@@ -18,7 +18,11 @@ object Entity extends Table[Entity]("entity") {
   def * = id ~ name <> (Entity.apply _, Entity.unapply _)
 
   val byId = createFinderBy(_.id)
-  def get(id : Int) : Option[Entity] = DB.withSession { implicit session =>
-    byId(id).firstOption
+  def get(i : Int) : Option[Entity] = DB.withSession { implicit session =>
+    byId(i).firstOption
+  }
+  def create(n : String) : Entity = DB.withSession { implicit session =>
+    val i = name returning id insert n
+    Entity(i, n)
   }
 }
