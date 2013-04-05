@@ -1,4 +1,5 @@
 # --- !Ups
+;
 
 CREATE TABLE "entity" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
@@ -9,6 +10,7 @@ COMMENT ON TABLE "entity" IS 'Users, groups, organizations, and other logical id
 INSERT INTO "entity" VALUES (0, 'Databrary');
 
 # --- !Downs
+;
 
 DROP TABLE "entity";
 
