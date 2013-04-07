@@ -1,0 +1,12 @@
+@(ddl : scala.slick.lifted.DDL)
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>DDL</title>
+	</head>
+	<body>
+		<pre>@ddl.createStatements.mkString("\n")</pre>
+	</body>
+</html>
