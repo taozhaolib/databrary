@@ -41,21 +41,9 @@ CREATE FUNCTION "trust_check" ("child" integer, "parent" integer = 0, "access" s
 $$;
 COMMENT ON FUNCTION "trust_check" (integer, integer, site_permission) IS 'Test if a given child has the given permission [any] from the given parent [root]';
 
-CREATE VIEW "trust_closure" ("child", "parent", "access") AS
-	WITH RECURSIVE closure AS (
-		SELECT child, parent, access FROM trust_valid
-		UNION
-		SELECT c.child, p.parent, LEAST(p.access, c.access)
-			FROM trust_valid p, closure c
-			WHERE p.child = c.parent
-	)
-	SELECT child, parent, max(access) FROM closure GROUP BY child, parent;
-COMMENT ON VIEW "trust_closure" IS 'The full transitive closure of "trust"';
-
 # --- !Downs
 ;
 
-DROP VIEW "trust_closure";
 DROP FUNCTION "trust_check" (integer, integer, site_permission);
 DROP FUNCTION "trust_parents" (integer, site_permission);
 DROP VIEW "trust_valid";
