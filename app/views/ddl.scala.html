@@ -1,4 +1,4 @@
-@(ddl : scala.slick.lifted.DDL)
+@(ddl : scala.slick.lifted.DDL, x : String = "")
 
 <!DOCTYPE html>
 
@@ -7,6 +7,7 @@
 		<title>DDL</title>
 	</head>
 	<body>
+		<pre>@x</pre>
 		<pre>@ddl.createStatements.mkString("\n")</pre>
 	</body>
 </html>

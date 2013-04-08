@@ -15,6 +15,9 @@ object UserPermission extends DBEnum("user_permission") {
 }
 
 case class Trust(child : Int, parent : Int, var access : SitePermission.Value, var delegate : UserPermission.Value, var expires : Option[Timestamp]) extends TableRow {
+  lazy val childEntity : Entity = Entity.get(child)
+  lazy val parentEntity : Entity = Entity.get(parent)
+
   def commit = DB.withSession { implicit session =>
     Trust.byKey(child, parent).map(_.mutable) update (access, delegate, expires)
   }
@@ -41,15 +44,15 @@ object Trust extends Table[Trust]("trust") {
   def childEntity = foreignKey("trust_child_fkey", child, Entity)(_.id)
   def parentEntity = foreignKey("trust_parent_fkey", parent, Entity)(_.id)
 
-  def byKey(c : Int, p : Int) = Query(this).filter(r => r.child === c && r.parent === p)
+  def byKey(c : Int, p : Int) = Query(this).where(r => r.child === c && r.parent === p)
   def get(c : Int, p : Int) : Option[Trust] = DB.withSession { implicit session =>
     byKey(c, p).firstOption
   }
   def getParents(c : Int) : List[Trust] = DB.withSession { implicit session =>
-    Query(this).filter(_.child === c).list
+    Query(this).where(_.child === c).list
   }
   def getChildren(p : Int) : List[Trust] = DB.withSession { implicit session =>
-    Query(this).filter(_.parent === p).list
+    Query(this).where(_.parent === p).list
   }
 
   val _check = SimpleFunction.ternary[Int, Int, Option[SitePermission.Value], Option[SitePermission.Value]]("trust_check")

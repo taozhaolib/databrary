@@ -7,7 +7,7 @@ import models._
 object Application extends Controller {
   
   def index = Action {
-    Ok(views.html.ddl(Entity.ddl ++ Trust.ddl))
+    Ok(views.html.ddl(Entity.ddl ++ Trust.ddl ++ Account.ddl))
   }
   
 }
