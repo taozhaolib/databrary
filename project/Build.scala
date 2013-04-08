@@ -15,8 +15,8 @@ object ApplicationBuild extends Build {
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
+    scalacOptions ++= Seq("-feature","-unchecked","-deprecation"),
     resolvers += Resolver.url("github repo for play-slick", url("http://loicdescotte.github.com/releases/"))(Resolver.ivyStylePatterns)
-    // scalacOptions ++= Seq("-feature","-unchecked","-deprecation")
   )
 
 }
