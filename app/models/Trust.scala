@@ -55,8 +55,8 @@ object Trust extends Table[Trust]("trust") {
     Query(this).where(_.parent === p).list
   }
 
-  val _check = SimpleFunction.ternary[Int, Int, Option[SitePermission.Value], Option[SitePermission.Value]]("trust_check")
-  def check(c : Int, p : Int = Entity.ROOT) : SitePermission.Value = DB.withSession { implicit session =>
-    Query(_check(c, p, None)).first.getOrElse(SitePermission.NONE)
+  val _check = SimpleFunction.unary[Int, Option[SitePermission.Value]]("trust_check")
+  def check(c : Int) : SitePermission.Value = DB.withSession { implicit session =>
+    Query(_check(c)).first.getOrElse(SitePermission.NONE)
   }
 }

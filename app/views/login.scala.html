@@ -1,0 +1,14 @@
+@(form : Form[String], error : String = "")
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Login</title>
+	</head>
+	<body>
+		@helper.form(routes.Application.login) {
+			<div>OpenID: @helper.inputText(form("openid"))</div>
+		}
+		<div>@error</div>
+	</body>
+</html>

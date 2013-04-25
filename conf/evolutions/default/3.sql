@@ -4,8 +4,9 @@
 CREATE TABLE "account" (
 	"entity" integer NOT NULL Unique References "entity",
 	"username" varchar(32) NOT NULL Primary Key,
+	"created" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"email" varchar(256) NOT NULL,
-	"created" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+	"openid" varchar(256)
 );
 
 # --- !Downs

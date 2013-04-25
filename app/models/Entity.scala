@@ -22,6 +22,7 @@ object Entity extends Table[Entity]("entity") {
   def mutable = name
 
   def byId(i : Int) = Query(this).where(_.id === i)
+
   def get(i : Int) : Entity =
     EntityCache.getOrElseUpdate(i,
       DB.withSession { implicit session =>
