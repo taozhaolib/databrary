@@ -1,0 +1,2 @@
+login.openID.notFound=Account for supplied OpenID not found.
+login.noCookie=You are not logged in. Please make sure you have cookies enabled.

@@ -2,8 +2,8 @@ package models
 
 import play.api.Play.current
 import play.api.db.slick
-import slick.DB
-import slick.Config.driver.simple._
+import             slick.DB
+import             slick.Config.driver.simple._
 import java.sql.Timestamp
 
 case class Account(id : Int, username : String, var email : String, var openid : Option[String]) extends TableRow {
@@ -26,6 +26,7 @@ object Account extends Table[Account]("account") {
   def mutable = email ~ openid
 
   def idKey = index("account_entity_key", id, unique = true)
+  def openidKey = index("account_openid_key", openid, unique = false)
   def entity = foreignKey("account_entity_fkey", id, Entity)(_.id)
 
   def byId(i : Int) = Query(this).where(_.id === i)
