@@ -3,13 +3,15 @@
 # ~~~~
 
 GET     /login                      	controllers.Application.login
+GET	/logout				controllers.Application.logout
 GET     /OpenID                     	controllers.Application.openID(username = "")
 GET     /OpenID/:username           	controllers.Application.openID(username : String)
 GET	/home			   	controllers.Application.home
+POST	/Account			controllers.Application.account
+GET     /                      		controllers.Application.login
+
 GET     /TEST                       	controllers.Application.test
 GET     /DDL                        	controllers.Application.ddl
-
-GET     /                      		controllers.Application.login
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               	controllers.Assets.at(path="/public", file)

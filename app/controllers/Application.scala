@@ -13,6 +13,30 @@ import          db.slick.Config.driver.simple._
 import          i18n.Messages
 import models._
 
+class AccountRequest[A](request : Request[A], val account : Account) 
+  extends WrappedRequest[A](request)
+
+object AccountAction {
+  def getAccount(request : Request[_]) : Option[Account] =
+    request.session.get("account").flatMap { i => 
+      try { Some(i.toInt) }
+      catch { case e:java.lang.NumberFormatException => None }
+    }.flatMap(Account.getId _)
+
+  def apply(noaccount : Request[AnyContent] => Result, block: AccountRequest[AnyContent] => Result) : Action[AnyContent] =
+    Action { request =>
+      getAccount(request).fold(noaccount(request)) {
+        account => block(new AccountRequest[AnyContent](request, account))
+      }
+    }
+
+  def apply(noaccount : => Result, block: AccountRequest[AnyContent] => Result) : Action[AnyContent] =
+    apply(_ => noaccount, block)
+
+  def apply(block: AccountRequest[AnyContent] => Result) : Action[AnyContent] =
+    apply(Results.Ok(views.html.login(Messages("login.noCookie"))), block)
+}
+
 object Application extends Controller {
   
   def ddl = Action {
@@ -30,14 +54,18 @@ object Application extends Controller {
   
   def login = Action { implicit request =>
     loginForm.bindFromRequest.fold(
-      blank => Ok(views.html.login(loginForm)),
+      blank => Ok(views.html.login()),
       { case (username, openid) => AsyncResult(OpenID.redirectURL(openid, routes.Application.openID(username).absoluteURL(), realm = Some("http://" + request.host)).extend1(
         {
           case Redeemed(url) => Redirect(url)
-          case Thrown(t) => Ok(views.html.login(loginForm, t.toString))
+          case Thrown(t) => Ok(views.html.login(t.toString))
         }
       ))}
     )
+  }
+
+  def logout = Action { implicit request =>
+    Ok(views.html.login(Messages("login.logout"))).withNewSession
   }
 
   def openID(username : String) = Action { implicit request =>
@@ -49,25 +77,35 @@ object Application extends Controller {
             (if (username.isEmpty) qao else qao.filter(_.username === username)).firstOption
           }.map { a =>
             Redirect(routes.Application.home).withSession("account" -> a.id.toString)
-          }.getOrElse {
-            Ok(views.html.login(loginForm, Messages("login.openID.notFound", info.id)))
-          }
-        case Thrown(t) => Ok(views.html.login(loginForm, t.toString))
+          }.getOrElse(
+            Ok(views.html.login(Messages("login.openID.notFound", info.id)))
+          ) 
+        case Thrown(t) => Ok(views.html.login(t.toString))
       }
     ))
   }
 
-  def getAccount(implicit request : Request[_]) : Option[Account] =
-    request.session.get("account").flatMap { i => 
-      try { Some(i.toInt) }
-      catch { case e:java.lang.NumberFormatException => None }
-    }.flatMap(Account.getId _)
+  def home = AccountAction { implicit request =>
+    Ok(views.html.home(request.account))
+  }
 
-  def home = Action { implicit request =>
-    getAccount.map { a =>
-      Ok(views.html.home(a))
-    }.getOrElse {
-      Ok(views.html.login(loginForm, Messages("login.noCookie")))
-    }
+  val accountForm = Form(tuple(
+    "email" -> email,
+    "openid" -> text
+  ))
+
+  def accountFormFill(a : Account) = accountForm.fill((a.email, a.openid.getOrElse("")))
+  
+  def account = AccountAction { implicit request =>
+    accountForm.bindFromRequest.fold(
+      blank => Ok(views.html.home(request.account)),
+      { case (email, openid) => 
+        val a = request.account
+        a.email = email
+        a.openid = if (openid.isEmpty) None else Some(openid)
+        a.commit
+        Redirect(routes.Application.home)
+      }
+    )
   }
 }

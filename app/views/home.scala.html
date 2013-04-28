@@ -1,8 +1,13 @@
-@(a : Account)
+@(a : Account)(implicit form : Form[(String,String)] = Application.accountFormFill(a))
 
 <!DOCTYPE html>
 <html>
 	<body>
-		Welcome, @a.username
+		<h1>Welcome, @a.username</h1>
+		<a href="@routes.Application.logout">logout</a>
+		@helper.form(routes.Application.account) {
+			@helper.inputText(form("email"))
+			@helper.inputText(form("openid"))
+		}
 	</body>
 </html>

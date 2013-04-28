@@ -1,4 +1,4 @@
-@(form : Form[(String,String)], error : String = "")
+@(error : String = "")
 
 <!DOCTYPE html>
 <html>
@@ -7,8 +7,8 @@
 	</head>
 	<body>
 		@helper.form(routes.Application.login) {
-			@helper.inputText(form("username"))
-			@helper.inputText(form("openid"))
+			@helper.inputText(Application.loginForm("username"))
+			@helper.inputText(Application.loginForm("openid"))
 		}
 		<div class="error">@error</div>
 	</body>
