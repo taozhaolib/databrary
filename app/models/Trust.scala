@@ -15,9 +15,6 @@ object UserPermission extends DBEnum("user_permission") {
 }
 
 case class Trust(child : Int, parent : Int, var access : SitePermission.Value, var delegate : UserPermission.Value, var expires : Option[Timestamp]) extends TableRow {
-  lazy val childEntity : Entity = Entity.get(child)
-  lazy val parentEntity : Entity = Entity.get(parent)
-
   def commit = DB.withSession { implicit session =>
     Trust.byKey(child, parent).map(_.mutable) update (access, delegate, expires)
   }
@@ -27,6 +24,9 @@ case class Trust(child : Int, parent : Int, var access : SitePermission.Value, v
   def remove = DB.withSession { implicit session =>
     Trust.byKey(child, parent).delete
   }
+
+  lazy val childEntity : Entity = Entity.get(child)
+  lazy val parentEntity : Entity = Entity.get(parent)
 }
 
 object Trust extends Table[Trust]("trust") {

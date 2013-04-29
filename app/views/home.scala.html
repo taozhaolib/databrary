@@ -1,13 +1,61 @@
-@(a : Account)(implicit form : Form[(String,String)] = Application.accountFormFill(a))
+@(acct : Account, accountForm : Form[(String, String)])
 
 <!DOCTYPE html>
 <html>
 	<body>
-		<h1>Welcome, @a.username</h1>
+		<h1>Welcome, @acct.username</h1>
 		<a href="@routes.Application.logout">logout</a>
-		@helper.form(routes.Application.account) {
-			@helper.inputText(form("email"))
-			@helper.inputText(form("openid"))
+
+		<h2>Account</h2>
+		@helper.form(routes.Application.postAccount) {
+			@helper.inputText(accountForm("email"))
+			@helper.inputText(accountForm("openid"))
+			<button type='submit'>Change</button>
 		}
+		@accountForm.globalErrors.map { error =>
+		<p class="error">
+			@error.message
+		</p>
+		}
+
+		<h2>My memberships</h2>
+		<div>
+			<table>
+				<tr>
+					<th>Name</th>
+					<th>Access</th>
+					<th>Delegated Permissions</th>
+					<th>Expiration</th>
+				</tr>
+				@Trust.getParents(acct.id).map { t =>
+				<tr>
+					<td>@t.parentEntity.name</td>
+					<td>@t.access</td>
+					<td>@t.delegate</td>
+					<td>@t.expires.getOrElse("never")</td>
+				</tr>
+				}
+			</table>
+		</div>
+
+		<h2>My authorizations</h2>
+		<div>
+			<table>
+				<tr>
+					<th>Name</th>
+					<th>Access</th>
+					<th>Delegated Permissions</th>
+					<th>Expiration</th>
+				</tr>
+				@Trust.getChildren(acct.id).map { t =>
+				<tr>
+					<td>@t.childEntity.name</td>
+					<td>@t.access</td>
+					<td>@t.delegate</td>
+					<td>@t.expires.getOrElse("never")</td>
+				</tr>
+				}
+			</table>
+		</div>
 	</body>
 </html>

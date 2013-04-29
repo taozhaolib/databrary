@@ -1,4 +1,4 @@
-@(error : String = "")
+@(form : Form[(String,String)])
 
 <!DOCTYPE html>
 <html>
@@ -6,10 +6,16 @@
 		<title>Login</title>
 	</head>
 	<body>
-		@helper.form(routes.Application.login) {
-			@helper.inputText(Application.loginForm("username"))
-			@helper.inputText(Application.loginForm("openid"))
+		@helper.form(routes.Application.postLogin) {
+			@helper.inputText(form("username"))
+			@helper.inputText(form("openid"))
+			<button type='submit'>Login</button>
 		}
-		<div class="error">@error</div>
+		@form.globalErrors.map { error =>
+		<p class="error">
+			@error.message
+		</p>
+		}
+
 	</body>
 </html>

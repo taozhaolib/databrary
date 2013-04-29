@@ -10,6 +10,8 @@ case class Entity(id : Int, var name : String) extends TableRow {
   def commit = DB.withSession { implicit session =>
     Entity.byId(id).map(_.mutable) update (name)
   }
+
+  lazy val siteAccess : SitePermission.Value = Trust.check(id)
 }
 
 object EntityCache extends HashMap[Int, Entity]

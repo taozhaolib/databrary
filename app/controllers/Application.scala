@@ -23,18 +23,18 @@ object AccountAction {
       catch { case e:java.lang.NumberFormatException => None }
     }.flatMap(Account.getId _)
 
-  def apply(noaccount : Request[AnyContent] => Result, block: AccountRequest[AnyContent] => Result) : Action[AnyContent] =
+  def apply(noaccount : Request[AnyContent] => Result, block : AccountRequest[AnyContent] => Result) : Action[AnyContent] =
     Action { request =>
       getAccount(request).fold(noaccount(request)) {
         account => block(new AccountRequest[AnyContent](request, account))
       }
     }
 
-  def apply(noaccount : => Result, block: AccountRequest[AnyContent] => Result) : Action[AnyContent] =
+  def apply(noaccount : => Result, block : AccountRequest[AnyContent] => Result) : Action[AnyContent] =
     apply(_ => noaccount, block)
 
-  def apply(block: AccountRequest[AnyContent] => Result) : Action[AnyContent] =
-    apply(Results.Ok(views.html.login(Messages("login.noCookie"))), block)
+  def apply(block : AccountRequest[AnyContent] => Result) : Action[AnyContent] =
+    apply(Application.viewLogin(Messages("login.noCookie")), block)
 }
 
 object Application extends Controller {
@@ -43,29 +43,29 @@ object Application extends Controller {
     Ok(views.html.ddl(Entity.ddl ++ Trust.ddl ++ Account.ddl))
   }
 
-  def test = Action {
-    Ok(views.html.test(Account.getUsername("dylan").orNull.access.toString))
-  }
+  def start = AccountAction(viewLogin,
+    { request : AccountRequest[AnyContent] => viewHome(request) })
 
   val loginForm = Form(tuple(
     "username" -> text,
-    "openid" -> text
+    "openid" -> nonEmptyText
   ))
+
+  def viewLogin = Ok(views.html.login(loginForm))
+  def viewLogin(err : String) = Ok(views.html.login(loginForm.withGlobalError(err)))
+
+  def login = Action { request => viewLogin }
   
-  def login = Action { implicit request =>
+  def postLogin = Action { implicit request =>
     loginForm.bindFromRequest.fold(
-      blank => Ok(views.html.login()),
+      form => Ok(views.html.login(form)),
       { case (username, openid) => AsyncResult(OpenID.redirectURL(openid, routes.Application.openID(username).absoluteURL(), realm = Some("http://" + request.host)).extend1(
         {
           case Redeemed(url) => Redirect(url)
-          case Thrown(t) => Ok(views.html.login(t.toString))
+          case Thrown(t) => viewLogin(t.toString)
         }
       ))}
     )
-  }
-
-  def logout = Action { implicit request =>
-    Ok(views.html.login(Messages("login.logout"))).withNewSession
   }
 
   def openID(username : String) = Action { implicit request =>
@@ -78,16 +78,18 @@ object Application extends Controller {
           }.map { a =>
             Redirect(routes.Application.home).withSession("account" -> a.id.toString)
           }.getOrElse(
-            Ok(views.html.login(Messages("login.openID.notFound", info.id)))
+            viewLogin(Messages("login.openID.notFound", info.id))
           ) 
-        case Thrown(t) => Ok(views.html.login(t.toString))
+        case Thrown(t) => viewLogin(t.toString)
       }
     ))
   }
 
-  def home = AccountAction { implicit request =>
-    Ok(views.html.home(request.account))
+  def logout = Action { request =>
+    viewLogin(Messages("login.logout")).withNewSession
   }
+
+  def home = AccountAction { viewHome(_) }
 
   val accountForm = Form(tuple(
     "email" -> email,
@@ -95,10 +97,13 @@ object Application extends Controller {
   ))
 
   def accountFormFill(a : Account) = accountForm.fill((a.email, a.openid.getOrElse("")))
+
+  def viewHome(implicit request : AccountRequest[_]) = 
+    Ok(views.html.home(request.account, accountFormFill(request.account)))
   
-  def account = AccountAction { implicit request =>
+  def postAccount = AccountAction { implicit request =>
     accountForm.bindFromRequest.fold(
-      blank => Ok(views.html.home(request.account)),
+      form => Ok(views.html.home(request.account, form)),
       { case (email, openid) => 
         val a = request.account
         a.email = email

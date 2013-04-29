@@ -2,15 +2,15 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+GET     /                      		controllers.Application.start
 GET     /login                      	controllers.Application.login
-GET	/logout				controllers.Application.logout
+POST    /Login                 		controllers.Application.postLogin
 GET     /OpenID                     	controllers.Application.openID(username = "")
 GET     /OpenID/:username           	controllers.Application.openID(username : String)
+GET	/logout				controllers.Application.logout
 GET	/home			   	controllers.Application.home
-POST	/Account			controllers.Application.account
-GET     /                      		controllers.Application.login
+POST	/Account			controllers.Application.postAccount
 
-GET     /TEST                       	controllers.Application.test
 GET     /DDL                        	controllers.Application.ddl
 
 # Map static resources from the /public folder to the /assets URL path
