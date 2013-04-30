@@ -58,7 +58,7 @@ object Application extends Controller {
   
   def postLogin = Action { implicit request =>
     loginForm.bindFromRequest.fold(
-      form => Ok(views.html.login(form)),
+      form => BadRequest(views.html.login(form)),
       { case (username, openid) => AsyncResult(OpenID.redirectURL(openid, routes.Application.openID(username).absoluteURL(), realm = Some("http://" + request.host)).extend1(
         {
           case Redeemed(url) => Redirect(url)
@@ -98,17 +98,41 @@ object Application extends Controller {
 
   def accountFormFill(a : Account) = accountForm.fill((a.email, a.openid.getOrElse("")))
 
-  def viewHome(implicit request : AccountRequest[_]) = 
-    Ok(views.html.home(request.account, accountFormFill(request.account)))
+  def authorizeForm(parent : Entity) = Form(mapping(
+      "name" -> optional(text),
+      "child" -> number,
+      "parent" -> ignored(parent.id),
+      "access" -> number(min=0, max=SitePermission.maxId-1),
+      "delegate" -> number(min=0, max=UserPermission.maxId-1),
+      "expires" -> sqlDate
+    )((name, child, parent, access, delegate, expires) => Trust(child, parent, SitePermission(access), UserPermission(delegate), Some(new java.sql.Timestamp(expires.getTime)))
+    )(t => t.expires.map(e => (Some(t.childEntity.name), t.child, t.parent, t.access.id, t.delegate.id, new java.sql.Date(e.getTime))))
+  )
+
+  def viewHome(implicit request : AccountRequest[_]) = {
+    val acct = request.account
+    val form = authorizeForm(acct.entity)
+    Ok(views.html.home(acct, accountFormFill(acct), Trust.getChildren(acct.id).map(form.fill(_))))
+  }
   
   def postAccount = AccountAction { implicit request =>
     accountForm.bindFromRequest.fold(
-      form => Ok(views.html.home(request.account, form)),
-      { case (email, openid) => 
+      form => BadRequest(views.html.home(request.account, form, Seq())),
+      { case (email, openid) =>
         val a = request.account
         a.email = email
         a.openid = if (openid.isEmpty) None else Some(openid)
         a.commit
+        Redirect(routes.Application.home)
+      }
+    )
+  }
+
+  def postAuthorize = AccountAction { implicit request =>
+    authorizeForm(request.account.entity).bindFromRequest.fold(
+      form => BadRequest(views.html.home(request.account, accountFormFill(request.account), Seq(form))),
+      trust => {
+        trust.commit
         Redirect(routes.Application.home)
       }
     )

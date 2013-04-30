@@ -10,6 +10,7 @@ GET     /OpenID/:username           	controllers.Application.openID(username : S
 GET	/logout				controllers.Application.logout
 GET	/home			   	controllers.Application.home
 POST	/Account			controllers.Application.postAccount
+POST	/Authorize			controllers.Application.postAuthorize
 
 GET     /DDL                        	controllers.Application.ddl
 

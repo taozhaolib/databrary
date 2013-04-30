@@ -1,4 +1,13 @@
-@(acct : Account, accountForm : Form[(String, String)])
+@(acct : Account, accountForm : Form[(String, String)], authorizeForms : Seq[Form[Trust]])
+
+@tableField(elements: helper.FieldElements) = {
+	<td class="@elements.args.get('_class) @if(elements.hasErrors) {error}" id="@elements.args.get('_id).getOrElse(elements.id + "_field")">
+		@elements.input
+		@elements.errors(elements.lang).map { error =>
+			<p class="error">@error</p>
+		}
+	</td>
+}
 
 <!DOCTYPE html>
 <html>
@@ -23,7 +32,7 @@
 			<table>
 				<tr>
 					<th>Name</th>
-					<th>Access</th>
+					<th>Site Access</th>
 					<th>Delegated Permissions</th>
 					<th>Expiration</th>
 				</tr>
@@ -43,17 +52,31 @@
 			<table>
 				<tr>
 					<th>Name</th>
-					<th>Access</th>
+					<th>Site Access</th>
 					<th>Delegated Permissions</th>
 					<th>Expiration</th>
+					<th>Action</th>
 				</tr>
-				@Trust.getChildren(acct.id).map { t =>
+				@defining(helper.FieldConstructor(tableField)) { implicit fieldConstructor =>
+				@authorizeForms.map { form =>
+				@helper.form(routes.Application.postAuthorize) {
 				<tr>
-					<td>@t.childEntity.name</td>
-					<td>@t.access</td>
-					<td>@t.delegate</td>
-					<td>@t.expires.getOrElse("never")</td>
+					<td>@form("name").value</td>
+					@helper.select(form("access"), SitePermission.values.toSeq.map(v => (v.id.toString, v.toString)))
+					@helper.select(form("delegate"), UserPermission.values.toSeq.map(v => (v.id.toString, v.toString)))
+					@helper.inputDate(form("expires"))
+					<td>
+					<input type='hidden' name='child' value='@form("child").value'/>
+					<button type='submit'>Change</button>
+					@form.errors.map { error =>
+					<p class="error">
+						@error.message
+					</p>
+					}
+					</td>
 				</tr>
+				}
+				}
 				}
 			</table>
 		</div>
