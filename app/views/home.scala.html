@@ -68,7 +68,7 @@
 					<td>
 					<input type='hidden' name='child' value='@form("child").value'/>
 					<button type='submit'>Change</button>
-					@form.errors.map { error =>
+					@form.globalErrors.map { error =>
 					<p class="error">
 						@error.message
 					</p>
