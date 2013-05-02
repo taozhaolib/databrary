@@ -6,7 +6,7 @@
 		<title>Login</title>
 	</head>
 	<body>
-		@helper.form(routes.Application.postLogin) {
+		@helper.form(routes.Login.postLogin) {
 			@helper.inputText(form("username"))
 			@helper.inputText(form("openid"))
 			<button type='submit'>Login</button>

@@ -13,10 +13,10 @@
 <html>
 	<body>
 		<h1>Welcome, @acct.username</h1>
-		<a href="@routes.Application.logout">logout</a>
+		<a href="@routes.Login.logout">logout</a>
 
 		<h2>Account</h2>
-		@helper.form(routes.Application.postAccount) {
+		@helper.form(routes.Account.postAccount) {
 			@helper.inputText(accountForm("email"))
 			@helper.inputText(accountForm("openid"))
 			<button type='submit'>Change</button>
@@ -59,7 +59,7 @@
 				</tr>
 				@defining(helper.FieldConstructor(tableField)) { implicit fieldConstructor =>
 				@authorizeForms.map { form =>
-				@helper.form(routes.Application.postAuthorize) {
+				@helper.form(routes.Account.postAuthorize) {
 				<tr>
 					<td>@form("name").value</td>
 					@helper.select(form("access"), SitePermission.values.toSeq.map(v => (v.id.toString, v.toString)))

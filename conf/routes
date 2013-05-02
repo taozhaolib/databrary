@@ -3,14 +3,16 @@
 # ~~~~
 
 GET     /                      		controllers.Application.start
-GET     /login                      	controllers.Application.login
-POST    /Login                 		controllers.Application.postLogin
-GET     /OpenID                     	controllers.Application.openID(username = "")
-GET     /OpenID/:username           	controllers.Application.openID(username : String)
-GET	/logout				controllers.Application.logout
-GET	/home			   	controllers.Application.home
-POST	/Account			controllers.Application.postAccount
-POST	/Authorize			controllers.Application.postAuthorize
+
+GET     /login                      	controllers.Login.login
+POST    /Login                 		controllers.Login.postLogin
+GET     /OpenID                     	controllers.Login.openID(username = "")
+GET     /OpenID/:username           	controllers.Login.openID(username : String)
+GET	/logout				controllers.Login.logout
+
+GET	/home			   	controllers.Account.home
+POST	/Account			controllers.Account.postAccount
+POST	/Authorize			controllers.Account.postAuthorize
 
 GET     /DDL                        	controllers.Application.ddl
 
