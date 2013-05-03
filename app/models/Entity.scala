@@ -7,11 +7,11 @@ import slick.Config.driver.simple._
 import collection.mutable.HashMap
 
 case class Entity(id : Int, var name : String) extends TableRow {
+  def ==(that : Entity) = id == that.id
+
   def commit = DB.withSession { implicit session =>
     Entity.byId(id).map(_.mutable) update (name)
   }
-
-  lazy val siteAccess : SitePermission.Value = Trust.check(id)
 }
 
 object EntityCache extends HashMap[Int, Entity]

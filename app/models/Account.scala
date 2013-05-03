@@ -10,6 +10,8 @@ case class Account(id : Int, username : String, var email : String, var openid :
   var entity : Entity = null
   var access : SitePermission.Value = null
 
+  def ==(that : Account) = id == that.id
+
   def commit = DB.withSession { implicit session =>
     Account.byId(id).map(_.mutable) update (email, openid)
   }
@@ -29,8 +31,8 @@ object Account extends Table[Account]("account") {
   def openidKey = index("account_openid_key", openid, unique = false)
   def entity = foreignKey("account_entity_fkey", id, Entity)(_.id)
 
-  def byId(i : Int) = Query(this).where(_.id === i)
-  def byUsername(u : String) = Query(this).filter(_.username === u)
+  private def byId(i : Int) = Query(this).where(_.id === i)
+  private def byUsername(u : String) = Query(this).filter(_.username === u)
 
   private def fillEntity(ae : (Account,Entity,Option[SitePermission.Value])) : Account =
     ae match { case (a,e,c) => a.entity = e; a.access = c.getOrElse(SitePermission.NONE); a }

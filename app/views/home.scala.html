@@ -1,4 +1,4 @@
-@(acct : Account, accountForm : Form[(String, String)], authorizeForms : Seq[Form[Trust]])
+@(acct : Account, accountForm : Form[(String, String)], trustForms : Seq[(Entity,Form[Trust])], trustSearch : Form[String])
 
 @tableField(elements: helper.FieldElements) = {
 	<td class="@elements.args.get('_class) @if(elements.hasErrors) {error}" id="@elements.args.get('_id).getOrElse(elements.id + "_field")">
@@ -16,16 +16,12 @@
 		<a href="@routes.Login.logout">logout</a>
 
 		<h2>Account</h2>
-		@helper.form(routes.Account.postAccount) {
+		@helper.form(routes.Account.accountChange) {
 			@helper.inputText(accountForm("email"))
 			@helper.inputText(accountForm("openid"))
 			<button type='submit'>Change</button>
 		}
-		@accountForm.globalErrors.map { error =>
-		<p class="error">
-			@error.message
-		</p>
-		}
+		@formErrors(accountForm)
 
 		<h2>My memberships</h2>
 		<div>
@@ -58,24 +54,32 @@
 					<th>Action</th>
 				</tr>
 				@defining(helper.FieldConstructor(tableField)) { implicit fieldConstructor =>
-				@authorizeForms.map { form =>
-				@helper.form(routes.Account.postAuthorize) {
+				@trustForms.map { case (child,form) =>
+				@helper.form(routes.Account.trustChange(child.id)) {
 				<tr>
-					<td>@form("name").value</td>
+					<td>@child.name</td>
 					@helper.select(form("access"), SitePermission.values.toSeq.map(v => (v.id.toString, v.toString)))
 					@helper.select(form("delegate"), UserPermission.values.toSeq.map(v => (v.id.toString, v.toString)))
 					@helper.inputDate(form("expires"))
 					<td>
-					<input type='hidden' name='child' value='@form("child").value'/>
-					<button type='submit'>Change</button>
-					@form.globalErrors.map { error =>
-					<p class="error">
-						@error.message
-					</p>
-					}
+						<button type='submit'>Change</button>
+						<a href='@routes.Account.trustDelete(child.id)'>Remove</a>
+						@formErrors(form)
 					</td>
 				</tr>
 				}
+				}
+				@helper.form(routes.Account.trustSearch) {
+				<tr>
+					@helper.inputText(trustSearch("name"))
+					<td/>
+					<td/>
+					<td/>
+					<td>
+						<button type='submit'>Search</button>
+						@formErrors(trustSearch)
+					</td>
+				</tr>
 				}
 				}
 			</table>

@@ -2,8 +2,8 @@ package models
 
 import play.api.Play.current
 import play.api.db.slick
-import slick.DB
-import slick.Config.driver.simple._
+import             slick.DB
+import             slick.Config.driver.simple._
 import java.sql.Timestamp
 
 object SitePermission extends DBEnum("site_permission") {
@@ -15,6 +15,8 @@ object UserPermission extends DBEnum("user_permission") {
 }
 
 case class Trust(child : Int, parent : Int, var access : SitePermission.Value, var delegate : UserPermission.Value, var expires : Option[Timestamp]) extends TableRow {
+  def ==(that : Trust) = child == that.child && parent == that.parent
+
   def commit = DB.withSession { implicit session =>
     Trust.byKey(child, parent).map(_.mutable) update (access, delegate, expires)
   }
@@ -22,7 +24,7 @@ case class Trust(child : Int, parent : Int, var access : SitePermission.Value, v
     Trust.* insert this
   }
   def remove = DB.withSession { implicit session =>
-    Trust.byKey(child, parent).delete
+    Trust.delete(child, parent)
   }
 
   lazy val childEntity : Entity = Entity.get(child)
@@ -53,6 +55,9 @@ object Trust extends Table[Trust]("trust") {
   }
   def getChildren(p : Int) : List[Trust] = DB.withSession { implicit session =>
     Query(this).where(_.parent === p).list
+  }
+  def delete(c : Int, p : Int) = DB.withSession { implicit session =>
+    byKey(c, p).delete
   }
 
   val _check = SimpleFunction.unary[Int, Option[SitePermission.Value]]("trust_check")

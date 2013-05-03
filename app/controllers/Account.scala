@@ -12,7 +12,7 @@ import models._
 
 object Account extends Controller {
 
-  def home = AccountAction { viewHome(_) }
+  def home = AccountAction { request => Ok(viewHome(request.account)()) }
 
   val accountForm = Form(tuple(
     "email" -> email,
@@ -21,26 +21,29 @@ object Account extends Controller {
 
   def accountFormFill(a : Account) = accountForm.fill((a.email, a.openid.getOrElse("")))
 
-  def authorizeForm(parent : Entity) = Form(mapping(
-      "name" -> optional(text),
-      "child" -> number,
-      "parent" -> ignored(parent.id),
+  def trustForm(child : Int, parent : Int) : Form[Trust] = Form(mapping(
       "access" -> number(min=0, max=SitePermission.maxId-1),
       "delegate" -> number(min=0, max=UserPermission.maxId-1),
       "expires" -> sqlDate
-    )((name, child, parent, access, delegate, expires) => Trust(child, parent, SitePermission(access), UserPermission(delegate), Some(new java.sql.Timestamp(expires.getTime)))
-    )(t => t.expires.map(e => (Some(t.childEntity.name), t.child, t.parent, t.access.id, t.delegate.id, new java.sql.Date(e.getTime))))
+    )((access, delegate, expires) => Trust(child, parent, SitePermission(access), UserPermission(delegate), Some(new java.sql.Timestamp(expires.getTime)))
+    )(t => t.expires.map(e => (t.access.id, t.delegate.id, new java.sql.Date(e.getTime))))
   )
 
-  def viewHome(implicit request : AccountRequest[_]) = {
-    val acct = request.account
-    val form = authorizeForm(acct.entity)
-    Ok(views.html.home(acct, accountFormFill(acct), Trust.getChildren(acct.id).map(form.fill(_))))
+  val trustSearchForm = Form(
+    "name" -> text
+  )
+
+  def viewHome(account : Account)(
+    accountForm : Form[(String, String)] = accountFormFill(account),
+    trustChangeForm : Option[(Entity,Form[Trust])] = None,
+    trustSearchForm : Form[String] = trustSearchForm) = {
+    val trustForms = Trust.getChildren(account.id).map(t => (t.childEntity, trustForm(t.child, t.parent).fill(t)))
+    views.html.home(account, accountForm, trustForms, trustSearchForm)
   }
   
-  def postAccount = AccountAction { implicit request =>
+  def accountChange = AccountAction { implicit request =>
     accountForm.bindFromRequest.fold(
-      form => BadRequest(views.html.home(request.account, form, Seq())),
+      form => BadRequest(viewHome(request.account)(accountForm = form)),
       { case (email, openid) =>
         val a = request.account
         a.email = email
@@ -51,11 +54,25 @@ object Account extends Controller {
     )
   }
 
-  def postAuthorize = AccountAction { implicit request =>
-    authorizeForm(request.account.entity).bindFromRequest.fold(
-      form => BadRequest(views.html.home(request.account, accountFormFill(request.account), Seq(form))),
+  def trustChange(child : Int) = AccountAction { implicit request =>
+    trustForm(child, request.account.id).bindFromRequest.fold(
+      form => BadRequest(viewHome(request.account)(trustChangeForm = Some((Entity.get(child), form)))),
       trust => {
         trust.commit
+        Redirect(routes.Account.home)
+      }
+    )
+  }
+
+  def trustDelete(child : Int) = AccountAction { implicit request =>
+    Trust.delete(child, request.account.id)
+    Redirect(routes.Account.home)
+  }
+
+  def trustSearch = AccountAction { implicit request =>
+    trustSearchForm.bindFromRequest.fold(
+      form => BadRequest(viewHome(request.account)(trustSearchForm = form)),
+      trust => {
         Redirect(routes.Account.home)
       }
     )
