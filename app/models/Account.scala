@@ -7,14 +7,12 @@ import             slick.Config.driver.simple._
 import java.sql.Timestamp
 
 case class Account(id : Int, username : String, var email : String, var openid : Option[String]) extends TableRow {
-  var entity : Entity = null
-  var access : SitePermission.Value = null
-
-  def ==(that : Account) = id == that.id
-
   def commit = DB.withSession { implicit session =>
     Account.byId(id).map(_.mutable) update (email, openid)
   }
+
+  val entity = CachedVal[Entity](Entity.get(id))
+  def access : SitePermission.Value = entity.access
 }
 
 object Account extends Table[Account]("account") {
@@ -31,18 +29,22 @@ object Account extends Table[Account]("account") {
   def openidKey = index("account_openid_key", openid, unique = false)
   def entity = foreignKey("account_entity_fkey", id, Entity)(_.id)
 
-  private def byId(i : Int) = Query(this).where(_.id === i)
-  private def byUsername(u : String) = Query(this).filter(_.username === u)
+  def byId(i : Int) = Query(this).where(_.id === i)
+  def byUsername(u : String) = Query(this).filter(_.username === u)
+  def byOpenid(o : String) = Query(this).filter(_.openid === o)
 
-  private def fillEntity(ae : (Account,Entity,Option[SitePermission.Value])) : Account =
-    ae match { case (a,e,c) => a.entity = e; a.access = c.getOrElse(SitePermission.NONE); a }
-  private def withEntity(q : Query[Account.type, Account]) : Query[(Account.type,Entity.type,Column[Option[SitePermission.Value]]), (Account,Entity,Option[SitePermission.Value])] =
-    for { a <- q ; (e, c) <- a.entity.map(e => (e, Trust._check(e.id))) } yield (a,e,c)
+  def firstOption(q : Query[Account.type, Account]) : Option[Account] =
+    DB.withSession { implicit session =>
+      (for { a <- q ; (e, c) <- a.entity.map(e => (e, Trust._check(e.id))) } yield (a,e,c)).firstOption.map(
+        { case (a,e,c) => 
+          a.entity() = Entity.cache(e, c.getOrElse(SitePermission.NONE))
+          a 
+        }
+      )
+    }
 
-  def getId(i : Int) : Option[Account] = DB.withSession { implicit session =>
-    withEntity(byId(i)).firstOption.map(fillEntity _)
-  }
-  def getUsername(u : String) : Option[Account] = DB.withSession { implicit session =>
-    withEntity(byUsername(u)).firstOption.map(fillEntity _)
-  }
+  def getId(i : Int) : Option[Account] =
+    firstOption(byId(i))
+  def getUsername(u : String) : Option[Account] =
+    firstOption(byUsername(u))
 }

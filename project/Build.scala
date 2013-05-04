@@ -11,7 +11,7 @@ object ApplicationBuild extends Build {
     jdbc,
     "com.typesafe.play" %% "play-slick" % "0.3.2",
     "com.typesafe.slick" %% "slick" % "1.0.0",
-    "postgresql" % "postgresql" % "9.1-901-1.jdbc4"
+    "postgresql" % "postgresql" % "9.1-901-1.jdbc4" // "9.2-1002.jdbc4"
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(

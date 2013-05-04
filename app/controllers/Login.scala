@@ -66,7 +66,7 @@ object Login extends Controller {
       { 
         case Redeemed(info) =>
           DB.withSession { implicit session =>
-            val qao = Query(models.Account).filter(_.openid === info.id)
+            val qao = models.Account.byOpenid(info.id)
             (if (username.isEmpty) qao else qao.filter(_.username === username)).firstOption
           }.map { a =>
             Redirect(routes.Account.home).withSession("account" -> a.id.toString)

@@ -15,8 +15,6 @@ object UserPermission extends DBEnum("user_permission") {
 }
 
 case class Trust(child : Int, parent : Int, var access : SitePermission.Value, var delegate : UserPermission.Value, var expires : Option[Timestamp]) extends TableRow {
-  def ==(that : Trust) = child == that.child && parent == that.parent
-
   def commit = DB.withSession { implicit session =>
     Trust.byKey(child, parent).map(_.mutable) update (access, delegate, expires)
   }

@@ -7,14 +7,17 @@ import slick.Config.driver.simple._
 import collection.mutable.HashMap
 
 case class Entity(id : Int, var name : String) extends TableRow {
-  def ==(that : Entity) = id == that.id
-
   def commit = DB.withSession { implicit session =>
     Entity.byId(id).map(_.mutable) update (name)
   }
+
+  def account = Account.getId(id)
+  val access = CachedVal[SitePermission.Value](Trust.check(id))
+  def trustParents = Trust.getParents(id)
+  def trustChildren = Trust.getChildren(id)
 }
 
-object EntityCache extends HashMap[Int, Entity]
+private object EntityCache extends HashMap[Int, Entity]
 
 object Entity extends Table[Entity]("entity") {
   def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
@@ -23,8 +26,13 @@ object Entity extends Table[Entity]("entity") {
   def * = id ~ name <> (Entity.apply _, Entity.unapply _)
   def mutable = name
 
-  def byId(i : Int) = Query(this).where(_.id === i)
+  private def byId(i : Int) = Query(this).where(_.id === i)
 
+  def cache(e : Entity, a : SitePermission.Value = null) : Entity = {
+    e.access() = a
+    EntityCache.put(e.id, e)
+    e
+  }
   def get(i : Int) : Entity =
     EntityCache.getOrElseUpdate(i,
       DB.withSession { implicit session =>
@@ -39,5 +47,5 @@ object Entity extends Table[Entity]("entity") {
     e
   }
 
-  val ROOT : Int = 0
+  final val ROOT : Int = 0
 }

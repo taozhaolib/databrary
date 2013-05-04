@@ -32,7 +32,7 @@
 					<th>Delegated Permissions</th>
 					<th>Expiration</th>
 				</tr>
-				@Trust.getParents(acct.id).map { t =>
+				@acct.entity.trustParents.map { t =>
 				<tr>
 					<td>@t.parentEntity.name</td>
 					<td>@t.access</td>

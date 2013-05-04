@@ -1,8 +1,23 @@
 package models
 
+import scala.language.implicitConversions
 import scala.slick.driver.BasicProfile
 import scala.slick.lifted.{TypeMapperDelegate,BaseTypeMapper}
 import scala.slick.session.{PositionedParameters,PositionedResult}
+
+class CachedVal[T <: AnyRef](init : => T) extends Function0[T] {
+  private var x : Option[T] = None
+  def apply : T = x.getOrElse(update(init))
+  def update(v : T) : T = {
+    x = Some(v)
+    v
+  }
+}
+
+object CachedVal {
+  def apply[T <: AnyRef](init : => T) = new CachedVal(init)
+  implicit def implicitGetCached[T <: AnyRef](x : CachedVal[T]) : T = x()
+}
 
 abstract trait TableRow {
   def commit

@@ -37,7 +37,7 @@ object Account extends Controller {
     accountForm : Form[(String, String)] = accountFormFill(account),
     trustChangeForm : Option[(Entity,Form[Trust])] = None,
     trustSearchForm : Form[String] = trustSearchForm) = {
-    val trustForms = Trust.getChildren(account.id).map(t => (t.childEntity, trustForm(t.child, t.parent).fill(t)))
+    val trustForms = account.entity.trustChildren.map(t => (t.childEntity, trustForm(t.child, t.parent).fill(t)))
     views.html.home(account, accountForm, trustForms, trustSearchForm)
   }
   
