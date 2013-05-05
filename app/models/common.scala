@@ -2,7 +2,7 @@ package models
 
 import scala.language.implicitConversions
 import scala.slick.driver.BasicProfile
-import scala.slick.lifted.{TypeMapperDelegate,BaseTypeMapper}
+import scala.slick.lifted.{TypeMapperDelegate,BaseTypeMapper,SimpleBinaryOperator}
 import scala.slick.session.{PositionedParameters,PositionedResult}
 
 class CachedVal[T <: AnyRef](init : => T) extends Function0[T] {
@@ -17,6 +17,10 @@ class CachedVal[T <: AnyRef](init : => T) extends Function0[T] {
 object CachedVal {
   def apply[T <: AnyRef](init : => T) = new CachedVal(init)
   implicit def implicitGetCached[T <: AnyRef](x : CachedVal[T]) : T = x()
+}
+
+object DBFunctions {
+  val ilike = SimpleBinaryOperator[Boolean]("ilike")
 }
 
 abstract trait TableRow {

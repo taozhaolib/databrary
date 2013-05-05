@@ -24,21 +24,22 @@ object Account extends Controller {
   def trustForm(child : Int, parent : Int) : Form[Trust] = Form(mapping(
       "access" -> number(min=0, max=SitePermission.maxId-1),
       "delegate" -> number(min=0, max=UserPermission.maxId-1),
-      "expires" -> sqlDate
+      "expires" -> default(sqlDate, new java.sql.Date(System.currentTimeMillis))
     )((access, delegate, expires) => Trust(child, parent, SitePermission(access), UserPermission(delegate), Some(new java.sql.Timestamp(expires.getTime)))
     )(t => t.expires.map(e => (t.access.id, t.delegate.id, new java.sql.Date(e.getTime))))
   )
 
   val trustSearchForm = Form(
-    "name" -> text
+    "name" -> nonEmptyText
   )
 
   def viewHome(account : Account)(
     accountForm : Form[(String, String)] = accountFormFill(account),
     trustChangeForm : Option[(Entity,Form[Trust])] = None,
-    trustSearchForm : Form[String] = trustSearchForm) = {
+    trustSearchForm : Form[String] = trustSearchForm,
+    trustResults : Seq[(Entity,Form[Trust])] = Seq()) = {
     val trustForms = account.entity.trustChildren.map(t => (t.childEntity, trustForm(t.child, t.parent).fill(t)))
-    views.html.home(account, accountForm, trustForms, trustSearchForm)
+    views.html.home(account, accountForm, trustForms, trustSearchForm, trustResults)
   }
   
   def accountChange = AccountAction { implicit request =>
@@ -70,11 +71,28 @@ object Account extends Controller {
   }
 
   def trustSearch = AccountAction { implicit request =>
-    trustSearchForm.bindFromRequest.fold(
+    val form = trustSearchForm.bindFromRequest
+    form.fold(
       form => BadRequest(viewHome(request.account)(trustSearchForm = form)),
+      name => {
+        val me = request.account.id
+        val res = DB.withSession { implicit session =>
+          Entity.byName(name).filter(e => e.id =!= me && e.id.notIn(Trust.byParent(me).map(_.child))).take(8).list
+        }
+        Ok(viewHome(request.account)(trustSearchForm = form, 
+          trustResults = res.map(e => (e,trustForm(e.id,me)))))
+      }
+    )
+  }
+
+  def trustAdd(child : Int) = AccountAction { implicit request =>
+    trustForm(child, request.account.id).bindFromRequest.fold(
+      form => BadRequest(viewHome(request.account)(trustResults = Seq((Entity.get(child), form)))),
       trust => {
+        trust.add
         Redirect(routes.Account.home)
       }
     )
   }
+
 }

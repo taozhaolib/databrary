@@ -13,6 +13,8 @@ GET	/logout				controllers.Login.logout
 GET	/home			   	controllers.Account.home
 POST	/Account			controllers.Account.accountChange
 POST	/Trust/:child			controllers.Account.trustChange(child : Int)
+POST	/Trust/:child/add		controllers.Account.trustAdd(child : Int)
+# should be POST but currently used as link:
 GET	/Trust/:child/delete		controllers.Account.trustDelete(child : Int)
 GET	/Trust/search			controllers.Account.trustSearch
 

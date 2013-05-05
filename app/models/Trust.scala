@@ -45,14 +45,16 @@ object Trust extends Table[Trust]("trust") {
   def parentEntity = foreignKey("trust_parent_fkey", parent, Entity)(_.id)
 
   def byKey(c : Int, p : Int) = Query(this).where(r => r.child === c && r.parent === p)
+  def byChild(c : Int) = Query(this).where(_.child === c)
+  def byParent(p : Int) = Query(this).where(_.parent === p)
   def get(c : Int, p : Int) : Option[Trust] = DB.withSession { implicit session =>
     byKey(c, p).firstOption
   }
   def getParents(c : Int) : List[Trust] = DB.withSession { implicit session =>
-    Query(this).where(_.child === c).list
+    byChild(c).list
   }
   def getChildren(p : Int) : List[Trust] = DB.withSession { implicit session =>
-    Query(this).where(_.parent === p).list
+    byParent(p).list
   }
   def delete(c : Int, p : Int) = DB.withSession { implicit session =>
     byKey(c, p).delete

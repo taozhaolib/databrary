@@ -12,7 +12,8 @@ case class Entity(id : Int, var name : String) extends TableRow {
   }
 
   def account = Account.getId(id)
-  val access = CachedVal[SitePermission.Value](Trust.check(id))
+  private val _access = CachedVal[SitePermission.Value](Trust.check(id))
+  def access : SitePermission.Value = _access
   def trustParents = Trust.getParents(id)
   def trustChildren = Trust.getChildren(id)
 }
@@ -29,7 +30,7 @@ object Entity extends Table[Entity]("entity") {
   private def byId(i : Int) = Query(this).where(_.id === i)
 
   def cache(e : Entity, a : SitePermission.Value = null) : Entity = {
-    e.access() = a
+    e._access() = a
     EntityCache.put(e.id, e)
     e
   }
@@ -45,6 +46,15 @@ object Entity extends Table[Entity]("entity") {
     val e = Entity(i, n)
     EntityCache.update(i, e)
     e
+  }
+
+  def byName(n : String) = {
+    // should clearly be improved and/or indexed
+    val w = "%" + n.split("\\s+").filter(!_.isEmpty).mkString("%") + "%"
+    for {
+      (e, a) <- Entity leftJoin Account on (_.id === _.id)
+      if a.username === n || DBFunctions.ilike(e.name, w)
+    } yield e
   }
 
   final val ROOT : Int = 0

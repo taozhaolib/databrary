@@ -11,7 +11,8 @@ case class Account(id : Int, username : String, var email : String, var openid :
     Account.byId(id).map(_.mutable) update (email, openid)
   }
 
-  val entity = CachedVal[Entity](Entity.get(id))
+  private val _entity = CachedVal[Entity](Entity.get(id))
+  def entity : Entity = _entity
   def access : SitePermission.Value = entity.access
 }
 
@@ -37,7 +38,7 @@ object Account extends Table[Account]("account") {
     DB.withSession { implicit session =>
       (for { a <- q ; (e, c) <- a.entity.map(e => (e, Trust._check(e.id))) } yield (a,e,c)).firstOption.map(
         { case (a,e,c) => 
-          a.entity() = Entity.cache(e, c.getOrElse(SitePermission.NONE))
+          a._entity() = Entity.cache(e, c.getOrElse(SitePermission.NONE))
           a 
         }
       )
