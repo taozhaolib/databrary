@@ -64,4 +64,10 @@ object Trust extends Table[Trust]("trust") {
   def check(c : Int) : SitePermission.Value = DB.withSession { implicit session =>
     Query(_check(c)).first.getOrElse(SitePermission.NONE)
   }
+  def check(c : Int, p : Int) : UserPermission.Value = 
+    if (c == p) 
+      UserPermission.ADMIN
+    else DB.withSession { implicit session =>
+      byKey(c, p).map(_.delegate).firstOption.getOrElse(UserPermission.NONE)
+    }
 }

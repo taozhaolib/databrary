@@ -1,0 +1,27 @@
+@(acct : Option[Account], entity : Entity)
+
+@common(acct, entity.name) {
+	<h1>@entity.name</h1>
+
+	@acct.filter(a => Trust.check(a.id, entity.id) >= UserPermission.ADMIN).map { _ =>
+		<a href='routes.Account.admin(entity.id)'>admin</a>
+	}
+
+	<dl>
+	@entity.account.map { a =>
+		<dt>username</dt>
+		<dd>@a.username</dd>
+		<dt>email</dt>
+		<dd>@a.email</dd>
+	}
+
+		<dt>Memberships</dt>
+		@entity.trustParents.map { t => 
+			<dd>@displayEntity(t.parentEntity)</dd>
+		}
+		<dt>Members</dt>
+		@entity.trustChildren.map { t => 
+			<dd>@displayEntity(t.childEntity)</dd>
+		}
+	</dl>
+}

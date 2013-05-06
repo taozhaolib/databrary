@@ -12,7 +12,7 @@ import models._
 
 object Account extends Controller {
 
-  def home = AccountAction { request => Ok(viewHome(request.account)()) }
+  def admin = AccountAction { request => Ok(viewAdmin(request.account)()) }
 
   val accountForm = Form(tuple(
     "email" -> email,
@@ -33,53 +33,53 @@ object Account extends Controller {
     "name" -> nonEmptyText
   )
 
-  def viewHome(account : Account)(
+  def viewAdmin(account : Account)(
     accountForm : Form[(String, String)] = accountFormFill(account),
     trustChangeForm : Option[(Entity,Form[Trust])] = None,
     trustSearchForm : Form[String] = trustSearchForm,
     trustResults : Seq[(Entity,Form[Trust])] = Seq()) = {
     val trustForms = account.entity.trustChildren.map(t => (t.childEntity, trustForm(t.child, t.parent).fill(t)))
-    views.html.home(account, accountForm, trustForms, trustSearchForm, trustResults)
+    views.html.accountAdmin(account, accountForm, trustForms, trustSearchForm, trustResults)
   }
   
   def accountChange = AccountAction { implicit request =>
     accountForm.bindFromRequest.fold(
-      form => BadRequest(viewHome(request.account)(accountForm = form)),
+      form => BadRequest(viewAdmin(request.account)(accountForm = form)),
       { case (email, openid) =>
         val a = request.account
         a.email = email
         a.openid = if (openid.isEmpty) None else Some(openid)
         a.commit
-        Redirect(routes.Account.home)
+        Redirect(routes.Account.admin)
       }
     )
   }
 
   def trustChange(child : Int) = AccountAction { implicit request =>
     trustForm(child, request.account.id).bindFromRequest.fold(
-      form => BadRequest(viewHome(request.account)(trustChangeForm = Some((Entity.get(child), form)))),
+      form => BadRequest(viewAdmin(request.account)(trustChangeForm = Some((models.Entity.get(child), form)))),
       trust => {
         trust.commit
-        Redirect(routes.Account.home)
+        Redirect(routes.Account.admin)
       }
     )
   }
 
   def trustDelete(child : Int) = AccountAction { implicit request =>
     Trust.delete(child, request.account.id)
-    Redirect(routes.Account.home)
+    Redirect(routes.Account.admin)
   }
 
   def trustSearch = AccountAction { implicit request =>
     val form = trustSearchForm.bindFromRequest
     form.fold(
-      form => BadRequest(viewHome(request.account)(trustSearchForm = form)),
+      form => BadRequest(viewAdmin(request.account)(trustSearchForm = form)),
       name => {
         val me = request.account.id
         val res = DB.withSession { implicit session =>
-          Entity.byName(name).filter(e => e.id =!= me && e.id.notIn(Trust.byParent(me).map(_.child))).take(8).list
+          models.Entity.byName(name).filter(e => e.id =!= me && e.id.notIn(Trust.byParent(me).map(_.child))).take(8).list
         }
-        Ok(viewHome(request.account)(trustSearchForm = form, 
+        Ok(viewAdmin(request.account)(trustSearchForm = form, 
           trustResults = res.map(e => (e,trustForm(e.id,me)))))
       }
     )
@@ -87,10 +87,10 @@ object Account extends Controller {
 
   def trustAdd(child : Int) = AccountAction { implicit request =>
     trustForm(child, request.account.id).bindFromRequest.fold(
-      form => BadRequest(viewHome(request.account)(trustResults = Seq((Entity.get(child), form)))),
+      form => BadRequest(viewAdmin(request.account)(trustResults = Seq((models.Entity.get(child), form)))),
       trust => {
         trust.add
-        Redirect(routes.Account.home)
+        Redirect(routes.Account.admin)
       }
     )
   }

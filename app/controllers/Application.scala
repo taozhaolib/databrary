@@ -8,8 +8,12 @@ import models._
 
 object Application extends Controller {
   
-  def start = AccountAction(Login.viewLogin,
-    { request : AccountRequest[AnyContent] => Ok(Account.viewHome(request.account)()) })
+  def start = AccountAction(
+    Login.viewLogin,
+    { request : AccountRequest[AnyContent] => 
+      Entity.viewEntity(Some(request.account), request.account.entity) 
+    }
+  )
 
   def ddl = Action {
     Ok(views.html.ddl(models.Entity.ddl ++ models.Trust.ddl ++ models.Account.ddl))

@@ -10,7 +10,9 @@ GET     /OpenID                     	controllers.Login.openID(username = "")
 GET     /OpenID/:username           	controllers.Login.openID(username : String)
 GET	/logout				controllers.Login.logout
 
-GET	/home			   	controllers.Account.home
+GET	/entity/:id			controllers.Entity.view(id : Int)
+
+GET	/account			controllers.Account.admin
 POST	/Account			controllers.Account.accountChange
 POST	/Trust/:child			controllers.Account.trustChange(child : Int)
 POST	/Trust/:child/add		controllers.Account.trustAdd(child : Int)

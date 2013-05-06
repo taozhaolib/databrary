@@ -1,0 +1,17 @@
+@(acct : Option[Account], title : String)(body : Html)
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>@title</title>
+	</head>
+	<body>
+		@acct.map { a =>
+		<div align='right'>
+			@displayEntity(a.entity)
+			<a href="@routes.Login.logout">logout</a>
+		</div>
+		}
+		@body
+	</body>
+</html>

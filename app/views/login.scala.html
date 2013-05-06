@@ -1,17 +1,10 @@
 @(form : Form[(String,String)])
 
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>Login</title>
-	</head>
-	<body>
-		@helper.form(routes.Login.loginPost) {
-			@helper.inputText(form("username"))
-			@helper.inputText(form("openid"))
-			<button type='submit'>Login</button>
-			@formErrors(form)
-		}
-
-	</body>
-</html>
+@common(None, "Login") {
+	@helper.form(routes.Login.loginPost) {
+		@helper.inputText(form("username"))
+		@helper.inputText(form("openid"))
+		<button type='submit'>Login</button>
+		@formErrors(form)
+	}
+}

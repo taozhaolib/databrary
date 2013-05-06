@@ -69,7 +69,7 @@ object Login extends Controller {
             val qao = models.Account.byOpenid(info.id)
             (if (username.isEmpty) qao else qao.filter(_.username === username)).firstOption
           }.map { a =>
-            Redirect(routes.Account.home).withSession("account" -> a.id.toString)
+            Redirect(routes.Entity.view(a.id)).withSession("account" -> a.id.toString)
           }.getOrElse(
             viewLogin(Messages("login.openID.notFound", info.id))
           ) 
