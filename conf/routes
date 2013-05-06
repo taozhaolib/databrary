@@ -5,20 +5,19 @@
 GET     /                      		controllers.Application.start
 
 GET     /login                      	controllers.Login.login
-POST    /Login                 		controllers.Login.loginPost
+POST    /Login                 		controllers.Login.post
 GET     /OpenID                     	controllers.Login.openID(username = "")
 GET     /OpenID/:username           	controllers.Login.openID(username : String)
 GET	/logout				controllers.Login.logout
 
 GET	/entity/:id			controllers.Entity.view(id : Int)
-
-GET	/account			controllers.Account.admin
-POST	/Account			controllers.Account.accountChange
-POST	/Trust/:child			controllers.Account.trustChange(child : Int)
-POST	/Trust/:child/add		controllers.Account.trustAdd(child : Int)
+GET	/entity/:id/admin		controllers.Entity.admin(id : Int)
+POST	/entity/:id/Admin		controllers.Entity.change(id : Int)
+POST	/entity/:id/Trust/:child	controllers.Entity.trustChange(id : Int, child : Int)
+POST	/entity/:id/Trust/:child/add	controllers.Entity.trustAdd(id : Int, child : Int)
 # should be POST but currently used as link:
-GET	/Trust/:child/delete		controllers.Account.trustDelete(child : Int)
-GET	/Trust/search			controllers.Account.trustSearch
+GET	/entity/:id/Trust/:child/delete	controllers.Entity.trustDelete(id : Int, child : Int)
+GET	/entity/:id/Trust/search	controllers.Entity.trustSearch(id : Int)
 
 GET     /DDL                        	controllers.Application.ddl
 

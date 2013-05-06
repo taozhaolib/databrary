@@ -3,8 +3,11 @@
 @common(acct, entity.name) {
 	<h1>@entity.name</h1>
 
-	@acct.filter(a => Trust.check(a.id, entity.id) >= UserPermission.ADMIN).map { _ =>
-		<a href='routes.Account.admin(entity.id)'>admin</a>
+	@* This information is limited to BROWSE(?) *@
+	@acct.filter(a => Trust.check(a.id) >= SitePermission.BROWSE).map { acct =>
+
+	@if(Trust.check(acct.id, entity.id) >= UserPermission.ADMIN) {
+		<a href='@routes.Entity.admin(entity.id)'>admin</a>
 	}
 
 	<dl>
@@ -24,4 +27,6 @@
 			<dd>@displayEntity(t.childEntity)</dd>
 		}
 	</dl>
+
+	}
 }

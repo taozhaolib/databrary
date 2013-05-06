@@ -1,4 +1,4 @@
-@(acct : Account, accountForm : Form[(String, String)], trustForms : Seq[(Entity,Form[Trust])], trustSearch : Form[String], trustResults : Seq[(Entity,Form[Trust])])
+@(acct : Account, entity : Entity, accountForm : Option[Form[(String, String)]], trustForms : Seq[(Entity,Form[Trust])], trustSearch : Form[String], trustResults : Seq[(Entity,Form[Trust])])
 
 @tableField(elements : helper.FieldElements) = {
 	<td class="@elements.args.get('_class) @if(elements.hasErrors) {error}" id="@elements.args.get('_id).getOrElse(elements.id + "_field")">
@@ -11,23 +11,25 @@
 
 @trustFields(entity : Entity, form : Form[Trust]) = {
 @defining(helper.FieldConstructor(tableField)) { implicit fieldConstructor =>
-	<td>@entity.name</td>
+	<td>@displayEntity(entity)</td>
 	@helper.select(form("access"), SitePermission.values.toSeq.map(v => (v.id.toString, v.toString)))
 	@helper.select(form("delegate"), UserPermission.values.toSeq.map(v => (v.id.toString, v.toString)))
 	@helper.inputDate(form("expires"))
 }
 }
 
-@common(Some(acct), "Admin: " + acct.entity.name) {
-	<h1>@displayEntity(acct.entity)</h1>
+@common(Some(acct), "admin: " + entity.name) {
+	<h1>@displayEntity(entity)</h1>
 
+	@accountForm.map { form =>
 	<h2>Account</h2>
-	@helper.form(routes.Account.accountChange) {
-		@helper.inputText(accountForm("email"))
-		@helper.inputText(accountForm("openid"))
+	@helper.form(routes.Entity.change(entity.id)) {
+		@helper.inputText(form("email"))
+		@helper.inputText(form("openid"))
 		<button type='submit'>Change</button>
 	}
-	@formErrors(accountForm)
+	@formErrors(form)
+	}
 
 	<h2>Authorizations</h2>
 	<table>
@@ -42,9 +44,9 @@
 		@defining(helper.FieldConstructor(tableField)) { implicit fieldConstructor =>
 
 		<tr><th colspan="5"><h3>Memberships</h3></th></tr>
-		@acct.entity.trustParents.map { t =>
+		@entity.trustParents.map { t =>
 		<tr>
-			<td>@t.parentEntity.name</td>
+			<td>@displayEntity(t.parentEntity)</td>
 			<td>@t.access</td>
 			<td>@t.delegate</td>
 			<td>@t.expires.getOrElse("never")</td>
@@ -54,19 +56,19 @@
 		<tr><th colspan="5"><h3>Authorizations</h3></th></tr>
 
 		@trustForms.map { case (child,form) =>
-		@helper.form(routes.Account.trustChange(child.id)) {
+		@helper.form(routes.Entity.trustChange(entity.id, child.id)) {
 		<tr>
 			@trustFields(child, form)
 			<td>
 				<button type='submit'>Change</button>
-				<a href='@routes.Account.trustDelete(child.id)'>Remove</a>
+				<a href='@routes.Entity.trustDelete(entity.id, child.id)'>Remove</a>
 				@formErrors(form)
 			</td>
 		</tr>
 		}
 		}
 
-		@helper.form(routes.Account.trustSearch) {
+		@helper.form(routes.Entity.trustSearch(entity.id)) {
 		<tr>
 			@helper.inputText(trustSearch("name"))
 			<td/>
@@ -80,7 +82,7 @@
 		}
 
 		@trustResults.map { case (child,form) =>
-		@helper.form(routes.Account.trustAdd(child.id)) {
+		@helper.form(routes.Entity.trustAdd(entity.id, child.id)) {
 		<tr>
 			@trustFields(child, form)
 			<td>

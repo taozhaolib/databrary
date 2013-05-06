@@ -1,7 +1,7 @@
 @(form : Form[(String,String)])
 
 @common(None, "Login") {
-	@helper.form(routes.Login.loginPost) {
+	@helper.form(routes.Login.post) {
 		@helper.inputText(form("username"))
 		@helper.inputText(form("openid"))
 		<button type='submit'>Login</button>

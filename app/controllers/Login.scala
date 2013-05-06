@@ -49,7 +49,7 @@ object Login extends Controller {
 
   def login = Action { request => viewLogin }
   
-  def loginPost = Action { implicit request =>
+  def post = Action { implicit request =>
     loginForm.bindFromRequest.fold(
       form => BadRequest(views.html.login(form)),
       { case (username, openid) => AsyncResult(OpenID.redirectURL(openid, routes.Login.openID(username).absoluteURL(), realm = Some("http://" + request.host)).extend1(
