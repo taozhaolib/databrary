@@ -55,7 +55,8 @@ object Entity extends Controller {
     trustChangeForm : Option[(Entity,Form[Trust])] = None,
     trustSearchForm : Form[String] = trustSearchForm,
     trustResults : Seq[(Entity,Form[Trust])] = Seq()) = {
-    val trustForms = entity.trustChildren.map(t => (t.childEntity, trustForm(t.child, t.parent).fill(t)))
+    val trustChange = trustChangeForm.fold(-1)(_._1.id)
+    val trustForms = entity.trustChildren.filter(_.child != trustChange).map(t => (t.childEntity, trustForm(t.child, t.parent).fill(t))) ++ trustChangeForm
     views.html.entityAdmin(acct, entity, accountForm, trustForms, trustSearchForm, trustResults)
   }
   
