@@ -4,9 +4,9 @@
 	<h1>@entity.name</h1>
 
 	@* This information is limited to BROWSE(?) *@
-	@acct.filter(a => Trust.check(a.id) >= SitePermission.BROWSE).map { acct =>
+	@acct.filter(_.entity.access >= SitePermission.BROWSE).map { acct =>
 
-	@if(Trust.check(acct.id, entity.id) >= UserPermission.ADMIN) {
+	@if(Trust.delegate_check(acct.id, entity.id) >= UserPermission.ADMIN) {
 		<a href='@routes.Entity.admin(entity.id)'>admin</a>
 	}
 

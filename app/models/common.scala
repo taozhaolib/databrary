@@ -34,7 +34,13 @@ abstract class DBEnum(type_name : String) extends Enumeration {
     def sqlTypeName = type_name
     def setValue(v : Value, p : PositionedParameters) = p.setObject(v.toString, sqlType)
     def setOption(v : Option[Value], p : PositionedParameters) = p.setObjectOption(v.map(_.toString), sqlType)
-    def nextValue(r : PositionedResult) : Value = withName(r.nextString)
+    def nextValue(r : PositionedResult) : Value = {
+      val s = r.nextString;
+      if (r.rs.wasNull)
+        null
+      else
+        withName(s)
+    }
     def updateValue(v : Value, r : PositionedResult) = r.updateString(v.toString)
   }
   implicit val typeMapper = new BaseTypeMapper[Value] {

@@ -36,7 +36,7 @@ object Account extends Table[Account]("account") {
 
   def firstOption(q : Query[Account.type, Account]) : Option[Account] =
     DB.withSession { implicit session =>
-      (for { a <- q ; (e, c) <- a.entity.map(e => (e, Trust._check(e.id))) } yield (a,e,c)).firstOption.map(
+      (for { a <- q ; (e, c) <- a.entity.map(e => (e, Trust._access_check(e.id))) } yield (a,e,c)).firstOption.map(
         { case (a,e,c) => 
           a._entity() = Entity.cache(e, c.getOrElse(SitePermission.NONE))
           a 

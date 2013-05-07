@@ -12,7 +12,8 @@ import models._
 
 object Entity extends Controller {
 
-  def viewEntity(a : Option[Account], e : Entity) = Ok(views.html.entity(a, e))
+  def viewEntity(a : Option[Account], e : Entity) = 
+    Ok(views.html.entity(a, e))
 
   def view(i : Int) = Action { request =>
     var e = models.Entity.get(i)
@@ -52,7 +53,7 @@ object Entity extends Controller {
   }
   
   def checkAdmin(i : Int)(act : (AccountRequest[AnyContent], Entity) => Result) = AccountAction { request =>
-    if (Trust.check(request.account.id, i) < UserPermission.ADMIN)
+    if (Trust.delegate_check(request.account.id, i) < UserPermission.ADMIN)
       Forbidden
     else
       act(request, models.Entity.get(i))

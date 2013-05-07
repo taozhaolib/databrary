@@ -44,7 +44,7 @@ object Trust extends Table[Trust]("trust") {
   def childEntity = foreignKey("trust_child_fkey", child, Entity)(_.id)
   def parentEntity = foreignKey("trust_parent_fkey", parent, Entity)(_.id)
 
-  def byKey(c : Int, p : Int) = Query(this).where(r => r.child === c && r.parent === p)
+  def byKey(c : Int, p : Int) = Query(this).where(t => t.child === c && t.parent === p)
   def byChild(c : Int) = Query(this).where(_.child === c)
   def byParent(p : Int) = Query(this).where(_.parent === p)
   def get(c : Int, p : Int) : Option[Trust] = DB.withSession { implicit session =>
@@ -60,14 +60,13 @@ object Trust extends Table[Trust]("trust") {
     byKey(c, p).delete
   }
 
-  val _check = SimpleFunction.unary[Int, Option[SitePermission.Value]]("trust_check")
-  def check(c : Int) : SitePermission.Value = DB.withSession { implicit session =>
-    Query(_check(c)).first.getOrElse(SitePermission.NONE)
+  val _access_check = SimpleFunction.unary[Int, Option[SitePermission.Value]]("trust_access_check")
+  def access_check(c : Int) : SitePermission.Value = DB.withSession { implicit session =>
+    Query(_access_check(c)).first.getOrElse(SitePermission.NONE)
   }
-  def check(c : Int, p : Int) : UserPermission.Value = 
-    if (c == p) 
-      UserPermission.ADMIN
-    else DB.withSession { implicit session =>
-      byKey(c, p).map(_.delegate).firstOption.getOrElse(UserPermission.NONE)
-    }
+
+  val _delegate_check = SimpleFunction.binary[Int, Int, Option[UserPermission.Value]]("trust_delegate_check")
+  def delegate_check(c : Int, p : Int) : UserPermission.Value = DB.withSession { implicit session =>
+    Query(_delegate_check(c, p)).first.getOrElse(UserPermission.NONE)
+  }
 }

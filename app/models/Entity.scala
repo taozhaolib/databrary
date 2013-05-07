@@ -12,7 +12,7 @@ case class Entity(id : Int, var name : String) extends TableRow {
   }
 
   def account = Account.getId(id)
-  private val _access = CachedVal[SitePermission.Value](Trust.check(id))
+  private val _access = CachedVal[SitePermission.Value](Trust.access_check(id))
   def access : SitePermission.Value = _access
   def trustParents = Trust.getParents(id)
   def trustChildren = Trust.getChildren(id)

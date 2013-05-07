@@ -7,6 +7,7 @@ CREATE TABLE "entity" (
 );
 COMMENT ON TABLE "entity" IS 'Users, groups, organizations, and other logical identities';
 
+-- ROOT entity (SERIAL starts at 1):
 INSERT INTO "entity" VALUES (0, 'Databrary');
 
 
@@ -31,7 +32,7 @@ CREATE TABLE "trust" (
 	"authorized" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"expires" timestamp,
 	Primary Key ("parent", "child"),
-	Check ("parent" <> "child")
+	Check ("child" <> "parent" AND "child" <> 0)
 );
 COMMENT ON TABLE "trust" IS 'Relationships and permissions granted between entities';
 COMMENT ON COLUMN "trust"."child" IS 'Entity granted permissions';
@@ -43,7 +44,7 @@ CREATE VIEW "trust_valid" AS
 	SELECT * FROM trust WHERE expires IS NULL OR expires > CURRENT_TIMESTAMP;
 COMMENT ON VIEW "trust_valid" IS 'Non-expired records from "trust"';
 
-CREATE FUNCTION "trust_parents" (IN "child" integer, OUT "parent" integer, INOUT "access" site_permission = NULL) RETURNS SETOF RECORD LANGUAGE sql STABLE AS $$
+CREATE FUNCTION "trust_access_parents" (IN "child" integer, OUT "parent" integer, INOUT "access" site_permission = NULL) RETURNS SETOF RECORD LANGUAGE sql STABLE AS $$
 	WITH RECURSIVE closure AS (
 		SELECT parent, access FROM trust_valid WHERE child = $1 AND ($2 IS NULL OR access >= $2)
 		UNION
@@ -53,19 +54,23 @@ CREATE FUNCTION "trust_parents" (IN "child" integer, OUT "parent" integer, INOUT
 	)
 	SELECT * FROM closure
 $$;
-COMMENT ON FUNCTION "trust_parents" (integer, site_permission) IS 'All ancestors (recursive) of a given child';
+COMMENT ON FUNCTION "trust_access_parents" (integer, site_permission) IS 'All ancestors (recursive) of a given child';
 
-CREATE FUNCTION "trust_check" ("child" integer, "parent" integer = 0, "access" site_permission = NULL) RETURNS site_permission LANGUAGE sql STABLE AS $$
-	SELECT CASE WHEN $1 = $2 THEN enum_last(max(access)) ELSE max(access) END FROM trust_parents($1, $3) WHERE parent = $2
+CREATE FUNCTION "trust_access_check" ("child" integer, "parent" integer = 0, "access" site_permission = NULL) RETURNS site_permission LANGUAGE sql STABLE AS $$
+	SELECT CASE WHEN $1 = $2 THEN enum_last(max(access)) ELSE max(access) END FROM trust_access_parents($1, $3) WHERE parent = $2
 $$;
-COMMENT ON FUNCTION "trust_check" (integer, integer, site_permission) IS 'Test if a given child has the given permission [any] from the given parent [root]';
+COMMENT ON FUNCTION "trust_access_check" (integer, integer, site_permission) IS 'Test if a given child has the given permission [any] from the given parent [root]';
 
+CREATE FUNCTION "trust_delegate_check" ("child" integer, "parent" integer, "delegate" user_permission = NULL) RETURNS user_permission LANGUAGE sql STABLE AS $$
+	SELECT CASE WHEN $1 = $2 THEN enum_last(max(delegate)) ELSE max(delegate) END FROM trust_valid WHERE child = $1 AND parent = $2
+$$;
 
 # --- !Downs
 ;
 
-DROP FUNCTION "trust_check" (integer, integer, site_permission);
-DROP FUNCTION "trust_parents" (integer, site_permission);
+DROP FUNCTION "trust_delegate_check" (integer, integer, site_permission);
+DROP FUNCTION "trust_access_check" (integer, integer, site_permission);
+DROP FUNCTION "trust_access_parents" (integer, site_permission);
 DROP VIEW "trust_valid";
 DROP TABLE "trust";
 DROP TYPE user_permission;
