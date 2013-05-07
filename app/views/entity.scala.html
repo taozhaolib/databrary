@@ -19,11 +19,11 @@
 	}
 
 		<dt>Memberships</dt>
-		@entity.trustParents.map { t => 
+		@entity.trustParents.filter(_.authorized.isDefined).map { t => 
 			<dd>@displayEntity(t.parentEntity)</dd>
 		}
 		<dt>Members</dt>
-		@entity.trustChildren.map { t => 
+		@entity.trustChildren.filter(_.authorized.isDefined).map { t => 
 			<dd>@displayEntity(t.childEntity)</dd>
 		}
 	</dl>

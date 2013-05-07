@@ -27,9 +27,9 @@ CREATE TYPE user_permission AS ENUM ('NONE', 'VIEW', 'EDIT', 'ADMIN');
 CREATE TABLE "trust" (
 	"child" integer NOT NULL References "entity" ON DELETE Cascade,
 	"parent" integer NOT NULL References "entity",
-	"access" site_permission NOT NULL,
-	"delegate" user_permission NOT NULL,
-	"authorized" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"access" site_permission NOT NULL Default 'NONE',
+	"delegate" user_permission NOT NULL Default 'NONE',
+	"authorized" timestamp DEFAULT CURRENT_TIMESTAMP,
 	"expires" timestamp,
 	Primary Key ("parent", "child"),
 	Check ("child" <> "parent" AND "child" <> 0)
@@ -41,8 +41,8 @@ COMMENT ON COLUMN "trust"."access" IS 'Level of site access inherited by child f
 COMMENT ON COLUMN "trust"."delegate" IS 'Direct permissions child has over parent (not inherited)';
 
 CREATE VIEW "trust_valid" AS
-	SELECT * FROM trust WHERE expires IS NULL OR expires > CURRENT_TIMESTAMP;
-COMMENT ON VIEW "trust_valid" IS 'Non-expired records from "trust"';
+	SELECT * FROM trust WHERE authorized < CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP);
+COMMENT ON VIEW "trust_valid" IS 'Active records from "trust"';
 
 CREATE FUNCTION "trust_access_parents" (IN "child" integer, OUT "parent" integer, INOUT "access" site_permission = NULL) RETURNS SETOF RECORD LANGUAGE sql STABLE AS $$
 	WITH RECURSIVE closure AS (
@@ -64,11 +64,13 @@ COMMENT ON FUNCTION "trust_access_check" (integer, integer, site_permission) IS 
 CREATE FUNCTION "trust_delegate_check" ("child" integer, "parent" integer, "delegate" user_permission = NULL) RETURNS user_permission LANGUAGE sql STABLE AS $$
 	SELECT CASE WHEN $1 = $2 THEN enum_last(max(delegate)) ELSE max(delegate) END FROM trust_valid WHERE child = $1 AND parent = $2
 $$;
+COMMENT ON FUNCTION "trust_delegate_check" (integer, integer, user_permission) IS 'Test if a given child has the given permission [any] over the given parent';
+
 
 # --- !Downs
 ;
 
-DROP FUNCTION "trust_delegate_check" (integer, integer, site_permission);
+DROP FUNCTION "trust_delegate_check" (integer, integer, user_permission);
 DROP FUNCTION "trust_access_check" (integer, integer, site_permission);
 DROP FUNCTION "trust_access_parents" (integer, site_permission);
 DROP VIEW "trust_valid";

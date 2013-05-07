@@ -7,6 +7,12 @@ import slick.Config.driver.simple._
 import collection.mutable.HashMap
 
 case class Entity(id : Int, var name : String) extends TableRow {
+  override def hashCode = id
+  override def equals(e : Any) = e match {
+    case Entity(i, _) => i == id
+    case _ => false
+  }
+
   def commit = DB.withSession { implicit session =>
     Entity.byId(id).map(_.mutable) update (name)
   }

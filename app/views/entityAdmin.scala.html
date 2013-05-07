@@ -50,6 +50,7 @@
 			<td>@t.access</td>
 			<td>@t.delegate</td>
 			<td>@t.expires.getOrElse("never")</td>
+			<td>@{if(t.authorized.isEmpty) "pending"}</td>
 		</tr>
 		}
 
@@ -60,9 +61,11 @@
 		<tr>
 			@trustFields(child, form)
 			<td>
-				<button type='submit'>Change</button>
-				<a href='@routes.Entity.trustDelete(entity.id, child.id)'>Remove</a>
+				@defining(form("pending").value == Some("true")) { pending =>
+				<button type='submit'>@{if(pending) "Authorize" else "Change"}</button>
+				<a href='@routes.Entity.trustDelete(entity.id, child.id)'>@{if(pending) "Deny" else "Revoke"}</a>
 				@formErrors(form)
+				}
 			</td>
 		</tr>
 		}

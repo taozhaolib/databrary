@@ -7,6 +7,12 @@ import             slick.Config.driver.simple._
 import java.sql.Timestamp
 
 case class Account(id : Int, username : String, var email : String, var openid : Option[String]) extends TableRow {
+  override def hashCode = id
+  override def equals(a : Any) = a match {
+    case Account(i, _, _, _) => i == id
+    case _ => false
+  }
+
   def commit = DB.withSession { implicit session =>
     Account.byId(id).map(_.mutable) update (email, openid)
   }

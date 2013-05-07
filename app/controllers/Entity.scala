@@ -33,9 +33,16 @@ object Entity extends Controller {
   def trustForm(child : Int, parent : Int) : Form[Trust] = Form(mapping(
       "access" -> number(min=0, max=SitePermission.maxId-1),
       "delegate" -> number(min=0, max=UserPermission.maxId-1),
+      "pending" -> boolean,
       "expires" -> optional(sqlDate)
-    )((access, delegate, expires) => Trust(child, parent, SitePermission(access), UserPermission(delegate), expires.map(e => new java.sql.Timestamp(e.getTime)))
-    )(t => Some((t.access.id, t.delegate.id, t.expires.map(e => new java.sql.Date(e.getTime))))
+    )((access, delegate, pending, expires) => Trust(
+      child, parent, 
+      SitePermission(access), 
+      UserPermission(delegate), 
+      if (pending) None else Some(new java.sql.Timestamp(System.currentTimeMillis)),
+      expires.map(e => new java.sql.Timestamp(e.getTime))
+    ))(t => 
+      Some((t.access.id, t.delegate.id, t.authorized.fold(true)(_ => false), t.expires.map(e => new java.sql.Date(e.getTime))))
     )
   )
 
