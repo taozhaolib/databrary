@@ -14,10 +14,12 @@ GET	/entity/:id			controllers.Entity.view(id : Int)
 GET	/entity/:id/admin		controllers.Entity.admin(id : Int)
 POST	/entity/:id/Admin		controllers.Entity.change(id : Int)
 POST	/entity/:id/Trust/:child	controllers.Entity.trustChange(id : Int, child : Int)
-POST	/entity/:id/Trust/:child/add	controllers.Entity.trustAdd(id : Int, child : Int)
+POST	/entity/:id/Trust/:other/child	controllers.Entity.trustAdd(id : Int, which : Boolean = false, other : Int)
+POST	/entity/:id/Trust/:other/parent	controllers.Entity.trustAdd(id : Int, which : Boolean = true, other : Int)
 # should be POST but currently used as link:
 GET	/entity/:id/Trust/:child/delete	controllers.Entity.trustDelete(id : Int, child : Int)
-GET	/entity/:id/Trust/search	controllers.Entity.trustSearch(id : Int)
+GET	/entity/:id/Trust/search/child	controllers.Entity.trustSearch(id : Int, which : Boolean = false)
+GET	/entity/:id/Trust/search/parent	controllers.Entity.trustSearch(id : Int, which : Boolean = true)
 
 GET     /DDL                        	controllers.Application.ddl
 

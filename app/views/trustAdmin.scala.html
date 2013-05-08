@@ -1,0 +1,95 @@
+@(entity : Entity, trustForms : Seq[(Entity,Form[Trust])], trustWhich : Option[Boolean], trustSearch : Form[String], trustResults : Seq[(Entity,Form[Trust])])
+
+@tableField(elements : helper.FieldElements) = {
+	<td class="@elements.args.get('_class) @if(elements.hasErrors) {error}" id="@elements.args.get('_id).getOrElse(elements.id + "_field")">
+		@elements.input
+		@elements.errors(elements.lang).map { error =>
+			<p class="error">@error</p>
+		}
+	</td>
+}
+
+@trustFields(entity : Entity, form : Form[Trust])(implicit fieldConstructor : helper.FieldConstructor) = {
+	<td>@displayEntity(entity)</td>
+	@helper.select(form("access"), SitePermission.values.toSeq.map(v => (v.id.toString, v.toString)))
+	@helper.select(form("delegate"), UserPermission.values.toSeq.map(v => (v.id.toString, v.toString)))
+	@helper.inputDate(form("expires"))
+}
+
+@trustSearchWhich(which : Boolean)(implicit fieldConstructor : helper.FieldConstructor) = {
+@if(trustWhich.fold(true)(_ == which)) {
+	@helper.form(routes.Entity.trustSearch(entity.id, which)) {
+	<tr>
+		@helper.inputText(trustSearch("name"))
+		<td/>
+		<td/>
+		<td/>
+		<td>
+			<button type='submit'>Search</button>
+			@formErrors(trustSearch)
+		</td>
+	</tr>
+	}
+
+	@trustResults.map { case (other,form) =>
+	@helper.form(routes.Entity.trustAdd(entity.id, which, other.id)) {
+	<tr>
+		@trustFields(other, form)
+		<td>
+			<input type='hidden' name='pending' value='@which'/>
+			<button type='submit'>@{if (which) "Request" else "Authorize"}</button>
+			@formErrors(form)
+		</td>
+	</tr>
+	}
+	}
+}
+}
+
+<table>
+@defining(helper.FieldConstructor(tableField)) { implicit fieldConstructor =>
+
+	<tr>
+		<th>Name</th>
+		<th>Site Access</th>
+		<th>Delegated Permissions</th>
+		<th>Expiration</th>
+		<th>Action</th>
+	</tr>
+
+	<tr><th colspan="5"><h3>Memberships</h3></th></tr>
+
+	@entity.trustParents.map { t =>
+	<tr>
+		<td>@displayEntity(t.parentEntity)</td>
+		<td>@t.access</td>
+		<td>@t.delegate</td>
+		<td>@t.expires.getOrElse("never")</td>
+		<td>@{if(t.authorized.isEmpty) "pending"}</td>
+	</tr>
+	}
+
+	@trustSearchWhich(true)
+
+
+	<tr><th colspan="5"><h3>Authorizations</h3></th></tr>
+
+	@trustForms.map { case (child,form) =>
+	@helper.form(routes.Entity.trustChange(entity.id, child.id)) {
+	<tr>
+		@trustFields(child, form)
+		<td>
+			@defining(form("pending").value == Some("true")) { pending =>
+			<button type='submit'>@{if(pending) "Authorize" else "Change"}</button>
+			<a href='@routes.Entity.trustDelete(entity.id, child.id)'>@{if(pending) "Deny" else "Revoke"}</a>
+			@formErrors(form)
+			}
+		</td>
+	</tr>
+	}
+	}
+
+	@trustSearchWhich(false)
+
+}
+</table>

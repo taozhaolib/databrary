@@ -53,11 +53,12 @@ object Entity extends Controller {
   def viewAdmin(acct : Account, entity : Entity)(
     accountForm : Option[Form[(String, String)]] = entity.account.map(accountFormFill(_)),
     trustChangeForm : Option[(Entity,Form[Trust])] = None,
+    trustWhich : Option[Boolean] = None,
     trustSearchForm : Form[String] = trustSearchForm,
     trustResults : Seq[(Entity,Form[Trust])] = Seq()) = {
     val trustChange = trustChangeForm.fold(-1)(_._1.id)
     val trustForms = entity.trustChildren.filter(_.child != trustChange).map(t => (t.childEntity, trustForm(t.child, t.parent).fill(t))) ++ trustChangeForm
-    views.html.entityAdmin(acct, entity, accountForm, trustForms, trustSearchForm, trustResults)
+    views.html.entityAdmin(acct, entity, accountForm, trustForms, trustWhich, trustSearchForm, trustResults)
   }
   
   def checkAdmin(i : Int)(act : (AccountRequest[AnyContent], Entity) => Result) = AccountAction { request =>
@@ -99,25 +100,27 @@ object Entity extends Controller {
     Redirect(routes.Entity.admin(entity.id))
   }
 
-  def trustSearch(i : Int) = checkAdmin(i) { (request, entity) =>
+  def trustSearch(i : Int, which : Boolean) = checkAdmin(i) { (request, entity) =>
     val form = trustSearchForm.bindFromRequest()(request)
     form.fold(
-      form => BadRequest(viewAdmin(request.account, entity)(trustSearchForm = form)),
+      form => BadRequest(viewAdmin(request.account, entity)(trustWhich = Some(which), trustSearchForm = form)),
       name => {
         val me = entity.id
         val res = DB.withSession { implicit session =>
-          models.Entity.byName(name).filter(e => e.id =!= me && e.id.notIn(Trust.byParent(me).map(_.child))).take(8).list
+          models.Entity.byName(name).filter(e => e.id =!= me && e.id.notIn(Trust.byParent(me).map(_.child)) && e.id.notIn(Trust.byChild(me).map(_.parent))).take(8).list
         }
-        Ok(viewAdmin(request.account, entity)(trustSearchForm = form, 
+        Ok(viewAdmin(request.account, entity)(trustWhich = Some(which), trustSearchForm = form, 
           trustResults = res.map(e => (e,trustForm(e.id,me)/* TODO: fill expires */))))
       }
     )
   }
 
-  def trustAdd(i : Int, child : Int) = checkAdmin(i) { (request, entity) =>
-    trustForm(child, entity.id).bindFromRequest()(request).fold(
-      form => BadRequest(viewAdmin(request.account, entity)(trustResults = Seq((models.Entity.get(child), form)))),
+  def trustAdd(i : Int, which : Boolean, other : Int) = checkAdmin(i) { (request, entity) =>
+    (if (which) trustForm(i, other) else trustForm(other, i)).bindFromRequest()(request).fold(
+      form => BadRequest(viewAdmin(request.account, entity)(trustWhich = Some(which), trustResults = Seq((models.Entity.get(other), form)))),
       trust => {
+        if (which)
+          trust.authorized = None
         trust.add
         Redirect(routes.Entity.admin(entity.id))
       }
