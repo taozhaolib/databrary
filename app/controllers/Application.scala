@@ -15,8 +15,4 @@ object Application extends Controller {
     }
   )
 
-  def ddl = Action {
-    Ok(views.html.ddl(models.Entity.ddl ++ models.Trust.ddl ++ models.Account.ddl))
-  }
-
 }

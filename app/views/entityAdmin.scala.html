@@ -1,4 +1,4 @@
-@(acct : Account, entity : Entity, accountForm : Option[Form[(String, String)]], trustForms : Seq[(Entity,Form[Trust])], trustWhich : Option[Boolean], trustSearch : Form[String], trustResults : Seq[(Entity,Form[Trust])])
+@(acct : Account, entity : Entity, accountForm : Option[Form[(String, String)]], authorizeForms : Seq[(Entity,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Entity,Form[Authorize])])
 
 
 @common(Some(acct), "admin: " + entity.name) {
@@ -15,5 +15,5 @@
 	}
 
 	<h2>Authorizations</h2>
-	@trustAdmin(entity, trustForms, trustWhich, trustSearch, trustResults)
+	@authorizeAdmin(entity, authorizeForms, authorizeWhich, authorizeSearch, authorizeResults)
 }

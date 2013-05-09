@@ -30,15 +30,15 @@ object Entity extends Controller {
 
   def accountFormFill(a : Account) = accountForm.fill((a.email, a.openid.getOrElse("")))
 
-  def trustForm(child : Int, parent : Int) : Form[Trust] = Form(mapping(
-      "access" -> number(min=0, max=SitePermission.maxId-1),
-      "delegate" -> number(min=0, max=UserPermission.maxId-1),
+  def authorizeForm(child : Int, parent : Int) : Form[Authorize] = Form(mapping(
+      "access" -> number(min=0, max=Permission.maxId-1),
+      "delegate" -> number(min=0, max=Permission.maxId-1),
       "pending" -> boolean,
       "expires" -> optional(sqlDate)
-    )((access, delegate, pending, expires) => Trust(
+    )((access, delegate, pending, expires) => Authorize(
       child, parent, 
-      SitePermission(access), 
-      UserPermission(delegate), 
+      Permission(access), 
+      Permission(delegate), 
       if (pending) None else Some(new java.sql.Timestamp(System.currentTimeMillis)),
       expires.map(e => new java.sql.Timestamp(e.getTime))
     ))(t => 
@@ -46,23 +46,23 @@ object Entity extends Controller {
     )
   )
 
-  val trustSearchForm = Form(
+  val authorizeSearchForm = Form(
     "name" -> nonEmptyText
   )
 
   def viewAdmin(acct : Account, entity : Entity)(
     accountForm : Option[Form[(String, String)]] = entity.account.map(accountFormFill(_)),
-    trustChangeForm : Option[(Entity,Form[Trust])] = None,
-    trustWhich : Option[Boolean] = None,
-    trustSearchForm : Form[String] = trustSearchForm,
-    trustResults : Seq[(Entity,Form[Trust])] = Seq()) = {
-    val trustChange = trustChangeForm.fold(-1)(_._1.id)
-    val trustForms = entity.trustChildren.filter(_.child != trustChange).map(t => (t.childEntity, trustForm(t.child, t.parent).fill(t))) ++ trustChangeForm
-    views.html.entityAdmin(acct, entity, accountForm, trustForms, trustWhich, trustSearchForm, trustResults)
+    authorizeChangeForm : Option[(Entity,Form[Authorize])] = None,
+    authorizeWhich : Option[Boolean] = None,
+    authorizeSearchForm : Form[String] = authorizeSearchForm,
+    authorizeResults : Seq[(Entity,Form[Authorize])] = Seq()) = {
+    val authorizeChange = authorizeChangeForm.fold(-1)(_._1.id)
+    val authorizeForms = entity.authorizeChildren.filter(_.child != authorizeChange).map(t => (t.childEntity, authorizeForm(t.child, t.parent).fill(t))) ++ authorizeChangeForm
+    views.html.entityAdmin(acct, entity, accountForm, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
   }
   
   def checkAdmin(i : Int)(act : (AccountRequest[AnyContent], Entity) => Result) = AccountAction { request =>
-    if (Trust.delegate_check(request.account.id, i) < UserPermission.ADMIN)
+    if (Authorize.delegate_check(request.account.id, i) < Permission.ADMIN)
       Forbidden
     else
       act(request, models.Entity.get(i))
@@ -85,43 +85,43 @@ object Entity extends Controller {
     )
   }
 
-  def trustChange(i : Int, child : Int) = checkAdmin(i) { (request, entity) =>
-    trustForm(child, entity.id).bindFromRequest()(request).fold(
-      form => BadRequest(viewAdmin(request.account, entity)(trustChangeForm = Some((models.Entity.get(child), form)))),
-      trust => {
-        trust.commit
+  def authorizeChange(i : Int, child : Int) = checkAdmin(i) { (request, entity) =>
+    authorizeForm(child, entity.id).bindFromRequest()(request).fold(
+      form => BadRequest(viewAdmin(request.account, entity)(authorizeChangeForm = Some((models.Entity.get(child), form)))),
+      authorize => {
+        authorize.commit
         Redirect(routes.Entity.admin(entity.id))
       }
     )
   }
 
-  def trustDelete(i : Int, child : Int) = checkAdmin(i) { (request, entity) =>
-    Trust.delete(child, entity.id)
+  def authorizeDelete(i : Int, child : Int) = checkAdmin(i) { (request, entity) =>
+    Authorize.delete(child, entity.id)
     Redirect(routes.Entity.admin(entity.id))
   }
 
-  def trustSearch(i : Int, which : Boolean) = checkAdmin(i) { (request, entity) =>
-    val form = trustSearchForm.bindFromRequest()(request)
+  def authorizeSearch(i : Int, which : Boolean) = checkAdmin(i) { (request, entity) =>
+    val form = authorizeSearchForm.bindFromRequest()(request)
     form.fold(
-      form => BadRequest(viewAdmin(request.account, entity)(trustWhich = Some(which), trustSearchForm = form)),
+      form => BadRequest(viewAdmin(request.account, entity)(authorizeWhich = Some(which), authorizeSearchForm = form)),
       name => {
         val me = entity.id
         val res = DB.withSession { implicit session =>
-          models.Entity.byName(name).filter(e => e.id =!= me && e.id.notIn(Trust.byParent(me).map(_.child)) && e.id.notIn(Trust.byChild(me).map(_.parent))).take(8).list
+          models.Entity.byName(name).filter(e => e.id =!= me && e.id.notIn(Authorize.byParent(me).map(_.child)) && e.id.notIn(Authorize.byChild(me).map(_.parent))).take(8).list
         }
-        Ok(viewAdmin(request.account, entity)(trustWhich = Some(which), trustSearchForm = form, 
-          trustResults = res.map(e => (e,trustForm(e.id,me)/* TODO: fill expires */))))
+        Ok(viewAdmin(request.account, entity)(authorizeWhich = Some(which), authorizeSearchForm = form, 
+          authorizeResults = res.map(e => (e,authorizeForm(e.id,me)/* TODO: fill expires */))))
       }
     )
   }
 
-  def trustAdd(i : Int, which : Boolean, other : Int) = checkAdmin(i) { (request, entity) =>
-    (if (which) trustForm(i, other) else trustForm(other, i)).bindFromRequest()(request).fold(
-      form => BadRequest(viewAdmin(request.account, entity)(trustWhich = Some(which), trustResults = Seq((models.Entity.get(other), form)))),
-      trust => {
+  def authorizeAdd(i : Int, which : Boolean, other : Int) = checkAdmin(i) { (request, entity) =>
+    (if (which) authorizeForm(i, other) else authorizeForm(other, i)).bindFromRequest()(request).fold(
+      form => BadRequest(viewAdmin(request.account, entity)(authorizeWhich = Some(which), authorizeResults = Seq((models.Entity.get(other), form)))),
+      authorize => {
         if (which)
-          trust.authorized = None
-        trust.add
+          authorize.authorized = None
+        authorize.add
         Redirect(routes.Entity.admin(entity.id))
       }
     )

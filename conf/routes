@@ -2,26 +2,24 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /                      		controllers.Application.start
+GET     /                      			controllers.Application.start
 
-GET     /login                      	controllers.Login.login
-POST    /Login                 		controllers.Login.post
-GET     /OpenID                     	controllers.Login.openID(username = "")
-GET     /OpenID/:username           	controllers.Login.openID(username : String)
-GET	/logout				controllers.Login.logout
+GET     /login                      		controllers.Login.login
+POST    /Login                 			controllers.Login.post
+GET     /OpenID                     		controllers.Login.openID(username = "")
+GET     /OpenID/:username           		controllers.Login.openID(username : String)
+GET	/logout					controllers.Login.logout
 
-GET	/entity/:id			controllers.Entity.view(id : Int)
-GET	/entity/:id/admin		controllers.Entity.admin(id : Int)
-POST	/entity/:id/Admin		controllers.Entity.change(id : Int)
-POST	/entity/:id/Trust/:child	controllers.Entity.trustChange(id : Int, child : Int)
-POST	/entity/:id/Trust/:other/child	controllers.Entity.trustAdd(id : Int, which : Boolean = false, other : Int)
-POST	/entity/:id/Trust/:other/parent	controllers.Entity.trustAdd(id : Int, which : Boolean = true, other : Int)
+GET	/entity/:id				controllers.Entity.view(id : Int)
+GET	/entity/:id/admin			controllers.Entity.admin(id : Int)
+POST	/entity/:id/Admin			controllers.Entity.change(id : Int)
+POST	/entity/:id/Authorize/:child		controllers.Entity.authorizeChange(id : Int, child : Int)
+POST	/entity/:id/Authorize/:other/child	controllers.Entity.authorizeAdd(id : Int, which : Boolean = false, other : Int)
+POST	/entity/:id/Authorize/:other/parent	controllers.Entity.authorizeAdd(id : Int, which : Boolean = true, other : Int)
 # should be POST but currently used as link:
-GET	/entity/:id/Trust/:child/delete	controllers.Entity.trustDelete(id : Int, child : Int)
-GET	/entity/:id/Trust/search/child	controllers.Entity.trustSearch(id : Int, which : Boolean = false)
-GET	/entity/:id/Trust/search/parent	controllers.Entity.trustSearch(id : Int, which : Boolean = true)
-
-GET     /DDL                        	controllers.Application.ddl
+GET	/entity/:id/Authorize/:child/delete	controllers.Entity.authorizeDelete(id : Int, child : Int)
+GET	/entity/:id/Authorize/search/child	controllers.Entity.authorizeSearch(id : Int, which : Boolean = false)
+GET	/entity/:id/Authorize/search/parent	controllers.Entity.authorizeSearch(id : Int, which : Boolean = true)
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               	controllers.Assets.at(path="/public", file)
+GET     /assets/*file               		controllers.Assets.at(path="/public", file)

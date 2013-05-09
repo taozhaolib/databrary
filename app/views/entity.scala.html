@@ -3,10 +3,10 @@
 @common(acct, entity.name) {
 	<h1>@entity.name</h1>
 
-	@* This information is limited to BROWSE(?) *@
-	@acct.filter(_.entity.access >= SitePermission.BROWSE).map { acct =>
+	@* This information is limited to VIEW(?) *@
+	@acct.filter(_.entity.access >= Permission.VIEW).map { acct =>
 
-	@if(Trust.delegate_check(acct.id, entity.id) >= UserPermission.ADMIN) {
+	@if(Authorize.delegate_check(acct.id, entity.id) >= Permission.ADMIN) {
 		<a href='@routes.Entity.admin(entity.id)'>admin</a>
 	}
 
@@ -19,11 +19,11 @@
 	}
 
 		<dt>Memberships</dt>
-		@entity.trustParents.filter(_.authorized.isDefined).map { t => 
+		@entity.authorizeParents.filter(_.authorized.isDefined).map { t => 
 			<dd>@displayEntity(t.parentEntity)</dd>
 		}
 		<dt>Members</dt>
-		@entity.trustChildren.filter(_.authorized.isDefined).map { t => 
+		@entity.authorizeChildren.filter(_.authorized.isDefined).map { t => 
 			<dd>@displayEntity(t.childEntity)</dd>
 		}
 	</dl>

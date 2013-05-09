@@ -18,10 +18,10 @@ case class Entity(id : Int, var name : String) extends TableRow {
   }
 
   def account = Account.getId(id)
-  private val _access = CachedVal[SitePermission.Value](Trust.access_check(id))
-  def access : SitePermission.Value = _access
-  def trustParents = Trust.getParents(id)
-  def trustChildren = Trust.getChildren(id)
+  private val _access = CachedVal[Permission.Value](Authorize.access_check(id))
+  def access : Permission.Value = _access
+  def authorizeParents = Authorize.getParents(id)
+  def authorizeChildren = Authorize.getChildren(id)
 }
 
 private object EntityCache extends HashMap[Int, Entity]
@@ -35,7 +35,7 @@ object Entity extends Table[Entity]("entity") {
 
   private def byId(i : Int) = Query(this).where(_.id === i)
 
-  def cache(e : Entity, a : SitePermission.Value = null) : Entity = {
+  def cache(e : Entity, a : Permission.Value = null) : Entity = {
     e._access() = a
     EntityCache.put(e.id, e)
     e

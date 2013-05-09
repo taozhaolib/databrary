@@ -19,7 +19,7 @@ case class Account(id : Int, username : String, var email : String, var openid :
 
   private val _entity = CachedVal[Entity](Entity.get(id))
   def entity : Entity = _entity
-  def access : SitePermission.Value = entity.access
+  def access : Permission.Value = entity.access
 }
 
 object Account extends Table[Account]("account") {
@@ -42,9 +42,9 @@ object Account extends Table[Account]("account") {
 
   def firstOption(q : Query[Account.type, Account]) : Option[Account] =
     DB.withSession { implicit session =>
-      (for { a <- q ; (e, c) <- a.entity.map(e => (e, Trust._access_check(e.id))) } yield (a,e,c)).firstOption.map(
+      (for { a <- q ; (e, c) <- a.entity.map(e => (e, Authorize._access_check(e.id))) } yield (a,e,c)).firstOption.map(
         { case (a,e,c) => 
-          a._entity() = Entity.cache(e, c.getOrElse(SitePermission.NONE))
+          a._entity() = Entity.cache(e, c.getOrElse(Permission.NONE))
           a 
         }
       )
