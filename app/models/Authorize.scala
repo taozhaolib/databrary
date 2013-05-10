@@ -43,6 +43,7 @@ object Authorize extends Table[Authorize]("authorize") {
   def byKey(c : Int, p : Int) = Query(this).where(t => t.child === c && t.parent === p)
   def byChild(c : Int) = Query(this).where(_.child === c).sortBy(_.authorized.nullsLast)
   def byParent(p : Int) = Query(this).where(_.parent === p).sortBy(_.authorized.nullsLast)
+
   def get(c : Int, p : Int) : Option[Authorize] = DB.withSession { implicit session =>
     byKey(c, p).firstOption
   }

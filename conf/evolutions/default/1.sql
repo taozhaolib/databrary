@@ -50,7 +50,7 @@ COMMENT ON VIEW "authorize_valid" IS 'Active records from "authorize"';
 
 CREATE FUNCTION "authorize_access_parents" (IN "child" integer, OUT "parent" integer, INOUT "access" permission = NULL) RETURNS SETOF RECORD LANGUAGE sql STABLE AS $$
 	WITH RECURSIVE closure AS (
-		SELECT parent, access FROM authorize_valid WHERE child = $1 AND ($2 IS NULL OR access >= $2)
+		SELECT $1 AS parent, enum_last(null::permission) AS access
 		UNION
 		SELECT p.parent, LEAST(p.access, c.access)
 			FROM authorize_valid p, closure c
@@ -61,7 +61,7 @@ $$;
 COMMENT ON FUNCTION "authorize_access_parents" (integer, permission) IS 'All ancestors (recursive) of a given child';
 
 CREATE FUNCTION "authorize_access_check" ("child" integer, "parent" integer = 0, "access" permission = NULL) RETURNS permission LANGUAGE sql STABLE AS $$
-	SELECT CASE WHEN $1 = $2 THEN enum_last(max(access)) ELSE max(access) END FROM authorize_access_parents($1, $3) WHERE parent = $2
+	SELECT max(access) FROM authorize_access_parents($1, $3) WHERE parent = $2
 $$;
 COMMENT ON FUNCTION "authorize_access_check" (integer, integer, permission) IS 'Test if a given child has the given permission [any] from the given parent [root]';
 
@@ -71,8 +71,52 @@ $$;
 COMMENT ON FUNCTION "authorize_delegate_check" (integer, integer, permission) IS 'Test if a given child has the given permission [any] over the given parent';
 
 
+CREATE TABLE "study" (
+	"id" SERIAL NOT NULL Primary Key,
+	"created" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"title" text NOT NULL,
+	"description" text
+);
+COMMENT ON TABLE "study" is 'Basic organizational unit for data.';
+
+CREATE TABLE "study_access" (
+	"study" integer NOT NULL References "study",
+	"entity" integer NOT NULL References "entity",
+	"access" permission NOT NULL Default 'NONE',
+	"inherited" boolean NOT NULL DEFAULT 'f',
+	Primary Key ("study", "entity")
+);
+COMMENT ON TABLE "study_access" is 'Permissions over studies assigned to users.';
+
+CREATE FUNCTION "study_access_check" ("study" integer, "entity" integer, "access" permission = NULL) RETURNS permission LANGUAGE sql STABLE AS $$
+	WITH sa AS (
+		SELECT entity, access, inherited 
+		  FROM study_access 
+		 WHERE study = $1 AND ($3 IS NULL OR access >= $3)
+	)
+	SELECT max(access) AS access FROM (
+		SELECT access 
+		  FROM sa
+		 WHERE entity = $2
+	UNION ALL
+		SELECT LEAST(sa.access, aap.access) 
+		  FROM sa JOIN authorize_access_parents($2, $3) aap ON entity = parent 
+		 WHERE inherited
+	UNION ALL
+		SELECT LEAST(sa.access, ad.delegate)
+		  FROM sa JOIN authorize_valid ad ON entity = parent 
+		 WHERE child = $2
+	) a WHERE $3 IS NULL OR access >= $3
+$$;
+COMMENT ON FUNCTION "study_access_check" (integer, integer, permission) is 'Test if a given entity has the given permission [any] on the given study, either directly, inherited through site access, or delegated.';
+
+
 # --- !Downs
 ;
+
+DROP FUNCTION "study_access_check" (integer, integer, permission);
+DROP TABLE "study_access";
+DROP TABLE "study";
 
 DROP FUNCTION "authorize_delegate_check" (integer, integer, permission);
 DROP FUNCTION "authorize_access_check" (integer, integer, permission);
