@@ -7,8 +7,9 @@ CREATE TABLE "entity" (
 );
 COMMENT ON TABLE "entity" IS 'Users, groups, organizations, and other logical identities';
 
--- ROOT entity (SERIAL starts at 1):
-INSERT INTO "entity" VALUES (0, 'Databrary');
+-- special entity (SERIAL starts at 1):
+INSERT INTO "entity" VALUES (-1, 'Everybody'); -- NOBODY
+INSERT INTO "entity" VALUES (0, 'Databrary'); -- ROOT
 
 
 CREATE TABLE "account" (
@@ -36,13 +37,16 @@ CREATE TABLE "authorize" (
 	"authorized" timestamp DEFAULT CURRENT_TIMESTAMP,
 	"expires" timestamp,
 	Primary Key ("parent", "child"),
-	Check ("child" <> "parent" AND "child" <> 0)
+	Check ("child" <> "parent" AND "child" > 0)
 );
 COMMENT ON TABLE "authorize" IS 'Relationships and permissions granted between entities';
 COMMENT ON COLUMN "authorize"."child" IS 'Entity granted permissions';
 COMMENT ON COLUMN "authorize"."parent" IS 'Entity granting permissions';
 COMMENT ON COLUMN "authorize"."access" IS 'Level of independent site access granted to child (effectively minimum level on path to ROOT)';
 COMMENT ON COLUMN "authorize"."delegate" IS 'Permissions for which child may act as parent (not inherited)';
+
+-- To allow normal users to inherit from nobody:
+INSERT INTO "authorize" ("child", "parent", "access") VALUES (0, -1, 'ADMIN');
 
 CREATE VIEW "authorize_valid" AS
 	SELECT * FROM authorize WHERE authorized < CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP);

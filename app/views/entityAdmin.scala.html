@@ -1,7 +1,7 @@
-@(acct : Account, entity : Entity, accountForm : Option[Form[(String, String)]], authorizeForms : Seq[(Entity,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Entity,Form[Authorize])])
+@(entity : Entity, accountForm : Option[Form[(String, String)]], authorizeForms : Seq[(Entity,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Entity,Form[Authorize])])(implicit request : AccountRequest[_])
 
 
-@common(Some(acct), "admin: " + entity.name) {
+@common("admin: " + entity.name) {
 	<h1>@displayEntity(entity)</h1>
 
 	@accountForm.map { form =>

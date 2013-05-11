@@ -8,6 +8,9 @@ import java.sql.Timestamp
 
 object Permission extends DBEnum("permission") {
   val NONE, VIEW, DOWNLOAD, CONTRIBUTE, ADMIN = Value
+  // aliases or equivalent permissions (do not use val here)
+  def EDIT = CONTRIBUTE
+  def DATA = DOWNLOAD
 }
 
 case class Authorize(child : Int, parent : Int, var access : Permission.Value, var delegate : Permission.Value, var authorized : Option[Timestamp], var expires : Option[Timestamp]) extends TableRow {

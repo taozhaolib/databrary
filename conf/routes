@@ -4,7 +4,7 @@
 
 GET     /                      			controllers.Application.start
 
-GET     /login                      		controllers.Login.login
+GET     /login                      		controllers.Login.view
 POST    /Login                 			controllers.Login.post
 GET     /OpenID                     		controllers.Login.openID(username = "")
 GET     /OpenID/:username           		controllers.Login.openID(username : String)
@@ -20,6 +20,9 @@ POST	/entity/:id/Authorize/:other/parent	controllers.Entity.authorizeAdd(id : In
 GET	/entity/:id/Authorize/:child/delete	controllers.Entity.authorizeDelete(id : Int, child : Int)
 GET	/entity/:id/Authorize/search/child	controllers.Entity.authorizeSearch(id : Int, which : Boolean = false)
 GET	/entity/:id/Authorize/search/parent	controllers.Entity.authorizeSearch(id : Int, which : Boolean = true)
+
+GET	/study/:id				controllers.Study.view(id : Int)
+GET	/study/:id/edit				controllers.Study.edit(id : Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               		controllers.Assets.at(path="/public", file)

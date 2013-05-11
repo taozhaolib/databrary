@@ -1,4 +1,4 @@
-@(acct : Option[Account], title : String)(body : Html)
+@(title : String)(body : Html)(implicit request : SiteRequest[_])
 
 <!DOCTYPE html>
 <html>
@@ -6,12 +6,14 @@
 		<title>@title</title>
 	</head>
 	<body>
-		@acct.map { a =>
 		<div align='right'>
+		@request.identity.account.fold {
+			<a href="@routes.Login.view">login</a>
+		} { a =>
 			@displayEntity(a.entity)
 			<a href="@routes.Login.logout">logout</a>
-		</div>
 		}
+		</div>
 		@body
 	</body>
 </html>

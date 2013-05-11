@@ -1,0 +1,12 @@
+@(study : Study, access : Permission.Value)(implicit request : SiteRequest[_])
+
+@common(study.title) {
+	<h1>@study.title</h1>
+
+	@if(access >= Permission.EDIT) {
+		<a href='@routes.Study.edit(study.id)'>edit</a>
+	}
+
+	<p>@study.description</p>
+
+}

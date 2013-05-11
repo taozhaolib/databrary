@@ -1,12 +1,12 @@
-@(acct : Option[Account], entity : Entity)
+@(entity : Entity)(implicit request : SiteRequest[_])
 
-@common(acct, entity.name) {
+@common(entity.name) {
 	<h1>@entity.name</h1>
 
 	@* This information is limited to VIEW(?) *@
-	@acct.filter(_.entity.access >= Permission.VIEW).map { acct =>
+	@if(request.identity.access >= Permission.VIEW) {
 
-	@if(Authorize.delegate_check(acct.id, entity.id) >= Permission.ADMIN) {
+	@if(Authorize.delegate_check(request.identity.id, entity.id) >= Permission.ADMIN) {
 		<a href='@routes.Entity.admin(entity.id)'>admin</a>
 	}
 
@@ -27,6 +27,6 @@
 			<dd>@displayEntity(t.childEntity)</dd>
 		}
 	</dl>
-
 	}
+
 }

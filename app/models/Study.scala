@@ -18,7 +18,8 @@ case class Study(id : Int, creation : Timestamp, var title : String, var descrip
   }
 
   def access : List[StudyAccess] = StudyAccess.getStudy(id)
-  def check_access(e : Entity) : Permission.Value = StudyAccess.check(id, e.id)
+  def check_access(i : Int) : Permission.Value = StudyAccess.check(id, i)
+  def check_access(e : Entity) : Permission.Value = check_access(e.id)
 }
 
 object Study extends Table[Study]("study") {

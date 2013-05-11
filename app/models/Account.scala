@@ -6,20 +6,27 @@ import             slick.DB
 import             slick.Config.driver.simple._
 import java.sql.Timestamp
 
-case class Account(id : Int, username : String, var email : String, var openid : Option[String]) extends TableRow {
+abstract class Identity(val id : Int) {
   override def hashCode = id
-  override def equals(a : Any) = a match {
-    case Account(i, _, _, _) => i == id
-    case _ => false
-  }
+  def equals(o : Identity) = o.id == id
+  val account : Option[Account]
+
+  private[models] val _entity = CachedVal[Entity](Entity.get(id))
+  def entity : Entity = _entity
+  def access : Permission.Value = entity.access
+}
+
+object NoAccount extends Identity(Entity.NOBODY) {
+  val account = None
+}
+
+case class Account(override val id : Int, username : String, var email : String, var openid : Option[String]) 
+  extends Identity(id) with TableRow {
+  val account = Some(this)
 
   def commit = DB.withSession { implicit session =>
     Account.byId(id).map(_.mutable) update (email, openid)
   }
-
-  private val _entity = CachedVal[Entity](Entity.get(id))
-  def entity : Entity = _entity
-  def access : Permission.Value = entity.access
 }
 
 object Account extends Table[Account]("account") {

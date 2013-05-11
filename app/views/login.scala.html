@@ -1,6 +1,6 @@
-@(form : Form[(String,String)])
+@(form : Form[(String,String)])(implicit request : SiteRequest[_])
 
-@common(None, "Login") {
+@common("Login") {
 	@helper.form(routes.Login.post) {
 		@helper.inputText(form("username"))
 		@helper.inputText(form("openid"))

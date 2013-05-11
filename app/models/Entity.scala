@@ -63,5 +63,6 @@ object Entity extends Table[Entity]("entity") {
     } yield e
   }
 
+  final val NOBODY : Int = -1
   final val ROOT : Int = 0
 }
