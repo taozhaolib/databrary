@@ -29,7 +29,7 @@ object Study extends Controller {
 
   def viewable(e : Int)(implicit request : SiteRequest[_]) = DB.withSession { implicit session =>
     val l = for { 
-      a <- StudyAccess.byEntity(e, Permission.CONTRIBUTE) 
+      a <- StudyAccess.byEntity(e, Permission.CONTRIBUTE).sortBy(_.access.desc)
       if StudyAccess.filterForEntity(request.identity.id)(a.studyId)
       s <- a.study
     } yield (s)

@@ -17,7 +17,7 @@ case class Study(id : Int, creation : Timestamp, var title : String, var descrip
     Study.byId(id).map(_.mutable) update (title, description)
   }
 
-  def access : List[StudyAccess] = StudyAccess.getStudy(id)
+  def access(p : Permission.Value = Permission.NONE) : List[StudyAccess] = StudyAccess.getStudy(id, p)
   def check_access(i : Int) : Permission.Value = StudyAccess.check(id, i)
   def check_access(e : Entity) : Permission.Value = check_access(e.id)
 }
@@ -50,8 +50,10 @@ case class StudyAccess(studyId : Int, entityId : Int, var access : Permission.Va
     StudyAccess.delete(studyId, entityId)
   }
 
-  lazy val study : Study = Study.get(studyId).orNull
-  lazy val entity : Entity = Entity.get(entityId)
+  private val _study = CachedVal[Study](Study.get(studyId).orNull)
+  def study : Study = _study
+  private val _entity = CachedVal[Entity](Entity.get(entityId))
+  def entity : Entity = _entity
 }
 
 object StudyAccess extends Table[StudyAccess]("study_access") {
@@ -76,11 +78,17 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
   def get(s : Int, e : Int) : Option[StudyAccess] = DB.withSession { implicit session =>
     byKey(s, e).firstOption
   }
-  def getStudy(s : Int) : List[StudyAccess] = DB.withSession { implicit session =>
-    byStudy(s).list
+  def getStudy(s : Int, p : Permission.Value = Permission.NONE) : List[StudyAccess] = DB.withSession { implicit session =>
+    (for { a <- byStudy(s, p).sortBy(_.access.desc) ; e <- a.entity } yield (a,e)).list.map({ case (a,e) =>
+      a._entity() = e
+      a
+    })
   }
-  def getEntity(e : Int) : List[StudyAccess] = DB.withSession { implicit session =>
-    byEntity(e).list
+  def getEntity(e : Int, p : Permission.Value = Permission.NONE) : List[StudyAccess] = DB.withSession { implicit session =>
+    (for { a <- byEntity(e, p).sortBy(_.access.desc) ; s <- a.study } yield (a,s)).list.map({ case (a,s) =>
+      a._study() = s
+      a
+    })
   }
   def delete(s : Int, e : Int) = DB.withSession { implicit session =>
     byKey(s, e).delete

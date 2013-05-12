@@ -3,6 +3,12 @@
 @common(study.title) {
 	<h1>@study.title</h1>
 
+	<ul>
+	@study.access(Permission.CONTRIBUTE).map { a => 
+		<li>@displayEntity(a.entity)</li>
+	}
+	</ul>
+
 	@if(access >= Permission.EDIT) {
 		<a href='@routes.Study.edit(study.id)'>edit</a>
 	}
