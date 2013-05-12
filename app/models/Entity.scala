@@ -20,8 +20,8 @@ case class Entity(id : Int, var name : String) extends TableRow {
   def account = Account.getId(id)
   private val _access = CachedVal[Permission.Value](Authorize.access_check(id))
   def access : Permission.Value = _access
-  def authorizeParents = Authorize.getParents(id)
-  def authorizeChildren = Authorize.getChildren(id)
+  def authorizeParents(all : Boolean = false) = Authorize.getParents(id, all)
+  def authorizeChildren(all : Boolean = false) = Authorize.getChildren(id, all)
 }
 
 private object EntityCache extends HashMap[Int, Entity]

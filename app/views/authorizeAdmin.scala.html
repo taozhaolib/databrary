@@ -59,7 +59,7 @@
 
 	<tr><th colspan="5"><h3>Memberships</h3></th></tr>
 
-	@entity.authorizeParents.map { t =>
+	@entity.authorizeParents(true).map { t =>
 	<tr>
 		<td>@displayEntity(t.parentEntity)</td>
 		<td>@t.access</td>

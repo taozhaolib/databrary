@@ -2,8 +2,9 @@ package models
 
 import scala.language.implicitConversions
 import scala.slick.driver.BasicProfile
-import scala.slick.lifted.{TypeMapperDelegate,BaseTypeMapper,SimpleBinaryOperator}
+import scala.slick.lifted._
 import scala.slick.session.{PositionedParameters,PositionedResult}
+import java.sql.Timestamp
 
 class CachedVal[T <: AnyRef](init : => T) extends Function0[T] {
   private var x : Option[T] = None
@@ -20,7 +21,8 @@ object CachedVal {
 }
 
 object DBFunctions {
-  val ilike = SimpleBinaryOperator[Boolean]("ilike")
+  val currentTimestamp = SimpleFunction.nullary[Timestamp]("transaction_timestamp")
+  val ilike = SimpleBinaryOperator[Boolean]("ILIKE")
 }
 
 abstract trait TableRow {
@@ -42,6 +44,12 @@ abstract class DBEnum(type_name : String) extends Enumeration {
         withName(s)
     }
     def updateValue(v : Value, r : PositionedResult) = r.updateString(v.toString)
+    override def valueToSQLLiteral(v : Value) = {
+      if (v eq null)
+        "NULL"
+      else
+        "'" + v.toString + "'"
+    }
   }
   implicit val typeMapper = new BaseTypeMapper[Value] {
     def apply(profile : BasicProfile) = typeMapperDelegate

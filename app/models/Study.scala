@@ -68,8 +68,10 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
   def entity = foreignKey("study_access_entity_fkey", entityId, Entity)(_.id)
 
   def byKey(s : Int, e : Int) = Query(this).where(a => a.studyId === s && a.entityId === e)
-  def byStudy(s : Int) = Query(this).where(_.studyId === s)
-  def byEntity(e : Int) = Query(this).where(_.entityId === e)
+  def byStudy(s : Int, p : Permission.Value = Permission.NONE) = 
+    Query(this).where(a => a.studyId === s && a.access >= p)
+  def byEntity(e : Int, p : Permission.Value = Permission.NONE) = 
+    Query(this).where(a => a.entityId === e && a.access >= p)
 
   def get(s : Int, e : Int) : Option[StudyAccess] = DB.withSession { implicit session =>
     byKey(s, e).firstOption
@@ -88,4 +90,6 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
   def check(s : Int, e : Int) : Permission.Value = DB.withSession { implicit session =>
     Query(_check(s, e)).first.getOrElse(Permission.NONE)
   }
+
+  def filterForEntity(e : Int)(s : Column[Int]) = _check(s, e) >= Permission.VIEW
 }

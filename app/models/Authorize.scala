@@ -50,11 +50,13 @@ object Authorize extends Table[Authorize]("authorize") {
   def get(c : Int, p : Int) : Option[Authorize] = DB.withSession { implicit session =>
     byKey(c, p).firstOption
   }
-  def getParents(c : Int) : List[Authorize] = DB.withSession { implicit session =>
-    byChild(c).list
+  def getParents(c : Int, all : Boolean) : List[Authorize] = DB.withSession { implicit session =>
+    val l = byChild(c)
+    (if (all) l else l.filter(_valid(_))).list
   }
-  def getChildren(p : Int) : List[Authorize] = DB.withSession { implicit session =>
-    byParent(p).list
+  def getChildren(p : Int, all : Boolean) : List[Authorize] = DB.withSession { implicit session =>
+    val l = byParent(p)
+    (if (all) l else l.filter(_valid(_))).list
   }
   def delete(c : Int, p : Int) = DB.withSession { implicit session =>
     byKey(c, p).delete
@@ -69,4 +71,7 @@ object Authorize extends Table[Authorize]("authorize") {
   def delegate_check(c : Int, p : Int) : Permission.Value = DB.withSession { implicit session =>
     Query(_delegate_check(c, p)).first.getOrElse(Permission.NONE)
   }
+
+  def _valid(a : Authorize.type) = 
+    a.authorized <= DBFunctions.currentTimestamp && (a.expires.isNull || a.expires > DBFunctions.currentTimestamp)
 }

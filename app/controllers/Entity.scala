@@ -58,7 +58,7 @@ object Entity extends Controller {
     authorizeResults : Seq[(Entity,Form[Authorize])] = Seq())(
     implicit request : AccountRequest[_]) = {
     val authorizeChange = authorizeChangeForm.fold(-1)(_._1.id)
-    val authorizeForms = entity.authorizeChildren.filter(_.child != authorizeChange).map(t => (t.childEntity, authorizeForm(t.child, t.parent).fill(t))) ++ authorizeChangeForm
+    val authorizeForms = entity.authorizeChildren(true).filter(_.child != authorizeChange).map(t => (t.childEntity, authorizeForm(t.child, t.parent).fill(t))) ++ authorizeChangeForm
     views.html.entityAdmin(entity, accountForm, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
   }
   
