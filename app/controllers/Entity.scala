@@ -30,7 +30,8 @@ object Entity extends Controller {
 
   def accountFormFill(a : Account) = accountForm.fill((a.email, a.openid.getOrElse("")))
 
-  def authorizeForm(child : Int, parent : Int) : Form[Authorize] = Form(mapping(
+  def authorizeForm(child : Int, parent : Int) : Form[Authorize] = Form(
+    mapping(
       "access" -> number(min=0, max=Permission.maxId-1),
       "delegate" -> number(min=0, max=Permission.maxId-1),
       "pending" -> boolean,
@@ -42,7 +43,10 @@ object Entity extends Controller {
       if (pending) None else Some(new java.sql.Timestamp(System.currentTimeMillis)),
       expires.map(e => new java.sql.Timestamp(e.getTime))
     ))(t => 
-      Some((t.access.id, t.delegate.id, t.authorized.fold(true)(_ => false), t.expires.map(e => new java.sql.Date(e.getTime))))
+      if (t.child == child && t.parent == parent)
+        Some((t.access.id, t.delegate.id, t.authorized.fold(true)(_ => false), t.expires.map(e => new java.sql.Date(e.getTime))))
+      else
+        None
     )
   )
 
@@ -57,8 +61,8 @@ object Entity extends Controller {
     authorizeSearchForm : Form[String] = authorizeSearchForm,
     authorizeResults : Seq[(Entity,Form[Authorize])] = Seq())(
     implicit request : AccountRequest[_]) = {
-    val authorizeChange = authorizeChangeForm.fold(-1)(_._1.id)
-    val authorizeForms = entity.authorizeChildren(true).filter(_.child != authorizeChange).map(t => (t.childEntity, authorizeForm(t.child, t.parent).fill(t))) ++ authorizeChangeForm
+    val authorizeChange = authorizeChangeForm.map(_._1.id)
+    val authorizeForms = entity.authorizeChildren(true).filter(t => Some(t.child) != authorizeChange).map(t => (t.childEntity, authorizeForm(t.child, t.parent).fill(t))) ++ authorizeChangeForm
     views.html.entityAdmin(entity, accountForm, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
   }
   

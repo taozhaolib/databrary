@@ -1,0 +1,73 @@
+@(study : Study, access : Permission.Value, editForm : Form[(String,String)], accessForms : Seq[(Entity,Form[StudyAccess])], accessSearch : Form[String], accessResults : Seq[(Entity,Form[StudyAccess])])(implicit request : SiteRequest[_])
+
+@accessFields(entity : Entity, form : Form[StudyAccess])(implicit fieldConstructor : helper.FieldConstructor) = {
+	<td>@displayEntity(entity)</td>
+	@helper.select(form("access"), Permission.values.toSeq.map(v => (v.id.toString, v.toString)))
+	@helper.select(form("inherit"), Permission.values.to(if (entity.id > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
+}
+
+@common("edit: " + study.title) {
+	<h1>@displayStudy(study)</h1>
+
+	@if(access >= Permission.EDIT) {
+	@helper.form(routes.Entity.change(study.id)) {
+		@helper.inputText(editForm("title"))
+		@helper.textarea(editForm("description"))
+		<button type='submit'>Change</button>
+	}
+	@formErrors(editForm)
+	}
+
+	@if(access >= Permission.ADMIN) {
+	<h2>Access</h2>
+	<table>
+	@defining(helper.FieldConstructor(tableFieldConstructor.f)) { implicit fieldConstructor =>
+		<tr>
+			<th>Name</th>
+			<th>Individual</th>
+			<th>Group</th>
+			<th>Action</th>
+		</tr>
+
+		@accessForms.map { case (entity,form) =>
+		@helper.form(routes.Study.accessChange(study.id, entity.id)) {
+		<tr>
+			@accessFields(entity, form)
+			<td>
+				<button type='submit'>Change</button>
+				@if(entity.id != request.identity.id) {
+				<a href='@routes.Study.accessDelete(study.id, entity.id)'>Revoke</a>
+				}
+				@formErrors(form)
+			</td>
+		</tr>
+		}
+		}
+
+		@helper.form(routes.Study.accessSearch(study.id)) {
+		<tr>
+			@helper.inputText(accessSearch("name"))
+			<td/>
+			<td/>
+			<td>
+				<button type='submit'>Search</button>
+				@formErrors(accessSearch)
+			</td>
+		</tr>
+		}
+
+		@accessResults.map { case (entity,form) =>
+		@helper.form(routes.Study.accessAdd(study.id, entity.id)) {
+		<tr>
+			@accessFields(entity, form)
+			<td>
+				<button type='submit'>Add</button>
+				@formErrors(form)
+			</td>
+		</tr>
+		}
+		}
+	}
+	</table>
+	}
+}

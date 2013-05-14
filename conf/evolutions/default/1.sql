@@ -32,12 +32,12 @@ CREATE TYPE permission AS ENUM ('NONE',
 CREATE TABLE "authorize" (
 	"child" integer NOT NULL References "entity" ON DELETE Cascade,
 	"parent" integer NOT NULL References "entity",
-	"access" permission NOT NULL Default 'NONE',
-	"delegate" permission NOT NULL Default 'NONE',
+	"access" permission NOT NULL DEFAULT 'NONE',
+	"delegate" permission NOT NULL DEFAULT 'NONE',
 	"authorized" timestamp DEFAULT CURRENT_TIMESTAMP,
 	"expires" timestamp,
 	Primary Key ("parent", "child"),
-	Check ("child" <> "parent" AND "child" > 0)
+	Check ("child" <> "parent" AND ("child" > 0 OR "parent" = -1))
 );
 COMMENT ON TABLE "authorize" IS 'Relationships and permissions granted between entities';
 COMMENT ON COLUMN "authorize"."child" IS 'Entity granted permissions';
@@ -46,7 +46,7 @@ COMMENT ON COLUMN "authorize"."access" IS 'Level of independent site access gran
 COMMENT ON COLUMN "authorize"."delegate" IS 'Permissions for which child may act as parent (not inherited)';
 
 -- To allow normal users to inherit from nobody:
-INSERT INTO "authorize" ("child", "parent", "access") VALUES (0, -1, 'ADMIN');
+INSERT INTO "authorize" ("child", "parent", "access") VALUES (0, -1, 'ADMIN', 'ADMIN');
 
 CREATE VIEW "authorize_valid" AS
 	SELECT * FROM authorize WHERE authorized < CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP);
@@ -67,7 +67,7 @@ COMMENT ON FUNCTION "authorize_access_parents" (integer, permission) IS 'All anc
 CREATE FUNCTION "authorize_access_check" ("child" integer, "parent" integer = 0, "access" permission = NULL) RETURNS permission LANGUAGE sql STABLE AS $$
 	SELECT max(access) FROM authorize_access_parents($1, $3) WHERE parent = $2
 $$;
-COMMENT ON FUNCTION "authorize_access_check" (integer, integer, permission) IS 'Test if a given child has the given permission [any] from the given parent [root]';
+COMMENT ON FUNCTION "authorize_access_check" (integer, integer, permission) IS 'Test if a given child inherits the given permission [any] from the given parent [root]';
 
 CREATE FUNCTION "authorize_delegate_check" ("child" integer, "parent" integer, "delegate" permission = NULL) RETURNS permission LANGUAGE sql STABLE AS $$
 	SELECT CASE WHEN $1 = $2 THEN enum_last(max(delegate)) ELSE max(delegate) END FROM authorize_valid WHERE child = $1 AND parent = $2
@@ -86,26 +86,26 @@ COMMENT ON TABLE "study" is 'Basic organizational unit for data.';
 CREATE TABLE "study_access" (
 	"study" integer NOT NULL References "study",
 	"entity" integer NOT NULL References "entity",
-	"access" permission NOT NULL Default 'NONE',
-	"inherited" boolean NOT NULL DEFAULT 'f',
+	"access" permission NOT NULL DEFAULT 'NONE',
+	"inherit" permission NOT NULL DEFAULT 'NONE' Check ("inherit" < 'ADMIN'),
+	Check ("access" >= "inherit"),
 	Primary Key ("study", "entity")
 );
 COMMENT ON TABLE "study_access" is 'Permissions over studies assigned to users.';
 
 CREATE FUNCTION "study_access_check" ("study" integer, "entity" integer, "access" permission = NULL) RETURNS permission LANGUAGE sql STABLE AS $$
 	WITH sa AS (
-		SELECT entity, access, inherited 
+		SELECT entity, access, inherit
 		  FROM study_access 
 		 WHERE study = $1 AND ($3 IS NULL OR access >= $3)
 	)
-	SELECT max(access) AS access FROM (
+	SELECT max(access) FROM (
 		SELECT access 
 		  FROM sa
 		 WHERE entity = $2
 	UNION ALL
-		SELECT LEAST(sa.access, aap.access) 
+		SELECT LEAST(sa.inherit, aap.access) 
 		  FROM sa JOIN authorize_access_parents($2, $3) aap ON entity = parent 
-		 WHERE inherited
 	UNION ALL
 		SELECT LEAST(sa.access, ad.delegate)
 		  FROM sa JOIN authorize_valid ad ON entity = parent 

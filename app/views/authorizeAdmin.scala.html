@@ -1,14 +1,5 @@
 @(entity : Entity, authorizeForms : Seq[(Entity,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Entity,Form[Authorize])])
 
-@tableField(elements : helper.FieldElements) = {
-	<td class="@elements.args.get('_class) @if(elements.hasErrors) {error}" id="@elements.args.get('_id).getOrElse(elements.id + "_field")">
-		@elements.input
-		@elements.errors(elements.lang).map { error =>
-			<p class="error">@error</p>
-		}
-	</td>
-}
-
 @authorizeFields(entity : Entity, form : Form[Authorize])(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@displayEntity(entity)</td>
 	@helper.select(form("access"), Permission.values.toSeq.map(v => (v.id.toString, v.toString)))
@@ -47,7 +38,7 @@
 }
 
 <table>
-@defining(helper.FieldConstructor(tableField)) { implicit fieldConstructor =>
+@defining(helper.FieldConstructor(tableFieldConstructor.f)) { implicit fieldConstructor =>
 
 	<tr>
 		<th>Name</th>

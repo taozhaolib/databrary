@@ -11,6 +11,7 @@ object Permission extends DBEnum("permission") {
   // aliases or equivalent permissions (do not use val here)
   def EDIT = CONTRIBUTE
   def DATA = DOWNLOAD
+  def OWN = ADMIN
 }
 
 case class Authorize(child : Int, parent : Int, var access : Permission.Value, var delegate : Permission.Value, var authorized : Option[Timestamp], var expires : Option[Timestamp]) extends TableRow {

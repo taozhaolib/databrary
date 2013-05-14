@@ -38,10 +38,10 @@ object Study extends Table[Study]("study") {
   }
 }
 
-case class StudyAccess(studyId : Int, entityId : Int, var access : Permission.Value, var inherited : Boolean) extends TableRow {
+case class StudyAccess(studyId : Int, entityId : Int, var access : Permission.Value, var inherit : Permission.Value) extends TableRow {
 
   def commit = DB.withSession { implicit session =>
-    StudyAccess.byKey(studyId, entityId).map(_.mutable) update (access, inherited)
+    StudyAccess.byKey(studyId, entityId).map(_.mutable) update (access, inherit)
   }
   def add = DB.withSession { implicit session =>
     StudyAccess.* insert this
@@ -60,10 +60,10 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
   def studyId = column[Int]("study")
   def entityId = column[Int]("entity")
   def access = column[Permission.Value]("access")
-  def inherited = column[Boolean]("inherited")
+  def inherit = column[Permission.Value]("inherit")
 
-  def * = studyId ~ entityId ~ access ~ inherited <> (StudyAccess.apply _, StudyAccess.unapply _)
-  def mutable = access ~ inherited
+  def * = studyId ~ entityId ~ access ~ inherit <> (StudyAccess.apply _, StudyAccess.unapply _)
+  def mutable = access ~ inherit
 
   def key = primaryKey("study_access_pkey", (studyId, entityId))
   def study = foreignKey("study_access_study_fkey", studyId, Study)(_.id)
