@@ -10,7 +10,7 @@
 	<h1>@displayStudy(study)</h1>
 
 	@if(access >= Permission.EDIT) {
-	@helper.form(routes.Entity.change(study.id)) {
+	@helper.form(routes.Study.change(study.id)) {
 		@helper.inputText(editForm("title"))
 		@helper.textarea(editForm("description"))
 		<button type='submit'>Change</button>

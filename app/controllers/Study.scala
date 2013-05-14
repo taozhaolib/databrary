@@ -12,7 +12,7 @@ import models._
 
 object Study extends Controller {
 
-  def check(i : Int, p : Permission.Value)(act : (Study, Permission.Value) => SiteRequest[AnyContent] => Result) = SiteAction { request =>
+  private[this] def check(i : Int, p : Permission.Value)(act : (Study, Permission.Value) => SiteRequest[AnyContent] => Result) = SiteAction { request =>
     val a = StudyAccess.check(request.identity.id, i)
     if (a < p)
       Forbidden
@@ -24,6 +24,8 @@ object Study extends Controller {
     Ok(views.html.study(study, access))
   }
 
+  /* list of studies belonging to entity e and viewable by the current identity
+   * poorly named, and should go elsewhere/be generalized to other searches */
   def viewable(e : Int)(implicit request : SiteRequest[_]) = DB.withSession { implicit session =>
     val l = for { 
       a <- StudyAccess.byEntity(e, Permission.CONTRIBUTE).sortBy(_.access.desc)
@@ -33,14 +35,13 @@ object Study extends Controller {
     l.list
   }
 
-  val editForm = Form(tuple(
+  private[this] val editForm = Form(tuple(
     "title" -> nonEmptyText,
     "description" -> text
   ))
+  private[this] def editFormFill(s : Study) = editForm.fill((s.title, s.description.getOrElse("")))
 
-  def editFormFill(s : Study) = editForm.fill((s.title, s.description.getOrElse("")))
-
-  def accessForm(study : Study, entity : Int) : Form[StudyAccess] = Form(
+  private[this] def accessForm(study : Study, entity : Int) : Form[StudyAccess] = Form(
     mapping(
       "access" -> number(min=0, max=Permission.maxId-1),
       "inherit" -> number(min=0, max=(if (entity > 0) Permission.EDIT else Permission.DOWNLOAD).id)
@@ -56,11 +57,11 @@ object Study extends Controller {
     )
   )
 
-  val accessSearchForm = Form(
+  private[this] val accessSearchForm = Form(
     "name" -> nonEmptyText
   )
 
-  def viewEdit(study : Study, access : Permission.Value)(
+  private[this] def viewEdit(study : Study, access : Permission.Value)(
     editForm : Form[(String,String)] = editFormFill(study),
     accessChangeForm : Option[(Entity,Form[StudyAccess])] = None,
     accessSearchForm : Form[String] = accessSearchForm,
@@ -76,7 +77,7 @@ object Study extends Controller {
   }
 
   def change(i : Int) = check(i, Permission.EDIT) { (study, access) => implicit request =>
-    editForm.bindFromRequest.fold(
+    editFormFill(study).bindFromRequest.fold(
       form => BadRequest(viewEdit(study, access)(editForm = form)),
       { case (title, description) =>
         study.title = title
@@ -117,5 +118,13 @@ object Study extends Controller {
     )
   }
 
-  def accessAdd(i : Int, e : Int) = TODO
+  def accessAdd(i : Int, e : Int) = check(i, Permission.ADMIN) { (study, perm) => implicit requet =>
+    accessForm(study, e).bindFromRequest.fold(
+      form => BadRequest(viewEdit(study, perm)(accessResults = Seq((models.Entity.get(e),form)))),
+      access => {
+        access.add
+        Redirect(routes.Study.edit(study.id))
+      }
+    )
+  }
 }

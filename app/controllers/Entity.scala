@@ -12,25 +12,21 @@ import models._
 
 object Entity extends Controller {
 
-  def viewEntity(e : Entity)(implicit request : SiteRequest[_]) = 
-    Ok(views.html.entity(e))
-
   def view(i : Int) = SiteAction { implicit request =>
     var e = models.Entity.get(i)
     if (e == null)
       NotFound
     else
-      viewEntity(e)
+      Ok(views.html.entity(e))
   }
 
-  val accountForm = Form(tuple(
+  private[this] val accountForm = Form(tuple(
     "email" -> email,
     "openid" -> text
   ))
+  private[this] def accountFormFill(a : Account) = accountForm.fill((a.email, a.openid.getOrElse("")))
 
-  def accountFormFill(a : Account) = accountForm.fill((a.email, a.openid.getOrElse("")))
-
-  def authorizeForm(child : Int, parent : Int) : Form[Authorize] = Form(
+  private[this] def authorizeForm(child : Int, parent : Int) : Form[Authorize] = Form(
     mapping(
       "access" -> number(min=0, max=Permission.maxId-1),
       "delegate" -> number(min=0, max=Permission.maxId-1),
@@ -50,11 +46,17 @@ object Entity extends Controller {
     )
   )
 
-  val authorizeSearchForm = Form(
+  private[this] def authorizeFormWhich(me : Entity, other : Int, which : Boolean) =
+    if (which)
+      authorizeForm(me.id, other)
+    else
+      authorizeForm(other, me.id)
+
+  private[this] val authorizeSearchForm = Form(
     "name" -> nonEmptyText
   )
 
-  def viewAdmin(entity : Entity)(
+  private[this] def viewAdmin(entity : Entity)(
     accountForm : Option[Form[(String, String)]] = entity.account.map(accountFormFill(_)),
     authorizeChangeForm : Option[(Entity,Form[Authorize])] = None,
     authorizeWhich : Option[Boolean] = None,
@@ -66,7 +68,7 @@ object Entity extends Controller {
     views.html.entityAdmin(entity, accountForm, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
   }
   
-  def checkAdmin(i : Int)(act : Entity => AccountRequest[AnyContent] => Result) = AccountAction { request =>
+  private[this] def checkAdmin(i : Int)(act : Entity => AccountRequest[AnyContent] => Result) = AccountAction { request =>
     if (Authorize.delegate_check(request.account.id, i) < Permission.ADMIN)
       Forbidden
     else
@@ -78,10 +80,10 @@ object Entity extends Controller {
   }
 
   def change(i : Int) = checkAdmin(i) { entity => implicit request =>
-    accountForm.bindFromRequest.fold(
+    val a = entity.account.get
+    accountFormFill(a).bindFromRequest.fold(
       form => BadRequest(viewAdmin(entity)(accountForm = Some(form))),
       { case (email, openid) =>
-        val a = entity.account.get
         a.email = email
         a.openid = if (openid.isEmpty) None else Some(openid)
         a.commit
@@ -115,13 +117,14 @@ object Entity extends Controller {
           models.Entity.byName(name).filter(e => e.id =!= me && e.id.notIn(Authorize.byParent(me).map(_.child)) && e.id.notIn(Authorize.byChild(me).map(_.parent))).take(8).list
         }
         Ok(viewAdmin(entity)(authorizeWhich = Some(which), authorizeSearchForm = form, 
-          authorizeResults = res.map(e => (e,authorizeForm(e.id,me)/* TODO: fill expires */))))
+          authorizeResults = res.map(e => (e,authorizeFormWhich(entity, e.id, which)
+            /* TODO: fill expires */))))
       }
     )
   }
 
   def authorizeAdd(i : Int, which : Boolean, other : Int) = checkAdmin(i) { entity => implicit request =>
-    (if (which) authorizeForm(i, other) else authorizeForm(other, i)).bindFromRequest.fold(
+    authorizeFormWhich(entity, other, which).bindFromRequest.fold(
       form => BadRequest(viewAdmin(entity)(authorizeWhich = Some(which), authorizeResults = Seq((models.Entity.get(other), form)))),
       authorize => {
         if (which)
@@ -131,5 +134,4 @@ object Entity extends Controller {
       }
     )
   }
-
 }

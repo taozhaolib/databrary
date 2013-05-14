@@ -40,6 +40,6 @@ object AccountAction {
 object Application extends Controller {
   
   def start = SiteAction(request => Ok(Login.viewLogin()(request)), implicit request =>
-    Entity.viewEntity(request.account.entity))
+    Ok(views.html.entity(request.account.entity)))
 
 }
