@@ -2,7 +2,7 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /                      			controllers.Application.start
+GET     /                      			controllers.Site.start
 
 GET     /login                      		controllers.Login.view
 POST    /Login                 			controllers.Login.post

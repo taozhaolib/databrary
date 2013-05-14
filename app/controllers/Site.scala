@@ -37,7 +37,7 @@ object AccountAction {
     SiteAction(Login.needLogin(_), block(_))
 }
 
-object Application extends Controller {
+object Site extends Controller {
   
   def start = SiteAction(request => Ok(Login.viewLogin()(request)), implicit request =>
     Ok(views.html.entity(request.account.entity)))
