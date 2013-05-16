@@ -14,7 +14,7 @@ case class Study(id : Int, creation : Timestamp, var title : String, var descrip
   }
 
   def commit = DB.withSession { implicit session =>
-    Study.byId(id).map(_.mutable) update (title, description)
+    Study.byId(id).map(_.update_*) update (title, description)
   }
 
   def access(p : Permission.Value = Permission.NONE) : List[StudyAccess] = StudyAccess.getStudy(id, p)
@@ -23,32 +23,36 @@ case class Study(id : Int, creation : Timestamp, var title : String, var descrip
 }
 
 object Study extends Table[Study]("study") {
-  def id = column[Int]("id")
+  def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
   def created = column[Timestamp]("created")
   def title = column[String]("title", O.DBType("text"))
   def description = column[Option[String]]("description", O.DBType("text"))
 
   def * = id ~ created ~ title ~ description <> (Study.apply _, Study.unapply _)
-  def mutable = title ~ description
+  def update_* = title ~ description
+  def insert_* = title
 
-  def byId(i : Int) = Query(this).where(_.id === i)
+  private def byId(i : Int) = Query(this).where(_.id === i)
 
   def get(i : Int) : Option[Study] = DB.withSession { implicit session =>
     byId(i).firstOption
+  }
+
+  def create(title : String) : Study = DB.withSession { implicit session =>
+    insert_* returning * insert title
   }
 }
 
 case class StudyAccess(studyId : Int, entityId : Int, var access : Permission.Value, var inherit : Permission.Value) extends TableRow {
 
   def commit = DB.withSession { implicit session =>
-    StudyAccess.byKey(studyId, entityId).map(_.mutable) update (access, inherit)
+    StudyAccess.byKey(studyId, entityId).map(_.update_*) update (access, inherit)
   }
   def add = DB.withSession { implicit session =>
     StudyAccess.* insert this
   }
-  def remove = DB.withSession { implicit session =>
+  def remove =
     StudyAccess.delete(studyId, entityId)
-  }
 
   private val _study = CachedVal[Study](Study.get(studyId).orNull)
   def study : Study = _study
@@ -63,13 +67,13 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
   def inherit = column[Permission.Value]("inherit")
 
   def * = studyId ~ entityId ~ access ~ inherit <> (StudyAccess.apply _, StudyAccess.unapply _)
-  def mutable = access ~ inherit
+  def update_* = access ~ inherit
 
   def key = primaryKey("study_access_pkey", (studyId, entityId))
   def study = foreignKey("study_access_study_fkey", studyId, Study)(_.id)
   def entity = foreignKey("study_access_entity_fkey", entityId, Entity)(_.id)
 
-  def byKey(s : Int, e : Int) = Query(this).where(a => a.studyId === s && a.entityId === e)
+  private def byKey(s : Int, e : Int) = Query(this).where(a => a.studyId === s && a.entityId === e)
   def byStudy(s : Int, p : Permission.Value = Permission.NONE) = 
     Query(this).where(a => a.studyId === s && a.access >= p)
   def byEntity(e : Int, p : Permission.Value = Permission.NONE) = 
@@ -90,11 +94,12 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
       a
     })
   }
+
   def delete(s : Int, e : Int) = DB.withSession { implicit session =>
     byKey(s, e).delete
   }
 
-  def _check = SimpleFunction.binary[Int, Int, Option[Permission.Value]]("study_access_check")
+  private[this] def _check = SimpleFunction.binary[Int, Int, Option[Permission.Value]]("study_access_check")
   def check(s : Int, e : Int) : Permission.Value = DB.withSession { implicit session =>
     Query(_check(s, e)).first.getOrElse(Permission.NONE)
   }

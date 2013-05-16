@@ -25,7 +25,10 @@ case class Account(override val id : Int, username : String, var email : String,
   val account = Some(this)
 
   def commit = DB.withSession { implicit session =>
-    Account.byId(id).map(_.mutable) update (email, openid)
+    Account.byId(id).map(_.update_*) update (email, openid)
+  }
+  def add = DB.withSession { implicit session =>
+    Account.* insert this
   }
 }
 
@@ -37,17 +40,17 @@ object Account extends Table[Account]("account") {
   def openid = column[Option[String]]("openid", O.DBType("varchar(256)"))
 
   def * = id ~ username ~ email ~ openid <> (Account.apply _, Account.unapply _)
-  def mutable = email ~ openid
+  private def update_* = email ~ openid
 
   def idKey = index("account_entity_key", id, unique = true)
   def openidKey = index("account_openid_key", openid, unique = false)
   def entity = foreignKey("account_entity_fkey", id, Entity)(_.id)
 
-  def byId(i : Int) = Query(this).where(_.id === i)
-  def byUsername(u : String) = Query(this).filter(_.username === u)
-  def byOpenid(o : String) = Query(this).filter(_.openid === o)
+  private def byId(i : Int) = Query(this).where(_.id === i)
+  private[this] def byUsername(u : String) = Query(this).filter(_.username === u)
+  private[this] def byOpenid(o : String) = Query(this).filter(_.openid === o)
 
-  def firstOption(q : Query[Account.type, Account]) : Option[Account] =
+  private[this] def firstOption(q : Query[Account.type, Account]) : Option[Account] =
     DB.withSession { implicit session =>
       (for { a <- q ; (e, c) <- a.entity.map(e => (e, Authorize._access_check(e.id))) } yield (a,e,c)).firstOption.map(
         { case (a,e,c) => 
@@ -61,4 +64,8 @@ object Account extends Table[Account]("account") {
     firstOption(byId(i))
   def getUsername(u : String) : Option[Account] =
     firstOption(byUsername(u))
+  def getOpenid(o : String, u : Option[String] = None) : Option[Account] = DB.withSession { implicit sesssion =>
+    val qao = byOpenid(o)
+    u.fold(qao)(u => qao.filter(_.username === u)).firstOption
+  }
 }

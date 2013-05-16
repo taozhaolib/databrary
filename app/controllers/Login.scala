@@ -1,5 +1,6 @@
 package controllers
 
+import util._
 import play.api._
 import          Play.current
 import          mvc._
@@ -47,14 +48,11 @@ object Login extends Controller {
     AsyncResult(OpenID.verifiedId.extend1(
       { 
         case Redeemed(info) =>
-          DB.withSession { implicit session =>
-            val qao = models.Account.byOpenid(info.id)
-            (if (username.isEmpty) qao else qao.filter(_.username === username)).firstOption
-          }.map { a =>
+          models.Account.getOpenid(info.id, maybe(username)).map { a =>
             Redirect(routes.Entity.view(a.id)).withSession("account" -> a.id.toString)
           }.getOrElse(
             BadRequest(viewLogin(Messages("login.openID.notFound", info.id)))
-          ) 
+          )
         case Thrown(t) => InternalServerError(viewLogin(t.toString))
       }
     ))

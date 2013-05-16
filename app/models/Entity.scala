@@ -14,7 +14,7 @@ case class Entity(id : Int, var name : String) extends TableRow {
   }
 
   def commit = DB.withSession { implicit session =>
-    Entity.byId(id).map(_.mutable) update (name)
+    Entity.byId(id).map(_.update_*) update (name)
   }
 
   def account = Account.getId(id)
@@ -31,7 +31,8 @@ object Entity extends Table[Entity]("entity") {
   def name = column[String]("name", O.DBType("text"))
 
   def * = id ~ name <> (Entity.apply _, Entity.unapply _)
-  def mutable = name
+  private def update_* = name
+  private[this] def insert_* = update_*
 
   private def byId(i : Int) = Query(this).where(_.id === i)
 
@@ -47,7 +48,7 @@ object Entity extends Table[Entity]("entity") {
       })
   def create(n : String) : Entity = {
     val i = DB.withSession { implicit session =>
-      name returning id insert n
+      insert_* returning id insert n
     }
     val e = Entity(i, n)
     EntityCache.update(i, e)

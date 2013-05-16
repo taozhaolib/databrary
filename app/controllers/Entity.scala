@@ -1,5 +1,6 @@
 package controllers
 
+import util._
 import play.api._
 import          Play.current
 import          mvc._
@@ -85,7 +86,7 @@ object Entity extends Controller {
       form => BadRequest(viewAdmin(entity)(accountForm = Some(form))),
       { case (email, openid) =>
         a.email = email
-        a.openid = if (openid.isEmpty) None else Some(openid)
+        a.openid = maybe(openid)
         a.commit
         Redirect(routes.Entity.admin(entity.id))
       }

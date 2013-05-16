@@ -1,5 +1,6 @@
 package controllers
 
+import util._
 import play.api._
 import          Play.current
 import          mvc._
@@ -81,7 +82,7 @@ object Study extends Controller {
       form => BadRequest(viewEdit(study, access)(editForm = form)),
       { case (title, description) =>
         study.title = title
-        study.description = if (description.isEmpty) None else Some(description)
+        study.description = maybe(description)
         study.commit
         Redirect(routes.Study.edit(study.id))
       }

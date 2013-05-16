@@ -10,7 +10,8 @@ class CachedVal[T <: AnyRef](init : => T) extends Function0[T] {
   private var x : Option[T] = None
   def apply : T = x.getOrElse(update(init))
   def update(v : T) : T = {
-    x = Some(v)
+    if (v != null)
+      x = Some(v)
     v
   }
 }
