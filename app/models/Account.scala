@@ -20,7 +20,7 @@ object NoAccount extends Identity(Entity.NOBODY) {
   val account = None
 }
 
-case class Account(override val id : Int, username : String, var email : String, var openid : Option[String]) 
+final case class Account(override val id : Int, username : String, var email : String, var openid : Option[String]) 
   extends Identity(id) with TableRow {
   val account = Some(this)
 

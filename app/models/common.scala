@@ -1,16 +1,17 @@
 package models
 
 import scala.language.implicitConversions
+import scala.slick.ast.{Node,ProductNode}
 import scala.slick.driver.BasicProfile
 import scala.slick.lifted._
 import scala.slick.session.{PositionedParameters,PositionedResult}
-import java.sql.Timestamp
+import java.sql.{Timestamp,SQLException}
 
 class CachedVal[T <: AnyRef](init : => T) extends Function0[T] {
   private var x : Option[T] = None
   def apply : T = x.getOrElse(update(init))
   def update(v : T) : T = {
-    if (v != null)
+    if (v ne null)
       x = Some(v)
     v
   }
@@ -54,5 +55,49 @@ abstract class DBEnum(type_name : String) extends Enumeration {
   }
   implicit val typeMapper = new BaseTypeMapper[Value] {
     def apply(profile : BasicProfile) = typeMapperDelegate
+  }
+}
+
+/* It's not clear why Projection is only over Column and not ColumnBase, but this should work: */
+final class ColumnPair[T1,T2](_1 : ColumnBase[T1], _2 : ColumnBase[T2])
+  extends Tuple2(_1, _2) with ColumnBase[(T1,T2)] with ProductNode with Product {
+  lazy val nodeChildren = Vector(Node(_1), Node(_2))
+  def getLinearizedNodes : IndexedSeq[Node] = Vector(Node(_1), Node(_2))
+  def getResult(profile : BasicProfile, rs : PositionedResult) : (T1,T2) = (
+    _1.getResult(profile, rs),
+    _2.getResult(profile, rs)
+  )
+  def setParameter(profile : BasicProfile, ps : PositionedParameters, value : Option[(T1,T2)]) {
+    _1.setParameter(profile, ps, value.map(_._1))
+    _2.setParameter(profile, ps, value.map(_._2))
+  }
+  def updateResult(profile : BasicProfile, rs : PositionedResult, value : (T1,T2)) {
+    _1.updateResult(profile, rs, value._1)
+    _2.updateResult(profile, rs, value._2)
+  }
+  // def <>[R](f: ((T1,T2) => R), g: (R => Option[(T1,T2)])) = MappedProjection[R, (T1,T2)](this, { case (p1,p2) => f(p1,p2) }, g)(this)
+}
+
+case class Inet(val ip : String)
+
+object Inet {
+  private[this] val inetTypeMapperDelegate = new TypeMapperDelegate[Inet] {
+    def zero = Inet("0.0.0.0")
+    def sqlType = java.sql.Types.OTHER
+    def sqlTypeName = "inet"
+    def setValue(v : Inet, p : PositionedParameters) = p.setObject(v.ip, sqlType)
+    def setOption(v : Option[Inet], p : PositionedParameters) = p.setObjectOption(v.map(_.ip), sqlType)
+    def nextValue(r : PositionedResult) : Inet = {
+      val s = r.nextString;
+      if (r.rs.wasNull)
+        null
+      else
+        Inet(s)
+    }
+    def updateValue(v : Inet, r : PositionedResult) = r.updateString(v.ip)
+    override def valueToSQLLiteral(v : Inet) = throw new SQLException("Inet literals not (yet) supported")
+  }
+  implicit val typeMapper = new BaseTypeMapper[Inet] {
+    def apply(profile : BasicProfile) = inetTypeMapperDelegate
   }
 }

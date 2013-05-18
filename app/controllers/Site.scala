@@ -5,6 +5,8 @@ import          Play.current
 import          mvc._
 import          data._
 import          i18n.Messages
+import          db.slick.DB
+import          db.slick.Config.driver.simple._
 import models._
 
 abstract class SiteRequest[A](request : Request[A], val identity : Identity) 

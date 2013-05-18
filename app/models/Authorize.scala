@@ -14,7 +14,8 @@ object Permission extends DBEnum("permission") {
   def OWN = ADMIN
 }
 
-case class Authorize(child : Int, parent : Int, var access : Permission.Value, var delegate : Permission.Value, var authorized : Option[Timestamp], var expires : Option[Timestamp]) extends TableRow {
+final case class Authorize(child : Int, parent : Int, var access : Permission.Value, var delegate : Permission.Value, var authorized : Option[Timestamp], var expires : Option[Timestamp]) extends TableRow {
+  var id = (child, parent)
   def commit = DB.withSession { implicit session =>
     Authorize.byKey(child, parent).map(_.update_*) update (access, delegate, authorized, expires)
   }
@@ -36,6 +37,7 @@ object Authorize extends Table[Authorize]("authorize") {
   def authorized = column[Option[Timestamp]]("authorized")
   def expires = column[Option[Timestamp]]("expires")
 
+  def id = child ~ parent
   def * = child ~ parent ~ access ~ delegate ~ authorized ~ expires <> (Authorize.apply _, Authorize.unapply _)
   private def update_* = access ~ delegate ~ authorized ~ expires
 

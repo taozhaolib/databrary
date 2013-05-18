@@ -75,6 +75,21 @@ $$;
 COMMENT ON FUNCTION "authorize_delegate_check" (integer, integer, permission) IS 'Test if a given child has the given permission [any] over the given parent';
 
 
+CREATE TYPE audit_action AS ENUM ('login', 'logout', 'add', 'change', 'delete');
+COMMENT ON TYPE audit_action IS 'The various activities for which we keep audit records (in audit or a derived table).';
+
+CREATE TABLE "audit" (
+	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"who" int NOT NULL References "account" ("entity") ON UPDATE CASCADE,
+	"ip" inet NOT NULL,
+	"action" audit_action NOT NULL
+) WITH (OIDS = FALSE);
+
+CREATE TABLE "audit_entity" (
+	LIKE "entity"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
+
 CREATE TABLE "study" (
 	"id" SERIAL NOT NULL Primary Key,
 	"created" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -115,12 +130,17 @@ $$;
 COMMENT ON FUNCTION "study_access_check" (integer, integer, permission) is 'Test if a given entity has the given permission [any] on the given study, either directly, inherited through site access, or delegated.';
 
 
+
 # --- !Downs
 ;
 
 DROP FUNCTION "study_access_check" (integer, integer, permission);
 DROP TABLE "study_access";
 DROP TABLE "study";
+
+DROP TABLE "audit_entity";
+DROP TABLE "audit";
+DROP TYPE audit_action;
 
 DROP FUNCTION "authorize_delegate_check" (integer, integer, permission);
 DROP FUNCTION "authorize_access_check" (integer, integer, permission);

@@ -15,7 +15,7 @@ object Entity extends Controller {
 
   def view(i : Int) = SiteAction { implicit request =>
     var e = models.Entity.get(i)
-    if (e == null)
+    if (e eq null)
       NotFound
     else
       Ok(views.html.entity(e))

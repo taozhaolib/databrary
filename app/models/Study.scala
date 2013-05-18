@@ -44,6 +44,7 @@ object Study extends Table[Study]("study") {
 }
 
 case class StudyAccess(studyId : Int, entityId : Int, var access : Permission.Value, var inherit : Permission.Value) extends TableRow {
+  var id = (studyId, entityId)
 
   def commit = DB.withSession { implicit session =>
     StudyAccess.byKey(studyId, entityId).map(_.update_*) update (access, inherit)
@@ -66,6 +67,7 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
   def access = column[Permission.Value]("access")
   def inherit = column[Permission.Value]("inherit")
 
+  def id = studyId ~ entityId
   def * = studyId ~ entityId ~ access ~ inherit <> (StudyAccess.apply _, StudyAccess.unapply _)
   def update_* = access ~ inherit
 

@@ -6,7 +6,7 @@ import slick.DB
 import slick.Config.driver.simple._
 import collection.mutable.HashMap
 
-case class Entity(id : Int, var name : String) extends TableRow {
+final case class Entity(id : Int, var name : String) extends TableRow {
   override def hashCode = id
   override def equals(e : Any) = e match {
     case Entity(i, _) => i == id
