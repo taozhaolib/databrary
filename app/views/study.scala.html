@@ -4,8 +4,8 @@
 	<h1>@study.title</h1>
 
 	<ul>
-	@study.access(Permission.CONTRIBUTE).map { a => 
-		<li>@displayEntity(a.entity)</li>
+	@study.access(Permission.CONTRIBUTE)(request.db).map { a => 
+		<li>@displayEntity(a.entity(request.db))</li>
 	}
 	</ul>
 

@@ -11,10 +11,10 @@ import          db.slick.Config.driver.simple._
 import          i18n.Messages
 import models._
 
-object Study extends Controller {
+object Study extends SiteController {
 
-  private[this] def check(i : Int, p : Permission.Value)(act : (Study, Permission.Value) => SiteRequest[AnyContent] => Result) = SiteAction { request =>
-    val a = StudyAccess.check(request.identity.id, i)
+  private[this] def check(i : Int, p : Permission.Value)(act : (Study, Permission.Value) => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
+    val a = StudyAccess.check(identity.id, i)
     if (a < p)
       Forbidden
     else
@@ -27,7 +27,7 @@ object Study extends Controller {
 
   /* list of studies belonging to entity e and viewable by the current identity
    * poorly named, and should go elsewhere/be generalized to other searches */
-  def viewable(e : Int)(implicit request : SiteRequest[_]) = DB.withSession { implicit session =>
+  def viewable(e : Int)(implicit request : SiteRequest[_]) = {
     val l = for { 
       a <- StudyAccess.byEntity(e, Permission.CONTRIBUTE).sortBy(_.access.desc)
       if StudyAccess.filterForEntity(request.identity.id)(a.studyId)
@@ -110,9 +110,7 @@ object Study extends Controller {
     form.fold(
       form => BadRequest(viewEdit(study, perm)(accessSearchForm = form)),
       name => {
-        val res = DB.withSession { implicit session =>
-          models.Entity.byName(name).filter(_.id.notIn(StudyAccess.byStudy(study.id).map(_.entityId))).take(8).list
-        }
+        val res = models.Entity.byName(name).filter(_.id.notIn(StudyAccess.byStudy(study.id).map(_.entityId))).take(8).list
         Ok(viewEdit(study, perm)(accessSearchForm = form, 
           accessResults = res.map(e => (e,accessForm(study,e.id)))))
       }

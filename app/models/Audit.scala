@@ -16,8 +16,8 @@ object AuditAction extends DBEnum("audit_action") {
 }
 
 case class Audit[T](who : Int, ip : Inet, action : AuditAction.Value, row : T) {
-  def entity = Entity.get(who)
-  def account = Account.getId(who)
+  def entity(implicit db : Session) = Entity.get(who)
+  def account(implicit db : Session) = Account.getId(who)
 }
 
 class AuditProjection[T](who : Column[Int], ip : Column[Inet], action : Column[AuditAction.Value], row : ColumnBase[T])
@@ -58,9 +58,8 @@ abstract class AuditTable[T](protected val table : AbstractTable[T]) extends Tab
     { case Audit(when, who, ip, action, row) => Some(((when, who, ip, action), row)) }
   ) */
 
-  def add(a : Audit[T]) = DB.withSession { implicit session =>
+  def add(a : Audit[T])(implicit db : Session) =
     * insert a
-  }
 }
 
 object VoidTable extends Table[Unit]("") {

@@ -13,15 +13,14 @@ final case class Entity(id : Int, var name : String) extends TableRow {
     case _ => false
   }
 
-  def commit = DB.withSession { implicit session =>
+  def commit(implicit db : Session) =
     Entity.byId(id).map(_.update_*) update (name)
-  }
 
-  def account = Account.getId(id)
-  private val _access = CachedVal[Permission.Value](Authorize.access_check(id))
-  def access : Permission.Value = _access
-  def authorizeParents(all : Boolean = false) = Authorize.getParents(id, all)
-  def authorizeChildren(all : Boolean = false) = Authorize.getChildren(id, all)
+  def account(implicit db : Session) = Account.getId(id)
+  private val _access = CachedVal[Permission.Value](Authorize.access_check(id)(_))
+  def access(implicit db : Session) : Permission.Value = _access
+  def authorizeParents(all : Boolean = false)(implicit db : Session) = Authorize.getParents(id, all)
+  def authorizeChildren(all : Boolean = false)(implicit db : Session) = Authorize.getChildren(id, all)
 }
 
 private object EntityCache extends HashMap[Int, Entity]
@@ -41,15 +40,10 @@ object Entity extends Table[Entity]("entity") {
     EntityCache.put(e.id, e)
     e
   }
-  def get(i : Int) : Entity =
-    EntityCache.getOrElseUpdate(i,
-      DB.withSession { implicit session =>
-        byId(i).firstOption.orNull
-      })
-  def create(n : String) : Entity = {
-    val i = DB.withSession { implicit session =>
-      insert_* returning id insert n
-    }
+  def get(i : Int)(implicit db : Session) : Entity =
+    EntityCache.getOrElseUpdate(i, byId(i).firstOption.orNull)
+  def create(n : String)(implicit db : Session) : Entity = {
+    val i = insert_* returning id insert n
     val e = Entity(i, n)
     EntityCache.update(i, e)
     e

@@ -16,17 +16,17 @@ object Permission extends DBEnum("permission") {
 
 final case class Authorize(child : Int, parent : Int, var access : Permission.Value, var delegate : Permission.Value, var authorized : Option[Timestamp], var expires : Option[Timestamp]) extends TableRow {
   var id = (child, parent)
-  def commit = DB.withSession { implicit session =>
+  def commit(implicit db : Session) =
     Authorize.byKey(child, parent).map(_.update_*) update (access, delegate, authorized, expires)
-  }
-  def add = DB.withSession { implicit session =>
+  def add(implicit db : Session) =
     Authorize.* insert this
-  }
-  def remove =
+  def remove(implicit db : Session) =
     Authorize.delete(child, parent)
 
-  lazy val childEntity : Entity = Entity.get(child)
-  lazy val parentEntity : Entity = Entity.get(parent)
+  private[this] val _childEntity = CachedVal[Entity](Entity.get(child)(_))
+  private[this] val _parentEntity = CachedVal[Entity](Entity.get(parent)(_))
+  def childEntity(implicit db : Session) : Entity = _childEntity
+  def parentEntity(implicit db : Session) : Entity = _parentEntity
 }
 
 object Authorize extends Table[Authorize]("authorize") {
@@ -52,28 +52,24 @@ object Authorize extends Table[Authorize]("authorize") {
   private[this] def _valid(a : Authorize.type) = 
     a.authorized <= DBFunctions.currentTimestamp && (a.expires.isNull || a.expires > DBFunctions.currentTimestamp)
 
-  def get(c : Int, p : Int) : Option[Authorize] = DB.withSession { implicit session =>
+  def get(c : Int, p : Int)(implicit db : Session) : Option[Authorize] =
     byKey(c, p).firstOption
-  }
-  def getParents(c : Int, all : Boolean) : List[Authorize] = DB.withSession { implicit session =>
+  def getParents(c : Int, all : Boolean)(implicit db : Session) : List[Authorize] = {
     val l = byChild(c)
     (if (all) l else l.filter(_valid(_))).list
   }
-  def getChildren(p : Int, all : Boolean) : List[Authorize] = DB.withSession { implicit session =>
+  def getChildren(p : Int, all : Boolean)(implicit db : Session) : List[Authorize] = {
     val l = byParent(p)
     (if (all) l else l.filter(_valid(_))).list
   }
-  def delete(c : Int, p : Int) = DB.withSession { implicit session =>
+  def delete(c : Int, p : Int)(implicit db : Session) =
     byKey(c, p).delete
-  }
 
   val _access_check = SimpleFunction.unary[Int, Option[Permission.Value]]("authorize_access_check")
-  def access_check(c : Int) : Permission.Value = DB.withSession { implicit session =>
+  def access_check(c : Int)(implicit db : Session) : Permission.Value =
     Query(_access_check(c)).first.getOrElse(Permission.NONE)
-  }
 
   private[this] val _delegate_check = SimpleFunction.binary[Int, Int, Option[Permission.Value]]("authorize_delegate_check")
-  def delegate_check(c : Int, p : Int) : Permission.Value = DB.withSession { implicit session =>
+  def delegate_check(c : Int, p : Int)(implicit db : Session) : Permission.Value =
     Query(_delegate_check(c, p)).first.getOrElse(Permission.NONE)
-  }
 }

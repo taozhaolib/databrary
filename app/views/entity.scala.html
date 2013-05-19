@@ -3,16 +3,16 @@
 @common(entity.name) {
 	<h1>@entity.name</h1>
 
-	@if(Authorize.delegate_check(request.identity.id, entity.id) >= Permission.ADMIN) {
+	@if(Authorize.delegate_check(request.identity.id, entity.id)(request.db) >= Permission.ADMIN) {
 		<a href='@routes.Entity.admin(entity.id)'>admin</a>
 	}
 
 	<dl>
 
 	@* This information is limited to VIEW(?) *@
-	@if(request.identity.access >= Permission.VIEW) {
+	@if(request.identity.access(request.db) >= Permission.VIEW) {
 
-	@entity.account.map { a =>
+	@entity.account(request.db).map { a =>
 		<dt>username</dt>
 		<dd>@a.username</dd>
 		<dt>email</dt>
@@ -20,12 +20,12 @@
 	}
 
 		<dt>Memberships</dt>
-		@entity.authorizeParents().map { t => 
-			<dd>@displayEntity(t.parentEntity)</dd>
+		@entity.authorizeParents()(request.db).map { t => 
+			<dd>@displayEntity(t.parentEntity(request.db))</dd>
 		}
 		<dt>Members</dt>
-		@entity.authorizeChildren().map { t => 
-			<dd>@displayEntity(t.childEntity)</dd>
+		@entity.authorizeChildren()(request.db).map { t => 
+			<dd>@displayEntity(t.childEntity(request.db))</dd>
 		}
 
 	}

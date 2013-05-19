@@ -1,4 +1,4 @@
-@(entity : Entity, authorizeForms : Seq[(Entity,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Entity,Form[Authorize])])
+@(entity : Entity, authorizeForms : Seq[(Entity,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Entity,Form[Authorize])])(implicit request : SiteRequest[_])
 
 @authorizeFields(entity : Entity, form : Form[Authorize])(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@displayEntity(entity)</td>
@@ -50,9 +50,9 @@
 
 	<tr><th colspan="5"><h3>Memberships</h3></th></tr>
 
-	@entity.authorizeParents(true).map { t =>
+	@entity.authorizeParents(true)(request.db).map { t =>
 	<tr>
-		<td>@displayEntity(t.parentEntity)</td>
+		<td>@displayEntity(t.parentEntity(request.db))</td>
 		<td>@t.access</td>
 		<td>@t.delegate</td>
 		<td>@t.expires.getOrElse("never")</td>

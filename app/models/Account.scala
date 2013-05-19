@@ -11,9 +11,9 @@ abstract class Identity(val id : Int) {
   def equals(o : Identity) = o.id == id
   val account : Option[Account]
 
-  private[models] val _entity = CachedVal[Entity](Entity.get(id))
-  def entity : Entity = _entity
-  def access : Permission.Value = entity.access
+  private[models] val _entity = CachedVal[Entity](Entity.get(id)(_))
+  def entity(implicit db : Session) : Entity = _entity
+  def access(implicit db : Session) : Permission.Value = entity.access
 }
 
 object NoAccount extends Identity(Entity.NOBODY) {
@@ -24,12 +24,10 @@ final case class Account(override val id : Int, username : String, var email : S
   extends Identity(id) with TableRow {
   val account = Some(this)
 
-  def commit = DB.withSession { implicit session =>
+  def commit(implicit db : Session) =
     Account.byId(id).map(_.update_*) update (email, openid)
-  }
-  def add = DB.withSession { implicit session =>
+  def add(implicit db : Session) =
     Account.* insert this
-  }
 }
 
 object Account extends Table[Account]("account") {
@@ -50,21 +48,20 @@ object Account extends Table[Account]("account") {
   private[this] def byUsername(u : String) = Query(this).filter(_.username === u)
   private[this] def byOpenid(o : String) = Query(this).filter(_.openid === o)
 
-  private[this] def firstOption(q : Query[Account.type, Account]) : Option[Account] =
-    DB.withSession { implicit session =>
-      (for { a <- q ; (e, c) <- a.entity.map(e => (e, Authorize._access_check(e.id))) } yield (a,e,c)).firstOption.map(
-        { case (a,e,c) => 
-          a._entity() = Entity.cache(e, c.getOrElse(Permission.NONE))
-          a 
-        }
-      )
-    }
+  private[this] def firstOption(q : Query[Account.type, Account])(implicit db : Session) : Option[Account] =
+    (for { 
+      a <- q 
+      (e, c) <- a.entity.map(e => (e, Authorize._access_check(e.id))) 
+    } yield (a,e,c)).firstOption.map({ case (a,e,c) => 
+      a._entity() = Entity.cache(e, c.getOrElse(Permission.NONE))
+      a 
+    })
 
-  def getId(i : Int) : Option[Account] =
+  def getId(i : Int)(implicit db : Session) : Option[Account] =
     firstOption(byId(i))
-  def getUsername(u : String) : Option[Account] =
+  def getUsername(u : String)(implicit db : Session) : Option[Account] =
     firstOption(byUsername(u))
-  def getOpenid(o : String, u : Option[String] = None) : Option[Account] = DB.withSession { implicit sesssion =>
+  def getOpenid(o : String, u : Option[String] = None)(implicit db : Session) : Option[Account] = {
     val qao = byOpenid(o)
     u.fold(qao)(u => qao.filter(_.username === u)).firstOption
   }

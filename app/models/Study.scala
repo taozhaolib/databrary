@@ -13,13 +13,12 @@ case class Study(id : Int, creation : Timestamp, var title : String, var descrip
     case _ => false
   }
 
-  def commit = DB.withSession { implicit session =>
+  def commit(implicit db : Session) =
     Study.byId(id).map(_.update_*) update (title, description)
-  }
 
-  def access(p : Permission.Value = Permission.NONE) : List[StudyAccess] = StudyAccess.getStudy(id, p)
-  def check_access(i : Int) : Permission.Value = StudyAccess.check(id, i)
-  def check_access(e : Entity) : Permission.Value = check_access(e.id)
+  def access(p : Permission.Value = Permission.NONE)(implicit db : Session) : List[StudyAccess] = StudyAccess.getStudy(id, p)
+  def check_access(i : Int)(implicit db : Session) : Permission.Value = StudyAccess.check(id, i)
+  def check_access(e : Entity)(implicit db : Session) : Permission.Value = check_access(e.id)
 }
 
 object Study extends Table[Study]("study") {
@@ -34,31 +33,27 @@ object Study extends Table[Study]("study") {
 
   private def byId(i : Int) = Query(this).where(_.id === i)
 
-  def get(i : Int) : Option[Study] = DB.withSession { implicit session =>
+  def get(i : Int)(implicit db : Session) : Option[Study] =
     byId(i).firstOption
-  }
 
-  def create(title : String) : Study = DB.withSession { implicit session =>
+  def create(title : String)(implicit db : Session) : Study =
     insert_* returning * insert title
-  }
 }
 
 case class StudyAccess(studyId : Int, entityId : Int, var access : Permission.Value, var inherit : Permission.Value) extends TableRow {
   var id = (studyId, entityId)
 
-  def commit = DB.withSession { implicit session =>
+  def commit(implicit db : Session) =
     StudyAccess.byKey(studyId, entityId).map(_.update_*) update (access, inherit)
-  }
-  def add = DB.withSession { implicit session =>
+  def add(implicit db : Session) =
     StudyAccess.* insert this
-  }
-  def remove =
+  def remove(implicit db : Session) =
     StudyAccess.delete(studyId, entityId)
 
-  private val _study = CachedVal[Study](Study.get(studyId).orNull)
-  def study : Study = _study
-  private val _entity = CachedVal[Entity](Entity.get(entityId))
-  def entity : Entity = _entity
+  private val _study = CachedVal[Study](Study.get(studyId)(_).orNull)
+  def study(implicit db : Session) : Study = _study
+  private val _entity = CachedVal[Entity](Entity.get(entityId)(_))
+  def entity(implicit db : Session) : Entity = _entity
 }
 
 object StudyAccess extends Table[StudyAccess]("study_access") {
@@ -81,30 +76,31 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
   def byEntity(e : Int, p : Permission.Value = Permission.NONE) = 
     Query(this).where(a => a.entityId === e && a.access >= p)
 
-  def get(s : Int, e : Int) : Option[StudyAccess] = DB.withSession { implicit session =>
+  def get(s : Int, e : Int)(implicit db : Session) : Option[StudyAccess] =
     byKey(s, e).firstOption
-  }
-  def getStudy(s : Int, p : Permission.Value = Permission.NONE) : List[StudyAccess] = DB.withSession { implicit session =>
-    (for { a <- byStudy(s, p).sortBy(_.access.desc) ; e <- a.entity } yield (a,e)).list.map({ case (a,e) =>
+  def getStudy(s : Int, p : Permission.Value = Permission.NONE)(implicit db : Session) : List[StudyAccess] =
+    (for { 
+      a <- byStudy(s, p).sortBy(_.access.desc) 
+      e <- a.entity 
+    } yield (a,e)).list.map({ case (a,e) =>
       a._entity() = e
       a
     })
-  }
-  def getEntity(e : Int, p : Permission.Value = Permission.NONE) : List[StudyAccess] = DB.withSession { implicit session =>
-    (for { a <- byEntity(e, p).sortBy(_.access.desc) ; s <- a.study } yield (a,s)).list.map({ case (a,s) =>
+  def getEntity(e : Int, p : Permission.Value = Permission.NONE)(implicit db : Session) : List[StudyAccess] =
+    (for { 
+      a <- byEntity(e, p).sortBy(_.access.desc) 
+      s <- a.study 
+    } yield (a,s)).list.map({ case (a,s) =>
       a._study() = s
       a
     })
-  }
 
-  def delete(s : Int, e : Int) = DB.withSession { implicit session =>
+  def delete(s : Int, e : Int)(implicit db : Session) =
     byKey(s, e).delete
-  }
 
   private[this] def _check = SimpleFunction.binary[Int, Int, Option[Permission.Value]]("study_access_check")
-  def check(s : Int, e : Int) : Permission.Value = DB.withSession { implicit session =>
+  def check(s : Int, e : Int)(implicit db : Session) : Permission.Value =
     Query(_check(s, e)).first.getOrElse(Permission.NONE)
-  }
 
   def filterForEntity(e : Int)(s : Column[Int]) = _check(s, e) >= Permission.VIEW
 }

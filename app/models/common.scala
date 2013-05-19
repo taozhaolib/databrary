@@ -4,12 +4,12 @@ import scala.language.implicitConversions
 import scala.slick.ast.{Node,ProductNode}
 import scala.slick.driver.BasicProfile
 import scala.slick.lifted._
-import scala.slick.session.{PositionedParameters,PositionedResult}
+import scala.slick.session.{PositionedParameters,PositionedResult,Session}
 import java.sql.{Timestamp,SQLException}
 
-class CachedVal[T <: AnyRef](init : => T) extends Function0[T] {
+class CachedVal[T <: AnyRef](init : Session => T) {
   private var x : Option[T] = None
-  def apply : T = x.getOrElse(update(init))
+  def apply(db : Session) : T = x.getOrElse(update(init(db)))
   def update(v : T) : T = {
     if (v ne null)
       x = Some(v)
@@ -18,8 +18,8 @@ class CachedVal[T <: AnyRef](init : => T) extends Function0[T] {
 }
 
 object CachedVal {
-  def apply[T <: AnyRef](init : => T) = new CachedVal(init)
-  implicit def implicitGetCached[T <: AnyRef](x : CachedVal[T]) : T = x()
+  def apply[T <: AnyRef](init : Session => T) = new CachedVal(init)
+  implicit def implicitGetCached[T <: AnyRef](x : CachedVal[T])(implicit db : Session) : T = x(db)
 }
 
 object DBFunctions {
@@ -27,9 +27,7 @@ object DBFunctions {
   val ilike = SimpleBinaryOperator[Boolean]("ILIKE")
 }
 
-abstract trait TableRow {
-  def commit
-}
+abstract trait TableRow
 
 abstract class DBEnum(type_name : String) extends Enumeration {
   private val typeMapperDelegate = new TypeMapperDelegate[Value] {
