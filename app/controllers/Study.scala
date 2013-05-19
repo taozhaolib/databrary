@@ -14,7 +14,7 @@ import models._
 object Study extends SiteController {
 
   private[this] def check(i : Int, p : Permission.Value)(act : (Study, Permission.Value) => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
-    val a = StudyAccess.check(identity.id, i)
+    val a = StudyAccess.check(request.identity.id, i)
     if (a < p)
       Forbidden
     else
@@ -64,9 +64,9 @@ object Study extends SiteController {
 
   private[this] def viewEdit(study : Study, access : Permission.Value)(
     editForm : Form[(String,String)] = editFormFill(study),
-    accessChangeForm : Option[(Entity,Form[StudyAccess])] = None,
+    accessChangeForm : Option[(Identity,Form[StudyAccess])] = None,
     accessSearchForm : Form[String] = accessSearchForm,
-    accessResults : Seq[(Entity,Form[StudyAccess])] = Seq())(
+    accessResults : Seq[(Identity,Form[StudyAccess])] = Seq())(
     implicit request : SiteRequest[_]) = {
     val accessChange = accessChangeForm.map(_._1.id)
     val accessForms = study.access().filter(a => Some(a.entityId) != accessChange).map(a => (a.entity, accessForm(study, a.entityId).fill(a))) ++ accessChangeForm
@@ -91,7 +91,7 @@ object Study extends SiteController {
 
   def accessChange(i : Int, e : Int) = check(i, Permission.ADMIN) { (study, perm) => implicit request =>
     accessForm(study, e).bindFromRequest.fold(
-      form => BadRequest(viewEdit(study, perm)(accessChangeForm = Some((models.Entity.get(e), form)))),
+      form => BadRequest(viewEdit(study, perm)(accessChangeForm = Some((models.Identity.get(e), form)))),
       access => {
         access.commit
         Redirect(routes.Study.edit(study.id))
@@ -101,7 +101,7 @@ object Study extends SiteController {
 
   def accessDelete(i : Int, e : Int) = check(i, Permission.ADMIN) { (study, perm) => implicit request =>
     if (request.identity.id != e)
-      StudyAccess.delete(study.id, e)
+      StudyAccess.delete((study.id, e))
     Redirect(routes.Study.edit(study.id))
   }
 
@@ -110,7 +110,7 @@ object Study extends SiteController {
     form.fold(
       form => BadRequest(viewEdit(study, perm)(accessSearchForm = form)),
       name => {
-        val res = models.Entity.byName(name).filter(_.id.notIn(StudyAccess.byStudy(study.id).map(_.entityId))).take(8).list
+        val res = models.Identity.byName(name).filter(_._1.id.notIn(StudyAccess.byStudy(study.id).map(_.entityId))).take(8).list.map(Identity.build _)
         Ok(viewEdit(study, perm)(accessSearchForm = form, 
           accessResults = res.map(e => (e,accessForm(study,e.id)))))
       }
@@ -119,7 +119,7 @@ object Study extends SiteController {
 
   def accessAdd(i : Int, e : Int) = check(i, Permission.ADMIN) { (study, perm) => implicit requet =>
     accessForm(study, e).bindFromRequest.fold(
-      form => BadRequest(viewEdit(study, perm)(accessResults = Seq((models.Entity.get(e),form)))),
+      form => BadRequest(viewEdit(study, perm)(accessResults = Seq((models.Identity.get(e),form)))),
       access => {
         access.add
         Redirect(routes.Study.edit(study.id))

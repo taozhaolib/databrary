@@ -11,8 +11,7 @@ class CachedVal[T <: AnyRef](init : Session => T) {
   private var x : Option[T] = None
   def apply(db : Session) : T = x.getOrElse(update(init(db)))
   def update(v : T) : T = {
-    if (v ne null)
-      x = Some(v)
+    x = Some(v)
     v
   }
 }

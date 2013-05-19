@@ -14,19 +14,19 @@ object Permission extends DBEnum("permission") {
   def OWN = ADMIN
 }
 
-final case class Authorize(child : Int, parent : Int, var access : Permission.Value, var delegate : Permission.Value, var authorized : Option[Timestamp], var expires : Option[Timestamp]) extends TableRow {
-  var id = (child, parent)
+final case class Authorize(childId : Int, parentId : Int, var access : Permission.Value, var delegate : Permission.Value, var authorized : Option[Timestamp], var expires : Option[Timestamp]) extends TableRow {
+  val id = (childId, parentId)
   def commit(implicit db : Session) =
-    Authorize.byKey(child, parent).map(_.update_*) update (access, delegate, authorized, expires)
+    Authorize.byId(id).map(_.update_*) update (access, delegate, authorized, expires)
   def add(implicit db : Session) =
     Authorize.* insert this
   def remove(implicit db : Session) =
-    Authorize.delete(child, parent)
+    Authorize.delete(id)
 
-  private[this] val _childEntity = CachedVal[Entity](Entity.get(child)(_))
-  private[this] val _parentEntity = CachedVal[Entity](Entity.get(parent)(_))
-  def childEntity(implicit db : Session) : Entity = _childEntity
-  def parentEntity(implicit db : Session) : Entity = _parentEntity
+  private[this] val _child = CachedVal[Identity](Identity.get(childId)(_))
+  private[this] val _parent = CachedVal[Identity](Identity.get(parentId)(_))
+  def child(implicit db : Session) : Identity = _child
+  def parent(implicit db : Session) : Identity = _parent
 }
 
 object Authorize extends Table[Authorize]("authorize") {
@@ -37,6 +37,7 @@ object Authorize extends Table[Authorize]("authorize") {
   def authorized = column[Option[Timestamp]]("authorized")
   def expires = column[Option[Timestamp]]("expires")
 
+  type Id = (Int,Int)
   def id = child ~ parent
   def * = child ~ parent ~ access ~ delegate ~ authorized ~ expires <> (Authorize.apply _, Authorize.unapply _)
   private def update_* = access ~ delegate ~ authorized ~ expires
@@ -46,6 +47,7 @@ object Authorize extends Table[Authorize]("authorize") {
   def parentEntity = foreignKey("authorize_parent_fkey", parent, Entity)(_.id)
 
   private def byKey(c : Int, p : Int) = Query(this).where(t => t.child === c && t.parent === p)
+  private def byId(i : Id) = byKey(i._1, i._2)
   def byChild(c : Int) = Query(this).where(_.child === c).sortBy(_.authorized.nullsLast)
   def byParent(p : Int) = Query(this).where(_.parent === p).sortBy(_.authorized.nullsLast)
 
@@ -62,8 +64,9 @@ object Authorize extends Table[Authorize]("authorize") {
     val l = byParent(p)
     (if (all) l else l.filter(_valid(_))).list
   }
-  def delete(c : Int, p : Int)(implicit db : Session) =
-    byKey(c, p).delete
+
+  def delete(i : Id)(implicit db : Session) =
+    byId(i).delete
 
   val _access_check = SimpleFunction.unary[Int, Option[Permission.Value]]("authorize_access_check")
   def access_check(c : Int)(implicit db : Session) : Permission.Value =

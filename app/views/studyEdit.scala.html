@@ -1,6 +1,6 @@
-@(study : Study, access : Permission.Value, editForm : Form[(String,String)], accessForms : Seq[(Entity,Form[StudyAccess])], accessSearch : Form[String], accessResults : Seq[(Entity,Form[StudyAccess])])(implicit request : SiteRequest[_])
+@(study : Study, access : Permission.Value, editForm : Form[(String,String)], accessForms : Seq[(Identity,Form[StudyAccess])], accessSearch : Form[String], accessResults : Seq[(Identity,Form[StudyAccess])])(implicit request : SiteRequest[_])
 
-@accessFields(entity : Entity, form : Form[StudyAccess])(implicit fieldConstructor : helper.FieldConstructor) = {
+@accessFields(entity : Identity, form : Form[StudyAccess])(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@displayEntity(entity)</td>
 	@helper.select(form("access"), Permission.values.toSeq.map(v => (v.id.toString, v.toString)))
 	@helper.select(form("inherit"), Permission.values.to(if (entity.id > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))

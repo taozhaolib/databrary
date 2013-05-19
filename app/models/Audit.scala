@@ -16,8 +16,7 @@ object AuditAction extends DBEnum("audit_action") {
 }
 
 case class Audit[T](who : Int, ip : Inet, action : AuditAction.Value, row : T) {
-  def entity(implicit db : Session) = Entity.get(who)
-  def account(implicit db : Session) = Account.getId(who)
+  def entity(implicit db : Session) = Identity.get(who)
 }
 
 class AuditProjection[T](who : Column[Int], ip : Column[Inet], action : Column[AuditAction.Value], row : ColumnBase[T])

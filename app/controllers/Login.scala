@@ -48,8 +48,8 @@ object Login extends Controller {
     AsyncResult(OpenID.verifiedId.extend1(
       { 
         case Redeemed(info) => DB.withSession { implicit db =>
-          models.Account.getOpenid(info.id, maybe(username)).map { a =>
-            Redirect(routes.Entity.view(a.id)).withSession("account" -> a.id.toString)
+          models.User.getOpenid(info.id, maybe(username)).map { a =>
+            Redirect(routes.Entity.view(a.id)).withSession("user" -> a.id.toString)
           }.getOrElse(
             BadRequest(viewLogin(Messages("login.openID.notFound", info.id)))
           )

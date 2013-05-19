@@ -7,10 +7,10 @@
 	</head>
 	<body>
 		<div align='right'>
-		@request.flatMap(_.identity.account).fold {
+		@request.flatMap(_.identity.user).fold {
 			<a href="@routes.Login.view">login</a>
-		} { a =>
-			@displayEntity(a.entity(request.get.db))(request.get)
+		} { u =>
+			@displayEntity(u)(request.get)
 			<a href="@routes.Login.logout">logout</a>
 		}
 		</div>

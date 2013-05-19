@@ -1,4 +1,4 @@
-@(entity : Entity, accountForm : Option[Form[(String, String)]], authorizeForms : Seq[(Entity,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Entity,Form[Authorize])])(implicit request : AccountRequest[_])
+@(entity : Identity, accountForm : Option[Form[(String, String)]], authorizeForms : Seq[(Identity,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Identity,Form[Authorize])])(implicit request : UserRequest[_])
 
 
 @common("admin: " + entity.name) {

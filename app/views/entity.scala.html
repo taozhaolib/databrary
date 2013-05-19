@@ -1,4 +1,4 @@
-@(entity : Entity)(implicit request : SiteRequest[_])
+@(entity : Identity)(implicit request : SiteRequest[_])
 
 @common(entity.name) {
 	<h1>@entity.name</h1>
@@ -12,7 +12,7 @@
 	@* This information is limited to VIEW(?) *@
 	@if(request.identity.access(request.db) >= Permission.VIEW) {
 
-	@entity.account(request.db).map { a =>
+	@entity.user.map { a =>
 		<dt>username</dt>
 		<dd>@a.username</dd>
 		<dt>email</dt>
@@ -21,11 +21,11 @@
 
 		<dt>Memberships</dt>
 		@entity.authorizeParents()(request.db).map { t => 
-			<dd>@displayEntity(t.parentEntity(request.db))</dd>
+			<dd>@displayEntity(t.parent(request.db))</dd>
 		}
 		<dt>Members</dt>
 		@entity.authorizeChildren()(request.db).map { t => 
-			<dd>@displayEntity(t.childEntity(request.db))</dd>
+			<dd>@displayEntity(t.child(request.db))</dd>
 		}
 
 	}
