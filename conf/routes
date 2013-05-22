@@ -3,6 +3,7 @@
 # ~~~~
 
 GET     /                      			controllers.Site.start
+GET     /test                  			controllers.Site.test
 
 GET     /login                      		controllers.Login.view
 POST    /Login                 			controllers.Login.post

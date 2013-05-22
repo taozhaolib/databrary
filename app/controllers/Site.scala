@@ -51,4 +51,8 @@ object Site extends SiteController {
   def start = SiteAction(request => Ok(Login.viewLogin()), implicit request =>
     Ok(views.html.entity(request.identity)))
 
+  def test = Action { request => DB.withSession { implicit db =>
+    Ok("Ok")
+  } }
+
 }
