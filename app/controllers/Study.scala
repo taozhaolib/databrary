@@ -14,7 +14,7 @@ import models._
 object Study extends SiteController {
 
   private[this] def check(i : Int, p : Permission.Value)(act : (Study, Permission.Value) => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
-    val a = StudyAccess.check(request.identity.id, i)
+    val a = StudyAccess.check(i, request.identity.id)
     if (a < p)
       Forbidden
     else
