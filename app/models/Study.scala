@@ -81,13 +81,13 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
   def get(s : Int, e : Int)(implicit db : Session) : Option[StudyAccess] =
     byKey(s, e).firstOption
   def getStudy(s : Int, p : Permission.Value = Permission.NONE)(implicit db : Session) : List[StudyAccess] =
-    (for { 
-      a <- byStudy(s, p).sortBy(_.access.desc) 
-      i <- Identity.byEntity(a.entity)
-    } yield (a,i)).list.map({ case (a,i) =>
+    /*(for {
+      a <- */byStudy(s, p).sortBy(_.access.desc)/*
+      i <- Identity.byEntity(a.entity) // triggers bug GH#159
+    } yield (a,i))*/.list/*.map({ case (a,i) =>
       a._entity() = Identity.build(i)
       a
-    })
+    })*/
   def getEntity(e : Int, p : Permission.Value = Permission.NONE)(implicit db : Session) : List[StudyAccess] =
     (for { 
       a <- byEntity(e, p).sortBy(_.access.desc) 
