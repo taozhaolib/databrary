@@ -5,6 +5,7 @@ import scala.slick.ast.{Node,ProductNode}
 import scala.slick.driver.BasicProfile
 import scala.slick.lifted._
 import scala.slick.session.{PositionedParameters,PositionedResult,Session}
+import scala.slick.util.{RecordLinearizer,NaturalTransformation2}
 import java.sql.{Timestamp,SQLException}
 
 class CachedVal[T <: AnyRef](init : Session => T) {
@@ -73,6 +74,23 @@ final class ColumnPair[T1,T2](_1 : ColumnBase[T1], _2 : ColumnBase[T2])
     _2.updateResult(profile, rs, value._2)
   }
   // def <>[R](f: ((T1,T2) => R), g: (R => Option[(T1,T2)])) = MappedProjection[R, (T1,T2)](this, { case (p1,p2) => f(p1,p2) }, g)(this)
+}
+
+class ViewShape[PackedBase, PackedView, UnpackedBase, UnpackedView](b : PackedView => PackedBase, f : UnpackedBase => UnpackedView, g : UnpackedView => UnpackedBase)(implicit baseShape : Shape[PackedBase, UnpackedBase, _])
+  extends IdentityShape[PackedView, UnpackedView]
+{
+  def linearizer(from : PackedView) = new RecordLinearizer[UnpackedView] {
+    private[this] val baseLinearizer = baseShape.linearizer(b(from)).asInstanceOf[RecordLinearizer[UnpackedBase]]
+    def getResult(profile : BasicProfile, rs : PositionedResult) : UnpackedView =
+      f(baseLinearizer.getResult(profile, rs))
+    def updateResult(profile : BasicProfile, rs : PositionedResult, value : UnpackedView) : Unit =
+      baseLinearizer.updateResult(profile, rs, g(value))
+    def setParameter(profile : BasicProfile, ps : PositionedParameters, value : Option[UnpackedView]): Unit =
+      baseLinearizer.setParameter(profile, ps, value.map(g))
+    def getLinearizedNodes : IndexedSeq[Node] =
+      baseLinearizer.getLinearizedNodes
+  }
+  def buildPacked(f : NaturalTransformation2[TypeMapper, ({ type L[X] = UnpackedView => X})#L, Column]) = impureShape
 }
 
 case class Inet(val ip : String)
