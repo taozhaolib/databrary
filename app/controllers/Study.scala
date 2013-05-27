@@ -110,7 +110,7 @@ object Study extends SiteController {
     form.fold(
       form => BadRequest(viewEdit(study, perm)(accessSearchForm = form)),
       name => {
-        val res = models.Identity.byName(name).filter(_.id.notIn(StudyAccess.byStudy(study.id).map(_.entityId))).take(8).list
+        val res = models.Identity.byName(name).filter(_._1.id.notIn(StudyAccess.byStudy(study.id).map(_.entityId))).take(8).list.map(Identity.build _)
         Ok(viewEdit(study, perm)(accessSearchForm = form, 
           accessResults = res.map(e => (e,accessForm(study,e.id)))))
       }

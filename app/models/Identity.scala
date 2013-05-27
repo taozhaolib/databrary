@@ -60,6 +60,7 @@ private object IdentityCache extends HashMap[Int, Identity] {
   add(Root)
 }
 
+/*
 class IdentityColumn(val tuple : (Entity.type, ColumnBase[Option[Account]]))
   extends Rep[Identity] with ProductNode {
   def id = tuple._1.id
@@ -71,19 +72,20 @@ class IdentityColumn(val tuple : (Entity.type, ColumnBase[Option[Account]]))
 object IdentityColumn {
   implicit final val identityShape = new ViewShape[(Entity.type, ColumnBase[Option[Account]]), IdentityColumn, (Entity, Option[Account]), Identity](_.tuple, Identity.build _, _.unbuild)
 }
+*/
 
 object Identity {
   private[models] def byEntity(q : Query[Entity.type, Entity]) =
     (for {
       (e, a) <- q leftJoin Account on (_.id === _.id)
-    } yield (e, a.?)).map(new IdentityColumn(_))
+    } yield (e, a.?))/*.map(new IdentityColumn(_))*/
   def byName(n : String) = {
     // should clearly be improved and/or indexed
     val w = "%" + n.split("\\s+").filter(!_.isEmpty).mkString("%") + "%"
     (for {
       (e, a) <- Entity leftJoin Account on (_.id === _.id)
       if a.username === n || DBFunctions.ilike(e.name, w)
-    } yield (e, a.?)).map(new IdentityColumn(_))
+    } yield (e, a.?))/*.map(new IdentityColumn(_))*/
   }
 
   def build(ea : (Entity, Option[Account])) : Identity = ea match { case (e,a) => 
@@ -96,7 +98,7 @@ object Identity {
 
   def get(i : Int)(implicit db : Session) : Identity =
     IdentityCache.getOrElseUpdate(i, 
-      byEntity(Entity.byId(i)).firstOption.orNull)
+      byEntity(Entity.byId(i)).firstOption.map(build _).orNull)
 
   def create(n : String)(implicit db : Session) : Identity =
     new Identity(Entity.create(n)).cache
