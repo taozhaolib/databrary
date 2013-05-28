@@ -21,18 +21,16 @@ private[models] object Account extends Table[Account]("account") {
   def email = column[String]("email", O.DBType("varchar(256)"))
   def openid = column[Option[String]]("openid", O.DBType("varchar(256)"))
 
-  def * = id ~ username ~ email ~ openid <> (Account.apply _, Account.unapply _)
+  def * = id ~ username ~ email ~ openid <> (apply _, unapply _)
   def ? = id.? ~ username.? ~ email.? ~ openid <> (
     (id, username, email, openid) => id.map(Account(_, username.get, email.get, openid)),
     (x : Option[Account]) => x.map({ case Account(id, username, email, openid) => (Some(id), Some(username), Some(email), openid) })
   )
   private def update_* = email ~ openid
 
-  def idKey = index("account_entity_key", id, unique = true)
-  def openidKey = index("account_openid_key", openid, unique = false)
+  private[this] def idKey = index("account_entity_key", id, unique = true)
+  private[this] def openidKey = index("account_openid_key", openid, unique = false)
   def entity = foreignKey("account_entity_fkey", id, Entity)(_.id)
 
-  def byId(i : Int) = Query(this).where(_.id === i)
-  def byUsername(u : String) = Query(this).filter(_.username === u)
-  def byOpenid(o : String) = Query(this).filter(_.openid === o)
+  private def byId(i : Int) = Query(this).where(_.id === i)
 }

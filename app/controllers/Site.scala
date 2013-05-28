@@ -16,7 +16,7 @@ abstract class SiteRequest[A](request : Request[A], val identity : Identity, val
 }
 
 class AnonRequest[A](request : Request[A], db : DBConnection)
-  extends SiteRequest[A](request, Nobody, db)
+  extends SiteRequest[A](request, Identity.Nobody, db)
 
 class UserRequest[A](request : Request[A], val user : User, db : DBConnection)
   extends SiteRequest[A](request, user, db)
@@ -26,7 +26,7 @@ object SiteAction {
     request.session.get("user").flatMap { i => 
       try { Some(i.toInt) }
       catch { case e:java.lang.NumberFormatException => None }
-    }.flatMap(models.User.get _)
+    }.flatMap(User.get _)
 
   def apply(anon : AnonRequest[AnyContent] => Result, user : UserRequest[AnyContent] => Result) : Action[AnyContent] =
     Action { request => DB.withSession { implicit db =>

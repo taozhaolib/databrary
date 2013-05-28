@@ -114,7 +114,7 @@ object Entity extends SiteController {
       form => BadRequest(viewAdmin(entity)(authorizeWhich = Some(which), authorizeSearchForm = form)),
       name => {
         val me = entity.id
-        val res = models.Identity.byName(name).filter(e => e._1.id =!= me && e._1.id.notIn(Authorize.byParent(me).map(_.child)) && e._1.id.notIn(Authorize.byChild(me).map(_.parent))).take(8).list.map(Identity.build _)
+        val res = Identity.byName(name).filter(e => e.id =!= me && e.id.notIn(Authorize.byParent(me).map(_.child)) && e.id.notIn(Authorize.byChild(me).map(_.parent))).take(8).list
         Ok(viewAdmin(entity)(authorizeWhich = Some(which), authorizeSearchForm = form, 
           authorizeResults = res.map(e => (e,authorizeFormWhich(entity, e.id, which)
             /* TODO: fill expires */))))

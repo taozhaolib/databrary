@@ -1,13 +1,9 @@
 package models
 
 import play.api.db.slick.Config.driver.simple._
-import scala.slick.ast.{Node,ProductNode}
-import scala.slick.driver.BasicProfile
 import scala.slick.lifted
-import scala.slick.lifted.{ColumnBase,Shape}
-import scala.slick.session.{PositionedParameters,PositionedResult}
-import scala.slick.util.{RecordLinearizer,NaturalTransformation2}
 import collection.mutable.HashMap
+import java.sql.Timestamp
 
 class Identity(entity : Entity) {
   final override def hashCode = id
@@ -30,12 +26,7 @@ class Identity(entity : Entity) {
 
   final def authorizeParents(all : Boolean = false)(implicit db : Session) = Authorize.getParents(id, all)
   final def authorizeChildren(all : Boolean = false)(implicit db : Session) = Authorize.getChildren(id, all)
-
-  private[models] def unbuild : (Entity, Option[Account]) = (entity, None)
 }
-
-object Nobody extends Identity(Entity(Entity.NOBODY, "Everybody"))
-object Root   extends Identity(Entity(Entity.ROOT,   "Databrary"))
 
 class User(entity : Entity, account : Account) extends Identity(entity) {
   final override def user = Some(this)
@@ -50,80 +41,75 @@ class User(entity : Entity, account : Account) extends Identity(entity) {
     super.commit
     account.commit
   }
-
-  override private[models] def unbuild = (entity, Some(account))
 }
 
 private object IdentityCache extends HashMap[Int, Identity] {
   def add(i : Identity) : Unit = update(i.id, i)
-  add(Nobody)
-  add(Root)
+  add(Identity.Nobody)
+  add(Identity.Root)
 }
 
-/*
-class IdentityColumn(val tuple : (Entity.type, ColumnBase[Option[Account]]))
-  extends Rep[Identity] with ProductNode {
-  def id = tuple._1.id
-  def name = tuple._1.name
+/* really a view, until slick has a better solution */
+object Identity extends Table[Identity]("identity") {
+  /* from entity */
+  def id = column[Int]("id")
+  def name = column[String]("name")
 
-  lazy val nodeChildren = Vector(Node(tuple._1), Node(tuple._2))
-}
+  /* from account */
+  def username = column[String]("username")
+  def created = column[Timestamp]("created")
+  def email = column[String]("email")
+  def openid = column[Option[String]]("openid")
+  
+  def * = id ~ name ~ username.? ~ email.? ~ openid <> (apply _, unapply _)
+  def user_* = id ~ name ~ username ~ email ~ openid <> (User.apply _, User.unapply _)
 
-object IdentityColumn {
-  implicit final val identityShape = new ViewShape[(Entity.type, ColumnBase[Option[Account]]), IdentityColumn, (Entity, Option[Account]), Identity](_.tuple, Identity.build _, _.unbuild)
-}
-*/
+  def apply(id : Int, name : String, username : Option[String], email : Option[String], openid : Option[String]) = id match {
+    case Entity.NOBODY => Nobody
+    case Entity.ROOT => Root
+    case _ => {
+      val e = Entity(id, name)
+      username.fold(new Identity(e))(u => new User(e, Account(id, u, email.get, openid)))
+    }
+  }
 
-object Identity {
-  private[models] def byEntity(q : Query[Entity.type, Entity]) =
-    (for {
-      (e, a) <- q leftJoin Account on (_.id === _.id)
-    } yield (e, a.?))/*.map(new IdentityColumn(_))*/
+  def unapply(i : Identity) = {
+    val u = i.user
+    Some((i.id, i.name, u.map(_.username), u.map(_.email), u.flatMap(_.openid)))
+  }
+
+  def byId(i : Int) = Query(this).where(_.id === i)
+
   def byName(n : String) = {
     // should clearly be improved and/or indexed
     val w = "%" + n.split("\\s+").filter(!_.isEmpty).mkString("%") + "%"
-    (for {
-      (e, a) <- Entity leftJoin Account on (_.id === _.id)
-      if a.username === n || DBFunctions.ilike(e.name, w)
-    } yield (e, a.?))/*.map(new IdentityColumn(_))*/
-  }
-
-  def build(ea : (Entity, Option[Account])) : Identity = ea match { case (e,a) => 
-    e.id match {
-      case Entity.NOBODY => Nobody
-      case Entity.ROOT => Root
-      case _ => a.fold(new Identity(e))(new User(e, _))
-    }
+    Query(this).filter(i => i.username === n || DBFunctions.ilike(i.name, w))
   }
 
   def get(i : Int)(implicit db : Session) : Identity =
     IdentityCache.getOrElseUpdate(i, 
-      byEntity(Entity.byId(i)).firstOption.map(build _).orNull)
+      byId(i).firstOption.orNull)
 
   def create(n : String)(implicit db : Session) : Identity =
     new Identity(Entity.create(n)).cache
+
+  final val Nobody = new Identity(Entity.Nobody)
+  final val Root   = new Identity(Entity.Root)
 }
 
 object User {
-  private[this] def byAccount(q : Query[Account.type, Account]) =
-    (for {
-      a <- q
-      e <- a.entity
-    } yield (e, a))
+  def apply(id : Int, name : String, username : String, email : String, openid : Option[String]) = 
+    new User(Entity(id, name), Account(id, username, email, openid))
+  def unapply(u : User) =
+    Some((u.id, u.name, u.username, u.email, u.openid))
 
-  private[this] def build(ea : (Entity, Account)) = ea match { case (e,a) =>
-    new User(e, a)
-  }
+  def byUsername(u : String) = Query(Identity).filter(_.username === u).map(_.user_*)
 
-  def get(i : Int)(implicit db : Session) : Option[User] = Option(
-    IdentityCache.getOrElseUpdate(i, 
-      byAccount(Account.byId(i)).firstOption.map(build _).orNull)
-    .asInstanceOf[User]
-  )
+  def get(i : Int)(implicit db : Session) : Option[User] = Identity.get(i).user
   def getUsername(u : String)(implicit db : Session) : Option[User] = 
-    byAccount(Account.byUsername(u)).firstOption.map(build _)
+    byUsername(u).firstOption
   def getOpenid(o : String, u : Option[String] = None)(implicit db : Session) : Option[User] = {
-    val qao = Account.byOpenid(o)
-    byAccount(u.fold(qao)(u => qao.filter(_.username === u))).firstOption.map(build _)
+    val q = Query(Identity).filter(_.openid === o)
+    u.fold(q)(u => q.filter(_.username === u)).map(_.user_*).firstOption
   }
 }

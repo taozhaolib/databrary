@@ -23,15 +23,17 @@ private[models] object Entity extends Table[Entity]("entity") {
   def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
   def name = column[String]("name", O.DBType("text"))
 
-  def * = id ~ name <> (Entity.apply _, Entity.unapply _)
+  def * = id ~ name <> (apply _, unapply _)
   private def update_* = name
   private[this] def insert_* = update_*
 
-  def byId(i : Int) = Query(this).where(_.id === i)
+  private def byId(i : Int) = Query(this).where(_.id === i)
 
   def create(n : String)(implicit db : Session) : Entity =
     Entity(insert_* returning id insert n, n)
 
   final val NOBODY : Int = -1
-  final val ROOT : Int = 0
+  final val ROOT   : Int = 0
+  final val Nobody = Entity(NOBODY, "Everybody")
+  final val Root   = Entity(ROOT,   "Databrary")
 }

@@ -21,6 +21,9 @@ CREATE TABLE "account" (
 );
 COMMENT ON TABLE "account" IS 'Login information for entities associated with registered individuals.';
 
+CREATE VIEW "identity" AS
+	SELECT * FROM entity LEFT JOIN account ON (id = entity);
+
 
 CREATE TYPE permission AS ENUM ('NONE',
 	'VIEW', -- study view, but no access to protected data (PUBLIC access)
