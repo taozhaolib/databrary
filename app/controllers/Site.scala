@@ -29,7 +29,7 @@ object SiteAction {
     }.flatMap(User.get _)
 
   def apply(anon : AnonRequest[AnyContent] => Result, user : UserRequest[AnyContent] => Result) : Action[AnyContent] =
-    Action { request => DB.withSession { implicit db =>
+    Action { request => DB.withTransaction { implicit db =>
       getUser(request).fold(anon(new AnonRequest(request, db)))(u => user(new UserRequest(request, u, db)))
     } }
 

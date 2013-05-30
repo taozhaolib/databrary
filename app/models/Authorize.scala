@@ -43,8 +43,8 @@ object Authorize extends Table[Authorize]("authorize") {
   private def update_* = access ~ delegate ~ authorized ~ expires
 
   def key = primaryKey("authorize_pkey", (child, parent))
-  def childEntity = foreignKey("authorize_child_fkey", child, Entity)(_.id)
-  def parentEntity = foreignKey("authorize_parent_fkey", parent, Entity)(_.id)
+  private[this] def childEntity = foreignKey("authorize_child_fkey", child, Entity)(_.id)
+  private[this] def parentEntity = foreignKey("authorize_parent_fkey", parent, Entity)(_.id)
 
   private def byKey(c : Int, p : Int) = Query(this).where(t => t.child === c && t.parent === p)
   private def byId(i : Id) = byKey(i._1, i._2)

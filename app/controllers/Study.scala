@@ -27,14 +27,12 @@ object Study extends SiteController {
 
   /* list of studies belonging to entity e and viewable by the current identity
    * poorly named, and should go elsewhere/be generalized to other searches */
-  def viewable(e : Int)(implicit request : SiteRequest[_]) = {
-    val l = for { 
+  def viewable(e : Int)(implicit request : SiteRequest[_]) =
+    (for { 
       a <- StudyAccess.byEntity(e, Permission.CONTRIBUTE).sortBy(_.access.desc)
       if StudyAccess.filterForEntity(request.identity.id)(a.studyId)
       s <- a.study
-    } yield (s)
-    l.list
-  }
+    } yield (s)).list
 
   private[this] val editForm = Form(tuple(
     "title" -> nonEmptyText,

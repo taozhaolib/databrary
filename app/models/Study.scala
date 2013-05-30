@@ -69,7 +69,7 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
 
   def key = primaryKey("study_access_pkey", (studyId, entityId))
   def study = foreignKey("study_access_study_fkey", studyId, Study)(_.id)
-  def entity = foreignKey("study_access_entity_fkey", entityId, Entity)(_.id)
+  private def entity = foreignKey("study_access_entity_fkey", entityId, Entity)(_.id)
 
   private def byKey(s : Int, e : Int) = Query(this).where(a => a.studyId === s && a.entityId === e)
   private def byId(i : Id) = byKey(i._1, i._2)
