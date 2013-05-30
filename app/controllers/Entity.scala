@@ -14,7 +14,7 @@ import models._
 object Entity extends SiteController {
 
   def view(i : Int) = SiteAction { implicit request =>
-    var e = models.Identity.get(i)
+    var e = Identity.get(i)
     if (e eq null)
       NotFound
     else
@@ -73,7 +73,7 @@ object Entity extends SiteController {
     if (Authorize.delegate_check(request.identity.id, i) < Permission.ADMIN)
       Forbidden
     else
-      act(models.Identity.get(i))(request)
+      act(Identity.get(i))(request)
   }
 
   def admin(i : Int) = checkAdmin(i) { entity => implicit requset =>
@@ -95,7 +95,7 @@ object Entity extends SiteController {
 
   def authorizeChange(i : Int, child : Int) = checkAdmin(i) { entity => implicit request =>
     authorizeForm(child, entity.id).bindFromRequest.fold(
-      form => BadRequest(viewAdmin(entity)(authorizeChangeForm = Some((models.Identity.get(child), form)))),
+      form => BadRequest(viewAdmin(entity)(authorizeChangeForm = Some((Identity.get(child), form)))),
       authorize => {
         authorize.commit
         Redirect(routes.Entity.admin(entity.id))
@@ -124,7 +124,7 @@ object Entity extends SiteController {
 
   def authorizeAdd(i : Int, which : Boolean, other : Int) = checkAdmin(i) { entity => implicit request =>
     authorizeFormWhich(entity, other, which).bindFromRequest.fold(
-      form => BadRequest(viewAdmin(entity)(authorizeWhich = Some(which), authorizeResults = Seq((models.Identity.get(other), form)))),
+      form => BadRequest(viewAdmin(entity)(authorizeWhich = Some(which), authorizeResults = Seq((Identity.get(other), form)))),
       authorize => {
         if (which)
           authorize.authorized = None

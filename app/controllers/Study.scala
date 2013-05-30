@@ -89,7 +89,7 @@ object Study extends SiteController {
 
   def accessChange(i : Int, e : Int) = check(i, Permission.ADMIN) { (study, perm) => implicit request =>
     accessForm(study, e).bindFromRequest.fold(
-      form => BadRequest(viewEdit(study, perm)(accessChangeForm = Some((models.Identity.get(e), form)))),
+      form => BadRequest(viewEdit(study, perm)(accessChangeForm = Some((Identity.get(e), form)))),
       access => {
         access.commit
         Redirect(routes.Study.edit(study.id))
@@ -117,7 +117,7 @@ object Study extends SiteController {
 
   def accessAdd(i : Int, e : Int) = check(i, Permission.ADMIN) { (study, perm) => implicit requet =>
     accessForm(study, e).bindFromRequest.fold(
-      form => BadRequest(viewEdit(study, perm)(accessResults = Seq((models.Identity.get(e),form)))),
+      form => BadRequest(viewEdit(study, perm)(accessResults = Seq((Identity.get(e),form)))),
       access => {
         access.add
         Redirect(routes.Study.edit(study.id))
