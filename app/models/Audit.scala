@@ -77,6 +77,7 @@ object Audit extends AuditTable[Unit](VoidTable) {
 
 object AuditEntity extends AuditTable[Entity](Entity) {
   def id = column[Int]("id")
-  def name = column[String]("name", O.DBType("text"))
-  def row = id ~ name <> (Entity.apply _, Entity.unapply _)
+  def name = column[String]("name")
+  def orcid = column[Option[Orcid]]("orcid")
+  def row = id ~ name ~ orcid <> (Entity.apply _, Entity.unapply _)
 }

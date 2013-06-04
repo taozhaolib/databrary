@@ -17,6 +17,10 @@
 		<dd>@a.username</dd>
 		<dt>email</dt>
 		<dd>@a.email</dd>
+		@a.orcid.map { o =>
+		<dt>ORCID iD</dt>
+		<dd><a href="@o.uri">@o.toString</a></dd>
+		}
 	}
 
 		<dt>Memberships</dt>

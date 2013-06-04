@@ -21,11 +21,14 @@ object Entity extends SiteController {
       Ok(views.html.entity(e))
   }
 
-  private[this] val accountForm = Form(tuple(
+  type AccountForm = Form[(String, String, Option[Orcid])]
+  private[this] val accountForm : AccountForm = Form(tuple(
     "email" -> email,
-    "openid" -> text
+    "openid" -> text,
+    "orcid" -> text.transform[Option[Orcid]](maybe(_).map(Orcid.apply _), _.fold("")(_.toString))
+      .verifying("invalid ORCID iD", _.fold(true)(_.valid))
   ))
-  private[this] def accountFormFill(u : User) = accountForm.fill((u.email, u.openid.getOrElse("")))
+  private[this] def accountFormFill(u : User) : AccountForm = accountForm.fill((u.email, u.openid.getOrElse(""), u.orcid))
 
   private[this] def authorizeForm(child : Int, parent : Int) : Form[Authorize] = Form(
     mapping(
@@ -58,7 +61,7 @@ object Entity extends SiteController {
   )
 
   private[this] def viewAdmin(entity : Identity)(
-    accountForm : Option[Form[(String, String)]] = entity.user.map(accountFormFill(_)),
+    accountForm : Option[AccountForm] = entity.user.map(accountFormFill(_)),
     authorizeChangeForm : Option[(Identity,Form[Authorize])] = None,
     authorizeWhich : Option[Boolean] = None,
     authorizeSearchForm : Form[String] = authorizeSearchForm,
@@ -84,9 +87,10 @@ object Entity extends SiteController {
     val u = entity.asInstanceOf[User]
     accountFormFill(u).bindFromRequest.fold(
       form => BadRequest(viewAdmin(entity)(accountForm = Some(form))),
-      { case (email, openid) =>
+      { case (email, openid, orcid) =>
         u.email = email
         u.openid = maybe(openid)
+        u.orcid = orcid
         u.commit
         Redirect(routes.Entity.admin(entity.id))
       }

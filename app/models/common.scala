@@ -96,7 +96,7 @@ class ViewShape[PackedBase, PackedView, UnpackedBase, UnpackedView](b : PackedVi
 case class Inet(val ip : String)
 
 object Inet {
-  private[this] val inetTypeMapperDelegate = new TypeMapperDelegate[Inet] {
+  private[this] val typeMapperDelegate = new TypeMapperDelegate[Inet] {
     def zero = Inet("0.0.0.0")
     def sqlType = java.sql.Types.OTHER
     def sqlTypeName = "inet"
@@ -113,6 +113,6 @@ object Inet {
     override def valueToSQLLiteral(v : Inet) = throw new SQLException("Inet literals not (yet) supported")
   }
   implicit val typeMapper = new BaseTypeMapper[Inet] {
-    def apply(profile : BasicProfile) = inetTypeMapperDelegate
+    def apply(profile : BasicProfile) = typeMapperDelegate
   }
 }

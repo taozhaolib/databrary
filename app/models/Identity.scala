@@ -17,6 +17,8 @@ class Identity(entity : Entity) {
   final def id = entity.id
   final def name = entity.name
   final def name_=(n : String) = entity.name = n
+  final def orcid = entity.orcid
+  final def orcid_=(o : Option[Orcid]) = entity.orcid = o
   final def access(implicit db : Session) : Permission.Value = entity.access
 
   def user : Option[User] = None
@@ -54,6 +56,7 @@ object Identity extends Table[Identity]("identity") {
   /* from entity */
   def id = column[Int]("id")
   def name = column[String]("name")
+  def orcid = column[Option[Orcid]]("orcid")
 
   /* from account */
   def username = column[String]("username")
@@ -61,21 +64,21 @@ object Identity extends Table[Identity]("identity") {
   def email = column[String]("email")
   def openid = column[Option[String]]("openid")
   
-  def * = id ~ name ~ username.? ~ email.? ~ openid <> (apply _, unapply _)
-  def user_* = id ~ name ~ username ~ email ~ openid <> (User.apply _, User.unapply _)
+  def * = id ~ name ~ orcid ~ username.? ~ email.? ~ openid <> (apply _, unapply _)
+  def user_* = id ~ name ~ orcid ~ username ~ email ~ openid <> (User.apply _, User.unapply _)
 
-  def apply(id : Int, name : String, username : Option[String], email : Option[String], openid : Option[String]) = id match {
+  def apply(id : Int, name : String, orcid : Option[Orcid], username : Option[String], email : Option[String], openid : Option[String]) = id match {
     case Entity.NOBODY => Nobody
     case Entity.ROOT => Root
     case _ => {
-      val e = Entity(id, name)
+      val e = Entity(id, name, orcid)
       username.fold(new Identity(e))(u => new User(e, Account(id, u, email.get, openid)))
     }
   }
 
   def unapply(i : Identity) = {
     val u = i.user
-    Some((i.id, i.name, u.map(_.username), u.map(_.email), u.flatMap(_.openid)))
+    Some((i.id, i.name, i.orcid, u.map(_.username), u.map(_.email), u.flatMap(_.openid)))
   }
 
   def byId(i : Int) = Query(this).where(_.id === i)
@@ -98,10 +101,10 @@ object Identity extends Table[Identity]("identity") {
 }
 
 object User {
-  def apply(id : Int, name : String, username : String, email : String, openid : Option[String]) = 
-    new User(Entity(id, name), Account(id, username, email, openid))
+  def apply(id : Int, name : String, orcid : Option[Orcid], username : String, email : String, openid : Option[String]) = 
+    new User(Entity(id, name, orcid), Account(id, username, email, openid))
   def unapply(u : User) =
-    Some((u.id, u.name, u.username, u.email, u.openid))
+    Some((u.id, u.name, u.orcid, u.username, u.email, u.openid))
 
   def byUsername(u : String) = Query(Identity).filter(_.username === u).map(_.user_*)
 

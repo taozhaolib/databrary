@@ -2,8 +2,9 @@
 ;
 
 CREATE TABLE "entity" (
-	"id" SERIAL NOT NULL Primary Key,
-	"name" text NOT NULL
+	"id" serial NOT NULL Primary Key,
+	"name" text NOT NULL,
+	"orcid" char(16)
 );
 COMMENT ON TABLE "entity" IS 'Users, groups, organizations, and other logical identities';
 
@@ -94,7 +95,7 @@ CREATE TABLE "audit_entity" (
 
 
 CREATE TABLE "study" (
-	"id" SERIAL NOT NULL Primary Key,
+	"id" serial NOT NULL Primary Key,
 	"created" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"title" text NOT NULL,
 	"description" text
