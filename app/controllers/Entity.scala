@@ -122,7 +122,7 @@ object Entity extends SiteController {
   }
 
   def authorizeDelete(i : Int, child : Int) = checkAdmin(i) { entity => implicit request =>
-    Authorize.delete((child, entity.id))
+    models.Authorize.get(child, entity.id).map(_.remove)
     Redirect(routes.Entity.admin(entity.id))
   }
 

@@ -21,13 +21,13 @@ final case class Authorize(childId : Int, parentId : Int, access : Permission.Va
   def set(implicit site : Site) : Unit = {
     implicit val db = site.db
     val r = Authorize.byId(id).map(_.update_*) update (access, delegate, authorized, expires)
-    if (r == 0) {
+    val act = if (r == 0) {
       /* possible race condition; should be done the other way but catching is too annoying */
       Authorize.* insert this
-      AuditAuthorize.add(AuditAction.add, this)
-    } else {
-      AuditAuthorize.add(AuditAction.change, this)
-    }
+      AuditAction.add
+    } else
+      AuditAction.change
+    AuditAuthorize.add(act, this)
   }
   def remove(implicit site : Site) : Unit = {
     implicit val db = site.db
@@ -78,7 +78,7 @@ object Authorize extends Table[Authorize]("authorize") {
     (if (all) l else l.filter(_valid(_))).list
   }
 
-  def delete(i : Id)(implicit db : Session) =
+  private def delete(i : Id)(implicit db : Session) =
     byId(i).delete
 
   val _access_check = SimpleFunction.unary[Int, Option[Permission.Value]]("authorize_access_check")

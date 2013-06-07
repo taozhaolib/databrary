@@ -19,7 +19,7 @@ private[models] final class Account private (val id : Int, val username : String
   private[this] var _openid = openid_
   def openid = _openid
 
-  private def * = (id, username, _email, _openid)
+  private def * = (id, username, email, openid)
 
   def change(email : String = _email, openid : Option[String] = _openid)(implicit site : Site) : Unit = {
     if (email == _email && openid == _openid)

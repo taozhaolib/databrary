@@ -5,16 +5,31 @@ import play.api.db.slick
 import             slick.DB
 import             slick.Config.driver.simple._
 import java.sql.Timestamp
+import util._
 
-case class Study(id : Int, creation : Timestamp, var title : String, var description : Option[String]) extends TableRow {
+final class Study private (val id : Int, val creation : Timestamp, title_ : String, description_ : Option[String]) extends TableRow {
   override def hashCode = id
   override def equals(a : Any) = a match {
     case Study(i, _, _, _) => i == id
     case _ => false
   }
 
-  def commit(implicit db : Session) =
+  private[this] var _title = title_
+  def title = _title
+  private[this] var _description = description_
+  def description = _description
+
+  private def * = (id, creation, title, description)
+
+  def change(title : String = _title, description : Option[String] = _description)(implicit site : Site) : Unit = {
+    if (title == _title && description == _description)
+      return
+    implicit val db = site.db
     Study.byId(id).map(_.update_*) update (title, description)
+    _title = title
+    _description = description
+    AuditStudy.add(AuditAction.change, this)
+  }
 
   def access(p : Permission.Value = Permission.NONE)(implicit db : Session) : List[StudyAccess] = StudyAccess.getStudy(id, p)
   def check_access(i : Int)(implicit db : Session) : Permission.Value = StudyAccess.check(id, i)
@@ -27,7 +42,11 @@ object Study extends Table[Study]("study") {
   def title = column[String]("title", O.DBType("text"))
   def description = column[Option[String]]("description", O.DBType("text"))
 
-  def * = id ~ created ~ title ~ description <> (Study.apply _, Study.unapply _)
+  private[models] def apply(id : Int, creation : Timestamp, title : String, description : Option[String]) =
+    new Study(id, creation, title, description)
+  private[models] def unapply(s : Study) = Some(s.*)
+
+  def * = id ~ created ~ title ~ description <> (apply _, unapply _)
   def update_* = title ~ description
   def insert_* = title
 
@@ -40,15 +59,34 @@ object Study extends Table[Study]("study") {
     insert_* returning * insert title
 }
 
-case class StudyAccess(studyId : Int, entityId : Int, var access : Permission.Value, var inherit : Permission.Value) extends TableRow {
+object AuditStudy extends AuditTable[Study](Study) {
+  def id = column[Int]("id")
+  def created = column[Timestamp]("created")
+  def title = column[String]("title")
+  def description = column[Option[String]]("description")
+
+  def row = id ~ created ~ title ~ description <> (Study.apply _, Study.unapply _)
+}
+
+final case class StudyAccess(studyId : Int, entityId : Int, access : Permission.Value, inherit : Permission.Value) extends TableRow {
   val id = (studyId, entityId)
 
-  def commit(implicit db : Session) =
-    StudyAccess.byId(id).map(_.update_*) update (access, inherit)
-  def add(implicit db : Session) =
-    StudyAccess.* insert this
-  def remove(implicit db : Session) =
-    StudyAccess.delete(id)
+  def set(implicit site : Site) : Unit = {
+    implicit val db = site.db
+    val r = StudyAccess.byId(id).map(_.update_*) update (access, inherit)
+    val act = if (r == 0) {
+      StudyAccess.* insert this
+      AuditAction.add
+    } else
+      AuditAction.change
+    AuditStudyAccess.add(act, this)
+  }
+  def remove(implicit site : Site) : Unit = {
+    implicit val db = site.db
+    val r = StudyAccess.delete(id)
+    if (r > 0)
+      AuditStudyAccess.add(AuditAction.remove, this)
+  }
 
   private val _study = CachedVal[Study](Study.get(studyId)(_).orNull)
   def study(implicit db : Session) : Study = _study
@@ -64,7 +102,7 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
 
   type Id = (Int,Int)
   def id = studyId ~ entityId
-  def * = studyId ~ entityId ~ access ~ inherit <> (StudyAccess.apply _, StudyAccess.unapply _)
+  def * = studyId ~ entityId ~ access ~ inherit <> (apply _, unapply _)
   def update_* = access ~ inherit
 
   def key = primaryKey("study_access_pkey", (studyId, entityId))
@@ -97,7 +135,7 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
       a
     })
 
-  def delete(i : Id)(implicit db : Session) =
+  private def delete(i : Id)(implicit db : Session) =
     byId(i).delete
 
   private[this] def _check = SimpleFunction.binary[Int, Int, Option[Permission.Value]]("study_access_check")
@@ -105,4 +143,13 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
     Query(_check(s, e)).first.getOrElse(Permission.NONE)
 
   def filterForEntity(e : Int)(s : Column[Int]) = _check(s, e) >= Permission.VIEW
+}
+
+object AuditStudyAccess extends AuditTable[StudyAccess](StudyAccess) {
+  def studyId = column[Int]("study")
+  def entityId = column[Int]("entity")
+  def access = column[Permission.Value]("access")
+  def inherit = column[Permission.Value]("inherit")
+
+  def row = studyId ~ entityId ~ access ~ inherit <> (StudyAccess.apply _, StudyAccess.unapply _)
 }

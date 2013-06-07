@@ -79,9 +79,7 @@ object Study extends SiteController {
     editFormFill(study).bindFromRequest.fold(
       form => BadRequest(viewEdit(study, access)(editForm = form)),
       { case (title, description) =>
-        study.title = title
-        study.description = maybe(description)
-        study.commit
+        study.change(title = title, description = maybe(description))
         Redirect(routes.Study.edit(study.id))
       }
     )
@@ -91,15 +89,14 @@ object Study extends SiteController {
     accessForm(study, e).bindFromRequest.fold(
       form => BadRequest(viewEdit(study, perm)(accessChangeForm = Some((Identity.get(e), form)))),
       access => {
-        access.commit
+        access.set
         Redirect(routes.Study.edit(study.id))
       }
     )
   }
 
   def accessDelete(i : Int, e : Int) = check(i, Permission.ADMIN) { (study, perm) => implicit request =>
-    if (request.identity.id != e)
-      StudyAccess.delete((study.id, e))
+    StudyAccess.get(study.id, e).filter(_.entityId != request.identity.id).map(_.remove)
     Redirect(routes.Study.edit(study.id))
   }
 
@@ -119,7 +116,7 @@ object Study extends SiteController {
     accessForm(study, e).bindFromRequest.fold(
       form => BadRequest(viewEdit(study, perm)(accessResults = Seq((Identity.get(e),form)))),
       access => {
-        access.add
+        access.set
         Redirect(routes.Study.edit(study.id))
       }
     )

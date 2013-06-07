@@ -18,7 +18,7 @@ private[models] final class Entity private (val id : Int, name_ : String, orcid_
   private[this] var _orcid = orcid_
   def orcid = _orcid
 
-  private def * = (id, _name, _orcid)
+  private def * = (id, name, orcid)
 
   def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Unit = {
     if (name == _name && orcid == _orcid)

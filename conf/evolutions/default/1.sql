@@ -112,6 +112,10 @@ CREATE TABLE "study" (
 );
 COMMENT ON TABLE "study" is 'Basic organizational unit for data.';
 
+CREATE TABLE "audit_study" (
+	LIKE "study"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
 CREATE TABLE "study_access" (
 	"study" integer NOT NULL References "study",
 	"entity" integer NOT NULL References "entity",
@@ -121,6 +125,10 @@ CREATE TABLE "study_access" (
 	Primary Key ("study", "entity")
 );
 COMMENT ON TABLE "study_access" is 'Permissions over studies assigned to users.';
+
+CREATE TABLE "audit_study_access" (
+	LIKE "study_access"
+) INHERITS ("audit") WITH (OIDS = FALSE);
 
 CREATE FUNCTION "study_access_check" ("study" integer, "entity" integer, "access" permission = NULL) RETURNS permission LANGUAGE sql STABLE AS $$
 	WITH sa AS (
