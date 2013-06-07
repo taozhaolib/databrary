@@ -7,7 +7,7 @@ import             slick.Config.driver.simple._
 import java.sql.Timestamp
 import util._
 
-private[models] final class Account(val id : Int, val username : String, email_ : String, openid_ : Option[String]) extends TableRow {
+private[models] final class Account private (val id : Int, val username : String, email_ : String, openid_ : Option[String]) extends TableRow {
   override def hashCode = id
   override def equals(a : Any) = a match {
     case Account(i, _, _, _) => i == id

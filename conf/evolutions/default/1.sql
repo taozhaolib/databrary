@@ -70,6 +70,10 @@ COMMENT ON COLUMN "authorize"."parent" IS 'Entity granting permissions';
 COMMENT ON COLUMN "authorize"."access" IS 'Level of independent site access granted to child (effectively minimum level on path to ROOT)';
 COMMENT ON COLUMN "authorize"."delegate" IS 'Permissions for which child may act as parent (not inherited)';
 
+CREATE TABLE "audit_authorize" (
+	LIKE "authorize"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
 -- To allow normal users to inherit from nobody:
 INSERT INTO "authorize" ("child", "parent", "access") VALUES (0, -1, 'ADMIN', 'ADMIN');
 
@@ -152,6 +156,7 @@ DROP FUNCTION "authorize_delegate_check" (integer, integer, permission);
 DROP FUNCTION "authorize_access_check" (integer, integer, permission);
 DROP FUNCTION "authorize_access_parents" (integer, permission);
 DROP VIEW "authorize_valid";
+DROP TABLE "audit_authorize";
 DROP TABLE "authorize";
 DROP TYPE permission;
 DROP TABLE "audit_account";

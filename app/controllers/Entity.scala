@@ -36,7 +36,7 @@ object Entity extends SiteController {
   ))
   private[this] def accountFormFill(u : User) : AccountForm = accountForm.fill((u.email, u.openid.getOrElse("")))
 
-  private[this] def authorizeForm(child : Int, parent : Int) : Form[Authorize] = Form(
+  private[this] def authorizeForm(child : Int, parent : Int, which : Boolean = false) : Form[Authorize] = Form(
     mapping(
       "access" -> number(min=0, max=Permission.maxId-1),
       "delegate" -> number(min=0, max=Permission.maxId-1),
@@ -46,7 +46,7 @@ object Entity extends SiteController {
       child, parent, 
       Permission(access), 
       Permission(delegate), 
-      if (pending) None else Some(new java.sql.Timestamp(System.currentTimeMillis)),
+      if (pending || which) None else Some(new java.sql.Timestamp(System.currentTimeMillis)),
       expires.map(e => new java.sql.Timestamp(e.getTime))
     ))(t => 
       if (t.childId == child && t.parentId == parent)
@@ -58,9 +58,9 @@ object Entity extends SiteController {
 
   private[this] def authorizeFormWhich(me : Identity, other : Int, which : Boolean) =
     if (which)
-      authorizeForm(me.id, other)
+      authorizeForm(me.id, other, which)
     else
-      authorizeForm(other, me.id)
+      authorizeForm(other, me.id, which)
 
   private[this] val authorizeSearchForm = Form(
     "name" -> nonEmptyText
@@ -115,7 +115,7 @@ object Entity extends SiteController {
     authorizeForm(child, entity.id).bindFromRequest.fold(
       form => BadRequest(viewAdmin(entity)(authorizeChangeForm = Some((Identity.get(child), form)))),
       authorize => {
-        authorize.commit
+        authorize.set
         Redirect(routes.Entity.admin(entity.id))
       }
     )
@@ -144,9 +144,7 @@ object Entity extends SiteController {
     authorizeFormWhich(entity, other, which).bindFromRequest.fold(
       form => BadRequest(viewAdmin(entity)(authorizeWhich = Some(which), authorizeResults = Seq((Identity.get(other), form)))),
       authorize => {
-        if (which)
-          authorize.authorized = None
-        authorize.add
+        authorize.set
         Redirect(routes.Entity.admin(entity.id))
       }
     )

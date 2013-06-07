@@ -5,6 +5,7 @@ import play.api.db.slick
 import             slick.DB
 import             slick.Config.driver.simple._
 import java.sql.Timestamp
+import util._
 
 object Permission extends DBEnum("permission") {
   val NONE, VIEW, DOWNLOAD, CONTRIBUTE, ADMIN = Value
@@ -14,18 +15,30 @@ object Permission extends DBEnum("permission") {
   def OWN = ADMIN
 }
 
-final case class Authorize(childId : Int, parentId : Int, var access : Permission.Value, var delegate : Permission.Value, var authorized : Option[Timestamp], var expires : Option[Timestamp]) extends TableRow {
+final case class Authorize(childId : Int, parentId : Int, access : Permission.Value, delegate : Permission.Value, authorized : Option[Timestamp], expires : Option[Timestamp]) extends TableRow {
   val id = (childId, parentId)
-  def commit(implicit db : Session) =
-    Authorize.byId(id).map(_.update_*) update (access, delegate, authorized, expires)
-  def add(implicit db : Session) =
-    Authorize.* insert this
-  def remove(implicit db : Session) =
-    Authorize.delete(id)
+
+  def set(implicit site : Site) : Unit = {
+    implicit val db = site.db
+    val r = Authorize.byId(id).map(_.update_*) update (access, delegate, authorized, expires)
+    if (r == 0) {
+      /* possible race condition; should be done the other way but catching is too annoying */
+      Authorize.* insert this
+      AuditAuthorize.add(AuditAction.add, this)
+    } else {
+      AuditAuthorize.add(AuditAction.change, this)
+    }
+  }
+  def remove(implicit site : Site) : Unit = {
+    implicit val db = site.db
+    val r = Authorize.delete(id)
+    if (r > 0)
+      AuditAuthorize.add(AuditAction.remove, this)
+  }
 
   private[this] val _child = CachedVal[Identity](Identity.get(childId)(_))
-  private[this] val _parent = CachedVal[Identity](Identity.get(parentId)(_))
   def child(implicit db : Session) : Identity = _child
+  private[this] val _parent = CachedVal[Identity](Identity.get(parentId)(_))
   def parent(implicit db : Session) : Identity = _parent
 }
 
@@ -39,7 +52,7 @@ object Authorize extends Table[Authorize]("authorize") {
 
   type Id = (Int,Int)
   def id = child ~ parent
-  def * = child ~ parent ~ access ~ delegate ~ authorized ~ expires <> (Authorize.apply _, Authorize.unapply _)
+  def * = child ~ parent ~ access ~ delegate ~ authorized ~ expires <> (apply _, unapply _)
   private def update_* = access ~ delegate ~ authorized ~ expires
 
   def key = primaryKey("authorize_pkey", (child, parent))
@@ -75,4 +88,15 @@ object Authorize extends Table[Authorize]("authorize") {
   private[this] val _delegate_check = SimpleFunction.binary[Int, Int, Option[Permission.Value]]("authorize_delegate_check")
   def delegate_check(c : Int, p : Int)(implicit db : Session) : Permission.Value =
     Query(_delegate_check(c, p)).first.getOrElse(Permission.NONE)
+}
+
+object AuditAuthorize extends AuditTable[Authorize](Authorize) {
+  def child = column[Int]("child")
+  def parent = column[Int]("parent")
+  def access = column[Permission.Value]("access")
+  def delegate = column[Permission.Value]("delegate")
+  def authorized = column[Option[Timestamp]]("authorized")
+  def expires = column[Option[Timestamp]]("expires")
+
+  def row = child ~ parent ~ access ~ delegate ~ authorized ~ expires <> (Authorize.apply _, Authorize.unapply _)
 }

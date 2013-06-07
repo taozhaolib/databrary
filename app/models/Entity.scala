@@ -6,7 +6,7 @@ import slick.DB
 import slick.Config.driver.simple._
 import util._
 
-private[models] final class Entity(val id : Int, name_ : String, orcid_ : Option[Orcid] = None) extends TableRow {
+private[models] final class Entity private (val id : Int, name_ : String, orcid_ : Option[Orcid] = None) extends TableRow {
   override def hashCode = id
   override def equals(e : Any) = e match {
     case e : Entity => e.id == id
@@ -62,5 +62,6 @@ object AuditEntity extends AuditTable[Entity](Entity) {
   def id = column[Int]("id")
   def name = column[String]("name")
   def orcid = column[Option[Orcid]]("orcid")
+
   def row = id ~ name ~ orcid <> (Entity.apply _, Entity.unapply _)
 }
