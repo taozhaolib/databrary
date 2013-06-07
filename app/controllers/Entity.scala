@@ -21,14 +21,20 @@ object Entity extends SiteController {
       Ok(views.html.entity(e))
   }
 
-  type AccountForm = Form[(String, String, Option[Orcid])]
-  private[this] val accountForm : AccountForm = Form(tuple(
-    "email" -> email,
-    "openid" -> text,
+  type EntityForm = Form[(String, Option[Orcid])]
+  private[this] val entityForm : EntityForm = Form(tuple(
+    "name" -> nonEmptyText,
     "orcid" -> text.transform[Option[Orcid]](maybe(_).map(Orcid.apply _), _.fold("")(_.toString))
       .verifying("invalid ORCID iD", _.fold(true)(_.valid))
   ))
-  private[this] def accountFormFill(u : User) : AccountForm = accountForm.fill((u.email, u.openid.getOrElse(""), u.orcid))
+  private[this] def entityFormFill(e : Identity) : EntityForm = entityForm.fill((e.name, e.orcid))
+
+  type AccountForm = Form[(String, String)]
+  private[this] val accountForm : AccountForm = Form(tuple(
+    "email" -> email,
+    "openid" -> text
+  ))
+  private[this] def accountFormFill(u : User) : AccountForm = accountForm.fill((u.email, u.openid.getOrElse("")))
 
   private[this] def authorizeForm(child : Int, parent : Int) : Form[Authorize] = Form(
     mapping(
@@ -61,6 +67,7 @@ object Entity extends SiteController {
   )
 
   private[this] def viewAdmin(entity : Identity)(
+    entityForm : EntityForm = entityFormFill(entity),
     accountForm : Option[AccountForm] = entity.user.map(accountFormFill(_)),
     authorizeChangeForm : Option[(Identity,Form[Authorize])] = None,
     authorizeWhich : Option[Boolean] = None,
@@ -69,7 +76,7 @@ object Entity extends SiteController {
     implicit request : UserRequest[_]) = {
     val authorizeChange = authorizeChangeForm.map(_._1.id)
     val authorizeForms = entity.authorizeChildren(true).filter(t => Some(t.childId) != authorizeChange).map(t => (t.child, authorizeForm(t.childId, t.parentId).fill(t))) ++ authorizeChangeForm
-    views.html.entityAdmin(entity, accountForm, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
+    views.html.entityAdmin(entity, entityForm, accountForm, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
   }
   
   private[this] def checkAdmin(i : Int)(act : Identity => UserRequest[AnyContent] => Result) = UserAction { implicit request =>
@@ -84,14 +91,21 @@ object Entity extends SiteController {
   }
 
   def change(i : Int) = checkAdmin(i) { entity => implicit request =>
-    val u = entity.asInstanceOf[User]
+    entityFormFill(entity).bindFromRequest.fold(
+      form => BadRequest(viewAdmin(entity)(entityForm = form)),
+      { case (name, orcid) =>
+        entity.changeEntity(name = name, orcid = orcid)
+        Redirect(routes.Entity.admin(entity.id))
+      }
+    )
+  }
+
+  def changeAccount(i : Int) = checkAdmin(i) { entity => implicit request =>
+    val u = entity.user.get
     accountFormFill(u).bindFromRequest.fold(
       form => BadRequest(viewAdmin(entity)(accountForm = Some(form))),
-      { case (email, openid, orcid) =>
-        u.email = email
-        u.openid = maybe(openid)
-        u.orcid = orcid
-        u.commit
+      { case (email, openid) =>
+        u.changeAccount(email = email, openid = maybe(openid))
         Redirect(routes.Entity.admin(entity.id))
       }
     )

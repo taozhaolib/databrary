@@ -15,6 +15,7 @@ GET	/Logout					controllers.Login.logout
 GET	/entity/:id				controllers.Entity.view(id : Int)
 GET	/entity/:id/admin			controllers.Entity.admin(id : Int)
 POST	/entity/:id/Admin			controllers.Entity.change(id : Int)
+POST	/entity/:id/Account			controllers.Entity.changeAccount(id : Int)
 GET	/entity/:id/Authorize/search/child	controllers.Entity.authorizeSearch(id : Int, which : Boolean = false)
 GET	/entity/:id/Authorize/search/parent	controllers.Entity.authorizeSearch(id : Int, which : Boolean = true)
 POST	/entity/:id/Authorize/:child		controllers.Entity.authorizeChange(id : Int, child : Int)

@@ -4,27 +4,25 @@ import play.api.db.slick.Config.driver.simple._
 import scala.slick.lifted
 import collection.mutable.HashMap
 import java.sql.Timestamp
+import controllers.SiteRequest
+import util._
 
 class Identity(entity : Entity) {
   final override def hashCode = id
   final def equals(o : Identity) = o.id == id
 
-  private def cache = {
+  private def cache =
     IdentityCache.add(this)
-    this
-  }
 
   final def id = entity.id
   final def name = entity.name
-  final def name_=(n : String) = entity.name = n
   final def orcid = entity.orcid
-  final def orcid_=(o : Option[Orcid]) = entity.orcid = o
   final def access(implicit db : Session) : Permission.Value = entity.access
 
   def user : Option[User] = None
 
-  def commit(implicit db : Session) = 
-    entity.commit
+  def changeEntity(name : String = name, orcid : Option[Orcid] = orcid)(implicit site : Site) =
+    entity.change(name, orcid)
 
   final def authorizeParents(all : Boolean = false)(implicit db : Session) = Authorize.getParents(id, all)
   final def authorizeChildren(all : Boolean = false)(implicit db : Session) = Authorize.getChildren(id, all)
@@ -35,18 +33,17 @@ class User(entity : Entity, account : Account) extends Identity(entity) {
 
   final def username = account.username
   final def email = account.email
-  final def email_=(e : String) = account.email = e
   final def openid = account.openid
-  final def openid_=(o : Option[String]) = account.openid = o
 
-  override def commit(implicit db : Session) = {
-    super.commit
-    account.commit
-  }
+  def changeAccount(email : String = email, openid : Option[String] = openid)(implicit site : Site) =
+    account.change(email, openid)
 }
 
 private object IdentityCache extends HashMap[Int, Identity] {
-  def add(i : Identity) : Unit = update(i.id, i)
+  def add[I <: Identity](i : I) : I = {
+    update(i.id, i)
+    i
+  }
   add(Identity.Nobody)
   add(Identity.Root)
 }

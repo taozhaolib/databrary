@@ -1,6 +1,5 @@
 package models
 
-import util._
 import play.api.Play.current
 import play.api.db.slick
 import slick.DB
@@ -10,9 +9,10 @@ import scala.slick.driver.BasicProfile
 import scala.slick.lifted.{AbstractTable,ColumnBase}
 import scala.slick.session.{PositionedResult,PositionedParameters}
 import java.sql.Timestamp
+import util._
 
 object AuditAction extends DBEnum("audit_action") {
-  val login, logout, add, change, delete = Value
+  val login, logout, add, change, remove, download = Value
 }
 
 case class Audit[T](who : Int, ip : Inet, action : AuditAction.Value, row : T) {
@@ -57,8 +57,10 @@ abstract class AuditTable[T](protected val table : AbstractTable[T]) extends Tab
     { case Audit(when, who, ip, action, row) => Some(((when, who, ip, action), row)) }
   ) */
 
-  def add(a : Audit[T])(implicit db : Session) =
+  private[this] def add(a : Audit[T])(implicit db : Session) : Unit =
     * insert a
+  def add(action : AuditAction.Value, row : T)(implicit site : Site) : Unit =
+    add(Audit(site.identity.id, site.clientIP, action, row))(site.db)
 }
 
 object VoidTable extends Table[Unit]("") {
@@ -73,11 +75,6 @@ object VoidTable extends Table[Unit]("") {
 }
 object Audit extends AuditTable[Unit](VoidTable) {
   def row = table.*
-}
-
-object AuditEntity extends AuditTable[Entity](Entity) {
-  def id = column[Int]("id")
-  def name = column[String]("name")
-  def orcid = column[Option[Orcid]]("orcid")
-  def row = id ~ name ~ orcid <> (Entity.apply _, Entity.unapply _)
+  def add(action : AuditAction.Value)(implicit site : Site) : Unit =
+    add(action, ())(site)
 }

@@ -1,15 +1,21 @@
-@(entity : Identity, accountForm : Option[controllers.Entity.AccountForm], authorizeForms : Seq[(Identity,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Identity,Form[Authorize])])(implicit request : UserRequest[_])
+@(entity : Identity, entityForm : controllers.Entity.EntityForm, accountForm : Option[controllers.Entity.AccountForm], authorizeForms : Seq[(Identity,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Identity,Form[Authorize])])(implicit request : UserRequest[_])
 
 
 @common("admin: " + entity.name) {
 	<h1>@displayEntity(entity)</h1>
 
+	@helper.form(routes.Entity.change(entity.id)) {
+		@helper.inputText(entityForm("name"))
+		@helper.inputText(entityForm("orcid"))
+		<button type='submit'>Change</button>
+	}
+	@formErrors(entityForm)
+
 	@accountForm.map { form =>
 	<h2>Account</h2>
-	@helper.form(routes.Entity.change(entity.id)) {
+	@helper.form(routes.Entity.changeAccount(entity.id)) {
 		@helper.inputText(form("email"))
 		@helper.inputText(form("openid"))
-		@helper.inputText(form("orcid"))
 		<button type='submit'>Change</button>
 	}
 	@formErrors(form)

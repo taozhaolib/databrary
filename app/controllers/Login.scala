@@ -49,6 +49,8 @@ object Login extends Controller {
       { 
         case Redeemed(info) => DB.withSession { implicit db =>
           User.getOpenid(info.id, maybe(username)).map { a =>
+            implicit val arequest = new UserRequest(request, a, db)
+            Audit.add(AuditAction.login)
             Redirect(routes.Entity.view(a.id)).withSession("user" -> a.id.toString)
           }.getOrElse(
             BadRequest(viewLogin(Messages("login.openID.notFound", info.id)))
@@ -59,7 +61,9 @@ object Login extends Controller {
     ))
   }
 
-  def logout = Action { request =>
+  def logout = SiteAction { implicit request =>
+    if (request.isInstanceOf[UserRequest[_]])
+      Audit.add(AuditAction.logout)
     Ok(viewLogin(Messages("login.logout"))).withNewSession
   }
 }

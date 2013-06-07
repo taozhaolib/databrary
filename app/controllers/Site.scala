@@ -8,11 +8,12 @@ import          i18n.Messages
 import          db.slick
 import             slick.DB
 import             slick.Config.driver.simple.{Session=>DBConnection,_}
+import util._
 import models._
 
 abstract class SiteRequest[A](request : Request[A], val identity : Identity, val db : DBConnection)
-  extends WrappedRequest[A](request) {
-  def access = identity.access(db)
+  extends WrappedRequest[A](request) with Site {
+  def clientIP = Inet(request.remoteAddress)
 }
 
 class AnonRequest[A](request : Request[A], db : DBConnection)

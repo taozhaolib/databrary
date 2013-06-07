@@ -1,6 +1,18 @@
 # --- !Ups
 ;
 
+CREATE TYPE audit_action AS ENUM ('login', 'logout', 'add', 'change', 'remove', 'download');
+COMMENT ON TYPE audit_action IS 'The various activities for which we keep audit records (in audit or a derived table).';
+
+CREATE TABLE "audit" (
+	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"who" int NOT NULL References "account" ("entity") ON UPDATE CASCADE,
+	"ip" inet NOT NULL,
+	"action" audit_action NOT NULL
+) WITH (OIDS = FALSE);
+COMMENT ON TABLE "audit" is 'Logs of all activities on the site, including access and modifications to any data. Each table has an associated audit table inheriting from this one.';
+
+
 CREATE TABLE "entity" (
 	"id" serial NOT NULL Primary Key,
 	"name" text NOT NULL,
@@ -12,6 +24,10 @@ COMMENT ON TABLE "entity" IS 'Users, groups, organizations, and other logical id
 INSERT INTO "entity" VALUES (-1, 'Everybody'); -- NOBODY
 INSERT INTO "entity" VALUES (0, 'Databrary'); -- ROOT
 
+CREATE TABLE "audit_entity" (
+	LIKE "entity"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
 
 CREATE TABLE "account" (
 	"entity" integer NOT NULL Unique References "entity",
@@ -21,6 +37,11 @@ CREATE TABLE "account" (
 	"openid" varchar(256) -- split out (multiple/user)?
 );
 COMMENT ON TABLE "account" IS 'Login information for entities associated with registered individuals.';
+
+CREATE TABLE "audit_account" (
+	LIKE "account"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+ALTER TABLE "audit_account" DROP COLUMN "created";
 
 CREATE VIEW "identity" AS
 	SELECT * FROM entity LEFT JOIN account ON (id = entity);
@@ -79,21 +100,6 @@ $$;
 COMMENT ON FUNCTION "authorize_delegate_check" (integer, integer, permission) IS 'Test if a given child has the given permission [any] over the given parent';
 
 
-CREATE TYPE audit_action AS ENUM ('login', 'logout', 'add', 'change', 'delete');
-COMMENT ON TYPE audit_action IS 'The various activities for which we keep audit records (in audit or a derived table).';
-
-CREATE TABLE "audit" (
-	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	"who" int NOT NULL References "account" ("entity") ON UPDATE CASCADE,
-	"ip" inet NOT NULL,
-	"action" audit_action NOT NULL
-) WITH (OIDS = FALSE);
-
-CREATE TABLE "audit_entity" (
-	LIKE "entity"
-) INHERITS ("audit") WITH (OIDS = FALSE);
-
-
 CREATE TABLE "study" (
 	"id" serial NOT NULL Primary Key,
 	"created" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -142,16 +148,17 @@ DROP FUNCTION "study_access_check" (integer, integer, permission);
 DROP TABLE "study_access";
 DROP TABLE "study";
 
-DROP TABLE "audit_entity";
-DROP TABLE "audit";
-DROP TYPE audit_action;
-
 DROP FUNCTION "authorize_delegate_check" (integer, integer, permission);
 DROP FUNCTION "authorize_access_check" (integer, integer, permission);
 DROP FUNCTION "authorize_access_parents" (integer, permission);
 DROP VIEW "authorize_valid";
 DROP TABLE "authorize";
 DROP TYPE permission;
+DROP TABLE "audit_account";
 DROP TABLE "account";
+DROP TABLE "audit_entity";
 DROP TABLE "entity";
+
+DROP TABLE "audit";
+DROP TYPE audit_action;
 
