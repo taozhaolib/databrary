@@ -8,14 +8,13 @@ object ApplicationBuild extends Build {
   val appVersion      = "0-SNAPSHOT"
 
   val appDependencies = Seq(
-    jdbc,
     "com.typesafe.play" %% "play-slick" % "0.3.2",
     "com.typesafe.slick" %% "slick" % "1.0.1",
-    "postgresql" % "postgresql" % "9.1-901-1.jdbc4" // "9.2-1002.jdbc4"
+    "fi.reaktor" %% "sqltyped" % "0.3.0-SNAPSHOT"
   )
 
-  val main = play.Project(appName, appVersion, appDependencies).settings(
-    scalacOptions ++= Seq("-feature","-unchecked","-deprecation","-Xlint")
-  )
+  val dbrary = Project("dbrary", file("dbrary"))
+
+  val main = play.Project(appName, appVersion, appDependencies).dependsOn(dbrary)
 
 }
