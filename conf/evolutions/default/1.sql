@@ -1,3 +1,13 @@
+-- This is currently the complete, authoritative schema, as it is easier to
+-- understand all in one place and unnecessary to use proper evolutions until
+-- production.  Play only checks for changes in the most recent evolution, so
+-- adding an empty 2.sql will prevent it from automatically applying changes to
+-- this file, if desired.
+
+-- Theoretically this could be maintained as authoritative during production,
+-- with further evolutions only making defensive changes, but it may be easier
+-- to keep separate.
+
 # --- !Ups
 ;
 
@@ -32,7 +42,6 @@ CREATE TABLE "audit_entity" (
 CREATE TABLE "account" (
 	"entity" integer NOT NULL Unique References "entity",
 	"username" varchar(32) NOT NULL Primary Key,
-	"created" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"email" varchar(256) NOT NULL, -- split out (multiple/user)?
 	"openid" varchar(256) -- split out (multiple/user)?
 );
@@ -41,7 +50,6 @@ COMMENT ON TABLE "account" IS 'Login information for entities associated with re
 CREATE TABLE "audit_account" (
 	LIKE "account"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
-ALTER TABLE "audit_account" DROP COLUMN "created";
 
 CREATE VIEW "identity" AS
 	SELECT * FROM entity LEFT JOIN account ON (id = entity);
@@ -106,7 +114,6 @@ COMMENT ON FUNCTION "authorize_delegate_check" (integer, integer, permission) IS
 
 CREATE TABLE "study" (
 	"id" serial NOT NULL Primary Key,
-	"created" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"title" text NOT NULL,
 	"description" text
 );
