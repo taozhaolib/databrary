@@ -8,6 +8,4 @@ resolvers in ThisBuild += Resolver.file("Local repo", file(Path.userHome.absolut
 
 libraryDependencies in ThisBuild += "postgresql" % "postgresql" % "9.1-901-1.jdbc4" // "9.2-1002.jdbc4"
 
-libraryDependencies in ThisBuild += "fi.reaktor" %% "sqltyped" % "0.3.0-SNAPSHOT"
-
 libraryDependencies in ThisBuild += play.Project.anorm

@@ -21,7 +21,5 @@ object Orcid {
   def apply(s : String) : Orcid =
     new Orcid(s.filterNot(c => c == '-' || c.isSpaceChar).stripPrefix("http://").stripPrefix("orcid.org/"))
 
-  implicit val typeMapper = scala.slick.lifted.MappedTypeMapper.base[Orcid, String](_.orcid, new Orcid(_))
-
   implicit val rowToOrcid : Column[Orcid] = Column(Column.rowToString(_, _).map(new Orcid(_)))
 }

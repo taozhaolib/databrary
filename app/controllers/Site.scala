@@ -5,26 +5,24 @@ import          Play.current
 import          mvc._
 import          data._
 import          i18n.Messages
-import          db.slick
-import             slick.DB
-import             slick.Config.driver.simple.{Session=>DBConnection,_}
+import          db.DB
 import dbrary._
 import util._
 import models._
 
-abstract class SiteRequest[A](request : Request[A], val identity : Identity, val db : DBConnection)
+abstract class SiteRequest[A](request : Request[A], val identity : Identity, val db : util.Site.DB)
   extends WrappedRequest[A](request) with Site {
   def clientIP = Inet(request.remoteAddress)
 }
 
-class AnonRequest[A](request : Request[A], db : DBConnection)
+class AnonRequest[A](request : Request[A], db : util.Site.DB)
   extends SiteRequest[A](request, Identity.Nobody, db)
 
-class UserRequest[A](request : Request[A], val user : User, db : DBConnection)
+class UserRequest[A](request : Request[A], val user : User, db : util.Site.DB)
   extends SiteRequest[A](request, user, db)
 
 object SiteAction {
-  private[this] def getUser(request : Request[_])(implicit db : DBConnection) : Option[User] =
+  private[this] def getUser(request : Request[_])(implicit db : util.Site.DB) : Option[User] =
     request.session.get("user").flatMap { i => 
       try { Some(i.toInt) }
       catch { case e:java.lang.NumberFormatException => None }
@@ -45,7 +43,7 @@ object UserAction {
 }
 
 class SiteController extends Controller {
-  implicit def db(implicit request : SiteRequest[_]) = request.db
+  implicit def db(implicit request : SiteRequest[_]) : util.Site.DB = request.db
 }
 
 object Site extends SiteController {
@@ -53,7 +51,7 @@ object Site extends SiteController {
   def start = SiteAction(request => Ok(Login.viewLogin()), implicit request =>
     Ok(views.html.entity(request.identity)))
 
-  def test = Action { request => DB.withSession { implicit db =>
+  def test = Action { request => DB.withConnection { implicit db =>
     Ok("Ok")
   } }
 

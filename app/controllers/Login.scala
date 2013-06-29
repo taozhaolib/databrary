@@ -9,8 +9,7 @@ import               Forms._
 import          libs.openid._
 import          libs.concurrent._
 import                          Execution.Implicits.defaultContext
-import          db.slick.DB
-import          db.slick.Config.driver.simple._
+import          db.DB
 import          i18n.Messages
 import models._
 import dbrary.AuditAction
@@ -48,7 +47,7 @@ object Login extends Controller {
   def openID(username : String) = Action { implicit request =>
     AsyncResult(OpenID.verifiedId.extend1(
       { 
-        case Redeemed(info) => DB.withSession { implicit db =>
+        case Redeemed(info) => DB.withConnection { implicit db =>
           User.getOpenid(info.id, maybe(username)).map { a =>
             implicit val arequest = new UserRequest(request, a, db)
             Audit.add(AuditAction.login)

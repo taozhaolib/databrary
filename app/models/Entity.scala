@@ -1,9 +1,5 @@
 package models
 
-import play.api.Play.current
-import play.api.db.slick
-import slick.DB
-import slick.Config.driver.simple._
 import anorm._
 import anorm.SqlParser.scalar
 import dbrary._
@@ -25,14 +21,13 @@ private[models] final class Entity (val id : Int, name_ : String, orcid_ : Optio
   def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Unit = {
     if (name == _name && orcid == _orcid)
       return
-    implicit val db = site.db.conn
-    Audit.SQLon(AuditAction.change, "entity", "SET name = {name}, orcid = {orcid} WHERE id = {id}")(args : _*).execute()
+    Audit.SQLon(AuditAction.change, "entity", "SET name = {name}, orcid = {orcid} WHERE id = {id}")(args : _*).execute()(site.db)
     _name = name
     _orcid = orcid
   }
 
-  private[this] val _access = CachedVal[Permission.Value, Session](Authorize.access_check(id)(_))
-  def access(implicit db : Session) : Permission.Value = _access
+  private[this] val _access = CachedVal[Permission.Value, Site.DB](Authorize.access_check(id)(_))
+  def access(implicit db : Site.DB) : Permission.Value = _access
 }
 
 private[models] object Entity extends TableView("entity") {
@@ -45,9 +40,8 @@ private[models] object Entity extends TableView("entity") {
 
 
   def create(name : String)(implicit site : Site) : Entity = {
-    implicit val db = site.db.conn
     val args = Anorm.Args('name -> name)
-    Audit.SQLon(AuditAction.add, "entity", Anorm.insertArgs(args), "*")(args : _*).single(row)
+    Audit.SQLon(AuditAction.add, "entity", Anorm.insertArgs(args), "*")(args : _*).single(row)(site.db)
   }
 
   final val NOBODY : Int = -1

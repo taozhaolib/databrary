@@ -1,11 +1,5 @@
 package models
 
-import scala.language.implicitConversions
-import scala.slick.ast.{Node,ProductNode}
-import scala.slick.driver.BasicProfile
-import scala.slick.lifted._
-import scala.slick.session.{PositionedParameters,PositionedResult,Session}
-import scala.slick.util.{RecordLinearizer,NaturalTransformation2}
 import anorm._
 import dbrary._
 
@@ -19,6 +13,7 @@ class CachedVal[T <: AnyRef, S](init : S => T) {
 }
 
 object CachedVal {
+  import scala.language.implicitConversions
   def apply[T <: AnyRef, S](init : S => T) = new CachedVal(init)
   implicit def implicitGetCached[T <: AnyRef, S](x : CachedVal[T, S])(implicit s : S) : T = x(s)
 }

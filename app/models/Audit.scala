@@ -1,20 +1,12 @@
 package models
 
 import play.api.Play.current
-import play.api.db.slick
-import slick.DB
-import slick.Config.driver.simple._
-import scala.slick.ast.{Node,ProductNode}
-import scala.slick.driver.BasicProfile
-import scala.slick.lifted.{AbstractTable,ColumnBase}
-import scala.slick.session.{PositionedResult,PositionedParameters}
-import java.sql.Timestamp
 import anorm._
 import dbrary._
 import util._
 
 case class Audit[T](who : Int, ip : Inet, action : AuditAction.Value, row : T) {
-  def entity(implicit db : Session) = Identity.get(who)
+  def entity(implicit db : Site.DB) = Identity.get(who)
 }
 
 object Audit {

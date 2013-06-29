@@ -6,8 +6,6 @@ import          Play.current
 import          mvc._
 import          data._
 import               Forms._
-import          db.slick.DB
-import          db.slick.Config.driver.simple._
 import          i18n.Messages
 import dbrary.Permission
 import models._
