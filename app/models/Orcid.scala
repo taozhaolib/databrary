@@ -1,6 +1,8 @@
 package models
 
-final class Orcid private (private val orcid : String) extends scala.collection.immutable.WrappedString(orcid)
+import anorm._
+
+final class Orcid private (val orcid : String) extends scala.collection.immutable.WrappedString(orcid)
 {
   def valid : Boolean = lengthCompare(16) == 0 && {
     val (b, cs) = orcid.splitAt(15)
@@ -20,4 +22,6 @@ object Orcid {
     new Orcid(s.filterNot(c => c == '-' || c.isSpaceChar).stripPrefix("http://").stripPrefix("orcid.org/"))
 
   implicit val typeMapper = scala.slick.lifted.MappedTypeMapper.base[Orcid, String](_.orcid, new Orcid(_))
+
+  implicit val rowToOrcid : Column[Orcid] = Column(Column.rowToString(_, _).map(new Orcid(_)))
 }

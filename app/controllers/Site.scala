@@ -8,6 +8,7 @@ import          i18n.Messages
 import          db.slick
 import             slick.DB
 import             slick.Config.driver.simple.{Session=>DBConnection,_}
+import dbrary._
 import util._
 import models._
 

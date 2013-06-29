@@ -6,11 +6,12 @@ import scala.slick.driver.BasicProfile
 import scala.slick.lifted._
 import scala.slick.session.{PositionedParameters,PositionedResult,Session}
 import scala.slick.util.{RecordLinearizer,NaturalTransformation2}
-import java.sql.{Timestamp,SQLException}
+import anorm._
+import dbrary._
 
-class CachedVal[T <: AnyRef](init : Session => T) {
+class CachedVal[T <: AnyRef, S](init : S => T) {
   private var x : Option[T] = None
-  def apply(db : Session) : T = x.getOrElse(update(init(db)))
+  def apply(s : S) : T = x.getOrElse(update(init(s)))
   def update(v : T) : T = {
     x = Some(v)
     v
@@ -18,101 +19,131 @@ class CachedVal[T <: AnyRef](init : Session => T) {
 }
 
 object CachedVal {
-  def apply[T <: AnyRef](init : Session => T) = new CachedVal(init)
-  implicit def implicitGetCached[T <: AnyRef](x : CachedVal[T])(implicit db : Session) : T = x(db)
+  def apply[T <: AnyRef, S](init : S => T) = new CachedVal(init)
+  implicit def implicitGetCached[T <: AnyRef, S](x : CachedVal[T, S])(implicit s : S) : T = x(s)
 }
 
-object DBFunctions {
-  val currentTimestamp = SimpleFunction.nullary[Timestamp]("transaction_timestamp")
-  val ilike = SimpleBinaryOperator[Boolean]("ILIKE")
-}
-
-abstract trait TableRow
-
-abstract class DBEnum(type_name : String) extends Enumeration {
-  private val typeMapperDelegate = new TypeMapperDelegate[Value] {
-    def zero = Value(0)
-    def sqlType = java.sql.Types.OTHER
-    def sqlTypeName = type_name
-    def setValue(v : Value, p : PositionedParameters) = p.setObject(v.toString, sqlType)
-    def setOption(v : Option[Value], p : PositionedParameters) = p.setObjectOption(v.map(_.toString), sqlType)
-    def nextValue(r : PositionedResult) : Value = {
-      val s = r.nextString;
-      if (r.rs.wasNull)
-        null
-      else
-        withName(s)
-    }
-    def updateValue(v : Value, r : PositionedResult) = r.updateString(v.toString)
-    override def valueToSQLLiteral(v : Value) = {
-      if (v eq null)
-        "NULL"
-      else
-        "'" + v.toString + "'"
-    }
-  }
-  implicit val typeMapper = new BaseTypeMapper[Value] {
-    def apply(profile : BasicProfile) = typeMapperDelegate
+private[models] abstract trait TableRow
+private[models] abstract class TableView(private[models] val table : String)
+private[models] abstract class TableViewId[R](table : String, id : R => Int) extends TableView(table) {
+  private[models] val row : RowParser[R]
+  private[models] val * = "*"
+  implicit val toStatement : ToStatement[R] = new ToStatement[R] {
+    def set(s: java.sql.PreparedStatement, index: Int, a: R) =
+      implicitly[ToStatement[Int]].set(s, index, id(a))
   }
 }
 
-/* It's not clear why Projection is only over Column and not ColumnBase, but this should work: */
-final class ColumnPair[T1,T2](_1 : ColumnBase[T1], _2 : ColumnBase[T2])
-  extends Tuple2(_1, _2) with ColumnBase[(T1,T2)] with ProductNode with Product {
-  lazy val nodeChildren = Vector(Node(_1), Node(_2))
-  def getLinearizedNodes : IndexedSeq[Node] = Vector(Node(_1), Node(_2))
-  def getResult(profile : BasicProfile, rs : PositionedResult) : (T1,T2) = (
-    _1.getResult(profile, rs),
-    _2.getResult(profile, rs)
-  )
-  def setParameter(profile : BasicProfile, ps : PositionedParameters, value : Option[(T1,T2)]) {
-    _1.setParameter(profile, ps, value.map(_._1))
-    _2.setParameter(profile, ps, value.map(_._2))
-  }
-  def updateResult(profile : BasicProfile, rs : PositionedResult, value : (T1,T2)) {
-    _1.updateResult(profile, rs, value._1)
-    _2.updateResult(profile, rs, value._2)
-  }
-  // def <>[R](f: ((T1,T2) => R), g: (R => Option[(T1,T2)])) = MappedProjection[R, (T1,T2)](this, { case (p1,p2) => f(p1,p2) }, g)(this)
-}
+object Anorm {
+  type Args = Seq[(Symbol, ParameterValue[_])]
+  def Args(args : (Symbol, ParameterValue[_])*) : Args = List(args : _*)
 
-class ViewShape[PackedBase, PackedView, UnpackedBase, UnpackedView](b : PackedView => PackedBase, f : UnpackedBase => UnpackedView, g : UnpackedView => UnpackedBase)(implicit baseShape : Shape[PackedBase, UnpackedBase, _])
-  extends IdentityShape[PackedView, UnpackedView]
-{
-  def linearizer(from : PackedView) = new RecordLinearizer[UnpackedView] {
-    private[this] val baseLinearizer = baseShape.linearizer(b(from)).asInstanceOf[RecordLinearizer[UnpackedBase]]
-    def getResult(profile : BasicProfile, rs : PositionedResult) : UnpackedView =
-      f(baseLinearizer.getResult(profile, rs))
-    def updateResult(profile : BasicProfile, rs : PositionedResult, value : UnpackedView) : Unit =
-      baseLinearizer.updateResult(profile, rs, g(value))
-    def setParameter(profile : BasicProfile, ps : PositionedParameters, value : Option[UnpackedView]): Unit =
-      baseLinearizer.setParameter(profile, ps, value.map(g))
-    def getLinearizedNodes : IndexedSeq[Node] =
-      baseLinearizer.getLinearizedNodes
+  def insertArgs(args : Args) = {
+    val names = args.map(_._1.name)
+    names.mkString("(", ", ", ")") + " VALUES " + names.mkString("({", "}, {", "})")
   }
-  def buildPacked(f : NaturalTransformation2[TypeMapper, ({ type L[X] = UnpackedView => X})#L, Column]) = impureShape
-}
 
-case class Inet(val ip : String)
+  def setArgs(args : Args, sep : String = ", ") =
+    args.map(_._1.name).map(n => n + " = {" + n + "}").mkString(sep)
 
-object Inet {
-  private[this] val typeMapperDelegate = new TypeMapperDelegate[Inet] {
-    def zero = Inet("0.0.0.0")
-    def sqlType = java.sql.Types.OTHER
-    def sqlTypeName = "inet"
-    def setValue(v : Inet, p : PositionedParameters) = p.setObject(v.ip, sqlType)
-    def setOption(v : Option[Inet], p : PositionedParameters) = p.setObjectOption(v.map(_.ip), sqlType)
-    def nextValue(r : PositionedResult) : Inet = {
-      val s = r.nextString;
-      if (r.rs.wasNull)
-        null
-      else
-        Inet(s)
-    }
-    def updateValue(v : Inet, r : PositionedResult) = r.updateString(v.ip)
-    override def valueToSQLLiteral(v : Inet) = throw new SQLException("Inet literals not (yet) supported")
+  /* talk about boilerplate, but this sort of arity overloading seems to be ubiquitous in scala */
+  def rowMap[C1,B](f : (C1) => B
+    , a1 : String
+    )(implicit 
+      c1: anorm.Column[C1]
+    ) : RowParser[B] = RowParser[B] { row =>
+    (for {
+      r1 <- row.get[C1](a1)(c1)
+    } yield f(r1)).fold(e => Error(e), b => Success(b))
   }
-  implicit val typeMapper = new BaseTypeMapper[Inet] {
-    def apply(profile : BasicProfile) = typeMapperDelegate
+  def rowMap[C1,C2,B](f : (C1,C2) => B
+    , a1 : String
+    , a2 : String
+    )(implicit 
+      c1 : anorm.Column[C1], 
+      c2 : anorm.Column[C2]
+    ) : RowParser[B] = RowParser[B] { row =>
+    (for {
+      r1 <- row.get[C1](a1)(c1)
+      r2 <- row.get[C2](a2)(c2)
+    } yield f(r1, r2)).fold(e => Error(e), b => Success(b))
+  }
+  def rowMap[C1,C2,C3,B](f : (C1,C2,C3) => B
+    , a1 : String
+    , a2 : String
+    , a3 : String
+    )(implicit 
+      c1 : anorm.Column[C1], 
+      c2 : anorm.Column[C2],
+      c3 : anorm.Column[C3]
+    ) : RowParser[B] = RowParser[B] { row =>
+    (for {
+      r1 <- row.get[C1](a1)(c1)
+      r2 <- row.get[C2](a2)(c2)
+      r3 <- row.get[C3](a3)(c3)
+    } yield f(r1, r2, r3)).fold(e => Error(e), b => Success(b))
+  }
+  def rowMap[C1,C2,C3,C4,B](f : (C1,C2,C3,C4) => B
+    , a1 : String
+    , a2 : String
+    , a3 : String
+    , a4 : String
+    )(implicit 
+      c1 : anorm.Column[C1], 
+      c2 : anorm.Column[C2],
+      c3 : anorm.Column[C3],
+      c4 : anorm.Column[C4]
+    ) : RowParser[B] = RowParser[B] { row =>
+    (for {
+      r1 <- row.get[C1](a1)(c1)
+      r2 <- row.get[C2](a2)(c2)
+      r3 <- row.get[C3](a3)(c3)
+      r4 <- row.get[C4](a4)(c4)
+    } yield f(r1, r2, r3, r4)).fold(e => Error(e), b => Success(b))
+  }
+  def rowMap[C1,C2,C3,C4,C5,B](f : (C1,C2,C3,C4,C5) => B
+    , a1 : String
+    , a2 : String
+    , a3 : String
+    , a4 : String
+    , a5 : String
+    )(implicit 
+      c1 : anorm.Column[C1], 
+      c2 : anorm.Column[C2],
+      c3 : anorm.Column[C3],
+      c4 : anorm.Column[C4],
+      c5 : anorm.Column[C5]
+    ) : RowParser[B] = RowParser[B] { row =>
+    (for {
+      r1 <- row.get[C1](a1)(c1)
+      r2 <- row.get[C2](a2)(c2)
+      r3 <- row.get[C3](a3)(c3)
+      r4 <- row.get[C4](a4)(c4)
+      r5 <- row.get[C5](a5)(c5)
+    } yield f(r1, r2, r3, r4, r5)).fold(e => Error(e), b => Success(b))
+  }
+  def rowMap[C1,C2,C3,C4,C5,C6,B](f : (C1,C2,C3,C4,C5,C6) => B
+    , a1 : String
+    , a2 : String
+    , a3 : String
+    , a4 : String
+    , a5 : String
+    , a6 : String
+    )(implicit 
+      c1 : anorm.Column[C1], 
+      c2 : anorm.Column[C2],
+      c3 : anorm.Column[C3],
+      c4 : anorm.Column[C4],
+      c5 : anorm.Column[C5],
+      c6 : anorm.Column[C6]
+    ) : RowParser[B] = RowParser[B] { row =>
+    (for {
+      r1 <- row.get[C1](a1)(c1)
+      r2 <- row.get[C2](a2)(c2)
+      r3 <- row.get[C3](a3)(c3)
+      r4 <- row.get[C4](a4)(c4)
+      r5 <- row.get[C5](a5)(c5)
+      r6 <- row.get[C6](a6)(c6)
+    } yield f(r1, r2, r3, r4, r5, r6)).fold(e => Error(e), b => Success(b))
   }
 }

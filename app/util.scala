@@ -9,5 +9,5 @@ trait Site {
   val identity : models.Identity
   val db : slick.session.Session
   def access = identity.access(db)
-  def clientIP : models.Inet
+  def clientIP : dbrary.Inet
 }

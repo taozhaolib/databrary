@@ -35,8 +35,8 @@
 	}
 
 		<dt>Studies</dt>
-		@controllers.Study.viewable(entity.id).map { s =>
-			<dd>@displayStudy(s)</dd>
+		@entity.studyAccess(dbrary.Permission.CONTRIBUTE).map { a =>
+			<dd>@displayStudy(a.study)</dd>
 		}
 
 	</dl>

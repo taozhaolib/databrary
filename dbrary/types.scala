@@ -2,38 +2,39 @@ package dbrary
 
 import org.postgresql._
 import org.postgresql.util._
+import java.sql.Timestamp
+import anorm._
 
-abstract class PGtype[S](pgType : String, pgValue : String) extends PGobject {
+class PGObject(pgType : String, pgValue : String) extends PGobject {
   setType(pgType)
   setValue(pgValue)
-  def unPG : S
 }
 
-class PGType[PG <: PGtype[S], S](pg : S => PG) {
-  import scala.language.implicitConversions
-  implicit def pgToScala(pg : PG) : S = pg.unPG
-  implicit def scalaToPg(s : S) : PG = pg(s)
+class PGType[A](pgType : String, f : String => A, g : A => String) {
+  implicit val column : Column[A] = Column.nonNull[A] { (value, meta) =>
+    val MetaDataItem(qualified, nullable, clazz) = meta
+    value match {
+      case obj: PGobject if obj.getType == pgType => Right(f(obj.getValue))
+      case obj: PGobject => Left(TypeDoesNotMatch("Incorrect type of object " + value + ":" + obj.getType + " for column " + qualified + ":" + pgType))
+      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to PGobject for column " + qualified))
+    }
+  }
+
+  implicit val statement : ToStatement[A] = new ToStatement[A] {
+    def set(s: java.sql.PreparedStatement, index: Int, a: A) =
+      s.setObject(index, new PGObject(pgType, g(a)))
+  }
 }
 
-
-case class Inet(ip : String)
-
-final class PGinet(s : Inet) extends PGtype[Inet]("inet", s.ip) {
-  def unPG = Inet(value)
-  def this() = this(Inet(""))
-}
-object PGinet extends PGType[PGinet,Inet](new PGinet(_))
-
-/*
-object PGBoot {
-  val pgTypes = Seq(
-    "inet" -> classOf[PGinet]
-  )
-
-  def init(db : PGConnection) = {
-    for ((t, c) <- pgTypes) {
-      db.addDataType(t, c)
+object Anorm {
+  implicit val columnTimestamp : Column[Timestamp] = Column.nonNull { (value, meta) =>
+    val MetaDataItem(qualified, nullable, clazz) = meta
+    value match {
+      case ts: Timestamp => Right(ts)
+      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to Timestamp for column " + qualified))
     }
   }
 }
-*/
+
+case class Inet(ip : String)
+object Inet extends PGType[Inet]("inet", new Inet(_), _.ip)

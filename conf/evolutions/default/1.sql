@@ -40,8 +40,8 @@ CREATE TABLE "audit_entity" (
 
 
 CREATE TABLE "account" (
-	"entity" integer NOT NULL Unique References "entity",
-	"username" varchar(32) NOT NULL Primary Key,
+	"id" integer NOT NULL Primary Key References "entity",
+	"username" varchar(32) NOT NULL Unique,
 	"email" varchar(256) NOT NULL, -- split out (multiple/user)?
 	"openid" varchar(256) -- split out (multiple/user)?
 );
@@ -50,9 +50,6 @@ COMMENT ON TABLE "account" IS 'Login information for entities associated with re
 CREATE TABLE "audit_account" (
 	LIKE "account"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
-
-CREATE VIEW "identity" AS
-	SELECT * FROM entity LEFT JOIN account ON (id = entity);
 
 
 CREATE TYPE permission AS ENUM ('NONE',

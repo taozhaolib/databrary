@@ -10,10 +10,4 @@ libraryDependencies in ThisBuild += "postgresql" % "postgresql" % "9.1-901-1.jdb
 
 libraryDependencies in ThisBuild += "fi.reaktor" %% "sqltyped" % "0.3.0-SNAPSHOT"
 
-initialize ~= { _ =>
-  System.setProperty("sqltyped.driver", "org.postgresql.Driver")
-  System.setProperty("sqltyped.url", "jdbc:postgresql:databrary?datatype.inet=dbrary.PGinet&datatype.permission=dbrary.PGpermission&datatype.audit_action=dbrary.PGaudit_action")
-  System.setProperty("sqltyped.schema", "public")
-  System.setProperty("sqltyped.username", "databrary")
-  System.setProperty("sqltyped.password", "")
-}
+libraryDependencies in ThisBuild += play.Project.anorm

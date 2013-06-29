@@ -1,4 +1,4 @@
-@(study : Study, access : Permission.Value, editForm : Form[(String,String)], accessForms : Seq[(Identity,Form[StudyAccess])], accessSearch : Form[String], accessResults : Seq[(Identity,Form[StudyAccess])])(implicit request : SiteRequest[_])
+@(study : Study, editForm : Form[(String,String)], accessForms : Seq[(Identity,Form[StudyAccess])], accessSearch : Form[String], accessResults : Seq[(Identity,Form[StudyAccess])])(implicit request : SiteRequest[_])
 
 @accessFields(entity : Identity, form : Form[StudyAccess])(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@displayEntity(entity)</td>
@@ -9,7 +9,7 @@
 @common("edit: " + study.title) {
 	<h1>@displayStudy(study)</h1>
 
-	@if(access >= Permission.EDIT) {
+	@if(study.permission >= Permission.EDIT) {
 	@helper.form(routes.Study.change(study.id)) {
 		@helper.inputText(editForm("title"))
 		@helper.textarea(editForm("description"))
@@ -18,7 +18,7 @@
 	@formErrors(editForm)
 	}
 
-	@if(access >= Permission.ADMIN) {
+	@if(study.permission >= Permission.ADMIN) {
 	<h2>Access</h2>
 	<table>
 	@defining(helper.FieldConstructor(tableFieldConstructor.f)) { implicit fieldConstructor =>

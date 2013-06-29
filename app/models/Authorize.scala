@@ -5,98 +5,61 @@ import play.api.db.slick
 import             slick.DB
 import             slick.Config.driver.simple._
 import java.sql.Timestamp
+import anorm._
+import anorm.SqlParser.scalar
+import dbrary._
+import dbrary.Anorm._
 import util._
 
-object Permission extends DBEnum("permission") {
-  val NONE, VIEW, DOWNLOAD, CONTRIBUTE, ADMIN = Value
-  // aliases or equivalent permissions (do not use val here)
-  def EDIT = CONTRIBUTE
-  def DATA = DOWNLOAD
-  def OWN = ADMIN
-}
-
 final case class Authorize(childId : Int, parentId : Int, access : Permission.Value, delegate : Permission.Value, authorized : Option[Timestamp], expires : Option[Timestamp]) extends TableRow {
-  val id = (childId, parentId)
+  private def id =
+    Anorm.Args('child -> childId, 'parent -> parentId)
+  private def args =
+    id ++ Anorm.Args('access -> access, 'delegate -> delegate, 'authorized -> authorized, 'expires -> expires)
 
   def set(implicit site : Site) : Unit = {
-    implicit val db = site.db
-    val r = Authorize.byId(id).map(_.update_*) update (access, delegate, authorized, expires)
-    val act = if (r == 0) {
-      /* possible race condition; should be done the other way but catching is too annoying */
-      Authorize.* insert this
-      AuditAction.add
-    } else
-      AuditAction.change
-    AuditAuthorize.add(act, this)
+    implicit val db = site.db.conn
+    val args = this.args
+    if (Audit.SQLon(AuditAction.change, Authorize.table, "SET access = {access}, delegate = {delegate}, authorized = {authorized}, expires = {expires} WHERE child = {child} AND parent = {parent}")(args : _*).executeUpdate() == 0)
+      Audit.SQLon(AuditAction.add, Authorize.table, Anorm.insertArgs(args))(args : _*).execute()
   }
-  def remove(implicit site : Site) : Unit = {
-    implicit val db = site.db
-    val r = Authorize.delete(id)
-    if (r > 0)
-      AuditAuthorize.add(AuditAction.remove, this)
-  }
+  def remove(implicit site : Site) : Unit =
+    Authorize.delete(childId, parentId)
 
-  private[this] val _child = CachedVal[Identity](Identity.get(childId)(_))
+  private[this] val _child = CachedVal[Identity, Session](Identity.get(childId)(_))
   def child(implicit db : Session) : Identity = _child
-  private[this] val _parent = CachedVal[Identity](Identity.get(parentId)(_))
+  private[this] val _parent = CachedVal[Identity, Session](Identity.get(parentId)(_))
   def parent(implicit db : Session) : Identity = _parent
 }
 
-object Authorize extends Table[Authorize]("authorize") {
-  def child = column[Int]("child")
-  def parent = column[Int]("parent")
-  def access = column[Permission.Value]("access")
-  def delegate = column[Permission.Value]("delegate")
-  def authorized = column[Option[Timestamp]]("authorized")
-  def expires = column[Option[Timestamp]]("expires")
+object Authorize extends TableView("authorize") {
+  private[this] val row = Anorm.rowMap(Authorize.apply _, "child", "parent", "access", "delegate", "authorized", "expires")
 
-  type Id = (Int,Int)
-  def id = child ~ parent
-  def * = child ~ parent ~ access ~ delegate ~ authorized ~ expires <> (apply _, unapply _)
-  private def update_* = access ~ delegate ~ authorized ~ expires
-
-  def key = primaryKey("authorize_pkey", (child, parent))
-  private[this] def childEntity = foreignKey("authorize_child_fkey", child, Entity)(_.id)
-  private[this] def parentEntity = foreignKey("authorize_parent_fkey", parent, Entity)(_.id)
-
-  private def byKey(c : Int, p : Int) = Query(this).where(t => t.child === c && t.parent === p)
-  private def byId(i : Id) = byKey(i._1, i._2)
-  def byChild(c : Int) = Query(this).where(_.child === c).sortBy(_.authorized.nullsLast)
-  def byParent(p : Int) = Query(this).where(_.parent === p).sortBy(_.authorized.nullsLast)
-
-  private[this] def _valid(a : Authorize.type) = 
-    a.authorized <= DBFunctions.currentTimestamp && (a.expires.isNull || a.expires > DBFunctions.currentTimestamp)
+  private[this] def select(all : Boolean) = 
+    "SELECT * FROM " + table + (if (all) "" else "_valid")
 
   def get(c : Int, p : Int)(implicit db : Session) : Option[Authorize] =
-    byKey(c, p).firstOption
-  def getParents(c : Int, all : Boolean)(implicit db : Session) : List[Authorize] = {
-    val l = byChild(c)
-    (if (all) l else l.filter(_valid(_))).list
-  }
-  def getChildren(p : Int, all : Boolean)(implicit db : Session) : List[Authorize] = {
-    val l = byParent(p)
-    (if (all) l else l.filter(_valid(_))).list
-  }
+    SQL(select(true) + " WHERE child = {child} AND parent = {parent}").
+      on('child -> c, 'parent -> p).singleOpt(row)(db.conn)
 
-  private def delete(i : Id)(implicit db : Session) =
-    byId(i).delete
+  private[models] def getParents(c : Int, all : Boolean)(implicit db : Session) =
+    SQL(select(all) + " WHERE child = {child}").
+      on('child -> c).list(row)(db.conn)
+  private[models] def getChildren(p : Int, all : Boolean)(implicit db : Session) =
+    SQL(select(all) + " WHERE parent = {parent}").
+      on('parent -> p).list(row)(db.conn)
 
-  val _access_check = SimpleFunction.unary[Int, Option[Permission.Value]]("authorize_access_check")
+  private def delete(c : Int, p : Int)(implicit site : Site) =
+    Audit.SQLon(AuditAction.remove, "authorize", "WHERE child = {child} AND parent = {parent}")('child -> c, 'parent -> p).
+      execute()(site.db.conn)
+
   def access_check(c : Int)(implicit db : Session) : Permission.Value =
-    Query(_access_check(c)).first.getOrElse(Permission.NONE)
+    SQL("SELECT authorize_access_check({id})").
+      on('id -> c).single(scalar[Option[Permission.Value]])(db.conn).
+      getOrElse(Permission.NONE)
 
-  private[this] val _delegate_check = SimpleFunction.binary[Int, Int, Option[Permission.Value]]("authorize_delegate_check")
   def delegate_check(c : Int, p : Int)(implicit db : Session) : Permission.Value =
-    Query(_delegate_check(c, p)).first.getOrElse(Permission.NONE)
-}
-
-object AuditAuthorize extends AuditTable[Authorize](Authorize) {
-  def child = column[Int]("child")
-  def parent = column[Int]("parent")
-  def access = column[Permission.Value]("access")
-  def delegate = column[Permission.Value]("delegate")
-  def authorized = column[Option[Timestamp]]("authorized")
-  def expires = column[Option[Timestamp]]("expires")
-
-  def row = child ~ parent ~ access ~ delegate ~ authorized ~ expires <> (Authorize.apply _, Authorize.unapply _)
+    SQL("SELECT authorize_delegate_check({child}, {parent})").
+      on('child -> c, 'parent -> p).single(scalar[Option[Permission.Value]])(db.conn).
+      getOrElse(Permission.NONE)
 }

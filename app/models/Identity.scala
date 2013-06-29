@@ -5,13 +5,15 @@ import scala.slick.lifted
 import collection.mutable.HashMap
 import java.sql.Timestamp
 import controllers.SiteRequest
+import anorm._
+import dbrary._
 import util._
 
 class Identity(entity : Entity) {
   final override def hashCode = id
   final def equals(o : Identity) = o.id == id
 
-  private def cache =
+  protected def cache =
     IdentityCache.add(this)
 
   final def id = entity.id
@@ -26,9 +28,11 @@ class Identity(entity : Entity) {
 
   final def authorizeParents(all : Boolean = false)(implicit db : Session) = Authorize.getParents(id, all)
   final def authorizeChildren(all : Boolean = false)(implicit db : Session) = Authorize.getChildren(id, all)
+
+  final def studyAccess(p : Permission.Value)(implicit site : Site) = StudyAccess.getStudies(id, p)
 }
 
-class User(entity : Entity, account : Account) extends Identity(entity) {
+final class User(entity : Entity, account : Account) extends Identity(entity) {
   final override def user = Some(this)
 
   final def username = account.username
@@ -48,68 +52,52 @@ private object IdentityCache extends HashMap[Int, Identity] {
   add(Identity.Root)
 }
 
-/* really a view, until slick has a better solution */
-object Identity extends Table[Identity]("identity") {
-  /* from entity */
-  def id = column[Int]("id")
-  def name = column[String]("name")
-  def orcid = column[Option[Orcid]]("orcid")
-
-  /* from account */
-  def username = column[String]("username")
-  def created = column[Timestamp]("created")
-  def email = column[String]("email")
-  def openid = column[Option[String]]("openid")
-  
-  def * = id ~ name ~ orcid ~ username.? ~ email.? ~ openid <> (apply _, unapply _)
-  def user_* = id ~ name ~ orcid ~ username ~ email ~ openid <> (User.apply _, User.unapply _)
-
-  def apply(id : Int, name : String, orcid : Option[Orcid], username : Option[String], email : Option[String], openid : Option[String]) = id match {
+object Identity extends TableViewId[Identity]("entity LEFT JOIN account USING (id)", _.id) {
+  private[this] def apply(id : Int, name : String, orcid : Option[Orcid], username : Option[String], email : Option[String], openid : Option[String]) = id match {
     case Entity.NOBODY => Nobody
     case Entity.ROOT => Root
     case _ => {
       val e = Entity(id, name, orcid)
-      username.fold(new Identity(e))(u => new User(e, Account(id, u, email.get, openid)))
+      username.fold(new Identity(e))(u => new User(e, new Account(id, u, email.get, openid)))
     }
   }
-
-  def unapply(i : Identity) = {
-    val u = i.user
-    Some((i.id, i.name, i.orcid, u.map(_.username), u.map(_.email), u.flatMap(_.openid)))
-  }
-
-  def byId(i : Int) = Query(this).where(_.id === i)
-
-  def byName(n : String) = {
-    // should clearly be improved and/or indexed
-    val w = "%" + n.split("\\s+").filter(!_.isEmpty).mkString("%") + "%"
-    Query(this).filter(i => i.username === n || DBFunctions.ilike(i.name, w))
-  }
+  private[models] val row = Anorm.rowMap(apply _, "id", "name", "orcid", "username", "email", "openid")
 
   def get(i : Int)(implicit db : Session) : Identity =
     IdentityCache.getOrElseUpdate(i, 
-      byId(i).firstOption.orNull)
+      SQL("SELECT * FROM " + table + " WHERE id = {id}").
+        on('id -> Some(i)).single(row)(db.conn))
 
-  def create(n : String)(implicit db : Session) : Identity =
+  def create(n : String)(implicit site : Site) : Identity =
     new Identity(Entity.create(n)).cache
+
+  private def byName = "username = {user} OR name ILIKE {name}"
+  private def byNameArgs(name : String) = Anorm.Args('user -> name, 'name -> name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%"))
+
+  def searchForAuthorize(name : String, who : Identity)(implicit db : Session) =
+    SQL("SELECT * FROM " + table + " WHERE " + byName + " AND id != {who} AND id NOT IN (SELECT child FROM authorize WHERE parent = {who} UNION SELECT parent FROM authorize WHERE child = {who}) LIMIT 8").
+      on(Anorm.Args('who -> who) ++ byNameArgs(name) : _*).list(row)(db.conn)
+
+  def searchForStudyAccess(name : String, study : Study)(implicit db : Session) =
+    SQL("SELECT * FROM " + table + " WHERE " + byName + " AND id NOT IN (SELECT entity FROM study_access WHERE study = {study}) LIMIT 8").
+      on(Anorm.Args('study -> study) ++ byNameArgs(name) : _*).list(row)(db.conn)
 
   final val Nobody = new Identity(Entity.Nobody)
   final val Root   = new Identity(Entity.Root)
 }
 
-object User {
-  def apply(id : Int, name : String, orcid : Option[Orcid], username : String, email : String, openid : Option[String]) = 
-    new User(Entity(id, name, orcid), Account(id, username, email, openid))
-  def unapply(u : User) =
-    Some((u.id, u.name, u.orcid, u.username, u.email, u.openid))
+object User extends TableViewId[User]("entity JOIN account USING (id)", _.id) {
+  private[this] def apply(id : Int, name : String, orcid : Option[Orcid], username : String, email : String, openid : Option[String]) =
+    new User(new Entity(id, name, orcid), new Account(id, username, email, openid))
+  private[models] val row = Anorm.rowMap(apply _, "id", "name", "orcid", "username", "email", "openid")
 
-  def byUsername(u : String) = Query(Identity).filter(_.username === u).map(_.user_*)
-
-  def get(i : Int)(implicit db : Session) : Option[User] = Identity.get(i).user
+  def get(i : Int)(implicit db : Session) : Option[User] = 
+    Identity.get(i).user
   def getUsername(u : String)(implicit db : Session) : Option[User] = 
-    byUsername(u).firstOption
+    SQL("SELECT * FROM " + table + " WHERE username = {username}").
+      on("username" -> u).singleOpt(row)(db.conn)/*.map(_.cache)*/
   def getOpenid(o : String, u : Option[String] = None)(implicit db : Session) : Option[User] = {
-    val q = Query(Identity).filter(_.openid === o)
-    u.fold(q)(u => q.filter(_.username === u)).map(_.user_*).firstOption
+    SQL("SELECT * FROM " + table + " WHERE openid = {openid} AND coalesce(username = {username}, 't') LIMIT 1").
+      on("openid" -> o, "username" -> u).singleOpt(row)(db.conn)/*.map(_.cache)*/
   }
 }

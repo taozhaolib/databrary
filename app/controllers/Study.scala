@@ -9,30 +9,22 @@ import               Forms._
 import          db.slick.DB
 import          db.slick.Config.driver.simple._
 import          i18n.Messages
+import dbrary.Permission
 import models._
 
 object Study extends SiteController {
 
-  private[this] def check(i : Int, p : Permission.Value)(act : (Study, Permission.Value) => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
-    val a = StudyAccess.check(i, request.identity.id)
-    if (a < p)
-      Forbidden
-    else
-      act(models.Study.get(i).get, a)(request)
+  private[this] def check(i : Int, p : Permission.Value = Permission.VIEW)(act : Study => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
+    models.Study.get(i).fold(NotFound : Result)(s =>
+      if (s.permission < p)
+        Forbidden
+      else
+        act(s)(request))
   }
 
-  def view(i : Int) = check(i, Permission.VIEW) { (study, access) => implicit request =>
-    Ok(views.html.study(study, access))
+  def view(i : Int) = check(i) { study => implicit request =>
+    Ok(views.html.study(study))
   }
-
-  /* list of studies belonging to entity e and viewable by the current identity
-   * poorly named, and should go elsewhere/be generalized to other searches */
-  def viewable(e : Int)(implicit request : SiteRequest[_]) =
-    (for { 
-      a <- StudyAccess.byEntity(e, Permission.CONTRIBUTE).sortBy(_.access.desc)
-      if StudyAccess.filterForEntity(request.identity.id)(a.studyId)
-      s <- a.study
-    } yield (s)).list
 
   private[this] val editForm = Form(tuple(
     "title" -> nonEmptyText,
@@ -60,24 +52,24 @@ object Study extends SiteController {
     "name" -> nonEmptyText
   )
 
-  private[this] def viewEdit(study : Study, access : Permission.Value)(
+  private[this] def viewEdit(study : Study)(
     editForm : Form[(String,String)] = editFormFill(study),
     accessChangeForm : Option[(Identity,Form[StudyAccess])] = None,
     accessSearchForm : Form[String] = accessSearchForm,
     accessResults : Seq[(Identity,Form[StudyAccess])] = Seq())(
     implicit request : SiteRequest[_]) = {
     val accessChange = accessChangeForm.map(_._1.id)
-    val accessForms = study.access().filter(a => Some(a.entityId) != accessChange).map(a => (a.entity, accessForm(study, a.entityId).fill(a))) ++ accessChangeForm
-    views.html.studyEdit(study, access, editForm, accessForms, accessSearchForm, accessResults)
+    val accessForms = study.entityAccess().filter(a => Some(a.entityId) != accessChange).map(a => (a.entity, accessForm(study, a.entityId).fill(a))) ++ accessChangeForm
+    views.html.studyEdit(study, editForm, accessForms, accessSearchForm, accessResults)
   }
 
-  def edit(i : Int) = check(i, Permission.EDIT) { (study, access) => implicit request =>
-    Ok(viewEdit(study, access)())
+  def edit(i : Int) = check(i, Permission.EDIT) { study => implicit request =>
+    Ok(viewEdit(study)())
   }
 
-  def change(i : Int) = check(i, Permission.EDIT) { (study, access) => implicit request =>
+  def change(i : Int) = check(i, Permission.EDIT) { study => implicit request =>
     editFormFill(study).bindFromRequest.fold(
-      form => BadRequest(viewEdit(study, access)(editForm = form)),
+      form => BadRequest(viewEdit(study)(editForm = form)),
       { case (title, description) =>
         study.change(title = title, description = maybe(description))
         Redirect(routes.Study.edit(study.id))
@@ -85,9 +77,9 @@ object Study extends SiteController {
     )
   }
 
-  def accessChange(i : Int, e : Int) = check(i, Permission.ADMIN) { (study, perm) => implicit request =>
+  def accessChange(i : Int, e : Int) = check(i, Permission.ADMIN) { study => implicit request =>
     accessForm(study, e).bindFromRequest.fold(
-      form => BadRequest(viewEdit(study, perm)(accessChangeForm = Some((Identity.get(e), form)))),
+      form => BadRequest(viewEdit(study)(accessChangeForm = Some((Identity.get(e), form)))),
       access => {
         access.set
         Redirect(routes.Study.edit(study.id))
@@ -95,26 +87,26 @@ object Study extends SiteController {
     )
   }
 
-  def accessDelete(i : Int, e : Int) = check(i, Permission.ADMIN) { (study, perm) => implicit request =>
+  def accessDelete(i : Int, e : Int) = check(i, Permission.ADMIN) { study => implicit request =>
     StudyAccess.get(study.id, e).filter(_.entityId != request.identity.id).map(_.remove)
     Redirect(routes.Study.edit(study.id))
   }
 
-  def accessSearch(i : Int) = check(i, Permission.ADMIN) { (study, perm) => implicit request =>
+  def accessSearch(i : Int) = check(i, Permission.ADMIN) { study => implicit request =>
     val form = accessSearchForm.bindFromRequest
     form.fold(
-      form => BadRequest(viewEdit(study, perm)(accessSearchForm = form)),
+      form => BadRequest(viewEdit(study)(accessSearchForm = form)),
       name => {
-        val res = Identity.byName(name).filter(_.id.notIn(StudyAccess.byStudy(study.id).map(_.entityId))).take(8).list
-        Ok(viewEdit(study, perm)(accessSearchForm = form, 
+        val res = Identity.searchForStudyAccess(name, study)
+        Ok(viewEdit(study)(accessSearchForm = form, 
           accessResults = res.map(e => (e,accessForm(study,e.id)))))
       }
     )
   }
 
-  def accessAdd(i : Int, e : Int) = check(i, Permission.ADMIN) { (study, perm) => implicit requet =>
+  def accessAdd(i : Int, e : Int) = check(i, Permission.ADMIN) { study => implicit requet =>
     accessForm(study, e).bindFromRequest.fold(
-      form => BadRequest(viewEdit(study, perm)(accessResults = Seq((Identity.get(e),form)))),
+      form => BadRequest(viewEdit(study)(accessResults = Seq((Identity.get(e),form)))),
       access => {
         access.set
         Redirect(routes.Study.edit(study.id))

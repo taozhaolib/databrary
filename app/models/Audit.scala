@@ -9,72 +9,27 @@ import scala.slick.driver.BasicProfile
 import scala.slick.lifted.{AbstractTable,ColumnBase}
 import scala.slick.session.{PositionedResult,PositionedParameters}
 import java.sql.Timestamp
+import anorm._
+import dbrary._
 import util._
-
-object AuditAction extends DBEnum("audit_action") {
-  val login, logout, add, change, remove, download = Value
-}
 
 case class Audit[T](who : Int, ip : Inet, action : AuditAction.Value, row : T) {
   def entity(implicit db : Session) = Identity.get(who)
 }
 
-class AuditProjection[T](who : Column[Int], ip : Column[Inet], action : Column[AuditAction.Value], row : ColumnBase[T])
-  extends Tuple4(who, ip, action, row) with ColumnBase[Audit[T]] with ProductNode with Product {
-  private[this] val columns = Vector(who, ip, action, row)
-  lazy val nodeChildren = columns.map(Node(_))
-  def getLinearizedNodes : IndexedSeq[Node] = nodeChildren
-  def getResult(profile : BasicProfile, rs : PositionedResult) = Audit(
-    who.getResult(profile, rs), 
-    ip.getResult(profile, rs), 
-    action.getResult(profile, rs), 
-    row.getResult(profile, rs)
-  )
-  def setParameter(profile : BasicProfile, ps : PositionedParameters, value : Option[Audit[T]]) {
-    who.setParameter(profile, ps, value.map(_.who))
-    ip.setParameter(profile, ps, value.map(_.ip))
-    action.setParameter(profile, ps, value.map(_.action))
-    row.setParameter(profile, ps, value.map(_.row))
+object Audit {
+  private[this] def acmd(action : AuditAction.Value) = action match {
+    case AuditAction.add => "INSERT INTO"
+    case AuditAction.change => "UPDATE"
+    case AuditAction.remove => "DELETE FROM"
   }
-  def updateResult(profile : BasicProfile, rs : PositionedResult, value : Audit[T]) {
-    who.updateResult(profile, rs, value.who)
-    ip.updateResult(profile, rs, value.ip)
-    action.updateResult(profile, rs, value.action)
-    row.updateResult(profile, rs, value.row)
-  }
-}
 
-abstract class AuditTable[T](protected val table : AbstractTable[T]) extends Table[Audit[T]](maybe(table.tableName).fold("audit")("audit_" + _)) {
-  def when = column[Timestamp]("when")
-  def who = column[Int]("who")
-  def ip = column[Inet]("ip")
-  def action = column[AuditAction.Value]("action")
+  private[this] def aargs(action : AuditAction.Value)(implicit site : Site) : List[(Symbol, ParameterValue[_])] =
+    List('audit_identity -> site.identity.id, 'audit_ip -> site.clientIP, 'audit_action -> action)
 
-  def row : ColumnBase[T]
-  def * = new AuditProjection[T](who, ip, action, row)
-  /* def * = new ColumnPair(when ~ who ~ ip ~ action, row) <> (
-    (a,r) => Audit(a._1, a._2, a._3, a._4, r), 
-    { case Audit(when, who, ip, action, row) => Some(((when, who, ip, action), row)) }
-  ) */
+  def SQLon(action : AuditAction.Value, table : String, stmt : String, returning : String = "")(args : (Symbol, ParameterValue[_])*)(implicit site : Site) =
+    SQL("WITH audit_row AS (" + acmd(action) + " " + table + " " + stmt + " RETURNING *) INSERT INTO audit_" + table + " SELECT CURRENT_TIMESTAMP, {audit_identity}, {audit_ip}, {audit_action}, * FROM audit_row" + maybe(returning).fold("")(" RETURNING " + _)).on(args ++ aargs(action) : _*)
 
-  private[this] def add(a : Audit[T])(implicit db : Session) : Unit =
-    * insert a
-  def add(action : AuditAction.Value, row : T)(implicit site : Site) : Unit =
-    add(Audit(site.identity.id, site.clientIP, action, row))(site.db)
-}
-
-object VoidTable extends Table[Unit]("") {
-  def * = new ColumnBase[Unit] with ProductNode /* with NullaryNode */ {
-    final def getLinearizedNodes : IndexedSeq[Node] = Vector()
-    final def getResult(profile : BasicProfile, rs : PositionedResult) = ()
-    final def setParameter(profile : BasicProfile, ps : PositionedParameters, value : Option[Unit]) = ()
-    final def updateResult(profile : BasicProfile, rs : PositionedResult, value : Unit) = ()
-    final val nodeChildren = Nil
-    protected[this] override final def nodeRebuild(ch : IndexedSeq[Node]) : Node = this
-  }
-}
-object Audit extends AuditTable[Unit](VoidTable) {
-  def row = table.*
-  def add(action : AuditAction.Value)(implicit site : Site) : Unit =
-    add(action, ())(site)
+  def add(action : AuditAction.Value)(implicit site : Site) =
+    SQL("INSERT INTO audit (who, ip, action) VALUES ({audit_identity}, {audit_ip}, {audit_action}").on(aargs(action) : _*)
 }

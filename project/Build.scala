@@ -9,12 +9,13 @@ object ApplicationBuild extends Build {
 
   val appDependencies = Seq(
     "com.typesafe.play" %% "play-slick" % "0.3.2",
-    "com.typesafe.slick" %% "slick" % "1.0.1",
-    "fi.reaktor" %% "sqltyped" % "0.3.0-SNAPSHOT"
+    "com.typesafe.slick" %% "slick" % "1.0.1"
   )
 
   val dbrary = Project("dbrary", file("dbrary"))
 
-  val main = play.Project(appName, appVersion, appDependencies).dependsOn(dbrary)
+  val main = play.Project(appName, appVersion, appDependencies).dependsOn(dbrary).settings(
+    templatesImport += "dbrary.Permission"
+  )
 
 }

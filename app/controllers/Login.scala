@@ -13,6 +13,7 @@ import          db.slick.DB
 import          db.slick.Config.driver.simple._
 import          i18n.Messages
 import models._
+import dbrary.AuditAction
 
 object Login extends Controller {
 

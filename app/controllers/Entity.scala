@@ -9,6 +9,7 @@ import               Forms._
 import          db.slick.DB
 import          db.slick.Config.driver.simple._
 import          i18n.Messages
+import dbrary.Permission
 import models._
 
 object Entity extends SiteController {
@@ -131,8 +132,7 @@ object Entity extends SiteController {
     form.fold(
       form => BadRequest(viewAdmin(entity)(authorizeWhich = Some(which), authorizeSearchForm = form)),
       name => {
-        val me = entity.id
-        val res = Identity.byName(name).filter(e => e.id =!= me && e.id.notIn(Authorize.byParent(me).map(_.child)) && e.id.notIn(Authorize.byChild(me).map(_.parent))).take(8).list
+        val res = Identity.searchForAuthorize(name, entity)
         Ok(viewAdmin(entity)(authorizeWhich = Some(which), authorizeSearchForm = form, 
           authorizeResults = res.map(e => (e,authorizeFormWhich(entity, e.id, which)
             /* TODO: fill expires */))))

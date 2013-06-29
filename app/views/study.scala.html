@@ -1,15 +1,15 @@
-@(study : Study, access : Permission.Value)(implicit request : SiteRequest[_])
+@(study : Study)(implicit request : SiteRequest[_])
 
 @common(study.title) {
 	<h1>@study.title</h1>
 
 	<ul>
-	@study.access(Permission.CONTRIBUTE)(request.db).map { a => 
+	@study.entityAccess(Permission.CONTRIBUTE)(request.db).map { a => 
 		<li>@displayEntity(a.entity(request.db))</li>
 	}
 	</ul>
 
-	@if(access >= Permission.EDIT) {
+	@if(study.permission >= Permission.EDIT) {
 		<a href='@routes.Study.edit(study.id)'>edit</a>
 	}
 
