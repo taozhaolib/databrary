@@ -9,12 +9,11 @@ object ApplicationBuild extends Build {
 
   val appDependencies = Seq(
     jdbc,
-    anorm
+    anorm,
+    "postgresql" % "postgresql" % "9.1-901-1.jdbc4" // "9.2-1002.jdbc4"
   )
 
-  val dbrary = Project("dbrary", file("dbrary"))
-
-  val main = play.Project(appName, appVersion, appDependencies).dependsOn(dbrary).settings(
+  val main = play.Project(appName, appVersion, appDependencies).settings(
     templatesImport += "dbrary.Permission"
   )
 
