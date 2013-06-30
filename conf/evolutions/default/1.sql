@@ -20,7 +20,7 @@ CREATE TABLE "audit" (
 	"ip" inet NOT NULL,
 	"action" audit_action NOT NULL
 ) WITH (OIDS = FALSE);
-COMMENT ON TABLE "audit" is 'Logs of all activities on the site, including access and modifications to any data. Each table has an associated audit table inheriting from this one.';
+COMMENT ON TABLE "audit" IS 'Logs of all activities on the site, including access and modifications to any data. Each table has an associated audit table inheriting from this one.';
 
 
 CREATE TABLE "entity" (
@@ -114,7 +114,7 @@ CREATE TABLE "study" (
 	"title" text NOT NULL,
 	"description" text
 );
-COMMENT ON TABLE "study" is 'Basic organizational unit for data.';
+COMMENT ON TABLE "study" IS 'Basic organizational unit for data.';
 
 CREATE TABLE "audit_study" (
 	LIKE "study"
@@ -156,9 +156,66 @@ $$;
 COMMENT ON FUNCTION "study_access_check" (integer, integer, permission) is 'Test if a given entity has the given permission [any] on the given study, either directly, inherited through site access, or delegated.';
 
 
+CREATE TYPE consent AS ENUM (
+	-- required permission:	site		study
+	'PUBLIC' 	-- 	NONE		VIEW		non-subject data
+	'DEIDENTIFIED', -- 	VIEW		VIEW		subject data without identifiers
+	'EXCERPTS', 	-- 	DOWNLOAD	DOWNLOAD	SHARED, but consented that excerpts may be PUBLIC
+	'SHARED', 	-- 	DOWNLOAD	DOWNLOAD	identified data authorized to be shared on databrary
+	'PRIVATE', 	-- 	DOWNLOAD	CONTRIBUTE	identified data not authorized for sharing
+);
+COMMENT ON TYPE consent IS 'Sensitivity levels that may apply to data according to the presence of protected identifiers and granted sharing level.  Does not necessarily map clearly to permission levels.';
+
+CREATE TABLE "object_type" (
+	"id" smallserial NOT NULL Primary Key,
+	"mimetype" varchar(128) NOT NULL,
+	"extension" varchar(8),
+	"description" text NOT NULL,
+	"timeseries" boolean NOT NULL Default FALSE
+);
+COMMENT ON TABLE "object_type" is 'Possible types for objects, sufficient for producing download headers.';
+COPY "object_type" (mimetype, description, extension) FROM STDIN;
+text/plain	txt	Plain text
+text/html	html	Hypertext markup
+application/pdf	pdf	Portable document
+image/jpeg	jpg	JPEG
+\.
+
+CREATE TABLE "object" (
+	"id" serial NOT NULL Primary Key,
+	"superseded" integer References "object", -- should this go on linkage
+	"created" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"type" smallint NOT NULL References "object_type",
+	"permission" consent NOT NULL,
+	"date" daterange
+);
+COMMENT ON TABLE "object" is 'Objects in storage along with their "constant" metadata.';
+
+CREATE TABLE "audit_object" (
+	LIKE "object"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
+CREATE TABLE "study_object" (
+	"object" integer NOT NULL References "object",
+	"study" integer NOT NULL References "study",
+	"title" text NOT NULL,
+	"description" text
+);
+COMMENT ON TABLE "study_object" is 'Object linkages into studies along with "dynamic" metadata.';
+
+CREATE TABLE "audit_study_object" (
+	LIKE "study_object"
+) INHERITS ("audit") WITH (OIDS = FALSE);
 
 # --- !Downs
 ;
+
+DROP TABLE "audit_study_object";
+DROP TABLE "study_object";
+DROP TABLE "audit_object";
+DROP TABLE "object";
+DROP TABLE "object_type";
+DROP TYPE consent;
 
 DROP FUNCTION "study_access_check" (integer, integer, permission);
 DROP TABLE "study_access";
