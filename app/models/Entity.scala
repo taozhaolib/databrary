@@ -26,7 +26,7 @@ private[models] final class Entity (val id : Int, name_ : String, orcid_ : Optio
     _orcid = orcid
   }
 
-  private[this] val _access = CachedVal[Permission.Value, Site.DB](Authorize.access_check(id)(_))
+  private val _access = CachedVal[Permission.Value, Site.DB](Authorize.access_check(id)(_))
   def access(implicit db : Site.DB) : Permission.Value = _access
 }
 
@@ -38,7 +38,6 @@ private[models] object Entity extends TableView("entity") {
   }
   private[this] val row = Anorm.rowMap(apply _, "id", "name", "orcid")
 
-
   def create(name : String)(implicit site : Site) : Entity = {
     val args = Anorm.Args('name -> name)
     Audit.SQLon(AuditAction.add, "entity", Anorm.insertArgs(args), "*")(args : _*).single(row)(site.db)
@@ -47,5 +46,7 @@ private[models] object Entity extends TableView("entity") {
   final val NOBODY : Int = -1
   final val ROOT   : Int = 0
   final val Nobody = new Entity(NOBODY, "Everybody")
+  Nobody._access() = Permission.NONE // anonymous users get this level
   final val Root   = new Entity(ROOT,   "Databrary")
+  Root._access() = null // the objective value is ADMIN but this should never be used
 }

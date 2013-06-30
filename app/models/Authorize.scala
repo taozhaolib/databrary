@@ -21,6 +21,11 @@ final case class Authorize(childId : Int, parentId : Int, access : Permission.Va
   def remove(implicit site : Site) : Unit =
     Authorize.delete(childId, parentId)
 
+  def valid = {
+    val now = (new java.util.Date).getTime
+    authorized.fold(false)(_.getTime < now) && expires.fold(true)(_.getTime > now)
+  }
+
   private[this] val _child = CachedVal[Identity, Site.DB](Identity.get(childId)(_))
   def child(implicit db : Site.DB) : Identity = _child
   private[this] val _parent = CachedVal[Identity, Site.DB](Identity.get(parentId)(_))
