@@ -12,7 +12,7 @@ import models._
 
 object Study extends SiteController {
 
-  private[this] def check(i : Int, p : Permission.Value = Permission.VIEW)(act : Study => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
+  private[this] def check(i : models.Study.Id, p : Permission.Value = Permission.VIEW)(act : Study => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
     models.Study.get(i).fold(NotFound : Result)(s =>
       if (s.permission < p)
         Forbidden
@@ -20,7 +20,7 @@ object Study extends SiteController {
         act(s)(request))
   }
 
-  def view(i : Int) = check(i) { study => implicit request =>
+  def view(i : models.Study.Id) = check(i) { study => implicit request =>
     Ok(views.html.study(study))
   }
 
@@ -30,10 +30,10 @@ object Study extends SiteController {
   ))
   private[this] def editFormFill(s : Study) = editForm.fill((s.title, s.description.getOrElse("")))
 
-  private[this] def accessForm(study : Study, entity : Int) : Form[StudyAccess] = Form(
+  private[this] def accessForm(study : Study, entity : Identity.Id) : Form[StudyAccess] = Form(
     mapping(
       "access" -> number(min=0, max=Permission.maxId-1),
-      "inherit" -> number(min=0, max=(if (entity > 0) Permission.EDIT else Permission.DOWNLOAD).id)
+      "inherit" -> number(min=0, max=(if (entity.unId > 0) Permission.EDIT else Permission.DOWNLOAD).id)
     )((access, inherit) => StudyAccess(
       study.id, entity, 
       Permission(access.max(inherit)),
@@ -61,11 +61,11 @@ object Study extends SiteController {
     views.html.studyEdit(study, editForm, accessForms, accessSearchForm, accessResults)
   }
 
-  def edit(i : Int) = check(i, Permission.EDIT) { study => implicit request =>
+  def edit(i : models.Study.Id) = check(i, Permission.EDIT) { study => implicit request =>
     Ok(viewEdit(study)())
   }
 
-  def change(i : Int) = check(i, Permission.EDIT) { study => implicit request =>
+  def change(i : models.Study.Id) = check(i, Permission.EDIT) { study => implicit request =>
     editFormFill(study).bindFromRequest.fold(
       form => BadRequest(viewEdit(study)(editForm = form)),
       { case (title, description) =>
@@ -75,7 +75,7 @@ object Study extends SiteController {
     )
   }
 
-  def accessChange(i : Int, e : Int) = check(i, Permission.ADMIN) { study => implicit request =>
+  def accessChange(i : models.Study.Id, e : Identity.Id) = check(i, Permission.ADMIN) { study => implicit request =>
     accessForm(study, e).bindFromRequest.fold(
       form => BadRequest(viewEdit(study)(accessChangeForm = Some((Identity.get(e), form)))),
       access => {
@@ -85,24 +85,25 @@ object Study extends SiteController {
     )
   }
 
-  def accessDelete(i : Int, e : Int) = check(i, Permission.ADMIN) { study => implicit request =>
-    StudyAccess.get(study.id, e).filter(_.entityId != request.identity.id).map(_.remove)
+  def accessDelete(i : models.Study.Id, e : Identity.Id) = check(i, Permission.ADMIN) { study => implicit request =>
+    if (e != request.identity.id)
+      StudyAccess.delete(study.id, e)
     Redirect(routes.Study.edit(study.id))
   }
 
-  def accessSearch(i : Int) = check(i, Permission.ADMIN) { study => implicit request =>
+  def accessSearch(i : models.Study.Id) = check(i, Permission.ADMIN) { study => implicit request =>
     val form = accessSearchForm.bindFromRequest
     form.fold(
       form => BadRequest(viewEdit(study)(accessSearchForm = form)),
       name => {
-        val res = Identity.searchForStudyAccess(name, study)
+        val res = Identity.searchForStudyAccess(name, study.id)
         Ok(viewEdit(study)(accessSearchForm = form, 
           accessResults = res.map(e => (e,accessForm(study,e.id)))))
       }
     )
   }
 
-  def accessAdd(i : Int, e : Int) = check(i, Permission.ADMIN) { study => implicit requet =>
+  def accessAdd(i : models.Study.Id, e : Identity.Id) = check(i, Permission.ADMIN) { study => implicit requet =>
     accessForm(study, e).bindFromRequest.fold(
       form => BadRequest(viewEdit(study)(accessResults = Seq((Identity.get(e),form)))),
       access => {

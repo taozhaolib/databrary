@@ -7,7 +7,7 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-final case class Authorize(childId : Int, parentId : Int, access : Permission.Value, delegate : Permission.Value, authorized : Option[Timestamp], expires : Option[Timestamp]) extends TableRow {
+final case class Authorize(childId : Identity.Id, parentId : Identity.Id, access : Permission.Value, delegate : Permission.Value, authorized : Option[Timestamp], expires : Option[Timestamp]) extends TableRow {
   private def id =
     Anorm.Args('child -> childId, 'parent -> parentId)
   private def args =
@@ -32,33 +32,33 @@ final case class Authorize(childId : Int, parentId : Int, access : Permission.Va
   def parent(implicit db : Site.DB) : Identity = _parent
 }
 
-object Authorize extends TableView("authorize") {
-  private[this] val row = Anorm.rowMap(Authorize.apply _, "child", "parent", "access", "delegate", "authorized", "expires")
+object Authorize extends TableView[Authorize]("authorize") {
+  private[models] val row = Anorm.rowMap(Authorize.apply _, "child", "parent", "access", "delegate", "authorized", "expires")
 
   private[this] def select(all : Boolean) = 
     "SELECT * FROM " + table + (if (all) "" else "_valid")
 
-  def get(c : Int, p : Int)(implicit db : Site.DB) : Option[Authorize] =
+  def get(c : Identity.Id, p : Identity.Id)(implicit db : Site.DB) : Option[Authorize] =
     SQL(select(true) + " WHERE child = {child} AND parent = {parent}").
       on('child -> c, 'parent -> p).singleOpt(row)
 
-  private[models] def getParents(c : Int, all : Boolean)(implicit db : Site.DB) =
+  private[models] def getParents(c : Identity.Id, all : Boolean)(implicit db : Site.DB) =
     SQL(select(all) + " WHERE child = {child}").
       on('child -> c).list(row)
-  private[models] def getChildren(p : Int, all : Boolean)(implicit db : Site.DB) =
+  private[models] def getChildren(p : Identity.Id, all : Boolean)(implicit db : Site.DB) =
     SQL(select(all) + " WHERE parent = {parent}").
       on('parent -> p).list(row)
 
-  private def delete(c : Int, p : Int)(implicit site : Site) =
+  def delete(c : Identity.Id, p : Identity.Id)(implicit site : Site) =
     Audit.SQLon(AuditAction.remove, "authorize", "WHERE child = {child} AND parent = {parent}")('child -> c, 'parent -> p).
       execute()(site.db)
 
-  def access_check(c : Int)(implicit db : Site.DB) : Permission.Value =
+  private[models] def access_check(c : Identity.Id)(implicit db : Site.DB) : Permission.Value =
     SQL("SELECT authorize_access_check({id})").
       on('id -> c).single(scalar[Option[Permission.Value]]).
       getOrElse(Permission.NONE)
 
-  def delegate_check(c : Int, p : Int)(implicit db : Site.DB) : Permission.Value =
+  private[models] def delegate_check(c : Identity.Id, p : Identity.Id)(implicit db : Site.DB) : Permission.Value =
     SQL("SELECT authorize_delegate_check({child}, {parent})").
       on('child -> c, 'parent -> p).single(scalar[Option[Permission.Value]]).
       getOrElse(Permission.NONE)

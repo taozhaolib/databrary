@@ -5,7 +5,7 @@ import anorm._
 import dbrary._
 import util._
 
-case class Audit[T](who : Int, ip : Inet, action : AuditAction.Value, row : T) {
+case class Audit[T](who : Identity.Id, ip : Inet, action : AuditAction.Value, row : T) {
   def entity(implicit db : Site.DB) = Identity.get(who)
 }
 

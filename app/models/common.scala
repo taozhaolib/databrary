@@ -1,5 +1,6 @@
 package models
 
+import play.api.mvc.PathBindable
 import anorm._
 import dbrary._
 
@@ -19,14 +20,16 @@ object CachedVal {
 }
 
 private[models] abstract trait TableRow
-private[models] abstract class TableView(private[models] val table : String)
-private[models] abstract class TableViewId[R](table : String, id : R => Int) extends TableView(table) {
+private[models] abstract class TableView[R <: TableRow](private[models] val table : String) {
   private[models] val row : RowParser[R]
   private[models] val * = "*"
-  implicit val toStatement : ToStatement[R] = new ToStatement[R] {
-    def set(s: java.sql.PreparedStatement, index: Int, a: R) =
-      implicitly[ToStatement[Int]].set(s, index, id(a))
-  }
+}
+private[models] abstract class TableViewId[R <: TableRow](table : String) extends TableView[R](table) {
+  class Id private[TableViewId] (val unId : Int)
+  def asId(i : Int) : Id = new Id(i)
+  implicit val pathBindableId : PathBindable[Id] = implicitly[PathBindable[Int]].transform(asId _, _.unId)
+  implicit val toStatementId : ToStatement[Id] = dbrary.Anorm.toStatementMap[Id,Int](_.unId)
+  implicit val columnId : Column[Id] = dbrary.Anorm.columnMap[Id,Int](asId _)
 }
 
 object Anorm {

@@ -1,9 +1,9 @@
-@(entity : Identity)(implicit request : SiteRequest[_])
+@(entity : Identity, delegated : dbrary.Permission.Value)(implicit request : SiteRequest[_])
 
 @common(entity.name) {
 	<h1>@entity.name</h1>
 
-	@if(Authorize.delegate_check(request.identity.id, entity.id)(request.db) >= Permission.ADMIN) {
+	@if(delegated >= Permission.ADMIN) {
 		<a href='@routes.Entity.admin(entity.id)'>admin</a>
 	}
 
@@ -35,9 +35,13 @@
 	}
 
 		<dt>Studies</dt>
-		@entity.studyAccess(dbrary.Permission.CONTRIBUTE).map { a =>
+		@if(delegated >= Permission.ADMIN) {
+			<dd>TODO: Create new study</dd>
+		}
+		@entity.studyAccess(Permission.CONTRIBUTE).map { a =>
 			<dd>@displayStudy(a.study)</dd>
 		}
+
 
 	</dl>
 }

@@ -24,7 +24,7 @@ class UserRequest[A](request : Request[A], val user : User, db : util.Site.DB)
 object SiteAction {
   private[this] def getUser(request : Request[_])(implicit db : util.Site.DB) : Option[User] =
     request.session.get("user").flatMap { i => 
-      try { Some(i.toInt) }
+      try { Some(Identity.asId(i.toInt)) }
       catch { case e:java.lang.NumberFormatException => None }
     }.flatMap(User.get _)
 
@@ -49,7 +49,7 @@ class SiteController extends Controller {
 object Site extends SiteController {
   
   def start = SiteAction(request => Ok(Login.viewLogin()), implicit request =>
-    Ok(views.html.entity(request.identity)))
+    Ok(views.html.entity(request.identity, Permission.ADMIN)))
 
   def test = Action { request => DB.withConnection { implicit db =>
     Ok("Ok")

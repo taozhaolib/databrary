@@ -12,12 +12,12 @@ import models._
 
 object Entity extends SiteController {
 
-  def view(i : Int) = SiteAction { implicit request =>
+  def view(i : Identity.Id) = SiteAction { implicit request =>
     var e = Identity.get(i)
     if (e eq null)
       NotFound
     else
-      Ok(views.html.entity(e))
+      Ok(views.html.entity(e, e.delegated))
   }
 
   type EntityForm = Form[(String, Option[Orcid])]
@@ -35,7 +35,7 @@ object Entity extends SiteController {
   ))
   private[this] def accountFormFill(u : User) : AccountForm = accountForm.fill((u.email, u.openid.getOrElse("")))
 
-  private[this] def authorizeForm(child : Int, parent : Int, which : Boolean = false) : Form[Authorize] = Form(
+  private[this] def authorizeForm(child : Identity.Id, parent : Identity.Id, which : Boolean = false) : Form[Authorize] = Form(
     mapping(
       "access" -> number(min=0, max=Permission.maxId-1),
       "delegate" -> number(min=0, max=Permission.maxId-1),
@@ -55,7 +55,7 @@ object Entity extends SiteController {
     )
   )
 
-  private[this] def authorizeFormWhich(me : Identity, other : Int, which : Boolean) =
+  private[this] def authorizeFormWhich(me : Identity, other : Identity.Id, which : Boolean) =
     if (which)
       authorizeForm(me.id, other, which)
     else
@@ -78,18 +78,18 @@ object Entity extends SiteController {
     views.html.entityAdmin(entity, entityForm, accountForm, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
   }
   
-  private[this] def checkAdmin(i : Int)(act : Identity => UserRequest[AnyContent] => Result) = UserAction { implicit request =>
-    if (Authorize.delegate_check(request.identity.id, i) < Permission.ADMIN)
+  private[this] def checkAdmin(i : Identity.Id)(act : Identity => UserRequest[AnyContent] => Result) = UserAction { implicit request =>
+    if (request.identity.delegatedBy(i) < Permission.ADMIN)
       Forbidden
     else
       act(Identity.get(i))(request)
   }
 
-  def admin(i : Int) = checkAdmin(i) { entity => implicit requset =>
+  def admin(i : Identity.Id) = checkAdmin(i) { entity => implicit requset =>
     Ok(viewAdmin(entity)()) 
   }
 
-  def change(i : Int) = checkAdmin(i) { entity => implicit request =>
+  def change(i : Identity.Id) = checkAdmin(i) { entity => implicit request =>
     entityFormFill(entity).bindFromRequest.fold(
       form => BadRequest(viewAdmin(entity)(entityForm = form)),
       { case (name, orcid) =>
@@ -99,7 +99,7 @@ object Entity extends SiteController {
     )
   }
 
-  def changeAccount(i : Int) = checkAdmin(i) { entity => implicit request =>
+  def changeAccount(i : Identity.Id) = checkAdmin(i) { entity => implicit request =>
     val u = entity.user.get
     accountFormFill(u).bindFromRequest.fold(
       form => BadRequest(viewAdmin(entity)(accountForm = Some(form))),
@@ -110,7 +110,7 @@ object Entity extends SiteController {
     )
   }
 
-  def authorizeChange(i : Int, child : Int) = checkAdmin(i) { entity => implicit request =>
+  def authorizeChange(i : Identity.Id, child : Identity.Id) = checkAdmin(i) { entity => implicit request =>
     authorizeForm(child, entity.id).bindFromRequest.fold(
       form => BadRequest(viewAdmin(entity)(authorizeChangeForm = Some((Identity.get(child), form)))),
       authorize => {
@@ -120,17 +120,17 @@ object Entity extends SiteController {
     )
   }
 
-  def authorizeDelete(i : Int, child : Int) = checkAdmin(i) { entity => implicit request =>
-    models.Authorize.get(child, entity.id).map(_.remove)
+  def authorizeDelete(i : Identity.Id, child : Identity.Id) = checkAdmin(i) { entity => implicit request =>
+    models.Authorize.delete(child, entity.id)
     Redirect(routes.Entity.admin(entity.id))
   }
 
-  def authorizeSearch(i : Int, which : Boolean) = checkAdmin(i) { entity => implicit request =>
+  def authorizeSearch(i : Identity.Id, which : Boolean) = checkAdmin(i) { entity => implicit request =>
     val form = authorizeSearchForm.bindFromRequest
     form.fold(
       form => BadRequest(viewAdmin(entity)(authorizeWhich = Some(which), authorizeSearchForm = form)),
       name => {
-        val res = Identity.searchForAuthorize(name, entity)
+        val res = Identity.searchForAuthorize(name, entity.id)
         Ok(viewAdmin(entity)(authorizeWhich = Some(which), authorizeSearchForm = form, 
           authorizeResults = res.map(e => (e,authorizeFormWhich(entity, e.id, which)
             /* TODO: fill expires */))))
@@ -138,7 +138,7 @@ object Entity extends SiteController {
     )
   }
 
-  def authorizeAdd(i : Int, which : Boolean, other : Int) = checkAdmin(i) { entity => implicit request =>
+  def authorizeAdd(i : Identity.Id, which : Boolean, other : Identity.Id) = checkAdmin(i) { entity => implicit request =>
     authorizeFormWhich(entity, other, which).bindFromRequest.fold(
       form => BadRequest(viewAdmin(entity)(authorizeWhich = Some(which), authorizeResults = Seq((Identity.get(other), form)))),
       authorize => {

@@ -34,6 +34,14 @@ object Anorm {
       case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to Timestamp for column " + qualified))
     }
   }
+
+  def toStatementMap[A,S](f : A => S)(implicit ts : ToStatement[S]) : ToStatement[A] = new ToStatement[A] {
+    def set(s: java.sql.PreparedStatement, index: Int, a: A) =
+      ts.set(s, index, f(a))
+  }
+  def columnMap[A,S](f : S => A)(implicit c : Column[S]) : Column[A] = Column(
+    c(_, _).map(f(_))
+  )
 }
 
 case class Inet(ip : String)

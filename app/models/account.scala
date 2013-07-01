@@ -4,8 +4,8 @@ import anorm._
 import dbrary._
 import util._
 
-private[models] final class Account (val id : Int, val username : String, email_ : String, openid_ : Option[String]) extends TableRow {
-  override def hashCode = id
+private[models] final class Account (val id : Entity.Id, val username : String, email_ : String, openid_ : Option[String]) extends TableRow {
+  override def hashCode = id.unId
   def equals(a : Account) = a.id == id
 
   private[this] var _email = email_
@@ -22,5 +22,8 @@ private[models] final class Account (val id : Int, val username : String, email_
   }
 }
 
-private[models] object Account extends TableView("account") {
+private[models] object Account extends TableView[Account]("account") {
+  private[this] def make(id : Entity.Id, username : String, email : String, openid : Option[String]) =
+    new Account(id, username, email, openid)
+  private[models] val row = Anorm.rowMap(make _, "id", "username", "email", "openid")
 }

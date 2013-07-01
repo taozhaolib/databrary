@@ -6,8 +6,8 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-private[models] final class Entity (val id : Int, name_ : String, orcid_ : Option[Orcid] = None) extends TableRow {
-  override def hashCode = id
+private[models] final class Entity (val id : Entity.Id, name_ : String, orcid_ : Option[Orcid] = None) extends TableRow {
+  override def hashCode = id.unId
   def equals(e : Entity) = e.id == id
 
   private[this] var _name = name_
@@ -30,21 +30,21 @@ private[models] final class Entity (val id : Int, name_ : String, orcid_ : Optio
   def access(implicit db : Site.DB) : Permission.Value = _access
 }
 
-private[models] object Entity extends TableView("entity") {
-  def apply(id : Int, name : String, orcid : Option[Orcid]) = id match {
+private[models] object Entity extends TableViewId[Entity]("entity") {
+  private[this] def make(id : Id, name : String, orcid : Option[Orcid]) = id match {
     case NOBODY => Nobody
     case ROOT => Root
-    case _ => new Entity(id, name, orcid)
+    case id => new Entity(id, name, orcid)
   }
-  private[this] val row = Anorm.rowMap(apply _, "id", "name", "orcid")
+  private[models] val row = Anorm.rowMap(make _, "id", "name", "orcid")
 
   def create(name : String)(implicit site : Site) : Entity = {
     val args = Anorm.Args('name -> name)
     Audit.SQLon(AuditAction.add, "entity", Anorm.insertArgs(args), "*")(args : _*).single(row)(site.db)
   }
 
-  final val NOBODY : Int = -1
-  final val ROOT   : Int = 0
+  final val NOBODY : Id = asId(-1)
+  final val ROOT   : Id = asId(0)
   final val Nobody = new Entity(NOBODY, "Everybody")
   Nobody._access() = Permission.NONE // anonymous users get this level
   final val Root   = new Entity(ROOT,   "Databrary")

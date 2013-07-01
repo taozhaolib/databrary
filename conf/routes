@@ -12,26 +12,26 @@ GET     /OpenID/:username           		controllers.Login.openID(username : String
 # should be POST:
 GET	/Logout					controllers.Login.logout
 
-GET	/entity/:id				controllers.Entity.view(id : Int)
-GET	/entity/:id/admin			controllers.Entity.admin(id : Int)
-POST	/entity/:id/Admin			controllers.Entity.change(id : Int)
-POST	/entity/:id/Account			controllers.Entity.changeAccount(id : Int)
-GET	/entity/:id/Authorize/search/child	controllers.Entity.authorizeSearch(id : Int, which : Boolean = false)
-GET	/entity/:id/Authorize/search/parent	controllers.Entity.authorizeSearch(id : Int, which : Boolean = true)
-POST	/entity/:id/Authorize/:child		controllers.Entity.authorizeChange(id : Int, child : Int)
-POST	/entity/:id/Authorize/:other/child	controllers.Entity.authorizeAdd(id : Int, which : Boolean = false, other : Int)
-POST	/entity/:id/Authorize/:other/parent	controllers.Entity.authorizeAdd(id : Int, which : Boolean = true, other : Int)
+GET	/entity/:id				controllers.Entity.view(id : models.Identity.Id)
+GET	/entity/:id/admin			controllers.Entity.admin(id : models.Identity.Id)
+POST	/entity/:id/Admin			controllers.Entity.change(id : models.Identity.Id)
+POST	/entity/:id/Account			controllers.Entity.changeAccount(id : models.Identity.Id)
+GET	/entity/:id/Authorize/search/child	controllers.Entity.authorizeSearch(id : models.Identity.Id, which : Boolean = false)
+GET	/entity/:id/Authorize/search/parent	controllers.Entity.authorizeSearch(id : models.Identity.Id, which : Boolean = true)
+POST	/entity/:id/Authorize/:child		controllers.Entity.authorizeChange(id : models.Identity.Id, child : models.Identity.Id)
+POST	/entity/:id/Authorize/:other/child	controllers.Entity.authorizeAdd(id : models.Identity.Id, which : Boolean = false, other : models.Identity.Id)
+POST	/entity/:id/Authorize/:other/parent	controllers.Entity.authorizeAdd(id : models.Identity.Id, which : Boolean = true, other : models.Identity.Id)
 # should be POST but currently used as link:
-GET	/entity/:id/Authorize/:child/delete	controllers.Entity.authorizeDelete(id : Int, child : Int)
+GET	/entity/:id/Authorize/:child/delete	controllers.Entity.authorizeDelete(id : models.Identity.Id, child : models.Identity.Id)
 
-GET	/study/:id				controllers.Study.view(id : Int)
-GET	/study/:id/edit				controllers.Study.edit(id : Int)
-POST	/study/:id/Edit				controllers.Study.change(id : Int)
-GET	/study/:id/Access/search		controllers.Study.accessSearch(id : Int)
-POST	/study/:id/Access/:entity/add		controllers.Study.accessAdd(id : Int, entity : Int)
+GET	/study/:id				controllers.Study.view(id : models.Study.Id)
+GET	/study/:id/edit				controllers.Study.edit(id : models.Study.Id)
+POST	/study/:id/Edit				controllers.Study.change(id : models.Study.Id)
+GET	/study/:id/Access/search		controllers.Study.accessSearch(id : models.Study.Id)
+POST	/study/:id/Access/:entity/add		controllers.Study.accessAdd(id : models.Study.Id, entity : models.Identity.Id)
 # should be POST:
-GET	/study/:id/Access/:entity/delete	controllers.Study.accessDelete(id : Int, entity : Int)
-POST	/study/:id/Access/:entity		controllers.Study.accessChange(id : Int, entity : Int)
+GET	/study/:id/Access/:entity/delete	controllers.Study.accessDelete(id : models.Study.Id, entity : models.Identity.Id)
+POST	/study/:id/Access/:entity		controllers.Study.accessChange(id : models.Study.Id, entity : models.Identity.Id)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               		controllers.Assets.at(path="/public", file)

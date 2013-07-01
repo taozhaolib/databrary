@@ -51,7 +51,7 @@ object Login extends Controller {
           User.getOpenid(info.id, maybe(username)).map { a =>
             implicit val arequest = new UserRequest(request, a, db)
             Audit.add(AuditAction.login)
-            Redirect(routes.Entity.view(a.id)).withSession("user" -> a.id.toString)
+            Redirect(routes.Entity.view(a.id)).withSession("user" -> a.id.unId.toString)
           }.getOrElse(
             BadRequest(viewLogin(Messages("login.openID.notFound", info.id)))
           )
