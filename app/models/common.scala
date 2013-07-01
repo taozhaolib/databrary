@@ -1,6 +1,6 @@
 package models
 
-import play.api.mvc.PathBindable
+import play.api.mvc.{PathBindable,QueryStringBindable}
 import anorm._
 import dbrary._
 
@@ -25,9 +25,12 @@ private[models] abstract class TableView[R <: TableRow](private[models] val tabl
   private[models] val * = "*"
 }
 private[models] abstract class TableViewId[R <: TableRow](table : String) extends TableView[R](table) {
-  class Id private[TableViewId] (val unId : Int)
+  class Id private[TableViewId] (val unId : Int) {
+    def ==(i : Id) = i.unId == unId // I don't understand why this is necessary
+  }
   def asId(i : Int) : Id = new Id(i)
-  implicit val pathBindableId : PathBindable[Id] = implicitly[PathBindable[Int]].transform(asId _, _.unId)
+  implicit val pathBindableId : PathBindable[Id] = PathBindable.bindableInt.transform(asId _, _.unId)
+  implicit val queryStringBindableId : QueryStringBindable[Id] = QueryStringBindable.bindableInt.transform(asId _, _.unId)
   implicit val toStatementId : ToStatement[Id] = dbrary.Anorm.toStatementMap[Id,Int](_.unId)
   implicit val columnId : Column[Id] = dbrary.Anorm.columnMap[Id,Int](asId _)
 }

@@ -1,4 +1,4 @@
-@(study : Study, editForm : Form[(String,String)], accessForms : Seq[(Identity,Form[StudyAccess])], accessSearch : Form[String], accessResults : Seq[(Identity,Form[StudyAccess])])(implicit request : SiteRequest[_])
+@(study : Study, editForm : Form[(String,Option[String])], accessForms : Seq[(Identity,Form[StudyAccess])], accessSearch : Form[String], accessResults : Seq[(Identity,Form[StudyAccess])])(implicit request : SiteRequest[_])
 
 @accessFields(entity : Identity, form : Form[StudyAccess])(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@displayEntity(entity)</td>

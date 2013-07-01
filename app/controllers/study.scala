@@ -26,9 +26,9 @@ object Study extends SiteController {
 
   private[this] val editForm = Form(tuple(
     "title" -> nonEmptyText,
-    "description" -> text
+    "description" -> optional(text)
   ))
-  private[this] def editFormFill(s : Study) = editForm.fill((s.title, s.description.getOrElse("")))
+  private[this] def editFormFill(s : Study) = editForm.fill((s.title, s.description))
 
   private[this] def accessForm(study : Study, entity : Identity.Id) : Form[StudyAccess] = Form(
     mapping(
@@ -51,7 +51,7 @@ object Study extends SiteController {
   )
 
   private[this] def viewEdit(study : Study)(
-    editForm : Form[(String,String)] = editFormFill(study),
+    editForm : Form[(String,Option[String])] = editFormFill(study),
     accessChangeForm : Option[(Identity,Form[StudyAccess])] = None,
     accessSearchForm : Form[String] = accessSearchForm,
     accessResults : Seq[(Identity,Form[StudyAccess])] = Seq())(
@@ -69,7 +69,7 @@ object Study extends SiteController {
     editFormFill(study).bindFromRequest.fold(
       form => BadRequest(viewEdit(study)(editForm = form)),
       { case (title, description) =>
-        study.change(title = title, description = maybe(description))
+        study.change(title = title, description = description.flatMap(maybe(_)))
         Redirect(routes.Study.edit(study.id))
       }
     )
@@ -111,5 +111,17 @@ object Study extends SiteController {
         Redirect(routes.Study.edit(study.id))
       }
     )
+  }
+
+  def create(e : Option[Identity.Id]) = UserAction { implicit request =>
+    val owner = e.getOrElse(request.identity.id)
+    if (request.identity.delegatedBy(owner) < Permission.CONTRIBUTE)
+      Forbidden
+    else {
+      val form = editForm.bindFromRequest
+      val study = (models.Study.create _).tupled(form.value.getOrElse(("New study", None)))
+      StudyAccess(study.id, owner, Permission.ADMIN, Permission.CONTRIBUTE).set
+      Ok(viewEdit(study)(editForm = form))
+    }
   }
 }

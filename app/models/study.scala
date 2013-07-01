@@ -6,7 +6,7 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-final class Study private (val id : Study.Id, title_ : String, description_ : Option[String], val permission : Permission.Value) extends TableRow {
+final class Study private (val id : Study.Id, title_ : String, description_ : Option[String]) extends TableRow {
   override def hashCode = id.unId
   def equals(a : Study) = a.id == id
 
@@ -26,12 +26,18 @@ final class Study private (val id : Study.Id, title_ : String, description_ : Op
     _description = description
   }
 
+  private val _permission = CachedVal[Permission.Value, Site](site => StudyAccess.check(id, site.identity.id)(site.db))
+  def permission(implicit site : Site) : Permission.Value = _permission
+
   def entityAccess(p : Permission.Value = Permission.NONE)(implicit db : Site.DB) = StudyAccess.getEntities(id, p)
 }
 
 object Study extends TableViewId[Study]("study") {
-  private[this] def make(id : Id, title : String, description : Option[String], access : Permission.Value) =
-    new Study(id, title, description, access)
+  private[this] def make(id : Id, title : String, description : Option[String], permission : Option[Permission.Value]) = {
+    val study = new Study(id, title, description)
+    permission.foreach(study._permission() = _)
+    study
+  }
   private[models] val row = Anorm.rowMap(make _, "id", "title", "description", "permission")
   private[models] val permission = "study_access_check(id, {identity})"
   private[models] override val * = "*, " + permission + " AS permission"
@@ -40,9 +46,9 @@ object Study extends TableViewId[Study]("study") {
     SQL("SELECT " + * + " FROM " + table + " WHERE id = {id} AND " + permission + " >= 'VIEW'").
       on('id -> i, 'identity -> site.identity.id).singleOpt(row)(site.db)
     
-  def create(title : String)(implicit site : Site) : Study = {
-    val args = Anorm.Args('title -> title)
-    Audit.SQLon(AuditAction.add, "study", Anorm.insertArgs(args), "*")(args : _*).single(row)(site.db)
+  def create(title : String, description : Option[String] = None)(implicit site : Site) : Study = {
+    val args = Anorm.Args('title -> title, 'description -> description)
+    Audit.SQLon(AuditAction.add, "study", Anorm.insertArgs(args), *)(args : _*).single(row)(site.db)
   }
 }
 
