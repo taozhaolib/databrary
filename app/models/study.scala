@@ -6,21 +6,16 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-final class Study private (val id : Study.Id, title_ : String, description_ : Option[String]) extends TableRow {
-  override def hashCode = id.unId
-  def equals(a : Study) = a.id == id
-
+final class Study private (val id : Study.Id, title_ : String, description_ : Option[String]) extends TableRowId(id.unId) {
   private[this] var _title = title_
   def title = _title
   private[this] var _description = description_
   def description = _description
 
-  private def args =
-    Anorm.Args('id -> id, 'title -> title, 'description -> description)
-
   def change(title : String = _title, description : Option[String] = _description)(implicit site : Site) : Unit = {
     if (title == _title && description == _description)
       return
+    val args = Anorm.Args('id -> id, 'title -> title, 'description -> description)
     Audit.SQLon(AuditAction.change, "study", "SET title = {title}, description = {description} WHERE id = {id}")(args : _*).execute()(site.db)
     _title = title
     _description = description
@@ -30,6 +25,7 @@ final class Study private (val id : Study.Id, title_ : String, description_ : Op
   def permission(implicit site : Site) : Permission.Value = _permission
 
   def entityAccess(p : Permission.Value = Permission.NONE)(implicit db : Site.DB) = StudyAccess.getEntities(id, p)
+  def objects(implicit db : Site.DB) = StudyObject.getObjects(id)
 }
 
 object Study extends TableViewId[Study]("study") {
@@ -42,7 +38,7 @@ object Study extends TableViewId[Study]("study") {
   private[models] val permission = "study_access_check(id, {identity})"
   private[models] override val * = "*, " + permission + " AS permission"
 
-  def get(i : Study.Id)(implicit site : Site) : Option[Study] =
+  def get(i : Id)(implicit site : Site) : Option[Study] =
     SQL("SELECT " + * + " FROM " + table + " WHERE id = {id} AND " + permission + " >= 'VIEW'").
       on('id -> i, 'identity -> site.identity.id).singleOpt(row)(site.db)
     

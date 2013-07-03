@@ -19,3 +19,7 @@ object Permission extends PGEnum("permission") {
 object AuditAction extends PGEnum("audit_action") {
   val login, logout, add, change, remove, download = Value
 }
+
+object Consent extends PGEnum("consent") {
+  val PUBLIC, IDENTIFIED, EXCERPTS, SHARED, PRIVATE = Value
+}

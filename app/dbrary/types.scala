@@ -2,7 +2,7 @@ package dbrary
 
 import org.postgresql._
 import org.postgresql.util._
-import java.sql.Timestamp
+import java.sql.{Timestamp,Date}
 import anorm._
 
 class PGObject(pgType : String, pgValue : String) extends PGobject {
@@ -32,6 +32,14 @@ object Anorm {
     value match {
       case ts: Timestamp => Right(ts)
       case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to Timestamp for column " + qualified))
+    }
+  }
+
+  implicit val columnDate : Column[Date] = Column.nonNull { (value, meta) =>
+    val MetaDataItem(qualified, nullable, clazz) = meta
+    value match {
+      case d: Date => Right(d)
+      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to Date for column " + qualified))
     }
   }
 

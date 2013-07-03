@@ -5,10 +5,7 @@ import anorm._
 import dbrary._
 import util._
 
-class Identity(private val entity : Entity) extends TableRow {
-  final override def hashCode = entity.hashCode
-  final def equals(o : Identity) = o.entity == entity
-
+class Identity(private val entity : Entity) extends TableRowId(entity.id.unId) {
   protected def cache =
     IdentityCache.add(this)
 

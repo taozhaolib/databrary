@@ -166,15 +166,15 @@ CREATE TYPE consent AS ENUM (
 );
 COMMENT ON TYPE consent IS 'Sensitivity levels that may apply to data according to the presence of protected identifiers and granted sharing level.  Does not necessarily map clearly to permission levels.';
 
-CREATE TABLE "object_type" (
-	"id" smallserial NOT NULL Primary Key,
+CREATE TABLE "format" (
+	"format" smallserial NOT NULL Primary Key,
 	"mimetype" varchar(128) NOT NULL,
 	"extension" varchar(8),
-	"description" text NOT NULL,
+	"name" text NOT NULL, -- an awful name but convenient to be distinct from other object fields
 	"timeseries" boolean NOT NULL Default FALSE
 );
-COMMENT ON TABLE "object_type" is 'Possible types for objects, sufficient for producing download headers.';
-COPY "object_type" (mimetype, description, extension) FROM STDIN;
+COMMENT ON TABLE "format" is 'Possible types for objects, sufficient for producing download headers.';
+COPY "format" (mimetype, extension, name) FROM STDIN;
 text/plain	txt	Plain text
 text/html	html	Hypertext markup
 application/pdf	pdf	Portable document
@@ -183,10 +183,9 @@ image/jpeg	jpg	JPEG
 
 CREATE TABLE "object" (
 	"id" serial NOT NULL Primary Key,
-	"superseded" integer References "object", -- should this go on linkage
-	"created" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	"type" smallint NOT NULL References "object_type",
-	"permission" consent NOT NULL,
+	-- "superseded" integer References "object", -- should this go on linkage?
+	"format" smallint NOT NULL References "format",
+	"consent" consent NOT NULL,
 	"date" daterange
 );
 COMMENT ON TABLE "object" is 'Objects in storage along with their "constant" metadata.';
@@ -196,10 +195,11 @@ CREATE TABLE "audit_object" (
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 CREATE TABLE "study_object" (
-	"object" integer NOT NULL References "object",
 	"study" integer NOT NULL References "study",
+	"object" integer NOT NULL References "object",
 	"title" text NOT NULL,
-	"description" text
+	"description" text,
+	Primary Key ("study", "object")
 );
 COMMENT ON TABLE "study_object" is 'Object linkages into studies along with "dynamic" metadata.';
 
@@ -214,7 +214,7 @@ DROP TABLE "audit_study_object";
 DROP TABLE "study_object";
 DROP TABLE "audit_object";
 DROP TABLE "object";
-DROP TABLE "object_type";
+DROP TABLE "format";
 DROP TYPE consent;
 
 DROP FUNCTION "study_access_check" (integer, integer, permission);

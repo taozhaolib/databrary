@@ -1,8 +1,12 @@
 package util
 
 object maybe {
-  def apply(s : String) =
-    if (s.isEmpty) None else Some(s)
+  /* is this in the standard library somewhere? could be generalized as "when"/comprehension guard */
+  def apply[A](a : A, f : A => Boolean) : Option[A] =
+    Some(a).filter(f)
+  /* special default for strings */
+  def apply(s : String, f : String => Boolean = !_.isEmpty) =
+    Some(s).filter(f)
 }
 
 object Site {

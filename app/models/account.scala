@@ -4,10 +4,7 @@ import anorm._
 import dbrary._
 import util._
 
-private[models] final class Account (val id : Entity.Id, val username : String, email_ : String, openid_ : Option[String]) extends TableRow {
-  override def hashCode = id.unId
-  def equals(a : Account) = a.id == id
-
+private[models] final class Account (val id : Entity.Id, val username : String, email_ : String, openid_ : Option[String]) extends TableRowId(id.unId) {
   private[this] var _email = email_
   def email = _email
   private[this] var _openid = openid_

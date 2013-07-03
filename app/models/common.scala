@@ -19,12 +19,16 @@ object CachedVal {
   implicit def implicitGetCached[T <: AnyRef, S](x : CachedVal[T, S])(implicit s : S) : T = x(s)
 }
 
-private[models] abstract trait TableRow
+private[models] abstract class TableRow
+private[models] abstract class TableRowId(private val _id : Int) extends TableRow {
+  override def hashCode = _id
+  def equals(a : this.type) = a._id == _id
+}
 private[models] abstract class TableView[R <: TableRow](private[models] val table : String) {
   private[models] val row : RowParser[R]
   private[models] val * = "*"
 }
-private[models] abstract class TableViewId[R <: TableRow](table : String) extends TableView[R](table) {
+private[models] abstract class TableViewId[R <: TableRowId](table : String) extends TableView[R](table) {
   class Id private[TableViewId] (val unId : Int) {
     def ==(i : Id) = i.unId == unId // I don't understand why this is necessary
   }

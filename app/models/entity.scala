@@ -6,21 +6,16 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-private[models] final class Entity (val id : Entity.Id, name_ : String, orcid_ : Option[Orcid] = None) extends TableRow {
-  override def hashCode = id.unId
-  def equals(e : Entity) = e.id == id
-
+private[models] final class Entity (val id : Entity.Id, name_ : String, orcid_ : Option[Orcid] = None) extends TableRowId(id.unId) {
   private[this] var _name = name_
   def name = _name
   private[this] var _orcid = orcid_
   def orcid = _orcid
 
-  private def args =
-    Anorm.Args('id -> id, 'name -> name, 'orcid -> orcid)
-
   def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Unit = {
     if (name == _name && orcid == _orcid)
       return
+    val args = Anorm.Args('id -> id, 'name -> name, 'orcid -> orcid)
     Audit.SQLon(AuditAction.change, "entity", "SET name = {name}, orcid = {orcid} WHERE id = {id}")(args : _*).execute()(site.db)
     _name = name
     _orcid = orcid
