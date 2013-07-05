@@ -1,0 +1,18 @@
+@(obj : StudyObject)(implicit request : SiteRequest[_])
+
+@common(obj.title) {
+	<h1><a href='@routes.Study.view(obj.studyId)'>@obj.study.title</a> &gt; @obj.title</h1>
+
+	<p>@obj.description</p>
+
+	<dl>
+		<dt>Format</dt>
+		<dd>@obj.obj.format.name</dd>
+		<dt>Consent</dt>
+		<dd>@obj.obj.consent</dd>
+		@obj.obj.date.map { date =>
+		<dt>Date</dt>
+		<dd>@date</dd>
+		}
+	</dl>
+}

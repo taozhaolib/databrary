@@ -13,11 +13,12 @@ import models._
 object Study extends SiteController {
 
   private[this] def check(i : models.Study.Id, p : Permission.Value = Permission.VIEW)(act : Study => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
-    models.Study.get(i).fold(NotFound : Result)(s =>
+    models.Study.get(i).fold(NotFound : Result) { s =>
       if (s.permission < p)
         Forbidden
       else
-        act(s)(request))
+        act(s)(request)
+    }
   }
 
   def view(i : models.Study.Id) = check(i) { study => implicit request =>
@@ -103,7 +104,7 @@ object Study extends SiteController {
     )
   }
 
-  def accessAdd(i : models.Study.Id, e : Identity.Id) = check(i, Permission.ADMIN) { study => implicit requet =>
+  def accessAdd(i : models.Study.Id, e : Identity.Id) = check(i, Permission.ADMIN) { study => implicit request =>
     accessForm(study, e).bindFromRequest.fold(
       form => BadRequest(viewEdit(study)(accessResults = Seq((Identity.get(e),form)))),
       access => {
@@ -123,5 +124,18 @@ object Study extends SiteController {
       StudyAccess(study.id, owner, Permission.ADMIN, Permission.CONTRIBUTE).set
       Ok(viewEdit(study)(editForm = form))
     }
+  }
+
+  private[this] def checkObject(i : models.Study.Id, o : models.Object.Id, p : Permission.Value = Permission.VIEW)(act : StudyObject => SiteRequest[AnyContent] => Result) = check(i) { study => implicit request =>
+    study.getObject(o).fold(NotFound : Result) { obj =>
+      if (obj.permission < p)
+        Forbidden
+      else
+        act(obj)(request)
+    }
+  }
+
+  def viewObject(i : models.Study.Id, o : models.Object.Id) = checkObject(i, o) { obj => implicit request =>
+    Ok(views.html.studyObject(obj))
   }
 }

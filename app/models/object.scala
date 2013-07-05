@@ -14,20 +14,23 @@ object ObjectFormat extends TableViewId[ObjectFormat]("format") {
   private[models] val row = Anorm.rowMap(ObjectFormat.apply _, "format", "mimetype", "extension", "name", "timeseries")
 }
 
-final class Object private (val id : Object.Id, val format : ObjectFormat, consent : Consent.Value, date_ : Date) extends TableRowId(id.unId) {
+final class Object private (val id : Object.Id, val format : ObjectFormat, consent_ : Consent.Value, date_ : Option[Date]) extends TableRowId(id.unId) {
+  private[this] var _consent = consent_
+  def consent = _consent
   private[this] var _date = date_
   def date = _date
 
-  def change(date : Date = _date)(implicit site : Site) : Unit = {
-    if (date == _date)
+  def change(consent : Consent.Value = _consent, date : Option[Date] = _date)(implicit site : Site) : Unit = {
+    if (date == _date && consent == _consent)
       return
-    Audit.SQLon(AuditAction.change, "object", "SET date = {date} WHERE id = {id}")('date -> date, 'id -> id).execute()(site.db)
+    Audit.SQLon(AuditAction.change, "object", "SET consent = {consent}, date = {date} WHERE id = {id}")('consent -> consent, 'date -> date, 'id -> id).execute()(site.db)
+    _consent = consent
     _date = date
   }
 }
 
-object Object extends TableViewId[Object]("object JOIN object_format USING (format)") {
-  private[models] val row = (Anorm.rowMap(Tuple3.apply[Id, Consent.Value, Date] _, "id", "consent", "date") ~ ObjectFormat.row).map({
+object Object extends TableViewId[Object]("object JOIN format USING (format)") {
+  private[models] val row = (Anorm.rowMap(Tuple3.apply[Id, Consent.Value, Option[Date]] _, "id", "consent", "date") ~ ObjectFormat.row).map({
     case ((id, consent, date) ~ format) => new Object(id, format, consent, date)
   })
   
@@ -36,7 +39,7 @@ object Object extends TableViewId[Object]("object JOIN object_format USING (form
       on('id -> i).singleOpt(row)
 }
 
-final class StudyObject private (val obj : Object, val study : Study.Id, title_ : String, description_ : Option[String]) extends TableRow {
+final class StudyObject private (val obj : Object, val studyId : Study.Id, title_ : String, description_ : Option[String]) extends TableRow {
   private[this] var _title = title_
   def title = _title
   private[this] var _description = description_
@@ -50,17 +53,31 @@ final class StudyObject private (val obj : Object, val study : Study.Id, title_ 
     _title = title
     _description = description
   }
+
+  private[StudyObject] val _study = CachedVal[Study, Site](Study.get(studyId)(_).get)
+  def study(implicit site : Site) : Study = _study
+
+  def permission(implicit site : Site) : Permission.Value = {
+    val p = study.permission
+    if (obj.consent > Consent.DEIDENTIFIED && (
+      (obj.consent > Consent.SHARED && p < Permission.EDIT) 
+      || site.access < Permission.DOWNLOAD))
+      Permission.NONE
+    else
+      p
+  }
 }
 
 object StudyObject extends TableView[StudyObject]("study_object JOIN (" + Object.table + ") ON (object = id)") {
   private[models] val row = (Anorm.rowMap(Tuple3.apply[Study.Id, String, Option[String]] _, "study", "title", "description") ~ Object.row).map({
     case ((study, title, description) ~ obj) => new StudyObject(obj, study, title, description)
   })
+  private[this] def rowStudy(s : Study) = row map { o => o._study() = s ; o }
 
-  def get(s : Study.Id, o : Object.Id)(implicit db : Site.DB) : Option[StudyObject] =
+  private[models] def get(s : Study, o : Object.Id)(implicit db : Site.DB) : Option[StudyObject] =
     SQL("SELECT * FROM " + table + " WHERE study = {study} AND object = {object}").
-      on('study -> s, 'object -> o).singleOpt(row)
-  def getObjects(s : Study.Id)(implicit db : Site.DB) =
+      on('study -> s.id, 'object -> o).singleOpt(rowStudy(s))
+  private[models] def getObjects(s : Study)(implicit db : Site.DB) =
     SQL("SELECT * FROM " + table + " WHERE study = {study}").
-      on('study -> s).list(row)
+      on('study -> s.id).list(rowStudy(s))
 }

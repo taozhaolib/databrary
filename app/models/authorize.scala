@@ -26,9 +26,9 @@ final case class Authorize(childId : Identity.Id, parentId : Identity.Id, access
     authorized.fold(false)(_.getTime < now) && expires.fold(true)(_.getTime > now)
   }
 
-  private[this] val _child = CachedVal[Identity, Site.DB](Identity.get(childId)(_))
+  private[Authorize] val _child = CachedVal[Identity, Site.DB](Identity.get(childId)(_))
   def child(implicit db : Site.DB) : Identity = _child
-  private[this] val _parent = CachedVal[Identity, Site.DB](Identity.get(parentId)(_))
+  private[Authorize] val _parent = CachedVal[Identity, Site.DB](Identity.get(parentId)(_))
   def parent(implicit db : Site.DB) : Identity = _parent
 }
 
@@ -42,12 +42,16 @@ object Authorize extends TableView[Authorize]("authorize") {
     SQL(select(true) + " WHERE child = {child} AND parent = {parent}").
       on('child -> c, 'parent -> p).singleOpt(row)
 
-  private[models] def getParents(c : Identity.Id, all : Boolean)(implicit db : Site.DB) =
+  private[models] def getParents(c : Identity, all : Boolean)(implicit db : Site.DB) =
     SQL(select(all) + " WHERE child = {child}").
-      on('child -> c).list(row)
-  private[models] def getChildren(p : Identity.Id, all : Boolean)(implicit db : Site.DB) =
+      on('child -> c.id).list(
+        row map { a => a._child() = c ; a }
+      )
+  private[models] def getChildren(p : Identity, all : Boolean)(implicit db : Site.DB) =
     SQL(select(all) + " WHERE parent = {parent}").
-      on('parent -> p).list(row)
+      on('parent -> p.id).list(
+        row map { a => a._parent() = p ; a }
+      )
 
   def delete(c : Identity.Id, p : Identity.Id)(implicit site : Site) =
     Audit.SQLon(AuditAction.remove, "authorize", "WHERE child = {child} AND parent = {parent}")('child -> c, 'parent -> p).

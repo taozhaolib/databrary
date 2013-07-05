@@ -33,6 +33,8 @@ POST	/study/:id/Access/:entity/add		controllers.Study.accessAdd(id : models.Stud
 GET	/study/:id/Access/:entity/delete	controllers.Study.accessDelete(id : models.Study.Id, entity : models.Identity.Id)
 POST	/study/:id/Access/:entity		controllers.Study.accessChange(id : models.Study.Id, entity : models.Identity.Id)
 POST	/study/Create				controllers.Study.create(owner : Option[models.Identity.Id] ?= None)
+# Not super happy with this path:
+GET	/study/:id/object/:obj			controllers.Study.viewObject(id : models.Study.Id, obj : models.Object.Id)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               		controllers.Assets.at(path="/public", file)

@@ -24,8 +24,9 @@ final class Study private (val id : Study.Id, title_ : String, description_ : Op
   private val _permission = CachedVal[Permission.Value, Site](site => StudyAccess.check(id, site.identity.id)(site.db))
   def permission(implicit site : Site) : Permission.Value = _permission
 
-  def entityAccess(p : Permission.Value = Permission.NONE)(implicit db : Site.DB) = StudyAccess.getEntities(id, p)
-  def objects(implicit db : Site.DB) = StudyObject.getObjects(id)
+  def entityAccess(p : Permission.Value = Permission.NONE)(implicit db : Site.DB) = StudyAccess.getEntities(this, p)
+  def objects(implicit db : Site.DB) = StudyObject.getObjects(this)
+  def getObject(o : Object.Id)(implicit db : Site.DB) = StudyObject.get(this, o)
 }
 
 object Study extends TableViewId[Study]("study") {
@@ -75,14 +76,16 @@ object StudyAccess extends TableView[StudyAccess]("study_access") {
     SQL("SELECT * FROM " + table + " WHERE study = {study} AND entity = {entity}").
       on('study -> s, 'entity -> e).singleOpt(row)
 
-  private[models] def getEntities(s : Study.Id, p : Permission.Value = Permission.NONE)(implicit db : Site.DB) =
+  private[models] def getEntities(s : Study, p : Permission.Value = Permission.NONE)(implicit db : Site.DB) =
     SQL("SELECT * FROM " + table + " JOIN " + Identity.table + " ON (entity = id) WHERE study = {study} AND access >= {access} ORDER BY access DESC").
-      on('study -> s, 'access -> p).list(row ~ Identity.row).
-      map({ case (a ~ e) => a._entity() = e; a })
-  private[models] def getStudies(e : Identity.Id, p : Permission.Value = Permission.NONE)(implicit site : Site) =
+      on('study -> s.id, 'access -> p).list((row ~ Identity.row).
+        map({ case (a ~ e) => a._entity() = e; a._study() = s; a })
+      )
+  private[models] def getStudies(e : Identity, p : Permission.Value = Permission.NONE)(implicit site : Site) =
     SQL("SELECT " + Study.* + " FROM " + table + " JOIN " + Study.table + " ON (study = id) WHERE entity = {entity} AND access >= {access} AND " + Study.permission + " >= 'VIEW' ORDER BY access DESC").
-      on('entity -> e, 'access -> p, 'identity -> site.identity.id).list(row ~ Study.row)(site.db).
-      map({ case (a ~ s) => a._study() = s; a })
+      on('entity -> e, 'access -> p, 'identity -> site.identity.id).list((row ~ Study.row).
+        map({ case (a ~ s) => a._study() = s; a._entity() = e; a })
+      )(site.db)
 
   def delete(s : Study.Id, e : Identity.Id)(implicit site : Site) =
     Audit.SQLon(AuditAction.remove, "study_access", "WHERE study = {study} AND entity = {entity}")('study -> s, 'entity -> e).

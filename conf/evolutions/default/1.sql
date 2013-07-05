@@ -158,11 +158,11 @@ COMMENT ON FUNCTION "study_access_check" (integer, integer, permission) is 'Test
 
 CREATE TYPE consent AS ENUM (
 	-- required permission:	site		study
-	'PUBLIC' 	-- 	NONE		VIEW		non-subject data
-	'DEIDENTIFIED', -- 	VIEW		VIEW		subject data without identifiers
+	'PUBLIC', 	-- 	-		VIEW		non-subject data
+	'DEIDENTIFIED', -- 	-		VIEW		subject data without identifiers
 	'EXCERPTS', 	-- 	DOWNLOAD	DOWNLOAD	SHARED, but consented that excerpts may be PUBLIC
 	'SHARED', 	-- 	DOWNLOAD	DOWNLOAD	identified data authorized to be shared on databrary
-	'PRIVATE', 	-- 	DOWNLOAD	CONTRIBUTE	identified data not authorized for sharing
+	'PRIVATE' 	-- 	-		CONTRIBUTE	identified data not authorized for sharing
 );
 COMMENT ON TYPE consent IS 'Sensitivity levels that may apply to data according to the presence of protected identifiers and granted sharing level.  Does not necessarily map clearly to permission levels.';
 
@@ -186,7 +186,7 @@ CREATE TABLE "object" (
 	-- "superseded" integer References "object", -- should this go on linkage?
 	"format" smallint NOT NULL References "format",
 	"consent" consent NOT NULL,
-	"date" daterange
+	"date" date
 );
 COMMENT ON TABLE "object" is 'Objects in storage along with their "constant" metadata.';
 

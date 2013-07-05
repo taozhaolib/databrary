@@ -19,12 +19,12 @@ class Identity(private val entity : Entity) extends TableRowId(entity.id.unId) {
   def changeEntity(name : String = name, orcid : Option[Orcid] = orcid)(implicit site : Site) =
     entity.change(name, orcid)
 
-  final def authorizeParents(all : Boolean = false)(implicit db : Site.DB) = Authorize.getParents(id, all)
-  final def authorizeChildren(all : Boolean = false)(implicit db : Site.DB) = Authorize.getChildren(id, all)
+  final def authorizeParents(all : Boolean = false)(implicit db : Site.DB) = Authorize.getParents(this, all)
+  final def authorizeChildren(all : Boolean = false)(implicit db : Site.DB) = Authorize.getChildren(this, all)
 
   final def delegated(implicit site : Site) = Authorize.delegate_check(site.identity.id, id)(site.db)
   final def delegatedBy(p : Identity.Id)(implicit site : Site) = Authorize.delegate_check(id, p)(site.db)
-  final def studyAccess(p : Permission.Value)(implicit site : Site) = StudyAccess.getStudies(id, p)
+  final def studyAccess(p : Permission.Value)(implicit site : Site) = StudyAccess.getStudies(this, p)
 }
 
 final class User(entity : Entity, account : Account) extends Identity(entity) {

@@ -2,7 +2,7 @@ package dbrary
 
 import org.postgresql._
 import org.postgresql.util._
-import java.sql.{Timestamp,Date}
+import java.sql.{Timestamp,Date,SQLException}
 import anorm._
 
 class PGObject(pgType : String, pgValue : String) extends PGobject {
@@ -54,3 +54,39 @@ object Anorm {
 
 case class Inet(ip : String)
 object Inet extends PGType[Inet]("inet", new Inet(_), _.ip)
+
+abstract class PGRangeBase[A] {
+  def toString : String
+}
+class PGRangeEmpty[A] extends PGRangeBase[A] {
+  override def toString = "empty"
+}
+class PGRange[A](val li : Boolean, val lb : Option[A], val ub : Option[A], val ui : Boolean) extends PGRangeBase[A] {
+  override def toString = (if (li) "[" else "(") + lb.map(_.toString).getOrElse("") + "," + ub.map(_.toString).getOrElse("") + (if (ui) "]" else ")")
+}
+class PGRangeCanonical[A](lbi : A, ube : A) extends PGRange[A](true, Some(lbi), Some(ube), false)
+class PGRangeConstructor[A](f : String => A) {
+  def apply(s : String) : PGRangeBase[A] = {
+    if (s == "empty" || s.isEmpty)
+      return new PGRangeEmpty[A]
+    val li = s.head match {
+      case '[' => true
+      case '(' => false
+      case _ => throw new SQLException("Invalid range: " + s)
+    }
+    val c = s.indexOf(',', 1)
+    if (c < 0)
+      throw new SQLException("Invalid range: " + s)
+    val lb = if (c == 1) None else Some(f(s.substring(1,c)))
+    val l = s.size
+    val ub = if (c == l-2) None else Some(f(s.substring(c+1,l-1)))
+    val ui = s.last match {
+      case ']' => true
+      case ')' => false
+      case _ => throw new SQLException("Invalid range: " + s)
+    }
+    new PGRange[A](li, lb, ub, ui)
+  }
+}
+
+class PGrange[A](pgType : String, f : String => A) extends PGType[PGRangeBase[A]](pgType, new PGRangeConstructor[A](f).apply _, _.toString)

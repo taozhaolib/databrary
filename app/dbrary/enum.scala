@@ -21,5 +21,5 @@ object AuditAction extends PGEnum("audit_action") {
 }
 
 object Consent extends PGEnum("consent") {
-  val PUBLIC, IDENTIFIED, EXCERPTS, SHARED, PRIVATE = Value
+  val PUBLIC, DEIDENTIFIED, EXCERPTS, SHARED, PRIVATE = Value
 }

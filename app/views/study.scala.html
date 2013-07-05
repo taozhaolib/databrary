@@ -9,10 +9,11 @@
 	}
 	</ul>
 
+	<p>@study.description</p>
+
 	@if(study.permission >= Permission.EDIT) {
 		<a href='@routes.Study.edit(study.id)'>edit</a>
 	}
 
-	<p>@study.description</p>
-
+	@objectList(study.objects(request.db))
 }
