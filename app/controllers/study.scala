@@ -7,7 +7,6 @@ import          mvc._
 import          data._
 import               Forms._
 import          i18n.Messages
-import dbrary.Permission
 import models._
 
 object Study extends SiteController {

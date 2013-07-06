@@ -7,6 +7,10 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
+object Consent extends PGEnum("consent") {
+  val PUBLIC, DEIDENTIFIED, EXCERPTS, SHARED, PRIVATE = Value
+}
+
 final case class ObjectFormat private (id : ObjectFormat.Id, mimetype : String, extension : Option[String], name : String, timeseries : Boolean) extends TableRowId(id.unId) {
 }
 

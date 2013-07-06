@@ -1,6 +1,6 @@
 @(e : Identity)(implicit request : SiteRequest[_])
 
 <a href='@routes.Entity.view(e.id)'>@e.name@{e match { 
-	case u : User if request.access >= dbrary.Permission.VIEW => " <" + u.username + ">"
+	case u : User if request.access >= Permission.VIEW => " <" + u.username + ">"
 	case _ => ""
 }}</a>

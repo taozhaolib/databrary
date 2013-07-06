@@ -1,0 +1,41 @@
+package dbrary
+
+import anorm.{Column,ToStatement}
+
+abstract class PGEnum(name : String) extends Enumeration {
+  object PG extends PGType[Value](name, withName(_), _.toString)
+  implicit val column = PG.column
+  implicit val statement = PG.statement
+}
+
+object PGEnum {
+  import scala.language.experimental.macros
+  import scala.reflect.macros.Context
+
+  /* This is not very useful as it can only create structural values rather than top-level objects */
+  def make(enumName : String) = macro makeImpl
+
+  def makeImpl(c : Context)(enumName : c.Expr[String]) : c.Expr[Any] = {
+    import c.universe._
+    val name = enumName.tree match {
+      case Literal(Constant(s : String)) => s
+      case _ => c.abort(c.enclosingPosition, "Argument to labels must be a string literal")
+    }
+    val labels = Connection.enumLabels(name)
+    val obj = newTermName(name)
+
+    c.Expr(Block(
+      List(ModuleDef(Modifiers(), obj, Template(
+        List(Ident(c.mirror.staticClass("dbrary.PGEnum"))),
+        emptyValDef,
+        DefDef(Modifiers(), nme.CONSTRUCTOR, Nil, List(Nil), TypeTree(), Block(
+          List(Apply(Select(Super(This(tpnme.EMPTY), tpnme.EMPTY), nme.CONSTRUCTOR), 
+            List(enumName.tree))),
+          Literal(Constant(()))))
+        :: labels.map(l => 
+          ValDef(Modifiers(), newTermName(l), TypeTree(), Select(This(""), newTermName("Value"))))
+      ))),
+      Ident(obj)
+    ))
+  }
+}

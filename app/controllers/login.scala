@@ -12,7 +12,6 @@ import                          Execution.Implicits.defaultContext
 import          db.DB
 import          i18n.Messages
 import models._
-import dbrary.AuditAction
 
 object Login extends Controller {
 

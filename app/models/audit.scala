@@ -5,6 +5,10 @@ import anorm._
 import dbrary._
 import util._
 
+object AuditAction extends PGEnum("audit_action") {
+  val login, logout, add, change, remove, download = Value
+}
+
 case class Audit[T](who : Identity.Id, ip : Inet, action : AuditAction.Value, row : T) {
   def entity(implicit db : Site.DB) = Identity.get(who)
 }
