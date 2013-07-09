@@ -11,7 +11,7 @@ import models._
 
 object Study extends SiteController {
 
-  private[this] def check(i : models.Study.Id, p : Permission.Value = Permission.VIEW)(act : Study => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
+  private[controllers] def check(i : models.Study.Id, p : Permission.Value = Permission.VIEW)(act : Study => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
     models.Study.get(i).fold(NotFound : Result) { s =>
       if (s.permission < p)
         Forbidden
@@ -24,13 +24,15 @@ object Study extends SiteController {
     Ok(views.html.study(study))
   }
 
+  type StudyForm = Form[(String, Option[String])]
   private[this] val editForm = Form(tuple(
     "title" -> nonEmptyText,
     "description" -> optional(text)
   ))
   private[this] def editFormFill(s : Study) = editForm.fill((s.title, s.description))
 
-  private[this] def accessForm(study : Study, entity : Identity.Id) : Form[StudyAccess] = Form(
+  type AccessForm = Form[StudyAccess]
+  private[this] def accessForm(study : Study, entity : Identity.Id) : AccessForm = Form(
     mapping(
       "access" -> number(min=0, max=Permission.maxId-1),
       "inherit" -> number(min=0, max=(if (entity.unId > 0) Permission.EDIT else Permission.DOWNLOAD).id)
@@ -70,7 +72,7 @@ object Study extends SiteController {
       form => BadRequest(viewEdit(study)(editForm = form)),
       { case (title, description) =>
         study.change(title = title, description = description.flatMap(maybe(_)))
-        Redirect(routes.Study.edit(study.id))
+        Redirect(routes.Study.view(study.id))
       }
     )
   }
@@ -123,18 +125,5 @@ object Study extends SiteController {
       StudyAccess(study.id, owner, Permission.ADMIN, Permission.CONTRIBUTE).set
       Ok(viewEdit(study)(editForm = form))
     }
-  }
-
-  private[this] def checkObject(i : models.Study.Id, o : models.Object.Id, p : Permission.Value = Permission.VIEW)(act : StudyObject => SiteRequest[AnyContent] => Result) = check(i) { study => implicit request =>
-    study.getObject(o).fold(NotFound : Result) { obj =>
-      if (obj.permission < p)
-        Forbidden
-      else
-        act(obj)(request)
-    }
-  }
-
-  def viewObject(i : models.Study.Id, o : models.Object.Id) = checkObject(i, o) { obj => implicit request =>
-    Ok(views.html.studyObject(obj))
   }
 }

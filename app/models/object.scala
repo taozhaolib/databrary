@@ -52,7 +52,7 @@ final class StudyObject private (val obj : Object, val studyId : Study.Id, title
   def change(title : String = _title, description : Option[String] = _description)(implicit site : Site) : Unit = {
     if (title == _title && description == _description)
       return
-    val args = Anorm.Args('obj -> obj.id, 'study -> study, 'title -> title, 'description -> description)
+    val args = Anorm.Args('obj -> obj.id, 'study -> studyId, 'title -> title, 'description -> description)
     Audit.SQLon(AuditAction.change, "study_object", "SET title = {title}, description = {description} WHERE object = {obj} AND study = {study}")(args : _*).execute()(site.db)
     _title = title
     _description = description

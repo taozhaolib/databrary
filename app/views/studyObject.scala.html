@@ -15,4 +15,9 @@
 		<dd>@date</dd>
 		}
 	</dl>
+
+	@if(obj.permission >= Permission.EDIT) {
+		<a href='@routes.Object.edit(obj.studyId, obj.obj.id)'>edit</a>
+	}
+
 }

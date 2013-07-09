@@ -2,8 +2,8 @@
 
 @authorizeFields(entity : Identity, form : Form[Authorize])(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@displayEntity(entity)</td>
-	@helper.select(form("access"), Permission.values.toSeq.map(v => (v.id.toString, v.toString)))
-	@helper.select(form("delegate"), Permission.values.toSeq.map(v => (v.id.toString, v.toString)))
+	@enumSelect(form("access"), Permission)
+	@enumSelect(form("delegate"), Permission)
 	@helper.inputDate(form("expires"))
 }
 

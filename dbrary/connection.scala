@@ -31,7 +31,9 @@ private[dbrary] object Connection {
       }
     }(f)
 
-  private lazy val enumLabelsStmt = apply(_.prepareStatement("SELECT enumlabel FROM pg_enum JOIN pg_type ON (enumtypid = pg_type.oid) WHERE typname = ?"))
+  def prepareStatement(sql : String) = apply(_.prepareStatement(sql))
+
+  private lazy val enumLabelsStmt = prepareStatement("SELECT enumlabel FROM pg_enum JOIN pg_type ON (enumtypid = pg_type.oid) WHERE typname = ?")
 
   def enumLabels(name : String) : List[String] = {
     val stmt = enumLabelsStmt

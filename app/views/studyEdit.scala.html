@@ -1,22 +1,20 @@
-@(study : Study, editForm : Form[(String,Option[String])], accessForms : Seq[(Identity,Form[StudyAccess])], accessSearch : Form[String], accessResults : Seq[(Identity,Form[StudyAccess])])(implicit request : SiteRequest[_])
+@(study : Study, editForm : controllers.Study.StudyForm, accessForms : Seq[(Identity,controllers.Study.AccessForm)], accessSearch : Form[String], accessResults : Seq[(Identity,controllers.Study.AccessForm)])(implicit request : SiteRequest[_])
 
 @accessFields(entity : Identity, form : Form[StudyAccess])(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@displayEntity(entity)</td>
-	@helper.select(form("access"), Permission.values.toSeq.map(v => (v.id.toString, v.toString)))
+	@enumSelect(form("access"), Permission)
 	@helper.select(form("inherit"), Permission.values.to(if (entity.id.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
 }
 
 @common("edit: " + study.title) {
 	<h1>@displayStudy(study)</h1>
 
-	@if(study.permission >= Permission.EDIT) {
 	@helper.form(routes.Study.change(study.id)) {
 		@helper.inputText(editForm("title"))
 		@helper.textarea(editForm("description"))
 		<button type='submit'>Change</button>
 	}
 	@formErrors(editForm)
-	}
 
 	@if(study.permission >= Permission.ADMIN) {
 	<h2>Access</h2>

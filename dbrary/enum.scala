@@ -11,16 +11,14 @@ abstract class PGEnum(name : String) extends Enumeration {
 object PGEnum {
   import scala.language.experimental.macros
   import scala.reflect.macros.Context
+  import macro._
 
   /* This is not very useful as it can only create structural values rather than top-level objects */
   def make(enumName : String) = macro makeImpl
 
   def makeImpl(c : Context)(enumName : c.Expr[String]) : c.Expr[Any] = {
     import c.universe._
-    val name = enumName.tree match {
-      case Literal(Constant(s : String)) => s
-      case _ => c.abort(c.enclosingPosition, "Argument to labels must be a string literal")
-    }
+    val name = getString(c)(enumName)
     val labels = Connection.enumLabels(name)
     val obj = newTermName(name)
 

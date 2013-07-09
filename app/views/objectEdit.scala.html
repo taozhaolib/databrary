@@ -1,0 +1,14 @@
+@(obj : StudyObject, editForm : controllers.Object.EditForm)(implicit request : SiteRequest[_])
+
+@common("edit: " + obj.title) {
+	<h1>@obj.study.title &gt; @obj.title</h1>
+
+	@helper.form(routes.Object.change(obj.studyId, obj.obj.id)) {
+		@helper.inputText(editForm("title"))
+		@helper.textarea(editForm("description"))
+		@enumSelect(editForm("consent"), Consent)
+		@helper.inputDate(editForm("date"))
+		<button type='submit'>Change</button>
+	}
+	@formErrors(editForm)
+}
