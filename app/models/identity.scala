@@ -5,6 +5,7 @@ import anorm._
 import dbrary._
 import util._
 
+/* Generic representation of user identity, which may be authenticated (as User) or anonymous */
 class Identity(private val entity : Entity) extends TableRowId(entity.id.unId) {
   protected def cache =
     IdentityCache.add(this)
@@ -12,18 +13,26 @@ class Identity(private val entity : Entity) extends TableRowId(entity.id.unId) {
   final def id = entity.id
   final def name = entity.name
   final def orcid = entity.orcid
+  /* level of access user has to the site */
   final def access(implicit db : Site.DB) : Permission.Value = entity.access
 
+  /* shorthand for asInstanceOf[User] */
   def user : Option[User] = None
 
   def changeEntity(name : String = name, orcid : Option[Orcid] = orcid)(implicit site : Site) =
     entity.change(name, orcid)
 
+  /* List of authorizations granted to this user, including inactive ones if all */
   final def authorizeParents(all : Boolean = false)(implicit db : Site.DB) = Authorize.getParents(this, all)
+  /* List of authorizations granted by this user */
   final def authorizeChildren(all : Boolean = false)(implicit db : Site.DB) = Authorize.getChildren(this, all)
 
+  /* List of delegations granted to this user */
   final def delegated(implicit site : Site) = Authorize.delegate_check(site.identity.id, id)(site.db)
+  /* List of delegations granted by this user */
   final def delegatedBy(p : Identity.Id)(implicit site : Site) = Authorize.delegate_check(id, p)(site.db)
+
+  /* List of studies accessible at (or above) the given permission level by this user */
   final def studyAccess(p : Permission.Value)(implicit site : Site) = StudyAccess.getStudies(this, p)
 }
 

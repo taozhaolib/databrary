@@ -242,10 +242,19 @@ CREATE TABLE "annotation" ( -- ABSTRACT
 	"object" integer References "object",
 	"excerpt" integer References "excerpt"
 );
+COMMENT ON TABLE "annotation" is 'Abstract base table for various types of annotations that can be added by users to nodes (unaudited, no updates).';
+
+CREATE TABLE "comment" (
+	"text" text NOT NULL,
+	"reply_to" integer References "comment",
+	Primary Key ("id")
+) INHERITS ("annotation");
+COMMENT ON TABLE "comment" is 'Free-text comments.';
 
 # --- !Downs
 ;
 
+DROP TABLE "comment";
 DROP TABLE "annotation";
 DROP TABLE "audit_study_excerpt";
 DROP TABLE "study_excerpt";

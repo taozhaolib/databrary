@@ -151,4 +151,31 @@ object Anorm {
       r6 <- row.get[C6](a6)(c6)
     } yield f(r1, r2, r3, r4, r5, r6)).fold(e => Error(e), b => Success(b))
   }
+  def rowMap[C1,C2,C3,C4,C5,C6,C7,B](f : (C1,C2,C3,C4,C5,C6,C7) => B
+    , a1 : String
+    , a2 : String
+    , a3 : String
+    , a4 : String
+    , a5 : String
+    , a6 : String
+    , a7 : String
+    )(implicit 
+      c1 : anorm.Column[C1], 
+      c2 : anorm.Column[C2],
+      c3 : anorm.Column[C3],
+      c4 : anorm.Column[C4],
+      c5 : anorm.Column[C5],
+      c6 : anorm.Column[C6],
+      c7 : anorm.Column[C7]
+    ) : RowParser[B] = RowParser[B] { row =>
+    (for {
+      r1 <- row.get[C1](a1)(c1)
+      r2 <- row.get[C2](a2)(c2)
+      r3 <- row.get[C3](a3)(c3)
+      r4 <- row.get[C4](a4)(c4)
+      r5 <- row.get[C5](a5)(c5)
+      r6 <- row.get[C6](a6)(c6)
+      r7 <- row.get[C7](a7)(c7)
+    } yield f(r1, r2, r3, r4, r5, r6, r7)).fold(e => Error(e), b => Success(b))
+  }
 }

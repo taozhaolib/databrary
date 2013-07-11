@@ -42,7 +42,7 @@ object Object extends SiteController {
       { case (title, description, consent, date) =>
         obj.change(title = title, description = maybe(description))
         obj.obj.change(consent = consent, date = date)
-        Redirect(routes.Object.view(obj.studyId, obj.obj.id))
+        Redirect(routes.Object.view(obj.studyId, obj.objId))
       }
     )
   }

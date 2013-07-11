@@ -44,6 +44,8 @@ object Object extends TableViewId[Object]("object JOIN format USING (format)") {
 }
 
 final class StudyObject private (val obj : Object, val studyId : Study.Id, title_ : String, description_ : Option[String]) extends TableRow {
+  def objId = obj.id
+  def id = (objId, studyId)
   private[this] var _title = title_
   def title = _title
   private[this] var _description = description_
@@ -52,7 +54,7 @@ final class StudyObject private (val obj : Object, val studyId : Study.Id, title
   def change(title : String = _title, description : Option[String] = _description)(implicit site : Site) : Unit = {
     if (title == _title && description == _description)
       return
-    val args = Anorm.Args('obj -> obj.id, 'study -> studyId, 'title -> title, 'description -> description)
+    val args = Anorm.Args('obj -> objId, 'study -> studyId, 'title -> title, 'description -> description)
     Audit.SQLon(AuditAction.change, "study_object", "SET title = {title}, description = {description} WHERE object = {obj} AND study = {study}")(args : _*).execute()(site.db)
     _title = title
     _description = description
@@ -71,6 +73,9 @@ final class StudyObject private (val obj : Object, val studyId : Study.Id, title
     else
       p
   }
+
+  def comments(implicit db : Site.DB) = Comment.get(this)
+  def addComment(text : String, replyTo : Option[Comment.Id] = None)(implicit site : Site) = Comment.create(this, text, replyTo)
 }
 
 object StudyObject extends TableView[StudyObject]("study_object JOIN (" + Object.table + ") ON (object = id)") {
@@ -79,6 +84,9 @@ object StudyObject extends TableView[StudyObject]("study_object JOIN (" + Object
   })
   private[this] def rowStudy(s : Study) = row map { o => o._study() = s ; o }
 
+  private[models] def get(s : Study.Id, o : Object.Id)(implicit db : Site.DB) : Option[StudyObject] =
+    SQL("SELECT * FROM " + table + " WHERE study = {study} AND object = {object}").
+      on('study -> s, 'object -> o).singleOpt(row)
   private[models] def get(s : Study, o : Object.Id)(implicit db : Site.DB) : Option[StudyObject] =
     SQL("SELECT * FROM " + table + " WHERE study = {study} AND object = {object}").
       on('study -> s.id, 'object -> o).singleOpt(rowStudy(s))

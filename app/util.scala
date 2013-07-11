@@ -12,6 +12,7 @@ object maybe {
 object Site {
   type DB = java.sql.Connection
 }
+/* The basic information in every request, primarily implemented by controllers.SiteRequest */
 trait Site {
   val identity : models.Identity
   val db : Site.DB
