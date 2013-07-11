@@ -8,6 +8,8 @@
 -- with further evolutions only making defensive changes, but it may be easier
 -- to keep separate.
 
+-- Currently these are largely under-indexed.
+
 # --- !Ups
 ;
 
@@ -16,7 +18,7 @@ COMMENT ON TYPE audit_action IS 'The various activities for which we keep audit 
 
 CREATE TABLE "audit" (
 	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	"who" int NOT NULL References "account" ("entity") ON UPDATE CASCADE,
+	"who" int NOT NULL, -- References "account" ("entity"),
 	"ip" inet NOT NULL,
 	"action" audit_action NOT NULL
 ) WITH (OIDS = FALSE);
@@ -183,10 +185,10 @@ image/jpeg	jpg	JPEG
 
 CREATE TABLE "object" (
 	"id" serial NOT NULL Primary Key,
-	-- "superseded" integer References "object", -- should this go on linkage?
 	"format" smallint NOT NULL References "format",
 	"consent" consent NOT NULL,
-	"date" date
+	"date" date,
+	"length" interval -- if format.timeseries
 );
 COMMENT ON TABLE "object" is 'Objects in storage along with their "constant" metadata.';
 
@@ -207,9 +209,48 @@ CREATE TABLE "audit_study_object" (
 	LIKE "study_object"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
+CREATE TABLE "excerpt" (
+	"id" serial NOT NULL Primary Key,
+	"object" integer NOT NULL References "object",
+	"offset" interval NOT NULL,
+	"length" interval,
+	"public" boolean NOT NULL Default 'f' -- only if object.consent = EXCERPTS
+);
+COMMENT ON TABLE "excrept" is 'Sections of timeseries objects selected for referencing.';
+
+CREATE TABLE "audit_excerpt" (
+	LIKE "excerpt"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
+CREATE TABLE "study_excerpt" (
+	"study" integer NOT NULL References "study",
+	"excerpt" integer NOT NULL References "excerpt",
+	"title" text NOT NULL,
+	Primary Key ("study", "excerpt")
+);
+COMMENT ON TABLE "study_excerpt" is 'Specific excerpts selected to highlight a study.';
+
+CREATE TABLE "audit_study_excerpt" (
+	LIKE "study_excerpt"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
+CREATE TABLE "annotation" ( -- ABSTRACT
+	"id" serial NOT NULL Primary Key,
+	"who" integer NOT NULL References "account",
+	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"study" integer NOT NULL References "study",
+	"object" integer References "object",
+	"excerpt" integer References "excerpt"
+);
+
 # --- !Downs
 ;
 
+DROP TABLE "annotation";
+DROP TABLE "audit_study_excerpt";
+DROP TABLE "study_excerpt";
+DROP TABLE "audit_excerpt";
+DROP TABLE "excerpt";
 DROP TABLE "audit_study_object";
 DROP TABLE "study_object";
 DROP TABLE "audit_object";

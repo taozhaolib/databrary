@@ -61,6 +61,7 @@ final class StudyObject private (val obj : Object, val studyId : Study.Id, title
   private[StudyObject] val _study = CachedVal[Study, Site](Study.get(studyId)(_).get)
   def study(implicit site : Site) : Study = _study
 
+  /* object permissions depend on study permissions, but can be further restricted by consent levels */
   def permission(implicit site : Site) : Permission.Value = {
     val p = study.permission
     if (obj.consent > Consent.DEIDENTIFIED && (

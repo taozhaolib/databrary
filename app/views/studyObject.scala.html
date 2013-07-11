@@ -1,6 +1,6 @@
 @(obj : StudyObject)(implicit request : SiteRequest[_])
 
-@common(obj.title) {
+@common(obj.study.title + ": " + obj.title) {
 	<h1><a href='@routes.Study.view(obj.studyId)'>@obj.study.title</a> &gt; @obj.title</h1>
 
 	<p>@obj.description</p>
