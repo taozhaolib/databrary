@@ -27,8 +27,8 @@ final class Study private (val id : Study.Id, title_ : String, description_ : Op
   def entityAccess(p : Permission.Value = Permission.NONE)(implicit db : Site.DB) = StudyAccess.getEntities(this, p)
   def objects(implicit db : Site.DB) = StudyObject.getObjects(this)
   def getObject(o : Object.Id)(implicit db : Site.DB) = StudyObject.get(this, o)
-  def comments(only : Boolean = false)(implicit db : Site.DB) = Comment.get(this, only)(db)
-  def addComment(text : String, replyTo : Option[Comment.Id] = None)(implicit site : Site) = Comment.create(this, text, replyTo)
+  def comments(only : Boolean = false)(implicit db : Site.DB) = Comment.getStudy(this, only)(db)
+  def addComment(text : String)(implicit site : Site) = Comment.create(this, text)
 }
 
 object Study extends TableViewId[Study]("study") {
@@ -85,7 +85,7 @@ object StudyAccess extends TableView[StudyAccess]("study_access") {
       )
   private[models] def getStudies(e : Identity, p : Permission.Value = Permission.NONE)(implicit site : Site) =
     SQL("SELECT " + Study.* + " FROM " + table + " JOIN " + Study.table + " ON (study = id) WHERE entity = {entity} AND access >= {access} AND " + Study.permission + " >= 'VIEW' ORDER BY access DESC").
-      on('entity -> e, 'access -> p, 'identity -> site.identity.id).list((row ~ Study.row).
+      on('entity -> e.id, 'access -> p, 'identity -> site.identity.id).list((row ~ Study.row).
         map({ case (a ~ s) => a._study() = s; a._entity() = e; a })
       )(site.db)
 

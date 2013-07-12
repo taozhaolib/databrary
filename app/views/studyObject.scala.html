@@ -20,4 +20,17 @@
 		<a href='@routes.Object.edit(obj.studyId, obj.obj.id)'>edit</a>
 	}
 
+	<h2>Comments</h2>
+	@if(request.access >= Permission.VIEW) {
+	@helper.form(routes.Comment.postStudyObject(obj.studyId, obj.objId)) {
+		@helper.inputText(controllers.Comment.form("text"))
+		<button type='submit'>Post</button>
+	}
+	}
+	<dl>
+	@obj.comments(request.db).map { c =>
+		<dt>@displayEntity(c.who(request.db)) @c.when</dt>
+		<dd>@c.text</dd>
+	}
+	</dl>
 }

@@ -16,4 +16,20 @@
 	}
 
 	@objectList(study.objects(request.db))
+
+	<h2>Comments</h2>
+	@if(request.access >= Permission.VIEW) {
+	@helper.form(routes.Comment.postStudy(study.id)) {
+		@helper.inputText(controllers.Comment.form("text"))
+		<button type='submit'>Post</button>
+	}
+	}
+	<dl>
+	@study.comments(false)(request.db).map { c =>
+		<dt>@displayEntity(c.who(request.db))@c.obj.map { o =>
+			&gt; @displayObject(o)
+		} @c.when</dt>
+		<dd>@c.text</dd>
+	}
+	</dl>
 }

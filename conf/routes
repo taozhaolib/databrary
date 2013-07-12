@@ -39,5 +39,8 @@ GET	/study/:id/object/:obj			controllers.Object.view(id : models.Study.Id, obj :
 GET	/study/:id/object/:obj/edit		controllers.Object.edit(id : models.Study.Id, obj : models.Object.Id)
 POST	/study/:id/object/:obj/Edit		controllers.Object.change(id : models.Study.Id, obj : models.Object.Id)
 
+POST	/study/:id/Comment			controllers.Comment.postStudy(id : models.Study.Id)
+POST	/study/:id/object/:obj/Comment		controllers.Comment.postStudyObject(id : models.Study.Id, obj : models.Object.Id)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               		controllers.Assets.at(path="/public", file)

@@ -236,7 +236,7 @@ CREATE TABLE "audit_study_excerpt" (
 
 CREATE TABLE "annotation" ( -- ABSTRACT
 	"id" serial NOT NULL Primary Key,
-	"who" integer NOT NULL References "account",
+	"who" integer NOT NULL References "entity",
 	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"study" integer NOT NULL References "study",
 	"object" integer References "object",
@@ -246,7 +246,6 @@ COMMENT ON TABLE "annotation" is 'Abstract base table for various types of annot
 
 CREATE TABLE "comment" (
 	"text" text NOT NULL,
-	"reply_to" integer References "comment",
 	Primary Key ("id")
 ) INHERITS ("annotation");
 COMMENT ON TABLE "comment" is 'Free-text comments.';

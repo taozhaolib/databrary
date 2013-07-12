@@ -46,4 +46,14 @@
 
 
 	</dl>
+
+	<h2>Comments</h2>
+	<dl>
+	@entity.getComments(request.db).map { c => @c.study.map { s =>
+		<dt>@displayStudy(s)@c.obj.map { o =>
+			&gt; @displayObject(o)
+		} @c.when</dt>
+		<dd>@c.text</dd>
+	} }
+	</dl>
 }

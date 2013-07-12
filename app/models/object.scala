@@ -74,8 +74,8 @@ final class StudyObject private (val obj : Object, val studyId : Study.Id, title
       p
   }
 
-  def comments(implicit db : Site.DB) = Comment.get(this)
-  def addComment(text : String, replyTo : Option[Comment.Id] = None)(implicit site : Site) = Comment.create(this, text, replyTo)
+  def comments(implicit db : Site.DB) = Comment.getStudyObject(this)
+  def addComment(text : String)(implicit site : Site) = Comment.create(this, text)
 }
 
 object StudyObject extends TableView[StudyObject]("study_object JOIN (" + Object.table + ") ON (object = id)") {

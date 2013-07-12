@@ -11,7 +11,7 @@
 	</tr>
 	@objects.map { obj =>
 	<tr>
-		<td><a href='@routes.Object.view(obj.studyId, obj.obj.id)'>@obj.title</a></td>
+		<td>@displayObject(obj)</td>
 		<td>@obj.obj.format.name</td>
 		<td>@obj.obj.consent</td>
 		<td>@obj.obj.date</td>

@@ -10,7 +10,7 @@ import          i18n.Messages
 import models._
 
 object Object extends SiteController {
-  private[this] def check(i : models.Study.Id, o : models.Object.Id, p : Permission.Value = Permission.VIEW)(act : StudyObject => SiteRequest[AnyContent] => Result) = Study.check(i) { study => implicit request =>
+  private[controllers] def check(i : models.Study.Id, o : models.Object.Id, p : Permission.Value = Permission.VIEW)(act : StudyObject => SiteRequest[AnyContent] => Result) = Study.check(i) { study => implicit request =>
     study.getObject(o).fold(NotFound : Result) { obj =>
       if (obj.permission < p)
         Forbidden

@@ -34,6 +34,9 @@ class Identity(private val entity : Entity) extends TableRowId(entity.id.unId) {
 
   /* List of studies accessible at (or above) the given permission level by this user */
   final def studyAccess(p : Permission.Value)(implicit site : Site) = StudyAccess.getStudies(this, p)
+
+  /* List of comments by this individual; this does not respect access permissions on the comment targets */
+  final def getComments(implicit db : Site.DB) = Comment.getEntity(this)
 }
 
 final class User(entity : Entity, account : Account) extends Identity(entity) {

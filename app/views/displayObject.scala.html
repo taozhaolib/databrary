@@ -1,0 +1,3 @@
+@(obj : StudyObject)(implicit request : SiteRequest[_])
+
+<a href='@routes.Object.view(obj.studyId, obj.objId)'>@obj.title</a>
