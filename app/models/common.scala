@@ -3,10 +3,11 @@ package models
 import play.api.mvc.{PathBindable,QueryStringBindable}
 import anorm._
 import dbrary._
+import util._
 
-class CachedVal[T <: AnyRef, S](init : S => T) {
+class CachedVal[T, S](init : S => T) {
   private var x : Option[T] = None
-  def apply(s : S) : T = x.getOrElse(update(init(s)))
+  def apply(s : S) : T = synchronized(x.getOrElse(update(init(s))))
   def update(v : T) : T = {
     x = Some(v)
     v
@@ -15,8 +16,8 @@ class CachedVal[T <: AnyRef, S](init : S => T) {
 
 object CachedVal {
   import scala.language.implicitConversions
-  def apply[T <: AnyRef, S](init : S => T) = new CachedVal(init)
-  implicit def implicitGetCached[T <: AnyRef, S](x : CachedVal[T, S])(implicit s : S) : T = x(s)
+  def apply[T, S](init : S => T) = new CachedVal[T,S](init)
+  implicit def implicitGetCached[T, S](x : CachedVal[T, S])(implicit s : S) : T = x(s)
 }
 
 private[models] abstract class TableRow
@@ -25,6 +26,7 @@ private[models] abstract class TableRowId(private val _id : Int) extends TableRo
   def equals(a : this.type) = a._id == _id
 }
 private[models] abstract class TableView[R <: TableRow](private[models] val table : String) {
+  private[models] val tableOID = CachedVal[Long,Site.DB](SQL("SELECT oid FROM pg_class WHERE relname = {name}").on('name -> table).single(SqlParser.scalar[Long])(_))
   private[models] val row : RowParser[R]
   private[models] val * = "*"
 }
