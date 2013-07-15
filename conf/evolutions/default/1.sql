@@ -130,7 +130,7 @@ CREATE TABLE "study_access" (
 	Check ("access" >= "inherit"),
 	Primary Key ("study", "entity")
 );
-COMMENT ON TABLE "study_access" is 'Permissions over studies assigned to users.';
+COMMENT ON TABLE "study_access" IS 'Permissions over studies assigned to users.';
 
 CREATE TABLE "audit_study_access" (
 	LIKE "study_access"
@@ -155,7 +155,17 @@ CREATE FUNCTION "study_access_check" ("study" integer, "entity" integer, "access
 		 WHERE child = $2
 	) a WHERE $3 IS NULL OR access >= $3
 $$;
-COMMENT ON FUNCTION "study_access_check" (integer, integer, permission) is 'Test if a given entity has the given permission [any] on the given study, either directly, inherited through site access, or delegated.';
+COMMENT ON FUNCTION "study_access_check" (integer, integer, permission) IS 'Test if a given entity has the given permission [any] on the given study, either directly, inherited through site access, or delegated.';
+
+
+CREATE TABLE "slot" (
+	"id" serial NOT NULL Primary Key,
+	"study" integer NOT NULL References "study",
+	"ident" varchar(16) NOT NULL,
+	Unique ("study", "id"), -- for foreign keys
+	Unique ("study", "ident")
+);
+COMMENT ON TABLE "slot" IS 'Data container: organizational unit within study, usually corresponding to an individual participant.';
 
 
 CREATE TYPE consent AS ENUM (
@@ -175,7 +185,7 @@ CREATE TABLE "format" (
 	"name" text NOT NULL, -- an awful name but convenient to be distinct from other object fields
 	"timeseries" boolean NOT NULL Default FALSE
 );
-COMMENT ON TABLE "format" is 'Possible types for objects, sufficient for producing download headers.';
+COMMENT ON TABLE "format" IS 'Possible types for objects, sufficient for producing download headers.';
 COPY "format" (mimetype, extension, name) FROM STDIN;
 text/plain	txt	Plain text
 text/html	html	Hypertext markup
@@ -190,23 +200,10 @@ CREATE TABLE "object" (
 	"date" date,
 	"length" interval -- if format.timeseries
 );
-COMMENT ON TABLE "object" is 'Objects in storage along with their "constant" metadata.';
+COMMENT ON TABLE "object" IS 'Objects in storage along with their "constant" metadata.';
 
 CREATE TABLE "audit_object" (
 	LIKE "object"
-) INHERITS ("audit") WITH (OIDS = FALSE);
-
-CREATE TABLE "study_object" (
-	"study" integer NOT NULL References "study",
-	"object" integer NOT NULL References "object",
-	"title" text NOT NULL,
-	"description" text,
-	Primary Key ("study", "object")
-);
-COMMENT ON TABLE "study_object" is 'Object linkages into studies along with "dynamic" metadata.';
-
-CREATE TABLE "audit_study_object" (
-	LIKE "study_object"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 CREATE TABLE "excerpt" (
@@ -216,19 +213,37 @@ CREATE TABLE "excerpt" (
 	"length" interval,
 	"public" boolean NOT NULL Default 'f' -- only if object.consent = EXCERPTS
 );
-COMMENT ON TABLE "excrept" is 'Sections of timeseries objects selected for referencing.';
+COMMENT ON TABLE "excrept" IS 'Sections of timeseries objects selected for referencing.';
 
 CREATE TABLE "audit_excerpt" (
 	LIKE "excerpt"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
-CREATE TABLE "study_excerpt" (
+
+CREATE TABLE "study_object" (
+	"study" integer NOT NULL References "study",
+	"object" integer NOT NULL References "object",
+	"slot" integer, -- not properly normalized: either slot_object or common slot/study parent
+	"title" text NOT NULL,
+	"description" text,
+	Primary Key ("study", "object"),
+	Foreign Key ("study", "slot") References "slot" ("study", "id")
+);
+COMMENT ON TABLE "study_object" IS 'Object linkages into studies along with "dynamic" metadata.';
+
+CREATE TABLE "audit_study_object" (
+	LIKE "study_object"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
+CREATE TABLE "study_excerpt" ( -- unfortunately redundant with study_object: common object/excerpt parent?
 	"study" integer NOT NULL References "study",
 	"excerpt" integer NOT NULL References "excerpt",
+	"slot" integer, -- see above
 	"title" text NOT NULL,
-	Primary Key ("study", "excerpt")
+	Primary Key ("study", "excerpt"),
+	Foreign Key ("slot", "study") References "slot" ("id", "study")
 );
-COMMENT ON TABLE "study_excerpt" is 'Specific excerpts selected to highlight a study.';
+COMMENT ON TABLE "study_excerpt" IS 'Specific excerpts selected to highlight a study.';
 
 CREATE TABLE "audit_study_excerpt" (
 	LIKE "study_excerpt"
@@ -238,17 +253,29 @@ CREATE TABLE "annotation" ( -- ABSTRACT
 	"id" serial NOT NULL Primary Key,
 	"who" integer NOT NULL References "entity",
 	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	-- horribly unnormalized; would be fixed by above options
 	"study" integer NOT NULL References "study",
-	"object" integer References "object",
-	"excerpt" integer References "excerpt"
+	"slot" integer,
+	"object" integer,
+	"excerpt" integer,
+	Foreign Key ("slot", "study") References "slot" ("id", "study"),
+	Foreign Key ("study", "object") References "study_object",
+	Foreign Key ("study", "object", "slot") References "study_object" ("study", "object", "slot"),
+	Foreign Key ("study", "excerpt") References "study_excerpt",
+	Foreign Key ("study", "excerpt", "slot") References "study_excerpt" ("study", "excerpt", "slot"),
+	Foreign Key ("excerpt", "object") References "excerpt" ("id", "object")
 );
-COMMENT ON TABLE "annotation" is 'Abstract base table for various types of annotations that can be added by users to nodes (unaudited, no updates).';
+COMMENT ON TABLE "annotation" IS 'Abstract base table for various types of annotations that can be added by users to nodes (unaudited, no updates).';
 
 CREATE TABLE "comment" (
 	"text" text NOT NULL,
-	Primary Key ("id")
+	Primary Key ("id"),
+	Foreign Key ("slot", "study") References "slot" ("id", "study"),
+	Foreign Key ("study", "object", "slot") References "study_object" ("study", "object", "slot"),
+	Foreign Key ("study", "excerpt", "slot") References "study_excerpt" ("study", "excerpt", "slot"),
+	Foreign Key ("excerpt", "object") References "excerpt" ("id", "object")
 ) INHERITS ("annotation");
-COMMENT ON TABLE "comment" is 'Free-text comments.';
+COMMENT ON TABLE "comment" IS 'Free-text comments.';
 
 # --- !Downs
 ;
@@ -266,6 +293,7 @@ DROP TABLE "object";
 DROP TABLE "format";
 DROP TYPE consent;
 
+DROP TABLE "slot";
 DROP FUNCTION "study_access_check" (integer, integer, permission);
 DROP TABLE "study_access";
 DROP TABLE "study";

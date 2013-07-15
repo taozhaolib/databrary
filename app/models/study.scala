@@ -25,8 +25,12 @@ final class Study private (val id : Study.Id, title_ : String, description_ : Op
   def permission(implicit site : Site) : Permission.Value = _permission
 
   def entityAccess(p : Permission.Value = Permission.NONE)(implicit db : Site.DB) = StudyAccess.getEntities(this, p)
+
+  def slots(implicit db : Site.DB) = Slot.getStudy(this)
+
   def objects(implicit db : Site.DB) = StudyObject.getObjects(this)
   def getObject(o : Object.Id)(implicit db : Site.DB) = StudyObject.get(this, o)
+
   def comments(only : Boolean = false)(implicit db : Site.DB) = Comment.getStudy(this, only)(db)
   def addComment(text : String)(implicit site : Site) = Comment.create(this, text)
 }
