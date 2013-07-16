@@ -1,0 +1,3 @@
+@(slot : Slot)(implicit request : SiteRequest[_])
+
+<a href='@routes.Study.view(slot.studyId)'>@slot.ident</a>

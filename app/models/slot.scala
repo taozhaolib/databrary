@@ -33,7 +33,7 @@ object Slot extends TableViewId[Slot]("slot") {
     SQL("SELECT " + * + " FROM " + table + " WHERE id = {id}").
       on('id -> i).singleOpt(row)
   private[models] def getStudy(study : Study)(implicit db : Site.DB) : Seq[Slot] =
-    SQL("SELECT " + * + " FROM " + table + " WHERE study = {study}").
+    SQL("SELECT " + * + " FROM " + table + " WHERE study = {study} ORDER BY ident").
       on('study -> study.id).list(rowStudy(study))
     
   private[models] def create(study : Study, ident : String)(implicit site : Site) : Slot = {

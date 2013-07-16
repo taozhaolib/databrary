@@ -162,7 +162,7 @@ CREATE TABLE "slot" (
 	"id" serial NOT NULL Primary Key,
 	"study" integer NOT NULL References "study",
 	"ident" varchar(16) NOT NULL,
-	Unique ("study", "id"), -- for foreign keys
+	Unique ("id", "study"), -- for FKs
 	Unique ("study", "ident")
 );
 COMMENT ON TABLE "slot" IS 'Data container: organizational unit within study, usually corresponding to an individual participant.';
@@ -223,11 +223,12 @@ CREATE TABLE "audit_excerpt" (
 CREATE TABLE "study_object" (
 	"study" integer NOT NULL References "study",
 	"object" integer NOT NULL References "object",
-	"slot" integer, -- not properly normalized: either slot_object or common slot/study parent
+	"slot" integer References "slot", -- not properly normalized: either slot_object or common slot/study parent
 	"title" text NOT NULL,
 	"description" text,
 	Primary Key ("study", "object"),
-	Foreign Key ("study", "slot") References "slot" ("study", "id")
+	Unique ("study", "object", "slot"), -- for FKs
+	Foreign Key ("slot", "study") References "slot" ("id", "study")
 );
 COMMENT ON TABLE "study_object" IS 'Object linkages into studies along with "dynamic" metadata.';
 
@@ -238,9 +239,10 @@ CREATE TABLE "audit_study_object" (
 CREATE TABLE "study_excerpt" ( -- unfortunately redundant with study_object: common object/excerpt parent?
 	"study" integer NOT NULL References "study",
 	"excerpt" integer NOT NULL References "excerpt",
-	"slot" integer, -- see above
+	"slot" integer References "slot", -- see above
 	"title" text NOT NULL,
 	Primary Key ("study", "excerpt"),
+	Unique ("study", "excerpt", "slot"), -- for FKs
 	Foreign Key ("slot", "study") References "slot" ("id", "study")
 );
 COMMENT ON TABLE "study_excerpt" IS 'Specific excerpts selected to highlight a study.';
@@ -253,17 +255,18 @@ CREATE TABLE "annotation" ( -- ABSTRACT
 	"id" serial NOT NULL Primary Key,
 	"who" integer NOT NULL References "entity",
 	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	-- horribly unnormalized; would be fixed by above options
+	-- horribly unnormalized (hence FK mess); will be fixed by study/slot/object normalization above
 	"study" integer NOT NULL References "study",
-	"slot" integer,
-	"object" integer,
-	"excerpt" integer,
+	"slot" integer References "slot",
+	"object" integer References "object",
+	"excerpt" integer References "excerpt",,
+	-- even these are incomplete due to lack of MATCH PARTIAL; refactor
 	Foreign Key ("slot", "study") References "slot" ("id", "study"),
 	Foreign Key ("study", "object") References "study_object",
 	Foreign Key ("study", "object", "slot") References "study_object" ("study", "object", "slot"),
+	Foreign Key ("excerpt", "object") References "excerpt" ("id", "object")
 	Foreign Key ("study", "excerpt") References "study_excerpt",
 	Foreign Key ("study", "excerpt", "slot") References "study_excerpt" ("study", "excerpt", "slot"),
-	Foreign Key ("excerpt", "object") References "excerpt" ("id", "object")
 );
 COMMENT ON TABLE "annotation" IS 'Abstract base table for various types of annotations that can be added by users to nodes (unaudited, no updates).';
 
@@ -271,9 +274,11 @@ CREATE TABLE "comment" (
 	"text" text NOT NULL,
 	Primary Key ("id"),
 	Foreign Key ("slot", "study") References "slot" ("id", "study"),
+	Foreign Key ("study", "object") References "study_object",
 	Foreign Key ("study", "object", "slot") References "study_object" ("study", "object", "slot"),
-	Foreign Key ("study", "excerpt", "slot") References "study_excerpt" ("study", "excerpt", "slot"),
 	Foreign Key ("excerpt", "object") References "excerpt" ("id", "object")
+	Foreign Key ("study", "excerpt") References "study_excerpt",
+	Foreign Key ("study", "excerpt", "slot") References "study_excerpt" ("study", "excerpt", "slot"),
 ) INHERITS ("annotation");
 COMMENT ON TABLE "comment" IS 'Free-text comments.';
 

@@ -17,6 +17,14 @@
 
 	@objectList(study.objects(request.db))
 
+	<h2>Slots</h2>
+
+	<ul>
+	@study.slots(request.db).foreach { slot => 
+		<li>@displaySlot(slot)</li>
+	}
+	</ul>
+
 	<h2>Comments</h2>
 	@if(request.access >= Permission.VIEW) {
 	@helper.form(routes.Comment.postStudy(study.id)) {
