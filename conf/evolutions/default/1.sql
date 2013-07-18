@@ -82,7 +82,7 @@ CREATE TABLE "audit_authorize" (
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 -- To allow normal users to inherit from nobody:
-INSERT INTO "authorize" ("child", "parent", "access") VALUES (0, -1, 'ADMIN', 'ADMIN');
+INSERT INTO "authorize" ("child", "parent", "access", "delegate") VALUES (0, -1, 'ADMIN', 'ADMIN');
 
 CREATE VIEW "authorize_valid" AS
 	SELECT * FROM authorize WHERE authorized < CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP);
@@ -167,6 +167,9 @@ CREATE TABLE "slot" (
 );
 COMMENT ON TABLE "slot" IS 'Data container: organizational unit within study, usually corresponding to an individual participant.';
 
+CREATE TABLE "audit_slot" (
+	LIKE "slot"
+) INHERITS ("audit") WITH (OIDS = FALSE);
 
 CREATE TYPE consent AS ENUM (
 	-- required permission:	site		study
@@ -186,12 +189,10 @@ CREATE TABLE "format" (
 	"timeseries" boolean NOT NULL Default FALSE
 );
 COMMENT ON TABLE "format" IS 'Possible types for objects, sufficient for producing download headers.';
-COPY "format" (mimetype, extension, name) FROM STDIN;
-text/plain	txt	Plain text
-text/html	html	Hypertext markup
-application/pdf	pdf	Portable document
-image/jpeg	jpg	JPEG
-\.
+INSERT INTO "format" (mimetype, extension, name) VALUES ('text/plain', 'txt', 'Plain text');
+INSERT INTO "format" (mimetype, extension, name) VALUES ('text/html', 'html', 'Hypertext markup');
+INSERT INTO "format" (mimetype, extension, name) VALUES ('application/pdf', 'pdf', 'Portable document');
+INSERT INTO "format" (mimetype, extension, name) VALUES ('image/jpeg', 'jpg', 'JPEG');
 
 CREATE TABLE "object" (
 	"id" serial NOT NULL Primary Key,
@@ -211,9 +212,10 @@ CREATE TABLE "excerpt" (
 	"object" integer NOT NULL References "object",
 	"offset" interval NOT NULL,
 	"length" interval,
-	"public" boolean NOT NULL Default 'f' -- only if object.consent = EXCERPTS
+	"public" boolean NOT NULL Default 'f', -- only if object.consent = EXCERPTS
+	Unique ("id", "object") -- for FKs
 );
-COMMENT ON TABLE "excrept" IS 'Sections of timeseries objects selected for referencing.';
+COMMENT ON TABLE "excerpt" IS 'Sections of timeseries objects selected for referencing.';
 
 CREATE TABLE "audit_excerpt" (
 	LIKE "excerpt"
@@ -255,18 +257,18 @@ CREATE TABLE "annotation" ( -- ABSTRACT
 	"id" serial NOT NULL Primary Key,
 	"who" integer NOT NULL References "entity",
 	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	-- horribly unnormalized (hence FK mess); will be fixed by study/slot/object normalization above
+	-- horribly unnormalized (hence FK mess), will be fixed by study/slot/object normalization above
 	"study" integer NOT NULL References "study",
 	"slot" integer References "slot",
 	"object" integer References "object",
-	"excerpt" integer References "excerpt",,
-	-- even these are incomplete due to lack of MATCH PARTIAL; refactor
+	"excerpt" integer References "excerpt",
+	-- even these are incomplete due to lack of MATCH PARTIAL, refactor
 	Foreign Key ("slot", "study") References "slot" ("id", "study"),
 	Foreign Key ("study", "object") References "study_object",
 	Foreign Key ("study", "object", "slot") References "study_object" ("study", "object", "slot"),
-	Foreign Key ("excerpt", "object") References "excerpt" ("id", "object")
+	Foreign Key ("excerpt", "object") References "excerpt" ("id", "object"),
 	Foreign Key ("study", "excerpt") References "study_excerpt",
-	Foreign Key ("study", "excerpt", "slot") References "study_excerpt" ("study", "excerpt", "slot"),
+	Foreign Key ("study", "excerpt", "slot") References "study_excerpt" ("study", "excerpt", "slot")
 );
 COMMENT ON TABLE "annotation" IS 'Abstract base table for various types of annotations that can be added by users to nodes (unaudited, no updates).';
 
@@ -276,9 +278,9 @@ CREATE TABLE "comment" (
 	Foreign Key ("slot", "study") References "slot" ("id", "study"),
 	Foreign Key ("study", "object") References "study_object",
 	Foreign Key ("study", "object", "slot") References "study_object" ("study", "object", "slot"),
-	Foreign Key ("excerpt", "object") References "excerpt" ("id", "object")
+	Foreign Key ("excerpt", "object") References "excerpt" ("id", "object"),
 	Foreign Key ("study", "excerpt") References "study_excerpt",
-	Foreign Key ("study", "excerpt", "slot") References "study_excerpt" ("study", "excerpt", "slot"),
+	Foreign Key ("study", "excerpt", "slot") References "study_excerpt" ("study", "excerpt", "slot")
 ) INHERITS ("annotation");
 COMMENT ON TABLE "comment" IS 'Free-text comments.';
 
@@ -298,9 +300,12 @@ DROP TABLE "object";
 DROP TABLE "format";
 DROP TYPE consent;
 
+DROP TABLE "audit_slot";
 DROP TABLE "slot";
 DROP FUNCTION "study_access_check" (integer, integer, permission);
+DROP TABLE "audit_study_access";
 DROP TABLE "study_access";
+DROP TABLE "audit_study";
 DROP TABLE "study";
 
 DROP FUNCTION "authorize_delegate_check" (integer, integer, permission);
