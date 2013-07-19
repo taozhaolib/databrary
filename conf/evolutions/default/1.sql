@@ -13,6 +13,44 @@
 # --- !Ups
 ;
 
+----------------------------------------------------------- utilities
+
+-- Note that the double-semicolons are necessary for play's poor evolution parsing
+CREATE FUNCTION create_abstract_parent ("parent" name, "children" name[]) RETURNS void LANGUAGE plpgsql AS $create$
+DECLARE
+	parent_table CONSTANT text := quote_ident(parent);;
+BEGIN
+	EXECUTE $macro$
+		CREATE TABLE $macro$ || parent_table || $macro$ ( -- ABSTRACT
+			"id" serial NOT NULL Primary Key,
+			"kind" name NOT NULL Check ("kind" IN ('$macro$ || array_to_string(children, $$','$$) || $macro$'))
+		);;
+		CREATE FUNCTION $macro$ || quote_ident(parent || '_trigger') || $macro$ () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+			IF TG_OP = 'INSERT' THEN
+				INSERT INTO $macro$ || parent_table || $macro$ (id, kind) VALUES (NEW.id, TG_TABLE_NAME);;
+			ELSIF TG_OP = 'DELETE' THEN
+				DELETE FROM $macro$ || parent_table || $macro$ WHERE id = OLD.id AND kind = TG_TABLE_NAME;;
+			ELSIF TG_OP = 'UPDATE' THEN
+				IF NEW.id = OLD.id THEN
+					RETURN NEW;;
+				END IF;;
+				UPDATE $macro$ || parent_table || $macro$ SET id = NEW.id WHERE id = OLD.id AND kind = TG_TABLE_NAME;;
+			END IF;;
+			IF NOT FOUND THEN
+				RAISE EXCEPTION 'inconsistency for %:% parent $macro$ || parent || $macro$', TG_TABLE_NAME, OLD.id;;
+			END IF;;
+			IF TG_OP = 'DELETE' THEN
+				RETURN OLD;;
+			ELSE
+				RETURN NEW;;
+			END IF;;
+		END;;$$
+	$macro$;;
+END;; $create$;
+COMMENT ON FUNCTION "create_abstract_parent" (name, name[]) IS 'A "macro" to create an abstract parent table and trigger function.  This could be done with a single function using dynamic EXECUTE but this way is more efficient and not much more messy.';
+
+----------------------------------------------------------- auditing
+
 CREATE TYPE audit_action AS ENUM ('login', 'logout', 'add', 'change', 'remove', 'download');
 COMMENT ON TYPE audit_action IS 'The various activities for which we keep audit records (in audit or a derived table).';
 
@@ -24,6 +62,7 @@ CREATE TABLE "audit" (
 ) WITH (OIDS = FALSE);
 COMMENT ON TABLE "audit" IS 'Logs of all activities on the site, including access and modifications to any data. Each table has an associated audit table inheriting from this one.';
 
+----------------------------------------------------------- users
 
 CREATE TABLE "entity" (
 	"id" serial NOT NULL Primary Key,
@@ -53,6 +92,7 @@ CREATE TABLE "audit_account" (
 	LIKE "account"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
+----------------------------------------------------------- permissions
 
 CREATE TYPE permission AS ENUM ('NONE',
 	'VIEW', -- study view, but no access to protected data (PUBLIC access)
@@ -110,13 +150,19 @@ CREATE FUNCTION "authorize_delegate_check" ("child" integer, "parent" integer, "
 $$;
 COMMENT ON FUNCTION "authorize_delegate_check" (integer, integer, permission) IS 'Test if a given child has the given permission [any] over the given parent';
 
+----------------------------------------------------------- containers
+
+SELECT create_abstract_parent('container', ARRAY['study','slot']);
+COMMENT ON TABLE "container" IS 'Parent table for anything objects can be attached to.';
+
 
 CREATE TABLE "study" (
-	"id" serial NOT NULL Primary Key,
+	"id" integer NOT NULL DEFAULT nextval('container_id_seq') Primary Key References "container" Deferrable Initially Deferred,
 	"title" text NOT NULL,
 	"description" text
 );
 COMMENT ON TABLE "study" IS 'Basic organizational unit for data.';
+CREATE TRIGGER "container" BEFORE INSERT OR UPDATE OR DELETE ON "study" FOR EACH ROW EXECUTE PROCEDURE "container_trigger" ();
 
 CREATE TABLE "audit_study" (
 	LIKE "study"
@@ -159,17 +205,20 @@ COMMENT ON FUNCTION "study_access_check" (integer, integer, permission) IS 'Test
 
 
 CREATE TABLE "slot" (
-	"id" serial NOT NULL Primary Key,
+	"id" integer NOT NULL DEFAULT nextval('container_id_seq') Primary Key References "container" Deferrable Initially Deferred,
 	"study" integer NOT NULL References "study",
 	"ident" varchar(16) NOT NULL,
 	Unique ("id", "study"), -- for FKs
 	Unique ("study", "ident")
 );
 COMMENT ON TABLE "slot" IS 'Data container: organizational unit within study, usually corresponding to an individual participant.';
+CREATE TRIGGER "container" BEFORE INSERT OR UPDATE OR DELETE ON "slot" FOR EACH ROW EXECUTE PROCEDURE "container_trigger" ();
 
 CREATE TABLE "audit_slot" (
 	LIKE "slot"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
+
+----------------------------------------------------------- objects
 
 CREATE TYPE consent AS ENUM (
 	-- required permission:	site		study
@@ -181,40 +230,62 @@ CREATE TYPE consent AS ENUM (
 );
 COMMENT ON TYPE consent IS 'Sensitivity levels that may apply to data according to the presence of protected identifiers and granted sharing level.  Does not necessarily map clearly to permission levels.';
 
+SELECT create_abstract_parent('object', ARRAY['file', 'timeseries', 'excerpt']);
+COMMENT ON TABLE "object" IS 'Parent table for all uploaded data in storage.';
+
 CREATE TABLE "format" (
 	"format" smallserial NOT NULL Primary Key,
 	"mimetype" varchar(128) NOT NULL,
 	"extension" varchar(8),
-	"name" text NOT NULL, -- an awful name but convenient to be distinct from other object fields
-	"timeseries" boolean NOT NULL Default FALSE
+	"name" text NOT NULL
 );
 COMMENT ON TABLE "format" IS 'Possible types for objects, sufficient for producing download headers.';
-INSERT INTO "format" (mimetype, extension, name) VALUES ('text/plain', 'txt', 'Plain text');
-INSERT INTO "format" (mimetype, extension, name) VALUES ('text/html', 'html', 'Hypertext markup');
-INSERT INTO "format" (mimetype, extension, name) VALUES ('application/pdf', 'pdf', 'Portable document');
-INSERT INTO "format" (mimetype, extension, name) VALUES ('image/jpeg', 'jpg', 'JPEG');
 
-CREATE TABLE "object" (
-	"id" serial NOT NULL Primary Key,
-	"format" smallint NOT NULL References "format",
+CREATE TABLE "file_format" (
+	Primary Key ("format")
+) INHERITS ("format");
+INSERT INTO "file_format" (mimetype, extension, name) VALUES ('text/plain', 'txt', 'Plain text');
+INSERT INTO "file_format" (mimetype, extension, name) VALUES ('text/html', 'html', 'Hypertext markup');
+INSERT INTO "file_format" (mimetype, extension, name) VALUES ('application/pdf', 'pdf', 'Portable document');
+INSERT INTO "file_format" (mimetype, extension, name) VALUES ('image/jpeg', 'jpg', 'JPEG');
+
+CREATE TABLE "file" (
+	"id" integer NOT NULL DEFAULT nextval('object_id_seq') Primary Key References "object" Deferrable Initially Deferred,
+	"format" smallint NOT NULL References "file_format",
 	"consent" consent NOT NULL,
-	"date" date,
-	"length" interval -- if format.timeseries
+	"date" date
 );
-COMMENT ON TABLE "object" IS 'Objects in storage along with their "constant" metadata.';
+COMMENT ON TABLE "file" IS 'Objects in storage along with their "constant" metadata.';
+CREATE TRIGGER "object" BEFORE INSERT OR UPDATE OR DELETE ON "file" FOR EACH ROW EXECUTE PROCEDURE "object_trigger" ();
 
-CREATE TABLE "audit_object" (
-	LIKE "object"
+CREATE TABLE "audit_file" (
+	LIKE "file"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
+CREATE TABLE "timeseries_format" (
+	Primary Key ("format")
+) INHERITS ("format");
+
+CREATE TABLE "timeseries" (
+	"id" integer NOT NULL DEFAULT nextval('object_id_seq') Primary Key References "object" Deferrable Initially Deferred,
+	"format" smallint NOT NULL References "timeseries_format",
+	"length" interval NOT NULL
+) INHERITS ("file");
+CREATE TRIGGER "object" BEFORE INSERT OR UPDATE OR DELETE ON "timeseries" FOR EACH ROW EXECUTE PROCEDURE "object_trigger" ();
+
+CREATE TABLE "audit_timeseries" (
+	LIKE "timeseries"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
+
 CREATE TABLE "excerpt" (
-	"id" serial NOT NULL Primary Key,
-	"object" integer NOT NULL References "object",
+	"id" integer NOT NULL DEFAULT nextval('object_id_seq') Primary Key References "object" Deferrable Initially Deferred,
+	"source" integer NOT NULL References "timeseries",
 	"offset" interval NOT NULL,
 	"length" interval,
-	"public" boolean NOT NULL Default 'f', -- only if object.consent = EXCERPTS
-	Unique ("id", "object") -- for FKs
+	"public" boolean NOT NULL Default 'f' -- only if object.consent = EXCERPTS
 );
+CREATE TRIGGER "object" BEFORE INSERT OR UPDATE OR DELETE ON "excerpt" FOR EACH ROW EXECUTE PROCEDURE "object_trigger" ();
 COMMENT ON TABLE "excerpt" IS 'Sections of timeseries objects selected for referencing.';
 
 CREATE TABLE "audit_excerpt" (
@@ -222,65 +293,35 @@ CREATE TABLE "audit_excerpt" (
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 
-CREATE TABLE "study_object" (
-	"study" integer NOT NULL References "study",
+CREATE TABLE "object_link" (
+	"container" integer NOT NULL References "container",
 	"object" integer NOT NULL References "object",
-	"slot" integer References "slot", -- not properly normalized: either slot_object or common slot/study parent
 	"title" text NOT NULL,
 	"description" text,
-	Primary Key ("study", "object"),
-	Unique ("study", "object", "slot"), -- for FKs
-	Foreign Key ("slot", "study") References "slot" ("id", "study")
+	Primary Key ("container", "object")
 );
-COMMENT ON TABLE "study_object" IS 'Object linkages into studies along with "dynamic" metadata.';
+COMMENT ON TABLE "object_link" IS 'Object linkages into containers along with "dynamic" metadata.';
 
-CREATE TABLE "audit_study_object" (
-	LIKE "study_object"
+CREATE TABLE "audit_object_link" (
+	LIKE "object_link"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
-CREATE TABLE "study_excerpt" ( -- unfortunately redundant with study_object: common object/excerpt parent?
-	"study" integer NOT NULL References "study",
-	"excerpt" integer NOT NULL References "excerpt",
-	"slot" integer References "slot", -- see above
-	"title" text NOT NULL,
-	Primary Key ("study", "excerpt"),
-	Unique ("study", "excerpt", "slot"), -- for FKs
-	Foreign Key ("slot", "study") References "slot" ("id", "study")
-);
-COMMENT ON TABLE "study_excerpt" IS 'Specific excerpts selected to highlight a study.';
-
-CREATE TABLE "audit_study_excerpt" (
-	LIKE "study_excerpt"
-) INHERITS ("audit") WITH (OIDS = FALSE);
+----------------------------------------------------------- annotations
 
 CREATE TABLE "annotation" ( -- ABSTRACT
 	"id" serial NOT NULL Primary Key,
 	"who" integer NOT NULL References "entity",
 	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	-- horribly unnormalized (hence FK mess), will be fixed by study/slot/object normalization above
-	"study" integer NOT NULL References "study",
-	"slot" integer References "slot",
+	"container" integer NOT NULL References "container",
 	"object" integer References "object",
-	"excerpt" integer References "excerpt",
-	-- even these are incomplete due to lack of MATCH PARTIAL, refactor
-	Foreign Key ("slot", "study") References "slot" ("id", "study"),
-	Foreign Key ("study", "object") References "study_object",
-	Foreign Key ("study", "object", "slot") References "study_object" ("study", "object", "slot"),
-	Foreign Key ("excerpt", "object") References "excerpt" ("id", "object"),
-	Foreign Key ("study", "excerpt") References "study_excerpt",
-	Foreign Key ("study", "excerpt", "slot") References "study_excerpt" ("study", "excerpt", "slot")
+	Foreign Key ("container", "object") References "object_link"
 );
 COMMENT ON TABLE "annotation" IS 'Abstract base table for various types of annotations that can be added by users to nodes (unaudited, no updates).';
 
 CREATE TABLE "comment" (
 	"text" text NOT NULL,
 	Primary Key ("id"),
-	Foreign Key ("slot", "study") References "slot" ("id", "study"),
-	Foreign Key ("study", "object") References "study_object",
-	Foreign Key ("study", "object", "slot") References "study_object" ("study", "object", "slot"),
-	Foreign Key ("excerpt", "object") References "excerpt" ("id", "object"),
-	Foreign Key ("study", "excerpt") References "study_excerpt",
-	Foreign Key ("study", "excerpt", "slot") References "study_excerpt" ("study", "excerpt", "slot")
+	Foreign Key ("container", "object") References "object_link"
 ) INHERITS ("annotation");
 COMMENT ON TABLE "comment" IS 'Free-text comments.';
 
@@ -289,15 +330,19 @@ COMMENT ON TABLE "comment" IS 'Free-text comments.';
 
 DROP TABLE "comment";
 DROP TABLE "annotation";
-DROP TABLE "audit_study_excerpt";
-DROP TABLE "study_excerpt";
+DROP TABLE "audit_object_link";
+DROP TABLE "object_link";
 DROP TABLE "audit_excerpt";
 DROP TABLE "excerpt";
-DROP TABLE "audit_study_object";
-DROP TABLE "study_object";
-DROP TABLE "audit_object";
-DROP TABLE "object";
+DROP TABLE "audit_timeseries";
+DROP TABLE "timeseries";
+DROP TABLE "timeseries_format";
+DROP TABLE "audit_file";
+DROP TABLE "file";
+DROP TABLE "file_format";
 DROP TABLE "format";
+DROP TABLE "object";
+DROP FUNCTION "object_trigger" ();
 DROP TYPE consent;
 
 DROP TABLE "audit_slot";
@@ -307,6 +352,8 @@ DROP TABLE "audit_study_access";
 DROP TABLE "study_access";
 DROP TABLE "audit_study";
 DROP TABLE "study";
+DROP TABLE "container";
+DROP FUNCTION "container_trigger" ();
 
 DROP FUNCTION "authorize_delegate_check" (integer, integer, permission);
 DROP FUNCTION "authorize_access_check" (integer, integer, permission);
@@ -323,3 +370,4 @@ DROP TABLE "entity";
 DROP TABLE "audit";
 DROP TYPE audit_action;
 
+DROP FUNCTION create_abstract_parent (name, name[]);
