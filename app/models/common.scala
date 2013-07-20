@@ -25,21 +25,28 @@ private[models] abstract class TableRowId(private val _id : Int) extends TableRo
   override def hashCode = _id
   def equals(a : this.type) = a._id == _id
 }
+
 private[models] abstract class TableView[R <: TableRow](private[models] val table : String) {
   private[models] val tableOID = CachedVal[Long,Site.DB](SQL("SELECT oid FROM pg_class WHERE relname = {name}").on('name -> table).single(SqlParser.scalar[Long])(_))
   private[models] val row : RowParser[R]
-  private[models] val * = "*"
+  protected def col(n : String*) = n.map(table + "." + _).mkString(", ")
+  private[models] val * = col("*")
 }
-private[models] abstract class TableViewId[R <: TableRowId](table : String) extends TableView[R](table) {
-  class Id private[TableViewId] (val unId : Int) {
+private[models] trait HasId {
+  type Id
+  def asId(i : Int) : Id
+}
+private[models] trait NewId extends HasId {
+  class Id private[NewId] (val unId : Int) {
     def ==(i : Id) = i.unId == unId // I don't understand why this is necessary
   }
-  def asId(i : Int) : Id = new Id(i)
+  final def asId(i : Int) : Id = new Id(i)
   implicit val pathBindableId : PathBindable[Id] = PathBindable.bindableInt.transform(asId _, _.unId)
   implicit val queryStringBindableId : QueryStringBindable[Id] = QueryStringBindable.bindableInt.transform(asId _, _.unId)
   implicit val toStatementId : ToStatement[Id] = dbrary.Anorm.toStatementMap[Id,Int](_.unId)
   implicit val columnId : Column[Id] = dbrary.Anorm.columnMap[Id,Int](asId _)
 }
+private[models] abstract class TableViewId[R <: TableRowId](table : String) extends TableView[R](table) with NewId
 
 object Anorm {
   type Args = Seq[(Symbol, ParameterValue[_])]
@@ -67,8 +74,8 @@ object Anorm {
     , a1 : String
     , a2 : String
     )(implicit 
-      c1 : anorm.Column[C1], 
-      c2 : anorm.Column[C2]
+      c1 : anorm.Column[C1]
+    , c2 : anorm.Column[C2]
     ) : RowParser[B] = RowParser[B] { row =>
     (for {
       r1 <- row.get[C1](a1)(c1)
@@ -80,9 +87,9 @@ object Anorm {
     , a2 : String
     , a3 : String
     )(implicit 
-      c1 : anorm.Column[C1], 
-      c2 : anorm.Column[C2],
-      c3 : anorm.Column[C3]
+      c1 : anorm.Column[C1] 
+    , c2 : anorm.Column[C2]
+    , c3 : anorm.Column[C3]
     ) : RowParser[B] = RowParser[B] { row =>
     (for {
       r1 <- row.get[C1](a1)(c1)
@@ -96,10 +103,10 @@ object Anorm {
     , a3 : String
     , a4 : String
     )(implicit 
-      c1 : anorm.Column[C1], 
-      c2 : anorm.Column[C2],
-      c3 : anorm.Column[C3],
-      c4 : anorm.Column[C4]
+      c1 : anorm.Column[C1] 
+    , c2 : anorm.Column[C2]
+    , c3 : anorm.Column[C3]
+    , c4 : anorm.Column[C4]
     ) : RowParser[B] = RowParser[B] { row =>
     (for {
       r1 <- row.get[C1](a1)(c1)
@@ -115,11 +122,11 @@ object Anorm {
     , a4 : String
     , a5 : String
     )(implicit 
-      c1 : anorm.Column[C1], 
-      c2 : anorm.Column[C2],
-      c3 : anorm.Column[C3],
-      c4 : anorm.Column[C4],
-      c5 : anorm.Column[C5]
+      c1 : anorm.Column[C1] 
+    , c2 : anorm.Column[C2]
+    , c3 : anorm.Column[C3]
+    , c4 : anorm.Column[C4]
+    , c5 : anorm.Column[C5]
     ) : RowParser[B] = RowParser[B] { row =>
     (for {
       r1 <- row.get[C1](a1)(c1)
@@ -137,12 +144,12 @@ object Anorm {
     , a5 : String
     , a6 : String
     )(implicit 
-      c1 : anorm.Column[C1], 
-      c2 : anorm.Column[C2],
-      c3 : anorm.Column[C3],
-      c4 : anorm.Column[C4],
-      c5 : anorm.Column[C5],
-      c6 : anorm.Column[C6]
+      c1 : anorm.Column[C1] 
+    , c2 : anorm.Column[C2]
+    , c3 : anorm.Column[C3]
+    , c4 : anorm.Column[C4]
+    , c5 : anorm.Column[C5]
+    , c6 : anorm.Column[C6]
     ) : RowParser[B] = RowParser[B] { row =>
     (for {
       r1 <- row.get[C1](a1)(c1)
@@ -162,13 +169,13 @@ object Anorm {
     , a6 : String
     , a7 : String
     )(implicit 
-      c1 : anorm.Column[C1], 
-      c2 : anorm.Column[C2],
-      c3 : anorm.Column[C3],
-      c4 : anorm.Column[C4],
-      c5 : anorm.Column[C5],
-      c6 : anorm.Column[C6],
-      c7 : anorm.Column[C7]
+      c1 : anorm.Column[C1] 
+    , c2 : anorm.Column[C2]
+    , c3 : anorm.Column[C3]
+    , c4 : anorm.Column[C4]
+    , c5 : anorm.Column[C5]
+    , c6 : anorm.Column[C6]
+    , c7 : anorm.Column[C7]
     ) : RowParser[B] = RowParser[B] { row =>
     (for {
       r1 <- row.get[C1](a1)(c1)

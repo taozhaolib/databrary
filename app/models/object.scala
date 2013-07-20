@@ -11,14 +11,28 @@ object Consent extends PGEnum("consent") {
   val PUBLIC, DEIDENTIFIED, EXCERPTS, SHARED, PRIVATE = Value
 }
 
-final case class ObjectFormat private (id : ObjectFormat.Id, mimetype : String, extension : Option[String], name : String, timeseries : Boolean) extends TableRowId(id.unId) {
+case class ObjectFormat private[models] (id : ObjectFormat.Id, mimetype : String, extension : Option[String], name : String, timeseries : Boolean) extends TableRowId(id.unId)
+
+object ObjectFormat extends NewId
+
+private[models] sealed abstract class FormatView(table : String, timeseries : Boolean) extends TableView[ObjectFormat](table) with HasId {
+  type Id = ObjectFormat.Id
+  def asId(i : Int) : Id = ObjectFormat.asId(i)
+
+  private[this] def make(id : Id, mimetype : String, extension : Option[String], name : String) =
+    new ObjectFormat(id, mimetype, extension, name, timeseries)
+  private[models] val row = Anorm.rowMap(make _, "format", "mimetype", "extension", "name")
 }
 
-object ObjectFormat extends TableViewId[ObjectFormat]("format") {
-  private[models] val row = Anorm.rowMap(ObjectFormat.apply _, "format", "mimetype", "extension", "name", "timeseries")
+object FileFormat extends FormatView("file_format", false)
+object TimeseriesFormat extends FormatView("timeseries_format", true)
+
+
+sealed abstract class Object protected (val id : Object.Id) extends TableRowId(id.unId) {
+  def consent : Consent.Value
 }
 
-final class Object private (val id : Object.Id, val format : ObjectFormat, consent_ : Consent.Value, date_ : Option[Date]) extends TableRowId(id.unId) {
+sealed class FileObject protected (id : FileObject.Id, val format : ObjectFormat, consent_ : Consent.Value, date_ : Option[Date]) extends Object(id) {
   private[this] var _consent = consent_
   def consent = _consent
   private[this] var _date = date_
@@ -27,70 +41,68 @@ final class Object private (val id : Object.Id, val format : ObjectFormat, conse
   def change(consent : Consent.Value = _consent, date : Option[Date] = _date)(implicit site : Site) : Unit = {
     if (date == _date && consent == _consent)
       return
-    Audit.SQLon(AuditAction.change, "object", "SET consent = {consent}, date = {date} WHERE id = {id}")('consent -> consent, 'date -> date, 'id -> id).execute()(site.db)
+    Audit.SQLon(AuditAction.change, "file", "SET consent = {consent}, date = {date} WHERE id = {id}")('consent -> consent, 'date -> date, 'id -> id).execute()(site.db)
     _consent = consent
     _date = date
   }
 }
 
-object Object extends TableViewId[Object]("object JOIN format USING (format)") {
-  private[models] val row = (Anorm.rowMap(Tuple3.apply[Id, Consent.Value, Option[Date]] _, "id", "consent", "date") ~ ObjectFormat.row).map({
-    case ((id, consent, date) ~ format) => new Object(id, format, consent, date)
-  })
+final class TimeseriesObject private (id : TimeseriesObject.Id, format : ObjectFormat, consent_ : Consent.Value, date_ : Option[Date]) extends FileObject(id, format, consent_, date_)
+
+final class Excerpt private (id : Excerpt.Id, val sourceId : TimeseriesObject.Id, public_ : Boolean) extends Object(id) {
+  private[this] var _public = public_
+  def public = _public
+
+  def change(public : Boolean = _public)(implicit site : Site) : Unit = {
+    if (public == _public)
+      return
+    Audit.SQLon(AuditAction.change, "excerpt", "SET public = {public} WHERE id = {id}")('public -> public, 'id -> id).execute()(site.db)
+    _public = public
+  }
+}
+
+
+private[models] object ObjectId extends NewId
+
+private[models] sealed abstract class ObjectView[R <: Object](table : String) extends TableView[R](table) with HasId {
+  type Id = ObjectId.Id
+  def asId(i : Int) : Id = ObjectId.asId(i)
+
+  def get(i : Id)(implicit db : Site.DB) : Option[R]
+}
+
+object Object extends ObjectView[Object]("object") {
+}
+
+object FileObject extends ObjectView[FileObject]("file") {
+  private[models] val baseRow = Anorm.rowMap(Tuple3.apply[Id, Consent.Value, Option[Date]] _, col("id"), col("consent"), col("date"))
+  private[models] val row = (baseRow ~ FileFormat.row) map {
+    case ((id, consent, date) ~ format) => new FileObject(id, format, consent, date)
+  }
   
-  private[models] def get(i : Id)(implicit db : Site.DB) : Option[Object] =
-    SQL("SELECT " + * + " FROM " + table + " WHERE id = {id}").
+  private[models] def get(i : Id)(implicit db : Site.DB) : Option[FileObject] =
+    SQL("SELECT " + * + " FROM file JOIN file_format ON file.format = file_format.id WHERE id = {id}").
       on('id -> i).singleOpt(row)
 }
 
-final class StudyObject private (val obj : Object, val studyId : Study.Id, title_ : String, description_ : Option[String]) extends TableRow {
-  def objId = obj.id
-  def id = (objId, studyId)
-  private[this] var _title = title_
-  def title = _title
-  private[this] var _description = description_
-  def description = _description
-
-  def change(title : String = _title, description : Option[String] = _description)(implicit site : Site) : Unit = {
-    if (title == _title && description == _description)
-      return
-    val args = Anorm.Args('obj -> objId, 'study -> studyId, 'title -> title, 'description -> description)
-    Audit.SQLon(AuditAction.change, "study_object", "SET title = {title}, description = {description} WHERE object = {obj} AND study = {study}")(args : _*).execute()(site.db)
-    _title = title
-    _description = description
+object TimeseriesObject extends ObjectView[TimeseriesObject]("timeseries") {
+  private[models] val baseRow = FileObject.baseRow
+  private[models] val row = (baseRow ~ TimeseriesFormat.row) map {
+    case ((id, consent, date) ~ format) => new TimeseriesObject(id, format, consent, date)
   }
-
-  private[StudyObject] val _study = CachedVal[Study, Site](Study.get(studyId)(_).get)
-  def study(implicit site : Site) : Study = _study
-
-  /* object permissions depend on study permissions, but can be further restricted by consent levels */
-  def permission(implicit site : Site) : Permission.Value = {
-    val p = study.permission
-    if (obj.consent > Consent.DEIDENTIFIED && (
-      (obj.consent > Consent.SHARED && p < Permission.EDIT) 
-      || site.access < Permission.DOWNLOAD))
-      Permission.NONE
-    else
-      p
-  }
-
-  def comments(implicit db : Site.DB) = Comment.getStudyObject(this)
-  def addComment(text : String)(implicit site : Site) = Comment.create(this, text)
+  
+  private[models] def get(i : Id)(implicit db : Site.DB) : Option[TimeseriesObject] =
+    SQL("SELECT " + * + " FROM timeseries JOIN timeseries_format ON timeseries.format = timeseries_format.id WHERE id = {id}").
+      on('id -> i).singleOpt(row)
 }
 
-object StudyObject extends TableView[StudyObject]("study_object JOIN (" + Object.table + ") ON (object = id)") {
-  private[models] val row = (Anorm.rowMap(Tuple3.apply[Study.Id, String, Option[String]] _, "study", "title", "description") ~ Object.row).map({
-    case ((study, title, description) ~ obj) => new StudyObject(obj, study, title, description)
-  })
-  private[this] def rowStudy(s : Study) = row map { o => o._study() = s ; o }
-
-  private[models] def get(s : Study.Id, o : Object.Id)(implicit db : Site.DB) : Option[StudyObject] =
-    SQL("SELECT * FROM " + table + " WHERE study = {study} AND object = {object}").
-      on('study -> s, 'object -> o).singleOpt(row)
-  private[models] def get(s : Study, o : Object.Id)(implicit db : Site.DB) : Option[StudyObject] =
-    SQL("SELECT * FROM " + table + " WHERE study = {study} AND object = {object}").
-      on('study -> s.id, 'object -> o).singleOpt(rowStudy(s))
-  private[models] def getObjects(s : Study)(implicit db : Site.DB) =
-    SQL("SELECT * FROM " + table + " WHERE study = {study}").
-      on('study -> s.id).list(rowStudy(s))
+object Excerpt extends ObjectView[Excerpt]("excerpt") {
+  private[this] def make(id : Id, sourceId : TimeseriesObject.Id, public : Boolean) =
+    new Excerpt(id, sourceId, public)
+  private[models] val row = Anorm.rowMap(make _, col("id"), col("source"), col("public"))
+  
+  private[models] def get(i : Id)(implicit db : Site.DB) : Option[Excerpt] =
+    SQL("SELECT " + * + " FROM excerpt WHERE id = {id}").
+      on('id -> i).singleOpt(row)
 }
+

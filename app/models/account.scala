@@ -22,5 +22,5 @@ private[models] final class Account (val id : Entity.Id, val username : String, 
 private[models] object Account extends TableView[Account]("account") {
   private[this] def make(id : Entity.Id, username : String, email : String, openid : Option[String]) =
     new Account(id, username, email, openid)
-  private[models] val row = Anorm.rowMap(make _, "id", "username", "email", "openid")
+  private[models] val row = Anorm.rowMap(make _, col("id"), col("username"), col("email"), col("openid"))
 }

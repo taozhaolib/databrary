@@ -10,7 +10,7 @@ import          i18n.Messages
 import models._
 
 object Object extends SiteController {
-  private[controllers] def check(i : models.Study.Id, o : models.Object.Id, p : Permission.Value = Permission.VIEW)(act : StudyObject => SiteRequest[AnyContent] => Result) = Study.check(i) { study => implicit request =>
+  private[controllers] def check(i : models.Study.Id, o : models.Object.Id, p : Permission.Value = Permission.VIEW)(act : ObjectLink => SiteRequest[AnyContent] => Result) = Study.check(i) { study => implicit request =>
     study.getObject(o).fold(NotFound : Result) { obj =>
       if (obj.permission < p)
         Forbidden
@@ -30,7 +30,7 @@ object Object extends SiteController {
     "consent" -> form.enumField(Consent),
     "date" -> optional(sqlDate)
   ))
-  private[this] def editFormFill(o : StudyObject) = editForm.fill((o.title, o.description.getOrElse(""), o.obj.consent, o.obj.date))
+  private[this] def editFormFill(o : ObjectLink)(implicit site : Site) = editForm.fill((o.title, o.description.getOrElse(""), o.obj(site.db).consent, o.obj(site.db).date))
 
   def edit(s : models.Study.Id, o : models.Object.Id) = check(s, o, Permission.EDIT) { obj => implicit request =>
     Ok(views.html.objectEdit(obj, editFormFill(obj)))

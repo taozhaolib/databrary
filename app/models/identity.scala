@@ -50,6 +50,7 @@ final class User(entity : Entity, account : Account) extends Identity(entity) {
     account.change(email, openid)
 }
 
+/* This is of questionable utility, but is primarily a proof of concept */
 private object IdentityCache extends HashMap[Int, Identity] {
   def add[I <: Identity](i : I) : I = {
     update(i.id.unId, i)
@@ -59,19 +60,20 @@ private object IdentityCache extends HashMap[Int, Identity] {
   add(Identity.Root)
 }
 
-object Identity extends TableView[Identity]("entity LEFT JOIN account USING (id)") {
+object Identity extends TableView[Identity]("entity LEFT JOIN account USING (id)") with HasId {
   type Id = Entity.Id
   def asId(i : Int) : Id = Entity.asId(i)
 
-  private[models] val row = (Entity.row ~ Account.row.?).map({
+  private[models] val * = Entity.* + ", " + Account.*
+  private[models] val row = (Entity.row ~ Account.row.?) map {
     case (e ~ None) => new Identity(e)
     case (e ~ Some(a)) => new User(e, a)
-  })
+  }
 
-  def get(i : Id)(implicit db : Site.DB) : Identity =
-    IdentityCache.getOrElseUpdate(i.unId, 
+  def get(i : Id)(implicit db : Site.DB) : Option[Identity] =
+    Option(IdentityCache.getOrElseUpdate(i.unId, 
       SQL("SELECT * FROM " + table + " WHERE id = {id}").
-        on('id -> i).single(row))
+        on('id -> i).singleOpt(row).orNull))
 
   def create(n : String)(implicit site : Site) : Identity =
     new Identity(Entity.create(n)).cache
@@ -91,16 +93,17 @@ object Identity extends TableView[Identity]("entity LEFT JOIN account USING (id)
   final val Root   = new Identity(Entity.Root)
 }
 
-object User extends TableView[User]("entity JOIN account USING (id)") {
+object User extends TableView[User]("entity JOIN account USING (id)") with HasId {
   type Id = Identity.Id
   def asId(i : Int) : Id = Identity.asId(i)
 
-  private[models] val row = (Entity.row ~ Account.row).map({
+  private[models] val * = Entity.* + ", " + Account.*
+  private[models] val row = (Entity.row ~ Account.row) map {
     case (e ~ a) => new User(e, a)
-  })
+  }
 
   def get(i : Id)(implicit db : Site.DB) : Option[User] = 
-    Identity.get(i).user
+    Identity.get(i).flatMap(_.user)
   def getUsername(u : String)(implicit db : Site.DB) : Option[User] = 
     SQL("SELECT * FROM " + table + " WHERE username = {username}").
       on("username" -> u).singleOpt(row)/*.map(_.cache)*/

@@ -15,8 +15,7 @@ private[models] final class Entity (val id : Entity.Id, name_ : String, orcid_ :
   def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Unit = {
     if (name == _name && orcid == _orcid)
       return
-    val args = Anorm.Args('id -> id, 'name -> name, 'orcid -> orcid)
-    Audit.SQLon(AuditAction.change, "entity", "SET name = {name}, orcid = {orcid} WHERE id = {id}")(args : _*).execute()(site.db)
+    Audit.SQLon(AuditAction.change, "entity", "SET name = {name}, orcid = {orcid} WHERE id = {id}")('id -> id, 'name -> name, 'orcid -> orcid).execute()(site.db)
     _name = name
     _orcid = orcid
   }
@@ -31,11 +30,11 @@ private[models] object Entity extends TableViewId[Entity]("entity") {
     case ROOT => Root
     case id => new Entity(id, name, orcid)
   }
-  private[models] val row = Anorm.rowMap(make _, "id", "name", "orcid")
+  private[models] val row = Anorm.rowMap(make _, col("id"), col("name"), col("orcid"))
 
   def create(name : String)(implicit site : Site) : Entity = {
     val args = Anorm.Args('name -> name)
-    Audit.SQLon(AuditAction.add, "entity", Anorm.insertArgs(args), "*")(args : _*).single(row)(site.db)
+    Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "*")(args : _*).single(row)(site.db)
   }
 
   final val NOBODY : Id = asId(-1)

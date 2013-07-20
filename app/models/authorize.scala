@@ -34,17 +34,17 @@ final case class Authorize(childId : Identity.Id, parentId : Identity.Id, access
     authorized.fold(false)(_.getTime < now) && expires.fold(true)(_.getTime > now)
   }
 
-  private[Authorize] val _child = CachedVal[Identity, Site.DB](Identity.get(childId)(_))
+  private[Authorize] val _child = CachedVal[Identity, Site.DB](Identity.get(childId)(_).get)
   def child(implicit db : Site.DB) : Identity = _child
-  private[Authorize] val _parent = CachedVal[Identity, Site.DB](Identity.get(parentId)(_))
+  private[Authorize] val _parent = CachedVal[Identity, Site.DB](Identity.get(parentId)(_).get)
   def parent(implicit db : Site.DB) : Identity = _parent
 }
 
 object Authorize extends TableView[Authorize]("authorize") {
-  private[models] val row = Anorm.rowMap(Authorize.apply _, "child", "parent", "access", "delegate", "authorized", "expires")
+  private[models] val row = Anorm.rowMap(Authorize.apply _, col("child"), col("parent"), col("access"), col("delegate"), col("authorized"), col("expires"))
 
   private[this] def select(all : Boolean) = 
-    "SELECT * FROM " + table + (if (all) "" else "_valid")
+    "SELECT " + * + " FROM " + table + (if (all) "" else "_valid")
 
   def get(c : Identity.Id, p : Identity.Id)(implicit db : Site.DB) : Option[Authorize] =
     SQL(select(true) + " WHERE child = {child} AND parent = {parent}").

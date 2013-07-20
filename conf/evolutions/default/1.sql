@@ -234,7 +234,7 @@ SELECT create_abstract_parent('object', ARRAY['file', 'timeseries', 'excerpt']);
 COMMENT ON TABLE "object" IS 'Parent table for all uploaded data in storage.';
 
 CREATE TABLE "format" (
-	"format" smallserial NOT NULL Primary Key,
+	"id" smallserial NOT NULL Primary Key,
 	"mimetype" varchar(128) NOT NULL,
 	"extension" varchar(8),
 	"name" text NOT NULL
@@ -242,7 +242,7 @@ CREATE TABLE "format" (
 COMMENT ON TABLE "format" IS 'Possible types for objects, sufficient for producing download headers.';
 
 CREATE TABLE "file_format" (
-	Primary Key ("format")
+	Primary Key ("id")
 ) INHERITS ("format");
 INSERT INTO "file_format" (mimetype, extension, name) VALUES ('text/plain', 'txt', 'Plain text');
 INSERT INTO "file_format" (mimetype, extension, name) VALUES ('text/html', 'html', 'Hypertext markup');
@@ -263,7 +263,7 @@ CREATE TABLE "audit_file" (
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 CREATE TABLE "timeseries_format" (
-	Primary Key ("format")
+	Primary Key ("id")
 ) INHERITS ("format");
 
 CREATE TABLE "timeseries" (
@@ -312,6 +312,7 @@ CREATE TABLE "annotation" ( -- ABSTRACT
 	"id" serial NOT NULL Primary Key,
 	"who" integer NOT NULL References "entity",
 	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	-- consider possible ON DELETE actions:
 	"container" integer NOT NULL References "container",
 	"object" integer References "object",
 	Foreign Key ("container", "object") References "object_link"
