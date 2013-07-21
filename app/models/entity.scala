@@ -38,7 +38,8 @@ private[models] object Entity extends TableViewId[Entity]("entity") {
 
   def create(name : String)(implicit site : Site) : Entity = {
     val args = Anorm.Args('name -> name)
-    Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "*")(args : _*).single(row)(site.db)
+    val id = Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
+    new Entity(id, name)
   }
 
   final val NOBODY : Id = asId(-1)

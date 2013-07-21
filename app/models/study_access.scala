@@ -39,7 +39,7 @@ object StudyAccess extends TableView[StudyAccess]("study_access") {
         map({ case (a ~ e) => a._entity() = e; a._study() = s; a })
       )
   private[models] def getStudies(e : Identity, p : Permission.Value = Permission.NONE)(implicit site : Site) =
-    SQL("SELECT " + Study.* + " FROM " + table + " JOIN " + Study.table + " ON (study = id) WHERE entity = {entity} AND access >= {access} AND " + Study.condition + " ORDER BY access DESC").
+    SQL("SELECT " + * + ", " + Study.* + " FROM " + table + " JOIN " + Study.table + " ON (study = id) WHERE entity = {entity} AND access >= {access} AND " + Study.condition + " ORDER BY access DESC").
       on('entity -> e.id, 'access -> p, 'identity -> site.identity.id).list((row ~ Study.row).
         map({ case (a ~ s) => a._study() = s; a._entity() = e; a })
       )(site.db)

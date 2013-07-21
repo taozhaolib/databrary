@@ -84,12 +84,12 @@ private[models] object Container extends ContainerView[Container]("container") {
   private[models] override val * = Study.* + ", " + Slot.*
   private[models] override val src = "container LEFT JOIN slot USING (id) JOIN study ON study.id = container.id OR study.id = slot.study"
   def get(i : Id)(implicit site : Site) : Option[Container] =
-    SQL("SELECT " + * + " FROM " + src + " WHERE id = {id} AND " + condition).
+    SQL("SELECT " + * + " FROM " + src + " WHERE container.id = {id} AND " + condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt(row)(site.db)
 }
 
 object Study extends ContainerView[Study]("study") {
-  private[this] def make(id : Id, title : String, description : Option[String], permission : Option[Permission.Value]) =
+  private[this] def make(id : Id, title : String, description : Option[String], permission : Option[Permission.Value] = None) =
     new Study(id, title, description, permission.getOrElse(Permission.NONE))
   private[models] val row = Anorm.rowMap(make _, col("id"), col("title"), col("description"), "permission")
   private[models] override val * = col("*") + ", " + permission + " AS permission"
@@ -100,7 +100,8 @@ object Study extends ContainerView[Study]("study") {
     
   def create(title : String, description : Option[String] = None)(implicit site : Site) : Study = {
     val args = Anorm.Args('title -> title, 'description -> description)
-    Audit.SQLon(AuditAction.add, "study", Anorm.insertArgs(args), *)(args : _*).single(row)(site.db)
+    val id = Audit.SQLon(AuditAction.add, "study", Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
+    make(id, title, description)
   }
 }
 
@@ -125,8 +126,9 @@ object Slot extends ContainerView[Slot]("slot") {
       on('study -> study.id).list(rowStudy(study))
     
   private[models] def create(study : Study, ident : String)(implicit site : Site) : Slot = {
-    val args = Anorm.Args('study -> study, 'ident -> ident)
-    Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), *)(args : _*).single(rowStudy(study))(site.db)
+    val args = Anorm.Args('study -> study.id, 'ident -> ident)
+    val id = Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
+    new Slot(id, study, ident)
   }
 }
 
