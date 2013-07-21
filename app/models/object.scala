@@ -11,14 +11,11 @@ object Consent extends PGEnum("consent") {
   val PUBLIC, DEIDENTIFIED, EXCERPTS, SHARED, PRIVATE = Value
 }
 
-case class ObjectFormat private[models] (id : ObjectFormat.Id, mimetype : String, extension : Option[String], name : String, timeseries : Boolean) extends TableRowId(id.unId)
+case class ObjectFormat private[models] (id : ObjectFormat.Id, mimetype : String, extension : Option[String], name : String, timeseries : Boolean) extends TableRowId[ObjectFormat]
 
-object ObjectFormat extends NewId
+object ObjectFormat extends HasId[ObjectFormat]
 
-private[models] sealed abstract class FormatView(table : String, timeseries : Boolean) extends TableView[ObjectFormat](table) with HasId {
-  type Id = ObjectFormat.Id
-  def asId(i : Int) : Id = ObjectFormat.asId(i)
-
+private[models] sealed abstract class FormatView(table : String, timeseries : Boolean) extends TableViewId[ObjectFormat](table) {
   private[this] def make(id : Id, mimetype : String, extension : Option[String], name : String) =
     new ObjectFormat(id, mimetype, extension, name, timeseries)
   private[models] val row = Anorm.rowMap(make _, col("format"), col("mimetype"), col("extension"), col("name"))
@@ -28,11 +25,11 @@ object FileFormat extends FormatView("file_format", false)
 object TimeseriesFormat extends FormatView("timeseries_format", true)
 
 
-sealed abstract class Object protected (val id : Object.Id) extends TableRowId(id.unId) {
+sealed abstract class Object protected (val id : Object.Id) extends TableRowId[Object] {
   def consent : Consent.Value
 }
 
-sealed class FileObject protected (id : FileObject.Id, val format : ObjectFormat, consent_ : Consent.Value, date_ : Option[Date]) extends Object(id) {
+sealed class FileObject protected (override val id : FileObject.Id, val format : ObjectFormat, consent_ : Consent.Value, date_ : Option[Date]) extends Object(id) with TableRowId[FileObject] {
   private[this] var _consent = consent_
   def consent = _consent
   private[this] var _date = date_
@@ -47,9 +44,9 @@ sealed class FileObject protected (id : FileObject.Id, val format : ObjectFormat
   }
 }
 
-final class TimeseriesObject private (id : TimeseriesObject.Id, format : ObjectFormat, consent_ : Consent.Value, date_ : Option[Date]) extends FileObject(id, format, consent_, date_)
+final class TimeseriesObject private (override val id : TimeseriesObject.Id, format : ObjectFormat, consent_ : Consent.Value, date_ : Option[Date]) extends FileObject(id, format, consent_, date_) with TableRowId[TimeseriesObject]
 
-final class Excerpt private (id : Excerpt.Id, val source : TimeseriesObject, public_ : Boolean) extends Object(id) {
+final class Excerpt private (override val id : Excerpt.Id, val source : TimeseriesObject, public_ : Boolean) extends Object(id) with TableRowId[Excerpt] {
   def sourceId = source.id
   private[this] var _public = public_
   def public = _public
@@ -71,12 +68,7 @@ final class Excerpt private (id : Excerpt.Id, val source : TimeseriesObject, pub
 }
 
 
-private[models] object ObjectId extends NewId
-
-private[models] sealed abstract class ObjectView[R <: Object](table : String) extends TableView[R](table) with HasId {
-  type Id = ObjectId.Id
-  def asId(i : Int) : Id = ObjectId.asId(i)
-
+private[models] sealed abstract class ObjectView[R <: Object with TableRowId[R]](table : String) extends TableViewId[R](table) {
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[R]
 }
 
@@ -85,9 +77,9 @@ object Object extends ObjectView[Object]("object") {
 
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[Object] =
     SQL("SELECT kind FROM object WHERE id = {id}").on('id -> i).singleOpt(scalar[String]) flatMap (_ match {
-      case "file" => FileObject.get(i)
-      case "timeseries" => TimeseriesObject.get(i)
-      case "excerpt" => Excerpt.get(i)
+      case "file" => FileObject.get(FileObject.asId(i.unId))
+      case "timeseries" => TimeseriesObject.get(TimeseriesObject.asId(i.unId))
+      case "excerpt" => Excerpt.get(Excerpt.asId(i.unId))
     })
 }
 
@@ -104,7 +96,7 @@ object FileObject extends ObjectView[FileObject]("file") {
 }
 
 object TimeseriesObject extends ObjectView[TimeseriesObject]("timeseries") {
-  private[models] val baseRow = FileObject.baseRow
+  private[models] val baseRow = Anorm.rowMap(Tuple3.apply[Id, Consent.Value, Option[Date]] _, col("id"), col("consent"), col("date"))
   private[models] val row = (baseRow ~ TimeseriesFormat.row) map {
     case ((id, consent, date) ~ format) => new TimeseriesObject(id, format, consent, date)
   }

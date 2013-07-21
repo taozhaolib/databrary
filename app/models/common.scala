@@ -20,10 +20,31 @@ object CachedVal {
   implicit def implicitGetCached[T, S](x : CachedVal[T, S])(implicit s : S) : T = x(s)
 }
 
-private[models] abstract class TableRow
-private[models] abstract class TableRowId(private val _id : Int) extends TableRow {
-  override def hashCode = _id
-  def equals(a : this.type) = a._id == _id
+class GenericId[I,+T](val unId : I) {
+  // I don't understand why this is necessary:
+  def ==(i : GenericId[I,AnyRef]) = i match {
+    case i : GenericId[I,T] => i.unId == unId
+    case _ => false
+  }
+}
+final class IntId[+T](unId : Int) extends GenericId[Int,T](unId)
+object IntId {
+  def apply[T](i : Int) = new IntId[T](i)
+  implicit def pathBindableId[T] : PathBindable[IntId[T]] = PathBindable.bindableInt.transform(apply[T] _, _.unId)
+  implicit def queryStringBindableId[T] : QueryStringBindable[IntId[T]] = QueryStringBindable.bindableInt.transform(apply[T] _, _.unId)
+  implicit def toStatementId[T] : ToStatement[IntId[T]] = dbrary.Anorm.toStatementMap[IntId[T],Int](_.unId)
+  implicit def columnId[T] : Column[IntId[T]] = dbrary.Anorm.columnMap[IntId[T],Int](apply[T] _)
+}
+private[models] trait HasId[+T] {
+  type Id = IntId[T]
+  def asId(i : Int) : Id = new IntId[T](i)
+}
+
+private[models] trait TableRow
+private[models] trait TableRowId[+T] extends TableRow {
+  val id : IntId[T]
+  override def hashCode = id.unId
+  def equals(a : this.type) = a.id == id
 }
 
 private[models] abstract class TableView[R <: TableRow](private[models] val table : String) {
@@ -33,21 +54,7 @@ private[models] abstract class TableView[R <: TableRow](private[models] val tabl
   private[models] val * : String = col("*")
   private[models] val src : String = table
 }
-private[models] trait HasId {
-  type Id
-  def asId(i : Int) : Id
-}
-private[models] trait NewId extends HasId {
-  class Id private[NewId] (val unId : Int) {
-    def ==(i : Id) = i.unId == unId // I don't understand why this is necessary
-  }
-  final def asId(i : Int) : Id = new Id(i)
-  implicit val pathBindableId : PathBindable[Id] = PathBindable.bindableInt.transform(asId _, _.unId)
-  implicit val queryStringBindableId : QueryStringBindable[Id] = QueryStringBindable.bindableInt.transform(asId _, _.unId)
-  implicit val toStatementId : ToStatement[Id] = dbrary.Anorm.toStatementMap[Id,Int](_.unId)
-  implicit val columnId : Column[Id] = dbrary.Anorm.columnMap[Id,Int](asId _)
-}
-private[models] abstract class TableViewId[R <: TableRowId](table : String) extends TableView[R](table) with NewId
+private[models] abstract class TableViewId[R <: TableRowId[R]](table : String) extends TableView[R](table) with HasId[R]
 
 object Anorm {
   type Args = Seq[(Symbol, ParameterValue[_])]

@@ -7,7 +7,7 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-class Annotation protected (val id : Annotation.Id, val whoId : Identity.Id, val when : Timestamp, val containerId : Container.Id, val objId : Option[Object.Id]) extends TableRowId(id.unId) {
+class Annotation protected (val id : Annotation.Id, val whoId : Identity.Id, val when : Timestamp, val containerId : Container.Id, val objId : Option[Object.Id]) extends TableRowId[Annotation] {
   protected[models] val _who = CachedVal[Identity, Site.DB](Identity.get(whoId)(_).get)
   def who(implicit db : Site.DB) : Identity = _who
   protected[models] val _container = CachedVal[Container, Site](Container.get(containerId)(_).get)
@@ -17,7 +17,10 @@ class Annotation protected (val id : Annotation.Id, val whoId : Identity.Id, val
   def target(implicit site : Site) : SitePage = if (objId.isEmpty) container else obj.get
 }
 
-private[models] sealed abstract class AnnotationView[R <: Annotation](table : String) extends TableViewId[R](table) {
+final class Comment private (override val id : Comment.Id, whoId : Identity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id], val text : String) extends Annotation(id, whoId, when, containerId, objId) with TableRowId[Comment] {
+}
+
+private[models] sealed abstract class AnnotationView[R <: Annotation](table : String) extends TableView[R](table) with HasId[R] {
   private[models] def get(id : Id)(implicit db : Site.DB) : Option[R] =
     SQL("SELECT " + * + " FROM " + table + " WHERE id = {id}").
       on('id -> id).singleOpt(row)
@@ -47,17 +50,15 @@ private[models] sealed abstract class AnnotationView[R <: Annotation](table : St
         c
       })(site.db)
 }
+
 private[models] object Annotation extends AnnotationView[Annotation]("annotation") {
   private[this] def make(id : Annotation.Id, whoId : Identity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id]) =
     new Annotation(id, whoId, when, containerId, objId)
   private[models] val row = Anorm.rowMap(make _, col("id"), col("who"), col("when"), col("container"), col("object"))
 }
 
-final class Comment private (id : Annotation.Id, whoId : Identity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id], val text : String) extends Annotation(id, whoId, when, containerId, objId) {
-}
-
 object Comment extends AnnotationView[Comment]("comment") {
-  private[this] def make(id : Annotation.Id, whoId : Identity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id], text : String) =
+  private[this] def make(id : Comment.Id, whoId : Identity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id], text : String) =
     new Comment(id, whoId, when, containerId, objId, text)
   private[models] val row = Anorm.rowMap(make _, col("id"), col("who"), col("when"), col("container"), col("object"), col("text"))
 

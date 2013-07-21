@@ -34,13 +34,12 @@ GET	/study/:id/Access/:entity/delete	controllers.Study.accessDelete(id : models.
 POST	/study/:id/Access/:entity		controllers.Study.accessChange(id : models.Study.Id, entity : models.Identity.Id)
 POST	/study/Create				controllers.Study.create(owner : Option[models.Identity.Id] ?= None)
 
-# Not super happy with these paths:
-GET	/study/:id/object/:obj			controllers.Object.view(id : models.Study.Id, obj : models.Object.Id)
-GET	/study/:id/object/:obj/edit		controllers.Object.edit(id : models.Study.Id, obj : models.Object.Id)
-POST	/study/:id/object/:obj/Edit		controllers.Object.change(id : models.Study.Id, obj : models.Object.Id)
+GET	/object/:id/:obj			controllers.Object.view(id : models.Container.Id, obj : models.Object.Id)
+GET	/object/:id/:obj/edit			controllers.Object.edit(id : models.Container.Id, obj : models.Object.Id)
+POST	/object/:id/:obj/Edit			controllers.Object.change(id : models.Container.Id, obj : models.Object.Id)
 
 POST	/study/:id/Comment			controllers.Comment.postStudy(id : models.Study.Id)
-POST	/study/:id/object/:obj/Comment		controllers.Comment.postObjectLink(id : models.Study.Id, obj : models.Object.Id)
+POST	/object/:id/:obj/Comment		controllers.Comment.postObjectLink(id : models.Container.Id, obj : models.Object.Id)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               		controllers.Assets.at(path="/public", file)

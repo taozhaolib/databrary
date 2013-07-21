@@ -20,10 +20,10 @@ object Comment extends SiteController {
     )
   }
 
-  def postObjectLink(s : models.Study.Id, o : models.Object.Id) = Object.check(s, o) { obj => implicit request =>
+  def postObjectLink(c : models.Container.Id, o : models.Object.Id) = Object.check(c, o) { link => implicit request =>
     form.bindFromRequest.fold(
       form => BadRequest(form.errors.head.message),
-      text => { obj.addComment(text) ; Redirect(routes.Object.view(obj.containerId, obj.objId)) }
+      text => { link.addComment(text) ; Redirect(routes.Object.view(link.containerId, link.objId)) }
     )
   }
 }

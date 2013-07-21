@@ -10,7 +10,7 @@ import util._
  * This is internal. The external interface to Entity is Identity.
  */
 
-private[models] final class Entity (val id : Entity.Id, name_ : String, orcid_ : Option[Orcid] = None) extends TableRowId(id.unId) {
+private[models] final class Entity (val id : Entity.Id, name_ : String, orcid_ : Option[Orcid] = None) extends TableRowId[Entity] {
   private[this] var _name = name_
   def name = _name
   private[this] var _orcid = orcid_

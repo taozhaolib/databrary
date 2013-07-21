@@ -6,11 +6,11 @@ import dbrary._
 import util._
 
 /* Generic representation of user identity, which may be authenticated (as User) or anonymous */
-sealed class Identity(private val entity : Entity) extends TableRowId(entity.id.unId) with SitePage {
+sealed class Identity(private val entity : Entity) extends TableRowId[Entity] with SitePage {
   protected def cache =
     IdentityCache.add(this)
 
-  final def id = entity.id
+  final val id = entity.id
   final def name = entity.name
   final def orcid = entity.orcid
   /* level of access user has to the site */
@@ -66,10 +66,7 @@ private object IdentityCache extends HashMap[Int, Identity] {
   add(Identity.Root)
 }
 
-object Identity extends TableView[Identity]("entity LEFT JOIN account USING (id)") with HasId {
-  type Id = Entity.Id
-  def asId(i : Int) : Id = Entity.asId(i)
-
+object Identity extends TableView[Identity]("entity LEFT JOIN account USING (id)") with HasId[Entity] {
   private[models] override val * = Entity.* + ", " + Account.*
   private[models] val row = (Entity.row ~ Account.row.?) map {
     case (e ~ None) => new Identity(e)
@@ -99,10 +96,7 @@ object Identity extends TableView[Identity]("entity LEFT JOIN account USING (id)
   final val Root   = new Identity(Entity.Root)
 }
 
-object User extends TableView[User]("entity JOIN account USING (id)") with HasId {
-  type Id = Identity.Id
-  def asId(i : Int) : Id = Identity.asId(i)
-
+object User extends TableView[User]("entity JOIN account USING (id)") with HasId[Entity] {
   private[models] override val * = Entity.* + ", " + Account.*
   private[models] val row = (Entity.row ~ Account.row) map {
     case (e ~ a) => new User(e, a)

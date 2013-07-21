@@ -6,9 +6,10 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-sealed abstract class Container protected (val id : Container.Id) extends TableRowId(id.unId) with SitePage {
+sealed abstract class Container protected (val id : Container.Id) extends TableRowId[Container] with SitePage {
   /* Study owning this container (possibly itself) */
   def study : Study
+  def permission : Permission.Value = study.permission
 
   def objects(implicit db : Site.DB) = ObjectLink.getObjects(this)
   def getObject(o : Object.Id)(implicit db : Site.DB) = ObjectLink.get(this, o)
@@ -17,7 +18,7 @@ sealed abstract class Container protected (val id : Container.Id) extends TableR
   def addComment(text : String)(implicit site : Site) = Comment.create(this, text)
 }
 
-final class Study private (id : Study.Id, title_ : String, description_ : Option[String], val permission : Permission.Value) extends Container(id) {
+final class Study private (override val id : Study.Id, title_ : String, description_ : Option[String], override val permission : Permission.Value) extends Container(id) with TableRowId[Study] {
   def study = this
 
   private[this] var _title = title_
@@ -43,7 +44,7 @@ final class Study private (id : Study.Id, title_ : String, description_ : Option
   def slots(implicit db : Site.DB) = Slot.getStudy(this)
 }
 
-final class Slot private (id : Slot.Id, val study : Study, ident_ : String) extends Container(id) {
+final class Slot private (override val id : Slot.Id, val study : Study, ident_ : String) extends Container(id) with TableRowId[Slot] {
   def studyId = study.id
   private[this] var _ident = ident_
   def ident = _ident
@@ -62,20 +63,14 @@ final class Slot private (id : Slot.Id, val study : Study, ident_ : String) exte
 }
 
 
-/* It would be nice if Study.Id strictly <: Container.Id, but the current NewId thing doesn't allow it without a lot of boilerplate */
-private[models] object ContainerId extends NewId
-
-private[models] sealed abstract class ContainerView[R <: Container](table : String) extends TableView[R](table) with HasId {
-  type Id = ContainerId.Id
-  def asId(i : Int) : Id = ContainerId.asId(i)
-
+private[models] sealed abstract class ContainerView[R <: Container with TableRowId[R]](table : String) extends TableViewId[R](table) {
   protected final val permission = "study_access_check(study.id, {identity})"
   private[models] final val condition = permission + " >= 'VIEW'"
 
   def get(i : Id)(implicit site : Site) : Option[R]
 }
 
-private[models] object Container extends ContainerView[Container]("container") {
+object Container extends ContainerView[Container]("container") {
   private[models] val row =
     (Study.row ~ Slot.baseRow.?) map {
       case (study ~ None) => study

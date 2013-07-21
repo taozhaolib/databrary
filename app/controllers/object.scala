@@ -10,8 +10,9 @@ import          i18n.Messages
 import models._
 
 object Object extends SiteController {
-  private[controllers] def check(i : models.Study.Id, o : models.Object.Id, p : Permission.Value = Permission.VIEW)(act : ObjectLink => SiteRequest[AnyContent] => Result) = Study.check(i) { study => implicit request =>
-    study.getObject(o).fold(NotFound : Result) { link =>
+
+  private[controllers] def check(i : models.Container.Id, o : models.Object.Id, p : Permission.Value = Permission.VIEW)(act : ObjectLink => SiteRequest[AnyContent] => Result) = Container.check(i) { container => implicit request =>
+    container.getObject(o).fold(NotFound : Result) { link =>
       if (link.permission < p)
         Forbidden
       else
@@ -19,7 +20,7 @@ object Object extends SiteController {
     }
   }
 
-  def view(i : models.Study.Id, o : models.Object.Id) = check(i, o) { link => implicit request =>
+  def view(i : models.Container.Id, o : models.Object.Id) = check(i, o) { link => implicit request =>
     Ok(views.html.objectLink(link))
   }
 
@@ -42,12 +43,12 @@ object Object extends SiteController {
         fileForm.fill((file.consent, file.date)))
     )
 
-  def edit(s : models.Study.Id, o : models.Object.Id) = check(s, o, Permission.EDIT) { link => implicit request =>
+  def edit(s : models.Container.Id, o : models.Object.Id) = check(s, o, Permission.EDIT) { link => implicit request =>
     val f = formsFill(link)
     Ok(views.html.objectEdit(link, f._1, f._2))
   }
 
-  def change(s : models.Study.Id, o : models.Object.Id) = check(s, o, Permission.EDIT) { link => implicit request =>
+  def change(s : models.Container.Id, o : models.Object.Id) = check(s, o, Permission.EDIT) { link => implicit request =>
     val forms = formsFill(link)
     val linkForm = forms._1.bindFromRequest
     val fileForm = forms._2.map(_.bindFromRequest)
@@ -61,7 +62,7 @@ object Object extends SiteController {
         file foreach {
           case (consent, date) => link.obj.asInstanceOf[models.FileObject].change(consent = consent, date = date)
         }
-        Redirect(routes.Object.view(link.containerId, link.objId))
+        Redirect(routes.Object.view(s, o))
     }
   }
 }

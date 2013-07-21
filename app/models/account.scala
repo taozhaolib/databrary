@@ -8,7 +8,7 @@ import util._
  * This is internal. The external interface to Account is User.
  */
 
-private[models] final class Account (val id : Entity.Id, val username : String, email_ : String, openid_ : Option[String]) extends TableRowId(id.unId) {
+private[models] final class Account (val id : Entity.Id, val username : String, email_ : String, openid_ : Option[String]) extends TableRowId[Entity] {
   private[this] var _email = email_
   def email = _email
   private[this] var _openid = openid_
