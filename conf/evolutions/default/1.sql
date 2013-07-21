@@ -218,6 +218,12 @@ CREATE TABLE "audit_slot" (
 	LIKE "slot"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
+CREATE VIEW "containers" AS
+	SELECT container.id, kind, study.id AS "study", title, description, slot.id AS "slot", ident FROM
+		container LEFT JOIN slot USING (id) 
+		JOIN study ON study.id = container.id OR study.id = slot.study;
+COMMENT ON VIEW "containers" IS 'All containers (studies and slots) in expanded form.';
+
 ----------------------------------------------------------- objects
 
 CREATE TYPE consent AS ENUM (

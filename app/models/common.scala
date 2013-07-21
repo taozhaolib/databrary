@@ -29,8 +29,9 @@ private[models] abstract class TableRowId(private val _id : Int) extends TableRo
 private[models] abstract class TableView[R <: TableRow](private[models] val table : String) {
   private[models] val tableOID = CachedVal[Long,Site.DB](SQL("SELECT oid FROM pg_class WHERE relname = {name}").on('name -> table).single(SqlParser.scalar[Long])(_))
   private[models] val row : RowParser[R]
-  protected def col(n : String*) = n.map(table + "." + _).mkString(", ")
-  private[models] val * = col("*")
+  protected final def col(n : String*) : String = n.map(table + "." + _).mkString(", ")
+  private[models] val * : String = col("*")
+  private[models] val src : String = table
 }
 private[models] trait HasId {
   type Id
@@ -187,4 +188,10 @@ object Anorm {
       r7 <- row.get[C7](a7)(c7)
     } yield f(r1, r2, r3, r4, r5, r6, r7)).fold(e => Error(e), b => Success(b))
   }
+}
+
+trait SitePage {
+  def pageName(implicit site : Site) : String
+  def pageParent(implicit site : Site) : Option[SitePage]
+  def pageURL : String
 }

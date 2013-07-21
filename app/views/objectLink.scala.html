@@ -1,0 +1,43 @@
+@(link : ObjectLink)(implicit request : SiteRequest[_])
+
+@common(link) {
+
+	<p>@link.description</p>
+
+	<dl>
+	@link.obj(request.db) match {
+	case obj : FileObject => {
+		<dt>Format</dt>
+		<dd>@obj.format.name</dd>
+		<dt>Consent</dt>
+		<dd>@obj.consent</dd>
+		@obj.date.map { date =>
+		<dt>Date</dt>
+		<dd>@date</dd>
+		}
+	}
+	case e : Excerpt => {
+		<dt>Source</dt>
+		<dd>???</dd>
+	}
+	}
+	</dl>
+
+	@if(link.permission >= Permission.EDIT) {
+		<a href='@routes.Object.edit(link.containerId, link.objId)'>edit</a>
+	}
+
+	<h2>Comments</h2>
+	@if(request.access >= Permission.VIEW) {
+	@helper.form(routes.Comment.postObjectLink(link.containerId, link.objId)) {
+		@helper.inputText(controllers.Comment.form("text"))
+		<button type='submit'>Post</button>
+	}
+	}
+	<dl>
+	@link.comments(request.db).map { c =>
+		<dt>@displayPage(c.who(request.db)) @c.when</dt>
+		<dd>@c.text</dd>
+	}
+	</dl>
+}

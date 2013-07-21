@@ -1,3 +1,8 @@
-@(title : String)(body : Html)(implicit request : SiteRequest[_])
+@(page : SitePage, action : String = "")(body : Html)(implicit request : SiteRequest[_])
 
-@commonBase(title, Some(request))(body)
+@defining(Path(page)) { path =>
+@commonBase(util.maybe(action).fold("")(_ + ": ") + path.toString, Some(request)) {
+	<h1>@path.toHtml</h1>
+	@body
+}
+}

@@ -6,7 +6,7 @@ import dbrary._
 import util._
 
 /* Generic representation of user identity, which may be authenticated (as User) or anonymous */
-class Identity(private val entity : Entity) extends TableRowId(entity.id.unId) {
+sealed class Identity(private val entity : Entity) extends TableRowId(entity.id.unId) with SitePage {
   protected def cache =
     IdentityCache.add(this)
 
@@ -22,6 +22,10 @@ class Identity(private val entity : Entity) extends TableRowId(entity.id.unId) {
   def changeEntity(name : String = name, orcid : Option[Orcid] = orcid)(implicit site : Site) =
     entity.change(name, orcid)
 
+  def pageName(implicit site : Site) = name
+  def pageParent(implicit site : Site) = None
+  def pageURL = controllers.routes.Entity.view(id).url
+
   /* List of authorizations granted to this user, including inactive ones if all */
   final def authorizeParents(all : Boolean = false)(implicit db : Site.DB) = Authorize.getParents(this, all)
   /* List of authorizations granted by this user */
@@ -36,7 +40,7 @@ class Identity(private val entity : Entity) extends TableRowId(entity.id.unId) {
   final def studyAccess(p : Permission.Value)(implicit site : Site) = StudyAccess.getStudies(this, p)
 
   /* List of comments by this individual; this does not respect access permissions on the comment targets */
-  final def getComments(implicit db : Site.DB) = Comment.getEntity(this)
+  final def getComments(implicit site : Site) = Comment.getEntity(this)
 }
 
 final class User(entity : Entity, account : Account) extends Identity(entity) {
@@ -48,6 +52,8 @@ final class User(entity : Entity, account : Account) extends Identity(entity) {
 
   def changeAccount(email : String = email, openid : Option[String] = openid)(implicit site : Site) =
     account.change(email, openid)
+
+  override def pageName(implicit site : Site) = super.pageName + (if (site.access >= Permission.VIEW) " <" + username + ">" else "")
 }
 
 /* This is of questionable utility, but is primarily a proof of concept */
@@ -64,7 +70,7 @@ object Identity extends TableView[Identity]("entity LEFT JOIN account USING (id)
   type Id = Entity.Id
   def asId(i : Int) : Id = Entity.asId(i)
 
-  private[models] val * = Entity.* + ", " + Account.*
+  private[models] override val * = Entity.* + ", " + Account.*
   private[models] val row = (Entity.row ~ Account.row.?) map {
     case (e ~ None) => new Identity(e)
     case (e ~ Some(a)) => new User(e, a)
@@ -72,7 +78,7 @@ object Identity extends TableView[Identity]("entity LEFT JOIN account USING (id)
 
   def get(i : Id)(implicit db : Site.DB) : Option[Identity] =
     Option(IdentityCache.getOrElseUpdate(i.unId, 
-      SQL("SELECT * FROM " + table + " WHERE id = {id}").
+      SQL("SELECT * FROM " + src + " WHERE id = {id}").
         on('id -> i).singleOpt(row).orNull))
 
   def create(n : String)(implicit site : Site) : Identity =
@@ -82,11 +88,11 @@ object Identity extends TableView[Identity]("entity LEFT JOIN account USING (id)
   private def byNameArgs(name : String) = Anorm.Args('user -> name, 'name -> name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%"))
 
   def searchForAuthorize(name : String, who : Identity.Id)(implicit db : Site.DB) =
-    SQL("SELECT * FROM " + table + " WHERE " + byName + " AND id != {who} AND id NOT IN (SELECT child FROM authorize WHERE parent = {who} UNION SELECT parent FROM authorize WHERE child = {who}) LIMIT 8").
+    SQL("SELECT * FROM " + src + " WHERE " + byName + " AND id != {who} AND id NOT IN (SELECT child FROM authorize WHERE parent = {who} UNION SELECT parent FROM authorize WHERE child = {who}) LIMIT 8").
       on(Anorm.Args('who -> who) ++ byNameArgs(name) : _*).list(row)
 
   def searchForStudyAccess(name : String, study : Study.Id)(implicit db : Site.DB) =
-    SQL("SELECT * FROM " + table + " WHERE " + byName + " AND id NOT IN (SELECT entity FROM study_access WHERE study = {study}) LIMIT 8").
+    SQL("SELECT * FROM " + src + " WHERE " + byName + " AND id NOT IN (SELECT entity FROM study_access WHERE study = {study}) LIMIT 8").
       on(Anorm.Args('study -> study) ++ byNameArgs(name) : _*).list(row)
 
   final val Nobody = new Identity(Entity.Nobody)
@@ -97,7 +103,7 @@ object User extends TableView[User]("entity JOIN account USING (id)") with HasId
   type Id = Identity.Id
   def asId(i : Int) : Id = Identity.asId(i)
 
-  private[models] val * = Entity.* + ", " + Account.*
+  private[models] override val * = Entity.* + ", " + Account.*
   private[models] val row = (Entity.row ~ Account.row) map {
     case (e ~ a) => new User(e, a)
   }
@@ -105,10 +111,10 @@ object User extends TableView[User]("entity JOIN account USING (id)") with HasId
   def get(i : Id)(implicit db : Site.DB) : Option[User] = 
     Identity.get(i).flatMap(_.user)
   def getUsername(u : String)(implicit db : Site.DB) : Option[User] = 
-    SQL("SELECT * FROM " + table + " WHERE username = {username}").
+    SQL("SELECT * FROM " + src + " WHERE username = {username}").
       on("username" -> u).singleOpt(row)/*.map(_.cache)*/
   def getOpenid(o : String, u : Option[String] = None)(implicit db : Site.DB) : Option[User] = {
-    SQL("SELECT * FROM " + table + " WHERE openid = {openid} AND coalesce(username = {username}, 't') LIMIT 1").
+    SQL("SELECT * FROM " + src + " WHERE openid = {openid} AND coalesce(username = {username}, 't') LIMIT 1").
       on("openid" -> o, "username" -> u).singleOpt(row)/*.map(_.cache)*/
   }
 }

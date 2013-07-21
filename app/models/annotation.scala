@@ -14,6 +14,7 @@ class Annotation protected (val id : Annotation.Id, val whoId : Identity.Id, val
   def container(implicit site : Site) : Container = _container
   protected[models] val _obj = CachedVal[Option[ObjectLink], Site](s => objId.flatMap(o => container(s).getObject(o)(s.db)))
   def obj(implicit site : Site) : Option[ObjectLink] = _obj
+  def target(implicit site : Site) : SitePage = if (objId.isEmpty) container else obj.get
 }
 
 private[models] sealed abstract class AnnotationView[R <: Annotation](table : String) extends TableViewId[R](table) {
@@ -21,7 +22,7 @@ private[models] sealed abstract class AnnotationView[R <: Annotation](table : St
     SQL("SELECT " + * + " FROM " + table + " WHERE id = {id}").
       on('id -> id).singleOpt(row)
 
-  private[this] def getList(container  : Container.Id, obj : Option[Option[Object.Id]])(implicit db : Site.DB) : Seq[R] = obj.fold {
+  private[this] def getList(container : Container.Id, obj : Option[Option[Object.Id]])(implicit db : Site.DB) : Seq[R] = obj.fold {
       SQL("SELECT " + * + " FROM " + table + " WHERE container = {container} ORDER BY id DESC").on('container -> container)
     } { _.fold {
       SQL("SELECT " + * + " FROM " + table + " WHERE container = {container} AND object IS NULL ORDER BY id DESC").on('container -> container)
@@ -39,13 +40,12 @@ private[models] sealed abstract class AnnotationView[R <: Annotation](table : St
       c._obj() = Some(obj)
       c
     })
-  /* This should ideally pull studies and check access as well */
-  private[models] def getEntity(i : Identity)(implicit db : Site.DB) : Seq[R] =
-    SQL("SELECT " + * + " FROM " + table + " WHERE who = {who} ORDER BY id DESC").
-      on('who -> i.id).list(row).map({ c =>
+  private[models] def getEntity(i : Identity)(implicit site : Site) : Seq[R] =
+    SQL("SELECT " + * + ", " + Container.* + " FROM " + table + " JOIN " + Container.src + " ON " + col("id") + " = container.id WHERE " + col("who") + " = {who} AND " + Container.condition + " ORDER BY " + col("id") + " DESC").
+      on('who -> i.id, 'identity -> site.identity.id).list(row map { c =>
         c._who() = i
         c
-      })
+      })(site.db)
 }
 private[models] object Annotation extends AnnotationView[Annotation]("annotation") {
   private[this] def make(id : Annotation.Id, whoId : Identity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id]) =

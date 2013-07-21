@@ -24,7 +24,7 @@ object Audit {
     List('identity -> site.identity.id, 'audit_ip -> site.clientIP, 'audit_action -> action)
 
   def SQLon(action : AuditAction.Value, table : String, stmt : String, returning : String = "")(args : (Symbol, ParameterValue[_])*)(implicit site : Site) =
-    SQL("WITH audit_row AS (" + acmd(action) + " " + table + " " + stmt + " RETURNING *) INSERT INTO audit_" + table + " SELECT CURRENT_TIMESTAMP, {identity}, {audit_ip}, {audit_action}, * FROM audit_row" + maybe(returning).fold("")(" RETURNING " + _)).on(args ++ aargs(action) : _*)
+    SQL("WITH audit_row AS (" + acmd(action) + " ONLY " + table + " " + stmt + " RETURNING *) INSERT INTO audit_" + table + " SELECT CURRENT_TIMESTAMP, {identity}, {audit_ip}, {audit_action}, * FROM audit_row" + maybe(returning).fold("")(" RETURNING " + _)).on(args ++ aargs(action) : _*)
 
   def add(action : AuditAction.Value)(implicit site : Site) =
     SQL("INSERT INTO audit (who, ip, action) VALUES ({identity}, {audit_ip}, {audit_action}").on(aargs(action) : _*)

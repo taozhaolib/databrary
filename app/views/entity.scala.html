@@ -1,7 +1,6 @@
 @(entity : Identity, delegated : Permission.Value)(implicit request : SiteRequest[_])
 
-@common(entity.name) {
-	<h1>@entity.name</h1>
+@common(entity) {
 
 	@if(delegated >= Permission.ADMIN) {
 		<a href='@routes.Entity.admin(entity.id)'>admin</a>
@@ -25,11 +24,11 @@
 
 		<dt>Memberships</dt>
 		@entity.authorizeParents()(request.db).map { t => 
-			<dd>@displayEntity(t.parent(request.db))</dd>
+			<dd>@displayPage(t.parent(request.db))</dd>
 		}
 		<dt>Members</dt>
 		@entity.authorizeChildren()(request.db).map { t => 
-			<dd>@displayEntity(t.child(request.db))</dd>
+			<dd>@displayPage(t.child(request.db))</dd>
 		}
 
 	}
@@ -41,7 +40,7 @@
 			}
 		}
 		@entity.studyAccess(Permission.CONTRIBUTE).map { a =>
-			<dd>@displayStudy(a.study)</dd>
+			<dd>@displayPage(a.study)</dd>
 		}
 
 
@@ -49,11 +48,9 @@
 
 	<h2>Comments</h2>
 	<dl>
-	@entity.getComments(request.db).map { c => @c.study.map { s =>
-		<dt>@displayStudy(s)@c.obj.map { o =>
-			&gt; @displayObject(o)
-		} @c.when</dt>
+	@entity.getComments.map { c =>
+		<dt>@displayPath(c.target) @c.when</dt>
 		<dd>@c.text</dd>
-	} }
+	}
 	</dl>
 }

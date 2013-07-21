@@ -1,11 +1,10 @@
 @(study : Study)(implicit request : SiteRequest[_])
 
-@common(study.title) {
-	<h1>@study.title</h1>
+@common(study) {
 
 	<ul>
 	@study.entityAccess(Permission.CONTRIBUTE)(request.db).map { a => 
-		<li>@displayEntity(a.entity(request.db))</li>
+		<li>@displayPage(a.entity(request.db))</li>
 	}
 	</ul>
 
@@ -21,7 +20,7 @@
 
 	<ul>
 	@study.slots(request.db).foreach { slot => 
-		<li>@displaySlot(slot)</li>
+		<li>@displayPage(slot)</li>
 	}
 	</ul>
 
@@ -34,8 +33,8 @@
 	}
 	<dl>
 	@study.comments(false)(request.db).map { c =>
-		<dt>@displayEntity(c.who(request.db))@c.obj.map { o =>
-			&gt; @displayObject(o)
+		<dt>@displayPage(c.who(request.db))@c.obj.map { o =>
+			&gt; @displayPage(o)
 		} @c.when</dt>
 		<dd>@c.text</dd>
 	}

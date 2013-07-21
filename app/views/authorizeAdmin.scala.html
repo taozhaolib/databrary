@@ -1,7 +1,7 @@
 @(entity : Identity, authorizeForms : Seq[(Identity,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Identity,Form[Authorize])])(implicit request : SiteRequest[_])
 
 @authorizeFields(entity : Identity, form : Form[Authorize])(implicit fieldConstructor : helper.FieldConstructor) = {
-	<td>@displayEntity(entity)</td>
+	<td>@displayPage(entity)</td>
 	@enumSelect(form("access"), Permission)
 	@enumSelect(form("delegate"), Permission)
 	@helper.inputDate(form("expires"))
@@ -52,7 +52,7 @@
 
 	@entity.authorizeParents(true)(request.db).map { t =>
 	<tr>
-		<td>@displayEntity(t.parent(request.db))</td>
+		<td>@displayPage(t.parent(request.db))</td>
 		<td>@t.access</td>
 		<td>@t.delegate</td>
 		<td>@t.expires.getOrElse("never")</td>

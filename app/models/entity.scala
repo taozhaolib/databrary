@@ -6,6 +6,10 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
+/* Entity represents any real-world individual, group, institution, etc.
+ * This is internal. The external interface to Entity is Identity.
+ */
+
 private[models] final class Entity (val id : Entity.Id, name_ : String, orcid_ : Option[Orcid] = None) extends TableRowId(id.unId) {
   private[this] var _name = name_
   def name = _name
@@ -30,7 +34,7 @@ private[models] object Entity extends TableViewId[Entity]("entity") {
     case ROOT => Root
     case id => new Entity(id, name, orcid)
   }
-  private[models] val row = Anorm.rowMap(make _, col("id"), col("name"), col("orcid"))
+  private[models] val row = Anorm.rowMap(make _, "id", col("name"), col("orcid"))
 
   def create(name : String)(implicit site : Site) : Entity = {
     val args = Anorm.Args('name -> name)

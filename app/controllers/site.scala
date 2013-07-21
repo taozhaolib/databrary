@@ -43,7 +43,7 @@ object UserAction {
 }
 
 class SiteController extends Controller {
-  implicit def db(implicit request : SiteRequest[_]) : util.Site.DB = request.db
+  implicit def db(implicit site : Site) : util.Site.DB = site.db
 }
 
 object Site extends SiteController {

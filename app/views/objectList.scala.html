@@ -1,4 +1,4 @@
-@(objects : Seq[StudyObject])(implicit request : SiteRequest[_])
+@(links : Seq[ObjectLink])(implicit request : SiteRequest[_])
 
 <h2>Objects</h2>
 
@@ -9,12 +9,18 @@
 		<th>Consent</th>
 		<th>Date</th>
 	</tr>
-	@objects.map { obj =>
+	@links.map { link =>
 	<tr>
-		<td>@displayObject(obj)</td>
-		<td>@obj.obj.format.name</td>
-		<td>@obj.obj.consent</td>
-		<td>@obj.obj.date</td>
+		<td>@displayPage(link)</td>
+		@link.obj(request.db) match {
+		case obj : FileObject => {
+		<td>@obj.format.name</td>
+		<td>@obj.consent</td>
+		<td>@obj.date</td>
+		}
+		case e : Excerpt => {
+		}
+		}
 	</tr>
 	}
 </table>

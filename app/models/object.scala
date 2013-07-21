@@ -21,7 +21,7 @@ private[models] sealed abstract class FormatView(table : String, timeseries : Bo
 
   private[this] def make(id : Id, mimetype : String, extension : Option[String], name : String) =
     new ObjectFormat(id, mimetype, extension, name, timeseries)
-  private[models] val row = Anorm.rowMap(make _, "format", "mimetype", "extension", "name")
+  private[models] val row = Anorm.rowMap(make _, col("format"), col("mimetype"), col("extension"), col("name"))
 }
 
 object FileFormat extends FormatView("file_format", false)
@@ -49,7 +49,8 @@ sealed class FileObject protected (id : FileObject.Id, val format : ObjectFormat
 
 final class TimeseriesObject private (id : TimeseriesObject.Id, format : ObjectFormat, consent_ : Consent.Value, date_ : Option[Date]) extends FileObject(id, format, consent_, date_)
 
-final class Excerpt private (id : Excerpt.Id, val sourceId : TimeseriesObject.Id, public_ : Boolean) extends Object(id) {
+final class Excerpt private (id : Excerpt.Id, val source : TimeseriesObject, public_ : Boolean) extends Object(id) {
+  def sourceId = source.id
   private[this] var _public = public_
   def public = _public
 
@@ -58,6 +59,14 @@ final class Excerpt private (id : Excerpt.Id, val sourceId : TimeseriesObject.Id
       return
     Audit.SQLon(AuditAction.change, "excerpt", "SET public = {public} WHERE id = {id}")('public -> public, 'id -> id).execute()(site.db)
     _public = public
+  }
+
+  def consent = {
+    val c = source.consent
+    if (c <= Consent.EXCERPTS && public)
+      Consent.PUBLIC
+    else
+      c
   }
 }
 
@@ -68,10 +77,18 @@ private[models] sealed abstract class ObjectView[R <: Object](table : String) ex
   type Id = ObjectId.Id
   def asId(i : Int) : Id = ObjectId.asId(i)
 
-  def get(i : Id)(implicit db : Site.DB) : Option[R]
+  private[models] def get(i : Id)(implicit db : Site.DB) : Option[R]
 }
 
 object Object extends ObjectView[Object]("object") {
+  private[models] val row = ???
+
+  private[models] def get(i : Id)(implicit db : Site.DB) : Option[Object] =
+    SQL("SELECT kind FROM object WHERE id = {id}").on('id -> i).singleOpt(scalar[String]) flatMap (_ match {
+      case "file" => FileObject.get(i)
+      case "timeseries" => TimeseriesObject.get(i)
+      case "excerpt" => Excerpt.get(i)
+    })
 }
 
 object FileObject extends ObjectView[FileObject]("file") {
@@ -79,9 +96,10 @@ object FileObject extends ObjectView[FileObject]("file") {
   private[models] val row = (baseRow ~ FileFormat.row) map {
     case ((id, consent, date) ~ format) => new FileObject(id, format, consent, date)
   }
+  private[models] override val src = "ONLY file JOIN ONLY file_format ON file.format = file_format.id"
   
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[FileObject] =
-    SQL("SELECT " + * + " FROM file JOIN file_format ON file.format = file_format.id WHERE id = {id}").
+    SQL("SELECT " + * + " FROM " + src + " WHERE file.id = {id}").
       on('id -> i).singleOpt(row)
 }
 
@@ -90,19 +108,26 @@ object TimeseriesObject extends ObjectView[TimeseriesObject]("timeseries") {
   private[models] val row = (baseRow ~ TimeseriesFormat.row) map {
     case ((id, consent, date) ~ format) => new TimeseriesObject(id, format, consent, date)
   }
+  private[models] override val src = "timeseries JOIN timeseries_format ON timeseries.format = timeseries_format.id"
   
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[TimeseriesObject] =
-    SQL("SELECT " + * + " FROM timeseries JOIN timeseries_format ON timeseries.format = timeseries_format.id WHERE id = {id}").
+    SQL("SELECT " + * + " FROM " + src + " WHERE timeseries.id = {id}").
       on('id -> i).singleOpt(row)
 }
 
 object Excerpt extends ObjectView[Excerpt]("excerpt") {
-  private[this] def make(id : Id, sourceId : TimeseriesObject.Id, public : Boolean) =
-    new Excerpt(id, sourceId, public)
-  private[models] val row = Anorm.rowMap(make _, col("id"), col("source"), col("public"))
+  private[this] val baseRow = Anorm.rowMap(Tuple2.apply[Id, Boolean] _, col("id"), col("public"))
+  private[this] def baseMake(ii : (Id, Boolean), source : TimeseriesObject) = new Excerpt(ii._1, source, ii._2)
+  private[models] override val * = col("id", "public")
+
+  private[models] val row = 
+    (baseRow ~ TimeseriesObject.row) map {
+      case (base ~ source) => baseMake(base, source)
+    }
+  private[models] override val src = "excerpt JOIN " + TimeseriesObject.src + " ON excerpt.source = timeseries.id"
   
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[Excerpt] =
-    SQL("SELECT " + * + " FROM excerpt WHERE id = {id}").
+    SQL("SELECT " + * + ", " + TimeseriesObject.* + " FROM " + src + " WHERE excerpt.id = {id}").
       on('id -> i).singleOpt(row)
 }
 
