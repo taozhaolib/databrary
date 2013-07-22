@@ -19,13 +19,18 @@
 	<h2>Slots</h2>
 
 	<ul>
-	@study.slots(request.db).foreach { slot => 
+	@study.slots(request.db).map { slot => 
 		<li>@displayPage(slot)</li>
+	}
+	@if(study.permission >= Permission.CONTRIBUTE) {
+		<li>@helper.form(routes.Slot.create(study.id)) {
+			<button type='submit'>Add new slot</button>
+		}</li>
 	}
 	</ul>
 
 	<h2>Comments</h2>
-	@if(request.access >= Permission.VIEW) {
+	@if(request.access >= Permission.COMMENT) {
 	@helper.form(routes.Comment.postStudy(study.id)) {
 		@helper.inputText(controllers.Comment.form("text"))
 		<button type='submit'>Post</button>

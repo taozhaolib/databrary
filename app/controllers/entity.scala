@@ -90,7 +90,7 @@ object Entity extends SiteController {
       form => BadRequest(viewAdmin(entity)(entityForm = form)),
       { case (name, orcid) =>
         entity.changeEntity(name = name, orcid = orcid)
-        Redirect(routes.Entity.view(entity.id))
+        Redirect(entity.pageURL)
       }
     )
   }
@@ -101,7 +101,7 @@ object Entity extends SiteController {
       form => BadRequest(viewAdmin(entity)(accountForm = Some(form))),
       { case (email, openid) =>
         u.changeAccount(email = email, openid = maybe(openid))
-        Redirect(routes.Entity.admin(entity.id))
+        Redirect(entity.pageURL)
       }
     )
   }

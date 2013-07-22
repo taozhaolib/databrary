@@ -80,3 +80,8 @@ object Comment extends AnnotationView[Comment]("comment") {
     c
   }
 }
+
+trait CommentPage extends SitePage {
+  def comments(only : Boolean = false)(implicit db : Site.DB) : Seq[Comment]
+  def addComment(text : String)(implicit site : Site) : Comment
+}

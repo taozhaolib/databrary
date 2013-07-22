@@ -10,20 +10,22 @@ import          i18n.Messages
 import models._
 
 object Comment extends SiteController {
+
   type CommentForm = Form[String]
   val form = Form("text" -> nonEmptyText)
 
-  def postStudy(s : models.Study.Id) = Study.check(s) { study => implicit request =>
-    form.bindFromRequest.fold(
-      form => BadRequest(form.errors.head.message),
-      text => { study.addComment(text) ; Redirect(routes.Study.view(s)) }
-    )
-  }
+  private[this] def post(node : CommentPage)(request : SiteRequest[_]) =
+    if (request.access < Permission.COMMENT)
+      Forbidden
+    else
+      form.bindFromRequest()(request).fold(form => BadRequest(form.errors.head.message), { text =>
+        node.addComment(text)(request)
+        Redirect(node.pageURL)
+      })
 
-  def postObjectLink(c : models.Container.Id, o : models.Object.Id) = Object.check(c, o) { link => implicit request =>
-    form.bindFromRequest.fold(
-      form => BadRequest(form.errors.head.message),
-      text => { link.addComment(text) ; Redirect(routes.Object.view(link.containerId, link.objId)) }
-    )
-  }
+  def postContainer(c : models.Container.Id) = Container.check(c, Permission.COMMENT)(post _)
+  /* specializations of above: */
+  def postStudy(s : models.Study.Id) = Study.check(s, Permission.COMMENT)(post _)
+  def postSlot(s : models.Slot.Id) = Slot.check(s, Permission.COMMENT)(post _)
+  def postObjectLink(c : models.Container.Id, o : models.Object.Id) = Object.check(c, o, Permission.COMMENT)(post _)
 }

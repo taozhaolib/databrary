@@ -218,6 +218,22 @@ CREATE TABLE "audit_slot" (
 	LIKE "slot"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
+
+CREATE FUNCTION "cast_int" ("input" text) RETURNS integer LANGUAGE plpgsql IMMUTABLE STRICT AS $$
+DECLARE
+	i integer;;
+BEGIN
+	SELECT input::integer INTO i;;
+	RETURN i;;
+EXCEPTION WHEN invalid_text_representation THEN
+	RETURN NULL;;
+END;; $$;
+
+CREATE FUNCTION "next_slot_ident" ("study" integer) RETURNS varchar(16) LANGUAGE sql STABLE STRICT AS $$
+	SELECT (GREATEST(max(cast_int(ident)), count(ident))+1)::varchar(16) FROM slot WHERE study = $1
+$$;
+
+
 CREATE VIEW "containers" AS
 	SELECT container.id, kind, study.id AS "study", title, description, slot.id AS "slot", ident FROM
 		container LEFT JOIN slot USING (id) 

@@ -1,0 +1,10 @@
+@(slot : Slot, editForm : controllers.Slot.SlotForm)(implicit request : SiteRequest[_])
+
+@common(slot, "edit") {
+
+	@helper.form(routes.Slot.change(slot.id)) {
+		@helper.inputText(editForm("ident"))
+		<button type='submit'>Change</button>
+	}
+	@formErrors(editForm)
+}

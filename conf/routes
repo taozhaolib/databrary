@@ -34,11 +34,18 @@ GET	/study/:id/Access/:entity/delete	controllers.Study.accessDelete(id : models.
 POST	/study/:id/Access/:entity		controllers.Study.accessChange(id : models.Study.Id, entity : models.Identity.Id)
 POST	/study/Create				controllers.Study.create(owner : Option[models.Identity.Id] ?= None)
 
+GET	/study/:id/slot/:ident			controllers.Study.viewSlot(id : models.Study.Id, ident : String)
+POST	/study/:id/Slot				controllers.Slot.create(id : models.Study.Id)
+GET	/slot/:id				controllers.Slot.view(id : models.Slot.Id)
+GET	/slot/:id/edit				controllers.Slot.edit(id : models.Slot.Id)
+POST	/slot/:id/Edit				controllers.Slot.change(id : models.Slot.Id)
+
 GET	/object/:id/:obj			controllers.Object.view(id : models.Container.Id, obj : models.Object.Id)
 GET	/object/:id/:obj/edit			controllers.Object.edit(id : models.Container.Id, obj : models.Object.Id)
 POST	/object/:id/:obj/Edit			controllers.Object.change(id : models.Container.Id, obj : models.Object.Id)
 
 POST	/study/:id/Comment			controllers.Comment.postStudy(id : models.Study.Id)
+POST	/slot/:id/Comment			controllers.Comment.postSlot(id : models.Slot.Id)
 POST	/object/:id/:obj/Comment		controllers.Comment.postObjectLink(id : models.Container.Id, obj : models.Object.Id)
 
 # Map static resources from the /public folder to the /assets URL path

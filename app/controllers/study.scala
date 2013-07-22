@@ -53,10 +53,10 @@ object Study extends SiteController {
   )
 
   private[this] def viewEdit(study : Study)(
-    editForm : Form[(String,Option[String])] = editFormFill(study),
-    accessChangeForm : Option[(Identity,Form[StudyAccess])] = None,
+    editForm : StudyForm = editFormFill(study),
+    accessChangeForm : Option[(Identity,AccessForm)] = None,
     accessSearchForm : Form[String] = accessSearchForm,
-    accessResults : Seq[(Identity,Form[StudyAccess])] = Seq())(
+    accessResults : Seq[(Identity,AccessForm)] = Seq())(
     implicit request : SiteRequest[_]) = {
     val accessChange = accessChangeForm.map(_._1.id)
     val accessForms = study.entityAccess().filter(a => Some(a.entityId) != accessChange).map(a => (a.entity, accessForm(study, a.entityId).fill(a))) ++ accessChangeForm
@@ -72,7 +72,7 @@ object Study extends SiteController {
       form => BadRequest(viewEdit(study)(editForm = form)),
       { case (title, description) =>
         study.change(title = title, description = description.flatMap(maybe(_)))
-        Redirect(routes.Study.view(study.id))
+        Redirect(study.pageURL)
       }
     )
   }
@@ -123,7 +123,11 @@ object Study extends SiteController {
       val form = editForm.bindFromRequest
       val study = (models.Study.create _).tupled(form.value.getOrElse(("New study", None)))
       StudyAccess(study.id, owner, Permission.ADMIN, Permission.CONTRIBUTE).set
-      Ok(viewEdit(study)(editForm = form))
+      Created(viewEdit(study)(editForm = form))
     }
+  }
+
+  def viewSlot(i : models.Study.Id, s : String) = check(i) { study => implicit request =>
+    study.slot(s).fold(NotFound : Result)(s => Found(s.pageURL))
   }
 }

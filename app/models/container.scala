@@ -6,7 +6,7 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-sealed abstract class Container protected (val id : Container.Id) extends TableRowId[Container] with SitePage {
+sealed abstract class Container protected (val id : Container.Id) extends TableRowId[Container] with CommentPage {
   /* Study owning this container (possibly itself) */
   def study : Study
   def permission : Permission.Value = study.permission
@@ -42,6 +42,7 @@ final class Study private (override val id : Study.Id, title_ : String, descript
   def entityAccess(p : Permission.Value = Permission.NONE)(implicit db : Site.DB) = StudyAccess.getEntities(this, p)
 
   def slots(implicit db : Site.DB) = Slot.getStudy(this)
+  def slot(ident : String)(implicit db : Site.DB) = Slot.getIdent(this, ident)
 }
 
 final class Slot private (override val id : Slot.Id, val study : Study, ident_ : String) extends Container(id) with TableRowId[Slot] {
@@ -59,7 +60,7 @@ final class Slot private (override val id : Slot.Id, val study : Study, ident_ :
 
   def pageName(implicit site : Site) = ident
   def pageParent(implicit site : Site) = Some(study)
-  def pageURL = ???
+  def pageURL = controllers.routes.Slot.view(id).url
 }
 
 
@@ -116,14 +117,22 @@ object Slot extends ContainerView[Slot]("slot") {
   def get(i : Id)(implicit site : Site) : Option[Slot] =
     SQL("SELECT " + * + ", " + Study.* + " FROM " + src + " WHERE slot.id = {id} AND " + condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt(row)(site.db)
+  private[models] def getIdent(study : Study, ident : String)(implicit db : Site.DB) : Option[Slot] =
+    SQL("SELECT " + * + " FROM slot WHERE study = {study} AND ident = {ident}").
+      on('study -> study.id, 'ident -> ident).singleOpt(rowStudy(study))
   private[models] def getStudy(study : Study)(implicit db : Site.DB) : Seq[Slot] =
     SQL("SELECT " + * + " FROM slot WHERE study = {study} ORDER BY ident").
       on('study -> study.id).list(rowStudy(study))
     
-  private[models] def create(study : Study, ident : String)(implicit site : Site) : Slot = {
-    val args = Anorm.Args('study -> study.id, 'ident -> ident)
-    val id = Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
-    new Slot(id, study, ident)
+  def create(study : Study, ident : Option[String])(implicit site : Site) : Option[Slot] = {
+    val stmt = "(study, ident) VALUES ({study}, " + (if (ident.isEmpty) "next_slot_ident({study})" else "{ident}") + ")"
+    try {
+      val (id ~ idnt) = Audit.SQLon(AuditAction.add, table, stmt, "id, ident")('study -> study.id, 'ident -> ident.getOrElse("")).
+        single(SqlParser.get[Id]("id") ~ SqlParser.get[String]("ident"))(site.db)
+      Some(new Slot(id, study, idnt))
+    } catch {
+      case _ : java.sql.SQLIntegrityConstraintViolationException => None
+    }
   }
 }
 

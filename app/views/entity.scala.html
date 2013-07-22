@@ -37,7 +37,7 @@
 		@if(delegated >= Permission.CONTRIBUTE) {
 			<dd>@helper.form(routes.Study.create(Some(entity.id))) {
 				<button type='submit'>Create new study</button>
-			}
+			}</dd>
 		}
 		@entity.studyAccess(Permission.CONTRIBUTE).map { a =>
 			<dd>@displayPage(a.study)</dd>

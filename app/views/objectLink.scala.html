@@ -28,14 +28,14 @@
 	}
 
 	<h2>Comments</h2>
-	@if(request.access >= Permission.VIEW) {
+	@if(request.access >= Permission.COMMENT) {
 	@helper.form(routes.Comment.postObjectLink(link.containerId, link.objId)) {
 		@helper.inputText(controllers.Comment.form("text"))
 		<button type='submit'>Post</button>
 	}
 	}
 	<dl>
-	@link.comments(request.db).map { c =>
+	@link.comments()(request.db).map { c =>
 		<dt>@displayPage(c.who(request.db)) @c.when</dt>
 		<dd>@c.text</dd>
 	}

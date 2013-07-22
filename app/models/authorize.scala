@@ -10,9 +10,10 @@ import util._
 object Permission extends PGEnum("permission") {
   val NONE, VIEW, DOWNLOAD, CONTRIBUTE, ADMIN = Value
   // aliases or equivalent permissions (do not use val here)
+  def OWN = ADMIN
   def EDIT = CONTRIBUTE
   def DATA = DOWNLOAD
-  def OWN = ADMIN
+  def COMMENT = VIEW
 }
 
 final case class Authorize(childId : Identity.Id, parentId : Identity.Id, access : Permission.Value, delegate : Permission.Value, authorized : Option[Timestamp], expires : Option[Timestamp]) extends TableRow {

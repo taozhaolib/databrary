@@ -7,7 +7,7 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-final class ObjectLink private (val containerId : Container.Id, val objId : Object.Id, title_ : String, description_ : Option[String]) extends TableRow with SitePage {
+final class ObjectLink private (val containerId : Container.Id, val objId : Object.Id, title_ : String, description_ : Option[String]) extends TableRow with CommentPage {
   def id = (containerId, objId)
   private[this] var _title = title_
   def title = _title
@@ -43,7 +43,7 @@ final class ObjectLink private (val containerId : Container.Id, val objId : Obje
   def pageParent(implicit site : Site) = Some(container)
   def pageURL = controllers.routes.Object.view(containerId, objId).url
 
-  def comments(implicit db : Site.DB) = Comment.getObjectLink(this)
+  def comments(only : Boolean = false)(implicit db : Site.DB) = Comment.getObjectLink(this)
   def addComment(text : String)(implicit site : Site) = Comment.create(this, text)
 }
 
