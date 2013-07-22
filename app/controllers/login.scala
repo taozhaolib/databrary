@@ -16,8 +16,8 @@ import models._
 object Login extends Controller {
 
   private[this] val loginForm = Form(tuple(
-    "username" -> text,
-    "openid" -> nonEmptyText
+    "username" -> text(0, 32),
+    "openid" -> nonEmptyText(0, 256)
   ))
 
   def viewLogin(err : Option[String] = None) : templates.Html = 

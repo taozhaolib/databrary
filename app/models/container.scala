@@ -50,12 +50,17 @@ final class Slot private (override val id : Slot.Id, val study : Study, ident_ :
   private[this] var _ident = ident_
   def ident = _ident
 
-  def change(ident : String = _ident)(implicit site : Site) : Unit = {
+  def change(ident : String = _ident)(implicit site : Site) : Boolean = {
     if (ident == _ident)
-      return
-    /* TODO: catch unique violation */
-    Audit.SQLon(AuditAction.change, "slot", "SET ident = {ident} WHERE id = {id}")('id -> id, 'ident -> ident).execute()(site.db)
-    _ident = ident
+      return true
+    try {
+      Audit.SQLon(AuditAction.change, "slot", "SET ident = {ident} WHERE id = {id}")('id -> id, 'ident -> ident).execute()(site.db)
+      _ident = ident
+      true
+    } catch {
+      case e : java.sql.SQLException if e.getMessage.startsWith("ERROR: duplicate key value violates unique constraint \"slot_study_ident_key\"") => false
+      case _ : java.sql.SQLIntegrityConstraintViolationException => false
+    }
   }
 
   def pageName(implicit site : Site) = ident
@@ -131,6 +136,7 @@ object Slot extends ContainerView[Slot]("slot") {
         single(SqlParser.get[Id]("id") ~ SqlParser.get[String]("ident"))(site.db)
       Some(new Slot(id, study, idnt))
     } catch {
+      case e : java.sql.SQLException if e.getMessage.startsWith("ERROR: duplicate key value violates unique constraint \"slot_study_ident_key\"") => None
       case _ : java.sql.SQLIntegrityConstraintViolationException => None
     }
   }

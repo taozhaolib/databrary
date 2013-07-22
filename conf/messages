@@ -1,3 +1,4 @@
 login.openID.notFound=Account for supplied OpenID not found.
 login.noCookie=You must be logged in to perform that action. Please make sure you have cookies enabled.
 login.logout=You have been logged out.
+slot.ident.conflict=Must not be the same as another slot

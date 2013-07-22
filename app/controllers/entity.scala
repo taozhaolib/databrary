@@ -19,7 +19,7 @@ object Entity extends SiteController {
   type EntityForm = Form[(String, Option[Orcid])]
   private[this] val entityForm : EntityForm = Form(tuple(
     "name" -> nonEmptyText,
-    "orcid" -> text.transform[Option[Orcid]](maybe(_).map(Orcid.apply _), _.fold("")(_.toString))
+    "orcid" -> text(0,20).transform[Option[Orcid]](maybe(_).map(Orcid.apply _), _.fold("")(_.toString))
       .verifying("invalid ORCID iD", _.fold(true)(_.valid))
   ))
   private[this] def entityFormFill(e : Identity) : EntityForm = entityForm.fill((e.name, e.orcid))
@@ -27,7 +27,7 @@ object Entity extends SiteController {
   type AccountForm = Form[(String, String)]
   private[this] val accountForm : AccountForm = Form(tuple(
     "email" -> email,
-    "openid" -> text
+    "openid" -> text(0, 256)
   ))
   private[this] def accountFormFill(u : User) : AccountForm = accountForm.fill((u.email, u.openid.getOrElse("")))
 

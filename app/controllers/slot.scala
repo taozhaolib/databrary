@@ -41,18 +41,21 @@ object Slot extends SiteController {
   }
 
   def change(i : models.Slot.Id) = check(i, Permission.EDIT) { slot => implicit request =>
-    editFormFill(slot).bindFromRequest.fold(
+    val form = editFormFill(slot).bindFromRequest
+    form.fold(
       form => BadRequest(viewEdit(slot)(editForm = form)),
       { case ident =>
-        slot.change(ident = ident)
-        Redirect(slot.pageURL)
+        if (!slot.change(ident = ident))
+          Conflict(viewEdit(slot)(editForm = form.withError("ident", Messages("slot.ident.conflict"))))
+        else
+          Redirect(slot.pageURL)
       }
     )
   }
 
   def create(s : models.Study.Id) = Study.check(s, Permission.CONTRIBUTE) { study => implicit request =>
     val form = editForm.bindFromRequest
-    models.Slot.create(study, form.value).fold(Conflict : Result)(slot =>
+    models.Slot.create(study, form.value).fold(Conflict(Messages("slot.ident.conflict")) : Result)(slot =>
       Created(viewEdit(slot)(editForm = form.fill(slot.ident))))
   }
 }
