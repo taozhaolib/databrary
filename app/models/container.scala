@@ -80,7 +80,7 @@ object Container extends ContainerView[Container]("container") {
   private[models] val row =
     (Study.row ~ Slot.baseRow.?) map {
       case (study ~ None) => study
-      case (study ~ Some(slot)) => Slot.baseMake(slot, study)
+      case (study ~ Some(slot)) => Slot.baseMake(study)(slot)
     }
   private[models] override val * = Study.* + ", " + Slot.*
   private[models] override val src = "container LEFT JOIN slot USING (id) JOIN study ON study.id = container.id OR study.id = slot.study"
@@ -108,16 +108,17 @@ object Study extends ContainerView[Study]("study") {
 
 object Slot extends ContainerView[Slot]("slot") {
   private[models] val baseRow = Anorm.rowMap(Tuple2.apply[Id, String] _, col("id"), col("ident"))
-  private[models] def baseMake(ii : (Id, String), study : Study) = new Slot(ii._1, study, ii._2)
+  private[models] def makeStudy(study : Study)(id : Id, ident : String) = new Slot(id, study, ident)
+  private[models] def baseMake(study : Study) = (makeStudy(study) _).tupled
   private[models] override val * = col("id", "ident")
 
   private[models] val row = 
-    (baseRow ~ Study.row) map {
-      case (slot ~ study) => baseMake(slot, study)
+    (Study.row ~ baseRow) map {
+      case (study ~ slot) => baseMake(study)(slot)
     }
   private[models] override val src = "slot JOIN study ON slot.study = study.id"
   private[this] def rowStudy(study : Study) =
-    baseRow map { slot => baseMake(slot, study) }
+    baseRow map { baseMake(study) }
 
   def get(i : Id)(implicit site : Site) : Option[Slot] =
     SQL("SELECT " + * + ", " + Study.* + " FROM " + src + " WHERE slot.id = {id} AND " + condition).

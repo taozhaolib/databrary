@@ -25,29 +25,32 @@ private[models] sealed abstract class AnnotationView[R <: Annotation](table : St
     SQL("SELECT " + * + " FROM " + table + " WHERE id = {id}").
       on('id -> id).singleOpt(row)
 
-  private[this] def getList(container : Container.Id, obj : Option[Option[Object.Id]])(implicit db : Site.DB) : Seq[R] = obj.fold {
-      SQL("SELECT " + * + " FROM " + table + " WHERE container = {container} ORDER BY id DESC").on('container -> container)
-    } { _.fold {
-      SQL("SELECT " + * + " FROM " + table + " WHERE container = {container} AND object IS NULL ORDER BY id DESC").on('container -> container)
-    } { obj =>
-      SQL("SELECT " + * + " FROM " + table + " WHERE container = {container} AND object = {obj} ORDER BY id DESC").on('container -> container, 'obj -> obj)
-    } }.list(row)
-
   private[models] def getContainer(container : Container, only : Boolean = false)(implicit db : Site.DB) : Seq[R] =
-    getList(container.id, if (only) Some(None) else None).map({ c =>
-      c._container() = container
-      c
-    })
+    SQL("SELECT " + * + (
+      if (only)
+       " FROM " + table + " WHERE object IS NULL AND"
+      else container match {
+        case _ : Slot  => " FROM " + table + " WHERE"
+        case _ : Study => ", " + Slot.* + " FROM " + table + " LEFT JOIN slot ON container = slot.id WHERE slot.study = {container} OR"
+      }) + " container = {container} ORDER BY " + col("id") + " DESC").
+      on('container -> container.id).list((row ~ Slot.baseRow.?) map { case (a ~ s) =>
+        // For some reason this ends up casting Slot as Study?
+        // a._container() = s.fold(container)(
+        a._container() = if (a.containerId == container.id) container 
+          else Slot.baseMake(container.asInstanceOf[Study])(s.get)
+        a
+      })
   private[models] def getObjectLink(obj : ObjectLink)(implicit db : Site.DB) : Seq[R] =
-    getList(obj.containerId, Some(Some(obj.objId))).map({ c =>
-      c._obj() = Some(obj)
-      c
-    })
+    SQL("SELECT " + * + " FROM " + table + " WHERE container = {container} AND object = {obj} ORDER BY id DESC").
+      on('container -> obj.containerId, 'obj -> obj.objId).list(row map { a =>
+        a._obj() = Some(obj)
+        a
+      })
   private[models] def getEntity(i : Identity)(implicit site : Site) : Seq[R] =
-    SQL("SELECT " + * + ", " + Container.* + " FROM " + table + " JOIN " + Container.src + " ON " + col("id") + " = container.id WHERE " + col("who") + " = {who} AND " + Container.condition + " ORDER BY " + col("id") + " DESC").
-      on('who -> i.id, 'identity -> site.identity.id).list(row map { c =>
-        c._who() = i
-        c
+    SQL("SELECT " + * + ", " + Container.* + " FROM " + table + " JOIN " + Container.src + " ON " + col("container") + " = container.id WHERE " + col("who") + " = {who} AND " + Container.condition + " ORDER BY " + col("id") + " DESC").
+      on('who -> i.id, 'identity -> site.identity.id).list(row map { a =>
+        a._who() = i
+        a
       })(site.db)
 }
 

@@ -38,9 +38,14 @@
 	}
 	<dl>
 	@study.comments(false)(request.db).map { c =>
-		<dt>@displayPage(c.who(request.db))@c.obj.map { o =>
-			&gt; @displayPage(o)
-		} @c.when</dt>
+		<dt>@displayPage(c.who(request.db))
+			@if(c.containerId != study.id) {
+				&gt; @displayPage(c.container)
+			}
+			@c.obj.map { o =>
+				&gt; @displayPage(o)
+			}
+			@c.when</dt>
 		<dd>@c.text</dd>
 	}
 	</dl>
