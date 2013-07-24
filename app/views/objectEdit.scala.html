@@ -1,16 +1,19 @@
-@(link : ObjectLink, linkForm : controllers.Object.LinkForm, fileForm : Option[controllers.Object.FileForm])(implicit request : SiteRequest[_])
+@(link : ObjectLink, form : controllers.Object.EditForm)(implicit request : SiteRequest[_])
 
 @common(link, "edit") {
 
 	@helper.form(routes.Object.change(link.containerId, link.objId)) {
-		@helper.inputText(linkForm("title"))
-		@helper.textarea(linkForm("description"))
-		@fileForm.map { fileForm =>
-		@enumSelect(fileForm("consent"), Consent)
-		@helper.inputDate(fileForm("date"))
+		@helper.inputText(form("title"))
+		@helper.textarea(form("description"))
+		@link.obj(request.db) match {
+		case obj : FileObject => {
+			@enumSelect(form("consent"), Consent)
+			@helper.inputDate(form("date"))
+		}
+		case e : Excerpt => {
+		}
 		}
 		<button type='submit'>Change</button>
 	}
-	@formErrors(linkForm)
-	@fileForm.map(formErrors(_))
+	@formErrors(form)
 }

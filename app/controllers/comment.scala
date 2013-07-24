@@ -18,6 +18,7 @@ object Comment extends SiteController {
     if (request.access < Permission.COMMENT)
       Forbidden
     else
+      /* FIXME: poorly displayed and possibly untranslated error message: */
       form.bindFromRequest()(request).fold(form => BadRequest(form.errors.head.message), { text =>
         node.addComment(text)(request)
         Redirect(node.pageURL)

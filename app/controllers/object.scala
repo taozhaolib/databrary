@@ -1,12 +1,12 @@
 package controllers
 
-import util._
 import play.api._
 import          Play.current
 import          mvc._
 import          data._
 import               Forms._
 import          i18n.Messages
+import util._
 import models._
 
 object Object extends SiteController {
@@ -24,45 +24,55 @@ object Object extends SiteController {
     Ok(views.html.objectLink(link))
   }
 
-  type LinkForm = Form[(String, String)]
-  private[this] val linkForm = Form(tuple(
+  private[this] val linkFields = tuple(
     "title" -> nonEmptyText,
     "description" -> text
-  ))
-
-  type FileForm = Form[(Consent.Value, Option[java.sql.Date])]
-  private[this] val fileForm = Form(tuple(
+  )
+  private[this] val fileFields = tuple(
     "consent" -> form.enumField(Consent),
     "date" -> optional(sqlDate)
-  ))
+  )
 
-  type Forms = (LinkForm, Option[FileForm])
-  private[this] def formsFill(link : ObjectLink)(implicit site : Site) : Forms =
-    ( linkForm.fill((link.title, link.description.getOrElse("")))
-    , Option(link.obj.asInstanceOf[models.FileObject]) map (file =>
-        fileForm.fill((file.consent, file.date)))
-    )
+  type EditForm = Form[((String, String), Option[(Consent.Value, Option[java.sql.Date])])]
+  private[this] def formFill(link : ObjectLink)(implicit site : Site) : EditForm = {
+    val file = Option(link.obj.asInstanceOf[models.FileObject])
+    Form(tuple(
+      "" -> linkFields,
+      "" -> MaybeMapping(file.map(_ => fileFields))
+    )).fill(((link.title, link.description.getOrElse("")), file.map(f => (f.consent, f.date))))
+  }
 
   def edit(s : models.Container.Id, o : models.Object.Id) = check(s, o, Permission.EDIT) { link => implicit request =>
-    val f = formsFill(link)
-    Ok(views.html.objectEdit(link, f._1, f._2))
+    Ok(views.html.objectEdit(link, formFill(link)))
   }
 
   def change(s : models.Container.Id, o : models.Object.Id) = check(s, o, Permission.EDIT) { link => implicit request =>
-    val forms = formsFill(link)
-    val linkForm = forms._1.bindFromRequest
-    val fileForm = forms._2.map(_.bindFromRequest)
-    val v = for {
-      l <- linkForm.value
-      f <- fileForm.fold(Some(None) : Option[Option[(Consent.Value, Option[java.sql.Date])]])(_.value.map(Some(_)))
-    } yield (l, f)
-    v.fold(BadRequest(views.html.objectEdit(link, linkForm, fileForm)) : Result) {
+    formFill(link).bindFromRequest.fold(
+      form => BadRequest(views.html.objectEdit(link, form)), {
       case ((title, description), file) =>
         link.change(title = title, description = maybe(description))
         file foreach {
           case (consent, date) => link.obj.asInstanceOf[models.FileObject].change(consent = consent, date = date)
         }
-        Redirect(routes.Object.view(s, o))
-    }
+        Redirect(link.pageURL)
+      }
+    )
   }
+
+  type UploadForm = Form[((String, String), (Consent.Value, Option[java.sql.Date]), Int, Unit)]
+  private[this] val uploadForm = Form(tuple(
+    "" -> linkFields,
+    "" -> fileFields,
+    "format" -> number,
+    "file" -> ignored(())
+  ))
+
+  def create(c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
+    Ok(views.html.objectCreate(container, uploadForm))
+  }
+
+  def upload(c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
+    NotImplemented
+  }
+
 }

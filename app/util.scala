@@ -1,7 +1,7 @@
 package util
 
 object maybe {
-  /* is this in the standard library somewhere? could be generalized as "when"/comprehension guard */
+  /* A more concise version of the common Option(_).filter(_) idiom */
   def apply[A](a : A, f : A => Boolean) : Option[A] =
     Some(a).filter(f)
   /* special default for strings */

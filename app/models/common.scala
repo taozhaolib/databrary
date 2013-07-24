@@ -49,7 +49,8 @@ private[models] trait TableRowId[+T] extends TableRow {
 }
 
 private[models] abstract class TableView[R <: TableRow](private[models] val table : String) {
-  private[models] val tableOID = CachedVal[Long,Site.DB](SQL("SELECT oid FROM pg_class WHERE relname = {name}").on('name -> table).single(SqlParser.scalar[Long])(_))
+  private[this] val _tableOID = CachedVal[Long,Site.DB](SQL("SELECT oid FROM pg_class WHERE relname = {name}").on('name -> table).single(SqlParser.scalar[Long])(_))
+  private[models] def tableOID(implicit db : Site.DB) : Long = _tableOID
   private[models] val row : RowParser[R]
   protected final def col(n : String*) : String = n.map(table + "." + _).mkString(", ")
   private[models] val * : String = col("*")
