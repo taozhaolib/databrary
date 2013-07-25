@@ -5,10 +5,13 @@
 	@helper.form(routes.Object.change(link.containerId, link.objId)) {
 		@helper.inputText(form("title"))
 		@helper.textarea(form("description"))
+
 		@link.obj(request.db) match {
 		case obj : FileObject => {
+		@if(obj.ownerId == Some(link.container.studyId)) {
 			@enumSelect(form("consent"), Consent)
 			@helper.inputDate(form("date"))
+		}
 		}
 		case e : Excerpt => {
 		}

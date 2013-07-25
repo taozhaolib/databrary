@@ -70,4 +70,13 @@ object ObjectLink extends TableView[ObjectLink]("object_link") {
         l._obj() = o
         l
       })(site.db)
+
+  def create(container : Container, obj : Object, title : String, description : Option[String] = None)(implicit site : Site) : ObjectLink = {
+    val args = Anorm.Args('container -> container.id, 'object -> obj.id, 'title -> title, 'description -> description)
+    Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args))(args : _*).execute()(site.db)
+    val link = new ObjectLink(container.id, obj.id, title, description)
+    link._container() = container
+    link._obj() = obj
+    link
+  }
 }

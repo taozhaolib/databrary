@@ -6,7 +6,7 @@
 		<a href='@routes.Slot.edit(slot.id)'>edit</a>
 	}
 
-	@objectList(slot.objects(request.db))
+	@objectList(slot)
 
 	<h2>Comments</h2>
 	@if(request.access >= Permission.COMMENT) {
@@ -17,7 +17,8 @@
 	}
 	<dl>
 	@slot.comments(false)(request.db).map { c =>
-		<dt>@displayPage(c.who(request.db))@c.obj.map { o =>
+		<dt>@displayPage(c.who(request.db))
+		@c.obj.map { o =>
 			&gt; @displayPage(o)
 		} @c.when</dt>
 		<dd>@c.text</dd>

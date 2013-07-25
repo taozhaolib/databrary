@@ -27,6 +27,7 @@ class GenericId[I,+T](val unId : I) {
     case _ => false
   }
   def !=(i : GenericId[I,AnyRef]) = !(this == i)
+  override def toString = "Id(" + unId.toString + ")"
 }
 final class IntId[+T](unId : Int) extends GenericId[Int,T](unId)
 object IntId {

@@ -15,6 +15,10 @@
 		<dt>Date</dt>
 		<dd>@date</dd>
 		}
+	@Option(obj.asInstanceOf[TimeseriesObject]).map { tso =>
+		<dt>Length</dt>
+		<dd>@tso.length</dd>
+	}
 	}
 	case e : Excerpt => {
 		<dt>Source</dt>

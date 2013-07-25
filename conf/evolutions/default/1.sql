@@ -257,14 +257,15 @@ COMMENT ON TABLE "object" IS 'Parent table for all uploaded data in storage.';
 
 CREATE TABLE "format" (
 	"id" smallserial NOT NULL Primary Key,
-	"mimetype" varchar(128) NOT NULL,
+	"mimetype" varchar(128) NOT NULL Unique,
 	"extension" varchar(8),
 	"name" text NOT NULL
 );
-COMMENT ON TABLE "format" IS 'Possible types for objects, sufficient for producing download headers.';
+COMMENT ON TABLE "format" IS 'Possible types for objects, sufficient for producing download headers. Abstract parent of file_format and timeseries_format.';
 
 CREATE TABLE "file_format" (
-	Primary Key ("id")
+	Primary Key ("id"),
+	Unique ("mimetype")
 ) INHERITS ("format");
 INSERT INTO "file_format" (mimetype, extension, name) VALUES ('text/plain', 'txt', 'Plain text');
 INSERT INTO "file_format" (mimetype, extension, name) VALUES ('text/html', 'html', 'Hypertext markup');
@@ -274,6 +275,7 @@ INSERT INTO "file_format" (mimetype, extension, name) VALUES ('image/jpeg', 'jpg
 CREATE TABLE "file" (
 	"id" integer NOT NULL DEFAULT nextval('object_id_seq') Primary Key References "object" Deferrable Initially Deferred,
 	"format" smallint NOT NULL References "file_format",
+	"owner" integer References "study" ON DELETE SET NULL,
 	"consent" consent NOT NULL,
 	"date" date
 );
@@ -285,13 +287,14 @@ CREATE TABLE "audit_file" (
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 CREATE TABLE "timeseries_format" (
-	Primary Key ("id")
+	Primary Key ("id"),
+	Unique ("mimetype")
 ) INHERITS ("format");
 
 CREATE TABLE "timeseries" (
 	"id" integer NOT NULL DEFAULT nextval('object_id_seq') Primary Key References "object" Deferrable Initially Deferred,
 	"format" smallint NOT NULL References "timeseries_format",
-	"length" interval NOT NULL
+	"length" interval HOURS TO SECONDS NOT NULL
 ) INHERITS ("file");
 CREATE TRIGGER "object" BEFORE INSERT OR UPDATE OR DELETE ON "timeseries" FOR EACH ROW EXECUTE PROCEDURE "object_trigger" ();
 
@@ -303,8 +306,8 @@ CREATE TABLE "audit_timeseries" (
 CREATE TABLE "excerpt" (
 	"id" integer NOT NULL DEFAULT nextval('object_id_seq') Primary Key References "object" Deferrable Initially Deferred,
 	"source" integer NOT NULL References "timeseries",
-	"offset" interval NOT NULL,
-	"length" interval,
+	"offset" interval HOURS TO SECONDS NOT NULL,
+	"length" interval HOURS TO SECONDS,
 	"public" boolean NOT NULL Default 'f' -- only if object.consent = EXCERPTS
 );
 CREATE TRIGGER "object" BEFORE INSERT OR UPDATE OR DELETE ON "excerpt" FOR EACH ROW EXECUTE PROCEDURE "object_trigger" ();

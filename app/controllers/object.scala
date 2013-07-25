@@ -35,7 +35,8 @@ object Object extends SiteController {
 
   type EditForm = Form[((String, String), Option[(Consent.Value, Option[java.sql.Date])])]
   private[this] def formFill(link : ObjectLink)(implicit site : Site) : EditForm = {
-    val file = Option(link.obj.asInstanceOf[models.FileObject])
+    /* Only allow file parameters to be changed if this is the original study for this object */
+    val file = Option(link.obj.asInstanceOf[models.FileObject]).filter(_.ownerId == Some(link.container.studyId))
     Form(tuple(
       "" -> linkFields,
       "" -> MaybeMapping(file.map(_ => fileFields))
@@ -59,11 +60,11 @@ object Object extends SiteController {
     )
   }
 
-  type UploadForm = Form[((String, String), (Consent.Value, Option[java.sql.Date]), Int, Unit)]
+  type UploadForm = Form[(String, String, (Consent.Value, Option[java.sql.Date]), Unit)]
   private[this] val uploadForm = Form(tuple(
-    "" -> linkFields,
+    "title" -> text,
+    "description" -> text,
     "" -> fileFields,
-    "format" -> number,
     "file" -> ignored(())
   ))
 
@@ -72,7 +73,25 @@ object Object extends SiteController {
   }
 
   def upload(c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
-    NotImplemented
+    val form = uploadForm.bindFromRequest
+    val file = request.body.asMultipartFormData.flatMap(_.file("file"))
+    (if (file.isEmpty) form.withError("file", "error.required") else form).fold(
+      form => BadRequest(views.html.objectCreate(container, form)), {
+      case (title, description, (consent, date), ()) =>
+        val f = file.get
+        f.contentType.flatMap(ObjectFormat.getMimetype(_)).fold(
+          BadRequest(views.html.objectCreate(container, form.withError("file", "file.format.unknown", f.contentType.getOrElse("unknown")))) : Result)
+        { format =>
+          val obj =
+            if (format.timeseries)
+              ???
+            else
+              FileObject.create(format, container.studyId, consent, date)
+          val link = ObjectLink.create(container, obj, maybe(title).getOrElse(f.filename), maybe(description))
+          Redirect(link.pageURL)
+        }
+      }
+    )
   }
 
 }

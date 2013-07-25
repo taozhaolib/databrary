@@ -8,6 +8,7 @@ import util._
 
 sealed abstract class Container protected (val id : Container.Id) extends TableRowId[Container] with CommentPage {
   /* Study owning this container (possibly itself) */
+  def studyId : Study.Id
   def study : Study
   def permission : Permission.Value = study.permission
 
@@ -19,6 +20,7 @@ sealed abstract class Container protected (val id : Container.Id) extends TableR
 }
 
 final class Study private (override val id : Study.Id, title_ : String, description_ : Option[String], override val permission : Permission.Value) extends Container(id) with TableRowId[Study] {
+  def studyId = id
   def study = this
 
   private[this] var _title = title_

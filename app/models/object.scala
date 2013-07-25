@@ -25,6 +25,9 @@ object ObjectFormat extends FormatView("format", false/* XXX unused */)
     new ObjectFormat(id, mimetype, extension, name, tableoid == TimeseriesFormat.tableOID)
   private[this] def absRow(implicit db : Site.DB) = Anorm.rowMap(make _, col("id"), col("mimetype"), col("extension"), col("name"), col("tableoid"))
   private[models] override val * = col("*", "tableoid")
+  def getMimetype(mimetype : String)(implicit db : Site.DB) : Option[ObjectFormat] =
+    SQL("SELECT " + * + " FROM format WHERE mimetype = {mimetype}").
+      on('mimetype -> mimetype).singleOpt(absRow)
   def getAll(implicit db : Site.DB) : Seq[ObjectFormat] =
     SQL("SELECT " + * + " FROM format ORDER BY " + col("id")).list(absRow)
 }
@@ -37,7 +40,7 @@ sealed abstract class Object protected (val id : Object.Id) extends TableRowId[O
   def consent : Consent.Value
 }
 
-sealed class FileObject protected (override val id : FileObject.Id, val format : ObjectFormat, consent_ : Consent.Value, date_ : Option[Date]) extends Object(id) with TableRowId[FileObject] {
+sealed class FileObject protected (override val id : FileObject.Id, val format : ObjectFormat, val ownerId : Option[Study.Id], consent_ : Consent.Value, date_ : Option[Date]) extends Object(id) with TableRowId[FileObject] {
   private[this] var _consent = consent_
   def consent = _consent
   private[this] var _date = date_
@@ -52,7 +55,7 @@ sealed class FileObject protected (override val id : FileObject.Id, val format :
   }
 }
 
-final class TimeseriesObject private (override val id : TimeseriesObject.Id, format : ObjectFormat, consent_ : Consent.Value, date_ : Option[Date]) extends FileObject(id, format, consent_, date_) with TableRowId[TimeseriesObject]
+final class TimeseriesObject private (override val id : TimeseriesObject.Id, format : ObjectFormat, ownerId : Option[Study.Id], consent_ : Consent.Value, date_ : Option[Date], val length : Interval) extends FileObject(id, format, ownerId, consent_, date_) with TableRowId[TimeseriesObject]
 
 final class Excerpt private (override val id : Excerpt.Id, val source : TimeseriesObject, public_ : Boolean) extends Object(id) with TableRowId[Excerpt] {
   def sourceId = source.id
@@ -92,25 +95,31 @@ object Object extends ObjectView[Object]("object") {
 }
 
 object FileObject extends ObjectView[FileObject]("file") {
-  private[models] val baseRow = Anorm.rowMap(Tuple3.apply[Id, Consent.Value, Option[Date]] _, col("id"), col("consent"), col("date"))
+  private[models] val baseRow = Anorm.rowMap(Tuple4.apply[Id, Option[Study.Id], Consent.Value, Option[Date]] _, col("id"), col("owner"), col("consent"), col("date"))
   private[models] val row = (baseRow ~ FileFormat.row) map {
-    case ((id, consent, date) ~ format) => new FileObject(id, format, consent, date)
+    case ((id, owner, consent, date) ~ format) => new FileObject(id, format, owner, consent, date)
   }
-  private[models] override val * = col("id", "consent", "date") + ", " + FileFormat.*
+  private[models] override val * = col("id", "owner", "consent", "date") + ", " + FileFormat.*
   private[models] override val src = "ONLY file JOIN ONLY file_format ON file.format = file_format.id"
   
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[FileObject] =
     SQL("SELECT " + * + " FROM " + src + " WHERE file.id = {id}").
       on('id -> i).singleOpt(row)
+
+  def create(format : ObjectFormat, owner : Study.Id, consent : Consent.Value, date : Option[Date])(implicit site : Site) : FileObject = {
+    val args = Anorm.Args('format -> format.ensuring(!_.timeseries).id, 'consent -> consent, 'date -> date)
+    val id = Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
+    new FileObject(id, format, Some(owner), consent, date)
+  }
 }
 
 object TimeseriesObject extends ObjectView[TimeseriesObject]("timeseries") {
   /* completely redundant with FileObject (for now) */
-  private[models] val baseRow = Anorm.rowMap(Tuple3.apply[Id, Consent.Value, Option[Date]] _, col("id"), col("consent"), col("date"))
+  private[models] val baseRow = Anorm.rowMap(Tuple5.apply[Id, Option[Study.Id], Consent.Value, Option[Date], Interval] _, col("id"), col("owner"), col("consent"), col("date"), col("length"))
   private[models] val row = (baseRow ~ TimeseriesFormat.row) map {
-    case ((id, consent, date) ~ format) => new TimeseriesObject(id, format, consent, date)
+    case ((id, owner, consent, date, length) ~ format) => new TimeseriesObject(id, format, owner, consent, date, length)
   }
-  private[models] override val * = col("id", "consent", "date") + ", " + TimeseriesFormat.*
+  private[models] override val * = col("id", "owner", "consent", "date", "length") + ", " + TimeseriesFormat.*
   private[models] override val src = "timeseries JOIN timeseries_format ON timeseries.format = timeseries_format.id"
   
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[TimeseriesObject] =

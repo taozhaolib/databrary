@@ -52,6 +52,43 @@ object Anorm {
   )
 }
 
+case class Interval(seconds : Double) extends scala.runtime.FractionalProxy[Double] {
+  def self = seconds
+  protected def ord = scala.math.Ordering.Double
+  protected def integralNum = scala.math.Numeric.DoubleAsIfIntegral
+  protected def num = scala.math.Numeric.DoubleIsFractional
+  def millis = 1000*seconds
+  def nanos = 1000000000*seconds
+  def samples(rate : Double) = math.round(rate*seconds)
+
+  /* This is unfortuante but I can't find any other reasonable formatting options outside the postgres server itself: */
+  override def toString = {
+    val s = "%06.3f".format(seconds % 60)
+    val m = seconds.toInt / 60
+    if (m >= 60)
+      "%02d:%02d:%s".format(m / 60, m % 60, s)
+    else
+      "%02d:%s".format(m, s)
+  }
+}
+object Interval {
+  def apply(i : PGInterval) : Interval =
+    Interval(60*(60*(24*(30*(12.175*i.getYears + i.getMonths) + i.getDays) + i.getHours) + i.getMinutes) + i.getSeconds)
+
+  implicit val column : Column[Interval] = Column.nonNull[Interval] { (value, meta) =>
+    val MetaDataItem(qualified, nullable, clazz) = meta
+    value match {
+      case int : PGInterval => Right(Interval(int))
+      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to PGInterval for column " + qualified))
+    }
+  }
+
+  implicit val statement : ToStatement[Interval] = new ToStatement[Interval] {
+    def set(s: java.sql.PreparedStatement, index: Int, a: Interval) =
+      s.setObject(index, new PGInterval(0, 0, 0, 0, 0, a.seconds))
+  }
+}
+
 case class Inet(ip : String)
 object Inet extends PGType[Inet]("inet", new Inet(_), _.ip)
 

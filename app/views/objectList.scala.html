@@ -1,4 +1,4 @@
-@(links : Seq[ObjectLink])(implicit request : SiteRequest[_])
+@(container : Container)(implicit request : SiteRequest[_])
 
 <h2>Objects</h2>
 
@@ -9,7 +9,7 @@
 		<th>Consent</th>
 		<th>Date</th>
 	</tr>
-	@links.map { link =>
+	@container.objects(request.db).map { link =>
 	<tr>
 		<td>@displayPage(link)</td>
 		@link.obj(request.db) match {
@@ -21,6 +21,11 @@
 		case e : Excerpt => {
 		}
 		}
+	</tr>
+	}
+	@if(container.permission >= Permission.CONTRIBUTE) {
+	<tr>
+		<td colspan="4"><a href='@routes.Object.create(container.id)'>Add new object</a></td>
 	</tr>
 	}
 </table>
