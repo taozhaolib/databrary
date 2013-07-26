@@ -6,6 +6,7 @@ import          mvc._
 import          data._
 import          i18n.Messages
 import          db.DB
+import java.util.TimeZone
 import dbrary._
 import util._
 import models._
@@ -16,10 +17,14 @@ abstract class SiteRequest[A](request : Request[A], val identity : Identity, val
 }
 
 class AnonRequest[A](request : Request[A], db : util.Site.DB)
-  extends SiteRequest[A](request, Identity.Nobody, db)
+  extends SiteRequest[A](request, Identity.Nobody, db) {
+  def timezone = TimeZone.getDefault
+}
 
 class UserRequest[A](request : Request[A], val user : User, db : util.Site.DB)
-  extends SiteRequest[A](request, user, db)
+  extends SiteRequest[A](request, user, db) {
+  def timezone = user.timezone.fold(TimeZone.getDefault)(TimeZone.getTimeZone _)
+}
 
 object SiteAction {
   private[this] def getUser(request : Request[_])(implicit db : util.Site.DB) : Option[User] =

@@ -9,12 +9,7 @@
 	@objectList(slot)
 
 	<h2>Comments</h2>
-	@if(request.access >= Permission.COMMENT) {
-	@helper.form(routes.Comment.postSlot(slot.id)) {
-		@helper.inputText(controllers.Comment.form("text"))
-		<button type='submit'>Post</button>
-	}
-	}
+	@commentPost(routes.Comment.postSlot(slot.id))
 	<dl>
 	@slot.comments(false)(request.db).map { c =>
 		<dt>@displayPage(c.who(request.db))

@@ -48,9 +48,10 @@ final class User(entity : Entity, account : Account) extends Identity(entity) {
   final def username = account.username
   final def email = account.email
   final def openid = account.openid
+  final def timezone = account.timezone
 
-  def changeAccount(email : String = email, openid : Option[String] = openid)(implicit site : Site) =
-    account.change(email, openid)
+  def changeAccount(email : String = email, openid : Option[String] = openid, timezone : Option[String] = timezone)(implicit site : Site) =
+    account.change(email, openid, timezone)
 
   override def pageName(implicit site : Site) = super.pageName + (if (site.access >= Permission.VIEW) " <" + username + ">" else "")
 }

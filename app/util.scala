@@ -18,4 +18,5 @@ trait Site {
   val db : Site.DB
   def access = identity.access(db)
   def clientIP : dbrary.Inet
+  def timezone : java.util.TimeZone
 }

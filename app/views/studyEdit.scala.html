@@ -10,7 +10,7 @@
 
 	@helper.form(routes.Study.change(study.id)) {
 		@helper.inputText(editForm("title"))
-		@helper.textarea(editForm("description"))
+		@helper.textarea(editForm("description"), 'cols -> 80, 'rows -> 8)
 		<button type='submit'>Change</button>
 	}
 	@formErrors(editForm)

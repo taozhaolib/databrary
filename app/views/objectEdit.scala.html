@@ -4,7 +4,7 @@
 
 	@helper.form(routes.Object.change(link.containerId, link.objId)) {
 		@helper.inputText(form("title"))
-		@helper.textarea(form("description"))
+		@helper.textarea(form("description"), 'cols -> 80, 'rows -> 4)
 
 		@link.obj(request.db) match {
 		case obj : FileObject => {
