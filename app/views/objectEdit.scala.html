@@ -8,7 +8,7 @@
 
 		@link.obj(request.db) match {
 		case obj : FileObject => {
-		@if(obj.ownerId == Some(link.container.studyId)) {
+		@if(obj.ownerId.fold(false)(_ == link.container.studyId)) {
 			@enumSelect(form("consent"), Consent)
 			@helper.inputDate(form("date"))
 		}

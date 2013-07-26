@@ -16,7 +16,6 @@ sealed class Identity(private val entity : Entity) extends TableRowId[Entity] wi
   /* level of access user has to the site */
   final def access(implicit db : Site.DB) : Permission.Value = entity.access
 
-  /* shorthand for asInstanceOf[User] */
   def user : Option[User] = None
 
   def changeEntity(name : String = name, orcid : Option[Orcid] = orcid)(implicit site : Site) =

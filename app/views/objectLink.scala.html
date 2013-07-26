@@ -1,24 +1,29 @@
 @(link : ObjectLink)(implicit request : SiteRequest[_])
 
+@fileData(obj : FileObject) = {
+	<dt>Format</dt>
+	<dd>@obj.format.name</dd>
+	<dt>Consent</dt>
+	<dd>@obj.consent</dd>
+	@obj.date.map { date =>
+	<dt>Date</dt>
+	<dd>@date</dd>
+	}
+}
+
 @common(link) {
 
 	<p>@link.description</p>
 
 	<dl>
 	@link.obj(request.db) match {
-	case obj : FileObject => {
-		<dt>Format</dt>
-		<dd>@obj.format.name</dd>
-		<dt>Consent</dt>
-		<dd>@obj.consent</dd>
-		@obj.date.map { date =>
-		<dt>Date</dt>
-		<dd>@date</dd>
-		}
-	@Option(obj.asInstanceOf[TimeseriesObject]).map { tso =>
+	case obj : TimeseriesObject => {
+		@fileData(obj)
 		<dt>Length</dt>
-		<dd>@tso.length</dd>
+		<dd>@obj.length</dd>
 	}
+	case obj : FileObject => {
+		@fileData(obj)
 	}
 	case e : Excerpt => {
 		<dt>Source</dt>

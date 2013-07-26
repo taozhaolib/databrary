@@ -107,7 +107,7 @@ object FileObject extends ObjectView[FileObject]("file") {
       on('id -> i).singleOpt(row)
 
   def create(format : ObjectFormat, owner : Study.Id, consent : Consent.Value, date : Option[Date])(implicit site : Site) : FileObject = {
-    val args = Anorm.Args('format -> format.ensuring(!_.timeseries).id, 'consent -> consent, 'date -> date)
+    val args = Anorm.Args('format -> format.ensuring(!_.timeseries).id, 'owner -> owner, 'consent -> consent, 'date -> date)
     val id = Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
     new FileObject(id, format, Some(owner), consent, date)
   }

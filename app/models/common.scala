@@ -22,11 +22,9 @@ object CachedVal {
 
 class GenericId[I,+T](val unId : I) {
   // I don't understand why this is necessary (and it's also not quite right with inheritance):
-  def ==(i : GenericId[I,AnyRef]) = i match {
-    case i : GenericId[I,T] => i.unId == unId
-    case _ => false
-  }
-  def !=(i : GenericId[I,AnyRef]) = !(this == i)
+  def equals(i : GenericId[I,_]) = i.unId equals unId
+  def ==(i : GenericId[I,_]) = i.unId == unId
+  def !=(i : GenericId[I,_]) = !(this == i)
   override def toString = "Id(" + unId.toString + ")"
 }
 final class IntId[+T](unId : Int) extends GenericId[Int,T](unId)

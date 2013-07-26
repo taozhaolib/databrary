@@ -36,7 +36,10 @@ object Object extends SiteController {
   type EditForm = Form[((String, String), Option[(Consent.Value, Option[java.sql.Date])])]
   private[this] def formFill(link : ObjectLink)(implicit site : Site) : EditForm = {
     /* Only allow file parameters to be changed if this is the original study for this object */
-    val file = Option(link.obj.asInstanceOf[models.FileObject]).filter(_.ownerId == Some(link.container.studyId))
+    val file = link.obj match {
+      case f : FileObject if f.ownerId.fold(false)(_ == link.container.studyId) => Some(f)
+      case _ => None
+    }
     Form(tuple(
       "" -> linkFields,
       "" -> MaybeMapping(file.map(_ => fileFields))
