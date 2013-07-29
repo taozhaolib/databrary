@@ -1,6 +1,7 @@
 package models
 
 import java.sql.Date
+import play.api.libs.Files.TemporaryFile
 import anorm._
 import anorm.SqlParser.scalar
 import dbrary._
@@ -106,9 +107,11 @@ object FileObject extends ObjectView[FileObject]("file") {
     SQL("SELECT " + * + " FROM " + src + " WHERE file.id = {id}").
       on('id -> i).singleOpt(row)
 
-  def create(format : ObjectFormat, owner : Study.Id, consent : Consent.Value, date : Option[Date])(implicit site : Site) : FileObject = {
+  def create(format : ObjectFormat, owner : Study.Id, consent : Consent.Value, date : Option[Date], file : TemporaryFile)(implicit site : Site) : FileObject = {
     val args = Anorm.Args('format -> format.ensuring(!_.timeseries).id, 'owner -> owner, 'consent -> consent, 'date -> date)
     val id = Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
+    store.Object.store(id, file)
+    site.db.commit
     new FileObject(id, format, Some(owner), consent, date)
   }
 }

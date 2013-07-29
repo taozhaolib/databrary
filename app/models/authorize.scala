@@ -22,6 +22,7 @@ final case class Authorize(childId : Identity.Id, parentId : Identity.Id, access
   private def args =
     id ++ Anorm.Args('access -> access, 'delegate -> delegate, 'authorized -> authorized, 'expires -> expires)
 
+  /* update or add; this and remove may both invalidate child.access */
   def set(implicit site : Site) : Unit = {
     val args = this.args
     if (Audit.SQLon(AuditAction.change, Authorize.table, "SET access = {access}, delegate = {delegate}, authorized = {authorized}, expires = {expires} WHERE child = {child} AND parent = {parent}")(args : _*).executeUpdate()(site.db) == 0)

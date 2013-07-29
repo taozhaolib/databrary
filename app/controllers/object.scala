@@ -6,6 +6,7 @@ import          mvc._
 import          data._
 import               Forms._
 import          i18n.Messages
+import          libs.iteratee.Enumerator
 import util._
 import models._
 
@@ -22,6 +23,30 @@ object Object extends SiteController {
 
   def view(i : models.Container.Id, o : models.Object.Id) = check(i, o) { link => implicit request =>
     Ok(views.html.objectLink(link))
+  }
+
+  def download(i : models.Container.Id, o : models.Object.Id) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
+    val etag = link.objId.unId.formatted("obj:%d")
+    /* Assuming objects are immutable, any if-modified-since header is good enough */
+    request.headers.get(IF_NONE_MATCH).filter(_ == etag).orElse(
+      request.headers.get(IF_MODIFIED_SINCE)
+    ).fold (
+      link.obj match {
+        case fobj : FileObject => {
+          val file = store.Object.file(fobj.id)
+          SimpleResult(
+            header = ResponseHeader(OK, Map(
+              CONTENT_LENGTH -> file.length.toString,
+              CONTENT_TYPE -> fobj.format.mimetype,
+              ETAG -> etag,
+              CACHE_CONTROL -> "max-age=31556926, private"
+            )),
+            Enumerator.fromFile(file)
+          ) : Result
+        }
+        case e : Excerpt => NotImplemented
+      }
+    ) (_ => NotModified)
   }
 
   private[this] val linkFields = tuple(
@@ -89,7 +114,7 @@ object Object extends SiteController {
             if (format.timeseries)
               ???
             else
-              FileObject.create(format, container.studyId, consent, date)
+              FileObject.create(format, container.studyId, consent, date, f.ref)
           val link = ObjectLink.create(container, obj, maybe(title).getOrElse(f.filename), maybe(description))
           Redirect(link.pageURL)
         }
