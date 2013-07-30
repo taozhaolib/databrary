@@ -6,15 +6,9 @@
 		@helper.inputText(form("title"))
 		@helper.textarea(form("description"), 'cols -> 80, 'rows -> 4)
 
-		@link.obj(request.db) match {
-		case obj : FileObject => {
-		@if(obj.ownerId.fold(false)(_ == link.container.studyId)) {
+		@if(controllers.Object.formForFile(form)) {
 			@enumSelect(form("consent"), Consent)
 			@helper.inputDate(form("date"))
-		}
-		}
-		case e : Excerpt => {
-		}
 		}
 		<button type='submit'>Change</button>
 	}

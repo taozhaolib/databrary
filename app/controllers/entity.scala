@@ -17,21 +17,22 @@ object Entity extends SiteController {
       e => Ok(views.html.entity(e, e.delegated)))
   }
 
-  type EntityForm = Form[(String, Option[Orcid])]
-  private[this] val entityForm : EntityForm = Form(tuple(
-    "name" -> nonEmptyText,
-    "orcid" -> text(0,20).transform[Option[Orcid]](maybe(_).map(Orcid.apply _), _.fold("")(_.toString))
-      .verifying("invalid ORCID iD", _.fold(true)(_.valid))
-  ))
-  private[this] def entityFormFill(e : models.Entity) : EntityForm = entityForm.fill((e.name, e.orcid))
+  type EditForm = Form[(String, Option[Orcid], Option[(String, String, String)])]
+  private[this] def formFill(e : models.Entity)(implicit request : UserRequest[_]) : EditForm = {
+    val acct = cast[models.Account](e).filter(_.equals(request.account))
+    Form(tuple(
+      "name" -> nonEmptyText,
+      "orcid" -> text(0,20).transform[Option[Orcid]](maybe(_).map(Orcid.apply _), _.fold("")(_.toString))
+        .verifying("invalid ORCID iD", _.fold(true)(_.valid)),
+      "" -> MaybeMapping(acct.map(_ => tuple(
+        "email" -> email,
+        "openid" -> text(0,256),
+        "timezone" -> text(0,32)
+      )))
+    )).fill((e.name, e.orcid, acct.map(a => (a.email, a.openid.getOrElse(""), a.timezone.getOrElse("")))))
+  }
 
-  type AccountForm = Form[(String, String, String)]
-  private[this] val accountForm : AccountForm = Form(tuple(
-    "email" -> email,
-    "openid" -> text(0,256),
-    "timezone" -> text(0,32)
-  ))
-  private[this] def accountFormFill(u : Account) : AccountForm = accountForm.fill((u.email, u.openid.getOrElse(""), u.timezone.getOrElse("")))
+  def formForAccount(form : EditForm) = form.value.fold(false)(!_._3.isEmpty)
 
   private[this] def authorizeForm(child : models.Entity.Id, parent : models.Entity.Id, which : Boolean = false) : Form[Authorize] = Form(
     mapping(
@@ -64,8 +65,7 @@ object Entity extends SiteController {
   )
 
   private[this] def viewAdmin(entity : models.Entity)(
-    entityForm : EntityForm = entityFormFill(entity),
-    accountForm : Option[AccountForm] = cast[models.Account](entity).map(accountFormFill(_)),
+    editForm : Option[EditForm] = None,
     authorizeChangeForm : Option[(models.Entity,Form[Authorize])] = None,
     authorizeWhich : Option[Boolean] = None,
     authorizeSearchForm : Form[String] = authorizeSearchForm,
@@ -73,7 +73,7 @@ object Entity extends SiteController {
     implicit request : UserRequest[_]) = {
     val authorizeChange = authorizeChangeForm.map(_._1.id)
     val authorizeForms = entity.authorizeChildren(true).filter(t => Some(t.childId) != authorizeChange).map(t => (t.child, authorizeForm(t.childId, t.parentId).fill(t))) ++ authorizeChangeForm
-    views.html.entityAdmin(entity, entityForm, accountForm.filter(_ => entity.equals(request.identity)), authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
+    views.html.entityAdmin(entity, editForm.getOrElse(formFill(entity)), authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
   }
   
   private[this] def checkAdmin(i : models.Entity.Id, delegate : Boolean = true)(act : models.Entity => UserRequest[AnyContent] => Result) = UserAction { implicit request =>
@@ -88,21 +88,14 @@ object Entity extends SiteController {
   }
 
   def change(i : models.Entity.Id) = checkAdmin(i) { entity => implicit request =>
-    entityFormFill(entity).bindFromRequest.fold(
-      form => BadRequest(viewAdmin(entity)(entityForm = form)),
-      { case (name, orcid) =>
+    formFill(entity).bindFromRequest.fold(
+      form => BadRequest(viewAdmin(entity)(editForm = Some(form))),
+      { case (name, orcid, acct) =>
         entity.change(name = name, orcid = orcid)
-        Redirect(entity.pageURL)
-      }
-    )
-  }
-
-  def changeAccount(i : models.Entity.Id) = checkAdmin(i, false) { entity => implicit request =>
-    val u = entity.asInstanceOf[Account]
-    accountFormFill(u).bindFromRequest.fold(
-      form => BadRequest(viewAdmin(entity)(accountForm = Some(form))),
-      { case (email, openid, timezone) =>
-        u.changeAccount(email = email, openid = maybe(openid), timezone = maybe(timezone))
+        acct foreach {
+          case (email, openid, timezone) =>
+            entity.asInstanceOf[models.Account].changeAccount(email = email, openid = maybe(openid), timezone = maybe(timezone))
+        }
         Redirect(entity.pageURL)
       }
     )

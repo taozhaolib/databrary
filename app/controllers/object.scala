@@ -49,16 +49,12 @@ object Object extends SiteController {
     } (_ => NotModified)
   }
 
-  private[this] val linkFields = tuple(
-    "title" -> nonEmptyText,
-    "description" -> text
-  )
   private[this] val fileFields = tuple(
     "consent" -> form.enumField(Consent),
     "date" -> optional(sqlDate)
   )
 
-  type EditForm = Form[((String, String), Option[(Consent.Value, Option[java.sql.Date])])]
+  type EditForm = Form[(String, String, Option[(Consent.Value, Option[java.sql.Date])])]
   private[this] def formFill(link : ObjectLink)(implicit site : Site) : EditForm = {
     /* Only allow file parameters to be changed if this is the original study for this object */
     val file = link.obj match {
@@ -66,10 +62,13 @@ object Object extends SiteController {
       case _ => None
     }
     Form(tuple(
-      "" -> linkFields,
+      "title" -> nonEmptyText,
+      "description" -> text,
       "" -> MaybeMapping(file.map(_ => fileFields))
-    )).fill(((link.title, link.description.getOrElse("")), file.map(f => (f.consent, f.date))))
+    )).fill((link.title, link.description.getOrElse(""), file.map(f => (f.consent, f.date))))
   }
+
+  def formForFile(form : EditForm) = form.value.fold(false)(!_._3.isEmpty)
 
   def edit(s : models.Container.Id, o : models.Object.Id) = check(s, o, Permission.EDIT) { link => implicit request =>
     Ok(views.html.objectEdit(link, formFill(link)))
@@ -78,7 +77,7 @@ object Object extends SiteController {
   def change(s : models.Container.Id, o : models.Object.Id) = check(s, o, Permission.EDIT) { link => implicit request =>
     formFill(link).bindFromRequest.fold(
       form => BadRequest(views.html.objectEdit(link, form)), {
-      case ((title, description), file) =>
+      case (title, description, file) =>
         link.change(title = title, description = maybe(description))
         file foreach {
           case (consent, date) => link.obj.asInstanceOf[models.FileObject].change(consent = consent, date = date)

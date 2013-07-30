@@ -15,7 +15,6 @@ GET	/Logout					controllers.Login.logout
 GET	/entity/:id				controllers.Entity.view(id : models.Entity.Id)
 GET	/entity/:id/admin			controllers.Entity.admin(id : models.Entity.Id)
 POST	/entity/:id/Admin			controllers.Entity.change(id : models.Entity.Id)
-POST	/entity/:id/Account			controllers.Entity.changeAccount(id : models.Entity.Id)
 GET	/entity/:id/Authorize/search/child	controllers.Entity.authorizeSearch(id : models.Entity.Id, which : Boolean = false)
 GET	/entity/:id/Authorize/search/parent	controllers.Entity.authorizeSearch(id : models.Entity.Id, which : Boolean = true)
 POST	/entity/:id/Authorize/:child		controllers.Entity.authorizeChange(id : models.Entity.Id, child : models.Entity.Id)

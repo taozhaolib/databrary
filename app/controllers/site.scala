@@ -22,7 +22,7 @@ class AnonRequest[A](request : Request[A], db : util.Site.DB)
   def timezone = TimeZone.getDefault
 }
 
-class UserRequest[A](request : Request[A], account : Account, db : util.Site.DB)
+class UserRequest[A](request : Request[A], val account : Account, db : util.Site.DB)
   extends SiteRequest[A](request, account, db) {
   override def user = Some(account)
   def timezone = account.timezone.fold(TimeZone.getDefault)(TimeZone.getTimeZone _)
