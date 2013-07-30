@@ -7,9 +7,9 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-class Annotation protected (val id : Annotation.Id, val whoId : Identity.Id, val when : Timestamp, val containerId : Container.Id, val objId : Option[Object.Id]) extends TableRowId[Annotation] {
-  protected[models] val _who = CachedVal[Identity, Site.DB](Identity.get(whoId)(_).get)
-  def who(implicit db : Site.DB) : Identity = _who
+class Annotation protected (val id : Annotation.Id, val whoId : Entity.Id, val when : Timestamp, val containerId : Container.Id, val objId : Option[Object.Id]) extends TableRowId[Annotation] {
+  protected[models] val _who = CachedVal[Entity, Site](Entity.get(whoId)(_).get)
+  def who(implicit site : Site) : Entity = _who
   protected[models] val _container = CachedVal[Container, Site](Container.get(containerId)(_).get)
   def container(implicit site : Site) : Container = _container
   protected[models] val _obj = CachedVal[Option[ObjectLink], Site](s => objId.flatMap(o => container(s).getObject(o)(s.db)))
@@ -17,7 +17,7 @@ class Annotation protected (val id : Annotation.Id, val whoId : Identity.Id, val
   def target(implicit site : Site) : SitePage = if (objId.isEmpty) container else obj.get
 }
 
-final class Comment private (override val id : Comment.Id, whoId : Identity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id], val text : String) extends Annotation(id, whoId, when, containerId, objId) with TableRowId[Comment] {
+final class Comment private (override val id : Comment.Id, whoId : Entity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id], val text : String) extends Annotation(id, whoId, when, containerId, objId) with TableRowId[Comment] {
 }
 
 private[models] sealed abstract class AnnotationView[R <: Annotation](table : String) extends TableView[R](table) with HasId[R] {
@@ -46,7 +46,7 @@ private[models] sealed abstract class AnnotationView[R <: Annotation](table : St
         a._obj() = Some(obj)
         a
       })
-  private[models] def getEntity(i : Identity)(implicit site : Site) : Seq[R] =
+  private[models] def getEntity(i : Entity)(implicit site : Site) : Seq[R] =
     SQL("SELECT " + * + ", " + Container.* + " FROM " + table + " JOIN " + Container.src + " ON " + col("container") + " = container.id WHERE " + col("who") + " = {who} AND " + Container.condition + " ORDER BY " + col("id") + " DESC").
       on('who -> i.id, 'identity -> site.identity.id).list(row map { a =>
         a._who() = i
@@ -55,13 +55,13 @@ private[models] sealed abstract class AnnotationView[R <: Annotation](table : St
 }
 
 private[models] object Annotation extends AnnotationView[Annotation]("annotation") {
-  private[this] def make(id : Annotation.Id, whoId : Identity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id]) =
+  private[this] def make(id : Annotation.Id, whoId : Entity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id]) =
     new Annotation(id, whoId, when, containerId, objId)
   private[models] val row = Anorm.rowMap(make _, col("id"), col("who"), col("when"), col("container"), col("object"))
 }
 
 object Comment extends AnnotationView[Comment]("comment") {
-  private[this] def make(id : Comment.Id, whoId : Identity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id], text : String) =
+  private[this] def make(id : Comment.Id, whoId : Entity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id], text : String) =
     new Comment(id, whoId, when, containerId, objId, text)
   private[models] val row = Anorm.rowMap(make _, col("id"), col("who"), col("when"), col("container"), col("object"), col("text"))
 

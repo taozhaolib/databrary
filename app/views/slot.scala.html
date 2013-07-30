@@ -12,7 +12,7 @@
 	@commentPost(routes.Comment.postSlot(slot.id))
 	<dl>
 	@slot.comments(false)(request.db).map { c =>
-		<dt>@displayPage(c.who(request.db))
+		<dt>@displayPage(c.who)
 		@c.obj.map { o =>
 			&gt; @displayPage(o)
 		} @c.when</dt>

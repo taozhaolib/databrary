@@ -40,7 +40,7 @@
 	@commentPost(routes.Comment.postObjectLink(link.containerId, link.objId))
 	<dl>
 	@link.comments()(request.db).map { c =>
-		<dt>@displayPage(c.who(request.db)) @c.when</dt>
+		<dt>@displayPage(c.who) @c.when</dt>
 		<dd>@c.text</dd>
 	}
 	</dl>

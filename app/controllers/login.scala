@@ -47,7 +47,7 @@ object Login extends Controller {
     AsyncResult(OpenID.verifiedId.extend1(
       { 
         case Redeemed(info) => DB.withConnection { implicit db =>
-          User.getOpenid(info.id, maybe(username)).map { a =>
+          Account.getOpenid(info.id, maybe(username)).map { a =>
             implicit val arequest = new UserRequest(request, a, db)
             Audit.add(AuditAction.login)
             Redirect(routes.Entity.view(a.id)).withSession("user" -> a.id.unId.toString)

@@ -11,27 +11,29 @@ import dbrary._
 import util._
 import models._
 
-abstract class SiteRequest[A](request : Request[A], val identity : Identity, val db : util.Site.DB)
+abstract class SiteRequest[A](request : Request[A], val identity : Entity, val db : util.Site.DB)
   extends WrappedRequest[A](request) with Site {
   def clientIP = Inet(request.remoteAddress)
 }
 
 class AnonRequest[A](request : Request[A], db : util.Site.DB)
-  extends SiteRequest[A](request, Identity.Nobody, db) {
+  extends SiteRequest[A](request, models.Entity.Nobody, db) {
+  override def user = None
   def timezone = TimeZone.getDefault
 }
 
-class UserRequest[A](request : Request[A], val user : User, db : util.Site.DB)
-  extends SiteRequest[A](request, user, db) {
-  def timezone = user.timezone.fold(TimeZone.getDefault)(TimeZone.getTimeZone _)
+class UserRequest[A](request : Request[A], account : Account, db : util.Site.DB)
+  extends SiteRequest[A](request, account, db) {
+  override def user = Some(account)
+  def timezone = account.timezone.fold(TimeZone.getDefault)(TimeZone.getTimeZone _)
 }
 
 object SiteAction {
-  private[this] def getUser(request : Request[_])(implicit db : util.Site.DB) : Option[User] =
+  private[this] def getUser(request : Request[_])(implicit db : util.Site.DB) : Option[Account] =
     request.session.get("user").flatMap { i => 
-      try { Some(Identity.asId(i.toInt)) }
+      try { Some(models.Account.asId(i.toInt)) }
       catch { case e:java.lang.NumberFormatException => None }
-    }.flatMap(User.get _)
+    }.flatMap(models.Account.get _)
 
   def apply(anon : AnonRequest[AnyContent] => Result, user : UserRequest[AnyContent] => Result) : Action[AnyContent] =
     Action { request => DB.withTransaction { implicit db =>

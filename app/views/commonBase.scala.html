@@ -7,7 +7,7 @@
 	</head>
 	<body>
 		<div align='right'>
-		@request.flatMap(_.identity.user).fold {
+		@request.flatMap(_.user).fold {
 			<a href="@routes.Login.view">login</a>
 		} { u =>
 			@displayPage(u)(request.get)

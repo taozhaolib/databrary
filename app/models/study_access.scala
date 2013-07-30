@@ -6,7 +6,7 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-final case class StudyAccess(studyId : Study.Id, entityId : Identity.Id, access : Permission.Value, inherit : Permission.Value) extends TableRow {
+final case class StudyAccess(studyId : Study.Id, entityId : Entity.Id, access : Permission.Value, inherit : Permission.Value) extends TableRow {
   private def id =
     Anorm.Args('study -> studyId, 'entity -> entityId)
   private def args = 
@@ -22,33 +22,33 @@ final case class StudyAccess(studyId : Study.Id, entityId : Identity.Id, access 
 
   private val _study = CachedVal[Study, Site](Study.get(studyId)(_).get)
   def study(implicit site : Site) : Study = _study
-  private val _entity = CachedVal[Identity, Site.DB](Identity.get(entityId)(_).get)
-  def entity(implicit db : Site.DB) : Identity = _entity
+  private val _entity = CachedVal[Entity, Site](Entity.get(entityId)(_).get)
+  def entity(implicit site : Site) : Entity = _entity
 }
 
 object StudyAccess extends TableView[StudyAccess]("study_access") {
   private[models] val row = Anorm.rowMap(StudyAccess.apply _, "study", "entity", "access", "inherit")
 
-  def get(s : Study.Id, e : Identity.Id)(implicit db : Site.DB) : Option[StudyAccess] =
+  def get(s : Study.Id, e : Entity.Id)(implicit db : Site.DB) : Option[StudyAccess] =
     SQL("SELECT * FROM " + table + " WHERE study = {study} AND entity = {entity}").
       on('study -> s, 'entity -> e).singleOpt(row)
 
   private[models] def getEntities(s : Study, p : Permission.Value = Permission.NONE)(implicit db : Site.DB) =
-    SQL("SELECT * FROM " + table + " JOIN " + Identity.table + " ON (entity = id) WHERE study = {study} AND access >= {access} ORDER BY access DESC").
-      on('study -> s.id, 'access -> p).list((row ~ Identity.row).
+    SQL("SELECT * FROM " + table + " JOIN " + Entity.table + " ON (entity = id) WHERE study = {study} AND access >= {access} ORDER BY access DESC").
+      on('study -> s.id, 'access -> p).list((row ~ Entity.row).
         map({ case (a ~ e) => a._entity() = e; a._study() = s; a })
       )
-  private[models] def getStudies(e : Identity, p : Permission.Value = Permission.NONE)(implicit site : Site) =
+  private[models] def getStudies(e : Entity, p : Permission.Value = Permission.NONE)(implicit site : Site) =
     SQL("SELECT " + * + ", " + Study.* + " FROM " + table + " JOIN " + Study.table + " ON (study = id) WHERE entity = {entity} AND access >= {access} AND " + Study.condition + " ORDER BY access DESC").
       on('entity -> e.id, 'access -> p, 'identity -> site.identity.id).list((row ~ Study.row).
         map({ case (a ~ s) => a._study() = s; a._entity() = e; a })
       )(site.db)
 
-  def delete(s : Study.Id, e : Identity.Id)(implicit site : Site) =
+  def delete(s : Study.Id, e : Entity.Id)(implicit site : Site) =
     Audit.SQLon(AuditAction.remove, "study_access", "WHERE study = {study} AND entity = {entity}")('study -> s, 'entity -> e).
       execute()(site.db)
 
-  def check(s : Study.Id, e : Identity.Id)(implicit db : Site.DB) : Permission.Value =
+  def check(s : Study.Id, e : Entity.Id)(implicit db : Site.DB) : Permission.Value =
     SQL("SELECT study_access_check({study}, {entity})").
       on('study -> s, 'entity -> e).single(scalar[Option[Permission.Value]]).
       getOrElse(Permission.NONE)

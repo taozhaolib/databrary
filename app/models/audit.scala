@@ -9,8 +9,9 @@ object AuditAction extends PGEnum("audit_action") {
   val login, logout, add, change, remove, download = Value
 }
 
-case class Audit[T](who : Identity.Id, ip : Inet, action : AuditAction.Value, row : T) {
-  def entity(implicit db : Site.DB) = Identity.get(who)
+case class Audit[T](who : Entity.Id, ip : Inet, action : AuditAction.Value, row : T) {
+  private val _entity = CachedVal[Option[Entity], Site](Entity.get(who)(_))
+  def entity(implicit site : Site) : Option[Entity] = _entity
 }
 
 object Audit {

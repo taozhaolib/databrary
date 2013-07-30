@@ -1,4 +1,4 @@
-@(entity : Identity, entityForm : controllers.Entity.EntityForm, accountForm : Option[controllers.Entity.AccountForm], authorizeForms : Seq[(Identity,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Identity,Form[Authorize])])(implicit request : UserRequest[_])
+@(entity : Entity, entityForm : controllers.Entity.EntityForm, accountForm : Option[controllers.Entity.AccountForm], authorizeForms : Seq[(Entity,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Entity,Form[Authorize])])(implicit request : UserRequest[_])
 
 
 @common(entity, "admin") {

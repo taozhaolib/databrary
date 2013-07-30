@@ -4,7 +4,7 @@
 
 	<ul>
 	@study.entityAccess(Permission.CONTRIBUTE)(request.db).map { a => 
-		<li>@displayPage(a.entity(request.db))</li>
+		<li>@displayPage(a.entity)</li>
 	}
 	</ul>
 
@@ -33,7 +33,7 @@
 	@commentPost(routes.Comment.postStudy(study.id))
 	<dl>
 	@study.comments(false)(request.db).map { c =>
-		<dt>@displayPage(c.who(request.db))
+		<dt>@displayPage(c.who)
 			@if(c.containerId != study.id) {
 				&gt; @displayPage(c.container)
 			}
