@@ -30,7 +30,7 @@ object Object extends SiteController {
     /* Assuming objects are immutable, any if-modified-since header is good enough */
     request.headers.get(IF_NONE_MATCH).filter(_ == etag).orElse(
       request.headers.get(IF_MODIFIED_SINCE)
-    ).fold (
+    ).fold {
       link.obj match {
         case fobj : FileObject => {
           val file = store.Object.file(fobj.id)
@@ -46,7 +46,7 @@ object Object extends SiteController {
         }
         case e : Excerpt => NotImplemented
       }
-    ) (_ => NotModified)
+    } (_ => NotModified)
   }
 
   private[this] val linkFields = tuple(
