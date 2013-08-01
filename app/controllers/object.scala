@@ -38,6 +38,7 @@ object Object extends SiteController {
             header = ResponseHeader(OK, Map(
               CONTENT_LENGTH -> file.length.toString,
               CONTENT_TYPE -> fobj.format.mimetype,
+              CONTENT_DISPOSITION -> ("attachment; filename=\"" + (link.title + fobj.format.extension.fold("")("." + _)).replaceAll("([\\p{Cntrl}\"\\\\])", "\\\\$2") + "\""),
               ETAG -> etag,
               CACHE_CONTROL -> "max-age=31556926, private"
             )),

@@ -36,6 +36,10 @@
 		<a href='@routes.Object.edit(link.containerId, link.objId)'>edit</a>
 	}
 
+	@if(link.permission >= Permission.DOWNLOAD) {
+		<a href='@routes.Object.download(link.containerId, link.objId)'>download</a>
+	}
+
 	<h2>Comments</h2>
 	@commentPost(routes.Comment.postObjectLink(link.containerId, link.objId))
 	<dl>
