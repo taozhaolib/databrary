@@ -40,12 +40,6 @@
 		<a href='@routes.Object.download(link.containerId, link.objId)'>download</a>
 	}
 
-	<h2>Comments</h2>
-	@commentPost(routes.Comment.postObjectLink(link.containerId, link.objId))
-	<dl>
-	@link.comments()(request.db).map { c =>
-		<dt>@displayPage(c.who) @c.when</dt>
-		<dd>@c.text</dd>
-	}
-	</dl>
+	@comments(Some(routes.Comment.postObjectLink(link.containerId, link.objId)), link.comments()(request.db)) { c => 
+		@display(c.who)) }
 }

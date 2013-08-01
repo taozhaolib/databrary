@@ -1,8 +1,0 @@
-@(route : Call)(implicit request : SiteRequest[_])
-
-@if(request.access >= Permission.COMMENT) {
-@helper.form(route) {
-	@helper.textarea(controllers.Comment.form("text"), 'cols -> 80, 'rows -> 4)
-	<button type='submit'>Post</button>
-}
-}

@@ -1,7 +1,7 @@
 @(study : Study, editForm : controllers.Study.StudyForm, accessForms : Seq[(Entity,controllers.Study.AccessForm)], accessSearch : Form[String], accessResults : Seq[(Entity,controllers.Study.AccessForm)])(implicit request : SiteRequest[_])
 
 @accessFields(entity : Entity, form : Form[StudyAccess])(implicit fieldConstructor : helper.FieldConstructor) = {
-	<td>@displayPage(entity)</td>
+	<td>@display(entity)</td>
 	@enumSelect(form("access"), Permission)
 	@helper.select(form("inherit"), Permission.values.to(if (entity.id.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
 }

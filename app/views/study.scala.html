@@ -4,7 +4,7 @@
 
 	<ul>
 	@study.entityAccess(Permission.CONTRIBUTE)(request.db).map { a => 
-		<li>@displayPage(a.entity)</li>
+		<li>@display(a.entity)</li>
 	}
 	</ul>
 
@@ -20,7 +20,7 @@
 
 	<ul>
 	@study.slots(request.db).map { slot => 
-		<li>@displayPage(slot)</li>
+		<li>@display(slot)</li>
 	}
 	@if(study.permission >= Permission.CONTRIBUTE) {
 		<li>@helper.form(routes.Slot.create(study.id)) {
@@ -29,19 +29,13 @@
 	}
 	</ul>
 
-	<h2>Comments</h2>
-	@commentPost(routes.Comment.postStudy(study.id))
-	<dl>
-	@study.comments(false)(request.db).map { c =>
-		<dt>@displayPage(c.who)
+	@comments(Some(routes.Comment.postStudy(study.id)), study.comments(false)(request.db)) { c =>
+		@display(c.who)
 			@if(c.containerId != study.id) {
-				&gt; @displayPage(c.container)
+				&gt; @display(c.container)
 			}
 			@c.obj.map { o =>
-				&gt; @displayPage(o)
+				&gt; @display(o)
 			}
-			@c.when</dt>
-		<dd>@c.text</dd>
 	}
-	</dl>
 }

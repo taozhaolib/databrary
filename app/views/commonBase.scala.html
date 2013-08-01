@@ -10,7 +10,7 @@
 		@request.flatMap(_.user).fold {
 			<a href="@routes.Login.view">login</a>
 		} { u =>
-			@displayPage(u)(request.get)
+			@display(u)(request.get)
 			<a href="@routes.Login.logout">logout</a>
 		}
 		</div>

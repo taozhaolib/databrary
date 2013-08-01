@@ -8,15 +8,10 @@
 
 	@objectList(slot)
 
-	<h2>Comments</h2>
-	@commentPost(routes.Comment.postSlot(slot.id))
-	<dl>
-	@slot.comments(false)(request.db).map { c =>
-		<dt>@displayPage(c.who)
+	@comments(Some(routes.Comment.postSlot(slot.id)), slot.comments(false)(request.db)) { c =>
+		@display(c.who)
 		@c.obj.map { o =>
-			&gt; @displayPage(o)
-		} @c.when</dt>
-		<dd>@c.text</dd>
+			&gt; @display(o)
+		}
 	}
-	</dl>
 }

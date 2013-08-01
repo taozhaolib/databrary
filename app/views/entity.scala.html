@@ -24,11 +24,11 @@
 
 		<dt>Memberships</dt>
 		@entity.authorizeParents()(request.db).map { t => 
-			<dd>@displayPage(t.parent)</dd>
+			<dd>@display(t.parent)</dd>
 		}
 		<dt>Members</dt>
 		@entity.authorizeChildren()(request.db).map { t => 
-			<dd>@displayPage(t.child)</dd>
+			<dd>@display(t.child)</dd>
 		}
 
 	}
@@ -40,17 +40,13 @@
 			}</dd>
 		}
 		@entity.studyAccess(Permission.CONTRIBUTE).map { a =>
-			<dd>@displayPage(a.study)</dd>
+			<dd>@display(a.study)</dd>
 		}
 
 
 	</dl>
 
-	<h2>Comments</h2>
-	<dl>
-	@entity.getComments.map { c =>
-		<dt>@displayPath(c.target) @c.when</dt>
-		<dd>@c.text</dd>
+	@comments(None, entity.getComments) { c =>
+		@display.path(c.target)
 	}
-	</dl>
 }

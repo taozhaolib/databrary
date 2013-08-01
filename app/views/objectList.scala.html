@@ -11,7 +11,7 @@
 	</tr>
 	@container.objects(request.db).map { link =>
 	<tr>
-		<td>@displayPage(link)</td>
+		<td>@display(link)</td>
 		@link.obj(request.db) match {
 		case obj : FileObject => {
 		<td>@obj.format.name</td>
