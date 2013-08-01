@@ -17,7 +17,7 @@ object Entity extends SiteController {
       e => Ok(views.html.entity(e, e.delegated)))
   }
 
-  type EditForm = Form[(String, Option[Orcid], Option[(String, String, String)])]
+  type EditForm = Form[(String, Option[Orcid], Option[(String, String)])]
   private[this] def formFill(e : models.Entity)(implicit request : UserRequest[_]) : EditForm = {
     val acct = cast[models.Account](e).filter(_.equals(request.account))
     Form(tuple(
@@ -26,10 +26,9 @@ object Entity extends SiteController {
         .verifying("invalid ORCID iD", _.fold(true)(_.valid)),
       "" -> MaybeMapping(acct.map(_ => tuple(
         "email" -> email,
-        "openid" -> text(0,256),
-        "timezone" -> text(0,32)
+        "openid" -> text(0,256)
       )))
-    )).fill((e.name, e.orcid, acct.map(a => (a.email, a.openid.getOrElse(""), a.timezone.getOrElse("")))))
+    )).fill((e.name, e.orcid, acct.map(a => (a.email, a.openid.getOrElse("")))))
   }
 
   def formForAccount(form : EditForm) = form.value.fold(false)(!_._3.isEmpty)
@@ -93,8 +92,8 @@ object Entity extends SiteController {
       { case (name, orcid, acct) =>
         entity.change(name = name, orcid = orcid)
         acct foreach {
-          case (email, openid, timezone) =>
-            entity.asInstanceOf[models.Account].changeAccount(email = email, openid = maybe(openid), timezone = maybe(timezone))
+          case (email, openid) =>
+            entity.asInstanceOf[models.Account].changeAccount(email = email, openid = maybe(openid))
         }
         Redirect(entity.pageURL)
       }

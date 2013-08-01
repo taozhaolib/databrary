@@ -6,7 +6,6 @@ import          mvc._
 import          data._
 import          i18n.Messages
 import          db.DB
-import java.util.TimeZone
 import dbrary._
 import util._
 import models._
@@ -19,13 +18,11 @@ abstract class SiteRequest[A](request : Request[A], val identity : Entity, val d
 class AnonRequest[A](request : Request[A], db : util.Site.DB)
   extends SiteRequest[A](request, models.Entity.Nobody, db) {
   override def user = None
-  def timezone = TimeZone.getDefault
 }
 
 class UserRequest[A](request : Request[A], val account : Account, db : util.Site.DB)
   extends SiteRequest[A](request, account, db) {
   override def user = Some(account)
-  def timezone = account.timezone.fold(TimeZone.getDefault)(TimeZone.getTimeZone _)
 }
 
 object SiteAction {

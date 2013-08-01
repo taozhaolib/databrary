@@ -84,8 +84,7 @@ CREATE TABLE "account" (
 	"id" integer NOT NULL Primary Key References "entity",
 	"username" varchar(32) NOT NULL Unique,
 	"email" varchar(256) NOT NULL, -- split out (multiple/user)?
-	"openid" varchar(256), -- split out (multiple/user)?
-	"timezone" varchar(32)
+	"openid" varchar(256) -- split out (multiple/user)?
 );
 COMMENT ON TABLE "account" IS 'Login information for entities associated with registered individuals.';
 

@@ -21,5 +21,4 @@ trait Site {
   def user : Option[models.Account] = cast[models.Account](identity)
   def access = identity.access(db)
   def clientIP : dbrary.Inet
-  def timezone : java.util.TimeZone
 }

@@ -9,7 +9,6 @@
 		@if(controllers.Entity.formForAccount(form)) {
 			@helper.inputText(form("email"))
 			@helper.inputText(form("openid"))
-			@helper.select(form("timezone"), ("", "default") +: java.util.TimeZone.getAvailableIDs.sorted.map(tz => (tz, tz.replaceAllLiterally("/", ": ").replaceAllLiterally("_", " "))))
 		}
 		<button type='submit'>Change</button>
 	}

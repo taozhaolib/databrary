@@ -46,23 +46,20 @@ sealed class Entity protected (val id : Entity.Id, name_ : String, orcid_ : Opti
 }
 
 /* Account refines Entity for individuals with registered (but not necessarily authorized) accounts on the site. */
-final class Account protected (entity : Entity, val username : String, email_ : String, openid_ : Option[String], timezone_ : Option[String]) extends Entity(entity.id, entity.name, entity.orcid) with TableRowId[Account] {
+final class Account protected (entity : Entity, val username : String, email_ : String, openid_ : Option[String]) extends Entity(entity.id, entity.name, entity.orcid) with TableRowId[Account] {
   override val id = Account.asId(entity.id.unId)
   private[this] var _email = email_
   def email = _email
   private[this] var _openid = openid_
   def openid = _openid
-  private[this] var _timezone = timezone_
-  def timezone = _timezone
 
-  def changeAccount(email : String = _email, openid : Option[String] = _openid, timezone : Option[String] = _timezone)(implicit site : Site) : Unit = {
-    if (email == _email && openid == _openid && timezone == _timezone)
+  def changeAccount(email : String = _email, openid : Option[String] = _openid)(implicit site : Site) : Unit = {
+    if (email == _email && openid == _openid)
       return
-    Audit.SQLon(AuditAction.change, Account.table, "SET email = {email}, openid = {openid}, timezone = {timezone} WHERE id = {id}")(
-      'email -> email, 'openid -> openid, 'timezone -> timezone, 'id -> id).execute()(site.db)
+    Audit.SQLon(AuditAction.change, Account.table, "SET email = {email}, openid = {openid} WHERE id = {id}")(
+      'email -> email, 'openid -> openid, 'id -> id).execute()(site.db)
     _email = email
     _openid = openid
-    _timezone = timezone
   }
 
   override def pageName(implicit site : Site) = super.pageName + (if (site.access >= Permission.VIEW) " <" + username + ">" else "")
@@ -118,10 +115,10 @@ object Entity extends TableViewId[Entity]("entity") {
 
 object Account extends TableViewId[Account]("account") {
   private[models] override val src = "entity JOIN account USING (id)"
-  private[models] def make(e : Entity)(username : String, email : String, openid : Option[String], timezone : Option[String]) =
-    new Account(e, username, email, openid, timezone)
-  private[models] val baseRow = Anorm.rowMap(Tuple4.apply[String, String, Option[String], Option[String]] _, col("username"), col("email"), col("openid"), col("timezone"))
-  private[models] override val * = col("username", "email", "openid", "timezone")
+  private[models] def make(e : Entity)(username : String, email : String, openid : Option[String]) =
+    new Account(e, username, email, openid)
+  private[models] val baseRow = Anorm.rowMap(Tuple3.apply[String, String, Option[String]] _, col("username"), col("email"), col("openid"))
+  private[models] override val * = col("username", "email", "openid")
   private[models] val row = (Entity.baseRow ~ baseRow) map {
     case (e ~ a) => (make(e) _).tupled(a)
   }
