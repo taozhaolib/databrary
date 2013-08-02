@@ -26,20 +26,22 @@ final case class StudyAccess(studyId : Study.Id, entityId : Entity.Id, access : 
   def entity(implicit site : Site) : Entity = _entity
 }
 
-object StudyAccess extends TableView[StudyAccess]("study_access") {
-  private[models] val row = Anorm.rowMap(StudyAccess.apply _, "study", "entity", "access", "inherit")
+object StudyAccess extends TableColumns4[
+    StudyAccess,    Study.Id, Entity.Id, Permission.Value, Permission.Value](
+    "study_access", "study",  "entity",  "access",         "inherit") {
+  private[models] val row = columns.map(StudyAccess.apply _)
 
   def get(s : Study.Id, e : Entity.Id)(implicit db : Site.DB) : Option[StudyAccess] =
-    SQL("SELECT * FROM " + table + " WHERE study = {study} AND entity = {entity}").
+    SELECT("WHERE study = {study} AND entity = {entity}").
       on('study -> s, 'entity -> e).singleOpt(row)
 
   private[models] def getEntities(s : Study, p : Permission.Value = Permission.NONE)(implicit db : Site.DB) =
-    SQL("SELECT * FROM " + table + " JOIN " + Entity.table + " ON (entity = id) WHERE study = {study} AND access >= {access} ORDER BY access DESC").
+    JOIN(Entity, "ON (entity = id) WHERE study = {study} AND access >= {access} ORDER BY access DESC").
       on('study -> s.id, 'access -> p).list((row ~ Entity.row).
         map({ case (a ~ e) => a._entity() = e; a._study() = s; a })
       )
   private[models] def getStudies(e : Entity, p : Permission.Value = Permission.NONE)(implicit site : Site) =
-    SQL("SELECT " + * + ", " + Study.* + " FROM " + table + " JOIN " + Study.table + " ON (study = id) WHERE entity = {entity} AND access >= {access} AND " + Study.condition + " ORDER BY access DESC").
+    JOIN(Study, "ON (study = id) WHERE entity = {entity} AND access >= {access} AND " + Study.condition + " ORDER BY access DESC").
       on('entity -> e.id, 'access -> p, 'identity -> site.identity.id).list((row ~ Study.row).
         map({ case (a ~ s) => a._study() = s; a._entity() = e; a })
       )(site.db)

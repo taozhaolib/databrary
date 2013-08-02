@@ -20,9 +20,10 @@ class Annotation protected (val id : Annotation.Id, val whoId : Entity.Id, val w
 final class Comment private (override val id : Comment.Id, whoId : Entity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id], val text : String) extends Annotation(id, whoId, when, containerId, objId) with TableRowId[Comment] {
 }
 
-private[models] sealed abstract class AnnotationView[R <: Annotation](table : String) extends TableView[R](table) with HasId[R] {
+private[models] sealed abstract trait AnnotationView[R <: Annotation with TableRowId[R]] extends TableView[R] with HasId[R] {
+  private[models] val row : RowParser[R]
   private[models] def get(id : Id)(implicit db : Site.DB) : Option[R] =
-    SQL("SELECT " + * + " FROM " + table + " WHERE id = {id}").
+    SELECT("WHERE id = {id}").
       on('id -> id).singleOpt(row)
 
   private[models] def getContainer(container : Container, only : Boolean = false)(implicit db : Site.DB) : Seq[R] =
@@ -33,7 +34,7 @@ private[models] sealed abstract class AnnotationView[R <: Annotation](table : St
         case _ : Slot  => " FROM " + table + " WHERE"
         case _ : Study => ", " + Slot.* + " FROM " + table + " LEFT JOIN slot ON container = slot.id WHERE slot.study = {container} OR"
       }) + " container = {container} ORDER BY " + col("id") + " DESC").
-      on('container -> container.id).list((row ~ Slot.baseRow.?) map { case (a ~ s) =>
+      on('container -> container.id).list((row ~ Slot.columns.?) map { case (a ~ s) =>
         // For some reason this ends up casting Slot as Study?
         // a._container() = s.fold(container)(
         a._container() = if (a.containerId == container.id) container 
@@ -41,29 +42,33 @@ private[models] sealed abstract class AnnotationView[R <: Annotation](table : St
         a
       })
   private[models] def getObjectLink(obj : ObjectLink)(implicit db : Site.DB) : Seq[R] =
-    SQL("SELECT " + * + " FROM " + table + " WHERE container = {container} AND object = {obj} ORDER BY id DESC").
+    SELECT("WHERE container = {container} AND object = {obj} ORDER BY id DESC").
       on('container -> obj.containerId, 'obj -> obj.objId).list(row map { a =>
         a._obj() = Some(obj)
         a
       })
   private[models] def getEntity(i : Entity)(implicit site : Site) : Seq[R] =
-    SQL("SELECT " + * + ", " + Container.* + " FROM " + table + " JOIN " + Container.src + " ON " + col("container") + " = container.id WHERE " + col("who") + " = {who} AND " + Container.condition + " ORDER BY " + col("id") + " DESC").
+    JOIN(Container, "ON " + col("container") + " = container.id WHERE " + col("who") + " = {who} AND " + Container.condition + " ORDER BY " + col("id") + " DESC").
       on('who -> i.id, 'identity -> site.identity.id).list(row map { a =>
         a._who() = i
         a
       })(site.db)
 }
 
-private[models] object Annotation extends AnnotationView[Annotation]("annotation") {
-  private[this] def make(id : Annotation.Id, whoId : Entity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id]) =
+private[models] object Annotation extends TableColumnsId4[
+    Annotation,   Entity.Id, Timestamp, Container.Id, Option[Object.Id]](
+    "annotation", "who",     "when",    "container",  "object") with AnnotationView[Annotation] {
+  private[this] def make(id : Id, whoId : Entity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id]) =
     new Annotation(id, whoId, when, containerId, objId)
-  private[models] val row = Anorm.rowMap(make _, col("id"), col("who"), col("when"), col("container"), col("object"))
+  private[models] val row = columns.map(make _)
 }
 
-object Comment extends AnnotationView[Comment]("comment") {
-  private[this] def make(id : Comment.Id, whoId : Entity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id], text : String) =
+object Comment extends TableColumnsId5[
+    Comment,   Entity.Id, Timestamp, Container.Id, Option[Object.Id], String](
+    "comment", "who",     "when",    "container",  "object",          "text") with AnnotationView[Comment] {
+  private[this] def make(id : Id, whoId : Entity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id], text : String) =
     new Comment(id, whoId, when, containerId, objId, text)
-  private[models] val row = Anorm.rowMap(make _, col("id"), col("who"), col("when"), col("container"), col("object"), col("text"))
+  private[models] val row = columns.map(make _)
 
   private[this] def create(container : Container.Id, obj : Option[Object.Id], text : String)(implicit site : Site) = {
     val args = Anorm.Args('who -> site.identity.id, 'container -> container, 'object -> obj, 'text -> text)

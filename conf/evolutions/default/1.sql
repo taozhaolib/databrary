@@ -240,6 +240,10 @@ CREATE VIEW "containers" AS
 		JOIN study ON study.id = container.id OR study.id = slot.study;
 COMMENT ON VIEW "containers" IS 'All containers (studies and slots) in expanded form.';
 
+CREATE FUNCTION "container_study" ("container" integer) RETURNS integer LANGUAGE sql STABLE STRICT AS $$
+	SELECT id FROM study WHERE id = container UNION SELECT study FROM slot WHERE id = container
+$$;
+
 ----------------------------------------------------------- objects
 
 CREATE TYPE consent AS ENUM (
@@ -294,7 +298,7 @@ CREATE TABLE "timeseries_format" (
 CREATE TABLE "timeseries" (
 	"id" integer NOT NULL DEFAULT nextval('object_id_seq') Primary Key References "object" Deferrable Initially Deferred,
 	"format" smallint NOT NULL References "timeseries_format",
-	"length" interval HOURS TO SECONDS NOT NULL
+	"length" interval HOUR TO SECOND NOT NULL
 ) INHERITS ("file");
 CREATE TRIGGER "object" BEFORE INSERT OR UPDATE OR DELETE ON "timeseries" FOR EACH ROW EXECUTE PROCEDURE "object_trigger" ();
 
@@ -306,8 +310,8 @@ CREATE TABLE "audit_timeseries" (
 CREATE TABLE "excerpt" (
 	"id" integer NOT NULL DEFAULT nextval('object_id_seq') Primary Key References "object" Deferrable Initially Deferred,
 	"source" integer NOT NULL References "timeseries",
-	"offset" interval HOURS TO SECONDS NOT NULL,
-	"length" interval HOURS TO SECONDS,
+	"offset" interval HOUR TO SECOND NOT NULL,
+	"length" interval HOUR TO SECOND,
 	"public" boolean NOT NULL Default 'f' -- only if object.consent = EXCERPTS
 );
 CREATE TRIGGER "object" BEFORE INSERT OR UPDATE OR DELETE ON "excerpt" FOR EACH ROW EXECUTE PROCEDURE "object_trigger" ();

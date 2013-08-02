@@ -42,23 +42,25 @@ final case class Authorize(childId : Entity.Id, parentId : Entity.Id, access : P
   def parent(implicit site : Site) : Entity = _parent
 }
 
-object Authorize extends TableView[Authorize]("authorize") {
-  private[models] val row = Anorm.rowMap(Authorize.apply _, "child", "parent", "access", "delegate", "authorized", "expires")
+object Authorize extends TableColumns6[
+    Authorize,   Entity.Id, Entity.Id, Permission.Value, Permission.Value, Option[Timestamp], Option[Timestamp]](
+    "authorize", "child",   "parent",  "access",         "delegate",       "authorized",      "expires") {
+  private[models] val row = columns.map(Authorize.apply _)
 
-  private[this] def select(all : Boolean) = 
-    "SELECT * FROM " + src + (if (all) "" else "_valid")
+  private[this] def SELECT(all : Boolean, q : String) : SqlQuery = 
+    SELECT("WHERE " + (if (all) "" else "authorized < CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP) AND ") + q)
 
   def get(c : Entity.Id, p : Entity.Id)(implicit db : Site.DB) : Option[Authorize] =
-    SQL(select(true) + " WHERE child = {child} AND parent = {parent}").
+    SELECT(true, "child = {child} AND parent = {parent}").
       on('child -> c, 'parent -> p).singleOpt(row)
 
   private[models] def getParents(c : Entity, all : Boolean)(implicit db : Site.DB) =
-    SQL(select(all) + " WHERE child = {child}").
+    SELECT(all, "child = {child}").
       on('child -> c.id).list(
         row map { a => a._child() = c ; a }
       )
   private[models] def getChildren(p : Entity, all : Boolean)(implicit db : Site.DB) =
-    SQL(select(all) + " WHERE parent = {parent}").
+    SELECT(all, "parent = {parent}").
       on('parent -> p.id).list(
         row map { a => a._parent() = p ; a }
       )

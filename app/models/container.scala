@@ -71,34 +71,37 @@ final class Slot private (override val id : Slot.Id, val study : Study, ident_ :
 }
 
 
-private[models] sealed abstract class ContainerView[R <: Container with TableRowId[R]](table : String) extends TableViewId[R](table) {
+private[models] sealed abstract trait ContainerView[R <: Container with TableRowId[R]] extends TableView[R] with HasId[R] {
   protected final val permission = "study_access_check(study.id, {identity})"
   private[models] final val condition = permission + " >= 'VIEW'"
 
   def get(i : Id)(implicit site : Site) : Option[R]
 }
 
-object Container extends ContainerView[Container]("container") {
+object Container extends ContainerView[Container] {
+  private[models] val table = "container"
+  private[models] val columns = Columns.unit
   private[models] val row =
-    (Study.row ~ Slot.baseRow.?) map {
+    (Study.row ~ Slot.columns.?) map {
       case (study ~ None) => study
       case (study ~ Some(slot)) => Slot.baseMake(study)(slot)
     }
   private[models] override val * = Study.* + ", " + Slot.*
   private[models] override val src = "container LEFT JOIN slot USING (id) JOIN study ON study.id = container.id OR study.id = slot.study"
   def get(i : Id)(implicit site : Site) : Option[Container] =
-    SQL("SELECT " + * + " FROM " + src + " WHERE container.id = {id} AND " + condition).
+    SELECT("WHERE container.id = {id} AND " + condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt(row)(site.db)
 }
 
-object Study extends ContainerView[Study]("study") {
+object Study extends Table[Study]("study") with ContainerView[Study] {
   private[this] def make(id : Id, title : String, description : Option[String], permission : Option[Permission.Value] = None) =
     new Study(id, title, description, permission.getOrElse(Permission.NONE))
-  private[models] val row = Anorm.rowMap(make _, col("id"), col("title"), col("description"), "permission")
-  private[models] override val * = col("*") + ", " + permission + " AS permission"
+  private[models] val columns = Columns.tuple[Id, String, Option[String], Option[Permission.Value]](col("id"), col("title"), col("description"), "permission")
+  private[models] val row = columns.map(make _)
+  private[models] override val * = col("id", "title", "description") + ", " + permission + " AS permission"
 
   def get(i : Id)(implicit site : Site) : Option[Study] =
-    SQL("SELECT " + * + " FROM study WHERE id = {id} AND " + condition).
+    SELECT("WHERE id = {id} AND " + condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt(row)(site.db)
     
   def create(title : String, description : Option[String] = None)(implicit site : Site) : Study = {
@@ -108,28 +111,23 @@ object Study extends ContainerView[Study]("study") {
   }
 }
 
-object Slot extends ContainerView[Slot]("slot") {
-  private[models] val baseRow = Anorm.rowMap(Tuple2.apply[Id, String] _, col("id"), col("ident"))
+object Slot extends TableColumnsId1[Slot, String]("slot", "ident") with ContainerView[Slot] {
   private[models] def makeStudy(study : Study)(id : Id, ident : String) = new Slot(id, study, ident)
   private[models] def baseMake(study : Study) = (makeStudy(study) _).tupled
-  private[models] override val * = col("id", "ident")
-
   private[models] val row = 
-    (Study.row ~ baseRow) map {
+    (Study.row ~ columns) map {
       case (study ~ slot) => baseMake(study)(slot)
     }
-  private[models] override val src = "slot JOIN study ON slot.study = study.id"
-  private[this] def rowStudy(study : Study) =
-    baseRow map { baseMake(study) }
+  private[this] def rowStudy(study : Study) = columns.map(makeStudy(study) _)
 
   def get(i : Id)(implicit site : Site) : Option[Slot] =
-    SQL("SELECT " + * + ", " + Study.* + " FROM " + src + " WHERE slot.id = {id} AND " + condition).
+    JOIN(Study, "ON slot.study = study.id WHERE slot.id = {id} AND " + condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt(row)(site.db)
   private[models] def getIdent(study : Study, ident : String)(implicit db : Site.DB) : Option[Slot] =
-    SQL("SELECT " + * + " FROM slot WHERE study = {study} AND ident = {ident}").
+    SELECT("WHERE study = {study} AND ident = {ident}").
       on('study -> study.id, 'ident -> ident).singleOpt(rowStudy(study))
   private[models] def getStudy(study : Study)(implicit db : Site.DB) : Seq[Slot] =
-    SQL("SELECT " + * + " FROM slot WHERE study = {study} ORDER BY ident").
+    SELECT("WHERE study = {study} ORDER BY ident").
       on('study -> study.id).list(rowStudy(study))
     
   def create(study : Study, ident : Option[String])(implicit site : Site) : Option[Slot] = {
