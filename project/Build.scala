@@ -10,7 +10,7 @@ object ApplicationBuild extends Build {
   val dbDependencies = Seq(
     jdbc,
     anorm,
-    "postgresql" % "postgresql" % "9.1-901-1.jdbc4" // "9.2-1002.jdbc4"
+    "org.postgresql" % "postgresql" % "9.2-1003-jdbc4"
   )
 
   val dbrary = Project("dbrary", file("dbrary")).settings(
