@@ -51,6 +51,9 @@ class SiteController extends Controller {
 }
 
 object Site extends SiteController {
+  def isSecure : Boolean =
+    current.configuration.getString("application.secret").exists(_ != "databrary").
+      ensuring(_ || !Play.isProd, "Running insecure in production")
   
   def start = SiteAction(request => Ok(Login.viewLogin()), implicit request =>
     Ok(views.html.entity(request.identity, Permission.ADMIN)))

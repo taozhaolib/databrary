@@ -120,7 +120,7 @@ object Account extends TableColumns3[
     "account", "username", "email", "openid") with HasId[Account] {
   private[models] def make(e : Entity)(username : String, email : String, openid : Option[String]) =
     new Account(e, username, email, openid)
-  private[models] override val * = Entity.*
+  private[models] override def * = Entity.*
   private[models] override val src = "entity JOIN account USING (id)"
   private[models] val row = (Entity.baseRow ~ columns) map {
     case (e ~ a) => (make(e) _).tupled(a)
@@ -131,9 +131,9 @@ object Account extends TableColumns3[
       on('id -> i).singleOpt(row)
   def getUsername(u : String)(implicit db : Site.DB) : Option[Account] = 
     SELECT("WHERE username = {username}").
-      on("username" -> u).singleOpt(row)
+      on('username -> u).singleOpt(row)
   def getOpenid(o : String, u : Option[String] = None)(implicit db : Site.DB) : Option[Account] = {
     SELECT("WHERE openid = {openid} AND coalesce(username = {username}, 't') LIMIT 1").
-      on("openid" -> o, "username" -> u).singleOpt(row)
+      on('openid -> o, 'username -> u).singleOpt(row)
   }
 }

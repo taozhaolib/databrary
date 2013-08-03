@@ -1,8 +1,7 @@
 -- This is currently the complete, authoritative schema, as it is easier to
 -- understand all in one place and unnecessary to use proper evolutions until
 -- production.  Play only checks for changes in the most recent evolution, so
--- adding an empty 2.sql will prevent it from automatically applying changes to
--- this file, if desired.
+-- changing this file will not prompt an evolution while 2.sql is unchanged.
 
 -- Theoretically this could be maintained as authoritative during production,
 -- with further evolutions only making defensive changes, but it may be easier
@@ -48,6 +47,16 @@ BEGIN
 	$macro$;;
 END;; $create$;
 COMMENT ON FUNCTION "create_abstract_parent" (name, name[]) IS 'A "macro" to create an abstract parent table and trigger function.  This could be done with a single function using dynamic EXECUTE but this way is more efficient and not much more messy.';
+
+CREATE FUNCTION "cast_int" ("input" text) RETURNS integer LANGUAGE plpgsql IMMUTABLE STRICT AS $$
+DECLARE
+	i integer;;
+BEGIN
+	SELECT input::integer INTO i;;
+	RETURN i;;
+EXCEPTION WHEN invalid_text_representation THEN
+	RETURN NULL;;
+END;; $$;
 
 ----------------------------------------------------------- auditing
 
@@ -219,16 +228,6 @@ CREATE TABLE "audit_slot" (
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 
-CREATE FUNCTION "cast_int" ("input" text) RETURNS integer LANGUAGE plpgsql IMMUTABLE STRICT AS $$
-DECLARE
-	i integer;;
-BEGIN
-	SELECT input::integer INTO i;;
-	RETURN i;;
-EXCEPTION WHEN invalid_text_representation THEN
-	RETURN NULL;;
-END;; $$;
-
 CREATE FUNCTION "next_slot_ident" ("study" integer) RETURNS varchar(16) LANGUAGE sql STABLE STRICT AS $$
 	SELECT (GREATEST(max(cast_int(ident)), count(ident))+1)::varchar(16) FROM slot WHERE study = $1
 $$;
@@ -375,6 +374,9 @@ DROP TABLE "object";
 DROP FUNCTION "object_trigger" ();
 DROP TYPE consent;
 
+DROP FUNCTION "container_study" (integer);
+DROP VIEW "containers";
+DROP FUNCTION "next_slot_ident" (integer);
 DROP TABLE "audit_slot";
 DROP TABLE "slot";
 DROP FUNCTION "study_access_check" (integer, integer, permission);
@@ -400,4 +402,5 @@ DROP TABLE "entity";
 DROP TABLE "audit";
 DROP TYPE audit_action;
 
+DROP FUNCTION cast_int (text);
 DROP FUNCTION create_abstract_parent (name, name[]);
