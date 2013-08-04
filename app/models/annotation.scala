@@ -20,8 +20,7 @@ class Annotation protected (val id : Annotation.Id, val whoId : Entity.Id, val w
 final class Comment private (override val id : Comment.Id, whoId : Entity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id], val text : String) extends Annotation(id, whoId, when, containerId, objId) with TableRowId[Comment] {
 }
 
-private[models] sealed abstract trait AnnotationView[R <: Annotation with TableRowId[R]] extends TableView[R] with HasId[R] {
-  private[models] val row : RowParser[R]
+private[models] sealed abstract class AnnotationView[R <: Annotation with TableRowId[R]](table : String) extends TableId[R](table) {
   private[models] def get(id : Id)(implicit db : Site.DB) : Option[R] =
     SELECT("WHERE id = {id}").
       on('id -> id).singleOpt(row)
@@ -32,8 +31,8 @@ private[models] sealed abstract trait AnnotationView[R <: Annotation with TableR
        " FROM " + table + " WHERE object IS NULL AND"
       else container match {
         case _ : Slot  => " FROM " + table + " WHERE"
-        case _ : Study => ", " + Slot.* + " FROM " + table + " LEFT JOIN slot ON container = slot.id WHERE slot.study = {container} OR"
-      }) + " container = {container} ORDER BY " + col("id") + " DESC").
+        case _ : Study => ", " + Slot.columns.select + " FROM " + table + " LEFT JOIN slot ON container = slot.id WHERE slot.study = {container} OR"
+      }) + " container = {container} ORDER BY " + table + ".id DESC").
       on('container -> container.id).list((row ~ Slot.columns.?) map { case (a ~ s) =>
         // For some reason this ends up casting Slot as Study?
         // a._container() = s.fold(container)(
@@ -48,27 +47,27 @@ private[models] sealed abstract trait AnnotationView[R <: Annotation with TableR
         a
       })
   private[models] def getEntity(i : Entity)(implicit site : Site) : Seq[R] =
-    JOIN(Container, "ON " + col("container") + " = container.id WHERE " + col("who") + " = {who} AND " + Container.condition + " ORDER BY " + col("id") + " DESC").
+    JOIN(Container, "ON " + table + ".container = container.id WHERE " + table + ".who = {who} AND " + Container.condition + " ORDER BY " + table + ".id DESC").
       on('who -> i.id, 'identity -> site.identity.id).list(row map { a =>
         a._who() = i
         a
       })(site.db)
 }
 
-private[models] object Annotation extends TableColumnsId4[
-    Annotation,   Entity.Id, Timestamp, Container.Id, Option[Object.Id]](
-    "annotation", "who",     "when",    "container",  "object") with AnnotationView[Annotation] {
-  private[this] def make(id : Id, whoId : Entity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id]) =
-    new Annotation(id, whoId, when, containerId, objId)
-  private[models] val row = columns.map(make _)
+private[models] object Annotation extends AnnotationView[Annotation]("annotation") {
+  private[models] val row = Columns[
+    Id,  Entity.Id, Timestamp, Container.Id, Option[Object.Id]](
+    'id, 'who,      'when,     'container,   'object).map {
+    (id, whoId, when, containerId, objId) => new Annotation(id, whoId, when, containerId, objId)
+  }
 }
 
-object Comment extends TableColumnsId5[
-    Comment,   Entity.Id, Timestamp, Container.Id, Option[Object.Id], String](
-    "comment", "who",     "when",    "container",  "object",          "text") with AnnotationView[Comment] {
-  private[this] def make(id : Id, whoId : Entity.Id, when : Timestamp, containerId : Container.Id, objId : Option[Object.Id], text : String) =
-    new Comment(id, whoId, when, containerId, objId, text)
-  private[models] val row = columns.map(make _)
+object Comment extends AnnotationView[Comment]("comment") {
+  private[models] val row = Columns[
+    Id,  Entity.Id, Timestamp, Container.Id, Option[Object.Id], String](
+    'id, 'who,      'when,     'container,   'object,           'text).map {
+    (id, whoId, when, containerId, objId, text) => new Comment(id, whoId, when, containerId, objId, text)
+  }
 
   private[this] def create(container : Container.Id, obj : Option[Object.Id], text : String)(implicit site : Site) = {
     val args = Anorm.Args('who -> site.identity.id, 'container -> container, 'object -> obj, 'text -> text)

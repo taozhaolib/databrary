@@ -14,26 +14,31 @@ object Consent extends PGEnum("consent") {
 
 case class ObjectFormat private[models] (id : ObjectFormat.Id, mimetype : String, extension : Option[String], name : String, timeseries : Boolean) extends TableRowId[ObjectFormat]
 
-private[models] sealed abstract class FormatView(table : String, timeseries : Boolean) extends TableColumnsId3[
-    ObjectFormat, String,     Option[String], String](
-    table,        "mimetype", "extension",    "name") {
-  private[this] def make(id : Id, mimetype : String, extension : Option[String], name : String) =
-    new ObjectFormat(id, mimetype, extension, name, timeseries)
-  private[models] val row = columns.map(make _)
+private[models] sealed abstract class FormatView(table : String, timeseries : Boolean) extends TableId[ObjectFormat](table) {
+  private[models] val row = Columns[
+    Id,  String,    Option[String], String](
+    'id, 'mimetype, 'extension,     'name) map {
+    (id, mimetype, extension, name) => new ObjectFormat(id, mimetype, extension, name, timeseries)
+  }
 }
 
-object ObjectFormat extends TableColumnsId4[
-    ObjectFormat, String,     Option[String], String, Long](
-    "format",     "mimetype", "extension",    "name", "tableoid") {
-  private[this] def make(id : Id, mimetype : String, extension : Option[String], name : String, tableoid : Long)(implicit db : Site.DB) =
-    new ObjectFormat(id, mimetype, extension, name, tableoid == TimeseriesFormat.tableOID)
-  private[this] def row(implicit db : Site.DB) = columns.map(make _)
+object ObjectFormat extends TableView with HasId[ObjectFormat] {
+  private[models] val table = "object"
+  private[this] val columns = Columns[
+    Id,  String,    Option[String], String, Long](
+    'id, 'mimetype, 'extension,     'name,  'tableoid)
+  private[this] def row(implicit db : Site.DB) = columns map {
+    (id : Id, mimetype : String, extension : Option[String], name : String, tableoid : Long) => new ObjectFormat(id, mimetype, extension, name, tableoid == TimeseriesFormat.tableOID)
+  }
+  /* unfortunate for TableView: */
+  type Row = (Id, String, Option[String], String, Long)
+  private[models] val row = columns
 
   def getMimetype(mimetype : String)(implicit db : Site.DB) : Option[ObjectFormat] =
     SELECT("WHERE mimetype = {mimetype}").
-      on('mimetype -> mimetype).singleOpt(row(db))
+      on('mimetype -> mimetype).singleOpt(row)
   def getAll(implicit db : Site.DB) : Seq[ObjectFormat] =
-    SELECT("ORDER BY " + col("id")).list(row(db))
+    SELECT("ORDER BY object.id").list(row)
 }
 
 object FileFormat extends FormatView("file_format", false)
@@ -83,32 +88,34 @@ final class Excerpt private (override val id : Excerpt.Id, val source : Timeseri
 }
 
 
-private[models] sealed abstract trait ObjectView[R <: Object with TableRowId[R]] extends TableView[R] with HasId[R] {
+private[models] sealed abstract trait ObjectView[R <: Object with TableRowId[R]] extends TableView with HasId[R] {
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[R]
 }
 
-object Object extends TableColumns1[Object, String]("object", "kind") with ObjectView[Object] {
+object Object extends ObjectView[Object] {
+  private[models] val table = "object"
+  type Row = String
+  private[models] val row = Columns[String]('kind)
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[Object] =
-    SELECT("WHERE id = {id}").on('id -> i).singleOpt(scalar[String]) flatMap (_ match {
+    SELECT("WHERE id = {id}").on('id -> i).singleOpt() flatMap {
       case "file" => FileObject.get(FileObject.asId(i.unId))
       case "timeseries" => TimeseriesObject.get(TimeseriesObject.asId(i.unId))
       case "excerpt" => Excerpt.get(Excerpt.asId(i.unId))
-    })
+    }
 }
 
-object FileObject extends TableColumnsId3[
-      FileObject, Option[Study.Id], Consent.Value, Option[Date]](
-      "file",     "owner",          "consent",     "date")
-    with ObjectView[FileObject] {
+object FileObject extends TableId[FileObject]("file") with ObjectView[FileObject] {
+  private[this] val columns = Columns[
+    Id,  Option[Study.Id], Consent.Value, Option[Date]](
+    'id, 'owner,           'consent,      'date)
   private[models] val row = (columns ~ FileFormat.row) map {
     case ((id, owner, consent, date) ~ format) => new FileObject(id, format, owner, consent, date)
   }
-  private[models] override val * = columns.select + ", " + FileFormat.*
   private[models] override val src = "ONLY file JOIN ONLY file_format ON file.format = file_format.id"
   
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[FileObject] =
     SELECT("WHERE file.id = {id}").
-      on('id -> i).singleOpt(row)
+      on('id -> i).singleOpt()
 
   def create(format : ObjectFormat, owner : Study.Id, consent : Consent.Value, date : Option[Date], file : TemporaryFile)(implicit site : Site) : FileObject = {
     val args = Anorm.Args('format -> format.ensuring(!_.timeseries).id, 'owner -> owner, 'consent -> consent, 'date -> date)
@@ -119,36 +126,31 @@ object FileObject extends TableColumnsId3[
   }
 }
 
-object TimeseriesObject extends TableColumnsId4[
-      TimeseriesObject, Option[Study.Id], Consent.Value, Option[Date], Interval](
-      "timeseries",     "owner",          "consent",     "date",       "length")
-    with ObjectView[TimeseriesObject] {
+object TimeseriesObject extends TableId[TimeseriesObject]("timeseries") with ObjectView[TimeseriesObject] {
+  private[this] val columns = Columns[
+    Id,  Option[Study.Id], Consent.Value, Option[Date], Interval](
+    'id, 'owner,           'consent,      'date,        'length)
   private[models] val row = (columns ~ TimeseriesFormat.row) map {
     case ((id, owner, consent, date, length) ~ format) => new TimeseriesObject(id, format, owner, consent, date, length)
   }
-  private[models] override val * = columns.select + ", " + TimeseriesFormat.*
   private[models] override val src = "timeseries JOIN timeseries_format ON timeseries.format = timeseries_format.id"
   
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[TimeseriesObject] =
     SELECT("WHERE timeseries.id = {id}").
-      on('id -> i).singleOpt(row)
+      on('id -> i).singleOpt()
 }
 
-object Excerpt extends TableColumnsId1[
-      Excerpt,   Boolean](
-      "excerpt", "public")
-    with ObjectView[Excerpt] {
-  private[this] def baseMake(ii : (Id, Boolean), source : TimeseriesObject) = new Excerpt(ii._1, source, ii._2)
-
-  private[models] val row = 
-    (columns ~ TimeseriesObject.row) map {
-      case (base ~ source) => baseMake(base, source)
-    }
-  private[models] override val * = columns.select + ", " + TimeseriesObject.*
+object Excerpt extends TableId[Excerpt]("excerpt") with ObjectView[Excerpt] {
+  private[this] val columns = Columns[
+    Id,  Boolean](
+    'id, 'public)
+  private[models] val row = (columns ~ TimeseriesObject.row) map {
+    case ((id, public) ~ source) => new Excerpt(id, source, public)
+  }
   private[models] override val src = "excerpt JOIN " + TimeseriesObject.src + " ON excerpt.source = timeseries.id"
   
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[Excerpt] =
     SELECT("WHERE excerpt.id = {id}").
-      on('id -> i).singleOpt(row)
+      on('id -> i).singleOpt()
 }
 

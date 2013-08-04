@@ -65,18 +65,18 @@ final class Account protected (entity : Entity, val username : String, email_ : 
   override def pageName(implicit site : Site) = super.pageName + (if (site.access >= Permission.VIEW) " <" + username + ">" else "")
 }
 
-object Entity extends TableColumnsId2[
-    Entity,   String, Option[Orcid]](
-    "entity", "name", "orcid") {
+object Entity extends TableId[Entity]("entity") {
   private[this] def make(id : Id, name : String, orcid : Option[Orcid]) = id match {
     case NOBODY => Nobody
     case ROOT => Root
     case _ => new Entity(id, name, orcid)
   }
-  private[models] val baseRow = columns.map(make _)
-  private[models] override val * = columns.select + ", " + Account.columns.select
+  private[models] val columns = Columns[
+    Id,  String, Option[Orcid]](
+    'id, 'name,  'orcid).
+    map(make _)
   private[models] override val src = "entity LEFT JOIN account USING (id)"
-  private[models] val row = (baseRow ~ Account.columns.?) map {
+  private[models] val row = (columns ~ Account.columns.?) map {
     case (e ~ None) => e
     case (e ~ Some(a)) => (Account.make(e) _).tupled(a)
   }
@@ -87,7 +87,7 @@ object Entity extends TableColumnsId2[
     case site.identity.id => Some(site.identity)
     case _ =>
       SELECT("WHERE id = {id}").
-        on('id -> i).singleOpt(row)(site.db)
+        on('id -> i).singleOpt()(site.db)
   }
 
   def create(name : String)(implicit site : Site) : Entity = {
@@ -99,13 +99,13 @@ object Entity extends TableColumnsId2[
   private def byName = "username = {user} OR name ILIKE {name}"
   private def byNameArgs(name : String) = Anorm.Args('user -> name, 'name -> name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%"))
 
-  def searchForAuthorize(name : String, who : Entity.Id)(implicit db : Site.DB) =
+  def searchForAuthorize(name : String, who : Entity.Id)(implicit db : Site.DB) : Seq[Entity] =
     SELECT("WHERE " + byName + " AND id != {who} AND id NOT IN (SELECT child FROM authorize WHERE parent = {who} UNION SELECT parent FROM authorize WHERE child = {who}) LIMIT 8").
-      on(Anorm.Args('who -> who) ++ byNameArgs(name) : _*).list(row)
+      on(Anorm.Args('who -> who) ++ byNameArgs(name) : _*).list()
 
-  def searchForStudyAccess(name : String, study : Study.Id)(implicit db : Site.DB) =
+  def searchForStudyAccess(name : String, study : Study.Id)(implicit db : Site.DB) : Seq[Entity] =
     SELECT("WHERE " + byName + " AND id NOT IN (SELECT entity FROM study_access WHERE study = {study}) LIMIT 8").
-      on(Anorm.Args('study -> study) ++ byNameArgs(name) : _*).list(row)
+      on(Anorm.Args('study -> study) ++ byNameArgs(name) : _*).list()
 
   private[models] final val NOBODY : Id = asId(-1)
   private[models] final val ROOT   : Id = asId(0)
@@ -115,25 +115,25 @@ object Entity extends TableColumnsId2[
   Root._access() = null // the objective value is ADMIN but this should never be used
 }
 
-object Account extends TableColumns3[
-    Account,   String,     String,  Option[String]](
-    "account", "username", "email", "openid") with HasId[Account] {
+object Account extends TableId[Account]("account") {
   private[models] def make(e : Entity)(username : String, email : String, openid : Option[String]) =
     new Account(e, username, email, openid)
-  private[models] override def * = Entity.*
+  private[models] val columns = Columns[
+    String,    String,  Option[String]](
+    'username, 'email,  'openid)
   private[models] override val src = "entity JOIN account USING (id)"
-  private[models] val row = (Entity.baseRow ~ columns) map {
+  private[models] val row = (Entity.columns ~ columns) map {
     case (e ~ a) => (make(e) _).tupled(a)
   }
 
   def get(i : Id)(implicit db : Site.DB) : Option[Account] = 
     SELECT("WHERE id = {id}").
-      on('id -> i).singleOpt(row)
+      on('id -> i).singleOpt()
   def getUsername(u : String)(implicit db : Site.DB) : Option[Account] = 
     SELECT("WHERE username = {username}").
-      on('username -> u).singleOpt(row)
+      on('username -> u).singleOpt()
   def getOpenid(o : String, u : Option[String] = None)(implicit db : Site.DB) : Option[Account] = {
     SELECT("WHERE openid = {openid} AND coalesce(username = {username}, 't') LIMIT 1").
-      on('openid -> o, 'username -> u).singleOpt(row)
+      on('openid -> o, 'username -> u).singleOpt()
   }
 }

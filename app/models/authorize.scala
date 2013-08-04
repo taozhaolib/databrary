@@ -42,17 +42,18 @@ final case class Authorize(childId : Entity.Id, parentId : Entity.Id, access : P
   def parent(implicit site : Site) : Entity = _parent
 }
 
-object Authorize extends TableColumns6[
-    Authorize,   Entity.Id, Entity.Id, Permission.Value, Permission.Value, Option[Timestamp], Option[Timestamp]](
-    "authorize", "child",   "parent",  "access",         "delegate",       "authorized",      "expires") {
-  private[models] val row = columns.map(Authorize.apply _)
+object Authorize extends Table[Authorize]("authorize") {
+  private[models] val row = Columns[
+    Entity.Id, Entity.Id, Permission.Value, Permission.Value, Option[Timestamp], Option[Timestamp]](
+    'child,    'parent,   'access,          'delegate,        'authorized,       'expires).
+    map(Authorize.apply _)
 
-  private[this] def SELECT(all : Boolean, q : String) : SqlQuery = 
+  private[this] def SELECT(all : Boolean, q : String) : SimpleSql[Authorize] = 
     SELECT("WHERE " + (if (all) "" else "authorized < CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP) AND ") + q)
 
   def get(c : Entity.Id, p : Entity.Id)(implicit db : Site.DB) : Option[Authorize] =
     SELECT(true, "child = {child} AND parent = {parent}").
-      on('child -> c, 'parent -> p).singleOpt(row)
+      on('child -> c, 'parent -> p).singleOpt()
 
   private[models] def getParents(c : Entity, all : Boolean)(implicit db : Site.DB) =
     SELECT(all, "child = {child}").

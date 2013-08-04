@@ -47,17 +47,18 @@ final class ObjectLink private (val containerId : Container.Id, val objId : Obje
   def addComment(text : String)(implicit site : Site) = Comment.create(this, text)
 }
 
-object ObjectLink extends TableColumns4[
-    ObjectLink,    Container.Id, Object.Id, String,  Option[String]](
-    "object_link", "container",  "object",  "title", "description") {
+object ObjectLink extends Table[ObjectLink]("object_link") {
   private[this] def make(containerId : Container.Id, objId : Object.Id, title : String, description : Option[String]) =
     new ObjectLink(containerId, objId, title, description)
-  private[models] val row = columns.map(make _)
+  private[models] val row = Columns[
+    Container.Id, Object.Id, String,  Option[String]](
+    'container,   'object,   'title,  'description).
+    map(make _)
   private[this] def rowContainer(container : Container) = row map { o => o._container() = container ; o }
 
   private[this] def get(c : Container.Id, o : Object.Id)(implicit db : Site.DB) : Option[ObjectLink] =
     SELECT("WHERE container = {container} AND object = {object}").
-      on('container -> c, 'object -> o).singleOpt(row)
+      on('container -> c, 'object -> o).singleOpt()
   private[models] def get(c : Container, o : Object.Id)(implicit db : Site.DB) : Option[ObjectLink] =
     SELECT("WHERE container = {container} AND object = {object}").
       on('container -> c.id, 'object -> o).singleOpt(rowContainer(c))

@@ -26,14 +26,15 @@ final case class StudyAccess(studyId : Study.Id, entityId : Entity.Id, access : 
   def entity(implicit site : Site) : Entity = _entity
 }
 
-object StudyAccess extends TableColumns4[
-    StudyAccess,    Study.Id, Entity.Id, Permission.Value, Permission.Value](
-    "study_access", "study",  "entity",  "access",         "inherit") {
-  private[models] val row = columns.map(StudyAccess.apply _)
+object StudyAccess extends Table[StudyAccess]("study_access") {
+  private[models] val row = Columns[
+    Study.Id, Entity.Id, Permission.Value, Permission.Value](
+    'study,   'entity,   'access,          'inherit).
+    map(StudyAccess.apply _)
 
   def get(s : Study.Id, e : Entity.Id)(implicit db : Site.DB) : Option[StudyAccess] =
     SELECT("WHERE study = {study} AND entity = {entity}").
-      on('study -> s, 'entity -> e).singleOpt(row)
+      on('study -> s, 'entity -> e).singleOpt()
 
   private[models] def getEntities(s : Study, p : Permission.Value = Permission.NONE)(implicit db : Site.DB) =
     JOIN(Entity, "ON (entity = id) WHERE study = {study} AND access >= {access} ORDER BY access DESC").
