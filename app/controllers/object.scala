@@ -110,11 +110,7 @@ object Object extends SiteController {
         f.contentType.flatMap(ObjectFormat.getMimetype(_)).fold(
           BadRequest(views.html.objectCreate(container, form.withError("file", "file.format.unknown", f.contentType.getOrElse("unknown")))) : Result)
         { format =>
-          val obj =
-            if (format.timeseries)
-              ???
-            else
-              FileObject.create(format, container.studyId, consent, date, f.ref)
+          val obj = models.Object.create(format, container.studyId, consent, date, f.ref)
           val link = ObjectLink.create(container, obj, maybe(title).getOrElse(f.filename), maybe(description))
           Redirect(link.pageURL)
         }

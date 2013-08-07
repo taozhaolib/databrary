@@ -64,7 +64,7 @@ sealed class FileObject protected (override val id : FileObject.Id, val format :
   }
 }
 
-final class TimeseriesObject private (override val id : TimeseriesObject.Id, format : ObjectFormat, ownerId : Option[Study.Id], consent_ : Consent.Value, date_ : Option[Date], val length : Interval) extends FileObject(id, format, ownerId, consent_, date_) with TableRowId[TimeseriesObject]
+final class TimeseriesObject private (override val id : TimeseriesObject.Id, format : ObjectFormat, ownerId : Option[Study.Id], consent_ : Consent.Value, date_ : Option[Date], val duration : Interval) extends FileObject(id, format, ownerId, consent_, date_) with TableRowId[TimeseriesObject]
 
 final class Excerpt private (override val id : Excerpt.Id, val source : TimeseriesObject, public_ : Boolean) extends Object(id) with TableRowId[Excerpt] {
   def sourceId = source.id
@@ -102,6 +102,16 @@ object Object extends ObjectView[Object] {
       case "timeseries" => TimeseriesObject.get(TimeseriesObject.asId(i.unId))
       case "excerpt" => Excerpt.get(Excerpt.asId(i.unId))
     }
+
+  def create(format : ObjectFormat, owner : Study.Id, consent : Consent.Value, date : Option[Date], file : TemporaryFile)(implicit site : Site) : FileObject = {
+    val obj = if (format.timeseries)
+        TimeseriesObject.create(format, owner, consent, date, file)
+      else
+        FileObject.create(format, owner, consent, date, file)
+    store.Object.store(obj.id, file)
+    site.db.commit
+    obj
+  }
 }
 
 object FileObject extends TableId[FileObject]("file") with ObjectView[FileObject] {
@@ -117,11 +127,9 @@ object FileObject extends TableId[FileObject]("file") with ObjectView[FileObject
     SELECT("WHERE file.id = {id}").
       on('id -> i).singleOpt()
 
-  def create(format : ObjectFormat, owner : Study.Id, consent : Consent.Value, date : Option[Date], file : TemporaryFile)(implicit site : Site) : FileObject = {
+  private[models] def create(format : ObjectFormat, owner : Study.Id, consent : Consent.Value, date : Option[Date], file : TemporaryFile)(implicit site : Site) : FileObject = {
     val args = Anorm.Args('format -> format.ensuring(!_.timeseries).id, 'owner -> owner, 'consent -> consent, 'date -> date)
     val id = Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
-    store.Object.store(id, file)
-    site.db.commit
     new FileObject(id, format, Some(owner), consent, date)
   }
 }
@@ -129,15 +137,23 @@ object FileObject extends TableId[FileObject]("file") with ObjectView[FileObject
 object TimeseriesObject extends TableId[TimeseriesObject]("timeseries") with ObjectView[TimeseriesObject] {
   private[this] val columns = Columns[
     Id,  Option[Study.Id], Consent.Value, Option[Date], Interval](
-    'id, 'owner,           'consent,      'date,        'length)
+    'id, 'owner,           'consent,      'date,        'duration)
   private[models] val row = (columns ~ TimeseriesFormat.row) map {
-    case ((id, owner, consent, date, length) ~ format) => new TimeseriesObject(id, format, owner, consent, date, length)
+    case ((id, owner, consent, date, duration) ~ format) => new TimeseriesObject(id, format, owner, consent, date, duration)
   }
   private[models] override val src = "timeseries JOIN timeseries_format ON timeseries.format = timeseries_format.id"
   
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[TimeseriesObject] =
     SELECT("WHERE timeseries.id = {id}").
       on('id -> i).singleOpt()
+
+  private[models] def create(format : ObjectFormat, owner : Study.Id, consent : Consent.Value, date : Option[Date], file : TemporaryFile)(implicit site : Site) : FileObject = {
+    val fmt = media.AV.probe(file.file.getPath)
+    val duration = Interval(fmt.duration)
+    val args = Anorm.Args('format -> format.ensuring(_.timeseries).id, 'owner -> owner, 'consent -> consent, 'date -> date, 'duration -> duration)
+    val id = Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
+    new TimeseriesObject(id, format, Some(owner), consent, date, duration)
+  }
 }
 
 object Excerpt extends TableId[Excerpt]("excerpt") with ObjectView[Excerpt] {

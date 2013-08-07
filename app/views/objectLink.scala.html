@@ -19,8 +19,8 @@
 	@link.obj(request.db) match {
 	case obj : TimeseriesObject => {
 		@fileData(obj)
-		<dt>Length</dt>
-		<dd>@obj.length</dd>
+		<dt>Duration</dt>
+		<dd>@obj.duration</dd>
 	}
 	case obj : FileObject => {
 		@fileData(obj)

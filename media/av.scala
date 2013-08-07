@@ -19,7 +19,7 @@ object AV {
 
   /* These are referenced by native code so must match their use there */
   final case class Error(msg : String, err : Int) extends RuntimeException(msg)
-  final case class Probe(streams : Int)
+  final case class Probe(format : String, duration : Double)
 
   @native def probe(file : String) : Probe
 }

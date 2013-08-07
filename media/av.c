@@ -1,7 +1,7 @@
 #include <jni.h>
 #include <libavformat/avformat.h>
 
-#define PKG	"media/AV"
+#define PKG	"media/AV$"
 static struct construct {
 	jclass class;
 	jmethodID init;
@@ -34,11 +34,11 @@ JNI_OnLoad(JavaVM *jvm, void *reserved)
 		return -1;
 
 #define CONSTRUCT_INIT(NAME, TYPE) \
-	if (construct_init(env, &NAME, PKG "$" #NAME, TYPE) < 0) \
+	if (construct_init(env, &NAME, PKG #NAME, TYPE) < 0) \
 		return -1
 
 	CONSTRUCT_INIT(Error, "(Ljava/lang/String;I)V");
-	CONSTRUCT_INIT(Probe, "(I)V");
+	CONSTRUCT_INIT(Probe, "(Ljava/lang/String;D)V");
 
 	av_register_all();
 
@@ -69,18 +69,20 @@ Java_media_AV_00024_probe(
 		jobject this,
 		jstring sfilename)
 {
-	AVFormatContext *fmt_ctx = NULL;
+	AVFormatContext *fmt = NULL;
 
 	const char *filename = (*env)->GetStringUTFChars(env, sfilename, 0);
-	int r = avformat_open_input(&fmt_ctx, filename, NULL, NULL);
+	int r = avformat_open_input(&fmt, filename, NULL, NULL);
 	(*env)->ReleaseStringUTFChars(env, sfilename, filename);
 	if (r < 0) {
 		throw(env, r);
 		return NULL;
 	}
 
-	jobject probe = CONSTRUCT(Probe, fmt_ctx->nb_streams);
+	jobject probe = CONSTRUCT(Probe, 
+			(*env)->NewStringUTF(env, fmt->iformat->name),
+			(double)fmt->duration/(double)AV_TIME_BASE);
 
-	avformat_close_input(&fmt_ctx);
+	avformat_close_input(&fmt);
 	return probe;
 }

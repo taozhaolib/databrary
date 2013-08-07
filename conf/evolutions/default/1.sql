@@ -297,7 +297,7 @@ CREATE TABLE "timeseries_format" (
 CREATE TABLE "timeseries" (
 	"id" integer NOT NULL DEFAULT nextval('object_id_seq') Primary Key References "object" Deferrable Initially Deferred,
 	"format" smallint NOT NULL References "timeseries_format",
-	"length" interval HOUR TO SECOND NOT NULL
+	"duration" interval HOUR TO SECOND NOT NULL
 ) INHERITS ("file");
 CREATE TRIGGER "object" BEFORE INSERT OR UPDATE OR DELETE ON "timeseries" FOR EACH ROW EXECUTE PROCEDURE "object_trigger" ();
 
@@ -310,7 +310,7 @@ CREATE TABLE "excerpt" (
 	"id" integer NOT NULL DEFAULT nextval('object_id_seq') Primary Key References "object" Deferrable Initially Deferred,
 	"source" integer NOT NULL References "timeseries",
 	"offset" interval HOUR TO SECOND NOT NULL,
-	"length" interval HOUR TO SECOND,
+	"duration" interval HOUR TO SECOND,
 	"public" boolean NOT NULL Default 'f' -- only if object.consent = EXCERPTS
 );
 CREATE TRIGGER "object" BEFORE INSERT OR UPDATE OR DELETE ON "excerpt" FOR EACH ROW EXECUTE PROCEDURE "object_trigger" ();
