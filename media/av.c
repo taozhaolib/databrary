@@ -2,23 +2,43 @@
 #include <libavformat/avformat.h>
 
 #define PKG	"media/AV"
-static jclass AVError, AVProbe;
-static jmethodID AVErrorInit, AVProbeInit;
+static struct construct {
+	jclass class;
+	jmethodID init;
+} Error, Probe;
+
+static inline int construct_init(JNIEnv *env, struct construct *c, const char *name, const char *type)
+{
+	jclass cl;
+	if (!((cl = (*env)->FindClass(env, name))
+	   && (c->class = (*env)->NewGlobalRef(env, cl))
+	   && (c->init = (*env)->GetMethodID(env, c->class, "<init>", type))))
+		return -1;
+	return 0;
+}
+
+static inline void construct_fini(JNIEnv *env, struct construct *c)
+{
+	(*env)->DeleteGlobalRef(env, c->class);
+	c->class = NULL;
+}
+
+#define CONSTRUCT(NAME, ARGS...) (*env)->NewObject(env, NAME.class, NAME.init, ##ARGS)
 
 JNIEXPORT jint JNICALL
 JNI_OnLoad(JavaVM *jvm, void *reserved)
 {
 	JNIEnv *env;
-	if (!(((*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_6) == 0)
-	   && (AVError = (*env)->FindClass(env, PKG "$AVError"))
-	   && (AVProbe = (*env)->FindClass(env, PKG "$AVProbe"))
-	   && (AVErrorInit = (*env)->GetMethodID(env, AVError, "<init>", "(Ljava/lang/String;I)V"))
-	   && (AVProbeInit = (*env)->GetMethodID(env, AVProbe, "<init>", "(I)V"))
-	   ))
+
+	if ((*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_6) != 0)
 		return -1;
 
-	AVError = (*env)->NewGlobalRef(env, AVError);
-	AVProbe = (*env)->NewGlobalRef(env, AVProbe);
+#define CONSTRUCT_INIT(NAME, TYPE) \
+	if (construct_init(env, &NAME, PKG "$" #NAME, TYPE) < 0) \
+		return -1
+
+	CONSTRUCT_INIT(Error, "(Ljava/lang/String;I)V");
+	CONSTRUCT_INIT(Probe, "(I)V");
 
 	av_register_all();
 
@@ -30,8 +50,8 @@ JNI_OnUnload(JavaVM *jvm, void *reserved)
 {
 	JNIEnv *env;
 	(*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_6);
-	(*env)->DeleteGlobalRef(env, AVError);
-	(*env)->DeleteGlobalRef(env, AVProbe);
+	construct_fini(env, &Error);
+	construct_fini(env, &Probe);
 }
 
 static void throw(JNIEnv *env, int r)
@@ -40,7 +60,7 @@ static void throw(JNIEnv *env, int r)
 	jstring str = (*env)->NewStringUTF(env,
 			av_strerror(r, msg, sizeof(msg)) == 0
 			? msg : strerror(AVUNERROR(r)));
-	(*env)->Throw(env, (*env)->NewObject(env, AVError, AVErrorInit, str, r));
+	(*env)->Throw(env, CONSTRUCT(Error, str, r));
 }
 
 JNIEXPORT jobject JNICALL
@@ -59,7 +79,7 @@ Java_media_AV_00024_probe(
 		return NULL;
 	}
 
-	jobject probe = (*env)->NewObject(env, AVProbe, AVProbeInit, fmt_ctx->nb_streams);
+	jobject probe = CONSTRUCT(Probe, fmt_ctx->nb_streams);
 
 	avformat_close_input(&fmt_ctx);
 	return probe;

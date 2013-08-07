@@ -4,6 +4,7 @@ resourceGenerators in Compile <+= (streams, baseDirectory in Compile, resourceMa
 	if (FileInfo.lastModified(src).lastModified >= FileInfo.lastModified(out).lastModified) {
 		val pkg = "pkg-config --cflags --libs libavformat" !! ;
 		val jh = System.getProperty("java.home")
+		// This does not handle spaces in paths properly:
 		val cmd = "gcc -Wall -fPIC -shared -o " + out + " -I" + jh + "/include " + pkg + " " + src
 		str.log.info(cmd)
 		if ((cmd !) != 0)

@@ -18,8 +18,8 @@ object AV {
   }
 
   /* These are referenced by native code so must match their use there */
-  final case class AVError(msg : String, err : Int) extends RuntimeException(msg)
-  final case class AVProbe(streams : Int)
+  final case class Error(msg : String, err : Int) extends RuntimeException(msg)
+  final case class Probe(streams : Int)
 
-  @native def probe(file : String) : AVProbe
+  @native def probe(file : String) : Probe
 }
