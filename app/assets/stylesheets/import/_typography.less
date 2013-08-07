@@ -1,0 +1,58 @@
+/*
+BASIC ELEMENTS
+*/
+p,
+ul,
+ol,
+dl {
+  margin: 0 0 1em;
+}
+
+a {
+  text-decoration: none;
+
+  .transition(all .15s linear);
+
+  &:hover {
+    .transition(all .15s linear)
+  }
+}
+
+strong,
+b {
+  font-family: 'SofiaProMedium', Helvetica, Verdana, sans-serif;
+}
+
+/*
+COMMON STYLES
+*/
+.keyword {
+  color: @primary;
+}
+
+ul.inline {
+  list-style: none;
+  padding: 0;
+
+  li {
+    display: inline-block;
+    margin: 0 5px;
+  }
+}
+
+/*
+SPECIAL
+*/
+.banner {
+  padding: 50px;
+  h1 {
+    font-size: 2.5em;
+    font-weight: normal;
+    text-align: left;
+  }
+
+  h2 {
+    font-size: 1.6em;
+    font-weight: normal;
+  }
+}

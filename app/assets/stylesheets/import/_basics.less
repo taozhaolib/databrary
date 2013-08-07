@@ -1,44 +1,59 @@
 /*
+VARIABLES
+*/
+//colors
+@pitch: #000;
+
+@black: #333;
+@gray_25: #666;
+@gray_50: #999;
+@gray_75: #ccc;
+@white: #fff;
+
+@primary: #68CB63;
+@secondary: #C8619D;
+@tertiary: #FBB47A;
+
+@text: @black;
+
+// standards
+@site_padding: 20px;
+
+// regions
+@header_height: 40px;
+@header_shadow: 0 0 3px @black;
+
+/*
 FONTS
 */
 
-@font-face
-{
-    font-family: 'SofiaProLight';
-    src: url('/assets/fonts/SofiaProLight-webfont.eot'); /* IE9 */
-    src: url('/assets/fonts/SofiaProLight-webfont.eot?#iefix') format('embedded-opentype'),
-    url('/assets/fonts/SofiaProLight-webfont.woff') format('woff'), /* Modern */
-    url('/assets/fonts/SofiaProLight-webfont.ttf')  format('truetype'), /* Webkit */
-    url('/assets/fonts/SofiaProLight-webfont.svg#svgFontName') format('svg'); /* Legacy */
+@font-face {
+  font-family: 'SofiaProLight';
+  src: url('/assets/fonts/SofiaProLight-webfont.eot'); /* IE9 */
+  src: url('/assets/fonts/SofiaProLight-webfont.eot?#iefix') format('embedded-opentype'),
+  url('/assets/fonts/SofiaProLight-webfont.woff') format('woff'), /* Modern */
+  url('/assets/fonts/SofiaProLight-webfont.ttf')  format('truetype'), /* Webkit */
+  url('/assets/fonts/SofiaProLight-webfont.svg#svgFontName') format('svg'); /* Legacy */
 }
 
-@font-face
-{
-    font-family: 'SofiaProMedium';
-    src: url('/assets/fonts/SofiaProMedium-webfont.eot'); /* IE9 */
-    src: url('/assets/fonts/SofiaProMedium-webfont.eot?#iefix') format('embedded-opentype'),
-    url('/assets/fonts/SofiaProMedium-webfont.woff') format('woff'), /* Modern */
-    url('/assets/fonts/SofiaProMedium-webfont.ttf')  format('truetype'), /* Webkit */
-    url('/assets/fonts/SofiaProMedium-webfont.svg#svgFontName') format('svg'); /* Legacy */
+@font-face {
+  font-family: 'SofiaProMedium';
+  src: url('/assets/fonts/SofiaProMedium-webfont.eot'); /* IE9 */
+  src: url('/assets/fonts/SofiaProMedium-webfont.eot?#iefix') format('embedded-opentype'),
+  url('/assets/fonts/SofiaProMedium-webfont.woff') format('woff'), /* Modern */
+  url('/assets/fonts/SofiaProMedium-webfont.ttf')  format('truetype'), /* Webkit */
+  url('/assets/fonts/SofiaProMedium-webfont.svg#svgFontName') format('svg'); /* Legacy */
 }
 
 /*
 BODY
 */
 body {
-	background: @white;
-	font-family: 'SofiaProLight', Helvetica, Verdana, sans-serif;
+  background: @white;
+  font-family: 'SofiaProLight', Helvetica, Verdana, sans-serif;
+  color: @text;
+  text-align: justify;
 }
-
-strong,
-b {
-	font-family: 'SofiaProMedium', Helvetica, Verdana, sans-serif;
-}
-
-/*
-ELEMENTS
-*/
-
 
 /*
 GRID
@@ -48,4 +63,8 @@ GRID
 	max-width: 970px;
 	margin: 0 auto;
 	padding: 0 5px;
+}
+
+.row {
+  .clearfix()
 }
