@@ -293,6 +293,8 @@ CREATE TABLE "timeseries_format" (
 	Primary Key ("id"),
 	Unique ("mimetype")
 ) INHERITS ("format");
+INSERT INTO "timeseries_format" (mimetype, extension, name) VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14');
+INSERT INTO "timeseries_format" (mimetype, extension, name) VALUES ('video/webm', 'webm', 'WebM');
 
 CREATE TABLE "timeseries" (
 	"id" integer NOT NULL DEFAULT nextval('object_id_seq') Primary Key References "object" Deferrable Initially Deferred,
