@@ -21,7 +21,7 @@ object ApplicationBuild extends Build {
     libraryDependencies ++= dbDependencies
   )
 
-  val media = Project("media", file("media")).settings(
+  val media = Project("media", file("media")).dependsOn(dbrary).settings(
     libraryDependencies ++= avDependencies
   )
 

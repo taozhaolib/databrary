@@ -33,8 +33,8 @@ login with only a username once you have an account, and it uses a public
 
 ### Object storage
 
-The default configuration stores objects under store/, which will need to be
-created or changed to another existing directory.
+The default configuration stores objects under store/ and cache/, which will
+both need to be created or changed to another existing directory.
 
 ## License
 

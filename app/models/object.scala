@@ -148,8 +148,8 @@ object TimeseriesObject extends TableId[TimeseriesObject]("timeseries") with Obj
       on('id -> i).singleOpt()
 
   private[models] def create(format : ObjectFormat, owner : Study.Id, consent : Consent.Value, date : Option[Date], file : TemporaryFile)(implicit site : Site) : FileObject = {
-    val fmt = media.AV.probe(file.file.getPath)
-    val duration = Interval(fmt.duration)
+    val fmt = media.AV.probe(file.file)
+    val duration = fmt.duration
     val args = Anorm.Args('format -> format.ensuring(_.timeseries).id, 'owner -> owner, 'consent -> consent, 'date -> date, 'duration -> duration)
     val id = Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
     new TimeseriesObject(id, format, Some(owner), consent, date, duration)

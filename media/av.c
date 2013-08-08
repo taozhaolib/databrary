@@ -64,7 +64,7 @@ static void throw(JNIEnv *env, int r)
 }
 
 JNIEXPORT jobject JNICALL
-Java_media_AV_00024_probe(
+Java_media_AV_00024__1probe(
 		JNIEnv *env,
 		jobject this,
 		jstring sfilename)
