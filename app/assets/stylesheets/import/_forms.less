@@ -2,7 +2,9 @@ button,
 input,
 select,
 textarea {
-	font-family: 'SofiaProLight', Helvetica, Verdana, sans-serif;
+  font-family: 'SofiaProLight', Helvetica, Verdana, sans-serif;
+  border: 1px solid @gray_50_tertiary;
+  .box-sizing(border-box);
 }
 
 input,
@@ -12,7 +14,12 @@ textarea {
 
 	&:focus {
 		outline: none;
-		border-color: #9fc;
+		border-color: @primary;
 		.transition(all .2s ease-in-out);
 	}
+}
+
+input[type="search"] {
+  .border-radius(50px);
+  .box-sizing(border-box);
 }

@@ -1,0 +1,13 @@
+@(title : String = "", sidebar : String = "", request : Option[SiteRequest[_]] = None)(body : Html)
+
+@template.html5(title) {
+    <div class="row">
+        <main id="body_main" class="column_wide">
+            @body
+        </main>
+
+        <aside id="body_sidebar" class="column_narrow">
+            @sidebar
+        </aside>
+    </div>
+}

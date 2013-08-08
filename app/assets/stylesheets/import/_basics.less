@@ -14,6 +14,10 @@ VARIABLES
 @secondary: #C8619D;
 @tertiary: #FBB47A;
 
+@gray_50_primary: mix(@gray_50, @primary, 90%);
+@gray_50_tertiary: mix(@gray_50, @tertiary, 90%);
+@gray_75_tertiary: mix(@gray_75, @tertiary, 90%);
+
 @text: @black;
 
 // standards
@@ -22,6 +26,11 @@ VARIABLES
 // regions
 @header_height: 40px;
 @header_shadow: 0 0 3px @black;
+
+// grid
+@grid_columns: 12;
+@grid_width: 60px;
+@grid_margin: 20px;
 
 /*
 FONTS
@@ -53,18 +62,4 @@ body {
   font-family: 'SofiaProLight', Helvetica, Verdana, sans-serif;
   color: @text;
   text-align: justify;
-}
-
-/*
-GRID
-*/
-.wrapper {
-	position: relative;
-	max-width: 970px;
-	margin: 0 auto;
-	padding: 0 5px;
-}
-
-.row {
-  .clearfix()
 }

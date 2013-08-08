@@ -12,3 +12,38 @@
     }
   }
 }
+
+#body_header {
+  @body_header_height: 66px;
+
+  .clearfix();
+  margin-bottom: @site_padding;
+  padding: @site_padding 0;
+  border-bottom: 1px solid @gray_75_tertiary;
+
+  .title,
+  .search {
+    height: @body_header_height;
+  }
+
+  .title {
+    float: left;
+    position: relative;
+    top: -7px;
+
+    font-size: 3em;
+    line-height: @body_header_height;
+  }
+
+  .search {
+    float: right;
+    font-size: 1.1em;
+    padding: @body_header_height/4 0 0;
+  }
+
+  .searchbox {
+    width: 300px;
+    height: @body_header_height/2;
+    padding: 2px 12px 4px;
+  }
+}
