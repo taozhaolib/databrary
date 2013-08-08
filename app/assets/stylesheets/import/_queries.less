@@ -5,6 +5,7 @@ MOBILE
   // grid
   @grid_columns: 0;
   .wrapper { .grid_wrapper() }
+  .row { .grid_row() }
 }
 
 /*
@@ -13,10 +14,8 @@ NARROW TABLET
 @media (min-width: 492px) and (max-width: 743px) {
   // grid
   @grid_columns: 6;
-  @grid_width: 64px;
-  @grid_margin: 20px;
-
   .wrapper { .grid_wrapper() }
+  .row { .grid_row() }
 }
 
 /*
@@ -25,10 +24,8 @@ WIDE TABLET
 @media (min-width: 744px) and (max-width: 995px) {
   // grid
   @grid_columns: 9;
-  @grid_width: 64px;
-  @grid_margin: 20px;
-
   .wrapper { .grid_wrapper() }
+  .row { .grid_row() }
 }
 
 /*
@@ -37,10 +34,8 @@ NORMAL SCREEN
 @media (min-width: 996px) and (max-width: 1247px) {
   // grid
   @grid_columns: 12;
-  @grid_width: 64px;
-  @grid_margin: 20px;
-
   .wrapper { .grid_wrapper() }
+  .row { .grid_row() }
 }
 
 /*
@@ -49,8 +44,6 @@ LARGE SCREEN
 @media (min-width: 1248px) {
   // grid
   @grid_columns: 15;
-  @grid_width: 64px;
-  @grid_margin: 20px;
-
   .wrapper { .grid_wrapper() }
+  .row { .grid_row() }
 }

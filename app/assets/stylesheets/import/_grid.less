@@ -8,16 +8,21 @@ FIXED GRID
   margin: 0 auto;
 }
 
-// collapse columns
+// collapse wrapper
 .grid_wrapper(@columns: @grid_columns, @width: @grid_width, @margin: @grid_margin) when (@columns = 0) {
   .clearfix();
   position: relative;
   margin: 0 4px;
 }
 
-.grid_row(@margin: @grid_margin) when (@columns > 0) {
+.grid_row(@margin: @grid_margin, @columns: @grid_columns) when (@columns > 0) {
   .clearfix();
   margin-left: @margin * -1;
+}
+
+// collapse rows
+.grid_row(@margin: @grid_margin, @columns: @grid_columns) when (@columns = 0) {
+  .clearfix();
 }
 
 .grid_column(@span: 1, @offset: 0, @width: @grid_width, @margin: @grid_margin) when (@columns > 0) {
@@ -25,4 +30,9 @@ FIXED GRID
   float: left;
   width: (@width * @span) + (@margin * (@span - 1));
   margin-left: (@width * @offset) + (@margin * (@offset + 1)) + (@margin * 2);
+}
+
+// collapse columns
+.grid_column(@span: 1, @offset: 0, @width: @grid_width, @margin: @grid_margin) when (@columns = 0) {
+  .clearfix();
 }
