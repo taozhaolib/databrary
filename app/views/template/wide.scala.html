@@ -1,0 +1,11 @@
+@(title : String = "", request : Option[SiteRequest[_]] = None)(body : Html)
+
+@template.html5(title) {
+    @region.bodyHeader()
+
+    <div class="row">
+        <main id="body_main" class="col">
+            @body
+        </main>
+    </div>
+}

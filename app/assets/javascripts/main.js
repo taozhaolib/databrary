@@ -15,6 +15,19 @@ var dbjs = {};
             siteFooter.removeClass('sticky');
         }
     }
+
+    dbjs.toggleFold = function(fold, folder, folded) {
+        var folders = $(fold + ' ' + folder),
+            foldeds = $(fold + ' ' + folded);
+
+        folders.click(function(e){
+            $(this).next(folded).slideToggle();
+            $(this).toggleClass('open');
+        });
+
+        folders.prepend('<span class="arrow"></span>')
+        foldeds.toggle();
+    }
 }());
 
 // event bindings
@@ -22,6 +35,15 @@ var dbjs = {};
 
 // initialization
 $(document).ready(function () {
+    dbjs.toggleFold('.question', 'h2', 'div');
+
+
+
+
+
+
+
+
     // refactor AND switch to modals!!!
     $('.drop_down .drop_toggle:not(".nil") a').click(function (e) {
         e.preventDefault();

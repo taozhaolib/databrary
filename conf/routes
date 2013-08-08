@@ -5,6 +5,7 @@
 # Static content
 GET     /                                      controllers.Static.index
 GET     /about                                 controllers.Static.about
+GET     /about/policies                        controllers.Static.policies
 GET     /about/board                           controllers.Static.board
 GET     /about/team                            controllers.Static.team
 GET     /about/contributors                    controllers.Static.contributors
