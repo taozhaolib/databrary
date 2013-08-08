@@ -1,15 +1,17 @@
-@(title : String = "", sidebar : String = "", request : Option[SiteRequest[_]] = None)(body : Html)
+@(title : String = "", request : Option[SiteRequest[_]] = None)(body : Html)(sidebar : Html)
 
 @template.html5(title) {
     @region.bodyHeader()
 
-    <div class="">
+    <div class="row">
         <main id="body_main" class="column_wide">
-        @body
+            @body
         </main>
 
         <aside id="body_sidebar" class="column_narrow">
-        @sidebar
+            @widget.staticLinks()
+
+            @sidebar
         </aside>
     </div>
 }

@@ -16,6 +16,11 @@ object Static extends SiteController {
       Ok(views.html.static.board())
   }
 
+  def team() = SiteAction {
+    implicit request =>
+      Ok(views.html.static.team())
+  }
+
   def contributors() = SiteAction {
     implicit request =>
       Ok(views.html.static.contributors())

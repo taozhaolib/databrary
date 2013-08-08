@@ -1,7 +1,7 @@
 @(request : Option[SiteRequest[_]] = None)
 <section id="site_header_nav" class="site_header">
 	<div class="wrapper">
-		<div id="site_user" class="drop_down">
+		<div id="site_user" class="drop_down col">
 			@request.flatMap(_.user).fold {
 				<div class="drop_toggle nil">
 					<a href="@routes.Login.view">login</a>
