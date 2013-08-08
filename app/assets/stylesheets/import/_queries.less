@@ -5,7 +5,6 @@ MOBILE
   // grid
   @grid_columns: 0;
   .wrapper { .grid_wrapper() }
-  .row { .grid_row() }
 }
 
 /*
@@ -15,7 +14,6 @@ NARROW TABLET
   // grid
   @grid_columns: 6;
   .wrapper { .grid_wrapper() }
-  .row { .grid_row() }
 }
 
 /*
@@ -25,7 +23,9 @@ WIDE TABLET
   // grid
   @grid_columns: 9;
   .wrapper { .grid_wrapper() }
-  .row { .grid_row() }
+
+  .column_wide { .grid_column(6, 3) }
+  .column_narrow { .grid_column(3, -9) }
 }
 
 /*
@@ -35,7 +35,6 @@ NORMAL SCREEN
   // grid
   @grid_columns: 12;
   .wrapper { .grid_wrapper() }
-  .row { .grid_row() }
 }
 
 /*
@@ -45,5 +44,4 @@ LARGE SCREEN
   // grid
   @grid_columns: 15;
   .wrapper { .grid_wrapper() }
-  .row { .grid_row() }
 }
