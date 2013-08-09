@@ -3,7 +3,7 @@ FIXED GRID WRAPPER
 */
 .grid_wrapper(@columns: @grid_columns, @width: @grid_width, @margin: @grid_margin)
 when (@columns > 0) {
-  width: (@width * @columns) + (@margin * @columns);
+  width: (@width * @columns) + (@margin * (@columns - 1));
   position: relative;
   margin: 0 auto;
   .clearfix();
@@ -18,6 +18,20 @@ when (@columns = 0) {
 }
 
 /*
+FIXED GRID ROW
+*/
+.grid_row(@columns: @grid_columns, @width: @grid_width, @margin: @grid_margin)
+when (@columns > 0) {
+  margin-left: @margin * -1;
+  .clearfix();
+}
+
+.grid_row(@columns: @grid_columns, @width: @grid_width, @margin: @grid_margin)
+when (@columns = 0) {
+  .clearfix();
+}
+
+/*
 FIXED GRID COLUMNS
 */
 .grid_column(@span: 1, @offset: 0, @columns: @grid_columns, @width: @grid_width, @margin: @grid_margin)
@@ -27,8 +41,7 @@ when (@columns > 0) {
 
   float: left;
   width: (@width * @span) + (@margin * (@span - 1));
-  margin-right: @half_margin;
-  margin-left: (@full_column * @offset) + @half_margin;
+  margin-left: (@width * @offset) + (@margin * (@offset + 1));
   .clearfix();
 }
 
@@ -40,10 +53,7 @@ when (@columns = 0) {
 /*
 HELPERS
 */
-.row { .clearfix(); }
 
-.grid_margin(@margin: @grid_margin) {
-  @half_margin: @margin / 2;
-  margin: 0 @half_margin;
-}
-.col { .grid_margin(); }
+.col_2 { .grid_column(2); }
+.col_4 { .grid_column(4); }
+

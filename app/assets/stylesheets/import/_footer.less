@@ -6,6 +6,7 @@
   border-top: 1px solid @gray_75_tertiary;
   padding: @site_padding 0;
   margin-top: @site_padding;
+  overflow: hidden;
 
   &.sticky {
     position: fixed;
@@ -30,6 +31,34 @@
       color: darken(@tertiary, 50%);
     }
   }
+
+  .watermark {
+    background: url("/assets/images/design/watermark.png") no-repeat;
+    .user-select(none);
+    position: absolute;
+    float: right;
+    bottom: -@site_padding;
+    width: 200px;
+    height: 190px;
+    right: -50px;
+  }
+
+  .grants {
+    position: relative;
+    top: -8px;
+
+    img {
+      position: relative;
+    }
+
+    .nsf {
+      top: 12px;
+    }
+
+    .nih {
+      top: 8px;
+    }
+  }
 }
 
 /*
@@ -51,6 +80,9 @@
   float: right;
   width: 50%;
   margin-bottom: @site_padding;
+  height: 18px;
+  position: relative;
+  top: -1px;
 
   text-align: right;
   font-size: 0.9em;
@@ -60,10 +92,13 @@
   }
 
   /* TEMP! */
-  height: 19px;
   img {
     height: 16px;
     position: relative;
     top: 1px;
+  }
+
+  a:hover img {
+    .box-shadow(0 0 5px darken(@tertiary, 25%));
   }
 }

@@ -9,6 +9,8 @@ MOBILE
   // grid
   @grid_columns: 0;
   .wrapper { .grid_wrapper(); }
+  .row { .grid_row(); }
+  .col { .grid_column(@grid_columns); }
 
   #site_body {
     font-size: 0.85em;
@@ -26,6 +28,8 @@ NARROW TABLET
   // grid
   @grid_columns: 6;
   .wrapper { .grid_wrapper(); }
+  .row { .grid_row(); }
+  .col { .grid_column(@grid_columns); }
 
   .column_wide { .grid_column(4); }
   .column_narrow { .grid_column(2); }
@@ -46,6 +50,8 @@ WIDE TABLET
   // grid
   @grid_columns: 9;
   .wrapper { .grid_wrapper(); }
+  .row { .grid_row(); }
+  .col { .grid_column(@grid_columns); }
 
   .column_wide { .grid_column(6); }
   .column_narrow { .grid_column(3); }
@@ -62,6 +68,8 @@ NORMAL SCREEN
   // grid
   @grid_columns: 12;
   .wrapper { .grid_wrapper(); }
+  .row { .grid_row(); }
+  .col { .grid_column(@grid_columns); }
 
   .column_wide { .grid_column(6); }
   .column_narrow { .grid_column(3); }
@@ -74,6 +82,8 @@ LARGE SCREEN
   // grid
   @grid_columns: 15;
   .wrapper { .grid_wrapper() }
+  .row { .grid_row(); }
+  .col { .grid_column(@grid_columns); }
 
   .column_wide { .grid_column(6); }
   .column_narrow { .grid_column(3); }

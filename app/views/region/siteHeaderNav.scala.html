@@ -1,28 +1,30 @@
 @(request : Option[SiteRequest[_]] = None)
 <section id="site_header_nav" class="site_header">
 	<div class="wrapper">
-		<div id="site_user" class="drop_down col">
-			@request.flatMap(_.user).fold {
-				<div class="drop_toggle nil">
-					<a href="@routes.Login.view">login</a>
-					<span>|</span>
-					<a href="@routes.Login.view">register</a>
-				</div>
-			} { u =>
-				<div class="drop_toggle">
-					<a href="@routes.Login.view">login</a>
-					<span>|</span>
-					<a href="@routes.Login.view">register</a>
-				</div>
-				
-				<div class="drop_menu">
-					<form method="post">
-						<input type="text" id="username" placeholder="Username">
-						<input type="password" id="password" placeholder="Password">
-						<button>Login</button>
-					</form>
-				</div>
-			}
-		</div>
+        <div class="row">
+            <div id="site_user" class="drop_down">
+                @request.flatMap(_.user).fold {
+                    <div class="drop_toggle nil">
+                        <a href="@routes.Login.view">login</a>
+                        <span>|</span>
+                        <a href="@routes.Login.view">register</a>
+                    </div>
+                } { u =>
+                    <div class="drop_toggle">
+                        <a href="@routes.Login.view">login</a>
+                        <span>|</span>
+                        <a href="@routes.Login.view">register</a>
+                    </div>
+
+                    <div class="drop_menu">
+                        <form method="post">
+                            <input type="text" id="username" placeholder="Username">
+                            <input type="password" id="password" placeholder="Password">
+                            <button>Login</button>
+                        </form>
+                    </div>
+                }
+            </div>
+        </div>
 	</div>
 </section>

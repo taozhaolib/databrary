@@ -18,6 +18,10 @@ a {
   &:hover {
     .transition(all .15s linear)
   }
+
+  abbr[title] {
+    border-bottom: 0;
+  }
 }
 
 strong,
@@ -49,6 +53,25 @@ ul.inline {
   li {
     display: inline-block;
     margin: 0 5px;
+  }
+}
+
+dl.people {
+  dt {
+    font-weight: bold;
+    margin-top: .5em;
+
+    &:first-of-type {
+      margin-top: 0;
+    }
+  }
+
+  dd {
+    margin-bottom: 0;
+    font-size: 0.9em;
+    text-indent: -1em;
+    padding-left: 1em;
+    text-align: left;
   }
 }
 
@@ -111,5 +134,20 @@ SPECIAL
     font-size: 1.6em;
     font-weight: normal;
     margin-bottom: @site_padding;
+  }
+}
+
+/*
+MAIN CONTENT
+*/
+main {
+  h1 {
+    margin: 0 0 .5em;
+    padding-bottom: 5px;
+    border-bottom: 1px solid @gray_50_tertiary;
+  }
+
+  h2 {
+    margin-bottom: 0;
   }
 }

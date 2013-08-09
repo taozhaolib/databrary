@@ -91,7 +91,7 @@ h6 {
 }
 
 abbr[title] {
-  border-bottom: 1px dotted;
+  border-bottom: 1px dotted @gray_75_tertiary;
 }
 
 b,
@@ -188,6 +188,8 @@ nav ol {
 img {
   border: 0;
   -ms-interpolation-mode: bicubic;
+  max-width:100% !important;
+  height:auto;
 }
 
 svg:not(:root) {
@@ -280,4 +282,4 @@ table {
   border-spacing: 0;
 }
 
-* { .box-sizing(border-box); }
+*, *:after, *:before { .box-sizing(border-box); }
