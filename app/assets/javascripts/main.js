@@ -4,17 +4,6 @@ var dbjs = {};
 // setup site features
 (function () {
     var isTouch = 'ontouchstart' in document.documentElement;
-    var siteFooter = $('#site_footer');
-
-    dbjs.stickyFooter = function() {
-        // chrome has a major bug. renders event before dom finished loading.
-        // find another way. (programmatic fixed-width css version, likely.)
-        if($(window).innerHeight() > siteFooter.offset().top + siteFooter.height()) {
-            siteFooter.addClass('sticky');
-        } else {
-            siteFooter.removeClass('sticky');
-        }
-    }
 
     dbjs.toggleFold = function(fold, folder, folded) {
         var folders = $(fold + ' ' + folder),
@@ -22,7 +11,7 @@ var dbjs = {};
 
         folders.click(function(e){
             $(this).next(folded).slideToggle();
-            $(this).toggleClass('open');
+            $(this).toggleClass('unfolded');
         });
 
         folders.prepend('<span class="arrow"></span>')
@@ -35,6 +24,7 @@ var dbjs = {};
 
 // initialization
 $(document).ready(function () {
+    // registration should only appear on the pages it's need. I've added it to-do.
     dbjs.toggleFold('.question', 'h2', 'div');
 
 
