@@ -37,7 +37,7 @@
 	}
 
 	@if(link.permission >= Permission.DOWNLOAD) {
-		<a href='@routes.Object.download(link.containerId, link.objId)'>download</a>
+		<a href='@routes.Object.download(link.containerId, link.objId, false)'>download</a>
 	}
 
 	@comments(Some(routes.Comment.postObjectLink(link.containerId, link.objId)), link.comments()(request.db)) { c => 

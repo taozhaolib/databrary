@@ -4,10 +4,10 @@ import java.lang._
 import java.io._
 import dbrary.Interval
 
-/* This should be redone somehow as an Akka actor using asynchronous IO */
+/* This should be redone somehow using asynchronous IO, though I have not found
+ * any library that supports this on pipes (netty comes the closest). */
 final class ProcessInputStream(process : Process) extends InputStream {
   private[this] val input = process.getInputStream
-  override def available = input.available
   override def close = {
     input.close
     process.destroy

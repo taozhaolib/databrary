@@ -25,7 +25,7 @@ object Object extends SiteController {
     Ok(views.html.objectLink(link))
   }
 
-  def download(i : models.Container.Id, o : models.Object.Id) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
+  def download(i : models.Container.Id, o : models.Object.Id, inline : Boolean) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
     val etag = link.objId.unId.formatted("obj:%d")
     /* Assuming objects are immutable, any if-modified-since header is good enough */
     request.headers.get(IF_NONE_MATCH).filter(_ == etag).orElse(
@@ -38,7 +38,7 @@ object Object extends SiteController {
             header = ResponseHeader(OK, Map(
               CONTENT_LENGTH -> file.length.toString,
               CONTENT_TYPE -> fobj.format.mimetype,
-              CONTENT_DISPOSITION -> ("attachment; filename=\"" + (link.title + fobj.format.extension.fold("")("." + _)).replaceAll("([\\p{Cntrl}\"\\\\])", "\\\\$2") + "\""),
+              CONTENT_DISPOSITION -> (if (inline) "inline" else ("attachment; filename=\"" + (link.title + fobj.format.extension.fold("")("." + _)).replaceAll("([\\p{Cntrl}\"\\\\])", "\\\\$2") + "\"")),
               ETAG -> etag,
               CACHE_CONTROL -> "max-age=31556926, private"
             )),
