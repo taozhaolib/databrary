@@ -255,9 +255,6 @@ CREATE TYPE consent AS ENUM (
 );
 COMMENT ON TYPE consent IS 'Sensitivity levels that may apply to data according to the presence of protected identifiers and granted sharing level.  Does not necessarily map clearly to permission levels.';
 
-SELECT create_abstract_parent('object', ARRAY['file', 'timeseries', 'excerpt']);
-COMMENT ON TABLE "object" IS 'Parent table for all uploaded data in storage.';
-
 CREATE TABLE "format" (
 	"id" smallserial NOT NULL Primary Key,
 	"mimetype" varchar(128) NOT NULL Unique,
@@ -270,10 +267,23 @@ CREATE TABLE "file_format" (
 	Primary Key ("id"),
 	Unique ("mimetype")
 ) INHERITS ("format");
+
+CREATE TABLE "timeseries_format" (
+	Primary Key ("id"),
+	Unique ("mimetype")
+) INHERITS ("format");
+
+-- The standard image and video formats MUST be the first two (IDs hard-coded):
+INSERT INTO "file_format" (mimetype, extension, name) VALUES ('image/jpeg', 'jpg', 'JPEG');
+INSERT INTO "timeseries_format" (mimetype, extension, name) VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14');
+-- These are arbitrary:
 INSERT INTO "file_format" (mimetype, extension, name) VALUES ('text/plain', 'txt', 'Plain text');
 INSERT INTO "file_format" (mimetype, extension, name) VALUES ('text/html', 'html', 'Hypertext markup');
 INSERT INTO "file_format" (mimetype, extension, name) VALUES ('application/pdf', 'pdf', 'Portable document');
-INSERT INTO "file_format" (mimetype, extension, name) VALUES ('image/jpeg', 'jpg', 'JPEG');
+INSERT INTO "timeseries_format" (mimetype, extension, name) VALUES ('video/webm', 'webm', 'WebM');
+
+SELECT create_abstract_parent('object', ARRAY['file', 'timeseries', 'excerpt']);
+COMMENT ON TABLE "object" IS 'Parent table for all uploaded data in storage.';
 
 CREATE TABLE "file" (
 	"id" integer NOT NULL DEFAULT nextval('object_id_seq') Primary Key References "object" Deferrable Initially Deferred,
@@ -289,17 +299,10 @@ CREATE TABLE "audit_file" (
 	LIKE "file"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
-CREATE TABLE "timeseries_format" (
-	Primary Key ("id"),
-	Unique ("mimetype")
-) INHERITS ("format");
-INSERT INTO "timeseries_format" (mimetype, extension, name) VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14');
-INSERT INTO "timeseries_format" (mimetype, extension, name) VALUES ('video/webm', 'webm', 'WebM');
-
 CREATE TABLE "timeseries" (
 	"id" integer NOT NULL DEFAULT nextval('object_id_seq') Primary Key References "object" Deferrable Initially Deferred,
 	"format" smallint NOT NULL References "timeseries_format",
-	"duration" interval HOUR TO SECOND NOT NULL
+	"duration" interval HOUR TO SECOND NOT NULL Check ("duration" > interval '0')
 ) INHERITS ("file");
 CREATE TRIGGER "object" BEFORE INSERT OR UPDATE OR DELETE ON "timeseries" FOR EACH ROW EXECUTE PROCEDURE "object_trigger" ();
 
@@ -312,7 +315,7 @@ CREATE TABLE "excerpt" (
 	"id" integer NOT NULL DEFAULT nextval('object_id_seq') Primary Key References "object" Deferrable Initially Deferred,
 	"source" integer NOT NULL References "timeseries",
 	"offset" interval HOUR TO SECOND NOT NULL,
-	"duration" interval HOUR TO SECOND,
+	"duration" interval HOUR TO SECOND Check ("duration" > interval '0'),
 	"public" boolean NOT NULL Default 'f' -- only if object.consent = EXCERPTS
 );
 CREATE TRIGGER "object" BEFORE INSERT OR UPDATE OR DELETE ON "excerpt" FOR EACH ROW EXECUTE PROCEDURE "object_trigger" ();

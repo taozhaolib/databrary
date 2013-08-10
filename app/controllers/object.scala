@@ -25,29 +25,40 @@ object Object extends SiteController {
     Ok(views.html.objectLink(link))
   }
 
-  def download(i : models.Container.Id, o : models.Object.Id, inline : Boolean) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
-    val etag = link.objId.unId.formatted("obj:%d")
+  private def objectResult(tag : String, data_ : => store.StreamEnumerator, fmt : ObjectFormat, saveAs : Option[String])(implicit request : SiteRequest[_]) : Result =
     /* Assuming objects are immutable, any if-modified-since header is good enough */
-    request.headers.get(IF_NONE_MATCH).filter(_ == etag).orElse(
+    request.headers.get(IF_NONE_MATCH).filter(_ == tag).orElse(
       request.headers.get(IF_MODIFIED_SINCE)
     ).fold {
-      link.obj match {
-        case fobj : FileObject => {
-          val file = store.Object.file(fobj.id)
-          SimpleResult(
-            header = ResponseHeader(OK, Map(
-              CONTENT_LENGTH -> file.length.toString,
-              CONTENT_TYPE -> fobj.format.mimetype,
-              CONTENT_DISPOSITION -> (if (inline) "inline" else ("attachment; filename=\"" + (link.title + fobj.format.extension.fold("")("." + _)).replaceAll("([\\p{Cntrl}\"\\\\])", "\\\\$2") + "\"")),
-              ETAG -> etag,
-              CACHE_CONTROL -> "max-age=31556926, private"
-            )),
-            Enumerator.fromFile(file)
-          ) : Result
-        }
-        case e : Excerpt => NotImplemented
-      }
+      val data = data_
+      val headers = Seq[Option[(String, String)]](
+        data.size.map(CONTENT_LENGTH -> _.toString),
+        Some(CONTENT_TYPE -> fmt.mimetype),
+        saveAs.map(name => CONTENT_DISPOSITION -> ("attachment; filename=\"" + (name + fmt.extension.fold("")("." + _)).replaceAll("([\\p{Cntrl}\"\\\\])", "\\\\$2") + "\"")),
+        Some(ETAG -> tag),
+        Some(CACHE_CONTROL -> "max-age=31556926, private") /* this needn't be private for public data */
+      ).flatten
+      SimpleResult(
+        header = ResponseHeader(OK, Map(headers : _*)),
+        data) : Result
     } (_ => NotModified)
+    
+  def download(i : models.Container.Id, o : models.Object.Id, inline : Boolean) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
+    objectResult(
+      link.objId.unId.formatted("obj:%d"),
+      store.Object.read(link.obj),
+      link.obj.format,
+      if (inline) None else Some(link.title)
+    )
+  }
+
+  def head(i : models.Container.Id, o : models.Object.Id) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
+    objectResult(
+      link.objId.unId.formatted("head:%d"),
+      store.Object.readHead(link.obj),
+      FileFormat.Image,
+      None
+    )
   }
 
   private[this] val fileFields = tuple(

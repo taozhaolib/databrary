@@ -27,7 +27,13 @@
 	}
 	case e : Excerpt => {
 		<dt>Source</dt>
-		<dd>???</dd>
+		<dd>??? need study reference!!!</dd>
+		<dt>Offset</dt>
+		<dd>@e.offset</dd>
+	@e.duration.map { duration =>
+		<dt>Duration</dt>
+		<dd>@duration</dd>
+	}
 	}
 	}
 	</dl>
@@ -37,6 +43,21 @@
 	}
 
 	@if(link.permission >= Permission.DOWNLOAD) {
+
+		@link.obj(request.db).format.mimeSubTypes match {
+		case ("image", _) => {
+			<img src='@routes.Object.download(link.containerId, link.objId, true)'/>
+		}
+		case ("video", _) => {
+			<img src='@routes.Object.head(link.containerId, link.objId)' alt='preview'/>
+		}
+		case ("text", _) => {
+			<iframe src='@routes.Object.download(link.containerId, link.objId, true)'/>
+		}
+		case _ => {
+		}
+		}
+
 		<a href='@routes.Object.download(link.containerId, link.objId, false)'>download</a>
 	}
 

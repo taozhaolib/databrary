@@ -12,28 +12,22 @@ object Consent extends PGEnum("consent") {
   val PUBLIC, DEIDENTIFIED, EXCERPTS, SHARED, PRIVATE = Value
 }
 
-case class ObjectFormat private[models] (id : ObjectFormat.Id, mimetype : String, extension : Option[String], name : String, timeseries : Boolean) extends TableRowId[ObjectFormat]
+case class ObjectFormat private[models] (id : ObjectFormat.Id, mimetype : String, extension : Option[String], name : String, timeseries : Boolean) extends TableRowId[ObjectFormat] {
+  def mimeSubTypes = {
+    val slash = mimetype.indexOf('/')
+    if (slash == -1)
+      (mimetype, "")
+    else
+      (mimetype.substring(0, slash), mimetype.substring(slash+1))
+  }
+}
 
-private[models] sealed abstract class FormatView(table : String, timeseries : Boolean) extends TableId[ObjectFormat](table) {
+private[models] sealed abstract class FormatView(table : String, timeseries : Boolean = false) extends TableId[ObjectFormat](table) {
   private[models] val row = Columns[
     Id,  String,    Option[String], String](
     'id, 'mimetype, 'extension,     'name) map {
     (id, mimetype, extension, name) => new ObjectFormat(id, mimetype, extension, name, timeseries)
   }
-}
-
-object ObjectFormat extends TableView with HasId[ObjectFormat] {
-  private[models] val table = "format"
-  private[models] override val src = "format"
-  private[this] val columns = Columns[
-    Id,  String,    Option[String], String, Long](
-    'id, 'mimetype, 'extension,     'name,  'tableoid)
-  private[this] def row(implicit db : Site.DB) = columns map {
-    (id : Id, mimetype : String, extension : Option[String], name : String, tableoid : Long) => new ObjectFormat(id, mimetype, extension, name, tableoid == TimeseriesFormat.tableOID)
-  }
-  /* unfortunate for TableView: */
-  type Row = (Id, String, Option[String], String, Long)
-  private[models] val row = columns
 
   def getMimetype(mimetype : String)(implicit db : Site.DB) : Option[ObjectFormat] =
     SELECT("WHERE mimetype = {mimetype}").
@@ -42,12 +36,32 @@ object ObjectFormat extends TableView with HasId[ObjectFormat] {
     SELECT("ORDER BY object.id").list(row)
 }
 
-object FileFormat extends FormatView("file_format", false)
-object TimeseriesFormat extends FormatView("timeseries_format", true)
+object ObjectFormat extends FormatView("format") {
+  private[this] val columns = Columns[
+    Id,  String,    Option[String], String, Long](
+    'id, 'mimetype, 'extension,     'name,  'tableoid)
+  private[this] def row(implicit db : Site.DB) = columns map {
+    (id : Id, mimetype : String, extension : Option[String], name : String, tableoid : Long) => new ObjectFormat(id, mimetype, extension, name, tableoid == TimeseriesFormat.tableOID)
+  }
+
+  override def getMimetype(mimetype : String)(implicit db : Site.DB) : Option[ObjectFormat] =
+    SELECT("WHERE mimetype = {mimetype}").
+      on('mimetype -> mimetype).singleOpt(row(db))
+  override def getAll(implicit db : Site.DB) : Seq[ObjectFormat] =
+    SELECT("ORDER BY object.id").list(row(db))
+}
+
+object FileFormat extends FormatView("file_format", false) {
+  final val Image = ObjectFormat(asId(1), "image/jpeg", Some("jpg"), "JPEG", false)
+}
+object TimeseriesFormat extends FormatView("timeseries_format", true) {
+  final val Video = ObjectFormat(asId(2), "image/jpeg", Some("jpg"), "JPEG", true)
+}
 
 
 sealed abstract class Object protected (val id : Object.Id) extends TableRowId[Object] {
   def consent : Consent.Value
+  def format : ObjectFormat
 }
 
 sealed class FileObject protected (override val id : FileObject.Id, val format : ObjectFormat, val ownerId : Option[Study.Id], consent_ : Consent.Value, date_ : Option[Date]) extends Object(id) with TableRowId[FileObject] {
@@ -67,7 +81,7 @@ sealed class FileObject protected (override val id : FileObject.Id, val format :
 
 final class TimeseriesObject private (override val id : TimeseriesObject.Id, format : ObjectFormat, ownerId : Option[Study.Id], consent_ : Consent.Value, date_ : Option[Date], val duration : Interval) extends FileObject(id, format, ownerId, consent_, date_) with TableRowId[TimeseriesObject]
 
-final class Excerpt private (override val id : Excerpt.Id, val source : TimeseriesObject, public_ : Boolean) extends Object(id) with TableRowId[Excerpt] {
+final class Excerpt private (override val id : Excerpt.Id, val source : TimeseriesObject, val offset : Interval, val duration : Option[Interval], public_ : Boolean) extends Object(id) with TableRowId[Excerpt] {
   def sourceId = source.id
   private[this] var _public = public_
   def public = _public
@@ -86,6 +100,7 @@ final class Excerpt private (override val id : Excerpt.Id, val source : Timeseri
     else
       c
   }
+  def format = duration.fold(FileFormat.Image)(_ => source.format)
 }
 
 
@@ -105,12 +120,13 @@ object Object extends ObjectView[Object] {
       case "excerpt" => Excerpt.get(Excerpt.asId(i.unId))
     }
 
+  /* This should really more appropriately be FileObject, since it does not apply to Excerpts */
   def create(format : ObjectFormat, owner : Study.Id, consent : Consent.Value, date : Option[Date], file : TemporaryFile)(implicit site : Site) : FileObject = {
     val obj = if (format.timeseries)
         TimeseriesObject.create(format, owner, consent, date, file)
       else
         FileObject.create(format, owner, consent, date, file)
-    store.Object.store(obj.id, file)
+    store.FileObject.store(obj.id, file)
     site.db.commit
     obj
   }
@@ -160,10 +176,10 @@ object TimeseriesObject extends TableId[TimeseriesObject]("timeseries") with Obj
 
 object Excerpt extends TableId[Excerpt]("excerpt") with ObjectView[Excerpt] {
   private[this] val columns = Columns[
-    Id,  Boolean](
-    'id, 'public)
+    Id,  Interval, Option[Interval], Boolean](
+    'id, 'offset,  'duration,        'public)
   private[models] val row = (columns ~ TimeseriesObject.row) map {
-    case ((id, public) ~ source) => new Excerpt(id, source, public)
+    case ((id, offset, duration, public) ~ source) => new Excerpt(id, source, offset, duration, public)
   }
   private[models] override val src = "excerpt JOIN " + TimeseriesObject.src + " ON excerpt.source = timeseries.id"
   
