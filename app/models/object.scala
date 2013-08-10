@@ -23,7 +23,8 @@ private[models] sealed abstract class FormatView(table : String, timeseries : Bo
 }
 
 object ObjectFormat extends TableView with HasId[ObjectFormat] {
-  private[models] val table = "object"
+  private[models] val table = "format"
+  private[models] override val src = "format"
   private[this] val columns = Columns[
     Id,  String,    Option[String], String, Long](
     'id, 'mimetype, 'extension,     'name,  'tableoid)
@@ -94,6 +95,7 @@ private[models] sealed abstract trait ObjectView[R <: Object with TableRowId[R]]
 
 object Object extends ObjectView[Object] {
   private[models] val table = "object"
+  private[models] override val src = "object"
   type Row = String
   private[models] val row = Columns[String]('kind)
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[Object] =

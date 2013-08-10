@@ -46,7 +46,7 @@ object AV {
 
   /* These are referenced by native code so must match their use there */
   final case class Error(msg : String, err : Int) extends RuntimeException(msg)
-  final case class Probe(format : String, _duration : Double) {
+  final case class Probe(format : String, _duration : scala.Double) {
     def duration : Interval = Interval(_duration)
   }
 
