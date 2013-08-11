@@ -79,6 +79,9 @@ Java_media_AV_00024__1probe(
 		return NULL;
 	}
 
+	/* Read some more metadata from the stream (ignore errors) */
+	avformat_find_stream_info(fmt, NULL);
+
 	jobject probe = CONSTRUCT(Probe, 
 			(*env)->NewStringUTF(env, fmt->iformat->name),
 			(double)fmt->duration/(double)AV_TIME_BASE);

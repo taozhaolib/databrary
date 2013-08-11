@@ -54,4 +54,7 @@ object AV {
   def probe(file : File) : Probe = _probe(file.getPath)
   def extractFrame(file : File, offset : Interval) : InputStream =
     ProcessInputStream("ffmpeg", "-loglevel", "error", "-accurate_seek", "-ss", offset.seconds.toString, "-i", file.getPath, "-f:v", "image2pipe", "-frames:v", "1", "-")
+  def extractSegment(file : File, offset : Interval, duration : Interval) : InputStream =
+    /* XXX this rounds outwards to keyframes and does other strange things with timing; also it doesn't work at all because mp4 can't output to pipes */
+    ProcessInputStream("ffmpeg", "-loglevel", "error", "-accurate_seek", "-ss", offset.seconds.toString, "-t", duration.seconds.toString, "-i", file.getPath, "-codec", "copy", "-")
 }
