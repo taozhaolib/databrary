@@ -1,8 +1,8 @@
 package store
 
-import java.io.{File,InputStream}
-import java.nio._
-import java.nio.file.StandardOpenOption
+import java.io.{File,InputStream,FileInputStream,FileNotFoundException}
+import java.nio.{ByteBuffer,channels}
+import java.nio.file.{StandardOpenOption,FileSystemException}
 import scala.concurrent._
 import scala.collection.mutable.{Map,Queue}
 import play.api.Play.current
@@ -24,8 +24,18 @@ object StreamEnumerator {
   }
   def fromFile(file : File, chunkSize : Int = 8192) = new StreamEnumerator {
     val size = Some(file.length)
+    private[this] val input = new FileInputStream(file)
     def apply[A](it : Iteratee[Array[Byte], A]) : Future[Iteratee[Array[Byte], A]] = 
-      Enumerator.fromFile(file, chunkSize).apply[A](it)
+      Enumerator.fromStream(input, chunkSize).apply[A](it)
+  }
+  def fromFileGenerator(name : String = "gen", gen : File => Unit) : StreamEnumerator = {
+    val t = File.createTempFile(name, "gen")
+    try {
+      gen(t)
+      StreamEnumerator.fromFile(t)
+    } finally {
+      t.delete
+    }
   }
 }
 
@@ -43,7 +53,8 @@ private[store] class StoreDir[Id <: IntId[_]](conf : String) {
 object FileObject extends StoreDir[models.FileObject.Id]("store.master") {
   def store(id : models.FileObject.Id, f : TemporaryFile) =
     f.moveTo(file(id))
-  def read(f : models.FileObject) : StreamEnumerator = StreamEnumerator.fromFile(file(f.id))
+  def read(f : models.FileObject) : StreamEnumerator =
+    StreamEnumerator.fromFile(file(f.id))
 }
 
 object Excerpt extends StoreDir[models.Object.Id]("store.cache") {
@@ -140,32 +151,63 @@ object Excerpt extends StoreDir[models.Object.Id]("store.cache") {
     else {
       val f = file(key)
       active.synchronized {
-        if (f.exists)
+        try {
           StreamEnumerator.fromFile(f)
-        else
+        } catch { case _ : FileNotFoundException =>
           new ActiveReader(active.getOrElse(key, new ActiveGenerator(key, gen)))
+        }
       }
     }
 
-  private def readFrame(key : Key, src : models.TimeseriesObject.Id, offset : Interval) : StreamEnumerator =
-    cached(key, media.AV.extractFrame(FileObject.file(src), offset))
-  def read(e : models.Excerpt) : StreamEnumerator = 
-    e.duration.fold(readFrame((e.id, false), e.sourceId, e.offset)) { len =>
-      cached((e.id, false), ???)
-    }
-  def readHead(e : models.Excerpt) : StreamEnumerator =
+  private def cached(file : File, gen : File => Unit) : Future[StreamEnumerator] = {
+    implicit val ec = executionContext
+    if (!enabled) Future {
+      StreamEnumerator.fromFileGenerator(file.getName, gen)
+    } else try {
+      Future.successful(StreamEnumerator.fromFile(file))
+    } catch { case _ : FileNotFoundException => Future {
+      val t = File.createTempFile(file.getName, null, file.getParentFile)
+      try {
+        gen(t)
+        if (!t.renameTo(file))
+          throw new FileSystemException(file.getPath, t.getPath, "rename failed")
+      } finally {
+        t.delete /* safe due to createTempFile semantics */
+      }
+      StreamEnumerator.fromFile(file)
+    } }
+  }
+
+  private[store] def read(e : models.Excerpt) : Future[StreamEnumerator] = 
+    cached(file(e.id), (f : File) => e.duration.fold(
+      media.AV.frame(FileObject.file(e.sourceId), e.offset, f))(
+      len => media.AV.extractSegment(FileObject.file(e.sourceId), e.offset, len, f)))
+
+  private def readFrame(key : Key, src : models.TimeseriesObject.Id, offset : Interval) : Future[StreamEnumerator] =
+    cached(file(key), (f : File) => media.AV.frame(FileObject.file(src), offset, f))
+  private[store] def readHead(e : models.Excerpt) : Future[StreamEnumerator] =
     readFrame((e.id, e.duration.nonEmpty), e.sourceId, e.offset)
-  def readHead(t : models.TimeseriesObject) : StreamEnumerator =
+  private[store] def readHead(t : models.TimeseriesObject) : Future[StreamEnumerator] =
     readFrame((t.id, true), t.id, Interval(0))
+
+  private[store] def readFrame(t : models.TimeseriesObject, offset : Interval) : Future[StreamEnumerator] =
+    Future { StreamEnumerator.fromFileGenerator(t.id.unId.toString, (f : File) =>
+      media.AV.frame(FileObject.file(t.id), offset, f)) } (executionContext)
+  private[store] def readFrame(e : models.Excerpt, offset : Interval) : Future[StreamEnumerator] =
+    readFrame(e.source, e.offset+offset)
 }
 
 object Object {
-  def read(o : models.Object) : StreamEnumerator = o match {
-    case f : models.FileObject => FileObject.read(f)
+  def read(o : models.Object) : Future[StreamEnumerator] = o match {
+    case f : models.FileObject => Future.successful(FileObject.read(f))
     case e : models.Excerpt => Excerpt.read(e)
   }
-  def readHead(o : models.Object) : StreamEnumerator = o match {
-    case t : models.TimeseriesObject => Excerpt.readHead(t)
+  def readHead(o : models.Object) : Future[StreamEnumerator] = o match {
+    case t : models.TimeseriesObject if t.isVideo => Excerpt.readHead(t)
     case e : models.Excerpt => Excerpt.readHead(e)
+  }
+  def readFrame(o : models.Object, offset : Interval) : Future[StreamEnumerator] = o match {
+    case t : models.TimeseriesObject if t.isVideo => Excerpt.readFrame(t, offset)
+    case e : models.Excerpt => Excerpt.readFrame(e, offset)
   }
 }

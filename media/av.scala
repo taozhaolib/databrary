@@ -1,7 +1,7 @@
 package media
 
-import java.lang._
-import java.io._
+import java.lang.{ProcessBuilder}
+import java.io.{InputStream,File,FileOutputStream}
 import dbrary.Interval
 
 /* This should be redone somehow using asynchronous IO, though I have not found
@@ -51,10 +51,15 @@ object AV {
   }
 
   @native def _probe(file : String) : Probe
+  @native def _frame(infile : String, offset : scala.Double, outfile : String) : Unit
   def probe(file : File) : Probe = _probe(file.getPath)
-  def extractFrame(file : File, offset : Interval) : InputStream =
+  def frame(infile : File, offset : Interval, outfile : File) = _frame(infile.getPath, offset.seconds, outfile.getPath)
+  def _extractFrame(file : File, offset : Interval) : InputStream =
     ProcessInputStream("ffmpeg", "-loglevel", "error", "-accurate_seek", "-ss", offset.seconds.toString, "-i", file.getPath, "-f:v", "image2pipe", "-frames:v", "1", "-")
-  def extractSegment(file : File, offset : Interval, duration : Interval) : InputStream =
-    /* XXX this rounds outwards to keyframes and does other strange things with timing; also it doesn't work at all because mp4 can't output to pipes */
-    ProcessInputStream("ffmpeg", "-loglevel", "error", "-accurate_seek", "-ss", offset.seconds.toString, "-t", duration.seconds.toString, "-i", file.getPath, "-codec", "copy", "-")
+  def extractSegment(infile : File, offset : Interval, duration : Interval, outfile : File) : Unit = {
+    /* XXX this rounds outwards to keyframes and does other strange things with timing */
+    val r = new ProcessBuilder("ffmpeg", "-loglevel", "error", "-accurate_seek", "-ss", offset.seconds.toString, "-t", duration.seconds.toString, "-i", infile.getPath, "-codec", "copy", outfile.getPath).inheritIO.redirectInput(new File("/dev/null")).start.waitFor
+    if (r != 0)
+      throw new Error("extractSegment failed", r)
+  }
 }

@@ -1,5 +1,6 @@
 package controllers
 
+import scala.concurrent.Future
 import play.api._
 import          Play.current
 import          mvc._
@@ -7,6 +8,7 @@ import          data._
 import               Forms._
 import          i18n.Messages
 import          libs.iteratee.Enumerator
+import          libs.concurrent.Execution.Implicits.defaultContext
 import util._
 import models._
 
@@ -25,12 +27,11 @@ object Object extends SiteController {
     Ok(views.html.objectLink(link))
   }
 
-  private def objectResult(tag : String, data_ : => store.StreamEnumerator, fmt : ObjectFormat, saveAs : Option[String])(implicit request : SiteRequest[_]) : Result =
+  private def objectResult(tag : String, data_ : => Future[store.StreamEnumerator], fmt : ObjectFormat, saveAs : Option[String])(implicit request : SiteRequest[_]) : Result =
     /* Assuming objects are immutable, any if-modified-since header is good enough */
     request.headers.get(IF_NONE_MATCH).filter(_ == tag).orElse(
       request.headers.get(IF_MODIFIED_SINCE)
-    ).fold {
-      val data = data_
+    ).fold(AsyncResult(data_.map { data =>
       val headers = Seq[Option[(String, String)]](
         data.size.map(CONTENT_LENGTH -> _.toString),
         Some(CONTENT_TYPE -> fmt.mimetype),
@@ -40,8 +41,8 @@ object Object extends SiteController {
       ).flatten
       SimpleResult(
         header = ResponseHeader(OK, Map(headers : _*)),
-        data) : Result
-    } (_ => NotModified)
+        data)
+    }) : Result) (_ => NotModified)
     
   def download(i : models.Container.Id, o : models.Object.Id, inline : Boolean) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
     objectResult(
@@ -56,6 +57,15 @@ object Object extends SiteController {
     objectResult(
       link.objId.unId.formatted("head:%d"),
       store.Object.readHead(link.obj),
+      FileFormat.Image,
+      None
+    )
+  }
+
+  def frame(i : models.Container.Id, o : models.Object.Id, offset : dbrary.Interval) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
+    objectResult(
+      "frame:%d.%f".format(link.objId.unId, offset.seconds),
+      store.Object.readFrame(link.obj, offset),
       FileFormat.Image,
       None
     )

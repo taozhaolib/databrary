@@ -79,7 +79,10 @@ sealed class FileObject protected (override val id : FileObject.Id, val format :
   }
 }
 
-final class TimeseriesObject private (override val id : TimeseriesObject.Id, format : ObjectFormat, ownerId : Option[Study.Id], consent_ : Consent.Value, date_ : Option[Date], val duration : Interval) extends FileObject(id, format, ownerId, consent_, date_) with TableRowId[TimeseriesObject]
+final class TimeseriesObject private (override val id : TimeseriesObject.Id, format : ObjectFormat, ownerId : Option[Study.Id], consent_ : Consent.Value, date_ : Option[Date], val duration : Interval) extends FileObject(id, format, ownerId, consent_, date_) with TableRowId[TimeseriesObject] {
+  /* this should be generalized for other privledged types: */
+  def isVideo = format.mimetype.startsWith("video/")
+}
 
 final class Excerpt private (override val id : Excerpt.Id, val source : TimeseriesObject, val offset : Interval, val duration : Option[Interval], public_ : Boolean) extends Object(id) with TableRowId[Excerpt] {
   def sourceId = source.id

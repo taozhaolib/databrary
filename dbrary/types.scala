@@ -60,6 +60,8 @@ case class Interval(seconds : Double) extends scala.runtime.FractionalProxy[Doub
   def millis = 1000*seconds
   def nanos = 1000000000*seconds
   def samples(rate : Double) = math.round(rate*seconds)
+  def +(other : Interval) = Interval(seconds + other.seconds)
+  def -(other : Interval) = Interval(seconds - other.seconds)
 
   /* This is unfortuante but I can't find any other reasonable formatting options outside the postgres server itself: */
   override def toString = {
