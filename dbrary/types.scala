@@ -4,6 +4,7 @@ import org.postgresql._
 import org.postgresql.util._
 import java.sql.{Timestamp,Date,SQLException}
 import anorm._
+import play.api.mvc.{PathBindable,JavascriptLitteral}
 
 class PGObject(pgType : String, pgValue : String) extends PGobject {
   setType(pgType)
@@ -84,10 +85,14 @@ object Interval {
       case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to PGInterval for column " + qualified))
     }
   }
-
   implicit val statement : ToStatement[Interval] = new ToStatement[Interval] {
     def set(s: java.sql.PreparedStatement, index: Int, a: Interval) =
       s.setObject(index, new PGInterval(0, 0, 0, 0, 0, a.seconds))
+  }
+
+  implicit val pathBindable : PathBindable[Interval] = PathBindable.bindableDouble.transform(apply _, _.seconds)
+  implicit val javascriptLitteral : JavascriptLitteral[Interval] = new JavascriptLitteral[Interval] {
+    def to(value : Interval) = value.seconds.toString
   }
 }
 

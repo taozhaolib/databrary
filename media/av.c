@@ -111,6 +111,9 @@ error:
 	return probe;
 }
 
+/* This does the equivalent of:
+ *   ffmpeg -loglevel error -accurate_seek -ss $offset -i $infile -f:v image2 -frames:v 1 $outfile
+ */
 JNIEXPORT void JNICALL
 Java_media_AV_00024__1frame(
 		JNIEnv *env,

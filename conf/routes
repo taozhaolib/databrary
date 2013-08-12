@@ -45,6 +45,7 @@ GET	/object/:id/:obj			controllers.Object.view(id : models.Container.Id, obj : m
 GET	/object/:id/:obj/download		controllers.Object.download(id : models.Container.Id, obj : models.Object.Id, inline : Boolean = false)
 GET	/object/:id/:obj/inline			controllers.Object.download(id : models.Container.Id, obj : models.Object.Id, inline : Boolean = true)
 GET	/object/:id/:obj/head			controllers.Object.head(id : models.Container.Id, obj : models.Object.Id)
+GET	/object/:id/:obj/frame/:offset		controllers.Object.frame(id : models.Container.Id, obj : models.Object.Id, offset : dbrary.Interval)
 GET	/object/:id/:obj/edit			controllers.Object.edit(id : models.Container.Id, obj : models.Object.Id)
 POST	/object/:id/:obj/Edit			controllers.Object.change(id : models.Container.Id, obj : models.Object.Id)
 

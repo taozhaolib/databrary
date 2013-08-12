@@ -53,23 +53,15 @@ object Object extends SiteController {
     )
   }
 
-  def head(i : models.Container.Id, o : models.Object.Id) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
+  def frame(i : models.Container.Id, o : models.Object.Id, offset : dbrary.Interval = dbrary.Interval(0)) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
     objectResult(
-      link.objId.unId.formatted("head:%d"),
-      store.Object.readHead(link.obj),
-      FileFormat.Image,
-      None
-    )
-  }
-
-  def frame(i : models.Container.Id, o : models.Object.Id, offset : dbrary.Interval) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
-    objectResult(
-      "frame:%d.%f".format(link.objId.unId, offset.seconds),
+      "frame:%d:%f".format(link.objId.unId, offset.seconds),
       store.Object.readFrame(link.obj, offset),
       FileFormat.Image,
       None
     )
   }
+  def head(i : models.Container.Id, o : models.Object.Id) = frame(i, o)
 
   private[this] val fileFields = tuple(
     "consent" -> form.enumField(Consent),
