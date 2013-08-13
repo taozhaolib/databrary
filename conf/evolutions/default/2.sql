@@ -28,18 +28,24 @@ INSERT INTO "study" ("id", "title") VALUES (1, 'Demo sandbox');
 INSERT INTO "slot" ("id", "study", "ident") VALUES (2, 1, 'S1');
 SELECT setval('container_id_seq', 2);
 
-INSERT INTO "study_access" ("study", "entity", "access", "inherit") VALUES (1, -1, 'VIEW', 'VIEW');
+INSERT INTO "study_access" ("study", "entity", "access", "inherit") VALUES (1, -1, 'DOWNLOAD', 'DOWNLOAD');
 INSERT INTO "study_access" ("study", "entity", "access", "inherit") VALUES (1, 0, 'DOWNLOAD', 'DOWNLOAD');
 INSERT INTO "study_access" ("study", "entity", "access", "inherit") VALUES (1, 1, 'ADMIN', 'NONE');
 INSERT INTO "study_access" ("study", "entity", "access", "inherit") VALUES (1, 2, 'ADMIN', 'NONE');
 INSERT INTO "study_access" ("study", "entity", "access", "inherit") VALUES (1, 3, 'ADMIN', 'NONE');
 
+INSERT INTO "timeseries" ("id", "format", "owner", "consent", "duration") VALUES (1, 2, 1, 'PUBLIC', interval '40');
+SELECT setval('object_id_seq', 1);
+
+INSERT INTO "object_link" ("container", "object", "title") VALUES (1, 1, 'counting');
+
 # --- !Downs
 ;
 
-TRUNCATE "entity", "study", "container" CASCADE;
+TRUNCATE "entity", "study", "container", "timeseries", "object", "object_link" CASCADE;
 SELECT setval('entity_id_seq', 1, 'f');
 SELECT setval('container_id_seq', 1, 'f');
+SELECT setval('object_id_seq', 1, 'f');
 
 INSERT INTO "entity" VALUES (-1, 'Everybody');
 INSERT INTO "entity" VALUES (0, 'Databrary');
