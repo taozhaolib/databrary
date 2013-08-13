@@ -23,14 +23,18 @@
 	
 	<body>
 		@region.siteHeader()
-		
-		<div id="site_body">
-			<div class="wrapper">
-				@body
-			</div>
-		</div>
 
-        @region.siteFooter()
+        <div class="fixed_wrapper">
+            <div id="site_body">
+                <div class="wrapper">
+                    @body
+                </div>
+            </div>
+
+            @region.siteFooter()
+        </div>
+
+
 		
 		@region.siteHeaderNav(request)
 	</body>

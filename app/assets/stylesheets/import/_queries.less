@@ -19,6 +19,20 @@ MOBILE
   .banner {
     font-size: 0.6em;
   }
+
+  #body_header .search,
+  #body_header .searchbox {
+    width: 100%;
+  }
+
+  #body_header .search {
+    height: auto;
+    padding-top: @site_padding/4;
+  }
+
+  #static_links {
+    z-index: 1;
+  }
 }
 
 /*
@@ -40,6 +54,12 @@ NARROW TABLET
 
   .banner {
     font-size: 0.8em;
+  }
+
+  #body_header .searchbox {
+    width: 180px;
+    position: relative;
+    top: -3px;
   }
 }
 
@@ -71,7 +91,7 @@ NORMAL SCREEN
   .row { .grid_row(); }
   .col { .grid_column(@grid_columns); }
 
-  .column_wide { .grid_column(6); }
+  .column_wide { .grid_column(6, 1.5); }
   .column_narrow { .grid_column(3); }
 }
 
@@ -85,7 +105,7 @@ LARGE SCREEN
   .row { .grid_row(); }
   .col { .grid_column(@grid_columns); }
 
-  .column_wide { .grid_column(6); }
+  .column_wide { .grid_column(6, 3); }
   .column_narrow { .grid_column(3); }
 
   .banner {
