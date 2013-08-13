@@ -114,7 +114,7 @@ error:
 /* This does the equivalent of:
  *   ffmpeg -loglevel error -accurate_seek -ss $offset -i $infile -f:v image2 -frames:v 1 $outfile
  */
-JNIEXPORT void JNICALL
+JNIEXPORT jobject JNICALL
 Java_media_AV_00024__1frame(
 		JNIEnv *env,
 		jobject this,
@@ -123,13 +123,14 @@ Java_media_AV_00024__1frame(
 		jstring joutfile)
 {
 	const char *infile = (*env)->GetStringUTFChars(env, jinfile, 0);
-	const char *outfile = (*env)->GetStringUTFChars(env, joutfile, 0);
+	const char *outfile = joutfile ? (*env)->GetStringUTFChars(env, joutfile, 0) : NULL;
 	AVFormatContext *in = NULL, *out = NULL;
 	AVCodec *codec;
 	AVStream *is = NULL, *os = NULL;
 	AVPacket pkt;
 	AVFrame *frame = NULL;
 	int i;
+	jbyteArray jimg = NULL;
 
 	av_init_packet(&pkt);
 
@@ -157,7 +158,10 @@ Java_media_AV_00024__1frame(
 		av_free_packet(&pkt);
 	} while (!gpp || frame->pts < off);
 
-	CHECK(avformat_alloc_output_context2(&out, NULL, "image2", outfile), "opening '%s'", outfile);
+	CHECK(avformat_alloc_output_context2(&out, NULL, outfile ? "image2" : "image2pipe", outfile), "opening '%s'", outfile);
+	if (!outfile)
+		CHECK(avio_open_dyn_buf(&out->pb), "opening buffer");
+
 	if (!((codec = avcodec_find_encoder(AV_CODEC_ID_MJPEG)) &&
 	      (os = avformat_new_stream(out, codec)))) {
 		throw(env, 0, "cannot find JPEG codec or create output stream");
@@ -172,6 +176,7 @@ Java_media_AV_00024__1frame(
 
 	if (os->codec->pix_fmt != frame->format)
 	{
+		/* This will only be necessary to support certain video formats */
 		throw(env, 0, "pixel format conversion not supported");
 		goto error;
 
@@ -193,6 +198,24 @@ Java_media_AV_00024__1frame(
 	CHECK(av_write_frame(out, &pkt), "writing frame to '%s'", outfile);
 	CHECK(av_write_trailer(out), "writing trailer to '%s'", outfile);
 
+	if (!outfile)
+	{
+		uint8_t *buf = NULL;
+		int l = avio_close_dyn_buf(out->pb, &buf);
+		/* assuming jbyte === uint8_t */
+		jbyte *img;
+		if (!((jimg = (*env)->NewByteArray(env, l)) &&
+		      (img = (*env)->GetByteArrayElements(env, jimg, NULL))))
+		{
+			jimg = NULL;
+			av_free(buf);
+			goto error;
+		}
+		memcpy(img, buf, l);
+		(*env)->ReleaseByteArrayElements(env, jimg, img, 0);
+		av_free(buf);
+	}
+
 error:
 	av_frame_free(&frame);
 	av_free_packet(&pkt);
@@ -207,7 +230,8 @@ error:
 		avformat_close_input(&in);
 	}
 
-	(*env)->ReleaseStringUTFChars(env, joutfile, outfile);
+	if (joutfile)
+		(*env)->ReleaseStringUTFChars(env, joutfile, outfile);
 	(*env)->ReleaseStringUTFChars(env, jinfile, infile);
-	return;
+	return jimg;
 }

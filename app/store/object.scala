@@ -17,6 +17,11 @@ trait StreamEnumerator extends Enumerator[Array[Byte]] {
   val size : Option[Long]
 }
 object StreamEnumerator {
+  def apply(buf : Array[Byte]) = new StreamEnumerator {
+    val size = Some(buf.length.toLong)
+    def apply[A](it : Iteratee[Array[Byte], A]) : Future[Iteratee[Array[Byte], A]] = 
+      Enumerator.apply(buf).apply[A](it)
+  }
   def fromStream(input : InputStream, chunkSize : Int = 8192) = new StreamEnumerator {
     val size = None /* input.available */
     def apply[A](it : Iteratee[Array[Byte], A]) : Future[Iteratee[Array[Byte], A]] = 
@@ -81,7 +86,11 @@ object Excerpt extends StoreDir[models.Object.Id]("store.cache") {
 
   private def genFrame(id : models.TimeseriesObject.Id, offset : Interval, cache : Boolean = true) : Future[StreamEnumerator] =
     /* Using millisecond resolution: */
-    generate(file(id, offset.millis.toLong.formatted(":%d")), (f : File) => media.AV.frame(FileObject.file(id), offset, f), cache)
+    if (cache && cacheEnabled)
+      generate(file(id, offset.millis.toLong.formatted(":%d")), (f : File) => media.AV.frame(FileObject.file(id), offset, f), cache)
+    else Future {
+      StreamEnumerator(media.AV.frame(FileObject.file(id), offset))
+    }
 
   private[store] def readFrame(t : models.TimeseriesObject, offset : Interval) : Future[StreamEnumerator] =
     genFrame(t.id, offset, offset == Interval(0))

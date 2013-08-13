@@ -28,9 +28,12 @@ object AV {
   }
 
   @native def _probe(file : String) : Probe
-  @native def _frame(infile : String, offset : Double, outfile : String) : Unit
+  @native def _frame(infile : String, offset : Double, outfile : String) : Array[Byte]
   def probe(file : File) : Probe = _probe(file.getPath)
-  def frame(infile : File, offset : Interval, outfile : File) = _frame(infile.getPath, offset.seconds, outfile.getPath)
+  def frame(infile : File, offset : Interval) : Array[Byte] =
+    _frame(infile.getPath, offset.seconds, null)
+  def frame(infile : File, offset : Interval, outfile : File) : Unit =
+    _frame(infile.getPath, offset.seconds, outfile.getPath)
   def segment(infile : File, offset : Interval, duration : Interval, outfile : File) : Unit = {
     /* XXX this rounds outwards to keyframes and does other strange things with timing */
     val r = new ProcessBuilder("ffmpeg", "-loglevel", "error", "-accurate_seek", "-ss", offset.seconds.toString, "-t", duration.seconds.toString, "-i", infile.getPath, "-codec", "copy", outfile.getPath).inheritIO.redirectInput(new File("/dev/null")).start.waitFor
