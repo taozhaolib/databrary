@@ -1,7 +1,14 @@
 /*
 MIXINS
 */
-@import "mixins/_all.less";
+@import "mixins/_settings";
+@import "mixins/_typography";
+@import "mixins/_helpers";
+@import "mixins/_sprites";
+@import "mixins/_icons";
+@import "mixins/_arrows";
+
+@import "mixins/_grid.less";
 
 /*
 IMPORTS
@@ -9,7 +16,6 @@ IMPORTS
 @import "import/_normalize.less";
 @import "import/_basics.less";
 
-@import "import/_grid.less";
 @import "import/_typography.less";
 @import "import/_forms.less";
 
@@ -20,9 +26,7 @@ IMPORTS
 /*
 DRAFT
 */
-.hide {
-  .hidden();
-}
+// ...
 
 /*
 QUERIES

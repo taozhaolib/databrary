@@ -1,10 +1,10 @@
 @(title : String = "", request : Option[SiteRequest[_]] = None)(body : Html)
 
 @template.html5(title) {
-    @region.bodyHeader()
+    @region.bodyHeaderSearch()
 
     <div class="row">
-        <main id="body_main" class="col">
+        <main id="body_main" class="column_full">
             @body
         </main>
     </div>

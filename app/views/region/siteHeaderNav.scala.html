@@ -5,23 +5,19 @@
             <div id="site_user" class="drop_down">
                 @request.flatMap(_.user).fold {
                     <div class="drop_toggle nil">
-                        <a href="@routes.Login.view">login</a>
+                        <a href="@routes.Login.view" class="login modal">login</a>
                         <span>|</span>
                         <a href="@routes.Login.view">register</a>
                     </div>
                 } { u =>
                     <div class="drop_toggle">
-                        <a href="@routes.Login.view">login</a>
-                        <span>|</span>
-                        <a href="@routes.Login.view">register</a>
+                        <img src="http://www.gravatar.com/avatar/NONONONO.jpg?s=16&d=mm">
+                        @display(u)(request.get)
                     </div>
 
                     <div class="drop_menu">
-                        <form method="post">
-                            <input type="text" id="username" placeholder="Username">
-                            <input type="password" id="password" placeholder="Password">
-                            <button>Login</button>
-                        </form>
+                        @display(u)(request.get)
+                        <a href="@routes.Login.logout">logout</a>
                     </div>
                 }
             </div>

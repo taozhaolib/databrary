@@ -1,4 +1,7 @@
 package views.html
+/**
+ * The file needs to be sorted to views/script/
+ */
 
 import play.api.templates.HtmlFormat._
 import util._

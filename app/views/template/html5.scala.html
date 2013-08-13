@@ -9,33 +9,29 @@
 		<title>@title || Databrary</title>
 
 		<link rel="stylesheet" href="@routes.Assets.at("stylesheets/main.min.css")">
-		
+
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script>
             if (!window.jQuery) {
-                document.write('<script src="assets/javascripts/jquery-1.10.2.min.js"><\/script>');
+                document.write('<script src="assets/javascripts/libs/jquery/jquery-1.10.2.min.js"><\/script>');
             }
         </script>
 		<script src="@routes.Assets.at("javascripts/main.js")"></script>
 
-        <!--[if lt IE 9]><script src="@routes.Assets.at("javascripts/lib/html5shiv/html5shiv.min.js")"></script><![endif]-->
+        <!--[if lt IE 9]><script src="@routes.Assets.at("javascripts/libs/html5shiv/html5shiv.min.js")"></script><![endif]-->
 	</head>
-	
+
 	<body>
 		@region.siteHeader()
 
-        <div class="fixed_wrapper">
-            <div id="site_body">
-                <div class="wrapper">
-                    @body
-                </div>
+        <div id="site_body">
+            <div class="wrapper">
+                @body
             </div>
-
-            @region.siteFooter()
         </div>
 
+        @region.siteFooter()
 
-		
 		@region.siteHeaderNav(request)
 	</body>
 </html>
