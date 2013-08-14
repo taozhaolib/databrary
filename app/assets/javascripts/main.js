@@ -77,6 +77,6 @@ var dbjs = {};
 $(document).ready(function () {
     // event registration should only appear on the pages it's need. I've added it to-do.
     dbjs.toggleFold('.question', 'h2', 'div');
-    dbjs.menuReduce('#static_links', '#body_main > article > h1:first-child');
+    dbjs.menuReduce('.sidebar_menu', 'main > article > h1:first-child');
     dbjs.footerFixer('#site_footer', '#site_body');
 });

@@ -2,95 +2,67 @@
 POSITION
 */
 .site_header {
-	position: fixed;
-	z-index: 1000;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: @header_height;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: @header_height;
 }
 
 /*
 HEADER
 */
 #site_header_head {
-	background: @black;
-	color: @white;
-	.box-shadow(@header_shadow);
-	
-	h1 {
-		margin-top: 0;
-		margin-bottom: 0;
-		font-size: 1.1em;
-		font-weight: normal;
-		line-height: @header_height;
-		
-		a {
-			display: inline-block;
-			background: url('/assets/images/logo/databrary-nav.png') no-repeat 0 center;
-			padding: 0 5px 0 25px;
+  background: @black;
+  color: @white;
+  .box-shadow(@header_shadow);
 
-			color: inherit;
-		}
-	}
+  h1 {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 1.1em;
+    font-weight: normal;
+    line-height: @header_height;
+
+    a {
+      display: inline-block;
+      background: url('/assets/images/logo/databrary-nav.png') no-repeat 0 center;
+      padding: 0 5px 0 25px;
+
+      color: inherit;
+    }
+  }
 }
 
 /*
 NAVIGATION
 */
 #site_header_nav {
-	overflow: visible;
-	height: 0;
-}
+  overflow: visible;
+  height: 0;
 
-#site_user {
-	position: absolute;
-	top: 0;
-	right: 5px;
-	
-	input {
-		margin-bottom: 10px;
-	}
-}
+  color: @gray_75;
 
-/*
-DROP DOWN
-*/
-.drop_down {
-	&.dropped {
-		a {
-			text-decoration: underline;
-			color: #ccc;
-		}
+  .header_user {
+    position: absolute;
+    top: 0;
+    right: 5px;
+    padding: 0 10px;
 
-		.drop_menu {
-			display: block;
-		}
-	}
+    img {
+      vertical-align: -3px;
+    }
 
-	.drop_toggle {
-		padding: 0 10px;
+    a {
+      font-size: 0.9em;
+      color: @gray_50;
+      text-decoration: none;
+      line-height: @header_height;
 
-		img {
-			vertical-align: -3px;
-		}
-
-		a {
-			font-size: 0.9em;
-			color: #999;
-			text-decoration: none;
-			line-height: @header_height;
-		}
-	}
-
-	.drop_menu {
-		display: none;
-		position: absolute;
-		top: 40px;
-		right: 0;
-		padding: 20px;
-
-		background: #666;
-		.box-shadow(@header_shadow);
-	}
+      &:hover {
+        color: @gray_75;
+      }
+    }
+  }
 }
