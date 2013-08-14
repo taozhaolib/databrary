@@ -4,6 +4,7 @@ import org.postgresql._
 import org.postgresql.util._
 import java.sql.{Timestamp,Date,SQLException}
 import anorm._
+import play.api.mvc.{PathBindable,JavascriptLitteral}
 
 class PGObject(pgType : String, pgValue : String) extends PGobject {
   setType(pgType)
@@ -60,6 +61,8 @@ case class Interval(seconds : Double) extends scala.runtime.FractionalProxy[Doub
   def millis = 1000*seconds
   def nanos = 1000000000*seconds
   def samples(rate : Double) = math.round(rate*seconds)
+  def +(other : Interval) = Interval(seconds + other.seconds)
+  def -(other : Interval) = Interval(seconds - other.seconds)
 
   /* This is unfortuante but I can't find any other reasonable formatting options outside the postgres server itself: */
   override def toString = {
@@ -82,10 +85,14 @@ object Interval {
       case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to PGInterval for column " + qualified))
     }
   }
-
   implicit val statement : ToStatement[Interval] = new ToStatement[Interval] {
     def set(s: java.sql.PreparedStatement, index: Int, a: Interval) =
       s.setObject(index, new PGInterval(0, 0, 0, 0, 0, a.seconds))
+  }
+
+  implicit val pathBindable : PathBindable[Interval] = PathBindable.bindableDouble.transform(apply _, _.seconds)
+  implicit val javascriptLitteral : JavascriptLitteral[Interval] = new JavascriptLitteral[Interval] {
+    def to(value : Interval) = value.seconds.toString
   }
 }
 

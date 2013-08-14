@@ -1,5 +1,6 @@
 package controllers
 
+import scala.concurrent.Future
 import play.api._
 import          Play.current
 import          mvc._
@@ -7,6 +8,7 @@ import          data._
 import               Forms._
 import          i18n.Messages
 import          libs.iteratee.Enumerator
+import          libs.concurrent.Execution.Implicits.defaultContext
 import util._
 import models._
 
@@ -25,30 +27,41 @@ object Object extends SiteController {
     Ok(views.html.objectLink(link))
   }
 
-  def download(i : models.Container.Id, o : models.Object.Id) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
-    val etag = link.objId.unId.formatted("obj:%d")
+  private def objectResult(tag : String, data_ : => Future[store.StreamEnumerator], fmt : ObjectFormat, saveAs : Option[String])(implicit request : SiteRequest[_]) : Result =
     /* Assuming objects are immutable, any if-modified-since header is good enough */
-    request.headers.get(IF_NONE_MATCH).filter(_ == etag).orElse(
+    request.headers.get(IF_NONE_MATCH).filter(_ == tag).orElse(
       request.headers.get(IF_MODIFIED_SINCE)
-    ).fold {
-      link.obj match {
-        case fobj : FileObject => {
-          val file = store.Object.file(fobj.id)
-          SimpleResult(
-            header = ResponseHeader(OK, Map(
-              CONTENT_LENGTH -> file.length.toString,
-              CONTENT_TYPE -> fobj.format.mimetype,
-              CONTENT_DISPOSITION -> ("attachment; filename=\"" + (link.title + fobj.format.extension.fold("")("." + _)).replaceAll("([\\p{Cntrl}\"\\\\])", "\\\\$2") + "\""),
-              ETAG -> etag,
-              CACHE_CONTROL -> "max-age=31556926, private"
-            )),
-            Enumerator.fromFile(file)
-          ) : Result
-        }
-        case e : Excerpt => NotImplemented
-      }
-    } (_ => NotModified)
+    ).fold(AsyncResult(data_.map { data =>
+      val headers = Seq[Option[(String, String)]](
+        data.size.map(CONTENT_LENGTH -> _.toString),
+        Some(CONTENT_TYPE -> fmt.mimetype),
+        saveAs.map(name => CONTENT_DISPOSITION -> ("attachment; filename=\"" + (name + fmt.extension.fold("")("." + _)).replaceAll("([\\p{Cntrl}\"\\\\])", "\\\\$2") + "\"")),
+        Some(ETAG -> tag),
+        Some(CACHE_CONTROL -> "max-age=31556926, private") /* this needn't be private for public data */
+      ).flatten
+      SimpleResult(
+        header = ResponseHeader(OK, Map(headers : _*)),
+        data)
+    }) : Result) (_ => NotModified)
+    
+  def download(i : models.Container.Id, o : models.Object.Id, inline : Boolean) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
+    objectResult(
+      link.objId.unId.formatted("obj:%d"),
+      store.Object.read(link.obj),
+      link.obj.format,
+      if (inline) None else Some(link.title)
+    )
   }
+
+  def frame(i : models.Container.Id, o : models.Object.Id, offset : dbrary.Interval = dbrary.Interval(0)) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
+    objectResult(
+      "frame:%d:%f".format(link.objId.unId, offset.seconds),
+      store.Object.readFrame(link.obj, offset),
+      FileFormat.Image,
+      None
+    )
+  }
+  def head(i : models.Container.Id, o : models.Object.Id) = frame(i, o)
 
   private[this] val fileFields = tuple(
     "consent" -> form.enumField(Consent),
@@ -110,11 +123,7 @@ object Object extends SiteController {
         f.contentType.flatMap(ObjectFormat.getMimetype(_)).fold(
           BadRequest(views.html.objectCreate(container, form.withError("file", "file.format.unknown", f.contentType.getOrElse("unknown")))) : Result)
         { format =>
-          val obj =
-            if (format.timeseries)
-              ???
-            else
-              FileObject.create(format, container.studyId, consent, date, f.ref)
+          val obj = models.Object.create(format, container.studyId, consent, date, f.ref)
           val link = ObjectLink.create(container, obj, maybe(title).getOrElse(f.filename), maybe(description))
           Redirect(link.pageURL)
         }

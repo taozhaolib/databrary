@@ -26,9 +26,12 @@ class GenericId[I,+T](val unId : I) {
   def equals(i : GenericId[I,_]) = i.unId equals unId
   def ==(i : GenericId[I,_]) = i.unId == unId
   def !=(i : GenericId[I,_]) = !(this == i)
+  override def hashCode = unId.hashCode
   override def toString = "Id(" + unId.toString + ")"
 }
-final class IntId[+T](unId : Int) extends GenericId[Int,T](unId)
+final class IntId[+T](unId : Int) extends GenericId[Int,T](unId) {
+  override def hashCode = unId
+}
 object IntId {
   def apply[T](i : Int) = new IntId[T](i)
   implicit def pathBindableId[T] : PathBindable[IntId[T]] = PathBindable.bindableInt.transform(apply[T] _, _.unId)
