@@ -51,6 +51,26 @@ var dbjs = {};
             $menu.toggleClass('dropped');
         });
     }
+
+    dbjs.footerFixer = function (element, above) {
+        var resizer = function(element, above) {
+            var windowHeight = $(window).height(),
+                $footer = $(element),
+                $body = $(above),
+                footerOffset = $footer.outerHeight() + $body.outerHeight(true) + $body.position().top;
+
+            if(windowHeight > footerOffset)
+                $footer.addClass('fixed');
+            else
+                $footer.removeClass('fixed');
+        }
+
+        $(window).resize(function(e) {
+            resizer(element, above);
+        });
+
+        resizer(element, above);
+    }
 }());
 
 // initialization
@@ -58,4 +78,5 @@ $(document).ready(function () {
     // event registration should only appear on the pages it's need. I've added it to-do.
     dbjs.toggleFold('.question', 'h2', 'div');
     dbjs.menuReduce('#static_links', '#body_main > article > h1:first-child');
+    dbjs.footerFixer('#site_footer', '#site_body');
 });
