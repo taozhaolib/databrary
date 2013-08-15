@@ -2,12 +2,13 @@ resourceGenerators in Compile <+= (streams, baseDirectory in Compile, resourceMa
 	val src = srcDir / "av.c"
 	val out = outDir / System.mapLibraryName("av")
 	if (FileInfo.lastModified(src).lastModified >= FileInfo.lastModified(out).lastModified) {
+		val slash = java.io.File.separator
 		val pkg = try {
 			"pkg-config --cflags --libs libavformat".!!
 		} catch {
 			case e : java.io.IOException => "-I/usr/local/lib -L/usr/local/lib -lavformat -lavcodec -lavutil"
 		}
-		val jh = System.getProperty("java.home") + java.io.File.pathSeparator + "include"
+		val jh = Option(System.getenv("JAVA_HOME")).getOrElse(System.getProperty("java.home") + slash + "..") + slash + "include"
 		// This does not handle spaces in paths properly:
 		val cmd = "gcc -Wall -fPIC -shared -o " + out + " -I\"" + jh + "\" " + pkg.trim + " " + src
 		str.log.info(cmd)
