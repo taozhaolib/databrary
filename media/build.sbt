@@ -7,9 +7,9 @@ resourceGenerators in Compile <+= (streams, baseDirectory in Compile, resourceMa
 		} catch {
 			case e : java.io.IOException => "-I/usr/local/lib -L/usr/local/lib -lavformat -lavcodec -lavutil"
 		}
-		val jh = System.getProperty("java.home")
+		val jh = System.getProperty("java.home") + java.io.File.pathSeparator + "include"
 		// This does not handle spaces in paths properly:
-		val cmd = "gcc -Wall -fPIC -shared -o " + out + " -I" + jh + "/include " + pkg.trim + " " + src
+		val cmd = "gcc -Wall -fPIC -shared -o " + out + " -I\"" + jh + "\" " + pkg.trim + " " + src
 		str.log.info(cmd)
 		outDir.mkdirs
 		if (cmd.! != 0)
