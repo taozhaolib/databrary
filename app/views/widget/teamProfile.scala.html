@@ -1,0 +1,34 @@
+@(name: String = "", position: String = "", email: String = "", image: String = "unknown.png", links: List[List[String]] = List())
+
+<article class="profile">
+    <div class="row">
+        <div class="column_mini">
+            <img src="/assets/images/profiles/@image" alt="@name" class="avatar">
+        </div>
+
+        <div class="column_small">
+            <h1>@Html(name)</h1>
+
+            <div class="position">@Html(position)</div>
+
+            <ul class="info">
+                @for(link <- links) {
+                    @if(link.length == 2) {
+                        <li><a href="@link(0)" title="@link(1)">@Html(link(1))</a></li>
+                    } else {
+                        <li>
+                            <div class="title">@Html(link(2))</div>
+                            <div class="affil"><a href="@link(0)" title="@link(1)">@Html(link(1))</a></div>
+                        </li>
+                    }
+                }
+            </ul>
+
+            <ul class="inline">
+                @if(email != "") {
+                    <li><a href="mailto:@email" title="Email @name"><img src="/assets/images/social/16px/email.png" alt="Email @name"></a></li>
+                }
+            </ul>
+        </div>
+    </div>
+</article>

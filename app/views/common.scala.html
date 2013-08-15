@@ -1,8 +1,12 @@
+@*
+ * Depreciated. All files will reference a specific template/
+ *@
 @(page : SitePage, action : String = "")(body : Html)(implicit request : SiteRequest[_])
 
 @defining(Path(page)) { path =>
-@commonBase(util.maybe(action).fold("")(_ + ": ") + path.toString, Some(request)) {
-	<h1>@path.toHtml</h1>
-	@body
-}
+	@template.html5(util.maybe(action).fold("")(_ + ": ") + path.toString, Some(request)) {
+		<h1>@path.toHtml</h1>
+
+		@body
+	}
 }

@@ -62,4 +62,7 @@ object Site extends SiteController {
     Ok("Ok")
   } }
 
+  def untrail(path : String) = Action {
+    MovedPermanently("/" + path)
+  }
 }

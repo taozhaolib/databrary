@@ -1,6 +1,6 @@
 @(form : Form[(String,String)])
 
-@commonBase("Login") {
+@template.html5("Login") {
 	@helper.form(routes.Login.post) {
 		@helper.inputText(form("username"))
 		@helper.inputText(form("openid"))

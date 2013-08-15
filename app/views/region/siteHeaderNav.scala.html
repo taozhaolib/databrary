@@ -1,0 +1,17 @@
+@(request: Option[SiteRequest[_]] = None)
+<section id="site_header_nav" class="site_header">
+    <div class="wrapper">
+        <div class="row">
+            <div class="header_user">
+                @request.flatMap(_.user).fold {
+                    <a href="@routes.Login.view" class="login modal">login</a>
+                    <span>|</span>
+                    <a href="@routes.Login.view">register</a>
+                } { u =>
+                    <img src="http://www.gravatar.com/avatar/NONONONO.jpg?s=16&d=mm">
+                    @display(u)(request.get)
+                }
+            </div>
+        </div>
+    </div>
+</section>

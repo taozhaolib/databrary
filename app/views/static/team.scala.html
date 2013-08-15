@@ -1,0 +1,29 @@
+@template.static("Our Team") {
+    <article id="static_team">
+        <h1>The Databrary Team</h1>
+
+        <h2>Principal Investigators</h2>
+
+        @widget.teamProfile("Karen Adolph", "Director", "karen.adolph@nyu.edu", "karen.jpg", List(List("http://www.nyu.edu/", "New York University", "Professor of Psychology and Neural Science"), List("http://psych.nyu.edu/adolph", "NYU Action Lab")))
+        @widget.teamProfile("Rick O. Gilmore", "Associate Director", "rogilmore@psu.edu", "rick.jpg", List(List("http://personal.psu.edu/rog1", "Penn State University", "Associate Professor of Psychology"), List("http://www.imaging.psu.edu", "<abbr title=\"Social, Life, &amp; Engineering Sciences Imaging Center\">SLEIC</abbr>", "Director of Human Imaging")))
+        @widget.teamProfile("David Millman", "Co-Investigator", "dsm@nyu.edu", "david.jpg", List(List("http://dlib.nyu.edu/dlts/", "New York University", "Director of Digital Library Technology Services")))
+
+        <h2>Staff</h2>
+
+        @widget.teamProfile("Michael Continues", "", "mike@databrary.org", links = List())
+        @widget.teamProfile("Dylan Simon", "", "dylan@databrary.org", links = List())
+        @widget.teamProfile("Alex Sokoloff", "", "alex@databrary.org", links = List())
+        @widget.teamProfile("Lisa Steiger", "", "lisa@databrary.org", links = List())
+
+        <h2>Contributors</h2>
+
+        @widget.teamProfile("Gladys Chan", "", "gladys@databrary.org", links = List())
+        @widget.teamProfile("John Franchak", "", "", links = List())
+        @widget.teamProfile("Clinton Freeman", "", "", links = List())
+        @widget.teamProfile("Jesse Lingeman", "", "jesse@databrary.org", links = List())
+        @widget.teamProfile("Eric Montellese", "", "", links = List())
+        @widget.teamProfile("Kasey Soska", "", "", links = List())
+    </article>
+} {
+
+}
