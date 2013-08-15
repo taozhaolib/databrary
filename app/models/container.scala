@@ -12,8 +12,8 @@ sealed abstract class Container protected (val id : Container.Id) extends TableR
   def study : Study
   def permission : Permission.Value = study.permission
 
-  def objects(implicit db : Site.DB) = ObjectLink.getObjects(this)
-  def getObject(o : Object.Id)(implicit db : Site.DB) = ObjectLink.get(this, o)
+  def assets(implicit db : Site.DB) = AssetLink.getAssets(this)
+  def getAsset(o : Asset.Id)(implicit db : Site.DB) = AssetLink.get(this, o)
 
   def comments(only : Boolean = false)(implicit db : Site.DB) = Comment.getContainer(this, only)(db)
   def addComment(text : String)(implicit site : Site) = Comment.create(this, text)
@@ -41,7 +41,7 @@ final class Study private (override val id : Study.Id, title_ : String, descript
   def pageParent(implicit site : Site) = None
   def pageURL = controllers.routes.Study.view(id).url
 
-  def entityAccess(p : Permission.Value = Permission.NONE)(implicit db : Site.DB) = StudyAccess.getEntities(this, p)
+  def partyAccess(p : Permission.Value = Permission.NONE)(implicit db : Site.DB) = StudyAccess.getEntities(this, p)
 
   def slots(implicit db : Site.DB) = Slot.getStudy(this)
   def slot(ident : String)(implicit db : Site.DB) = Slot.getIdent(this, ident)

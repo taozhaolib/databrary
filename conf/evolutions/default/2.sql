@@ -4,13 +4,13 @@
 # --- !Ups
 ;
 
-INSERT INTO entity (id, name) VALUES (1, 'Dylan Simon');
-INSERT INTO entity (id, name) VALUES (2, 'Alex Sokoloff');
-INSERT INTO entity (id, name) VALUES (3, 'Mike Continues');
-INSERT INTO entity (id, name) VALUES (4, 'Lisa Steiger');
-INSERT INTO entity (id, name) VALUES (5, 'Karen Adolph');
-INSERT INTO entity (id, name) VALUES (6, 'Rick Gilmore');
-SELECT setval('entity_id_seq', 6);
+INSERT INTO party (id, name) VALUES (1, 'Dylan Simon');
+INSERT INTO party (id, name) VALUES (2, 'Alex Sokoloff');
+INSERT INTO party (id, name) VALUES (3, 'Mike Continues');
+INSERT INTO party (id, name) VALUES (4, 'Lisa Steiger');
+INSERT INTO party (id, name) VALUES (5, 'Karen Adolph');
+INSERT INTO party (id, name) VALUES (6, 'Rick Gilmore');
+SELECT setval('party_id_seq', 6);
 
 INSERT INTO account (id, username, email, openid) VALUES (1, 'dylan', 'dylan@databrary.org', 'http://dylex.net/');
 INSERT INTO account (id, username, email, openid) VALUES (2, 'alex', 'alex@databrary.org', NULL);
@@ -28,26 +28,26 @@ INSERT INTO study (id, title) VALUES (1, 'Demo sandbox');
 INSERT INTO slot (id, study, ident) VALUES (2, 1, 'S1');
 SELECT setval('container_id_seq', 2);
 
-INSERT INTO study_access (study, entity, access, inherit) VALUES (1, -1, 'DOWNLOAD', 'DOWNLOAD');
-INSERT INTO study_access (study, entity, access, inherit) VALUES (1, 0, 'DOWNLOAD', 'DOWNLOAD');
-INSERT INTO study_access (study, entity, access, inherit) VALUES (1, 1, 'ADMIN', 'NONE');
-INSERT INTO study_access (study, entity, access, inherit) VALUES (1, 2, 'ADMIN', 'NONE');
-INSERT INTO study_access (study, entity, access, inherit) VALUES (1, 3, 'ADMIN', 'NONE');
+INSERT INTO study_access (study, party, access, inherit) VALUES (1, -1, 'DOWNLOAD', 'DOWNLOAD');
+INSERT INTO study_access (study, party, access, inherit) VALUES (1, 0, 'DOWNLOAD', 'DOWNLOAD');
+INSERT INTO study_access (study, party, access, inherit) VALUES (1, 1, 'ADMIN', 'NONE');
+INSERT INTO study_access (study, party, access, inherit) VALUES (1, 2, 'ADMIN', 'NONE');
+INSERT INTO study_access (study, party, access, inherit) VALUES (1, 3, 'ADMIN', 'NONE');
 
 INSERT INTO timeseries (id, format, owner, consent, duration) VALUES (1, 2, 1, 'PUBLIC', interval '40');
-SELECT setval('object_id_seq', 1);
+SELECT setval('asset_id_seq', 1);
 
-INSERT INTO object_link (container, object, title) VALUES (1, 1, 'counting');
+INSERT INTO asset_link (container, asset, title) VALUES (1, 1, 'counting');
 
 # --- !Downs
 ;
 
-TRUNCATE entity, study, container, timeseries, object, object_link CASCADE;
-SELECT setval('entity_id_seq', 1, 'f');
+TRUNCATE party, study, container, timeseries, asset, asset_link CASCADE;
+SELECT setval('party_id_seq', 1, 'f');
 SELECT setval('container_id_seq', 1, 'f');
-SELECT setval('object_id_seq', 1, 'f');
+SELECT setval('asset_id_seq', 1, 'f');
 
-INSERT INTO entity VALUES (-1, 'Everybody');
-INSERT INTO entity VALUES (0, 'Databrary');
+INSERT INTO party VALUES (-1, 'Everybody');
+INSERT INTO party VALUES (0, 'Databrary');
 INSERT INTO authorize (child, parent, access) VALUES (0, -1, 'ADMIN');
 

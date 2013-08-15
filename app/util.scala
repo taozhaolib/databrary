@@ -16,7 +16,7 @@ object Site {
 }
 /* The basic information in every request, primarily implemented by controllers.SiteRequest */
 trait Site {
-  val identity : models.Entity
+  val identity : models.Party
   val db : Site.DB
   def user : Option[models.Account] = cast[models.Account](identity)
   def access = identity.access(db)

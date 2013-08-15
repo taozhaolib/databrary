@@ -54,14 +54,14 @@ private[store] class StoreDir[Id <: IntId[_]](conf : String) {
   protected def file(id : Id, ext : String) : File = new File(file(id).getPath + ext)
 }
 
-object FileObject extends StoreDir[models.FileObject.Id]("store.master") {
-  def store(id : models.FileObject.Id, f : TemporaryFile) =
+object FileAsset extends StoreDir[models.FileAsset.Id]("store.master") {
+  def store(id : models.FileAsset.Id, f : TemporaryFile) =
     f.moveTo(file(id))
-  def read(f : models.FileObject) : StreamEnumerator =
+  def read(f : models.FileAsset) : StreamEnumerator =
     StreamEnumerator.fromFile(file(f.id))
 }
 
-object Excerpt extends StoreDir[models.Object.Id]("store.cache") {
+object Excerpt extends StoreDir[models.Asset.Id]("store.cache") {
   private def cacheEnabled = base.exists
   implicit val executionContext : ExecutionContext = Akka.system.dispatchers.lookup("excerpt")
 
@@ -84,32 +84,32 @@ object Excerpt extends StoreDir[models.Object.Id]("store.cache") {
       }
     } }
 
-  private def genFrame(id : models.TimeseriesObject.Id, offset : Interval, cache : Boolean = true) : Future[StreamEnumerator] =
+  private def genFrame(id : models.Timeseries.Id, offset : Interval, cache : Boolean = true) : Future[StreamEnumerator] =
     /* Using millisecond resolution: */
     if (cache && cacheEnabled)
-      generate(file(id, offset.millis.toLong.formatted(":%d")), (f : File) => media.AV.frame(FileObject.file(id), offset, f), cache)
+      generate(file(id, offset.millis.toLong.formatted(":%d")), (f : File) => media.AV.frame(FileAsset.file(id), offset, f), cache)
     else Future {
-      StreamEnumerator(media.AV.frame(FileObject.file(id), offset))
+      StreamEnumerator(media.AV.frame(FileAsset.file(id), offset))
     }
 
-  private[store] def readFrame(t : models.TimeseriesObject, offset : Interval) : Future[StreamEnumerator] =
+  private[store] def readFrame(t : models.Timeseries, offset : Interval) : Future[StreamEnumerator] =
     genFrame(t.id, offset, offset == Interval(0))
   private[store] def readFrame(e : models.Excerpt, offset : Interval = Interval(0)) : Future[StreamEnumerator] =
     genFrame(e.sourceId, e.offset+offset, offset == Interval(0))
 
   private[store] def read(e : models.Excerpt) : Future[StreamEnumerator] = 
     e.duration.fold(readFrame(e)) { len =>
-      generate(file(e.id), (f : File) => media.AV.segment(FileObject.file(e.sourceId), e.offset, len, f))
+      generate(file(e.id), (f : File) => media.AV.segment(FileAsset.file(e.sourceId), e.offset, len, f))
     }
 }
 
-object Object {
-  def read(o : models.Object) : Future[StreamEnumerator] = o match {
-    case f : models.FileObject => Future.successful(FileObject.read(f))
+object Asset {
+  def read(o : models.Asset) : Future[StreamEnumerator] = o match {
+    case f : models.FileAsset => Future.successful(FileAsset.read(f))
     case e : models.Excerpt => Excerpt.read(e)
   }
-  def readFrame(o : models.Object, offset : Interval = Interval(0)) : Future[StreamEnumerator] = o match {
-    case t : models.TimeseriesObject if t.isVideo => Excerpt.readFrame(t, offset)
+  def readFrame(o : models.Asset, offset : Interval = Interval(0)) : Future[StreamEnumerator] = o match {
+    case t : models.Timeseries if t.isVideo => Excerpt.readFrame(t, offset)
     case e : models.Excerpt => Excerpt.readFrame(e, offset)
   }
 }

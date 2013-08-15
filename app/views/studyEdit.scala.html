@@ -1,9 +1,9 @@
-@(study : Study, editForm : controllers.Study.StudyForm, accessForms : Seq[(Entity,controllers.Study.AccessForm)], accessSearch : Form[String], accessResults : Seq[(Entity,controllers.Study.AccessForm)])(implicit request : SiteRequest[_])
+@(study : Study, editForm : controllers.Study.StudyForm, accessForms : Seq[(Party,controllers.Study.AccessForm)], accessSearch : Form[String], accessResults : Seq[(Party,controllers.Study.AccessForm)])(implicit request : SiteRequest[_])
 
-@accessFields(entity : Entity, form : Form[StudyAccess])(implicit fieldConstructor : helper.FieldConstructor) = {
-	<td>@display(entity)</td>
+@accessFields(party : Party, form : Form[StudyAccess])(implicit fieldConstructor : helper.FieldConstructor) = {
+	<td>@display(party)</td>
 	@enumSelect(form("access"), Permission)
-	@helper.select(form("inherit"), Permission.values.to(if (entity.id.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
+	@helper.select(form("inherit"), Permission.values.to(if (party.id.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
 }
 
 @common(study, "edit") {
@@ -26,14 +26,14 @@
 			<th>Action</th>
 		</tr>
 
-		@accessForms.map { case (entity,form) =>
-		@helper.form(routes.Study.accessChange(study.id, entity.id)) {
+		@accessForms.map { case (party,form) =>
+		@helper.form(routes.Study.accessChange(study.id, party.id)) {
 		<tr>
-			@accessFields(entity, form)
+			@accessFields(party, form)
 			<td>
 				<button type='submit'>Change</button>
-				@if(entity.id != request.identity.id) {
-				<a href='@routes.Study.accessDelete(study.id, entity.id)'>Revoke</a>
+				@if(party.id != request.identity.id) {
+				<a href='@routes.Study.accessDelete(study.id, party.id)'>Revoke</a>
 				}
 				@formErrors(form)
 			</td>
@@ -53,10 +53,10 @@
 		</tr>
 		}
 
-		@accessResults.map { case (entity,form) =>
-		@helper.form(routes.Study.accessAdd(study.id, entity.id)) {
+		@accessResults.map { case (party,form) =>
+		@helper.form(routes.Study.accessAdd(study.id, party.id)) {
 		<tr>
-			@accessFields(entity, form)
+			@accessFields(party, form)
 			<td>
 				<button type='submit'>Add</button>
 				@formErrors(form)

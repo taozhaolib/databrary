@@ -6,12 +6,12 @@
 		<a href='@routes.Slot.edit(slot.id)'>edit</a>
 	}
 
-	@objectList(slot)
+	@assetList(slot)
 
 	@comments(Some(routes.Comment.postSlot(slot.id)), slot.comments(false)(request.db)) { c =>
 		@display(c.who)
-		@c.obj.map { o =>
-			&gt; @display(o)
+		@c.asset.map { a =>
+			&gt; @display(a)
 		}
 	}
 }

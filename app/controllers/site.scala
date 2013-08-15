@@ -10,13 +10,13 @@ import dbrary._
 import util._
 import models._
 
-abstract class SiteRequest[A](request : Request[A], val identity : Entity, val db : util.Site.DB)
+abstract class SiteRequest[A](request : Request[A], val identity : Party, val db : util.Site.DB)
   extends WrappedRequest[A](request) with Site {
   def clientIP = Inet(request.remoteAddress)
 }
 
 class AnonRequest[A](request : Request[A], db : util.Site.DB)
-  extends SiteRequest[A](request, models.Entity.Nobody, db) {
+  extends SiteRequest[A](request, models.Party.Nobody, db) {
   override def user = None
 }
 
@@ -56,7 +56,7 @@ object Site extends SiteController {
       ensuring(_ || !Play.isProd, "Running insecure in production")
   
   def start = SiteAction(request => Ok(Login.viewLogin()), implicit request =>
-    Ok(views.html.entity(request.identity, Permission.ADMIN)))
+    Ok(views.html.party(request.identity, Permission.ADMIN)))
 
   def test = Action { request => DB.withConnection { implicit db =>
     Ok("Ok")

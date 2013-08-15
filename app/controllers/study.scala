@@ -32,16 +32,16 @@ object Study extends SiteController {
   private[this] def editFormFill(s : Study) = editForm.fill((s.title, s.description))
 
   type AccessForm = Form[StudyAccess]
-  private[this] def accessForm(study : Study, entity : models.Entity.Id) : AccessForm = Form(
+  private[this] def accessForm(study : Study, party : models.Party.Id) : AccessForm = Form(
     mapping(
       "access" -> number(min=0, max=Permission.maxId-1),
-      "inherit" -> number(min=0, max=(if (entity.unId > 0) Permission.EDIT else Permission.DOWNLOAD).id)
+      "inherit" -> number(min=0, max=(if (party.unId > 0) Permission.EDIT else Permission.DOWNLOAD).id)
     )((access, inherit) => StudyAccess(
-      study.id, entity, 
+      study.id, party, 
       Permission(access.max(inherit)),
       Permission(inherit)
     ))(a =>
-      if (a.studyId == study.id && a.entityId == entity)
+      if (a.studyId == study.id && a.partyId == party)
         Some((a.access.id, a.inherit.id))
       else
         None
@@ -54,12 +54,12 @@ object Study extends SiteController {
 
   private[this] def viewEdit(study : Study)(
     editForm : StudyForm = editFormFill(study),
-    accessChangeForm : Option[(models.Entity,AccessForm)] = None,
+    accessChangeForm : Option[(models.Party,AccessForm)] = None,
     accessSearchForm : Form[String] = accessSearchForm,
-    accessResults : Seq[(models.Entity,AccessForm)] = Seq())(
+    accessResults : Seq[(models.Party,AccessForm)] = Seq())(
     implicit request : SiteRequest[_]) = {
     val accessChange = accessChangeForm.map(_._1.id)
-    val accessForms = study.entityAccess().filter(a => Some(a.entityId) != accessChange).map(a => (a.entity, accessForm(study, a.entityId).fill(a))) ++ accessChangeForm
+    val accessForms = study.partyAccess().filter(a => Some(a.partyId) != accessChange).map(a => (a.party, accessForm(study, a.partyId).fill(a))) ++ accessChangeForm
     views.html.studyEdit(study, editForm, accessForms, accessSearchForm, accessResults)
   }
 
@@ -77,9 +77,9 @@ object Study extends SiteController {
     )
   }
 
-  def accessChange(i : models.Study.Id, e : models.Entity.Id) = check(i, Permission.ADMIN) { study => implicit request =>
+  def accessChange(i : models.Study.Id, e : models.Party.Id) = check(i, Permission.ADMIN) { study => implicit request =>
     accessForm(study, e).bindFromRequest.fold(
-      form => BadRequest(viewEdit(study)(accessChangeForm = Some((models.Entity.get(e).get, form)))),
+      form => BadRequest(viewEdit(study)(accessChangeForm = Some((models.Party.get(e).get, form)))),
       access => {
         access.set
         Redirect(routes.Study.edit(study.id))
@@ -87,7 +87,7 @@ object Study extends SiteController {
     )
   }
 
-  def accessDelete(i : models.Study.Id, e : models.Entity.Id) = check(i, Permission.ADMIN) { study => implicit request =>
+  def accessDelete(i : models.Study.Id, e : models.Party.Id) = check(i, Permission.ADMIN) { study => implicit request =>
     if (e != request.identity.id)
       StudyAccess.delete(study.id, e)
     Redirect(routes.Study.edit(study.id))
@@ -98,16 +98,16 @@ object Study extends SiteController {
     form.fold(
       form => BadRequest(viewEdit(study)(accessSearchForm = form)),
       name => {
-        val res = models.Entity.searchForStudyAccess(name, study.id)
+        val res = models.Party.searchForStudyAccess(name, study.id)
         Ok(viewEdit(study)(accessSearchForm = form, 
           accessResults = res.map(e => (e,accessForm(study,e.id)))))
       }
     )
   }
 
-  def accessAdd(i : models.Study.Id, e : models.Entity.Id) = check(i, Permission.ADMIN) { study => implicit request =>
+  def accessAdd(i : models.Study.Id, e : models.Party.Id) = check(i, Permission.ADMIN) { study => implicit request =>
     accessForm(study, e).bindFromRequest.fold(
-      form => BadRequest(viewEdit(study)(accessResults = Seq((models.Entity.get(e).get, form)))),
+      form => BadRequest(viewEdit(study)(accessResults = Seq((models.Party.get(e).get, form)))),
       access => {
         access.set
         Redirect(routes.Study.edit(study.id))
@@ -115,7 +115,7 @@ object Study extends SiteController {
     )
   }
 
-  def create(e : Option[models.Entity.Id]) = UserAction { implicit request =>
+  def create(e : Option[models.Party.Id]) = UserAction { implicit request =>
     val owner = e.getOrElse(request.identity.id)
     if (request.identity.delegatedBy(owner) < Permission.CONTRIBUTE)
       Forbidden

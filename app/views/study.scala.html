@@ -3,8 +3,8 @@
 @common(study) {
 
 	<ul>
-	@study.entityAccess(Permission.CONTRIBUTE)(request.db).map { a => 
-		<li>@display(a.entity)</li>
+	@study.partyAccess(Permission.CONTRIBUTE)(request.db).map { a => 
+		<li>@display(a.party)</li>
 	}
 	</ul>
 
@@ -14,7 +14,7 @@
 		<a href='@routes.Study.edit(study.id)'>edit</a>
 	}
 
-	@objectList(study)
+	@assetList(study)
 
 	<h2>Slots</h2>
 
@@ -34,8 +34,8 @@
 			@if(c.containerId != study.id) {
 				&gt; @display(c.container)
 			}
-			@c.obj.map { o =>
-				&gt; @display(o)
+			@c.asset.map { a =>
+				&gt; @display(a)
 			}
 	}
 }

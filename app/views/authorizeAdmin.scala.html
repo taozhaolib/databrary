@@ -1,7 +1,7 @@
-@(entity : Entity, authorizeForms : Seq[(Entity,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Entity,Form[Authorize])])(implicit request : SiteRequest[_])
+@(party : Party, authorizeForms : Seq[(Party,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Party,Form[Authorize])])(implicit request : SiteRequest[_])
 
-@authorizeFields(entity : Entity, form : Form[Authorize])(implicit fieldConstructor : helper.FieldConstructor) = {
-	<td>@display(entity)</td>
+@authorizeFields(party : Party, form : Form[Authorize])(implicit fieldConstructor : helper.FieldConstructor) = {
+	<td>@display(party)</td>
 	@enumSelect(form("access"), Permission)
 	@enumSelect(form("delegate"), Permission)
 	@helper.inputDate(form("expires"))
@@ -9,7 +9,7 @@
 
 @authorizeSearchWhich(which : Boolean)(implicit fieldConstructor : helper.FieldConstructor) = {
 @if(authorizeWhich.fold(true)(_ == which)) {
-	@helper.form(routes.Entity.authorizeSearch(entity.id, which)) {
+	@helper.form(routes.Party.authorizeSearch(party.id, which)) {
 	<tr>
 		@helper.inputText(authorizeSearch("name"))
 		<td/>
@@ -23,7 +23,7 @@
 	}
 
 	@authorizeResults.map { case (other,form) =>
-	@helper.form(routes.Entity.authorizeAdd(entity.id, which, other.id)) {
+	@helper.form(routes.Party.authorizeAdd(party.id, which, other.id)) {
 	<tr>
 		@authorizeFields(other, form)
 		<td>
@@ -50,7 +50,7 @@
 
 	<tr><th colspan="5"><h3>Memberships</h3></th></tr>
 
-	@entity.authorizeParents(true)(request.db).map { t =>
+	@party.authorizeParents(true)(request.db).map { t =>
 	<tr>
 		<td>@display(t.parent)</td>
 		<td>@t.access</td>
@@ -66,13 +66,13 @@
 	<tr><th colspan="5"><h3>Authorizations</h3></th></tr>
 
 	@authorizeForms.map { case (child,form) =>
-	@helper.form(routes.Entity.authorizeChange(entity.id, child.id)) {
+	@helper.form(routes.Party.authorizeChange(party.id, child.id)) {
 	<tr>
 		@authorizeFields(child, form)
 		<td>
 			@defining(form("pending").value == Some("true")) { pending =>
 			<button type='submit'>@{if(pending) "Authorize" else "Change"}</button>
-			<a href='@routes.Entity.authorizeDelete(entity.id, child.id)'>@{if(pending) "Deny" else "Revoke"}</a>
+			<a href='@routes.Party.authorizeDelete(party.id, child.id)'>@{if(pending) "Deny" else "Revoke"}</a>
 			@formErrors(form)
 			}
 		</td>

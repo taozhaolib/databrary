@@ -1,9 +1,9 @@
-@(entity : Entity, delegated : Permission.Value)(implicit request : SiteRequest[_])
+@(party : Party, delegated : Permission.Value)(implicit request : SiteRequest[_])
 
-@common(entity) {
+@common(party) {
 
 	@if(delegated >= Permission.ADMIN) {
-		<a href='@routes.Entity.admin(entity.id)'>admin</a>
+		<a href='@routes.Party.admin(party.id)'>admin</a>
 	}
 
 	<dl>
@@ -11,7 +11,7 @@
 	@* This information is limited to VIEW(?) *@
 	@if(request.identity.access(request.db) >= Permission.VIEW) {
 
-	@dbrary.cast[Account](entity).map { a =>
+	@dbrary.cast[Account](party).map { a =>
 		<dt>username</dt>
 		<dd>@a.username</dd>
 		<dt>email</dt>
@@ -23,11 +23,11 @@
 	}
 
 		<dt>Memberships</dt>
-		@entity.authorizeParents()(request.db).map { t => 
+		@party.authorizeParents()(request.db).map { t => 
 			<dd>@display(t.parent)</dd>
 		}
 		<dt>Members</dt>
-		@entity.authorizeChildren()(request.db).map { t => 
+		@party.authorizeChildren()(request.db).map { t => 
 			<dd>@display(t.child)</dd>
 		}
 
@@ -35,18 +35,18 @@
 
 		<dt>Studies</dt>
 		@if(delegated >= Permission.CONTRIBUTE) {
-			<dd>@helper.form(routes.Study.create(Some(entity.id))) {
+			<dd>@helper.form(routes.Study.create(Some(party.id))) {
 				<button type='submit'>Create new study</button>
 			}</dd>
 		}
-		@entity.studyAccess(Permission.CONTRIBUTE).map { a =>
+		@party.studyAccess(Permission.CONTRIBUTE).map { a =>
 			<dd>@display(a.study)</dd>
 		}
 
 
 	</dl>
 
-	@comments(None, entity.getComments) { c =>
+	@comments(None, party.getComments) { c =>
 		@display.path(c.target)
 	}
 }

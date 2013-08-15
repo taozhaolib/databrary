@@ -34,7 +34,7 @@ object Login extends Controller {
   private[this] def login(a : Account)(implicit request : Request[_], db : util.Site.DB) = {
     implicit val arequest = new UserRequest(request, a, db)
     Audit.add(AuditAction.login)
-    Redirect(routes.Entity.view(a.id)).withSession("user" -> a.id.unId.toString)
+    Redirect(routes.Party.view(a.id)).withSession("user" -> a.id.unId.toString)
   }
   
   def post = Action { implicit request =>

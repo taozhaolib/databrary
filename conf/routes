@@ -3,71 +3,71 @@
 # ~~~~
 
 # Static content
-GET     /                                      controllers.Static.index
-GET     /about                                 controllers.Static.about
-GET     /about/policies                        controllers.Static.policies
-GET     /about/faq                             controllers.Static.faq
-GET     /about/board                           controllers.Static.board
-GET     /about/team                            controllers.Static.team
-GET     /about/contributors                    controllers.Static.contributors
-GET     /about/jobs                            controllers.Static.jobs
-GET     /about/contact                         controllers.Static.contact
+GET     /                                      	controllers.Static.index
+GET     /about                                 	controllers.Static.about
+GET     /about/policies                        	controllers.Static.policies
+GET     /about/faq                             	controllers.Static.faq
+GET     /about/board                           	controllers.Static.board
+GET     /about/team                            	controllers.Static.team
+GET     /about/contributors                    	controllers.Static.contributors
+GET     /about/jobs                            	controllers.Static.jobs
+GET     /about/contact                         	controllers.Static.contact
 
 # Users
-GET     /login                                 controllers.Login.view
-POST    /Login                                 controllers.Login.post
-GET     /OpenID                                controllers.Login.openID(username = "")
-GET     /OpenID/:username                      controllers.Login.openID(username : String)
+GET     /login                                 	controllers.Login.view
+POST    /Login                                 	controllers.Login.post
+GET     /OpenID                                	controllers.Login.openID(username = "")
+GET     /OpenID/:username                      	controllers.Login.openID(username : String)
 # TODO: should be POST:
-GET     /Logout                                controllers.Login.logout
+GET     /Logout                                	controllers.Login.logout
 
 # Entities
-GET     /entity/:id                            controllers.Entity.view(id : models.Entity.Id)
-GET     /entity/:id/admin                      controllers.Entity.admin(id : models.Entity.Id)
-POST    /entity/:id/Admin                      controllers.Entity.change(id : models.Entity.Id)
-GET     /entity/:id/Authorize/search/child     controllers.Entity.authorizeSearch(id : models.Entity.Id, which : Boolean = false)
-GET     /entity/:id/Authorize/search/parent    controllers.Entity.authorizeSearch(id : models.Entity.Id, which : Boolean = true)
-POST    /entity/:id/Authorize/:child           controllers.Entity.authorizeChange(id : models.Entity.Id, child : models.Entity.Id)
-POST    /entity/:id/Authorize/:other/child     controllers.Entity.authorizeAdd(id : models.Entity.Id, which : Boolean = false, other : models.Entity.Id)
-POST    /entity/:id/Authorize/:other/parent    controllers.Entity.authorizeAdd(id : models.Entity.Id, which : Boolean = true, other : models.Entity.Id)
+GET     /party/:id                             	controllers.Party.view(id : models.Party.Id)
+GET     /party/:id/admin                       	controllers.Party.admin(id : models.Party.Id)
+POST    /party/:id/Admin                       	controllers.Party.change(id : models.Party.Id)
+GET     /party/:id/Authorize/search/child      	controllers.Party.authorizeSearch(id : models.Party.Id, which : Boolean = false)
+GET     /party/:id/Authorize/search/parent     	controllers.Party.authorizeSearch(id : models.Party.Id, which : Boolean = true)
+POST    /party/:id/Authorize/:child            	controllers.Party.authorizeChange(id : models.Party.Id, child : models.Party.Id)
+POST    /party/:id/Authorize/:other/child      	controllers.Party.authorizeAdd(id : models.Party.Id, which : Boolean = false, other : models.Party.Id)
+POST    /party/:id/Authorize/:other/parent     	controllers.Party.authorizeAdd(id : models.Party.Id, which : Boolean = true, other : models.Party.Id)
 # TODO: should be POST but currently used as link:
-GET     /entity/:id/Authorize/:child/delete    controllers.Entity.authorizeDelete(id : models.Entity.Id, child : models.Entity.Id)
+GET     /party/:id/Authorize/:child/delete     	controllers.Party.authorizeDelete(id : models.Party.Id, child : models.Party.Id)
 
-GET     /study/:id                             controllers.Study.view(id : models.Study.Id)
-GET     /study/:id/edit                        controllers.Study.edit(id : models.Study.Id)
-POST    /study/:id/Edit                        controllers.Study.change(id : models.Study.Id)
-GET     /study/:id/Access/search               controllers.Study.accessSearch(id : models.Study.Id)
-POST    /study/:id/Access/:entity/add          controllers.Study.accessAdd(id : models.Study.Id, entity : models.Entity.Id)
+GET     /study/:id                             	controllers.Study.view(id : models.Study.Id)
+GET     /study/:id/edit                        	controllers.Study.edit(id : models.Study.Id)
+POST    /study/:id/Edit                        	controllers.Study.change(id : models.Study.Id)
+GET     /study/:id/Access/search               	controllers.Study.accessSearch(id : models.Study.Id)
+POST    /study/:id/Access/:party/add           	controllers.Study.accessAdd(id : models.Study.Id, party : models.Party.Id)
 # TODO: should be POST:
-GET     /study/:id/Access/:entity/delete       controllers.Study.accessDelete(id : models.Study.Id, entity : models.Entity.Id)
-POST    /study/:id/Access/:entity              controllers.Study.accessChange(id : models.Study.Id, entity : models.Entity.Id)
-POST    /study/Create                          controllers.Study.create(owner : Option[models.Entity.Id] ?= None)
+GET     /study/:id/Access/:party/delete        	controllers.Study.accessDelete(id : models.Study.Id, party : models.Party.Id)
+POST    /study/:id/Access/:party               	controllers.Study.accessChange(id : models.Study.Id, party : models.Party.Id)
+POST    /study/Create                          	controllers.Study.create(owner : Option[models.Party.Id] ?= None)
 
-GET     /study/:id/slot/:ident                 controllers.Study.viewSlot(id : models.Study.Id, ident : String)
-POST    /study/:id/Slot                        controllers.Slot.create(id : models.Study.Id)
-GET     /slot/:id                              controllers.Slot.view(id : models.Slot.Id)
-GET     /slot/:id/edit                         controllers.Slot.edit(id : models.Slot.Id)
-POST    /slot/:id/Edit                         controllers.Slot.change(id : models.Slot.Id)
+GET     /study/:id/slot/:ident                 	controllers.Study.viewSlot(id : models.Study.Id, ident : String)
+POST    /study/:id/Slot                        	controllers.Slot.create(id : models.Study.Id)
+GET     /slot/:id                              	controllers.Slot.view(id : models.Slot.Id)
+GET     /slot/:id/edit                         	controllers.Slot.edit(id : models.Slot.Id)
+POST    /slot/:id/Edit                         	controllers.Slot.change(id : models.Slot.Id)
 
-GET	/object/:id/create			controllers.Object.create(id : models.Container.Id)
-POST	/object/:id/Upload			controllers.Object.upload(id : models.Container.Id)
-GET	/object/:id/:obj			controllers.Object.view(id : models.Container.Id, obj : models.Object.Id)
-GET	/object/:id/:obj/download		controllers.Object.download(id : models.Container.Id, obj : models.Object.Id, inline : Boolean = false)
-GET	/object/:id/:obj/inline			controllers.Object.download(id : models.Container.Id, obj : models.Object.Id, inline : Boolean = true)
-GET	/object/:id/:obj/head			controllers.Object.head(id : models.Container.Id, obj : models.Object.Id)
-GET	/object/:id/:obj/frame/:offset		controllers.Object.frame(id : models.Container.Id, obj : models.Object.Id, offset : dbrary.Interval)
-GET	/object/:id/:obj/edit			controllers.Object.edit(id : models.Container.Id, obj : models.Object.Id)
-POST	/object/:id/:obj/Edit			controllers.Object.change(id : models.Container.Id, obj : models.Object.Id)
+GET	/asset/:id/create			controllers.Asset.create(id : models.Container.Id)
+POST	/asset/:id/Upload			controllers.Asset.upload(id : models.Container.Id)
+GET	/asset/:id/:obj				controllers.Asset.view(id : models.Container.Id, obj : models.Asset.Id)
+GET	/asset/:id/:obj/download		controllers.Asset.download(id : models.Container.Id, obj : models.Asset.Id, inline : Boolean = false)
+GET	/asset/:id/:obj/inline			controllers.Asset.download(id : models.Container.Id, obj : models.Asset.Id, inline : Boolean = true)
+GET	/asset/:id/:obj/head			controllers.Asset.head(id : models.Container.Id, obj : models.Asset.Id)
+GET	/asset/:id/:obj/frame/:offset		controllers.Asset.frame(id : models.Container.Id, obj : models.Asset.Id, offset : dbrary.Interval)
+GET	/asset/:id/:obj/edit			controllers.Asset.edit(id : models.Container.Id, obj : models.Asset.Id)
+POST	/asset/:id/:obj/Edit			controllers.Asset.change(id : models.Container.Id, obj : models.Asset.Id)
 
-POST    /study/:id/Comment                     controllers.Comment.postStudy(id : models.Study.Id)
-POST    /slot/:id/Comment                      controllers.Comment.postSlot(id : models.Slot.Id)
-POST    /object/:id/:obj/Comment               controllers.Comment.postObjectLink(id : models.Container.Id, obj : models.Object.Id)
+POST    /study/:id/Comment                     	controllers.Comment.postStudy(id : models.Study.Id)
+POST    /slot/:id/Comment                      	controllers.Comment.postSlot(id : models.Slot.Id)
+POST    /asset/:id/:obj/Comment               	controllers.Comment.postAssetLink(id : models.Container.Id, obj : models.Asset.Id)
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file                          controllers.Assets.at(path="/public", file)
+GET     /assets/*file                          	controllers.Assets.at(path="/public", file)
 
 # test
-GET     /test                                  controllers.Site.test
+GET     /test                                  	controllers.Site.test
 
 # redirect trailing slash
-GET     /*path/                                controllers.Site.untrail(path: String)
+GET     /*path/                                	controllers.Site.untrail(path: String)

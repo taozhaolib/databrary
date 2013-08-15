@@ -1,8 +1,8 @@
-@(container : Container, form : controllers.Object.UploadForm)(implicit request : SiteRequest[_])
+@(container : Container, form : controllers.Asset.UploadForm)(implicit request : SiteRequest[_])
 
 @common(container, "upload") {
 
-	@helper.form(routes.Object.upload(container.id), 'enctype -> "multipart/form-data") {
+	@helper.form(routes.Asset.upload(container.id), 'enctype -> "multipart/form-data") {
 		@helper.inputText(form("title"))
 		@helper.textarea(form("description"))
 		@enumSelect(form("consent"), Consent)

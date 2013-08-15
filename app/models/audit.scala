@@ -9,9 +9,9 @@ object AuditAction extends PGEnum("audit_action") {
   val login, logout, add, change, remove, download = Value
 }
 
-case class Audit[T](who : Entity.Id, ip : Inet, action : AuditAction.Value, row : T) extends TableRow {
-  private val _entity = CachedVal[Option[Entity], Site](Entity.get(who)(_))
-  def entity(implicit site : Site) : Option[Entity] = _entity
+case class Audit[T](who : Party.Id, ip : Inet, action : AuditAction.Value, row : T) extends TableRow {
+  private val _party = CachedVal[Option[Party], Site](Party.get(who)(_))
+  def party(implicit site : Site) : Option[Party] = _party
 }
 
 object Audit {
