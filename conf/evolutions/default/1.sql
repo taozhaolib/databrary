@@ -255,7 +255,7 @@ CREATE TYPE consent AS ENUM (
 );
 COMMENT ON TYPE consent IS 'Sensitivity levels that may apply to data according to the presence of protected identifiers and granted sharing level.  Does not necessarily map clearly to permission levels.';
 
-CREATE FUNCTION "interval_mi_e" (interval, interval) RETURNS double LANGUAGE sql IMMUTABLE STRICT AS 
+CREATE FUNCTION "interval_mi_e" (interval, interval) RETURNS double precision LANGUAGE sql IMMUTABLE STRICT AS 
 	$$ SELECT date_part('epoch', interval_mi($1, $2)) $$;
 CREATE TYPE segment AS RANGE (
 	SUBTYPE = interval HOUR TO SECOND,
