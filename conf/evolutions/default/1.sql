@@ -240,7 +240,7 @@ CREATE VIEW "containers" AS
 COMMENT ON VIEW "containers" IS 'All containers (studies and slots) in expanded form.';
 
 CREATE FUNCTION "container_study" ("container" integer) RETURNS integer LANGUAGE sql STABLE STRICT AS $$
-	SELECT id FROM study WHERE id = container UNION SELECT study FROM slot WHERE id = container
+	SELECT id FROM study WHERE id = $1 UNION SELECT study FROM slot WHERE id = $1
 $$;
 
 ----------------------------------------------------------- assets
