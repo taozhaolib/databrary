@@ -11,11 +11,15 @@ class PGObject(pgType : String, pgValue : String) extends PGobject {
   setValue(pgValue)
 }
 
-class PGType[A](pgType : String, f : String => A, g : A => String) {
+trait PGType[A] {
+  val pgType : String
+  def pgGet(s : String) : A
+  def pgPut(t : A) : String
+
   implicit val column : Column[A] = Column.nonNull[A] { (value, meta) =>
     val MetaDataItem(qualified, nullable, clazz) = meta
     value match {
-      case obj: PGobject if obj.getType == pgType => Right(f(obj.getValue))
+      case obj: PGobject if obj.getType == pgType => Right(pgGet(obj.getValue))
       case obj: PGobject => Left(TypeDoesNotMatch("Incorrect type of object " + value + ":" + obj.getType + " for column " + qualified + ":" + pgType))
       case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to PGobject for column " + qualified))
     }
@@ -23,7 +27,7 @@ class PGType[A](pgType : String, f : String => A, g : A => String) {
 
   implicit val statement : ToStatement[A] = new ToStatement[A] {
     def set(s: java.sql.PreparedStatement, index: Int, a: A) =
-      s.setObject(index, new PGObject(pgType, g(a)))
+      s.setObject(index, new PGObject(pgType, pgPut(a)))
   }
 }
 
@@ -53,16 +57,22 @@ object Anorm {
   )
 }
 
-case class Interval(seconds : Double) extends scala.runtime.FractionalProxy[Double] {
-  def self = seconds
+case class Interval(seconds : Double) 
+  extends scala.math.Ordered[Interval] {
+  /*
+     with scala.runtime.FractionalProxy[Double] 
+     with scala.runtime.OrderedProxy[Double] {
+     def self = seconds
   protected def ord = scala.math.Ordering.Double
   protected def integralNum = scala.math.Numeric.DoubleAsIfIntegral
   protected def num = scala.math.Numeric.DoubleIsFractional
+  */
   def millis = 1000*seconds
   def nanos = 1000000000*seconds
   def samples(rate : Double) = math.round(rate*seconds)
   def +(other : Interval) = Interval(seconds + other.seconds)
   def -(other : Interval) = Interval(seconds - other.seconds)
+  def compare(other : Interval) = seconds.compare(other.seconds)
 
   /* This is unfortuante but I can't find any other reasonable formatting options outside the postgres server itself: */
   override def toString = {
@@ -77,6 +87,12 @@ case class Interval(seconds : Double) extends scala.runtime.FractionalProxy[Doub
 object Interval {
   def apply(i : PGInterval) : Interval =
     Interval(60*(60*(24*(30*(12.175*i.getYears + i.getMonths) + i.getDays) + i.getHours) + i.getMinutes) + i.getSeconds)
+
+  object pgType extends PGType[Interval] {
+    val pgType = "interval"
+    def pgGet(s : String) = Interval(new PGInterval(s))
+    def pgPut(i : Interval) = i.seconds.toString
+  }
 
   implicit val column : Column[Interval] = Column.nonNull[Interval] { (value, meta) =>
     val MetaDataItem(qualified, nullable, clazz) = meta
@@ -97,40 +113,8 @@ object Interval {
 }
 
 case class Inet(ip : String)
-object Inet extends PGType[Inet]("inet", new Inet(_), _.ip)
-
-abstract class PGRangeBase[A] {
-  def toString : String
+object Inet extends PGType[Inet]{
+  val pgType = "inet"
+  def pgGet(s : String) = Inet(s)
+  def pgPut(i : Inet) = i.ip
 }
-class PGRangeEmpty[A] extends PGRangeBase[A] {
-  override def toString = "empty"
-}
-class PGRange[A](val li : Boolean, val lb : Option[A], val ub : Option[A], val ui : Boolean) extends PGRangeBase[A] {
-  override def toString = (if (li) "[" else "(") + lb.map(_.toString).getOrElse("") + "," + ub.map(_.toString).getOrElse("") + (if (ui) "]" else ")")
-}
-class PGRangeCanonical[A](lbi : A, ube : A) extends PGRange[A](true, Some(lbi), Some(ube), false)
-class PGRangeConstructor[A](f : String => A) {
-  def apply(s : String) : PGRangeBase[A] = {
-    if (s == "empty" || s.isEmpty)
-      return new PGRangeEmpty[A]
-    val li = s.head match {
-      case '[' => true
-      case '(' => false
-      case _ => throw new SQLException("Invalid range: " + s)
-    }
-    val c = s.indexOf(',', 1)
-    if (c < 0)
-      throw new SQLException("Invalid range: " + s)
-    val lb = if (c == 1) None else Some(f(s.substring(1,c)))
-    val l = s.size
-    val ub = if (c == l-2) None else Some(f(s.substring(c+1,l-1)))
-    val ui = s.last match {
-      case ']' => true
-      case ')' => false
-      case _ => throw new SQLException("Invalid range: " + s)
-    }
-    new PGRange[A](li, lb, ub, ui)
-  }
-}
-
-class PGrange[A](pgType : String, f : String => A) extends PGType[PGRangeBase[A]](pgType, new PGRangeConstructor[A](f).apply _, _.toString)

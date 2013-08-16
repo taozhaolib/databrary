@@ -255,6 +255,21 @@ CREATE TYPE consent AS ENUM (
 );
 COMMENT ON TYPE consent IS 'Sensitivity levels that may apply to data according to the presence of protected identifiers and granted sharing level.  Does not necessarily map clearly to permission levels.';
 
+CREATE FUNCTION "interval_mi_e" (interval, interval) RETURNS double LANGUAGE sql IMMUTABLE STRICT AS 
+	$$ SELECT date_part('epoch', interval_mi($1, $2)) $$;
+CREATE TYPE segment AS RANGE (
+	SUBTYPE = interval HOUR TO SECOND,
+	SUBTYPE_DIFF = "interval_mi_e"
+);
+COMMENT ON TYPE "segment" IS 'Intervals of time, used primarily for representing clips of timeseries data.';
+
+CREATE FUNCTION "duration" (segment) RETURNS interval HOUR TO SECOND LANGUAGE sql IMMUTABLE STRICT AS
+	$$ SELECT CASE WHEN isempty($1) THEN '0' ELSE interval_mi(upper($1), lower($1)) $$;
+COMMENT ON FUNCTION "duration" (segment) IS 'Determine the length of a segment, or NULL if unbounded.';
+CREATE FUNCTION "singleton" (segment) RETURNS interval LANGUAGE sql IMMUTABLE STRICT AS
+	$$ SELECT lower($1) WHERE lower_inc($1) AND upper_inc($1) AND lower($1) = upper($1) $$;
+COMMENT ON FUNCTION "singleton" (segment) IS 'Determine if a segment represents a single point and return it, or NULL if not.';
+
 CREATE TABLE "format" (
 	"id" smallserial NOT NULL Primary Key,
 	"mimetype" varchar(128) NOT NULL Unique,
@@ -377,6 +392,10 @@ DROP TABLE "file_format";
 DROP TABLE "format";
 DROP TABLE "asset";
 DROP FUNCTION "asset_trigger" ();
+DROP FUNCTION "singleton" (segment);
+DROP FUNCTION "duration" (segment);
+DROP TYPE segment;
+DROP FUNCTION "interval_mi_e" (interval, interval);
 DROP TYPE consent;
 
 DROP FUNCTION "container_study" (integer);

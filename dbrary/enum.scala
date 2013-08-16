@@ -3,9 +3,13 @@ package dbrary
 import anorm.{Column,ToStatement}
 
 abstract class PGEnum(name : String) extends Enumeration {
-  object PG extends PGType[Value](name, withName(_), _.toString)
-  implicit val column = PG.column
-  implicit val statement = PG.statement
+  object pgType extends PGType[Value] {
+    val pgType = name
+    def pgGet(s : String) = withName(s)
+    def pgPut(v : Value) = v.toString
+  }
+  implicit val column = pgType.column
+  implicit val statement = pgType.statement
 }
 
 object PGEnum {
