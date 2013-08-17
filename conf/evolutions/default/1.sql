@@ -109,6 +109,16 @@ CREATE TYPE permission AS ENUM ('NONE',
 	'CONTRIBUTE', -- create and edit studies of own/target (FULL access)
 	'ADMIN' -- perform administrative tasks on site/target such as changing permissions
 );
+COMMENT ON TYPE permission IS 'Levels of access parties can have to the site, studies, and assets.';
+
+CREATE TYPE consent AS ENUM (
+	-- 		permission required (on study)
+	'PRIVATE', 	-- CONTRIBUTE	did not consent to any sharing
+	'SHARED', 	-- DOWNLOAD	consented to share on databrary
+	'EXCERPTS', 	-- DOWNLOAD	SHARED, but consented that excerpts may be PUBLIC
+	'PUBLIC' 	-- VIEW		consented to share openly
+);
+COMMENT ON TYPE consent IS 'Levels of sharing that participants may consent to.';
 
 CREATE TABLE "authorize" (
 	"child" integer NOT NULL References "party" ON DELETE Cascade,
@@ -161,7 +171,7 @@ COMMENT ON FUNCTION "authorize_delegate_check" (integer, integer, permission) IS
 
 ----------------------------------------------------------- containers
 
-SELECT create_abstract_parent('container', ARRAY['study','slot']);
+SELECT create_abstract_parent('container', ARRAY['study','slot','session']);
 COMMENT ON TABLE "container" IS 'Parent table for anything assets can be attached to.';
 
 
@@ -217,10 +227,9 @@ CREATE TABLE "slot" (
 	"id" integer NOT NULL DEFAULT nextval('container_id_seq') Primary Key References "container" Deferrable Initially Deferred,
 	"study" integer NOT NULL References "study",
 	"ident" varchar(16) NOT NULL,
-	Unique ("id", "study"), -- for FKs
 	Unique ("study", "ident")
 );
-COMMENT ON TABLE "slot" IS 'Data container: organizational unit within study, usually corresponding to an individual participant.';
+COMMENT ON TABLE "slot" IS 'Organizational unit within study, corresponding to a single participant/individual/group/sample.';
 CREATE TRIGGER "container" BEFORE INSERT OR UPDATE OR DELETE ON "slot" FOR EACH ROW EXECUTE PROCEDURE "container_trigger" ();
 
 CREATE TABLE "audit_slot" (
@@ -233,33 +242,42 @@ CREATE FUNCTION "next_slot_ident" ("study" integer) RETURNS varchar(16) LANGUAGE
 $$;
 
 
+CREATE TABLE "session" (
+	"id" integer NOT NULL DEFAULT nextval('container_id_seq') Primary Key References "container" Deferrable Initially Deferred,
+	"slot" integer NOT NULL References "slot",
+	"consent" consent NOT NULL Default enum_first(null::consent),
+	"date" date
+);
+COMMENT ON TABLE "session" IS 'Organizational unit within slot containing raw data, usually corresponding to an individual data acqusition.';
+CREATE TRIGGER "container" BEFORE INSERT OR UPDATE OR DELETE ON "session" FOR EACH ROW EXECUTE PROCEDURE "container_trigger" ();
+
+
 CREATE VIEW "containers" AS
-	SELECT container.id, kind, study.id AS "study", title, description, slot.id AS "slot", ident FROM
-		container LEFT JOIN slot USING (id) 
-		JOIN study ON study.id = container.id OR study.id = slot.study;
-COMMENT ON VIEW "containers" IS 'All containers (studies and slots) in expanded form.';
+	SELECT container.id, kind, study.id AS "study", title, description, slot.id AS "slot", ident, session.id AS "session" FROM container 
+		LEFT JOIN session USING (id)
+		LEFT JOIN slot  ON slot.id  = container.id OR slot.id = session.slot
+		     JOIN study ON study.id = container.id OR study.id = slot.study;
+COMMENT ON VIEW "containers" IS 'All containers (studies, slots, and sessions) in expanded form.';
 
 CREATE FUNCTION "container_study" ("container" integer) RETURNS integer LANGUAGE sql STABLE STRICT AS $$
-	SELECT id FROM study WHERE id = $1 UNION SELECT study FROM slot WHERE id = $1
+	SELECT study FROM containers WHERE id = $1
 $$;
 
 ----------------------------------------------------------- assets
 
-CREATE TYPE consent AS ENUM (
-	-- required permission:	site		study
-	'PUBLIC', 	-- 	-		VIEW		non-subject data
-	'DEIDENTIFIED', -- 	-		VIEW		subject data without identifiers
-	'EXCERPTS', 	-- 	DOWNLOAD	DOWNLOAD	SHARED, but consented that excerpts may be PUBLIC
-	'SHARED', 	-- 	DOWNLOAD	DOWNLOAD	identified data authorized to be shared on databrary
-	'PRIVATE' 	-- 	-		CONTRIBUTE	identified data not authorized for sharing
+CREATE TYPE classification AS ENUM (
+	'IDENTIFIED', 	-- data containing HIPPA identifiers, requiring appropriate consent and DOWNLOAD permission
+	'DEIDENTIFIED', -- "raw" data which has been de-identified, requiring only DOWNLOAD permission
+	'ANALYSIS', 	-- un/de-identified derived, generated, summarized, or aggregated data measures
+	'PRODUCT',	-- research products such as results, summaries, commentaries, discussions, manuscripts, or articles
+	'MATERIAL'	-- materials not derived from data, such as proposals, procedures, stimuli, manuals, (blank) forms, or documentation
 );
-COMMENT ON TYPE consent IS 'Sensitivity levels that may apply to data according to the presence of protected identifiers and granted sharing level.  Does not necessarily map clearly to permission levels.';
 
-CREATE FUNCTION "interval_mi_e" (interval, interval) RETURNS double precision LANGUAGE sql IMMUTABLE STRICT AS 
+CREATE FUNCTION "interval_mi_epoch" (interval, interval) RETURNS double precision LANGUAGE sql IMMUTABLE STRICT AS 
 	$$ SELECT date_part('epoch', interval_mi($1, $2)) $$;
 CREATE TYPE segment AS RANGE (
 	SUBTYPE = interval HOUR TO SECOND,
-	SUBTYPE_DIFF = "interval_mi_e"
+	SUBTYPE_DIFF = "interval_mi_epoch"
 );
 COMMENT ON TYPE "segment" IS 'Intervals of time, used primarily for representing clips of timeseries data.';
 
@@ -276,36 +294,32 @@ CREATE TABLE "format" (
 	"extension" varchar(8),
 	"name" text NOT NULL
 );
-COMMENT ON TABLE "format" IS 'Possible types for assets, sufficient for producing download headers. Abstract parent of file_format and timeseries_format.';
-
-CREATE TABLE "file_format" (
-	Primary Key ("id"),
-	Unique ("mimetype")
-) INHERITS ("format");
+COMMENT ON TABLE "format" IS 'Possible types for assets, sufficient for producing download headers.';
 
 CREATE TABLE "timeseries_format" (
 	Primary Key ("id"),
 	Unique ("mimetype")
 ) INHERITS ("format");
+COMMENT ON TABLE "timeseries_format" IS 'Special asset types that correspond to internal formats representing timeseries data.';
 
--- The standard image and video formats MUST be the first two (IDs hard-coded):
-INSERT INTO "file_format" (mimetype, extension, name) VALUES ('image/jpeg', 'jpg', 'JPEG');
-INSERT INTO "timeseries_format" (mimetype, extension, name) VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14');
--- These are arbitrary:
-INSERT INTO "file_format" (mimetype, extension, name) VALUES ('text/plain', 'txt', 'Plain text');
-INSERT INTO "file_format" (mimetype, extension, name) VALUES ('text/html', 'html', 'Hypertext markup');
-INSERT INTO "file_format" (mimetype, extension, name) VALUES ('application/pdf', 'pdf', 'Portable document');
-INSERT INTO "timeseries_format" (mimetype, extension, name) VALUES ('video/webm', 'webm', 'WebM');
+-- The privledged formats with special handling (image and video for now) have hard-coded IDs:
+INSERT INTO "format" (id, mimetype, extension, name) VALUES (-1, 'image/jpeg', 'jpg', 'JPEG');
+INSERT INTO "timeseries_format" (id, mimetype, extension, name) VALUES (-2, 'video/mp4', 'mp4', 'Databrary video');
 
-SELECT create_abstract_parent('asset', ARRAY['file', 'timeseries', 'excerpt']);
+-- The above video format will change to reflect internal storage, these are used for uploaded files:
+INSERT INTO "format" (mimetype, extension, name) VALUES ('text/plain', 'txt', 'Plain text');
+INSERT INTO "format" (mimetype, extension, name) VALUES ('text/html', 'html', 'Hypertext markup');
+INSERT INTO "format" (mimetype, extension, name) VALUES ('application/pdf', 'pdf', 'Portable document');
+INSERT INTO "format" (mimetype, extension, name) VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14');
+INSERT INTO "format" (mimetype, extension, name) VALUES ('video/webm', 'webm', 'WebM');
+
+SELECT create_abstract_parent('asset', ARRAY['file', 'timeseries', 'clip']);
 COMMENT ON TABLE "asset" IS 'Parent table for all uploaded data in storage.';
 
 CREATE TABLE "file" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
-	"format" smallint NOT NULL References "file_format",
-	"owner" integer References "study" ON DELETE SET NULL,
-	"consent" consent NOT NULL,
-	"date" date
+	"format" smallint NOT NULL References "format",
+	"classification" classification NOT NULL
 );
 COMMENT ON TABLE "file" IS 'Assets in storage along with their "constant" metadata.';
 CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "file" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
@@ -326,19 +340,13 @@ CREATE TABLE "audit_timeseries" (
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 
-CREATE TABLE "excerpt" (
+CREATE TABLE "clip" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
 	"source" integer NOT NULL References "timeseries",
-	"offset" interval HOUR TO SECOND NOT NULL,
-	"duration" interval HOUR TO SECOND Check ("duration" > interval '0'),
-	"public" boolean NOT NULL Default 'f' -- only if asset.consent = EXCERPTS
+	"segment" segment NOT NULL Check (NOT isempty("segment"))
 );
-CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "excerpt" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
-COMMENT ON TABLE "excerpt" IS 'Sections of timeseries assets selected for referencing.';
-
-CREATE TABLE "audit_excerpt" (
-	LIKE "excerpt"
-) INHERITS ("audit") WITH (OIDS = FALSE);
+CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "clip" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
+COMMENT ON TABLE "clip" IS 'Sections of timeseries assets selected for referencing.';
 
 
 CREATE TABLE "asset_link" (
@@ -381,25 +389,24 @@ DROP TABLE "comment";
 DROP TABLE "annotation";
 DROP TABLE "audit_asset_link";
 DROP TABLE "asset_link";
-DROP TABLE "audit_excerpt";
-DROP TABLE "excerpt";
+DROP TABLE "clip";
 DROP TABLE "audit_timeseries";
 DROP TABLE "timeseries";
-DROP TABLE "timeseries_format";
 DROP TABLE "audit_file";
 DROP TABLE "file";
-DROP TABLE "file_format";
+DROP TABLE "timeseries_format";
 DROP TABLE "format";
 DROP TABLE "asset";
 DROP FUNCTION "asset_trigger" ();
 DROP FUNCTION "singleton" (segment);
 DROP FUNCTION "duration" (segment);
 DROP TYPE segment;
-DROP FUNCTION "interval_mi_e" (interval, interval);
-DROP TYPE consent;
+DROP FUNCTION "interval_mi_epoch" (interval, interval);
+DROP TYPE classification;
 
 DROP FUNCTION "container_study" (integer);
 DROP VIEW "containers";
+DROP TABLE "session";
 DROP FUNCTION "next_slot_ident" (integer);
 DROP TABLE "audit_slot";
 DROP TABLE "slot";
@@ -417,6 +424,7 @@ DROP FUNCTION "authorize_access_parents" (integer, permission);
 DROP VIEW "authorize_valid";
 DROP TABLE "audit_authorize";
 DROP TABLE "authorize";
+DROP TYPE consent;
 DROP TYPE permission;
 DROP TABLE "audit_account";
 DROP TABLE "account";

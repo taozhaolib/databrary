@@ -25,8 +25,7 @@ INSERT INTO authorize (child, parent, access, delegate) VALUES (5, 0, 'CONTRIBUT
 INSERT INTO authorize (child, parent, access, delegate) VALUES (6, 0, 'CONTRIBUTE', 'NONE');
 
 INSERT INTO study (id, title) VALUES (1, 'Demo sandbox');
-INSERT INTO slot (id, study, ident) VALUES (2, 1, 'S1');
-SELECT setval('container_id_seq', 2);
+SELECT setval('container_id_seq', 1);
 
 INSERT INTO study_access (study, party, access, inherit) VALUES (1, -1, 'DOWNLOAD', 'DOWNLOAD');
 INSERT INTO study_access (study, party, access, inherit) VALUES (1, 0, 'DOWNLOAD', 'DOWNLOAD');
@@ -34,7 +33,7 @@ INSERT INTO study_access (study, party, access, inherit) VALUES (1, 1, 'ADMIN', 
 INSERT INTO study_access (study, party, access, inherit) VALUES (1, 2, 'ADMIN', 'NONE');
 INSERT INTO study_access (study, party, access, inherit) VALUES (1, 3, 'ADMIN', 'NONE');
 
-INSERT INTO timeseries (id, format, owner, consent, duration) VALUES (1, 2, 1, 'PUBLIC', interval '40');
+INSERT INTO timeseries (id, format, classification, duration) VALUES (1, -2, 'MATERIAL', interval '40');
 SELECT setval('asset_id_seq', 1);
 
 INSERT INTO asset_link (container, asset, title) VALUES (1, 1, 'counting');
