@@ -28,6 +28,7 @@ abstract sealed class Range[A <: Ordered[A]](implicit t : RangeType[A]) {
       None
     else
       upperPoint.flatMap(u => lowerPoint.filter(_ == u))
+  def isSingleton : Boolean = singleton.isDefined
   def normalize =
     if (isEmpty || !t.discrete)
       self
@@ -114,8 +115,8 @@ abstract class PGRangeType[A <: Ordered[A]](val pgType : String)(implicit baseTy
       (if (r.upperClosed) ']' else ')')
 }
 
-object PGIntervalRange extends PGRangeType[Interval]("segment")(Interval.pgType) {
+object PGSegment extends PGRangeType[Offset]("segment")(Offset.pgType) {
   val unit = None
-  def increment(a : Interval) = None
-  def decrement(a : Interval) = None
+  def increment(a : Offset) = None
+  def decrement(a : Offset) = None
 }

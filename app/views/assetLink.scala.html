@@ -1,14 +1,6 @@
 @(link : AssetLink)(implicit request : SiteRequest[_])
 
 @fileData(asset : FileAsset) = {
-	<dt>Format</dt>
-	<dd>@asset.format.name</dd>
-	<dt>Consent</dt>
-	<dd>@asset.consent</dd>
-	@asset.date.map { date =>
-	<dt>Date</dt>
-	<dd>@date</dd>
-	}
 }
 
 @common(link) {
@@ -16,6 +8,8 @@
 	<p>@link.description</p>
 
 	<dl>
+		<dt>Format</dt>
+		<dd>@link.asset(request.db).format.name</dd>
 	@link.asset(request.db) match {
 	case ts : Timeseries => {
 		@fileData(ts)
@@ -25,17 +19,15 @@
 	case f : FileAsset => {
 		@fileData(f)
 	}
-	case e : Excerpt => {
-		<dt>Source</dt>
-		<dd>??? need study reference!!!</dd>
+	case e : Clip => {
 		<dt>Offset</dt>
-		<dd>@e.offset</dd>
-	@e.duration.map { duration =>
+		<dd>@e.segment.lowerBound.get</dd>
 		<dt>Duration</dt>
-		<dd>@duration</dd>
+		<dd>@e.duration</dd>
 	}
 	}
-	}
+		<dt>Consent</dt>
+		<dd>@link.asset(request.db).consent</dd>
 	</dl>
 
 	@if(link.permission >= Permission.EDIT) {

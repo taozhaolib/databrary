@@ -5,8 +5,18 @@ import play.api.data.Forms._
 import play.api.data.validation._
 import util._
 
-object form {
-  def enumField(enum : Enumeration) = number(min=0, max=enum.maxId-1).transform[enum.Value](enum(_), _.id)
+object Field {
+  def enum(enum : Enumeration) = number(min=0, max=enum.maxId-1).transform[enum.Value](enum(_), _.id)
+}
+
+object EmptyMapping extends Mapping[Unit] {
+  val key = ""
+  val mappings = Nil
+  val constraints = Nil
+  def bind(data : Map[String, String]) : Either[Seq[FormError], Unit] = Right(())
+  def unbind(value : Unit) : (Map[String, String], Seq[FormError]) = (Map.empty, Nil)
+  def withPrefix(prefix : String) : Mapping[Unit] = this
+  def verifying(constraints : Constraint[Unit]*) : Mapping[Unit] = this
 }
 
 /* Useful for forms that have dynamically optional content (as opposed to user-optional) */

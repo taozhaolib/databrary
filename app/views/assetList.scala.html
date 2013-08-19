@@ -7,20 +7,12 @@
 		<th>Title</th>
 		<th>Format</th>
 		<th>Consent</th>
-		<th>Date</th>
 	</tr>
 	@container.assets(request.db).map { link =>
 	<tr>
 		<td>@display(link)</td>
-		@link.asset(request.db) match {
-		case asset : FileAsset => {
-		<td>@asset.format.name</td>
-		<td>@asset.consent</td>
-		<td>@asset.date</td>
-		}
-		case e : Excerpt => {
-		}
-		}
+		<td>@link.asset(request.db).format.name</td>
+		<td>@link.asset(request.db).consent</td>
 	</tr>
 	}
 	@if(container.permission >= Permission.CONTRIBUTE) {

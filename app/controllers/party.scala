@@ -35,19 +35,17 @@ object Party extends SiteController {
 
   private[this] def authorizeForm(child : models.Party.Id, parent : models.Party.Id, which : Boolean = false) : Form[Authorize] = Form(
     mapping(
-      "access" -> number(min=0, max=Permission.maxId-1),
-      "delegate" -> number(min=0, max=Permission.maxId-1),
+      "access" -> Field.enum(Permission),
+      "delegate" -> Field.enum(Permission),
       "pending" -> boolean,
       "expires" -> optional(sqlDate)
     )((access, delegate, pending, expires) => Authorize(
-      child, parent, 
-      Permission(access), 
-      Permission(delegate), 
+      child, parent, access, delegate, 
       if (pending || which) None else Some(new java.sql.Timestamp(System.currentTimeMillis)),
       expires.map(e => new java.sql.Timestamp(e.getTime))
     ))(t => 
       if (t.childId == child && t.parentId == parent)
-        Some((t.access.id, t.delegate.id, t.authorized.fold(true)(_ => false), t.expires.map(e => new java.sql.Date(e.getTime))))
+        Some((t.access, t.delegate, t.authorized.fold(true)(_ => false), t.expires.map(e => new java.sql.Date(e.getTime))))
       else
         None
     )

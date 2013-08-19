@@ -11,6 +11,7 @@ import          libs.iteratee.Enumerator
 import          libs.concurrent.Execution.Implicits.defaultContext
 import util._
 import models._
+import dbrary.Offset
 
 object Asset extends SiteController {
 
@@ -53,33 +54,39 @@ object Asset extends SiteController {
     )
   }
 
-  def frame(i : models.Container.Id, o : models.Asset.Id, offset : dbrary.Interval = dbrary.Interval(0)) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
-    assetResult(
+  def frame(i : models.Container.Id, o : models.Asset.Id, offset : Offset = 0) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
+    val dur = link.asset match {
+      case t : Timeseries => Some(t.duration)
+      case c : Clip => c.duration
+      case _ => None
+    }
+    if (offset < 0 || dur.fold(true)(offset > _))
+      NotFound
+    else assetResult(
       "frame:%d:%f".format(link.assetId.unId, offset.seconds),
       store.Asset.readFrame(link.asset, offset),
-      FileFormat.Image,
+      AssetFormat.Image,
       None
     )
   }
   def head(i : models.Container.Id, o : models.Asset.Id) = frame(i, o)
 
-  private[this] val fileFields = tuple(
-    "consent" -> form.enumField(Consent),
-    "date" -> optional(sqlDate)
-  )
+  /* Any editable fields on FileAssets (currently none) */
+  type FileFields = Unit
+  private[this] val fileFields : Mapping[FileFields] = EmptyMapping
 
-  type EditForm = Form[(String, String, Option[(Consent.Value, Option[java.sql.Date])])]
+  type EditForm = Form[(String, String, Option[FileFields])]
   private[this] def formFill(link : AssetLink)(implicit site : Site) : EditForm = {
-    /* Only allow file parameters to be changed if this is the original study for this asset */
+    /* Under what conditions should FileAsset data be allowed to be changed? */
     val file = link.asset match {
-      case f : FileAsset if f.ownerId.fold(false)(_ == link.container.studyId) => Some(f)
+      case f : FileAsset => Some(f)
       case _ => None
     }
     Form(tuple(
       "title" -> nonEmptyText,
       "description" -> text,
       "" -> MaybeMapping(file.map(_ => fileFields))
-    )).fill((link.title, link.description.getOrElse(""), file.map(f => (f.consent, f.date))))
+    )).fill((link.title, link.description.getOrElse(""), file.map(f => ())))
   }
 
   def formForFile(form : EditForm) = form.value.fold(false)(!_._3.isEmpty)
@@ -93,19 +100,19 @@ object Asset extends SiteController {
       form => BadRequest(views.html.assetEdit(link, form)), {
       case (title, description, file) =>
         link.change(title = title, description = maybe(description))
-        file foreach {
-          case (consent, date) => link.asset.asInstanceOf[models.FileAsset].change(consent = consent, date = date)
-        }
+        /* file foreach {
+          () => link.asset.asInstanceOf[models.FileAsset].change
+        } */
         Redirect(link.pageURL)
       }
     )
   }
 
-  type UploadForm = Form[(String, String, (Consent.Value, Option[java.sql.Date]), Unit)]
+  type UploadForm = Form[(String, String, Classification.Value, Unit)]
   private[this] val uploadForm = Form(tuple(
     "title" -> text,
     "description" -> text,
-    "" -> fileFields,
+    "classification" -> Field.enum(Classification),
     "file" -> ignored(())
   ))
 
@@ -118,12 +125,12 @@ object Asset extends SiteController {
     val file = request.body.asMultipartFormData.flatMap(_.file("file"))
     (if (file.isEmpty) form.withError("file", "error.required") else form).fold(
       form => BadRequest(views.html.assetCreate(container, form)), {
-      case (title, description, (consent, date), ()) =>
+      case (title, description, classification, ()) =>
         val f = file.get
         f.contentType.flatMap(AssetFormat.getMimetype(_)).fold(
           BadRequest(views.html.assetCreate(container, form.withError("file", "file.format.unknown", f.contentType.getOrElse("unknown")))) : Result)
         { format =>
-          val asset = models.Asset.create(format, container.studyId, consent, date, f.ref)
+          val asset = models.FileAsset.create(format, classification, f.ref)
           val link = AssetLink.create(container, asset, maybe(title).getOrElse(f.filename), maybe(description))
           Redirect(link.pageURL)
         }

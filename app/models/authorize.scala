@@ -7,15 +7,6 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-object Permission extends PGEnum("permission") {
-  val NONE, VIEW, DOWNLOAD, CONTRIBUTE, ADMIN = Value
-  // aliases or equivalent permissions (do not use val here)
-  def OWN = ADMIN
-  def EDIT = CONTRIBUTE
-  def DATA = DOWNLOAD
-  def COMMENT = VIEW
-}
-
 final case class Authorize(childId : Party.Id, parentId : Party.Id, access : Permission.Value, delegate : Permission.Value, authorized : Option[Timestamp], expires : Option[Timestamp]) extends TableRow {
   private def id =
     Anorm.Args('child -> childId, 'parent -> parentId)

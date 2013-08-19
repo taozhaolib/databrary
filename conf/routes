@@ -55,7 +55,7 @@ GET	/asset/:id/:obj				controllers.Asset.view(id : models.Container.Id, obj : mo
 GET	/asset/:id/:obj/download		controllers.Asset.download(id : models.Container.Id, obj : models.Asset.Id, inline : Boolean = false)
 GET	/asset/:id/:obj/inline			controllers.Asset.download(id : models.Container.Id, obj : models.Asset.Id, inline : Boolean = true)
 GET	/asset/:id/:obj/head			controllers.Asset.head(id : models.Container.Id, obj : models.Asset.Id)
-GET	/asset/:id/:obj/frame/:offset		controllers.Asset.frame(id : models.Container.Id, obj : models.Asset.Id, offset : dbrary.Interval)
+GET	/asset/:id/:obj/frame/:offset		controllers.Asset.frame(id : models.Container.Id, obj : models.Asset.Id, offset : dbrary.Offset)
 GET	/asset/:id/:obj/edit			controllers.Asset.edit(id : models.Container.Id, obj : models.Asset.Id)
 POST	/asset/:id/:obj/Edit			controllers.Asset.change(id : models.Container.Id, obj : models.Asset.Id)
 

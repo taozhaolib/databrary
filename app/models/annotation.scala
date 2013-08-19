@@ -28,7 +28,7 @@ private[models] sealed abstract class AnnotationView[R <: Annotation with TableR
   private[models] def getContainer(container : Container, only : Boolean = false)(implicit db : Site.DB) : Seq[R] =
     SQL("SELECT " + * + (
       if (only)
-       " FROM " + table + " WHERE asset IS NULL AND"
+        " FROM " + table + " WHERE asset IS NULL AND"
       else container match {
         case _ : Slot  => " FROM " + table + " WHERE"
         case _ : Study => ", " + Slot.columns.select + " FROM " + table + " LEFT JOIN slot ON container = slot.id WHERE slot.study = {container} OR"

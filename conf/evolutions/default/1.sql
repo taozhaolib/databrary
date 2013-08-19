@@ -246,10 +246,14 @@ CREATE TABLE "session" (
 	"id" integer NOT NULL DEFAULT nextval('container_id_seq') Primary Key References "container" Deferrable Initially Deferred,
 	"slot" integer NOT NULL References "slot",
 	"consent" consent NOT NULL Default enum_first(null::consent),
-	"date" date
+	"date" date NOT NULL
 );
 COMMENT ON TABLE "session" IS 'Organizational unit within slot containing raw data, usually corresponding to an individual data acqusition.';
 CREATE TRIGGER "container" BEFORE INSERT OR UPDATE OR DELETE ON "session" FOR EACH ROW EXECUTE PROCEDURE "container_trigger" ();
+
+CREATE TABLE "audit_session" (
+	LIKE "session"
+) INHERITS ("audit") WITH (OIDS = FALSE);
 
 
 CREATE VIEW "containers" AS
@@ -267,6 +271,7 @@ $$;
 
 CREATE TYPE classification AS ENUM (
 	'IDENTIFIED', 	-- data containing HIPPA identifiers, requiring appropriate consent and DOWNLOAD permission
+	'EXCERPT', 	-- IDENTIFIED data that has been selected as a releasable excerpt
 	'DEIDENTIFIED', -- "raw" data which has been de-identified, requiring only DOWNLOAD permission
 	'ANALYSIS', 	-- un/de-identified derived, generated, summarized, or aggregated data measures
 	'PRODUCT',	-- research products such as results, summaries, commentaries, discussions, manuscripts, or articles
@@ -308,10 +313,10 @@ INSERT INTO "timeseries_format" (id, mimetype, extension, name) VALUES (-2, 'vid
 
 -- The above video format will change to reflect internal storage, these are used for uploaded files:
 INSERT INTO "format" (mimetype, extension, name) VALUES ('text/plain', 'txt', 'Plain text');
-INSERT INTO "format" (mimetype, extension, name) VALUES ('text/html', 'html', 'Hypertext markup');
+-- INSERT INTO "format" (mimetype, extension, name) VALUES ('text/html', 'html', 'Hypertext markup');
 INSERT INTO "format" (mimetype, extension, name) VALUES ('application/pdf', 'pdf', 'Portable document');
-INSERT INTO "format" (mimetype, extension, name) VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14');
-INSERT INTO "format" (mimetype, extension, name) VALUES ('video/webm', 'webm', 'WebM');
+-- INSERT INTO "format" (mimetype, extension, name) VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14');
+-- INSERT INTO "format" (mimetype, extension, name) VALUES ('video/webm', 'webm', 'WebM');
 
 SELECT create_abstract_parent('asset', ARRAY['file', 'timeseries', 'clip']);
 COMMENT ON TABLE "asset" IS 'Parent table for all uploaded data in storage.';
@@ -320,6 +325,7 @@ CREATE TABLE "file" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
 	"format" smallint NOT NULL References "format",
 	"classification" classification NOT NULL
+	-- "date" date
 );
 COMMENT ON TABLE "file" IS 'Assets in storage along with their "constant" metadata.';
 CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "file" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
@@ -343,9 +349,12 @@ CREATE TABLE "audit_timeseries" (
 CREATE TABLE "clip" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
 	"source" integer NOT NULL References "timeseries",
-	"segment" segment NOT NULL Check (NOT isempty("segment"))
+	"segment" segment NOT NULL Check (NOT isempty("segment")),
+	"excerpt" boolean NOT NULL Default 'f'
 );
 CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "clip" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
+ALTER TABLE "clip" ALTER COLUMN "segment" SET STORAGE plain;
+CREATE INDEX ON "clip" ("source");
 COMMENT ON TABLE "clip" IS 'Sections of timeseries assets selected for referencing.';
 
 
@@ -356,11 +365,22 @@ CREATE TABLE "asset_link" (
 	"description" text,
 	Primary Key ("container", "asset")
 );
+CREATE INDEX ON "asset_link" ("asset");
 COMMENT ON TABLE "asset_link" IS 'Asset linkages into containers along with "dynamic" metadata.';
 
 CREATE TABLE "audit_asset_link" (
 	LIKE "asset_link"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
+
+
+CREATE FUNCTION "asset_parents" ("asset" integer, "segment" segment = NULL) RETURNS SETOF integer LANGUAGE sql STABLE AS 
+	$$ SELECT $1 UNION ALL SELECT id FROM clip WHERE source = $1 AND segment && $2 $$;
+COMMENT ON FUNCTION "asset_parents" (integer, segment) IS 'Set of assets that compose (provide/overlap) the specified asset.';
+
+CREATE FUNCTION "asset_consent" ("asset" integer, "segment" segment = NULL) RETURNS consent LANGUAGE sql STABLE AS $$
+	SELECT MIN(consent) FROM asset_parents($1, $2) JOIN asset_link ON (asset_parents = asset) JOIN session ON (container = session.id)
+$$;
+COMMENT ON FUNCTION "asset_consent" (integer, segment) IS 'Effective (minimal) consent level granted on the given asset.';
 
 ----------------------------------------------------------- annotations
 
@@ -387,6 +407,9 @@ COMMENT ON TABLE "comment" IS 'Free-text comments.';
 
 DROP TABLE "comment";
 DROP TABLE "annotation";
+
+DROP FUNCTION "asset_consent" (integer, segment);
+DROP FUNCTION "asset_parents" (integer, segment);
 DROP TABLE "audit_asset_link";
 DROP TABLE "asset_link";
 DROP TABLE "clip";
@@ -406,6 +429,7 @@ DROP TYPE classification;
 
 DROP FUNCTION "container_study" (integer);
 DROP VIEW "containers";
+DROP TABLE "audit_session";
 DROP TABLE "session";
 DROP FUNCTION "next_slot_ident" (integer);
 DROP TABLE "audit_slot";

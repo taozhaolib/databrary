@@ -8,11 +8,11 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-object Consent extends PGEnum("consent") {
-  val PUBLIC, DEIDENTIFIED, EXCERPTS, SHARED, PRIVATE = Value
+object Classification extends PGEnum("classification") {
+  val IDENTIFIED, EXCERPT, DEIDENTIFIED, ANALYSIS, PRODUCT, MATERIAL = Value
 }
 
-case class AssetFormat private[models] (id : AssetFormat.Id, mimetype : String, extension : Option[String], name : String, timeseries : Boolean) extends TableRowId[AssetFormat] {
+class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype : String, val extension : Option[String], val name : String) extends TableRowId[AssetFormat] {
   def mimeSubTypes = {
     val slash = mimetype.indexOf('/')
     if (slash == -1)
@@ -22,88 +22,68 @@ case class AssetFormat private[models] (id : AssetFormat.Id, mimetype : String, 
   }
 }
 
-private[models] sealed abstract class FormatView(table : String, timeseries : Boolean = false) extends TableId[AssetFormat](table) {
+sealed abstract class TimeseriesFormat private[models] (override val id : TimeseriesFormat.Id, mimetype : String, extension : Option[String], name : String) extends AssetFormat(id, mimetype, extension, name) {
+  val sampleFormat : AssetFormat
+}
+
+object AssetFormat extends TableId[AssetFormat]("format") {
   private[models] val row = Columns[
     Id,  String,    Option[String], String](
     'id, 'mimetype, 'extension,     'name) map {
-    (id, mimetype, extension, name) => new AssetFormat(id, mimetype, extension, name, timeseries)
+    (id, mimetype, extension, name) => id match {
+      case IMAGE => Image
+      case _ => new AssetFormat(id, mimetype, extension, name)
+    }
   }
+  private[models] override val src = "ONLY format"
 
   def getMimetype(mimetype : String)(implicit db : Site.DB) : Option[AssetFormat] =
     SELECT("WHERE mimetype = {mimetype}").
       on('mimetype -> mimetype).singleOpt(row)
   def getAll(implicit db : Site.DB) : Seq[AssetFormat] =
-    SELECT("ORDER BY asset.id").list(row)
+    SELECT("ORDER BY format.id").list(row)
+
+  private[models] final val IMAGE : Id = asId(-1)
+  object Image extends AssetFormat(IMAGE, "image/jpeg", Some("jpg"), "JPEG")
 }
 
-object AssetFormat extends FormatView("format") {
-  private[this] val columns = Columns[
-    Id,  String,    Option[String], String, Long](
-    'id, 'mimetype, 'extension,     'name,  'tableoid)
-  private[this] def row(implicit db : Site.DB) = columns map {
-    (id : Id, mimetype : String, extension : Option[String], name : String, tableoid : Long) => new AssetFormat(id, mimetype, extension, name, tableoid == TimeseriesFormat.tableOID)
+object TimeseriesFormat extends HasId[TimeseriesFormat] {
+  def get(id : Id) = id match {
+    case VIDEO => Some(Video)
+    case _ => None
   }
 
-  override def getMimetype(mimetype : String)(implicit db : Site.DB) : Option[AssetFormat] =
-    SELECT("WHERE mimetype = {mimetype}").
-      on('mimetype -> mimetype).singleOpt(row(db))
-  override def getAll(implicit db : Site.DB) : Seq[AssetFormat] =
-    SELECT("ORDER BY asset.id").list(row(db))
-}
-
-object FileFormat extends FormatView("file_format", false) {
-  final val Image = AssetFormat(asId(1), "image/jpeg", Some("jpg"), "JPEG", false)
-}
-object TimeseriesFormat extends FormatView("timeseries_format", true) {
-  final val Video = AssetFormat(asId(2), "image/jpeg", Some("jpg"), "JPEG", true)
+  private[models] final val VIDEO : Id = asId(-2)
+  object Video extends TimeseriesFormat(VIDEO, "video/mp4", Some("mp4"), "Video") {
+    val sampleFormat = AssetFormat.Image
+  }
 }
 
 
 sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Asset] {
-  def consent : Consent.Value
   def format : AssetFormat
+  def classification : Classification.Value
+  val consent : Consent.Value
 }
 
-sealed class FileAsset protected (override val id : FileAsset.Id, val format : AssetFormat, val ownerId : Option[Study.Id], consent_ : Consent.Value, date_ : Option[Date]) extends Asset(id) with TableRowId[FileAsset] {
-  private[this] var _consent = consent_
-  def consent = _consent
-  private[this] var _date = date_
-  def date = _date
+sealed class FileAsset protected (override val id : FileAsset.Id, val format : AssetFormat, val classification : Classification.Value, val consent : Consent.Value = Consent.NONE) extends Asset(id) with TableRowId[FileAsset]
 
-  def change(consent : Consent.Value = _consent, date : Option[Date] = _date)(implicit site : Site) : Unit = {
-    if (date == _date && consent == _consent)
-      return
-    Audit.SQLon(AuditAction.change, "file", "SET consent = {consent}, date = {date} WHERE id = {id}")('consent -> consent, 'date -> date, 'id -> id).execute()(site.db)
-    _consent = consent
-    _date = date
-  }
+final class Timeseries private (override val id : Timeseries.Id, override val format : TimeseriesFormat, classification : Classification.Value, val duration : Offset, consent : Consent.Value) extends FileAsset(id, format, classification, consent) with TableRowId[Timeseries] {
+  def segment : Range[Offset] = Range[Offset](0, duration)(PGSegment)
 }
 
-final class Timeseries private (override val id : Timeseries.Id, format : AssetFormat, ownerId : Option[Study.Id], consent_ : Consent.Value, date_ : Option[Date], val duration : Interval) extends FileAsset(id, format, ownerId, consent_, date_) with TableRowId[Timeseries] {
-  /* this should be generalized for other privledged types: */
-  def isVideo = format.mimetype.startsWith("video/")
-}
-
-final class Excerpt private (override val id : Excerpt.Id, val source : Timeseries, val offset : Interval, val duration : Option[Interval], public_ : Boolean) extends Asset(id) with TableRowId[Excerpt] {
+final class Clip private (override val id : Clip.Id, val source : Timeseries, val segment : Range[Offset], val excerpt : Boolean, val consent : Consent.Value) extends Asset(id) with TableRowId[Clip] {
   def sourceId = source.id
-  private[this] var _public = public_
-  def public = _public
 
-  def change(public : Boolean = _public)(implicit site : Site) : Unit = {
-    if (public == _public)
-      return
-    Audit.SQLon(AuditAction.change, "excerpt", "SET public = {public} WHERE id = {id}")('public -> public, 'id -> id).execute()(site.db)
-    _public = public
-  }
-
-  def consent = {
-    val c = source.consent
-    if (c <= Consent.EXCERPTS && public)
-      Consent.PUBLIC
+  def format = if (segment.isSingleton) source.format else source.format.sampleFormat
+  def classification = {
+    val c = source.classification
+    if (c == Classification.IDENTIFIED && excerpt)
+      Classification.EXCERPT
     else
       c
   }
-  def format = duration.fold(FileFormat.Image)(_ => source.format)
+  def duration : Option[Offset] = segment.upperBound.flatMap(u => segment.lowerBound.map(u - _))
 }
 
 
@@ -116,77 +96,61 @@ object Asset extends AssetView[Asset] {
   private[models] override val src = "asset"
   type Row = String
   private[models] val row = Columns[String]('kind)
+
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[Asset] =
     SELECT("WHERE id = {id}").on('id -> i).singleOpt() flatMap {
       case "file" => FileAsset.get(FileAsset.asId(i.unId))
       case "timeseries" => Timeseries.get(Timeseries.asId(i.unId))
-      case "excerpt" => Excerpt.get(Excerpt.asId(i.unId))
+      case "clip" => Clip.get(Clip.asId(i.unId))
     }
-
-  /* This should really more appropriately be FileAsset, since it does not apply to Excerpts */
-  def create(format : AssetFormat, owner : Study.Id, consent : Consent.Value, date : Option[Date], file : TemporaryFile)(implicit site : Site) : FileAsset = {
-    val asset = if (format.timeseries)
-        Timeseries.create(format, owner, consent, date, file)
-      else
-        FileAsset.create(format, owner, consent, date, file)
-    store.FileAsset.store(asset.id, file)
-    site.db.commit
-    asset
-  }
 }
 
 object FileAsset extends TableId[FileAsset]("file") with AssetView[FileAsset] {
   private[this] val columns = Columns[
-    Id,  Option[Study.Id], Consent.Value, Option[Date]](
-    'id, 'owner,           'consent,      'date)
-  private[models] val row = (columns ~ FileFormat.row) map {
-    case ((id, owner, consent, date) ~ format) => new FileAsset(id, format, owner, consent, date)
+    Id,  Classification.Value, Option[Consent.Value]](
+    'id, 'Classification,      SelectAs("asset_consent(file.id)", "file_consent"))
+  private[models] val row = (columns ~ AssetFormat.row) map {
+    case ((id, classification, consent) ~ format) => new FileAsset(id, format, classification, consent.getOrElse(Consent.NONE))
   }
-  private[models] override val src = "ONLY file JOIN ONLY file_format ON file.format = file_format.id"
+  private[models] override val src = "ONLY file JOIN ONLY format ON file.format = format.id"
   
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[FileAsset] =
     SELECT("WHERE file.id = {id}").
       on('id -> i).singleOpt()
 
-  private[models] def create(format : AssetFormat, owner : Study.Id, consent : Consent.Value, date : Option[Date], file : TemporaryFile)(implicit site : Site) : FileAsset = {
-    val args = Anorm.Args('format -> format.ensuring(!_.timeseries).id, 'owner -> owner, 'consent -> consent, 'date -> date)
+  def create(format : AssetFormat, classification : Classification.Value, file : TemporaryFile)(implicit site : Site) : FileAsset = {
+    val args = Anorm.Args('format -> format, 'classification -> classification)
     val id = Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
-    new FileAsset(id, format, Some(owner), consent, date)
+    store.FileAsset.store(id, file)
+    site.db.commit
+    new FileAsset(id, format, classification)
   }
 }
 
 object Timeseries extends TableId[Timeseries]("timeseries") with AssetView[Timeseries] {
   private[this] val columns = Columns[
-    Id,  Option[Study.Id], Consent.Value, Option[Date], Interval](
-    'id, 'owner,           'consent,      'date,        'duration)
-  private[models] val row = (columns ~ TimeseriesFormat.row) map {
-    case ((id, owner, consent, date, duration) ~ format) => new Timeseries(id, format, owner, consent, date, duration)
+    Id,  TimeseriesFormat.Id, Classification.Value, Offset,    Option[Consent.Value]](
+    'id, 'format,             'classification,      'duration, SelectAs("asset_consent(timeseries.id)", "timeseries_consent"))
+  private[models] val row = columns map {
+    (id, format, classification, duration, consent) => new Timeseries(id, TimeseriesFormat.get(format).get, classification, duration, consent.getOrElse(Consent.NONE))
   }
-  private[models] override val src = "timeseries JOIN timeseries_format ON timeseries.format = timeseries_format.id"
   
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[Timeseries] =
     SELECT("WHERE timeseries.id = {id}").
       on('id -> i).singleOpt()
-
-  private[models] def create(format : AssetFormat, owner : Study.Id, consent : Consent.Value, date : Option[Date], file : TemporaryFile)(implicit site : Site) : FileAsset = {
-    val fmt = media.AV.probe(file.file)
-    val duration = fmt.duration
-    val args = Anorm.Args('format -> format.ensuring(_.timeseries).id, 'owner -> owner, 'consent -> consent, 'date -> date, 'duration -> duration)
-    val id = Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
-    new Timeseries(id, format, Some(owner), consent, date, duration)
-  }
 }
 
-object Excerpt extends TableId[Excerpt]("excerpt") with AssetView[Excerpt] {
+object Clip extends TableId[Clip]("clip") with AssetView[Clip] {
+  implicit private val segmentColumn = PGSegment.column // why isn't this implicit found?
   private[this] val columns = Columns[
-    Id,  Interval, Option[Interval], Boolean](
-    'id, 'offset,  'duration,        'public)
+    Id,  Range[Offset], Boolean,  Option[Consent.Value]](
+    'id, 'segment,      'excerpt, SelectAs("asset_consent(clip.id, clip.segment)", "clip_consent"))
   private[models] val row = (columns ~ Timeseries.row) map {
-    case ((id, offset, duration, public) ~ source) => new Excerpt(id, source, offset, duration, public)
+    case ((id, segment, excerpt, consent) ~ source) => new Clip(id, source, segment, excerpt, consent.getOrElse(Consent.NONE))
   }
-  private[models] override val src = "excerpt JOIN " + Timeseries.src + " ON excerpt.source = timeseries.id"
+  private[models] override val src = "clip JOIN " + Timeseries.src + " ON clip.source = timeseries.id"
   
-  private[models] def get(i : Id)(implicit db : Site.DB) : Option[Excerpt] =
+  private[models] def get(i : Id)(implicit db : Site.DB) : Option[Clip] =
     SELECT("WHERE excerpt.id = {id}").
       on('id -> i).singleOpt()
 }

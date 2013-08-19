@@ -57,8 +57,9 @@ object Anorm {
   )
 }
 
-case class Interval(seconds : Double) 
-  extends scala.math.Ordered[Interval] {
+/* A length of time; called "interval" in postgres, offset is a better name for our purposes */
+case class Offset(seconds : Double) 
+  extends scala.math.Ordered[Offset] {
   /*
      with scala.runtime.FractionalProxy[Double] 
      with scala.runtime.OrderedProxy[Double] {
@@ -70,9 +71,9 @@ case class Interval(seconds : Double)
   def millis = 1000*seconds
   def nanos = 1000000000*seconds
   def samples(rate : Double) = math.round(rate*seconds)
-  def +(other : Interval) = Interval(seconds + other.seconds)
-  def -(other : Interval) = Interval(seconds - other.seconds)
-  def compare(other : Interval) = seconds.compare(other.seconds)
+  def +(other : Offset) = Offset(seconds + other.seconds)
+  def -(other : Offset) = Offset(seconds - other.seconds)
+  def compare(other : Offset) = seconds.compare(other.seconds)
 
   /* This is unfortuante but I can't find any other reasonable formatting options outside the postgres server itself: */
   override def toString = {
@@ -84,32 +85,35 @@ case class Interval(seconds : Double)
       "%02d:%s".format(m, s)
   }
 }
-object Interval {
-  def apply(i : PGInterval) : Interval =
-    Interval(60*(60*(24*(30*(12.175*i.getYears + i.getMonths) + i.getDays) + i.getHours) + i.getMinutes) + i.getSeconds)
+object Offset {
+  def apply(i : PGInterval) : Offset =
+    Offset(60*(60*(24*(30*(12.175*i.getYears + i.getMonths) + i.getDays) + i.getHours) + i.getMinutes) + i.getSeconds)
 
-  object pgType extends PGType[Interval] {
+  object pgType extends PGType[Offset] {
     val pgType = "interval"
-    def pgGet(s : String) = Interval(new PGInterval(s))
-    def pgPut(i : Interval) = i.seconds.toString
+    def pgGet(s : String) = Offset(new PGInterval(s))
+    def pgPut(i : Offset) = i.seconds.toString
   }
 
-  implicit val column : Column[Interval] = Column.nonNull[Interval] { (value, meta) =>
+  implicit val column : Column[Offset] = Column.nonNull[Offset] { (value, meta) =>
     val MetaDataItem(qualified, nullable, clazz) = meta
     value match {
-      case int : PGInterval => Right(Interval(int))
+      case int : PGInterval => Right(Offset(int))
       case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to PGInterval for column " + qualified))
     }
   }
-  implicit val statement : ToStatement[Interval] = new ToStatement[Interval] {
-    def set(s: java.sql.PreparedStatement, index: Int, a: Interval) =
+  implicit val statement : ToStatement[Offset] = new ToStatement[Offset] {
+    def set(s: java.sql.PreparedStatement, index: Int, a: Offset) =
       s.setObject(index, new PGInterval(0, 0, 0, 0, 0, a.seconds))
   }
 
-  implicit val pathBindable : PathBindable[Interval] = PathBindable.bindableDouble.transform(apply _, _.seconds)
-  implicit val javascriptLitteral : JavascriptLitteral[Interval] = new JavascriptLitteral[Interval] {
-    def to(value : Interval) = value.seconds.toString
+  implicit val pathBindable : PathBindable[Offset] = PathBindable.bindableDouble.transform(apply _, _.seconds)
+  implicit val javascriptLitteral : JavascriptLitteral[Offset] = new JavascriptLitteral[Offset] {
+    def to(value : Offset) = value.seconds.toString
   }
+
+  import scala.language.implicitConversions
+  implicit def ofSeconds(seconds : Double) : Offset = Offset(seconds)
 }
 
 case class Inet(ip : String)
