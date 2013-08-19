@@ -2,7 +2,14 @@
 
 http://databrary.org/
 
-http://databrary.org/bugs/
+https://www.assembla.com/spaces/databrary
+
+## Layout
+
+* [MVC Application](app/)
+* [Master database schema](conf/evolutions/default/1.sql)
+* [Database interface](dbrary/)
+* [ffmpeg interface](media/)
 
 ## Installation requirements
 
