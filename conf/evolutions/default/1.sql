@@ -171,7 +171,7 @@ COMMENT ON FUNCTION "authorize_delegate_check" (integer, integer, permission) IS
 
 ----------------------------------------------------------- containers
 
-SELECT create_abstract_parent('container', ARRAY['study','slot','session']);
+SELECT create_abstract_parent('container', ARRAY['study','slot']);
 COMMENT ON TABLE "container" IS 'Parent table for anything assets can be attached to.';
 
 
@@ -226,10 +226,11 @@ COMMENT ON FUNCTION "study_access_check" (integer, integer, permission) IS 'Test
 CREATE TABLE "slot" (
 	"id" integer NOT NULL DEFAULT nextval('container_id_seq') Primary Key References "container" Deferrable Initially Deferred,
 	"study" integer NOT NULL References "study",
-	"ident" varchar(16) NOT NULL,
-	Unique ("study", "ident")
+	"consent" consent,
+	"date" date
 );
-COMMENT ON TABLE "slot" IS 'Organizational unit within study, corresponding to a single participant/individual/group/sample.';
+COMMENT ON TABLE "slot" IS 'Organizational unit within study containing raw data, usually corresponding to an individual data acqusition (single visit/participant/group/sample).';
+CREATE INDEX ON "slot" ("study");
 CREATE TRIGGER "container" BEFORE INSERT OR UPDATE OR DELETE ON "slot" FOR EACH ROW EXECUTE PROCEDURE "container_trigger" ();
 
 CREATE TABLE "audit_slot" (
@@ -237,34 +238,14 @@ CREATE TABLE "audit_slot" (
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 
-CREATE FUNCTION "next_slot_ident" ("study" integer) RETURNS varchar(16) LANGUAGE sql STABLE STRICT AS $$
-	SELECT (GREATEST(max(cast_int(ident)), count(ident))+1)::varchar(16) FROM slot WHERE study = $1
-$$;
-
-
-CREATE TABLE "session" (
-	"id" integer NOT NULL DEFAULT nextval('container_id_seq') Primary Key References "container" Deferrable Initially Deferred,
-	"slot" integer NOT NULL References "slot",
-	"consent" consent NOT NULL Default enum_first(null::consent),
-	"date" date NOT NULL
-);
-COMMENT ON TABLE "session" IS 'Organizational unit within slot containing raw data, usually corresponding to an individual data acqusition.';
-CREATE TRIGGER "container" BEFORE INSERT OR UPDATE OR DELETE ON "session" FOR EACH ROW EXECUTE PROCEDURE "container_trigger" ();
-
-CREATE TABLE "audit_session" (
-	LIKE "session"
-) INHERITS ("audit") WITH (OIDS = FALSE);
-
-
 CREATE VIEW "containers" AS
-	SELECT container.id, kind, study.id AS "study", title, description, slot.id AS "slot", ident, session.id AS "session" FROM container 
-		LEFT JOIN session USING (id)
-		LEFT JOIN slot  ON slot.id  = container.id OR slot.id = session.slot
+	SELECT container.id, kind, study.id AS "study", title, description, slot.id AS "slot" FROM container 
+		LEFT JOIN slot USING (id)
 		     JOIN study ON study.id = container.id OR study.id = slot.study;
-COMMENT ON VIEW "containers" IS 'All containers (studies, slots, and sessions) in expanded form.';
+COMMENT ON VIEW "containers" IS 'All containers (studies and slots) in expanded form.';
 
 CREATE FUNCTION "container_study" ("container" integer) RETURNS integer LANGUAGE sql STABLE STRICT AS $$
-	SELECT study FROM containers WHERE id = $1
+	SELECT id FROM study WHERE id = $1 UNION ALL SELECT study FROM slot WHERE study FROM containers WHERE id = $1
 $$;
 
 ----------------------------------------------------------- assets
@@ -378,7 +359,7 @@ CREATE FUNCTION "asset_parents" ("asset" integer, "segment" segment = NULL) RETU
 COMMENT ON FUNCTION "asset_parents" (integer, segment) IS 'Set of assets that compose (provide/overlap) the specified asset.';
 
 CREATE FUNCTION "asset_consent" ("asset" integer, "segment" segment = NULL) RETURNS consent LANGUAGE sql STABLE AS $$
-	SELECT MIN(consent) FROM asset_parents($1, $2) JOIN asset_link ON (asset_parents = asset) JOIN session ON (container = session.id)
+	SELECT MIN(consent) FROM asset_parents($1, $2) JOIN asset_link ON (asset_parents = asset) JOIN slot ON (container = slot.id)
 $$;
 COMMENT ON FUNCTION "asset_consent" (integer, segment) IS 'Effective (minimal) consent level granted on the given asset.';
 
@@ -429,9 +410,6 @@ DROP TYPE classification;
 
 DROP FUNCTION "container_study" (integer);
 DROP VIEW "containers";
-DROP TABLE "audit_session";
-DROP TABLE "session";
-DROP FUNCTION "next_slot_ident" (integer);
 DROP TABLE "audit_slot";
 DROP TABLE "slot";
 DROP FUNCTION "study_access_check" (integer, integer, permission);

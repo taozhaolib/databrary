@@ -43,7 +43,6 @@ GET     /study/:id/Access/:party/delete        	controllers.Study.accessDelete(i
 POST    /study/:id/Access/:party               	controllers.Study.accessChange(id : models.Study.Id, party : models.Party.Id)
 POST    /study/Create                          	controllers.Study.create(owner : Option[models.Party.Id] ?= None)
 
-GET     /study/:id/slot/:ident                 	controllers.Study.viewSlot(id : models.Study.Id, ident : String)
 POST    /study/:id/Slot                        	controllers.Slot.create(id : models.Study.Id)
 GET     /slot/:id                              	controllers.Slot.view(id : models.Slot.Id)
 GET     /slot/:id/edit                         	controllers.Slot.edit(id : models.Slot.Id)

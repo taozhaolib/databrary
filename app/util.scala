@@ -6,6 +6,8 @@ object maybe {
   /* A more concise version of the common Option(_).filter(_) idiom */
   def apply[A](a : A, f : A => Boolean) : Option[A] =
     Some(a).filter(f)
+  def apply[A](a : A, n : A) : Option[A] =
+    maybe(a, (_ : A) != n)
   /* special default for strings */
   def apply(s : String, f : String => Boolean = !_.isEmpty) =
     Some(s).filter(f)

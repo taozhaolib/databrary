@@ -3,7 +3,8 @@
 @common(slot, "edit") {
 
 	@helper.form(routes.Slot.change(slot.id)) {
-		@helper.inputText(editForm("ident"))
+		@enumSelect(editForm("consent"), Consent)
+		@helper.inputDate(editForm("date"))
 		<button type='submit'>Change</button>
 	}
 	@formErrors(editForm)

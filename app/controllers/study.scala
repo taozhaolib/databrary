@@ -126,8 +126,4 @@ object Study extends SiteController {
       Created(viewEdit(study)(editForm = form))
     }
   }
-
-  def viewSlot(i : models.Study.Id, s : String) = check(i) { study => implicit request =>
-    study.slot(s).fold(NotFound : Result)(s => Found(s.pageURL))
-  }
 }
