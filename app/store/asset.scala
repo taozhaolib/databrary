@@ -93,9 +93,9 @@ object Segment extends StoreDir[models.Asset.Id]("store.cache") {
     }
 
   private[store] def readFrame(t : models.Timeseries, offset : Offset) : Future[StreamEnumerator] =
-    genFrame(t.id, offset, offset == 0)
+    genFrame(t.id, offset, offset.seconds == 0)
   private[store] def readFrame(e : models.Clip, offset : Offset = 0) : Future[StreamEnumerator] =
-    genFrame(e.sourceId, e.segment.lowerBound.get+offset, offset == 0)
+    genFrame(e.sourceId, e.segment.lowerBound.get+offset, offset.seconds == 0)
 
   private[store] def read(e : models.Clip) : Future[StreamEnumerator] = 
     e.segment.singleton.fold {

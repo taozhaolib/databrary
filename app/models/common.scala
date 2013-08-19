@@ -61,12 +61,15 @@ private[models] abstract trait TableView {
   private[models] def * : String = row.select
   private[models] val src : String = table /* the source for selects */
 
-  protected def SELECT(q : String = "") : SimpleSql[Row] = 
-    SQL("SELECT " + * + " FROM " + src + (if (q.isEmpty) "" else " " + q)).using(row)
-  protected def JOIN(t : TableView, q : String = "") : SimpleSql[Row ~ t.Row] = {
-    val j = row ~ t.row
-    SQL("SELECT " + j.select + " FROM " + src + " JOIN " + t.src + (if (q.isEmpty) "" else " " + q)).using(j)
+  private[this] def unwords(s : String*) = s.mkString(" ")
+  protected def SELECT(q : String*) : SimpleSql[Row] = 
+    SQL(unwords(Seq("SELECT", *, "FROM", src) ++ q : _*)).using(row)
+  protected def JOIN[A](s : SelectParser[A], q : String*) : SimpleSql[Row ~ A] = {
+    val j = row ~ s
+    SQL(unwords(Seq("SELECT", j.select, "FROM", src) ++ q : _*)).using(j)
   }
+  protected def JOIN(t : TableView, q : String*) : SimpleSql[Row ~ t.Row] =
+    JOIN(t.row, Seq("JOIN", t.src) ++ q : _*)
 
   import scala.language.implicitConversions
   protected implicit def tableColumn(col : Symbol) = SelectColumn(table, col.name)

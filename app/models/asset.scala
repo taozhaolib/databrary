@@ -64,6 +64,7 @@ sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Ass
   def format : AssetFormat
   def classification : Classification.Value
   val consent : Consent.Value
+  def containers(implicit site : Site) = AssetLink.getContainers(this)(site)
 }
 
 sealed class FileAsset protected (override val id : FileAsset.Id, val format : AssetFormat, val classification : Classification.Value, val consent : Consent.Value = Consent.NONE) extends Asset(id) with TableRowId[FileAsset]

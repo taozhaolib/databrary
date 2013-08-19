@@ -36,7 +36,7 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
     SELECT("WHERE study = {study} AND party = {party}").
       on('study -> s, 'party -> e).singleOpt()
 
-  private[models] def getEntities(s : Study, p : Permission.Value = Permission.NONE)(implicit db : Site.DB) =
+  private[models] def getParties(s : Study, p : Permission.Value = Permission.NONE)(implicit db : Site.DB) =
     JOIN(Party, "ON (party = id) WHERE study = {study} AND access >= {access} ORDER BY access DESC").
       on('study -> s.id, 'access -> p).list((row ~ Party.row).
         map({ case (a ~ e) => a._party() = e; a._study() = s; a })

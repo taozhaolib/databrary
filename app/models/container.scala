@@ -45,7 +45,7 @@ final class Study private (override val id : Study.Id, title_ : String, descript
   def pageParent(implicit site : Site) = None
   def pageURL = controllers.routes.Study.view(id).url
 
-  def partyAccess(p : Permission.Value = Permission.NONE)(implicit db : Site.DB) = StudyAccess.getEntities(this, p)
+  def partyAccess(p : Permission.Value = Permission.NONE)(implicit db : Site.DB) = StudyAccess.getParties(this, p)
 
   def slots(implicit db : Site.DB) = Slot.getStudy(this)
   def slot(ident : String)(implicit db : Site.DB) = Slot.getIdent(this, ident)
@@ -74,6 +74,10 @@ final class Slot private (override val id : Slot.Id, val study : Study, ident_ :
   def pageName(implicit site : Site) = ident
   def pageParent(implicit site : Site) = Some(study)
   def pageURL = controllers.routes.Slot.view(id).url
+
+  def sessions(implicit db : Site.DB) = Session.getSlot(this)
+  def assets(all : Boolean = true)(implicit db : Site.DB) =
+    if (all) AssetLink.getSlotAssets(this) else super.assets(db)
 }
 
 final class Session private (override val id : Session.Id, val slot : Slot, val consent_ : Consent.Value, val date_ : Date) extends Container(id) with TableRowId[Session] {
@@ -119,7 +123,7 @@ object Container extends ContainerView[Container]("container") {
     LEFT JOIN slot  ON slot.id  = container.id OR slot.id = session.slot
          JOIN study ON study.id = container.id OR study.id = slot.study"""
   def get(i : Id)(implicit site : Site) : Option[Container] =
-    SELECT("WHERE container.id = {id} AND " + condition).
+    SELECT("WHERE container.id = {id} AND", condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt()(site.db)
 }
 
@@ -131,7 +135,7 @@ object Study extends ContainerView[Study]("study") {
   }
 
   def get(i : Id)(implicit site : Site) : Option[Study] =
-    SELECT("WHERE id = {id} AND " + condition).
+    SELECT("WHERE id = {id} AND", condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt()(site.db)
     
   def create(title : String, description : Option[String] = None)(implicit site : Site) : Study = {
@@ -154,7 +158,7 @@ object Slot extends ContainerView[Slot]("slot") {
   private[this] def rowStudy(study : Study) = columns.map(makeStudy(study) _)
 
   def get(i : Id)(implicit site : Site) : Option[Slot] =
-    SELECT("WHERE slot.id = {id} AND " + condition).
+    SELECT("WHERE slot.id = {id} AND", condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt()(site.db)
   private[models] def getIdent(study : Study, ident : String)(implicit db : Site.DB) : Option[Slot] =
     SQL("SELECT " + columns.select + " FROM slot WHERE study = {study} AND ident = {ident}").
@@ -189,7 +193,7 @@ object Session extends ContainerView[Session]("session") {
   private[this] def rowSlot(slot : Slot) = columns.map(makeSlot(slot) _)
 
   def get(i : Id)(implicit site : Site) : Option[Session] =
-    SELECT("WHERE session.id = {id} AND " + condition).
+    SELECT("WHERE session.id = {id} AND", condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt()(site.db)
   private[models] def getSlot(slot : Slot)(implicit db : Site.DB) : Seq[Session] =
     SQL("SELECT " + columns.select + " FROM slot WHERE slot = {slot} ORDER BY date").

@@ -79,8 +79,15 @@ object AssetLink extends Table[AssetLink]("asset_link") {
   private[models] def getAssets(c : Container)(implicit db : Site.DB) : Seq[AssetLink] =
     SELECT("WHERE container = {container}").
       on('container -> c.id).list(rowContainer(c))
+  private[models] def getSlotAssets(slot : Slot)(implicit db : Site.DB) : Seq[AssetLink] =
+    JOIN(Session.columns, "LEFT JOIN session ON container = session.id WHERE container = {container} OR session.slot = {container}").
+      on('container -> slot.id).list((row ~ Session.columns.?) map {
+        case a ~ s => 
+          a._container() = s.fold(slot : Container)(Session.baseMake(slot))
+          a
+      })
   private[models] def getContainers(a : Asset)(implicit site : Site) : Seq[AssetLink] =
-    JOIN(Container, "ON container.id = container WHERE asset = {asset} AND " + Container.condition).
+    JOIN(Container, "ON container.id = container WHERE asset = {asset} AND", Container.condition).
       on('asset -> a.id, 'identity -> site.identity.id).list((row ~ Container.row) map { case (l ~ c) =>
         l._container() = c
         l._asset() = a
