@@ -20,7 +20,7 @@ DECLARE
 	parent_table CONSTANT text := quote_ident(parent);;
 BEGIN
 	EXECUTE $macro$
-		CREATE TABLE $macro$ || parent_table || $macro$ ( -- ABSTRACT
+		CREATE TABLE $macro$ || parent_table || $macro$ (
 			"id" serial NOT NULL Primary Key,
 			"kind" name NOT NULL Check ("kind" IN ('$macro$ || array_to_string(children, $$','$$) || $macro$'))
 		);;
@@ -245,7 +245,7 @@ CREATE VIEW "containers" AS
 COMMENT ON VIEW "containers" IS 'All containers (studies and slots) in expanded form.';
 
 CREATE FUNCTION "container_study" ("container" integer) RETURNS integer LANGUAGE sql STABLE STRICT AS $$
-	SELECT id FROM study WHERE id = $1 UNION ALL SELECT study FROM slot WHERE study FROM containers WHERE id = $1
+	SELECT id FROM study WHERE id = $1 UNION ALL SELECT study FROM slot WHERE id = $1
 $$;
 
 ----------------------------------------------------------- assets
@@ -354,43 +354,136 @@ CREATE TABLE "audit_asset_link" (
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 
-CREATE FUNCTION "asset_parents" ("asset" integer, "segment" segment = NULL) RETURNS SETOF integer LANGUAGE sql STABLE AS 
-	$$ SELECT $1 UNION ALL SELECT id FROM clip WHERE source = $1 AND segment && $2 $$;
-COMMENT ON FUNCTION "asset_parents" (integer, segment) IS 'Set of assets that compose (provide/overlap) the specified asset.';
+CREATE VIEW "asset_nesting" ("child", "parent") AS 
+	SELECT id, id FROM file UNION ALL SELECT id, source FROM clip UNION ALL
+	SELECT cc.id, cp.id FROM clip cc JOIN clip cp ON cc.source = cp.source AND cc.segment <@ cp.segment;
 
-CREATE FUNCTION "asset_consent" ("asset" integer, "segment" segment = NULL) RETURNS consent LANGUAGE sql STABLE AS $$
+CREATE FUNCTION "asset_parents" ("file" integer, "segment" segment = NULL) RETURNS SETOF integer LANGUAGE sql STABLE AS 
+	$$ SELECT $1 UNION ALL SELECT id FROM clip WHERE source = $1 AND segment @> $2 $$;
+COMMENT ON FUNCTION "asset_parents" (integer, segment) IS 'Set of assets that provide the specified asset.  Note that the contains relation here is rather liberal, as we are depending on researchers and/or other parts of the system to ensure than overlapping consents don''t disagree.';
+
+CREATE FUNCTION "asset_consent" ("file" integer, "segment" segment = NULL) RETURNS consent LANGUAGE sql STABLE AS $$
 	SELECT MIN(consent) FROM asset_parents($1, $2) JOIN asset_link ON (asset_parents = asset) JOIN slot ON (container = slot.id)
 $$;
-COMMENT ON FUNCTION "asset_consent" (integer, segment) IS 'Effective (minimal) consent level granted on the given asset.';
+COMMENT ON FUNCTION "asset_consent" (integer, segment) IS 'Effective (minimal) consent level granted on the specified asset.';
 
 ----------------------------------------------------------- annotations
 
-CREATE TABLE "annotation" ( -- ABSTRACT
-	"id" serial NOT NULL Primary Key,
-	"who" integer NOT NULL References "party",
-	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	-- consider possible ON DELETE actions:
-	"container" integer NOT NULL References "container",
-	"asset" integer References "asset",
-	Foreign Key ("container", "asset") References "asset_link"
+SELECT create_abstract_parent('annotation', ARRAY['record','comment','tag']);
+COMMENT ON TABLE "annotation" IS 'Parent table for metadata annotations.';
+
+
+CREATE TABLE "record_class" (
+	"id" smallserial Primary Key,
+	"name" varchar(64) NOT NULL Unique
 );
-COMMENT ON TABLE "annotation" IS 'Abstract base table for various types of annotations that can be added by users to nodes (unaudited, no updates).';
+COMMENT ON TABLE "record_class" IS 'Types of records that are relevant for data organization.';
+INSERT INTO "record_class" ("name") VALUES ('participant');
+
+CREATE TABLE "record" (
+	"id" integer NOT NULL DEFAULT nextval('annotation_id_seq') Primary Key References "annotation" Deferrable Initially Deferred,
+	"class" smallint References "record_class"
+);
+CREATE TRIGGER "annotation" BEFORE INSERT OR UPDATE OR DELETE ON "record" FOR EACH ROW EXECUTE PROCEDURE "annotation_trigger" ();
+COMMENT ON TABLE "record" IS 'Sets of metadata measurements organized into or applying to a single cohesive unit.  These belong to the object(s) they''re attached to, which are expected to be within a single study.';
+
+CREATE TABLE "metric" (
+	"id" serial Primary Key,
+	"name" varchar(64) NOT NULL,
+	"kind" name NOT NULL Check ("kind" IN ('text', 'number', 'date')),
+	"values" text[] -- options for text enumerations; not enforced (could be pulled out to separate kind/table)
+);
+COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$kind tables.  Rough prototype.';
+INSERT INTO "metric" ("name", "kind") VALUES ('ident', 'text');
+INSERT INTO "metric" ("name", "kind") VALUES ('birthday', 'date');
+INSERT INTO "metric" ("name", "kind", "values") VALUES ('gender', 'text', ARRAY['F','M']);
+
+CREATE TABLE "measure" ( -- ABSTRACT
+	"record" integer NOT NULL References "record",
+	"metric" integer NOT NULL References "metric", -- WHERE kind = table_name
+	Primary Key ("record", "metric"),
+	Check ('f') NO INHERIT
+);
+COMMENT ON TABLE "measure" IS 'Abstract parent of all measure tables containing data values.  Rough prototype.';
+
+CREATE TABLE "measure_text" (
+	"record" integer NOT NULL References "record",
+	"metric" integer NOT NULL References "metric", -- WHERE kind = "text"
+	"datum" text NOT NULL,
+	Primary Key ("record", "metric")
+) INHERITS ("measure");
+
+CREATE TABLE "measure_number" (
+	"record" integer NOT NULL References "record",
+	"metric" integer NOT NULL References "metric", -- WHERE kind = "number"
+	"datum" numeric NOT NULL,
+	Primary Key ("record", "metric")
+) INHERITS ("measure");
+
+CREATE TABLE "measure_date" (
+	"record" integer NOT NULL References "record",
+	"metric" integer NOT NULL References "metric", -- WHERE kind = "date"
+	"datum" date NOT NULL,
+	Primary Key ("record", "metric")
+) INHERITS ("measure");
+
+CREATE VIEW "measure_view" AS
+	SELECT record, metric, datum FROM measure_text UNION ALL
+	SELECT record, metric, text(datum) FROM measure_number UNION ALL
+	SELECT record, metric, text(datum) FROM measure_date;
+
 
 CREATE TABLE "comment" (
-	"text" text NOT NULL,
-	Primary Key ("id"),
-	Foreign Key ("container", "asset") References "asset_link"
-) INHERITS ("annotation");
-COMMENT ON TABLE "comment" IS 'Free-text comments.';
+	"id" integer NOT NULL DEFAULT nextval('annotation_id_seq') Primary Key References "annotation" Deferrable Initially Deferred,
+	"who" integer NOT NULL References "party",
+	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"text" text NOT NULL
+);
+CREATE TRIGGER "annotation" BEFORE INSERT OR UPDATE OR DELETE ON "comment" FOR EACH ROW EXECUTE PROCEDURE "annotation_trigger" ();
+COMMENT ON TABLE "comment" IS 'Free-text comments that can be added to nodes (unaudited, immutable).';
+
+
+CREATE TABLE "container_annotation" (
+	"annotation" integer NOT NULL References "annotation",
+	"container" integer NOT NULL References "container",
+	Primary Key ("annotation", "container")
+);
+
+CREATE TABLE "asset_annotation" (
+	"annotation" integer NOT NULL References "annotation",
+	"asset" integer NOT NULL References "asset",
+	Primary Key ("annotation", "asset")
+);
+
+CREATE FUNCTION "asset_annotations" ("asset" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
+	SELECT annotation FROM asset_nesting JOIN asset_annotation ON child = asset WHERE parent = $1
+$$;
+
+CREATE FUNCTION "container_annotations" ("container" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
+	WITH containers (container) AS (SELECT $1 UNION ALL SELECT id AS container FROM slot WHERE study = $1)
+	SELECT annotation FROM containers JOIN container_annotation USING (container) UNION
+	SELECT annotation FROM containers JOIN asset_link USING (container) JOIN asset_nesting ON parent = asset JOIN asset_annotation ON child = asset_annotation.asset
+$$;
+
 
 # --- !Downs
 ;
 
+DROP FUNCTION "container_annotations" (integer);
+DROP FUNCTION "asset_annotations" (integer);
+DROP TABLE "asset_annotation";
+DROP TABLE "container_annotation";
 DROP TABLE "comment";
+DROP TABLE "measure" CASCADE;
+DROP TABLE "metric";
+DROP TABLE "record";
+DROP TABLE "record_class";
 DROP TABLE "annotation";
+DROP FUNCTION "annotation_trigger" ();
 
 DROP FUNCTION "asset_consent" (integer, segment);
 DROP FUNCTION "asset_parents" (integer, segment);
+DROP VIEW "asset_nesting";
 DROP TABLE "audit_asset_link";
 DROP TABLE "asset_link";
 DROP TABLE "clip";
