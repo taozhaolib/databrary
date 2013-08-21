@@ -18,25 +18,27 @@
 CREATE FUNCTION create_abstract_parent ("parent" name, "children" name[]) RETURNS void LANGUAGE plpgsql AS $create$
 DECLARE
 	parent_table CONSTANT text := quote_ident(parent);;
+	kind_type CONSTANT text := quote_ident(parent || '_kind');;
 BEGIN
 	EXECUTE $macro$
+		CREATE TYPE $macro$ || kind_type || $macro$ AS ENUM ('$macro$ || array_to_string(children, $$','$$) || $macro$');;
 		CREATE TABLE $macro$ || parent_table || $macro$ (
 			"id" serial NOT NULL Primary Key,
-			"kind" name NOT NULL Check ("kind" IN ('$macro$ || array_to_string(children, $$','$$) || $macro$'))
+			"kind" $macro$ || kind_type || $macro$ NOT NULL
 		);;
 		CREATE FUNCTION $macro$ || quote_ident(parent || '_trigger') || $macro$ () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
 			IF TG_OP = 'INSERT' THEN
-				INSERT INTO $macro$ || parent_table || $macro$ (id, kind) VALUES (NEW.id, TG_TABLE_NAME);;
+				INSERT INTO $macro$ || parent_table || $macro$ (id, kind) VALUES (NEW.id, TG_TABLE_NAME::$macro$ || kind_type || $macro$);;
 			ELSIF TG_OP = 'DELETE' THEN
-				DELETE FROM $macro$ || parent_table || $macro$ WHERE id = OLD.id AND kind = TG_TABLE_NAME;;
+				DELETE FROM $macro$ || parent_table || $macro$ WHERE id = OLD.id AND kind = TG_TABLE_NAME::$macro$ || kind_type || $macro$;;
 			ELSIF TG_OP = 'UPDATE' THEN
 				IF NEW.id = OLD.id THEN
 					RETURN NEW;;
 				END IF;;
-				UPDATE $macro$ || parent_table || $macro$ SET id = NEW.id WHERE id = OLD.id AND kind = TG_TABLE_NAME;;
+				UPDATE $macro$ || parent_table || $macro$ SET id = NEW.id WHERE id = OLD.id AND kind = TG_TABLE_NAME::$macro$ || kind_type || $macro$;;
 			END IF;;
 			IF NOT FOUND THEN
-				RAISE EXCEPTION 'inconsistency for %:% parent $macro$ || parent || $macro$', TG_TABLE_NAME, OLD.id;;
+				RAISE EXCEPTION 'inconsistency for %:% parent $macro$ || parent || $macro$', TG_TABLE_NAME::$macro$ || kind_type || $macro$, OLD.id;;
 			END IF;;
 			IF TG_OP = 'DELETE' THEN
 				RETURN OLD;;
@@ -289,15 +291,15 @@ CREATE TABLE "timeseries_format" (
 COMMENT ON TABLE "timeseries_format" IS 'Special asset types that correspond to internal formats representing timeseries data.';
 
 -- The privledged formats with special handling (image and video for now) have hard-coded IDs:
-INSERT INTO "format" (id, mimetype, extension, name) VALUES (-1, 'image/jpeg', 'jpg', 'JPEG');
-INSERT INTO "timeseries_format" (id, mimetype, extension, name) VALUES (-2, 'video/mp4', 'mp4', 'Databrary video');
+INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-1, 'image/jpeg', 'jpg', 'JPEG');
+INSERT INTO "timeseries_format" ("id", "mimetype", "extension", "name") VALUES (-2, 'video/mp4', 'mp4', 'Databrary video');
 
 -- The above video format will change to reflect internal storage, these are used for uploaded files:
-INSERT INTO "format" (mimetype, extension, name) VALUES ('text/plain', 'txt', 'Plain text');
--- INSERT INTO "format" (mimetype, extension, name) VALUES ('text/html', 'html', 'Hypertext markup');
-INSERT INTO "format" (mimetype, extension, name) VALUES ('application/pdf', 'pdf', 'Portable document');
--- INSERT INTO "format" (mimetype, extension, name) VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14');
--- INSERT INTO "format" (mimetype, extension, name) VALUES ('video/webm', 'webm', 'WebM');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/plain', 'txt', 'Plain text');
+-- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/html', 'html', 'Hypertext markup');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/pdf', 'pdf', 'Portable document');
+-- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14');
+-- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/webm', 'webm', 'WebM');
 
 SELECT create_abstract_parent('asset', ARRAY['file', 'timeseries', 'clip']);
 COMMENT ON TABLE "asset" IS 'Parent table for all uploaded data in storage.';
@@ -387,16 +389,19 @@ CREATE TABLE "record" (
 CREATE TRIGGER "annotation" BEFORE INSERT OR UPDATE OR DELETE ON "record" FOR EACH ROW EXECUTE PROCEDURE "annotation_trigger" ();
 COMMENT ON TABLE "record" IS 'Sets of metadata measurements organized into or applying to a single cohesive unit.  These belong to the object(s) they''re attached to, which are expected to be within a single study.';
 
+CREATE TYPE data_type AS ENUM ('text', 'number', 'date');
+COMMENT ON TYPE data_type IS 'Types of measurement data corresponding to measure_* tables.';
+
 CREATE TABLE "metric" (
 	"id" serial Primary Key,
 	"name" varchar(64) NOT NULL,
-	"kind" name NOT NULL Check ("kind" IN ('text', 'number', 'date')),
-	"values" text[] -- options for text enumerations; not enforced (could be pulled out to separate kind/table)
+	"type" data_type NOT NULL,
+	"values" text[] -- options for text enumerations, not enforced (could be pulled out to separate kind/table)
 );
-COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$kind tables.  Rough prototype.';
-INSERT INTO "metric" ("name", "kind") VALUES ('ident', 'text');
-INSERT INTO "metric" ("name", "kind") VALUES ('birthday', 'date');
-INSERT INTO "metric" ("name", "kind", "values") VALUES ('gender', 'text', ARRAY['F','M']);
+COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.  Rough prototype.';
+INSERT INTO "metric" ("name", "type") VALUES ('ident', 'text');
+INSERT INTO "metric" ("name", "type") VALUES ('birthday', 'date');
+INSERT INTO "metric" ("name", "type", "values") VALUES ('gender', 'text', ARRAY['F','M']);
 
 CREATE TABLE "measure" ( -- ABSTRACT
 	"record" integer NOT NULL References "record",
@@ -476,10 +481,12 @@ DROP TABLE "container_annotation";
 DROP TABLE "comment";
 DROP TABLE "measure" CASCADE;
 DROP TABLE "metric";
+DROP TYPE data_type;
 DROP TABLE "record";
 DROP TABLE "record_class";
 DROP TABLE "annotation";
 DROP FUNCTION "annotation_trigger" ();
+DROP TYPE "annotation_kind";
 
 DROP FUNCTION "asset_consent" (integer, segment);
 DROP FUNCTION "asset_parents" (integer, segment);
@@ -495,6 +502,7 @@ DROP TABLE "timeseries_format";
 DROP TABLE "format";
 DROP TABLE "asset";
 DROP FUNCTION "asset_trigger" ();
+DROP TYPE "asset_kind";
 DROP FUNCTION "singleton" (segment);
 DROP FUNCTION "duration" (segment);
 DROP TYPE segment;
@@ -512,6 +520,7 @@ DROP TABLE "audit_study";
 DROP TABLE "study";
 DROP TABLE "container";
 DROP FUNCTION "container_trigger" ();
+DROP TYPE "container_kind";
 
 DROP FUNCTION "authorize_delegate_check" (integer, integer, permission);
 DROP FUNCTION "authorize_access_check" (integer, integer, permission);
