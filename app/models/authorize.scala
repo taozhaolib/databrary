@@ -8,16 +8,12 @@ import dbrary.Anorm._
 import util._
 
 final case class Authorize(childId : Party.Id, parentId : Party.Id, access : Permission.Value, delegate : Permission.Value, authorized : Option[Timestamp], expires : Option[Timestamp]) extends TableRow {
-  private def id =
-    Anorm.Args('child -> childId, 'parent -> parentId)
-  private def args =
-    id ++ Anorm.Args('access -> access, 'delegate -> delegate, 'authorized -> authorized, 'expires -> expires)
-
   /* update or add; this and remove may both invalidate child.access */
   def set(implicit site : Site) : Unit = {
-    val args = this.args
-    if (Audit.SQLon(AuditAction.change, Authorize.table, "SET access = {access}, delegate = {delegate}, authorized = {authorized}, expires = {expires} WHERE child = {child} AND parent = {parent}")(args : _*).executeUpdate()(site.db) == 0)
-      Audit.SQLon(AuditAction.add, Authorize.table, Anorm.insertArgs(args))(args : _*).execute()(site.db)
+    val id = SQLArgs('child -> childId, 'parent -> parentId)
+    val args = SQLArgs('access -> access, 'delegate -> delegate, 'authorized -> authorized, 'expires -> expires)
+    if (Audit.change(Authorize.table, args, id).executeUpdate()(site.db) == 0)
+      Audit.add(Authorize.table, args ++ id).execute()(site.db)
   }
   def remove(implicit site : Site) : Unit =
     Authorize.delete(childId, parentId)
@@ -58,7 +54,7 @@ object Authorize extends Table[Authorize]("authorize") {
       )
 
   def delete(c : Party.Id, p : Party.Id)(implicit site : Site) =
-    Audit.SQLon(AuditAction.remove, "authorize", "WHERE child = {child} AND parent = {parent}")('child -> c, 'parent -> p).
+    Audit.remove("authorize", SQLArgs('child -> c, 'parent -> p)).
       execute()(site.db)
 
   private[models] def access_check(c : Party.Id)(implicit db : Site.DB) : Permission.Value =

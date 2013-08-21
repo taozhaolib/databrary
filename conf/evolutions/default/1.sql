@@ -371,8 +371,18 @@ COMMENT ON FUNCTION "asset_consent" (integer, segment) IS 'Effective (minimal) c
 
 ----------------------------------------------------------- annotations
 
-SELECT create_abstract_parent('annotation', ARRAY['record','comment','tag']);
+SELECT create_abstract_parent('annotation', ARRAY['comment','tag','record']);
 COMMENT ON TABLE "annotation" IS 'Parent table for metadata annotations.';
+
+
+CREATE TABLE "comment" (
+	"id" integer NOT NULL DEFAULT nextval('annotation_id_seq') Primary Key References "annotation" Deferrable Initially Deferred,
+	"who" integer NOT NULL References "party",
+	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"text" text NOT NULL
+);
+CREATE TRIGGER "annotation" BEFORE INSERT OR UPDATE OR DELETE ON "comment" FOR EACH ROW EXECUTE PROCEDURE "annotation_trigger" ();
+COMMENT ON TABLE "comment" IS 'Free-text comments that can be added to nodes (unaudited, immutable).';
 
 
 CREATE TABLE "record_class" (
@@ -395,12 +405,13 @@ COMMENT ON TYPE data_type IS 'Types of measurement data corresponding to measure
 CREATE TABLE "metric" (
 	"id" serial Primary Key,
 	"name" varchar(64) NOT NULL,
+	"classification" classification NOT NULL Default 'DEIDENTIFIED',
 	"type" data_type NOT NULL,
 	"values" text[] -- options for text enumerations, not enforced (could be pulled out to separate kind/table)
 );
 COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.  Rough prototype.';
 INSERT INTO "metric" ("name", "type") VALUES ('ident', 'text');
-INSERT INTO "metric" ("name", "type") VALUES ('birthday', 'date');
+INSERT INTO "metric" ("name", "classification", "type") VALUES ('birthday', 'IDENTIFIED', 'date');
 INSERT INTO "metric" ("name", "type", "values") VALUES ('gender', 'text', ARRAY['F','M']);
 
 CREATE TABLE "measure" ( -- ABSTRACT
@@ -442,16 +453,6 @@ CREATE TABLE "audit_measure" (
 	LIKE "measure",
 	"datum" text NOT NULL
 ) INHERITS ("audit") WITH (OIDS = FALSE);
-
-
-CREATE TABLE "comment" (
-	"id" integer NOT NULL DEFAULT nextval('annotation_id_seq') Primary Key References "annotation" Deferrable Initially Deferred,
-	"who" integer NOT NULL References "party",
-	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	"text" text NOT NULL
-);
-CREATE TRIGGER "annotation" BEFORE INSERT OR UPDATE OR DELETE ON "comment" FOR EACH ROW EXECUTE PROCEDURE "annotation_trigger" ();
-COMMENT ON TABLE "comment" IS 'Free-text comments that can be added to nodes (unaudited, immutable).';
 
 
 CREATE TABLE "container_annotation" (

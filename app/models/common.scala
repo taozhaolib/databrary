@@ -80,17 +80,20 @@ private[models] abstract class Table[R <: TableRow](private[models] val table : 
 }
 private[models] abstract class TableId[R <: TableRowId[R]](table : String) extends Table[R](table) with HasId[R]
 
-private[models] object Anorm {
-  type Args = Seq[(Symbol, ParameterValue[_])]
-  def Args(args : (Symbol, ParameterValue[_])*) : Args = List(args : _*)
+private[models] final class SQLArgs private (private val args : Seq[SQLArgs.Arg]) extends scala.collection.SeqProxy[SQLArgs.Arg] {
+  def self = args
+  def ++(other : SQLArgs) = new SQLArgs(args ++ other.args)
 
-  def insertArgs(args : Args) = {
+  def insert = {
     val names = args.map(_._1.name)
     names.mkString("(", ", ", ")") + " VALUES " + names.mkString("({", "}, {", "})")
   }
-
-  def setArgs(args : Args, sep : String = ", ") =
+  def set(sep : String = ", ") =
     args.map(_._1.name).map(n => n + " = {" + n + "}").mkString(sep)
+}
+private[models] object SQLArgs {
+  type Arg = (Symbol, ParameterValue[_])
+  def apply(args : Arg*) = new SQLArgs(args)
 }
 
 trait SitePage {

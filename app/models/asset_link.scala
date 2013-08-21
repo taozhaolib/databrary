@@ -7,7 +7,7 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-final class AssetLink private (val containerId : Container.Id, val assetId : Asset.Id, title_ : String, description_ : Option[String]) extends TableRow with CommentPage {
+final class AssetLink private (val containerId : Container.Id, val assetId : Asset.Id, title_ : String, description_ : Option[String]) extends TableRow with SitePage with Annotated {
   def id = (containerId, assetId)
   private[this] var _title = title_
   def title = _title
@@ -17,7 +17,7 @@ final class AssetLink private (val containerId : Container.Id, val assetId : Ass
   def change(title : String = _title, description : Option[String] = _description)(implicit site : Site) : Unit = {
     if (title == _title && description == _description)
       return
-    Audit.SQLon(AuditAction.change, "asset_link", "SET title = {title}, description = {description} WHERE container = {container} AND asset = {asset}")('asset -> assetId, 'container -> containerId, 'title -> title, 'description -> description).execute()(site.db)
+    Audit.change("asset_link", SQLArgs('title -> title, 'description -> description), SQLArgs('container -> containerId, 'asset -> assetId)).execute()(site.db)
     _title = title
     _description = description
   }
@@ -56,8 +56,9 @@ final class AssetLink private (val containerId : Container.Id, val assetId : Ass
   def pageParent(implicit site : Site) = Some(container)
   def pageURL = controllers.routes.Asset.view(containerId, assetId).url
 
-  def comments(only : Boolean = false)(implicit db : Site.DB) = Comment.getAssetLink(this)
-  def addComment(text : String)(implicit site : Site) = Comment.create(this, text)
+  /* Annotated is proxy for linked asset */
+  private[models] final def annotatedLevel = "asset"
+  private[models] final def annotatedId = assetId
 }
 
 object AssetLink extends Table[AssetLink]("asset_link") {
@@ -88,8 +89,7 @@ object AssetLink extends Table[AssetLink]("asset_link") {
       })(site.db)
 
   def create(container : Container, asset : Asset, title : String, description : Option[String] = None)(implicit site : Site) : AssetLink = {
-    val args = Anorm.Args('container -> container.id, 'asset -> asset.id, 'title -> title, 'description -> description)
-    Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args))(args : _*).execute()(site.db)
+    Audit.add(table, SQLArgs('container -> container.id, 'asset -> asset.id, 'title -> title, 'description -> description)).execute()(site.db)
     val link = new AssetLink(container.id, asset.id, title, description)
     link._container() = container
     link._asset() = asset

@@ -7,15 +7,11 @@ import dbrary.Anorm._
 import util._
 
 final case class StudyAccess(studyId : Study.Id, partyId : Party.Id, access : Permission.Value, inherit : Permission.Value) extends TableRow {
-  private def id =
-    Anorm.Args('study -> studyId, 'party -> partyId)
-  private def args = 
-    id ++ Anorm.Args('access -> access, 'inherit -> inherit)
-
   def set(implicit site : Site) : Unit = {
-    val args = this.args
-    if (Audit.SQLon(AuditAction.change, "study_access", "SET access = {access}, inherit = {inherit} WHERE study = {study} AND party = {party}")(args : _*).executeUpdate()(site.db) == 0)
-      Audit.SQLon(AuditAction.add, "study_access", Anorm.insertArgs(args))(args : _*).execute()(site.db)
+    val id = SQLArgs('study -> studyId, 'party -> partyId)
+    val args =  SQLArgs('access -> access, 'inherit -> inherit)
+    if (Audit.change("study_access", args, id).executeUpdate()(site.db) == 0)
+      Audit.add("study_access", args ++ id).execute()(site.db)
   }
   def remove(implicit site : Site) : Unit =
     StudyAccess.delete(studyId, partyId)
@@ -48,7 +44,7 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
       )(site.db)
 
   def delete(s : Study.Id, e : Party.Id)(implicit site : Site) =
-    Audit.SQLon(AuditAction.remove, "study_access", "WHERE study = {study} AND party = {party}")('study -> s, 'party -> e).
+    Audit.remove("study_access", SQLArgs('study -> s, 'party -> e)).
       execute()(site.db)
 
   def check(s : Study.Id, e : Party.Id)(implicit db : Site.DB) : Permission.Value =

@@ -33,7 +33,7 @@ object Login extends Controller {
 
   private[this] def login(a : Account)(implicit request : Request[_], db : util.Site.DB) = {
     implicit val arequest = new UserRequest(request, a, db)
-    Audit.add(AuditAction.login)
+    Audit.action(AuditAction.login)
     Redirect(routes.Party.view(a.id)).withSession("user" -> a.id.unId.toString)
   }
   
@@ -76,7 +76,7 @@ object Login extends Controller {
 
   def logout = SiteAction { implicit request =>
     if (request.isInstanceOf[UserRequest[_]])
-      Audit.add(AuditAction.logout)
+      Audit.action(AuditAction.logout)
     Ok(viewLogin(Messages("login.logout"))).withNewSession
   }
 }

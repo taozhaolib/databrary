@@ -46,7 +46,7 @@
 
 	</dl>
 
-	@comments(None, party.getComments) { c =>
+	@comments(None, party.comments(request.db)) { c =>
 		@display.path(c.target)
 	}
 }

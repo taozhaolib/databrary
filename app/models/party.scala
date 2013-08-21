@@ -15,7 +15,7 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Unit = {
     if (name == _name && orcid == _orcid)
       return
-    Audit.SQLon(AuditAction.change, "party", "SET name = {name}, orcid = {orcid} WHERE id = {id}")('id -> id, 'name -> name, 'orcid -> orcid).execute()(site.db)
+    Audit.change("party", SQLArgs('name -> name, 'orcid -> orcid), SQLArgs('id -> id)).execute()(site.db)
     _name = name
     _orcid = orcid
   }
@@ -42,7 +42,7 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   final def studyAccess(p : Permission.Value)(implicit site : Site) = StudyAccess.getStudies(this, p)
 
   /* List of comments by this individual; this does not respect access permissions on the comment targets */
-  final def getComments(implicit site : Site) = Comment.getParty(this)
+  final def comments(implicit db : Site.DB) = Comment.getParty(this)(db)
 }
 
 /* Account refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
@@ -56,8 +56,7 @@ final class Account protected (party : Party, val username : String, email_ : St
   def changeAccount(email : String = _email, openid : Option[String] = _openid)(implicit site : Site) : Unit = {
     if (email == _email && openid == _openid)
       return
-    Audit.SQLon(AuditAction.change, Account.table, "SET email = {email}, openid = {openid} WHERE id = {id}")(
-      'email -> email, 'openid -> openid, 'id -> id).execute()(site.db)
+    Audit.change(Account.table, SQLArgs('email -> email, 'openid -> openid), SQLArgs('id -> id)).execute()(site.db)
     _email = email
     _openid = openid
   }
@@ -91,21 +90,20 @@ object Party extends TableId[Party]("party") {
   }
 
   def create(name : String)(implicit site : Site) : Party = {
-    val args = Anorm.Args('name -> name)
-    val id = Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
+    val id = Audit.add(table, SQLArgs('name -> name), "id").single(scalar[Id])(site.db)
     new Party(id, name)
   }
 
   private def byName = "username = {user} OR name ILIKE {name}"
-  private def byNameArgs(name : String) = Anorm.Args('user -> name, 'name -> name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%"))
+  private def byNameArgs(name : String) = SQLArgs('user -> name, 'name -> name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%"))
 
   def searchForAuthorize(name : String, who : Party.Id)(implicit db : Site.DB) : Seq[Party] =
     SELECT("WHERE " + byName + " AND id != {who} AND id NOT IN (SELECT child FROM authorize WHERE parent = {who} UNION SELECT parent FROM authorize WHERE child = {who}) LIMIT 8").
-      on(Anorm.Args('who -> who) ++ byNameArgs(name) : _*).list()
+      on(SQLArgs('who -> who) ++ byNameArgs(name) : _*).list()
 
   def searchForStudyAccess(name : String, study : Study.Id)(implicit db : Site.DB) : Seq[Party] =
     SELECT("WHERE " + byName + " AND id NOT IN (SELECT party FROM study_access WHERE study = {study}) LIMIT 8").
-      on(Anorm.Args('study -> study) ++ byNameArgs(name) : _*).list()
+      on(SQLArgs('study -> study) ++ byNameArgs(name) : _*).list()
 
   private[models] final val NOBODY : Id = asId(-1)
   private[models] final val ROOT   : Id = asId(0)

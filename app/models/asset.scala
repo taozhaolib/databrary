@@ -12,7 +12,7 @@ object Classification extends PGEnum("classification") {
   val IDENTIFIED, EXCERPT, DEIDENTIFIED, ANALYSIS, PRODUCT, MATERIAL = Value
 }
 
-class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype : String, val extension : Option[String], val name : String) extends TableRowId[AssetFormat] {
+sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype : String, val extension : Option[String], val name : String) extends TableRowId[AssetFormat] {
   def mimeSubTypes = {
     val slash = mimetype.indexOf('/')
     if (slash == -1)
@@ -60,14 +60,17 @@ object TimeseriesFormat extends HasId[TimeseriesFormat] {
 }
 
 
-sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Asset] {
+sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Asset] with Annotated {
   def format : AssetFormat
   def classification : Classification.Value
   val consent : Consent.Value
   def containers(implicit site : Site) = AssetLink.getContainers(this)(site)
+  private[models] final def annotatedLevel = "asset"
+  private[models] final def annotatedId = id
 }
 
-sealed class FileAsset protected (override val id : FileAsset.Id, val format : AssetFormat, val classification : Classification.Value, val consent : Consent.Value = Consent.NONE) extends Asset(id) with TableRowId[FileAsset]
+sealed class FileAsset protected (override val id : FileAsset.Id, val format : AssetFormat, val classification : Classification.Value, val consent : Consent.Value = Consent.NONE) extends Asset(id) with TableRowId[FileAsset] {
+}
 
 final class Timeseries private (override val id : Timeseries.Id, override val format : TimeseriesFormat, classification : Classification.Value, val duration : Offset, consent : Consent.Value) extends FileAsset(id, format, classification, consent) with TableRowId[Timeseries] {
   def segment : Range[Offset] = Range[Offset](0, duration)(PGSegment)
@@ -120,8 +123,7 @@ object FileAsset extends TableId[FileAsset]("file") with AssetView[FileAsset] {
       on('id -> i).singleOpt()
 
   def create(format : AssetFormat, classification : Classification.Value, file : TemporaryFile)(implicit site : Site) : FileAsset = {
-    val args = Anorm.Args('format -> format, 'classification -> classification)
-    val id = Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
+    val id = Audit.add(table, SQLArgs('format -> format, 'classification -> classification), "id").single(scalar[Id])(site.db)
     store.FileAsset.store(id, file)
     site.db.commit
     new FileAsset(id, format, classification)

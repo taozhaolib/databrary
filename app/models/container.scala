@@ -7,7 +7,7 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-sealed abstract class Container protected (val id : Container.Id) extends TableRowId[Container] with CommentPage {
+sealed abstract class Container protected (val id : Container.Id) extends TableRowId[Container] with SitePage with Annotated {
   /* Study owning this container (possibly itself) */
   def studyId : Study.Id
   def study : Study
@@ -17,8 +17,8 @@ sealed abstract class Container protected (val id : Container.Id) extends TableR
   def assets(implicit db : Site.DB) = AssetLink.getAssets(this)
   def getAsset(o : Asset.Id)(implicit db : Site.DB) = AssetLink.get(this, o)
 
-  def comments(only : Boolean = false)(implicit db : Site.DB) = Comment.getContainer(this, only)(db)
-  def addComment(text : String)(implicit site : Site) = Comment.create(this, text)
+  private[models] final def annotatedLevel = "container"
+  private[models] final def annotatedId = id
 }
 
 final class Study private (override val id : Study.Id, title_ : String, description_ : Option[String], override val permission : Permission.Value) extends Container(id) with TableRowId[Study] {
@@ -33,8 +33,8 @@ final class Study private (override val id : Study.Id, title_ : String, descript
   def change(title : String = _title, description : Option[String] = _description)(implicit site : Site) : Unit = {
     if (title == _title && description == _description)
       return
-    val args = Anorm.Args('id -> id, 'title -> title, 'description -> description)
-    Audit.SQLon(AuditAction.change, "study", "SET title = {title}, description = {description} WHERE id = {id}")(args : _*).execute()(site.db)
+    val args = 
+    Audit.change("study", SQLArgs('title -> title, 'description -> description), SQLArgs('id -> id)).execute()(site.db)
     _title = title
     _description = description
   }
@@ -60,7 +60,7 @@ final class Slot private (override val id : Slot.Id, val study : Study, val cons
   def change(consent : Consent.Value = _consent, date : Date = _date)(implicit site : Site) : Unit = {
     if (date == _date && consent == _consent)
       return
-    Audit.SQLon(AuditAction.change, "slot", "SET consent = {consent}, date = {date} WHERE id = {id}")('consent -> maybe(consent, Consent.NONE), 'date -> date, 'id -> id).execute()(site.db)
+    Audit.change("slot", SQLArgs('consent -> maybe(consent, Consent.NONE), 'date -> date), SQLArgs('id -> id)).execute()(site.db)
     _consent = consent
     _date = date
   }
@@ -90,6 +90,10 @@ object Container extends ContainerView[Container]("container") {
   def get(i : Id)(implicit site : Site) : Option[Container] =
     SELECT("WHERE container.id = {id} AND", condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt()(site.db)
+
+  def getAnnotation(annotation : Annotation)(implicit site : Site) : Seq[Container] =
+    SELECT("JOIN container_annotations ON container.id = container WHERE annotation = {annotation}").
+      on('annotation -> annotation.id, 'identity -> site.identity.id).list()(site.db)
 }
 
 object Study extends ContainerView[Study]("study") {
@@ -104,8 +108,7 @@ object Study extends ContainerView[Study]("study") {
       on('id -> i, 'identity -> site.identity.id).singleOpt()(site.db)
     
   def create(title : String, description : Option[String] = None)(implicit site : Site) : Study = {
-    val args = Anorm.Args('title -> title, 'description -> description)
-    val id = Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
+    val id = Audit.add(table, SQLArgs('title -> title, 'description -> description), "id").single(scalar[Id])(site.db)
     new Study(id, title, description, Permission.NONE)
   }
 }
@@ -130,8 +133,7 @@ object Slot extends ContainerView[Slot]("slot") {
       on('study -> study.id).list(rowStudy(study))
     
   def create(study : Study, consent : Consent.Value, date : Date)(implicit site : Site) : Slot = {
-    val args = Anorm.Args('study -> study.id, 'consent -> maybe(consent, Consent.NONE), 'date -> date)
-    val id = Audit.SQLon(AuditAction.add, table, Anorm.insertArgs(args), "id")(args : _*).single(scalar[Id])(site.db)
+    val id = Audit.add(table, SQLArgs('study -> study.id, 'consent -> maybe(consent, Consent.NONE), 'date -> date), "id").single(scalar[Id])(site.db)
     new Slot(id, study, consent, date)
   }
 }

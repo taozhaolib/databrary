@@ -7,88 +7,64 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-class Annotation protected (val id : Annotation.Id, val whoId : Party.Id, val when : Timestamp, val containerId : Container.Id, val assetId : Option[Asset.Id]) extends TableRowId[Annotation] {
-  protected[models] val _who = CachedVal[Party, Site](Party.get(whoId)(_).get)
-  def who(implicit site : Site) : Party = _who
-  protected[models] val _container = CachedVal[Container, Site](Container.get(containerId)(_).get)
-  def container(implicit site : Site) : Container = _container
-  protected[models] val _asset = CachedVal[Option[AssetLink], Site](s => assetId.flatMap(o => container(s).getAsset(o)(s.db)))
-  def asset(implicit site : Site) : Option[AssetLink] = _asset
-  def target(implicit site : Site) : SitePage = if (assetId.isEmpty) container else asset.get
+sealed abstract class Annotation protected (val id : Annotation.Id) extends TableRowId[Annotation] {
+  /* this checks permissions */
+  def containers(implicit site : Site) : Seq[Container] = Container.getAnnotation(this)(site)
 }
 
-final class Comment private (override val id : Comment.Id, whoId : Party.Id, when : Timestamp, containerId : Container.Id, assetId : Option[Asset.Id], val text : String) extends Annotation(id, whoId, when, containerId, assetId) with TableRowId[Comment] {
+final class Comment private (override val id : Comment.Id, val whoId : Party.Id, val when : Timestamp, val text : String) extends Annotation(id) with TableRowId[Comment] {
+  def companion = Comment
+  protected[models] val _who = CachedVal[Party, Site](Party.get(whoId)(_).get)
+  def who(implicit site : Site) : Party = _who
 }
+
 
 private[models] sealed abstract class AnnotationView[R <: Annotation with TableRowId[R]](table : String) extends TableId[R](table) {
   private[models] def get(id : Id)(implicit db : Site.DB) : Option[R] =
     SELECT("WHERE id = {id}").
-      on('id -> id).singleOpt(row)
+      on('id -> id).singleOpt()
 
-  private[models] def getContainer(container : Container, only : Boolean = false)(implicit db : Site.DB) : Seq[R] =
-    SQL("SELECT " + * + (
-      if (only)
-        " FROM " + table + " WHERE asset IS NULL AND"
-      else container match {
-        case _ : Slot  => " FROM " + table + " WHERE"
-        case _ : Study => ", " + Slot.columns.select + " FROM " + table + " LEFT JOIN slot ON container = slot.id WHERE slot.study = {container} OR"
-      }) + " container = {container} ORDER BY " + table + ".id DESC").
-      on('container -> container.id).list((row ~ Slot.columns.?) map { case (a ~ s) =>
-        // For some reason this ends up casting Slot as Study?
-        // a._container() = s.fold(container)(
-        a._container() = if (a.containerId == container.id) container 
-          else Slot.baseMake(container.asInstanceOf[Study])(s.get)
-        a
-      })
-  private[models] def getAssetLink(asset : AssetLink)(implicit db : Site.DB) : Seq[R] =
-    SELECT("WHERE container = {container} AND asset = {asset} ORDER BY id DESC").
-      on('container -> asset.containerId, 'asset -> asset.assetId).list(row map { a =>
-        a._asset() = Some(asset)
-        a
-      })
-  private[models] def getParty(i : Party)(implicit site : Site) : Seq[R] =
-    JOIN(Container, "ON " + table + ".container = container.id WHERE " + table + ".who = {who} AND " + Container.condition + " ORDER BY " + table + ".id DESC").
-      on('who -> i.id, 'identity -> site.identity.id).list(row map { a =>
-        a._who() = i
-        a
-      })(site.db)
-}
-
-private[models] object Annotation extends AnnotationView[Annotation]("annotation") {
-  private[models] val row = Columns[
-    Id,  Party.Id, Timestamp, Container.Id, Option[Asset.Id]](
-    'id, 'who,     'when,     'container,   'asset).map {
-    (id, whoId, when, containerId, assetId) => new Annotation(id, whoId, when, containerId, assetId)
+  private[models] def get(a : Annotated, all : Boolean = true)(implicit db : Site.DB) : Seq[R] = {
+    val j = a.annotatedLevel + "_annotation"
+    SELECT(if (all) 
+        "JOIN " + j + "s({a}) ON " + table + ".id = " + j + "s"
+      else
+        "JOIN " + j + " ON " + table + ".id = annotation WHERE " + a.annotatedLevel + " = {a}").
+      on('a -> a.annotatedId).list()
   }
 }
+
+object Annotation extends HasId[Annotation] //AnnotationView[Annotation]("annotation")
 
 object Comment extends AnnotationView[Comment]("comment") {
   private[models] val row = Columns[
-    Id,  Party.Id, Timestamp, Container.Id, Option[Asset.Id], String](
-    'id, 'who,     'when,     'container,   'asset,           'text).map {
-    (id, whoId, when, containerId, assetId, text) => new Comment(id, whoId, when, containerId, assetId, text)
+    Id,  Party.Id, Timestamp, String](
+    'id, 'who,     'when,     'text).map {
+    (id, whoId, when, text) => new Comment(id, whoId, when, text)
   }
 
-  private[this] def create(container : Container.Id, asset : Option[Asset.Id], text : String)(implicit site : Site) = {
-    val args = Anorm.Args('who -> site.identity.id, 'container -> container, 'asset -> asset, 'text -> text)
-    val c = SQL("INSERT INTO " + table + " " + Anorm.insertArgs(args) + " RETURNING " + *).
+  private[models] def getParty(i : Party)(implicit db : Site.DB) : Seq[Comment] =
+    SELECT("WHERE who = {who}").
+      on('who -> i.id).list(row map { a =>
+        a._who() = i
+        a
+      })
+
+  private[models] def post(a : Annotated, text : String)(implicit site : Site) : Comment = {
+    val args = SQLArgs('who -> site.identity.id, 'text -> text)
+    val c = SQL("INSERT INTO " + table + " " + args.insert + " RETURNING " + *).
       on(args : _*).single(row)(site.db)
     c._who() = site.identity
-    c
-  }
-  private[models] def create(container : Container, text : String)(implicit site : Site) : Comment = {
-    val c = create(container.id, None, text)
-    c._container() = container
-    c
-  }
-  private[models] def create(asset : AssetLink, text : String)(implicit site : Site) : Comment = {
-    val c = create(asset.containerId, Some(asset.assetId), text)
-    c._asset() = Some(asset)
+    Audit.add(a.annotatedLevel + "_annotation", SQLArgs(Symbol(a.annotatedLevel) -> a.annotatedId, 'annotation -> c.id)).
+      execute()(site.db)
     c
   }
 }
 
-trait CommentPage extends SitePage {
-  def comments(only : Boolean = false)(implicit db : Site.DB) : Seq[Comment]
-  def addComment(text : String)(implicit site : Site) : Comment
+
+trait Annotated {
+  private[models] def annotatedId : IntId[_]
+  private[models] def annotatedLevel : String
+  def comments(all : Boolean = true)(implicit db : Site.DB) : Seq[Comment] = Comment.get(this, all)(db)
+  def postComment(text : String)(implicit site : Site) : Comment = Comment.post(this, text)(site)
 }
