@@ -436,6 +436,12 @@ CREATE VIEW "measure_view" AS
 	SELECT record, metric, datum FROM measure_text UNION ALL
 	SELECT record, metric, text(datum) FROM measure_number UNION ALL
 	SELECT record, metric, text(datum) FROM measure_date;
+COMMENT ON VIEW "measure_view" IS 'Data from all measure tables, coerced to text.';
+
+CREATE TABLE "audit_measure" (
+	LIKE "measure",
+	"datum" text NOT NULL
+) INHERITS ("audit") WITH (OIDS = FALSE);
 
 
 CREATE TABLE "comment" (
@@ -453,12 +459,23 @@ CREATE TABLE "container_annotation" (
 	"container" integer NOT NULL References "container",
 	Primary Key ("annotation", "container")
 );
+COMMENT ON TABLE "container_annotation" IS 'Attachment of annotations to containers.';
+
+CREATE TABLE "audit_container_annotation" (
+	LIKE "container_annotation"
+) INHERITS ("audit") WITH (OIDS = FALSE);
 
 CREATE TABLE "asset_annotation" (
 	"annotation" integer NOT NULL References "annotation",
 	"asset" integer NOT NULL References "asset",
 	Primary Key ("annotation", "asset")
 );
+COMMENT ON TABLE "asset_annotation" IS 'Attachment of annotations to assets.';
+
+CREATE TABLE "audit_asset_annotation" (
+	LIKE "asset_annotation"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
 
 CREATE FUNCTION "asset_annotations" ("asset" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
 	SELECT annotation FROM asset_nesting JOIN asset_annotation ON child = asset WHERE parent = $1
