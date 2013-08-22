@@ -12,6 +12,7 @@ object Classification extends PGEnum("classification") {
   val IDENTIFIED, EXCERPT, DEIDENTIFIED, ANALYSIS, PRODUCT, MATERIAL = Value
 }
 
+/* id should actually be a Short but who cares */
 sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype : String, val extension : Option[String], val name : String) extends TableRowId[AssetFormat] {
   def mimeSubTypes = {
     val slash = mimetype.indexOf('/')

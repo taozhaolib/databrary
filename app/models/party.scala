@@ -5,13 +5,15 @@ import anorm.SqlParser.scalar
 import dbrary._
 import util._
 
-/* Party represents any real-world individual, group, institution, etc. */
+/** Any real-world individual, group, institution, etc.
+  * Instances are generally obtained from [[Party.get]] or [[Party.create]]. */
 sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid] = None) extends TableRowId[Party] with SitePage {
   private[this] var _name = name_
   def name = _name
   private[this] var _orcid = orcid_
   def orcid = _orcid
 
+  /** Update the given values in the database and this object in-place. */
   def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Unit = {
     if (name == _name && orcid == _orcid)
       return
@@ -20,8 +22,9 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
     _orcid = orcid
   }
 
-  /* level of access user has to the site */
   private val _access = CachedVal[Permission.Value, Site.DB](Authorize.access_check(id)(_))
+  /** Level of access user has to the site.
+    * Usually accessed through [[util.Site.access]]. */
   def access(implicit db : Site.DB) : Permission.Value = _access
 
   def pageName(implicit site : Site) = name
