@@ -10,6 +10,11 @@ import util._
 sealed abstract class Annotation protected (val id : Annotation.Id) extends TableRowId[Annotation] {
   /* this checks permissions */
   def containers(implicit site : Site) : Seq[Container] = Container.getAnnotation(this)(site)
+  /* this does not check permissions, so should be followed by, e.g., .flatMap(_.containers) */
+  def assets(implicit db : Site.DB) : Seq[Asset] = Asset.getAnnotation(this)(db)
+
+  def allContainers(implicit site : Site) : Seq[Container] = 
+    containers(site) ++ assets(site.db).flatMap(_.containers(true)(site).map(_.container(site)))
 }
 
 final class Comment private (override val id : Comment.Id, val whoId : Party.Id, val when : Timestamp, val text : String) extends Annotation(id) with TableRowId[Comment] {

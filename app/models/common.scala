@@ -31,6 +31,7 @@ class GenericId[I,+T](val unId : I) {
 }
 final class IntId[+T](unId : Int) extends GenericId[Int,T](unId) {
   override def hashCode = unId
+  private[models] def coerce[A] = new IntId[A](unId)
 }
 object IntId {
   def apply[T](i : Int) = new IntId[T](i)

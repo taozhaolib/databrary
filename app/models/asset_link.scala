@@ -80,11 +80,15 @@ object AssetLink extends Table[AssetLink]("asset_link") {
   private[models] def getAssets(c : Container)(implicit db : Site.DB) : Seq[AssetLink] =
     SELECT("WHERE container = {container}").
       on('container -> c.id).list(rowContainer(c))
-  private[models] def getContainers(a : Asset)(implicit site : Site) : Seq[AssetLink] =
-    JOIN(Container, "ON container.id = container WHERE asset = {asset} AND", Container.condition).
-      on('asset -> a.id, 'identity -> site.identity.id).list((row ~ Container.row) map { case (l ~ c) =>
+  private[models] def getContainers(a : Asset, all : Boolean)(implicit site : Site) : Seq[AssetLink] =
+    JOIN(Container, "ON container.id = container", 
+        if (all) "JOIN asset_parents({file}, {segment}) ON asset = asset_parents WHERE" 
+        else "WHERE asset = {asset} AND", 
+      Container.condition).
+      on('asset -> a.id, 'file -> a.fileId, 'segment -> a.fileSegment, 'identity -> site.identity.id).list((row ~ Container.row) map { case (l ~ c) =>
         l._container() = c
-        l._asset() = a
+        if (l.assetId == a.id)
+          l._asset() = a
         l
       })(site.db)
 

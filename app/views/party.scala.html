@@ -47,6 +47,6 @@
 	</dl>
 
 	@comments(None, party.comments(request.db)) { c =>
-		@display.path(c.target)
+		@c.allContainers.map(display.path _)
 	}
 }

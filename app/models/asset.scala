@@ -32,6 +32,7 @@ object AssetFormat extends TableId[AssetFormat]("format") {
     'id, 'mimetype, 'extension,     'name) map {
     (id, mimetype, extension, name) => id match {
       case IMAGE => Image
+      case TimeseriesFormat.VIDEO => TimeseriesFormat.Video
       case _ => new AssetFormat(id, mimetype, extension, name)
     }
   }
@@ -64,15 +65,19 @@ sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Ass
   def format : AssetFormat
   def classification : Classification.Value
   val consent : Consent.Value
-  def containers(implicit site : Site) = AssetLink.getContainers(this)(site)
+  def containers(all : Boolean = true)(implicit site : Site) : Seq[AssetLink] = AssetLink.getContainers(this, all)(site)
+  def fileId : FileAsset.Id
+  def fileSegment : Option[Range[Offset]]
   private[models] final def annotatedLevel = "asset"
   private[models] final def annotatedId = id
 }
 
-sealed class FileAsset protected (override val id : FileAsset.Id, val format : AssetFormat, val classification : Classification.Value, val consent : Consent.Value = Consent.NONE) extends Asset(id) with TableRowId[FileAsset] {
+sealed class FileAsset protected[models] (override val id : FileAsset.Id, val format : AssetFormat, val classification : Classification.Value, val consent : Consent.Value = Consent.NONE) extends Asset(id) with TableRowId[FileAsset] {
+  def fileId = id
+  def fileSegment = None
 }
 
-final class Timeseries private (override val id : Timeseries.Id, override val format : TimeseriesFormat, classification : Classification.Value, val duration : Offset, consent : Consent.Value) extends FileAsset(id, format, classification, consent) with TableRowId[Timeseries] {
+final class Timeseries private[models] (override val id : Timeseries.Id, override val format : TimeseriesFormat, classification : Classification.Value, val duration : Offset, consent : Consent.Value) extends FileAsset(id, format, classification, consent) with TableRowId[Timeseries] {
   def segment : Range[Offset] = Range[Offset](0, duration)(PGSegment)
 }
 
@@ -88,31 +93,44 @@ final class Clip private (override val id : Clip.Id, val source : Timeseries, va
       c
   }
   def duration : Option[Offset] = segment.upperBound.flatMap(u => segment.lowerBound.map(u - _))
+  def fileId = sourceId
+  def fileSegment = Some(segment)
 }
 
 
-private[models] sealed abstract trait AssetView[R <: Asset with TableRowId[R]] extends TableView with HasId[R] {
+private[models] sealed abstract class AssetView[R <: Asset with TableRowId[R]](table : String) extends TableId[R](table) {
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[R]
 }
 
-object Asset extends AssetView[Asset] {
-  private[models] val table = "asset"
-  private[models] override val src = "asset"
-  type Row = String
-  private[models] val row = Columns[String]('kind)
-
-  private[models] def get(i : Id)(implicit db : Site.DB) : Option[Asset] =
-    SELECT("WHERE id = {id}").on('id -> i).singleOpt() flatMap {
-      case "file" => FileAsset.get(FileAsset.asId(i.unId))
-      case "timeseries" => Timeseries.get(Timeseries.asId(i.unId))
-      case "clip" => Clip.get(Clip.asId(i.unId))
+object Asset extends AssetView[Asset]("asset") {
+  /* This is rather messy, but such is the nature of the dynamic query */
+  private[models] val row = 
+    (FileAsset.columns.~+[Option[Offset]](SelectColumn("timeseries", "duration")) ~
+     AssetFormat.row ~ Clip.columns.?) map {
+      case (id, classification, consent, None) ~ format ~ None => new FileAsset(id, format, classification, consent.getOrElse(Consent.NONE))
+      case (id, classification, consent, Some(duration)) ~ (format : TimeseriesFormat) ~ clip => {
+        val ts = new Timeseries(id.coerce[Timeseries], format, classification, duration, consent.getOrElse(Consent.NONE))
+        clip.fold(ts : Asset)(Clip.make(ts))
+      }
     }
+  private[models] override val src = """asset
+    LEFT JOIN clip USING (id)
+         JOIN file ON file.id = asset.id OR file.id = clip.source
+    LEFT JOIN timeseries ON timeseries.id = file.id
+         JOIN format ON file.format = format.id"""
+
+  def get(i : Id)(implicit db : Site.DB) : Option[Asset] =
+    SELECT("WHERE asset.id = {id}").on('id -> i).singleOpt()
+
+  private[models] def getAnnotation(annotation : Annotation)(implicit db : Site.DB) : Seq[Asset] =
+    SELECT("JOIN asset_annotations ON asset.id = asset WHERE annotation = {annotation}").
+      on('annotation -> annotation.id).list()
 }
 
-object FileAsset extends TableId[FileAsset]("file") with AssetView[FileAsset] {
-  private[this] val columns = Columns[
+object FileAsset extends AssetView[FileAsset]("file") {
+  private[models] val columns = Columns[
     Id,  Classification.Value, Option[Consent.Value]](
-    'id, 'Classification,      SelectAs("asset_consent(file.id)", "file_consent"))
+    'id, 'classification,      SelectAs("asset_consent(file.id)", "file_consent"))
   private[models] val row = (columns ~ AssetFormat.row) map {
     case ((id, classification, consent) ~ format) => new FileAsset(id, format, classification, consent.getOrElse(Consent.NONE))
   }
@@ -130,7 +148,7 @@ object FileAsset extends TableId[FileAsset]("file") with AssetView[FileAsset] {
   }
 }
 
-object Timeseries extends TableId[Timeseries]("timeseries") with AssetView[Timeseries] {
+object Timeseries extends AssetView[Timeseries]("timeseries") {
   private[this] val columns = Columns[
     Id,  TimeseriesFormat.Id, Classification.Value, Offset,    Option[Consent.Value]](
     'id, 'format,             'classification,      'duration, SelectAs("asset_consent(timeseries.id)", "timeseries_consent"))
@@ -143,13 +161,15 @@ object Timeseries extends TableId[Timeseries]("timeseries") with AssetView[Times
       on('id -> i).singleOpt()
 }
 
-object Clip extends TableId[Clip]("clip") with AssetView[Clip] {
+object Clip extends AssetView[Clip]("clip") {
   implicit private val segmentColumn = PGSegment.column // why isn't this implicit found?
-  private[this] val columns = Columns[
+  private[this] def makeSource(source : Timeseries)(id : Id, segment : Range[Offset], excerpt : Boolean, consent : Option[Consent.Value]) = new Clip(id, source, segment, excerpt, consent.getOrElse(Consent.NONE))
+  private[models] def make(source : Timeseries) = (makeSource(source) _).tupled
+  private[models] val columns = Columns[
     Id,  Range[Offset], Boolean,  Option[Consent.Value]](
     'id, 'segment,      'excerpt, SelectAs("asset_consent(clip.id, clip.segment)", "clip_consent"))
   private[models] val row = (columns ~ Timeseries.row) map {
-    case ((id, segment, excerpt, consent) ~ source) => new Clip(id, source, segment, excerpt, consent.getOrElse(Consent.NONE))
+    case (clip ~ source) => make(source)(clip)
   }
   private[models] override val src = "clip JOIN " + Timeseries.src + " ON clip.source = timeseries.id"
   
