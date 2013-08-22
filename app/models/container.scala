@@ -92,7 +92,7 @@ object Container extends ContainerView[Container]("container") {
       on('id -> i, 'identity -> site.identity.id).singleOpt()(site.db)
 
   def getAnnotation(annotation : Annotation)(implicit site : Site) : Seq[Container] =
-    SELECT("JOIN container_annotations ON container.id = container WHERE annotation = {annotation}").
+    SELECT("JOIN container_annotation ON container.id = container WHERE annotation = {annotation}").
       on('annotation -> annotation.id, 'identity -> site.identity.id).list()(site.db)
 }
 

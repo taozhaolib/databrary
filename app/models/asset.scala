@@ -123,7 +123,7 @@ object Asset extends AssetView[Asset]("asset") {
     SELECT("WHERE asset.id = {id}").on('id -> i).singleOpt()
 
   private[models] def getAnnotation(annotation : Annotation)(implicit db : Site.DB) : Seq[Asset] =
-    SELECT("JOIN asset_annotations ON asset.id = asset WHERE annotation = {annotation}").
+    SELECT("JOIN asset_annotation ON asset.id = asset WHERE annotation = {annotation}").
       on('annotation -> annotation.id).list()
 }
 

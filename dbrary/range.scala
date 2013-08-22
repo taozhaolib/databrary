@@ -4,7 +4,7 @@ import java.sql.SQLException
 
 trait RangeType[A] {
   protected val unit : Option[A]
-  val discrete = unit.isDefined
+  def discrete = unit.isDefined
   def increment(a : A) : Option[A] // = unit.map(a + _)
   def decrement(a : A) : Option[A] // = unit.map(a - _)
 }
