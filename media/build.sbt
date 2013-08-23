@@ -10,7 +10,7 @@ resourceGenerators in Compile <+= (streams, baseDirectory in Compile, resourceMa
 		}
 		val jh = Option(System.getenv("JAVA_HOME")).getOrElse(System.getProperty("java.home") + slash + "..") + slash + "include"
 		// This does not handle spaces in paths properly:
-		val cmd = "gcc -Wall -fPIC -shared -o " + out + " -I\"" + jh + "\" " + pkg.trim + " " + src
+		val cmd = "gcc -Wall -fPIC -shared -o " + out + " -I" + jh + " " + pkg.trim + " " + src
 		str.log.info(cmd)
 		outDir.mkdirs
 		if (cmd.! != 0)
