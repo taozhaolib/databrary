@@ -170,8 +170,10 @@ Java_media_AV_00024__1frame(
 	os->codec->time_base = is->codec->time_base;
 	os->codec->width = frame->width;
 	os->codec->height = frame->height;
+	/* These are too new and should also use av_frame_get_color* instead:
 	os->codec->colorspace = frame->colorspace;
 	os->codec->color_range = frame->color_range;
+	*/
 	os->codec->pix_fmt = CHECK(avcodec_find_best_pix_fmt_of_list(codec->pix_fmts, frame->format, 0, NULL), "finding pixel format");
 
 	if (os->codec->pix_fmt != frame->format)
