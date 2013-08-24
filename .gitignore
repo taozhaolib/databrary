@@ -1,7 +1,6 @@
-logs
-project/project
-project/target
-target
+logs/
+project/project/
+target/
 tmp
 .history
 dist
