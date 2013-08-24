@@ -24,31 +24,35 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
 
   private val _access = CachedVal[Permission.Value, Site.DB](Authorize.access_check(id)(_))
   /** Level of access user has to the site.
-    * Usually accessed through [[util.Site.access]]. */
+    * Computed by [Authorize.access_check] and usually accessed through [[util.Site.access]]. */
   def access(implicit db : Site.DB) : Permission.Value = _access
 
   def pageName(implicit site : Site) = name
   def pageParent(implicit site : Site) = None
   def pageURL = controllers.routes.Party.view(id).url
 
-  /* List of authorizations granted to this user, including inactive ones if all */
+  /** List of authorizations granted to this user.
+    * @param all include inactive authorizations */
   final def authorizeParents(all : Boolean = false)(implicit db : Site.DB) = Authorize.getParents(this, all)
-  /* List of authorizations granted by this user */
+  /** List of authorizations granted by this user.
+    * @param all include inactive authorizations */
   final def authorizeChildren(all : Boolean = false)(implicit db : Site.DB) = Authorize.getChildren(this, all)
 
-  /* List of delegations granted to this user */
+  /** List of delegations granted to this user. */
   final def delegated(implicit site : Site) = Authorize.delegate_check(site.identity.id, id)(site.db)
-  /* List of delegations granted by this user */
+  /** List of delegations granted by this user. */
   final def delegatedBy(p : Party.Id)(implicit site : Site) = Authorize.delegate_check(id, p)(site.db)
 
-  /* List of studies accessible at (or above) the given permission level by this user */
+  /** List of studies accessible by this user.
+    * @param p permission level to restrict to */
   final def studyAccess(p : Permission.Value)(implicit site : Site) = StudyAccess.getStudies(this, p)
 
-  /* List of comments by this individual; this does not respect access permissions on the comment targets */
+  /** List of comments by this individual.
+    * This does not respect access permissions on the comment targets. */
   final def comments(implicit db : Site.DB) = Comment.getParty(this)(db)
 }
 
-/* Account refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
+/** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
 final class Account protected (party : Party, val username : String, email_ : String, openid_ : Option[String]) extends Party(party.id, party.name, party.orcid) with TableRowId[Account] {
   override val id = Account.asId(party.id.unId)
   private[this] var _email = email_
@@ -56,6 +60,7 @@ final class Account protected (party : Party, val username : String, email_ : St
   private[this] var _openid = openid_
   def openid = _openid
 
+  /** Update the given values in the database and this object in-place. */
   def changeAccount(email : String = _email, openid : Option[String] = _openid)(implicit site : Site) : Unit = {
     if (email == _email && openid == _openid)
       return
@@ -83,6 +88,7 @@ object Party extends TableId[Party]("party") {
     case (e ~ Some(a)) => (Account.make(e) _).tupled(a)
   }
 
+  /** Look up a party by id. */
   def get(i : Id)(implicit site : Site) : Option[Party] = i match {
     case NOBODY => Some(Nobody)
     case ROOT => Some(Root)
@@ -92,6 +98,7 @@ object Party extends TableId[Party]("party") {
         on('id -> i).singleOpt()(site.db)
   }
 
+  /** Create a new party. */
   def create(name : String)(implicit site : Site) : Party = {
     val id = Audit.add(table, SQLArgs('name -> name), "id").single(scalar[Id])(site.db)
     new Party(id, name)
@@ -100,18 +107,30 @@ object Party extends TableId[Party]("party") {
   private def byName = "username = {user} OR name ILIKE {name}"
   private def byNameArgs(name : String) = SQLArgs('user -> name, 'name -> name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%"))
 
+  /** Search for parties by name for the purpose of authorization.
+    * @param name string to match against name/username (case insensitive substring)
+    * @param who party doing the authorization, to exclude parties already authorized
+    */
   def searchForAuthorize(name : String, who : Party.Id)(implicit db : Site.DB) : Seq[Party] =
     SELECT("WHERE " + byName + " AND id != {who} AND id NOT IN (SELECT child FROM authorize WHERE parent = {who} UNION SELECT parent FROM authorize WHERE child = {who}) LIMIT 8").
       on(SQLArgs('who -> who) ++ byNameArgs(name) : _*).list()
 
+  /** Search for parties by name for the purpose of study access.
+    * @param name string to match against name/username (case insensitive substring)
+    * @param study study to which to grant access, to exclude parties with access already.
+    */
   def searchForStudyAccess(name : String, study : Study.Id)(implicit db : Site.DB) : Seq[Party] =
     SELECT("WHERE " + byName + " AND id NOT IN (SELECT party FROM study_access WHERE study = {study}) LIMIT 8").
       on(SQLArgs('study -> study) ++ byNameArgs(name) : _*).list()
 
   private[models] final val NOBODY : Id = asId(-1)
   private[models] final val ROOT   : Id = asId(0)
+  /** The special party group representing everybody (including anonymous users) on the site.
+    * This is also in the database, but is cached here for special handling. */
   final val Nobody = new Party(NOBODY, "Everybody")
   Nobody._access() = Permission.NONE // anonymous users get this level
+  /** The special party group representing authorized users on the site.
+    * This is also in the database, but is cached here for special handling. */
   final val Root   = new Party(ROOT,   "Databrary")
   Root._access() = null // the objective value is ADMIN but this should never be used
 }
@@ -127,14 +146,21 @@ object Account extends TableId[Account]("account") {
     case (e ~ a) => (make(e) _).tupled(a)
   }
 
+  /** Look up a user by id.
+    * @return None if no party or no account for given party
+    */
   def get(i : Id)(implicit db : Site.DB) : Option[Account] = 
     SELECT("WHERE id = {id}").
       on('id -> i).singleOpt()
-  def getUsername(u : String)(implicit db : Site.DB) : Option[Account] = 
+  /** Look up a user by username. */
+  def getUsername(username : String)(implicit db : Site.DB) : Option[Account] = 
     SELECT("WHERE username = {username}").
-      on('username -> u).singleOpt()
-  def getOpenid(o : String, u : Option[String] = None)(implicit db : Site.DB) : Option[Account] = {
+      on('username -> username).singleOpt()
+  /** Look up a user by openid.
+    * @param username optionally limit results to the given username
+    * @return an arbitrary account with the given openid, or the account for username if the openid matches */
+  def getOpenid(openid : String, username : Option[String] = None)(implicit db : Site.DB) : Option[Account] = {
     SELECT("WHERE openid = {openid} AND coalesce(username = {username}, 't') LIMIT 1").
-      on('openid -> o, 'username -> u).singleOpt()
+      on('openid -> openid, 'username -> username).singleOpt()
   }
 }

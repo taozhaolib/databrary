@@ -108,8 +108,8 @@ object Asset {
     case f : models.FileAsset => Future.successful(FileAsset.read(f))
     case e : models.Clip => Segment.read(e)
   }
-  def readFrame(o : models.Asset, offset : Offset = 0) : Future[StreamEnumerator] = o match {
-    case t : models.Timeseries if t.format == TimeseriesFormat.Video => Segment.readFrame(t, offset)
+  def readFrame(o : TimeseriesData, offset : Offset = 0) : Future[StreamEnumerator] = o match {
+    case t : models.Timeseries => Segment.readFrame(t, offset)
     case e : models.Clip => Segment.readFrame(e, offset)
   }
 }

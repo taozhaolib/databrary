@@ -15,7 +15,7 @@ object maybe {
     */
   def apply[A](a : A, n : A) : Option[A] =
     maybe(a, (_ : A) != n)
-  /** Special default for Strings. */
+  /** Default empty value for Strings. */
   def apply(s : String, f : String => Boolean = !_.isEmpty) =
     Some(s).filter(f)
 }

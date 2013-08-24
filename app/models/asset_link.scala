@@ -85,7 +85,7 @@ object AssetLink extends Table[AssetLink]("asset_link") {
         if (all) "JOIN asset_parents({file}, {segment}) ON asset = asset_parents WHERE" 
         else "WHERE asset = {asset} AND", 
       Container.condition).
-      on('asset -> a.id, 'file -> a.fileId, 'segment -> a.fileSegment, 'identity -> site.identity.id).list((row ~ Container.row) map { case (l ~ c) =>
+      on('asset -> a.id, 'file -> a.sourceId, 'segment -> cast[Clip](a).map(_.segment), 'identity -> site.identity.id).list((row ~ Container.row) map { case (l ~ c) =>
         l._container() = c
         if (l.assetId == a.id)
           l._asset() = a

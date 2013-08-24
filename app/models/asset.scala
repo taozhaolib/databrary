@@ -8,12 +8,10 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-object Classification extends PGEnum("classification") {
-  val IDENTIFIED, EXCERPT, DEIDENTIFIED, ANALYSIS, PRODUCT, MATERIAL = Value
-}
-
-/* id should actually be a Short but who cares */
+/** File formats for assets.
+  * id should actually be a ShortId but it's just simpler to have Ints everywhere. */
 sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype : String, val extension : Option[String], val name : String) extends TableRowId[AssetFormat] {
+  /** mimetype split into its two components at the slash */
   def mimeSubTypes = {
     val slash = mimetype.indexOf('/')
     if (slash == -1)
@@ -23,10 +21,15 @@ sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype 
   }
 }
 
+/** Specialization of [[AssetFormat]] for timeseries files stored in special internal formats.
+  * Note that some non-TimeseriesFormat AssetFormats may represent timeseries data, but they are not interpreted as such. */
 sealed abstract class TimeseriesFormat private[models] (override val id : TimeseriesFormat.Id, mimetype : String, extension : Option[String], name : String) extends AssetFormat(id, mimetype, extension, name) {
+  /** The type of data produced when this timeseries is sampled at a single point.
+    * For some data this may be a single number, in which case this may need to be extended. */
   val sampleFormat : AssetFormat
 }
 
+/** Interface for non-timeseries file formats. */
 object AssetFormat extends TableId[AssetFormat]("format") {
   private[models] val row = Columns[
     Id,  String,    Option[String], String](
@@ -39,52 +42,94 @@ object AssetFormat extends TableId[AssetFormat]("format") {
   }
   private[models] override val src = "ONLY format"
 
+  /** Lookup a format by its mimetime. */
   def getMimetype(mimetype : String)(implicit db : Site.DB) : Option[AssetFormat] =
     SELECT("WHERE mimetype = {mimetype}").
       on('mimetype -> mimetype).singleOpt(row)
+  /** Get a list of all file formats in the database */
   def getAll(implicit db : Site.DB) : Seq[AssetFormat] =
     SELECT("ORDER BY format.id").list(row)
 
   private[models] final val IMAGE : Id = asId(-1)
+  /** File type for internal image data (jpeg).
+    * Images of this type may be produced and handled specially internally.
+    */
   object Image extends AssetFormat(IMAGE, "image/jpeg", Some("jpg"), "JPEG")
 }
 
+/** Interface to special timeseries formats.
+  * These formats are all hard-coded so do not rely on the database, although they do have a corresponding timeseries_format table.
+  * Currently this only includes Video, but may be extended to audio or other timeseries data. */
 object TimeseriesFormat extends HasId[TimeseriesFormat] {
+  /** Retrieve a timeseries format by id. */
   def get(id : Id) = id match {
     case VIDEO => Some(Video)
     case _ => None
   }
 
   private[models] final val VIDEO : Id = asId(-2)
+  /** The designated internal video format. */
   object Video extends TimeseriesFormat(VIDEO, "video/mp4", Some("mp4"), "Video") {
     val sampleFormat = AssetFormat.Image
   }
 }
 
 
-sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Asset] with Annotated {
+/** Abstract base for all assets: objects within the system backed by primary file storage. */
+sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Asset] with BackedAsset with Annotated {
+  /** Format of this asset. */
   def format : AssetFormat
+  /** Data classification for the data in this asset. */
   def classification : Classification.Value
+  /** Participant consent level granted for this asset, which may depend on specific [[AssetLink]]s of this asset. */
   val consent : Consent.Value
+
+  /** List of all AssetLinks via which this asset is linked into containers. */
   def containers(all : Boolean = true)(implicit site : Site) : Seq[AssetLink] = AssetLink.getContainers(this, all)(site)
-  def fileId : FileAsset.Id
-  def fileSegment : Option[Range[Offset]]
+
   private[models] final def annotatedLevel = "asset"
   private[models] final def annotatedId = id
 }
 
-sealed class FileAsset protected[models] (override val id : FileAsset.Id, val format : AssetFormat, val classification : Classification.Value, val consent : Consent.Value = Consent.NONE) extends Asset(id) with TableRowId[FileAsset] {
-  def fileId = id
-  def fileSegment = None
+/** Assets which are backed by files on disk.
+  * Currently this includes all of them. */
+sealed trait BackedAsset {
+  /** The backing asset from which this data is taken, which may be itself or a containing asset. */
+  def source : Asset
+  /** The backing asset from which this data is taken, which may be itself or a containing asset. */
+  def sourceId : Asset.Id = source.id
 }
 
-final class Timeseries private[models] (override val id : Timeseries.Id, override val format : TimeseriesFormat, classification : Classification.Value, val duration : Offset, consent : Consent.Value) extends FileAsset(id, format, classification, consent) with TableRowId[Timeseries] {
+/** Refinement (implicitly of Asset) for objects representing timeseries data. */
+sealed trait TimeseriesData extends BackedAsset {
+  /** The range of times represented by this object.
+    * Should be a valid, bounded range. */
+  def segment : Range[Offset]
+  /** Length of time represented by this object, which may be zero if it is a single sample. */
+  def duration : Offset = segment.upperBound.flatMap(u => segment.lowerBound.map(u - _)).get
+  def source : Timeseries
+  override def sourceId : Timeseries.Id = source.id
+}
+
+/** Base for simple "opaque" file assets, uploaded, stored, and downloaded as individual files with no special processing. */
+sealed class FileAsset protected[models] (override val id : FileAsset.Id, val format : AssetFormat, val classification : Classification.Value, val consent : Consent.Value = Consent.NONE) extends Asset(id) with TableRowId[FileAsset] with BackedAsset {
+  def source = this
+  override def sourceId = id
+}
+
+/** Base for special timeseries assets in a designated format.
+  * These assets may be handled in their entirety as FileAssets, extracted from to produce Clips.
+  * They are never created directly by users but through a conversion process on existing FileAssets. */
+final class Timeseries private[models] (override val id : Timeseries.Id, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, consent : Consent.Value) extends FileAsset(id, format, classification, consent) with TableRowId[Timeseries] with TimeseriesData {
+  override def source = this
   def segment : Range[Offset] = Range[Offset](0, duration)(PGSegment)
 }
 
-final class Clip private (override val id : Clip.Id, val source : Timeseries, val segment : Range[Offset], val excerpt : Boolean, val consent : Consent.Value) extends Asset(id) with TableRowId[Clip] {
-  def sourceId = source.id
-
+/** Base for clips of Timeseries.
+  * These represent a selected, contiguous range (segment) of time within a Timeseries.
+  * @param excerpt if this clip was identified for possible public release. Actual permission checks should use [[classification]] instead.
+  */
+final class Clip private (override val id : Clip.Id, val source : Timeseries, val segment : Range[Offset], val excerpt : Boolean, val consent : Consent.Value) extends Asset(id) with TableRowId[Clip] with TimeseriesData {
   def format = if (segment.isSingleton) source.format else source.format.sampleFormat
   def classification = {
     val c = source.classification
@@ -93,9 +138,6 @@ final class Clip private (override val id : Clip.Id, val source : Timeseries, va
     else
       c
   }
-  def duration : Option[Offset] = segment.upperBound.flatMap(u => segment.lowerBound.map(u - _))
-  def fileId = sourceId
-  def fileSegment = Some(segment)
 }
 
 

@@ -2,8 +2,13 @@ package models
 
 import anorm._
 
+/** An [[http://orcid.org/ ORCID]] identifier.
+  * A 16 character string of a particular format, with 15 digits and one checksum which may be a digit or 'X'?
+  * They are stored as a string of length 16, but displayed with dashes.
+  */
 final class Orcid private (val orcid : String) extends scala.collection.immutable.WrappedString(orcid)
 {
+  /** Determine if this is a valid ORCID. */
   def valid : Boolean = lengthCompare(16) == 0 && {
     val (b, cs) = orcid.splitAt(15)
     val d = b.map(_.asDigit)
@@ -14,10 +19,12 @@ final class Orcid private (val orcid : String) extends scala.collection.immutabl
   }
 
   override def toString : String = orcid.grouped(4).mkString("-")
+  /** The URI for this ORCID, which should be used for linking and often display. */
   def uri : String = "http://orcid.org/" + toString
 }
 
 object Orcid {
+  /** Create an [[Orcid]], possibly removing any formatting cruft, without checking for validity. */
   def apply(s : String) : Orcid =
     new Orcid(s.filterNot(c => c == '-' || c.isSpaceChar).stripPrefix("http://").stripPrefix("orcid.org/"))
 

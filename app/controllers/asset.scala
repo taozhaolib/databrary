@@ -55,19 +55,14 @@ object Asset extends SiteController {
   }
 
   def frame(i : models.Container.Id, o : models.Asset.Id, offset : Offset = 0) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
-    val dur = link.asset match {
-      case t : Timeseries => Some(t.duration)
-      case c : Clip => c.duration
-      case _ => None
+    dbrary.cast[TimeseriesData](link.asset).filter(offset >= 0 && offset < _.duration).fold(NotFound : Result) { ts =>
+      assetResult(
+        "frame:%d:%f".format(link.assetId.unId, offset.seconds),
+        store.Asset.readFrame(ts, offset),
+        AssetFormat.Image,
+        None
+      )
     }
-    if (offset < 0 || dur.fold(true)(offset > _))
-      NotFound
-    else assetResult(
-      "frame:%d:%f".format(link.assetId.unId, offset.seconds),
-      store.Asset.readFrame(link.asset, offset),
-      AssetFormat.Image,
-      None
-    )
   }
   def head(i : models.Container.Id, o : models.Asset.Id) = frame(i, o)
 
