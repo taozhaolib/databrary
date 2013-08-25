@@ -24,6 +24,10 @@ object Study extends SiteController {
     Ok(views.html.study(study))
   }
 
+  def listAll = SiteAction { implicit request =>
+    Ok(views.html.studyList(models.Study.getAll))
+  }
+
   type StudyForm = Form[(String, Option[String])]
   private[this] val editForm = Form(tuple(
     "title" -> nonEmptyText,

@@ -133,6 +133,12 @@ object Study extends ContainerView[Study]("study") {
   def get(i : Id)(implicit site : Site) : Option[Study] =
     SELECT("WHERE id = {id} AND", condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt()(site.db)
+
+  /** Retrieve the set of all studies in the system.
+    * This only returns studies for which the current user has [[Permission.VIEW]] access. */
+  def getAll(implicit site : Site) : Seq[Study] =
+    SELECT("WHERE", condition).
+      on('identity -> site.identity.id).list()(site.db)
     
   /** Create a new, empty study with no permissions.
     * The caller should probably add a [[StudyAccess]] for this study to grant [[Permission.ADMIN]] access to some user. */
