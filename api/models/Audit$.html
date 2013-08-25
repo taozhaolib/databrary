@@ -44,7 +44,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Helper for audit tables.  Not a <span class="extype" name="models.TableView">models.TableView</span> because it corresponds to multiple underlying tables.</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -167,8 +167,8 @@
         <span class="name">action</span><span class="params">(<span name="action">action: <a href="AuditAction$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.AuditAction.Value">AuditAction.Value</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="anorm.SimpleSql">SimpleSql</span>[<span class="extype" name="anorm.Row">Row</span>]</span>
       </span>
       </h4>
-      
-    </li><li name="models.Audit#add" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Record an audit event of the specified type to the generic audit table.</p>
+    </li><li name="models.Audit#add" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="add(table:String,args:models.SQLArgs,returning:String)(implicitsite:util.Site):anorm.SimpleSql[anorm.Row]"></a>
       <a id="add(String,SQLArgs,String)(Site):SimpleSql[Row]"></a>
       <h4 class="signature">
@@ -180,7 +180,9 @@
         <span class="name">add</span><span class="params">(<span name="table">table: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="args">args: <span class="extype" name="models.SQLArgs">SQLArgs</span></span>, <span name="returning">returning: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="anorm.SimpleSql">SimpleSql</span>[<span class="extype" name="anorm.Row">Row</span>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Record and perform an <a href="AuditAction$.html#add:models.AuditAction.Value" class="extmbr" name="models.AuditAction#add">AuditAction.add</a> event for a particular table.</p><div class="fullcomment"><div class="comment cmt"><p>Record and perform an <a href="AuditAction$.html#add:models.AuditAction.Value" class="extmbr" name="models.AuditAction#add">AuditAction.add</a> event for a particular table.
+This does the equivalent of <code>INSERT INTO table args VALUES args [RETURNING returning]</code>.</p></div><dl class="paramcmts block"><dt class="param">table</dt><dd class="cmt"><p>the name of the affected table, with a corresponding &quot;audit_table&quot; table</p></dd><dt class="param">args</dt><dd class="cmt"><p>parameters for attached row data</p></dd><dt class="param">returning</dt><dd class="cmt"><p>optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
+</p></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -194,7 +196,7 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.Audit#change" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.Audit#change" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="change(table:String,sets:models.SQLArgs,where:models.SQLArgs,returning:String)(implicitsite:util.Site):anorm.SimpleSql[anorm.Row]"></a>
       <a id="change(String,SQLArgs,SQLArgs,String)(Site):SimpleSql[Row]"></a>
       <h4 class="signature">
@@ -206,7 +208,9 @@
         <span class="name">change</span><span class="params">(<span name="table">table: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sets">sets: <span class="extype" name="models.SQLArgs">SQLArgs</span></span>, <span name="where">where: <span class="extype" name="models.SQLArgs">SQLArgs</span></span>, <span name="returning">returning: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="anorm.SimpleSql">SimpleSql</span>[<span class="extype" name="anorm.Row">Row</span>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Record an <a href="AuditAction$.html#change:models.AuditAction.Value" class="extmbr" name="models.AuditAction#change">AuditAction.change</a> event to a particular audit table.</p><div class="fullcomment"><div class="comment cmt"><p>Record an <a href="AuditAction$.html#change:models.AuditAction.Value" class="extmbr" name="models.AuditAction#change">AuditAction.change</a> event to a particular audit table.
+This does the equivalent of <code>UPDATE table SET sets WHERE where [RETURNING returning]</code>.</p></div><dl class="paramcmts block"><dt class="param">table</dt><dd class="cmt"><p>the name of the affected table, with a corresponding &quot;audit_table&quot; table</p></dd><dt class="param">sets</dt><dd class="cmt"><p>parameters to update attached row data</p></dd><dt class="param">where</dt><dd class="cmt"><p>parameters to select attached row data</p></dd><dt class="param">returning</dt><dd class="cmt"><p>optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
+</p></dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -343,7 +347,7 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.Audit#remove" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.Audit#remove" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="remove(table:String,args:models.SQLArgs,returning:String)(implicitsite:util.Site):anorm.SimpleSql[anorm.Row]"></a>
       <a id="remove(String,SQLArgs,String)(Site):SimpleSql[Row]"></a>
       <h4 class="signature">
@@ -355,7 +359,9 @@
         <span class="name">remove</span><span class="params">(<span name="table">table: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="args">args: <span class="extype" name="models.SQLArgs">SQLArgs</span></span>, <span name="returning">returning: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="anorm.SimpleSql">SimpleSql</span>[<span class="extype" name="anorm.Row">Row</span>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Record an <a href="AuditAction$.html#remove:models.AuditAction.Value" class="extmbr" name="models.AuditAction#remove">AuditAction.remove</a> event to a particular audit table.</p><div class="fullcomment"><div class="comment cmt"><p>Record an <a href="AuditAction$.html#remove:models.AuditAction.Value" class="extmbr" name="models.AuditAction#remove">AuditAction.remove</a> event to a particular audit table.
+This does the equivalent of <code>DELETE FROM table WHERE args [RETURNING returning]</code>.</p></div><dl class="paramcmts block"><dt class="param">table</dt><dd class="cmt"><p>the name of the affected table, with a corresponding &quot;audit_table&quot; table</p></dd><dt class="param">args</dt><dd class="cmt"><p>parameters to select attached row data</p></dd><dt class="param">returning</dt><dd class="cmt"><p>optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
+</p></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

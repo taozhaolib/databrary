@@ -239,8 +239,8 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="models.Authorize#delete" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="delete(c:models.Party.Id,p:models.Party.Id)(implicitsite:util.Site):Boolean"></a>
+    </li><li name="models.Authorize#delete" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="delete(child:models.Party.Id,parent:models.Party.Id)(implicitsite:util.Site):Boolean"></a>
       <a id="delete(Party.Id,Party.Id)(Site):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -248,10 +248,11 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">delete</span><span class="params">(<span name="c">c: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="p">p: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">delete</span><span class="params">(<span name="child">child: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="parent">parent: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Remove a particular authorization from the database.</p><div class="fullcomment"><div class="comment cmt"><p>Remove a particular authorization from the database.</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>true if a matching authorization was found and deleted
+</p></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -295,7 +296,7 @@
               
         </dd></dl></div>
     </li><li name="models.Authorize#get" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="get(c:models.Party.Id,p:models.Party.Id)(implicitdb:util.Site.DB):Option[models.Authorize]"></a>
+      <a id="get(child:models.Party.Id,parent:models.Party.Id)(implicitdb:util.Site.DB):Option[models.Authorize]"></a>
       <a id="get(Party.Id,Party.Id)(DB):Option[Authorize]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -303,10 +304,10 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">get</span><span class="params">(<span name="c">c: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="p">p: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Authorize.html" class="extype" name="models.Authorize">Authorize</a>]</span>
+        <span class="name">get</span><span class="params">(<span name="child">child: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="parent">parent: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Authorize.html" class="extype" name="models.Authorize">Authorize</a>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Retrieve a specific authorization identified by child and parent.</p>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>

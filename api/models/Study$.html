@@ -265,7 +265,7 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="models.Study#create" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.Study#create" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="create(title:String,description:Option[String])(implicitsite:util.Site):models.Study"></a>
       <a id="create(String,Option[String])(Site):Study"></a>
       <h4 class="signature">
@@ -277,7 +277,8 @@
         <span class="name">create</span><span class="params">(<span name="title">title: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="description">description: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Study.html" class="extype" name="models.Study">Study</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Create a new, empty study with no permissions.</p><div class="fullcomment"><div class="comment cmt"><p>Create a new, empty study with no permissions.
+The caller should probably add a <a href="StudyAccess.html" class="extype" name="models.StudyAccess">StudyAccess</a> for this study to grant <a href="Permission$.html#ADMIN:models.Permission.Value" class="extmbr" name="models.Permission#ADMIN">Permission.ADMIN</a> access to some user.</p></div></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -332,7 +333,8 @@
         <span class="name">get</span><span class="params">(<span name="i">i: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Study.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Study.html" class="extype" name="models.Study">Study</a>]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Study">Study</a> → ContainerView</dd></dl></div>
+      <p class="shortcomment cmt">Retrieve an individual Study.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve an individual Study.
+This checks user permissions and returns None if the user lacks <a href="Permission$.html#VIEW:models.Permission.Value" class="extmbr" name="models.Permission#VIEW">Permission.VIEW</a> access.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Study">Study</a> → ContainerView</dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>

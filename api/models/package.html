@@ -98,7 +98,7 @@
         <a href="Account.html"><span class="name">Account</span></a><span class="result"> extends <a href="Party.html" class="extype" name="models.Party">Party</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Account.html" class="extype" name="models.Account">Account</a>]</span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Refines Party for individuals with registered (but not necessarily authorized) accounts on the site.</p>
     </li><li name="models.Annotated" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="AnnotatedextendsObject"></a>
       <a id="Annotated:Annotated"></a>
@@ -111,7 +111,7 @@
         <a href="Annotated.html"><span class="name">Annotated</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Objects on which annotations may be placed.</p>
     </li><li name="models.Annotation" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="AnnotationextendsTableRowId[models.Annotation]"></a>
       <a id="Annotation:Annotation"></a>
@@ -124,9 +124,9 @@
         <a href="Annotation.html"><span class="name">Annotation</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a>]</span>
       </span>
       </h4>
-      
+      <p class="comment cmt">One of a variety of types of metadata that may be attached to other objects in the system.</p>
     </li><li name="models.Asset" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="AssetextendsTableRowId[models.Asset]withAnnotated"></a>
+      <a id="AssetextendsTableRowId[models.Asset]withBackedAssetwithAnnotated"></a>
       <a id="Asset:Asset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -134,10 +134,10 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Asset.html"><span class="name">Asset</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>] with <a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></span>
+        <a href="Asset.html"><span class="name">Asset</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>] with <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a> with <a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Abstract base for all assets: objects within the system backed by primary file storage.</p>
     </li><li name="models.AssetFormat" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="AssetFormatextendsTableRowId[models.AssetFormat]"></a>
       <a id="AssetFormat:AssetFormat"></a>
@@ -150,7 +150,7 @@
         <a href="AssetFormat.html"><span class="name">AssetFormat</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
       </span>
       </h4>
-      
+      <p class="comment cmt">File formats for assets.</p>
     </li><li name="models.AssetLink" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="AssetLinkextendsTableRowwithSitePagewithAnnotated"></a>
       <a id="AssetLink:AssetLink"></a>
@@ -163,7 +163,7 @@
         <a href="AssetLink.html"><span class="name">AssetLink</span></a><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a> with <a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">An embedding or link (in the filesystem sense) of an asset within a container.</p>
     </li><li name="models.Audit" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Audit[T]extendsTableRowwithProductwithSerializable"></a>
       <a id="Audit[T]:Audit[T]"></a>
@@ -173,10 +173,10 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="Audit.html"><span class="name">Audit</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="who">who: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="ip">ip: <span class="extype" name="dbrary.Inet">Inet</span></span>, <span name="action">action: <a href="AuditAction$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.AuditAction.Value">AuditAction.Value</a></span>, <span name="row">row: <span class="extype" name="models.Audit.T">T</span></span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="Audit.html"><span class="name">Audit</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="when">when: <span class="extype" name="java.sql.Timestamp">Timestamp</span></span>, <span name="who">who: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="ip">ip: <span class="extype" name="dbrary.Inet">Inet</span></span>, <span name="action">action: <a href="AuditAction$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.AuditAction.Value">AuditAction.Value</a></span>, <span name="row">row: <span class="extype" name="models.Audit.T">T</span></span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Represents an event row in an audit table of a particular type.</p>
     </li><li name="models.Authorize" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="AuthorizeextendsTableRowwithProductwithSerializable"></a>
       <a id="Authorize:Authorize"></a>
@@ -189,7 +189,20 @@
         <a href="Authorize.html"><span class="name">Authorize</span></a><span class="params">(<span name="childId">childId: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="parentId">parentId: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="delegate">delegate: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="authorized">authorized: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Timestamp">Timestamp</span>]</span>, <span name="expires">expires: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Timestamp">Timestamp</span>]</span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">A specific authorization by one party of another.</p>
+    </li><li name="models.BackedAsset" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="BackedAssetextendsObject"></a>
+      <a id="BackedAsset:BackedAsset"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="BackedAsset.html"><span class="name">BackedAsset</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Assets which are backed by files on disk.</p>
     </li><li name="models.CachedVal" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="CachedVal[T,S]extendsObject"></a>
       <a id="CachedVal[T,S]:CachedVal[T,S]"></a>
@@ -204,7 +217,7 @@
       </h4>
       <p class="comment cmt">A variable with a default value depending on some state.</p>
     </li><li name="models.Clip" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ClipextendsAssetwithTableRowId[models.Clip]"></a>
+      <a id="ClipextendsAssetwithTableRowId[models.Clip]withTimeseriesData"></a>
       <a id="Clip:Clip"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -212,10 +225,10 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Clip.html"><span class="name">Clip</span></a><span class="result"> extends <a href="Asset.html" class="extype" name="models.Asset">Asset</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Clip.html" class="extype" name="models.Clip">Clip</a>]</span>
+        <a href="Clip.html"><span class="name">Clip</span></a><span class="result"> extends <a href="Asset.html" class="extype" name="models.Asset">Asset</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Clip.html" class="extype" name="models.Clip">Clip</a>] with <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Base for clips of Timeseries.</p>
     </li><li name="models.Comment" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="CommentextendsAnnotationwithTableRowId[models.Comment]"></a>
       <a id="Comment:Comment"></a>
@@ -228,7 +241,7 @@
         <a href="Comment.html"><span class="name">Comment</span></a><span class="result"> extends <a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
       </span>
       </h4>
-      
+      <p class="comment cmt">A comment made by a particular user, usually only applied to exactly one object.</p>
     </li><li name="models.Container" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="ContainerextendsTableRowId[models.Container]withSitePagewithAnnotated"></a>
       <a id="Container:Container"></a>
@@ -241,9 +254,9 @@
         <a href="Container.html"><span class="name">Container</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Container.html" class="extype" name="models.Container">Container</a>] with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a> with <a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Base class for all objects which can contain or serve as attachment point for assets.</p>
     </li><li name="models.FileAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="FileAssetextendsAssetwithTableRowId[models.FileAsset]"></a>
+      <a id="FileAssetextendsAssetwithTableRowId[models.FileAsset]withBackedAsset"></a>
       <a id="FileAsset:FileAsset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -251,10 +264,10 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="FileAsset.html"><span class="name">FileAsset</span></a><span class="result"> extends <a href="Asset.html" class="extype" name="models.Asset">Asset</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a>]</span>
+        <a href="FileAsset.html"><span class="name">FileAsset</span></a><span class="result"> extends <a href="Asset.html" class="extype" name="models.Asset">Asset</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a>] with <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Base for simple &quot;opaque&quot; file assets, uploaded, stored, and downloaded as individual files with no special processing.</p>
     </li><li name="models.GenericId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="GenericId[I,+T]extendsObject"></a>
       <a id="GenericId[I,+T]:GenericId[I,T]"></a>
@@ -293,7 +306,7 @@
         <a href="Orcid.html"><span class="name">Orcid</span></a><span class="result"> extends <span class="extype" name="scala.collection.immutable.WrappedString">WrappedString</span></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">An <a href="http://orcid.org/" target="_blank">ORCID</a> identifier.</p>
     </li><li name="models.Party" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="PartyextendsTableRowId[models.Party]withSitePage"></a>
       <a id="Party:Party"></a>
@@ -332,7 +345,7 @@
         <a href="Slot.html"><span class="name">Slot</span></a><span class="result"> extends <a href="Container.html" class="extype" name="models.Container">Container</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>]</span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Smallest organizatonal unit of related data, primarily used for an individual session of data with a single date, place, and consent level.</p>
     </li><li name="models.Study" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="StudyextendsContainerwithTableRowId[models.Study]"></a>
       <a id="Study:Study"></a>
@@ -345,7 +358,7 @@
         <a href="Study.html"><span class="name">Study</span></a><span class="result"> extends <a href="Container.html" class="extype" name="models.Container">Container</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Study.html" class="extype" name="models.Study">Study</a>]</span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Main organizational unit or package of data, within which everything else exists.</p>
     </li><li name="models.StudyAccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="StudyAccessextendsTableRowwithProductwithSerializable"></a>
       <a id="StudyAccess:StudyAccess"></a>
@@ -358,9 +371,9 @@
         <a href="StudyAccess.html"><span class="name">StudyAccess</span></a><span class="params">(<span name="studyId">studyId: <a href="Study$.html#Id=models.IntId[T]" class="extmbr" name="models.Study.Id">Study.Id</a></span>, <span name="partyId">partyId: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="inherit">inherit: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Access control over a study granted to a party.</p>
     </li><li name="models.Timeseries" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="TimeseriesextendsFileAssetwithTableRowId[models.Timeseries]"></a>
+      <a id="TimeseriesextendsFileAssetwithTableRowId[models.Timeseries]withTimeseriesData"></a>
       <a id="Timeseries:Timeseries"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -368,10 +381,23 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Timeseries.html"><span class="name">Timeseries</span></a><span class="result"> extends <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>]</span>
+        <a href="Timeseries.html"><span class="name">Timeseries</span></a><span class="result"> extends <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>] with <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Base for special timeseries assets in a designated format.</p>
+    </li><li name="models.TimeseriesData" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="TimeseriesDataextendsBackedAsset"></a>
+      <a id="TimeseriesData:TimeseriesData"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="TimeseriesData.html"><span class="name">TimeseriesData</span></a><span class="result"> extends <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Refinement (implicitly of Asset) for objects representing timeseries data.</p>
     </li><li name="models.TimeseriesFormat" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="TimeseriesFormatextendsAssetFormat"></a>
       <a id="TimeseriesFormat:TimeseriesFormat"></a>
@@ -384,7 +410,7 @@
         <a href="TimeseriesFormat.html"><span class="name">TimeseriesFormat</span></a><span class="result"> extends <a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Specialization of <a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a> for timeseries files stored in special internal formats.</p>
     </li></ol>
             </div>
 
@@ -417,7 +443,7 @@
         <a href="Annotation$.html"><span class="name">Annotation</span></a><span class="result"> extends <span class="extype" name="models.HasId">HasId</span>[<a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a>]</span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Dummy object for providing generic <a href="Annotation$.html#Id=models.IntId[T]" class="extmbr" name="models.Annotation.Id">Annotation.Id</a>s</p>
     </li><li name="models.Asset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Asset"></a>
       <a id="Asset:Asset"></a>
@@ -443,7 +469,7 @@
         <a href="AssetFormat$.html"><span class="name">AssetFormat</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Interface for non-timeseries file formats.</p>
     </li><li name="models.AssetLink" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="AssetLink"></a>
       <a id="AssetLink:AssetLink"></a>
@@ -469,7 +495,7 @@
         <a href="Audit$.html"><span class="name">Audit</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Helper for audit tables.</p>
     </li><li name="models.AuditAction" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="AuditAction"></a>
       <a id="AuditAction:AuditAction"></a>
@@ -482,7 +508,7 @@
         <a href="AuditAction$.html"><span class="name">AuditAction</span></a><span class="result"> extends <span class="extype" name="dbrary.PGEnum">PGEnum</span></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">The possible events or actions on the site that can be put into audit tables.</p>
     </li><li name="models.Authorize" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Authorize"></a>
       <a id="Authorize:Authorize"></a>
@@ -521,7 +547,7 @@
         <a href="Classification$.html"><span class="name">Classification</span></a><span class="result"> extends <span class="extype" name="dbrary.PGEnum">PGEnum</span></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">The possible types of data sensitivity according to the presence of identifying user data.</p>
     </li><li name="models.Clip" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Clip"></a>
       <a id="Clip:Clip"></a>
@@ -560,7 +586,7 @@
         <a href="Consent$.html"><span class="name">Consent</span></a><span class="result"> extends <span class="extype" name="dbrary.PGEnum">PGEnum</span></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">The possible levels of participant consent governing [Classification.</p>
     </li><li name="models.Container" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Container"></a>
       <a id="Container:Container"></a>
@@ -638,7 +664,7 @@
         <a href="Permission$.html"><span class="name">Permission</span></a><span class="result"> extends <span class="extype" name="dbrary.PGEnum">PGEnum</span></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">The possible levels of permission used for site access, user delegation, and study permissions.</p>
     </li><li name="models.Slot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Slot"></a>
       <a id="Slot:Slot"></a>
@@ -703,7 +729,7 @@
         <a href="TimeseriesFormat$.html"><span class="name">TimeseriesFormat</span></a><span class="result"> extends <span class="extype" name="models.HasId">HasId</span>[<a href="TimeseriesFormat.html" class="extype" name="models.TimeseriesFormat">TimeseriesFormat</a>]</span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Interface to special timeseries formats.</p>
     </li></ol>
             </div>
 

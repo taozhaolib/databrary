@@ -40,11 +40,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">Audit</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="who">who: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="ip">ip: <span class="extype" name="dbrary.Inet">Inet</span></span>, <span name="action">action: <a href="AuditAction$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.AuditAction.Value">AuditAction.Value</a></span>, <span name="row">row: <span class="extype" name="models.Audit.T">T</span></span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">Audit</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="when">when: <span class="extype" name="java.sql.Timestamp">Timestamp</span></span>, <span name="who">who: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="ip">ip: <span class="extype" name="dbrary.Inet">Inet</span></span>, <span name="action">action: <a href="AuditAction$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.AuditAction.Value">AuditAction.Value</a></span>, <span name="row">row: <span class="extype" name="models.Audit.T">T</span></span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Represents an event row in an audit table of a particular type.  Currently unused as there is intentionally no read/modify access to audit tables.</p></div><dl class="paramcmts block"><dt class="tparam">T</dt><dd class="cmt"><p>the type of data attached to this record. Usually this is a <span class="extype" name="models.TableRow">models.TableRow</span> instance for a corresponding audit_t table.</p></dd><dt class="param">when</dt><dd class="cmt"><p>the time of this event</p></dd><dt class="param">who</dt><dd class="cmt"><p>the user who generated this event. May no longer be a valid party.</p></dd><dt class="param">ip</dt><dd class="cmt"><p>the ip of the client machine that generated this event</p></dd><dt class="param">action</dt><dd class="cmt"><p>the type of event</p></dd><dt class="param">row</dt><dd class="cmt"><p>the remaining data columns
+</p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -84,8 +85,8 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="models.Audit#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(who:models.Party.Id,ip:dbrary.Inet,action:models.AuditAction.Value,row:T):models.Audit[T]"></a>
+              <ol><li name="models.Audit#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="&lt;init&gt;(when:java.sql.Timestamp,who:models.Party.Id,ip:dbrary.Inet,action:models.AuditAction.Value,row:T):models.Audit[T]"></a>
       <a id="&lt;init&gt;:Audit[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -93,10 +94,11 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Audit</span><span class="params">(<span name="who">who: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="ip">ip: <span class="extype" name="dbrary.Inet">Inet</span></span>, <span name="action">action: <a href="AuditAction$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.AuditAction.Value">AuditAction.Value</a></span>, <span name="row">row: <span class="extype" name="models.Audit.T">T</span></span>)</span>
+        <span class="name">Audit</span><span class="params">(<span name="when">when: <span class="extype" name="java.sql.Timestamp">Timestamp</span></span>, <span name="who">who: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="ip">ip: <span class="extype" name="dbrary.Inet">Inet</span></span>, <span name="action">action: <a href="AuditAction$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.AuditAction.Value">AuditAction.Value</a></span>, <span name="row">row: <span class="extype" name="models.Audit.T">T</span></span>)</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Create a new unpersisted audit record.</p><div class="fullcomment"><div class="comment cmt"><p>Create a new unpersisted audit record. There is no reason to do this.</p></div><dl class="paramcmts block"><dt class="param">when</dt><dd class="cmt"><p>the time of this event</p></dd><dt class="param">who</dt><dd class="cmt"><p>the user who generated this event. May no longer be a valid party.</p></dd><dt class="param">ip</dt><dd class="cmt"><p>the ip of the client machine that generated this event</p></dd><dt class="param">action</dt><dd class="cmt"><p>the type of event</p></dd><dt class="param">row</dt><dd class="cmt"><p>the remaining data columns
+</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -183,7 +185,7 @@
         <span class="name">action</span><span class="result">: <a href="AuditAction$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.AuditAction.Value">AuditAction.Value</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">the type of event</p>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -267,7 +269,7 @@
         <span class="name">ip</span><span class="result">: <span class="extype" name="dbrary.Inet">Inet</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">the ip of the client machine that generated this event</p>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -332,7 +334,7 @@
         <span class="name">party</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Look up the party who generated this event, if still valid.</p>
     </li><li name="models.Audit#row" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="row:T"></a>
       <a id="row:T"></a>
@@ -345,7 +347,8 @@
         <span class="name">row</span><span class="result">: <span class="extype" name="models.Audit.T">T</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">the remaining data columns
+</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -407,7 +410,20 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="models.Audit#who" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.Audit#when" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="when:java.sql.Timestamp"></a>
+      <a id="when:Timestamp"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">when</span><span class="result">: <span class="extype" name="java.sql.Timestamp">Timestamp</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">the time of this event</p>
+    </li><li name="models.Audit#who" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="who:models.Party.Id"></a>
       <a id="who:Party.Id"></a>
       <h4 class="signature">
@@ -419,7 +435,7 @@
         <span class="name">who</span><span class="result">: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">the user who generated this event.</p><div class="fullcomment"><div class="comment cmt"><p>the user who generated this event. May no longer be a valid party.</p></div></div>
     </li></ol>
             </div>
 

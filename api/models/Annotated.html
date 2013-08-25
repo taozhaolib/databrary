@@ -44,7 +44,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Objects on which annotations may be placed.</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
@@ -187,7 +187,7 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="models.Annotated#comments" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.Annotated#comments" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="comments(all:Boolean)(implicitdb:util.Site.DB):Seq[models.Comment]"></a>
       <a id="comments(Boolean)(DB):Seq[Comment]"></a>
       <h4 class="signature">
@@ -199,7 +199,8 @@
         <span class="name">comments</span><span class="params">(<span name="all">all: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">The list of comments on this object.</p><div class="fullcomment"><div class="comment cmt"><p>The list of comments on this object.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include indirect comments on any contained objects
+</p></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -320,7 +321,7 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.Annotated#postComment" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.Annotated#postComment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="postComment(text:String)(implicitsite:util.Site):models.Comment"></a>
       <a id="postComment(String)(Site):Comment"></a>
       <h4 class="signature">
@@ -332,7 +333,8 @@
         <span class="name">postComment</span><span class="params">(<span name="text">text: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Comment.html" class="extype" name="models.Comment">Comment</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Post a new comment this object.</p><div class="fullcomment"><div class="comment cmt"><p>Post a new comment this object.
+This will throw an exception if there is no current user, but does not check permissions otherwise.</p></div></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

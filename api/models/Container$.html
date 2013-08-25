@@ -319,7 +319,8 @@
         <span class="name">get</span><span class="params">(<span name="i">i: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Container.html" class="extype" name="models.Container">Container</a>]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Container">Container</a> → ContainerView</dd></dl></div>
+      <p class="shortcomment cmt">Retrieve an individual Container, according to its type.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve an individual Container, according to its type.
+This checks user permissions and returns None if the user lacks <a href="Permission$.html#VIEW:models.Permission.Value" class="extmbr" name="models.Permission#VIEW">Permission.VIEW</a> access.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Container">Container</a> → ContainerView</dd></dl></div>
     </li><li name="models.Container#getAnnotation" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="getAnnotation(annotation:models.Annotation)(implicitsite:util.Site):Seq[models.Container]"></a>
       <a id="getAnnotation(Annotation)(Site):Seq[Container]"></a>
@@ -332,7 +333,7 @@
         <span class="name">getAnnotation</span><span class="params">(<span name="annotation">annotation: <a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Container.html" class="extype" name="models.Container">Container</a>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Retrieve the set of (viewable) containers to which the given annotation is attached.</p>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>

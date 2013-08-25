@@ -44,7 +44,9 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>The possible levels of participant consent governing [Classification.IDENTIFIED] data.
+Must match the corresponding postgres &quot;consent&quot; type, except for the NONE value which represents NULL (missing) as this is a common possibility.
+Should thus often be constructed as <code>consent.getOrElse(Consent.NONE)</code> and used as <code>util.maybe(consent, Consent.NONE)</code>.</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="dbrary.PGEnum">PGEnum</span>, <span class="extype" name="scala.Enumeration">Enumeration</span>, <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -648,7 +650,7 @@
               
         </dd></dl></div>
     </li><li name="scala.Enumeration#withName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="withName(s:&lt;?&gt;):Enumeration.this.Value"></a>
+      <a id="withName(s:String):Enumeration.this.Value"></a>
       <a id="withName(String):Value"></a>
       <h4 class="signature">
       <span class="modifier_kind">

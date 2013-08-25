@@ -44,7 +44,11 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Access control over a study granted to a party.
+Study access permissions (ACLs) are determined by a set of StudyAccess entries (ACEs).
+Note that study access can also be granted to descendents (&quot;members&quot;) of the assigned party in one of two ways: through explicit inheritance within StudyAccess, or through delegated permissions within an Authorization.
+Only one of these is necessary to gain access (they are unioned, not intersected).</p><p>Unlike most [TableRow] classes, these may be constructed directly, and thus are not expected to reflect the current state of the database in the same way and have different update semantics.</p></div><dl class="paramcmts block"><dt class="param">studyId</dt><dd class="cmt"><p>the study to which access is being granted; the target</p></dd><dt class="param">partyId</dt><dd class="cmt"><p>the party being granted the access; the user</p></dd><dt class="param">access</dt><dd class="cmt"><p>the level of permission granted directly to the party. Levels at or above <a href="Permission$.html#EDIT:models.Permission.Value" class="extmbr" name="models.Permission#EDIT">Permission.EDIT</a> are considered study &quot;membership.&quot;</p></dd><dt class="param">inherit</dt><dd class="cmt"><p>the level of permission granted to all descendents/members of the party, which cannot be <a href="Permission$.html#ADMIN:models.Permission.Value" class="extmbr" name="models.Permission#ADMIN">Permission.ADMIN</a>
+</p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -84,7 +88,7 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="models.StudyAccess#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="models.StudyAccess#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="&lt;init&gt;(studyId:models.Study.Id,partyId:models.Party.Id,access:models.Permission.Value,inherit:models.Permission.Value):models.StudyAccess"></a>
       <a id="&lt;init&gt;:StudyAccess"></a>
       <h4 class="signature">
@@ -96,7 +100,8 @@
         <span class="name">StudyAccess</span><span class="params">(<span name="studyId">studyId: <a href="Study$.html#Id=models.IntId[T]" class="extmbr" name="models.Study.Id">Study.Id</a></span>, <span name="partyId">partyId: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="inherit">inherit: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">create an access object, not (yet) persisted to the database</p><div class="fullcomment"><div class="comment cmt"><p>create an access object, not (yet) persisted to the database</p></div><dl class="paramcmts block"><dt class="param">studyId</dt><dd class="cmt"><p>the study to which access is being granted; the target</p></dd><dt class="param">partyId</dt><dd class="cmt"><p>the party being granted the access; the user</p></dd><dt class="param">access</dt><dd class="cmt"><p>the level of permission granted directly to the party. Levels at or above <a href="Permission$.html#EDIT:models.Permission.Value" class="extmbr" name="models.Permission#EDIT">Permission.EDIT</a> are considered study &quot;membership.&quot;</p></dd><dt class="param">inherit</dt><dd class="cmt"><p>the level of permission granted to all descendents/members of the party, which cannot be <a href="Permission$.html#ADMIN:models.Permission.Value" class="extmbr" name="models.Permission#ADMIN">Permission.ADMIN</a>
+</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -171,7 +176,7 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.StudyAccess#access" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.StudyAccess#access" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="access:models.Permission.Value"></a>
       <a id="access:Permission.Value"></a>
       <h4 class="signature">
@@ -183,7 +188,7 @@
         <span class="name">access</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">the level of permission granted directly to the party.</p><div class="fullcomment"><div class="comment cmt"><p>the level of permission granted directly to the party. Levels at or above <a href="Permission$.html#EDIT:models.Permission.Value" class="extmbr" name="models.Permission#EDIT">Permission.EDIT</a> are considered study &quot;membership.&quot;</p></div></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -267,7 +272,8 @@
         <span class="name">inherit</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">the level of permission granted to all descendents/members of the party, which cannot be <a href="Permission$.html#ADMIN:models.Permission.Value" class="extmbr" name="models.Permission#ADMIN">Permission.ADMIN</a>
+</p>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -332,7 +338,7 @@
         <span class="name">party</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">The party being granted access.</p>
     </li><li name="models.StudyAccess#partyId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="partyId:models.Party.Id"></a>
       <a id="partyId:Party.Id"></a>
@@ -345,8 +351,8 @@
         <span class="name">partyId</span><span class="result">: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>
       </span>
       </h4>
-      
-    </li><li name="models.StudyAccess#remove" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">the party being granted the access; the user</p>
+    </li><li name="models.StudyAccess#remove" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="remove(implicitsite:util.Site):Unit"></a>
       <a id="remove(Site):Unit"></a>
       <h4 class="signature">
@@ -358,8 +364,10 @@
         <span class="name">remove</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
-    </li><li name="models.StudyAccess#set" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Remove this access from the database.</p><div class="fullcomment"><div class="comment cmt"><p>Remove this access from the database.
+Only study and party are relevant for this operation.
+This may invalidate study.access.</p></div></div>
+    </li><li name="models.StudyAccess#set" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="set(implicitsite:util.Site):Unit"></a>
       <a id="set(Site):Unit"></a>
       <h4 class="signature">
@@ -371,8 +379,11 @@
         <span class="name">set</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      
-    </li><li name="models.StudyAccess#study" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Update or add this access in the database.</p><div class="fullcomment"><div class="comment cmt"><p>Update or add this access in the database.
+If an access for the study and party already exist, it is changed to match this.
+Otherwise, a new one is added.
+This may invalidate study.access.</p></div></div>
+    </li><li name="models.StudyAccess#study" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="study(implicitsite:util.Site):models.Study"></a>
       <a id="study(Site):Study"></a>
       <h4 class="signature">
@@ -384,7 +395,8 @@
         <span class="name">study</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Study.html" class="extype" name="models.Study">Study</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">The study to which access is being granted.</p><div class="fullcomment"><div class="comment cmt"><p>The study to which access is being granted.
+If the current user does not have access to study, this may throw an exception.</p></div></div>
     </li><li name="models.StudyAccess#studyId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="studyId:models.Study.Id"></a>
       <a id="studyId:Study.Id"></a>
@@ -397,7 +409,7 @@
         <span class="name">studyId</span><span class="result">: <a href="Study$.html#Id=models.IntId[T]" class="extmbr" name="models.Study.Id">Study.Id</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">the study to which access is being granted; the target</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

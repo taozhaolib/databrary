@@ -210,7 +210,7 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.Party#Nobody" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.Party#Nobody" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Nobody:models.Party"></a>
       <a id="Nobody:Party"></a>
       <h4 class="signature">
@@ -222,8 +222,9 @@
         <span class="name">Nobody</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
       </span>
       </h4>
-      
-    </li><li name="models.Party#Root" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">The special party group representing everybody (including anonymous users) on the site.</p><div class="fullcomment"><div class="comment cmt"><p>The special party group representing everybody (including anonymous users) on the site.
+This is also in the database, but is cached here for special handling.</p></div></div>
+    </li><li name="models.Party#Root" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Root:models.Party"></a>
       <a id="Root:Party"></a>
       <h4 class="signature">
@@ -235,7 +236,8 @@
         <span class="name">Root</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">The special party group representing authorized users on the site.</p><div class="fullcomment"><div class="comment cmt"><p>The special party group representing authorized users on the site.
+This is also in the database, but is cached here for special handling.</p></div></div>
     </li><li name="models.TableView#SELECT" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="SELECT(q:String*):anorm.SimpleSql[TableView.this.Row]"></a>
       <a id="SELECT(String*):SimpleSql[Row]"></a>
@@ -303,7 +305,7 @@
         <span class="name">create</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Create a new party.</p>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -358,7 +360,7 @@
         <span class="name">get</span><span class="params">(<span name="i">i: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Look up a party by id.</p>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -437,7 +439,7 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.Party#searchForAuthorize" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.Party#searchForAuthorize" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="searchForAuthorize(name:String,who:models.Party.Id)(implicitdb:util.Site.DB):Seq[models.Party]"></a>
       <a id="searchForAuthorize(String,Id)(DB):Seq[Party]"></a>
       <h4 class="signature">
@@ -449,8 +451,9 @@
         <span class="name">searchForAuthorize</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="who">who: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</span>
       </span>
       </h4>
-      
-    </li><li name="models.Party#searchForStudyAccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Search for parties by name for the purpose of authorization.</p><div class="fullcomment"><div class="comment cmt"><p>Search for parties by name for the purpose of authorization.</p></div><dl class="paramcmts block"><dt class="param">name</dt><dd class="cmt"><p>string to match against name/username (case insensitive substring)</p></dd><dt class="param">who</dt><dd class="cmt"><p>party doing the authorization, to exclude parties already authorized
+</p></dd></dl></div>
+    </li><li name="models.Party#searchForStudyAccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="searchForStudyAccess(name:String,study:models.Study.Id)(implicitdb:util.Site.DB):Seq[models.Party]"></a>
       <a id="searchForStudyAccess(String,Study.Id)(DB):Seq[Party]"></a>
       <h4 class="signature">
@@ -462,7 +465,8 @@
         <span class="name">searchForStudyAccess</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="study">study: <a href="Study$.html#Id=models.IntId[T]" class="extmbr" name="models.Study.Id">Study.Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Search for parties by name for the purpose of study access.</p><div class="fullcomment"><div class="comment cmt"><p>Search for parties by name for the purpose of study access.</p></div><dl class="paramcmts block"><dt class="param">name</dt><dd class="cmt"><p>string to match against name/username (case insensitive substring)</p></dd><dt class="param">study</dt><dd class="cmt"><p>study to which to grant access, to exclude parties with access already.
+</p></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

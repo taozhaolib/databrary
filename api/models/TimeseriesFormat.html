@@ -44,7 +44,8 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Specialization of <a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a> for timeseries files stored in special internal formats.
+Note that some non-TimeseriesFormat AssetFormats may represent timeseries data, but they are not interpreted as such.</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
@@ -91,7 +92,7 @@
 
         <div id="values" class="values members">
               <h3>Abstract Value Members</h3>
-              <ol><li name="models.TimeseriesFormat#sampleFormat" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+              <ol><li name="models.TimeseriesFormat#sampleFormat" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="sampleFormat:models.AssetFormat"></a>
       <a id="sampleFormat:AssetFormat"></a>
       <h4 class="signature">
@@ -103,7 +104,8 @@
         <span class="name">sampleFormat</span><span class="result">: <a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">The type of data produced when this timeseries is sampled at a single point.</p><div class="fullcomment"><div class="comment cmt"><p>The type of data produced when this timeseries is sampled at a single point.
+For some data this may be a single number, in which case this may need to be extended.</p></div></div>
     </li></ol>
             </div>
 
@@ -322,7 +324,7 @@
         <span class="name">mimeSubTypes</span><span class="result">: (<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="java.lang.String">String</span>)</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a></dd></dl></div>
+      <p class="shortcomment cmt">mimetype split into its two components at the slash</p><div class="fullcomment"><div class="comment cmt"><p>mimetype split into its two components at the slash</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>

@@ -44,7 +44,8 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>The possible levels of permission used for site access, user delegation, and study permissions.
+Must match the corresponding postgres &quot;permission&quot; type.</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="dbrary.PGEnum">PGEnum</span>, <span class="extype" name="scala.Enumeration">Enumeration</span>, <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -216,7 +217,7 @@
       </span>
       </h4>
       
-    </li><li name="models.Permission#COMMENT" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.Permission#COMMENT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="COMMENT:models.Permission.Value"></a>
       <a id="COMMENT:Value"></a>
       <h4 class="signature">
@@ -228,7 +229,7 @@
         <span class="name">COMMENT</span><span class="result">: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Value</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Alias for VIEW.</p><div class="fullcomment"><div class="comment cmt"><p>Alias for VIEW. COMMENTing on objects requires VIEW site access.</p></div></div>
     </li><li name="models.Permission#CONTRIBUTE" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="CONTRIBUTE:models.Permission.Value"></a>
       <a id="CONTRIBUTE:Value"></a>
@@ -242,7 +243,7 @@
       </span>
       </h4>
       
-    </li><li name="models.Permission#DATA" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.Permission#DATA" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="DATA:models.Permission.Value"></a>
       <a id="DATA:Value"></a>
       <h4 class="signature">
@@ -254,7 +255,7 @@
         <span class="name">DATA</span><span class="result">: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Value</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Alias for DOWNLOAD.</p><div class="fullcomment"><div class="comment cmt"><p>Alias for DOWNLOAD. DOWNLOAD permissions grant access to shared data, while non-data only requires VIEW.</p></div></div>
     </li><li name="models.Permission#DOWNLOAD" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="DOWNLOAD:models.Permission.Value"></a>
       <a id="DOWNLOAD:Value"></a>
@@ -280,7 +281,7 @@
         <span class="name">EDIT</span><span class="result">: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Value</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Alias for CONTRIBUTE.</p>
     </li><li name="models.Permission#NONE" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="NONE:models.Permission.Value"></a>
       <a id="NONE:Value"></a>
@@ -294,7 +295,7 @@
       </span>
       </h4>
       
-    </li><li name="models.Permission#OWN" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.Permission#OWN" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="OWN:models.Permission.Value"></a>
       <a id="OWN:Value"></a>
       <h4 class="signature">
@@ -306,7 +307,7 @@
         <span class="name">OWN</span><span class="result">: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Value</a></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Alias for ADMIN.</p><div class="fullcomment"><div class="comment cmt"><p>Alias for ADMIN. Study ADMINs are considered OWNers.</p></div></div>
     </li><li name="models.Permission#VIEW" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="VIEW:models.Permission.Value"></a>
       <a id="VIEW:Value"></a>
