@@ -46,10 +46,6 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   /** List of studies accessible by this user.
     * @param p permission level to restrict to */
   final def studyAccess(p : Permission.Value)(implicit site : Site) = StudyAccess.getStudies(this, p)
-
-  /** List of comments by this individual.
-    * This does not respect access permissions on the comment targets. */
-  final def comments(implicit db : Site.DB) = Comment.getParty(this)(db)
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
@@ -70,6 +66,10 @@ final class Account protected (party : Party, val username : String, email_ : St
   }
 
   override def pageName(implicit site : Site) = super.pageName + (if (site.access >= Permission.VIEW) " <" + username + ">" else "")
+
+  /** List of comments by this individual.
+    * This does not respect access permissions on the comment targets. */
+  final def comments(implicit db : Site.DB) = Comment.getParty(this)(db)
 }
 
 object Party extends TableId[Party]("party") {
@@ -146,12 +146,20 @@ object Account extends TableId[Account]("account") {
     case (e ~ a) => (make(e) _).tupled(a)
   }
 
+  /** Look up a user by id, without an active session.
+    * @return None if no party or no account for given party
+    */
+  def get_(i : Id)(implicit db : Site.DB) : Option[Account] =
+    SELECT("WHERE id = {id}").
+      on('id -> i).singleOpt()
   /** Look up a user by id.
     * @return None if no party or no account for given party
     */
-  def get(i : Id)(implicit db : Site.DB) : Option[Account] = 
-    SELECT("WHERE id = {id}").
-      on('id -> i).singleOpt()
+  def get(i : Id)(implicit site : Site) : Option[Account] =
+    if (i == site.identity.id)
+      site.user
+    else
+      get_(i)(site.db)
   /** Look up a user by username. */
   def getUsername(username : String)(implicit db : Site.DB) : Option[Account] = 
     SELECT("WHERE username = {username}").

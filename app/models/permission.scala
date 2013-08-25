@@ -7,9 +7,13 @@ import dbrary._
 object Permission extends PGEnum("permission") {
   val NONE, VIEW, DOWNLOAD, CONTRIBUTE, ADMIN = Value
   // aliases or equivalent permissions (do not use val here)
+  /** Alias for ADMIN. Study ADMINs are considered OWNers. */
   def OWN = ADMIN
+  /** Alias for CONTRIBUTE. */
   def EDIT = CONTRIBUTE
+  /** Alias for DOWNLOAD. DOWNLOAD permissions grant access to shared data, while non-data only requires VIEW. */
   def DATA = DOWNLOAD
+  /** Alias for VIEW. COMMENTing on objects requires VIEW site access. */
   def COMMENT = VIEW
 }
 

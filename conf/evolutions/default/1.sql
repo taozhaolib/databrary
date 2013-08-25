@@ -377,7 +377,7 @@ COMMENT ON TABLE "annotation" IS 'Parent table for metadata annotations.';
 
 CREATE TABLE "comment" (
 	"id" integer NOT NULL DEFAULT nextval('annotation_id_seq') Primary Key References "annotation" Deferrable Initially Deferred,
-	"who" integer NOT NULL References "party",
+	"who" integer NOT NULL References "account",
 	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"text" text NOT NULL
 );

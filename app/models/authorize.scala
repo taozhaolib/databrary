@@ -10,7 +10,7 @@ import util._
 /** A specific authorization by one party of another.
   * An authorization represents granting of certain permissions to a party by/under another, which can also be viewed as group membership.
   * Unlike most [TableRow] classes, these may be constructed directly, and thus are not expected to reflect the current state of the database in the same way and have different update semantics.
-  * @constructor create a authorization object, not (yet) persisted in the database
+  * @constructor create an authorization object, not (yet) persisted to the database
   * @param childId the party being authorized, the "member"
   * @param parentId the party whose permissions are being authorized, the "group"
   * @param access the level of site access granted via the parent to the child, thus the maximum site permission level inherited by the child from the parent
@@ -82,7 +82,7 @@ object Authorize extends Table[Authorize]("authorize") {
       )
 
   /** Remove a particular authorization from the database.
-    * @return true if a matching authorization was deleted
+    * @return true if a matching authorization was found and deleted
     */
   def delete(child : Party.Id, parent : Party.Id)(implicit site : Site) =
     Audit.remove("authorize", SQLArgs('child -> child, 'parent -> parent)).

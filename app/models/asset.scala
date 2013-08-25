@@ -75,7 +75,8 @@ object TimeseriesFormat extends HasId[TimeseriesFormat] {
 }
 
 
-/** Abstract base for all assets: objects within the system backed by primary file storage. */
+/** Abstract base for all assets: objects within the system backed by primary file storage.
+  * Unlike containers, no user-specific permission checking is done when retrieving assets or their data, so additional link-based checking must be done before presenting these to users. */
 sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Asset] with BackedAsset with Annotated {
   /** Format of this asset. */
   def format : AssetFormat
@@ -162,9 +163,12 @@ object Asset extends AssetView[Asset]("asset") {
     LEFT JOIN timeseries ON timeseries.id = file.id
          JOIN format ON file.format = format.id"""
 
+  /** Retrieve a single asset according to its type.
+    * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
   def get(i : Id)(implicit db : Site.DB) : Option[Asset] =
     SELECT("WHERE asset.id = {id}").on('id -> i).singleOpt()
 
+  /** Retrieve the set of assets to which the given annotation is attached. */
   private[models] def getAnnotation(annotation : Annotation)(implicit db : Site.DB) : Seq[Asset] =
     SELECT("JOIN asset_annotation ON asset.id = asset WHERE annotation = {annotation}").
       on('annotation -> annotation.id).list()
@@ -179,10 +183,16 @@ object FileAsset extends AssetView[FileAsset]("file") {
   }
   private[models] override val src = "ONLY file JOIN ONLY format ON file.format = format.id"
   
+  /** Retrieve a single (non-timeseries) file asset.
+    * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[FileAsset] =
     SELECT("WHERE file.id = {id}").
       on('id -> i).singleOpt()
 
+  /** Create a new file asset based from an uploaded file.
+    * @param format the format of the file, taken as given
+    * @param file a complete, uploaded file which will be moved into the appropriate storage location
+    */
   def create(format : AssetFormat, classification : Classification.Value, file : TemporaryFile)(implicit site : Site) : FileAsset = {
     val id = Audit.add(table, SQLArgs('format -> format, 'classification -> classification), "id").single(scalar[Id])(site.db)
     store.FileAsset.store(id, file)
@@ -199,6 +209,8 @@ object Timeseries extends AssetView[Timeseries]("timeseries") {
     (id, format, classification, duration, consent) => new Timeseries(id, TimeseriesFormat.get(format).get, classification, duration, consent.getOrElse(Consent.NONE))
   }
   
+  /** Retrieve a single timeseries asset.
+    * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[Timeseries] =
     SELECT("WHERE timeseries.id = {id}").
       on('id -> i).singleOpt()
@@ -216,6 +228,8 @@ object Clip extends AssetView[Clip]("clip") {
   }
   private[models] override val src = "clip JOIN " + Timeseries.src + " ON clip.source = timeseries.id"
   
+  /** Retrieve a single clip.
+    * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[Clip] =
     SELECT("WHERE excerpt.id = {id}").
       on('id -> i).singleOpt()

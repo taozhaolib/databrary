@@ -30,7 +30,7 @@ object SiteAction {
     request.session.get("user").flatMap { i => 
       try { Some(models.Account.asId(i.toInt)) }
       catch { case e:java.lang.NumberFormatException => None }
-    }.flatMap(models.Account.get _)
+    }.flatMap(models.Account.get_ _)
 
   def apply(anon : AnonRequest[AnyContent] => Result, user : UserRequest[AnyContent] => Result) : Action[AnyContent] =
     Action { request => DB.withTransaction { implicit db =>
