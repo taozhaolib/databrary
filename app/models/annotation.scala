@@ -48,7 +48,7 @@ private[models] sealed abstract class AnnotationView[R <: Annotation with TableR
         "JOIN " + j + "s({target}) ON " + table + ".id = " + j + "s"
       else
         "JOIN " + j + " ON " + table + ".id = annotation WHERE " + target.annotatedLevel + " = {target}").
-      on('a -> target.annotatedId).list()
+      on('target -> target.annotatedId).list()
   }
 }
 
