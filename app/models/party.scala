@@ -54,7 +54,7 @@ final class Account protected (party : Party, email_ : String, password_ : Strin
   private[this] var _email = email_
   def email = _email
   private[this] var _password = password_
-  /** Crypted password, using standard unix format, currently $2a$-style bcrypt */
+  /** Crypted password, using standard unix format, currently \$2a\$-style bcrypt */
   def password = _password
   private[this] var _openid = openid_
   def openid = _openid
