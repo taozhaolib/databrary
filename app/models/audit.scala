@@ -2,7 +2,9 @@ package models
 
 import play.api.Play.current
 import anorm._
+import java.sql.Timestamp
 import dbrary._
+import dbrary.Anorm._
 import util._
 
 /** The possible events or actions on the site that can be put into audit tables.
@@ -20,14 +22,24 @@ object AuditAction extends PGEnum("audit_action") {
   * @param action the type of event
   * @param row the remaining data columns
   */
-case class Audit[T](when : java.sql.Timestamp, who : Party.Id, ip : Inet, action : AuditAction.Value, row : T) extends TableRow {
+case class Audit[T](when : Timestamp, who : Party.Id, ip : Inet, action : AuditAction.Value, row : T) extends TableRow {
   private val _party = CachedVal[Option[Party], Site](Party.get(who)(_))
   /** Look up the party who generated this event, if still valid. */
   def party(implicit site : Site) : Option[Party] = _party
+
+  def withRow[A](row : A) = copy[A](row = row)
 }
 
 /** Helper for audit tables.  Not a [[models.TableView]] because it corresponds to multiple underlying tables. */
 object Audit {
+  private[this] def make[T](row : T)(when : Timestamp, who : Party.Id, ip : Inet, action : AuditAction.Value) =
+    Audit[T](when, who, ip, action, row)
+  private[models] def row[T](row : T, tableName : String = "audit") = Columns[
+    Timestamp,                       Party.Id,                       Inet,                          AuditAction.Value](
+    SelectColumn(tableName, "when"), SelectColumn(tableName, "who"), SelectColumn(tableName, "ip"), SelectColumn(tableName, "action")).
+    map(make[T](row) _)
+  private[models] val columns = row[Unit](())
+
   private[this] def acmd(action : AuditAction.Value) = action match {
     case AuditAction.add => "INSERT INTO"
     case AuditAction.change => "UPDATE"
@@ -50,7 +62,7 @@ object Audit {
     * @param args parameters for attached row data
     * @param returning optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
     */
-  def add(table : String, args : SQLArgs, returning : String = "")(implicit site : Site) =
+  private[models] def add(table : String, args : SQLArgs, returning : String = "")(implicit site : Site) =
     SQLon(AuditAction.add, table, args.insert, returning)(args)(site)
 
   /** Record an [[AuditAction.remove]] event to a particular audit table.
@@ -59,7 +71,7 @@ object Audit {
     * @param args parameters to select attached row data
     * @param returning optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
     */
-  def remove(table : String, args : SQLArgs, returning : String = "")(implicit site : Site) =
+  private[models] def remove(table : String, args : SQLArgs, returning : String = "")(implicit site : Site) =
     SQLon(AuditAction.remove, table, "WHERE " + args.set(" AND "), returning)(args)(site)
 
   /** Record an [[AuditAction.change]] event to a particular audit table.
@@ -69,6 +81,6 @@ object Audit {
     * @param where parameters to select attached row data
     * @param returning optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
     */
-  def change(table : String, sets : SQLArgs, where : SQLArgs, returning : String = "")(implicit site : Site) =
+  private[models] def change(table : String, sets : SQLArgs, where : SQLArgs, returning : String = "")(implicit site : Site) =
     SQLon(AuditAction.change, table, "SET " + sets.set(", ") + " WHERE " + where.set(" AND "), returning)(SQLArgs(sets ++ where : _*))(site)
 }

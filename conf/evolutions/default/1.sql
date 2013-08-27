@@ -188,6 +188,8 @@ CREATE TRIGGER "container" BEFORE INSERT OR UPDATE OR DELETE ON "study" FOR EACH
 CREATE TABLE "audit_study" (
 	LIKE "study"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
+CREATE INDEX "study_creation_idx" ON audit_study (id) WHERE action = 'add';
+COMMENT ON INDEX "study_creation_idx" IS 'Allow efficient retrieval of study creation information, specifically date.';
 
 CREATE TABLE "study_access" (
 	"study" integer NOT NULL References "study",

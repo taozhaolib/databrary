@@ -10,6 +10,13 @@
 
 	<p>@study.description</p>
 
+	<dl>
+	@study.creationAudit(request.db).map { creation =>
+		<dt>Created</dt>
+		<dd>@creation.when</dd>
+	}
+	</dl>
+
 	@if(study.permission >= Permission.EDIT) {
 		<a href='@routes.Study.edit(study.id)'>edit</a>
 	}

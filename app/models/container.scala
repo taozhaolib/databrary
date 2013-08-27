@@ -65,6 +65,13 @@ final class Study private (override val id : Study.Id, title_ : String, descript
 
   /** List of slots within this study. */
   def slots(implicit db : Site.DB) = Slot.getStudy(this)
+
+  /** Get study creation information */
+  def creationAudit(implicit db : Site.DB) : Option[Audit[Unit]] = {
+    def cols = Audit.row[Unit]((), "audit_study")
+    SQL("SELECT " + cols.select + " FROM audit_study WHERE id = {id} AND action = 'add'").
+      on('id -> id).singleOpt(cols)
+  }
 }
 
 /** Smallest organizatonal unit of related data, primarily used for an individual session of data with a single date, place, and consent level. */
