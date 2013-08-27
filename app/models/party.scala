@@ -49,23 +49,25 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
-final class Account protected (party : Party, val username : String, email_ : String, openid_ : Option[String]) extends Party(party.id, party.name, party.orcid) with TableRowId[Account] {
+final class Account protected (party : Party, email_ : String, password_ : String, openid_ : Option[String]) extends Party(party.id, party.name, party.orcid) with TableRowId[Account] {
   override val id = Account.asId(party.id.unId)
   private[this] var _email = email_
   def email = _email
+  private[this] var _password = password_
+  /** Crypted password, using standard unix format, currently $2a$-style bcrypt */
+  def password = _password
   private[this] var _openid = openid_
   def openid = _openid
 
   /** Update the given values in the database and this object in-place. */
-  def changeAccount(email : String = _email, openid : Option[String] = _openid)(implicit site : Site) : Unit = {
-    if (email == _email && openid == _openid)
+  def changeAccount(email : String = _email, password : String = _password, openid : Option[String] = _openid)(implicit site : Site) : Unit = {
+    if (email == _email && password == _password && openid == _openid)
       return
-    Audit.change(Account.table, SQLArgs('email -> email, 'openid -> openid), SQLArgs('id -> id)).execute()(site.db)
+    Audit.change(Account.table, SQLArgs('email -> email, 'password -> password, 'openid -> openid), SQLArgs('id -> id)).execute()(site.db)
     _email = email
+    _password = password
     _openid = openid
   }
-
-  override def pageName(implicit site : Site) = super.pageName + (if (site.access >= Permission.VIEW) " <" + username + ">" else "")
 
   /** List of comments by this individual.
     * This does not respect access permissions on the comment targets. */
@@ -104,11 +106,11 @@ object Party extends TableId[Party]("party") {
     new Party(id, name)
   }
 
-  private def byName = "username = {user} OR name ILIKE {name}"
-  private def byNameArgs(name : String) = SQLArgs('user -> name, 'name -> name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%"))
+  private def byName = "name ILIKE {name} OR email ILIKE {name}"
+  private def byNameArgs(name : String) = SQLArgs('name -> name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%"))
 
   /** Search for parties by name for the purpose of authorization.
-    * @param name string to match against name/username (case insensitive substring)
+    * @param name string to match against name/email (case insensitive substring)
     * @param who party doing the authorization, to exclude parties already authorized
     */
   def searchForAuthorize(name : String, who : Party.Id)(implicit db : Site.DB) : Seq[Party] =
@@ -116,7 +118,7 @@ object Party extends TableId[Party]("party") {
       on(SQLArgs('who -> who) ++ byNameArgs(name) : _*).list()
 
   /** Search for parties by name for the purpose of study access.
-    * @param name string to match against name/username (case insensitive substring)
+    * @param name string to match against name/email (case insensitive substring)
     * @param study study to which to grant access, to exclude parties with access already.
     */
   def searchForStudyAccess(name : String, study : Study.Id)(implicit db : Site.DB) : Seq[Party] =
@@ -136,11 +138,11 @@ object Party extends TableId[Party]("party") {
 }
 
 object Account extends TableId[Account]("account") {
-  private[models] def make(e : Party)(username : String, email : String, openid : Option[String]) =
-    new Account(e, username, email, openid)
+  private[models] def make(e : Party)(email : String, password : Option[String], openid : Option[String]) =
+    new Account(e, email, password.getOrElse(""), openid)
   private[models] val columns = Columns[
-    String,    String,  Option[String]](
-    'username, 'email,  'openid)
+    String, Option[String], Option[String]](
+    'email, 'password,      'openid)
   private[models] override val src = "party JOIN account USING (id)"
   private[models] val row = (Party.columns ~ columns) map {
     case (e ~ a) => (make(e) _).tupled(a)
@@ -160,15 +162,15 @@ object Account extends TableId[Account]("account") {
       site.user
     else
       get_(i)(site.db)
-  /** Look up a user by username. */
-  def getUsername(username : String)(implicit db : Site.DB) : Option[Account] = 
-    SELECT("WHERE username = {username}").
-      on('username -> username).singleOpt()
+  /** Look up a user by email. */
+  def getEmail(email : String)(implicit db : Site.DB) : Option[Account] = 
+    SELECT("WHERE email = {email}").
+      on('email -> email).singleOpt()
   /** Look up a user by openid.
-    * @param username optionally limit results to the given username
-    * @return an arbitrary account with the given openid, or the account for username if the openid matches */
-  def getOpenid(openid : String, username : Option[String] = None)(implicit db : Site.DB) : Option[Account] = {
-    SELECT("WHERE openid = {openid} AND coalesce(username = {username}, 't') LIMIT 1").
-      on('openid -> openid, 'username -> username).singleOpt()
+    * @param email optionally limit results to the given email
+    * @return an arbitrary account with the given openid, or the account for email if the openid matches */
+  def getOpenid(openid : String, email : Option[String] = None)(implicit db : Site.DB) : Option[Account] = {
+    SELECT("WHERE openid = {openid} AND coalesce(email = {email}, 't') LIMIT 1").
+      on('openid -> openid, 'email -> email).singleOpt()
   }
 }

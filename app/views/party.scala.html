@@ -12,8 +12,6 @@
 	@if(request.identity.access(request.db) >= Permission.VIEW) {
 
 	@dbrary.cast[Account](party).map { a =>
-		<dt>username</dt>
-		<dd>@a.username</dd>
 		<dt>email</dt>
 		<dd>@a.email</dd>
 		@a.orcid.map { o =>

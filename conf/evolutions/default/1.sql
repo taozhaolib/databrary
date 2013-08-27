@@ -93,8 +93,8 @@ CREATE TABLE "audit_party" (
 
 CREATE TABLE "account" (
 	"id" integer NOT NULL Primary Key References "party",
-	"username" varchar(32) NOT NULL Unique,
 	"email" varchar(256) NOT NULL, -- split out (multiple/user)?
+	"password" varchar(60), -- standard unix-style hash, currently $2a$ bcrypt
 	"openid" varchar(256) -- split out (multiple/user)?
 );
 COMMENT ON TABLE "account" IS 'Login information for parties associated with registered individuals.';

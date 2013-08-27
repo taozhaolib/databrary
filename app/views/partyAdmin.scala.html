@@ -6,8 +6,10 @@
 	@helper.form(routes.Party.change(party.id)) {
 		@helper.inputText(form("name"))
 		@helper.inputText(form("orcid"))
-		@if(controllers.Party.formForAccount(form)) {
+		@if(controllers.Party.formForAccount(form, party)) {
 			@helper.inputText(form("email"))
+			@helper.inputPassword(form("password"))
+			@helper.inputPassword(form("again"))
 			@helper.inputText(form("openid"))
 		}
 		<button type='submit'>Change</button>

@@ -4,7 +4,7 @@
 # --- !Ups
 ;
 
-INSERT INTO party (id, name) VALUES (1, 'Dylan Simon');
+INSERT INTO party (id, name, orcid) VALUES (1, 'Dylan Simon', '0000000227931679');
 INSERT INTO party (id, name) VALUES (2, 'Alex Sokoloff');
 INSERT INTO party (id, name) VALUES (3, 'Mike Continues');
 INSERT INTO party (id, name) VALUES (4, 'Lisa Steiger');
@@ -12,10 +12,10 @@ INSERT INTO party (id, name) VALUES (5, 'Karen Adolph');
 INSERT INTO party (id, name) VALUES (6, 'Rick Gilmore');
 SELECT setval('party_id_seq', 6);
 
-INSERT INTO account (id, username, email, openid) VALUES (1, 'dylan', 'dylan@databrary.org', 'http://dylex.net/');
-INSERT INTO account (id, username, email, openid) VALUES (2, 'alex', 'alex@databrary.org', NULL);
-INSERT INTO account (id, username, email, openid) VALUES (3, 'mike', 'mike@databrary.org', NULL);
-INSERT INTO account (id, username, email, openid) VALUES (4, 'lisa', 'lisa@databrary.org', NULL);
+INSERT INTO account (id, email, openid) VALUES (1, 'dylan@databrary.org', 'http://dylex.net/');
+INSERT INTO account (id, email, openid) VALUES (2, 'alex@databrary.org', NULL);
+INSERT INTO account (id, email, openid) VALUES (3, 'mike@databrary.org', NULL);
+INSERT INTO account (id, email, openid) VALUES (4, 'lisa@databrary.org', NULL);
 
 INSERT INTO authorize (child, parent, access, delegate) VALUES (1, 0, 'ADMIN', 'ADMIN');
 INSERT INTO authorize (child, parent, access, delegate) VALUES (2, 0, 'ADMIN', 'ADMIN');
