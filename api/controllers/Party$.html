@@ -87,7 +87,7 @@
         <div id="types" class="types members">
               <h3>Type Members</h3>
               <ol><li name="controllers.Party.EditForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="EditForm=play.api.data.Form[(String,Option[models.Orcid],Option[(String,String)])]"></a>
+      <a id="EditForm=play.api.data.Form[(String,Option[models.Orcid],Option[(String,Option[String],String,String)])]"></a>
       <a id="EditForm:EditForm"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -95,7 +95,7 @@
         <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <span class="name">EditForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Option">Option</span>[<a href="../models/Orcid.html" class="extype" name="models.Orcid">Orcid</a>], <span class="extype" name="scala.Option">Option</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)])]</span>
+        <span class="name">EditForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Option">Option</span>[<a href="../models/Orcid.html" class="extype" name="models.Orcid">Orcid</a>], <span class="extype" name="scala.Option">Option</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)])]</span>
       </span>
       </h4>
       
@@ -2492,15 +2492,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
     </li><li name="controllers.Party#formForAccount" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="formForAccount(form:controllers.Party.EditForm):Boolean"></a>
-      <a id="formForAccount(EditForm):Boolean"></a>
+      <a id="formForAccount(form:controllers.Party.EditForm,party:models.Party)(implicitrequest:controllers.UserRequest[_]):Boolean"></a>
+      <a id="formForAccount(EditForm,Party)(UserRequest[_]):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">formForAccount</span><span class="params">(<span name="form">form: <a href="#EditForm=play.api.data.Form[(String,Option[models.Orcid],Option[(String,String)])]" class="extmbr" name="controllers.Party.EditForm">EditForm</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">formForAccount</span><span class="params">(<span name="form">form: <a href="#EditForm=play.api.data.Form[(String,Option[models.Orcid],Option[(String,Option[String],String,String)])]" class="extmbr" name="controllers.Party.EditForm">EditForm</a></span>, <span name="party">party: <a href="../models/Party.html" class="extype" name="models.Party">Party</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="UserRequest.html" class="extype" name="controllers.UserRequest">UserRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
       

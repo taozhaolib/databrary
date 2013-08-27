@@ -335,6 +335,20 @@ The caller should probably add a <a href="StudyAccess.html" class="extype" name=
       </h4>
       <p class="shortcomment cmt">Retrieve an individual Study.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve an individual Study.
 This checks user permissions and returns None if the user lacks <a href="Permission$.html#VIEW:models.Permission.Value" class="extmbr" name="models.Permission#VIEW">Permission.VIEW</a> access.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Study">Study</a> → ContainerView</dd></dl></div>
+    </li><li name="models.Study#getAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getAll(implicitsite:util.Site):Seq[models.Study]"></a>
+      <a id="getAll(Site):Seq[Study]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getAll</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Study.html" class="extype" name="models.Study">Study</a>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Retrieve the set of all studies in the system.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve the set of all studies in the system.
+This only returns studies for which the current user has <a href="Permission$.html#VIEW:models.Permission.Value" class="extmbr" name="models.Permission#VIEW">Permission.VIEW</a> access.</p></div></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>

@@ -85,7 +85,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.Account#&lt;init&gt;" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(party:models.Party,username:String,email_:String,openid_:Option[String]):models.Account"></a>
+      <a id="&lt;init&gt;(party:models.Party,email_:String,password_:String,openid_:Option[String]):models.Account"></a>
       <a id="&lt;init&gt;:Account"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -93,7 +93,7 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Account</span><span class="params">(<span name="party">party: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="username">username: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="email_">email_: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="openid_">openid_: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span>
+        <span class="name">Account</span><span class="params">(<span name="party">party: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="email_">email_: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="password_">password_: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="openid_">openid_: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
@@ -238,15 +238,15 @@ Computed by [Authorize.access_check] and usually accessed through <a href="../ut
       </h4>
       <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p><div class="fullcomment"><div class="comment cmt"><p>Update the given values in the database and this object in-place.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Party.html" class="extype" name="models.Party">Party</a></dd></dl></div>
     </li><li name="models.Account#changeAccount" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="changeAccount(email:String,openid:Option[String])(implicitsite:util.Site):Unit"></a>
-      <a id="changeAccount(String,Option[String])(Site):Unit"></a>
+      <a id="changeAccount(email:String,password:String,openid:Option[String])(implicitsite:util.Site):Unit"></a>
+      <a id="changeAccount(String,String,Option[String])(Site):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">changeAccount</span><span class="params">(<span name="email">email: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">_email</span></span>, <span name="openid">openid: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">_openid</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">changeAccount</span><span class="params">(<span name="email">email: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">_email</span></span>, <span name="password">password: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">_password</span></span>, <span name="openid">openid: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">_openid</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p>
@@ -504,7 +504,7 @@ This does not respect access permissions on the comment targets.</p></div></div>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Party.html" class="extype" name="models.Party">Party</a></dd></dl></div>
-    </li><li name="models.Account#pageName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.Party#pageName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageName(implicitsite:util.Site):String"></a>
       <a id="pageName(Site):String"></a>
       <h4 class="signature">
@@ -513,10 +513,10 @@ This does not respect access permissions on the comment targets.</p></div></div>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">pageName</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+        <span class="name">pageName</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The title of the object/page in the hiearchy, which may only make sense within <a href="#pageParent(implicitsite:util.Site):None.type" class="extmbr" name="models.Account#pageParent">pageParent</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The title of the object/page in the hiearchy, which may only make sense within <a href="#pageParent(implicitsite:util.Site):None.type" class="extmbr" name="models.Account#pageParent">pageParent</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Account">Account</a> → <a href="Party.html" class="extype" name="models.Party">Party</a> → <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></dd></dl></div>
+      <p class="shortcomment cmt">The title of the object/page in the hiearchy, which may only make sense within <a href="#pageParent(implicitsite:util.Site):None.type" class="extmbr" name="models.Account#pageParent">pageParent</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The title of the object/page in the hiearchy, which may only make sense within <a href="#pageParent(implicitsite:util.Site):None.type" class="extmbr" name="models.Account#pageParent">pageParent</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Party.html" class="extype" name="models.Party">Party</a> → <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.Party#pageParent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageParent(implicitsite:util.Site):None.type"></a>
       <a id="pageParent(Site):None.type"></a>
@@ -543,6 +543,19 @@ This does not respect access permissions on the comment targets.</p></div></div>
       </span>
       </h4>
       <p class="shortcomment cmt">The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Party.html" class="extype" name="models.Party">Party</a> → <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></dd></dl></div>
+    </li><li name="models.Account#password" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="password:String"></a>
+      <a id="password:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">password</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Crypted password, using standard unix format, currently $2a$-style bcrypt</p>
     </li><li name="models.Party#studyAccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="studyAccess(p:models.Permission.Value)(implicitsite:util.Site):Seq[models.StudyAccess]"></a>
       <a id="studyAccess(Permission.Value)(Site):Seq[StudyAccess]"></a>
@@ -582,19 +595,6 @@ This does not respect access permissions on the comment targets.</p></div></div>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.Account#username" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="username:String"></a>
-      <a id="username:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">username</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
