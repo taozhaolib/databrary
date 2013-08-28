@@ -13,7 +13,7 @@
             @helper.form(routes.Login.post) {
                 @widget.formErrors(form)
 
-                @helper.inputText(form("email"), 'placeholder -> "Username", '_class -> "big")
+                @helper.inputText(form("email"), 'placeholder -> "Email", '_class -> "big")
 				@helper.inputPassword(form("password"), 'placeholder -> "Password", '_class -> "big")
                 @helper.inputText(form("openid"), 'placeholder -> "OpenID", '_class -> "big")
 
