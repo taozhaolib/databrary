@@ -16,7 +16,7 @@ https://www.assembla.com/spaces/databrary
 ### Postgres
 
 Postgres must be installed and listening on localhost:5432, for example with a
-line like this in pg_hba.conf:
+line like this in pg\_hba.conf:
 
     host	sameuser	all	127.0.0.1/32	md5
 
@@ -26,19 +26,19 @@ line like this in pg_hba.conf:
     CREATE USER "databrary" WITH PASSWORD '<passwd>';
     CREATE DATABASE "databrary" WITH OWNER "databrary";
 
-Then create conf/secret.conf with whatever password you used above:
+Then create conf/local.conf with whatever password you used above:
 
     db.default.password="<passwd>" 
 
-To change any of the other settings, see conf/application.conf.
+For other settings, see conf/application.conf.
 
 ### Security
 
 By default in development mode the site is completely insecure, meaning you can
 login with only a username once you have an account, and it uses a public
-"secret".  To switch to secure mode, add a line to conf/secret.conf:
+"secret".  To switch to secure mode, add a line to conf/local.conf:
 
-    echo application.secret=\"`openssl rand -base64 -out /dev/stdout 48`\" >> conf/secret.conf
+    echo application.secret=\"`openssl rand -base64 -out /dev/stdout 48`\" >> conf/local.conf
 
 ### Object storage
 
