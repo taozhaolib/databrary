@@ -1,0 +1,11 @@
+@(title : String = "", css: Html = Html(""), js: Html = Html(""))(body : Html)
+
+@template.html5(title, css, js, None) {
+    @region.bodyHeaderSearch()
+
+    <div class="row">
+        <main id="body_main" class="column_full">
+            @body
+        </main>
+    </div>
+}

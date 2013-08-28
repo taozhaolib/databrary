@@ -1,0 +1,90 @@
+// modals
+.modal {
+	display: none;
+	position: fixed;
+	z-index: 950;
+	margin: 0 auto;
+	top: 0;
+	left: 0;
+	right: 0;
+	background: @white;
+	padding-top: @gutter;
+
+	.border-radius(20px);
+	.box-shadow(@shadow);
+	border: 10px solid @gray_50_second;
+
+	h1 {
+		margin: 0 0 @gutter;
+		padding: @gutter @gutter .2em @gutter;
+		border-bottom: 1px solid @gray_50_third;
+	}
+
+	form {
+		padding: 0 @gutter @gutter @gutter;
+	}
+}
+
+#modal_back {
+	display: none;
+	position: fixed;
+	z-index: 900;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+
+	background: fadeout(@white, 10%);
+}
+
+// tabs
+.tabset {
+	ul.tabs {
+		margin: 0;
+		padding: 0;
+		width: 100%;
+
+		li {
+			display: inline;
+			float: left;
+
+			&.current {
+				a {
+					background: @white;
+					position: relative;
+					bottom: -1px;
+
+					&:hover {
+						#gradient > .vertical(@white_75_second, @white);
+					}
+				}
+			}
+		}
+
+		a {
+			display: block;
+			padding: 5px 10px 2px;
+			margin-left: 10px;
+			color: @text;
+			border: 1px solid @gray_50_second;
+			#gradient > .vertical(@white, lighten(@white_50_second, 10%));
+			.border-radius(5px 5px 0 0);
+			border-bottom: 0;
+
+			&:hover {
+				#gradient > .vertical(@white_75_second, @white);
+			}
+		}
+	}
+
+	.views {
+		border: 1px solid @gray_50_third;
+		.border-radius(5px);
+		padding: 5px @gutter;
+	}
+
+	.rolled {
+		overflow: hidden;
+		padding: (@gutter - 5) 0;
+	}
+}

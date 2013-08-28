@@ -2,69 +2,72 @@
 
 @accessFields(party : Party, form : Form[StudyAccess])(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@display(party)</td>
-	@enumSelect(form("access"), Permission)
+	@widget.enumSelect(form("access"), Permission)
 	@helper.select(form("inherit"), Permission.values.to(if (party.id.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
 }
 
-@common(study, "edit") {
+@template.crud("Edit Study: " + study.title) {
+    <article>
+        <h1>@Path(study).toHtml</h1>
 
-	@helper.form(routes.Study.change(study.id)) {
-		@helper.inputText(editForm("title"))
-		@helper.textarea(editForm("description"), 'cols -> 80, 'rows -> 8)
-		<button type='submit'>Change</button>
-	}
-	@formErrors(editForm)
+        @helper.form(routes.Study.change(study.id)) {
+            @helper.inputText(editForm("title"))
+            @helper.textarea(editForm("description"), 'cols -> 80, 'rows -> 8)
+            <button type='submit'>Change</button>
+        }
+        @widget.formErrors(editForm)
 
-	@if(study.permission >= Permission.ADMIN) {
-	<h2>Access</h2>
-	<table>
-	@defining(helper.FieldConstructor(tableFieldConstructor.f)) { implicit fieldConstructor =>
-		<tr>
-			<th>Name</th>
-			<th>Individual</th>
-			<th>Group</th>
-			<th>Action</th>
-		</tr>
+        @if(study.permission >= Permission.ADMIN) {
+            <h2>Access</h2>
+            <table>
+            @defining(helper.FieldConstructor(widget.tableFieldConstructor.f)) { implicit fieldConstructor =>
+                <tr>
+                    <th>Name</th>
+                    <th>Individual</th>
+                    <th>Group</th>
+                    <th>Action</th>
+                </tr>
 
-		@accessForms.map { case (party,form) =>
-		@helper.form(routes.Study.accessChange(study.id, party.id)) {
-		<tr>
-			@accessFields(party, form)
-			<td>
-				<button type='submit'>Change</button>
-				@if(party.id != request.identity.id) {
-				<a href='@routes.Study.accessDelete(study.id, party.id)'>Revoke</a>
-				}
-				@formErrors(form)
-			</td>
-		</tr>
-		}
-		}
+                @accessForms.map { case (party,form) =>
+                    @helper.form(routes.Study.accessChange(study.id, party.id)) {
+                        <tr>
+                            @accessFields(party, form)
+                            <td>
+                                <button type='submit'>Change</button>
+                                @if(party.id != request.identity.id) {
+                                    <a href='@routes.Study.accessDelete(study.id, party.id)'>Revoke</a>
+                                }
+                                @widget.formErrors(form)
+                            </td>
+                        </tr>
+                    }
+                }
 
-		@helper.form(routes.Study.accessSearch(study.id)) {
-		<tr>
-			@helper.inputText(accessSearch("name"))
-			<td/>
-			<td/>
-			<td>
-				<button type='submit'>Search</button>
-				@formErrors(accessSearch)
-			</td>
-		</tr>
-		}
+                @helper.form(routes.Study.accessSearch(study.id)) {
+                    <tr>
+                        @helper.inputText(accessSearch("name"))
+                        <td/>
+                        <td/>
+                        <td>
+                            <button type='submit'>Search</button>
+                            @widget.formErrors(accessSearch)
+                        </td>
+                    </tr>
+                }
 
-		@accessResults.map { case (party,form) =>
-		@helper.form(routes.Study.accessAdd(study.id, party.id)) {
-		<tr>
-			@accessFields(party, form)
-			<td>
-				<button type='submit'>Add</button>
-				@formErrors(form)
-			</td>
-		</tr>
-		}
-		}
-	}
-	</table>
-	}
+                @accessResults.map { case (party,form) =>
+                    @helper.form(routes.Study.accessAdd(study.id, party.id)) {
+                        <tr>
+                            @accessFields(party, form)
+                            <td>
+                                <button type='submit'>Add</button>
+                                @widget.formErrors(form)
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+            </table>
+        }
+    </article>
 }

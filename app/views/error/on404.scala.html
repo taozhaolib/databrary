@@ -1,6 +1,6 @@
 @(request : RequestHeader)
 
-@template.html5("There's been an error! (404)") {
+@template.raw("There's been an error! (404)") {
 	<h1>404! This route isn't sensical:</h1>	
 	<p>@request.path</p>
 }

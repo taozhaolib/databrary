@@ -1,6 +1,6 @@
 @(request : RequestHeader, error : String)
 
-@template.html5("There's been an error! (400)") {
+@template.raw("There's been an error! (400)") {
 	<h1>400! Unexpected parsing.</h1>	
 	<p>Bad request: @error</p>	
 	<p>@request.path</p>

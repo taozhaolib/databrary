@@ -1,0 +1,154 @@
+// body - header
+#body_header {
+	@body_header_height: 66px;
+
+	.clearfix();
+	margin-bottom: @gutter;
+	padding: @gutter 0;
+	border-bottom: 1px solid @gray_75_third;
+
+	.title,
+	.search {
+		height: @body_header_height;
+	}
+
+	.title {
+		float: left;
+		position: relative;
+		top: -7px;
+
+		font-size: 3em;
+		line-height: @body_header_height;
+
+		img {
+			vertical-align: bottom;
+			margin-right: 5px;
+		}
+
+		a {
+			color: inherit;
+		}
+	}
+
+	.search {
+		float: right;
+		font-size: 1.1em;
+		padding: @body_header_height/4 0 0;
+	}
+
+	.searchbox {
+		width: 300px;
+		height: @body_header_height/2;
+		padding: 2px 12px 4px;
+	}
+}
+
+// body - sidebar
+#body_sidebar {
+	h1 {
+		margin: 0 0 .25em;
+		line-height: 1;
+		font-size: 1.5em;
+	}
+
+	.sidebar_nav {
+		ul:first-child {
+			padding-left: 0;
+		}
+	}
+}
+
+// body - sidebar - menu
+.sidebar_menu {
+	position: relative;
+
+	&.reduced {
+		font-size: 0.5em;
+		display: inline-block;
+
+		button {
+			@dark_first: darken(@first, 25%);
+
+			position: relative;
+			top: -.3em;
+			display: block;
+			padding-left: 1.25em;
+			border: 0;
+			font-size: 1em;
+			height: 1.25em;
+			width: 1em;
+			border-top: 0.75em double @dark_first;
+			border-bottom: 0.25em solid @dark_first;
+			margin-right: 5px;
+			.transition(@transition);
+		}
+
+		nav {
+			position: absolute;
+			left: -@gutter/8;
+			display: none;
+			padding-top: @gutter/2;
+		}
+
+		nav:before, nav:after {
+			content: '';
+			width: @gutter/2;
+			height: @gutter/2;
+			background: @white;
+			.rotate(45deg);
+			position: absolute;
+			top: (@gutter/2) - 5px;
+			left: 0;
+			margin-left: @gutter/4;
+			z-index: 11;
+		}
+
+		nav:after {
+			.box-shadow(@shadow);
+			z-index: -15;
+		}
+
+		ul {
+			padding: @gutter/2;
+			margin: 0;
+			background: @white;
+			.border-radius(5px);
+			.box-shadow(@shadow);
+		}
+
+		&:hover {
+			button {
+				.transition(@transition);
+				border-color: @first;
+			}
+		}
+
+		&.dropped {
+			button {
+				.transition(@transition);
+				border-color: @second;
+			}
+
+			nav {
+				display: block;
+			}
+		}
+	}
+}
+
+.sidebar_nav {
+	a {
+		display: block;
+		padding: 3px 6px;
+		.border-radius(3px);
+
+		&:hover {
+			background: @white_75_first;
+			color: @text;
+		}
+	}
+
+	li.foot {
+		margin-bottom: 1em;
+	}
+}

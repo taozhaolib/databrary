@@ -1,19 +1,21 @@
 @(party : Party, form : controllers.Party.EditForm, authorizeForms : Seq[(Party,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Party,Form[Authorize])])(implicit request : UserRequest[_])
 
+@template.crud("Admin Party: " + party.toString()) {
+    <article>
+        <h1>@party.toString()</h1>
 
-@common(party, "admin") {
+        @helper.form(routes.Party.change(party.id)) {
+            @helper.inputText(form("name"))
+            @helper.inputText(form("orcid"))
+            @if(controllers.Party.formForAccount(form)) {
+                @helper.inputText(form("email"))
+                @helper.inputText(form("openid"))
+            }
+            <button type='submit'>Change</button>
+        }
+        @widget.formErrors(form)
 
-	@helper.form(routes.Party.change(party.id)) {
-		@helper.inputText(form("name"))
-		@helper.inputText(form("orcid"))
-		@if(controllers.Party.formForAccount(form)) {
-			@helper.inputText(form("email"))
-			@helper.inputText(form("openid"))
-		}
-		<button type='submit'>Change</button>
-	}
-	@formErrors(form)
-
-	<h2>Authorizations</h2>
-	@authorizeAdmin(party, authorizeForms, authorizeWhich, authorizeSearch, authorizeResults)
+        <h2>Authorizations</h2>
+        @authorizeAdmin(party, authorizeForms, authorizeWhich, authorizeSearch, authorizeResults)
+    </article>
 }

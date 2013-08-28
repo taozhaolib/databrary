@@ -1,0 +1,63 @@
+// grid - fixed - wrapper
+.grid_wrapper(@columns: @grid_columns, @width: @grid_width, @margin: @grid_margin) when (@columns > 0) {
+	width: (@width * @columns) + (@margin * (@columns - 1));
+	position: relative;
+	margin: 0 auto;
+	.clearfix();
+}
+
+.grid_wrapper(@columns: @grid_columns, @width: @grid_width, @margin: @grid_margin) when (@columns = 0) {
+	position: relative;
+	margin: 0 @margin / 2;
+	.clearfix();
+}
+
+// grid - fixed - row
+.grid_row(@columns: @grid_columns, @width: @grid_width, @margin: @grid_margin) when (@columns > 0) {
+	margin-left: @margin * -1;
+	.clearfix();
+}
+
+.grid_row(@columns: @grid_columns, @width: @grid_width, @margin: @grid_margin) when (@columns = 0) {
+	.clearfix();
+}
+
+// grid - fixed - column
+.grid_column(@span: 1, @offset: 0, @columns: @grid_columns, @width: @grid_width, @margin: @grid_margin) when (@columns > 0) {
+	float: left;
+	width: (@width * @span) + (@margin * (@span - 1));
+	margin-left: (@width * @offset) + (@margin * (@offset + 1));
+	.clearfix();
+}
+
+.grid_column(@span: 1, @offset: 0, @columns: @grid_columns, @width: @grid_width, @margin: @grid_margin) when (@columns = 0) {
+	.clearfix();
+}
+
+// grid width
+.grid_width(@span: 1, @offset: 0, @columns: @grid_columns, @width: @grid_width, @margin: @grid_margin) when (@columns > 0) {
+	width: (@width * @span) + (@margin * (@span - 1));
+}
+
+.grid_width(@span: 1, @offset: 0, @columns: @grid_columns, @width: @grid_width, @margin: @grid_margin) when (@columns = 0) {
+	width: 100%;
+}
+
+// grid max
+.grid_max(@span: 1, @offset: 0, @columns: @grid_columns, @width: @grid_width, @margin: @grid_margin) when (@columns > 0) {
+	max-width: (@width * @span) + (@margin * (@span - 1));
+}
+
+.grid_max(@span: 1, @offset: 0, @columns: @grid_columns, @width: @grid_width, @margin: @grid_margin) when (@columns = 0) {
+	max-width: 100%;
+}
+
+// grid min
+.grid_min(@span: 1, @offset: 0, @columns: @grid_columns, @width: @grid_width, @margin: @grid_margin) when (@columns > 0) {
+	min-width: (@width * @span) + (@margin * (@span - 1));
+}
+
+.grid_min(@span: 1, @offset: 0, @columns: @grid_columns, @width: @grid_width, @margin: @grid_margin) when (@columns = 0) {
+	min-width: 100%;
+}
+

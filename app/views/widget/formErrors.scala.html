@@ -1,0 +1,7 @@
+@(form : Form[_])
+
+@form.globalErrors.map { error =>
+<div class="inline error">
+	@error.message
+</div>
+}

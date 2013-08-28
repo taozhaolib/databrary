@@ -1,0 +1,98 @@
+// body - page
+#site_body {
+	margin: @header_height 0 @gutter;
+}
+
+.page {
+	a {
+		color: @second;
+
+		&:hover {
+			color: darken(@second, 25%);
+		}
+	}
+}
+
+// body - header
+#body_main {
+	header {
+		margin-bottom: @gutter/2;
+
+		h1 {
+			margin: 0;
+		}
+	}
+
+	h1 {
+		margin: 0 0 @gutter/2;
+		padding-bottom: 0.2em;
+		border-bottom: 1px solid @gray_50_third;
+	}
+
+	h2 {
+		margin-bottom: 0;
+	}
+
+	.menu {
+		border-bottom: 1px solid @gray_50_third;
+
+		ul {
+			display: inline-block;
+			margin: 0;
+			padding: 0;
+		}
+
+		li {
+			display: inline;
+			margin-left: 10px;
+			font-size: 0.9em;
+			text-transform: lowercase;
+
+			&.current {
+				a {
+					background: lighten(@white_75_second, 5%);
+
+					&:hover {
+						background: @white_75_second;
+					}
+				}
+			}
+		}
+
+		a {
+			display: inline-block;
+			padding: 5px 10px;
+
+			&:hover {
+				background: @white_75_second;
+			}
+		}
+	}
+
+	.userinfo {
+		margin-bottom: @gutter/2;
+
+		img {
+			display: block;
+		}
+
+		.avatar {
+			float: left;
+			margin-right: @gutter/4;
+		}
+
+		.info {
+			padding-top: 1px;
+		}
+
+		.institution {
+			font-size: 0.9em;
+		}
+	}
+}
+
+.arealinks {
+	text-align: right;
+	margin-top: @gutter/2;
+	font-size: 0.8em;
+}
