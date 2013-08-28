@@ -35,6 +35,20 @@ object Study extends SiteController {
   ))
   private[this] def editFormFill(s : Study) = editForm.fill((s.title, s.description))
 
+  def edit(i : models.Study.Id) = check(i, Permission.EDIT) { study => implicit request =>
+    Ok(views.html.studyEdit(study, editFormFill(study)))
+  }
+
+  def change(i : models.Study.Id) = check(i, Permission.EDIT) { study => implicit request =>
+    editFormFill(study).bindFromRequest.fold(
+      form => BadRequest(views.html.studyEdit(study, form)),
+      { case (title, description) =>
+        study.change(title = title, description = description.flatMap(maybe(_)))
+        Redirect(study.pageURL)
+      }
+    )
+  }
+
   type AccessForm = Form[StudyAccess]
   private[this] def accessForm(study : Study, party : models.Party.Id) : AccessForm = Form(
     mapping(
@@ -56,34 +70,23 @@ object Study extends SiteController {
     "name" -> nonEmptyText
   )
 
-  private[this] def viewEdit(study : Study)(
-    editForm : StudyForm = editFormFill(study),
+  private[this] def viewAdmin(study : Study)(
     accessChangeForm : Option[(models.Party,AccessForm)] = None,
     accessSearchForm : Form[String] = accessSearchForm,
     accessResults : Seq[(models.Party,AccessForm)] = Seq())(
     implicit request : SiteRequest[_]) = {
     val accessChange = accessChangeForm.map(_._1.id)
     val accessForms = study.partyAccess().filter(a => Some(a.partyId) != accessChange).map(a => (a.party, accessForm(study, a.partyId).fill(a))) ++ accessChangeForm
-    views.html.studyEdit(study, editForm, accessForms, accessSearchForm, accessResults)
+    views.html.studyAdmin(study, accessForms, accessSearchForm, accessResults)
   }
 
-  def edit(i : models.Study.Id) = check(i, Permission.EDIT) { study => implicit request =>
-    Ok(viewEdit(study)())
-  }
-
-  def change(i : models.Study.Id) = check(i, Permission.EDIT) { study => implicit request =>
-    editFormFill(study).bindFromRequest.fold(
-      form => BadRequest(viewEdit(study)(editForm = form)),
-      { case (title, description) =>
-        study.change(title = title, description = description.flatMap(maybe(_)))
-        Redirect(study.pageURL)
-      }
-    )
+  def admin(i : models.Study.Id) = check(i, Permission.ADMIN) { study => implicit request =>
+    Ok(viewAdmin(study)())
   }
 
   def accessChange(i : models.Study.Id, e : models.Party.Id) = check(i, Permission.ADMIN) { study => implicit request =>
     accessForm(study, e).bindFromRequest.fold(
-      form => BadRequest(viewEdit(study)(accessChangeForm = Some((models.Party.get(e).get, form)))),
+      form => BadRequest(viewAdmin(study)(accessChangeForm = Some((models.Party.get(e).get, form)))),
       access => {
         access.set
         Redirect(routes.Study.edit(study.id))
@@ -100,10 +103,10 @@ object Study extends SiteController {
   def accessSearch(i : models.Study.Id) = check(i, Permission.ADMIN) { study => implicit request =>
     val form = accessSearchForm.bindFromRequest
     form.fold(
-      form => BadRequest(viewEdit(study)(accessSearchForm = form)),
+      form => BadRequest(viewAdmin(study)(accessSearchForm = form)),
       name => {
         val res = models.Party.searchForStudyAccess(name, study.id)
-        Ok(viewEdit(study)(accessSearchForm = form, 
+        Ok(viewAdmin(study)(accessSearchForm = form, 
           accessResults = res.map(e => (e,accessForm(study,e.id)))))
       }
     )
@@ -111,7 +114,7 @@ object Study extends SiteController {
 
   def accessAdd(i : models.Study.Id, e : models.Party.Id) = check(i, Permission.ADMIN) { study => implicit request =>
     accessForm(study, e).bindFromRequest.fold(
-      form => BadRequest(viewEdit(study)(accessResults = Seq((models.Party.get(e).get, form)))),
+      form => BadRequest(viewAdmin(study)(accessResults = Seq((models.Party.get(e).get, form)))),
       access => {
         access.set
         Redirect(routes.Study.edit(study.id))
@@ -127,7 +130,7 @@ object Study extends SiteController {
       val form = editForm.bindFromRequest
       val study = (models.Study.create _).tupled(form.value.getOrElse(("New study", None)))
       StudyAccess(study.id, owner, Permission.ADMIN, Permission.CONTRIBUTE).set
-      Created(viewEdit(study)(editForm = form))
+      Created(views.html.studyEdit(study, form))
     }
   }
 }

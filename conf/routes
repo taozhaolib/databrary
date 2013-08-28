@@ -36,6 +36,7 @@ GET     /party/:id/Authorize/:child/delete     	controllers.Party.authorizeDelet
 GET     /study/:id                             	controllers.Study.view(id : models.Study.Id)
 GET     /study/:id/edit                        	controllers.Study.edit(id : models.Study.Id)
 POST    /study/:id/Edit                        	controllers.Study.change(id : models.Study.Id)
+GET     /study/:id/access                       controllers.Study.admin(id : models.Study.Id)
 GET     /study/:id/Access/search               	controllers.Study.accessSearch(id : models.Study.Id)
 POST    /study/:id/Access/:party/add           	controllers.Study.accessAdd(id : models.Study.Id, party : models.Party.Id)
 # TODO: should be POST:

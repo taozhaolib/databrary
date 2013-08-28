@@ -20,6 +20,9 @@
 	@if(study.permission >= Permission.EDIT) {
 		<a href='@routes.Study.edit(study.id)'>edit</a>
 	}
+	@if(study.permission >= Permission.ADMIN) {
+		<a href='@routes.Study.admin(study.id)'>edit</a>
+	}
 
 	@assetList(study)
 
