@@ -4,12 +4,11 @@
     <article>
         <h1>@slot.toString()</h1>
 
-        @helper.form(routes.Slot.change(slot.id)) {
-            @helper.inputText(editForm("ident"))
-
-            <button type='submit'>Change</button>
-
-            @widget.formErrors(editForm)
-        }
+	@helper.form(routes.Slot.change(slot.id)) {
+		@widget.enumSelect(editForm("consent"), Consent)
+		@helper.inputDate(editForm("date"))
+		<button type='submit'>Change</button>
+	}
+	@widget.formErrors(editForm)
     </article>
 }

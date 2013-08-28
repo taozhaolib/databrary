@@ -1,0 +1,13 @@
+@(list : Seq[Study])(implicit request : SiteRequest[_])
+
+@template.html5("study list") {
+
+	<h1>Study list</h1>
+
+	<ul>
+	@list.map { s =>
+		<li>@display(s)</li>
+	}
+	</ul>
+
+}

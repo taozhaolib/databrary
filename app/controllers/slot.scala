@@ -7,6 +7,7 @@ import          mvc._
 import          data._
 import               Forms._
 import          i18n.Messages
+import java.sql.Date
 import models._
 
 object Slot extends SiteController {
@@ -24,11 +25,12 @@ object Slot extends SiteController {
     Ok(views.html.slot(slot))
   }
 
-  type SlotForm = Form[String]
-  private[this] val editForm = Form(single(
-    "ident" -> nonEmptyText(1, 16)
+  type SlotForm = Form[(Consent.Value, Date)]
+  private[this] val editForm = Form(tuple(
+    "consent" -> Field.enum(Consent),
+    "date" -> sqlDate
   ))
-  private[this] def editFormFill(s : Slot) = editForm.fill(s.ident)
+  private[this] def editFormFill(s : Slot) = editForm.fill((s.consent, s.date))
 
   private[this] def viewEdit(slot : Slot)(
     editForm : SlotForm = editFormFill(slot))(
@@ -44,18 +46,21 @@ object Slot extends SiteController {
     val form = editFormFill(slot).bindFromRequest
     form.fold(
       form => BadRequest(viewEdit(slot)(editForm = form)),
-      { case ident =>
-        if (!slot.change(ident = ident))
-          Conflict(viewEdit(slot)(editForm = form.withError("ident", Messages("slot.ident.conflict"))))
-        else
-          Redirect(slot.pageURL)
+      { case (consent, date) =>
+        slot.change(consent = consent, date = date)
+        Redirect(slot.pageURL)
       }
     )
   }
 
   def create(s : models.Study.Id) = Study.check(s, Permission.CONTRIBUTE) { study => implicit request =>
     val form = editForm.bindFromRequest
-    models.Slot.create(study, form.value).fold(Conflict(Messages("slot.ident.conflict")) : Result)(slot =>
-      Created(viewEdit(slot)(editForm = form.fill(slot.ident))))
+    form.fold(
+      form => BadRequest(views.html.study(study)), // FIXME: report error, preserve fields
+      { case (consent, date) =>
+        val slot = models.Slot.create(study = study, consent = consent, date = date)
+        Created(viewEdit(slot)(editForm = form))
+      }
+    )
   }
 }

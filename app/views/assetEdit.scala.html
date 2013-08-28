@@ -9,8 +9,6 @@
             @helper.textarea(form("description"), 'cols -> 80, 'rows -> 4)
 
             @if(controllers.Asset.formForFile(form)) {
-                @widget.enumSelect(form("consent"), Consent)
-                @helper.inputDate(form("date"))
             }
 
             <button type='submit'>Change</button>

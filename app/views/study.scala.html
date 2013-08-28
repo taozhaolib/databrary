@@ -16,7 +16,11 @@
                     </aside>
 
                     <aside class="dbinfo foot col_6">
-                        Created: ___CREATED___
+<dl>
+                        @study.creationAudit(request.db).map { creation =>
+		<dt>Created</dt>
+		<dd>@creation.when</dd>
+	}</dl>
                     </aside>
 
                     <aside class="investigators foot col_3">

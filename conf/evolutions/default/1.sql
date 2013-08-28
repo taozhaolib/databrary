@@ -18,25 +18,27 @@
 CREATE FUNCTION create_abstract_parent ("parent" name, "children" name[]) RETURNS void LANGUAGE plpgsql AS $create$
 DECLARE
 	parent_table CONSTANT text := quote_ident(parent);;
+	kind_type CONSTANT text := quote_ident(parent || '_kind');;
 BEGIN
 	EXECUTE $macro$
-		CREATE TABLE $macro$ || parent_table || $macro$ ( -- ABSTRACT
+		CREATE TYPE $macro$ || kind_type || $macro$ AS ENUM ('$macro$ || array_to_string(children, $$','$$) || $macro$');;
+		CREATE TABLE $macro$ || parent_table || $macro$ (
 			"id" serial NOT NULL Primary Key,
-			"kind" name NOT NULL Check ("kind" IN ('$macro$ || array_to_string(children, $$','$$) || $macro$'))
+			"kind" $macro$ || kind_type || $macro$ NOT NULL
 		);;
 		CREATE FUNCTION $macro$ || quote_ident(parent || '_trigger') || $macro$ () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
 			IF TG_OP = 'INSERT' THEN
-				INSERT INTO $macro$ || parent_table || $macro$ (id, kind) VALUES (NEW.id, TG_TABLE_NAME);;
+				INSERT INTO $macro$ || parent_table || $macro$ (id, kind) VALUES (NEW.id, TG_TABLE_NAME::$macro$ || kind_type || $macro$);;
 			ELSIF TG_OP = 'DELETE' THEN
-				DELETE FROM $macro$ || parent_table || $macro$ WHERE id = OLD.id AND kind = TG_TABLE_NAME;;
+				DELETE FROM $macro$ || parent_table || $macro$ WHERE id = OLD.id AND kind = TG_TABLE_NAME::$macro$ || kind_type || $macro$;;
 			ELSIF TG_OP = 'UPDATE' THEN
 				IF NEW.id = OLD.id THEN
 					RETURN NEW;;
 				END IF;;
-				UPDATE $macro$ || parent_table || $macro$ SET id = NEW.id WHERE id = OLD.id AND kind = TG_TABLE_NAME;;
+				UPDATE $macro$ || parent_table || $macro$ SET id = NEW.id WHERE id = OLD.id AND kind = TG_TABLE_NAME::$macro$ || kind_type || $macro$;;
 			END IF;;
 			IF NOT FOUND THEN
-				RAISE EXCEPTION 'inconsistency for %:% parent $macro$ || parent || $macro$', TG_TABLE_NAME, OLD.id;;
+				RAISE EXCEPTION 'inconsistency for %:% parent $macro$ || parent || $macro$', TG_TABLE_NAME::$macro$ || kind_type || $macro$, OLD.id;;
 			END IF;;
 			IF TG_OP = 'DELETE' THEN
 				RETURN OLD;;
@@ -91,8 +93,8 @@ CREATE TABLE "audit_party" (
 
 CREATE TABLE "account" (
 	"id" integer NOT NULL Primary Key References "party",
-	"username" varchar(32) NOT NULL Unique,
 	"email" varchar(256) NOT NULL, -- split out (multiple/user)?
+	"password" varchar(60), -- standard unix-style hash, currently $2a$ bcrypt
 	"openid" varchar(256) -- split out (multiple/user)?
 );
 COMMENT ON TABLE "account" IS 'Login information for parties associated with registered individuals.';
@@ -109,6 +111,16 @@ CREATE TYPE permission AS ENUM ('NONE',
 	'CONTRIBUTE', -- create and edit studies of own/target (FULL access)
 	'ADMIN' -- perform administrative tasks on site/target such as changing permissions
 );
+COMMENT ON TYPE permission IS 'Levels of access parties can have to the site, studies, and assets.';
+
+CREATE TYPE consent AS ENUM (
+	-- 		permission required (on study)
+	'PRIVATE', 	-- CONTRIBUTE	did not consent to any sharing
+	'SHARED', 	-- DOWNLOAD	consented to share on databrary
+	'EXCERPTS', 	-- DOWNLOAD	SHARED, but consented that excerpts may be PUBLIC
+	'PUBLIC' 	-- VIEW		consented to share openly
+);
+COMMENT ON TYPE consent IS 'Levels of sharing that participants may consent to.';
 
 CREATE TABLE "authorize" (
 	"child" integer NOT NULL References "party" ON DELETE Cascade,
@@ -176,6 +188,8 @@ CREATE TRIGGER "container" BEFORE INSERT OR UPDATE OR DELETE ON "study" FOR EACH
 CREATE TABLE "audit_study" (
 	LIKE "study"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
+CREATE INDEX "study_creation_idx" ON audit_study (id) WHERE action = 'add';
+COMMENT ON INDEX "study_creation_idx" IS 'Allow efficient retrieval of study creation information, specifically date.';
 
 CREATE TABLE "study_access" (
 	"study" integer NOT NULL References "study",
@@ -216,11 +230,11 @@ COMMENT ON FUNCTION "study_access_check" (integer, integer, permission) IS 'Test
 CREATE TABLE "slot" (
 	"id" integer NOT NULL DEFAULT nextval('container_id_seq') Primary Key References "container" Deferrable Initially Deferred,
 	"study" integer NOT NULL References "study",
-	"ident" varchar(16) NOT NULL,
-	Unique ("id", "study"), -- for FKs
-	Unique ("study", "ident")
+	"consent" consent,
+	"date" date
 );
-COMMENT ON TABLE "slot" IS 'Data container: organizational unit within study, usually corresponding to an individual participant.';
+COMMENT ON TABLE "slot" IS 'Organizational unit within study containing raw data, usually corresponding to an individual data acqusition (single visit/participant/group/sample).';
+CREATE INDEX ON "slot" ("study");
 CREATE TRIGGER "container" BEFORE INSERT OR UPDATE OR DELETE ON "slot" FOR EACH ROW EXECUTE PROCEDURE "container_trigger" ();
 
 CREATE TABLE "audit_slot" (
@@ -228,38 +242,32 @@ CREATE TABLE "audit_slot" (
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 
-CREATE FUNCTION "next_slot_ident" ("study" integer) RETURNS varchar(16) LANGUAGE sql STABLE STRICT AS $$
-	SELECT (GREATEST(max(cast_int(ident)), count(ident))+1)::varchar(16) FROM slot WHERE study = $1
-$$;
-
-
 CREATE VIEW "containers" AS
-	SELECT container.id, kind, study.id AS "study", title, description, slot.id AS "slot", ident FROM
-		container LEFT JOIN slot USING (id) 
-		JOIN study ON study.id = container.id OR study.id = slot.study;
+	SELECT container.id, kind, study.id AS "study", title, description, slot.id AS "slot" FROM container 
+		LEFT JOIN slot USING (id)
+		     JOIN study ON study.id = container.id OR study.id = slot.study;
 COMMENT ON VIEW "containers" IS 'All containers (studies and slots) in expanded form.';
 
 CREATE FUNCTION "container_study" ("container" integer) RETURNS integer LANGUAGE sql STABLE STRICT AS $$
-	SELECT id FROM study WHERE id = $1 UNION SELECT study FROM slot WHERE id = $1
+	SELECT id FROM study WHERE id = $1 UNION ALL SELECT study FROM slot WHERE id = $1
 $$;
 
 ----------------------------------------------------------- assets
 
-CREATE TYPE consent AS ENUM (
-	-- required permission:	site		study
-	'PUBLIC', 	-- 	-		VIEW		non-subject data
-	'DEIDENTIFIED', -- 	-		VIEW		subject data without identifiers
-	'EXCERPTS', 	-- 	DOWNLOAD	DOWNLOAD	SHARED, but consented that excerpts may be PUBLIC
-	'SHARED', 	-- 	DOWNLOAD	DOWNLOAD	identified data authorized to be shared on databrary
-	'PRIVATE' 	-- 	-		CONTRIBUTE	identified data not authorized for sharing
+CREATE TYPE classification AS ENUM (
+	'IDENTIFIED', 	-- data containing HIPPA identifiers, requiring appropriate consent and DOWNLOAD permission
+	'EXCERPT', 	-- IDENTIFIED data that has been selected as a releasable excerpt
+	'DEIDENTIFIED', -- "raw" data which has been de-identified, requiring only DOWNLOAD permission
+	'ANALYSIS', 	-- un/de-identified derived, generated, summarized, or aggregated data measures
+	'PRODUCT',	-- research products such as results, summaries, commentaries, discussions, manuscripts, or articles
+	'MATERIAL'	-- materials not derived from data, such as proposals, procedures, stimuli, manuals, (blank) forms, or documentation
 );
-COMMENT ON TYPE consent IS 'Sensitivity levels that may apply to data according to the presence of protected identifiers and granted sharing level.  Does not necessarily map clearly to permission levels.';
 
-CREATE FUNCTION "interval_mi_e" (interval, interval) RETURNS double precision LANGUAGE sql IMMUTABLE STRICT AS 
+CREATE FUNCTION "interval_mi_epoch" (interval, interval) RETURNS double precision LANGUAGE sql IMMUTABLE STRICT AS 
 	$$ SELECT date_part('epoch', interval_mi($1, $2)) $$;
 CREATE TYPE segment AS RANGE (
 	SUBTYPE = interval HOUR TO SECOND,
-	SUBTYPE_DIFF = "interval_mi_e"
+	SUBTYPE_DIFF = "interval_mi_epoch"
 );
 COMMENT ON TYPE "segment" IS 'Intervals of time, used primarily for representing clips of timeseries data.';
 
@@ -276,36 +284,33 @@ CREATE TABLE "format" (
 	"extension" varchar(8),
 	"name" text NOT NULL
 );
-COMMENT ON TABLE "format" IS 'Possible types for assets, sufficient for producing download headers. Abstract parent of file_format and timeseries_format.';
-
-CREATE TABLE "file_format" (
-	Primary Key ("id"),
-	Unique ("mimetype")
-) INHERITS ("format");
+COMMENT ON TABLE "format" IS 'Possible types for assets, sufficient for producing download headers.';
 
 CREATE TABLE "timeseries_format" (
 	Primary Key ("id"),
 	Unique ("mimetype")
 ) INHERITS ("format");
+COMMENT ON TABLE "timeseries_format" IS 'Special asset types that correspond to internal formats representing timeseries data.';
 
--- The standard image and video formats MUST be the first two (IDs hard-coded):
-INSERT INTO "file_format" (mimetype, extension, name) VALUES ('image/jpeg', 'jpg', 'JPEG');
-INSERT INTO "timeseries_format" (mimetype, extension, name) VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14');
--- These are arbitrary:
-INSERT INTO "file_format" (mimetype, extension, name) VALUES ('text/plain', 'txt', 'Plain text');
-INSERT INTO "file_format" (mimetype, extension, name) VALUES ('text/html', 'html', 'Hypertext markup');
-INSERT INTO "file_format" (mimetype, extension, name) VALUES ('application/pdf', 'pdf', 'Portable document');
-INSERT INTO "timeseries_format" (mimetype, extension, name) VALUES ('video/webm', 'webm', 'WebM');
+-- The privledged formats with special handling (image and video for now) have hard-coded IDs:
+INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-1, 'image/jpeg', 'jpg', 'JPEG');
+INSERT INTO "timeseries_format" ("id", "mimetype", "extension", "name") VALUES (-2, 'video/mp4', 'mp4', 'Databrary video');
 
-SELECT create_abstract_parent('asset', ARRAY['file', 'timeseries', 'excerpt']);
+-- The above video format will change to reflect internal storage, these are used for uploaded files:
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/plain', 'txt', 'Plain text');
+-- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/html', 'html', 'Hypertext markup');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/pdf', 'pdf', 'Portable document');
+-- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14');
+-- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/webm', 'webm', 'WebM');
+
+SELECT create_abstract_parent('asset', ARRAY['file', 'timeseries', 'clip']);
 COMMENT ON TABLE "asset" IS 'Parent table for all uploaded data in storage.';
 
 CREATE TABLE "file" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
-	"format" smallint NOT NULL References "file_format",
-	"owner" integer References "study" ON DELETE SET NULL,
-	"consent" consent NOT NULL,
-	"date" date
+	"format" smallint NOT NULL References "format",
+	"classification" classification NOT NULL
+	-- "date" date
 );
 COMMENT ON TABLE "file" IS 'Assets in storage along with their "constant" metadata.';
 CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "file" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
@@ -326,19 +331,16 @@ CREATE TABLE "audit_timeseries" (
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 
-CREATE TABLE "excerpt" (
+CREATE TABLE "clip" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
 	"source" integer NOT NULL References "timeseries",
-	"offset" interval HOUR TO SECOND NOT NULL,
-	"duration" interval HOUR TO SECOND Check ("duration" > interval '0'),
-	"public" boolean NOT NULL Default 'f' -- only if asset.consent = EXCERPTS
+	"segment" segment NOT NULL Check (NOT isempty("segment")),
+	"excerpt" boolean NOT NULL Default 'f'
 );
-CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "excerpt" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
-COMMENT ON TABLE "excerpt" IS 'Sections of timeseries assets selected for referencing.';
-
-CREATE TABLE "audit_excerpt" (
-	LIKE "excerpt"
-) INHERITS ("audit") WITH (OIDS = FALSE);
+CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "clip" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
+ALTER TABLE "clip" ALTER COLUMN "segment" SET STORAGE plain;
+CREATE INDEX ON "clip" ("source");
+COMMENT ON TABLE "clip" IS 'Sections of timeseries assets selected for referencing.';
 
 
 CREATE TABLE "asset_link" (
@@ -348,82 +350,203 @@ CREATE TABLE "asset_link" (
 	"description" text,
 	Primary Key ("container", "asset")
 );
+CREATE INDEX ON "asset_link" ("asset");
 COMMENT ON TABLE "asset_link" IS 'Asset linkages into containers along with "dynamic" metadata.';
 
 CREATE TABLE "audit_asset_link" (
 	LIKE "asset_link"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
+
+CREATE VIEW "asset_nesting" ("child", "parent") AS 
+	SELECT id, id FROM file UNION ALL SELECT id, source FROM clip UNION ALL
+	SELECT cc.id, cp.id FROM clip cc JOIN clip cp ON cc.source = cp.source AND cc.segment <@ cp.segment;
+
+CREATE FUNCTION "asset_parents" ("file" integer, "segment" segment = NULL) RETURNS SETOF integer LANGUAGE sql STABLE AS 
+	$$ SELECT $1 UNION ALL SELECT id FROM clip WHERE source = $1 AND segment @> $2 $$;
+COMMENT ON FUNCTION "asset_parents" (integer, segment) IS 'Set of assets that provide the specified asset.  Note that the contains relation here is rather liberal, as we are depending on researchers and/or other parts of the system to ensure than overlapping consents don''t disagree.';
+
+CREATE FUNCTION "asset_consent" ("file" integer, "segment" segment = NULL) RETURNS consent LANGUAGE sql STABLE AS $$
+	SELECT MIN(consent) FROM asset_parents($1, $2) JOIN asset_link ON (asset_parents = asset) JOIN slot ON (container = slot.id)
+$$;
+COMMENT ON FUNCTION "asset_consent" (integer, segment) IS 'Effective (minimal) consent level granted on the specified asset.';
+
 ----------------------------------------------------------- annotations
 
-CREATE TABLE "annotation" ( -- ABSTRACT
-	"id" serial NOT NULL Primary Key,
-	"who" integer NOT NULL References "party",
-	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	-- consider possible ON DELETE actions:
-	"container" integer NOT NULL References "container",
-	"asset" integer References "asset",
-	Foreign Key ("container", "asset") References "asset_link"
-);
-COMMENT ON TABLE "annotation" IS 'Abstract base table for various types of annotations that can be added by users to nodes (unaudited, no updates).';
+SELECT create_abstract_parent('annotation', ARRAY['comment','tag','record']);
+COMMENT ON TABLE "annotation" IS 'Parent table for metadata annotations.';
+
 
 CREATE TABLE "comment" (
-	"text" text NOT NULL,
-	Primary Key ("id"),
-	Foreign Key ("container", "asset") References "asset_link"
-) INHERITS ("annotation");
-COMMENT ON TABLE "comment" IS 'Free-text comments.';
+	"id" integer NOT NULL DEFAULT nextval('annotation_id_seq') Primary Key References "annotation" Deferrable Initially Deferred,
+	"who" integer NOT NULL References "account",
+	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"text" text NOT NULL
+);
+CREATE TRIGGER "annotation" BEFORE INSERT OR UPDATE OR DELETE ON "comment" FOR EACH ROW EXECUTE PROCEDURE "annotation_trigger" ();
+COMMENT ON TABLE "comment" IS 'Free-text comments that can be added to nodes (unaudited, immutable).';
+
+
+CREATE TABLE "record_class" (
+	"id" smallserial Primary Key,
+	"name" varchar(64) NOT NULL Unique
+);
+COMMENT ON TABLE "record_class" IS 'Types of records that are relevant for data organization.';
+INSERT INTO "record_class" ("name") VALUES ('participant');
+
+CREATE TABLE "record" (
+	"id" integer NOT NULL DEFAULT nextval('annotation_id_seq') Primary Key References "annotation" Deferrable Initially Deferred,
+	"class" smallint References "record_class"
+);
+CREATE TRIGGER "annotation" BEFORE INSERT OR UPDATE OR DELETE ON "record" FOR EACH ROW EXECUTE PROCEDURE "annotation_trigger" ();
+COMMENT ON TABLE "record" IS 'Sets of metadata measurements organized into or applying to a single cohesive unit.  These belong to the object(s) they''re attached to, which are expected to be within a single study.';
+
+CREATE TYPE data_type AS ENUM ('text', 'number', 'date');
+COMMENT ON TYPE data_type IS 'Types of measurement data corresponding to measure_* tables.';
+
+CREATE TABLE "metric" (
+	"id" serial Primary Key,
+	"name" varchar(64) NOT NULL,
+	"classification" classification NOT NULL Default 'DEIDENTIFIED',
+	"type" data_type NOT NULL,
+	"values" text[] -- options for text enumerations, not enforced (could be pulled out to separate kind/table)
+);
+COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.  Rough prototype.';
+INSERT INTO "metric" ("name", "type") VALUES ('ident', 'text');
+INSERT INTO "metric" ("name", "classification", "type") VALUES ('birthday', 'IDENTIFIED', 'date');
+INSERT INTO "metric" ("name", "type", "values") VALUES ('gender', 'text', ARRAY['F','M']);
+
+CREATE TABLE "measure" ( -- ABSTRACT
+	"record" integer NOT NULL References "record",
+	"metric" integer NOT NULL References "metric", -- WHERE kind = table_name
+	Primary Key ("record", "metric"),
+	Check ('f') NO INHERIT
+);
+COMMENT ON TABLE "measure" IS 'Abstract parent of all measure tables containing data values.  Rough prototype.';
+
+CREATE TABLE "measure_text" (
+	"record" integer NOT NULL References "record",
+	"metric" integer NOT NULL References "metric", -- WHERE kind = "text"
+	"datum" text NOT NULL,
+	Primary Key ("record", "metric")
+) INHERITS ("measure");
+
+CREATE TABLE "measure_number" (
+	"record" integer NOT NULL References "record",
+	"metric" integer NOT NULL References "metric", -- WHERE kind = "number"
+	"datum" numeric NOT NULL,
+	Primary Key ("record", "metric")
+) INHERITS ("measure");
+
+CREATE TABLE "measure_date" (
+	"record" integer NOT NULL References "record",
+	"metric" integer NOT NULL References "metric", -- WHERE kind = "date"
+	"datum" date NOT NULL,
+	Primary Key ("record", "metric")
+) INHERITS ("measure");
+
+CREATE VIEW "measure_view" AS
+	SELECT record, metric, datum FROM measure_text UNION ALL
+	SELECT record, metric, text(datum) FROM measure_number UNION ALL
+	SELECT record, metric, text(datum) FROM measure_date;
+COMMENT ON VIEW "measure_view" IS 'Data from all measure tables, coerced to text.';
+
+CREATE TABLE "audit_measure" (
+	LIKE "measure",
+	"datum" text NOT NULL
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
+
+CREATE TABLE "container_annotation" (
+	"annotation" integer NOT NULL References "annotation",
+	"container" integer NOT NULL References "container",
+	Primary Key ("annotation", "container")
+);
+COMMENT ON TABLE "container_annotation" IS 'Attachment of annotations to containers.';
+
+CREATE TABLE "audit_container_annotation" (
+	LIKE "container_annotation"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
+CREATE TABLE "asset_annotation" (
+	"annotation" integer NOT NULL References "annotation",
+	"asset" integer NOT NULL References "asset",
+	Primary Key ("annotation", "asset")
+);
+COMMENT ON TABLE "asset_annotation" IS 'Attachment of annotations to assets.';
+
+CREATE TABLE "audit_asset_annotation" (
+	LIKE "asset_annotation"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
+
+CREATE FUNCTION "asset_annotations" ("asset" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
+	SELECT annotation FROM asset_nesting JOIN asset_annotation ON child = asset WHERE parent = $1
+$$;
+
+CREATE FUNCTION "container_annotations" ("container" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
+	WITH containers (container) AS (SELECT $1 UNION ALL SELECT id AS container FROM slot WHERE study = $1)
+	SELECT annotation FROM containers JOIN container_annotation USING (container) UNION
+	SELECT annotation FROM containers JOIN asset_link USING (container) JOIN asset_nesting ON parent = asset JOIN asset_annotation ON child = asset_annotation.asset
+$$;
+
 
 # --- !Downs
 ;
 
+DROP FUNCTION "container_annotations" (integer);
+DROP FUNCTION "asset_annotations" (integer);
+DROP TABLE "asset_annotation";
+DROP TABLE "container_annotation";
 DROP TABLE "comment";
+DROP TABLE "measure" CASCADE;
+DROP TABLE "metric";
+DROP TYPE data_type;
+DROP TABLE "record";
+DROP TABLE "record_class";
 DROP TABLE "annotation";
-DROP TABLE "audit_asset_link";
+DROP FUNCTION "annotation_trigger" ();
+DROP TYPE "annotation_kind";
+
+DROP FUNCTION "asset_consent" (integer, segment);
+DROP FUNCTION "asset_parents" (integer, segment);
+DROP VIEW "asset_nesting";
 DROP TABLE "asset_link";
-DROP TABLE "audit_excerpt";
-DROP TABLE "excerpt";
-DROP TABLE "audit_timeseries";
+DROP TABLE "clip";
 DROP TABLE "timeseries";
-DROP TABLE "timeseries_format";
-DROP TABLE "audit_file";
 DROP TABLE "file";
-DROP TABLE "file_format";
+DROP TABLE "timeseries_format";
 DROP TABLE "format";
 DROP TABLE "asset";
 DROP FUNCTION "asset_trigger" ();
+DROP TYPE "asset_kind";
 DROP FUNCTION "singleton" (segment);
 DROP FUNCTION "duration" (segment);
 DROP TYPE segment;
-DROP FUNCTION "interval_mi_e" (interval, interval);
-DROP TYPE consent;
+DROP FUNCTION "interval_mi_epoch" (interval, interval);
+DROP TYPE classification;
 
 DROP FUNCTION "container_study" (integer);
 DROP VIEW "containers";
-DROP FUNCTION "next_slot_ident" (integer);
-DROP TABLE "audit_slot";
 DROP TABLE "slot";
 DROP FUNCTION "study_access_check" (integer, integer, permission);
-DROP TABLE "audit_study_access";
 DROP TABLE "study_access";
-DROP TABLE "audit_study";
 DROP TABLE "study";
 DROP TABLE "container";
 DROP FUNCTION "container_trigger" ();
+DROP TYPE "container_kind";
 
 DROP FUNCTION "authorize_delegate_check" (integer, integer, permission);
 DROP FUNCTION "authorize_access_check" (integer, integer, permission);
 DROP FUNCTION "authorize_access_parents" (integer, permission);
 DROP VIEW "authorize_valid";
-DROP TABLE "audit_authorize";
 DROP TABLE "authorize";
+DROP TYPE consent;
 DROP TYPE permission;
-DROP TABLE "audit_account";
 DROP TABLE "account";
-DROP TABLE "audit_party";
 DROP TABLE "party";
 
-DROP TABLE "audit";
+DROP TABLE "audit" CASCADE;
 DROP TYPE audit_action;
 
 DROP FUNCTION cast_int (text);

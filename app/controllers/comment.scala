@@ -14,13 +14,13 @@ object Comment extends SiteController {
   type CommentForm = Form[String]
   val form = Form("text" -> nonEmptyText)
 
-  private[this] def post(node : CommentPage)(request : SiteRequest[_]) =
+  private[this] def post(node : Annotated with SitePage)(request : SiteRequest[_]) =
     if (request.access < Permission.COMMENT)
       Forbidden
     else
       /* FIXME: poorly displayed and possibly untranslated error message: */
       form.bindFromRequest()(request).fold(form => BadRequest(form.errors.head.message), { text =>
-        node.addComment(text)(request)
+        node.postComment(text)(request)
         Redirect(node.pageURL)
       })
 

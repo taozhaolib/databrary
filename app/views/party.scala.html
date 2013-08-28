@@ -1,55 +1,53 @@
-@(party: Party, delegated: Permission.Value)(implicit request: SiteRequest[_])
+@(party : Party, delegated : Permission.Value)(implicit request : SiteRequest[_])
 
-    @template.crud("Party: " + party.toString()) {
-        <article>
-            <h1>@party.toString()</h1>
+@template.crud("Party: " + party.toString()) {
+    <article>
+        <h1>@party.toString()</h1>
 
-            @if(delegated >= Permission.ADMIN) {
-                <a href='@routes.Party.admin(party.id)'>admin</a>
-            }
-
-            <dl>
-
-                @* This information is limited to VIEW(?) *@
-                @if(request.identity.access(request.db) >= Permission.VIEW) {
-
-                    @dbrary.cast[Account](party).map { a =>
-                        <dt>username</dt>
-                        <dd>@a.username</dd>
-                        <dt>email</dt>
-                        <dd>@a.email</dd>
-                    @a.orcid.map { o =>
-                        <dt>ORCID iD</dt>
-                        <dd><a href="@o.uri">@o.toString</a></dd>
-                    }
-                    }
-
-                    <dt>Memberships</dt>
-                    @party.authorizeParents()(request.db).map { t =>
-                        <dd>@display(t.parent)</dd>
-                    }
-                    <dt>Members</dt>
-                    @party.authorizeChildren()(request.db).map { t =>
-                        <dd>@display(t.child)</dd>
-                    }
-
-                }
-
-                <dt>Studies</dt>
-                @if(delegated >= Permission.CONTRIBUTE) {
-                    <dd>@helper.form(routes.Study.create(Some(party.id))) {
-                        <button type='submit'>Create new study</button>
-                    }</dd>
-                }
-                @party.studyAccess(Permission.CONTRIBUTE).map { a =>
-                    <dd>@display(a.study)</dd>
-                }
-
-
-            </dl>
-
-            @region.comments(None, party.getComments) { c =>
-                @display.path(c.target)
-            }
-        </article>
-    }
+		@if(delegated >= Permission.ADMIN) {
+			<a href='@routes.Party.admin(party.id)'>admin</a>
+		}
+	
+		<dl>
+	
+		@* This information is limited to VIEW(?) *@
+		@if(request.identity.access(request.db) >= Permission.VIEW) {
+	
+		@dbrary.cast[Account](party).map { a =>
+			<dt>email</dt>
+			<dd>@a.email</dd>
+			@a.orcid.map { o =>
+			<dt>ORCID iD</dt>
+			<dd><a href="@o.uri">@o.toString</a></dd>
+			}
+		}
+	
+			<dt>Memberships</dt>
+			@party.authorizeParents()(request.db).map { t => 
+				<dd>@display(t.parent)</dd>
+			}
+			<dt>Members</dt>
+			@party.authorizeChildren()(request.db).map { t => 
+				<dd>@display(t.child)</dd>
+			}
+	
+		}
+	
+			<dt>Studies</dt>
+			@if(delegated >= Permission.CONTRIBUTE) {
+				<dd>@helper.form(routes.Study.create(Some(party.id))) {
+					<button type='submit'>Create new study</button>
+				}</dd>
+			}
+			@party.studyAccess(Permission.CONTRIBUTE).map { a =>
+				<dd>@display(a.study)</dd>
+			}
+	
+	
+		</dl>
+	
+		@comments(None, dbrary.cast[Account](party).fold(Nil : Seq[models.Comment])(_.comments(request.db))) { c =>
+			@c.allContainers.map(display.path _)
+		}
+    </article>
+}

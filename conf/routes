@@ -36,14 +36,15 @@ GET     /party/:id/Authorize/:child/delete     	controllers.Party.authorizeDelet
 GET     /study/:id                             	controllers.Study.view(id : models.Study.Id)
 GET     /study/:id/edit                        	controllers.Study.edit(id : models.Study.Id)
 POST    /study/:id/Edit                        	controllers.Study.change(id : models.Study.Id)
+GET     /study/:id/access                       controllers.Study.admin(id : models.Study.Id)
 GET     /study/:id/Access/search               	controllers.Study.accessSearch(id : models.Study.Id)
 POST    /study/:id/Access/:party/add           	controllers.Study.accessAdd(id : models.Study.Id, party : models.Party.Id)
 # TODO: should be POST:
 GET     /study/:id/Access/:party/delete        	controllers.Study.accessDelete(id : models.Study.Id, party : models.Party.Id)
 POST    /study/:id/Access/:party               	controllers.Study.accessChange(id : models.Study.Id, party : models.Party.Id)
 POST    /study/Create                          	controllers.Study.create(owner : Option[models.Party.Id] ?= None)
+GET     /studies                        	controllers.Study.listAll
 
-GET     /study/:id/slot/:ident                 	controllers.Study.viewSlot(id : models.Study.Id, ident : String)
 POST    /study/:id/Slot                        	controllers.Slot.create(id : models.Study.Id)
 GET     /slot/:id                              	controllers.Slot.view(id : models.Slot.Id)
 GET     /slot/:id/edit                         	controllers.Slot.edit(id : models.Slot.Id)
@@ -55,7 +56,7 @@ GET	/asset/:id/:obj				controllers.Asset.view(id : models.Container.Id, obj : mo
 GET	/asset/:id/:obj/download		controllers.Asset.download(id : models.Container.Id, obj : models.Asset.Id, inline : Boolean = false)
 GET	/asset/:id/:obj/inline			controllers.Asset.download(id : models.Container.Id, obj : models.Asset.Id, inline : Boolean = true)
 GET	/asset/:id/:obj/head			controllers.Asset.head(id : models.Container.Id, obj : models.Asset.Id)
-GET	/asset/:id/:obj/frame/:offset		controllers.Asset.frame(id : models.Container.Id, obj : models.Asset.Id, offset : dbrary.Interval)
+GET	/asset/:id/:obj/frame/:offset		controllers.Asset.frame(id : models.Container.Id, obj : models.Asset.Id, offset : dbrary.Offset)
 GET	/asset/:id/:obj/edit			controllers.Asset.edit(id : models.Container.Id, obj : models.Asset.Id)
 POST	/asset/:id/:obj/Edit			controllers.Asset.change(id : models.Container.Id, obj : models.Asset.Id)
 

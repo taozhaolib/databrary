@@ -4,17 +4,14 @@
     <article>
         <h1>@slot.toString()</h1>
 
-        @if(slot.permission >= Permission.EDIT) {
-            <a href='@routes.Slot.edit(slot.id)'>edit</a>
-        }
+	@if(slot.permission >= Permission.EDIT) {
+		<a href='@routes.Slot.edit(slot.id)'>edit</a>
+	}
 
-        @widget.assetList(slot)
+	@widget.assetList(slot)
 
-        @region.comments(Some(routes.Comment.postSlot(slot.id)), slot.comments(false)(request.db)) { c =>
-            @display(c.who)
-            @c.asset.map { a =>
-                &gt; @display(a)
-            }
-        }
+	@region.comments(Some(routes.Comment.postSlot(slot.id)), slot.comments(true)(request.db)) { c =>
+		@display(c.who)
+	}
     </article>
 }
