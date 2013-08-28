@@ -17,11 +17,10 @@ trait PGType[A] {
   def pgPut(t : A) : String
 
   implicit val column : Column[A] = Column.nonNull[A] { (value, meta) =>
-    val MetaDataItem(qualified, nullable, clazz) = meta
     value match {
       case obj: PGobject if obj.getType == pgType => Right(pgGet(obj.getValue))
-      case obj: PGobject => Left(TypeDoesNotMatch("Incorrect type of object " + value + ":" + obj.getType + " for column " + qualified + ":" + pgType))
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to PGobject for column " + qualified))
+      case obj: PGobject => Left(TypeDoesNotMatch("Incorrect type of object " + value + ":" + obj.getType + " for column " + meta.column + ":" + pgType))
+      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to PGobject for column " + meta.column))
     }
   }
 
@@ -33,18 +32,26 @@ trait PGType[A] {
 
 object Anorm {
   implicit val columnTimestamp : Column[Timestamp] = Column.nonNull { (value, meta) =>
-    val MetaDataItem(qualified, nullable, clazz) = meta
     value match {
       case ts: Timestamp => Right(ts)
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to Timestamp for column " + qualified))
+      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to Timestamp for column " + meta.column))
     }
   }
 
   implicit val columnDate : Column[Date] = Column.nonNull { (value, meta) =>
-    val MetaDataItem(qualified, nullable, clazz) = meta
     value match {
       case d: Date => Right(d)
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to Date for column " + qualified))
+      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to Date for column " + meta.column))
+    }
+  }
+
+  implicit val columnArrayString : Column[Array[String]] = Column.nonNull { (value, meta) =>
+    value match {
+      case a: java.sql.Array => a.getArray match {
+        case a : Array[String] => Right(a)
+        case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":Array[" + a.getBaseTypeName + "] to Array[String] for column " + meta.column))
+      }
+      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to Array[String] for column " + meta.column))
     }
   }
 
@@ -96,10 +103,9 @@ object Offset {
   }
 
   implicit val column : Column[Offset] = Column.nonNull[Offset] { (value, meta) =>
-    val MetaDataItem(qualified, nullable, clazz) = meta
     value match {
       case int : PGInterval => Right(Offset(int))
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to PGInterval for column " + qualified))
+      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to PGInterval for column " + meta.column))
     }
   }
   implicit val statement : ToStatement[Offset] = new ToStatement[Offset] {
