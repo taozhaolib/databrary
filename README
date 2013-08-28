@@ -2,8 +2,6 @@
 
 http://databrary.org/
 
-http://databrary.org/bugs/
-
 ## Installation requirements
 
 ### Postgres
@@ -36,18 +34,8 @@ login with only a username once you have an account, and it uses a public
 ### Object storage
 
 The default configuration stores objects under store/ and cache/, which will
-both need to be created or changed to other existing directories.
+both need to be created or changed to another existing directory.
 
 ## License
 
-Copyright (C) 2013 New York University
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+TBD: Will likely either be GPL or Apache. Until further notice this work is proprietary, all rights reserved.

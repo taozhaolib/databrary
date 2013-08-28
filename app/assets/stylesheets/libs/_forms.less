@@ -1,0 +1,122 @@
+// forms
+button,
+input,
+select,
+textarea {
+	font-family: 'SofiaProLight', Helvetica, Verdana, sans-serif;
+	.box-sizing(border-box);
+}
+
+input,
+select,
+textarea {
+	border: 1px solid @gray_50_third;
+	.transition(all .2s ease-in-out);
+
+	&:focus {
+		outline: none;
+		border-color: @first;
+		.transition(all .2s ease-in-out);
+	}
+}
+
+textarea {
+	resize: vertical;
+}
+
+input[type="search"] {
+	.border-radius(50px);
+	.box-sizing(border-box);
+}
+
+input {
+	padding: 6px 8px;
+	.border-radius(3px);
+	width: 100%;
+	.grid_max(8);
+}
+
+// forms - fields and fieldsets
+.field {
+	margin-bottom: @gutter / 2;
+
+	&.big {
+		font-size: 1.25em;
+	}
+
+	&.mini {
+		font-size: .75em;
+	}
+}
+
+// buttons
+.button {
+	padding: 3px 10px;
+	.border-radius(5px);
+	color: @text !important;
+
+	border: 1px solid @gray_50;
+	#gradient > .vertical(@white_75_gray, @white_50_gray);
+
+	&:hover {
+		#gradient > .vertical(@white_50_gray, @white_75_gray);
+	}
+
+	&:active {
+		#gradient > .vertical(@white_25_gray, @white_50_gray);
+	}
+
+	&.big {
+		font-size: 1.25em;
+		padding: 6px 20px;
+	}
+}
+
+.button.first {
+	border: 1px solid @gray_50_first;
+	#gradient > .vertical(@white_75_first, @white_50_first);
+
+	&:hover {
+		#gradient > .vertical(@white_50_first, @white_75_first);
+	}
+
+	&:active {
+		#gradient > .vertical(@white_25_first, @white_50_first);
+	}
+}
+
+.button.second {
+	border: 1px solid @gray_50_second;
+	#gradient > .vertical(@white_75_second, @white_50_second);
+
+	&:hover {
+		#gradient > .vertical(@white_50_second, @white_75_second);
+	}
+
+	&:active {
+		#gradient > .vertical(@white_25_second, @white_50_second);
+	}
+}
+
+.button.third {
+	border: 1px solid @gray_50_third;
+	#gradient > .vertical(@white_75_third, @white_50_third);
+
+	&:hover {
+		#gradient > .vertical(@white_50_third, @white_75_third);
+	}
+
+	&:active {
+		#gradient > .vertical(@white_25_third, @white_50_third);
+	}
+}
+
+// errors
+.inline.error {
+	.border-radius(3px);
+	padding: 0.5em .75em;
+	background: lighten(@second, 25%);
+	color: darken(@second, 20%);
+	border: 2px solid darken(@second, 10%);
+	margin-bottom: @gutter/2;
+}

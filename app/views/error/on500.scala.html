@@ -1,6 +1,6 @@
 @(throwable: Throwable)
 
-@template.html5("There's been an error! (500)") {
+@template.raw("There's been an error! (500)") {
 	<h1>Oops! A 500 error:</h1>	
 	<p>@throwable.getMessage</p>
 }

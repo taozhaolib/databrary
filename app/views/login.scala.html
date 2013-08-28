@@ -1,10 +1,24 @@
-@(form : Form[(String,String)])
+@(form: Form[(String, String)])
 
-@template.html5("Login") {
-	@helper.form(routes.Login.post) {
-		@helper.inputText(form("username"))
-		@helper.inputText(form("openid"))
-		<button type='submit'>Login</button>
-		@formErrors(form)
-	}
+@import helper.FieldConstructor
+    @implicitField = @{
+        FieldConstructor(tag.minimalFieldConstructor.f)
+    }
+
+@template.raw("Login") {
+    <article class="form row">
+        <div class="column_center">
+            <h1>Enter Databrary</h1>
+
+            @helper.form(routes.Login.post) {
+                @widget.formErrors(form)
+
+                @helper.inputText(form("username"), 'placeholder -> "Username", '_class -> "big")
+                @helper.inputText(form("openid"), 'placeholder -> "OpenID", '_class -> "big")
+
+                <button type="submit" class="big button first">Login</button>
+
+            }
+        </div>
+    </article>
 }

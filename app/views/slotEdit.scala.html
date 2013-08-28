@@ -1,10 +1,15 @@
 @(slot : Slot, editForm : controllers.Slot.SlotForm)(implicit request : SiteRequest[_])
 
-@common(slot, "edit") {
+@template.crud("Edit Slot: " + slot.toString()) {
+    <article>
+        <h1>@slot.toString()</h1>
 
-	@helper.form(routes.Slot.change(slot.id)) {
-		@helper.inputText(editForm("ident"))
-		<button type='submit'>Change</button>
-	}
-	@formErrors(editForm)
+        @helper.form(routes.Slot.change(slot.id)) {
+            @helper.inputText(editForm("ident"))
+
+            <button type='submit'>Change</button>
+
+            @widget.formErrors(editForm)
+        }
+    </article>
 }

@@ -1,14 +1,19 @@
 @(container : Container, form : controllers.Asset.UploadForm)(implicit request : SiteRequest[_])
 
-@common(container, "upload") {
+@template.crud("Upload Asset") {
+    <article>
+        <h1>Upload Asset</h1>
 
-	@helper.form(routes.Asset.upload(container.id), 'enctype -> "multipart/form-data") {
-		@helper.inputText(form("title"))
-		@helper.textarea(form("description"))
-		@enumSelect(form("consent"), Consent)
-		@helper.inputDate(form("date"))
-		@helper.inputFile(form("file"))
-		<button type='submit'>Upload</button>
-	}
-	@formErrors(form)
+        @helper.form(routes.Asset.upload(container.id), 'enctype -> "multipart/form-data") {
+            @helper.inputText(form("title"))
+            @helper.textarea(form("description"))
+            @widget.enumSelect(form("consent"), Consent)
+            @helper.inputDate(form("date"))
+            @helper.inputFile(form("file"))
+
+            <button type='submit'>Upload</button>
+        }
+
+        @widget.formErrors(form)
+    </article>
 }

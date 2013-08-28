@@ -2,8 +2,8 @@
 
 @authorizeFields(party : Party, form : Form[Authorize])(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@display(party)</td>
-	@enumSelect(form("access"), Permission)
-	@enumSelect(form("delegate"), Permission)
+	@widget.enumSelect(form("access"), Permission)
+	@widget.enumSelect(form("delegate"), Permission)
 	@helper.inputDate(form("expires"))
 }
 
@@ -17,7 +17,7 @@
 		<td/>
 		<td>
 			<button type='submit'>Search</button>
-			@formErrors(authorizeSearch)
+			@widget.formErrors(authorizeSearch)
 		</td>
 	</tr>
 	}
@@ -29,7 +29,7 @@
 		<td>
 			<input type='hidden' name='pending' value='@which'/>
 			<button type='submit'>@{if (which) "Request" else "Authorize"}</button>
-			@formErrors(form)
+			@widget.formErrors(form)
 		</td>
 	</tr>
 	}
@@ -38,7 +38,7 @@
 }
 
 <table>
-@defining(helper.FieldConstructor(tableFieldConstructor.f)) { implicit fieldConstructor =>
+@defining(helper.FieldConstructor(widget.tableFieldConstructor.f)) { implicit fieldConstructor =>
 
 	<tr>
 		<th>Name</th>
@@ -73,7 +73,7 @@
 			@defining(form("pending").value == Some("true")) { pending =>
 			<button type='submit'>@{if(pending) "Authorize" else "Change"}</button>
 			<a href='@routes.Party.authorizeDelete(party.id, child.id)'>@{if(pending) "Deny" else "Revoke"}</a>
-			@formErrors(form)
+			@widget.formErrors(form)
 			}
 		</td>
 	</tr>

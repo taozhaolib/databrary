@@ -1,0 +1,17 @@
+@import helper.FieldConstructor
+    @implicitField = @{
+        FieldConstructor(tag.minimalFieldConstructor.f)
+    }
+
+<article id="modal_login" class="modal modal_small">
+    <h1>Enter Databrary</h1>
+
+    @helper.form(routes.Login.post) {
+        @helper.inputText(form("username"), 'placeholder -> "Username", '_class -> "big")
+        @helper.inputText(form("openid"), 'placeholder -> "OpenID", '_class -> "big")
+
+        <button type="submit" class="big button first">Login</button>
+
+        @widget.formErrors(form)
+    }
+</article>

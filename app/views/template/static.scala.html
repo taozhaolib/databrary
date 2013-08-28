@@ -1,6 +1,6 @@
-@(title : String = "", request : Option[SiteRequest[_]] = None)(body : Html)(sidebar : Html = Html(""))
+@(title : String = "", css: Html = Html(""), js: Html = Html(""))(body : Html)(sidebar : Html = Html(""))(implicit request: SiteRequest[_])
 
-@template.html5(title) {
+@template.html5(title, css, js, Some(request)) {
     @region.bodyHeaderSearch()
 
     <div class="row">

@@ -14,5 +14,3 @@ dist
 /RUNNING_PID
 /.settings
 /hs_err_pid*.log
-/store/
-/cache/

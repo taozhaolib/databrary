@@ -1,0 +1,13 @@
+@(study: Study)(implicit request: SiteRequest[_])
+
+<section id="comments">
+    @region.comments(Some(routes.Comment.postStudy(study.id)), study.comments(false)(request.db)) { c =>
+        @display(c.who)
+        @if(c.containerId != study.id) {
+                &gt; @display(c.container)
+            }
+        @c.asset.map { a =>
+        &gt; @display(a)
+        }
+    }
+</section>

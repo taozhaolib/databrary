@@ -1,0 +1,93 @@
+// fonts
+	.font-face('SofiaProLight', '/assets/fonts/SofiaProLight', normal, normal, true)
+
+;
+	.font-face('SofiaProMedium', '/assets/fonts/SofiaProMedium', normal, normal, true)
+
+;
+
+.sofia_light() {
+	font-family: 'SofiaProLight', Helvetica, Verdana, sans-serif;
+}
+
+.sofia_medium() {
+	font-family: 'SofiaProMedium', Helvetica, Verdana, sans-serif;
+}
+
+// body
+body {
+	background: @back;
+	.sofia_light();
+	color: @text;
+	text-align: justify;
+	line-height: 1.333;
+}
+
+// basic elements
+h1, h2, h3, h4, h5, h6,
+ul, ol {
+	text-align: left;
+}
+
+ul {
+	list-style: circle;
+}
+
+a {
+	text-decoration: none;
+	.transition(all .15s linear);
+
+	&:hover {
+		.transition(all .15s linear)
+	}
+
+	abbr[title] {
+		border-bottom: 0;
+	}
+}
+
+strong,
+b {
+	font-family: 'SofiaProMedium', Helvetica, Verdana, sans-serif;
+}
+
+hr {
+	border: 0;
+	border-bottom: 1px solid @gray_50_third;
+	margin: 1em 0;
+}
+
+// common - visibility
+.cf {.clearfix(); }
+
+.hide {.hidden(); }
+
+.vhide { .visually-hidden(); }
+
+// common - flow
+.phead { padding-top: @gutter; }
+
+.pfoot { padding-bottom: @gutter; }
+
+.mhead { margin-top: @gutter; }
+
+.mfoot { margin-bottom: @gutter; }
+
+// common - style
+.keyword {
+	color: @first;
+}
+
+.legal {
+	font-size: 0.7em;
+}
+
+ul.inline {
+	list-style: none;
+	padding: 0;
+
+	li {
+		display: inline-block;
+		margin: 0 5px;
+	}
+}

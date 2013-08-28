@@ -1,16 +1,21 @@
 @(link : AssetLink, form : controllers.Asset.EditForm)(implicit request : SiteRequest[_])
 
-@common(link, "edit") {
+@template.crud("Edit Asset: " + link.toString()) {
+    <article>
+        <h1>@link.toString()</h1>
 
-	@helper.form(routes.Asset.change(link.containerId, link.assetId)) {
-		@helper.inputText(form("title"))
-		@helper.textarea(form("description"), 'cols -> 80, 'rows -> 4)
+        @helper.form(routes.Asset.change(link.containerId, link.assetId)) {
+            @helper.inputText(form("title"))
+            @helper.textarea(form("description"), 'cols -> 80, 'rows -> 4)
 
-		@if(controllers.Asset.formForFile(form)) {
-			@enumSelect(form("consent"), Consent)
-			@helper.inputDate(form("date"))
-		}
-		<button type='submit'>Change</button>
-	}
-	@formErrors(form)
+            @if(controllers.Asset.formForFile(form)) {
+                @widget.enumSelect(form("consent"), Consent)
+                @helper.inputDate(form("date"))
+            }
+
+            <button type='submit'>Change</button>
+        }
+
+        @widget.formErrors(form)
+    </article>
 }

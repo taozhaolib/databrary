@@ -1,39 +1,39 @@
-/*
-VARIABLES
-*/
-@import "import/_variables.less";
+// variables
+@import "libs/_variables.less";
 
-/*
-MIXINS
-*/
-@import "mixins/_helpers.less";
-@import "mixins/_typography.less";
-@import "mixins/_grid.less";
+// helpers
+@import "libs/_mixins.less";
+@import "libs/_grid.less";
+@import "libs/_normalize.less";
 
-@import "mixins/_arrows.less";
-@import "mixins/_sprites.less";
-@import "mixins/_icons.less";
+// global
+@import "libs/_typography.less";
+@import "libs/_forms.less";
+@import "libs/_tables.less";
+@import "libs/_widgets.less";
 
-/*
-IMPORTS
-*/
-@import "import/_normalize.less";
-@import "import/_typography.less";
-@import "import/_forms.less";
+// template
+@import "libs/_header.less";
+@import "libs/_footer.less";
+@import "libs/_regions.less";
 
-@import "import/_header.less";
-@import "import/_body.less";
-@import "import/_regions.less";
-@import "import/_footer.less";
+// content
+@import "libs/_body.less";
+@import "libs/_pages.less";
 
-@import "import/_pages.less";
+//draft
+.col_1 { .grid_column(1); }
+.col_2 { .grid_column(2); }
+.col_3 { .grid_column(3); }
+.col_4 { .grid_column(4); }
+.col_5 { .grid_column(5); }
+.col_6 { .grid_column(6); }
+.col_7 { .grid_column(7); }
+.col_8 { .grid_column(8); }
+.col_9 { .grid_column(9); }
+.col_10 { .grid_column(10); }
+.col_11 { .grid_column(11); }
+.col_12 { .grid_column(12); }
 
-/*
-DRAFT
-*/
-// ...
-
-/*
-QUERIES
-*/
-@import "import/_queries.less";
+// queries
+@import "libs/_queries.less";

@@ -11,56 +11,59 @@
 	}
 }
 
-@common(link) {
+@template.crud("Edit Asset: " + link.toString()) {
+    <article>
+        <h1>@link.toString()</h1>
 
-	<p>@link.description</p>
+        <p>@link.description</p>
 
-	<dl>
-	@link.asset(request.db) match {
-	case ts : Timeseries => {
-		@fileData(ts)
-		<dt>Duration</dt>
-		<dd>@ts.duration</dd>
-	}
-	case f : FileAsset => {
-		@fileData(f)
-	}
-	case e : Excerpt => {
-		<dt>Source</dt>
-		<dd>??? need study reference!!!</dd>
-		<dt>Offset</dt>
-		<dd>@e.offset</dd>
-	@e.duration.map { duration =>
-		<dt>Duration</dt>
-		<dd>@duration</dd>
-	}
-	}
-	}
-	</dl>
+        <dl>
+            @link.asset(request.db) match {
+        case ts : Timeseries => {
+            @fileData(ts)
+            <dt>Duration</dt>
+            <dd>@ts.duration</dd>
+        }
+        case f : FileAsset => {
+            @fileData(f)
+        }
+        case e : Excerpt => {
+            <dt>Source</dt>
+            <dd>??? need study reference!!!</dd>
+            <dt>Offset</dt>
+            <dd>@e.offset</dd>
+            @e.duration.map { duration =>
+                <dt>Duration</dt>
+                <dd>@duration</dd>
+            }
+        }
+            }
+        </dl>
 
-	@if(link.permission >= Permission.EDIT) {
-		<a href='@routes.Asset.edit(link.containerId, link.assetId)'>edit</a>
-	}
+        @if(link.permission >= Permission.EDIT) {
+            <a href='@routes.Asset.edit(link.containerId, link.assetId)'>edit</a>
+        }
 
-	@if(link.permission >= Permission.DOWNLOAD) {
+        @if(link.permission >= Permission.DOWNLOAD) {
 
-		@link.asset(request.db).format.mimeSubTypes match {
-		case ("image", _) => {
-			<img src='@routes.Asset.download(link.containerId, link.assetId, true)'/>
-		}
-		case ("video", _) => {
-			<img src='@routes.Asset.head(link.containerId, link.assetId)' alt='preview'/>
-		}
-		case ("text", _) => {
-			<iframe src='@routes.Asset.download(link.containerId, link.assetId, true)'/>
-		}
-		case _ => {
-		}
-		}
+            @link.asset(request.db).format.mimeSubTypes match {
+                case ("image", _) => {
+                    <img src='@routes.Asset.download(link.containerId, link.assetId, true)'/>
+                }
+                case ("video", _) => {
+                    <img src='@routes.Asset.head(link.containerId, link.assetId)' alt='preview'/>
+                }
+                case ("text", _) => {
+                    <iframe src='@routes.Asset.download(link.containerId, link.assetId, true)'/>
+                }
+                case _ => {
+                }
+            }
 
-		<a href='@routes.Asset.download(link.containerId, link.assetId, false)'>download</a>
-	}
+            <a href='@routes.Asset.download(link.containerId, link.assetId, false)'>download</a>
+            }
 
-	@comments(Some(routes.Comment.postAssetLink(link.containerId, link.assetId)), link.comments()(request.db)) { c => 
-		@display(c.who)) }
+        @region.comments(Some(routes.Comment.postAssetLink(link.containerId, link.assetId)), link.comments()(request.db)) { c =>
+            @display(c.who)) }
+    </article>
 }

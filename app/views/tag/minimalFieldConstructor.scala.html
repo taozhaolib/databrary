@@ -1,0 +1,17 @@
+@(elements: helper.FieldElements)
+
+<div class="field cf @elements.args.get('_class) @if(elements.hasErrors) {error}" id="@elements.args.get('_id).getOrElse(elements.id + "_field")">
+    <div class="input">
+        @elements.input
+
+        @if(elements.hasErrors) {
+            <aside class="help">
+                <ul>
+                    @elements.errors(elements.lang).map { error =>
+                        <li class="error">@error</li>
+                    }
+                </ul>
+            </aside>
+        }
+    </div>
+</div>

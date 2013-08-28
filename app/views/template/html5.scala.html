@@ -1,4 +1,4 @@
-@(title : String = "The Databrary Project", request : Option[SiteRequest[_]] = None)(body : Html)
+@(title : String = "The Databrary Project", css: Html = Html(""), js: Html = Html(""), request : Option[SiteRequest[_]])(body : Html)
 <!DOCTYPE html>
 <html>
 	<head>
@@ -9,6 +9,7 @@
 		<title>@title || Databrary</title>
 
 		<link rel="stylesheet" href="@routes.Assets.at("stylesheets/main.min.css")">
+        @css
 
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script>
@@ -17,6 +18,7 @@
             }
         </script>
 		<script src="@routes.Assets.at("javascripts/main.js")"></script>
+        @js
 
         <!--[if lt IE 9]><script src="@routes.Assets.at("javascripts/libs/html5shiv/html5shiv.min.js")"></script><![endif]-->
 	</head>
@@ -24,7 +26,7 @@
 	<body>
 		@region.siteHeader()
 
-        <div id="site_body">
+        <div id="site_body" class="page">
             <div class="wrapper">
                 @body
             </div>

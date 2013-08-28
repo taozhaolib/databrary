@@ -1,0 +1,143 @@
+// static
+.banner {
+	padding: 50px;
+
+	h1 {
+		font-size: 2.5em;
+		font-weight: normal;
+		text-align: left;
+		margin-top: 0;
+		border: 0;
+	}
+
+	h2 {
+		font-size: 1.6em;
+		font-weight: normal;
+		margin-bottom: @gutter;
+	}
+}
+
+dl.people {
+	dt {
+		font-weight: bold;
+		margin-top: .5em;
+
+		&:first-of-type {
+			margin-top: 0;
+		}
+	}
+
+	dd {
+		margin-bottom: 0;
+		font-size: 0.9em;
+		text-indent: -1em;
+		padding-left: 1em;
+		text-align: left;
+	}
+}
+
+// static - faq
+#static_faq {
+	section {
+		padding-bottom: .5em;
+	}
+
+	h2 {
+		font-size: 1em;
+		margin-top: 0;
+		cursor: pointer;
+
+		.arrow {
+			.arrow-north(8px, @text);
+			margin: 0 5px;
+			position: relative;
+			.rotate(90deg);
+			.transition(all .1s linear);
+		}
+
+		&:hover {
+			color: @gray_25_first;
+
+			.arrow {
+				.rotate(135deg);
+				.transition(all .1s linear);
+			}
+		}
+
+		&.unfolded .arrow {
+			.rotate(180deg);
+			.transition(all .1s linear);
+		}
+	}
+
+	> div {
+		padding-top: .5em;
+	}
+}
+
+// static - team
+#static_team {
+	h2 {
+		margin: @gutter 0;
+		border-top: 1px solid @gray_75_third;
+		border-bottom: 1px solid @gray_75_third;
+		padding: @gutter / 4 0;
+		font-size: 1em;
+		text-transform: uppercase;
+		letter-spacing: 3px;
+		color: darken(@third, 25%);
+		font-weight: normal;
+		text-align: center;
+	}
+
+	.profile {
+		margin-bottom: @gutter;
+
+		.avatar {
+			padding: @gutter / 4;
+			border: 1px solid @gray_75_third;
+			.border-radius(@gutter / 4);
+		}
+
+		h1 {
+			font-size: 1.2em;
+			color: darken(@first, 15%);
+			border-bottom: 0;
+			padding: 0;
+			margin: 0;
+		}
+
+		.position {
+			.sofia_medium();
+			text-transform: uppercase;
+			font-size: 0.9em;
+		}
+
+		ul.info {
+			font-size: 0.9em;
+			line-height: 1.2;
+			list-style: none;
+			padding: 0;
+			margin: @gutter / 4 0 0;
+
+			li {
+				margin-bottom: @gutter / 4;
+			}
+		}
+
+		ul.inline {
+			li {
+				margin: 0 10px 0 0;
+			}
+
+			a,
+			img {
+				display: block;
+			}
+
+			a:hover {
+				.box-shadow(0 0 5px @second);
+			}
+		}
+	}
+}

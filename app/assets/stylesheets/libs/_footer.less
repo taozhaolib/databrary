@@ -1,0 +1,88 @@
+// footer
+#site_footer {
+	background: lighten(@third, 25%);
+	border-top: 1px solid @gray_75_third;
+	padding: @gutter 0;
+	margin-top: @gutter;
+	overflow: hidden;
+
+	&.fixed {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		z-index: 800;
+	}
+
+	ul.inline {
+		margin-bottom: @gutter;
+
+		li {
+			margin: 0 10px 0 0;
+		}
+	}
+
+	a {
+		color: darken(@third, 25%);
+
+		&:hover {
+			color: darken(@third, 50%);
+		}
+	}
+
+	.watermark {
+		background: url("/assets/images/logo/databrary-watermark.png") no-repeat;
+		.user-select(none);
+		position: absolute;
+		float: right;
+		bottom: -@gutter;
+		width: 200px;
+		height: 190px;
+		right: -50px;
+	}
+
+	.grants {
+		position: relative;
+		top: -8px;
+
+		img {
+			position: relative;
+		}
+
+		.nsf {
+			top: 12px;
+		}
+
+		.nih {
+			top: 8px;
+		}
+	}
+
+	.footer_links {
+		text-align: left;
+		font-size: 0.9em;
+	}
+
+	.footer_social {
+		height: 18px;
+		position: relative;
+		top: -2px;
+
+		text-align: right;
+		font-size: 0.9em;
+
+		p {
+			margin: 0;
+		}
+
+		img {
+			height: 16px;
+			position: relative;
+			top: 1px;
+		}
+
+		a:hover img {
+			.box-shadow(0 0 5px darken(@third, 25%));
+		}
+	}
+}

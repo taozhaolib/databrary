@@ -1,15 +1,18 @@
-@(request: Option[SiteRequest[_]] = None)
+@(request: Option[SiteRequest[_]])
+
 <section id="site_header_nav" class="site_header">
     <div class="wrapper">
         <div class="row">
             <div class="header_user">
                 @request.flatMap(_.user).fold {
-                    <a href="@routes.Login.view" class="login modal">login</a>
+                    <a href="@routes.Login.view" class="modal_link" data-target="modal_login">login</a>
                     <span>|</span>
                     <a href="@routes.Login.view">register</a>
                 } { u =>
-                    <img src="http://www.gravatar.com/avatar/NONONONO.jpg?s=16&d=mm">
+                    <img src="@display.gravatarUrl(u.email, 16)">
                     @display(u)(request.get)
+                    <span>|</span>
+                    <a href="@routes.Login.logout">logout</a>
                 }
             </div>
         </div>
