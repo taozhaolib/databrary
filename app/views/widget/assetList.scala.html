@@ -5,7 +5,6 @@
         <col class="main">
         <col class="meta">
         <col class="meta">
-        <col class="meta">
     </colgroup>
 
     <thead>
@@ -13,7 +12,6 @@
             <th class="main">Title</th>
             <th class="meta">Format</th>
             <th class="meta">Consent</th>
-            <th class="meta">Date</th>
         </tr>
     </thead>
 
@@ -21,15 +19,8 @@
         @container.assets(request.db).map { link =>
             <tr>
                 <td class="main">@display(link)</td>
-                @link.asset(request.db) match {
-            case asset: FileAsset => {
-                <td class="meta">@asset.format.name</td>
-                <td class="meta">@asset.consent</td>
-                <td class="meta">@asset.date</td>
-            }
-            case e: Excerpt => {
-            }
-                }
+				<td>@link.asset(request.db).format.name</td>
+				<td>@link.asset(request.db).consent</td>
             </tr>
         }
     </tbody>

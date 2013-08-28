@@ -1,6 +1,5 @@
 @(study : Study, editForm : controllers.Study.StudyForm)(implicit request : SiteRequest[_])
 
-	@widget.enumSelect(form("access"), Permission)
 @template.crud("Edit Study: " + study.title) {
     <article>
         <h1>@Path(study).toHtml</h1>

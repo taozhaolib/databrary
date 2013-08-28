@@ -46,7 +46,7 @@
 	
 		</dl>
 	
-		@comments(None, dbrary.cast[Account](party).fold(Nil : Seq[models.Comment])(_.comments(request.db))) { c =>
+		@region.comments(None, dbrary.cast[Account](party).fold(Nil : Seq[models.Comment])(_.comments(request.db))) { c =>
 			@c.allContainers.map(display.path _)
 		}
     </article>

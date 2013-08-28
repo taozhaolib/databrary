@@ -16,11 +16,14 @@
                         "current"
                     }
                 }"><a href="@routes.Study.edit(study.id)">edit</a></li>
-                <li class="@{
-                    if(request.path.toString() == routes.Study.edit(study.id).toString()) {
+				
+					@if(study.permission >= Permission.ADMIN) {
+					<li class="@{
+                    if(request.path.toString() == routes.Study.admin(study.id).toString()) {
                         "current"
                     }
-                }"><a href="">permissions</a></li>
+                }"><a href="@routes.Study.admin(study.id)">permissions</a></li>
+					}
             </ul>
         </nav>
     }
