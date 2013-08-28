@@ -10,18 +10,15 @@ import dbrary._
 import util._
 import models._
 
-abstract class SiteRequest[A](request : Request[A], val identity : Party, val db : util.Site.DB)
-  extends WrappedRequest[A](request) with Site {
+abstract class SiteRequest[A](request : Request[A], val identity : Party, val db : util.Site.DB) extends WrappedRequest[A](request) with Site {
   def clientIP = Inet(request.remoteAddress)
 }
 
-class AnonRequest[A](request : Request[A], db : util.Site.DB)
-  extends SiteRequest[A](request, models.Party.Nobody, db) {
+class AnonRequest[A](request : Request[A], db : util.Site.DB) extends SiteRequest[A](request, models.Party.Nobody, db) {
   override def user = None
 }
 
-class UserRequest[A](request : Request[A], val account : Account, db : util.Site.DB)
-  extends SiteRequest[A](request, account, db) {
+class UserRequest[A](request : Request[A], val account : Account, db : util.Site.DB) extends SiteRequest[A](request, account, db) {
   override def user = Some(account)
 }
 
@@ -55,8 +52,7 @@ object Site extends SiteController {
     current.configuration.getString("application.secret").exists(_ != "databrary").
       ensuring(_ || !Play.isProd, "Running insecure in production")
   
-  def start = SiteAction(request => Ok(Login.viewLogin()), implicit request =>
-    Ok(views.html.party(request.identity, Permission.ADMIN)))
+  def start = Login.view
 
   def test = Action { request => DB.withConnection { implicit db =>
     Ok("Ok")

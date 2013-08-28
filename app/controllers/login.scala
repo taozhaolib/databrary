@@ -30,9 +30,8 @@ object Login extends Controller {
   def needLogin =
     Forbidden(viewLogin(Some(Messages("login.noCookie"))))
 
-  def view = Action { request => 
-    Ok(viewLogin())
-  }
+  def view = SiteAction(request => Ok(viewLogin()), implicit request =>
+    Ok(views.html.party(request.identity, Permission.ADMIN)))
 
   private[this] def login(a : Account)(implicit request : Request[_], db : util.Site.DB) = {
     implicit val arequest = new UserRequest(request, a, db)
