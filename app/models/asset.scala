@@ -194,7 +194,7 @@ object FileAsset extends AssetView[FileAsset]("file") {
     * @param file a complete, uploaded file which will be moved into the appropriate storage location
     */
   def create(format : AssetFormat, classification : Classification.Value, file : TemporaryFile)(implicit site : Site) : FileAsset = {
-    val id = Audit.add(table, SQLArgs('format -> format, 'classification -> classification), "id").single(scalar[Id])(site.db)
+    val id = Audit.add(table, SQLArgs('format -> format.id, 'classification -> classification), "id").single(scalar[Id])(site.db)
     store.FileAsset.store(id, file)
     site.db.commit
     new FileAsset(id, format, classification)

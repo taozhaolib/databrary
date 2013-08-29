@@ -7,12 +7,12 @@
         @helper.form(routes.Asset.upload(container.id), 'enctype -> "multipart/form-data") {
             @helper.inputText(form("title"))
             @helper.textarea(form("description"))
-            @widget.enumSelect(form("consent"), Consent)
+            @widget.enumSelect(form("classification"), Classification)
             @helper.inputFile(form("file"))
 
             <button type='submit'>Upload</button>
         }
-
         @widget.formErrors(form)
+
     </article>
 }

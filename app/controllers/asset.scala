@@ -123,8 +123,8 @@ object Asset extends SiteController {
       case (title, description, classification, ()) =>
         val f = file.get
         f.contentType.flatMap(AssetFormat.getMimetype(_)).fold(
-          BadRequest(views.html.assetCreate(container, form.withError("file", "file.format.unknown", f.contentType.getOrElse("unknown")))) : Result)
-        { format =>
+          BadRequest(views.html.assetCreate(container, form.withError("file", "file.format.unknown", f.contentType.getOrElse("unknown")))) : Result
+        ) { format =>
           val asset = models.FileAsset.create(format, classification, f.ref)
           val link = AssetLink.create(container, asset, maybe(title).getOrElse(f.filename), maybe(description))
           Redirect(link.pageURL)
