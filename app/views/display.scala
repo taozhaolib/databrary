@@ -31,8 +31,8 @@ object display {
     } + (if (d < 0) " ago" else "")
   }
 
-  def plainText(text: Option[String] = Option("")) = {
-    raw("<p>"+text.getOrElse("").split("\\r?\\n").mkString("</p><p>")+"</p>")
+  def plainText(text: String = "") = {
+    raw("<p>"+text.split("\\r?\\n").mkString("</p><p>")+"</p>")
   }
 
   def gravatarUrl(email: String = "none", size: Int = 64) = {

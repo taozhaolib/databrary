@@ -28,7 +28,6 @@
 		<a href='@routes.Asset.download(link.containerId, link.assetId, false)'>download</a>
 	}
 
-        @region.comments(Some(routes.Comment.postAssetLink(link.containerId, link.assetId)), link.comments()(request.db)) { c =>
-            @display(c.who) }
+        @region.comments(Some(routes.Comment.postAssetLink(link.containerId, link.assetId)), link.comments()(request.db))
     </article>
 }

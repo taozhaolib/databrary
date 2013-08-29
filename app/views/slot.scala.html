@@ -5,13 +5,11 @@
         <h1>@slot.toString()</h1>
 
 	@if(slot.permission >= Permission.EDIT) {
-		<a href='@routes.Slot.edit(slot.id)'>edit</a>
+		<a href="@routes.Slot.edit(slot.id)">edit</a>
 	}
 
 	@widget.assetList(slot)
 
-	@region.comments(Some(routes.Comment.postSlot(slot.id)), slot.comments(true)(request.db)) { c =>
-		@display(c.who)
-	}
+	@region.comments(Some(routes.Comment.postSlot(slot.id)), slot.comments(true)(request.db))
     </article>
 }

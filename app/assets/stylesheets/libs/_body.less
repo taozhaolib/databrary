@@ -15,11 +15,13 @@
 
 // body - header
 #body_main {
-	header {
-		margin-bottom: @gutter/2;
+	article {
+		header {
+			margin-bottom: @gutter/2;
 
-		h1 {
-			margin: 0;
+			h1 {
+				margin: 0;
+			}
 		}
 	}
 
@@ -69,25 +71,79 @@
 		}
 	}
 
-	.userinfo {
-		margin-bottom: @gutter/2;
+	// comments
+	#comments {
+		h1 {
+			border: 0;
+			padding: 0;
+		}
+	}
 
-		img {
-			display: block;
+	.comment {
+		.grid_width(6);
+
+		&.form {
+			border-bottom: 2px solid @gray_50_third;
+			margin-bottom: @gutter;
+			border-top: 2px solid @gray_50_third;
+			padding-top: @gutter;
+			.border-radius(15px);
+			padding-left: @gutter;
+			padding-right: @gutter;
 		}
 
-		.avatar {
-			float: left;
-			margin-right: @gutter/4;
+		.userinfo {
+			margin-bottom: @gutter/4;
 		}
 
-		.info {
-			padding-top: 1px;
+		.body {
+			padding-left: (@avatar_medium + (@gutter/4));
+			margin-bottom: @gutter;
 		}
 
-		.institution {
-			font-size: 0.9em;
+		textarea {
+			min-height: 150px;
 		}
+	}
+}
+
+.userinfo {
+	margin-bottom: @gutter/2;
+	text-align: left;
+
+	img {
+		display: block;
+	}
+
+	.avatar {
+		float: left;
+		margin-right: @gutter/4;
+	}
+
+	.info {
+	}
+
+	.name {
+		a {
+			font-size: 1.1em;
+		}
+	}
+
+	.institution, .date {
+		font-size: 0.9em;
+		color: @gray_50_third;
+
+		a {
+			color: @gray_50_third;
+
+			&:hover {
+				color: @gray_25_third;
+			}
+		}
+
+	}
+
+	.date {
 	}
 }
 

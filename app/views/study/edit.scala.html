@@ -1,0 +1,15 @@
+@(study : Study, editForm : controllers.Study.StudyForm)(implicit request : SiteRequest[_])
+
+@template.crud("Edit Study: " + study.title) {
+    <article>
+        <h1>@Path(study).toHtml</h1>
+
+        @helper.form(routes.Study.change(study.id)) {
+            @helper.inputText(editForm("title"))
+            @helper.textarea(editForm("description"), 'cols -> 80, 'rows -> 8)
+            <button type='submit'>Change</button>
+        }
+        @widget.formErrors(editForm)
+
+    </article>
+}
