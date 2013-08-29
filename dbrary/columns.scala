@@ -5,16 +5,19 @@ import anorm._
 sealed trait Select {
   def toString : String
   def get[T](implicit c : Column[T]) : RowParser[T]
+  def inTable(table : String) : Select
 }
 
 case class SelectColumn(table : String, col : String) extends Select {
   override def toString = table + "." + col
   def get[T](implicit c : Column[T]) : RowParser[T] = SqlParser.get[T](toString)(c)
+  def inTable(table : String) = copy(table = table)
 }
 
 case class SelectAs(expr : String, name : String) extends Select {
   override def toString = expr + " AS " + name
   override def get[T](implicit c : Column[T]) : RowParser[T] = SqlParser.getAliased[T](name)(c)
+  def inTable(table : String) = this
 }
 
 trait Selects {
@@ -35,6 +38,8 @@ trait SelectParser[+A] extends RowParser[A] with Selects {
   override def ? : SelectParser[Option[A]] = copy(super.?)
   def ~[B](p : SelectParser[B]) : SelectParser[A ~ B] =
     SelectParser[A ~ B](selects ++ p.selects, super.~[B](p))
+  def inTable(table : String) : SelectParser[A] =
+    SelectParser[A](selects.map(_.inTable(table)), this)
 }
 
 sealed abstract class Columns[+A](cols : Select*) extends SelectParser[A] {
