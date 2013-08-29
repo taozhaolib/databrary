@@ -21,11 +21,11 @@ object Study extends SiteController {
   }
 
   def view(i : models.Study.Id) = check(i) { study => implicit request =>
-    Ok(views.html.study(study))
+    Ok(views.html.study.view(study))
   }
 
   def listAll = SiteAction { implicit request =>
-    Ok(views.html.studyList(models.Study.getAll))
+    Ok(views.html.study.list(models.Study.getAll))
   }
 
   type StudyForm = Form[(String, Option[String])]
@@ -36,12 +36,12 @@ object Study extends SiteController {
   private[this] def editFormFill(s : Study) = editForm.fill((s.title, s.description))
 
   def edit(i : models.Study.Id) = check(i, Permission.EDIT) { study => implicit request =>
-    Ok(views.html.studyEdit(study, editFormFill(study)))
+    Ok(views.html.study.edit(study, editFormFill(study)))
   }
 
   def change(i : models.Study.Id) = check(i, Permission.EDIT) { study => implicit request =>
     editFormFill(study).bindFromRequest.fold(
-      form => BadRequest(views.html.studyEdit(study, form)),
+      form => BadRequest(views.html.study.edit(study, form)),
       { case (title, description) =>
         study.change(title = title, description = description.flatMap(maybe(_)))
         Redirect(study.pageURL)
@@ -77,7 +77,7 @@ object Study extends SiteController {
     implicit request : SiteRequest[_]) = {
     val accessChange = accessChangeForm.map(_._1.id)
     val accessForms = study.partyAccess().filter(a => Some(a.partyId) != accessChange).map(a => (a.party, accessForm(study, a.partyId).fill(a))) ++ accessChangeForm
-    views.html.studyAdmin(study, accessForms, accessSearchForm, accessResults)
+    views.html.study.admin(study, accessForms, accessSearchForm, accessResults)
   }
 
   def admin(i : models.Study.Id) = check(i, Permission.ADMIN) { study => implicit request =>
@@ -130,7 +130,7 @@ object Study extends SiteController {
       val form = editForm.bindFromRequest
       val study = (models.Study.create _).tupled(form.value.getOrElse(("New study", None)))
       StudyAccess(study.id, owner, Permission.ADMIN, Permission.CONTRIBUTE).set
-      Created(views.html.studyEdit(study, form))
+      Created(views.html.study.edit(study, form))
     }
   }
 }
