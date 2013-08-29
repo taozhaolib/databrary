@@ -45,7 +45,8 @@ POST    /study/:id/Access/:party               	controllers.Study.accessChange(i
 POST    /study/Create                          	controllers.Study.create(owner : Option[models.Party.Id] ?= None)
 GET     /studies                        	controllers.Study.listAll
 
-POST    /study/:id/Slot                        	controllers.Slot.create(id : models.Study.Id)
+GET     /study/:id/slot                        	controllers.Slot.create(id : models.Study.Id)
+POST    /study/:id/Slot                        	controllers.Slot.add(id : models.Study.Id)
 GET     /slot/:id                              	controllers.Slot.view(id : models.Slot.Id)
 GET     /slot/:id/edit                         	controllers.Slot.edit(id : models.Slot.Id)
 POST    /slot/:id/Edit                         	controllers.Slot.change(id : models.Slot.Id)

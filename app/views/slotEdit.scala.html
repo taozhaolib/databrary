@@ -1,13 +1,13 @@
-@(slot : Slot, editForm : controllers.Slot.SlotForm)(implicit request : SiteRequest[_])
+@(s : Either[Study,Slot], editForm : controllers.Slot.SlotForm)(implicit request : SiteRequest[_])
 
-@template.crud("Edit Slot: " + slot.toString()) {
+@template.crud(s.fold("Create Slot in Study: " + _.toString, "Edit Slot: " + _.toString)) {
     <article>
-        <h1>@slot.toString()</h1>
+        <h1>@s.fold(_.toString + ": New Slot", _.toString)</h1>
 
-	@helper.form(routes.Slot.change(slot.id)) {
+	@helper.form(s.fold(study => routes.Slot.add(study.id), slot => routes.Slot.change(slot.id))) {
 		@widget.enumSelect(editForm("consent"), Consent)
 		@helper.inputDate(editForm("date"))
-		<button type='submit'>Change</button>
+		<button type='submit'>@s.fold(_ => "Add", _ => "Change")</button>
 	}
 	@widget.formErrors(editForm)
     </article>

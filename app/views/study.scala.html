@@ -78,9 +78,7 @@
                         <li>@display(slot)</li>
                     }
                     @if(study.permission >= Permission.CONTRIBUTE) {
-                        <li>@helper.form(routes.Slot.create(study.id)) {
-                            <button type='submit'>Add new slot</button>
-                        }</li>
+		        <a href='@routes.Slot.create(study.id)'>Add new slot</a>
                     }
                 </ul>
             </div>

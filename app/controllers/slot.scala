@@ -35,7 +35,7 @@ object Slot extends SiteController {
   private[this] def viewEdit(slot : Slot)(
     editForm : SlotForm = editFormFill(slot))(
     implicit request : SiteRequest[_]) = {
-    views.html.slotEdit(slot, editForm)
+    views.html.slotEdit(Right(slot), editForm)
   }
 
   def edit(i : models.Slot.Id) = check(i, Permission.EDIT) { slot => implicit request =>
@@ -54,12 +54,16 @@ object Slot extends SiteController {
   }
 
   def create(s : models.Study.Id) = Study.check(s, Permission.CONTRIBUTE) { study => implicit request =>
+    Ok(views.html.slotEdit(Left(study), editForm))
+  }
+
+  def add(s : models.Study.Id) = Study.check(s, Permission.CONTRIBUTE) { study => implicit request =>
     val form = editForm.bindFromRequest
     form.fold(
-      form => BadRequest(views.html.study(study)), // FIXME: report error, preserve fields
+      form => BadRequest(views.html.slotEdit(Left(study), form)),
       { case (consent, date) =>
         val slot = models.Slot.create(study = study, consent = consent, date = date)
-        Created(viewEdit(slot)(editForm = form))
+        Created(views.html.slot(slot))
       }
     )
   }
