@@ -1,8 +1,6 @@
 # Databrary
 
-http://databrary.org/
-
-https://www.assembla.com/spaces/databrary
+http://databrary.github.io/play
 
 ## Layout
 
@@ -11,7 +9,7 @@ https://www.assembla.com/spaces/databrary
 * [Database interface](dbrary/)
 * [ffmpeg interface](media/)
 
-## Installation requirements
+## Installation
 
 ### Postgres
 

@@ -33,6 +33,10 @@ final class Comment private (override val id : Comment.Id, val whoId : Account.I
   def who(implicit site : Site) : Account = _who
 }
 
+/** A set of Measures. */
+final class Record private (override val id : Record.Id, val category : Option[RecordCategory]) extends Annotation(id) with TableRowId[Record] {
+}
+
 
 private[models] sealed abstract class AnnotationView[R <: Annotation with TableRowId[R]](table : String) extends TableId[R](table) {
   /** Retrieve a specific annotation of the instantiated object's type by id. */
@@ -81,6 +85,17 @@ object Comment extends AnnotationView[Comment]("comment") {
       execute()(site.db)
     c
   }
+}
+
+object Record extends AnnotationView[Record]("record") {
+  private[this] val columns = Columns[
+    Id](
+    'id)
+  private[models] val row = (columns ~ RecordCategory.row.?) map {
+    case (id ~ cls) => new Record(id, cls)
+  }
+  private[models] override val src = "record JOIN record_category ON record.category = record_category.id"
+
 }
 
 

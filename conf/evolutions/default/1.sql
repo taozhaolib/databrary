@@ -7,6 +7,8 @@
 -- with further evolutions only making defensive changes, but it may be easier
 -- to keep separate.
 
+-- A general convention is that hard-coded fixtures get non-positive ids.
+
 -- Currently these are largely under-indexed.
 
 # --- !Ups
@@ -272,7 +274,7 @@ CREATE TYPE segment AS RANGE (
 COMMENT ON TYPE "segment" IS 'Intervals of time, used primarily for representing clips of timeseries data.';
 
 CREATE FUNCTION "duration" (segment) RETURNS interval HOUR TO SECOND LANGUAGE sql IMMUTABLE STRICT AS
-	$$ SELECT CASE WHEN isempty($1) THEN '0' ELSE interval_mi(upper($1), lower($1)) $$;
+	$$ SELECT CASE WHEN isempty($1) THEN '0' ELSE interval_mi(upper($1), lower($1)) END $$;
 COMMENT ON FUNCTION "duration" (segment) IS 'Determine the length of a segment, or NULL if unbounded.';
 CREATE FUNCTION "singleton" (segment) RETURNS interval LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT lower($1) WHERE lower_inc($1) AND upper_inc($1) AND lower($1) = upper($1) $$;
@@ -387,16 +389,16 @@ CREATE TRIGGER "annotation" BEFORE INSERT OR UPDATE OR DELETE ON "comment" FOR E
 COMMENT ON TABLE "comment" IS 'Free-text comments that can be added to nodes (unaudited, immutable).';
 
 
-CREATE TABLE "record_class" (
+CREATE TABLE "record_category" (
 	"id" smallserial Primary Key,
 	"name" varchar(64) NOT NULL Unique
 );
-COMMENT ON TABLE "record_class" IS 'Types of records that are relevant for data organization.';
-INSERT INTO "record_class" ("name") VALUES ('participant');
+COMMENT ON TABLE "record_category" IS 'Types of records that are relevant for data organization.';
+INSERT INTO "record_category" ("id", "name") VALUES (-1, 'participant');
 
 CREATE TABLE "record" (
 	"id" integer NOT NULL DEFAULT nextval('annotation_id_seq') Primary Key References "annotation" Deferrable Initially Deferred,
-	"class" smallint References "record_class"
+	"category" smallint References "record_category"
 );
 CREATE TRIGGER "annotation" BEFORE INSERT OR UPDATE OR DELETE ON "record" FOR EACH ROW EXECUTE PROCEDURE "annotation_trigger" ();
 COMMENT ON TABLE "record" IS 'Sets of metadata measurements organized into or applying to a single cohesive unit.  These belong to the object(s) they''re attached to, which are expected to be within a single study.';
@@ -412,9 +414,9 @@ CREATE TABLE "metric" (
 	"values" text[] -- options for text enumerations, not enforced (could be pulled out to separate kind/table)
 );
 COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.  Rough prototype.';
-INSERT INTO "metric" ("name", "type") VALUES ('ident', 'text');
-INSERT INTO "metric" ("name", "classification", "type") VALUES ('birthday', 'IDENTIFIED', 'date');
-INSERT INTO "metric" ("name", "type", "values") VALUES ('gender', 'text', ARRAY['F','M']);
+INSERT INTO "metric" ("id", "name", "type") VALUES (-1, 'ident', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-2, 'birthday', 'IDENTIFIED', 'date');
+INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-3, 'gender', 'text', ARRAY['F','M']);
 
 CREATE TABLE "measure" ( -- ABSTRACT
 	"record" integer NOT NULL References "record",
@@ -503,7 +505,7 @@ DROP TABLE "measure" CASCADE;
 DROP TABLE "metric";
 DROP TYPE data_type;
 DROP TABLE "record";
-DROP TABLE "record_class";
+DROP TABLE "record_category";
 DROP TABLE "annotation";
 DROP FUNCTION "annotation_trigger" ();
 DROP TYPE "annotation_kind";
