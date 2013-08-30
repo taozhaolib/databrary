@@ -1,6 +1,15 @@
 @(throwable: Throwable)
 
 @template.raw("There's been an error! (500)") {
-	<h1>Oops! A 500 error:</h1>	
-	<p>@throwable.getMessage</p>
+	<article class="focus row">
+		<div class="column_center">
+			<h1>500! Inner turmoil alert.</h1>
+
+			<div class="error inline">
+				<ul>
+					<li>@throwable.getMessage</li>
+				</ul>
+			</div>
+		</div>
+	</article>
 }

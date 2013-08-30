@@ -1,6 +1,15 @@
-@(request : RequestHeader)
+@(request: RequestHeader)
 
 @template.raw("There's been an error! (404)") {
-	<h1>404! This route isn't sensical:</h1>	
-	<p>@request.path</p>
+	<article class="focus row">
+		<div class="column_center">
+			<h1>404! There's nothing here.</h1>
+
+			<div class="error inline">
+				<ul>
+					<li>@request.path</li>
+				</ul>
+			</div>
+		</div>
+	</article>
 }

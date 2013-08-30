@@ -113,11 +113,27 @@ input {
 }
 
 // errors
-.inline.error {
-	.border-radius(3px);
-	padding: 0.5em .75em;
-	background: lighten(@second, 25%);
-	color: darken(@second, 20%);
-	border: 2px solid darken(@second, 10%);
-	margin-bottom: @gutter/2;
+.error {
+	&.inline {
+		.border-radius(3px);
+		padding: 0.5em .75em;
+		background: lighten(@second, 25%);
+		color: darken(@second, 20%);
+		border: 2px solid darken(@second, 10%);
+		margin-bottom: @gutter/2;
+
+		ul {
+			margin: 0;
+			list-style: none;
+			padding: 0;
+		}
+
+		li {
+			margin-top: (@gutter/2);
+
+			&:first-child {
+				margin: 0;
+			}
+		}
+	}
 }
