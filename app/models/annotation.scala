@@ -35,6 +35,10 @@ final class Comment private (override val id : Comment.Id, val whoId : Account.I
 
 /** A set of Measures. */
 final class Record private (override val id : Record.Id, val category : Option[RecordCategory]) extends Annotation(id) with TableRowId[Record] {
+  /** A specific measure of the given type and metric. */
+  def measure[T](metric : Metric)(implicit db : Site.DB) : Option[T] = Measure.get[T](this.id, metric)(db)
+  /** All measures in this record. */
+  def measures(implicit db : Site.DB) : Seq[MeasureBase] = Measure.getRecord(this.id)(db)
 }
 
 
@@ -110,4 +114,8 @@ trait Annotated {
   /** Post a new comment this object.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
   def postComment(text : String)(implicit site : Site) : Comment = Comment.post(this, text)(site)
+  /** The list of records on this object.
+    * @param all include indirect comments on any contained objects
+    */
+  def records(all : Boolean = true)(implicit db : Site.DB) : Seq[Record] = Record.get(this, all)(db)
 }
