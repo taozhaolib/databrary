@@ -6,45 +6,107 @@ $.fn.exists = function () {
 // clean dbjs namespace
 var dbjs = dbjs || {};
 
-function extend(ns, ns_string) {
-	var parts = ns_string.split('.'),
-		parent = ns,
-		pl, i;
-	if (parts[0] == "myApp") {
-		parts = parts.slice(1);
+/**
+ * Creates folding content.
+ * @param region container element
+ * @param clicker click toggle, child of fold
+ * @param toggle toggled area, child of fold
+ */
+dbjs.fold = function (region, clicker, toggle) {
+	var $clicker = $(region + ' ' + clicker),
+		$toggles = $(region + ' ' + toggle);
+
+	$clicker.click(function (e) {
+		$(this).next(toggle).slideToggle();
+		$(this).toggleClass('unfolded');
+	});
+
+	$clicker.prepend('<span class="arrow"></span>');
+	$toggles.toggle();
+};
+
+/**
+ * Creates rolldown modal content.
+ * @param clicker click toggle
+ * @param toggle toggled area
+ */
+dbjs.modal = function (clicker, toggle, now) {
+	if (typeof(now) === 'undefined') now = false;
+
+	var $clicker = $(clicker),
+		$toggle = $(toggle),
+		modals = '.modal',
+		back = '#modal_back',
+		$back;
+
+	// modal background
+	if (!$(back).exists()) {
+		$('body').append('<div id="modal_back"></div>');
+		$back = $(back);
+
+		$back.click(function (e) {
+			$(modals).fadeOut(250);
+			$(this).fadeOut(250);
+		});
 	}
-	pl = parts.length;
-	for (i = 0; i < pl; i++) {
-		//create a property if it doesnt exist
-		if (typeof parent[parts[i]] == 'undefined') {
-			parent[parts[i]] = {};
-		}
-		parent = parent[parts[i]];
+
+	// clicker
+	var click = function () {
+		$toggle.fadeIn();
+		$back.fadeIn();
+	};
+
+	$clicker.click(function (e) {
+		click();
+		return false;
+	});
+
+	if (now === true) {
+		click();
 	}
-	return parent;
-}
+};
+
+dbjs.ajaxModal = function (clicker, url, now) {
+	if (typeof(now) === 'undefined') now = false;
+	var $clicker = $(clicker),
+		$toggle, toggle;
+
+	var setup = function (url) {
+		$clicker.off('click');
+
+		$.get(url, function (data) {
+			console.log($(data));
+
+			$toggle = $(data).find('.modal');
+			toggle = $clicker.attr('data-target');
+
+			$toggle.attr('id', toggle).appendTo($('body'));
+
+			toggle = '#'+toggle;
+
+			if (now === true) {
+				dbjs.modal(clicker, toggle);
+			} else {
+				$clicker.off('click.ajaxModal');
+				dbjs.modal(clicker, toggle, true);
+			}
+
+		}, 'html');
+
+		$clicker.on('click');
+	}
+
+	if (now === true) {
+		setup(url);
+	} else {
+		$clicker.on('click.ajaxModal', function (e) {
+			setup(url);
+		});
+	}
+};
 
 // setup site features
 (function () {
-	var isTouch = 'ontouchstart' in document.documentElement;
-
-	var $window = $(window),
-		$document = $(document),
-		$body = $('body');
-
-	dbjs.toggleFold = function (fold, folder, folded) {
-		var $folders = $(fold + ' ' + folder),
-			$foldeds = $(fold + ' ' + folded);
-
-		$folders.click(function (e) {
-			$(this).next(folded).slideToggle();
-			$(this).toggleClass('unfolded');
-		});
-
-		$folders.prepend('<span class="arrow"></span>')
-		$foldeds.toggle();
-	}
-
 	dbjs.menuReduce = function (menu, position) {
 		var $menu = $(menu),
 			$position = $(position),
@@ -128,31 +190,6 @@ function extend(ns, ns_string) {
 		resizer(element, above);
 	}
 
-	dbjs.modalLink = function (links, targets) {
-		var $links = $(links),
-			back = '#modal_back',
-			$back;
-
-		if (!$(back).exists()) {
-			$("body").append('<div id="modal_back"></div>');
-			$back = $(back);
-		}
-
-		$back.click(function (e) {
-			$(targets).fadeOut();
-			$(this).fadeOut();
-		});
-
-		$links.click(function (e) {
-			var $target = $('#' + $(this).attr('data-target'));
-
-			$target.fadeIn();
-			$back.fadeIn();
-
-			return false;
-		});
-	}
-
 	dbjs.tabs = function (tabset, tab, view) {
 		var $tabset = $(tabset),
 			$tabs = $tabset.find(tab),
@@ -188,15 +225,15 @@ function extend(ns, ns_string) {
 				$view = $(id),
 				viewHeight = $view[0].scrollHeight;
 
-			if($this.parent().hasClass('current')) {
-				$currentView.fadeOut(150, function() {
+			if ($this.parent().hasClass('current')) {
+				$currentView.fadeOut(150, function () {
 					$currentView.fadeIn(150);
 				});
 
 				return;
 			}
 
-			$currentView.slideUp(250, function() {
+			$currentView.slideUp(250, function () {
 				$view.slideDown(250);
 			});
 
@@ -219,9 +256,9 @@ function extend(ns, ns_string) {
 // initialization
 $(document).ready(function () {
 	// event registration should only appear on the pages it's need.
-	dbjs.toggleFold('.question', 'h2', 'div');
+	dbjs.fold('.question', 'h2', 'div');
 	dbjs.menuReduce('.sidebar_menu', 'main > article > h1:first-child');
 	dbjs.footerFixer('#site_footer', '#site_body');
-//	dbjs.modalLink('.modal_link', '.modal');
+	dbjs.ajaxModal('#modal_login_link', '/ajax/modal/login', true);
 	dbjs.tabs('.tabset', '.tab', '.view');
 });

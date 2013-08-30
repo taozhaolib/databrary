@@ -45,6 +45,10 @@ object UserAction {
 
 class SiteController extends Controller {
   implicit def db(implicit site : Site) : util.Site.DB = site.db
+
+  def isAjax[A](implicit request : Request[A]) = {
+    request.headers.get("X-Requested-With") == Some("XMLHttpRequest")
+  }
 }
 
 object Site extends SiteController {
@@ -60,9 +64,5 @@ object Site extends SiteController {
 
   def untrail(path : String) = Action {
     MovedPermanently("/" + path)
-  }
-
-  def isAjax[A](implicit request : Request[A]) = {
-    request.headers.get("X-Requested-With") == Some("XMLHttpRequest")
   }
 }

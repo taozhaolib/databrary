@@ -1,16 +1,8 @@
 @(title: String = "The Databrary Project", css: Html = Html(""), js: Html = Html(""))(body: Html)
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>@title || Databrary</title>
 
-		@css
+<div id="title">@title</div>
 
-		@js
-	</head>
+<div id="css">@css</div>
+<div id="js">@js</div>
 
-	<body>
-	@body
-	</body>
-</html>
-
+<div id="body">@body</div>
