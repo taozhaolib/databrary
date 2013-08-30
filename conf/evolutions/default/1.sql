@@ -453,6 +453,12 @@ CREATE VIEW "measure_view" AS
 	SELECT record, metric, text(datum) FROM measure_date;
 COMMENT ON VIEW "measure_view" IS 'Data from all measure tables, coerced to text.';
 
+CREATE VIEW "measure_all" ("record", "metric", "datum_text", "datum_number", "datum_date") AS
+	SELECT record, metric, datum, NULL::numeric, NULL::date FROM measure_text UNION ALL
+	SELECT record, metric, NULL, datum, NULL FROM measure_number UNION ALL
+	SELECT record, metric, NULL, NULL, datum FROM measure_date;
+COMMENT ON VIEW "measure_all" IS 'Data from all measure tables, coerced to text.';
+
 CREATE TABLE "audit_measure" (
 	LIKE "measure",
 	"datum" text NOT NULL
@@ -501,6 +507,8 @@ DROP FUNCTION "asset_annotations" (integer);
 DROP TABLE "asset_annotation";
 DROP TABLE "container_annotation";
 DROP TABLE "comment";
+DROP VIEW "measure_all";
+DROP VIEW "measure_view";
 DROP TABLE "measure" CASCADE;
 DROP TABLE "metric";
 DROP TYPE data_type;

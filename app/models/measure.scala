@@ -33,36 +33,29 @@ object DataType extends PGEnum("data_type") {
   val text, number, date = Value
 }
 
-private[models] final class MeasureType[T] private (val dataType : DataType.Value)(implicit val column : Column[T]) {
-  def name = dataType.toString
-  def table = "measure_" + name
+
+private[models] final class MeasureType[T] private (val dataType : DataType.Value)(implicit column_ : Column[T]) {
+  val name = dataType.toString
+  val table = "measure_" + name
+  val column = Columns[T](SelectColumn(table, "datum"))(column_)
+  val columnAll = Columns[T](SelectColumn("measure_all", "datum_" + name))(column_)
 }
+
 object MeasureType {
   implicit val measureText = new MeasureType[String](DataType.text)
   implicit val measureNumber = new MeasureType[Double](DataType.number)
   implicit val measureDate = new MeasureType[Date](DataType.date)
-  def apply(dataType : DataType.Value) = dataType match {
+  def apply(dataType : DataType.Value) : MeasureType[_] = dataType match {
     case DataType.text => measureText
     case DataType.number => measureNumber
     case DataType.date => measureDate
   }
 }
 
-final class MeasureData[T] private (dataType : MeasureType[T], val datum : T) {
-  override def toString : String = datum.toString
-}
-object MeasureData {
-  def apply[T](datum : T)(implicit tpe : MeasureType[T]) : MeasureData[T] =
-    new MeasureData[T](tpe, datum)
-}
 
 sealed class Metric private (val id : Metric.Id, val name : String, val classification : Classification.Value, val dataType : DataType.Value, val values : Array[String] = Array[String]()) extends TableRowId[Metric] {
   def measureType = MeasureType(dataType)
 }
-
-private[models] sealed class MeasureBase(val recordId : Record.Id, val metric : Metric) extends TableRow
-final class Measure[T](recordId : Record.Id, metric : Metric, val datum : MeasureData[T]) extends MeasureBase(recordId, metric)
-
 
 object Metric extends TableId[Metric]("metric") {
   private[models] val row = Columns[
@@ -86,19 +79,53 @@ object Metric extends TableId[Metric]("metric") {
   object Gender extends Metric(GENDER, "gender", Classification.DEIDENTIFIED, DataType.text, Array[String]("F", "M"))
 }
 
-object Measure extends Table[MeasureBase]("measure") {
-  private val columns = Columns[
-    Record.Id, Metric.Id](
-    'record,   'metric)
-  private[models] val row = (columns ~ Metric.row) map { 
-    case ((record, _) ~ metric) => new MeasureBase(record, metric)
+
+sealed trait MeasureData {
+  type Type
+  val dataType : MeasureType[Type]
+  val datum : Type
+  override def toString : String = datum.toString
+}
+final class MeasureDatum[T](val datum : T)(implicit val dataType : MeasureType[T]) extends MeasureData {
+  type Type = T
+}
+object MeasureData {
+  implicit val column : Column[MeasureData] = Column.nonNull[MeasureData] { (value, meta) =>
+    value match {
+      case s : String => Right(new MeasureDatum(s))
+      case d : Double => Right(new MeasureDatum(d))
+      case d : Date => Right(new MeasureDatum(d))
+      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to MeasureData for column " + meta.column))
+    }
   }
-  private def rowType[T](tpe : MeasureType[T]) = columns.~+[T]('datum)(tpe.column).inTable(tpe.table)
+}
+
+private[models] sealed class MeasureBase(val recordId : Record.Id, val metric : Metric, val datum : MeasureData) extends TableRow
+final class Measure[T](recordId : Record.Id, metric : Metric, datum : MeasureDatum[T]) extends MeasureBase(recordId, metric, datum)
+
+object Measure extends Table[MeasureBase]("measure_all") {
+  import MayErr._
+  private val columns = Columns[
+    Record.Id](
+    'record)
+  private[models] val row : SelectParser[MeasureBase] = SelectParser[MeasureBase](
+    columns.selects ++ DataType.values.map(t => SelectColumn(table, t.toString)) ++ Metric.row.selects,
+    row => for {
+      record <- columns(row)
+      metric <- Metric.row(row)
+      tpe = metric.measureType
+      datum <- tpe.columnAll(row)
+    } yield (new Measure(record, metric, new MeasureDatum(datum)(tpe)))
+  )
+  private[models] override val src = "measure_all JOIN metric ON measure_all.metric = metric.id"
   
-  def get[T](record : Record.Id, metric : Metric)(implicit db : Site.DB) = {
+  def get[T](record : Record.Id, metric : Metric)(implicit db : Site.DB) : Option[T] = {
     val tpe = metric.measureType.asInstanceOf[MeasureType[T]]
-    val row = rowType(tpe) map { case (record, _, datum) => new Measure[T](record, metric, MeasureData[T](datum)(tpe)) }
+    val row = tpe.column
     SQL("SELECT " + row.select + " FROM " + tpe.table + " WHERE record = {record} AND metric = {metric}").
       on('record -> record, 'metric -> metric.id).singleOpt(row)
   }
+
+  def getRecord(record : Record.Id)(implicit db : Site.DB) : Seq[MeasureBase] =
+    SELECT("WHERE record = {record}").on('record -> record).list
 }
