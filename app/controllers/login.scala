@@ -14,7 +14,7 @@ import org.mindrot.jbcrypt.BCrypt
 import util._
 import models._
 
-object Login extends Controller {
+object Login extends SiteController {
 
   type LoginForm = Form[(Option[String],String,String)]
   private[this] val loginForm : LoginForm = Form(tuple(
