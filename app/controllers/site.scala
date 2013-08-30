@@ -24,7 +24,7 @@ class UserRequest[A](request : Request[A], val account : Account, db : util.Site
 
 object SiteAction {
   private[this] def getUser(request : Request[_])(implicit db : util.Site.DB) : Option[Account] =
-    request.session.get("user").flatMap { i => 
+    request.session.get("user").flatMap { i =>
       try { Some(models.Account.asId(i.toInt)) }
       catch { case e:java.lang.NumberFormatException => None }
     }.flatMap(models.Account.get_ _)
@@ -39,7 +39,7 @@ object SiteAction {
 }
 
 object UserAction {
-  def apply(block : UserRequest[AnyContent] => Result) : Action[AnyContent] = 
+  def apply(block : UserRequest[AnyContent] => Result) : Action[AnyContent] =
     SiteAction(_ => Login.needLogin, block(_))
 }
 
@@ -51,7 +51,7 @@ object Site extends SiteController {
   def isSecure : Boolean =
     current.configuration.getString("application.secret").exists(_ != "databrary").
       ensuring(_ || !Play.isProd, "Running insecure in production")
-  
+
   def start = Login.view
 
   def test = Action { request => DB.withConnection { implicit db =>
@@ -60,5 +60,9 @@ object Site extends SiteController {
 
   def untrail(path : String) = Action {
     MovedPermanently("/" + path)
+  }
+
+  def isAjax[A](implicit request : Request[A]) = {
+    request.headers.get("X-Requested-With") == Some("XMLHttpRequest")
   }
 }

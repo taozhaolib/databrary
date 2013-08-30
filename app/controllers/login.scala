@@ -14,7 +14,7 @@ import org.mindrot.jbcrypt.BCrypt
 import util._
 import models._
 
-object Login extends Controller {
+object Login extends SiteController {
 
   type LoginForm = Form[(Option[String],String,String)]
   private[this] val loginForm : LoginForm = Form(tuple(
@@ -23,9 +23,9 @@ object Login extends Controller {
     "openid" -> text(0, 256)
   ))
 
-  def viewLogin(err : Option[String] = None) : templates.Html = 
+  def viewLogin(err : Option[String] = None) : templates.Html =
     views.html.login(err.fold(loginForm)(loginForm.withGlobalError(_)))
-  def viewLogin(err : String) : templates.Html = 
+  def viewLogin(err : String) : templates.Html =
     viewLogin(Some(err))
   def needLogin =
     Forbidden(viewLogin(Some(Messages("login.noCookie"))))
@@ -33,12 +33,15 @@ object Login extends Controller {
   def view = SiteAction(request => Ok(viewLogin()), implicit request =>
     Ok(views.html.party(request.identity, Permission.ADMIN)))
 
+  def ajaxView = SiteAction(request => Ok(views.html.modal.login(loginForm)), implicit request =>
+    Ok(views.html.modal.profile(request.identity, Permission.ADMIN)))
+
   private[this] def login(a : Account)(implicit request : Request[_], db : util.Site.DB) = {
     implicit val arequest = new UserRequest(request, a, db)
     Audit.action(AuditAction.login)
     Redirect(routes.Party.view(a.id)).withSession("user" -> a.id.unId.toString)
   }
-  
+
   def post = Action { implicit request =>
     val form = loginForm.bindFromRequest
     def error : Result = BadRequest(views.html.login(form.copy(data = form.data.updated("password", "")).withGlobalError(Messages("login.bad"))))
