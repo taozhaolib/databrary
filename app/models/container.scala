@@ -72,6 +72,11 @@ final class Study private (override val id : Study.Id, title_ : String, descript
     SQL("SELECT " + cols.select + " FROM audit_study WHERE id = {id} AND action = 'add'").
       on('id -> id).singleOpt(cols)
   }
+
+  /** List of records associated with any slot in this study.
+    * @param category restrict to the specified category
+    * @return unique records sorted by category */
+  def slotRecords(category : Option[RecordCategory] = None)(implicit db : Site.DB) = Record.getSlots(this, category)
 }
 
 /** Smallest organizatonal unit of related data, primarily used for an individual session of data with a single date, place, and consent level. */

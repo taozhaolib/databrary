@@ -98,8 +98,24 @@ object Record extends AnnotationView[Record]("record") {
   private[models] val row = (columns ~ RecordCategory.row.?) map {
     case (id ~ cls) => new Record(id, cls)
   }
-  private[models] override val src = "record JOIN record_category ON record.category = record_category.id"
+  private[models] override val src = "record LEFT JOIN record_category ON record.category = record_category.id"
 
+  /** Retrieve all the categorized records associated with slots in the given study.
+    * @param category restrict to the specified category, or include all categories
+    * @return unique records sorted by category */
+  private[models] def getSlots(study : Study, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
+    val cols = category.fold(row)(cat => columns.map(new Record(_, Some(cat))))
+    SQL(
+      "SELECT " + cols.select + " FROM record" + 
+        (if (category.isEmpty) " JOIN record_category ON category = record_category.id" else "") + 
+        " JOIN container_annotation ON record.id = annotation JOIN slot ON container = slot.id WHERE slot.study = {study}" +
+        (if (category.isDefined) " AND category = {category}" else "") +
+        " GROUP BY " + cols.select + " ORDER BY" + 
+        (if (category.isEmpty) " record_category.id," else "") +
+        " record.id").
+      on('study -> study.id, 'category -> category.map(_.id)).
+      list(cols)
+  }
 }
 
 
