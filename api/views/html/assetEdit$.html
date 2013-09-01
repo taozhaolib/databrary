@@ -40,13 +40,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">assetEdit</span><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.api.templates.Html">Html</span>]] with <span class="extype" name="play.api.templates.Template3">Template3</span>[<a href="../../models/AssetLink.html" class="extype" name="models.AssetLink">AssetLink</a>, <a href="../../controllers/Asset$.html#EditForm=play.api.data.Form[(String,String,Option[controllers.Asset.FileFields])]" class="extmbr" name="controllers.Asset.EditForm">EditForm</a>, <a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>]</span>
+        <span class="name">assetEdit</span><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.api.templates.Html">Html</span>]] with <span class="extype" name="play.api.templates.Template3">Template3</span>[<span class="extype" name="scala.Either">Either</span>[<a href="../../models/Container.html" class="extype" name="models.Container">Container</a>, <a href="../../models/AssetLink.html" class="extype" name="models.AssetLink">AssetLink</a>], <a href="../../controllers/Asset$.html#AssetForm=play.api.data.Form[(String,String,Option[(models.Classification.Value,Unit)])]" class="extmbr" name="controllers.Asset.AssetForm">AssetForm</a>, <a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>]</span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="play.api.templates.Template3">Template3</span>[<a href="../../models/AssetLink.html" class="extype" name="models.AssetLink">AssetLink</a>, <a href="../../controllers/Asset$.html#EditForm=play.api.data.Form[(String,String,Option[controllers.Asset.FileFields])]" class="extmbr" name="controllers.Asset.EditForm">EditForm</a>, <a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>], <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.api.templates.Html">Html</span>]], <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="play.api.templates.Template3">Template3</span>[<span class="extype" name="scala.Either">Either</span>[<a href="../../models/Container.html" class="extype" name="models.Container">Container</a>, <a href="../../models/AssetLink.html" class="extype" name="models.AssetLink">AssetLink</a>], <a href="../../controllers/Asset$.html#AssetForm=play.api.data.Form[(String,String,Option[(models.Classification.Value,Unit)])]" class="extmbr" name="controllers.Asset.AssetForm">AssetForm</a>, <a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>], <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.api.templates.Html">Html</span>]], <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -169,15 +169,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>BaseScalaTemplate</dd></dl></div>
     </li><li name="views.html.assetEdit#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="apply(link:models.AssetLink,form:controllers.Asset.EditForm)(implicitrequest:controllers.SiteRequest[_]):play.api.templates.Html"></a>
-      <a id="apply(AssetLink,EditForm)(SiteRequest[_]):Html"></a>
+      <a id="apply(target:Either[models.Container,models.AssetLink],form:controllers.Asset.AssetForm)(implicitrequest:controllers.SiteRequest[_]):play.api.templates.Html"></a>
+      <a id="apply(Either[Container,AssetLink],AssetForm)(SiteRequest[_]):Html"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="link">link: <a href="../../models/AssetLink.html" class="extype" name="models.AssetLink">AssetLink</a></span>, <span name="form">form: <a href="../../controllers/Asset$.html#EditForm=play.api.data.Form[(String,String,Option[controllers.Asset.FileFields])]" class="extmbr" name="controllers.Asset.EditForm">EditForm</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.api.templates.Html">Html</span></span>
+        <span class="name">apply</span><span class="params">(<span name="target">target: <span class="extype" name="scala.Either">Either</span>[<a href="../../models/Container.html" class="extype" name="models.Container">Container</a>, <a href="../../models/AssetLink.html" class="extype" name="models.AssetLink">AssetLink</a>]</span>, <span name="form">form: <a href="../../controllers/Asset$.html#AssetForm=play.api.data.Form[(String,String,Option[(models.Classification.Value,Unit)])]" class="extmbr" name="controllers.Asset.AssetForm">AssetForm</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.api.templates.Html">Html</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt"></p>
@@ -224,15 +224,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="views.html.assetEdit#f" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="f:(models.AssetLink,controllers.Asset.EditForm)=&gt;controllers.SiteRequest[_]=&gt;play.api.templates.Html"></a>
-      <a id="f:(AssetLink,EditForm)⇒(SiteRequest[_])⇒Html"></a>
+      <a id="f:(Either[models.Container,models.AssetLink],controllers.Asset.AssetForm)=&gt;controllers.SiteRequest[_]=&gt;play.api.templates.Html"></a>
+      <a id="f:(Either[Container,AssetLink],AssetForm)⇒(SiteRequest[_])⇒Html"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">f</span><span class="result">: (<a href="../../models/AssetLink.html" class="extype" name="models.AssetLink">AssetLink</a>, <a href="../../controllers/Asset$.html#EditForm=play.api.data.Form[(String,String,Option[controllers.Asset.FileFields])]" class="extmbr" name="controllers.Asset.EditForm">EditForm</a>) ⇒ (<a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]) ⇒ <span class="extype" name="play.api.templates.Html">Html</span></span>
+        <span class="name">f</span><span class="result">: (<span class="extype" name="scala.Either">Either</span>[<a href="../../models/Container.html" class="extype" name="models.Container">Container</a>, <a href="../../models/AssetLink.html" class="extype" name="models.AssetLink">AssetLink</a>], <a href="../../controllers/Asset$.html#AssetForm=play.api.data.Form[(String,String,Option[(models.Classification.Value,Unit)])]" class="extmbr" name="controllers.Asset.AssetForm">AssetForm</a>) ⇒ (<a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]) ⇒ <span class="extype" name="play.api.templates.Html">Html</span></span>
       </span>
       </h4>
       
@@ -344,15 +344,15 @@
       </h4>
       
     </li><li name="views.html.assetEdit#render" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="render(link:models.AssetLink,form:controllers.Asset.EditForm,request:controllers.SiteRequest[_]):play.api.templates.Html"></a>
-      <a id="render(AssetLink,EditForm,SiteRequest[_]):Html"></a>
+      <a id="render(target:Either[models.Container,models.AssetLink],form:controllers.Asset.AssetForm,request:controllers.SiteRequest[_]):play.api.templates.Html"></a>
+      <a id="render(Either[Container,AssetLink],AssetForm,SiteRequest[_]):Html"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">render</span><span class="params">(<span name="link">link: <a href="../../models/AssetLink.html" class="extype" name="models.AssetLink">AssetLink</a></span>, <span name="form">form: <a href="../../controllers/Asset$.html#EditForm=play.api.data.Form[(String,String,Option[controllers.Asset.FileFields])]" class="extmbr" name="controllers.Asset.EditForm">EditForm</a></span>, <span name="request">request: <a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.api.templates.Html">Html</span></span>
+        <span class="name">render</span><span class="params">(<span name="target">target: <span class="extype" name="scala.Either">Either</span>[<a href="../../models/Container.html" class="extype" name="models.Container">Container</a>, <a href="../../models/AssetLink.html" class="extype" name="models.AssetLink">AssetLink</a>]</span>, <span name="form">form: <a href="../../controllers/Asset$.html#AssetForm=play.api.data.Form[(String,String,Option[(models.Classification.Value,Unit)])]" class="extmbr" name="controllers.Asset.AssetForm">AssetForm</a></span>, <span name="request">request: <a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.api.templates.Html">Html</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="views.html.assetEdit">assetEdit</a> → Template3</dd></dl></div>
@@ -427,7 +427,7 @@
 
         <div id="inheritedMembers">
         <div class="parent" name="play.api.templates.Template3">
-              <h3>Inherited from <span class="extype" name="play.api.templates.Template3">Template3</span>[<a href="../../models/AssetLink.html" class="extype" name="models.AssetLink">AssetLink</a>, <a href="../../controllers/Asset$.html#EditForm=play.api.data.Form[(String,String,Option[controllers.Asset.FileFields])]" class="extmbr" name="controllers.Asset.EditForm">EditForm</a>, <a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>]</h3>
+              <h3>Inherited from <span class="extype" name="play.api.templates.Template3">Template3</span>[<span class="extype" name="scala.Either">Either</span>[<a href="../../models/Container.html" class="extype" name="models.Container">Container</a>, <a href="../../models/AssetLink.html" class="extype" name="models.AssetLink">AssetLink</a>], <a href="../../controllers/Asset$.html#AssetForm=play.api.data.Form[(String,String,Option[(models.Classification.Value,Unit)])]" class="extmbr" name="controllers.Asset.AssetForm">AssetForm</a>, <a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>]</h3>
             </div><div class="parent" name="play.templates.BaseScalaTemplate">
               <h3>Inherited from <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.api.templates.Html">Html</span>]]</h3>
             </div><div class="parent" name="scala.Serializable">
