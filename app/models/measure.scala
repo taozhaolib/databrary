@@ -36,15 +36,15 @@ object DataType extends PGEnum("data_type") {
 
 /** Class for measurement types.
   * This provides convenient mapping tools between DataType, measures in the database, and Scala values. */
-private[models] final class MeasureType[T] private (val dataType : DataType.Value)(implicit column_ : Column[T]) {
+private[models] final class MeasureType[T : Column] private (val dataType : DataType.Value) {
   /** The name of this type, as used in database identifiers. */
   val name = dataType.toString
   /** The table storing measurements of this type. */
   def table = "measure_" + name
   /** Column access to values of this type in the specific measurement table. */
-  val column = Columns[T](SelectColumn(table, "datum"))(column_)
+  val column = Columns[T](SelectColumn(table, "datum"))
   /** Column access to values of this type in the joint measurement table. */
-  val columnAll = Columns[T](SelectColumn("measure_all", "datum_" + name))(column_)
+  val columnAll = Columns[T](SelectColumn("measure_all", "datum_" + name))
 }
 object MeasureType {
   /** Text measurements are represented as Strings. */

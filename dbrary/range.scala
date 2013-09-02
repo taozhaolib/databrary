@@ -51,7 +51,7 @@ abstract sealed class Range[A <: Ordered[A]](implicit t : RangeType[A]) {
 }
 
 object Range {
-  def empty[A <: Ordered[A]](implicit t : RangeType[A]) = new Range[A] {
+  def empty[A <: Ordered[A] : RangeType] = new Range[A] {
     override val isEmpty = true
     override val singleton = None
     val lowerBound = None
@@ -61,7 +61,7 @@ object Range {
     override def @>(x : A) = false
     override def @>(r : Range[A]) = false
   }
-  def singleton[A <: Ordered[A]](x : A)(implicit t : RangeType[A]) = new Range[A] {
+  def singleton[A <: Ordered[A] : RangeType](x : A) = new Range[A] {
     override val isEmpty = false
     override val singleton = Some(x)
     val lowerBound = Some(x)
@@ -69,13 +69,13 @@ object Range {
     val lowerClosed = true
     val upperClosed = true
   }
-  def apply[A <: Ordered[A]](lb : A, ub : A)(implicit t : RangeType[A]) = new Range[A] {
+  def apply[A <: Ordered[A] : RangeType](lb : A, ub : A) = new Range[A] {
     val lowerBound = Some(lb)
     val upperBound = Some(ub)
     val lowerClosed = true
     val upperClosed = true
   }
-  def apply[A <: Ordered[A]](lc : Boolean, lb : Option[A], ub : Option[A], uc : Boolean)(implicit t : RangeType[A]) = new Range[A] {
+  def apply[A <: Ordered[A] : RangeType](lc : Boolean, lb : Option[A], ub : Option[A], uc : Boolean) = new Range[A] {
     val lowerBound = lb
     val upperBound = ub
     val lowerClosed = lc
