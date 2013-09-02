@@ -40,29 +40,8 @@ final class AssetLink private (val containerId : Container.Id, val assetId : Ass
 
   /** Effective permission the site user has over this link, specifically in regards to the asset itself.
     * Asset permissions depend on study permissions, but can be further restricted by consent levels. */
-  def permission(implicit site : Site) : Permission.Value = {
-    /* XXX: These permissions need to be reviewed carefully */
-    val p = container.permission
-    val c = asset(site.db).consent
-    val t = asset(site.db).classification 
-    val a = site.access
-    // shared, identified data withheld from un-authorized users
-    if (a < Permission.DOWNLOAD && p > Permission.VIEW &&
-       ((t <= Classification.IDENTIFIED && c < Consent.PUBLIC) ||
-        (t <= Classification.EXCERPT && c < Consent.EXCERPTS)))
-      Permission.VIEW
-    // study members get full access
-    else if (p >= Permission.EDIT)
-      p
-    // private, identified data withheld from others
-    else if (t < Classification.DEIDENTIFIED && c < Consent.SHARED && p > Permission.VIEW)
-      Permission.VIEW
-    // anyone with VIEW permission can download non-data
-    else if (t > Classification.ANALYSIS && p == Permission.VIEW)
-      Permission.DOWNLOAD
-    else
-      p
-  }
+  def permission(implicit site : Site) : Permission.Value =
+    Permission.data(container.permission, asset(site.db).consent, asset(site.db).classification)
 
   def pageName(implicit site : Site) = title
   def pageParent(implicit site : Site) = Some(container)

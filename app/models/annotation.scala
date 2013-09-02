@@ -64,7 +64,7 @@ final class Record private (override val id : Record.Id, val category_ : Option[
 
 private[models] sealed abstract class AnnotationView[R <: Annotation with TableRowId[R]](table : String) extends TableId[R](table) {
   /** Retrieve a specific annotation of the instantiated object's type by id. */
-  private[models] def get(id : Id)(implicit db : Site.DB) : Option[R] =
+  def get(id : Id)(implicit db : Site.DB) : Option[R] =
     SELECT("WHERE " + table + ".id = {id}").
       on('id -> id).singleOpt()
 
@@ -122,7 +122,7 @@ object Record extends AnnotationView[Record]("record") {
 
   /** Retrieve all the categorized records associated with slots in the given study.
     * @param category restrict to the specified category, or include all categories
-    * @return unique records sorted by category */
+    * @return unique records sorted by category, ident */
   private[models] def getSlots(study : Study, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
     val metric = Metric.Ident
     val cols = (category.fold(row)(cat => columns.map(new Record(_, Some(cat)))) ~ metric.measureType.column.?) map 

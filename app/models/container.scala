@@ -127,9 +127,10 @@ object Container extends ContainerView[Container]("container") {
     SELECT("WHERE container.id = {id} AND", condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt()(site.db)
 
-  /** Retrieve the set of (viewable) containers to which the given annotation is attached. */
+  /** Retrieve the set of containers to which the given annotation is attached.
+    * @return viewable containers ordered by study, date */
   def getAnnotation(annotation : Annotation)(implicit site : Site) : Seq[Container] =
-    SELECT("JOIN container_annotation ON container.id = container WHERE annotation = {annotation}").
+    SELECT("JOIN container_annotation ON container.id = container WHERE annotation = {annotation} ORDER BY study.id, slot.date, slot.id").
       on('annotation -> annotation.id, 'identity -> site.identity.id).list()(site.db)
 }
 
