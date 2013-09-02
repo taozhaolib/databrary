@@ -28,7 +28,7 @@ sealed abstract class Annotation protected (val id : Annotation.Id) extends Tabl
 /** A comment made by a particular user, usually only applied to exactly one object.
   * These are immutable (and unaudited), although the author may be considered to have ownership. */
 final class Comment private (override val id : Comment.Id, val whoId : Account.Id, val when : Timestamp, val text : String) extends Annotation(id) with TableRowId[Comment] {
-  protected[models] val _who = CachedVal[Account, Site](Account.get(whoId)(_).get)
+  private val _who = CachedVal[Account, Site](Account.get(whoId)(_).get)
   /** The user who made the comment. */
   def who(implicit site : Site) : Account = _who
 }
@@ -54,6 +54,11 @@ final class Record private (override val id : Record.Id, val category_ : Option[
   def measures(implicit db : Site.DB) : Seq[MeasureBase] = Measure.getRecord(this.id)(db)
   /** Add a measure to this record. */
   def addMeasure[T](metric : Metric[T], datum : T)(implicit db : Site.DB) = Measure.add[T](this.id, metric, datum)(db)
+
+  private val _ident = CachedVal[Option[String], Site.DB](measure(Metric.Ident)(_))
+  /** Cached version of `measure(Metric.Ident)`.
+    * Unfortunately, this may become invalid if ident is changed. */
+  def ident = _ident
 }
 
 
@@ -119,16 +124,18 @@ object Record extends AnnotationView[Record]("record") {
     * @param category restrict to the specified category, or include all categories
     * @return unique records sorted by category */
   private[models] def getSlots(study : Study, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
-    val cols = category.fold(row)(cat => columns.map(new Record(_, Some(cat))))
+    val metric = Metric.Ident
+    val cols = (category.fold(row)(cat => columns.map(new Record(_, Some(cat)))) ~ metric.measureType.column.?) map 
+      { case (record ~ ident) => record._ident() = ident; record }
     SQL(
       "SELECT " + cols.select + " FROM record" + 
         (if (category.isEmpty) " JOIN record_category ON category = record_category.id" else "") + 
-        " JOIN container_annotation ON record.id = annotation JOIN slot ON container = slot.id WHERE slot.study = {study}" +
+        " JOIN container_annotation ON record.id = annotation JOIN slot ON container = slot.id LEFT JOIN measure_text ON record.id = " + metric.measureType.table + ".record WHERE slot.study = {study} AND measure_text.metric = {metric}" +
         (if (category.isDefined) " AND category = {category}" else "") +
         " GROUP BY " + cols.select + " ORDER BY" + 
         (if (category.isEmpty) " record_category.id," else "") +
-        " record.id").
-      on('study -> study.id, 'category -> category.map(_.id)).
+        " " + metric.measureType.column + ", record.id").
+      on('study -> study.id, 'ident -> metric.id, 'category -> category.map(_.id)).
       list(cols)
   }
 

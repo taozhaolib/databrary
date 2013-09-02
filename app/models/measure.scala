@@ -40,11 +40,11 @@ private[models] final class MeasureType[T : Column] private (val dataType : Data
   /** The name of this type, as used in database identifiers. */
   val name = dataType.toString
   /** The table storing measurements of this type. */
-  def table = "measure_" + name
+  private[models] def table = "measure_" + name
   /** Column access to values of this type in the specific measurement table. */
-  val column = Columns[T](SelectColumn(table, "datum"))
+  private[models] val column = Columns[T](SelectColumn(table, "datum"))
   /** Column access to values of this type in the joint measurement table. */
-  val columnAll = Columns[T](SelectColumn("measure_all", "datum_" + name))
+  private[models] val columnAll = Columns[T](SelectColumn("measure_all", "datum_" + name))
 }
 object MeasureType {
   /** Text measurements are represented as Strings. */
