@@ -398,7 +398,7 @@ INSERT INTO "record_category" ("id", "name") VALUES (-1, 'participant');
 
 CREATE TABLE "record" (
 	"id" integer NOT NULL DEFAULT nextval('annotation_id_seq') Primary Key References "annotation" Deferrable Initially Deferred,
-	"category" smallint References "record_category"
+	"category" smallint References "record_category" ON DELETE SET NULL
 );
 CREATE TRIGGER "annotation" BEFORE INSERT OR UPDATE OR DELETE ON "record" FOR EACH ROW EXECUTE PROCEDURE "annotation_trigger" ();
 COMMENT ON TABLE "record" IS 'Sets of metadata measurements organized into or applying to a single cohesive unit.  These belong to the object(s) they''re attached to, which are expected to be within a single study.';
@@ -419,7 +419,7 @@ INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-2, 'birth
 INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-3, 'gender', 'text', ARRAY['F','M']);
 
 CREATE TABLE "measure" ( -- ABSTRACT
-	"record" integer NOT NULL References "record",
+	"record" integer NOT NULL References "record" ON DELETE CASCADE,
 	"metric" integer NOT NULL References "metric", -- WHERE kind = table_name
 	Primary Key ("record", "metric"),
 	Check ('f') NO INHERIT
@@ -427,21 +427,21 @@ CREATE TABLE "measure" ( -- ABSTRACT
 COMMENT ON TABLE "measure" IS 'Abstract parent of all measure tables containing data values.  Rough prototype.';
 
 CREATE TABLE "measure_text" (
-	"record" integer NOT NULL References "record",
+	"record" integer NOT NULL References "record" ON DELETE CASCADE,
 	"metric" integer NOT NULL References "metric", -- WHERE kind = "text"
 	"datum" text NOT NULL,
 	Primary Key ("record", "metric")
 ) INHERITS ("measure");
 
 CREATE TABLE "measure_number" (
-	"record" integer NOT NULL References "record",
+	"record" integer NOT NULL References "record" ON DELETE CASCADE,
 	"metric" integer NOT NULL References "metric", -- WHERE kind = "number"
 	"datum" numeric NOT NULL,
 	Primary Key ("record", "metric")
 ) INHERITS ("measure");
 
 CREATE TABLE "measure_date" (
-	"record" integer NOT NULL References "record",
+	"record" integer NOT NULL References "record" ON DELETE CASCADE,
 	"metric" integer NOT NULL References "metric", -- WHERE kind = "date"
 	"datum" date NOT NULL,
 	Primary Key ("record", "metric")
@@ -459,11 +459,6 @@ CREATE VIEW "measure_all" ("record", "metric", "datum_text", "datum_number", "da
 	SELECT record, metric, NULL, NULL, datum FROM measure_date;
 COMMENT ON VIEW "measure_all" IS 'Data from all measure tables, coerced to text.';
 
-CREATE TABLE "audit_measure" (
-	LIKE "measure",
-	"datum" text NOT NULL
-) INHERITS ("audit") WITH (OIDS = FALSE);
-
 
 CREATE TABLE "container_annotation" (
 	"annotation" integer NOT NULL References "annotation",
@@ -472,20 +467,12 @@ CREATE TABLE "container_annotation" (
 );
 COMMENT ON TABLE "container_annotation" IS 'Attachment of annotations to containers.';
 
-CREATE TABLE "audit_container_annotation" (
-	LIKE "container_annotation"
-) INHERITS ("audit") WITH (OIDS = FALSE);
-
 CREATE TABLE "asset_annotation" (
 	"annotation" integer NOT NULL References "annotation",
 	"asset" integer NOT NULL References "asset",
 	Primary Key ("annotation", "asset")
 );
 COMMENT ON TABLE "asset_annotation" IS 'Attachment of annotations to assets.';
-
-CREATE TABLE "audit_asset_annotation" (
-	LIKE "asset_annotation"
-) INHERITS ("audit") WITH (OIDS = FALSE);
 
 
 CREATE FUNCTION "asset_annotations" ("asset" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
