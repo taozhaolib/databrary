@@ -34,18 +34,33 @@ final class Comment private (override val id : Comment.Id, val whoId : Account.I
 }
 
 /** A set of Measures. */
-final class Record private (override val id : Record.Id, val category : Option[RecordCategory]) extends Annotation(id) with TableRowId[Record] {
+final class Record private (override val id : Record.Id, val category_ : Option[RecordCategory] = None) extends Annotation(id) with TableRowId[Record] {
+  private[this] var _category = category_
+  def category = _category
+  def categoryId = category.map(_.id)
+
+  /** Update the given values in the database and this object in-place. */
+  def change(category : Option[RecordCategory] = _category)(implicit db : Site.DB) : Unit = {
+    if (category == _category)
+      return
+    SQL("UPDATE record SET category = {category} WHERE id = {id}").
+      on('id -> id, 'category -> category.map(_.id)).execute()
+    _category = category
+  }
+
   /** A specific measure of the given type and metric. */
-  def measure[T](metric : Metric)(implicit db : Site.DB) : Option[T] = Measure.get[T](this.id, metric)(db)
+  def measure[T](metric : Metric[T])(implicit db : Site.DB) : Option[T] = Measure.get[T](this.id, metric)(db)
   /** All measures in this record. */
   def measures(implicit db : Site.DB) : Seq[MeasureBase] = Measure.getRecord(this.id)(db)
+  /** Add a measure to this record. */
+  def addMeasure[T](metric : Metric[T], datum : T)(implicit db : Site.DB) = Measure.add[T](this.id, metric, datum)(db)
 }
 
 
 private[models] sealed abstract class AnnotationView[R <: Annotation with TableRowId[R]](table : String) extends TableId[R](table) {
   /** Retrieve a specific annotation of the instantiated object's type by id. */
   private[models] def get(id : Id)(implicit db : Site.DB) : Option[R] =
-    SELECT("WHERE id = {id}").
+    SELECT("WHERE " + table + ".id = {id}").
       on('id -> id).singleOpt()
 
   /** Retrieve the set of annotations of the instantiated object's type on the given target.
@@ -115,6 +130,14 @@ object Record extends AnnotationView[Record]("record") {
         " record.id").
       on('study -> study.id, 'category -> category.map(_.id)).
       list(cols)
+  }
+
+  /** Create a new record, initially unattached.
+    * The result should be immediately attached to a target to make it accessible. */
+  def create(category : Option[RecordCategory] = None)(implicit db : Site.DB) : Record = {
+    val id = SQL("INSERT INTO record (category) VALUES ({category}) RETURNING id").
+      on('category -> category.map(_.id)).single(scalar[Id])
+    new Record(id, category)
   }
 }
 
