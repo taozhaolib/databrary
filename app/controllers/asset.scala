@@ -25,7 +25,7 @@ object Asset extends SiteController {
   }
 
   def view(i : models.Container.Id, o : models.Asset.Id) = check(i, o) { link => implicit request =>
-    Ok(views.html.assetLink(link))
+    Ok(views.html.asset.link(link))
   }
 
   private def assetResult(tag : String, data_ : => Future[store.StreamEnumerator], fmt : AssetFormat, saveAs : Option[String])(implicit request : SiteRequest[_]) : Result =
@@ -87,12 +87,12 @@ object Asset extends SiteController {
   def formForFile(form : EditForm) = form.value.fold(false)(!_._3.isEmpty)
 
   def edit(s : models.Container.Id, o : models.Asset.Id) = check(s, o, Permission.EDIT) { link => implicit request =>
-    Ok(views.html.assetEdit(link, formFill(link)))
+    Ok(views.html.asset.edit(link, formFill(link)))
   }
 
   def change(s : models.Container.Id, o : models.Asset.Id) = check(s, o, Permission.EDIT) { link => implicit request =>
     formFill(link).bindFromRequest.fold(
-      form => BadRequest(views.html.assetEdit(link, form)), {
+      form => BadRequest(views.html.asset.edit(link, form)), {
       case (title, description, file) =>
         link.change(title = title, description = maybe(description))
         /* file foreach {
@@ -112,18 +112,18 @@ object Asset extends SiteController {
   ))
 
   def create(c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
-    Ok(views.html.assetCreate(container, uploadForm))
+    Ok(views.html.asset.create(container, uploadForm))
   }
 
   def upload(c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
     val form = uploadForm.bindFromRequest
     val file = request.body.asMultipartFormData.flatMap(_.file("file"))
     (if (file.isEmpty) form.withError("file", "error.required") else form).fold(
-      form => BadRequest(views.html.assetCreate(container, form)), {
+      form => BadRequest(views.html.asset.create(container, form)), {
       case (title, description, classification, ()) =>
         val f = file.get
         f.contentType.flatMap(AssetFormat.getMimetype(_)).fold(
-          BadRequest(views.html.assetCreate(container, form.withError("file", "file.format.unknown", f.contentType.getOrElse("unknown")))) : Result
+          BadRequest(views.html.asset.create(container, form.withError("file", "file.format.unknown", f.contentType.getOrElse("unknown")))) : Result
         ) { format =>
           val asset = models.FileAsset.create(format, classification, f.ref)
           val link = AssetLink.create(container, asset, maybe(title).getOrElse(f.filename), maybe(description))

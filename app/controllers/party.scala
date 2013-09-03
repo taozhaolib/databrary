@@ -15,7 +15,7 @@ object Party extends SiteController {
 
   def view(i : models.Party.Id) = SiteAction { implicit request =>
     models.Party.get(i).fold(NotFound : Result)(
-      e => Ok(views.html.party(e, e.delegated)))
+      e => Ok(views.html.party.view(e, e.delegated)))
   }
 
   private def adminAccount(e : models.Party)(implicit request : UserRequest[_]) =
@@ -77,7 +77,7 @@ object Party extends SiteController {
     implicit request : UserRequest[_]) = {
     val authorizeChange = authorizeChangeForm.map(_._1.id)
     val authorizeForms = party.authorizeChildren(true).filter(t => Some(t.childId) != authorizeChange).map(t => (t.child, authorizeForm(t.childId, t.parentId).fill(t))) ++ authorizeChangeForm
-    views.html.partyAdmin(party, editForm.getOrElse(formFill(party)), authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
+    views.html.party.admin(party, editForm.getOrElse(formFill(party)), authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
   }
   
   private[this] def checkAdmin(i : models.Party.Id, delegate : Boolean = true)(act : models.Party => UserRequest[AnyContent] => Result) = UserAction { implicit request =>

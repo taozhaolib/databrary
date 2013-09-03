@@ -31,7 +31,7 @@ object Login extends SiteController {
     Forbidden(viewLogin(Some(Messages("login.noCookie"))))
 
   def view = SiteAction(request => Ok(viewLogin()), implicit request =>
-    Ok(views.html.party(request.identity, Permission.ADMIN)))
+    Ok(views.html.party.view(request.identity, Permission.ADMIN)))
 
   def ajaxView = SiteAction(request => Ok(views.html.modal.login(loginForm)), implicit request =>
     Ok(views.html.modal.profile(request.identity, Permission.ADMIN)))

@@ -16,11 +16,12 @@
                     </aside>
 
                     <aside class="dbinfo foot col_6">
-<dl>
+                        <dl>
                         @study.creationAudit(request.db).map { creation =>
-		<dt>Created</dt>
-		<dd>@creation.when</dd>
-	}</dl>
+                            <dt>Created</dt>
+                            <dd>@creation.when</dd>
+                        }
+                        </dl>
                     </aside>
 
                     <aside class="investigators foot col_3">
@@ -60,18 +61,18 @@
 
         <section id="metadata" class="tabset">
             <div id="assets" class="view">
-                <h1 class='tab'>Files</h1>
+                <h2 class='tab'>Files</h2>
                 @widget.assetList(study)
             </div>
 
             <div id="team" class="view">
-                <h1 class='tab'>Team</h1>
+                <h2 class='tab'>Team</h2>
 
                 <p>___TEAM___</p>
             </div>
 
             <div id="participants" class="view">
-                <h1 class='tab'>Participants</h1>
+                <h2 class='tab'>Participants</h2>
 
                 <ul>
                     @study.slots(request.db).map { slot =>
