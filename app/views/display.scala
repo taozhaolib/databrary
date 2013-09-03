@@ -8,6 +8,7 @@ import util._
 import models._
 import controllers._
 import scala.Some
+import java.text.SimpleDateFormat
 
 object display {
   def page(page : SitePage)(implicit site : Site) = PathCrumb(page).toHtml
@@ -29,6 +30,11 @@ object display {
       val n = a / t
       n + " " + u + (if (n == 1) "" else "s")
     } + (if (d < 0) " ago" else "")
+  }
+
+  def date(t : java.util.Date) : String = {
+    val date = new SimpleDateFormat("MMMM YYYY")
+    date.format(t)
   }
 
   def plainText(text: String = "") = {

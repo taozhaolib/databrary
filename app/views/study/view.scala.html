@@ -16,12 +16,9 @@
                     </aside>
 
                     <aside class="dbinfo foot col_6">
-                        <dl>
                         @study.creationAudit(request.db).map { creation =>
-                            <dt>Created</dt>
-                            <dd>@creation.when</dd>
+                            <span class="date created">Created <time datetime="@creation.when" pubdate>@display.date(creation.when)</time></span>
                         }
-                        </dl>
                     </aside>
 
                     <aside class="investigators foot col_3">
@@ -60,15 +57,19 @@
         </div>
 
         <section id="metadata" class="tabset">
-            <div id="assets" class="view">
-                <h2 class='tab'>Files</h2>
+            <div id="media" class="view">
+                <h2 class='tab'>Media</h2>
+
+            </div>
+
+            <div id="documents" class="view">
+                <h2 class='tab'>Documents</h2>
                 @widget.assetList(study)
             </div>
 
-            <div id="team" class="view">
-                <h2 class='tab'>Team</h2>
+            <div id="highlights" class="view">
+                <h2 class='tab'>Highlights</h2>
 
-                <p>___TEAM___</p>
             </div>
 
             <div id="participants" class="view">
@@ -82,6 +83,12 @@
 		        <a href='@routes.Slot.create(study.id)'>Add new slot</a>
                     }
                 </ul>
+            </div>
+
+            <div id="team" class="view">
+                <h2 class='tab'>Team</h2>
+
+                <p>___TEAM___</p>
             </div>
         </section>
 

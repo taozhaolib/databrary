@@ -1,8 +1,8 @@
 @(party : Party, delegated : Permission.Value)(implicit request : SiteRequest[_])
 
-@template.crud("Party: " + party.toString()) {
-    <article>
-        <h1>@party.toString()</h1>
+@template.crud("Profile: " + party.name) {
+    <article id="profile_@party.id.unId" class="profile">
+        <h1>@party.name</h1>
 
 		@if(delegated >= Permission.ADMIN) {
 			<a href='@routes.Party.admin(party.id)'>admin</a>
