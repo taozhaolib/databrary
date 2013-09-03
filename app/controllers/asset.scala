@@ -25,7 +25,7 @@ object Asset extends SiteController {
   }
 
   def view(i : models.Container.Id, o : models.Asset.Id) = check(i, o) { link => implicit request =>
-    Ok(views.html.assetLink(link))
+    Ok(views.html.asset.link(link))
   }
 
   private def assetResult(tag : String, data_ : => Future[store.StreamEnumerator], fmt : AssetFormat, saveAs : Option[String])(implicit request : SiteRequest[_]) : Result =
@@ -78,18 +78,18 @@ object Asset extends SiteController {
   private[this] def formFill(link : AssetLink)(implicit site : Site) : AssetForm = {
     /* Under what conditions should FileAsset data be allowed to be changed? */
     assetForm(false).fill((link.title, link.description.getOrElse(""), None))
-  }
+    }
 
   /* FIXME this doesn't work in error cases */
   def formForFile(form : AssetForm) = form.value.fold(false)(!_._3.isEmpty)
 
   def edit(s : models.Container.Id, o : models.Asset.Id) = check(s, o, Permission.EDIT) { link => implicit request =>
-    Ok(views.html.assetEdit(Right(link), formFill(link)))
+    Ok(views.html.asset.edit(Right(link), formFill(link)))
   }
 
   def change(s : models.Container.Id, o : models.Asset.Id) = check(s, o, Permission.EDIT) { link => implicit request =>
     formFill(link).bindFromRequest.fold(
-      form => BadRequest(views.html.assetEdit(Right(link), form)), {
+      form => BadRequest(views.html.asset.edit(Right(link), form)), {
       case (title, description, file) =>
         link.change(title = title, description = maybe(description))
         /* file foreach {
@@ -103,19 +103,19 @@ object Asset extends SiteController {
   private[this] val uploadForm = assetForm(true)
 
   def create(c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
-    Ok(views.html.assetEdit(Left(container), uploadForm))
+    Ok(views.html.asset.edit(Left(container), uploadForm))
   }
 
   def upload(c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
     val form = uploadForm.bindFromRequest
     val file = request.body.asMultipartFormData.flatMap(_.file("file"))
     (if (file.isEmpty) form.withError("file", "error.required") else form).fold(
-      form => BadRequest(views.html.assetEdit(Left(container), form)), {
+      form => BadRequest(views.html.asset.edit(Left(container), form)), {
       case (title, description, fileData) =>
         val (classification, ()) = fileData.get
         val f = file.get
         f.contentType.flatMap(AssetFormat.getMimetype(_)).fold(
-          BadRequest(views.html.assetEdit(Left(container), form.withError("file", "file.format.unknown", f.contentType.getOrElse("unknown")))) : Result
+          BadRequest(views.html.asset.edit(Left(container), form.withError("file", "file.format.unknown", f.contentType.getOrElse("unknown")))) : Result
         ) { format =>
           val asset = models.FileAsset.create(format, classification, f.ref)
           val link = AssetLink.create(container, asset, maybe(title).getOrElse(f.filename), maybe(description))

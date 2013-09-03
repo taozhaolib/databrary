@@ -1,0 +1,40 @@
+@(study: Study)(implicit request: SiteRequest[_])
+
+<table class="assets">
+    <colgroup>
+        <col class="main">
+        <col class="meta">
+        <col class="meta">
+    </colgroup>
+
+    <thead>
+        <tr>
+            <th class="main">Ident</th>
+            <th class="meta">Gender</th>
+            <th class="meta">Age</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    @study.slotRecords(Some(RecordCategory.Participant))(request.db).map { r =>
+        <tr>
+	    <td class="main"><a href='@routes.Record.view(r.id)'>@r.measure(Metric.Ident)(request.db)</a></td>
+            <td>@r.measure(Metric.Gender)(request.db)</td>
+            <td>___AGE___</td>
+        </tr>
+    }
+    </tbody>
+
+    <!-- Not all slots may be associated with participants. Show all here for now: -->
+    <ul>
+    @study.slots(request.db).map { slot =>
+	    <li>@display(slot)</li>
+    }
+    </ul>
+</table>
+
+@if(study.permission >= Permission.CONTRIBUTE) {
+    <div class="arealinks">
+        <a class="button mhead" href="@routes.Slot.create(study.id)" title="Add new slot">Add</a>
+    </div>
+}

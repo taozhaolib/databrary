@@ -1,7 +1,16 @@
-@(request : RequestHeader, error : String)
+@(request: RequestHeader, error: String)
 
 @template.raw("There's been an error! (400)") {
-	<h1>400! Unexpected parsing.</h1>	
-	<p>Bad request: @error</p>	
-	<p>@request.path</p>
+	<article class="focus row">
+		<div class="column_center">
+			<h1>400! What a naughty request.</h1>
+
+			<div class="error inline">
+				<ul>
+					<li>@error</li>
+					<li>@request.path</li>
+				</ul>
+			</div>
+		</div>
+	</article>
 }

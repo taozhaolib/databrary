@@ -1,0 +1,29 @@
+@(party : Party, time : Option[java.sql.Timestamp] = None)(implicit request : SiteRequest[_])
+
+<@if(time.isDefined){header}else{section} class="userinfo cf">
+    <div class="avatar">
+        <a href="@party.pageURL" title="@party.name">
+        @dbrary.cast[Account](party).map { account =>
+            <img src="@display.gravatarUrl(account.email, 36)" alt="@party.name">
+        }
+        </a>
+    </div>
+
+    <div class="info">
+        <div class="name">
+            <a href="@party.pageURL" title="@party.name">@party.name</a>
+        </div>
+
+        @if(time.isDefined) {
+            <div class="date">
+            @display(time.get)
+            </div>
+        } else {
+            <div class="institution">
+            @party.authorizeParents()(request.db).map { t =>
+                @display(t.parent)
+            }
+            </div>
+        }
+    </div>
+</@if(time.isDefined){header}else{section}>

@@ -1,0 +1,72 @@
+@(study: Study)(implicit request: SiteRequest[_])
+
+@template.crud("Study: " + study.title) {
+    <article id="study_@study.id.unId" class="study">
+        @region.crudHeaderStudy(study)
+
+        <div class="row">
+            <div class="description col_6">
+                @display.plainText(study.description.get)
+            </div>
+
+            <footer class="extended col_6">
+                <div class="row">
+                    <aside class="sample col_6">
+                        <img src="@routes.Assets.at("images/draft.png")" alt="">
+                    </aside>
+
+                    <aside class="dbinfo foot col_6">
+                        @study.creationAudit(request.db).map { creation =>
+                            <span class="date created">Created <time datetime="@creation.when" pubdate>@display.date(creation.when)</time></span>
+                        }
+                    </aside>
+
+                    <aside class="investigators foot col_3">
+                        <h2>Investigators</h2>
+
+                        @study.partyAccess(Permission.CONTRIBUTE)(request.db).map { a =>
+                            @widget.userinfo(a.party)
+                        }
+                    </aside>
+
+                    <aside class="funding foot col_3">
+                        <h2>Funding</h2>
+
+                        <p>___FUNDING___</p>
+                    </aside>
+                </div>
+            </footer>
+        </div>
+
+        <section id="metadata" class="tabset">
+            <div id="media" class="view">
+                <h2 class='tab'>Media</h2>
+                <p>___MEDIA___</p>
+            </div>
+
+            <div id="highlights" class="view">
+                <h2 class='tab'>Highlights</h2>
+                <p>___HIGHLIGHTS___</p>
+            </div>
+
+            <div id="documents" class="view">
+                <h2 class='tab'>Documents</h2>
+                @widget.assetList(study)
+            </div>
+
+            <div id="participants" class="view">
+                <h2 class='tab'>Participants</h2>
+                @widget.slotList(study)
+            </div>
+
+            <div id="history" class="view">
+                <h2 class='tab'>History</h2>
+                <p>___HISTORY___</p>
+            </div>
+        </section>
+
+        <div class="row">
+            @region.comments(Some(routes.Comment.postStudy(study.id)), study.comments(true)(request.db))
+        </div>
+    </article>
+}

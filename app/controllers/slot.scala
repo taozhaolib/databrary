@@ -22,7 +22,7 @@ object Slot extends SiteController {
   }
 
   def view(i : models.Slot.Id) = check(i) { slot => implicit request =>
-    Ok(views.html.slot(slot))
+    Ok(views.html.slot.view(slot))
   }
 
   type SlotForm = Form[(Consent.Value, Date)]
@@ -35,7 +35,7 @@ object Slot extends SiteController {
   private[this] def viewEdit(slot : Slot)(
     editForm : SlotForm = editFormFill(slot))(
     implicit request : SiteRequest[_]) = {
-    views.html.slotEdit(Right(slot), editForm)
+    views.html.slot.edit(Right(slot), editForm)
   }
 
   def edit(i : models.Slot.Id) = check(i, Permission.EDIT) { slot => implicit request =>
@@ -54,16 +54,16 @@ object Slot extends SiteController {
   }
 
   def create(s : models.Study.Id) = Study.check(s, Permission.CONTRIBUTE) { study => implicit request =>
-    Ok(views.html.slotEdit(Left(study), editForm))
+    Ok(views.html.slot.edit(Left(study), editForm))
   }
 
   def add(s : models.Study.Id) = Study.check(s, Permission.CONTRIBUTE) { study => implicit request =>
     val form = editForm.bindFromRequest
     form.fold(
-      form => BadRequest(views.html.slotEdit(Left(study), form)),
+      form => BadRequest(views.html.slot.edit(Left(study), form)),
       { case (consent, date) =>
         val slot = models.Slot.create(study = study, consent = consent, date = date)
-        Created(views.html.slot(slot))
+        Created(views.html.slot.view(slot))
       }
     )
   }

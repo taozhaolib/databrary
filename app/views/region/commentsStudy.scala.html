@@ -1,7 +1,0 @@
-@(study: Study)(implicit request: SiteRequest[_])
-
-<section id="comments">
-    @region.comments(Some(routes.Comment.postStudy(study.id)), study.comments(true)(request.db)) { c =>
-		@display(c.who)
-	}
-</section>

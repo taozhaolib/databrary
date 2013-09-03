@@ -1,0 +1,15 @@
+@(study: Study)(implicit request: SiteRequest[_])
+
+@defining(study.partyAccess()(request.db)) { list =>
+    @list.filter(_.access == Permission.ADMIN).map { account =>
+        @account.party.name<br>
+    }
+
+    @list.filter(_.access == Permission.EDIT).map { account =>
+        @account.party.name<br>
+    }
+
+    @list.filter(_.access == Permission.DOWNLOAD).map { account =>
+        @account.party.name<br>
+    }
+}

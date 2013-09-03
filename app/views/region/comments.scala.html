@@ -1,21 +1,50 @@
-@(post : Option[Call], comments : Seq[Comment])(title : Comment => Html)(implicit request : SiteRequest[_])
+@(post : Option[Call], comments : Seq[Comment])(implicit request : SiteRequest[_])
 
-<section id="comments">
+@import helper.FieldConstructor
+    @implicitField = @{
+        FieldConstructor(tag.minimalFieldConstructor.f)
+    }
+
+<section id="comments" class="col_8">
     <h1>Comments</h1>
 
     @post.map { post =>
         @if(request.access >= Permission.COMMENT) {
-            @helper.form(post) {
-                @helper.textarea(controllers.Comment.form("text"), 'cols -> 80, 'rows -> 4)
-                <button type='submit'>Post</button>
-            }
+            <div class="comment form">
+                <header class="userinfo cf">
+                    <div class="avatar">
+                        <a href="@request.user.get.pageURL" title="@request.user.get.name"><img src="@display.gravatarUrl(request.user.get.email, 40)" alt="@request.user.get.name"></a>
+                    </div>
+
+                    <div class="info">
+                        <div class="name">
+                            <a href="@request.user.get.pageURL" title="@request.user.get.name">@request.user.get.name</a>
+                        </div>
+
+                        <div class="date">
+                            Comment now
+                        </div>
+                    </div>
+                </header>
+
+                @helper.form(post) {
+                    <div class="body">
+                        @helper.textarea(controllers.Comment.form("text"))
+                        <button type="submit" class="button first">Post</button>
+                    </div>
+                }
+            </div>
+
         }
     }
 
-        <dl>
-        @comments.map { c =>
-            <dt>@title(c) @display(c.when)</dt>
-            <dd>@c.text</dd>
-        }
-        </dl>
-</section>
+    @comments.map { c =>
+        <article class="comment">
+            @widget.userinfo(c.who, Some(c.when))
+
+            <div class="body">
+            @display.plainText(c.text)
+            </div>
+        </article>
+    }
+    </section>

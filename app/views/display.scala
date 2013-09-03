@@ -8,6 +8,7 @@ import util._
 import models._
 import controllers._
 import scala.Some
+import java.text.SimpleDateFormat
 
 object display {
   def page(page : SitePage)(implicit site : Site) = PathCrumb(page).toHtml
@@ -31,8 +32,13 @@ object display {
     } + (if (d < 0) " ago" else "")
   }
 
-  def plainText(text: Option[String] = Option("")) = {
-    raw("<p>"+text.getOrElse("").split("\\r?\\n").mkString("</p><p>")+"</p>")
+  def date(t : java.util.Date) : String = {
+    val date = new SimpleDateFormat("MMMM YYYY")
+    date.format(t)
+  }
+
+  def plainText(text: String = "") = {
+    raw("<p>"+text.split("\\r?\\n").mkString("</p><p>")+"</p>")
   }
 
   def gravatarUrl(email: String = "none", size: Int = 64) = {

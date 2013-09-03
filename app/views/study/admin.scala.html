@@ -8,7 +8,7 @@
 
 @template.crud("Edit Study Permissions: " + study.title) {
     <article>
-        <h1>@Path(study).toHtml</h1>
+        @region.crudHeaderStudy(study)
 
 	<table>
 	@defining(helper.FieldConstructor(widget.tableFieldConstructor.f)) { implicit fieldConstructor =>
