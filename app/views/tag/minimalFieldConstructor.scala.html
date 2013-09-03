@@ -1,6 +1,8 @@
 @(elements: helper.FieldElements)
 
 <div class="field cf @elements.args.get('_class) @if(elements.hasErrors) {error}" id="@elements.args.get('_id).getOrElse(elements.id + "_field")">
+    <label for="@elements.id" style="display: none;">@elements.label(elements.lang)</label>
+
     <div class="input">
         @elements.input
 
