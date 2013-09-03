@@ -1,0 +1,33 @@
+@(study: Study)(implicit request: SiteRequest[_])
+
+<table class="assets">
+    <colgroup>
+        <col class="main">
+        <col class="meta">
+        <col class="meta">
+    </colgroup>
+
+    <thead>
+        <tr>
+            <th class="main">Ident</th>
+            <th class="meta">Gender</th>
+            <th class="meta">Age</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    @study.slots(request.db).map { slot =>
+        <tr>
+            <td class="main">@display(slot)</td>
+            <td>___SEX___</td>
+            <td>___AGE___</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if(study.permission >= Permission.CONTRIBUTE) {
+    <div class="arealinks">
+        <a class="button mhead" href="@routes.Slot.create(study.id)" title="Add new slot">Add</a>
+    </div>
+}

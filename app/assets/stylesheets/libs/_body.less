@@ -111,9 +111,12 @@
 .userinfo {
 	margin-bottom: @gutter/2;
 	text-align: left;
+	font-size: 0.9em;
+	line-height: 1;
 
 	img {
 		display: block;
+		.size(@avatar_medium);
 	}
 
 	.avatar {
@@ -126,12 +129,14 @@
 
 	.name {
 		a {
+			display: inline-block;
 			font-size: 1.1em;
+			padding: 3px 0 1px;
 		}
 	}
 
 	.institution, .date {
-		font-size: 0.9em;
+		font-size: 0.8em;
 		color: @gray_50_third;
 
 		a {

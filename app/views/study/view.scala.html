@@ -25,25 +25,7 @@
                         <h2>Investigators</h2>
 
                         @study.partyAccess(Permission.CONTRIBUTE)(request.db).map { a =>
-                            <section class="userinfo cf">
-                                @dbrary.cast[Account](a.party).map { account =>
-                                    <div class="avatar">
-                                        <a href="@a.party.pageURL" title="@a.party.name"><img src="@display.gravatarUrl(account.email, 44)" alt="@a.party.name"></a>
-                                    </div>
-                                }
-
-                            <div class="info">
-                                <div class="name">
-                                    <a href="@a.party.pageURL" title="@a.party.name">@a.party.name</a>
-                                </div>
-
-                                <div class="institution">
-                                @a.party.authorizeParents()(request.db).map { t =>
-                                    @display(t.parent)
-                                }
-                            </div>
-                            </div>
-                            </section>
+                            @widget.userinfo(a.party)
                         }
                     </aside>
 
@@ -59,7 +41,12 @@
         <section id="metadata" class="tabset">
             <div id="media" class="view">
                 <h2 class='tab'>Media</h2>
+                <p>___MEDIA___</p>
+            </div>
 
+            <div id="highlights" class="view">
+                <h2 class='tab'>Highlights</h2>
+                <p>___HIGHLIGHTS___</p>
             </div>
 
             <div id="documents" class="view">
@@ -67,28 +54,14 @@
                 @widget.assetList(study)
             </div>
 
-            <div id="highlights" class="view">
-                <h2 class='tab'>Highlights</h2>
-
-            </div>
-
             <div id="participants" class="view">
                 <h2 class='tab'>Participants</h2>
-
-                <ul>
-                    @study.slots(request.db).map { slot =>
-                        <li>@display(slot)</li>
-                    }
-                    @if(study.permission >= Permission.CONTRIBUTE) {
-		        <a href='@routes.Slot.create(study.id)'>Add new slot</a>
-                    }
-                </ul>
+                @widget.slotList(study)
             </div>
 
-            <div id="team" class="view">
-                <h2 class='tab'>Team</h2>
-
-                <p>___TEAM___</p>
+            <div id="history" class="view">
+                <h2 class='tab'>History</h2>
+                <p>___HISTORY___</p>
             </div>
         </section>
 

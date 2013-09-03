@@ -13,7 +13,7 @@
             <div class="comment form">
                 <header class="userinfo cf">
                     <div class="avatar">
-                        <a href="@request.user.get.pageURL" title="@request.user.get.name"><img src="@display.gravatarUrl(request.user.get.email, 44)" alt="@request.user.get.name"></a>
+                        <a href="@request.user.get.pageURL" title="@request.user.get.name"><img src="@display.gravatarUrl(request.user.get.email, 40)" alt="@request.user.get.name"></a>
                     </div>
 
                     <div class="info">
@@ -40,21 +40,7 @@
 
     @comments.map { c =>
         <article class="comment">
-            <header class="userinfo cf">
-                <div class="avatar">
-                    <a href="@c.who.pageURL" title="@c.who.name"><img src="@display.gravatarUrl(c.who.email, 44)" alt="@c.who.name"></a>
-                </div>
-
-                <div class="info">
-                    <div class="name">
-                        <a href="@c.who.pageURL" title="@c.who.name">@c.who.name</a>
-                    </div>
-
-                    <div class="date">
-                    @display(c.when)
-                    </div>
-                </div>
-            </header>
+            @widget.userinfo(c.who, Some(c.when))
 
             <div class="body">
             @display.plainText(c.text)

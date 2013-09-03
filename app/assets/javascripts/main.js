@@ -4,7 +4,7 @@ $.fn.exists = function () {
 }
 
 // clean dbjs namespace
-var dbjs = dbjs || {};
+var dbjs = {};
 
 /**
  * Creates tabset with content panes
@@ -296,7 +296,7 @@ $(document).ready(function () {
 	// when logged out
 	dbjs.ajaxModal('#modal_login_link', '/ajax/modal/login', true);
 	// when logged in
-	//dbjs.ajaxModal('#modal_profile_link', '/ajax/modal/login', true);
+	//dbjs.ajaxModal('#modal_profile_link', '/ajax/modal/profile', true);
 
 	// faq
 	dbjs.fold('.question', 'h2', 'div');
