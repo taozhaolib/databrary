@@ -250,6 +250,9 @@ CREATE VIEW "containers" AS
 		     JOIN study ON study.id = container.id OR study.id = slot.study;
 COMMENT ON VIEW "containers" IS 'All containers (studies and slots) in expanded form.';
 
+CREATE VIEW "container_nesting" ("child", "parent") AS 
+	SELECT id, id FROM container UNION ALL SELECT id, study FROM slot;
+
 CREATE FUNCTION "container_study" ("container" integer) RETURNS integer LANGUAGE sql STABLE STRICT AS $$
 	SELECT id FROM study WHERE id = $1 UNION ALL SELECT study FROM slot WHERE id = $1
 $$;
@@ -366,10 +369,10 @@ CREATE VIEW "asset_nesting" ("child", "parent") AS
 
 CREATE FUNCTION "asset_parents" ("file" integer, "segment" segment = NULL) RETURNS SETOF integer LANGUAGE sql STABLE AS 
 	$$ SELECT $1 UNION ALL SELECT id FROM clip WHERE source = $1 AND segment @> $2 $$;
-COMMENT ON FUNCTION "asset_parents" (integer, segment) IS 'Set of assets that provide the specified asset.  Note that the contains relation here is rather liberal, as we are depending on researchers and/or other parts of the system to ensure than overlapping consents don''t disagree.';
+COMMENT ON FUNCTION "asset_parents" (integer, segment) IS 'Set of assets that provide the specified asset.  Note that the contains relation here is rather liberal, as we are depending on researchers and/or other parts of the system to ensure that overlapping consents don''t disagree.';
 
 CREATE FUNCTION "asset_consent" ("file" integer, "segment" segment = NULL) RETURNS consent LANGUAGE sql STABLE AS $$
-	SELECT MIN(consent) FROM asset_parents($1, $2) JOIN asset_link ON (asset_parents = asset) JOIN slot ON (container = slot.id)
+	SELECT MIN(consent) FROM asset_parents($1, $2) JOIN asset_link ON asset_parents = asset JOIN slot ON container = slot.id
 $$;
 COMMENT ON FUNCTION "asset_consent" (integer, segment) IS 'Effective (minimal) consent level granted on the specified asset.';
 
@@ -480,15 +483,26 @@ CREATE FUNCTION "asset_annotations" ("asset" integer) RETURNS SETOF integer LANG
 $$;
 
 CREATE FUNCTION "container_annotations" ("container" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
-	WITH containers (container) AS (SELECT $1 UNION ALL SELECT id AS container FROM slot WHERE study = $1)
-	SELECT annotation FROM containers JOIN container_annotation USING (container) UNION
+	WITH containers (container) AS (SELECT $1 UNION ALL SELECT id AS container FROM slot WHERE study = $1) -- (SELECT child FROM container_nesting WHERE parent = $1)
+	SELECT annotation FROM containers JOIN container_annotation USING (container) UNION ALL
 	SELECT annotation FROM containers JOIN asset_link USING (container) JOIN asset_nesting ON parent = asset JOIN asset_annotation ON child = asset_annotation.asset
 $$;
 
+CREATE FUNCTION "annotation_containers" ("annotation" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
+	SELECT container FROM container_annotation WHERE annotation = $1 UNION ALL
+	SELECT asset_link.container FROM asset_annotation JOIN asset_nesting ON asset_annotation.asset = asset_nesting.child JOIN asset_link ON asset_nesting.parent = asset_link.asset WHERE annotation = $1
+$$;
+
+CREATE FUNCTION "annotation_consent" ("annotation" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS $$
+	SELECT MIN(consent) FROM annotation_containers($1) JOIN slot ON annotation_containers = slot.id
+$$;
+COMMENT ON FUNCTION "annotation_consent" (integer) IS 'Effective (minimal) consent level granted on the specified annotation.';
 
 # --- !Downs
 ;
 
+DROP FUNCTION "annotation_consent" (integer);
+DROP FUNCTION "annotation_containers" (integer);
 DROP FUNCTION "container_annotations" (integer);
 DROP FUNCTION "asset_annotations" (integer);
 DROP TABLE "asset_annotation";
@@ -524,6 +538,7 @@ DROP FUNCTION "interval_mi_epoch" (interval, interval);
 DROP TYPE classification;
 
 DROP FUNCTION "container_study" (integer);
+DROP VIEW "container_nesting";
 DROP VIEW "containers";
 DROP TABLE "slot";
 DROP FUNCTION "study_access_check" (integer, integer, permission);

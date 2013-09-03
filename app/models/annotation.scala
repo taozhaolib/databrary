@@ -71,7 +71,7 @@ private[models] sealed abstract class AnnotationView[R <: Annotation with TableR
   /** Retrieve the set of annotations of the instantiated object's type on the given target.
     * @param all include all indirect annotations on any containers, objects, or clips contained within the given target (which may be a lot) */
   private[models] def get(target : Annotated, all : Boolean = true)(implicit db : Site.DB) : Seq[R] = {
-    val j = target.annotatedLevel + "_annotation"
+    val j = target.annotationTable
     SELECT(if (all) 
         "JOIN " + j + "s({target}) ON " + table + ".id = " + j + "s"
       else
@@ -105,8 +105,8 @@ object Comment extends AnnotationView[Comment]("comment") {
     val c = SQL("INSERT INTO " + table + " " + args.insert + " RETURNING " + *).
       on(args : _*).single(row)(site.db)
     c._who() = site.user.get
-    Audit.add(target.annotatedLevel + "_annotation", SQLArgs(Symbol(target.annotatedLevel) -> target.annotatedId, 'annotation -> c.id)).
-      execute()(site.db)
+    SQL("INSERT INTO " + target.annotationTable + " (" + target.annotatedLevel + ", annotation) VALUES ({target}, {annotation})").
+      on('target -> target.annotatedId, 'annotation -> c.id).execute()(site.db)
     c
   }
 }
@@ -153,6 +153,7 @@ object Record extends AnnotationView[Record]("record") {
 trait Annotated {
   private[models] def annotatedId : IntId[_]
   private[models] def annotatedLevel : String
+  private[models] def annotationTable = annotatedLevel + "_annotation"
   /** The list of comments on this object.
     * @param all include indirect comments on any contained objects
     */
