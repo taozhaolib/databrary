@@ -58,9 +58,7 @@ object Classification extends PGEnum("classification") {
       IDENTIFIED
     else if (c >= Consent.EXCERPTS)
       EXCERPT
-    else if (c > Consent.NONE)
-      DEIDENTIFIED
     else
-      UNRESTRICTED
+      DEIDENTIFIED
   }
 }

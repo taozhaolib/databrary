@@ -73,6 +73,12 @@
             <div id="participants" class="view">
                 <h1 class='tab'>Participants</h1>
 
+		<ul>
+		@study.slotRecords(Some(RecordCategory.Participant))(request.db).map { r =>
+			<li><a href='@routes.Record.view(r.id)'>@r.measure(Metric.Ident)(request.db)</a> @r.measure(Metric.Gender)(request.db)</li>
+		}
+		</ul>
+
                 <ul>
                     @study.slots(request.db).map { slot =>
                         <li>@display(slot)</li>

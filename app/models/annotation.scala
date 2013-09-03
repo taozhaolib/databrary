@@ -136,14 +136,14 @@ object Record extends AnnotationView[Record]("record") {
     val metric = Metric.Ident
     val cols = (category.fold(row)(cat => columns.map(makeCategory(Some(cat)) _)) ~ metric.measureType.column.?) map 
       { case (record ~ ident) => record._ident() = ident; record }
-    SQL("SELECT " + cols.select + " FROM record" + 
-        (if (category.isEmpty) " JOIN record_category ON category = record_category.id" else "") + 
-        " JOIN container_annotation ON record.id = annotation JOIN slot ON container = slot.id LEFT JOIN measure_text ON record.id = " + metric.measureType.table + ".record WHERE slot.study = {study} AND measure_text.metric = {metric}" +
-        (if (category.isDefined) " AND category = {category}" else "") +
-        " GROUP BY " + cols.select + " ORDER BY" + 
-        (if (category.isEmpty) " record_category.id," else "") +
-        " " + metric.measureType.column + ", record.id").
-      on('study -> study.id, 'ident -> metric.id, 'category -> category.map(_.id)).
+    SQL("SELECT " + cols.select + " FROM (SELECT record.id, record.category FROM record" +
+        (if (category.isEmpty) " JOIN record_category ON record.category = record_category.id" else "") + 
+        " JOIN container_annotation ON record.id = annotation JOIN slot ON container = slot.id WHERE slot.study = {study} GROUP BY record.id, record.category" +
+        (if (category.isDefined) " HAVING record.category = {category}" else "") +
+        ") record LEFT JOIN measure_text ON record.id = " + metric.measureType.table + ".record WHERE measure_text.metric = {metric} ORDER BY" +
+        (if (category.isEmpty) " record.category," else "") +
+        " " + metric.measureType.column.select + ", record.id").
+      on('study -> study.id, 'metric -> metric.id, 'category -> category.map(_.id)).
       list(cols)
   }
 

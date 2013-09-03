@@ -65,6 +65,8 @@ POST    /study/:id/Comment                     	controllers.Comment.postStudy(id
 POST    /slot/:id/Comment                      	controllers.Comment.postSlot(id : models.Slot.Id)
 POST    /asset/:id/:obj/Comment               	controllers.Comment.postAssetLink(id : models.Container.Id, obj : models.Asset.Id)
 
+GET	/record/:id				controllers.Record.view(id : models.Record.Id)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                          	controllers.Assets.at(path="/public", file)
 
