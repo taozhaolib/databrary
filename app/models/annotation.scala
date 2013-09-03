@@ -34,7 +34,7 @@ final class Comment private (override val id : Comment.Id, val whoId : Account.I
 }
 
 /** A set of Measures. */
-final class Record private (override val id : Record.Id, val category_ : Option[RecordCategory] = None) extends Annotation(id) with TableRowId[Record] {
+final class Record private (override val id : Record.Id, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE) extends Annotation(id) with TableRowId[Record] {
   private[this] var _category = category_
   def category = _category
   def categoryId = category.map(_.id)
@@ -59,6 +59,13 @@ final class Record private (override val id : Record.Id, val category_ : Option[
   /** Cached version of `measure(Metric.Ident)`.
     * Unfortunately, this may become invalid if ident is changed. */
   def ident = _ident
+
+  /** Effective permission the site user has over a given metric in this record, specifically in regards to the measure datum itself.
+    * Record permissions depend on study permissions, but can be further restricted by consent levels.
+    * @param permission applicable (study) permission for this record's target
+    */
+  def permission(permission : Permission.Value, metric : MetricBase)(implicit site : Site) : Permission.Value =
+    Permission.data(permission, consent, metric.classification)
 }
 
 
@@ -112,11 +119,13 @@ object Comment extends AnnotationView[Comment]("comment") {
 }
 
 object Record extends AnnotationView[Record]("record") {
+  private[this] def makeCategory(category : Option[RecordCategory])(id : Id, consent : Option[Consent.Value]) =
+    new Record(id, category, consent.getOrElse(Consent.NONE))
   private[this] val columns = Columns[
-    Id](
-    'id)
+    Id,  Option[Consent.Value]](
+    'id, SelectAs("annotation_consent(record.id)", "annotation_consent"))
   private[models] val row = (columns ~ RecordCategory.row.?) map {
-    case (id ~ cls) => new Record(id, cls)
+    case (rec ~ cls) => (makeCategory(cls) _).tupled(rec)
   }
   private[models] override val src = "record LEFT JOIN record_category ON record.category = record_category.id"
 
@@ -125,10 +134,9 @@ object Record extends AnnotationView[Record]("record") {
     * @return unique records sorted by category, ident */
   private[models] def getSlots(study : Study, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
     val metric = Metric.Ident
-    val cols = (category.fold(row)(cat => columns.map(new Record(_, Some(cat)))) ~ metric.measureType.column.?) map 
+    val cols = (category.fold(row)(cat => columns.map(makeCategory(Some(cat)) _)) ~ metric.measureType.column.?) map 
       { case (record ~ ident) => record._ident() = ident; record }
-    SQL(
-      "SELECT " + cols.select + " FROM record" + 
+    SQL("SELECT " + cols.select + " FROM record" + 
         (if (category.isEmpty) " JOIN record_category ON category = record_category.id" else "") + 
         " JOIN container_annotation ON record.id = annotation JOIN slot ON container = slot.id LEFT JOIN measure_text ON record.id = " + metric.measureType.table + ".record WHERE slot.study = {study} AND measure_text.metric = {metric}" +
         (if (category.isDefined) " AND category = {category}" else "") +
