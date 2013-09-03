@@ -1,19 +1,24 @@
-@(link : AssetLink, form : controllers.Asset.EditForm)(implicit request : SiteRequest[_])
+@(target : Either[Container,AssetLink], form : controllers.Asset.AssetForm)(implicit request : SiteRequest[_])
 
-@template.crud("Edit Asset: " + link.toString()) {
+@template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.toString())) {
     <article>
-        <h1>@link.toString()</h1>
+	<h1>@target.fold(_ => "Upload Asset", _.toString())</h1>
 
-        @helper.form(routes.Asset.change(link.containerId, link.assetId)) {
+	@helper.form(target.fold(
+		container => routes.Asset.upload(container.id),
+		link => routes.Asset.change(link.containerId, link.assetId)),
+		'enctype -> "multipart/form-data") {
             @helper.inputText(form("title"))
             @helper.textarea(form("description"), 'cols -> 80, 'rows -> 4)
 
             @if(controllers.Asset.formForFile(form)) {
+	        @widget.enumSelect(form("classification"), Classification)
+	        @helper.inputFile(form("file"))
             }
 
-            <button type='submit'>Change</button>
+	    <button type='submit'>@target.fold(_ => "Upload", _ => "Change")</button>
         }
-
         @widget.formErrors(form)
+
     </article>
 }

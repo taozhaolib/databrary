@@ -10,10 +10,10 @@ abstract class ToTyStatement[T,A](implicit ts : ToStatement[T]) extends ToStatem
     ts.set(s, index, convert(aValue))
 }
 object ToTyStatement {
-  implicit def identityTyStatement[A](implicit ts : ToStatement[A]) : ToTyStatement[A,A] = new ToTyStatement[A,A] {
+  implicit def identityTyStatement[A : ToStatement] : ToTyStatement[A,A] = new ToTyStatement[A,A] {
     def convert(a : A) = a
   }
-  implicit def optionTyStatement[A](implicit ts : ToStatement[A]) : ToTyStatement[Option[A],A] = new ToTyStatement[Option[A],A] {
+  implicit def optionTyStatement[A : ToStatement] : ToTyStatement[Option[A],A] = new ToTyStatement[Option[A],A] {
     def convert(a : A) = Some(a)
   }
 }

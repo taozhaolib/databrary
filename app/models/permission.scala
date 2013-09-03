@@ -1,6 +1,7 @@
 package models
 
 import dbrary._
+import util._
 
 /** The possible levels of permission used for site access, user delegation, and study permissions.
   * Must match the corresponding postgres "permission" type. */
@@ -15,6 +16,20 @@ object Permission extends PGEnum("permission") {
   def DATA = DOWNLOAD
   /** Alias for VIEW. COMMENTing on objects requires VIEW site access. */
   def COMMENT = VIEW
+
+  /** The effective permission for data objects with the given attributes. */
+  final def data(p : Value, consent : Consent.Value, classification : Classification.Value)(implicit site : Site) : Value = {
+    if (p >= EDIT)
+      p
+    else if (p >= DOWNLOAD && classification >= Classification.access(consent))
+      DOWNLOAD
+    else if (p >= VIEW && classification >= Classification.UNRESTRICTED)
+      DOWNLOAD
+    else if (p >= VIEW)
+      VIEW
+    else
+      NONE
+  }
 }
 
 /** The possible levels of participant consent governing [Classification.IDENTIFIED] data.
@@ -28,4 +43,24 @@ object Consent extends PGEnum("consent") {
   * Must match the corresponding postgres "consent" type. */
 object Classification extends PGEnum("classification") {
   val IDENTIFIED, EXCERPT, DEIDENTIFIED, ANALYSIS, PRODUCT, MATERIAL = Value
+  def RESTRICTED = IDENTIFIED
+  /** ANALYSIS and above are non-data and so unrestricted. */
+  def UNRESTRICTED = ANALYSIS
+
+  /** The most restricetd data classification level that the current user may access under the given consent level.
+    * Actual access to data will additionally depend on study permissions not checked here. */
+  def access(consent : Consent.Value)(implicit site : Site) : Value = {
+    val c = consent
+    val a = site.access
+    if (// a >= Permission.ADMIN ||
+        c >= Consent.PUBLIC ||
+        c >= Consent.SHARED && a >= Permission.DOWNLOAD)
+      IDENTIFIED
+    else if (c >= Consent.EXCERPTS)
+      EXCERPT
+    else if (c > Consent.NONE)
+      DEIDENTIFIED
+    else
+      UNRESTRICTED
+  }
 }

@@ -35,12 +35,12 @@ object SiteAction {
     } }
 
   def apply(block : SiteRequest[AnyContent] => Result) : Action[AnyContent] =
-    apply(block(_), block(_))
+    apply(block, block)
 }
 
 object UserAction {
   def apply(block : UserRequest[AnyContent] => Result) : Action[AnyContent] =
-    SiteAction(_ => Login.needLogin, block(_))
+    SiteAction(_ => Login.needLogin, block)
 }
 
 class SiteController extends Controller {

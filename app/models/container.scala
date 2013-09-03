@@ -72,6 +72,11 @@ final class Study private (override val id : Study.Id, title_ : String, descript
     SQL("SELECT " + cols.select + " FROM audit_study WHERE id = {id} AND action = 'add'").
       on('id -> id).singleOpt(cols)
   }
+
+  /** List of records associated with any slot in this study.
+    * @param category restrict to the specified category
+    * @return unique records sorted by category */
+  def slotRecords(category : Option[RecordCategory] = None)(implicit db : Site.DB) = Record.getSlots(this, category)
 }
 
 /** Smallest organizatonal unit of related data, primarily used for an individual session of data with a single date, place, and consent level. */
@@ -122,9 +127,10 @@ object Container extends ContainerView[Container]("container") {
     SELECT("WHERE container.id = {id} AND", condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt()(site.db)
 
-  /** Retrieve the set of (viewable) containers to which the given annotation is attached. */
+  /** Retrieve the set of containers to which the given annotation is attached.
+    * @return viewable containers ordered by study, date */
   def getAnnotation(annotation : Annotation)(implicit site : Site) : Seq[Container] =
-    SELECT("JOIN container_annotation ON container.id = container WHERE annotation = {annotation}").
+    SELECT("JOIN container_annotation ON container.id = container WHERE annotation = {annotation} ORDER BY study.id, slot.date, slot.id").
       on('annotation -> annotation.id, 'identity -> site.identity.id).list()(site.db)
 }
 
