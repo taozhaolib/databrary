@@ -11,40 +11,62 @@
 
             <footer class="extended col_6">
                 <div class="row">
-                    <aside class="sample col_6">
-                        <img src="@routes.Assets.at("images/draft.png")" alt="">
-                    </aside>
+                    <div class="wide_col_6">
+                        <aside class="sample foot col_6">
+                            <img src="@routes.Assets.at("images/draft.png")" alt="">
+                        </aside>
 
-                    <aside class="dbinfo foot col_6">
-                        @study.creationAudit(request.db).map { creation =>
-                            <span class="date created">Created <time datetime="@creation.when" pubdate>@display.date(creation.when)</time></span>
-                        }
-                    </aside>
+                        <aside class="access foot col_6">
+                            <h2>Access</h2>
 
-                    <aside class="investigators foot col_3">
-                        <h2>Investigators</h2>
+                            @widget.studyAccess(study)
+                        </aside>
 
-                        @study.partyAccess(Permission.CONTRIBUTE)(request.db).map { a =>
-                            @widget.userinfo(a.party)
-                        }
-                    </aside>
+                        <aside class="citing foot col_6">
+                            <h2>Citation</h2>
 
-                    <aside class="funding foot col_3">
-                        <h2>Funding</h2>
+                            @widget.studyCitation(study)
+                        </aside>
+                    </div>
 
-                        <p>___FUNDING___</p>
-                    </aside>
+                    <div class="wide_col_3">
+                        <aside class="investigators foot col_3">
+                            <h2>Investigators</h2>
+
+                            @study.partyAccess(Permission.CONTRIBUTE)(request.db).map { a =>
+                                @widget.userinfo(a.party)
+                            }
+                        </aside>
+
+                        <div class="col_3">
+                            <aside class="dates foot">
+                                <h2>Metadata</h2>
+                                <dl class="metalist cf">
+                                @study.creationAudit(request.db).map { creation =>
+                                    <dt class="date created">Created</dt>
+                                    <dd><time datetime="@creation.when" pubdate>@display.date(creation.when)</time></dd>
+                                }
+                                </dl>
+                            </aside>
+
+                            <aside class="funding foot">
+                                <h2>Funding</h2>
+
+                                @widget.userinfo(models.Party.Root)
+                            </aside>
+                        </div>
+                    </div>
                 </div>
             </footer>
         </div>
 
         <section id="metadata" class="tabset">
-            <div id="media" class="view">
+            <div id="media" class="view demo">
                 <h2 class='tab'>Media</h2>
                 <p>___MEDIA___</p>
             </div>
 
-            <div id="highlights" class="view">
+            <div id="highlights" class="view demo">
                 <h2 class='tab'>Highlights</h2>
                 <p>___HIGHLIGHTS___</p>
             </div>
@@ -59,7 +81,7 @@
                 @widget.slotList(study)
             </div>
 
-            <div id="history" class="view">
+            <div id="history" class="view demo">
                 <h2 class='tab'>History</h2>
                 <p>___HISTORY___</p>
             </div>

@@ -3,9 +3,7 @@
 <@if(time.isDefined){header}else{section} class="userinfo cf">
     <div class="avatar">
         <a href="@party.pageURL" title="@party.name">
-        @dbrary.cast[Account](party).map { account =>
-            <img src="@display.gravatarUrl(account.email, 36)" alt="@party.name">
-        }
+            <img src="@display.gravatarUrlByParty(party, 36)" alt="@party.name">
         </a>
     </div>
 

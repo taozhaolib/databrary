@@ -71,6 +71,12 @@
 		}
 	}
 
+	.extended {
+		h2 {
+			margin-top: 0;
+		}
+	}
+
 	// comments
 	#comments {
 		h1 {
@@ -161,4 +167,38 @@
 
 .focus {
   padding: (@gutter*4) 0;
+}
+
+.citation {
+	font-size: 0.8em;
+	text-align: left;
+	color: @gray_50_third;
+}
+
+.foot {
+	margin-bottom: (@gutter/2);
+}
+
+dl.metalist {
+
+	dt {
+		padding-top: 4px;
+		font-size: 0.8em;
+		float: left;
+		width: 33%;
+		font-weight: bold;
+		text-align: right;
+		margin-right: 3%;
+	}
+
+	dd {
+		float: left;
+		display: inline-block;
+		width: 64%;
+		margin: 0;
+	}
+
+	dd + dd {
+		margin: 0 0 0 34%;
+	}
 }

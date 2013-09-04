@@ -9,6 +9,7 @@ import models._
 import controllers._
 import scala.Some
 import java.text.SimpleDateFormat
+import java.util.Date
 
 object display {
   def page(page : SitePage)(implicit site : Site) = PathCrumb(page).toHtml
@@ -32,17 +33,37 @@ object display {
     } + (if (d < 0) " ago" else "")
   }
 
-  def date(t : java.util.Date) : String = {
-    val date = new SimpleDateFormat("MMMM YYYY")
-    date.format(t)
+  def date(timestamp : Date = new Date(System.currentTimeMillis), format: String = "MMMM YYYY") : String = {
+    val date = new SimpleDateFormat(format)
+    date.format(timestamp)
   }
 
   def plainText(text: String = "") = {
     raw("<p>"+text.split("\\r?\\n").mkString("</p><p>")+"</p>")
   }
 
-  def gravatarUrl(email: String = "none", size: Int = 64) = {
+  def gravatarUrlByEmail(email: String = "none", size: Int = 64) = {
     "http://gravatar.com/avatar/"+md5(email.toLowerCase.replaceAll("\\s+", "")).hash+"?s="+size+"&d=mm"
+  }
+
+  def gravatarUrlByParty(party: Party, size: Int = 64) = {
+    dbrary.cast[Account](party) match {
+      case Some(account) => "http://gravatar.com/avatar/"+md5(account.email.toLowerCase.replaceAll("\\s+", "")).hash+"?s="+size+"&d=mm"
+      case None => "http://gravatar.com/avatar/none?s="+size+"&d=mm"
+    }
+  }
+
+  def citeName(name: String) = {
+    var names = name.split(" ")
+
+    var out = names.last+", "
+    names = names.take(names.length - 1)
+
+    for (n <- 0 until names.length) {
+      out += ""+names(n).substring(0,1)+"."
+    }
+
+    out
   }
 
   def apply(x : SitePage, full : Boolean = false)(implicit site : Site) = if (full) path(x) else page(x)

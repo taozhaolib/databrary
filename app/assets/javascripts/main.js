@@ -1,16 +1,16 @@
 // jQuery extensions
 $.fn.exists = function () {
 	return this.length !== 0;
-}
+};
 
 // clean dbjs namespace
 var dbjs = {};
 
 /**
  * Creates tabset with content panes
- * @param tabset 	containing element
- * @param tab		class of tabs
- * @param body		class of content panes
+ * @param tabset    containing element
+ * @param tab        class of tabs
+ * @param body        class of content panes
  */
 dbjs.tabs = function (tabset, tab, body) {
 	var $tabset = $(tabset),
@@ -75,9 +75,9 @@ dbjs.tabs = function (tabset, tab, body) {
 
 /**
  * Creates rolldown modal content.
- * @param clicker 	click toggle
- * @param toggle 	toggled area
- * @param now 		display modal now, or on click
+ * @param clicker    click toggle
+ * @param toggle    toggled area
+ * @param now        display modal now, or on click
  */
 dbjs.modal = function (clicker, toggle, now) {
 	if (typeof(now) === 'undefined') now = false;
@@ -119,9 +119,9 @@ dbjs.modal = function (clicker, toggle, now) {
 
 /**
  * Creates rolldown modal content filled by ajax.
- * @param clicker 	click toggle
- * @param url 		ajax retrieved content
- * @param now 		load content now, or on click
+ * @param clicker    click toggle
+ * @param url        ajax retrieved content
+ * @param now        load content now, or on click
  */
 dbjs.ajaxModal = function (clicker, url, now) {
 	if (typeof(now) === 'undefined') now = false;
@@ -133,8 +133,6 @@ dbjs.ajaxModal = function (clicker, url, now) {
 		$clicker.off('click');
 
 		$.get(url, function (data) {
-			console.log($(data));
-
 			$toggle = $(data).find('.modal');
 			toggle = $clicker.attr('data-target');
 
@@ -165,9 +163,9 @@ dbjs.ajaxModal = function (clicker, url, now) {
 
 /**
  * Creates folding content.
- * @param region 	container element
- * @param clicker 	click toggle, child of fold
- * @param toggle 	toggled area, child of fold
+ * @param region    container element
+ * @param clicker    click toggle, child of fold
+ * @param toggle    toggled area, child of fold
  */
 dbjs.fold = function (region, clicker, toggle) {
 	var $clicker = $(region + ' ' + clicker),
@@ -184,8 +182,8 @@ dbjs.fold = function (region, clicker, toggle) {
 
 /**
  * Creates a compact menu for small browser windows
- * @param menu		region to resize
- * @param position	where to position menu link
+ * @param menu        region to resize
+ * @param position    where to position menu link
  */
 dbjs.sideMenu = function (menu, position) {
 	var $menu = $(menu),
@@ -235,8 +233,8 @@ dbjs.sideMenu = function (menu, position) {
 
 /**
  * Keeps footer at the bottom of the window when the content is shorter than the window
- * @param footer 	element made sticky
- * @param above 	content to monitor for height
+ * @param footer    element made sticky
+ * @param above    content to monitor for height
  */
 dbjs.stickyFooter = function (footer, above) {
 	var $above = $(above),
