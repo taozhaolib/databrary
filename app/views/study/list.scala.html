@@ -1,13 +1,27 @@
 @(list : Seq[Study])(implicit request : SiteRequest[_])
 
 @template.crud("Study List") {
+    <div class="roll">
+        <h1>Study list</h1>
 
-	<h1>Study list</h1>
+        @list.map { study =>
+            <article class="study roll row">
+                <aside class="thumb">
+                    ___THUMB___
+                </aside>
 
-	<ul>
-	@list.map { s =>
-		<li>@display(s)</li>
-	}
-	</ul>
+                <header>
+                    <h1>@study.title</h1>
+                </header>
 
+                <div class="body">
+                    @display.plainText(study.description.get)
+                </div>
+
+                <footer>
+                    ___META___
+                </footer>
+            </article>
+        }
+    </div>
 }

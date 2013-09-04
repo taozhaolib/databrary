@@ -3,9 +3,9 @@
 @fileData(asset : FileAsset) = {
 }
 
-@template.crud("Edit Asset: " + link.toString()) {
+@template.crud("Edit Asset: " + link.title) {
     <article>
-        <h1>@link.toString()</h1>
+        <h1>@link.title</h1>
 
         <p>@link.description</p>
 
@@ -16,7 +16,9 @@
 			<img src='@routes.Asset.download(link.containerId, link.assetId, true)'/>
 		}
 		case ("video", _) => {
-			<img src='@routes.Asset.head(link.containerId, link.assetId)' alt='preview'/>
+			<video controls>
+                <source src="@routes.Asset.download(link.containerId, link.assetId, true)" type="video/mp4">
+			</video>
 		}
 		case ("text", _) => {
 			<iframe src='@routes.Asset.download(link.containerId, link.assetId, true)'/>

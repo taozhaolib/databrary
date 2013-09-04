@@ -1,0 +1,5 @@
+@(study: Study)(implicit request: SiteRequest[_])
+
+@study.assets(request.db).find(_.asset(request.db).format.name == "Video").map { assetLink =>
+    <img src="@routes.Asset.head(study.id, assetLink.assetId)" alt="@assetLink.title">
+}
