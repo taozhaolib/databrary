@@ -12,19 +12,19 @@
 	@if(link.permission >= Permission.DOWNLOAD) {
 
 		@link.asset(request.db).format.mimeSubTypes match {
-		case ("image", _) => {
-			<img src='@routes.Asset.download(link.containerId, link.assetId, true)'/>
-		}
-		case ("video", _) => {
-			<video controls>
-                <source src="@routes.Asset.download(link.containerId, link.assetId, true)" type="video/mp4">
-			</video>
-		}
-		case ("text", _) => {
-			<iframe src='@routes.Asset.download(link.containerId, link.assetId, true)'/>
-		}
-		case _ => {
-		}
+            case ("image", _) => {
+                <img src='@routes.Asset.download(link.containerId, link.assetId, true)'/>
+            }
+            case ("video", _) => {
+                <video controls>
+                    <source src="@routes.Asset.download(link.containerId, link.assetId, true)" type="video/mp4">
+                </video>
+            }
+            case ("text", _) => {
+                <iframe src='@routes.Asset.download(link.containerId, link.assetId, true)'/>
+            }
+            case _ => {
+            }
 		}
 
 		<a href='@routes.Asset.download(link.containerId, link.assetId, false)'>download</a>

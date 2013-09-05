@@ -1,4 +1,4 @@
-@(study: Study)(implicit request: SiteRequest[_])
+@(study: Study, assetMap: scala.collection.mutable.Map[String, List[AssetLink]])(implicit request: SiteRequest[_])
 
 @template.crud("Study: " + study.title) {
     <article id="study_@study.id.unId" class="study">
@@ -39,6 +39,12 @@
                         </aside>
 
                         <div class="col_3">
+                            <aside class="funding foot">
+                                <h2>Funding</h2>
+
+                                @widget.userinfo(models.Party.Root)
+                            </aside>
+
                             <aside class="dates foot">
                                 <h2>Metadata</h2>
                                 <dl class="metalist cf">
@@ -48,12 +54,6 @@
                                 }
                                 </dl>
                             </aside>
-
-                            <aside class="funding foot">
-                                <h2>Funding</h2>
-
-                                @widget.userinfo(models.Party.Root)
-                            </aside>
                         </div>
                     </div>
                 </div>
@@ -61,9 +61,18 @@
         </div>
 
         <section id="metadata" class="tabset">
-            <div id="media" class="view demo">
+            <div id="media" class="view">
                 <h2 class='tab'>Media</h2>
-                <p>___MEDIA___</p>
+
+                @if(assetMap.isDefinedAt("Video")) {
+                    @widget.thumbList(study, assetMap("Video"))
+                }
+                @if(assetMap.isDefinedAt("Image")) {
+                    @widget.thumbList(study, assetMap("Image"))
+                }
+                @if(assetMap.isDefinedAt("Audio")) {
+                    @widget.thumbList(study, assetMap("Audio"))
+                }
             </div>
 
             <div id="highlights" class="view demo">

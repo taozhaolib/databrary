@@ -1,0 +1,39 @@
+@(container: Container, assetList: List[AssetLink])(implicit request: SiteRequest[_])
+
+@if(assetList.length >= 1) {
+    <h3>@assetList.find(_ => true).get.asset(request.db).format.name</h3>
+
+    <div class="thumb_list row">
+    @for(assetLink <- assetList) {
+        <div class="thumb hover col_2">
+            <a href="@routes.Asset.view(assetLink.containerId, assetLink.assetId)" title="@assetLink.title">
+                <div class="media">
+                @assetLink.asset(request.db).format.mimeSubTypes match {
+                    case ("image", _) => {
+                        <img src='@routes.Asset.download(assetLink.containerId, assetLink.assetId, true)'/>
+                    }
+                    case ("video", _) => {
+                        <img src='@routes.Asset.head(assetLink.containerId, assetLink.assetId)'/>
+                    }
+                    case ("text", _) => {
+                        <iframe src='@routes.Asset.download(assetLink.containerId, assetLink.assetId, true)'/>
+                    }
+                    case _ => {
+                    }
+                }
+                </div>
+
+                <div class="text">
+                @assetLink.title
+                </div>
+            </a>
+        </div>
+    }
+    </div>
+
+    @if(container.permission >= Permission.CONTRIBUTE) {
+        <div class="arealinks">
+            <a class="button mhead" href="@routes.Asset.create(container.id)" title="Add new asset">Add</a>
+        </div>
+    }
+}

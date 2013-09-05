@@ -35,6 +35,13 @@
 		margin-bottom: 0;
 	}
 
+	h3 {
+		margin: 0;
+		text-transform: uppercase;
+		letter-spacing: 3px;
+		font-weight: normal;
+	}
+
 	.menu {
 		border-bottom: 1px solid @gray_50_third;
 
@@ -208,5 +215,47 @@ dl.metalist {
 		display: block;
 		width: 100%;
 		height: auto;
+	}
+
+	&.hover {
+		a{
+			display: block;
+			position: relative;
+			color: @white;
+			line-height: 1;
+
+			.media {
+
+			}
+
+			.text {
+				.transition(@transition);
+				opacity: 0;
+				background: @first;
+				padding: (@gutter/4);
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+			}
+
+			&:hover {
+				.media {
+
+				}
+
+				.text {
+					opacity: 0.95;
+				}
+			}
+		}
+
+		.title {
+			font-weight: bold;
+		}
+		.length {
+			font-size: 0.8em;
+		}
 	}
 }
