@@ -20,7 +20,7 @@
             </div>
         } else {
             <div class="institution">
-            @party.authorizeParents()(request.db).map { t =>
+            @party.authorizeParents().map { t =>
                 @display(t.parent)
             }
             </div>

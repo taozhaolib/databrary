@@ -9,7 +9,7 @@
 	}
 
 	<dl>
-	@record.measures(request.db).filter(m => record.permission(permission, m.metric) >= Permission.DOWNLOAD).map { m =>
+	@record.measures.filter(m => record.permission(permission, m.metric) >= Permission.DOWNLOAD).map { m =>
 		<dt>@m.metric.name</dt>
 		<dd>@m.datum</dt>
 	}

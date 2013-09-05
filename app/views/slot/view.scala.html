@@ -10,6 +10,6 @@
 
 	@widget.assetList(slot)
 
-	@region.comments(Some(routes.Comment.postSlot(slot.id)), slot.comments(true)(request.db))
+	@region.comments(Some(routes.Comment.postSlot(slot.id)), slot.comments(true))
     </article>
 }

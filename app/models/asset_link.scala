@@ -36,7 +36,7 @@ final class AssetLink private (val containerId : Container.Id, val assetId : Ass
   def container(implicit site : Site) : Container = _container
   private[AssetLink] val _asset = CachedVal[Asset, Site.DB](Asset.get(assetId)(_).get)
   /** The asset object for this link. */
-  def asset(implicit site : Site.DB) : Asset = _asset
+  def asset(implicit db : Site.DB) : Asset = _asset
 
   /** Effective permission the site user has over this link, specifically in regards to the asset itself.
     * Asset permissions depend on study permissions, but can be further restricted by consent levels. */

@@ -11,7 +11,7 @@
 		<dl>
 	
 		@* This information is limited to VIEW(?) *@
-		@if(request.identity.access(request.db) >= Permission.VIEW) {
+		@if(request.identity.access >= Permission.VIEW) {
 	
 		@dbrary.cast[Account](party).map { a =>
 			<dt>email</dt>
@@ -23,11 +23,11 @@
 		}
 	
 			<dt>Memberships</dt>
-			@party.authorizeParents()(request.db).map { t => 
+			@party.authorizeParents().map { t => 
 				<dd>@display(t.parent)</dd>
 			}
 			<dt>Members</dt>
-			@party.authorizeChildren()(request.db).map { t => 
+			@party.authorizeChildren().map { t => 
 				<dd>@display(t.child)</dd>
 			}
 	
@@ -46,6 +46,6 @@
 	
 		</dl>
 	
-		@region.comments(None, dbrary.cast[Account](party).fold(Nil : Seq[models.Comment])(_.comments(request.db)))
+		@region.comments(None, dbrary.cast[Account](party).fold(Nil : Seq[models.Comment])(_.comments))
     </article>
 }

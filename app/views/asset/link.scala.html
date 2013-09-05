@@ -11,7 +11,7 @@
 
 	@if(link.permission >= Permission.DOWNLOAD) {
 
-		@link.asset(request.db).format.mimeSubTypes match {
+		@link.asset.format.mimeSubTypes match {
 		case ("image", _) => {
 			<img src='@routes.Asset.download(link.containerId, link.assetId, true)'/>
 		}
@@ -28,6 +28,6 @@
 		<a href='@routes.Asset.download(link.containerId, link.assetId, false)'>download</a>
 	}
 
-        @region.comments(Some(routes.Comment.postAssetLink(link.containerId, link.assetId)), link.comments()(request.db))
+        @region.comments(Some(routes.Comment.postAssetLink(link.containerId, link.assetId)), link.comments())
     </article>
 }
