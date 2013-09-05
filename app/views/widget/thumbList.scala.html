@@ -1,4 +1,4 @@
-@(container: Container, assetList: List[AssetLink])(implicit request: SiteRequest[_])
+@(container: Container, assetList: List[AssetLink], excerpts : Boolean = false)(implicit request: SiteRequest[_])
 
 @if(assetList.length >= 1) {
     <h3>@assetList.find(_ => true).get.asset(request.db).format.name</h3>
@@ -15,16 +15,21 @@
                     case ("video", _) => {
                         <img src='@routes.Asset.head(assetLink.containerId, assetLink.assetId)'/>
                     }
-                    case ("text", _) => {
-                        <iframe src='@routes.Asset.download(assetLink.containerId, assetLink.assetId, true)'/>
-                    }
                     case _ => {
                     }
                 }
                 </div>
 
                 <div class="text">
-                @assetLink.title
+                    <div class="title">
+                    @assetLink.title
+                    </div>
+
+                    <div class="time">
+                    @dbrary.cast[Timeseries](assetLink.asset(request.db)).map { timeseries =>
+                        @timeseries.duration
+                    }
+                    </div>
                 </div>
             </a>
         </div>

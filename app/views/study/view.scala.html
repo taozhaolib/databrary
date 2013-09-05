@@ -75,9 +75,18 @@
                 }
             </div>
 
-            <div id="highlights" class="view demo">
+            <div id="highlights" class="view">
                 <h2 class='tab'>Highlights</h2>
-                <p>___HIGHLIGHTS___</p>
+
+                @if(assetMap.isDefinedAt("Video")) {
+                    @widget.thumbList(study, assetMap("Video"), true)
+                }
+                @if(assetMap.isDefinedAt("Image")) {
+                    @widget.thumbList(study, assetMap("Image"), true)
+                }
+                @if(assetMap.isDefinedAt("Audio")) {
+                    @widget.thumbList(study, assetMap("Audio"), true)
+                }
             </div>
 
             <div id="documents" class="view">

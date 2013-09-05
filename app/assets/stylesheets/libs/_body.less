@@ -246,16 +246,17 @@ dl.metalist {
 				}
 
 				.text {
-					opacity: 0.95;
+					opacity: 0.96;
 				}
 			}
 		}
 
 		.title {
 			font-weight: bold;
+			margin-bottom: (@gutter/4)
 		}
-		.length {
-			font-size: 0.8em;
+		.time {
+			font-size: 0.7em;
 		}
 	}
 }
@@ -269,18 +270,22 @@ dl.metalist {
 
 		&:hover {
 			color: @second;
+
+			h1 {
+				color: @text;
+				background: @white_75_second;
+			}
 		}
 	}
 
-	header {
 		h1 {
 			border: 0;
 			margin: 0;
 			padding: (@gutter/4) (@gutter/2);
 			.border-radius(15px 0 15px 0);
 			background: @white_75_first;
+			.transition(@transition);
 		}
-	}
 
 	.people {
 		font-weight: bold;
@@ -298,6 +303,12 @@ dl.metalist {
 
 	.body {
 		position: relative;
+	}
+
+	.description {
+		p {
+			margin: 0;
+		}
 	}
 
 	.fade {
