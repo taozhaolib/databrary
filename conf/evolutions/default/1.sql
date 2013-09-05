@@ -418,7 +418,7 @@ CREATE TABLE "metric" (
 );
 COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.  Rough prototype.';
 INSERT INTO "metric" ("id", "name", "type") VALUES (-1, 'ident', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-2, 'birthday', 'IDENTIFIED', 'date');
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-2, 'birthdate', 'IDENTIFIED', 'date');
 INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-3, 'gender', 'text', ARRAY['F','M']);
 
 CREATE TABLE "measure" ( -- ABSTRACT

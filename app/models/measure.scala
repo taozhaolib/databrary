@@ -24,7 +24,7 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
 
   private final val PARTICIPANT : Id = asId(-1)
   /** RecordCategory representing participants, individuals whose data is contained in a particular sesion.
-    * Participants usually are associated with birthday, gender, and other demographics. */
+    * Participants usually are associated with birthdate, gender, and other demographics. */
   final val Participant = new RecordCategory(PARTICIPANT, "participant")
 }
 
@@ -88,13 +88,13 @@ object Metric extends TableId[MetricBase]("metric") {
   /** Retrieve a single metric by id. */
   def get(id : Id)(implicit db : Site.DB) = id match {
     case IDENT => Some(Ident)
-    case BIRTHDAY => Some(Birthday)
+    case BIRTHDATE => Some(Birthdate)
     case GENDER => Some(Gender)
     case _ => SELECT("WHERE id = {id}").on('id -> id).singleOpt()
   }
 
   private final val IDENT : Id = asId(-1)
-  private final val BIRTHDAY : Id = asId(-2)
+  private final val BIRTHDATE : Id = asId(-2)
   private final val GENDER : Id = asId(-3)
   /** Identifiers providing generic labels for records or data, such as participant id, condition name, etc.
     * [[Classification.DEIDENTIFIED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
@@ -102,7 +102,7 @@ object Metric extends TableId[MetricBase]("metric") {
   /** Date of birth for any records representing organisms or other entities with dates of origination.
     * These are treated specially in combination with [[Slot.date]] to compute ages.
     * [[Classification.IDENTIFIED]] implies all authorized researchers get full access to these. */
-  object Birthday extends Metric[Date](BIRTHDAY, "birthday", Classification.IDENTIFIED)
+  object Birthdate extends Metric[Date](BIRTHDATE, "birthdate", Classification.IDENTIFIED)
   /** Gender is treated as a text enumeration. */
   object Gender extends Metric[String](GENDER, "gender", Classification.DEIDENTIFIED, Array[String]("F", "M"))
 }

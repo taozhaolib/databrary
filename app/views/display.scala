@@ -7,7 +7,6 @@ import play.api.templates.HtmlFormat._
 import util._
 import models._
 import controllers._
-import scala.Some
 import java.text.SimpleDateFormat
 
 object display {
@@ -32,18 +31,21 @@ object display {
     } + (if (d < 0) " ago" else "")
   }
 
-  def date(t : java.util.Date) : String = {
-    val date = new SimpleDateFormat("MMMM YYYY")
-    date.format(t)
-  }
+  private val dateFmtY = new SimpleDateFormat("YYYY")
+  private val dateFmtYM = new SimpleDateFormat("MMMM YYYY")
+  private val dateFmtYMD = new SimpleDateFormat("YYYY-MMM-DD")
 
-  def plainText(text: String = "") = {
+  def date(t : java.util.Date) : String =
+    dateFmtYM.format(t)
+
+  def date(s : Slot)(implicit site : Site) =
+    (if (s.dataAccess() >= Permission.DOWNLOAD) dateFmtYMD else dateFmtY).format(s.date)
+
+  def plainText(text: String = "") =
     raw("<p>"+text.split("\\r?\\n").mkString("</p><p>")+"</p>")
-  }
 
-  def gravatarUrl(email: String = "none", size: Int = 64) = {
+  def gravatarUrl(email: String = "none", size: Int = 64) =
     "http://gravatar.com/avatar/"+md5(email.toLowerCase.replaceAll("\\s+", "")).hash+"?s="+size+"&d=mm"
-  }
 
   def apply(x : SitePage, full : Boolean = false)(implicit site : Site) = if (full) path(x) else page(x)
   def apply(x : java.util.Date) = time(x)

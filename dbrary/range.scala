@@ -1,8 +1,8 @@
 package dbrary
 
-import java.sql.SQLException
+import java.sql.{SQLException,Date}
 
-trait RangeType[A] {
+trait RangeType[A <: Ordered[A]] {
   protected val unit : Option[A]
   def discrete = unit.isDefined
   def increment(a : A) : Option[A] // = unit.map(a + _)
@@ -48,6 +48,12 @@ abstract sealed class Range[A <: Ordered[A]](implicit t : RangeType[A]) {
     lowerBound.fold(true)(sl => r.lowerBound.fold(false)(rl => if (lowerClosed >= r.lowerClosed) sl <= rl else sl < rl)) &&
     upperBound.fold(true)(su => r.upperBound.fold(false)(ru => if (upperClosed >= r.upperClosed) su >= ru else su > ru)) &&
     !isEmpty
+  def map[B <: Ordered[B] : RangeType](f : A => B) = new Range[B] {
+    val lowerBound = self.lowerBound.map(f)
+    val upperBound = self.upperBound.map(f)
+    val lowerClosed = self.lowerClosed
+    val upperClosed = self.upperClosed
+  }
 }
 
 object Range {
