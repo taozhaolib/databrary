@@ -1,7 +1,7 @@
-@(container: Container, assetList: List[AssetLink], excerpts : Boolean = false)(implicit request: SiteRequest[_])
+@(container: Container, assetList: Seq[AssetLink])(implicit request: SiteRequest[_])
 
-@if(assetList.length >= 1) {
-    <h3>@assetList.find(_ => true).get.asset(request.db).format.name</h3>
+@if(assetList.nonEmpty) {
+    <h3>@assetList.head.asset(request.db).format.name</h3>
 
     <div class="thumb_list row">
     @for(assetLink <- assetList) {
@@ -35,10 +35,4 @@
         </div>
     }
     </div>
-
-    @if(container.permission >= Permission.CONTRIBUTE) {
-        <div class="arealinks">
-            <a class="button mhead" href="@routes.Asset.create(container.id)" title="Add new asset">Add</a>
-        </div>
-    }
 }

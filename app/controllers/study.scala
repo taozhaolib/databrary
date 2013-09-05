@@ -8,7 +8,6 @@ import          data._
 import               Forms._
 import          i18n.Messages
 import models._
-import scala.collection.mutable.Map
 
 object Study extends SiteController {
 
@@ -22,22 +21,10 @@ object Study extends SiteController {
   }
 
   def view(i : models.Study.Id) = check(i) { study => implicit request =>
-    var assetMap = Map[String, List[AssetLink]]();
-    assetMap += ("Material" -> List[AssetLink]())
+    def part(x : Seq[AssetLink]) = x.groupBy(_.asset(request.db).format.mimeSubTypes._1)
+    val (excerpts, files) = study.assets(request.db).partition(_.asset(request.db).classification == Classification.EXCERPT)
 
-    for(assetLink <- study.assets(request.db)) {
-      if(assetMap.getOrElse(assetLink.asset.format.name, 0) == 0)
-        assetMap += (assetLink.asset.format.name -> List[AssetLink]())
-
-      if(assetLink.asset.format.name == "Video") {
-        assetMap(assetLink.asset.format.name) = assetMap(assetLink.asset.format.name) :+ assetLink
-        assetMap("Material") = assetMap("Material") :+ assetLink
-      } else {
-        assetMap("Material") = assetMap("Material") :+ assetLink
-      }
-    }
-
-    Ok(views.html.study.view(study, assetMap))
+    Ok(views.html.study.view(study, (part(excerpts), part(files))))
   }
 
   def listAll = SiteAction { implicit request =>

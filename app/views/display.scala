@@ -60,15 +60,13 @@ object display {
   def plainText(text: String = "") =
     raw("<p>"+text.split("\\r?\\n").mkString("</p><p>")+"</p>")
 
-  def gravatarUrlByEmail(email: String = "none", size: Int = 64) = {
-    "http://gravatar.com/avatar/"+md5(email.toLowerCase.replaceAll("\\s+", "")).hash+"?s="+size+"&d=mm"
-
-  def gravatarUrlByEmail(email: String = "none", size: Int = 64) =
   def plainTextSummary(text: String = "", length: Int = 1000) = {
     raw("<p>"+text.split("\\r?\\n").slice(0, length).mkString("</p><p>")+"</p>")
   }
 
   def gravatarUrlByEmail(email: String = "none", size: Int = 64) = {
+    "http://gravatar.com/avatar/"+md5(email.toLowerCase.replaceAll("\\s+", "")).hash+"?s="+size+"&d=mm"
+  }
 
   def gravatarUrlByParty(party: Party, size: Int = 64) = {
     dbrary.cast[Account](party) match {
