@@ -51,8 +51,8 @@ object display {
   private val dateFmtYM = new SimpleDateFormat("MMMM yyyy")
   private val dateFmtYMD = new SimpleDateFormat("yyyy-MMM-dd")
 
-  def date(t : java.util.Date) : String =
-    dateFmtYM.format(t)
+  def date(t : java.util.Date, format : String) : String =
+    new SimpleDateFormat(format).format(t)
 
   def date(s : Slot)(implicit site : Site) =
     (if (s.dataAccess() >= Permission.DOWNLOAD) dateFmtYMD else dateFmtY).format(s.date)
@@ -60,7 +60,7 @@ object display {
   def plainText(text: String = "") =
     raw("<p>"+text.split("\\r?\\n").mkString("</p><p>")+"</p>")
 
-  def gravatarUrl(email: String = "none", size: Int = 64) =
+  def gravatarUrlByEmail(email: String = "none", size: Int = 64) =
     "http://gravatar.com/avatar/"+md5(email.toLowerCase.replaceAll("\\s+", "")).hash+"?s="+size+"&d=mm"
 
   def gravatarUrlByParty(party: Party, size: Int = 64) = {

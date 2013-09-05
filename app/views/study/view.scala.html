@@ -50,7 +50,7 @@
                                 <dl class="metalist cf">
                                 @study.creationAudit(request.db).map { creation =>
                                     <dt class="date created">Created</dt>
-                                    <dd><time datetime="@creation.when" pubdate>@display.date(creation.when)</time></dd>
+                                    <dd><time datetime="@creation.when" pubdate>@display.date(creation.when, "MMMM yyyy")</time></dd>
                                 }
                                 </dl>
                             </aside>
