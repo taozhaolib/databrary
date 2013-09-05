@@ -21,7 +21,8 @@ sealed abstract class Container protected (val id : Container.Id) extends TableR
   def consent : Consent.Value
 
   /** List of contained assets within this container. */
-  def assets(implicit db : Site.DB) = AssetLink.getAssets(this)
+  private[this] val _assets = CachedVal[Seq[AssetLink], Site.DB](AssetLink.getAssets(this)(_))
+  def assets(implicit db : Site.DB) : Seq[AssetLink] = _assets
   /** Look up a specific contained asset. */
   def getAsset(o : Asset.Id)(implicit db : Site.DB) = AssetLink.get(this, o)
 
