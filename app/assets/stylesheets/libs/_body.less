@@ -14,7 +14,7 @@
 }
 
 // body - header
-#body_main {
+.main {
 	article {
 		header {
 			margin-bottom: @gutter/2;
@@ -257,5 +257,55 @@ dl.metalist {
 		.length {
 			font-size: 0.8em;
 		}
+	}
+}
+
+.study_roll {
+	margin-bottom: @gutter;
+
+	a.block {
+		display: block;
+		color: @text;
+
+		&:hover {
+			color: @second;
+		}
+	}
+
+	header {
+		h1 {
+			border: 0;
+			margin: 0;
+			padding: (@gutter/4) (@gutter/2);
+			.border-radius(15px 0 15px 0);
+			background: @white_75_first;
+		}
+	}
+
+	.people {
+		font-weight: bold;
+		margin-bottom: @gutter/4;
+
+		img {
+			position: relative;
+			top: 2px;
+		}
+
+		.sep:last-child {
+			display: none;
+		}
+	}
+
+	.body {
+		position: relative;
+	}
+
+	.fade {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 75px;
+		#gradient > .vertical(transparent, @white);
 	}
 }

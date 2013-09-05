@@ -281,6 +281,23 @@ dbjs.stickyFooter = function (footer, above) {
 	resize(footer, above);
 };
 
+dbjs.fadeOff = function (container, faded) {
+	var $container = $(container),
+		fade = '<div class="fade"></div>';
+
+	$container.each(function () {
+		var $this = $(this),
+			$faded = $this.find(faded);
+
+		// jquery reading $this.outerHeight funky
+//		$faded.hide();
+//		$this.height($this.outerHeight(false));
+//		$faded.show();
+
+		$faded.append($(fade));
+	});
+};
+
 // initialization
 $(document).ready(function () {
 	// TODO: event registration should only appear on the pages it's need. In the works.
@@ -301,4 +318,7 @@ $(document).ready(function () {
 
 	// study (none other currently)
 	dbjs.tabs('.tabset', '.tab', '.view');
+
+	// study list
+	dbjs.fadeOff('.study_roll','.body')
 });

@@ -5,22 +5,30 @@
         <h1>Study list</h1>
 
         @list.map { study =>
-            <article class="study roll row">
-                <aside class="thumb">
-                    ___THUMB___
-                </aside>
+            <article id="study_@study.id.unId" class="study study_roll cf">
+                <div class="row">
+                    <a href="@routes.Study.view(study.id)" class="block" title="@study.title">
+                        <header class="column_full">
+                            <h1>@study.title</h1>
+                        </header>
 
-                <header>
-                    <h1>@study.title</h1>
-                </header>
+                        <aside class="thumb col_4">
+                        @widget.studyThumb(study)
+                        </aside>
 
-                <div class="body">
-                    @display.plainText(study.description.get)
+                        <div class="body col_8">
+                            <footer>
+                                <div class="people">
+                                @study.partyAccess(Permission.CONTRIBUTE)(request.db).map { a => <img src="@display.gravatarUrlByParty(a.party, 16)"> @display.citeName(a.party.name)<span class="sep">,</span> }
+                                </div>
+                            </footer>
+
+                            <div class="description">
+                            @display.plainTextSummary(study.description.get, 1)
+                            </div>
+                        </div>
+                    </a>
                 </div>
-
-                <footer>
-                    ___META___
-                </footer>
             </article>
         }
     </div>
