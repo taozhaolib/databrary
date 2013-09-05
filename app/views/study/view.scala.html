@@ -6,7 +6,7 @@
 
         <div class="row">
             <div class="description col_6">
-                @display.plainText(study.description.get)
+		@study.description.map(display.plainText _)
             </div>
 
             <footer class="extended col_6">

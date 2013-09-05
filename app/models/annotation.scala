@@ -1,6 +1,6 @@
 package models
 
-import java.sql.Timestamp
+import java.sql.{Timestamp,Date}
 import anorm._
 import anorm.SqlParser.scalar
 import dbrary._
@@ -34,7 +34,7 @@ final class Comment private (override val id : Comment.Id, val whoId : Account.I
 }
 
 /** A set of Measures. */
-final class Record private (override val id : Record.Id, val category_ : Option[RecordCategory] = None) extends Annotation(id) with TableRowId[Record] {
+final class Record private (override val id : Record.Id, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE) extends Annotation(id) with TableRowId[Record] with SitePage {
   private[this] var _category = category_
   def category = _category
   def categoryId = category.map(_.id)
@@ -57,8 +57,37 @@ final class Record private (override val id : Record.Id, val category_ : Option[
 
   private val _ident = CachedVal[Option[String], Site.DB](measure(Metric.Ident)(_))
   /** Cached version of `measure(Metric.Ident)`.
-    * Unfortunately, this may become invalid if ident is changed. */
-  def ident = _ident
+    * This may become invalid if the value is changed. */
+  def ident(implicit db : Site.DB) : Option[String] = _ident
+
+  private val _birthdate = CachedVal[Option[Date], Site.DB](measure(Metric.Birthdate)(_))
+  /** Cached version of `measure(Metric.Birthdate)`.
+    * This may become invalid if the value is changed. */
+  def birthdate(implicit db : Site.DB) : Option[Date] = _birthdate
+
+  private val _daterange = CachedVal[Range[Date], Site.DB] { implicit db =>
+    SQL("SELECT daterange(min(slot.date), max(slot.date), '[]') FROM container_annotation JOIN slot ON container = slot.id WHERE annotation = {id}").
+      on('id -> id).single(scalar[Range[Date]](PGDateRange.column))
+  }
+  /** The range of acquisition dates covered by associated slots. */
+  def daterange(implicit db : Site.DB) : Range[Date] = _daterange.normalize
+
+  /** The range of ages as defined by `daterange - birthdate`. */
+  def agerange(implicit db : Site.DB) : Option[Range[Long]] = birthdate.map(dob => daterange.map(_.getTime - dob.getTime))
+
+  /** The age at test for a specific slot, as defined by `slot.date - birthdate`. */
+  def age(slot : Slot)(implicit db : Site.DB) : Option[Long] = birthdate.map(slot.date.getTime - _.getTime)
+
+  /** Effective permission the site user has over a given metric in this record, specifically in regards to the measure datum itself.
+    * Record permissions depend on study permissions, but can be further restricted by consent levels.
+    * @param permission applicable (study) permission for this record's target
+    */
+  def permission(permission : Permission.Value, metric : MetricBase)(implicit site : Site) : Permission.Value =
+    Permission.data(permission, consent, metric.classification)
+
+  def pageName(implicit site : Site) = ident(site.db).orElse(category.map(_.name)).getOrElse("record")
+  def pageParent(implicit site : Site) = None
+  def pageURL = controllers.routes.Record.view(id).url
 }
 
 
@@ -71,7 +100,7 @@ private[models] sealed abstract class AnnotationView[R <: Annotation with TableR
   /** Retrieve the set of annotations of the instantiated object's type on the given target.
     * @param all include all indirect annotations on any containers, objects, or clips contained within the given target (which may be a lot) */
   private[models] def get(target : Annotated, all : Boolean = true)(implicit db : Site.DB) : Seq[R] = {
-    val j = target.annotatedLevel + "_annotation"
+    val j = target.annotationTable
     SELECT(if (all) 
         "JOIN " + j + "s({target}) ON " + table + ".id = " + j + "s"
       else
@@ -105,18 +134,20 @@ object Comment extends AnnotationView[Comment]("comment") {
     val c = SQL("INSERT INTO " + table + " " + args.insert + " RETURNING " + *).
       on(args : _*).single(row)(site.db)
     c._who() = site.user.get
-    Audit.add(target.annotatedLevel + "_annotation", SQLArgs(Symbol(target.annotatedLevel) -> target.annotatedId, 'annotation -> c.id)).
-      execute()(site.db)
+    SQL("INSERT INTO " + target.annotationTable + " (" + target.annotatedLevel + ", annotation) VALUES ({target}, {annotation})").
+      on('target -> target.annotatedId, 'annotation -> c.id).execute()(site.db)
     c
   }
 }
 
 object Record extends AnnotationView[Record]("record") {
+  private[this] def makeCategory(category : Option[RecordCategory])(id : Id, consent : Option[Consent.Value]) =
+    new Record(id, category, consent.getOrElse(Consent.NONE))
   private[this] val columns = Columns[
-    Id](
-    'id)
+    Id,  Option[Consent.Value]](
+    'id, SelectAs("annotation_consent(record.id)", "annotation_consent"))
   private[models] val row = (columns ~ RecordCategory.row.?) map {
-    case (id ~ cls) => new Record(id, cls)
+    case (rec ~ cls) => (makeCategory(cls) _).tupled(rec)
   }
   private[models] override val src = "record LEFT JOIN record_category ON record.category = record_category.id"
 
@@ -125,17 +156,22 @@ object Record extends AnnotationView[Record]("record") {
     * @return unique records sorted by category, ident */
   private[models] def getSlots(study : Study, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
     val metric = Metric.Ident
-    val cols = (category.fold(row)(cat => columns.map(new Record(_, Some(cat)))) ~ metric.measureType.column.?) map 
-      { case (record ~ ident) => record._ident() = ident; record }
-    SQL(
-      "SELECT " + cols.select + " FROM record" + 
-        (if (category.isEmpty) " JOIN record_category ON category = record_category.id" else "") + 
-        " JOIN container_annotation ON record.id = annotation JOIN slot ON container = slot.id LEFT JOIN measure_text ON record.id = " + metric.measureType.table + ".record WHERE slot.study = {study} AND measure_text.metric = {metric}" +
-        (if (category.isDefined) " AND category = {category}" else "") +
-        " GROUP BY " + cols.select + " ORDER BY" + 
-        (if (category.isEmpty) " record_category.id," else "") +
-        " " + metric.measureType.column + ", record.id").
-      on('study -> study.id, 'ident -> metric.id, 'category -> category.map(_.id)).
+    val cols = (category.fold(row)(cat => columns.map(makeCategory(Some(cat)) _)) ~
+        metric.measureType.column.? ~
+        Columns[Range[Date]](Select("daterange"))(PGDateRange.column)) map 
+      { case (record ~ ident ~ daterange) =>
+        record._ident() = ident
+        record._daterange() = daterange
+        record
+      }
+    SQL("SELECT " + cols.select + " FROM (SELECT record.id, record.category, daterange(min(slot.date), max(slot.date), '[]') FROM record" +
+        (if (category.isEmpty) " JOIN record_category ON record.category = record_category.id" else "") + 
+        " JOIN container_annotation ON record.id = annotation JOIN slot ON container = slot.id WHERE slot.study = {study} GROUP BY record.id, record.category" +
+        (if (category.isDefined) " HAVING record.category = {category}" else "") +
+        ") record LEFT JOIN measure_text ON record.id = " + metric.measureType.table + ".record AND measure_text.metric = {metric} ORDER BY" +
+        (if (category.isEmpty) " record.category," else "") +
+        " " + metric.measureType.column.select + ", record.id").
+      on('study -> study.id, 'metric -> metric.id, 'category -> category.map(_.id)).
       list(cols)
   }
 
@@ -153,6 +189,7 @@ object Record extends AnnotationView[Record]("record") {
 trait Annotated {
   private[models] def annotatedId : IntId[_]
   private[models] def annotatedLevel : String
+  private[models] def annotationTable = annotatedLevel + "_annotation"
   /** The list of comments on this object.
     * @param all include indirect comments on any contained objects
     */

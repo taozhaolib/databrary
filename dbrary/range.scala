@@ -1,27 +1,44 @@
 package dbrary
 
-import java.sql.SQLException
+import java.sql.{SQLException,Date}
+import java.util.Calendar
 
-trait RangeType[A] {
-  protected val unit : Option[A]
-  def discrete = unit.isDefined
-  def increment(a : A) : Option[A] // = unit.map(a + _)
-  def decrement(a : A) : Option[A] // = unit.map(a - _)
+trait RangeType[A] extends Ordering[A]
+trait DiscreteRangeType[A] extends RangeType[A] {
+  def increment(a : A) : A // = a + 1
+  def decrement(a : A) : A // = a - 1
 }
 
-abstract sealed class Range[A <: Ordered[A]](implicit t : RangeType[A]) {
+object RangeType {
+  implicit val intRange = new DiscreteRangeType[Int] {
+    def increment(a : Int) = a + 1
+    def decrement(a : Int) = a - 1
+    def compare(a : Int, b : Int) = a compare b
+  }
+  implicit val longRange = new DiscreteRangeType[Long] {
+    def increment(a : Long) = a + 1
+    def decrement(a : Long) = a - 1
+    def compare(a : Long, b : Long) = a compare b
+  }
+}
+
+abstract sealed class Range[A](implicit t : RangeType[A]) {
   self =>
+  private[this] def dt = t match {
+    case dt : DiscreteRangeType[A] => Some(dt)
+    case _ => None
+  }
   val lowerBound : Option[A]
   val upperBound : Option[A]
   val lowerClosed : Boolean
   val upperClosed : Boolean
-  def lowerPoint : Option[A] = if (lowerClosed) lowerBound else lowerBound.flatMap(t.increment(_))
-  def upperPoint : Option[A] = if (upperClosed) upperBound else upperBound.flatMap(t.decrement(_))
+  def lowerPoint : Option[A] = if (lowerClosed) lowerBound else lowerBound.flatMap(lb => dt.map(_.increment(lb)))
+  def upperPoint : Option[A] = if (upperClosed) upperBound else upperBound.flatMap(ub => dt.map(_.decrement(ub)))
   def isEmpty : Boolean = lowerBound.fold(false) { l => upperBound.fold(false) { u =>
     if (lowerClosed && upperClosed) 
-      l > u
+      t.gt(l, u)
     else
-      l >= u
+      t.gteq(l, u)
   } }
   def singleton : Option[A] = 
     if (isEmpty)
@@ -30,7 +47,7 @@ abstract sealed class Range[A <: Ordered[A]](implicit t : RangeType[A]) {
       upperPoint.flatMap(u => lowerPoint.filter(_ == u))
   def isSingleton : Boolean = singleton.isDefined
   def normalize =
-    if (isEmpty || !t.discrete)
+    if (isEmpty || !t.isInstanceOf[DiscreteRangeType[A]])
       self
     else new Range[A] {
       override val isEmpty = false
@@ -41,17 +58,23 @@ abstract sealed class Range[A <: Ordered[A]](implicit t : RangeType[A]) {
     }
   /* contains relations, as in postgres */
   def @>(x : A) =
-    lowerBound.fold(true)(l => if (lowerClosed) l <= x else l < x) &&
-    upperBound.fold(true)(u => if (upperClosed) x <= u else x < u) &&
+    lowerBound.fold(true)(l => if (lowerClosed) t.lteq(l, x) else t.lt(l, x)) &&
+    upperBound.fold(true)(u => if (upperClosed) t.lteq(x, u) else t.lt(x, u)) &&
     !isEmpty
   def @>(r : Range[A]) = 
-    lowerBound.fold(true)(sl => r.lowerBound.fold(false)(rl => if (lowerClosed >= r.lowerClosed) sl <= rl else sl < rl)) &&
-    upperBound.fold(true)(su => r.upperBound.fold(false)(ru => if (upperClosed >= r.upperClosed) su >= ru else su > ru)) &&
+    lowerBound.fold(true)(sl => r.lowerBound.fold(false)(rl => if (lowerClosed >= r.lowerClosed) t.lteq(sl, rl) else t.lt(sl, rl))) &&
+    upperBound.fold(true)(su => r.upperBound.fold(false)(ru => if (upperClosed >= r.upperClosed) t.gteq(su, ru) else t.gt(su, ru))) &&
     !isEmpty
+  def map[B : RangeType](f : A => B) = new Range[B] {
+    val lowerBound = self.lowerBound.map(f)
+    val upperBound = self.upperBound.map(f)
+    val lowerClosed = self.lowerClosed
+    val upperClosed = self.upperClosed
+  }
 }
 
 object Range {
-  def empty[A <: Ordered[A] : RangeType] = new Range[A] {
+  def empty[A : RangeType] = new Range[A] {
     override val isEmpty = true
     override val singleton = None
     val lowerBound = None
@@ -61,7 +84,7 @@ object Range {
     override def @>(x : A) = false
     override def @>(r : Range[A]) = false
   }
-  def singleton[A <: Ordered[A] : RangeType](x : A) = new Range[A] {
+  def singleton[A : RangeType](x : A) = new Range[A] {
     override val isEmpty = false
     override val singleton = Some(x)
     val lowerBound = Some(x)
@@ -69,13 +92,13 @@ object Range {
     val lowerClosed = true
     val upperClosed = true
   }
-  def apply[A <: Ordered[A] : RangeType](lb : A, ub : A) = new Range[A] {
+  def apply[A : RangeType](lb : A, ub : A) = new Range[A] {
     val lowerBound = Some(lb)
     val upperBound = Some(ub)
     val lowerClosed = true
     val upperClosed = true
   }
-  def apply[A <: Ordered[A] : RangeType](lc : Boolean, lb : Option[A], ub : Option[A], uc : Boolean) = new Range[A] {
+  def apply[A : RangeType](lc : Boolean, lb : Option[A], ub : Option[A], uc : Boolean) = new Range[A] {
     val lowerBound = lb
     val upperBound = ub
     val lowerClosed = lc
@@ -83,7 +106,7 @@ object Range {
   }
 }
 
-abstract class PGRangeType[A <: Ordered[A]](val pgType : String)(implicit baseType : PGType[A]) extends RangeType[A] with PGType[Range[A]] {
+abstract class PGRangeType[A](val pgType : String)(implicit baseType : PGType[A]) extends RangeType[A] with PGType[Range[A]] {
   def pgGet(s : String) : Range[A] = {
     if (s == "empty" || s.isEmpty)
       return Range.empty[A](this)
@@ -116,7 +139,17 @@ abstract class PGRangeType[A <: Ordered[A]](val pgType : String)(implicit baseTy
 }
 
 object PGSegment extends PGRangeType[Offset]("segment")(Offset.pgType) {
-  val unit = None
-  def increment(a : Offset) = None
-  def decrement(a : Offset) = None
+  def compare(a : Offset, b : Offset) = a compare b
+}
+
+object PGDateRange extends PGRangeType[Date]("daterange")(
+  new PGType[Date] {
+    val pgType = "date"
+    def pgGet(s : String) = dbutil.timestampUtils.toDate(null, s)
+    def pgPut(d : Date) = dbutil.timestampUtils.toString(null, d)
+  }) with DiscreteRangeType[Date] {
+  def compare(a : Date, b : Date) = a compareTo b
+  private[this] def addDate(a : Date, i : Int) = new Date({ val cal = Calendar.getInstance ; cal.setTime(a) ; cal.add(Calendar.DATE, i) ; cal.getTimeInMillis })
+  def increment(a : Date) = addDate(a, +1)
+  def decrement(a : Date) = addDate(a, -1)
 }
