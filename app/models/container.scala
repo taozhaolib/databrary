@@ -21,7 +21,8 @@ sealed abstract class Container protected (val id : Container.Id) extends TableR
   def consent : Consent.Value
 
   /** List of contained assets within this container. */
-  def assets(implicit db : Site.DB) = AssetLink.getAssets(this)
+  private[this] val _assets = CachedVal[Seq[AssetLink], Site.DB](AssetLink.getAssets(this)(_))
+  def assets(implicit db : Site.DB) : Seq[AssetLink] = _assets
   /** Look up a specific contained asset. */
   def getAsset(o : Asset.Id)(implicit db : Site.DB) = AssetLink.get(this, o)
 
@@ -85,7 +86,8 @@ final class Slot private (override val id : Slot.Id, val study : Study, val cons
   private[this] var _consent = consent_
   def consent = _consent
   private[this] var _date = date_
-  /** The date at which the contained data were collected. */
+  /** The date at which the contained data were collected.
+    * Note that this is covered (in part) by dataAccess permissions due to birthday/age restrictions. */
   def date = _date
 
   /** Update the given values in the database and this object in-place. */
@@ -100,6 +102,10 @@ final class Slot private (override val id : Slot.Id, val study : Study, val cons
   def pageName(implicit site : Site) = date.toString
   def pageParent(implicit site : Site) = Some(study)
   def pageURL = controllers.routes.Slot.view(id).url
+
+  /** The level of access granted on data covered by this slot to the current user. */
+  def dataAccess(classification : Classification.Value = Classification.RESTRICTED)(implicit site : Site) =
+    Permission.data(permission, consent, classification)
 }
 
 

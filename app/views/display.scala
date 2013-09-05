@@ -7,13 +7,15 @@ import play.api.templates.HtmlFormat._
 import util._
 import models._
 import controllers._
-import scala.Some
 import java.text.SimpleDateFormat
 import java.util.Date
 
 object display {
   def page(page : SitePage)(implicit site : Site) = PathCrumb(page).toHtml
   def path(page : SitePage)(implicit site : Site) = Path(page).toHtml
+
+  private[this] def range[A](f : A => String)(r : dbrary.Range[A]) : String =
+    if (r.isEmpty) "" else r.singleton.fold(r.lowerBound.fold("")(f) + "-" + r.upperBound.fold("")(f))(f)
 
   /* roughly: */
   private[this] final val timeUnits = Seq[(String,Long)](
@@ -33,22 +35,40 @@ object display {
     } + (if (d < 0) " ago" else "")
   }
 
-  def date(timestamp : Date = new Date(System.currentTimeMillis), format: String = "MMMM YYYY") : String = {
-    val date = new SimpleDateFormat(format)
-    date.format(timestamp)
+  def age(a : Long) : String = {
+    val (_, s) = ((a, "") /: timeUnits.take(3)) { (as, ut) =>
+      val (a, s) = as
+      val (u, t) = ut
+      val n = a / t
+      (a - n*t, if (n != 0) s + n + u(0) else s)
+  }
+    if (s.isEmpty) "0" else s
   }
 
-  def plainText(text: String = "") = {
+  def agerange(a : dbrary.Range[Long]) : String = range(age)(a)
+
+  private val dateFmtY = new SimpleDateFormat("yyyy")
+  private val dateFmtYM = new SimpleDateFormat("MMMM yyyy")
+  private val dateFmtYMD = new SimpleDateFormat("yyyy-MMM-dd")
+
+  def date(t : java.util.Date, format : String) : String =
+    new SimpleDateFormat(format).format(t)
+
+  def date(s : Slot)(implicit site : Site) =
+    (if (s.dataAccess() >= Permission.DOWNLOAD) dateFmtYMD else dateFmtY).format(s.date)
+
+  def plainText(text: String = "") =
     raw("<p>"+text.split("\\r?\\n").mkString("</p><p>")+"</p>")
-  }
 
+  def gravatarUrlByEmail(email: String = "none", size: Int = 64) = {
+    "http://gravatar.com/avatar/"+md5(email.toLowerCase.replaceAll("\\s+", "")).hash+"?s="+size+"&d=mm"
+
+  def gravatarUrlByEmail(email: String = "none", size: Int = 64) =
   def plainTextSummary(text: String = "", length: Int = 1000) = {
     raw("<p>"+text.split("\\r?\\n").slice(0, length).mkString("</p><p>")+"</p>")
   }
 
   def gravatarUrlByEmail(email: String = "none", size: Int = 64) = {
-    "http://gravatar.com/avatar/"+md5(email.toLowerCase.replaceAll("\\s+", "")).hash+"?s="+size+"&d=mm"
-  }
 
   def gravatarUrlByParty(party: Party, size: Int = 64) = {
     dbrary.cast[Account](party) match {

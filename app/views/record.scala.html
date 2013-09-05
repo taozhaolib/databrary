@@ -1,0 +1,25 @@
+@(record : Record, containers : Seq[Container], permission : Permission.Value)(implicit request : SiteRequest[_])
+
+@template.crud("Record: " + record.toString()) {
+    <article>
+        <h1>@record.toString()</h1>
+
+	@if(permission >= Permission.EDIT) {
+		__EDIT__
+	}
+
+	<dl>
+	@record.measures(request.db).filter(m => record.permission(permission, m.metric) >= Permission.DOWNLOAD).map { m =>
+		<dt>@m.metric.name</dt>
+		<dd>@m.datum</dt>
+	}
+	</dl>
+
+	<ul>
+	@containers.map { c =>
+		<li>@display.path(c)</li>
+	}
+	</ul>
+
+    </article>
+}

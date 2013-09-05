@@ -16,14 +16,21 @@
     </thead>
 
     <tbody>
-    @study.slots(request.db).map { slot =>
+    @study.slotRecords(Some(RecordCategory.Participant))(request.db).map { r =>
         <tr>
-            <td class="main">@display(slot)</td>
-            <td class="demo">___SEX___</td>
-            <td class="demo">___AGE___</td>
+	    <td class="main"><a href='@routes.Record.view(r.id)'>@r.ident(request.db)</a></td>
+            <td>@r.measure(Metric.Gender)(request.db)</td>
+            <td>@r.agerange(request.db).map(display.agerange _)</td>
         </tr>
     }
     </tbody>
+
+    <!-- Not all slots may be associated with participants. Show all here for now: -->
+    <ul>
+    @study.slots(request.db).map { slot =>
+	    <li><a href='@slot.pageURL'>@display.date(slot)</li>
+    }
+    </ul>
 </table>
 
 @if(study.permission >= Permission.CONTRIBUTE) {

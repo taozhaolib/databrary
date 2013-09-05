@@ -217,7 +217,7 @@ object Timeseries extends AssetView[Timeseries]("timeseries") {
 }
 
 object Clip extends AssetView[Clip]("clip") {
-  implicit private val segmentColumn = PGSegment.column // why isn't this implicit found?
+  import PGSegment.{column => segmentColumn}
   private[this] def makeSource(source : Timeseries)(id : Id, segment : Range[Offset], excerpt : Boolean, consent : Option[Consent.Value]) = new Clip(id, source, segment, excerpt, consent.getOrElse(Consent.NONE))
   private[models] def make(source : Timeseries) = (makeSource(source) _).tupled
   private[models] val columns = Columns[
