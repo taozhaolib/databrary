@@ -13,6 +13,9 @@ object display {
   def page(page : SitePage)(implicit site : Site) = PathCrumb(page).toHtml
   def path(page : SitePage)(implicit site : Site) = Path(page).toHtml
 
+  private[this] def range[A](f : A => String)(r : dbrary.Range[A]) : String =
+    if (r.isEmpty) "" else r.singleton.fold(r.lowerBound.fold("")(f) + "-" + r.upperBound.fold("")(f))(f)
+
   /* roughly: */
   private[this] final val timeUnits = Seq[(String,Long)](
       "year" -> 31556926000L,
@@ -31,9 +34,21 @@ object display {
     } + (if (d < 0) " ago" else "")
   }
 
-  private val dateFmtY = new SimpleDateFormat("YYYY")
-  private val dateFmtYM = new SimpleDateFormat("MMMM YYYY")
-  private val dateFmtYMD = new SimpleDateFormat("YYYY-MMM-DD")
+  def age(a : Long) : String = {
+    val (_, s) = ((a, "") /: timeUnits.take(3)) { (as, ut) =>
+      val (a, s) = as
+      val (u, t) = ut
+      val n = a / t
+      (a - n*t, if (n != 0) s + n + u(0) else s)
+    }
+    if (s.isEmpty) "0" else s
+  }
+
+  def agerange(a : dbrary.Range[Long]) : String = range(age)(a)
+
+  private val dateFmtY = new SimpleDateFormat("yyyy")
+  private val dateFmtYM = new SimpleDateFormat("MMMM yyyy")
+  private val dateFmtYMD = new SimpleDateFormat("yyyy-MMM-dd")
 
   def date(t : java.util.Date) : String =
     dateFmtYM.format(t)

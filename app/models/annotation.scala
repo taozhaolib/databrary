@@ -1,6 +1,6 @@
 package models
 
-import java.sql.Timestamp
+import java.sql.{Timestamp,Date}
 import anorm._
 import anorm.SqlParser.scalar
 import dbrary._
@@ -34,7 +34,7 @@ final class Comment private (override val id : Comment.Id, val whoId : Account.I
 }
 
 /** A set of Measures. */
-final class Record private (override val id : Record.Id, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE) extends Annotation(id) with TableRowId[Record] {
+final class Record private (override val id : Record.Id, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE) extends Annotation(id) with TableRowId[Record] with SitePage {
   private[this] var _category = category_
   def category = _category
   def categoryId = category.map(_.id)
@@ -57,8 +57,26 @@ final class Record private (override val id : Record.Id, val category_ : Option[
 
   private val _ident = CachedVal[Option[String], Site.DB](measure(Metric.Ident)(_))
   /** Cached version of `measure(Metric.Ident)`.
-    * Unfortunately, this may become invalid if ident is changed. */
-  def ident = _ident
+    * This may become invalid if the value is changed. */
+  def ident(implicit db : Site.DB) : Option[String] = _ident
+
+  private val _birthdate = CachedVal[Option[Date], Site.DB](measure(Metric.Birthdate)(_))
+  /** Cached version of `measure(Metric.Birthdate)`.
+    * This may become invalid if the value is changed. */
+  def birthdate(implicit db : Site.DB) : Option[Date] = _birthdate
+
+  private val _daterange = CachedVal[Range[Date], Site.DB] { implicit db =>
+    SQL("SELECT daterange(min(slot.date), max(slot.date), '[]') FROM container_annotation JOIN slot ON container = slot.id WHERE annotation = {id}").
+      on('id -> id).single(scalar[Range[Date]](PGDateRange.column))
+  }
+  /** The range of acquisition dates covered by associated slots. */
+  def daterange(implicit db : Site.DB) : Range[Date] = _daterange.normalize
+
+  /** The range of ages as defined by `daterange - birthdate`. */
+  def agerange(implicit db : Site.DB) : Option[Range[Long]] = birthdate.map(dob => daterange.map(_.getTime - dob.getTime))
+
+  /** The age at test for a specific slot, as defined by `slot.date - birthdate`. */
+  def age(slot : Slot)(implicit db : Site.DB) : Option[Long] = birthdate.map(slot.date.getTime - _.getTime)
 
   /** Effective permission the site user has over a given metric in this record, specifically in regards to the measure datum itself.
     * Record permissions depend on study permissions, but can be further restricted by consent levels.
@@ -66,6 +84,10 @@ final class Record private (override val id : Record.Id, val category_ : Option[
     */
   def permission(permission : Permission.Value, metric : MetricBase)(implicit site : Site) : Permission.Value =
     Permission.data(permission, consent, metric.classification)
+
+  def pageName(implicit site : Site) = ident(site.db).orElse(category.map(_.name)).getOrElse("record")
+  def pageParent(implicit site : Site) = None
+  def pageURL = controllers.routes.Record.view(id).url
 }
 
 
@@ -134,13 +156,19 @@ object Record extends AnnotationView[Record]("record") {
     * @return unique records sorted by category, ident */
   private[models] def getSlots(study : Study, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
     val metric = Metric.Ident
-    val cols = (category.fold(row)(cat => columns.map(makeCategory(Some(cat)) _)) ~ metric.measureType.column.?) map 
-      { case (record ~ ident) => record._ident() = ident; record }
-    SQL("SELECT " + cols.select + " FROM (SELECT record.id, record.category FROM record" +
+    val cols = (category.fold(row)(cat => columns.map(makeCategory(Some(cat)) _)) ~
+        metric.measureType.column.? ~
+        Columns[Range[Date]](Select("daterange"))(PGDateRange.column)) map 
+      { case (record ~ ident ~ daterange) =>
+        record._ident() = ident
+        record._daterange() = daterange
+        record
+      }
+    SQL("SELECT " + cols.select + " FROM (SELECT record.id, record.category, daterange(min(slot.date), max(slot.date), '[]') FROM record" +
         (if (category.isEmpty) " JOIN record_category ON record.category = record_category.id" else "") + 
         " JOIN container_annotation ON record.id = annotation JOIN slot ON container = slot.id WHERE slot.study = {study} GROUP BY record.id, record.category" +
         (if (category.isDefined) " HAVING record.category = {category}" else "") +
-        ") record LEFT JOIN measure_text ON record.id = " + metric.measureType.table + ".record WHERE measure_text.metric = {metric} ORDER BY" +
+        ") record LEFT JOIN measure_text ON record.id = " + metric.measureType.table + ".record AND measure_text.metric = {metric} ORDER BY" +
         (if (category.isEmpty) " record.category," else "") +
         " " + metric.measureType.column.select + ", record.id").
       on('study -> study.id, 'metric -> metric.id, 'category -> category.map(_.id)).

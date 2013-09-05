@@ -18,9 +18,9 @@
     <tbody>
     @study.slotRecords(Some(RecordCategory.Participant))(request.db).map { r =>
         <tr>
-	    <td class="main"><a href='@routes.Record.view(r.id)'>@r.measure(Metric.Ident)(request.db)</a></td>
+	    <td class="main"><a href='@routes.Record.view(r.id)'>@r.ident(request.db)</a></td>
             <td>@r.measure(Metric.Gender)(request.db)</td>
-            <td>___AGE___</td>
+            <td>@r.agerange(request.db).map(display.agerange _)</td>
         </tr>
     }
     </tbody>
