@@ -1,4 +1,4 @@
-package util
+package util {
 
 import dbrary._
 
@@ -37,4 +37,10 @@ trait Site {
   def access = identity.access(db)
   /** IP of the client's host. */
   def clientIP : dbrary.Inet
+}
+
+}
+
+package object util {
+  implicit def siteDB(implicit site : Site) : Site.DB = site.db
 }
