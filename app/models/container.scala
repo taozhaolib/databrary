@@ -48,7 +48,7 @@ final class Study private (override val id : Study.Id, title_ : String, descript
     if (title == _title && description == _description)
       return
     val args = 
-    Audit.change("study", SQLArgs('title -> title, 'description -> description), SQLArgs('id -> id)).execute()(site.db)
+    Audit.change("study", SQLArgs('title -> title, 'description -> description), SQLArgs('id -> id)).execute()
     _title = title
     _description = description
   }
@@ -94,7 +94,7 @@ final class Slot private (override val id : Slot.Id, val study : Study, val cons
   def change(consent : Consent.Value = _consent, date : Date = _date)(implicit site : Site) : Unit = {
     if (date == _date && consent == _consent)
       return
-    Audit.change("slot", SQLArgs('consent -> maybe(consent, Consent.NONE), 'date -> date), SQLArgs('id -> id)).execute()(site.db)
+    Audit.change("slot", SQLArgs('consent -> maybe(consent, Consent.NONE), 'date -> date), SQLArgs('id -> id)).execute()
     _consent = consent
     _date = date
   }
@@ -131,13 +131,13 @@ object Container extends ContainerView[Container]("container") {
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   def get(i : Id)(implicit site : Site) : Option[Container] =
     SELECT("WHERE container.id = {id} AND", condition).
-      on('id -> i, 'identity -> site.identity.id).singleOpt()(site.db)
+      on('id -> i, 'identity -> site.identity.id).singleOpt()
 
   /** Retrieve the set of containers to which the given annotation is attached.
     * @return viewable containers ordered by study, date */
   def getAnnotation(annotation : Annotation)(implicit site : Site) : Seq[Container] =
     SELECT("JOIN container_annotation ON container.id = container WHERE annotation = {annotation} ORDER BY study.id, slot.date, slot.id").
-      on('annotation -> annotation.id, 'identity -> site.identity.id).list()(site.db)
+      on('annotation -> annotation.id, 'identity -> site.identity.id).list()
 }
 
 object Study extends ContainerView[Study]("study") {
@@ -151,18 +151,18 @@ object Study extends ContainerView[Study]("study") {
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   def get(i : Id)(implicit site : Site) : Option[Study] =
     SELECT("WHERE id = {id} AND", condition).
-      on('id -> i, 'identity -> site.identity.id).singleOpt()(site.db)
+      on('id -> i, 'identity -> site.identity.id).singleOpt()
 
   /** Retrieve the set of all studies in the system.
     * This only returns studies for which the current user has [[Permission.VIEW]] access. */
   def getAll(implicit site : Site) : Seq[Study] =
     SELECT("WHERE", condition).
-      on('identity -> site.identity.id).list()(site.db)
+      on('identity -> site.identity.id).list()
     
   /** Create a new, empty study with no permissions.
     * The caller should probably add a [[StudyAccess]] for this study to grant [[Permission.ADMIN]] access to some user. */
   def create(title : String, description : Option[String] = None)(implicit site : Site) : Study = {
-    val id = Audit.add(table, SQLArgs('title -> title, 'description -> description), "id").single(scalar[Id])(site.db)
+    val id = Audit.add(table, SQLArgs('title -> title, 'description -> description), "id").single(scalar[Id])
     new Study(id, title, description, Permission.NONE)
   }
 }
@@ -183,7 +183,7 @@ object Slot extends ContainerView[Slot]("slot") {
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   def get(i : Id)(implicit site : Site) : Option[Slot] =
     SELECT("WHERE slot.id = {id} AND", condition).
-      on('id -> i, 'identity -> site.identity.id).singleOpt()(site.db)
+      on('id -> i, 'identity -> site.identity.id).singleOpt()
   /** Retrieve a list of slots within th egiven study. */
   private[models] def getStudy(study : Study)(implicit db : Site.DB) : Seq[Slot] =
     SQL("SELECT " + columns.select + " FROM slot WHERE study = {study} ORDER BY date").
@@ -191,7 +191,7 @@ object Slot extends ContainerView[Slot]("slot") {
     
   /** Create a new slot in the specified study. */
   def create(study : Study, consent : Consent.Value, date : Date)(implicit site : Site) : Slot = {
-    val id = Audit.add(table, SQLArgs('study -> study.id, 'consent -> maybe(consent, Consent.NONE), 'date -> date), "id").single(scalar[Id])(site.db)
+    val id = Audit.add(table, SQLArgs('study -> study.id, 'consent -> maybe(consent, Consent.NONE), 'date -> date), "id").single(scalar[Id])
     new Slot(id, study, consent, date)
   }
 }

@@ -26,8 +26,8 @@ final case class Authorize(childId : Party.Id, parentId : Party.Id, access : Per
   def set(implicit site : Site) : Unit = {
     val id = SQLArgs('child -> childId, 'parent -> parentId)
     val args = SQLArgs('access -> access, 'delegate -> delegate, 'authorized -> authorized, 'expires -> expires)
-    if (Audit.change(Authorize.table, args, id).executeUpdate()(site.db) == 0)
-      Audit.add(Authorize.table, args ++ id).execute()(site.db)
+    if (Audit.change(Authorize.table, args, id).executeUpdate() == 0)
+      Audit.add(Authorize.table, args ++ id).execute()
   }
   /** Remove this authorization from the database.
     * Only child and parent are relevant for this operation.
@@ -86,7 +86,7 @@ object Authorize extends Table[Authorize]("authorize") {
     */
   def delete(child : Party.Id, parent : Party.Id)(implicit site : Site) =
     Audit.remove("authorize", SQLArgs('child -> child, 'parent -> parent)).
-      execute()(site.db)
+      execute()
 
   /** Determine the site access granted to a particular party.
     * This is defined by the minimum access level along a path of valid authorizations from [Party.Root], maximized over all possible paths, or Permission.NONE if there are no such paths. */

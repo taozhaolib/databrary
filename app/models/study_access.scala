@@ -26,8 +26,8 @@ final case class StudyAccess(studyId : Study.Id, partyId : Party.Id, access : Pe
   def set(implicit site : Site) : Unit = {
     val id = SQLArgs('study -> studyId, 'party -> partyId)
     val args =  SQLArgs('access -> access, 'inherit -> inherit)
-    if (Audit.change("study_access", args, id).executeUpdate()(site.db) == 0)
-      Audit.add("study_access", args ++ id).execute()(site.db)
+    if (Audit.change("study_access", args, id).executeUpdate() == 0)
+      Audit.add("study_access", args ++ id).execute()
   }
   /** Remove this access from the database.
     * Only study and party are relevant for this operation.
@@ -67,14 +67,14 @@ object StudyAccess extends Table[StudyAccess]("study_access") {
     JOIN(Study, "ON (study = id) WHERE party = {party} AND access >= {access} AND " + Study.condition + " ORDER BY access DESC").
       on('party -> party.id, 'access -> permission, 'identity -> site.identity.id).list((row ~ Study.row).
         map({ case (a ~ s) => a._study() = s; a._party() = party; a })
-      )(site.db)
+      )
 
   /** Remove a particular study access from the database.
     * @return true if a matching study access was found and deleted
     */
   def delete(study : Study.Id, party : Party.Id)(implicit site : Site) =
     Audit.remove("study_access", SQLArgs('study -> study, 'party -> party)).
-      execute()(site.db)
+      execute()
 
   /** Determine what permission level the party has over the study.
     * This takes into account full permission semantics including inheritance.

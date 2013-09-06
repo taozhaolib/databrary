@@ -22,7 +22,7 @@ sealed abstract class Annotation protected (val id : Annotation.Id) extends Tabl
   /** The set of all containers to which this asset applies, directly or indirectly through contained assets or clips of those assets.
     * This does check permissions, but is not necessarily very useful, because it does not indicate exactly which objects the annotation is applied to. */
   def allContainers(implicit site : Site) : Seq[Container] = 
-    containers(site) ++ assets(site.db).flatMap(_.containers(true)(site).map(_.container(site)))
+    containers(site) ++ assets.flatMap(_.containers(true)(site).map(_.container(site)))
 }
 
 /** A comment made by a particular user, usually only applied to exactly one object.
@@ -85,7 +85,7 @@ final class Record private (override val id : Record.Id, val category_ : Option[
   def permission(permission : Permission.Value, metric : MetricBase)(implicit site : Site) : Permission.Value =
     Permission.data(permission, consent, metric.classification)
 
-  def pageName(implicit site : Site) = ident(site.db).orElse(category.map(_.name)).getOrElse("record")
+  def pageName(implicit site : Site) = ident.orElse(category.map(_.name)).getOrElse("record")
   def pageParent(implicit site : Site) = None
   def pageURL = controllers.routes.Record.view(id).url
 }
@@ -132,10 +132,10 @@ object Comment extends AnnotationView[Comment]("comment") {
   private[models] def post(target : Annotated, text : String)(implicit site : Site) : Comment = {
     val args = SQLArgs('who -> site.identity.id, 'text -> text)
     val c = SQL("INSERT INTO " + table + " " + args.insert + " RETURNING " + *).
-      on(args : _*).single(row)(site.db)
+      on(args : _*).single(row)
     c._who() = site.user.get
     SQL("INSERT INTO " + target.annotationTable + " (" + target.annotatedLevel + ", annotation) VALUES ({target}, {annotation})").
-      on('target -> target.annotatedId, 'annotation -> c.id).execute()(site.db)
+      on('target -> target.annotatedId, 'annotation -> c.id).execute()
     c
   }
 }
