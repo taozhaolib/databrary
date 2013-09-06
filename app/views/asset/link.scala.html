@@ -11,6 +11,7 @@
 
 	@if(link.permission >= Permission.DOWNLOAD) {
 
+<<<<<<< HEAD
 		@link.asset(request.db).format.mimeSubTypes match {
             case ("image", _) => {
                 <img src='@routes.Asset.download(link.containerId, link.assetId, true)'/>
@@ -25,11 +26,25 @@
             }
             case _ => {
             }
+=======
+		@link.asset.format.mimeSubTypes match {
+		case ("image", _) => {
+			<img src='@routes.Asset.download(link.containerId, link.assetId, true)'/>
+		}
+		case ("video", _) => {
+			<img src='@routes.Asset.head(link.containerId, link.assetId)' alt='preview'/>
+		}
+		case ("text", _) => {
+			<iframe src='@routes.Asset.download(link.containerId, link.assetId, true)'/>
+		}
+		case _ => {
+		}
+>>>>>>> remotes/origin/master
 		}
 
 		<a href='@routes.Asset.download(link.containerId, link.assetId, false)'>download</a>
 	}
 
-        @region.comments(Some(routes.Comment.postAssetLink(link.containerId, link.assetId)), link.comments()(request.db))
+        @region.comments(Some(routes.Comment.postAssetLink(link.containerId, link.assetId)), link.comments())
     </article>
 }

@@ -1,6 +1,6 @@
 @(study: Study)(implicit request: SiteRequest[_])
 
-@defining(study.partyAccess()(request.db)) { list =>
+@defining(study.partyAccess()) { list =>
     @list.filter(_.access == Permission.ADMIN).map { account =>
         @account.party.name<br>
     }

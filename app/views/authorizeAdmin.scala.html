@@ -50,7 +50,7 @@
 
 	<tr><th colspan="5"><h3>Memberships</h3></th></tr>
 
-	@party.authorizeParents(true)(request.db).map { t =>
+	@party.authorizeParents(true).map { t =>
 	<tr>
 		<td>@display(t.parent)</td>
 		<td>@t.access</td>
