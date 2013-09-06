@@ -1,100 +1,97 @@
-@(study : Study, assetMap : (Map[String, Seq[AssetLink]], Map[String, Seq[AssetLink]]))(implicit request : SiteRequest[_])
+@(study: Study, assetMap: (Map[String, Seq[AssetLink]], Map[String, Seq[AssetLink]]))(implicit request: SiteRequest[_])
 
 @template.crud("Study: " + study.title) {
-    <article id="study_@study.id.unId" class="study">
-        @region.crudHeaderStudy(study)
+	<article id="study_@study.id.unId" class="study">
+		@region.crudHeaderStudy(study)
 
-        <div class="row">
-            <div class="description col_6">
-            @study.description.map(display.plainText _)
-            </div>
+		<div class="row">
+			<div class="description col_6">
+			@study.description.map(display.plainText _)
+			</div>
 
-            <footer class="extended col_6">
-                <div class="row">
-                    <div class="wide_col_6">
-                        <aside class="thumb foot col_6">
-                        @widget.studyThumb(study)
-                        </aside>
+			<footer class="extended col_6">
+				<div class="row">
+					<div class="wide_col_6">
+						<aside class="thumb col_6">
+						@widget.studyThumb(study)
+						</aside>
 
-                        <aside class="access foot col_6">
-                            <h2>Access</h2>
+						<aside class="dates foot col_6">
+						@study.creationAudit(request.db).map { creation =>
+							<span class="date created">
+								Created <time datetime="@creation.when" pubdate>@display.date(creation.when, "MMMM yyyy")</time></span>
+						}
+						</aside>
 
-                            @widget.studyAccess(study)
-                        </aside>
+						<aside class="citing foot col_6">
+							<h2>Citation</h2>
 
-                        <aside class="citing foot col_6">
-                            <h2>Citation</h2>
+							@widget.studyCitation(study)
+						</aside>
+					</div>
 
-                            @widget.studyCitation(study)
-                        </aside>
-                    </div>
+					<div class="wide_col_3">
+						<aside class="investigators foot col_3">
+							<h2>Investigators</h2>
 
-                    <div class="wide_col_3">
-                        <aside class="investigators foot col_3">
-                            <h2>Investigators</h2>
+							@study.partyAccess(Permission.CONTRIBUTE)(request.db).map { a =>
+								@widget.userinfo(a.party)
+							}
+						</aside>
 
-                            @study.partyAccess(Permission.CONTRIBUTE)(request.db).map { a =>
-                                @widget.userinfo(a.party)
-                            }
-                        </aside>
+						<div class="col_3">
+							<aside class="funding foot">
+								<h2>Funding</h2>
 
-                        <div class="col_3">
-                            <aside class="funding foot">
-                                <h2>Funding</h2>
+								@widget.userinfo(models.Party.Root)
+							</aside>
 
-                                @widget.userinfo(models.Party.Root)
-                            </aside>
+							<aside class="access cf foot">
+								<h2>Sharing</h2>
+								@widget.studyAccess(study)
+							</aside>
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
 
-                            <aside class="dates foot">
-                                <h2>Metadata</h2>
-                                <dl class="metalist cf">
-                                @study.creationAudit(request.db).map { creation =>
-                                    <dt class="date created">Created</dt>
-                                    <dd><time datetime="@creation.when" pubdate>@display.date(creation.when, "MMMM yyyy")</time></dd>
-                                }
-                                </dl>
-                            </aside>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-        </div>
+		<section id="metadata" class="tabset">
+			<div id="media" class="view">
+				<h2 class='tab'>Media</h2>
 
-        <section id="metadata" class="tabset">
-            <div id="media" class="view">
-                <h2 class='tab'>Media</h2>
+				@widget.thumbList(study, assetMap._2.getOrElse("video", Nil))
+				@widget.thumbList(study, assetMap._2.getOrElse("image", Nil))
+				@widget.thumbList(study, assetMap._2.getOrElse("audio", Nil))
+			</div>
 
-                @widget.thumbList(study, assetMap._2.getOrElse("video", Nil))
-                @widget.thumbList(study, assetMap._2.getOrElse("image", Nil))
-                @widget.thumbList(study, assetMap._2.getOrElse("audio", Nil))
-            </div>
+			<div id="highlights" class="view">
+				<h2 class='tab'>Highlights</h2>
 
-            <div id="highlights" class="view">
-                <h2 class='tab'>Highlights</h2>
+				@widget.thumbList(study, assetMap._1.getOrElse("video", Nil))
+				@widget.thumbList(study, assetMap._1.getOrElse("image", Nil))
+				@widget.thumbList(study, assetMap._1.getOrElse("audio", Nil))
+			</div>
 
-                @widget.thumbList(study, assetMap._1.getOrElse("video", Nil))
-                @widget.thumbList(study, assetMap._1.getOrElse("image", Nil))
-                @widget.thumbList(study, assetMap._1.getOrElse("audio", Nil))
-            </div>
+			<div id="documents" class="view">
+				<h2 class='tab'>Documents</h2>
+				@widget.assetList(study)
+			</div>
 
-            <div id="documents" class="view">
-                <h2 class='tab'>Documents</h2>
-                @widget.assetList(study)
-            </div>
+			<div id="participants" class="view">
+				<h2 class='tab'>Participants</h2>
+				@widget.slotList(study)
+			</div>
 
-            <div id="participants" class="view">
-                <h2 class='tab'>Participants</h2>
-                @widget.slotList(study)
-            </div>
+			<div id="permission" class="view">
+				<h2 class='tab'>Permission</h2>
 
-            <div id="permission" class="view">
-                <h2 class='tab'>Permission</h2>
-                @study.partyAccess()(request.db)
-            </div>
-        </section>
+				@widget.studyPermission(study)
+			</div>
+		</section>
 
-        <div class="row">
-        @region.comments(Some(routes.Comment.postStudy(study.id)), study.comments(true)(request.db))
-        </div>
-    </article>
+		<div class="row">
+		@region.comments(Some(routes.Comment.postStudy(study.id)), study.comments(true)(request.db))
+		</div>
+	</article>
 }
