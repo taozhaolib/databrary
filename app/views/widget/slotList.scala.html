@@ -28,7 +28,7 @@
     <!-- Not all slots may be associated with participants. Show all here for now: -->
     <ul>
     @study.slots(request.db).map { slot =>
-	    <li><a href='@slot.pageURL'>@display.date(slot)</li>
+        <li><a href='@slot.pageURL'>@display.date(slot)</a>: @slot.idents</li>
     }
     </ul>
 </table>

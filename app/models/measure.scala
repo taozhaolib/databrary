@@ -192,6 +192,18 @@ object Measure extends Table[MeasureBase]("measure_all") {
   private[models] def getRecord(record : Record.Id)(implicit db : Site.DB) : Seq[MeasureBase] =
     SELECT("WHERE record = {record}").on('record -> record).list
 
+  /** Retrieve the set of all records and possibly measures of the given type on the given target. */
+  private[models] def getAnnotated[T](target : Annotated, category : Option[RecordCategory] = None, metric : Metric[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] = {
+    val tpe = metric.measureType
+    val row = (Record.rowCategory(category) ~ tpe.column.?) map { case (r ~ c) => (r, c) }
+    SQL("SELECT " + row.select + " FROM " + tpe.table +
+      " RIGHT JOIN " + (if (category.isDefined) "record" else Record.src) +
+      " ON record = record.id JOIN " + target.annotationTable + " ON record.id = annotation WHERE metric = {metric}" +
+      (if (category.isDefined) " AND category = {category}" else "") +
+      " AND " + target.annotatedLevel + " = {target}").
+    on('target -> target.annotatedId, 'category -> category.map(_.id), 'metric -> metric.id).list(row)
+  }
+
   /** Add a new measure of a specific type and metric to the given record.
     * This may fail (throw an SQLException) if there is already a value for the given metric on the record. */
   private[models] def add[T](record : Record.Id, metric : Metric[T], value : T)(implicit db : Site.DB) : Measure[T] = {

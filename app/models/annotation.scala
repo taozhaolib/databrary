@@ -149,6 +149,8 @@ object Record extends AnnotationView[Record]("record") {
   private[models] val row = (columns ~ RecordCategory.row.?) map {
     case (rec ~ cls) => (makeCategory(cls) _).tupled(rec)
   }
+  private[models] def rowCategory(category : Option[RecordCategory]) =
+    category.fold(row)(cat => columns.map(makeCategory(Some(cat)) _))
   private[models] override val src = "record LEFT JOIN record_category ON record.category = record_category.id"
 
   /** Retrieve all the categorized records associated with slots in the given study.
@@ -156,7 +158,7 @@ object Record extends AnnotationView[Record]("record") {
     * @return unique records sorted by category, ident */
   private[models] def getSlots(study : Study, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
     val metric = Metric.Ident
-    val cols = (category.fold(row)(cat => columns.map(makeCategory(Some(cat)) _)) ~
+    val cols = (rowCategory(category) ~
         metric.measureType.column.? ~
         Columns[Range[Date]](Select("daterange"))(PGDateRange.column)) map 
       { case (record ~ ident ~ daterange) =>
@@ -201,4 +203,13 @@ trait Annotated {
     * @param all include indirect comments on any contained objects
     */
   def records(all : Boolean = true)(implicit db : Site.DB) : Seq[Record] = Record.get(this, all)(db)
+  /** The list of records and possibly measures on this object.
+    * This is essentially equivalent to `this.records(false).filter(_.category == category).map(r => (r, r.measure[T](metric)))` but more efficient.
+    * @param category if Some limit to the given category */
+  def recordMeasures[T](category : Option[RecordCategory] = None, metric : Metric[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] = Measure.getAnnotated[T](this, category, metric)
+  /** A list of record identification strings that apply to this object.
+    * This is probably not a permanent solution for naming, but it's a start. */
+  def idents(implicit db : Site.DB) : Seq[(String)] = recordMeasures() map {
+    case (r, i) => r.category.fold("")(_.name + ':') + i.getOrElse("[" + r.id.unId.toString + ']')
+  }
 }
