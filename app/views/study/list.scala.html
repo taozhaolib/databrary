@@ -12,19 +12,25 @@
                             <h1>@study.title</h1>
                         </header>
 
-                        <aside class="thumb col_4">
+                        <aside class="thumb col_4 cf">
                         @widget.studyThumb(study)
                         </aside>
 
                         <div class="body col_8">
-                            <footer>
+                            <footer class="meta cf">
+								<div class="date">
+									@study.creationAudit(request.db).map { creation =>
+										<time datetime="@creation.when" pubdate>@display.date(creation.when, "yyyy")</time>
+									}
+								</div>
+
                                 <div class="people">
                                 @study.partyAccess(Permission.CONTRIBUTE)(request.db).map { a => <img src="@display.gravatarUrlByParty(a.party, 16)"> @display.citeName(a.party.name)<span class="sep">,</span> }
                                 </div>
                             </footer>
 
                             <div class="description">
-                            @display.plainTextSummary(study.description.get, 1)
+                            @display.plainTextSummary(study.description.get, 2)
                             </div>
                         </div>
                     </a>

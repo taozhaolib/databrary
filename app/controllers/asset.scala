@@ -25,7 +25,7 @@ object Asset extends SiteController {
   }
 
   def view(i : models.Container.Id, o : models.Asset.Id) = check(i, o) { link => implicit request =>
-    Ok(views.html.asset.link(link))
+    Ok(views.html.asset.view(link))
   }
 
   private def assetResult(tag : String, data_ : => Future[store.StreamEnumerator], fmt : AssetFormat, saveAs : Option[String])(implicit request : SiteRequest[_]) : Result =
@@ -44,7 +44,7 @@ object Asset extends SiteController {
         header = ResponseHeader(OK, Map(headers : _*)),
         data)
     }) : Result) (_ => NotModified)
-    
+
   def download(i : models.Container.Id, o : models.Asset.Id, inline : Boolean) = check(i, o, Permission.DOWNLOAD) { link => implicit request =>
     assetResult(
       link.assetId.unId.formatted("obj:%d"),

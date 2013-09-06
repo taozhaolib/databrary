@@ -1,0 +1,3 @@
+@(route: play.api.mvc.Call, title: String)(implicit request : SiteRequest[_])
+
+<li class="@{if(request.path.toString() == route.toString()) {"current"}}"><a href="@route" alt="@title">@title</a></li>

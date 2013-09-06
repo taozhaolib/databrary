@@ -61,7 +61,7 @@ object display {
     raw("<p>"+text.split("\\r?\\n").mkString("</p><p>")+"</p>")
 
   def plainTextSummary(text: String = "", length: Int = 1000) = {
-    raw("<p>"+text.split("\\r?\\n").slice(0, length).mkString("</p><p>")+"</p>")
+    raw("<p>"+text.split("\\r?\\n\\r?\\n").slice(0, length).mkString("</p><p>")+"</p>")
   }
 
   def gravatarUrlByEmail(email: String = "none", size: Int = 64) = {

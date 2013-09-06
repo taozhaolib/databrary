@@ -281,20 +281,21 @@ dbjs.stickyFooter = function (footer, above) {
 	resize(footer, above);
 };
 
-dbjs.fadeOff = function (container, faded) {
+dbjs.fadeOff = function (container, faded, fader) {
 	var $container = $(container),
 		fade = '<div class="fade"></div>';
 
-	$container.each(function () {
-		var $this = $(this),
-			$faded = $this.find(faded);
+	// could replace this with img.load().each(if complete, load...)
+	// but which looks better to the user?
+	$(window).load(function () {
+		$container.each(function () {
+			var $this = $(this),
+				$faded = $this.find(faded),
+				$fader = $this.find(fader);
 
-		// jquery reading $this.outerHeight funky
-//		$faded.hide();
-//		$this.height($this.outerHeight(false));
-//		$faded.show();
-
-		$faded.append($(fade));
+			$faded.height($fader.height());
+			$faded.append($(fade));
+		});
 	});
 };
 
@@ -320,5 +321,5 @@ $(document).ready(function () {
 	dbjs.tabs('.tabset', '.tab', '.view');
 
 	// study list
-	dbjs.fadeOff('.study_roll','.body')
+	dbjs.fadeOff('.study_roll a', '.body', '.thumb')
 });

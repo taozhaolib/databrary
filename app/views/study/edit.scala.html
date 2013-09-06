@@ -2,7 +2,7 @@
 
 @template.crud("Edit Study: " + study.title) {
     <article>
-        @region.crudHeaderStudy(study)
+		@crud.studyHeader(study)
 
         @helper.form(routes.Study.change(study.id)) {
             @helper.inputText(editForm("title"))

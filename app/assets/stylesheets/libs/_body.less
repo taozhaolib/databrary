@@ -291,9 +291,15 @@ dl.metalist {
 			.transition(@transition);
 		}
 
+	.date {
+		float: right;
+		color: @gray_50;
+	}
+
 	.people {
 		font-weight: bold;
 		margin-bottom: @gutter/4;
+		float: left;
 
 		img {
 			position: relative;
@@ -307,12 +313,10 @@ dl.metalist {
 
 	.body {
 		position: relative;
+		overflow: hidden;
 	}
 
 	.description {
-		p {
-			margin: 0;
-		}
 	}
 
 	.fade {
