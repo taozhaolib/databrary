@@ -40,13 +40,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Metric</span><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>]</span>
+        <span class="name">Metric</span><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<span class="extype" name="models.MetricBase">MetricBase</span>]</span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="models.TableId">TableId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>], <span class="extype" name="models.HasId">HasId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>], <span class="extype" name="models.Table">Table</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="models.TableId">TableId</span>[<span class="extype" name="models.MetricBase">MetricBase</span>], <span class="extype" name="models.HasId">HasId</span>[<span class="extype" name="models.MetricBase">MetricBase</span>], <span class="extype" name="models.Table">Table</span>[<span class="extype" name="models.MetricBase">MetricBase</span>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -95,7 +95,7 @@
         <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <span class="name">Id</span><span class="result"> = <a href="IntId.html" class="extype" name="models.IntId">IntId</a>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>]</span>
+        <span class="name">Id</span><span class="result"> = <a href="IntId.html" class="extype" name="models.IntId">IntId</a>[<span class="extype" name="models.MetricBase">MetricBase</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId</dd></dl></div>
@@ -108,7 +108,7 @@
         <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <span class="name">Row</span><span class="result"> = <a href="Metric.html" class="extype" name="models.Metric">Metric</a></span>
+        <span class="name">Row</span><span class="result"> = <span class="extype" name="models.MetricBase">MetricBase</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Type of TableRow this object can generate.</p><div class="fullcomment"><div class="comment cmt"><p>Type of TableRow this object can generate.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>Table → TableView</dd></dl></div>
@@ -184,16 +184,16 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.Metric.Birthday" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Birthday"></a>
-      <a id="Birthday:Birthday"></a>
+    </li><li name="models.Metric.Birthdate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Birthdate"></a>
+      <a id="Birthdate:Birthdate"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Metric$$Birthday$.html"><span class="name">Birthday</span></a><span class="result"> extends <a href="Metric.html" class="extype" name="models.Metric">Metric</a></span>
+        <a href="Metric$$Birthdate$.html"><span class="name">Birthdate</span></a><span class="result"> extends <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="java.sql.Date">Date</span>]</span>
       </span>
       </h4>
       <p class="comment cmt">Date of birth for any records representing organisms or other entities with dates of origination.</p>
@@ -206,7 +206,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Metric$$Gender$.html"><span class="name">Gender</span></a><span class="result"> extends <a href="Metric.html" class="extype" name="models.Metric">Metric</a></span>
+        <a href="Metric$$Gender$.html"><span class="name">Gender</span></a><span class="result"> extends <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4>
       <p class="comment cmt">Gender is treated as a text enumeration.</p>
@@ -219,7 +219,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Metric$$Ident$.html"><span class="name">Ident</span></a><span class="result"> extends <a href="Metric.html" class="extype" name="models.Metric">Metric</a></span>
+        <a href="Metric$$Ident$.html"><span class="name">Ident</span></a><span class="result"> extends <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4>
       <p class="comment cmt">Identifiers providing generic labels for records or data, such as participant id, condition name, etc.</p>
@@ -534,11 +534,11 @@
 
         <div id="inheritedMembers">
         <div class="parent" name="models.TableId">
-              <h3>Inherited from <span class="extype" name="models.TableId">TableId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>]</h3>
+              <h3>Inherited from <span class="extype" name="models.TableId">TableId</span>[<span class="extype" name="models.MetricBase">MetricBase</span>]</h3>
             </div><div class="parent" name="models.HasId">
-              <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>]</h3>
+              <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<span class="extype" name="models.MetricBase">MetricBase</span>]</h3>
             </div><div class="parent" name="models.Table">
-              <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>]</h3>
+              <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<span class="extype" name="models.MetricBase">MetricBase</span>]</h3>
             </div><div class="parent" name="models.TableView">
               <h3>Inherited from <span class="extype" name="models.TableView">TableView</span></h3>
             </div><div class="parent" name="scala.AnyRef">

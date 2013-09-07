@@ -181,7 +181,7 @@ Usually represents a single project or dataset with a single set of procedures.<
         <span class="name">assets</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="AssetLink.html" class="extype" name="models.AssetLink">AssetLink</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">List of contained assets within this container.</p><div class="fullcomment"><div class="comment cmt"><p>List of contained assets within this container.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Container.html" class="extype" name="models.Container">Container</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Container.html" class="extype" name="models.Container">Container</a></dd></dl></div>
     </li><li name="models.Study#change" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="change(title:String,description:Option[String])(implicitsite:util.Site):Unit"></a>
       <a id="change(String,Option[String])(Site):Unit"></a>
@@ -372,6 +372,20 @@ Always <a href="Consent$.html#NONE:models.Consent.Value" class="extmbr" name="mo
       </span>
       </h4>
       <p class="shortcomment cmt">Primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Study">Study</a> → <a href="Container.html" class="extype" name="models.Container">Container</a> → TableRowId</dd></dl></div>
+    </li><li name="models.Annotated#idents" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="idents(implicitdb:util.Site.DB):Seq[String]"></a>
+      <a id="idents(DB):Seq[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">idents</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">A list of record identification strings that apply to this object.</p><div class="fullcomment"><div class="comment cmt"><p>A list of record identification strings that apply to this object.
+This is probably not a permanent solution for naming, but it's a start.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -504,6 +518,20 @@ This will never be less than <a href="Permission$.html#VIEW:models.Permission.Va
       </h4>
       <p class="shortcomment cmt">Post a new comment this object.</p><div class="fullcomment"><div class="comment cmt"><p>Post a new comment this object.
 This will throw an exception if there is no current user, but does not check permissions otherwise.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
+    </li><li name="models.Annotated#recordMeasures" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="recordMeasures[T](category:Option[models.RecordCategory],metric:models.Metric[T])(implicitdb:util.Site.DB):Seq[(models.Record,Option[T])]"></a>
+      <a id="recordMeasures[T](Option[RecordCategory],Metric[T])(DB):Seq[(Record,Option[T])]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">recordMeasures</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="category">category: <span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>, <span name="metric">metric: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="models.Annotated.recordMeasures.T">T</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[(<a href="Record.html" class="extype" name="models.Record">Record</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="models.Annotated.recordMeasures.T">T</span>])]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The list of records and possibly measures on this object.</p><div class="fullcomment"><div class="comment cmt"><p>The list of records and possibly measures on this object.
+This is essentially equivalent to <code>this.records(false).filter(_.category == category).map(r =&gt; (r, r.measure[T](metric)))</code> but more efficient.</p></div><dl class="paramcmts block"><dt class="param">category</dt><dd class="cmt"><p>if Some limit to the given category</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
     </li><li name="models.Annotated#records" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="records(all:Boolean)(implicitdb:util.Site.DB):Seq[models.Record]"></a>
       <a id="records(Boolean)(DB):Seq[Record]"></a>

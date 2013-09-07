@@ -49,7 +49,7 @@
           <div class="superTypes hiddenContent"><span class="extype" name="play.api.mvc.Controller">Controller</span>, <span class="extype" name="play.api.mvc.Rendering">Rendering</span>, <span class="extype" name="play.api.mvc.RequestExtractors">RequestExtractors</span>, <span class="extype" name="play.api.mvc.AcceptExtractors">AcceptExtractors</span>, <span class="extype" name="play.api.http.ContentTypes">ContentTypes</span>, <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span>, <span class="extype" name="play.api.http.Status">play.api.http.Status</span>, <span class="extype" name="play.api.mvc.BodyParsers">BodyParsers</span>, <span class="extype" name="play.api.mvc.Results">Results</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
           <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a href="Asset$.html" class="extype" name="controllers.Asset">Asset</a>, <a href="Comment$.html" class="extype" name="controllers.Comment">Comment</a>, <a href="Container$.html" class="extype" name="controllers.Container">Container</a>, <a href="Login$.html" class="extype" name="controllers.Login">Login</a>, <a href="Party$.html" class="extype" name="controllers.Party">Party</a>, <a href="Site$.html" class="extype" name="controllers.Site">Site</a>, <a href="Slot$.html" class="extype" name="controllers.Slot">Slot</a>, <a href="Static$.html" class="extype" name="controllers.Static">Static</a>, <a href="Study$.html" class="extype" name="controllers.Study">Study</a></div>
+          <div class="subClasses hiddenContent"><a href="Asset$.html" class="extype" name="controllers.Asset">Asset</a>, <a href="Comment$.html" class="extype" name="controllers.Comment">Comment</a>, <a href="Container$.html" class="extype" name="controllers.Container">Container</a>, <a href="Login$.html" class="extype" name="controllers.Login">Login</a>, <a href="Party$.html" class="extype" name="controllers.Party">Party</a>, <a href="Record$.html" class="extype" name="controllers.Record">Record</a>, <a href="Site$.html" class="extype" name="controllers.Site">Site</a>, <a href="Slot$.html" class="extype" name="controllers.Slot">Slot</a>, <a href="Static$.html" class="extype" name="controllers.Static">Static</a>, <a href="Study$.html" class="extype" name="controllers.Study">Study</a></div>
         </div></div>
         
 
@@ -2351,19 +2351,6 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="controllers.SiteController#db" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="db(implicitsite:util.Site):util.Site.DB"></a>
-      <a id="db(Site):DB"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">db</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -2445,6 +2432,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="controllers.SiteController#isAjax" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="isAjax[A](implicitrequest:play.api.mvc.Request[A]):Boolean"></a>
+      <a id="isAjax[A](Request[A]):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isAjax</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteController.isAjax.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>

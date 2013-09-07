@@ -2,22 +2,22 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>slotEdit - views.html.slotEdit</title>
-          <meta name="description" content="slotEdit - views.html.slotEdit" />
-          <meta name="keywords" content="slotEdit views.html.slotEdit" />
+          <title>admin - views.html.study.admin</title>
+          <meta name="description" content="admin - views.html.study.admin" />
+          <meta name="keywords" content="admin views.html.study.admin" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
-      <link href="../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
-      <link href="../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../../lib/template.js"></script>
-      <script type="text/javascript" src="../../lib/tools.tooltip.js"></script>
+      <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../lib/tools.tooltip.js"></script>
       
       <script type="text/javascript">
          if(top === self) {
-            var url = '../../index.html';
-            var hash = 'views.html.slotEdit$';
+            var url = '../../../index.html';
+            var hash = 'views.html.study.admin$';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -29,9 +29,9 @@
         </head>
         <body class="value">
       <div id="definition">
-        <img src="../../lib/object_big.png" />
-        <p id="owner"><a href="../package.html" class="extype" name="views">views</a>.<a href="package.html" class="extype" name="views.html">html</a></p>
-        <h1>slotEdit</h1>
+        <img src="../../../lib/object_big.png" />
+        <p id="owner"><a href="../../package.html" class="extype" name="views">views</a>.<a href="../package.html" class="extype" name="views.html">html</a>.<a href="package.html" class="extype" name="views.html.study">study</a></p>
+        <h1>admin</h1>
       </div>
 
       <h4 id="signature" class="signature">
@@ -40,13 +40,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">slotEdit</span><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.api.templates.Html">Html</span>]] with <span class="extype" name="play.api.templates.Template3">Template3</span>[<span class="extype" name="scala.Either">Either</span>[<a href="../../models/Study.html" class="extype" name="models.Study">Study</a>, <a href="../../models/Slot.html" class="extype" name="models.Slot">Slot</a>], <a href="../../controllers/Slot$.html#SlotForm=play.api.data.Form[(models.Consent.Value,java.sql.Date)]" class="extmbr" name="controllers.Slot.SlotForm">SlotForm</a>, <a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>]</span>
+        <span class="name">admin</span><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.api.templates.Html">Html</span>]] with <span class="extype" name="play.api.templates.Template5">Template5</span>[<a href="../../../models/Study.html" class="extype" name="models.Study">Study</a>, <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Party.html" class="extype" name="models.Party">Party</a>, <a href="../../../controllers/Study$.html#AccessForm=play.api.data.Form[models.StudyAccess]" class="extmbr" name="controllers.Study.AccessForm">AccessForm</a>)], <span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Party.html" class="extype" name="models.Party">Party</a>, <a href="../../../controllers/Study$.html#AccessForm=play.api.data.Form[models.StudyAccess]" class="extmbr" name="controllers.Study.AccessForm">AccessForm</a>)], <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>]</span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="play.api.templates.Template3">Template3</span>[<span class="extype" name="scala.Either">Either</span>[<a href="../../models/Study.html" class="extype" name="models.Study">Study</a>, <a href="../../models/Slot.html" class="extype" name="models.Slot">Slot</a>], <a href="../../controllers/Slot$.html#SlotForm=play.api.data.Form[(models.Consent.Value,java.sql.Date)]" class="extmbr" name="controllers.Slot.SlotForm">SlotForm</a>, <a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>], <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.api.templates.Html">Html</span>]], <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="play.api.templates.Template5">Template5</span>[<a href="../../../models/Study.html" class="extype" name="models.Study">Study</a>, <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Party.html" class="extype" name="models.Party">Party</a>, <a href="../../../controllers/Study$.html#AccessForm=play.api.data.Form[models.StudyAccess]" class="extmbr" name="controllers.Study.AccessForm">AccessForm</a>)], <span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Party.html" class="extype" name="models.Party">Party</a>, <a href="../../../controllers/Study$.html#AccessForm=play.api.data.Form[models.StudyAccess]" class="extmbr" name="controllers.Study.AccessForm">AccessForm</a>)], <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>], <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.api.templates.Html">Html</span>]], <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -64,7 +64,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="views.html.slotEdit"><span>slotEdit</span></li><li class="in" name="play.api.templates.Template3"><span>Template3</span></li><li class="in" name="play.templates.BaseScalaTemplate"><span>BaseScalaTemplate</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="views.html.study.admin"><span>admin</span></li><li class="in" name="play.api.templates.Template5"><span>Template5</span></li><li class="in" name="play.templates.BaseScalaTemplate"><span>BaseScalaTemplate</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -168,16 +168,16 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>BaseScalaTemplate</dd></dl></div>
-    </li><li name="views.html.slotEdit#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="apply(s:Either[models.Study,models.Slot],editForm:controllers.Slot.SlotForm)(implicitrequest:controllers.SiteRequest[_]):play.api.templates.Html"></a>
-      <a id="apply(Either[Study,Slot],SlotForm)(SiteRequest[_]):Html"></a>
+    </li><li name="views.html.study.admin#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="apply(study:models.Study,accessForms:Seq[(models.Party,controllers.Study.AccessForm)],accessSearch:play.api.data.Form[String],accessResults:Seq[(models.Party,controllers.Study.AccessForm)])(implicitrequest:controllers.SiteRequest[_]):play.api.templates.Html"></a>
+      <a id="apply(Study,Seq[(Party,AccessForm)],Form[String],Seq[(Party,AccessForm)])(SiteRequest[_]):Html"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="s">s: <span class="extype" name="scala.Either">Either</span>[<a href="../../models/Study.html" class="extype" name="models.Study">Study</a>, <a href="../../models/Slot.html" class="extype" name="models.Slot">Slot</a>]</span>, <span name="editForm">editForm: <a href="../../controllers/Slot$.html#SlotForm=play.api.data.Form[(models.Consent.Value,java.sql.Date)]" class="extmbr" name="controllers.Slot.SlotForm">SlotForm</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.api.templates.Html">Html</span></span>
+        <span class="name">apply</span><span class="params">(<span name="study">study: <a href="../../../models/Study.html" class="extype" name="models.Study">Study</a></span>, <span name="accessForms">accessForms: <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Party.html" class="extype" name="models.Party">Party</a>, <a href="../../../controllers/Study$.html#AccessForm=play.api.data.Form[models.StudyAccess]" class="extmbr" name="controllers.Study.AccessForm">AccessForm</a>)]</span>, <span name="accessSearch">accessSearch: <span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="accessResults">accessResults: <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Party.html" class="extype" name="models.Party">Party</a>, <a href="../../../controllers/Study$.html#AccessForm=play.api.data.Form[models.StudyAccess]" class="extmbr" name="controllers.Study.AccessForm">AccessForm</a>)]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.api.templates.Html">Html</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt"></p>
@@ -223,16 +223,16 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="views.html.slotEdit#f" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="f:(Either[models.Study,models.Slot],controllers.Slot.SlotForm)=&gt;controllers.SiteRequest[_]=&gt;play.api.templates.Html"></a>
-      <a id="f:(Either[Study,Slot],SlotForm)⇒(SiteRequest[_])⇒Html"></a>
+    </li><li name="views.html.study.admin#f" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="f:(models.Study,Seq[(models.Party,controllers.Study.AccessForm)],play.api.data.Form[String],Seq[(models.Party,controllers.Study.AccessForm)])=&gt;controllers.SiteRequest[_]=&gt;play.api.templates.Html"></a>
+      <a id="f:(Study,Seq[(Party,AccessForm)],Form[String],Seq[(Party,AccessForm)])⇒(SiteRequest[_])⇒Html"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">f</span><span class="result">: (<span class="extype" name="scala.Either">Either</span>[<a href="../../models/Study.html" class="extype" name="models.Study">Study</a>, <a href="../../models/Slot.html" class="extype" name="models.Slot">Slot</a>], <a href="../../controllers/Slot$.html#SlotForm=play.api.data.Form[(models.Consent.Value,java.sql.Date)]" class="extmbr" name="controllers.Slot.SlotForm">SlotForm</a>) ⇒ (<a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]) ⇒ <span class="extype" name="play.api.templates.Html">Html</span></span>
+        <span class="name">f</span><span class="result">: (<a href="../../../models/Study.html" class="extype" name="models.Study">Study</a>, <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Party.html" class="extype" name="models.Party">Party</a>, <a href="../../../controllers/Study$.html#AccessForm=play.api.data.Form[models.StudyAccess]" class="extmbr" name="controllers.Study.AccessForm">AccessForm</a>)], <span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Party.html" class="extype" name="models.Party">Party</a>, <a href="../../../controllers/Study$.html#AccessForm=play.api.data.Form[models.StudyAccess]" class="extmbr" name="controllers.Study.AccessForm">AccessForm</a>)]) ⇒ (<a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]) ⇒ <span class="extype" name="play.api.templates.Html">Html</span></span>
       </span>
       </h4>
       
@@ -330,32 +330,32 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="views.html.slotEdit#ref" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ref:views.html.slotEdit.type"></a>
-      <a id="ref:slotEdit.this.type"></a>
+    </li><li name="views.html.study.admin#ref" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ref:views.html.study.admin.type"></a>
+      <a id="ref:admin.this.type"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">ref</span><span class="result">: <a href="" class="extype" name="views.html.slotEdit">slotEdit</a>.this.type</span>
+        <span class="name">ref</span><span class="result">: <a href="" class="extype" name="views.html.study.admin">admin</a>.this.type</span>
       </span>
       </h4>
       
-    </li><li name="views.html.slotEdit#render" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="render(s:Either[models.Study,models.Slot],editForm:controllers.Slot.SlotForm,request:controllers.SiteRequest[_]):play.api.templates.Html"></a>
-      <a id="render(Either[Study,Slot],SlotForm,SiteRequest[_]):Html"></a>
+    </li><li name="views.html.study.admin#render" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="render(study:models.Study,accessForms:Seq[(models.Party,controllers.Study.AccessForm)],accessSearch:play.api.data.Form[String],accessResults:Seq[(models.Party,controllers.Study.AccessForm)],request:controllers.SiteRequest[_]):play.api.templates.Html"></a>
+      <a id="render(Study,Seq[(Party,AccessForm)],Form[String],Seq[(Party,AccessForm)],SiteRequest[_]):Html"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">render</span><span class="params">(<span name="s">s: <span class="extype" name="scala.Either">Either</span>[<a href="../../models/Study.html" class="extype" name="models.Study">Study</a>, <a href="../../models/Slot.html" class="extype" name="models.Slot">Slot</a>]</span>, <span name="editForm">editForm: <a href="../../controllers/Slot$.html#SlotForm=play.api.data.Form[(models.Consent.Value,java.sql.Date)]" class="extmbr" name="controllers.Slot.SlotForm">SlotForm</a></span>, <span name="request">request: <a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.api.templates.Html">Html</span></span>
+        <span class="name">render</span><span class="params">(<span name="study">study: <a href="../../../models/Study.html" class="extype" name="models.Study">Study</a></span>, <span name="accessForms">accessForms: <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Party.html" class="extype" name="models.Party">Party</a>, <a href="../../../controllers/Study$.html#AccessForm=play.api.data.Form[models.StudyAccess]" class="extmbr" name="controllers.Study.AccessForm">AccessForm</a>)]</span>, <span name="accessSearch">accessSearch: <span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="accessResults">accessResults: <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Party.html" class="extype" name="models.Party">Party</a>, <a href="../../../controllers/Study$.html#AccessForm=play.api.data.Form[models.StudyAccess]" class="extmbr" name="controllers.Study.AccessForm">AccessForm</a>)]</span>, <span name="request">request: <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.api.templates.Html">Html</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="views.html.slotEdit">slotEdit</a> → Template3</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="views.html.study.admin">admin</a> → Template5</dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -426,8 +426,8 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="play.api.templates.Template3">
-              <h3>Inherited from <span class="extype" name="play.api.templates.Template3">Template3</span>[<span class="extype" name="scala.Either">Either</span>[<a href="../../models/Study.html" class="extype" name="models.Study">Study</a>, <a href="../../models/Slot.html" class="extype" name="models.Slot">Slot</a>], <a href="../../controllers/Slot$.html#SlotForm=play.api.data.Form[(models.Consent.Value,java.sql.Date)]" class="extmbr" name="controllers.Slot.SlotForm">SlotForm</a>, <a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>]</h3>
+        <div class="parent" name="play.api.templates.Template5">
+              <h3>Inherited from <span class="extype" name="play.api.templates.Template5">Template5</span>[<a href="../../../models/Study.html" class="extype" name="models.Study">Study</a>, <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Party.html" class="extype" name="models.Party">Party</a>, <a href="../../../controllers/Study$.html#AccessForm=play.api.data.Form[models.StudyAccess]" class="extmbr" name="controllers.Study.AccessForm">AccessForm</a>)], <span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Party.html" class="extype" name="models.Party">Party</a>, <a href="../../../controllers/Study$.html#AccessForm=play.api.data.Form[models.StudyAccess]" class="extmbr" name="controllers.Study.AccessForm">AccessForm</a>)], <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>]</h3>
             </div><div class="parent" name="play.templates.BaseScalaTemplate">
               <h3>Inherited from <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.api.templates.Html">Html</span>]]</h3>
             </div><div class="parent" name="scala.Serializable">

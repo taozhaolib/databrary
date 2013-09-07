@@ -85,7 +85,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.MeasureDatum#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(datum:T)(implicitdataType:models.MeasureType[T]):models.MeasureDatum[T]"></a>
+      <a id="&lt;init&gt;(value:T)(implicitmeasureType:models.MeasureType[T]):models.MeasureDatum[T]"></a>
       <a id="&lt;init&gt;:MeasureDatum[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -93,7 +93,7 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">MeasureDatum</span><span class="params">(<span name="datum">datum: <span class="extype" name="models.MeasureDatum.T">T</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dataType">dataType: <span class="extype" name="models.MeasureType">MeasureType</span>[<span class="extype" name="models.MeasureDatum.T">T</span>]</span>)</span>
+        <span class="name">MeasureDatum</span><span class="params">(<span name="value">value: <span class="extype" name="models.MeasureDatum.T">T</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="measureType">measureType: <span class="extype" name="models.MeasureType">MeasureType</span>[<span class="extype" name="models.MeasureDatum.T">T</span>]</span>)</span>
       </span>
       </h4>
       
@@ -216,32 +216,6 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="models.MeasureDatum#dataType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="dataType:models.MeasureType[T]"></a>
-      <a id="dataType:MeasureType[T]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">dataType</span><span class="result">: <span class="extype" name="models.MeasureType">MeasureType</span>[<span class="extype" name="models.MeasureDatum.T">T</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.MeasureDatum">MeasureDatum</a> → <a href="MeasureData.html" class="extype" name="models.MeasureData">MeasureData</a></dd></dl></div>
-    </li><li name="models.MeasureDatum#datum" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="datum:T"></a>
-      <a id="datum:T"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">datum</span><span class="result">: <span class="extype" name="models.MeasureDatum.T">T</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The value itself.</p><div class="fullcomment"><div class="comment cmt"><p>The value itself.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.MeasureDatum">MeasureDatum</a> → <a href="MeasureData.html" class="extype" name="models.MeasureData">MeasureData</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -323,6 +297,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.MeasureDatum#measureType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="measureType:models.MeasureType[T]"></a>
+      <a id="measureType:MeasureType[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">measureType</span><span class="result">: <span class="extype" name="models.MeasureType">MeasureType</span>[<span class="extype" name="models.MeasureDatum.T">T</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.MeasureDatum">MeasureDatum</a> → <a href="MeasureData.html" class="extype" name="models.MeasureData">MeasureData</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -388,6 +375,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="MeasureData.html" class="extype" name="models.MeasureData">MeasureData</a> → AnyRef → Any</dd></dl></div>
+    </li><li name="models.MeasureDatum#value" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="value:T"></a>
+      <a id="value:T"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">value</span><span class="result">: <span class="extype" name="models.MeasureDatum.T">T</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The value itself.</p><div class="fullcomment"><div class="comment cmt"><p>The value itself.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.MeasureDatum">MeasureDatum</a> → <a href="MeasureData.html" class="extype" name="models.MeasureData">MeasureData</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>

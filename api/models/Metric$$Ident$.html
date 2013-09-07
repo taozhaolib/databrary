@@ -40,14 +40,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Ident</span><span class="result"> extends <a href="Metric.html" class="extype" name="models.Metric">Metric</a></span>
+        <span class="name">Ident</span><span class="result"> extends <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Identifiers providing generic labels for records or data, such as participant id, condition name, etc.
 <a href="Classification$.html#DEIDENTIFIED:models.Classification.Value" class="extmbr" name="models.Classification#DEIDENTIFIED">Classification.DEIDENTIFIED</a> implies these contain no identifying information, as per human subject regulations for identifiers.</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="Metric.html" class="extype" name="models.Metric">Metric</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="models.MetricBase">MetricBase</span>, <span class="extype" name="models.TableRowId">TableRowId</span>[<span class="extype" name="models.MetricBase">MetricBase</span>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -65,7 +65,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Metric.Ident"><span>Ident</span></li><li class="in" name="models.Metric"><span>Metric</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Metric.Ident"><span>Ident</span></li><li class="in" name="models.Metric"><span>Metric</span></li><li class="in" name="models.MetricBase"><span>MetricBase</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -181,7 +181,7 @@
         <span class="name">classification</span><span class="result">: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Metric.html" class="extype" name="models.Metric">Metric</a></dd></dl></div>
+      <p class="shortcomment cmt">The privacy-determining identification level of measurements of this type.</p><div class="fullcomment"><div class="comment cmt"><p>The privacy-determining identification level of measurements of this type.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Metric.html" class="extype" name="models.Metric">Metric</a> → MetricBase</dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -210,7 +210,7 @@
         <span class="name">dataType</span><span class="result">: <a href="DataType$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.DataType.Value">DataType.Value</a></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Metric.html" class="extype" name="models.Metric">Metric</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Metric.html" class="extype" name="models.Metric">Metric</a> → MetricBase</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -304,7 +304,7 @@
         <span class="name">id</span><span class="result">: <a href="Metric$.html#Id=models.IntId[T]" class="extmbr" name="models.Metric.Id">Metric.Id</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Metric.html" class="extype" name="models.Metric">Metric</a> → TableRowId</dd></dl></div>
+      <p class="shortcomment cmt">Primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Metric.html" class="extype" name="models.Metric">Metric</a> → MetricBase → TableRowId</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -319,18 +319,18 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.Metric#measureType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="measureType:models.MeasureType[_]"></a>
-      <a id="measureType:MeasureType[_]"></a>
+      <a id="measureType:models.MeasureType[T]"></a>
+      <a id="measureType:MeasureType[String]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">measureType</span><span class="result">: <span class="extype" name="models.MeasureType">MeasureType</span>[_]</span>
+        <span class="name">measureType</span><span class="result">: <span class="extype" name="models.MeasureType">MeasureType</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Metric.html" class="extype" name="models.Metric">Metric</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Metric.html" class="extype" name="models.Metric">Metric</a> → MetricBase</dd></dl></div>
     </li><li name="models.Metric#name" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="name:String"></a>
       <a id="name:String"></a>
@@ -343,7 +343,7 @@
         <span class="name">name</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Metric.html" class="extype" name="models.Metric">Metric</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Metric.html" class="extype" name="models.Metric">Metric</a> → MetricBase</dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -421,7 +421,7 @@
         <span class="name">values</span><span class="result">: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Metric.html" class="extype" name="models.Metric">Metric</a></dd></dl></div>
+      <p class="shortcomment cmt">possible values of categorical text data types (nominal/factors), or empty if unrestricted.</p><div class="fullcomment"><div class="comment cmt"><p>possible values of categorical text data types (nominal/factors), or empty if unrestricted.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Metric.html" class="extype" name="models.Metric">Metric</a> → MetricBase</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -480,9 +480,11 @@
 
         <div id="inheritedMembers">
         <div class="parent" name="models.Metric">
-              <h3>Inherited from <a href="Metric.html" class="extype" name="models.Metric">Metric</a></h3>
+              <h3>Inherited from <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</h3>
+            </div><div class="parent" name="models.MetricBase">
+              <h3>Inherited from <span class="extype" name="models.MetricBase">MetricBase</span></h3>
             </div><div class="parent" name="models.TableRowId">
-              <h3>Inherited from <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>]</h3>
+              <h3>Inherited from <span class="extype" name="models.TableRowId">TableRowId</span>[<span class="extype" name="models.MetricBase">MetricBase</span>]</h3>
             </div><div class="parent" name="models.TableRow">
               <h3>Inherited from <span class="extype" name="models.TableRow">TableRow</span></h3>
             </div><div class="parent" name="scala.AnyRef">

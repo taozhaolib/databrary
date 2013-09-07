@@ -44,7 +44,10 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Models provide an interface to the postgres database.
+In general, models provide all of the information necessary to serve requests, but do not do any validation or permission checking beyond what the database does itself.
+Controllers and other callers should do any necessary checking to ensure appropriate semantics.
+</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -334,15 +337,15 @@
       </h4>
       <p class="comment cmt">A measurement value with a specific type.</p>
     </li><li name="models.Metric" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="MetricextendsTableRowId[models.Metric]"></a>
-      <a id="Metric:Metric"></a>
+      <a id="Metric[T]extendsMetricBase"></a>
+      <a id="Metric[T]:Metric[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">sealed </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Metric.html"><span class="name">Metric</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>]</span>
+        <a href="Metric.html"><span class="name">Metric</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="models.MetricBase">MetricBase</span></span>
       </span>
       </h4>
       <p class="comment cmt">Types of measurements (i.</p>
@@ -373,7 +376,7 @@
       </h4>
       <p class="comment cmt">Any real-world individual, group, institution, etc.</p>
     </li><li name="models.Record" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="RecordextendsAnnotationwithTableRowId[models.Record]"></a>
+      <a id="RecordextendsAnnotationwithTableRowId[models.Record]withSitePage"></a>
       <a id="Record:Record"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -381,7 +384,7 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Record.html"><span class="name">Record</span></a><span class="result"> extends <a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]</span>
+        <a href="Record.html"><span class="name">Record</span></a><span class="result"> extends <a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>] with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></span>
       </span>
       </h4>
       <p class="comment cmt">A set of Measures.</p>
@@ -765,7 +768,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Metric$.html"><span class="name">Metric</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>]</span>
+        <a href="Metric$.html"><span class="name">Metric</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<span class="extype" name="models.MetricBase">MetricBase</span>]</span>
       </span>
       </h4>
       
