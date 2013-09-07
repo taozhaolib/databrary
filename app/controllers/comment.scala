@@ -16,7 +16,7 @@ object Comment extends SiteController {
 
   private[this] def post(node : Annotated with SitePage)(request : SiteRequest[_]) =
     if (request.access < Permission.COMMENT)
-      Forbidden
+      Forbidden : Result
     else
       /* FIXME: poorly displayed and possibly untranslated error message: */
       form.bindFromRequest()(request).fold(form => BadRequest(form.errors.head.message), { text =>
