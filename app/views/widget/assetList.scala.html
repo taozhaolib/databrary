@@ -16,7 +16,7 @@
     </thead>
 
     <tbody>
-        @container.assets.map { link =>
+        @container.assets.filter(_.permission >= Permission.VIEW).map { link =>
             <tr>
                 <td class="main">@display(link)</td>
 				<td>@link.asset.format.name</td>
