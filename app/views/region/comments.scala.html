@@ -11,21 +11,7 @@
     @post.map { post =>
         @if(request.access >= Permission.COMMENT) {
             <div class="comment form">
-                <header class="userinfo cf">
-                    <div class="avatar">
-                        <a href="@request.user.get.pageURL" title="@request.user.get.name"><img src="@display.gravatarUrl(request.user.get.email, 40)" alt="@request.user.get.name"></a>
-                    </div>
-
-                    <div class="info">
-                        <div class="name">
-                            <a href="@request.user.get.pageURL" title="@request.user.get.name">@request.user.get.name</a>
-                        </div>
-
-                        <div class="date">
-                            Comment now
-                        </div>
-                    </div>
-                </header>
+                @widget.userinfo(request.user.get)
 
                 @helper.form(post) {
                     <div class="body">

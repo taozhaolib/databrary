@@ -1,0 +1,34 @@
+@(link : AssetLink)(implicit request : SiteRequest[_])
+
+@fileData(asset : FileAsset) = {
+}
+
+@template.crud("Edit Asset: " + link.title) {
+    <article>
+        <h1>@link.title</h1>
+
+        <p>@link.description</p>
+
+	@if(link.permission >= Permission.DOWNLOAD) {
+		@link.asset(request.db).format.mimeSubTypes match {
+            case ("image", _) => {
+                <img src='@routes.Asset.download(link.containerId, link.assetId, true)'/>
+            }
+            case ("video", _) => {
+                <video controls>
+                    <source src="@routes.Asset.download(link.containerId, link.assetId, true)" type="video/mp4">
+                </video>
+            }
+            case ("text", _) => {
+                <iframe src='@routes.Asset.download(link.containerId, link.assetId, true)'/>
+            }
+            case _ => {
+            }
+		}
+
+		<a href='@routes.Asset.download(link.containerId, link.assetId, false)'>download</a>
+	}
+
+        @region.comments(Some(routes.Comment.postAssetLink(link.containerId, link.assetId)), link.comments())
+    </article>
+}

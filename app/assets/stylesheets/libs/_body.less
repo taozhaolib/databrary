@@ -14,7 +14,7 @@
 }
 
 // body - header
-#body_main {
+.main {
 	article {
 		header {
 			margin-bottom: @gutter/2;
@@ -33,6 +33,13 @@
 
 	h2 {
 		margin-bottom: 0;
+	}
+
+	h3 {
+		margin: 0;
+		text-transform: uppercase;
+		letter-spacing: 3px;
+		font-weight: normal;
 	}
 
 	.menu {
@@ -68,6 +75,12 @@
 			&:hover {
 				background: @white_75_second;
 			}
+		}
+	}
+
+	.extended {
+		h2 {
+			margin-top: 0;
 		}
 	}
 
@@ -161,4 +174,157 @@
 
 .focus {
   padding: (@gutter*4) 0;
+}
+
+.citation {
+	font-size: 0.8em;
+	text-align: left;
+	color: @gray_50_third;
+}
+
+.dates {
+	font-size: 0.7em;
+}
+
+.foot {
+	margin-bottom: (@gutter/2);
+}
+
+dl.metalist {
+
+	dt {
+		padding-top: 4px;
+		font-size: 0.8em;
+		float: left;
+		width: 33%;
+		font-weight: bold;
+		text-align: right;
+		margin-right: 3%;
+	}
+
+	dd {
+		float: left;
+		display: inline-block;
+		width: 64%;
+		margin: 0;
+	}
+
+	dd + dd {
+		margin: 0 0 0 34%;
+	}
+}
+
+.thumb {
+	img {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+
+	&.hover {
+		a{
+			display: block;
+			position: relative;
+			color: @white;
+			line-height: 1;
+
+			.media {
+
+			}
+
+			.text {
+				.transition(@transition);
+				opacity: 0;
+				background: @first;
+				padding: (@gutter/4);
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+			}
+
+			&:hover {
+				.media {
+
+				}
+
+				.text {
+					opacity: 0.96;
+				}
+			}
+		}
+
+		.title {
+			font-weight: bold;
+			margin-bottom: (@gutter/4)
+		}
+		.time {
+			font-size: 0.7em;
+		}
+	}
+}
+
+.study_roll {
+	margin-bottom: @gutter;
+
+	a.block {
+		display: block;
+		color: @text;
+
+		&:hover {
+			color: @second;
+
+			h1 {
+				color: @text;
+				background: @white_75_second;
+			}
+		}
+	}
+
+		h1 {
+			border: 0;
+			margin: 0;
+			padding: (@gutter/4) (@gutter/2);
+			.border-radius(15px 0 15px 0);
+			background: @white_75_first;
+			.transition(@transition);
+		}
+
+	.date {
+		float: right;
+		color: @gray_50;
+	}
+
+	.people {
+		font-weight: bold;
+		margin-bottom: @gutter/4;
+		float: left;
+
+		img {
+			position: relative;
+			top: 2px;
+		}
+
+		.sep:last-child {
+			display: none;
+		}
+	}
+
+	.body {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.description {
+	}
+
+	.fade {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 75px;
+		#gradient > .vertical(transparent, @white);
+	}
 }

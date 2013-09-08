@@ -1,0 +1,38 @@
+@(container: Container, assetList: Seq[AssetLink])(implicit request: SiteRequest[_])
+
+@if(assetList.nonEmpty) {
+    <h3>@assetList.head.asset(request.db).format.name</h3>
+
+    <div class="thumb_list row">
+    @for(assetLink <- assetList) {
+        <div class="thumb hover col_2">
+            <a href="@routes.Asset.view(assetLink.containerId, assetLink.assetId)" title="@assetLink.title">
+                <div class="media">
+                @assetLink.asset(request.db).format.mimeSubTypes match {
+                    case ("image", _) => {
+                        <img src='@routes.Asset.download(assetLink.containerId, assetLink.assetId, true)'/>
+                    }
+                    case ("video", _) => {
+                        <img src='@routes.Asset.head(assetLink.containerId, assetLink.assetId)'/>
+                    }
+                    case _ => {
+                    }
+                }
+                </div>
+
+                <div class="text">
+                    <div class="title">
+                    @assetLink.title
+                    </div>
+
+                    <div class="time">
+                    @dbrary.cast[Timeseries](assetLink.asset(request.db)).map { timeseries =>
+                        @timeseries.duration
+                    }
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+    </div>
+}

@@ -9,7 +9,7 @@
                     <span>|</span>
                     <a href="@routes.Login.view">register</a>
                 } { u =>
-                    <a href="@u.pageURL" id="modal_profile_link" class="modal_link" data-target="modal_profile"><img src="@display.gravatarUrl(u.email, 16)" alt="@u.name"> @u.name</a>
+                    <a href="@u.pageURL" id="modal_profile_link" class="modal_link" data-target="modal_profile"><img src="@display.gravatarUrlByEmail(u.email, 16)" alt="@u.name"> @u.name</a>
                     <span>|</span>
                     <a href="@routes.Login.logout">logout</a>
                 }
