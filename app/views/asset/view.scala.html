@@ -9,6 +9,8 @@
 
         <p>@link.description</p>
 
+	@widget.recordList(link.asset, link.permission, true)
+
 	@if(link.permission >= Permission.DOWNLOAD) {
 		@link.asset(request.db).format.mimeSubTypes match {
             case ("image", _) => {

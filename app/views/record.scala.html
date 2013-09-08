@@ -11,7 +11,7 @@
 	<dl>
 	@record.measures.filter(m => record.permission(permission, m.metric) >= Permission.DOWNLOAD).map { m =>
 		<dt>@m.metric.name</dt>
-		<dd>@m.datum</dt>
+		<dd>@m.datum</dd>
 	}
 	</dl>
 
