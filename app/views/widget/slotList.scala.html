@@ -24,6 +24,7 @@
         </tr>
     }
     </tbody>
+</table>
 
     <!-- Not all slots may be associated with participants. Show all here for now: -->
     <ul>
@@ -31,7 +32,6 @@
         <li><a href='@slot.pageURL'>@display.date(slot)</a>: @slot.idents</li>
     }
     </ul>
-</table>
 
 @if(study.permission >= Permission.CONTRIBUTE) {
     <div class="arealinks">
