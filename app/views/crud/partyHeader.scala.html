@@ -1,16 +1,16 @@
-@(study : Study)(implicit request : SiteRequest[_])
+@(party : Party)(implicit request : SiteRequest[_])
 
 <header>
-    <h1>@study.title</h1>
+    <h1>@party.name</h1>
 
     <nav class="menu">
         <ul>
-        @if(study.permission >= Permission.EDIT) {
-			@crud.headerCurrentLink(routes.Study.view(study.id), "view")
-			@crud.headerCurrentLink(routes.Study.edit(study.id), "edit")
+        @if(party.delegated >= Permission.EDIT) {
+			@crud.headerCurrentLink(routes.Party.view(party.id), "view")
+			@crud.headerCurrentLink(routes.Party.edit(party.id), "edit")
 
-            @if(study.permission >= Permission.ADMIN) {
-				@crud.headerCurrentLink(routes.Study.admin(study.id), "permissions")
+            @if(party.delegated >= Permission.ADMIN) {
+				@crud.headerCurrentLink(routes.Party.admin(party.id), "access")
             }
         }
         </ul>

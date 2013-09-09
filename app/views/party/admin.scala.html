@@ -3,7 +3,7 @@
 
 @template.crud("Admin Party: " + party.toString()) {
     <article>
-        <h1>@party.toString()</h1>
+        @crud.partyHeader(party)
 
 	@widget.authorizeAdmin(party, authorizeForms, authorizeWhich, authorizeSearch, authorizeResults)
  </article>  

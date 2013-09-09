@@ -137,7 +137,7 @@ private[models] object SQLArgs {
 
 /** An object with a corresponding page on the site. */
 trait SitePage {
-  /** The title of the object/page in the hiearchy, which may only make sense within [[pageParent]]. */
+  /** The title of the object/page in the hierarchy, which may only make sense within [[pageParent]]. */
   def pageName(implicit site : Site) : String
   /** The object "above" this one (in terms of breadcrumbs and nesting). */
   def pageParent(implicit site : Site) : Option[SitePage]

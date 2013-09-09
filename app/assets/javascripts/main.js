@@ -129,6 +129,9 @@ dbjs.ajaxModal = function (clicker, url, now) {
 	var $clicker = $(clicker),
 		$toggle, toggle;
 
+	if(!$clicker.exists())
+		return;
+
 	var setup = function (url) {
 		$clicker.off('click');
 
@@ -322,7 +325,7 @@ $(document).ready(function () {
 	// when logged out
 	dbjs.ajaxModal('#modal_login_link', '/ajax/modal/login', true);
 	// when logged in
-	//dbjs.ajaxModal('#modal_profile_link', '/ajax/modal/profile', true);
+	dbjs.ajaxModal('#modal_profile_link', '/ajax/modal/profile', true);
 
 	// faq
 	dbjs.fold('.question', 'h2', 'div');
