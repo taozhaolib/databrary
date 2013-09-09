@@ -1,6 +1,7 @@
 package models
 
 import play.api.mvc.{PathBindable,QueryStringBindable}
+import play.api.data.format.{Formats,Formatter}
 import anorm._
 import dbrary._
 import util._
@@ -53,6 +54,12 @@ object IntId {
   implicit def queryStringBindable[T] : QueryStringBindable[IntId[T]] = QueryStringBindable.bindableInt.transform(apply[T] _, _.unId)
   implicit def statement[T] : ToStatement[IntId[T]] = dbrary.Anorm.toStatementMap[IntId[T],Int](_.unId)
   implicit def column[T] : Column[IntId[T]] = dbrary.Anorm.columnMap[IntId[T],Int](apply[T] _)
+  implicit def formatter[T] : Formatter[IntId[T]] = new Formatter[IntId[T]] {
+    def bind(key : String, data : Map[String, String]) =
+      Formats.intFormat.bind(key, data).right.map(apply _)
+    def unbind(key : String, value : IntId[T]) =
+      Formats.intFormat.unbind(key, value.unId)
+  }
 }
 /** Any class (usually a singleton object) which provides an Id type. */
 private[models] trait HasId[+T] {
@@ -128,6 +135,7 @@ private[models] final class SQLArgs private (private val args : Seq[SQLArgs.Arg]
     */
   def set(sep : String = ", ") =
     args.map(_._1.name).map(n => n + " = {" + n + "}").mkString(sep)
+  def where = set(" AND ")
 }
 private[models] object SQLArgs {
   /** A single SQL placeholder parameter and its value. */

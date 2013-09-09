@@ -11,14 +11,76 @@ import models._
 
 object Record extends SiteController {
 
-  def view(i : models.Record.Id) = SiteAction { implicit request =>
+  private[controllers] def check(i : models.Record.Id, p : Permission.Value = Permission.VIEW)(act : (Record, Permission.Value) => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
     models.Record.get(i).fold(NotFound : Result) { record =>
       val l = record.containers
       if (l.isEmpty)
         NotFound
-      else
-        Ok(views.html.record(record, l, l.map(_.permission).max))
+      else {
+        val perm = l.map(_.permission).max
+        if (perm < p)
+          Forbidden
+        else
+          act(record, perm)(request)
+      }
     }
+  }
+
+  def view(i : models.Record.Id) = check(i) { (record, permission) => implicit request =>
+    Ok(views.html.record.view(record, permission))
+  }
+
+  private type MeasureMapping = (Metric.Id, Option[String])
+  private val measureMapping = tuple(
+    "metric" -> of[Metric.Id],
+    "datum" -> optional(nonEmptyText)
+  )
+  type RecordForm = Form[(Option[RecordCategory.Id], Seq[MeasureMapping], MeasureMapping)]
+  private val recordForm = Form(tuple(
+    "category" -> optional(of[RecordCategory.Id]),
+    "measure" -> seq(measureMapping),
+    "add" -> measureMapping
+  ))
+
+  private def recordFormFill(r : Record)(implicit site : Site) =
+    recordForm.fill((r.categoryId, r.measures.map(m => (m.metricId, Some(m.datum.toString))), (Metric.asId(0), None)))
+
+  def edit(i : models.Record.Id) = check(i, Permission.EDIT) { (record, permission) => implicit request =>
+    Ok(views.html.record.edit(record, recordFormFill(record)))
+  }
+
+  def update(i : models.Record.Id) = check(i, Permission.EDIT) { (record, permission) => implicit request =>
+    val form = recordFormFill(record).bindFromRequest
+    form.fold(
+      form => BadRequest(views.html.record.edit(record, form)),
+      { case (category, data, (metric, datum)) =>
+        record.change(category = category.flatMap(RecordCategory.get(_)))
+        def update(metric : Metric.Id, datum : Option[String]) : Option[String] =
+          Metric.get(metric).fold(Some("measure.unknown") : Option[String]) { m =>
+            datum.fold {
+              record.deleteMeasure(m)
+              None : Option[String]
+            } { value =>
+              if (!record.setMeasure(m, value))
+                Some("measure.bad")
+              else
+                None
+            }
+          }
+        data.zipWithIndex.foldLeft {
+          if (metric == 0)
+            form
+          else
+            update(metric, datum).fold(form)(form.withError("add.datum", _))
+        } { (form, measure) =>
+          val ((metric, datum), i) = measure
+          update(metric, datum).fold(form)(form.withError("measure.datum[" + i + "]", _))
+        }.fold(
+          form => BadRequest(views.html.record.edit(record, form)),
+          _ => Redirect(record.pageURL)
+        )
+      }
+    )
   }
 
 }

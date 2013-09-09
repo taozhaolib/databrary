@@ -50,11 +50,19 @@ final class Record private (override val id : Record.Id, val category_ : Option[
   }
 
   /** A specific measure of the given type and metric. */
-  def measure[T](metric : Metric[T])(implicit db : Site.DB) : Option[T] = Measure.get[T](this.id, metric)(db)
+  def measure[T](metric : Metric[T])(implicit db : Site.DB) : Option[T] = Measure.get[T](this.id, metric)
+  private[this] val _measures = CachedVal[Seq[MeasureBase], Site.DB](Measure.getRecord(this.id)(_))
   /** All measures in this record. */
-  def measures(implicit db : Site.DB) : Seq[MeasureBase] = Measure.getRecord(this.id)(db)
+  def measures(implicit db : Site.DB) : Seq[MeasureBase] = _measures
   /** Add a measure to this record. */
-  def addMeasure[T](metric : Metric[T], datum : T)(implicit db : Site.DB) = Measure.add[T](this.id, metric, datum)(db)
+  def addMeasure[T](metric : Metric[T], datum : T)(implicit db : Site.DB) = Measure.add[T](this.id, metric, datum)
+
+  /** Add or change a measure on this record.
+    * This is not type safe so may generate SQL exceptions, and may invalidate measures on this object. */
+  def setMeasure(metric : MetricBase, value : String)(implicit db : Site.DB) = Measure.set(this.id, metric, value)
+  /** Remove a measure from this record.
+    * This may invalidate measures on this object. */
+  def deleteMeasure(metric : MetricBase)(implicit db : Site.DB) = Measure.delete(this.id, metric)
 
   private val _ident = CachedVal[Option[String], Site.DB](measure(Metric.Ident)(_))
   /** Cached version of `measure(Metric.Ident)`.
