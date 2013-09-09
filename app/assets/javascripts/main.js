@@ -129,6 +129,9 @@ dbjs.ajaxModal = function (clicker, url, now) {
 	var $clicker = $(clicker),
 		$toggle, toggle;
 
+	if(!$clicker.exists())
+		return;
+
 	var setup = function (url) {
 		$clicker.off('click');
 
@@ -233,8 +236,8 @@ dbjs.sideMenu = function (menu, position) {
 
 /**
  * Keeps footer at the bottom of the window when the content is shorter than the window
- * @param footer    element made sticky
- * @param above    content to monitor for height
+ * @param footer 	element made sticky
+ * @param above 	content to monitor for height
  */
 dbjs.stickyFooter = function (footer, above) {
 	var $above = $(above),
@@ -273,14 +276,24 @@ dbjs.stickyFooter = function (footer, above) {
 		return false;
 	};
 
-	var contentCheck = setInterval(function () {
-		if (checkResize())
-			resize(footer, above);
-	}, 50);
+	if(screen.height > aboveH * (2/3)) {
+		// skip the interval check if the content is sufficiently long
+		// this estimate can be greatly improved by comparing screen and browser width
+		var contentCheck = setInterval(function () {
+			if (checkResize())
+				resize(footer, above);
+		}, 50);
+	}
 
 	resize(footer, above);
 };
 
+/**
+ * Fades the bottom of longer content based on shorter content size
+ * @param container wrapper for fader and faded element
+ * @param faded 	element faded to fit
+ * @param fader 	element measured for height
+ */
 dbjs.fadeOff = function (container, faded, fader) {
 	var $container = $(container),
 		fade = '<div class="fade"></div>';
@@ -312,7 +325,7 @@ $(document).ready(function () {
 	// when logged out
 	dbjs.ajaxModal('#modal_login_link', '/ajax/modal/login', true);
 	// when logged in
-	//dbjs.ajaxModal('#modal_profile_link', '/ajax/modal/profile', true);
+	dbjs.ajaxModal('#modal_profile_link', '/ajax/modal/profile', true);
 
 	// faq
 	dbjs.fold('.question', 'h2', 'div');

@@ -30,7 +30,7 @@
                             </footer>
 
                             <div class="description">
-                            @display.plainTextSummary(study.description.get, 2)
+                            @display.plainTextSummary(study.description.getOrElse(""), 2)
                             </div>
                         </div>
                     </a>

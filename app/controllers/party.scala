@@ -15,7 +15,12 @@ object Party extends SiteController {
 
   def view(i : models.Party.Id) = SiteAction { implicit request =>
     models.Party.get(i).fold(NotFound : Result)(
-      e => Ok(views.html.party.view(e, e.delegated)))
+      e => Ok(views.html.party.view(e)))
+  }
+
+  def ajaxView() = SiteAction { implicit request =>
+    request.user.fold(NotFound : Result)(
+      e => Ok(views.html.modal.profile(request.identity)))
   }
 
   private def adminAccount(e : models.Party)(implicit request : UserRequest[_]) =
@@ -68,16 +73,18 @@ object Party extends SiteController {
     "name" -> nonEmptyText
   )
 
+  private[this] def viewEdit(party : models.Party)(editForm : Option[EditForm] = None)(implicit request : UserRequest[_]) = {
+    views.html.party.edit(party, editForm.getOrElse(formFill(party)))
+  }
+
   private[this] def viewAdmin(party : models.Party)(
-    editForm : Option[EditForm] = None,
     authorizeChangeForm : Option[(models.Party,Form[Authorize])] = None,
     authorizeWhich : Option[Boolean] = None,
     authorizeSearchForm : Form[String] = authorizeSearchForm,
-    authorizeResults : Seq[(models.Party,Form[Authorize])] = Seq())(
-    implicit request : UserRequest[_]) = {
+    authorizeResults : Seq[(models.Party,Form[Authorize])] = Seq())(implicit request : UserRequest[_]) = {
     val authorizeChange = authorizeChangeForm.map(_._1.id)
     val authorizeForms = party.authorizeChildren(true).filter(t => Some(t.childId) != authorizeChange).map(t => (t.child, authorizeForm(t.childId, t.parentId).fill(t))) ++ authorizeChangeForm
-    views.html.party.admin(party, editForm.getOrElse(formFill(party)), authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
+    views.html.party.admin(party, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
   }
   
   private[this] def checkAdmin(i : models.Party.Id, delegate : Boolean = true)(act : models.Party => UserRequest[AnyContent] => Result) = UserAction { implicit request =>
@@ -87,13 +94,13 @@ object Party extends SiteController {
       act(models.Party.get(i).get)(request)
   }
 
-  def admin(i : models.Party.Id) = checkAdmin(i) { party => implicit requset =>
-    Ok(viewAdmin(party)()) 
+  def edit(i : models.Party.Id) = checkAdmin(i) { party => implicit request =>
+    Ok(viewEdit(party)())
   }
 
   def change(i : models.Party.Id) = checkAdmin(i) { party => implicit request =>
     formFill(party).bindFromRequest.fold(
-      form => BadRequest(viewAdmin(party)(editForm = Some(form))),
+      form => BadRequest(viewEdit(party)(editForm = Some(form))),
       { case (name, orcid, acct) =>
         party.change(name = name, orcid = orcid)
         acct foreach {
@@ -107,6 +114,10 @@ object Party extends SiteController {
         Redirect(party.pageURL)
       }
     )
+  }
+
+  def admin(i : models.Party.Id) = checkAdmin(i) { party => implicit request =>
+    Ok(viewAdmin(party)())
   }
 
   def authorizeChange(i : models.Party.Id, child : models.Party.Id) = checkAdmin(i) { party => implicit request =>

@@ -23,8 +23,9 @@ GET 	/Logout 							controllers.Login.logout
 
 # Entities
 GET 	/party/:id 							controllers.Party.view(id : models.Party.Id)
+GET 	/party/:id/edit 					controllers.Party.edit(id : models.Party.Id)
+POST 	/party/:id/Edit 					controllers.Party.change(id : models.Party.Id)
 GET 	/party/:id/admin 					controllers.Party.admin(id : models.Party.Id)
-POST 	/party/:id/Admin 					controllers.Party.change(id : models.Party.Id)
 GET 	/party/:id/Authorize/search/child 	controllers.Party.authorizeSearch(id : models.Party.Id, which : Boolean = false)
 GET 	/party/:id/Authorize/search/parent 	controllers.Party.authorizeSearch(id : models.Party.Id, which : Boolean = true)
 POST 	/party/:id/Authorize/:child 		controllers.Party.authorizeChange(id : models.Party.Id, child : models.Party.Id)
@@ -65,7 +66,7 @@ POST 	/study/:id/Comment 					controllers.Comment.postStudy(id : models.Study.Id
 POST 	/slot/:id/Comment 					controllers.Comment.postSlot(id : models.Slot.Id)
 POST 	/asset/:id/:obj/Comment 			controllers.Comment.postAssetLink(id : models.Container.Id, obj : models.Asset.Id)
 
-GET	/record/:id				controllers.Record.view(id : models.Record.Id)
+GET	/record/:id					controllers.Record.view(id : models.Record.Id)
 GET	/record/:id/edit				controllers.Record.edit(id : models.Record.Id)
 POST	/record/:id/Edit				controllers.Record.update(id : models.Record.Id)
 
@@ -74,6 +75,7 @@ GET 	/assets/*file 						controllers.Assets.at(path="/public", file)
 
 # ajax
 GET		/ajax/modal/login					controllers.Login.ajaxView
+GET		/ajax/modal/profile					controllers.Party.ajaxView
 
 # test
 GET 	/test 								controllers.Site.test

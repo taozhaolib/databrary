@@ -1,0 +1,18 @@
+@(party : Party)(implicit request : SiteRequest[_])
+
+<header>
+    <h1>@party.name</h1>
+
+    <nav class="menu">
+        <ul>
+        @if(party.delegated >= Permission.EDIT) {
+			@crud.headerCurrentLink(routes.Party.view(party.id), "view")
+			@crud.headerCurrentLink(routes.Party.edit(party.id), "edit")
+
+            @if(party.delegated >= Permission.ADMIN) {
+				@crud.headerCurrentLink(routes.Party.admin(party.id), "access")
+            }
+        }
+        </ul>
+    </nav>
+</header>

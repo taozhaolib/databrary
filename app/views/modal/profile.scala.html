@@ -1,12 +1,8 @@
-@(party : Party, delegated : Permission.Value)(implicit request : SiteRequest[_])
+@(party : Party)(implicit request : SiteRequest[_])
 
-@template.crud("Party: " + party.toString()) {
+@template.modal("profile", "full")() {
     <article>
-        <h1>@party.toString()</h1>
-
-		@if(delegated >= Permission.ADMIN) {
-			<a href='@routes.Party.admin(party.id)'>admin</a>
-		}
+        @crud.partyHeader(party)
 	
 		<dl>
 	
@@ -34,7 +30,7 @@
 		}
 	
 			<dt>Studies</dt>
-			@if(delegated >= Permission.CONTRIBUTE) {
+			@if(party.delegated >= Permission.CONTRIBUTE) {
 				<dd>@helper.form(routes.Study.create(Some(party.id))) {
 					<button type='submit'>Create new study</button>
 				}</dd>
@@ -45,7 +41,9 @@
 	
 	
 		</dl>
-	
-		@region.comments(None, dbrary.cast[Account](party).fold(Nil : Seq[models.Comment])(_.comments))
+
+        <div class="row">
+            @region.comments(None, dbrary.cast[Account](party).fold(Nil : Seq[models.Comment])(_.comments))
+        </div>
     </article>
 }
