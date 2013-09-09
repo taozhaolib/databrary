@@ -23,8 +23,9 @@ GET 	/Logout 							controllers.Login.logout
 
 # Entities
 GET 	/party/:id 							controllers.Party.view(id : models.Party.Id)
+GET 	/party/:id/edit 					controllers.Party.edit(id : models.Party.Id)
+POST 	/party/:id/Edit 					controllers.Party.change(id : models.Party.Id)
 GET 	/party/:id/admin 					controllers.Party.admin(id : models.Party.Id)
-POST 	/party/:id/Admin 					controllers.Party.change(id : models.Party.Id)
 GET 	/party/:id/Authorize/search/child 	controllers.Party.authorizeSearch(id : models.Party.Id, which : Boolean = false)
 GET 	/party/:id/Authorize/search/parent 	controllers.Party.authorizeSearch(id : models.Party.Id, which : Boolean = true)
 POST 	/party/:id/Authorize/:child 		controllers.Party.authorizeChange(id : models.Party.Id, child : models.Party.Id)

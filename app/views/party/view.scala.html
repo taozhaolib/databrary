@@ -5,6 +5,7 @@
         <h1>@party.name</h1>
 
 		@if(delegated >= Permission.ADMIN) {
+			<a href='@routes.Party.edit(party.id)'>edit</a>
 			<a href='@routes.Party.admin(party.id)'>admin</a>
 		}
 	
