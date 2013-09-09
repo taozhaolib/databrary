@@ -98,6 +98,7 @@ object Authorize extends Table[Authorize]("authorize") {
   /** Determine the permission level granted to a child by a parent.
     * The child is granted all the same rights of the parent up to this level. */
   private[models] def delegate_check(child : Party.Id, parent : Party.Id)(implicit db : Site.DB) : Permission.Value =
+    if (child == parent) Permission.ADMIN else // optimization
     SQL("SELECT authorize_delegate_check({child}, {parent})").
       on('child -> child, 'parent -> parent).single(scalar[Option[Permission.Value]]).
       getOrElse(Permission.NONE)
