@@ -12,9 +12,10 @@ import util._
   * Permissions over annotations are generally determined by the permissions on the objects to which they attach.
   * The exact permissions and ownership semantics depend on the particular asset type. */
 sealed abstract class Annotation protected (val id : Annotation.Id) extends TableRowId[Annotation] {
+  private[this] val _containers = CachedVal[Seq[Container], Site](Container.getAnnotation(this)(_))
   /** The set of containers to which this annotation applies.
     * This checks permissions, so a non-empty list implies the annotation is visible to the current user. */
-  def containers(implicit site : Site) : Seq[Container] = Container.getAnnotation(this)(site)
+  def containers(implicit site : Site) : Seq[Container] = _containers
   /** The set of assets to which this annotation applies.
     * This does not check permissions, so must be followed by additional checks such as `assets.flatMap(_.containers)` to ensure the annotation (and asset) may be accessed. */
   def assets(implicit db : Site.DB) : Seq[Asset] = Asset.getAnnotation(this)(db)

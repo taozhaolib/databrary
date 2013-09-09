@@ -38,10 +38,11 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
     * @param all include inactive authorizations */
   final def authorizeChildren(all : Boolean = false)(implicit db : Site.DB) = Authorize.getChildren(this, all)
 
-  /** List of delegations granted to this user. */
-  final def delegated(implicit site : Site) = Authorize.delegate_check(site.identity.id, id)
-  /** List of delegations granted by this user. */
-  final def delegatedBy(p : Party.Id)(implicit site : Site) = Authorize.delegate_check(id, p)
+  private[this] val _delegated = CachedVal[Permission.Value, Site](site => Authorize.delegate_check(site.identity.id, id)(site.db))
+  /** Permission delegated by this party to the current user. */
+  final def delegated(implicit site : Site) : Permission.Value = _delegated
+  /** Permission delegated by the given party to this party. */
+  final def delegatedBy(p : Party.Id)(implicit site : Site) : Permission.Value = Authorize.delegate_check(id, p)
 
   /** List of studies accessible by this user.
     * @param p permission level to restrict to */
