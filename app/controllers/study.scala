@@ -21,10 +21,9 @@ object Study extends SiteController {
   }
 
   def view(i : models.Study.Id) = check(i) { study => implicit request =>
-    def part(x : Seq[AssetLink]) = x.groupBy(_.asset(request.db).format.mimeSubTypes._1)
-    val (excerpts, files) = study.assets(request.db).partition(_.asset(request.db).classification == Classification.EXCERPT)
-
-    Ok(views.html.study.view(study, (part(excerpts), part(files))))
+    def group(x : Seq[AssetLink]) = x.groupBy(_.asset(request.db).format.mimeSubTypes._1)
+    val (excerpts, files) = study.assets(request.db).filter(_.permission >= Permission.DOWNLOAD).partition(_.asset(request.db).classification == Classification.EXCERPT)
+    Ok(views.html.study.view(study, (group(excerpts), group(files))))
   }
 
   def listAll = SiteAction { implicit request =>

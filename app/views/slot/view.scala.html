@@ -2,11 +2,13 @@
 
 @template.crud("Slot: " + slot.toString()) {
     <article>
-        <h1>@slot.toString()</h1>
+        <h1>@slot.toString(): @slot.idents</h1>
 
 	@if(slot.permission >= Permission.EDIT) {
 		<a href="@routes.Slot.edit(slot.id)">edit</a>
 	}
+
+	@widget.recordList(slot, slot.permission)
 
 	@widget.assetList(slot)
 

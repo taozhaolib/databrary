@@ -11,16 +11,16 @@
         <tr>
             <th class="main">Title</th>
             <th class="meta">Format</th>
-            <th class="meta">Consent</th>
+            <th class="meta">Classification</th>
         </tr>
     </thead>
 
     <tbody>
-        @container.assets.map { link =>
+        @container.assets.filter(_.permission >= Permission.VIEW).map { link =>
             <tr>
                 <td class="main">@display(link)</td>
 				<td>@link.asset.format.name</td>
-				<td>@link.asset.consent</td>
+				<td>@link.asset.classification</td>
             </tr>
         }
     </tbody>

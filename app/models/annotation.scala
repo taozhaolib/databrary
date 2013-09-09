@@ -22,7 +22,7 @@ sealed abstract class Annotation protected (val id : Annotation.Id) extends Tabl
   /** The set of all containers to which this asset applies, directly or indirectly through contained assets or clips of those assets.
     * This does check permissions, but is not necessarily very useful, because it does not indicate exactly which objects the annotation is applied to. */
   def allContainers(implicit site : Site) : Seq[Container] = 
-    containers(site) ++ assets(site.db).flatMap(_.containers(true)(site).map(_.container(site)))
+    containers(site) ++ assets.flatMap(_.containers(true)(site).map(_.container(site)))
 }
 
 /** A comment made by a particular user, usually only applied to exactly one object.
@@ -85,7 +85,7 @@ final class Record private (override val id : Record.Id, val category_ : Option[
   def permission(permission : Permission.Value, metric : MetricBase)(implicit site : Site) : Permission.Value =
     Permission.data(permission, consent, metric.classification)
 
-  def pageName(implicit site : Site) = ident(site.db).orElse(category.map(_.name)).getOrElse("record")
+  def pageName(implicit site : Site) = ident.orElse(category.map(_.name)).getOrElse("record")
   def pageParent(implicit site : Site) = None
   def pageURL = controllers.routes.Record.view(id).url
 }
@@ -132,10 +132,10 @@ object Comment extends AnnotationView[Comment]("comment") {
   private[models] def post(target : Annotated, text : String)(implicit site : Site) : Comment = {
     val args = SQLArgs('who -> site.identity.id, 'text -> text)
     val c = SQL("INSERT INTO " + table + " " + args.insert + " RETURNING " + *).
-      on(args : _*).single(row)(site.db)
+      on(args : _*).single(row)
     c._who() = site.user.get
     SQL("INSERT INTO " + target.annotationTable + " (" + target.annotatedLevel + ", annotation) VALUES ({target}, {annotation})").
-      on('target -> target.annotatedId, 'annotation -> c.id).execute()(site.db)
+      on('target -> target.annotatedId, 'annotation -> c.id).execute()
     c
   }
 }
@@ -149,6 +149,8 @@ object Record extends AnnotationView[Record]("record") {
   private[models] val row = (columns ~ RecordCategory.row.?) map {
     case (rec ~ cls) => (makeCategory(cls) _).tupled(rec)
   }
+  private[models] def rowCategory(category : Option[RecordCategory]) =
+    category.fold(row)(cat => columns.map(makeCategory(Some(cat)) _))
   private[models] override val src = "record LEFT JOIN record_category ON record.category = record_category.id"
 
   /** Retrieve all the categorized records associated with slots in the given study.
@@ -156,7 +158,7 @@ object Record extends AnnotationView[Record]("record") {
     * @return unique records sorted by category, ident */
   private[models] def getSlots(study : Study, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
     val metric = Metric.Ident
-    val cols = (category.fold(row)(cat => columns.map(makeCategory(Some(cat)) _)) ~
+    val cols = (rowCategory(category) ~
         metric.measureType.column.? ~
         Columns[Range[Date]](Select("daterange"))(PGDateRange.column)) map 
       { case (record ~ ident ~ daterange) =>
@@ -201,4 +203,13 @@ trait Annotated {
     * @param all include indirect comments on any contained objects
     */
   def records(all : Boolean = true)(implicit db : Site.DB) : Seq[Record] = Record.get(this, all)(db)
+  /** The list of records and possibly measures on this object.
+    * This is essentially equivalent to `this.records(false).filter(_.category == category).map(r => (r, r.measure[T](metric)))` but more efficient.
+    * @param category if Some limit to the given category */
+  def recordMeasures[T](category : Option[RecordCategory] = None, metric : Metric[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] = Measure.getAnnotated[T](this, category, metric)
+  /** A list of record identification strings that apply to this object.
+    * This is probably not a permanent solution for naming, but it's a start. */
+  def idents(implicit db : Site.DB) : Seq[(String)] = recordMeasures() map {
+    case (r, i) => r.category.fold("")(_.name + ':') + i.getOrElse("[" + r.id.unId.toString + ']')
+  }
 }

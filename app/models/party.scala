@@ -17,7 +17,7 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Unit = {
     if (name == _name && orcid == _orcid)
       return
-    Audit.change("party", SQLArgs('name -> name, 'orcid -> orcid), SQLArgs('id -> id)).execute()(site.db)
+    Audit.change("party", SQLArgs('name -> name, 'orcid -> orcid), SQLArgs('id -> id)).execute()
     _name = name
     _orcid = orcid
   }
@@ -39,9 +39,9 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   final def authorizeChildren(all : Boolean = false)(implicit db : Site.DB) = Authorize.getChildren(this, all)
 
   /** List of delegations granted to this user. */
-  final def delegated(implicit site : Site) = Authorize.delegate_check(site.identity.id, id)(site.db)
+  final def delegated(implicit site : Site) = Authorize.delegate_check(site.identity.id, id)
   /** List of delegations granted by this user. */
-  final def delegatedBy(p : Party.Id)(implicit site : Site) = Authorize.delegate_check(id, p)(site.db)
+  final def delegatedBy(p : Party.Id)(implicit site : Site) = Authorize.delegate_check(id, p)
 
   /** List of studies accessible by this user.
     * @param p permission level to restrict to */
@@ -63,7 +63,7 @@ final class Account protected (party : Party, email_ : String, password_ : Strin
   def changeAccount(email : String = _email, password : String = _password, openid : Option[String] = _openid)(implicit site : Site) : Unit = {
     if (email == _email && password == _password && openid == _openid)
       return
-    Audit.change(Account.table, SQLArgs('email -> email, 'password -> password, 'openid -> openid), SQLArgs('id -> id)).execute()(site.db)
+    Audit.change(Account.table, SQLArgs('email -> email, 'password -> password, 'openid -> openid), SQLArgs('id -> id)).execute()
     _email = email
     _password = password
     _openid = openid
@@ -97,12 +97,12 @@ object Party extends TableId[Party]("party") {
     case site.identity.id => Some(site.identity)
     case _ =>
       SELECT("WHERE id = {id}").
-        on('id -> i).singleOpt()(site.db)
+        on('id -> i).singleOpt()
   }
 
   /** Create a new party. */
   def create(name : String)(implicit site : Site) : Party = {
-    val id = Audit.add(table, SQLArgs('name -> name), "id").single(scalar[Id])(site.db)
+    val id = Audit.add(table, SQLArgs('name -> name), "id").single(scalar[Id])
     new Party(id, name)
   }
 
@@ -161,7 +161,7 @@ object Account extends TableId[Account]("account") {
     if (i == site.identity.id)
       site.user
     else
-      get_(i)(site.db)
+      get_(i)
   /** Look up a user by email. */
   def getEmail(email : String)(implicit db : Site.DB) : Option[Account] = 
     SELECT("WHERE email = {email}").

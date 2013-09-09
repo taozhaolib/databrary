@@ -24,7 +24,7 @@ final class AssetLink private (val containerId : Container.Id, val assetId : Ass
   def change(title : String = _title, description : Option[String] = _description)(implicit site : Site) : Unit = {
     if (title == _title && description == _description)
       return
-    Audit.change("asset_link", SQLArgs('title -> title, 'description -> description), SQLArgs('container -> containerId, 'asset -> assetId)).execute()(site.db)
+    Audit.change("asset_link", SQLArgs('title -> title, 'description -> description), SQLArgs('container -> containerId, 'asset -> assetId)).execute()
     _title = title
     _description = description
   }
@@ -41,7 +41,7 @@ final class AssetLink private (val containerId : Container.Id, val assetId : Ass
   /** Effective permission the site user has over this link, specifically in regards to the asset itself.
     * Asset permissions depend on study permissions, but can be further restricted by consent levels. */
   def permission(implicit site : Site) : Permission.Value =
-    Permission.data(container.permission, asset(site.db).consent, asset(site.db).classification)
+    Permission.data(container.permission, asset.consent, asset.classification)
 
   def pageName(implicit site : Site) = title
   def pageParent(implicit site : Site) = Some(container)
@@ -91,12 +91,12 @@ object AssetLink extends Table[AssetLink]("asset_link") {
         if (l.assetId == asset.id)
           l._asset() = asset
         l
-      })(site.db)
+      })
 
   /** Create a new link between an asset and a container.
     * This can change effective permissions on this asset, so care must be taken when using this function with existing assets. */
   def create(container : Container, asset : Asset, title : String, description : Option[String] = None)(implicit site : Site) : AssetLink = {
-    Audit.add(table, SQLArgs('container -> container.id, 'asset -> asset.id, 'title -> title, 'description -> description)).execute()(site.db)
+    Audit.add(table, SQLArgs('container -> container.id, 'asset -> asset.id, 'title -> title, 'description -> description)).execute()
     val link = new AssetLink(container.id, asset.id, title, description)
     link._container() = container
     link._asset() = asset
