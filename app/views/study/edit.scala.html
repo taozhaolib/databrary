@@ -1,13 +1,13 @@
-@(study : Study, editForm : controllers.Study.StudyForm)(implicit request : SiteRequest[_])
+@(a : Either[Party,Study], editForm : controllers.Study.StudyForm)(implicit request : SiteRequest[_])
 
-@template.crud("Edit Study: " + study.title) {
+@template.crud(a.fold(_.toString + ": Create Study", "Edit Study: " + _.title)) {
     <article>
-		@crud.studyHeader(study)
+	@a.fold(crud.partyHeader(_), crud.studyHeader(_))
 
-        @helper.form(routes.Study.change(study.id)) {
+	@helper.form(a.fold(p => routes.Study.add(p.id), s => routes.Study.change(s.id))) {
             @helper.inputText(editForm("title"))
             @helper.textarea(editForm("description"), 'cols -> 80, 'rows -> 8)
-            <button type='submit'>Change</button>
+	    <button type='submit'>@a.fold(_ => "Create", _ => "Change")</button>
         }
         @widget.formErrors(editForm)
 

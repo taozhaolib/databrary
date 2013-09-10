@@ -34,6 +34,8 @@ POST 	/party/:id/Authorize/:other/parent 	controllers.Party.authorizeAdd(id : mo
 # TODO: should be POST but currently used as link:
 GET 	/party/:id/Authorize/:child/delete 	controllers.Party.authorizeDelete(id : models.Party.Id, child : models.Party.Id)
 
+GET 	/study/create 						controllers.Study.create(owner : Option[models.Party.Id] ?= None)
+POST 	/study/Create/:owner 						controllers.Study.add(owner : models.Party.Id)
 GET 	/study/:id 							controllers.Study.view(id : models.Study.Id)
 GET 	/study/:id/edit 					controllers.Study.edit(id : models.Study.Id)
 POST 	/study/:id/Edit 					controllers.Study.change(id : models.Study.Id)
@@ -43,7 +45,6 @@ POST 	/study/:id/Access/:party/add 		controllers.Study.accessAdd(id : models.Stu
 # TODO: should be POST:
 GET 	/study/:id/Access/:party/delete 	controllers.Study.accessDelete(id : models.Study.Id, party : models.Party.Id)
 POST 	/study/:id/Access/:party 			controllers.Study.accessChange(id : models.Study.Id, party : models.Party.Id)
-POST 	/study/Create 						controllers.Study.create(owner : Option[models.Party.Id] ?= None)
 GET 	/studies 							controllers.Study.listAll
 
 GET 	/study/:id/slot 					controllers.Slot.create(id : models.Study.Id)

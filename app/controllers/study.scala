@@ -38,17 +38,39 @@ object Study extends SiteController {
   private[this] def editFormFill(s : Study) = editForm.fill((s.title, s.description))
 
   def edit(i : models.Study.Id) = check(i, Permission.EDIT) { study => implicit request =>
-    Ok(views.html.study.edit(study, editFormFill(study)))
+    Ok(views.html.study.edit(Right(study), editFormFill(study)))
   }
 
   def change(i : models.Study.Id) = check(i, Permission.EDIT) { study => implicit request =>
     editFormFill(study).bindFromRequest.fold(
-      form => BadRequest(views.html.study.edit(study, form)),
+      form => BadRequest(views.html.study.edit(Right(study), form)),
       { case (title, description) =>
         study.change(title = title, description = description.flatMap(maybe(_)))
         Redirect(study.pageURL)
       }
     )
+  }
+
+  def create(e : Option[models.Party.Id]) = UserAction { implicit request =>
+    val owner = e.getOrElse(request.identity.id)
+    if (request.identity.delegatedBy(owner) < Permission.CONTRIBUTE)
+      Forbidden
+    else
+      Ok(views.html.study.edit(Left(models.Party.get(owner).get), editForm))
+  }
+
+  def add(owner : models.Party.Id) = UserAction { implicit request =>
+    if (request.identity.delegatedBy(owner) < Permission.CONTRIBUTE)
+      Forbidden
+    else
+      editForm.bindFromRequest.fold(
+        form => BadRequest(views.html.study.edit(Left(models.Party.get(owner).get), form)),
+        { case (title, description) =>
+          val study = models.Study.create(title, description)
+          StudyAccess(study.id, owner, Permission.ADMIN, Permission.CONTRIBUTE).set
+          Redirect(study.pageURL)
+        }
+      )
   }
 
   type AccessForm = Form[StudyAccess]
@@ -122,17 +144,5 @@ object Study extends SiteController {
         Redirect(routes.Study.edit(study.id))
       }
     )
-  }
-
-  def create(e : Option[models.Party.Id]) = UserAction { implicit request =>
-    val owner = e.getOrElse(request.identity.id)
-    if (request.identity.delegatedBy(owner) < Permission.CONTRIBUTE)
-      Forbidden
-    else {
-      val form = editForm.bindFromRequest
-      val study = (models.Study.create _).tupled(form.value.getOrElse(("New study", None)))
-      StudyAccess(study.id, owner, Permission.ADMIN, Permission.CONTRIBUTE).set
-      Created(views.html.study.edit(study, form))
-    }
   }
 }
