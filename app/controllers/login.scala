@@ -24,7 +24,7 @@ object Login extends SiteController {
   ))
 
   def viewLogin(err : Option[String] = None) : templates.Html =
-    views.html.login(err.fold(loginForm)(loginForm.withGlobalError(_)))
+    views.html.account.login(err.fold(loginForm)(loginForm.withGlobalError(_)))
   def viewLogin(err : String) : templates.Html =
     viewLogin(Some(err))
   def needLogin =
@@ -44,9 +44,9 @@ object Login extends SiteController {
 
   def post = Action { implicit request =>
     val form = loginForm.bindFromRequest
-    def error : Result = BadRequest(views.html.login(form.copy(data = form.data.updated("password", "")).withGlobalError(Messages("login.bad"))))
+    def error : Result = BadRequest(views.html.account.login(form.copy(data = form.data.updated("password", "")).withGlobalError(Messages("login.bad"))))
     form.fold(
-      form => BadRequest(views.html.login(form)),
+      form => BadRequest(views.html.account.login(form)),
       { case (email, password, openid) => DB.withConnection { implicit db =>
         val acct = email.flatMap(Account.getEmail _)
         if (!password.isEmpty) {
@@ -68,7 +68,7 @@ object Login extends SiteController {
     AsyncResult(OpenID.verifiedId.extend1(
       { case Redeemed(info) => DB.withConnection { implicit db =>
           Account.getOpenid(info.id, maybe(email)).fold(
-            BadRequest(views.html.login(loginForm.fill((maybe(email), "", info.id)).withError("openid", "login.openID.notFound"))) : Result
+            BadRequest(views.html.account.login(loginForm.fill((maybe(email), "", info.id)).withError("openid", "login.openID.notFound"))) : Result
           )(login)
       } case Thrown(t) => InternalServerError(viewLogin(t.toString))
       }

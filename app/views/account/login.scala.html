@@ -1,0 +1,9 @@
+@(form : Login.LoginForm)
+
+@template.raw("Login") {
+    <article class="focus form row">
+        <div class="column_center">
+            @account.loginFill(form)
+        </div>
+    </article>
+}

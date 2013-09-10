@@ -139,7 +139,7 @@ dbjs.ajaxModal = function (clicker, url, now) {
 			$toggle = $(data).find('.modal');
 			toggle = $clicker.attr('data-target');
 
-			$toggle.attr('id', toggle).appendTo($('body'));
+			$toggle.attr('id', toggle).appendTo($('#site_body'));
 
 			toggle = '#' + toggle;
 
