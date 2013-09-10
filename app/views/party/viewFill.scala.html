@@ -1,0 +1,64 @@
+@(party : Party)(implicit request : SiteRequest[_])
+
+@crud.partyHeader(party)
+
+<div class="modal_content">
+    <div class="row">
+        <section class="personal column_left">
+        @dbrary.cast[Account](party).map { a =>
+            <img src="@display.gravatarUrlByEmail(a.email, 144)" alt="party.name" class="avatar">
+
+            <div class="connect">
+                <h2>Connect</h2>
+
+                <ul class="flat">
+                    @if(request.identity.access >= Permission.VIEW) {
+                        @if(a.email != "") {
+                            <li><a href="mailto:@a.email" title="Email @party.name"><img src="/assets/images/social/16px/email.png" alt="Email @party.name">@a.email</a></li>
+                        }
+                    }
+
+                    @party.orcid.map { o =>
+                        <li><a href="@o.uri" title="@party.name on ORCID"><img src="/assets/images/social/16px/orcid.png" alt="@party.name on ORCID">@o.toString</a></li>
+                    }
+                </ul>
+            </div>
+        }
+
+        @if(party.authorizeParents().nonEmpty) {
+            <div class="memberships">
+                <h2>Memberships</h2>
+
+                <ul class="flat">
+                @party.authorizeParents().map { t =>
+                    <li>@display(t.parent)</li>
+                }
+                </ul>
+            </div>
+        }
+
+        @if(party.authorizeChildren().nonEmpty) {
+            <div class="memberships">
+            @if(dbrary.cast[Account](party)) { <h2>Dependents</h2> } else { <h2>Members</h2> }
+
+                <ul class="flat">
+                @party.authorizeChildren().map { t =>
+                    <li>@display(t.child)</li>
+                }
+                </ul>
+            </div>
+        }
+        </section>
+
+        <div class="content column_right">
+            <h2>Studies</h2>
+            @party.studyAccess(Permission.CONTRIBUTE).map { a =>
+                @widget.studySmall(a.study)
+            }
+
+            <div class="row">
+            @region.comments(None, dbrary.cast[Account](party).fold(Nil : Seq[models.Comment])(_.comments))
+            </div>
+        </div>
+    </div>
+</div>

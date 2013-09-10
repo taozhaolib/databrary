@@ -113,7 +113,7 @@ object Study extends SiteController {
       form => BadRequest(viewAdmin(study)(accessChangeForm = Some((models.Party.get(e).get, form)))),
       access => {
         access.set
-        Redirect(routes.Study.edit(study.id))
+        Redirect(routes.Study.admin(study.id))
       }
     )
   }
@@ -121,7 +121,7 @@ object Study extends SiteController {
   def accessDelete(i : models.Study.Id, e : models.Party.Id) = check(i, Permission.ADMIN) { study => implicit request =>
     if (e != request.identity.id)
       StudyAccess.delete(study.id, e)
-    Redirect(routes.Study.edit(study.id))
+    Redirect(routes.Study.admin(study.id))
   }
 
   def accessSearch(i : models.Study.Id) = check(i, Permission.ADMIN) { study => implicit request =>
@@ -141,7 +141,7 @@ object Study extends SiteController {
       form => BadRequest(viewAdmin(study)(accessResults = Seq((models.Party.get(e).get, form)))),
       access => {
         access.set
-        Redirect(routes.Study.edit(study.id))
+        Redirect(routes.Study.admin(study.id))
       }
     )
   }

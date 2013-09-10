@@ -1,49 +1,7 @@
 @(party : Party)(implicit request : SiteRequest[_])
 
 @template.crud("Profile: " + party.name) {
-    <article id="profile_@party.id.unId" class="profile">
-        @crud.partyHeader(party)
-	
-		<dl>
-	
-		@* This information is limited to VIEW(?) *@
-		@if(request.identity.access >= Permission.VIEW) {
-	
-		@dbrary.cast[Account](party).map { a =>
-			<dt>email</dt>
-			<dd>@a.email</dd>
-			@a.orcid.map { o =>
-			<dt>ORCID iD</dt>
-			<dd><a href="@o.uri">@o.toString</a></dd>
-			}
-		}
-	
-			<dt>Memberships</dt>
-			@party.authorizeParents().map { t => 
-				<dd>@display(t.parent)</dd>
-			}
-			<dt>Members</dt>
-			@party.authorizeChildren().map { t => 
-				<dd>@display(t.child)</dd>
-			}
-	
-		}
-	
-			<dt>Studies</dt>
-			@if(party.delegated >= Permission.CONTRIBUTE) {
-				<dd>@helper.form(routes.Study.create(Some(party.id))) {
-					<button type='submit'>Create new study</button>
-				}</dd>
-			}
-			@party.studyAccess(Permission.CONTRIBUTE).map { a =>
-				<dd>@display(a.study)</dd>
-			}
-	
-	
-		</dl>
-
-        <div class="row">
-        @region.comments(None, dbrary.cast[Account](party).fold(Nil : Seq[models.Comment])(_.comments))
-        </div>
+    <article id="profile_@party.id.unId" class="party view">
+        @views.html.party.viewFill(party)
     </article>
 }
