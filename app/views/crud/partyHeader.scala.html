@@ -12,6 +12,10 @@
             @if(party.delegated >= Permission.ADMIN) {
 				@crud.headerCurrentLink(routes.Party.admin(party.id), "access")
             }
+
+            @if(party.delegated >= Permission.CONTRIBUTE) {
+                @crud.headerCurrentLink(routes.Study.create(Some(party.id)), "new study", true)
+            }
         }
         </ul>
     </nav>

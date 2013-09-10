@@ -326,6 +326,7 @@ $(document).ready(function () {
 	dbjs.ajaxModal('#modal_login_link', '/ajax/modal/login', true);
 	// when logged in
 	dbjs.ajaxModal('#modal_profile_link', '/ajax/modal/profile', true);
+    dbjs.fadeOff('.party.view a.block', '.body', '.thumb')
 
 	// faq
 	dbjs.fold('.question', 'h2', 'div');

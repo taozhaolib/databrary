@@ -9,7 +9,9 @@
             <img src="@display.gravatarUrlByEmail(a.email, 144)" alt="party.name" class="avatar">
 
             <div class="connect">
-                <ul>
+                <h2>Connect</h2>
+
+                <ul class="flat">
                     @if(request.identity.access >= Permission.VIEW) {
                         @if(a.email != "") {
                             <li><a href="mailto:@a.email" title="Email @party.name"><img src="/assets/images/social/16px/email.png" alt="Email @party.name">@a.email</a></li>
@@ -27,7 +29,7 @@
             <div class="memberships">
                 <h2>Memberships</h2>
 
-                <ul>
+                <ul class="flat">
                 @party.authorizeParents().map { t =>
                     <li>@display(t.parent)</li>
                 }
@@ -39,7 +41,7 @@
             <div class="memberships">
             @if(dbrary.cast[Account](party)) { <h2>Dependents</h2> } else { <h2>Members</h2> }
 
-                <ul>
+                <ul class="flat">
                 @party.authorizeChildren().map { t =>
                     <li>@display(t.child)</li>
                 }
@@ -49,15 +51,9 @@
         </section>
 
         <div class="content column_right">
-            <dt>Studies</dt>
-            @if(party.delegated >= Permission.CONTRIBUTE) {
-                <dd>@helper.form(routes.Study.create(Some(party.id))) {
-                    <button type='submit'>Create new study</button>
-                }</dd>
-            }
-
+            <h2>Studies</h2>
             @party.studyAccess(Permission.CONTRIBUTE).map { a =>
-                <dd>@display(a.study)</dd>
+                @widget.studySmall(a.study)
             }
 
             <div class="row">
