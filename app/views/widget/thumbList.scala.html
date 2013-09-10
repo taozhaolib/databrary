@@ -1,7 +1,7 @@
 @(container: Container, assetList: Seq[AssetLink])(implicit request: SiteRequest[_])
 
 @if(assetList.nonEmpty) {
-    <h3>@assetList.head.asset(request.db).format.name</h3>
+    <h3>@assetList.head.asset(request.db).format.mimeSubTypes._1</h3>
 
     <div class="thumb_list row">
     @for(assetLink <- assetList) {
