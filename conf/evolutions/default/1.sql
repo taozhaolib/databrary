@@ -298,8 +298,8 @@ CREATE TABLE "timeseries_format" (
 COMMENT ON TABLE "timeseries_format" IS 'Special asset types that correspond to internal formats representing timeseries data.';
 
 -- The privledged formats with special handling (image and video for now) have hard-coded IDs:
-INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-1, 'image/jpeg', 'jpg', 'JPEG');
-INSERT INTO "timeseries_format" ("id", "mimetype", "extension", "name") VALUES (-2, 'video/mp4', 'mp4', 'Databrary video');
+INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-700, 'image/jpeg', 'jpg', 'JPEG');
+INSERT INTO "timeseries_format" ("id", "mimetype", "extension", "name") VALUES (-800, 'video/mp4', 'mp4', 'Databrary video');
 
 -- The above video format will change to reflect internal storage, these are used for uploaded files:
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/plain', 'txt', 'Plain text');
@@ -397,7 +397,7 @@ CREATE TABLE "record_category" (
 	"name" varchar(64) NOT NULL Unique
 );
 COMMENT ON TABLE "record_category" IS 'Types of records that are relevant for data organization.';
-INSERT INTO "record_category" ("id", "name") VALUES (-1, 'participant');
+INSERT INTO "record_category" ("id", "name") VALUES (-500, 'participant');
 
 CREATE TABLE "record" (
 	"id" integer NOT NULL DEFAULT nextval('annotation_id_seq') Primary Key References "annotation" Deferrable Initially Deferred,
@@ -417,9 +417,19 @@ CREATE TABLE "metric" (
 	"values" text[] -- options for text enumerations, not enforced (could be pulled out to separate kind/table)
 );
 COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.  Rough prototype.';
-INSERT INTO "metric" ("id", "name", "type") VALUES (-1, 'ident', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-2, 'birthdate', 'IDENTIFIED', 'date');
-INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-3, 'gender', 'text', ARRAY['F','M']);
+INSERT INTO "metric" ("id", "name", "type") VALUES (-900, 'ident', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-590, 'birthdate', 'IDENTIFIED', 'date');
+INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-580, 'gender', 'text', ARRAY['F','M']);
+
+CREATE TABLE "record_template" (
+	"category" smallint References "record_category" ON DELETE CASCADE,
+	"metric" int References "metric",
+	Primary Key ("category", "metric")
+);
+COMMENT ON TABLE "record_template" IS 'Default set of measures defining a given record category.';
+INSERT INTO "record_template" ("category", "metric") VALUES (-500, -900);
+INSERT INTO "record_template" ("category", "metric") VALUES (-500, -590);
+INSERT INTO "record_template" ("category", "metric") VALUES (-500, -580);
 
 CREATE TABLE "measure" ( -- ABSTRACT
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,
@@ -511,6 +521,7 @@ DROP TABLE "comment";
 DROP VIEW "measure_all";
 DROP VIEW "measure_view";
 DROP TABLE "measure" CASCADE;
+DROP TABLE "record_template";
 DROP TABLE "metric";
 DROP TYPE data_type;
 DROP TABLE "record";

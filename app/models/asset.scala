@@ -50,7 +50,7 @@ object AssetFormat extends TableId[AssetFormat]("format") {
   def getAll(implicit db : Site.DB) : Seq[AssetFormat] =
     SELECT("ORDER BY format.id").list(row)
 
-  private[models] final val IMAGE : Id = asId(-1)
+  private[models] final val IMAGE : Id = asId(-700)
   /** File type for internal image data (jpeg).
     * Images of this type may be produced and handled specially internally.
     */
@@ -67,7 +67,7 @@ object TimeseriesFormat extends HasId[TimeseriesFormat] {
     case _ => None
   }
 
-  private[models] final val VIDEO : Id = asId(-2)
+  private[models] final val VIDEO : Id = asId(-800)
   /** The designated internal video format. */
   object Video extends TimeseriesFormat(VIDEO, "video/mp4", Some("mp4"), "Video") {
     val sampleFormat = AssetFormat.Image

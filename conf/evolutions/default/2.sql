@@ -33,7 +33,7 @@ INSERT INTO study_access (study, party, access, inherit) VALUES (1, 1, 'ADMIN', 
 INSERT INTO study_access (study, party, access, inherit) VALUES (1, 2, 'ADMIN', 'NONE');
 INSERT INTO study_access (study, party, access, inherit) VALUES (1, 3, 'ADMIN', 'NONE');
 
-INSERT INTO timeseries (id, format, classification, duration) VALUES (1, -2, 'MATERIAL', interval '40');
+INSERT INTO timeseries (id, format, classification, duration) VALUES (1, -800, 'MATERIAL', interval '40');
 SELECT setval('asset_id_seq', 1);
 
 INSERT INTO asset_link (container, asset, title) VALUES (1, 1, 'counting');

@@ -1,0 +1,36 @@
+@(record : models.Record, meas : Seq[MetricBase], form : controllers.Record.RecordForm)(implicit request : SiteRequest[_])
+
+@template.crud("Edit Record: " + record.toString()) {
+    <article>
+	<h1><a href="@record.pageURL">@record.toString()</a></h1>
+
+	@helper.form(routes.Record.update(record.id)) {
+	    @helper.select(form("category"), ("", "") +: RecordCategory.getAll.map(c => (c.id.unId.toString, c.name)))</dt>
+
+	    <dl>
+	    @meas.zipWithIndex.map { case (m, i) =>
+		<input type='hidden' name='measure[@i].metric' value='@m.id.unId.toString'/>
+	    @defining(form("measure[" + i + "].datum")) { field =>
+	    	<dt>@m.name (@m.classification)</dt>
+		<dd>@m.dataType match {
+		case DataType.date => {
+			@helper.inputDate(field)
+		}
+		case _ if m.values.nonEmpty => {
+			@helper.select(field, m.values.map(v => (v, v)))
+		}
+		case _ => {
+			@helper.inputText(field)
+		}
+		}
+		</dd>
+	} }
+		<dt>@helper.select(form("add.metric"), Metric.getAll.map(m => (m.id.unId.toString, m.name + " (" + m.classification + ")")))</dt>
+		<dd>@helper.inputText(form("add.datum"))</dd>
+	    </dl>
+	    <button type='submit'>Update</button>
+	}
+	@widget.formErrors(form)
+
+    </article>
+}

@@ -10,7 +10,10 @@ import util._
   * Records that represent data buckets or other kinds of slot groupings (e.g., participants, days, conditions, etc.) can be assigned a particular RecordCategory for the purpose of display and templating.
   * For now there is only one instance: [RecordCategory.Participant]
   */
-final class RecordCategory private (val id : RecordCategory.Id, val name : String) extends TableRowId[RecordCategory]
+final class RecordCategory private (val id : RecordCategory.Id, val name : String) extends TableRowId[RecordCategory] {
+  /** The default set of metrics which define records in this category. */
+  def template(implicit db : Site.DB) = Metric.getTemplate(id)
+}
 
 object RecordCategory extends TableId[RecordCategory]("record_category") {
   private[models] val row = Columns[
@@ -22,7 +25,16 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
     }
   }
 
-  private final val PARTICIPANT : Id = asId(-1)
+  def get(id : Id)(implicit db : Site.DB) : Option[RecordCategory] = id match {
+    case PARTICIPANT => Some(Participant)
+    case _ => SELECT("WHERE id = {id}").on('id -> id).singleOpt
+  }
+
+  def getAll(implicit db : Site.DB) : Seq[RecordCategory] =
+    Seq(Participant) ++
+    SELECT("WHERE id > 0 ORDER BY id").list
+
+  private final val PARTICIPANT : Id = asId(-500)
   /** RecordCategory representing participants, individuals whose data is contained in a particular sesion.
     * Participants usually are associated with birthdate, gender, and other demographics. */
   final val Participant = new RecordCategory(PARTICIPANT, "participant")
@@ -64,7 +76,7 @@ object MeasureType {
 
 
 /** Abstract type for Metric. */
-private[models] sealed abstract trait MetricBase extends TableRowId[MetricBase] {
+sealed abstract trait MetricBase extends TableRowId[MetricBase] {
   val id : Metric.Id
   val name : String
   /** The privacy-determining identification level of measurements of this type. */
@@ -79,23 +91,35 @@ sealed class Metric[T] private (val id : Metric.Id, val name : String, val class
   val dataType = measureType.dataType
 }
 object Metric extends TableId[MetricBase]("metric") {
-  private[this] def make(id : Metric.Id, name : String, classification : Classification.Value, dataType : DataType.Value, values : Option[Array[String]]) =
-    new Metric(id, name, classification, values.getOrElse(Array[String]()))(MeasureType(dataType))
+  private[this] def make(id : Metric.Id, name : String, classification : Classification.Value, dataType : DataType.Value, values : Option[Array[String]]) = id match {
+    case IDENT => Ident
+    case BIRTHDATE => Birthdate
+    case GENDER => Gender
+    case _ => new Metric(id, name, classification, values.getOrElse(Array[String]()))(MeasureType(dataType))
+  }
   private[models] val row = Columns[
     Id,  String, Classification.Value, DataType.Value, Option[Array[String]]](
     'id, 'name,  'classification,      'type,          'values).map(make _)
 
   /** Retrieve a single metric by id. */
-  def get(id : Id)(implicit db : Site.DB) = id match {
+  def get(id : Id)(implicit db : Site.DB) : Option[MetricBase] = id match {
     case IDENT => Some(Ident)
     case BIRTHDATE => Some(Birthdate)
     case GENDER => Some(Gender)
     case _ => SELECT("WHERE id = {id}").on('id -> id).singleOpt()
   }
 
-  private final val IDENT : Id = asId(-1)
-  private final val BIRTHDATE : Id = asId(-2)
-  private final val GENDER : Id = asId(-3)
+  def getAll(implicit db : Site.DB) : Seq[MetricBase] =
+    Seq(Ident, Birthdate, Gender) ++
+    SELECT("WHERE id > 0 ORDER BY id").list
+
+  private[models] def getTemplate(category : RecordCategory.Id)(implicit db : Site.DB) : Seq[MetricBase] =
+    SELECT("JOIN record_template ON id = metric WHERE category = {category} ORDER BY id").
+      on('category -> category).list
+
+  private final val IDENT : Id = asId(-900)
+  private final val BIRTHDATE : Id = asId(-590)
+  private final val GENDER : Id = asId(-580)
   /** Identifiers providing generic labels for records or data, such as participant id, condition name, etc.
     * [[Classification.DEIDENTIFIED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
   object Ident extends Metric[String](IDENT, "ident", Classification.DEIDENTIFIED)
@@ -141,6 +165,11 @@ private[models] sealed abstract class MeasureBase(val recordId : Record.Id, val 
   def dataType = metric.dataType
   def measureType = metric.measureType
   def datum : MeasureData
+
+  /** Remove this measure from its associated record and delete it. */
+  def remove(implicit db : Site.DB) : Unit =
+    SQL("DELETE FROM " + measureType.table + " WHERE record = {record} AND metric = {metric}").
+      on('record -> recordId, 'metric -> metricId).execute
 }
 /** A measurement with a specific, tagged type. */
 final class Measure[T](recordId : Record.Id, metric : Metric[T], value_ : T) extends MeasureBase(recordId, metric) {
@@ -156,11 +185,6 @@ final class Measure[T](recordId : Record.Id, metric : Metric[T], value_ : T) ext
       on('record -> recordId, 'metric -> metricId, 'value -> value).execute
     _value = value
   }
-
-  /** Remove this measure from its associated record and delete it. */
-  def remove(implicit db : Site.DB) : Unit =
-    SQL("DELETE FROM " + measureType.table + " WHERE record = {record} AND metric = {metric}").
-      on('record -> recordId, 'metric -> metricId).execute
 }
 
 object Measure extends Table[MeasureBase]("measure_all") {
@@ -190,7 +214,7 @@ object Measure extends Table[MeasureBase]("measure_all") {
 
   /** Retrieve the set of measures in the given record. */
   private[models] def getRecord(record : Record.Id)(implicit db : Site.DB) : Seq[MeasureBase] =
-    SELECT("WHERE record = {record}").on('record -> record).list
+    SELECT("WHERE record = {record} ORDER BY metric.id").on('record -> record).list
 
   /** Retrieve the set of all records and possibly measures of the given type on the given target. */
   private[models] def getAnnotated[T](target : Annotated, category : Option[RecordCategory] = None, metric : Metric[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] = {
@@ -211,5 +235,19 @@ object Measure extends Table[MeasureBase]("measure_all") {
     SQL("INSERT INTO " + tpe.table + " (record, metric, datum) VALUES ({record}, {metric}, {value})").
       on('record -> record, 'metric -> metric.id, 'value -> value).execute
     new Measure[T](record, metric, value)
+  }
+
+  private[models] def set(record : Record.Id, metric : MetricBase, value : String)(implicit db : Site.DB) : Boolean = {
+    val tpe = metric.measureType
+    val args = SQLArgs('record -> record, 'metric -> metric.id, 'value -> value)
+    if (SQL("UPDATE " + tpe.table + " SET datum = {value} WHERE record = {record} AND metric = {metric}").on(args : _*).executeUpdate == 0)
+      SQL("INSERT INTO " + tpe.table + " (record, metric, datum) VALUES ({record}, {metric}, {value})").on(args : _*).execute
+    true
+  }
+
+  private[models] def delete(record : Record.Id, metric : MetricBase)(implicit db : Site.DB) : Unit = {
+    val tpe = metric.measureType
+    SQL("DELETE FROM " + tpe.table + " WHERE record = {record} AND metric = {metric}").
+      on('record -> record, 'metric -> metric.id).execute
   }
 }
