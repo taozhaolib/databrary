@@ -10,7 +10,10 @@ import util._
   * Records that represent data buckets or other kinds of slot groupings (e.g., participants, days, conditions, etc.) can be assigned a particular RecordCategory for the purpose of display and templating.
   * For now there is only one instance: [RecordCategory.Participant]
   */
-final class RecordCategory private (val id : RecordCategory.Id, val name : String) extends TableRowId[RecordCategory]
+final class RecordCategory private (val id : RecordCategory.Id, val name : String) extends TableRowId[RecordCategory] {
+  /** The default set of metrics which define records in this category. */
+  def template(implicit db : Site.DB) = Metric.getTemplate(id)
+}
 
 object RecordCategory extends TableId[RecordCategory]("record_category") {
   private[models] val row = Columns[
@@ -73,7 +76,7 @@ object MeasureType {
 
 
 /** Abstract type for Metric. */
-private[models] sealed abstract trait MetricBase extends TableRowId[MetricBase] {
+sealed abstract trait MetricBase extends TableRowId[MetricBase] {
   val id : Metric.Id
   val name : String
   /** The privacy-determining identification level of measurements of this type. */
@@ -88,8 +91,12 @@ sealed class Metric[T] private (val id : Metric.Id, val name : String, val class
   val dataType = measureType.dataType
 }
 object Metric extends TableId[MetricBase]("metric") {
-  private[this] def make(id : Metric.Id, name : String, classification : Classification.Value, dataType : DataType.Value, values : Option[Array[String]]) =
-    new Metric(id, name, classification, values.getOrElse(Array[String]()))(MeasureType(dataType))
+  private[this] def make(id : Metric.Id, name : String, classification : Classification.Value, dataType : DataType.Value, values : Option[Array[String]]) = id match {
+    case IDENT => Ident
+    case BIRTHDATE => Birthdate
+    case GENDER => Gender
+    case _ => new Metric(id, name, classification, values.getOrElse(Array[String]()))(MeasureType(dataType))
+  }
   private[models] val row = Columns[
     Id,  String, Classification.Value, DataType.Value, Option[Array[String]]](
     'id, 'name,  'classification,      'type,          'values).map(make _)
@@ -105,6 +112,10 @@ object Metric extends TableId[MetricBase]("metric") {
   def getAll(implicit db : Site.DB) : Seq[MetricBase] =
     Seq(Ident, Birthdate, Gender) ++
     SELECT("WHERE id > 0 ORDER BY id").list
+
+  private[models] def getTemplate(category : RecordCategory.Id)(implicit db : Site.DB) : Seq[MetricBase] =
+    SELECT("JOIN record_template ON id = metric WHERE category = {category} ORDER BY id").
+      on('category -> category).list
 
   private final val IDENT : Id = asId(-900)
   private final val BIRTHDATE : Id = asId(-590)

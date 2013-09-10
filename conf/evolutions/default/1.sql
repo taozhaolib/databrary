@@ -421,6 +421,16 @@ INSERT INTO "metric" ("id", "name", "type") VALUES (-900, 'ident', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-590, 'birthdate', 'IDENTIFIED', 'date');
 INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-580, 'gender', 'text', ARRAY['F','M']);
 
+CREATE TABLE "record_template" (
+	"category" smallint References "record_category" ON DELETE CASCADE,
+	"metric" int References "metric",
+	Primary Key ("category", "metric")
+);
+COMMENT ON TABLE "record_template" IS 'Default set of measures defining a given record category.';
+INSERT INTO "record_template" ("category", "metric") VALUES (-500, -900);
+INSERT INTO "record_template" ("category", "metric") VALUES (-500, -590);
+INSERT INTO "record_template" ("category", "metric") VALUES (-500, -580);
+
 CREATE TABLE "measure" ( -- ABSTRACT
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,
 	"metric" integer NOT NULL References "metric", -- WHERE kind = table_name
@@ -511,6 +521,7 @@ DROP TABLE "comment";
 DROP VIEW "measure_all";
 DROP VIEW "measure_view";
 DROP TABLE "measure" CASCADE;
+DROP TABLE "record_template";
 DROP TABLE "metric";
 DROP TYPE data_type;
 DROP TABLE "record";

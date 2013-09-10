@@ -42,17 +42,27 @@ object Record extends SiteController {
     "add" -> measureMapping
   ))
 
-  private def recordFormFill(r : Record)(implicit site : Site) =
-    recordForm.fill((r.categoryId, r.measures.map(m => (m.metricId, Some(m.datum.toString))), (Metric.asId(0), None)))
+  private def recordFormFill(r : Record)(implicit site : Site) : (Seq[MetricBase], RecordForm) = {
+    val m = r.measures
+    val mm = m.map(_.metric)
+    val t = r.category.fold(Nil : Seq[MetricBase])(_.template).diff(mm)
+    (mm ++ t, recordForm.fill((
+      r.categoryId,
+      m.map(m => (m.metricId, Some(m.datum.toString))) ++ t.map(m => (m.id, None)),
+      (Metric.asId(0), None)
+    )))
+  }
 
   def edit(i : models.Record.Id) = check(i, Permission.EDIT) { (record, permission) => implicit request =>
-    Ok(views.html.record.edit(record, recordFormFill(record)))
+    val (m, f) = recordFormFill(record)
+    Ok(views.html.record.edit(record, m, f))
   }
 
   def update(i : models.Record.Id) = check(i, Permission.EDIT) { (record, permission) => implicit request =>
-    val form = recordFormFill(record).bindFromRequest
+    val (meas, formin) = recordFormFill(record)
+    val form = formin.bindFromRequest
     form.fold(
-      form => BadRequest(views.html.record.edit(record, form)),
+      form => BadRequest(views.html.record.edit(record, meas, form)),
       { case (category, data, (metric, datum)) =>
         record.change(category = category.flatMap(RecordCategory.get(_)))
         def update(metric : Metric.Id, datum : Option[String]) : Option[String] =
@@ -76,7 +86,7 @@ object Record extends SiteController {
           val ((metric, datum), i) = measure
           update(metric, datum).fold(form)(form.withError("measure.datum[" + i + "]", _))
         }.fold(
-          form => BadRequest(views.html.record.edit(record, form)),
+          form => BadRequest(views.html.record.edit(record, meas, form)),
           _ => Redirect(record.pageURL)
         )
       }
