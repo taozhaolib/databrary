@@ -511,6 +511,9 @@ COMMENT ON FUNCTION "annotation_consent" (integer) IS 'Effective (minimal) conse
 # --- !Downs
 ;
 
+DROP TABLE "audit" CASCADE;
+DROP TYPE audit_action;
+
 DROP FUNCTION "annotation_consent" (integer);
 DROP FUNCTION "annotation_containers" (integer);
 DROP FUNCTION "container_annotations" (integer);
@@ -568,9 +571,6 @@ DROP TYPE consent;
 DROP TYPE permission;
 DROP TABLE "account";
 DROP TABLE "party";
-
-DROP TABLE "audit" CASCADE;
-DROP TYPE audit_action;
 
 DROP FUNCTION cast_int (text);
 DROP FUNCTION create_abstract_parent (name, name[]);
