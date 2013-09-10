@@ -80,6 +80,7 @@ object TimeseriesFormat extends HasId[TimeseriesFormat] {
 sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Asset] with BackedAsset with Annotated {
   /** Format of this asset. */
   def format : AssetFormat
+  def excerpt : Boolean = false
   /** Data classification for the data in this asset. */
   def classification : Classification.Value
   /** Participant consent level granted for this asset, which may depend on specific [[AssetLink]]s of this asset. */
@@ -130,7 +131,7 @@ final class Timeseries private[models] (override val id : Timeseries.Id, overrid
   * These represent a selected, contiguous range (segment) of time within a Timeseries.
   * @param excerpt if this clip was identified for possible public release. Actual permission checks should use [[classification]] instead.
   */
-final class Clip private (override val id : Clip.Id, val source : Timeseries, val segment : Range[Offset], val excerpt : Boolean, val consent : Consent.Value) extends Asset(id) with TableRowId[Clip] with TimeseriesData {
+final class Clip private (override val id : Clip.Id, val source : Timeseries, val segment : Range[Offset], override val excerpt : Boolean, val consent : Consent.Value) extends Asset(id) with TableRowId[Clip] with TimeseriesData {
   def format = if (segment.isSingleton) source.format.sampleFormat else source.format
   def classification = {
     val c = source.classification

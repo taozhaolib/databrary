@@ -22,7 +22,7 @@ object Study extends SiteController {
 
   def view(i : models.Study.Id) = check(i) { study => implicit request =>
     def group(x : Seq[AssetLink]) = x.groupBy(_.asset(request.db).format.mimeSubTypes._1)
-    val (excerpts, files) = study.assets(request.db).filter(_.permission >= Permission.DOWNLOAD).partition(_.asset(request.db).classification == Classification.EXCERPT)
+    val (excerpts, files) = study.assets(request.db).filter(_.permission >= Permission.DOWNLOAD).partition(_.asset(request.db).excerpt)
     Ok(views.html.study.view(study, (group(excerpts), group(files))))
   }
 
