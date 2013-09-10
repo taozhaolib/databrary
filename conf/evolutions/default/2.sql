@@ -5,24 +5,21 @@
 ;
 
 INSERT INTO party (id, name, orcid) VALUES (1, 'Dylan Simon', '0000000227931679');
-INSERT INTO party (id, name) VALUES (2, 'Alex Sokoloff');
-INSERT INTO party (id, name) VALUES (3, 'Mike Continues');
-INSERT INTO party (id, name) VALUES (4, 'Lisa Steiger');
-INSERT INTO party (id, name) VALUES (5, 'Karen Adolph');
-INSERT INTO party (id, name) VALUES (6, 'Rick Gilmore');
+INSERT INTO party (id, name) VALUES (2, 'Mike Continues');
+INSERT INTO party (id, name) VALUES (3, 'Lisa Steiger');
+INSERT INTO party (id, name) VALUES (4, 'Karen Adolph');
+INSERT INTO party (id, name) VALUES (5, 'Rick Gilmore');
 SELECT setval('party_id_seq', 6);
 
 INSERT INTO account (id, email, openid) VALUES (1, 'dylan@databrary.org', 'http://dylex.net/');
-INSERT INTO account (id, email, openid) VALUES (2, 'alex@databrary.org', NULL);
-INSERT INTO account (id, email, openid) VALUES (3, 'mike@databrary.org', NULL);
-INSERT INTO account (id, email, openid) VALUES (4, 'lisa@databrary.org', NULL);
+INSERT INTO account (id, email, openid) VALUES (2, 'mike@databrary.org', NULL);
+INSERT INTO account (id, email, openid) VALUES (3, 'lisa@databrary.org', NULL);
 
 INSERT INTO authorize (child, parent, access, delegate) VALUES (1, 0, 'ADMIN', 'ADMIN');
 INSERT INTO authorize (child, parent, access, delegate) VALUES (2, 0, 'ADMIN', 'ADMIN');
 INSERT INTO authorize (child, parent, access, delegate) VALUES (3, 0, 'ADMIN', 'ADMIN');
-INSERT INTO authorize (child, parent, access, delegate) VALUES (4, 0, 'ADMIN', 'ADMIN');
+INSERT INTO authorize (child, parent, access, delegate) VALUES (4, 0, 'CONTRIBUTE', 'NONE');
 INSERT INTO authorize (child, parent, access, delegate) VALUES (5, 0, 'CONTRIBUTE', 'NONE');
-INSERT INTO authorize (child, parent, access, delegate) VALUES (6, 0, 'CONTRIBUTE', 'NONE');
 
 INSERT INTO study (id, title) VALUES (1, 'Demo sandbox');
 SELECT setval('container_id_seq', 1);
@@ -31,7 +28,6 @@ INSERT INTO study_access (study, party, access, inherit) VALUES (1, -1, 'DOWNLOA
 INSERT INTO study_access (study, party, access, inherit) VALUES (1, 0, 'DOWNLOAD', 'DOWNLOAD');
 INSERT INTO study_access (study, party, access, inherit) VALUES (1, 1, 'ADMIN', 'NONE');
 INSERT INTO study_access (study, party, access, inherit) VALUES (1, 2, 'ADMIN', 'NONE');
-INSERT INTO study_access (study, party, access, inherit) VALUES (1, 3, 'ADMIN', 'NONE');
 
 INSERT INTO timeseries (id, format, classification, duration) VALUES (1, -800, 'MATERIAL', interval '40');
 SELECT setval('asset_id_seq', 1);
