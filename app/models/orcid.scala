@@ -1,6 +1,7 @@
 package models
 
 import anorm._
+import dbrary._
 
 /** An [[http://orcid.org/ ORCID]] identifier.
   * A 16 character string of a particular format, with 15 digits and one checksum which may be a digit or 'X'?
@@ -28,5 +29,6 @@ object Orcid {
   def apply(s : String) : Orcid =
     new Orcid(s.filterNot(c => c == '-' || c.isSpaceChar).stripPrefix("http://").stripPrefix("orcid.org/"))
 
-  implicit val rowToOrcid : Column[Orcid] = Column(Column.rowToString(_, _).map(new Orcid(_)))
+  implicit val column : Column[Orcid] = Anorm.columnMap[Orcid,String](new Orcid(_))
+  implicit val statement : ToStatement[Orcid] = Anorm.toStatementMap[Orcid,String](_.orcid)
 }
