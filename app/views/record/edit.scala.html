@@ -17,7 +17,7 @@
 			@helper.inputDate(field)
 		}
 		case _ if m.values.nonEmpty => {
-			@helper.select(field, m.values.map(v => (v, v)))
+			@helper.select(field, ("", "") +: m.values.map(v => (v, v)))
 		}
 		case _ => {
 			@helper.inputText(field)

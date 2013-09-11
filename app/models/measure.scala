@@ -48,7 +48,7 @@ object DataType extends PGEnum("data_type") {
 
 /** Class for measurement types.
   * This provides convenient mapping tools between DataType, measures in the database, and Scala values. */
-private[models] final class MeasureType[T : Column] private (val dataType : DataType.Value) {
+private[models] abstract sealed class MeasureType[T : Column] private (val dataType : DataType.Value) {
   /** The name of this type, as used in database identifiers. */
   val name = dataType.toString
   /** The table storing measurements of this type. */
@@ -57,15 +57,22 @@ private[models] final class MeasureType[T : Column] private (val dataType : Data
   private[models] val column = Columns[T](SelectColumn(table, "datum"))
   /** Column access to values of this type in the joint measurement table. */
   private[models] val columnAll = Columns[T](SelectColumn("measure_all", "datum_" + name))
+  private[models] def fromString(s : String) : Option[T]
 }
-object MeasureType {
+private[models] object MeasureType {
   /** Text measurements are represented as Strings. */
-  implicit val measureText = new MeasureType[String](DataType.text)
+  implicit val measureText = new MeasureType[String](DataType.text) {
+    private[models] def fromString(s : String) = Some(s)
+  }
   /** Numeric measurements are represented as Doubles, although this will lose precision.
     * BigNumeric or something might be better -- unfortunately jdbc seems to map numeric as Double anyway. */
-  implicit val measureNumber = new MeasureType[Double](DataType.number)
+  implicit val measureNumber = new MeasureType[Double](DataType.number) {
+    private[models] def fromString(s : String) = scala.util.control.Exception.catching(classOf[java.lang.NumberFormatException]).opt(s.toDouble)
+  }
   /** Date measurements. */
-  implicit val measureDate = new MeasureType[Date](DataType.date)
+  implicit val measureDate = new MeasureType[Date](DataType.date) {
+    private[models] def fromString(s : String) = scala.util.control.Exception.catching(classOf[java.lang.IllegalArgumentException]).opt(Date.valueOf(s))
+  }
 
   def apply(dataType : DataType.Value) : MeasureType[_] = dataType match {
     case DataType.text => measureText
@@ -239,10 +246,12 @@ object Measure extends Table[MeasureBase]("measure_all") {
 
   private[models] def set(record : Record.Id, metric : MetricBase, value : String)(implicit db : Site.DB) : Boolean = {
     val tpe = metric.measureType
-    val args = SQLArgs('record -> record, 'metric -> metric.id, 'value -> value)
-    if (SQL("UPDATE " + tpe.table + " SET datum = {value} WHERE record = {record} AND metric = {metric}").on(args : _*).executeUpdate == 0)
-      SQL("INSERT INTO " + tpe.table + " (record, metric, datum) VALUES ({record}, {metric}, {value})").on(args : _*).execute
-    true
+    tpe.fromString(value).fold(false) { v =>
+      val args = SQLArgs('record -> record, 'metric -> metric.id, 'value -> v)
+      if (SQL("UPDATE " + tpe.table + " SET datum = {value} WHERE record = {record} AND metric = {metric}").on(args : _*).executeUpdate == 0)
+        SQL("INSERT INTO " + tpe.table + " (record, metric, datum) VALUES ({record}, {metric}, {value})").on(args : _*).execute
+      true
+    }
   }
 
   private[models] def delete(record : Record.Id, metric : MetricBase)(implicit db : Site.DB) : Unit = {
