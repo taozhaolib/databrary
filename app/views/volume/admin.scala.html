@@ -1,14 +1,14 @@
-@(study : Study, accessForms : Seq[(Party,controllers.Study.AccessForm)], accessSearch : Form[String], accessResults : Seq[(Party,controllers.Study.AccessForm)])(implicit request : SiteRequest[_])
+@(volume : Volume, accessForms : Seq[(Party,controllers.Volume.AccessForm)], accessSearch : Form[String], accessResults : Seq[(Party,controllers.Volume.AccessForm)])(implicit request : SiteRequest[_])
 
-@accessFields(party : Party, form : Form[StudyAccess])(implicit fieldConstructor : helper.FieldConstructor) = {
+@accessFields(party : Party, form : Form[VolumeAccess])(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@display(party)</td>
 	@widget.enumSelect(form("access"), Permission)
 	@helper.select(form("inherit"), Permission.values.to(if (party.id.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
 }
 
-@template.crud("Edit Study Permissions: " + study.title) {
+@template.crud("Edit Volume Permissions: " + volume.title) {
     <article>
-		@crud.studyHeader(study)
+		@crud.volumeHeader(volume)
 
 	<table>
 	@defining(helper.FieldConstructor(widget.tableFieldConstructor.f)) { implicit fieldConstructor =>
@@ -20,13 +20,13 @@
 		</tr>
 
 		@accessForms.map { case (party,form) =>
-		@helper.form(routes.Study.accessChange(study.id, party.id)) {
+		@helper.form(routes.Volume.accessChange(volume.id, party.id)) {
 		<tr>
 			@accessFields(party, form)
 			<td>
 				<button type='submit'>Change</button>
 				@if(party.id != request.identity.id) {
-				<a href='@routes.Study.accessDelete(study.id, party.id)'>Revoke</a>
+				<a href='@routes.Volume.accessDelete(volume.id, party.id)'>Revoke</a>
 				}
 				@widget.formErrors(form)
 			</td>
@@ -34,7 +34,7 @@
 		}
 		}
 
-		@helper.form(routes.Study.accessSearch(study.id)) {
+		@helper.form(routes.Volume.accessSearch(volume.id)) {
 		<tr>
 			@helper.inputText(accessSearch("name"))
 			<td/>
@@ -47,7 +47,7 @@
 		}
 
 		@accessResults.map { case (party,form) =>
-		@helper.form(routes.Study.accessAdd(study.id, party.id)) {
+		@helper.form(routes.Volume.accessAdd(volume.id, party.id)) {
 		<tr>
 			@accessFields(party, form)
 			<td>

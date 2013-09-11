@@ -21,13 +21,13 @@ INSERT INTO authorize (child, parent, access, delegate) VALUES (3, 0, 'ADMIN', '
 INSERT INTO authorize (child, parent, access, delegate) VALUES (4, 0, 'CONTRIBUTE', 'NONE');
 INSERT INTO authorize (child, parent, access, delegate) VALUES (5, 0, 'CONTRIBUTE', 'NONE');
 
-INSERT INTO study (id, title) VALUES (1, 'Demo sandbox');
+INSERT INTO volume (id, title) VALUES (1, 'Demo sandbox');
 SELECT setval('container_id_seq', 1);
 
-INSERT INTO study_access (study, party, access, inherit) VALUES (1, -1, 'DOWNLOAD', 'DOWNLOAD');
-INSERT INTO study_access (study, party, access, inherit) VALUES (1, 0, 'DOWNLOAD', 'DOWNLOAD');
-INSERT INTO study_access (study, party, access, inherit) VALUES (1, 1, 'ADMIN', 'NONE');
-INSERT INTO study_access (study, party, access, inherit) VALUES (1, 2, 'ADMIN', 'NONE');
+INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, -1, 'DOWNLOAD', 'DOWNLOAD');
+INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 0, 'DOWNLOAD', 'DOWNLOAD');
+INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 1, 'ADMIN', 'NONE');
+INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 2, 'ADMIN', 'NONE');
 
 INSERT INTO timeseries (id, format, classification, duration) VALUES (1, -800, 'MATERIAL', interval '40');
 SELECT setval('asset_id_seq', 1);
@@ -37,7 +37,7 @@ INSERT INTO asset_link (container, asset, title) VALUES (1, 1, 'counting');
 # --- !Downs
 ;
 
-TRUNCATE party, study, container, timeseries, asset, asset_link CASCADE;
+TRUNCATE party, volume, container, timeseries, asset, asset_link CASCADE;
 SELECT setval('party_id_seq', 1, 'f');
 SELECT setval('container_id_seq', 1, 'f');
 SELECT setval('asset_id_seq', 1, 'f');

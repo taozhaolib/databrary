@@ -14,7 +14,7 @@
             }
 
             @if(party.delegated >= Permission.CONTRIBUTE) {
-                @crud.headerCurrentLink(routes.Study.create(Some(party.id)), "new study", true)
+                @crud.headerCurrentLink(routes.Volume.create(Some(party.id)), "new volume", true)
             }
         }
         </ul>

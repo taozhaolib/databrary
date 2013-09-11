@@ -1,23 +1,23 @@
-@(study: Study, assetMap: (Map[String, Seq[AssetLink]], Map[String, Seq[AssetLink]]))(implicit request: SiteRequest[_])
+@(volume: Volume, assetMap: (Map[String, Seq[AssetLink]], Map[String, Seq[AssetLink]]))(implicit request: SiteRequest[_])
 
-@template.crud("Study: " + study.title) {
-	<article id="study_@study.id.unId" class="study">
-		@crud.studyHeader(study)
+@template.crud("Volume: " + volume.title) {
+	<article id="volume_@volume.id.unId" class="volume">
+		@crud.volumeHeader(volume)
 
 		<div class="row">
 			<div class="description col_6">
-			@study.description.map(display.plainText _)
+			@volume.description.map(display.plainText _)
 			</div>
 
 			<footer class="extended col_6">
 				<div class="row">
 					<div class="wide_col_6">
 						<aside class="thumb col_6">
-						@widget.studyThumb(study)
+						@widget.volumeThumb(volume)
 						</aside>
 
 						<aside class="dates foot col_6">
-						@study.creationAudit(request.db).map { creation =>
+						@volume.creationAudit(request.db).map { creation =>
 							<span class="date created">
 								Created <time datetime="@creation.when" pubdate>@display.date(creation.when, "MMMM yyyy")</time></span>
 						}
@@ -26,7 +26,7 @@
 						<aside class="citing foot col_6">
 							<h2>Citation</h2>
 
-							@widget.studyCitation(study)
+							@widget.volumeCitation(volume)
 						</aside>
 					</div>
 
@@ -34,7 +34,7 @@
 						<aside class="investigators foot col_3">
 							<h2>Investigators</h2>
 
-							@study.partyAccess(Permission.CONTRIBUTE)(request.db).map { a =>
+							@volume.partyAccess(Permission.CONTRIBUTE)(request.db).map { a =>
 								@widget.userinfo(a.party)
 							}
 						</aside>
@@ -48,7 +48,7 @@
 
 							<aside class="access cf foot">
 								<h2>Sharing</h2>
-								@widget.studyAccess(study)
+								@widget.volumeAccess(volume)
 							</aside>
 						</div>
 					</div>
@@ -60,38 +60,38 @@
 			<div id="media" class="view">
 				<h2 class='tab'>Media</h2>
 
-				@widget.thumbList(study, assetMap._2.getOrElse("video", Nil))
-				@widget.thumbList(study, assetMap._2.getOrElse("image", Nil))
-				@widget.thumbList(study, assetMap._2.getOrElse("audio", Nil))
+				@widget.thumbList(volume, assetMap._2.getOrElse("video", Nil))
+				@widget.thumbList(volume, assetMap._2.getOrElse("image", Nil))
+				@widget.thumbList(volume, assetMap._2.getOrElse("audio", Nil))
 			</div>
 
 			<div id="highlights" class="view">
 				<h2 class='tab'>Highlights</h2>
 
-				@widget.thumbList(study, assetMap._1.getOrElse("video", Nil))
-				@widget.thumbList(study, assetMap._1.getOrElse("image", Nil))
-				@widget.thumbList(study, assetMap._1.getOrElse("audio", Nil))
+				@widget.thumbList(volume, assetMap._1.getOrElse("video", Nil))
+				@widget.thumbList(volume, assetMap._1.getOrElse("image", Nil))
+				@widget.thumbList(volume, assetMap._1.getOrElse("audio", Nil))
 			</div>
 
 			<div id="documents" class="view">
 				<h2 class='tab'>Documents</h2>
-				@widget.assetList(study)
+				@widget.assetList(volume)
 			</div>
 
 			<div id="participants" class="view">
 				<h2 class='tab'>Participants</h2>
-				@widget.slotList(study)
+				@widget.slotList(volume)
 			</div>
 
 			<div id="permission" class="view">
 				<h2 class='tab'>Permission</h2>
 
-				@widget.studyPermission(study)
+				@widget.volumePermission(volume)
 			</div>
 		</section>
 
 		<div class="row">
-		@region.comments(Some(routes.Comment.postStudy(study.id)), study.comments(true)(request.db))
+		@region.comments(Some(routes.Comment.postVolume(volume.id)), volume.comments(true)(request.db))
 		</div>
 	</article>
 }

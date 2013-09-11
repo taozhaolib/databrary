@@ -1,4 +1,4 @@
-@(study: Study)(implicit request: SiteRequest[_])
+@(volume: Volume)(implicit request: SiteRequest[_])
 
 <table class="assets">
     <colgroup>
@@ -16,7 +16,7 @@
     </thead>
 
     <tbody>
-    @study.slotRecords(Some(RecordCategory.Participant)).map { r =>
+    @volume.slotRecords(Some(RecordCategory.Participant)).map { r =>
         <tr>
 	    <td class="main"><a href='@routes.Record.view(r.id)'>@r.ident(request.db)</a></td>
             <td>@r.measure(Metric.Gender)(request.db)</td>
@@ -29,13 +29,13 @@
 <h3>All Slots</h3>
     @* Not all slots may be associated with participants. Show all here for now: *@
     <ul>
-    @study.slots(request.db).map { slot =>
+    @volume.slots(request.db).map { slot =>
         <li><a href='@slot.pageURL'>@display.date(slot)</a>: @slot.idents</li>
     }
     </ul>
 
-@if(study.permission >= Permission.CONTRIBUTE) {
+@if(volume.permission >= Permission.CONTRIBUTE) {
     <div class="arealinks">
-        <a class="button mhead" href="@routes.Slot.create(study.id)" title="Add new slot">Add</a>
+        <a class="button mhead" href="@routes.Slot.create(volume.id)" title="Add new slot">Add</a>
     </div>
 }

@@ -53,16 +53,16 @@ object Slot extends SiteController {
     )
   }
 
-  def create(s : models.Study.Id) = Study.check(s, Permission.CONTRIBUTE) { study => implicit request =>
-    Ok(views.html.slot.edit(Left(study), editForm))
+  def create(s : models.Volume.Id) = Volume.check(s, Permission.CONTRIBUTE) { volume => implicit request =>
+    Ok(views.html.slot.edit(Left(volume), editForm))
   }
 
-  def add(s : models.Study.Id) = Study.check(s, Permission.CONTRIBUTE) { study => implicit request =>
+  def add(s : models.Volume.Id) = Volume.check(s, Permission.CONTRIBUTE) { volume => implicit request =>
     val form = editForm.bindFromRequest
     form.fold(
-      form => BadRequest(views.html.slot.edit(Left(study), form)),
+      form => BadRequest(views.html.slot.edit(Left(volume), form)),
       { case (consent, date) =>
-        val slot = models.Slot.create(study = study, consent = consent, date = date)
+        val slot = models.Slot.create(volume = volume, consent = consent, date = date)
         Created(views.html.slot.view(slot))
       }
     )

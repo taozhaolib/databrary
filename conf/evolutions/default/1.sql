@@ -108,15 +108,15 @@ CREATE TABLE "audit_account" (
 ----------------------------------------------------------- permissions
 
 CREATE TYPE permission AS ENUM ('NONE',
-	'VIEW', -- study view, but no access to protected data (PUBLIC access)
+	'VIEW', -- list view, but no access to protected data (PUBLIC access)
 	'DOWNLOAD', -- full read access to shared data (BROWSE access)
-	'CONTRIBUTE', -- create and edit studies of own/target (FULL access)
+	'CONTRIBUTE', -- create and edit data of own/target (FULL access)
 	'ADMIN' -- perform administrative tasks on site/target such as changing permissions
 );
-COMMENT ON TYPE permission IS 'Levels of access parties can have to the site, studies, and assets.';
+COMMENT ON TYPE permission IS 'Levels of access parties can have to the site data.';
 
 CREATE TYPE consent AS ENUM (
-	-- 		permission required (on study)
+	-- 		permission required
 	'PRIVATE', 	-- CONTRIBUTE	did not consent to any sharing
 	'SHARED', 	-- DOWNLOAD	consented to share on databrary
 	'EXCERPTS', 	-- DOWNLOAD	SHARED, but consented that excerpts may be PUBLIC
@@ -175,43 +175,43 @@ COMMENT ON FUNCTION "authorize_delegate_check" (integer, integer, permission) IS
 
 ----------------------------------------------------------- containers
 
-SELECT create_abstract_parent('container', ARRAY['study','slot']);
+SELECT create_abstract_parent('container', ARRAY['volume','slot']);
 COMMENT ON TABLE "container" IS 'Parent table for anything assets can be attached to.';
 
 
-CREATE TABLE "study" (
+CREATE TABLE "volume" (
 	"id" integer NOT NULL DEFAULT nextval('container_id_seq') Primary Key References "container" Deferrable Initially Deferred,
 	"title" text NOT NULL,
 	"description" text
 );
-COMMENT ON TABLE "study" IS 'Basic organizational unit for data.';
-CREATE TRIGGER "container" BEFORE INSERT OR UPDATE OR DELETE ON "study" FOR EACH ROW EXECUTE PROCEDURE "container_trigger" ();
+COMMENT ON TABLE "volume" IS 'Basic organizational unit for data.';
+CREATE TRIGGER "container" BEFORE INSERT OR UPDATE OR DELETE ON "volume" FOR EACH ROW EXECUTE PROCEDURE "container_trigger" ();
 
-CREATE TABLE "audit_study" (
-	LIKE "study"
+CREATE TABLE "audit_volume" (
+	LIKE "volume"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
-CREATE INDEX "study_creation_idx" ON audit_study (id) WHERE action = 'add';
-COMMENT ON INDEX "study_creation_idx" IS 'Allow efficient retrieval of study creation information, specifically date.';
+CREATE INDEX "volume_creation_idx" ON audit_volume (id) WHERE action = 'add';
+COMMENT ON INDEX "volume_creation_idx" IS 'Allow efficient retrieval of volume creation information, specifically date.';
 
-CREATE TABLE "study_access" (
-	"study" integer NOT NULL References "study",
+CREATE TABLE "volume_access" (
+	"volume" integer NOT NULL References "volume",
 	"party" integer NOT NULL References "party",
 	"access" permission NOT NULL DEFAULT 'NONE',
 	"inherit" permission NOT NULL DEFAULT 'NONE' Check ("inherit" < 'ADMIN'),
 	Check ("access" >= "inherit"),
-	Primary Key ("study", "party")
+	Primary Key ("volume", "party")
 );
-COMMENT ON TABLE "study_access" IS 'Permissions over studies assigned to users.';
+COMMENT ON TABLE "volume_access" IS 'Permissions over volumes assigned to users.';
 
-CREATE TABLE "audit_study_access" (
-	LIKE "study_access"
+CREATE TABLE "audit_volume_access" (
+	LIKE "volume_access"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
-CREATE FUNCTION "study_access_check" ("study" integer, "party" integer, "access" permission = NULL) RETURNS permission LANGUAGE sql STABLE AS $$
+CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer, "access" permission = NULL) RETURNS permission LANGUAGE sql STABLE AS $$
 	WITH sa AS (
 		SELECT party, access, inherit
-		  FROM study_access 
-		 WHERE study = $1 AND ($3 IS NULL OR access >= $3)
+		  FROM volume_access 
+		 WHERE volume = $1 AND ($3 IS NULL OR access >= $3)
 	)
 	SELECT max(access) FROM (
 		SELECT access 
@@ -226,17 +226,17 @@ CREATE FUNCTION "study_access_check" ("study" integer, "party" integer, "access"
 		 WHERE child = $2
 	) a WHERE $3 IS NULL OR access >= $3
 $$;
-COMMENT ON FUNCTION "study_access_check" (integer, integer, permission) IS 'Test if a given party has the given permission [any] on the given study, either directly, inherited through site access, or delegated.';
+COMMENT ON FUNCTION "volume_access_check" (integer, integer, permission) IS 'Test if a given party has the given permission [any] on the given volume, either directly, inherited through site access, or delegated.';
 
 
 CREATE TABLE "slot" (
 	"id" integer NOT NULL DEFAULT nextval('container_id_seq') Primary Key References "container" Deferrable Initially Deferred,
-	"study" integer NOT NULL References "study",
+	"volume" integer NOT NULL References "volume",
 	"consent" consent,
 	"date" date
 );
-COMMENT ON TABLE "slot" IS 'Organizational unit within study containing raw data, usually corresponding to an individual data acqusition (single visit/participant/group/sample).';
-CREATE INDEX ON "slot" ("study");
+COMMENT ON TABLE "slot" IS 'Organizational unit within volume containing raw data, usually corresponding to an individual data acqusition (single visit/participant/group/sample).';
+CREATE INDEX ON "slot" ("volume");
 CREATE TRIGGER "container" BEFORE INSERT OR UPDATE OR DELETE ON "slot" FOR EACH ROW EXECUTE PROCEDURE "container_trigger" ();
 
 CREATE TABLE "audit_slot" (
@@ -245,16 +245,16 @@ CREATE TABLE "audit_slot" (
 
 
 CREATE VIEW "containers" AS
-	SELECT container.id, kind, study.id AS "study", title, description, slot.id AS "slot" FROM container 
+	SELECT container.id, kind, volume.id AS "volume", title, description, slot.id AS "slot" FROM container 
 		LEFT JOIN slot USING (id)
-		     JOIN study ON study.id = container.id OR study.id = slot.study;
-COMMENT ON VIEW "containers" IS 'All containers (studies and slots) in expanded form.';
+		     JOIN volume ON volume.id = container.id OR volume.id = slot.volume;
+COMMENT ON VIEW "containers" IS 'All containers (volumes and slots) in expanded form.';
 
 CREATE VIEW "container_nesting" ("child", "parent") AS 
-	SELECT id, id FROM container UNION ALL SELECT id, study FROM slot;
+	SELECT id, id FROM container UNION ALL SELECT id, volume FROM slot;
 
-CREATE FUNCTION "container_study" ("container" integer) RETURNS integer LANGUAGE sql STABLE STRICT AS $$
-	SELECT id FROM study WHERE id = $1 UNION ALL SELECT study FROM slot WHERE id = $1
+CREATE FUNCTION "container_volume" ("container" integer) RETURNS integer LANGUAGE sql STABLE STRICT AS $$
+	SELECT id FROM volume WHERE id = $1 UNION ALL SELECT volume FROM slot WHERE id = $1
 $$;
 
 ----------------------------------------------------------- assets
@@ -404,7 +404,7 @@ CREATE TABLE "record" (
 	"category" smallint References "record_category" ON DELETE SET NULL
 );
 CREATE TRIGGER "annotation" BEFORE INSERT OR UPDATE OR DELETE ON "record" FOR EACH ROW EXECUTE PROCEDURE "annotation_trigger" ();
-COMMENT ON TABLE "record" IS 'Sets of metadata measurements organized into or applying to a single cohesive unit.  These belong to the object(s) they''re attached to, which are expected to be within a single study.';
+COMMENT ON TABLE "record" IS 'Sets of metadata measurements organized into or applying to a single cohesive unit.  These belong to the object(s) they''re attached to, which are expected to be within a single volume.';
 
 CREATE TYPE data_type AS ENUM ('text', 'number', 'date');
 COMMENT ON TYPE data_type IS 'Types of measurement data corresponding to measure_* tables.';
@@ -493,7 +493,7 @@ CREATE FUNCTION "asset_annotations" ("asset" integer) RETURNS SETOF integer LANG
 $$;
 
 CREATE FUNCTION "container_annotations" ("container" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
-	WITH containers (container) AS (SELECT $1 UNION ALL SELECT id AS container FROM slot WHERE study = $1) -- (SELECT child FROM container_nesting WHERE parent = $1)
+	WITH containers (container) AS (SELECT $1 UNION ALL SELECT id AS container FROM slot WHERE volume = $1) -- (SELECT child FROM container_nesting WHERE parent = $1)
 	SELECT annotation FROM containers JOIN container_annotation USING (container) UNION ALL
 	SELECT annotation FROM containers JOIN asset_link USING (container) JOIN asset_nesting ON parent = asset JOIN asset_annotation ON child = asset_annotation.asset
 $$;
@@ -551,13 +551,13 @@ DROP TYPE segment;
 DROP FUNCTION "interval_mi_epoch" (interval, interval);
 DROP TYPE classification;
 
-DROP FUNCTION "container_study" (integer);
+DROP FUNCTION "container_volume" (integer);
 DROP VIEW "container_nesting";
 DROP VIEW "containers";
 DROP TABLE "slot";
-DROP FUNCTION "study_access_check" (integer, integer, permission);
-DROP TABLE "study_access";
-DROP TABLE "study";
+DROP FUNCTION "volume_access_check" (integer, integer, permission);
+DROP TABLE "volume_access";
+DROP TABLE "volume";
 DROP TABLE "container";
 DROP FUNCTION "container_trigger" ();
 DROP TYPE "container_kind";

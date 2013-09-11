@@ -26,7 +26,7 @@ object Comment extends SiteController {
 
   def postContainer(c : models.Container.Id) = Container.check(c, Permission.COMMENT)(post _)
   /* specializations of above: */
-  def postStudy(s : models.Study.Id) = Study.check(s, Permission.COMMENT)(post _)
+  def postVolume(s : models.Volume.Id) = Volume.check(s, Permission.COMMENT)(post _)
   def postSlot(s : models.Slot.Id) = Slot.check(s, Permission.COMMENT)(post _)
   def postAssetLink(c : models.Container.Id, o : models.Asset.Id) = Asset.check(c, o, Permission.COMMENT)(post _)
 }

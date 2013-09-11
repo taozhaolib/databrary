@@ -1,6 +1,0 @@
-@(study: Study)(implicit request: SiteRequest[_])
-
-<div class="citation">
-    @study.partyAccess(Permission.CONTRIBUTE)(request.db).map { a => @display.citeName(a.party.name), }
-    @study.creationAudit(request.db).map { creation => (@display.date(creation.when, "YYYY"))}. @study.title. <em>Databrary</em>. Retrieved @display.date(new java.util.Date(System.currentTimeMillis), "MMMM d, YYYY") from <a href="@routes.Study.view(study.id).absoluteURL()" title="@study.title on Databrary.org">@routes.Study.view(study.id).absoluteURL()</a>.
-</div>

@@ -1,0 +1,18 @@
+@(volume: Volume)(implicit request: SiteRequest[_])
+
+@display(permission: Permission.Value) = {
+	@defining(volume.partyAccess(permission)(request.db).filter(_.access == permission)) { volumeAccesses =>
+		@if(volumeAccesses.nonEmpty) {
+			<h3>@volumeAccesses.head.access</h3>
+
+			<div class="row foot">
+				@volumeAccesses.map { volumeAccess => @widget.userinfo(volumeAccess.party, None, true)}
+			</div>
+		}
+	}
+}
+
+@display(Permission.ADMIN)
+@display(Permission.EDIT)
+@display(Permission.DOWNLOAD)
+@display(Permission.VIEW)

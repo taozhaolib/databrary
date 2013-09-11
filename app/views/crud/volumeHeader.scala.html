@@ -1,0 +1,18 @@
+@(volume : Volume)(implicit request : SiteRequest[_])
+
+<header>
+    <h1>@volume.title</h1>
+
+    <nav class="menu">
+        <ul>
+        @if(volume.permission >= Permission.EDIT) {
+			@crud.headerCurrentLink(routes.Volume.view(volume.id), "view")
+			@crud.headerCurrentLink(routes.Volume.edit(volume.id), "edit")
+
+            @if(volume.permission >= Permission.ADMIN) {
+				@crud.headerCurrentLink(routes.Volume.admin(volume.id), "permissions")
+            }
+        }
+        </ul>
+    </nav>
+</header>

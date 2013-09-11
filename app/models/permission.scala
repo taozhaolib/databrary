@@ -3,12 +3,12 @@ package models
 import dbrary._
 import util._
 
-/** The possible levels of permission used for site access, user delegation, and study permissions.
+/** The possible levels of permission used for site access, user delegation, and volume permissions.
   * Must match the corresponding postgres "permission" type. */
 object Permission extends PGEnum("permission") {
   val NONE, VIEW, DOWNLOAD, CONTRIBUTE, ADMIN = Value
   // aliases or equivalent permissions (do not use val here)
-  /** Alias for ADMIN. Study ADMINs are considered OWNers. */
+  /** Alias for ADMIN. Volume ADMINs are considered OWNers. */
   def OWN = ADMIN
   /** Alias for CONTRIBUTE. */
   def EDIT = CONTRIBUTE
@@ -48,7 +48,7 @@ object Classification extends PGEnum("classification") {
   def UNRESTRICTED = ANALYSIS
 
   /** The most restricetd data classification level that the current user may access under the given consent level.
-    * Actual access to data will additionally depend on study permissions not checked here. */
+    * Actual access to data will additionally depend on volume permissions not checked here. */
   def access(consent : Consent.Value)(implicit site : Site) : Value = {
     val c = consent
     val a = site.access

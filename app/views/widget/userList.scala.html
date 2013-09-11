@@ -1,6 +1,6 @@
-@(study: Study)(implicit request: SiteRequest[_])
+@(volume: Volume)(implicit request: SiteRequest[_])
 
-@defining(study.partyAccess()) { list =>
+@defining(volume.partyAccess()) { list =>
     @list.filter(_.access == Permission.ADMIN).map { account =>
         @account.party.name<br>
     }

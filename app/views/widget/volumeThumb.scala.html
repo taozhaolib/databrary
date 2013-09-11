@@ -1,0 +1,12 @@
+@(volume: Volume)(implicit request: SiteRequest[_])
+
+@defining(volume.assets(request.db).find(_.asset(request.db).format.name == "Video")) { thumb =>
+	@if(thumb.nonEmpty) {
+		@thumb.map { assetLink =>
+			<img src="@routes.Asset.head(volume.id, assetLink.assetId)" alt="@assetLink.title">
+		}
+	} else {
+		<img src="/assets/images/draft.png" alt="@volume.title">
+	}
+}
+

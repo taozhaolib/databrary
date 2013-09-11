@@ -1,31 +1,31 @@
-@(study : Study)(implicit request : SiteRequest[_])
+@(volume : Volume)(implicit request : SiteRequest[_])
 
-<article id="study_@study.id.unId" class="study study_roll cf">
+<article id="volume_@volume.id.unId" class="volume volume_roll cf">
     <div class="row">
-        <a href="@routes.Study.view(study.id)" class="block cf" title="@study.title">
+        <a href="@routes.Volume.view(volume.id)" class="block cf" title="@volume.title">
             <header class="column_full">
-                <h1>@study.title</h1>
+                <h1>@volume.title</h1>
             </header>
 
             <aside class="thumb col_4 cf">
-            @widget.studyThumb(study)
+            @widget.volumeThumb(volume)
             </aside>
 
             <div class="body col_8">
                 <footer class="meta cf">
                     <div class="date">
-                    @study.creationAudit(request.db).map { creation =>
+                    @volume.creationAudit(request.db).map { creation =>
                         <time datetime="@creation.when" pubdate>@display.date(creation.when, "yyyy")</time>
                     }
                     </div>
 
                     <div class="people">
-                    @study.partyAccess(Permission.CONTRIBUTE)(request.db).map { a => <img src="@display.gravatarUrlByParty(a.party, 16)"> @display.citeName(a.party.name)<span class="sep">,</span> }
+                    @volume.partyAccess(Permission.CONTRIBUTE)(request.db).map { a => <img src="@display.gravatarUrlByParty(a.party, 16)"> @display.citeName(a.party.name)<span class="sep">,</span> }
                     </div>
                 </footer>
 
                 <div class="description">
-                @display.plainTextSummary(study.description.getOrElse(""), 2)
+                @display.plainTextSummary(volume.description.getOrElse(""), 2)
                 </div>
             </div>
         </a>

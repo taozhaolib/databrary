@@ -88,8 +88,8 @@ final class Record private (override val id : Record.Id, val category_ : Option[
   def age(slot : Slot)(implicit db : Site.DB) : Option[Long] = birthdate.map(slot.date.getTime - _.getTime)
 
   /** Effective permission the site user has over a given metric in this record, specifically in regards to the measure datum itself.
-    * Record permissions depend on study permissions, but can be further restricted by consent levels.
-    * @param permission applicable (study) permission for this record's target
+    * Record permissions depend on volume permissions, but can be further restricted by consent levels.
+    * @param permission applicable (volume) permission for this record's target
     */
   def permission(permission : Permission.Value, metric : MetricBase)(implicit site : Site) : Permission.Value =
     Permission.data(permission, consent, metric.classification)
@@ -162,10 +162,10 @@ object Record extends AnnotationView[Record]("record") {
     category.fold(row)(cat => columns.map(makeCategory(Some(cat)) _))
   private[models] override val src = "record LEFT JOIN record_category ON record.category = record_category.id"
 
-  /** Retrieve all the categorized records associated with slots in the given study.
+  /** Retrieve all the categorized records associated with slots in the given volume.
     * @param category restrict to the specified category, or include all categories
     * @return unique records sorted by category, ident */
-  private[models] def getSlots(study : Study, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
+  private[models] def getSlots(volume : Volume, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
     val metric = Metric.Ident
     val cols = (rowCategory(category) ~
         metric.measureType.column.? ~
@@ -177,12 +177,12 @@ object Record extends AnnotationView[Record]("record") {
       }
     SQL("SELECT " + cols.select + " FROM (SELECT record.id, record.category, daterange(min(slot.date), max(slot.date), '[]') FROM record" +
         (if (category.isEmpty) " JOIN record_category ON record.category = record_category.id" else "") + 
-        " JOIN container_annotation ON record.id = annotation JOIN slot ON container = slot.id WHERE slot.study = {study} GROUP BY record.id, record.category" +
+        " JOIN container_annotation ON record.id = annotation JOIN slot ON container = slot.id WHERE slot.volume = {volume} GROUP BY record.id, record.category" +
         (if (category.isDefined) " HAVING record.category = {category}" else "") +
         ") record LEFT JOIN measure_text ON record.id = " + metric.measureType.table + ".record AND measure_text.metric = {metric} ORDER BY" +
         (if (category.isEmpty) " record.category," else "") +
         " " + metric.measureType.column.select + ", record.id").
-      on('study -> study.id, 'metric -> metric.id, 'category -> category.map(_.id)).
+      on('volume -> volume.id, 'metric -> metric.id, 'category -> category.map(_.id)).
       list(cols)
   }
 

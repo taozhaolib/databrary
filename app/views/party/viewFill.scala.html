@@ -52,8 +52,8 @@
 
         <div class="content column_right">
             <h2>Studies</h2>
-            @party.studyAccess(Permission.CONTRIBUTE).map { a =>
-                @widget.studySmall(a.study)
+            @party.volumeAccess(Permission.CONTRIBUTE).map { a =>
+                @widget.volumeSmall(a.volume)
             }
 
             <div class="row">

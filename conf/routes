@@ -34,21 +34,21 @@ POST        /party/:id/Authorize/:other/parent                 controllers.Party
 # TODO: should be POST but currently used as link:
 GET         /party/:id/Authorize/:child/delete                 controllers.Party.authorizeDelete(id : models.Party.Id, child : models.Party.Id)
 
-GET 	    /study/create 						controllers.Study.create(owner : Option[models.Party.Id] ?= None)
-POST 	    /study/Create/:owner 						controllers.Study.add(owner : models.Party.Id)
-GET         /study/:id                                         controllers.Study.view(id : models.Study.Id)
-GET         /study/:id/edit                                 controllers.Study.edit(id : models.Study.Id)
-POST        /study/:id/Edit                                 controllers.Study.change(id : models.Study.Id)
-GET         /study/:id/access                                 controllers.Study.admin(id : models.Study.Id)
-GET         /study/:id/Access/search                         controllers.Study.accessSearch(id : models.Study.Id)
-POST        /study/:id/Access/:party/add                         controllers.Study.accessAdd(id : models.Study.Id, party : models.Party.Id)
+GET 	    /study/create 						controllers.Volume.create(owner : Option[models.Party.Id] ?= None)
+POST 	    /study/Create/:owner 						controllers.Volume.add(owner : models.Party.Id)
+GET         /study/:id                                         controllers.Volume.view(id : models.Volume.Id)
+GET         /study/:id/edit                                 controllers.Volume.edit(id : models.Volume.Id)
+POST        /study/:id/Edit                                 controllers.Volume.change(id : models.Volume.Id)
+GET         /study/:id/access                                 controllers.Volume.admin(id : models.Volume.Id)
+GET         /study/:id/Access/search                         controllers.Volume.accessSearch(id : models.Volume.Id)
+POST        /study/:id/Access/:party/add                         controllers.Volume.accessAdd(id : models.Volume.Id, party : models.Party.Id)
 # TODO: should be POST:
-GET         /study/:id/Access/:party/delete                 controllers.Study.accessDelete(id : models.Study.Id, party : models.Party.Id)
-POST        /study/:id/Access/:party                         controllers.Study.accessChange(id : models.Study.Id, party : models.Party.Id)
-GET         /studies                                         controllers.Study.listAll
+GET         /study/:id/Access/:party/delete                 controllers.Volume.accessDelete(id : models.Volume.Id, party : models.Party.Id)
+POST        /study/:id/Access/:party                         controllers.Volume.accessChange(id : models.Volume.Id, party : models.Party.Id)
+GET         /studies                                         controllers.Volume.listAll
 
-GET         /study/:id/slot                                 controllers.Slot.create(id : models.Study.Id)
-POST        /study/:id/Slot                                 controllers.Slot.add(id : models.Study.Id)
+GET         /study/:id/slot                                 controllers.Slot.create(id : models.Volume.Id)
+POST        /study/:id/Slot                                 controllers.Slot.add(id : models.Volume.Id)
 GET         /slot/:id                                         controllers.Slot.view(id : models.Slot.Id)
 GET         /slot/:id/edit                                         controllers.Slot.edit(id : models.Slot.Id)
 POST        /slot/:id/Edit                                         controllers.Slot.change(id : models.Slot.Id)
@@ -63,7 +63,7 @@ GET         /asset/:id/:obj/frame/:offset                        controllers.Ass
 GET         /asset/:id/:obj/edit                                controllers.Asset.edit(id : models.Container.Id, obj : models.Asset.Id)
 POST        /asset/:id/:obj/Edit                                controllers.Asset.change(id : models.Container.Id, obj : models.Asset.Id)
 
-POST        /study/:id/Comment                                 controllers.Comment.postStudy(id : models.Study.Id)
+POST        /study/:id/Comment                                 controllers.Comment.postVolume(id : models.Volume.Id)
 POST        /slot/:id/Comment                                 controllers.Comment.postSlot(id : models.Slot.Id)
 POST        /asset/:id/:obj/Comment                         controllers.Comment.postAssetLink(id : models.Container.Id, obj : models.Asset.Id)
 

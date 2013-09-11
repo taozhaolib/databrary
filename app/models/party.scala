@@ -44,9 +44,9 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   /** Permission delegated by the given party to this party. */
   final def delegatedBy(p : Party.Id)(implicit site : Site) : Permission.Value = Authorize.delegate_check(id, p)
 
-  /** List of studies accessible by this user.
+  /** List of volumes accessible by this user.
     * @param p permission level to restrict to */
-  final def studyAccess(p : Permission.Value)(implicit site : Site) = StudyAccess.getStudies(this, p)
+  final def volumeAccess(p : Permission.Value)(implicit site : Site) = VolumeAccess.getVolumes(this, p)
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
@@ -118,13 +118,13 @@ object Party extends TableId[Party]("party") {
     SELECT("WHERE " + byName + " AND id != {who} AND id NOT IN (SELECT child FROM authorize WHERE parent = {who} UNION SELECT parent FROM authorize WHERE child = {who}) LIMIT 8").
       on(SQLArgs('who -> who) ++ byNameArgs(name) : _*).list()
 
-  /** Search for parties by name for the purpose of study access.
+  /** Search for parties by name for the purpose of volume access.
     * @param name string to match against name/email (case insensitive substring)
-    * @param study study to which to grant access, to exclude parties with access already.
+    * @param volume volume to which to grant access, to exclude parties with access already.
     */
-  def searchForStudyAccess(name : String, study : Study.Id)(implicit db : Site.DB) : Seq[Party] =
-    SELECT("WHERE " + byName + " AND id NOT IN (SELECT party FROM study_access WHERE study = {study}) LIMIT 8").
-      on(SQLArgs('study -> study) ++ byNameArgs(name) : _*).list()
+  def searchForVolumeAccess(name : String, volume : Volume.Id)(implicit db : Site.DB) : Seq[Party] =
+    SELECT("WHERE " + byName + " AND id NOT IN (SELECT party FROM volume_access WHERE volume = {volume}) LIMIT 8").
+      on(SQLArgs('volume -> volume) ++ byNameArgs(name) : _*).list()
 
   private[models] final val NOBODY : Id = asId(-1)
   private[models] final val ROOT   : Id = asId(0)
