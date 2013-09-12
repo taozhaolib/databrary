@@ -12,11 +12,11 @@
                             <h1>@study.title</h1>
                         </header>
 
-                        <aside class="thumb col_4 cf">
+                        <aside class="thumb cf">
                         @widget.studyThumb(study)
                         </aside>
 
-                        <div class="body col_8">
+                        <div class="body">
                             <footer class="meta cf">
 								<div class="date">
 									@study.creationAudit(request.db).map { creation =>
