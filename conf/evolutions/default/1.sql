@@ -173,19 +173,14 @@ CREATE FUNCTION "authorize_delegate_check" ("child" integer, "parent" integer, "
 $$;
 COMMENT ON FUNCTION "authorize_delegate_check" (integer, integer, permission) IS 'Test if a given child has the given permission [any] over the given parent';
 
------------------------------------------------------------ containers
-
-SELECT create_abstract_parent('container', ARRAY['volume','slot']);
-COMMENT ON TABLE "container" IS 'Parent table for anything assets can be attached to.';
-
+----------------------------------------------------------- volumes
 
 CREATE TABLE "volume" (
-	"id" integer NOT NULL DEFAULT nextval('container_id_seq') Primary Key References "container" Deferrable Initially Deferred,
+	"id" serial NOT NULL Primary Key,
 	"title" text NOT NULL,
 	"description" text
 );
 COMMENT ON TABLE "volume" IS 'Basic organizational unit for data.';
-CREATE TRIGGER "container" BEFORE INSERT OR UPDATE OR DELETE ON "volume" FOR EACH ROW EXECUTE PROCEDURE "container_trigger" ();
 
 CREATE TABLE "audit_volume" (
 	LIKE "volume"
@@ -228,45 +223,7 @@ CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer, "acces
 $$;
 COMMENT ON FUNCTION "volume_access_check" (integer, integer, permission) IS 'Test if a given party has the given permission [any] on the given volume, either directly, inherited through site access, or delegated.';
 
-
-CREATE TABLE "slot" (
-	"id" integer NOT NULL DEFAULT nextval('container_id_seq') Primary Key References "container" Deferrable Initially Deferred,
-	"volume" integer NOT NULL References "volume",
-	"consent" consent,
-	"date" date
-);
-COMMENT ON TABLE "slot" IS 'Organizational unit within volume containing raw data, usually corresponding to an individual data acqusition (single visit/participant/group/sample).';
-CREATE INDEX ON "slot" ("volume");
-CREATE TRIGGER "container" BEFORE INSERT OR UPDATE OR DELETE ON "slot" FOR EACH ROW EXECUTE PROCEDURE "container_trigger" ();
-
-CREATE TABLE "audit_slot" (
-	LIKE "slot"
-) INHERITS ("audit") WITH (OIDS = FALSE);
-
-
-CREATE VIEW "containers" AS
-	SELECT container.id, kind, volume.id AS "volume", title, description, slot.id AS "slot" FROM container 
-		LEFT JOIN slot USING (id)
-		     JOIN volume ON volume.id = container.id OR volume.id = slot.volume;
-COMMENT ON VIEW "containers" IS 'All containers (volumes and slots) in expanded form.';
-
-CREATE VIEW "container_nesting" ("child", "parent") AS 
-	SELECT id, id FROM container UNION ALL SELECT id, volume FROM slot;
-
-CREATE FUNCTION "container_volume" ("container" integer) RETURNS integer LANGUAGE sql STABLE STRICT AS $$
-	SELECT id FROM volume WHERE id = $1 UNION ALL SELECT volume FROM slot WHERE id = $1
-$$;
-
------------------------------------------------------------ assets
-
-CREATE TYPE classification AS ENUM (
-	'IDENTIFIED', 	-- data containing HIPPA identifiers, requiring appropriate consent and DOWNLOAD permission
-	'EXCERPT', 	-- IDENTIFIED data that has been selected as a releasable excerpt
-	'DEIDENTIFIED', -- "raw" data which has been de-identified, requiring only DOWNLOAD permission
-	'ANALYSIS', 	-- un/de-identified derived, generated, summarized, or aggregated data measures
-	'PRODUCT',	-- research products such as results, summaries, commentaries, discussions, manuscripts, or articles
-	'MATERIAL'	-- materials not derived from data, such as proposals, procedures, stimuli, manuals, (blank) forms, or documentation
-);
+----------------------------------------------------------- time intervals
 
 CREATE FUNCTION "interval_mi_epoch" (interval, interval) RETURNS double precision LANGUAGE sql IMMUTABLE STRICT AS 
 	$$ SELECT date_part('epoch', interval_mi($1, $2)) $$;
@@ -282,6 +239,79 @@ COMMENT ON FUNCTION "duration" (segment) IS 'Determine the length of a segment, 
 CREATE FUNCTION "singleton" (segment) RETURNS interval LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT lower($1) WHERE lower_inc($1) AND upper_inc($1) AND lower($1) = upper($1) $$;
 COMMENT ON FUNCTION "singleton" (segment) IS 'Determine if a segment represents a single point and return it, or NULL if not.';
+
+CREATE FUNCTION "segment_shift" (segment, interval) RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS $$
+	SELECT CASE WHEN isempty($1) THEN 'empty' ELSE
+		segment(lower($1) + $2, upper($1) + $2,
+			CASE WHEN lower_inc($1) THEN '[' ELSE '(' END || CASE WHEN upper_inc($1) THEN ']' ELSE ')' END)
+	END
+$$;
+COMMENT ON FUNCTION "segment_shift" (segment, interval) IS 'Shift both end points of a segment by the specified interval.';
+
+
+CREATE TABLE "object_segment" ( -- ABSTRACT
+	"source" integer NOT NULL, -- References "source_table"
+	"segment" segment NOT NULL Check (NOT isempty("segment")),
+	Check (false) NO INHERIT
+);
+ALTER TABLE "object_segment" ALTER COLUMN "segment" SET STORAGE plain;
+COMMENT ON TABLE "object_segment" IS 'Generic table for objects defined as a temporal sub-sequence of another object.  Inherit from this table to use the functions below.';
+
+CREATE FUNCTION "object_segment_contains" ("object_segment", "object_segment") RETURNS boolean LANGUAGE sql IMMUTABLE STRICT AS
+	$$ SELECT $1.source = $2.source AND $1.segment @> $2.segment $$;
+CREATE FUNCTION "object_segment_within" ("object_segment", "object_segment") RETURNS boolean LANGUAGE sql IMMUTABLE STRICT AS
+	$$ SELECT $1.source = $2.source AND $1.segment <@ $2.segment $$;
+CREATE OPERATOR @> (PROCEDURE = "object_segment_contains", LEFTARG = "object_segment", RIGHTARG = "object_segment", COMMUTATOR = <@);
+CREATE OPERATOR <@ (PROCEDURE = "object_segment_within", LEFTARG = "object_segment", RIGHTARG = "object_segment", COMMUTATOR = @>);
+
+----------------------------------------------------------- containers
+
+CREATE TABLE "container" (
+	"id" serial NOT NULL Primary Key,
+	"volume" integer NOT NULL References "volume",
+	"date" date
+);
+COMMENT ON TABLE "container" IS 'Organizational unit within volume containing related files (with common annotations), often corresponding to an individual data session (single visit/acquisition/participant/group/day).';
+CREATE INDEX ON "container" ("volume");
+
+CREATE TABLE "audit_container" (
+	LIKE "container"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
+
+CREATE TABLE "slot" (
+	"id" serial NOT NULL Primary Key,
+	"source" integer NOT NULL References "container",
+	"segment" segment NOT NULL Default '(,)',
+	Unique ("source", "segment")
+) INHERITS ("object_segment");
+COMMENT ON TABLE "slot" IS 'Sections of containers selected for referencing, annotating, consenting, etc.';
+
+CREATE VIEW "slot_nesting" ("child", "parent") AS 
+	SELECT c.id, p.id FROM slot c JOIN slot p ON c <@ p;
+COMMENT ON VIEW "slot_nesting" IS 'Transitive closure of slots containtained within other slots.  Note that the contains relation here is rather liberal, as we are depending on researchers and/or other parts of the system to ensure that overlapping consents don''t disagree.';
+
+
+CREATE TABLE "slot_consent" (
+	"slot" integer NOT NULL Primary Key References "slot",
+	"consent" consent NOT NULL
+);
+COMMENT ON TABLE "slot_consent" IS 'Sharing/release permissions granted by participants on (portions of) contained data.';
+
+CREATE TABLE "audit_slot_consent" (
+	LIKE "slot_consent"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
+----------------------------------------------------------- assets
+
+CREATE TYPE classification AS ENUM (
+	'IDENTIFIED', 	-- data containing HIPPA identifiers, requiring appropriate consent and DOWNLOAD permission
+	'EXCERPT', 	-- IDENTIFIED data that has been selected as a releasable excerpt
+	'DEIDENTIFIED', -- "raw" data which has been de-identified, requiring only DOWNLOAD permission
+	'ANALYSIS', 	-- un/de-identified derived, generated, summarized, or aggregated data measures
+	'PRODUCT',	-- research products such as results, summaries, commentaries, discussions, manuscripts, or articles
+	'MATERIAL'	-- materials not derived from data, such as proposals, procedures, stimuli, manuals, (blank) forms, or documentation
+);
 
 CREATE TABLE "format" (
 	"id" smallserial NOT NULL Primary Key,
@@ -315,14 +345,9 @@ CREATE TABLE "file" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
 	"format" smallint NOT NULL References "format",
 	"classification" classification NOT NULL
-	-- "date" date
 );
-COMMENT ON TABLE "file" IS 'Assets in storage along with their "constant" metadata.';
 CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "file" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
-
-CREATE TABLE "audit_file" (
-	LIKE "file"
-) INHERITS ("audit") WITH (OIDS = FALSE);
+COMMENT ON TABLE "file" IS 'Assets in storage along with their "constant" metadata.';
 
 CREATE TABLE "timeseries" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
@@ -330,49 +355,60 @@ CREATE TABLE "timeseries" (
 	"duration" interval HOUR TO SECOND NOT NULL Check ("duration" > interval '0')
 ) INHERITS ("file");
 CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "timeseries" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
+COMMENT ON TABLE "timeseries" IS 'File assets representing interpretable and sub-selectable timeseries data (e.g., videos).';
 
-CREATE TABLE "audit_timeseries" (
-	LIKE "timeseries"
+CREATE TABLE "audit_file" (
+	LIKE "file"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 
 CREATE TABLE "clip" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
 	"source" integer NOT NULL References "timeseries",
-	"segment" segment NOT NULL Check (NOT isempty("segment")),
-	"excerpt" boolean NOT NULL Default 'f'
-);
+	"segment" segment NOT NULL Check (lower("segment") >= '0'::interval AND NOT upper_inf("segment")), -- segment <@ [0,source.duration]
+	Unique ("source", "segment")
+) INHERITS ("object_segment");
 CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "clip" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
-ALTER TABLE "clip" ALTER COLUMN "segment" SET STORAGE plain;
 CREATE INDEX ON "clip" ("source");
-COMMENT ON TABLE "clip" IS 'Sections of timeseries assets selected for referencing.';
+COMMENT ON TABLE "clip" IS 'Sections of timeseries assets selected for use.  When placed into containers, they are treated independently of their source timeseries.';
 
 
 CREATE TABLE "asset_link" (
-	"container" integer NOT NULL References "container",
 	"asset" integer NOT NULL References "asset",
+	"container" integer NOT NULL References "container",
+	"offset" interval HOUR TO SECOND,
 	"title" text NOT NULL,
 	"description" text,
-	Primary Key ("container", "asset")
+	Primary Key ("asset", "container")
 );
-CREATE INDEX ON "asset_link" ("asset");
+CREATE INDEX ON "asset_link" ("container");
 COMMENT ON TABLE "asset_link" IS 'Asset linkages into containers along with "dynamic" metadata.';
+COMMENT ON COLUMN "asset_link"."offset" IS 'Start point or position of this asset within the container, such that this asset occurs or starts offset time after the beginning of the container session.  NULL offsets are treated as universal (existing at all times).';
 
 CREATE TABLE "audit_asset_link" (
 	LIKE "asset_link"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 
-CREATE VIEW "asset_nesting" ("child", "parent") AS 
-	SELECT id, id FROM file UNION ALL SELECT id, source FROM clip UNION ALL
-	SELECT cc.id, cp.id FROM clip cc JOIN clip cp ON cc.source = cp.source AND cc.segment <@ cp.segment;
+CREATE VIEW "asset_duration" ("id", "duration") AS
+	SELECT id, NULL FROM ONLY file UNION ALL
+	SELECT id, duration FROM timeseries UNION ALL
+	SELECT id, duration(segment) FROM clip;
+COMMENT ON VIEW "asset_duration" IS 'All assets along with their temporal durations, NULL for non-timeseries.';
 
-CREATE FUNCTION "asset_parents" ("file" integer, "segment" segment = NULL) RETURNS SETOF integer LANGUAGE sql STABLE AS 
-	$$ SELECT $1 UNION ALL SELECT id FROM clip WHERE source = $1 AND segment @> $2 $$;
-COMMENT ON FUNCTION "asset_parents" (integer, segment) IS 'Set of assets that provide the specified asset.  Note that the contains relation here is rather liberal, as we are depending on researchers and/or other parts of the system to ensure that overlapping consents don''t disagree.';
+CREATE FUNCTION "asset_volumes" ("asset" integer) RETURNS SETOF integer LANGUAGE sql STABLE AS $$
+	SELECT container.volume FROM asset_link JOIN container ON asset_link.container = container.id WHERE asset_link.asset = $1
+$$;
+COMMENT ON FUNCTION "asset_volumes" (integer) IS 'Set of volumes containing the given asset.';
 
-CREATE FUNCTION "asset_consent" ("file" integer, "segment" segment = NULL) RETURNS consent LANGUAGE sql STABLE AS $$
-	SELECT MIN(consent) FROM asset_parents($1, $2) JOIN asset_link ON asset_parents = asset JOIN slot ON container = slot.id
+CREATE FUNCTION "asset_slots" ("asset" integer, "segment" segment) RETURNS SETOF integer LANGUAGE sql STABLE AS $$ 
+	SELECT slot.id FROM asset_link JOIN slot ON asset_link.container = slot.source 
+	WHERE asset_link.asset = $1 AND COALESCE(segment_shift(segment, asset_link.offset) <@ slot.segment, asset_link.offset <@ slot.segment, true)
+$$;
+COMMENT ON FUNCTION "asset_slots" (integer) IS 'Set of slots which contain the (segment of the) asset.';
+
+CREATE FUNCTION "asset_consent" ("asset" integer, "segment" segment = NULL) RETURNS consent LANGUAGE sql STABLE AS $$
+	SELECT MIN(consent) FROM asset_slots($1, $2) JOIN slot_consent ON asset_slots = slot_consent.slot
 $$;
 COMMENT ON FUNCTION "asset_consent" (integer, segment) IS 'Effective (minimal) consent level granted on the specified asset.';
 
@@ -435,7 +471,7 @@ CREATE TABLE "measure" ( -- ABSTRACT
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,
 	"metric" integer NOT NULL References "metric", -- WHERE kind = table_name
 	Primary Key ("record", "metric"),
-	Check ('f') NO INHERIT
+	Check (false) NO INHERIT
 );
 COMMENT ON TABLE "measure" IS 'Abstract parent of all measure tables containing data values.  Rough prototype.';
 
@@ -473,39 +509,16 @@ CREATE VIEW "measure_all" ("record", "metric", "datum_text", "datum_number", "da
 COMMENT ON VIEW "measure_all" IS 'Data from all measure tables, coerced to text.';
 
 
-CREATE TABLE "container_annotation" (
+CREATE TABLE "slot_annotation" (
+	"slot" integer NOT NULL References "slot",
 	"annotation" integer NOT NULL References "annotation",
-	"container" integer NOT NULL References "container",
-	Primary Key ("annotation", "container")
+	Primary Key ("annotation", "slot")
 );
-COMMENT ON TABLE "container_annotation" IS 'Attachment of annotations to containers.';
-
-CREATE TABLE "asset_annotation" (
-	"annotation" integer NOT NULL References "annotation",
-	"asset" integer NOT NULL References "asset",
-	Primary Key ("annotation", "asset")
-);
-COMMENT ON TABLE "asset_annotation" IS 'Attachment of annotations to assets.';
+COMMENT ON TABLE "slot_annotation" IS 'Attachment of annotations to slots.';
 
 
-CREATE FUNCTION "asset_annotations" ("asset" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
-	SELECT annotation FROM asset_nesting JOIN asset_annotation ON child = asset WHERE parent = $1
-$$;
-
-CREATE FUNCTION "container_annotations" ("container" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
-	WITH containers (container) AS (SELECT $1 UNION ALL SELECT id AS container FROM slot WHERE volume = $1) -- (SELECT child FROM container_nesting WHERE parent = $1)
-	SELECT annotation FROM containers JOIN container_annotation USING (container) UNION ALL
-	SELECT annotation FROM containers JOIN asset_link USING (container) JOIN asset_nesting ON parent = asset JOIN asset_annotation ON child = asset_annotation.asset
-$$;
-
-CREATE FUNCTION "annotation_containers" ("annotation" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
-	SELECT container FROM container_annotation WHERE annotation = $1 UNION ALL
-	SELECT asset_link.container FROM asset_annotation JOIN asset_nesting ON asset_annotation.asset = asset_nesting.child JOIN asset_link ON asset_nesting.parent = asset_link.asset WHERE annotation = $1
-$$;
-
-CREATE FUNCTION "annotation_consent" ("annotation" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS $$
-	SELECT MIN(consent) FROM annotation_containers($1) JOIN slot ON annotation_containers = slot.id
-$$;
+CREATE FUNCTION "annotation_consent" ("annotation" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS
+	$$ SELECT MIN(consent) FROM slot_annotation JOIN slot_consent USING (slot) WHERE annotation = $1 $$;
 COMMENT ON FUNCTION "annotation_consent" (integer) IS 'Effective (minimal) consent level granted on the specified annotation.';
 
 # --- !Downs
@@ -515,12 +528,7 @@ DROP TABLE "audit" CASCADE;
 DROP TYPE audit_action;
 
 DROP FUNCTION "annotation_consent" (integer);
-DROP FUNCTION "annotation_containers" (integer);
-DROP FUNCTION "container_annotations" (integer);
-DROP FUNCTION "asset_annotations" (integer);
-DROP TABLE "asset_annotation";
-DROP TABLE "container_annotation";
-DROP TABLE "comment";
+DROP TABLE "slot_annotation";
 DROP VIEW "measure_all";
 DROP VIEW "measure_view";
 DROP TABLE "measure" CASCADE;
@@ -529,13 +537,15 @@ DROP TABLE "metric";
 DROP TYPE data_type;
 DROP TABLE "record";
 DROP TABLE "record_category";
+DROP TABLE "comment";
 DROP TABLE "annotation";
 DROP FUNCTION "annotation_trigger" ();
 DROP TYPE "annotation_kind";
 
 DROP FUNCTION "asset_consent" (integer, segment);
-DROP FUNCTION "asset_parents" (integer, segment);
-DROP VIEW "asset_nesting";
+DROP FUNCTION "asset_slots" (integer, segment);
+DROP FUNCTION "asset_volumes" (integer);
+DROP VIEW "asset_duration";
 DROP TABLE "asset_link";
 DROP TABLE "clip";
 DROP TABLE "timeseries";
@@ -545,22 +555,27 @@ DROP TABLE "format";
 DROP TABLE "asset";
 DROP FUNCTION "asset_trigger" ();
 DROP TYPE "asset_kind";
+DROP TYPE classification;
+
+DROP TABLE "slot_consent";
+DROP VIEW "slot_nesting";
+DROP TABLE "slot";
+DROP TABLE "container";
+
+DROP OPERATOR <@ ("object_segment", "object_segment");
+DROP OPERATOR @> ("object_segment", "object_segment");
+DROP FUNCTION "object_segment_within" ("object_segment", "object_segment");
+DROP FUNCTION "object_segment_contains" ("object_segment", "object_segment");
+DROP TABLE "object_segment";
+DROP FUNCTION "segment_shift" (segment, interval);
 DROP FUNCTION "singleton" (segment);
 DROP FUNCTION "duration" (segment);
 DROP TYPE segment;
 DROP FUNCTION "interval_mi_epoch" (interval, interval);
-DROP TYPE classification;
 
-DROP FUNCTION "container_volume" (integer);
-DROP VIEW "container_nesting";
-DROP VIEW "containers";
-DROP TABLE "slot";
 DROP FUNCTION "volume_access_check" (integer, integer, permission);
 DROP TABLE "volume_access";
 DROP TABLE "volume";
-DROP TABLE "container";
-DROP FUNCTION "container_trigger" ();
-DROP TYPE "container_kind";
 
 DROP FUNCTION "authorize_delegate_check" (integer, integer, permission);
 DROP FUNCTION "authorize_access_check" (integer, integer, permission);
