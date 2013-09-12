@@ -6,6 +6,13 @@ $.fn.exists = function () {
 // clean dbjs namespace
 var dbjs = {};
 
+dbjs.vars = {
+	speedFast: 150,
+	speedNorm: 250,
+	speedSlow: 350,
+	speedTest: 1000
+};
+
 /**
  * Creates tabset with content panes
  * @param tabset    containing element
@@ -136,12 +143,18 @@ dbjs.ajaxModal = function (clicker, url, now) {
 		$clicker.off('click');
 
 		$.get(url, function (data) {
-			$toggle = $(data).find('.modal');
+			var $data = $(data),
+				$script = $data.find('script');
+
+			$toggle = $data.find('.modal');
 			toggle = $clicker.attr('data-target');
 
 			$toggle.attr('id', toggle).appendTo($('#site_body'));
 
 			toggle = '#' + toggle;
+
+			if($script.exists())
+				$script.appendTo($('body'));
 
 			if (now === true) {
 				dbjs.modal(clicker, toggle);
@@ -312,6 +325,39 @@ dbjs.fadeOff = function (container, faded, fader) {
 	});
 };
 
+/**
+ * Uses a set of togglers to hide all but the active element and the inverse set of togglers
+ * @param toggler	elements used to toggle
+ * @param toggled	elements toggled by togglers
+ */
+dbjs.simpleToggle = function (toggler, toggled) {
+	var $togglers = $(toggler),
+		$toggleds = $(toggled),
+		$active = $togglers.filter('.active');
+
+	var clicker = function (toggler) {
+		var $toggler = $(toggler),
+			$toggled = $($toggler.attr('href'));
+
+		$toggler.fadeOut(dbjs.vars.speedNorm, function () {
+			$togglers.not($toggler).fadeIn(dbjs.vars.speedNorm);
+		});
+
+		$toggleds.not($toggled).slideUp(dbjs.vars.speedNorm, function () {
+			$toggled.slideDown(dbjs.vars.speedNorm);
+		});
+	};
+
+	$togglers.click(function (e) {
+		e.stopPropagation();
+
+		clicker(this);
+	});
+
+	if($active.exists())
+		clicker($active);
+};
+
 // initialization
 $(document).ready(function () {
 	// TODO: event registration should only appear on the pages it's need. In the works.
@@ -326,7 +372,6 @@ $(document).ready(function () {
 	dbjs.ajaxModal('#modal_login_link', '/ajax/modal/login', true);
 	// when logged in
 	dbjs.ajaxModal('#modal_profile_link', '/ajax/modal/profile', true);
-    dbjs.fadeOff('.party.view a.block', '.body', '.thumb')
 
 	// faq
 	dbjs.fold('.question', 'h2', 'div');
