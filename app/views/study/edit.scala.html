@@ -1,13 +1,19 @@
 @(a : Either[Party,Study], editForm : controllers.Study.StudyForm)(implicit request : SiteRequest[_])
 
+@import helper.FieldConstructor
+
+    @implicitField = @{
+        FieldConstructor(tag.minimalFieldConstructor.f)
+    }
+
 @template.crud(a.fold(_.toString + ": Create Study", "Edit Study: " + _.title)) {
     <article>
 	@a.fold(crud.partyHeader(_), crud.studyHeader(_))
 
 	@helper.form(a.fold(p => routes.Study.add(p.id), s => routes.Study.change(s.id))) {
-            @helper.inputText(editForm("title"))
-            @helper.textarea(editForm("description"), 'cols -> 80, 'rows -> 8)
-	    <button type='submit'>@a.fold(_ => "Create", _ => "Change")</button>
+            @helper.inputText(editForm("title"), 'placeholder -> "Title", '_class -> "big")
+            @helper.textarea(editForm("description"), 'placeholder -> "Description", '_class -> "")
+	    <button type="submit" class="big button first">Submit</button>
         }
         @widget.formErrors(editForm)
 

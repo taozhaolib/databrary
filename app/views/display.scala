@@ -51,6 +51,9 @@ object display {
   private val dateFmtYM = new SimpleDateFormat("MMMM yyyy")
   private val dateFmtYMD = new SimpleDateFormat("yyyy-MMM-dd")
 
+  def date(t : java.sql.Timestamp, format : String) : String =
+    new SimpleDateFormat(format).format(t)
+
   def date(t : java.util.Date, format : String) : String =
     new SimpleDateFormat(format).format(t)
 

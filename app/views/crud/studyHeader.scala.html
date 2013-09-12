@@ -10,7 +10,7 @@
 			@crud.headerCurrentLink(routes.Study.edit(study.id), "edit")
 
             @if(study.permission >= Permission.ADMIN) {
-				@crud.headerCurrentLink(routes.Study.admin(study.id), "permissions")
+				@crud.headerCurrentLink(routes.Study.admin(study.id), "access")
             }
         }
         </ul>

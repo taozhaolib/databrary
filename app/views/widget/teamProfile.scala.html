@@ -3,7 +3,7 @@
 <article class="profile">
     <div class="row">
         <div class="column_mini">
-            <img src="/assets/images/profiles/@image" alt="@name" class="avatar">
+            <img src="@routes.Assets.at("images/profiles/"+image)" alt="@name" class="avatar">
         </div>
 
         <div class="column_small">
@@ -26,7 +26,7 @@
 
             <ul class="inline">
                 @if(email != "") {
-                    <li><a href="mailto:@email" title="Email @name"><img src="/assets/images/social/16px/email.png" alt="Email @name"></a></li>
+                    <li><a href="mailto:@email" title="Email @name"><img src="@routes.Assets.at("images/social/16px/email.png")" alt="Email @name"></a></li>
                 }
             </ul>
         </div>
