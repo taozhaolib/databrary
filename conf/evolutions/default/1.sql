@@ -296,7 +296,7 @@ CREATE TABLE "slot_consent" (
 	"slot" integer NOT NULL Primary Key References "slot",
 	"consent" consent NOT NULL
 );
-COMMENT ON TABLE "slot_consent" IS 'Sharing/release permissions granted by participants on (portions of) contained data.';
+COMMENT ON TABLE "slot_consent" IS 'Sharing/release permissions granted by participants on (portions of) contained data.  This could equally well be an annotation, but is not put on slot to keep size minimal and avoid slot auditing.';
 
 CREATE TABLE "audit_slot_consent" (
 	LIKE "slot_consent"

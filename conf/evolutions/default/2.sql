@@ -17,9 +17,7 @@ INSERT INTO account (id, email, openid) VALUES (3, 'lisa@databrary.org', NULL);
 
 INSERT INTO authorize (child, parent, access, delegate) VALUES (1, 0, 'ADMIN', 'ADMIN');
 INSERT INTO authorize (child, parent, access, delegate) VALUES (2, 0, 'ADMIN', 'ADMIN');
-INSERT INTO authorize (child, parent, access, delegate) VALUES (3, 0, 'ADMIN', 'ADMIN');
-INSERT INTO authorize (child, parent, access, delegate) VALUES (4, 0, 'CONTRIBUTE', 'NONE');
-INSERT INTO authorize (child, parent, access, delegate) VALUES (5, 0, 'CONTRIBUTE', 'NONE');
+INSERT INTO authorize (child, parent, access, delegate) VALUES (3, 0, 'CONTRIBUTE', 'NONE');
 
 INSERT INTO volume (id, title) VALUES (1, 'Demo sandbox');
 SELECT setval('container_id_seq', 1);
@@ -32,15 +30,15 @@ INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 2, 'ADMIN'
 INSERT INTO timeseries (id, format, classification, duration) VALUES (1, -800, 'MATERIAL', interval '40');
 SELECT setval('asset_id_seq', 1);
 
-INSERT INTO asset_link (container, asset, title) VALUES (1, 1, 'counting');
+-- INSERT INTO asset_link (container, asset, title) VALUES (1, 1, 'counting');
 
 # --- !Downs
 ;
 
-TRUNCATE party, volume, container, timeseries, asset, asset_link CASCADE;
-SELECT setval('party_id_seq', 1, 'f');
-SELECT setval('container_id_seq', 1, 'f');
-SELECT setval('asset_id_seq', 1, 'f');
+TRUNCATE party, volume, container, timeseries, asset CASCADE;
+SELECT setval('party_id_seq', 1, false);
+SELECT setval('container_id_seq', 1, false);
+SELECT setval('asset_id_seq', 1, false);
 
 INSERT INTO party VALUES (-1, 'Everybody');
 INSERT INTO party VALUES (0, 'Databrary');
