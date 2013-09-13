@@ -11,31 +11,31 @@ import util._
   * An asset link includes the asset and container, along with a name and description for that particular link.
   * Permissions are checked in msot cases, as indicated.
   */
-final class AssetLink private (val containerId : Container.Id, val assetId : Asset.Id, title_ : String, description_ : Option[String]) extends TableRow with SitePage with Annotated {
+final class AssetLink private (val containerId : Container.Id, val assetId : Asset.Id, name_ : String, body_ : Option[String]) extends TableRow with SitePage with Annotated {
   def id = (containerId, assetId)
-  private[this] var _title = title_
+  private[this] var _name = name_
   /** Title or name of the asset as used in the container. */
-  def title = _title
-  private[this] var _description = description_
+  def name = _name
+  private[this] var _body = body_
   /** Optional description of this asset. */
-  def description = _description
+  def body = _body
 
   /** Update the given values in the database and this object in-place. */
-  def change(title : String = _title, description : Option[String] = _description)(implicit site : Site) : Unit = {
-    if (title == _title && description == _description)
+  def change(name : String = _name, body : Option[String] = _body)(implicit site : Site) : Unit = {
+    if (name == _name && body == _body)
       return
-    Audit.change("asset_link", SQLArgs('title -> title, 'description -> description), SQLArgs('container -> containerId, 'asset -> assetId)).execute()
-    _title = title
-    _description = description
+    Audit.change("asset_link", SQLArgs('name -> name, 'body -> body), SQLArgs('container -> containerId, 'asset -> assetId)).execute()
+    _name = name
+    _body = body
   }
 
   /** The cached container object.  In most cases this will be set during retrieval, such that appropriate container permissions have already been checked at that time. */
   private[AssetLink] val _container = CachedVal[Container, Site](Container.get(containerId)(_).get)
-  /** The container object for this link.
+  /** The container object for this link. Cached.
     * If this link associated with an unreadable container, this will throw an exception. */
   def container(implicit site : Site) : Container = _container
   private[AssetLink] val _asset = CachedVal[Asset, Site.DB](Asset.get(assetId)(_).get)
-  /** The asset object for this link. */
+  /** The asset object for this link. Cached. */
   def asset(implicit db : Site.DB) : Asset = _asset
 
   /** Effective permission the site user has over this link, specifically in regards to the asset itself.
@@ -43,7 +43,7 @@ final class AssetLink private (val containerId : Container.Id, val assetId : Ass
   def permission(implicit site : Site) : Permission.Value =
     Permission.data(container.permission, asset.consent, asset.classification)
 
-  def pageName(implicit site : Site) = title
+  def pageName(implicit site : Site) = name
   def pageParent(implicit site : Site) = Some(container)
   def pageURL = controllers.routes.Asset.view(containerId, assetId).url
 
@@ -53,11 +53,11 @@ final class AssetLink private (val containerId : Container.Id, val assetId : Ass
 }
 
 object AssetLink extends Table[AssetLink]("asset_link") {
-  private[this] def make(containerId : Container.Id, assetId : Asset.Id, title : String, description : Option[String]) =
-    new AssetLink(containerId, assetId, title, description)
+  private[this] def make(containerId : Container.Id, assetId : Asset.Id, name : String, body : Option[String]) =
+    new AssetLink(containerId, assetId, name, body)
   private[models] val row = Columns[
     Container.Id, Asset.Id, String,  Option[String]](
-    'container,   'asset,   'title,  'description).
+    'container,   'asset,   'name,  'body).
     map(make _)
   private[this] def rowContainer(container : Container) = row map { a => a._container() = container ; a }
 
@@ -95,9 +95,9 @@ object AssetLink extends Table[AssetLink]("asset_link") {
 
   /** Create a new link between an asset and a container.
     * This can change effective permissions on this asset, so care must be taken when using this function with existing assets. */
-  def create(container : Container, asset : Asset, title : String, description : Option[String] = None)(implicit site : Site) : AssetLink = {
-    Audit.add(table, SQLArgs('container -> container.id, 'asset -> asset.id, 'title -> title, 'description -> description)).execute()
-    val link = new AssetLink(container.id, asset.id, title, description)
+  def create(container : Container, asset : Asset, name : String, body : Option[String] = None)(implicit site : Site) : AssetLink = {
+    Audit.add(table, SQLArgs('container -> container.id, 'asset -> asset.id, 'name -> name, 'body -> body)).execute()
+    val link = new AssetLink(container.id, asset.id, name, body)
     link._container() = container
     link._asset() = asset
     link

@@ -177,8 +177,8 @@ COMMENT ON FUNCTION "authorize_delegate_check" (integer, integer, permission) IS
 
 CREATE TABLE "volume" (
 	"id" serial NOT NULL Primary Key,
-	"title" text NOT NULL,
-	"description" text
+	"name" text NOT NULL,
+	"body" text
 );
 COMMENT ON TABLE "volume" IS 'Basic organizational unit for data.';
 
@@ -269,6 +269,7 @@ CREATE OPERATOR <@ (PROCEDURE = "object_segment_within", LEFTARG = "object_segme
 CREATE TABLE "container" (
 	"id" serial NOT NULL Primary Key,
 	"volume" integer NOT NULL References "volume",
+	"name" text,
 	"date" date
 );
 COMMENT ON TABLE "container" IS 'Organizational unit within volume containing related files (with common annotations), often corresponding to an individual data session (single visit/acquisition/participant/group/day).';
@@ -377,8 +378,8 @@ CREATE TABLE "asset_link" (
 	"asset" integer NOT NULL References "asset",
 	"container" integer NOT NULL References "container",
 	"offset" interval HOUR TO SECOND,
-	"title" text NOT NULL,
-	"description" text,
+	"name" text NOT NULL,
+	"body" text,
 	Primary Key ("asset", "container")
 );
 CREATE INDEX ON "asset_link" ("container");

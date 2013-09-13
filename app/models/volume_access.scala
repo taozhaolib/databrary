@@ -36,11 +36,11 @@ final case class VolumeAccess(volumeId : Volume.Id, partyId : Party.Id, access :
     VolumeAccess.delete(volumeId, partyId)
 
   private val _volume = CachedVal[Volume, Site](Volume.get(volumeId)(_).get)
-  /** The volume to which access is being granted.
+  /** The volume to which access is being granted. Cached.
     * If the current user does not have access to volume, this may throw an exception. */
   def volume(implicit site : Site) : Volume = _volume
   private val _party = CachedVal[Party, Site](Party.get(partyId)(_).get)
-  /** The party being granted access. */
+  /** The party being granted access. Cached. */
   def party(implicit site : Site) : Party = _party
 }
 

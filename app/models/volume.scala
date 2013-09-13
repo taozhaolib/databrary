@@ -10,25 +10,25 @@ import util._
 /** Main organizational unit or package of data, within which everything else exists.
   * Usually represents a single project or dataset with a single set of procedures.
   * @param permission the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than [[Permission.VIEW]] except possibly for transient objects, as unavailable volumes should never be returned in the first place. */
-final class Volume private (val id : Volume.Id, title_ : String, description_ : Option[String], val permission : Permission.Value) extends TableRowId[Volume] with SitePage {
-  private[this] var _title = title_
+final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], val permission : Permission.Value) extends TableRowId[Volume] with SitePage {
+  private[this] var _name = name_
   /** Title headline of this volume. */
-  def title = _title
-  private[this] var _description = description_
+  def name = _name
+  private[this] var _body = body_
   /** Longer, abstract-like description of this volume. */
-  def description = _description
+  def body = _body
 
   /** Update the given values in the database and this object in-place. */
-  def change(title : String = _title, description : Option[String] = _description)(implicit site : Site) : Unit = {
-    if (title == _title && description == _description)
+  def change(name : String = _name, body : Option[String] = _body)(implicit site : Site) : Unit = {
+    if (name == _name && body == _body)
       return
     val args = 
-    Audit.change("volume", SQLArgs('title -> title, 'description -> description), SQLArgs('id -> id)).execute()
-    _title = title
-    _description = description
+    Audit.change("volume", SQLArgs('name -> name, 'body -> body), SQLArgs('id -> id)).execute()
+    _name = name
+    _body = body
   }
 
-  def pageName(implicit site : Site) = title
+  def pageName(implicit site : Site) = name
   def pageParent(implicit site : Site) = None
   def pageURL = controllers.routes.Volume.view(id).url
 
@@ -36,7 +36,7 @@ final class Volume private (val id : Volume.Id, title_ : String, description_ : 
   def partyAccess(p : Permission.Value = Permission.NONE)(implicit db : Site.DB) = VolumeAccess.getParties(this, p)
 
   /** List of containers within this volume. */
-  def containers(implicit db : Site.DB) = Container.getVolume(this)
+  def containers(implicit db : Site.DB) : Seq[Container] = Container.getVolume(this)
 
   /** Get volume creation information */
   def creationAudit(implicit db : Site.DB) : Option[Audit[Unit]] = {
@@ -52,10 +52,12 @@ final class Volume private (val id : Volume.Id, title_ : String, description_ : 
 }
 
 object Volume extends TableId[Volume]("volume") {
+  provate val permission = "volume_access_check(volume.id, {identity})"
+  private[models] val condition = permission + " >= 'VIEW'"
   private[models] val row = Columns[
     Id,  String, Option[String], Option[Permission.Value]](
-    'id, 'title, 'description,   SelectAs(permission, "permission")) map {
-    (id, title, description, permission) => new Volume(id, title, description, permission.getOrElse(Permission.NONE))
+    'id, 'name,  'body,   SelectAs(permission, "permission")) map {
+    (id, name, body, permission) => new Volume(id, name, body, permission.getOrElse(Permission.NONE))
   }
 
   /** Retrieve an individual Volume.
@@ -72,9 +74,9 @@ object Volume extends TableId[Volume]("volume") {
     
   /** Create a new, empty volume with no permissions.
     * The caller should probably add a [[VolumeAccess]] for this volume to grant [[Permission.ADMIN]] access to some user. */
-  def create(title : String, description : Option[String] = None)(implicit site : Site) : Volume = {
-    val id = Audit.add(table, SQLArgs('title -> title, 'description -> description), "id").single(scalar[Id])
-    new Volume(id, title, description, Permission.NONE)
+  def create(name : String, body : Option[String] = None)(implicit site : Site) : Volume = {
+    val id = Audit.add(table, SQLArgs('name -> name, 'body -> body), "id").single(scalar[Id])
+    new Volume(id, name, body, Permission.NONE)
   }
 }
 

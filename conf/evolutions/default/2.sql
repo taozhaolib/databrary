@@ -19,7 +19,7 @@ INSERT INTO authorize (child, parent, access, delegate) VALUES (1, 0, 'ADMIN', '
 INSERT INTO authorize (child, parent, access, delegate) VALUES (2, 0, 'ADMIN', 'ADMIN');
 INSERT INTO authorize (child, parent, access, delegate) VALUES (3, 0, 'CONTRIBUTE', 'NONE');
 
-INSERT INTO volume (id, title) VALUES (1, 'Demo sandbox');
+INSERT INTO volume (id, name) VALUES (1, 'Demo sandbox');
 SELECT setval('container_id_seq', 1);
 
 INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, -1, 'DOWNLOAD', 'DOWNLOAD');
@@ -30,7 +30,7 @@ INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 2, 'ADMIN'
 INSERT INTO timeseries (id, format, classification, duration) VALUES (1, -800, 'MATERIAL', interval '40');
 SELECT setval('asset_id_seq', 1);
 
--- INSERT INTO asset_link (container, asset, title) VALUES (1, 1, 'counting');
+-- INSERT INTO asset_link (container, asset, name) VALUES (1, 1, 'counting');
 
 # --- !Downs
 ;

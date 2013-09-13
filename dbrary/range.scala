@@ -92,6 +92,16 @@ object Range {
     val lowerClosed = true
     val upperClosed = true
   }
+  def full[A : RangeType] = new Range[A] {
+    override val isEmpty = false
+    override val singleton = None
+    val lowerBound = None
+    val upperBound = None
+    val lowerClosed = false
+    val upperClosed = false
+    override def @>(x : A) = true
+    override def @>(r : Range[A]) = true
+  }
   def apply[A : RangeType](lb : A, ub : A) = new Range[A] {
     val lowerBound = Some(lb)
     val upperBound = Some(ub)

@@ -43,10 +43,10 @@ final case class Authorize(childId : Party.Id, parentId : Party.Id, access : Per
   }
 
   private[Authorize] val _child = CachedVal[Party, Site](Party.get(childId)(_).get)
-  /** The child party being authorized. */
+  /** The child party being authorized. Cached. */
   def child(implicit site : Site) : Party = _child
   private[Authorize] val _parent = CachedVal[Party, Site](Party.get(parentId)(_).get)
-  /** The parent party granting the authorization. */
+  /** The parent party granting the authorization. Cached. */
   def parent(implicit site : Site) : Party = _parent
 }
 

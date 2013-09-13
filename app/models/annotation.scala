@@ -13,7 +13,7 @@ import util._
   * The exact permissions and ownership semantics depend on the particular asset type. */
 sealed abstract class Annotation protected (val id : Annotation.Id) extends TableRowId[Annotation] {
   private[this] val _containers = CachedVal[Seq[Container], Site](Container.getAnnotation(this)(_))
-  /** The set of containers to which this annotation applies.
+  /** The set of containers to which this annotation applies.  Cached.
     * This checks permissions, so a non-empty list implies the annotation is visible to the current user. */
   def containers(implicit site : Site) : Seq[Container] = _containers
   /** The set of assets to which this annotation applies.
@@ -30,7 +30,7 @@ sealed abstract class Annotation protected (val id : Annotation.Id) extends Tabl
   * These are immutable (and unaudited), although the author may be considered to have ownership. */
 final class Comment private (override val id : Comment.Id, val whoId : Account.Id, val when : Timestamp, val text : String) extends Annotation(id) with TableRowId[Comment] {
   private val _who = CachedVal[Account, Site](Account.get(whoId)(_).get)
-  /** The user who made the comment. */
+  /** The user who made the comment.  Cached. */
   def who(implicit site : Site) : Account = _who
 }
 
@@ -52,7 +52,7 @@ final class Record private (override val id : Record.Id, val category_ : Option[
   /** A specific measure of the given type and metric. */
   def measure[T](metric : Metric[T])(implicit db : Site.DB) : Option[T] = Measure.get[T](this.id, metric)
   private[this] val _measures = CachedVal[Seq[MeasureBase], Site.DB](Measure.getRecord(this.id)(_))
-  /** All measures in this record. */
+  /** All measures in this record. Cached. */
   def measures(implicit db : Site.DB) : Seq[MeasureBase] = _measures
   /** Add a measure to this record. */
   def addMeasure[T](metric : Metric[T], datum : T)(implicit db : Site.DB) = Measure.add[T](this.id, metric, datum)
@@ -78,7 +78,7 @@ final class Record private (override val id : Record.Id, val category_ : Option[
     SQL("SELECT daterange(min(slot.date), max(slot.date), '[]') FROM container_annotation JOIN slot ON container = slot.id WHERE annotation = {id}").
       on('id -> id).single(scalar[Range[Date]](PGDateRange.column))
   }
-  /** The range of acquisition dates covered by associated slots. */
+  /** The range of acquisition dates covered by associated slots. Cached. */
   def daterange(implicit db : Site.DB) : Range[Date] = _daterange.normalize
 
   /** The range of ages as defined by `daterange - birthdate`. */
