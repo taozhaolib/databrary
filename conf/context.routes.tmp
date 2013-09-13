@@ -1,0 +1,46 @@
+# volumes
+
+GET         /$vid<[0-9]+>                                                           controllers.Volume.view(vid : models.Volume.Id)
+
+GET         /$vid<[0-9]+>/edit                                                      controllers.Volume.edit(vid : models.Volume.Id)
+POST        /$vid<[0-9]+>/edit                                                      controllers.Volume.change(vid : models.Volume.Id)
+
+GET         /$vid<[0-9]+>/access                                                    controllers.Volume.access(vid : models.Volume.Id)
+GET         /$vid<[0-9]+>/access/search                                             controllers.Volume.accessSearch(vid : models.Volume.Id)
+POST        /$vid<[0-9]+>/access/:party/add                                         controllers.Volume.accessAdd(vid : models.Volume.Id, party : models.Party.Id)
+GET         /$vid<[0-9]+>/access/:party/delete                                      controllers.Volume.accessDelete(vid : models.Volume.Id, party : models.Party.Id)
+POST        /$vid<[0-9]+>/access/:party                                             controllers.Volume.accessChange(vid : models.Volume.Id, party : models.Party.Id)
+
+# slots
+GET         /$vid<[0-9]+>/slot/create                                               controllers.Slot.create(vid : models.Volume.Id)
+POST        /$vid<[0-9]+>/slot/create                                               controllers.Slot.add(vid : models.Volume.Id)
+
+GET         /$vid<[0-9]+>/slot/$sid<[0-9]+>                                         controllers.Slot.view(vid : models.Volume.Id, sid : models.Slot.Id)
+
+GET         /$vid<[0-9]+>/slot/$sid<[0-9]+>/edit                                    controllers.Slot.edit(vid : models.Volume.Id, sid : models.Slot.Id)
+POST        /$vid<[0-9]+>/slot/$sid<[0-9]+>/edit                                    controllers.Slot.change(vid : models.Volume.Id, sid : models.Slot.Id)
+
+# assets
+GET         /$vid<[0-9]+>/slot/$sid<[0-9]+>/asset/create                            controllers.Asset.create(vid : models.Volume.Id, sid : models.Container.Id)
+POST        /$vid<[0-9]+>/slot/$sid<[0-9]+>/asset/create                            controllers.Asset.upload(vid : models.Volume.Id, sid : models.Container.Id)
+GET         /$vid<[0-9]+>/slot/$sid<[0-9]+>/asset/$aid<[0-9]+>                      controllers.Asset.view(vid : models.Volume.Id, sid : models.Container.Id, aid : models.Asset.Id)
+GET         /$vid<[0-9]+>/slot/$sid<[0-9]+>/asset/$aid<[0-9]+>/download             controllers.Asset.download(vid : models.Volume.Id, sid : models.Container.Id, aid : models.Asset.Id, inline : Boolean = false)
+GET         /$vid<[0-9]+>/slot/$sid<[0-9]+>/asset/$aid<[0-9]+>/inline               controllers.Asset.download(vid : models.Volume.Id, sid : models.Container.Id, aid : models.Asset.Id, inline : Boolean = true)
+GET         /$vid<[0-9]+>/slot/$sid<[0-9]+>/asset/$aid<[0-9]+>/head                 controllers.Asset.head(vid : models.Volume.Id, sid : models.Container.Id, aid : models.Asset.Id)
+GET         /$vid<[0-9]+>/slot/$sid<[0-9]+>/asset/$aid<[0-9]+>/frame/:offset        controllers.Asset.frame(vid : models.Volume.Id, sid : models.Container.Id, aid : models.Asset.Id, offset : dbrary.Offset)
+GET         /$vid<[0-9]+>/slot/$sid<[0-9]+>/asset/$aid<[0-9]+>/edit                 controllers.Asset.edit(vid : models.Volume.Id, sid : models.Container.Id, aid : models.Asset.Id)
+POST        /$vid<[0-9]+>/slot/$sid<[0-9]+>/asset/$aid<[0-9]+>/Edit                 controllers.Asset.change(vid : models.Volume.Id, sid : models.Container.Id, aid : models.Asset.Id)
+
+#comments
+POST        /$vid<[0-9]+>/comment                                                   controllers.Comment.postVolume(vid : models.Volume.Id)
+POST        /$vid<[0-9]+>/slot/$sid<[0-9]+>/comment                                 controllers.Comment.postSlot(vid : models.Volume.Id, sid : models.Slot.Id)
+POST        /$vid<[0-9]+>/slot/$sid<[0-9]+>/asset//$aid<[0-9]+>/comment             controllers.Comment.postAssetLink(vid : models.Volume.Id, sid : models.Container.Id, aid : models.Asset.Id)
+
+#records
+GET         /$vid<[0-9]+>/record/create                                             controllers.Record.create(vid : models.Volume.Id)
+POST        /$vid<[0-9]+>/record/create                                             controllers.Record.createPost(vid : models.Volume.Id)
+
+GET         /$vid<[0-9]+>/record/$rid<[0-9]+>                                       controllers.Record.view(vid : models.Volume.Id, rid : models.Record.Id)
+
+GET         /$vid<[0-9]+>/record/$rid<[0-9]+>/edit                                  controllers.Record.edit(vid : models.Volume.Id, rid : models.Record.Id)
+POST        /$vid<[0-9]+>/record/$rid<[0-9]+>/edit                                  controllers.Record.editPost(vid : models.Volume.Id, rid : models.Record.Id)
