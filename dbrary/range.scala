@@ -65,7 +65,11 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
     lowerBound.fold(true)(sl => r.lowerBound.fold(false)(rl => if (lowerClosed >= r.lowerClosed) t.lteq(sl, rl) else t.lt(sl, rl))) &&
     upperBound.fold(true)(su => r.upperBound.fold(false)(ru => if (upperClosed >= r.upperClosed) t.gteq(su, ru) else t.gt(su, ru))) &&
     !isEmpty
+  /** Apply a monotonic increasing transform to both end-points.
+    * Non-monotonic transforms will result in incoherent ranges. */
   def map[B : RangeType](f : A => B) = new Range[B] {
+    override val isEmpty = self.isEmpty
+    override val singleton = self.singleton.map(f)
     val lowerBound = self.lowerBound.map(f)
     val upperBound = self.upperBound.map(f)
     val lowerClosed = self.lowerClosed
@@ -102,11 +106,17 @@ object Range {
     override def @>(x : A) = true
     override def @>(r : Range[A]) = true
   }
-  def apply[A : RangeType](lb : A, ub : A) = new Range[A] {
+  def apply[A : DiscreteRangeType](lb : A, ub : A) = new Range[A] {
     val lowerBound = Some(lb)
     val upperBound = Some(ub)
     val lowerClosed = true
     val upperClosed = true
+  }
+  def apply[A : RangeType](lb : A, ub : A) = new Range[A] {
+    val lowerBound = Some(lb)
+    val upperBound = Some(ub)
+    val lowerClosed = true
+    val upperClosed = lb == ub
   }
   def apply[A : RangeType](lc : Boolean, lb : Option[A], ub : Option[A], uc : Boolean) = new Range[A] {
     val lowerBound = lb

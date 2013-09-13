@@ -233,6 +233,9 @@ CREATE TYPE segment AS RANGE (
 );
 COMMENT ON TYPE "segment" IS 'Intervals of time, used primarily for representing clips of timeseries data.';
 
+CREATE FUNCTION "segment" (interval) RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS
+	$$ SELECT segment('0', $1) $$;
+COMMENT ON FUNCTION "segment" (interval) IS 'The segment [0,X) but strict in X.';
 CREATE FUNCTION "duration" (segment) RETURNS interval HOUR TO SECOND LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT CASE WHEN isempty($1) THEN '0' ELSE interval_mi(upper($1), lower($1)) END $$;
 COMMENT ON FUNCTION "duration" (segment) IS 'Determine the length of a segment, or NULL if unbounded.';
@@ -374,20 +377,19 @@ CREATE INDEX ON "clip" ("source");
 COMMENT ON TABLE "clip" IS 'Sections of timeseries assets selected for use.  When placed into containers, they are treated independently of their source timeseries.';
 
 
-CREATE TABLE "asset_link" (
-	"asset" integer NOT NULL References "asset",
+CREATE TABLE "asset_container" (
+	"asset" integer NOT NULL References "asset" Primary Key,
 	"container" integer NOT NULL References "container",
 	"offset" interval HOUR TO SECOND,
 	"name" text NOT NULL,
 	"body" text,
-	Primary Key ("asset", "container")
 );
-CREATE INDEX ON "asset_link" ("container");
-COMMENT ON TABLE "asset_link" IS 'Asset linkages into containers along with "dynamic" metadata.';
-COMMENT ON COLUMN "asset_link"."offset" IS 'Start point or position of this asset within the container, such that this asset occurs or starts offset time after the beginning of the container session.  NULL offsets are treated as universal (existing at all times).';
+CREATE INDEX ON "asset_container" ("container");
+COMMENT ON TABLE "asset_container" IS 'Asset linkages into containers along with "dynamic" metadata.';
+COMMENT ON COLUMN "asset_container"."offset" IS 'Start point or position of this asset within the container, such that this asset occurs or starts offset time after the beginning of the container session.  NULL offsets are treated as universal (existing at all times).';
 
-CREATE TABLE "audit_asset_link" (
-	LIKE "asset_link"
+CREATE TABLE "audit_asset_container" (
+	LIKE "asset_container"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 
@@ -397,14 +399,9 @@ CREATE VIEW "asset_duration" ("id", "duration") AS
 	SELECT id, duration(segment) FROM clip;
 COMMENT ON VIEW "asset_duration" IS 'All assets along with their temporal durations, NULL for non-timeseries.';
 
-CREATE FUNCTION "asset_volumes" ("asset" integer) RETURNS SETOF integer LANGUAGE sql STABLE AS $$
-	SELECT container.volume FROM asset_link JOIN container ON asset_link.container = container.id WHERE asset_link.asset = $1
-$$;
-COMMENT ON FUNCTION "asset_volumes" (integer) IS 'Set of volumes containing the given asset.';
-
 CREATE FUNCTION "asset_slots" ("asset" integer, "segment" segment) RETURNS SETOF integer LANGUAGE sql STABLE AS $$ 
-	SELECT slot.id FROM asset_link JOIN slot ON asset_link.container = slot.source 
-	WHERE asset_link.asset = $1 AND COALESCE(segment_shift(segment, asset_link.offset) <@ slot.segment, asset_link.offset <@ slot.segment, true)
+	SELECT slot.id FROM asset_container JOIN slot ON asset_container.container = slot.source 
+	WHERE asset_container.asset = $1 AND COALESCE(segment_shift(segment, asset_container.offset) <@ slot.segment, asset_container.offset <@ slot.segment, true)
 $$;
 COMMENT ON FUNCTION "asset_slots" (integer) IS 'Set of slots which contain the (segment of the) asset.';
 
@@ -545,9 +542,8 @@ DROP TYPE "annotation_kind";
 
 DROP FUNCTION "asset_consent" (integer, segment);
 DROP FUNCTION "asset_slots" (integer, segment);
-DROP FUNCTION "asset_volumes" (integer);
 DROP VIEW "asset_duration";
-DROP TABLE "asset_link";
+DROP TABLE "asset_container";
 DROP TABLE "clip";
 DROP TABLE "timeseries";
 DROP TABLE "file";
@@ -571,6 +567,7 @@ DROP TABLE "object_segment";
 DROP FUNCTION "segment_shift" (segment, interval);
 DROP FUNCTION "singleton" (segment);
 DROP FUNCTION "duration" (segment);
+DROP FUNCTION "segment" (interval);
 DROP TYPE segment;
 DROP FUNCTION "interval_mi_epoch" (interval, interval);
 

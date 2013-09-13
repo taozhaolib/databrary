@@ -77,7 +77,7 @@ object TimeseriesFormat extends HasId[TimeseriesFormat] {
 
 /** Abstract base for all assets: objects within the system backed by primary file storage.
   * Unlike containers, no user-specific permission checking is done when retrieving assets or their data, so additional link-based checking must be done before presenting these to users. */
-sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Asset] with BackedAsset with Annotated {
+sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Asset] with BackedAsset {
   /** Format of this asset. */
   def format : AssetFormat
   def excerpt : Boolean = false
@@ -86,11 +86,8 @@ sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Ass
   /** Participant consent level granted for this asset, which may depend on specific [[AssetLink]]s of this asset. */
   val consent : Consent.Value
 
-  /** List of all AssetLinks via which this asset is linked into containers. */
-  def containers(all : Boolean = true)(implicit site : Site) : Seq[AssetLink] = AssetLink.getContainers(this, all)(site)
-
-  private[models] final def annotatedLevel = "asset"
-  private[models] final def annotatedId = id
+  /** AssetLink via which this asset is linked into a container. */
+  def link(implicit site : Site) : Option[AssetLink] = AssetLink.get(this)
 }
 
 /** Assets which are backed by files on disk.
@@ -105,7 +102,7 @@ sealed trait BackedAsset {
 /** Refinement (implicitly of Asset) for objects representing timeseries data. */
 sealed trait TimeseriesData extends BackedAsset {
   /** The range of times represented by this object.
-    * Should be a valid, bounded range. */
+    * Should be a valid, finite, bounded range. */
   def segment : Range[Offset]
   /** Length of time represented by this object, which may be zero if it is a single sample. */
   def duration : Offset = segment.upperBound.flatMap(u => segment.lowerBound.map(u - _)).get
@@ -163,16 +160,12 @@ object Asset extends AssetView[Asset]("asset") {
          JOIN file ON file.id = asset.id OR file.id = clip.source
     LEFT JOIN timeseries ON timeseries.id = file.id
          JOIN format ON file.format = format.id"""
+  private[models] val duration = "COALESCE(timeseries.duration, duration(clip.segment))"
 
   /** Retrieve a single asset according to its type.
     * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
   def get(i : Id)(implicit db : Site.DB) : Option[Asset] =
     SELECT("WHERE asset.id = {id}").on('id -> i).singleOpt()
-
-  /** Retrieve the set of assets to which the given annotation is attached. */
-  private[models] def getAnnotation(annotation : Annotation)(implicit db : Site.DB) : Seq[Asset] =
-    SELECT("JOIN asset_annotation ON asset.id = asset WHERE annotation = {annotation}").
-      on('annotation -> annotation.id).list()
 }
 
 object FileAsset extends AssetView[FileAsset]("file") {

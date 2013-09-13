@@ -8,9 +8,8 @@ import dbrary.Anorm._
 import util._
 
 /** Collection of related assets.
-  * To be used, all assets must be place into collections.
-  * These collections can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.
-  * Critically, all assets within a collection share the same annotations.
+  * To be used, all assets must be placed into containers.
+  * These containers can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.
   */
 final class Container protected (val id : Container.Id, val volume : Volume, val name_ : Option[String], val date_ : Option[Date]) extends TableRowId[Container] with SitePage {
   def volumeId = volume.id
@@ -50,13 +49,13 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
 }
 
 object Container extends TableId[Container]("container") {
-  private def makeVolume(volume : Volume)(id : Id, name : Option[String], date : Option[Date]) =
+  private def make(volume : Volume)(id : Id, name : Option[String], date : Option[Date]) =
     new Container(id, volume, name, date)
   private[models] val columns = Columns[
     Id,  Option[String], Option[Date]](
     'id, 'name,          'date)
   private[models] val row = (Volume.row ~ columns) map {
-    case (vol ~ cont) => (makeVolume(vol) _).tupled(cont)
+    case (vol ~ cont) => (make(vol) _).tupled(cont)
   }
   private[models] override val src = "container JOIN volume ON container.volume = volume.id"
 
@@ -70,7 +69,7 @@ object Container extends TableId[Container]("container") {
     * This does not check permissions as an existing volume implies visibility. */
   private[models] def getVolume(v : Volume)(implicit db : Site.DB) : Seq[Container] =
     SQL("SELECT " + columns.select + " FROM container WHERE container.volume = {vol} ORDER BY date, id").
-      on('vol -> v.id).list(columns.map(makeVolume(v) _))
+      on('vol -> v.id).list(columns.map(make(v) _))
 
   /** Create a new container in the specified volume. */
   def create(volume : Volume, name : Option[String] = None, date : Option[Date] = None)(implicit site : Site) : Slot = {
@@ -81,8 +80,8 @@ object Container extends TableId[Container]("container") {
 
 /** Smallest organizatonal unit of related data.
   * Primarily used for an individual session of data with a single date and place.
-  * Importantly contained data must be covered by a single consent level. */
-final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], val consent_ : Consent.Value) extends Container(id) with TableRowId[Slot] {
+  * Critically, contained data are should be covered by a single consent level and share the same annotations. */
+final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], val consent_ : Consent.Value) extends TableRowId[Slot] with Annotated {
   def volumeId = volume.id
   private[this] var _consent = consent_
   def consent = _consent
@@ -99,23 +98,35 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     _consent = consent
   }
 
+  /** Effective start point of this slot within the container. */
+  def offset : Offset = segment.lowerBound.getOrElse(0)
+
+  /** Permission granted to the current site user for this container, defined by the containing volume and determined at lookup time. */
+  def permission : Permission.Value = consent.permission
+
+  /** The level of access granted on data covered by this slot to the current user. */
+  def dataPermission(classification : Classification.Value = Classification.RESTRICTED)(implicit site : Site) =
+    Permission.data(permission, consent, classification)
+
+  /** List of contained asset segments within this slot. */
+  def assets(implicit db : Site.DB) : Seq[AssetLink] = _assets
+
+  private[models] def annotatedLevel = "slot"
+  private[models] def annotatedId = id
+
   def pageName(implicit site : Site) = this.toString // FIXME
   def pageParent(implicit site : Site) = Some(container)
   def pageURL = controllers.routes.Slot.view(id).url
-
-  /** The level of access granted on data covered by this slot to the current user. */
-  def dataAccess(classification : Classification.Value = Classification.RESTRICTED)(implicit site : Site) =
-    Permission.data(permission, consent, classification)
 }
 
 object Slot extends TableId[Slot]("slot") {
-  private def makeContainer(container : Container)(id : Id, segment : Range[Offset], consent : Option[Consent.Value]) =
+  private def make(container : Container)(id : Id, segment : Range[Offset], consent : Option[Consent.Value]) =
     new Slot(id, container, segment, consent.getOrElse(Consent.NONE))
   private[models] val columns = Columns[
     Id,  Range[Offset], Option[Consent.Value]](
     'id, 'segment,      'consent)
   private[models] val row = (Container.row ~ columns) map {
-    case (cont ~ slot) => (makeContainer(cont) _).tupled(slot) 
+    case (cont ~ slot) => (make(cont) _).tupled(slot) 
   }
   private val baseSrc = "slot LEFT JOIN slot_consent ON slot.id = slot_consent.slot"
   private[models] override val src = baseSrc + " JOIN " + Container.src + " ON slot.source = container.id"
@@ -130,7 +141,7 @@ object Slot extends TableId[Slot]("slot") {
     * This does not check permissions as an existing volume implies visibility. */
   private[models] def getContainer(c : Container)(implicit db : Site.DB) : Seq[Slot] =
     SQL("SELECT " + columns.select + " FROM " + baseSrc + " WHERE slot.source = {cont} ORDER BY slot.segment").
-      on('cont -> c.id).list(columns.map(makeContainer(c) _))
+      on('cont -> c.id).list(columns.map(make(c) _))
     
   /** Create a new slot in the specified container. */
   def create(container : Container, segment : Range[Offset] = Range.full[Offset])(implicit site : Site) : Slot = {
