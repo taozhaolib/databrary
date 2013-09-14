@@ -21,22 +21,26 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
     'id, 'name) map {
     (id, name) => id match {
       case PARTICIPANT => Participant
+      case TOPLEVEL => TopLevel
       case _ => new RecordCategory(id, name)
     }
   }
 
   def get(id : Id)(implicit db : Site.DB) : Option[RecordCategory] = id match {
     case PARTICIPANT => Some(Participant)
+    case TOPLEVEL => Some(TopLevel)
     case _ => SELECT("WHERE id = {id}").on('id -> id).singleOpt
   }
 
   def getAll(implicit db : Site.DB) : Seq[RecordCategory] =
-    Seq(Participant) ++
+    Seq(TopLevel, Participant) ++
     SELECT("WHERE id > 0 ORDER BY id").list
 
+  private final val TOPLEVEL : Id = asId(-900)
   private final val PARTICIPANT : Id = asId(-500)
   /** RecordCategory representing participants, individuals whose data is contained in a particular sesion.
     * Participants usually are associated with birthdate, gender, and other demographics. */
+  final val TopLevel = new RecordCategory(TOPLEVEL, "top level")
   final val Participant = new RecordCategory(PARTICIPANT, "participant")
 }
 
@@ -223,10 +227,11 @@ object Measure extends Table[MeasureBase]("measure_all") {
   private[models] def getRecord(record : Record.Id)(implicit db : Site.DB) : Seq[MeasureBase] =
     SELECT("WHERE record = {record} ORDER BY metric.id").on('record -> record).list
 
-  /** Retrieve the set of all records and possibly measures of the given type on the given target. */
-  private[models] def getAnnotated[T](target : Annotated, category : Option[RecordCategory] = None, metric : Metric[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] = {
+  /** Retrieve the set of all records and possibly measures of the given type on the given slot. */
+  private[models] def getAnnotated[T](target : AnnotatedInVolume, category : Option[RecordCategory] = None, metric : Metric[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] = {
     val tpe = metric.measureType
-    val row = (Record.rowCategory(category) ~ tpe.column.?) map { case (r ~ c) => (r, c) }
+    val row = Record.rowVolCat(target.volume, category) ~ tpe.column.? map 
+      { case (r ~ m) => (r, m) }
     SQL("SELECT " + row.select + " FROM " + tpe.table +
       " RIGHT JOIN " + (if (category.isDefined) "record" else Record.src) +
       " ON record = record.id JOIN " + target.annotationTable + " ON record.id = annotation WHERE metric = {metric}" +

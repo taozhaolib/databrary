@@ -10,13 +10,14 @@ import util._
 /** Main organizational unit or package of data, within which everything else exists.
   * Usually represents a single project or dataset with a single set of procedures.
   * @param permission the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than [[Permission.VIEW]] except possibly for transient objects, as unavailable volumes should never be returned in the first place. */
-final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], val permission : Permission.Value) extends TableRowId[Volume] with SitePage {
+final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], override val permission : Permission.Value) extends TableRowId[Volume] with SitePage with InVolume {
   private[this] var _name = name_
   /** Title headline of this volume. */
   def name = _name
   private[this] var _body = body_
   /** Longer, abstract-like description of this volume. */
   def body = _body
+  def volume = this
 
   /** Update the given values in the database and this object in-place. */
   def change(name : String = _name, body : Option[String] = _body)(implicit site : Site) : Unit = {
@@ -48,11 +49,11 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   /** List of records associated with any slot in this volume.
     * @param category restrict to the specified category
     * @return unique records sorted by category */
-  def slotRecords(category : Option[RecordCategory] = None)(implicit db : Site.DB) = Record.getSlots(this, category)
+  def slotRecords(category : Option[RecordCategory] = None)(implicit db : Site.DB) = Record.getVolume(this, category)
 }
 
 object Volume extends TableId[Volume]("volume") {
-  provate val permission = "volume_access_check(volume.id, {identity})"
+  private val permission = "volume_access_check(volume.id, {identity})"
   private[models] val condition = permission + " >= 'VIEW'"
   private[models] val row = Columns[
     Id,  String, Option[String], Option[Permission.Value]](
@@ -80,3 +81,9 @@ object Volume extends TableId[Volume]("volume") {
   }
 }
 
+trait InVolume {
+  def volumeId : Volume.Id = volume.id
+  def volume : Volume
+  /** Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time. */
+  def permission : Permission.Value = volume.permission
+}

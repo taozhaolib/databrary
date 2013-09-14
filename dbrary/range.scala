@@ -78,7 +78,7 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
 }
 
 object Range {
-  def empty[A : RangeType] = new Range[A] {
+  def empty[A : RangeType] : Range[A] = new Range[A] {
     override val isEmpty = true
     override val singleton = None
     val lowerBound = None
@@ -88,7 +88,7 @@ object Range {
     override def @>(x : A) = false
     override def @>(r : Range[A]) = false
   }
-  def singleton[A : RangeType](x : A) = new Range[A] {
+  def singleton[A : RangeType](x : A) : Range[A] = new Range[A] {
     override val isEmpty = false
     override val singleton = Some(x)
     val lowerBound = Some(x)
@@ -96,7 +96,7 @@ object Range {
     val lowerClosed = true
     val upperClosed = true
   }
-  def full[A : RangeType] = new Range[A] {
+  def full[A : RangeType] : Range[A] = new Range[A] {
     override val isEmpty = false
     override val singleton = None
     val lowerBound = None
@@ -106,19 +106,13 @@ object Range {
     override def @>(x : A) = true
     override def @>(r : Range[A]) = true
   }
-  def apply[A : DiscreteRangeType](lb : A, ub : A) = new Range[A] {
+  def apply[A : RangeType](lb : A, ub : A) : Range[A] = new Range[A] {
     val lowerBound = Some(lb)
     val upperBound = Some(ub)
     val lowerClosed = true
-    val upperClosed = true
+    val upperClosed = implicitly[RangeType[A]].isInstanceOf[DiscreteRangeType[A]] || lb == ub
   }
-  def apply[A : RangeType](lb : A, ub : A) = new Range[A] {
-    val lowerBound = Some(lb)
-    val upperBound = Some(ub)
-    val lowerClosed = true
-    val upperClosed = lb == ub
-  }
-  def apply[A : RangeType](lc : Boolean, lb : Option[A], ub : Option[A], uc : Boolean) = new Range[A] {
+  def apply[A : RangeType](lc : Boolean, lb : Option[A], ub : Option[A], uc : Boolean) : Range[A] = new Range[A] {
     val lowerBound = lb
     val upperBound = ub
     val lowerClosed = lc

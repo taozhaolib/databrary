@@ -12,18 +12,9 @@ import util._
   * Permissions over annotations are generally determined by the permissions on the objects to which they attach.
   * The exact permissions and ownership semantics depend on the particular asset type. */
 sealed abstract class Annotation protected (val id : Annotation.Id) extends TableRowId[Annotation] {
-  private[this] val _containers = CachedVal[Seq[Container], Site](Container.getAnnotation(this)(_))
-  /** The set of containers to which this annotation applies.  Cached.
+  /** The set of slots to which this annotation applies.
     * This checks permissions, so a non-empty list implies the annotation is visible to the current user. */
-  def containers(implicit site : Site) : Seq[Container] = _containers
-  /** The set of assets to which this annotation applies.
-    * This does not check permissions, so must be followed by additional checks such as `assets.flatMap(_.containers)` to ensure the annotation (and asset) may be accessed. */
-  def assets(implicit db : Site.DB) : Seq[Asset] = Asset.getAnnotation(this)(db)
-
-  /** The set of all containers to which this asset applies, directly or indirectly through contained assets or clips of those assets.
-    * This does check permissions, but is not necessarily very useful, because it does not indicate exactly which objects the annotation is applied to. */
-  def allContainers(implicit site : Site) : Seq[Container] = 
-    containers(site) ++ assets.flatMap(_.containers(true)(site).map(_.container(site)))
+  def slots(implicit site : Site) : Seq[Slot] = Slot.getAnnotation(id)
 }
 
 /** A comment made by a particular user, usually only applied to exactly one object.
@@ -35,9 +26,10 @@ final class Comment private (override val id : Comment.Id, val whoId : Account.I
 }
 
 /** A set of Measures. */
-final class Record private (override val id : Record.Id, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE) extends Annotation(id) with TableRowId[Record] with SitePage {
+final class Record private (override val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE) extends Annotation(id) with TableRowId[Record] with SitePage with InVolume {
+  def volumeId = volume.id
   private[this] var _category = category_
-  def category = _category
+  def category : Option[RecordCategory] = _category
   def categoryId = category.map(_.id)
 
   /** Update the given values in the database and this object in-place. */
@@ -75,7 +67,7 @@ final class Record private (override val id : Record.Id, val category_ : Option[
   def birthdate(implicit db : Site.DB) : Option[Date] = _birthdate
 
   private val _daterange = CachedVal[Range[Date], Site.DB] { implicit db =>
-    SQL("SELECT daterange(min(slot.date), max(slot.date), '[]') FROM container_annotation JOIN slot ON container = slot.id WHERE annotation = {id}").
+    SQL("SELECT annotation_daterange({id})").
       on('id -> id).single(scalar[Range[Date]](PGDateRange.column))
   }
   /** The range of acquisition dates covered by associated slots. Cached. */
@@ -84,18 +76,17 @@ final class Record private (override val id : Record.Id, val category_ : Option[
   /** The range of ages as defined by `daterange - birthdate`. */
   def agerange(implicit db : Site.DB) : Option[Range[Long]] = birthdate.map(dob => daterange.map(_.getTime - dob.getTime))
 
-  /** The age at test for a specific slot, as defined by `slot.date - birthdate`. */
-  def age(slot : Slot)(implicit db : Site.DB) : Option[Long] = birthdate.map(slot.date.getTime - _.getTime)
+  /** The age at test for a specific date, as defined by `date - birthdate`. */
+  def age(date : Date)(implicit db : Site.DB) : Option[Long] = birthdate.map(date.getTime - _.getTime)
 
   /** Effective permission the site user has over a given metric in this record, specifically in regards to the measure datum itself.
     * Record permissions depend on volume permissions, but can be further restricted by consent levels.
-    * @param permission applicable (volume) permission for this record's target
     */
-  def permission(permission : Permission.Value, metric : MetricBase)(implicit site : Site) : Permission.Value =
-    Permission.data(permission, consent, metric.classification)
+  def permission(metric : MetricBase)(implicit site : Site) : Permission.Value =
+    Permission.data(volume.permission, consent, metric.classification)
 
   def pageName(implicit site : Site) = ident.orElse(category.map(_.name)).getOrElse("record")
-  def pageParent(implicit site : Site) = None
+  def pageParent(implicit site : Site) = Some(volume)
   def pageURL = controllers.routes.Record.view(id).url
 }
 
@@ -150,36 +141,36 @@ object Comment extends AnnotationView[Comment]("comment") {
 }
 
 object Record extends AnnotationView[Record]("record") {
-  private[this] def makeCategory(category : Option[RecordCategory])(id : Id, consent : Option[Consent.Value]) =
-    new Record(id, category, consent.getOrElse(Consent.NONE))
-  private[this] val columns = Columns[
+  private[models] def make(volume : Volume, category : Option[RecordCategory])(id : Id, consent : Option[Consent.Value]) =
+    new Record(id, volume, category, consent.getOrElse(Consent.NONE))
+  private[models] val columns = Columns[
     Id,  Option[Consent.Value]](
     'id, SelectAs("annotation_consent(record.id)", "annotation_consent"))
-  private[models] val row = (columns ~ RecordCategory.row.?) map {
-    case (rec ~ cls) => (makeCategory(cls) _).tupled(rec)
+  private[models] val row = (columns ~ Volume.row ~ RecordCategory.row.?) map {
+    case (rec ~ vol ~ cls) => (make(vol, cls) _).tupled(rec)
   }
-  private[models] def rowCategory(category : Option[RecordCategory]) =
-    category.fold(row)(cat => columns.map(makeCategory(Some(cat)) _))
-  private[models] override val src = "record LEFT JOIN record_category ON record.category = record_category.id"
+  private[models] override val src = "record LEFT JOIN " + RecordCategory.src + " ON record.category = record_category.id JOIN " + Volume.src + " ON record.volume = volume.id"
+  private def rowVolume(vol : Volume) = (columns ~ RecordCategory.row.?) map {
+    case (rec ~ cls) => (make(vol, cls) _).tupled(rec)
+  }
+  private[models] def rowVolCat(vol : Volume, category : Option[RecordCategory] = None) =
+    category.fold(rowVolume(vol))(cat => columns.map(make(vol, Some(cat)) _))
 
-  /** Retrieve all the categorized records associated with slots in the given volume.
+  /** Retrieve all the categorized records associated the given volume.
     * @param category restrict to the specified category, or include all categories
-    * @return unique records sorted by category, ident */
-  private[models] def getSlots(volume : Volume, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
+    * @return records sorted by category, ident */
+  private[models] def getVolume(volume : Volume, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
     val metric = Metric.Ident
-    val cols = (rowCategory(category) ~
-        metric.measureType.column.? ~
-        Columns[Range[Date]](Select("daterange"))(PGDateRange.column)) map 
-      { case (record ~ ident ~ daterange) =>
+    val cols = rowVolCat(volume, category) ~ metric.measureType.column.? map
+      { case (record ~ ident) =>
         record._ident() = ident
-        record._daterange() = daterange
         record
       }
-    SQL("SELECT " + cols.select + " FROM (SELECT record.id, record.category, daterange(min(slot.date), max(slot.date), '[]') FROM record" +
+    SQL("SELECT " + cols.select + " FROM record" +
         (if (category.isEmpty) " JOIN record_category ON record.category = record_category.id" else "") + 
-        " JOIN container_annotation ON record.id = annotation JOIN slot ON container = slot.id WHERE slot.volume = {volume} GROUP BY record.id, record.category" +
-        (if (category.isDefined) " HAVING record.category = {category}" else "") +
-        ") record LEFT JOIN measure_text ON record.id = " + metric.measureType.table + ".record AND measure_text.metric = {metric} ORDER BY" +
+        " WHERE record.volume = {volume}" +
+        (if (category.isDefined) " AND record.category = {category}" else "") +
+        " LEFT JOIN measure_text ON record.id = " + metric.measureType.table + ".record AND measure_text.metric = {metric} ORDER BY" +
         (if (category.isEmpty) " record.category," else "") +
         " " + metric.measureType.column.select + ", record.id").
       on('volume -> volume.id, 'metric -> metric.id, 'category -> category.map(_.id)).
@@ -188,10 +179,11 @@ object Record extends AnnotationView[Record]("record") {
 
   /** Create a new record, initially unattached.
     * The result should be immediately attached to a target to make it accessible. */
-  def create(category : Option[RecordCategory] = None)(implicit db : Site.DB) : Record = {
-    val id = SQL("INSERT INTO record (category) VALUES ({category}) RETURNING id").
-      on('category -> category.map(_.id)).single(scalar[Id])
-    new Record(id, category)
+  def create(volume : Volume, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Record = {
+    val args = SQLArgs('volume -> volume.id, 'category -> category.map(_.id))
+    val id = SQL("INSERT INTO record " + args.insert + " RETURNING id").
+      on(args : _*).single(scalar[Id])
+    new Record(id, volume, category)
   }
 }
 
@@ -212,6 +204,9 @@ trait Annotated {
     * @param all include indirect comments on any contained objects
     */
   def records(all : Boolean = true)(implicit db : Site.DB) : Seq[Record] = Record.get(this, all)(db)
+}
+
+trait AnnotatedInVolume extends Annotated with InVolume {
   /** The list of records and possibly measures on this object.
     * This is essentially equivalent to `this.records(false).filter(_.category == category).map(r => (r, r.measure[T](metric)))` but more efficient.
     * @param category if Some limit to the given category */

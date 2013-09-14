@@ -306,6 +306,9 @@ CREATE TABLE "audit_slot_consent" (
 	LIKE "slot_consent"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
+CREATE FUNCTION "slot_consent" ("slot") RETURNS consent LANGUAGE sql STABLE STRICT AS
+	$$ SELECT consent FROM slot_consent JOIN slot ON slot = id WHERE slot @> $1 $$;
+
 ----------------------------------------------------------- assets
 
 CREATE TYPE classification AS ENUM (
@@ -431,10 +434,12 @@ CREATE TABLE "record_category" (
 	"name" varchar(64) NOT NULL Unique
 );
 COMMENT ON TABLE "record_category" IS 'Types of records that are relevant for data organization.';
+INSERT INTO "record_category" ("id", "name") VALUES (-900, 'top level');
 INSERT INTO "record_category" ("id", "name") VALUES (-500, 'participant');
 
 CREATE TABLE "record" (
 	"id" integer NOT NULL DEFAULT nextval('annotation_id_seq') Primary Key References "annotation" Deferrable Initially Deferred,
+	"volume" integer NOT NULL References "volume",
 	"category" smallint References "record_category" ON DELETE SET NULL
 );
 CREATE TRIGGER "annotation" BEFORE INSERT OR UPDATE OR DELETE ON "record" FOR EACH ROW EXECUTE PROCEDURE "annotation_trigger" ();
@@ -519,12 +524,22 @@ CREATE FUNCTION "annotation_consent" ("annotation" integer) RETURNS consent LANG
 	$$ SELECT MIN(consent) FROM slot_annotation JOIN slot_consent USING (slot) WHERE annotation = $1 $$;
 COMMENT ON FUNCTION "annotation_consent" (integer) IS 'Effective (minimal) consent level granted on the specified annotation.';
 
+CREATE FUNCTION "annotation_daterange" ("annotation" integer) RETURNS daterange LANGUAGE sql STABLE STRICT AS $$
+	SELECT daterange(min(container.date), max(container.date), '[]') 
+	  FROM slot_annotation
+	  JOIN slot ON slot = slot.id
+	  JOIN container ON slot.container = container.id
+	 WHERE annotation = $1
+$$;
+COMMENT ON FUNCTION "annotation_daterange" (integer) IS 'Range of container dates covered by the given annotation.';
+
 # --- !Downs
 ;
 
 DROP TABLE "audit" CASCADE;
 DROP TYPE audit_action;
 
+DROP FUNCTION "annotation_daterange" (integer);
 DROP FUNCTION "annotation_consent" (integer);
 DROP TABLE "slot_annotation";
 DROP VIEW "measure_all";

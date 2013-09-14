@@ -12,12 +12,12 @@ private[models] abstract trait PositionedAsset {
   def asset : Asset
   def assetId : Asset.Id
   /** Start point of this asset with respect to the start of this context, or None for "global/floating". */
-  def offset : Option[Offset] = extent.lowerBound
-  protected def timeseries : Option[TimeseriesData] = cast[TimeseriesData](Asset)
-  protected def duration : Offset = timeseries.fold(0)(_.duration)
+  def offset : Option[Offset] = extent.flatMap(_.lowerBound)
+  protected def timeseries : Option[TimeseriesData] = cast[TimeseriesData](asset)
+  protected def duration : Offset = timeseries.fold(Offset(0))(_.duration)
   /** Range of times that this asset covers within this context, or None for "global/floating". */
   def extent : Option[Range[Offset]] = offset map { start =>
-    timeseries.fold(Range[Offset].singleton(start))(ts => Range[Offset](start, start + ts._duration))
+    timeseries.fold(Range.singleton[Offset](start)(PGSegment))(ts => Range[Offset](start, start + ts.duration)(PGSegment))
   }
 }
 
@@ -83,7 +83,7 @@ object AssetContainer extends Table[AssetContainer]("asset_container") {
     val row = (Container.row ~ columns) map {
       case (cont ~ link) => (make(asset, cont) _).tupled(link)
     }
-    SQL("SELECT " + row.select + " FROM asset_container JOIN " + Container.src + " ON asset_container.container = container.id WHERE asset_container.asset = {asset} AND", Volume.condition).
+    SQL("SELECT " + row.select + " FROM asset_container JOIN " + Container.src + " ON asset_container.container = container.id WHERE asset_container.asset = {asset} AND " + Volume.condition).
       on('asset -> asset.id, 'identity -> site.identity.id).singleOpt(row)
   }
   /** Retrieve a specific asset link by container and asset id.
@@ -118,11 +118,9 @@ sealed class SlotAsset protected (val link : AssetContainer, val slot : Slot) ex
   def source = link.asset.source
   def sourceId = link.asset.sourceId
   override def offset : Option[Offset] =
-    slot.lowerBound.flatMap(l => link.offset.map(_ - l)).
-      fold(link.offset)(_.max(0))
+    slot.segment.lowerBound.flatMap(s => link.offset.map(l => (l - s).max(0))).orElse(link.offset)
   override protected def duration : Offset =
-    slot.upperBound.flatMap(u => link.offset.map(u - _)).
-      fold(super.duration)(_.min(super.duration))
+    slot.segment.upperBound.flatMap(s => link.offset.map(l => (s - l).min(super.duration))).getOrElse(super.duration)
 
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
     * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
@@ -134,21 +132,21 @@ case class SlotTimeseries private[models] (override val link : TimeseriesContain
   def segment = {
     val b = link.asset.segment
     val lb = b.lowerBound.get
-    val lbn = slot.lowerBound.flatMap(l => link.offset.map(l - _)).fold(lb)(lb + _.max(0)),
+    val lbn = slot.segment.lowerBound.flatMap(l => link.offset.map(l - _)).fold(lb)(lb + _.max(0))
     val ub = b.upperBound.get
-    val ubn = slot.upperBound.flatMap(u => link.offset.map(u - _)).fold(ub)(lbn + _.min(ub - lbn))
-    Range[Offset](lbn, ubn)
+    val ubn = slot.segment.upperBound.flatMap(u => link.offset.map(u - _)).fold(ub)(lbn + _.min(ub - lbn))
+    Range[Offset](lbn, ubn)(PGSegment)
   }
 }
 
-object AssetSegment {
+object SlotAsset {
   private def make(link : AssetContainer, slot : Slot) = link match {
     case ts : TimeseriesContainer => new SlotTimeseries(ts, slot)
     case _ => new SlotAsset(link, slot)
   }
-  private[models] def getSlot(slot : Slot)(implicit db : Site.DB) : Seq[AssetSegment] = {
-    val row = AssetContainer.containerRow(container).map(make(_, slot))
-    SQL("SELECT " + row.select + " FROM " + containerSrc + " WHERE asset_container.container = {container} AND (asset_container.offset IS NULL OR asset_container.offset <@ slot.segment OR segment_shift(segment(" + Asset.duration + "), asset_container.offset) && slot.segment)").
+  private[models] def getSlot(slot : Slot)(implicit db : Site.DB) : Seq[SlotAsset] = {
+    val row = AssetContainer.containerRow(slot.container).map(make(_, slot))
+    SQL("SELECT " + row.select + " FROM " + AssetContainer.containerSrc + " WHERE asset_container.container = {container} AND (asset_container.offset IS NULL OR asset_container.offset <@ slot.segment OR segment_shift(segment(" + Asset.duration + "), asset_container.offset) && slot.segment)").
       on('container -> slot.container.id).list(row)
   }
 }

@@ -80,19 +80,16 @@ object TimeseriesFormat extends HasId[TimeseriesFormat] {
 sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Asset] with BackedAsset {
   /** Format of this asset. */
   def format : AssetFormat
-  def excerpt : Boolean = false
   /** Data classification for the data in this asset. */
   def classification : Classification.Value
-  /** Participant consent level granted for this asset, which may depend on specific [[AssetLink]]s of this asset. */
-  val consent : Consent.Value
 
-  /** AssetLink via which this asset is linked into a container. */
-  def link(implicit site : Site) : Option[AssetLink] = AssetLink.get(this)
+  /** AssetContainer via which this asset is linked into a container. */
+  def link(implicit site : Site) : Option[AssetContainer] = AssetContainer.get(this)
 }
 
 /** Assets which are backed by files on disk.
   * Currently this includes all of them. */
-sealed trait BackedAsset {
+trait BackedAsset {
   /** The backing asset from which this data is taken, which may be itself or a containing asset. */
   def source : Asset
   /** The backing asset from which this data is taken, which may be itself or a containing asset. */
@@ -100,7 +97,7 @@ sealed trait BackedAsset {
 }
 
 /** Refinement (implicitly of Asset) for objects representing timeseries data. */
-sealed trait TimeseriesData extends BackedAsset {
+trait TimeseriesData extends BackedAsset {
   /** The range of times represented by this object.
     * Should be a valid, finite, bounded range. */
   def segment : Range[Offset]
@@ -111,7 +108,7 @@ sealed trait TimeseriesData extends BackedAsset {
 }
 
 /** Base for simple "opaque" file assets, uploaded, stored, and downloaded as individual files with no special processing. */
-sealed class FileAsset protected[models] (override val id : FileAsset.Id, val format : AssetFormat, val classification : Classification.Value, val consent : Consent.Value = Consent.NONE) extends Asset(id) with TableRowId[FileAsset] with BackedAsset {
+sealed class FileAsset protected[models] (override val id : FileAsset.Id, val format : AssetFormat, val classification : Classification.Value) extends Asset(id) with TableRowId[FileAsset] with BackedAsset {
   def source = this
   override def sourceId = id
 }
@@ -119,24 +116,17 @@ sealed class FileAsset protected[models] (override val id : FileAsset.Id, val fo
 /** Base for special timeseries assets in a designated format.
   * These assets may be handled in their entirety as FileAssets, extracted from to produce Clips.
   * They are never created directly by users but through a conversion process on existing FileAssets. */
-final class Timeseries private[models] (override val id : Timeseries.Id, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, consent : Consent.Value) extends FileAsset(id, format, classification, consent) with TableRowId[Timeseries] with TimeseriesData {
+final class Timeseries private[models] (override val id : Timeseries.Id, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset) extends FileAsset(id, format, classification) with TableRowId[Timeseries] with TimeseriesData {
   override def source = this
   def segment : Range[Offset] = Range[Offset](0, duration)(PGSegment)
 }
 
 /** Base for clips of Timeseries.
   * These represent a selected, contiguous range (segment) of time within a Timeseries.
-  * @param excerpt if this clip was identified for possible public release. Actual permission checks should use [[classification]] instead.
   */
-final class Clip private (override val id : Clip.Id, val source : Timeseries, val segment : Range[Offset], override val excerpt : Boolean, val consent : Consent.Value) extends Asset(id) with TableRowId[Clip] with TimeseriesData {
+final class Clip private (override val id : Clip.Id, val source : Timeseries, val segment : Range[Offset]) extends Asset(id) with TableRowId[Clip] with TimeseriesData {
   def format = if (segment.isSingleton) source.format.sampleFormat else source.format
-  def classification = {
-    val c = source.classification
-    if (c == Classification.IDENTIFIED && excerpt)
-      Classification.EXCERPT
-    else
-      c
-  }
+  def classification = source.classification
 }
 
 
@@ -149,9 +139,9 @@ object Asset extends AssetView[Asset]("asset") {
   private[models] val row = 
     (FileAsset.columns.~+[Option[Offset]](SelectColumn("timeseries", "duration")) ~
      AssetFormat.row ~ Clip.columns.?) map {
-      case (id, classification, consent, None) ~ format ~ None => new FileAsset(id, format, classification, consent.getOrElse(Consent.NONE))
-      case (id, classification, consent, Some(duration)) ~ (format : TimeseriesFormat) ~ clip => {
-        val ts = new Timeseries(id.coerce[Timeseries], format, classification, duration, consent.getOrElse(Consent.NONE))
+      case (id, classification, None) ~ format ~ None => new FileAsset(id, format, classification)
+      case (id, classification, Some(duration)) ~ (format : TimeseriesFormat) ~ clip => {
+        val ts = new Timeseries(id.coerce[Timeseries], format, classification, duration)
         clip.fold(ts : Asset)(Clip.make(ts))
       }
     }
@@ -170,10 +160,10 @@ object Asset extends AssetView[Asset]("asset") {
 
 object FileAsset extends AssetView[FileAsset]("file") {
   private[models] val columns = Columns[
-    Id,  Classification.Value, Option[Consent.Value]](
-    'id, 'classification,      SelectAs("asset_consent(file.id)", "file_consent"))
+    Id,  Classification.Value](
+    'id, 'classification)
   private[models] val row = (columns ~ AssetFormat.row) map {
-    case ((id, classification, consent) ~ format) => new FileAsset(id, format, classification, consent.getOrElse(Consent.NONE))
+    case ((id, classification) ~ format) => new FileAsset(id, format, classification)
   }
   private[models] override val src = "ONLY file JOIN ONLY format ON file.format = format.id"
   
@@ -197,10 +187,10 @@ object FileAsset extends AssetView[FileAsset]("file") {
 
 object Timeseries extends AssetView[Timeseries]("timeseries") {
   private[this] val columns = Columns[
-    Id,  TimeseriesFormat.Id, Classification.Value, Offset,    Option[Consent.Value]](
-    'id, 'format,             'classification,      'duration, SelectAs("asset_consent(timeseries.id)", "timeseries_consent"))
+    Id,  TimeseriesFormat.Id, Classification.Value, Offset](
+    'id, 'format,             'classification,      'duration)
   private[models] val row = columns map {
-    (id, format, classification, duration, consent) => new Timeseries(id, TimeseriesFormat.get(format).get, classification, duration, consent.getOrElse(Consent.NONE))
+    (id, format, classification, duration) => new Timeseries(id, TimeseriesFormat.get(format).get, classification, duration)
   }
   
   /** Retrieve a single timeseries asset.
@@ -212,11 +202,11 @@ object Timeseries extends AssetView[Timeseries]("timeseries") {
 
 object Clip extends AssetView[Clip]("clip") {
   import PGSegment.{column => segmentColumn}
-  private[this] def makeSource(source : Timeseries)(id : Id, segment : Range[Offset], excerpt : Boolean, consent : Option[Consent.Value]) = new Clip(id, source, segment, excerpt, consent.getOrElse(Consent.NONE))
+  private[this] def makeSource(source : Timeseries)(id : Id, segment : Range[Offset]) = new Clip(id, source, segment)
   private[models] def make(source : Timeseries) = (makeSource(source) _).tupled
   private[models] val columns = Columns[
-    Id,  Range[Offset], Boolean,  Option[Consent.Value]](
-    'id, 'segment,      'excerpt, SelectAs("asset_consent(clip.id, clip.segment)", "clip_consent"))
+    Id,  Range[Offset]](
+    'id, 'segment)
   private[models] val row = (columns ~ Timeseries.row) map {
     case (clip ~ source) => make(source)(clip)
   }
@@ -225,7 +215,7 @@ object Clip extends AssetView[Clip]("clip") {
   /** Retrieve a single clip.
     * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[Clip] =
-    SELECT("WHERE excerpt.id = {id}").
+    SELECT("WHERE clip.id = {id}").
       on('id -> i).singleOpt()
 }
 
