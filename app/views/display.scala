@@ -58,34 +58,32 @@ object display {
     (if (s.dataAccess() >= Permission.DOWNLOAD) dateFmtYMD else dateFmtY).format(s.date)
 
   def plainText(text: String = "") =
-    raw("<p>"+text.split("\\r?\\n").mkString("</p><p>")+"</p>")
+    raw("<p>"+text.replaceAll("\\r?\\n", "</p><p>")+"</p>")
 
-  def plainTextSummary(text: String = "", length: Int = 1000) = {
-    raw("<p>"+text.split("\\r?\\n\\r?\\n").slice(0, length).mkString("</p><p>")+"</p>")
-  }
+  /** Displays the first length lines of text.
+    * Is this really correct?  Should length be in characters?
+    */
+  def plainTextSummary(text: String = "", length: Int = 1000) =
+    raw("<p>"+text.split("\\r?\\n\\r?\\n").take(length).mkString("</p><p>")+"</p>")
 
-  def gravatarUrlByEmail(email: String = "none", size: Int = 64) = {
-    "http://gravatar.com/avatar/"+md5(email.toLowerCase.replaceAll("\\s+", "")).hash+"?s="+size+"&d=mm"
-  }
+  def gravatarUrlByEmailOpt(email: Option[String] = None, size: Int = 64) =
+    "http://gravatar.com/avatar/"+email.fold("none")(e => md5(e.toLowerCase.replaceAll("\\s+", "")).hash)+"?s="+size+"&d=mm"
 
-  def gravatarUrlByParty(party: Party, size: Int = 64) = {
-    dbrary.cast[Account](party) match {
-      case Some(account) => "http://gravatar.com/avatar/"+md5(account.email.toLowerCase.replaceAll("\\s+", "")).hash+"?s="+size+"&d=mm"
-      case None => "http://gravatar.com/avatar/none?s="+size+"&d=mm"
-    }
-  }
+  def gravatarUrlByEmail(email: String, size: Int = 64) =
+    gravatarUrlByEmailOpt(Some(email), size)
+
+  def gravatarUrlByParty(party: Party, size: Int = 64) =
+    gravatarUrlByEmailOpt(dbrary.cast[Account](party).map(_.email), size)
 
   def citeName(name: String) = {
-    var names = name.split(" ")
-
-    var out = names.last+", "
-    names = names.take(names.length - 1)
-
-    for (n <- 0 until names.length) {
-      out += ""+names(n).substring(0,1)+"."
-    }
-
-    out
+    val names = name.split(" +")
+    val out = new StringBuilder(names.last)
+    if (names.length > 1)
+      names.init foreach { n =>
+        out += n.head
+        out ++= ". "
+      }
+    out.result
   }
 
   def apply(x : SitePage, full : Boolean = false)(implicit site : Site) = if (full) path(x) else page(x)
