@@ -12,6 +12,8 @@ object Permission extends PGEnum("permission") {
   def OWN = ADMIN
   /** Alias for CONTRIBUTE. */
   def EDIT = CONTRIBUTE
+  /** Alias for CONTRIBUTE. Grants full access to data, bypassing consent permissions. */
+  def FULL = CONTRIBUTE
   /** Alias for DOWNLOAD. DOWNLOAD permissions grant access to shared data, while non-data only requires VIEW. */
   def DATA = DOWNLOAD
   /** Alias for VIEW. COMMENTing on objects requires VIEW site access. */
@@ -19,7 +21,7 @@ object Permission extends PGEnum("permission") {
 
   /** The effective permission for data objects with the given attributes. */
   final def data(p : Value, consent : Consent.Value, classification : Classification.Value)(implicit site : Site) : Value = {
-    if (p >= EDIT)
+    if (p >= FULL)
       p
     else if (p >= DOWNLOAD && classification >= Classification.access(consent))
       DOWNLOAD

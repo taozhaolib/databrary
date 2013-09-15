@@ -1,4 +1,4 @@
-@(container : models.Slot)(implicit request: SiteRequest[_])
+@(assets : Seq[SlotAsset])(implicit request: SiteRequest[_])
 
 <table class="assets">
     <colgroup>
@@ -18,12 +18,12 @@
     </thead>
 
     <tbody>
-        @slot.assets.map { link =>
+        @assets.map { link =>
             <tr>
                 <td class="main">@display(link)</td>
-				<td>@link.asset.format.name</td>
-				<td>@link.asset.classification</td>
-				<td>@link.extent</td>
+				<td>@link.format.name</td>
+				<td>@link.classification</td>
+				<td>@link.offset</td>
             </tr>
         }
     </tbody>

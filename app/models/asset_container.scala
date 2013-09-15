@@ -48,7 +48,7 @@ final class ContainerTimeseries private[models] (override val asset : Asset with
 }
 
 object ContainerAsset extends Table[ContainerAsset]("asset_container") {
-  private def make(asset : Asset, container : Container)(offset : Option[Offset], name : String, body : Option[String]) = asset match {
+  private[models] def make(asset : Asset, container : Container)(offset : Option[Offset], name : String, body : Option[String]) = asset match {
     case ts : TimeseriesData => new ContainerTimeseries(ts, container, offset, name, body)
     case _ => new ContainerAsset(asset, container, offset, name, body)
   }
@@ -104,12 +104,17 @@ object ContainerAsset extends Table[ContainerAsset]("asset_container") {
 
 /** A segment of an asset as used in a slot.
   * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot) extends SitePage with BackedAsset with InVolume {
+sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, excerpt_ : Option[Boolean] = None) extends SitePage with BackedAsset with InVolume {
   def slotId = slot.id
   def volume = link.volume
   def volumeId = link.volumeId
   def source = link.asset.source
   def sourceId = link.asset.sourceId
+  private var _excerpt = excerpt_
+  /** Whether this clip has been vetted for public release, permissions permitting. */
+  def excerpt : Boolean = _excerpt.getOrElse(false)
+  /** Whether if this clip has been promoted for toplevel display. */
+  def toplevel : Boolean = _excerpt.isDefined
   def offset : Option[Offset] =
     (for { s <- slot.segment.lowerBound ; l <- link.offset }
       yield ((l - s).max(0))).
@@ -119,17 +124,44 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot) ex
       yield ((s - l).min(link.duration))).
       getOrElse(link.duration)
 
+  /** Update the given values in the database and this object in-place.
+    * @param excerpt changes both toplevel (`None` or `Some(false)`) and excerpt (`Some(true)`)
+    */
+  def change(excerpt : Option[Boolean] = _excerpt)(implicit site : Site) : Unit = {
+    if (excerpt != _excerpt)
+    {
+      val ids = SQLArgs('slot -> slotId, 'asset -> link.assetId)
+      excerpt.fold {
+        Audit.remove("toplevel_asset", ids).execute() : Unit
+      } { e =>
+        if (Audit.change("toplevel_asset", SQLArgs('excerpt -> e), ids).executeUpdate() == 0)
+          Audit.add("toplevel_asset", SQLArgs('excerpt -> e) ++ ids).execute()
+      }
+      _excerpt = excerpt
+    }
+  }
+
+  def format = link.asset.format
+
+  def classification = {
+    val c = link.asset.classification
+    if (c == Classification.IDENTIFIED && excerpt)
+      Classification.EXCERPT
+    else
+      c
+  }
+
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
     * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
   def permission(implicit site : Site) : Permission.Value =
-    slot.dataPermission(link.asset.classification)
+    slot.dataPermission(classification)
 
   def pageName(implicit site : Site) = link.name
   def pageParent(implicit site : Site) = Some(slot)
   def pageURL = controllers.routes.Asset.view(slotId, link.assetId).url
 }
 
-case class SlotTimeseries private[models] (override val link : ContainerTimeseries, val slot : Slot) extends SlotAsset(link, slot) with TimeseriesData {
+case class SlotTimeseries private[models] (override val link : ContainerTimeseries, val slot : Slot, excerpt_ : Option[Boolean] = None) extends SlotAsset(link, slot, excerpt_) with TimeseriesData {
   def source = link.asset.source
   def sourceId = link.asset.sourceId
   def entire = link.asset.entire && link.offset.fold(true) { l =>
@@ -148,29 +180,44 @@ case class SlotTimeseries private[models] (override val link : ContainerTimeseri
       getOrElse(ub)
     Range[Offset](lbn, ubn)(PGSegment)
   }
+  override def format = if (segment.isSingleton) link.asset.format.sampleFormat else link.asset.format
 }
 
 object SlotAsset {
-  private def make(link : ContainerAsset, slot : Slot) = link match {
-    case ts : ContainerTimeseries => new SlotTimeseries(ts, slot)
-    case _ => new SlotAsset(link, slot)
+  private def make(link : ContainerAsset, slot : Slot, excerpt : Option[Boolean]) = link match {
+    case ts : ContainerTimeseries => new SlotTimeseries(ts, slot, excerpt)
+    case _ => new SlotAsset(link, slot, excerpt)
   }
+  private val columns = Columns[
+    Option[Boolean]](
+    SelectColumn("toplevel_asset", "excerpt"))
   private val condition = "(asset_container.offset IS NULL OR asset_container.offset <@ slot.segment OR segment_shift(segment(" + Asset.duration + "), asset_container.offset) && slot.segment)"
 
   /** Retrieve a single SlotAsset by asset id and slot id.
     * This checks permissions on the slot('s container's volume). */
   def get(asset : Asset.Id, slot : Slot.Id)(implicit db : Site.DB) : Option[SlotAsset] = {
-    val row = ContainerAsset.row ~ Slot.columns map {
-      case (link ~ slot) => make(link, (Slot.make(link.container) _).tupled(slot))
+    val row = ContainerAsset.row ~ Slot.columns ~ columns map {
+      case (link ~ slot ~ excerpt) => make(link, (Slot.make(link.container) _).tupled(slot), excerpt)
     }
-    SQL("SELECT " + row.select + " FROM " + ContainerAsset.src + " JOIN " + Slot.baseSrc + " ON container.id = slot.source WHERE slot.id = {slot} AND asset.id = {asset} AND " + condition).
+    SQL("SELECT " + row.select + " FROM " + ContainerAsset.src + " JOIN " + Slot.baseSrc + " ON container.id = slot.source LEFT JOIN toplevel_asset ON slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset WHERE slot.id = {slot} AND asset.id = {asset} AND " + condition).
       on('asset -> asset, 'slot -> slot).singleOpt(row)
   }
 
   /** Retrieve the list of all assets within the given slot. */
   private[models] def getSlot(slot : Slot)(implicit db : Site.DB) : Seq[SlotAsset] = {
-    val row = ContainerAsset.containerRow(slot.container).map(make(_, slot))
-    SQL("SELECT " + row.select + " FROM " + ContainerAsset.containerSrc + " WHERE asset_container.container = {container} AND " + condition).
-      on('container -> slot.container.id).list(row)
+    val row = ContainerAsset.containerRow(slot.container) ~ columns map {
+      case (link ~ excerpt) => make(link, slot, excerpt)
+    }
+    SQL("SELECT " + row.select + " FROM " + ContainerAsset.containerSrc + " JOIN slot ON asset_container.container = slot.source LEFT JOIN toplevel_asset ON slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset WHERE slot.id = {slot} AND " + condition).
+      on('slot -> slot.id).list(row)
+  }
+
+  /** Retrieve the list of all top-level assets. */
+  private[models] def getToplevel(volume : Volume)(implicit db : Site.DB) : Seq[SlotAsset] = {
+    val row = Asset.row ~ ContainerAsset.columns ~ Container.volumeRow(volume) ~ Slot.columns ~ columns map {
+      case (asset ~ link ~ cont ~ slot ~ excerpt) => make((ContainerAsset.make(asset, cont) _).tupled(link), (Slot.make(cont) _).tupled(slot), excerpt)
+    }
+    SQL("SELECT " + row.select + " FROM " + ContainerAsset.containerSrc + " JOIN container ON asset_container.container = container.id JOIN " + Slot.baseSrc + " ON container.id = slot.source LEFT JOIN toplevel_asset ON slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset WHERE container.volume = {vol} AND " + condition + " AND (toplevel.slot IS NOT NULL OR toplevel_asset.asset IS NOT NULL)").
+      on('vol -> volume.id).list(row)
   }
 }

@@ -21,26 +21,22 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
     'id, 'name) map {
     (id, name) => id match {
       case PARTICIPANT => Participant
-      case TOPLEVEL => TopLevel
       case _ => new RecordCategory(id, name)
     }
   }
 
   def get(id : Id)(implicit db : Site.DB) : Option[RecordCategory] = id match {
     case PARTICIPANT => Some(Participant)
-    case TOPLEVEL => Some(TopLevel)
     case _ => SELECT("WHERE id = {id}").on('id -> id).singleOpt
   }
 
   def getAll(implicit db : Site.DB) : Seq[RecordCategory] =
-    Seq(TopLevel, Participant) ++
+    Seq(Participant) ++
     SELECT("WHERE id > 0 ORDER BY id").list
 
-  private final val TOPLEVEL : Id = asId(-900)
   private final val PARTICIPANT : Id = asId(-500)
   /** RecordCategory representing participants, individuals whose data is contained in a particular sesion.
     * Participants usually are associated with birthdate, gender, and other demographics. */
-  final val TopLevel = new RecordCategory(TOPLEVEL, "top level")
   final val Participant = new RecordCategory(PARTICIPANT, "participant")
 }
 

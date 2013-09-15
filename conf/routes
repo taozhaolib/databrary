@@ -66,7 +66,7 @@ GET	/slot/:id/asset/:obj			controllers.Asset.view(id : models.Slot.Id, obj : mod
 GET	/slot/:id/asset/:obj/download		controllers.Asset.download(id : models.Slot.Id, obj : models.Asset.Id, inline : Boolean = false)
 GET	/slot/:id/asset/:obj/inline		controllers.Asset.download(id : models.Slot.Id, obj : models.Asset.Id, inline : Boolean = true)
 GET	/slot/:id/asset/:obj/head		controllers.Asset.head(id : models.Slot.Id, obj : models.Asset.Id)
-GET	/slot/:id/asset/:obj/frame/:offset	controllers.Asset.frameSlot(id : models.Slot.Id, obj : models.Asset.Id, offset : dbrary.Offset)
+GET	/slot/:id/asset/:obj/frame/:offset	controllers.Asset.frame(id : models.Slot.Id, obj : models.Asset.Id, offset : dbrary.Offset)
 
 POST        /study/:id/Comment                                 controllers.Comment.postVolume(id : models.Volume.Id)
 POST        /slot/:id/Comment                                 controllers.Comment.postSlot(id : models.Slot.Id)

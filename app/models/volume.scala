@@ -39,6 +39,9 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   /** List of containers within this volume. */
   def containers(implicit db : Site.DB) : Seq[Container] = Container.getVolume(this)
 
+  /** List of toplevel assets within this volume. */
+  def toplevelAssets(implicit db : Site.DB) : Seq[SlotAsset] = SlotAsset.getToplevel(this)
+
   /** Get volume creation information */
   def creationAudit(implicit db : Site.DB) : Option[Audit[Unit]] = {
     def cols = Audit.row[Unit]((), "audit_volume")

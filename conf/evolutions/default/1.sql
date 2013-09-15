@@ -185,7 +185,7 @@ COMMENT ON TABLE "volume" IS 'Basic organizational unit for data.';
 CREATE TABLE "audit_volume" (
 	LIKE "volume"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
-CREATE INDEX "volume_creation_idx" ON audit_volume (id) WHERE action = 'add';
+CREATE INDEX "volume_creation_idx" ON audit_volume ("id") WHERE "action" = 'add';
 COMMENT ON INDEX "volume_creation_idx" IS 'Allow efficient retrieval of volume creation information, specifically date.';
 
 CREATE TABLE "volume_access" (
@@ -287,28 +287,28 @@ CREATE TABLE "slot" (
 	"id" serial NOT NULL Primary Key,
 	"source" integer NOT NULL References "container",
 	"segment" segment NOT NULL Default '(,)',
-	Unique ("source", "segment")
+	"consent" consent,
+	Unique ("source", "segment"),
+	Exclude ("source" WITH ==, "segment" WITH &&) WHERE "consent" IS NOT NULL
 ) INHERITS ("object_segment");
-COMMENT ON TABLE "slot" IS 'Sections of containers selected for referencing, annotating, consenting, etc.';
 CREATE INDEX "slot_full_container_idx" ON "slot" ("source") WHERE "segment" = '(,)';
+COMMENT ON TABLE "slot" IS 'Sections of containers selected for referencing, annotating, consenting, etc.';
+COMMENT ON COLUMN "slot"."consent" IS 'Sharing/release permissions granted by participants on (portions of) contained data.  This could equally well be an annotation, but hopefully won''t add too much space here.';
 
-CREATE VIEW "slot_nesting" ("child", "parent") AS 
-	SELECT c.id, p.id FROM slot c JOIN slot p ON c <@ p;
-COMMENT ON VIEW "slot_nesting" IS 'Transitive closure of slots containtained within other slots.  Note that the contains relation here is rather liberal, as we are depending on researchers and/or other parts of the system to ensure that overlapping consents don''t disagree.';
-
-
-CREATE TABLE "slot_consent" (
-	"slot" integer NOT NULL Primary Key References "slot",
-	"consent" consent NOT NULL
-);
-COMMENT ON TABLE "slot_consent" IS 'Sharing/release permissions granted by participants on (portions of) contained data.  This could equally well be an annotation, but is not put on slot to keep size minimal and avoid slot auditing.';
-
-CREATE TABLE "audit_slot_consent" (
-	LIKE "slot_consent"
+CREATE TABLE "audit_slot" (
+	LIKE "slot"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
+COMMENT ON TABLE "audit_slot" IS 'Partial auditing for slot table covering only consent changes.';
 
-CREATE FUNCTION "slot_consent" ("slot") RETURNS consent LANGUAGE sql STABLE STRICT AS
-	$$ SELECT consent FROM slot_consent JOIN slot ON slot = id WHERE slot @> $1 $$;
+
+CREATE VIEW "slot_nesting" ("child", "parent", "consent") AS 
+	SELECT c.id, p.id, p.consent FROM slot c JOIN slot p ON c <@ p;
+COMMENT ON VIEW "slot_nesting" IS 'Transitive closure of slots containtained within other slots.';
+
+
+CREATE FUNCTION "slot_consent" ("slot" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS
+	$$ SELECT consent FROM slot_nesting WHERE child = $1 AND consent IS NOT NULL $$;
+COMMENT ON FUNCTION "slot_consent" (integer) IS 'Effective consent level on a given slot.';
 
 ----------------------------------------------------------- assets
 
@@ -381,19 +381,19 @@ CREATE INDEX ON "clip" ("source");
 COMMENT ON TABLE "clip" IS 'Sections of timeseries assets selected for use.  When placed into containers, they are treated independently of their source timeseries.';
 
 
-CREATE TABLE "asset_container" (
+CREATE TABLE "container_asset" (
 	"asset" integer NOT NULL References "asset" Primary Key,
 	"container" integer NOT NULL References "container",
 	"offset" interval HOUR TO SECOND,
 	"name" text NOT NULL,
 	"body" text,
 );
-CREATE INDEX ON "asset_container" ("container");
-COMMENT ON TABLE "asset_container" IS 'Asset linkages into containers along with "dynamic" metadata.';
-COMMENT ON COLUMN "asset_container"."offset" IS 'Start point or position of this asset within the container, such that this asset occurs or starts offset time after the beginning of the container session.  NULL offsets are treated as universal (existing at all times).';
+CREATE INDEX ON "container_asset" ("container");
+COMMENT ON TABLE "container_asset" IS 'Asset linkages into containers along with "dynamic" metadata.';
+COMMENT ON COLUMN "container_asset"."offset" IS 'Start point or position of this asset within the container, such that this asset occurs or starts offset time after the beginning of the container session.  NULL offsets are treated as universal (existing at all times).';
 
-CREATE TABLE "audit_asset_container" (
-	LIKE "asset_container"
+CREATE TABLE "audit_container_asset" (
+	LIKE "container_asset"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
 
@@ -403,16 +403,28 @@ CREATE VIEW "asset_duration" ("id", "duration") AS
 	SELECT id, duration(segment) FROM clip;
 COMMENT ON VIEW "asset_duration" IS 'All assets along with their temporal durations, NULL for non-timeseries.';
 
-CREATE FUNCTION "asset_slots" ("asset" integer, "segment" segment) RETURNS SETOF integer LANGUAGE sql STABLE AS $$ 
-	SELECT slot.id FROM asset_container JOIN slot ON asset_container.container = slot.source 
-	WHERE asset_container.asset = $1 AND COALESCE(segment_shift(segment, asset_container.offset) <@ slot.segment, asset_container.offset <@ slot.segment, true)
-$$;
-COMMENT ON FUNCTION "asset_slots" (integer) IS 'Set of slots which contain the (segment of the) asset.';
 
-CREATE FUNCTION "asset_consent" ("asset" integer, "segment" segment = NULL) RETURNS consent LANGUAGE sql STABLE AS $$
-	SELECT MIN(consent) FROM asset_slots($1, $2) JOIN slot_consent ON asset_slots = slot_consent.slot
-$$;
-COMMENT ON FUNCTION "asset_consent" (integer, segment) IS 'Effective (minimal) consent level granted on the specified asset.';
+CREATE TABLE "toplevel_slot" (
+	"slot" integer NOT NULL Primary Key References "slot",
+);
+COMMENT ON TABLE "toplevel_slot" IS 'Slots whose assets are promoted to the top volume level for display.';
+
+CREATE TABLE "audit_toplevel_slot" (
+	LIKE "toplevel_slot"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
+CREATE TABLE "toplevel_asset" (
+	"slot" integer NOT NULL References "slot",
+	"asset" integer NOT NULL References "asset",
+	"excerpt" boolean NOT NULL Default false,
+	Primary Key ("slot", "asset")
+);
+COMMENT ON TABLE "toplevel_asset" IS 'Slot assets which are promoted to the top volume level for display.';
+COMMENT ON COLUMN "toplevel_asset"."excerpt" IS 'Asset segments that may be released publically if so permitted.';
+
+CREATE TABLE "audit_toplevel_asset" (
+	LIKE "toplevel_asset"
+) INHERITS ("audit") WITH (OIDS = FALSE);
 
 ----------------------------------------------------------- annotations
 
@@ -435,7 +447,6 @@ CREATE TABLE "record_category" (
 	"name" varchar(64) NOT NULL Unique
 );
 COMMENT ON TABLE "record_category" IS 'Types of records that are relevant for data organization.';
-INSERT INTO "record_category" ("id", "name") VALUES (-900, 'top level');
 INSERT INTO "record_category" ("id", "name") VALUES (-500, 'participant');
 
 CREATE TABLE "record" (
@@ -556,10 +567,9 @@ DROP TABLE "annotation";
 DROP FUNCTION "annotation_trigger" ();
 DROP TYPE "annotation_kind";
 
-DROP FUNCTION "asset_consent" (integer, segment);
-DROP FUNCTION "asset_slots" (integer, segment);
+DROP TABLE "toplevel";
 DROP VIEW "asset_duration";
-DROP TABLE "asset_container";
+DROP TABLE "container_asset";
 DROP TABLE "clip";
 DROP TABLE "timeseries";
 DROP TABLE "file";
@@ -570,7 +580,7 @@ DROP FUNCTION "asset_trigger" ();
 DROP TYPE "asset_kind";
 DROP TYPE classification;
 
-DROP TABLE "slot_consent";
+DROP FUNCTION "slot_consent" (integer);
 DROP VIEW "slot_nesting";
 DROP TABLE "slot";
 DROP TABLE "container";

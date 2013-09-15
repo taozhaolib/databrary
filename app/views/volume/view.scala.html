@@ -1,4 +1,4 @@
-@(volume: Volume, assetMap: (Map[String, Seq[AssetLink]], Map[String, Seq[AssetLink]]))(implicit request: SiteRequest[_])
+@(volume: Volume, assets : Seq[SlotAsset], excerpts : Map[String, Seq[SlotAsset]], assetMap : Map[String, Seq[SlotAsset]])(implicit request: SiteRequest[_])
 
 @template.crud("Volume: " + volume.name) {
 	<article id="volume_@volume.id.unId" class="volume">
@@ -60,22 +60,22 @@
 			<div id="media" class="view">
 				<h2 class='tab'>Media</h2>
 
-				@widget.thumbList(volume, assetMap._2.getOrElse("video", Nil))
-				@widget.thumbList(volume, assetMap._2.getOrElse("image", Nil))
-				@widget.thumbList(volume, assetMap._2.getOrElse("audio", Nil))
+				@widget.thumbList(assetMap.getOrElse("video", Nil))
+				@widget.thumbList(assetMap.getOrElse("image", Nil))
+				@widget.thumbList(assetMap.getOrElse("audio", Nil))
 			</div>
 
 			<div id="highlights" class="view">
 				<h2 class='tab'>Highlights</h2>
 
-				@widget.thumbList(volume, assetMap._1.getOrElse("video", Nil))
-				@widget.thumbList(volume, assetMap._1.getOrElse("image", Nil))
-				@widget.thumbList(volume, assetMap._1.getOrElse("audio", Nil))
+				@widget.thumbList(excerpts.getOrElse("video", Nil))
+				@widget.thumbList(excerpts.getOrElse("image", Nil))
+				@widget.thumbList(excerpts.getOrElse("audio", Nil))
 			</div>
 
 			<div id="documents" class="view">
 				<h2 class='tab'>Documents</h2>
-				@widget.assetList(volume)
+				@widget.assetList(assets)
 			</div>
 
 			<div id="participants" class="view">

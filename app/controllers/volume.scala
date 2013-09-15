@@ -21,9 +21,10 @@ object Volume extends SiteController {
   }
 
   def view(i : models.Volume.Id) = check(i) { volume => implicit request =>
-    def group(x : Seq[AssetLink]) = x.groupBy(_.asset(request.db).format.mimeSubTypes._1)
-    val (excerpts, files) = volume.assets(request.db).filter(_.permission >= Permission.DOWNLOAD).partition(_.asset(request.db).excerpt)
-    Ok(views.html.volume.view(volume, (group(excerpts), group(files))))
+    val top = volume.toplevelAssets
+    def group(x : Seq[SlotAsset]) = x.groupBy(_.format.mimeSubTypes._1)
+    val (excerpts, files) = top.filter(_.permission >= Permission.DOWNLOAD).partition(_.excerpt)
+    Ok(views.html.volume.view(volume, top, group(excerpts), group(files)))
   }
 
   def listAll = SiteAction { implicit request =>

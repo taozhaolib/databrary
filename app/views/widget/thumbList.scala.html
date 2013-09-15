@@ -1,19 +1,19 @@
-@(container: Container, assetList: Seq[AssetLink])(implicit request: SiteRequest[_])
+@(assetList: Seq[SlotAsset])(implicit request: SiteRequest[_])
 
 @if(assetList.nonEmpty) {
-    <h3>@assetList.head.asset(request.db).format.mimeSubTypes._1</h3>
+    <h3>@assetList.head.format.mimeSubTypes._1</h3>
 
     <div class="thumb_list row">
-    @for(assetLink <- assetList) {
+    @assetList.map { assetLink =>
         <div class="thumb hover col_2">
-            <a href="@routes.Asset.view(assetLink.containerId, assetLink.assetId)" title="@assetLink.title">
+            <a href="@routes.Asset.view(assetLink.slotId, assetLink.link.assetId)" title="@assetLink.link.name">
                 <div class="media">
-                @assetLink.asset(request.db).format.mimeSubTypes match {
+                @assetLink.format.mimeSubTypes match {
                     case ("image", _) => {
-                        <img src='@routes.Asset.download(assetLink.containerId, assetLink.assetId, true)'/>
+                        <img src='@routes.Asset.download(assetLink.slotId, assetLink.link.assetId, true)'/>
                     }
                     case ("video", _) => {
-                        <img src='@routes.Asset.head(assetLink.containerId, assetLink.assetId)'/>
+                        <img src='@routes.Asset.head(assetLink.slotId, assetLink.link.assetId)'/>
                     }
                     case _ => {
                     }
@@ -22,11 +22,11 @@
 
                 <div class="text">
                     <div class="title">
-                    @assetLink.title
+                    @assetLink.link.name
                     </div>
 
                     <div class="time">
-                    @dbrary.cast[Timeseries](assetLink.asset(request.db)).map { timeseries =>
+                    @dbrary.cast[Timeseries](assetLink.link.asset).map { timeseries =>
                         @timeseries.duration
                     }
                     </div>

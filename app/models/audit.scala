@@ -72,7 +72,7 @@ object Audit {
     * @param returning optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
     */
   private[models] def remove(table : String, args : SQLArgs, returning : String = "")(implicit site : Site) =
-    SQLon(AuditAction.remove, table, "WHERE " + args.set(" AND "), returning)(args)(site)
+    SQLon(AuditAction.remove, table, "WHERE " + args.where, returning)(args)(site)
 
   /** Record an [[AuditAction.change]] event to a particular audit table.
     * This does the equivalent of `UPDATE table SET sets WHERE where [RETURNING returning]`.
@@ -82,5 +82,5 @@ object Audit {
     * @param returning optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
     */
   private[models] def change(table : String, sets : SQLArgs, where : SQLArgs, returning : String = "")(implicit site : Site) =
-    SQLon(AuditAction.change, table, "SET " + sets.set(", ") + " WHERE " + where.set(" AND "), returning)(SQLArgs(sets ++ where : _*))(site)
+    SQLon(AuditAction.change, table, "SET " + sets.set() + " WHERE " + where.where, returning)(SQLArgs(sets ++ where : _*))(site)
 }

@@ -17,7 +17,7 @@
 
 	@widget.recordList(slot, slot.permission)
 
-	@widget.assetList(slot)
+	@widget.assetList(slot.assets)
 
 	@region.comments(Some(routes.Comment.postSlot(slot.id)), slot.comments(true))
     </article>

@@ -47,7 +47,7 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
 }
 
 object Container extends TableId[Container]("container") {
-  private def make(volume : Volume)(id : Id, name : Option[String], date : Option[Date]) =
+  private[models] def make(volume : Volume)(id : Id, name : Option[String], date : Option[Date]) =
     new Container(id, volume, name, date)
   private[models] val columns = Columns[
     Id,  Option[String], Option[Date]](
@@ -89,29 +89,47 @@ object Container extends TableId[Container]("container") {
 /** Smallest organizatonal unit of related data.
   * Primarily used for an individual session of data with a single date and place.
   * Critically, contained data are should be covered by a single consent level and share the same annotations. */
-final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], val consent_ : Consent.Value = Consent.NONE) extends TableRowId[Slot] with AnnotatedInVolume with SitePage {
+final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE, toplevel_ : Boolean = false) extends TableRowId[Slot] with AnnotatedInVolume with SitePage {
   def containerId : Container.Id = container.id
+  def volume = container.volume
   private[this] var _consent = consent_
   /** Effective consent for covered assets, or [[Consent.NONE]] if no matching consent. */
   def consent = _consent
-  def volume = container.volume
+  private[this] var _toplevel = toplevel_
+  /** True if this slot has been promoted for toplevel display. */
+  def toplevel = _toplevel
 
   /** Update the given values in the database and this object in-place. */
-  def change(consent : Consent.Value = _consent)(implicit site : Site) : Unit = {
-    /* TODO: check consent overlaps (or change the interface for this) */
-    if (consent == _consent)
-      return
-    val ids = SQLArgs('slot -> id)
-    if (consent == Consent.NONE)
-      Audit.remove("slot_consent", ids).execute
-    else if (Audit.change("slot_consent", SQLArgs('consent -> consent), ids).executeUpdate == 0)
-      Audit.add("slot_consent", SQLArgs('consent -> consent) ++ ids).execute
-    _consent = consent
+  def change(consent : Consent.Value = _consent, toplevel : Boolean = _toplevel)(implicit site : Site) : Unit = {
+    if (consent != _consent)
+    {
+      Audit.change("slot", SQLArgs('consent -> consent), SQLArgs('id -> id)).execute()
+      _consent = consent
+    }
+    if (toplevel != _toplevel)
+    {
+      if (toplevel)
+        Audit.add("toplevel_slot", SQLArgs('slot -> id)).execute()
+      else
+        Audit.remove("toplevel_slot", SQLArgs('slot -> id)).execute()
+    }
   }
+
+  private[this] val _context = CachedVal[Option[Slot], Site.DB] { implicit db =>
+    if (consent != Consent.NONE) Some(this) else {
+      val row = Slot.containerRow(container)
+      SQL("SELECT " + row.select + " FROM " + Slot.baseSrc + " WHERE slot.source = {cont} AND slot.segment @> {seg} AND slot.consent IS NOT NULL").
+        on('cont -> containerId, 'seg -> segment).singleOpt(row)
+    }
+  }
+  /** The relevant consented slot containing this one. Cached.
+    * Users with FULL access fall back to the full container. */
+  def context(implicit db : Site.DB) : Option[Slot] =
+    _context.orElse(if (permission >= Permission.FULL) Some(container.fullSlot) else None)
 
   /** The level of access granted on data covered by this slot to the current user. */
   def dataPermission(classification : Classification.Value = Classification.RESTRICTED)(implicit site : Site) =
-    Permission.data(permission, consent, classification)
+    Permission.data(permission, context.fold(consent)(_.consent), classification)
 
   /** Effective start point of this slot within the container. */
   def offset : Offset = segment.lowerBound.getOrElse(0)
@@ -129,19 +147,19 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
 
 object Slot extends TableId[Slot]("slot") {
   import PGSegment.{column => segmentColumn}
-  private[models] def make(container : Container)(id : Id, segment : Range[Offset], consent : Option[Consent.Value]) =
-    new Slot(id, container, segment, consent.getOrElse(Consent.NONE))
+  private[models] def make(container : Container)(id : Id, segment : Range[Offset], consent : Option[Consent.Value], toplevel : Boolean) =
+    new Slot(id, container, segment, consent.getOrElse(Consent.NONE), toplevel)
   private[models] val columns = Columns[
-    Id,  Range[Offset], Option[Consent.Value]](
-    'id, 'segment,      'consent)
+    Id,  Range[Offset], Option[Consent.Value], Boolean](
+    'id, 'segment,      'consent,              SelectAs("toplevel_slot.slot IS NOT NULL", "toplevel"))
   private[models] val row = (Container.row ~ columns) map {
     case (cont ~ slot) => (make(cont) _).tupled(slot) 
   }
   private[models] def containerRow(container : Container) = columns map (make(container) _)
-  private[models] val baseSrc = "slot LEFT JOIN slot_consent ON slot.id = slot_consent.slot"
+  private[models] val baseSrc = "slot LEFT JOIN toplevel_slot ON slot.id = toplevel_slot.slot"
   private[models] override val src = baseSrc + " JOIN " + Container.src + " ON slot.source = container.id"
 
-  val fullRange = Range.full[Offset](PGSegment)
+  final val fullRange = Range.full[Offset](PGSegment)
 
   /** Retrieve an individual Slot.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
@@ -159,9 +177,9 @@ object Slot extends TableId[Slot]("slot") {
 
   /** Retrieve a list of slots within the given container.
     * This does not check permissions as an existing volume implies visibility. */
-  private[models] def getContainer(c : Container)(implicit db : Site.DB) : Seq[Slot] = {
+  private[models] def getContainer(c : Container, top : Boolean = false)(implicit db : Site.DB) : Seq[Slot] = {
     val row = containerRow(c)
-    SQL("SELECT " + row.select + " FROM " + baseSrc + " WHERE slot.source = {cont} ORDER BY slot.segment").
+    SQL("SELECT " + row.select + " FROM slot " + (if (top) "" else "LEFT ") + "JOIN toplevel_slot ON slot.id = toplevel_slot.slot WHERE slot.source = {cont} ORDER BY slot.segment").
       on('cont -> c.id).list(row)
   }
 
