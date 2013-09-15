@@ -57,11 +57,12 @@ private[store] class StoreDir[Id <: IntId[_]](conf : String) {
 object FileAsset extends StoreDir[models.FileAsset.Id]("store.master") {
   def store(id : models.FileAsset.Id, f : TemporaryFile) =
     f.moveTo(file(id))
-  def read(f : models.FileAsset) : StreamEnumerator =
-    StreamEnumerator.fromFile(file(f.id))
+  def read(f : models.BackedAsset) : StreamEnumerator =
+    StreamEnumerator.fromFile(file(f.sourceId))
 }
 
-object Segment extends StoreDir[models.Asset.Id]("store.cache") {
+private[store] object Segment extends StoreDir[models.Asset.Id]("store.cache") {
+  /* Cache filenames use millisecond resolution */
   private def cacheEnabled = base.exists
   implicit val executionContext : ExecutionContext = Akka.system.dispatchers.lookup("excerpt")
 
@@ -84,32 +85,32 @@ object Segment extends StoreDir[models.Asset.Id]("store.cache") {
       }
     } }
 
-  private def genFrame(id : models.Timeseries.Id, offset : Offset, cache : Boolean = true) : Future[StreamEnumerator] =
-    /* Using millisecond resolution: */
+  private def genFrame(id : models.Timeseries.Id, offset : Offset, cache : Boolean = true) : Future[StreamEnumerator] = {
+    val f = file(id, offset.millis.toLong.formatted(":%d"))
     if (cache && cacheEnabled)
-      generate(file(id, offset.millis.toLong.formatted(":%d")), (f : File) => media.AV.frame(FileAsset.file(id), offset, f), cache)
+      generate(f, (f : File) => media.AV.frame(FileAsset.file(id), offset, f), cache)
     else Future {
       StreamEnumerator(media.AV.frame(FileAsset.file(id), offset))
     }
+  }
 
-  private[store] def readFrame(t : models.Timeseries, offset : Offset) : Future[StreamEnumerator] =
-    genFrame(t.id, offset, offset.seconds == 0)
-  private[store] def readFrame(e : models.Clip, offset : Offset = 0) : Future[StreamEnumerator] =
-    genFrame(e.sourceId, e.segment.lowerBound.get+offset, offset.seconds == 0)
+  private def genSegment(id : models.Timeseries.Id, segment : Range[Offset], cache : Boolean = true) : Future[StreamEnumerator] = {
+    val f = file(id, ":%d-%d".format(segment.lowerBound.get.millis, segment.upperBound.get.millis))
+    generate(f, (f : File) => media.AV.segment(FileAsset.file(id), segment, f), cache)
+  }
 
-  private[store] def read(e : models.Clip) : Future[StreamEnumerator] = 
-    e.segment.singleton.fold {
-      generate(file(e.id), (f : File) => media.AV.segment(FileAsset.file(e.sourceId), e.segment, f))
-    } (genFrame(e.sourceId, _))
+  private[store] def readFrame(t : TimeseriesData, offset : Offset) : Future[StreamEnumerator] =
+    genFrame(t.sourceId, t.segment.lowerBound.get+offset, offset.seconds == 0)
+
+  private[store] def read(t : TimeseriesData) : Future[StreamEnumerator] = 
+    t.segment.singleton.fold(genSegment(t.sourceId, t.segment))(genFrame(t.sourceId, _))
 }
 
 object Asset {
-  def read(o : models.Asset) : Future[StreamEnumerator] = o match {
-    case f : models.FileAsset => Future.successful(FileAsset.read(f))
-    case e : models.Clip => Segment.read(e)
+  def read(o : BackedAsset) : Future[StreamEnumerator] = o match {
+    case t : TimeseriesData if !t.entire => Segment.read(t)
+    case _ => Future.successful(FileAsset.read(o))
   }
-  def readFrame(o : TimeseriesData, offset : Offset = 0) : Future[StreamEnumerator] = o match {
-    case t : models.Timeseries => Segment.readFrame(t, offset)
-    case e : models.Clip => Segment.readFrame(e, offset)
-  }
+  def readFrame(o : TimeseriesData, offset : Offset = 0) : Future[StreamEnumerator] =
+    Segment.readFrame(o, offset)
 }

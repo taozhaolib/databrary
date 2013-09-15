@@ -8,6 +8,7 @@ import          data._
 import               Forms._
 import          i18n.Messages
 import java.sql.Date
+import dbrary.{Offset,Range}
 import models._
 
 object Slot extends SiteController {
@@ -32,7 +33,7 @@ object Slot extends SiteController {
   private[this] def editFormFill(s : Slot) = editForm.fill((s.consent))
 
   private[this] def viewEdit(slot : Slot)(
-    editForm : SlotForm = editFormFill(slot))(
+    editForm : EditForm = editFormFill(slot))(
     implicit request : SiteRequest[_]) = {
     views.html.slot.edit(slot, editForm)
   }
@@ -51,24 +52,21 @@ object Slot extends SiteController {
     )
   }
 
-  type CreateForm = Form[(Offset, Offset)]
-  private[this] val createForm = Form(tuple(
+  type CreateForm = Form[(Option[Offset], Option[Offset])]
+  private[this] val createForm : CreateForm = Form(tuple(
     "start" -> optional(Field.offset),
     "end" -> optional(Field.offset)
-  ).verifying(Messages("range.invalid"), {
-    case (Some(s), Some(e)) => s <= e
-    case _ => true
-  }))
+  ).verifying(Messages("range.invalid"), !_.zipped.exists(_ > _)))
 
   def create(c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { cont => implicit request =>
     Ok(views.html.slot.create(cont, createForm))
   }
 
-  def add(c : models.Container.Id) = Container.check(s, Permission.CONTRIBUTE) { cont => implicit request =>
+  def add(c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { cont => implicit request =>
     createForm.bindFromRequest.fold(
-      form => BadRequest(views.html.slot.create(cont), form),
+      form => BadRequest(views.html.slot.create(cont, form)),
       { case (start, end) =>
-        val slot = models.Slot.getOrCreate(cont, Range[Offset](start, end)(PGSegment))
+        val slot = models.Slot.getOrCreate(cont, Range[Offset](start, end)(dbrary.PGSegment))
         Redirect(slot.pageURL)
       }
     )

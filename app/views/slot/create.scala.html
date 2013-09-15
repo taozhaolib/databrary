@@ -5,8 +5,8 @@
         <h1>@cont.toString: New Slot</h1>
 
 	@helper.form(routes.Slot.add(cont.id)) {
-		@helper.inputText(editForm("start"))
-		@helper.inputText(editForm("end"))
+		@helper.inputText(form("start"))
+		@helper.inputText(form("end"))
 		<button type='submit'>Add</button>
 	}
 	@widget.formErrors(form)

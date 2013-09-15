@@ -4,7 +4,7 @@
     <article>
         <h1>@slot.toString</h1>
 
-	@helper.form(routes.Slot.change(slot.id))) {
+	@helper.form(routes.Slot.change(slot.id)) {
 		@widget.enumSelect(form("consent"), Consent)
 		<button type='submit'>Change</button>
 	}

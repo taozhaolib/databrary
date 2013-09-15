@@ -10,6 +10,7 @@
 		'enctype -> "multipart/form-data") {
             @helper.inputText(form("name"))
             @helper.textarea(form("body"), 'cols -> 80, 'rows -> 4)
+            @helper.inputText(form("offset"))
 
             @if(controllers.Asset.formForFile(form)) {
 	        @widget.enumSelect(form("classification"), Classification)

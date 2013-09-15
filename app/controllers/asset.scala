@@ -33,10 +33,6 @@ object Asset extends SiteController {
     }
   }
 
-  def view(i : models.Container.Id, a : models.Asset.Id) = checkContainer(i, a) { link => implicit request =>
-    Ok(views.html.asset.view(link))
-  }
-
   def view(i : models.Slot.Id, a : models.Asset.Id) = checkSlot(i, a) { link => implicit request =>
     Ok(views.html.asset.view(link))
   }
@@ -58,61 +54,43 @@ object Asset extends SiteController {
         data)
     }) : Result) (_ => NotModified)
 
-  def download(i : models.Container.Id, o : models.Asset.Id, inline : Boolean) = checkContainer(i, o, Permission.DOWNLOAD) { link => implicit request =>
-    assetResult(
-      link.assetId.unId.formatted("obj:%d"),
-      store.Asset.read(link.asset),
-      link.asset.format,
-      if (inline) None else Some(link.name)
-    )
-  }
-
   def download(i : models.Slot.Id, o : models.Asset.Id, inline : Boolean) = checkSlot(i, o, Permission.DOWNLOAD) { link => implicit request =>
     assetResult(
       "sobj:%d:%d".format(link.slotId.unId, link.link.assetId.unId),
       store.Asset.read(link),
       link.link.asset.format,
-      if (inline) None else Some(link.name)
+      if (inline) None else Some(link.link.name)
     )
   }
 
-  def frameContainer(i : models.Container.Id, o : models.Asset.Id, offset : Offset = 0) = checkContainer(i, o, Permission.DOWNLOAD) { link => implicit request =>
-    dbrary.cast[TimeseriesData](link.asset).filter(offset >= 0 && offset < _.duration).fold(NotFound : Result) { ts =>
-      assetResult(
-        "frame:%d:%f".format(link.assetId.unId, offset.seconds),
-        store.Asset.readFrame(ts, offset),
-        link.asset.format.sampleFormat,
-        None
-      )
+  def frame(i : models.Slot.Id, o : models.Asset.Id, offset : Offset = 0) = checkSlot(i, o, Permission.DOWNLOAD) { link => implicit request =>
+    link match {
+      case ts : SlotTimeseries if offset >= 0 && offset < ts.duration =>
+        assetResult(
+          "sframe:%d:%d:%d".format(link.slotId.unId, link.link.assetId.unId, offset.millis),
+          store.Asset.readFrame(ts, offset),
+          ts.source.format.sampleFormat,
+          None
+        )
+      case _ => NotFound
     }
   }
-  def head(i : models.Container.Id, o : models.Asset.Id) = frameContainer(i, o)
+  def head(i : models.Slot.Id, o : models.Asset.Id) = frame(i, o)
 
-  def frameSlot(i : models.Slot.Id, o : models.Asset.Id, offset : Offset = 0) = checkSlot(i, o, Permission.DOWNLOAD) { link => implicit request =>
-    dbrary.cast[TimeseriesData](link).filter(offset >= 0 && offset < _.duration).fold(NotFound : Result) { ts =>
-      assetResult(
-        "sframe:%d:%d:%f".format(link.slotId.unId, link.link.assetId.unId, offset.seconds),
-        store.Asset.readFrame(ts, offset),
-        link.link.asset.format.sampleFormat,
-        None
-      )
-    }
-  }
-  def head(i : models.Slot.Id, o : models.Asset.Id) = frameSlot(i, o)
-
-  type AssetForm = Form[(String, String, Option[(Classification.Value, Unit)])]
+  type AssetForm = Form[(String, String, Option[Offset], Option[(Classification.Value, Unit)])]
   private[this] def assetForm(file : Boolean) : AssetForm = Form(tuple(
     "name" -> nonEmptyText,
     "body" -> text,
+    "offset" -> optional(Field.offset),
     "" -> MaybeMapping(Some(tuple(
       "classification" -> Field.enum(Classification),
       "file" -> ignored(()))).filter(_ => file))
   ))
 
   private[this] def formFill(link : ContainerAsset)(implicit site : Site) : AssetForm = {
-    /* Under what conditions should FileAsset data be allowed to be changed? */
-    assetForm(false).fill((link.name, link.body.getOrElse(""), None))
-    }
+    /* TODO Under what conditions should FileAsset data be allowed to be changed? */
+    assetForm(false).fill((link.name, link.body.getOrElse(""), link.offset, None))
+  }
 
   /* FIXME this doesn't work in error cases */
   def formForFile(form : AssetForm) = form.value.fold(false)(!_._3.isEmpty)
@@ -124,12 +102,12 @@ object Asset extends SiteController {
   def change(s : models.Container.Id, o : models.Asset.Id) = checkContainer(s, o, Permission.EDIT) { link => implicit request =>
     formFill(link).bindFromRequest.fold(
       form => BadRequest(views.html.asset.edit(Right(link), form)), {
-      case (name, body, file) =>
-        link.change(name = name, body = maybe(body))
+      case (name, body, offset, file) =>
+        link.change(name = name, body = maybe(body), offset = offset)
         /* file foreach {
           () => link.asset.asInstanceOf[models.FileAsset].change
         } */
-        Redirect(link.pageURL)
+        Redirect(link.container.pageURL)
       }
     )
   }
@@ -145,15 +123,15 @@ object Asset extends SiteController {
     val file = request.body.asMultipartFormData.flatMap(_.file("file"))
     (if (file.isEmpty) form.withError("file", "error.required") else form).fold(
       form => BadRequest(views.html.asset.edit(Left(container), form)), {
-      case (name, body, fileData) =>
+      case (name, body, offset, fileData) =>
         val (classification, ()) = fileData.get
         val f = file.get
         f.contentType.flatMap(AssetFormat.getMimetype(_)).fold(
           BadRequest(views.html.asset.edit(Left(container), form.withError("file", "file.format.unknown", f.contentType.getOrElse("unknown")))) : Result
         ) { format =>
           val asset = models.FileAsset.create(format, classification, f.ref)
-          val link = ContainerAsset.create(container, asset, maybe(name).getOrElse(f.filename), maybe(body))
-          Redirect(link.pageURL)
+          val link = ContainerAsset.create(container, asset, offset, maybe(name).getOrElse(f.filename), maybe(body))
+          Redirect(link.container.pageURL)
         }
       }
     )

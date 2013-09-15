@@ -7,36 +7,16 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
-/** A particular asset occupying a specific position within a context. */
-abstract trait SiteAsset extends SitePage {
-  def parent : SiteVolumeAssets
-  def link : ContainerAsset
-
-  /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
-    * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
-  def permission(implicit site : Site) : Permission.Value =
-    parent.dataPermission(link.asset.classification)
-
-  /** Start point of this asset with respect to the start of this context, or None for "global/floating". */
-  def offset : Option[Offset] = extent.flatMap(_.lowerBound)
-  protected def timeseries : Option[TimeseriesData] = cast[TimeseriesData](link.asset)
-  protected def duration : Offset = timeseries.fold(Offset(0))(_.duration)
-  /** Range of times that this asset covers within this context, or None for "global/floating". */
-  def extent : Option[Range[Offset]] = offset map { start =>
-    timeseries.fold(Range.singleton[Offset](start)(PGSegment))(ts => Range[Offset](start, start + ts.duration)(PGSegment))
-  }
-}
-
 /** An embedding or link (in the filesystem sense) of an asset within a container.
   * An asset link includes the asset and container, along with a name and description for that particular link.
   * Permissions are checked in msot cases, as indicated.
   */
-sealed class ContainerAsset protected (override val asset : Asset, val container : Container, offset_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with SiteAsset {
-  def parent = container
-  def link = this
+sealed class ContainerAsset protected (override val asset : Asset, val container : Container, offset_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with InVolume {
   def assetId = asset.id
   def containerId = container.id
   def id = (assetId, containerId)
+  def volume = container.volume
+  def volumeId = container.volumeId
   private[this] var _offset = offset_
   /** Start point of this asset within the container. */
   override def offset : Option[Offset] = _offset
@@ -56,16 +36,20 @@ sealed class ContainerAsset protected (override val asset : Asset, val container
     _body = body
   }
 
-  def pageName(implicit site : Site) = name
-  def pageParent(implicit site : Site) = Some(container)
-  def pageURL = controllers.routes.Asset.view(containerId, assetId).url
+  def duration : Offset = 0
+  /** Range of times that this asset covers, or None for "global/floating". */
+  def extent : Option[Range[Offset]] = offset.map(Range.singleton[Offset](_)(PGSegment))
 }
 
-final class TimeseriesContainer private[models] (override val asset : Asset with TimeseriesData, container : Container, offset : Option[Offset], name : String, body : Option[String]) extends ContainerAsset(asset, container, offset, name, body)
+final class ContainerTimeseries private[models] (override val asset : Asset with TimeseriesData, container : Container, offset_ : Option[Offset], name_ : String, body_ : Option[String]) extends ContainerAsset(asset, container, offset_, name_, body_) {
+  override def duration : Offset = asset.duration
+  override def extent : Option[Range[Offset]] = offset.map(start =>
+    Range[Offset](start, start + duration)(PGSegment))
+}
 
 object ContainerAsset extends Table[ContainerAsset]("asset_container") {
   private def make(asset : Asset, container : Container)(offset : Option[Offset], name : String, body : Option[String]) = asset match {
-    case ts : TimeseriesData => new TimeseriesContainer(ts, container, offset, name, body)
+    case ts : TimeseriesData => new ContainerTimeseries(ts, container, offset, name, body)
     case _ => new ContainerAsset(asset, container, offset, name, body)
   }
   private[models] val columns = Columns[
@@ -120,26 +104,38 @@ object ContainerAsset extends Table[ContainerAsset]("asset_container") {
 
 /** A segment of an asset as used in a slot.
   * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot) extends SiteAsset with BackedAsset {
-  def parent = slot
+sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot) extends SitePage with BackedAsset with InVolume {
   def slotId = slot.id
+  def volume = link.volume
+  def volumeId = link.volumeId
   def source = link.asset.source
   def sourceId = link.asset.sourceId
-  override def offset : Option[Offset] =
+  def offset : Option[Offset] =
     (for { s <- slot.segment.lowerBound ; l <- link.offset }
       yield ((l - s).max(0))).
       orElse(link.offset)
-  override protected def duration : Offset =
+  def duration : Offset =
     (for { s <- slot.segment.upperBound ; l <- link.offset }
-      yield ((s - l).min(super.duration))).
-      getOrElse(super.duration)
+      yield ((s - l).min(link.duration))).
+      getOrElse(link.duration)
+
+  /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
+    * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
+  def permission(implicit site : Site) : Permission.Value =
+    slot.dataPermission(link.asset.classification)
 
   def pageName(implicit site : Site) = link.name
   def pageParent(implicit site : Site) = Some(slot)
-  def pageURL = controllers.routes.Asset.view(slotId, assetId).url
+  def pageURL = controllers.routes.Asset.view(slotId, link.assetId).url
 }
 
-case class SlotTimeseries private[models] (override val link : TimeseriesContainer, val slot : Slot) extends SlotAsset(link, slot) with TimeseriesData {
+case class SlotTimeseries private[models] (override val link : ContainerTimeseries, val slot : Slot) extends SlotAsset(link, slot) with TimeseriesData {
+  def source = link.asset.source
+  def sourceId = link.asset.sourceId
+  def entire = link.asset.entire && link.offset.fold(true) { l =>
+    slot.segment.lowerBound.fold(true)(_ <= l) &&
+    slot.segment.upperBound.fold(true)(_ >= l + link.asset.duration)
+  }
   def segment = {
     val b = link.asset.segment
     val lb = b.lowerBound.get
@@ -156,7 +152,7 @@ case class SlotTimeseries private[models] (override val link : TimeseriesContain
 
 object SlotAsset {
   private def make(link : ContainerAsset, slot : Slot) = link match {
-    case ts : TimeseriesContainer => new SlotTimeseries(ts, slot)
+    case ts : ContainerTimeseries => new SlotTimeseries(ts, slot)
     case _ => new SlotAsset(link, slot)
   }
   private val condition = "(asset_container.offset IS NULL OR asset_container.offset <@ slot.segment OR segment_shift(segment(" + Asset.duration + "), asset_container.offset) && slot.segment)"
@@ -168,7 +164,7 @@ object SlotAsset {
       case (link ~ slot) => make(link, (Slot.make(link.container) _).tupled(slot))
     }
     SQL("SELECT " + row.select + " FROM " + ContainerAsset.src + " JOIN " + Slot.baseSrc + " ON container.id = slot.source WHERE slot.id = {slot} AND asset.id = {asset} AND " + condition).
-      on('asset -> asset, 'slot -> slot).list(row)
+      on('asset -> asset, 'slot -> slot).singleOpt(row)
   }
 
   /** Retrieve the list of all assets within the given slot. */

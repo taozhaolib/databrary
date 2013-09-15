@@ -95,6 +95,7 @@ case class Offset(seconds : Double)
   }
 }
 object Offset {
+  def apply(d : BigDecimal) : Offset = Offset(d.toDouble)
   def apply(i : PGInterval) : Offset =
     Offset(60*(60*(24*(30*(12.175*i.getYears + i.getMonths) + i.getDays) + i.getHours) + i.getMinutes) + i.getSeconds)
 

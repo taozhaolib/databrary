@@ -4,12 +4,13 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.data.validation._
 import util._
+import dbrary.Offset
 
 object Field {
   def enum(enum : Enumeration) = number(min=0, max=enum.maxId-1).transform[enum.Value](enum(_), _.id)
   /** Form field formatter for time offsets.
     * Currently this just uses a dumb seconds-only format. */
-  val offset = bigDecimal(8, 3).transform[dbrary.Offset](Offset(_), _.seconds)
+  val offset = bigDecimal(8, 3).transform[Offset](Offset(_), _.seconds)
 }
 
 object EmptyMapping extends Mapping[Unit] {

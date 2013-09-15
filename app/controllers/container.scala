@@ -47,7 +47,7 @@ object Container extends SiteController {
       form => BadRequest(viewEdit(cont)(editForm = form)),
       { case (name, date) =>
         cont.change(name = name, date = date)
-        Redirect(name.pageURL)
+        Redirect(cont.pageURL)
       }
     )
   }

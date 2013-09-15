@@ -4,7 +4,7 @@
     <article>
         <h1>@c.fold(_.toString + ": New Slot", c => c.toString + ": " + c.name)</h1>
 
-	@helper.form(c.fold(volume => routes.Container.add(volume.id), cont => routes.Container.change(container.id))) {
+	@helper.form(c.fold(volume => routes.Container.add(volume.id), cont => routes.Container.change(cont.id))) {
 		@helper.inputText(form("name"))
 		@helper.inputDate(form("date"))
 		<button type='submit'>@c.fold(_ => "Add", _ => "Change")</button>

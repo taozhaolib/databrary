@@ -290,6 +290,7 @@ CREATE TABLE "slot" (
 	Unique ("source", "segment")
 ) INHERITS ("object_segment");
 COMMENT ON TABLE "slot" IS 'Sections of containers selected for referencing, annotating, consenting, etc.';
+CREATE INDEX "slot_full_container_idx" ON "slot" ("source") WHERE "segment" = '(,)';
 
 CREATE VIEW "slot_nesting" ("child", "parent") AS 
 	SELECT c.id, p.id FROM slot c JOIN slot p ON c <@ p;

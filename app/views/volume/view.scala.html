@@ -19,7 +19,7 @@
 						<aside class="dates foot col_6">
 						@volume.creationAudit(request.db).map { creation =>
 							<span class="date created">
-								Created <time datetime="@creation.when" pubdate>@display.date(creation.when, "MMMM yyyy")</time></span>
+								Created <time datetime="@creation.when" pubdate>@display.dateFmtYM.format(creation.when)</time></span>
 						}
 						</aside>
 

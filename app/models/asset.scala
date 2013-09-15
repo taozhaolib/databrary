@@ -83,17 +83,17 @@ sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Ass
   /** Data classification for the data in this asset. */
   def classification : Classification.Value
 
-  /** AssetContainer via which this asset is linked into a container. */
-  def link(implicit site : Site) : Option[AssetContainer] = AssetContainer.get(this)
+  /** ContainerAsset via which this asset is linked into a container. */
+  def link(implicit site : Site) : Option[ContainerAsset] = ContainerAsset.get(this)
 }
 
 /** Assets which are backed by files on disk.
   * Currently this includes all of them. */
 trait BackedAsset {
   /** The backing asset from which this data is taken, which may be itself or a containing asset. */
-  def source : Asset
+  def source : FileAsset
   /** The backing asset from which this data is taken, which may be itself or a containing asset. */
-  def sourceId : Asset.Id = source.id
+  def sourceId : FileAsset.Id = source.id
 }
 
 /** Refinement (implicitly of Asset) for objects representing timeseries data. */
@@ -101,6 +101,7 @@ trait TimeseriesData extends BackedAsset {
   /** The range of times represented by this object.
     * Should be a valid, finite, bounded range. */
   def segment : Range[Offset]
+  def entire : Boolean
   /** Length of time represented by this object, which may be zero if it is a single sample. */
   def duration : Offset = segment.upperBound.flatMap(u => segment.lowerBound.map(u - _)).get
   def source : Timeseries
@@ -118,6 +119,7 @@ sealed class FileAsset protected[models] (override val id : FileAsset.Id, val fo
   * They are never created directly by users but through a conversion process on existing FileAssets. */
 final class Timeseries private[models] (override val id : Timeseries.Id, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset) extends FileAsset(id, format, classification) with TableRowId[Timeseries] with TimeseriesData {
   override def source = this
+  def entire = true
   def segment : Range[Offset] = Range[Offset](0, duration)(PGSegment)
 }
 
@@ -125,6 +127,7 @@ final class Timeseries private[models] (override val id : Timeseries.Id, overrid
   * These represent a selected, contiguous range (segment) of time within a Timeseries.
   */
 final class Clip private (override val id : Clip.Id, val source : Timeseries, val segment : Range[Offset]) extends Asset(id) with TableRowId[Clip] with TimeseriesData {
+  def entire = false
   def format = if (segment.isSingleton) source.format.sampleFormat else source.format
   def classification = source.classification
 }
