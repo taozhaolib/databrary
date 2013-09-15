@@ -6,7 +6,7 @@
 	@helper.select(form("inherit"), Permission.values.to(if (party.id.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
 }
 
-@template.crud("Edit Volume Permissions: " + volume.title) {
+@template.crud("Edit Volume Permissions: " + volume.name) {
     <article>
 		@crud.volumeHeader(volume)
 

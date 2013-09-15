@@ -32,10 +32,10 @@ object Volume extends SiteController {
 
   type VolumeForm = Form[(String, Option[String])]
   private[this] val editForm = Form(tuple(
-    "title" -> nonEmptyText,
-    "description" -> optional(text)
+    "name" -> nonEmptyText,
+    "body" -> optional(text)
   ))
-  private[this] def editFormFill(s : Volume) = editForm.fill((s.title, s.description))
+  private[this] def editFormFill(s : Volume) = editForm.fill((s.name, s.body))
 
   def edit(i : models.Volume.Id) = check(i, Permission.EDIT) { volume => implicit request =>
     Ok(views.html.volume.edit(Right(volume), editFormFill(volume)))
@@ -44,8 +44,8 @@ object Volume extends SiteController {
   def change(i : models.Volume.Id) = check(i, Permission.EDIT) { volume => implicit request =>
     editFormFill(volume).bindFromRequest.fold(
       form => BadRequest(views.html.volume.edit(Right(volume), form)),
-      { case (title, description) =>
-        volume.change(title = title, description = description.flatMap(maybe(_)))
+      { case (name, body) =>
+        volume.change(name = name, body = body.flatMap(maybe(_)))
         Redirect(volume.pageURL)
       }
     )
@@ -65,8 +65,8 @@ object Volume extends SiteController {
     else
       editForm.bindFromRequest.fold(
         form => BadRequest(views.html.volume.edit(Left(models.Party.get(owner).get), form)),
-        { case (title, description) =>
-          val volume = models.Volume.create(title, description)
+        { case (name, body) =>
+          val volume = models.Volume.create(name, body)
           VolumeAccess(volume.id, owner, Permission.ADMIN, Permission.CONTRIBUTE).set
           Redirect(volume.pageURL)
         }

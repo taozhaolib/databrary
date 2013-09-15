@@ -2,5 +2,5 @@
 
 <div class="citation">
     @volume.partyAccess(Permission.CONTRIBUTE)(request.db).map { a => @display.citeName(a.party.name), }
-    @volume.creationAudit(request.db).map { creation => (@display.date(creation.when, "YYYY"))}. @volume.title. <em>Databrary</em>. Retrieved @display.date(new java.util.Date(System.currentTimeMillis), "MMMM d, YYYY") from <a href="@routes.Volume.view(volume.id).absoluteURL()" title="@volume.title on Databrary.org">@routes.Volume.view(volume.id).absoluteURL()</a>.
+    @volume.creationAudit(request.db).map { creation => (@display.date(creation.when, "YYYY"))}. @volume.title. <em>Databrary</em>. Retrieved @display.dateFmtCite.format(new java.util.Date()) from <a href="@routes.Volume.view(volume.id).absoluteURL()" title="@volume.title on Databrary.org">@routes.Volume.view(volume.id).absoluteURL()</a>.
 </div>

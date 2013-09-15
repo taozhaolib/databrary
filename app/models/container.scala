@@ -7,11 +7,30 @@ import dbrary._
 import dbrary.Anorm._
 import util._
 
+abstract trait SiteVolumeAssets extends SitePage with InVolume {
+  type AssetLink <: SiteAsset
+  def assets(implicit db : Site.DB) : Seq[AssetLink]
+
+  def container : Container
+  def containerId : Container.Id = container.id
+  /** The date at which the contained data were collected.
+    * Note that this is covered (in part) by dataAccess permissions due to birthday/age restrictions. */
+  def date : Option[Date] = container.date
+
+  /** Effective consent for covered assets, or [[Consent.NONE]] if no matching consent. */
+  def consent(implicit db : Site.DB) : Consent
+  /** The level of access granted on data covered by this slot to the current user. */
+  def dataPermission(classification : Classification.Value = Classification.RESTRICTED)(implicit site : Site) =
+    Permission.data(permission, consent, classification)
+
+}
+
 /** Collection of related assets.
   * To be used, all assets must be placed into containers.
   * These containers can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.
   */
-final class Container protected (val id : Container.Id, val volume : Volume, val name_ : Option[String], val date_ : Option[Date]) extends TableRowId[Container] with SitePage with InVolume {
+final class Container protected (val id : Container.Id, val volume : Volume, val name_ : Option[String], val date_ : Option[Date]) extends TableRowId[Container] with SiteVolumeAssets {
+  def container = this
   private[this] var _name = name_
   /** Descriptive name to help with organization by contributors.
     * This (as with Container in general) is not necessarily intended for public consumption. */
@@ -19,7 +38,7 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
   private[this] var _date = date_
   /** The date at which the contained data were collected.
     * Note that this is covered (in part) by dataAccess permissions due to birthday/age restrictions. */
-  def date = _date
+  override def date = _date
 
   /** Update the given values in the database and this object in-place. */
   def change(name : Option[String] = _name, date : Option[Date] = _date)(implicit site : Site) : Unit = {
@@ -30,14 +49,20 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
     _date = date
   }
 
-  private[this] val _assets = CachedVal[Seq[AssetContainer], Site.DB](AssetContainer.getContainer(this)(_))
+  type AssetLink = ContainerAsset
+  private[this] val _assets = CachedVal[Seq[ContainerAsset], Site.DB](ContainerAsset.getContainer(this)(_))
   /** List of contained assets within this container. Cached. */
-  def assets(implicit db : Site.DB) : Seq[AssetContainer] = _assets
+  def assets(implicit db : Site.DB) : Seq[ContainerAsset] = _assets
   /** Look up a specific contained asset. */
-  def getAsset(o : Asset.Id)(implicit db : Site.DB) = AssetContainer.get(this, o)
+  def getAsset(o : Asset.Id)(implicit db : Site.DB) = ContainerAsset.get(this, o)
 
   /** List of slots on this container. */
   def slots(implicit db : Site.DB) : Seq[Slot] = Slot.getContainer(this)
+  private[this] val _fullSlot = CachedVal[Option[Slot], Site.DB](Slot.get(this)(_))
+  /** Slot that covers this entire container, if any. Cached. */
+  def fullSlot(implicit db : Site.DB) : Option[Slot] = _fullSlot
+  /** Effective consent for this container, if covered by a single slot. */
+  def consent(implicit db : Site.DB) = fullSlot.fold(Consent.NONE)(_.consent)
 
   def pageName(implicit site : Site) = date.toString // FIXME date permissions/useful title
   def pageParent(implicit site : Site) = Some(volume)
@@ -57,9 +82,13 @@ object Container extends TableId[Container]("container") {
 
   /** Retrieve an individual Container.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
-  def get(i : Id)(implicit site : Site) : Option[Container] =
-    SELECT("WHERE container.id = {id} AND", Volume.condition).
-      on('id -> i, 'identity -> site.identity.id).singleOpt()
+  def get(i : Id)(implicit site : Site) : Option[Container] = {
+    val cols = row ~ Slot.columns.? map { case (cont ~ slot) =>
+      cont._fullSlot() = slot.map((Slot.make(cont) _).tupled)
+    }
+    SELECT("SELECT " + cols.select + " FROM " + src + " LEFT JOIN " + Slot.baseSrc + " ON container.id = slot.source AND slot.segment = '(,)' WHERE container.id = {id} AND", Volume.condition).
+      on('id -> i, 'identity -> site.identity.id).singleOpt(cols)
+  }
 
   /** Retrieve all the containers in a given volume.
     * This does not check permissions as an existing volume implies visibility. */
@@ -77,14 +106,14 @@ object Container extends TableId[Container]("container") {
 /** Smallest organizatonal unit of related data.
   * Primarily used for an individual session of data with a single date and place.
   * Critically, contained data are should be covered by a single consent level and share the same annotations. */
-final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], val consent_ : Consent.Value = Consent.NONE) extends TableRowId[Slot] with Annotated with InVolume {
-  def containerId = container.id
+final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], val consent_ : Consent.Value = Consent.NONE) extends TableRowId[Slot] with AnnotatedInVolume with SiteVolumeAssets {
   private[this] var _consent = consent_
   def consent = _consent
   def volume = container.volume
 
   /** Update the given values in the database and this object in-place. */
   def change(consent : Consent.Value = _consent)(implicit site : Site) : Unit = {
+    /* TODO: check consent overlaps (or change the interface for this) */
     if (consent == _consent)
       return
     val ids = SQLArgs('slot -> id)
@@ -98,10 +127,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   /** Effective start point of this slot within the container. */
   def offset : Offset = segment.lowerBound.getOrElse(0)
 
-  /** The level of access granted on data covered by this slot to the current user. */
-  def dataPermission(classification : Classification.Value = Classification.RESTRICTED)(implicit site : Site) =
-    Permission.data(permission, consent, classification)
-
+  type AssetLink = SlotAsset
   /** List of contained asset segments within this slot. */
   def assets(implicit db : Site.DB) : Seq[SlotAsset] = SlotAsset.getSlot(this)
 
@@ -115,7 +141,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
 
 object Slot extends TableId[Slot]("slot") {
   import PGSegment.{column => segmentColumn}
-  private def make(container : Container)(id : Id, segment : Range[Offset], consent : Option[Consent.Value]) =
+  private[models] def make(container : Container)(id : Id, segment : Range[Offset], consent : Option[Consent.Value]) =
     new Slot(id, container, segment, consent.getOrElse(Consent.NONE))
   private[models] val columns = Columns[
     Id,  Range[Offset], Option[Consent.Value]](
@@ -123,14 +149,22 @@ object Slot extends TableId[Slot]("slot") {
   private[models] val row = (Container.row ~ columns) map {
     case (cont ~ slot) => (make(cont) _).tupled(slot) 
   }
-  private val baseSrc = "slot LEFT JOIN slot_consent ON slot.id = slot_consent.slot"
+  private[models] val baseSrc = "slot LEFT JOIN slot_consent ON slot.id = slot_consent.slot"
   private[models] override val src = baseSrc + " JOIN " + Container.src + " ON slot.source = container.id"
+
+  val fullRange = Range.full[Offset](PGSegment)
 
   /** Retrieve an individual Slot.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   def get(i : Id)(implicit site : Site) : Option[Slot] =
     SELECT("WHERE slot.id = {id} AND", Volume.condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt()
+
+  /** Retrieve an individual Slot by Container and segment.
+    * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
+  private[models] def get(container : Container, segment : Range[Offset] = fullRange)(implicit db : Site.DB) : Option[Slot] =
+    SQL("SELECT " + columns.select + " FROM " + baseSrc + " WHERE slot.source = {cont} AND slot.segment = {seg}").
+      on('cont -> container.id, 'seg -> segment).list(columns.map(make(container) _))
 
   /** Retrieve a list of slots within the given container.
     * This does not check permissions as an existing volume implies visibility. */
@@ -144,9 +178,10 @@ object Slot extends TableId[Slot]("slot") {
     SELECT("JOIN slot_annotation ON slot.id = slot_annotation.slot WHERE slot_annotation.annotation = {annot} ORDER BY slot.source, slot.segment").
       on('annot -> a).list
     
-  /** Create a new slot in the specified container. */
-  def create(container : Container, segment : Range[Offset] = Range.full[Offset](PGSegment))(implicit site : Site) : Slot = {
-    val id = Audit.add(table, SQLArgs('container -> container.id, 'segment -> segment), "id").single(scalar[Id])
-    new Slot(id, container, segment)
-  }
+  /** Create a new slot in the specified container or return a matching one if it already exists. */
+  def getOrCreate(container : Container, segment : Range[Offset] = fullRange)(implicit site : Site) : Slot =
+    get(container, segment) getOrElse {
+      val id = Audit.add(table, SQLArgs('container -> container.id, 'segment -> segment), "id").single(scalar[Id])
+      new Slot(id, container, segment)
+    }
 }

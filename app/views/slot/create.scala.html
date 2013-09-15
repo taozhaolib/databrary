@@ -1,0 +1,14 @@
+@(cont : Container, form : controllers.Slot.CreateForm)(implicit request : SiteRequest[_])
+
+@template.crud("Create Slot in Container: " + cont.toString) {
+    <article>
+        <h1>@cont.toString: New Slot</h1>
+
+	@helper.form(routes.Slot.add(cont.id)) {
+		@helper.inputText(editForm("start"))
+		@helper.inputText(editForm("end"))
+		<button type='submit'>Add</button>
+	}
+	@widget.formErrors(form)
+    </article>
+}

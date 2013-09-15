@@ -1,4 +1,4 @@
-@(target : Either[Container,AssetLink], form : controllers.Asset.AssetForm)(implicit request : SiteRequest[_])
+@(target : Either[Container,ContainerAsset], form : controllers.Asset.AssetForm)(implicit request : SiteRequest[_])
 
 @template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.toString())) {
     <article>
@@ -8,8 +8,8 @@
 		container => routes.Asset.upload(container.id),
 		link => routes.Asset.change(link.containerId, link.assetId)),
 		'enctype -> "multipart/form-data") {
-            @helper.inputText(form("title"))
-            @helper.textarea(form("description"), 'cols -> 80, 'rows -> 4)
+            @helper.inputText(form("name"))
+            @helper.textarea(form("body"), 'cols -> 80, 'rows -> 4)
 
             @if(controllers.Asset.formForFile(form)) {
 	        @widget.enumSelect(form("classification"), Classification)

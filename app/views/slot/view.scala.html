@@ -8,6 +8,13 @@
 		<a href="@routes.Slot.edit(slot.id)">edit</a>
 	}
 
+	<dl>
+	@slot.container.date.map { _ =>
+		<dt>Date</dt>
+		<dd>@display.date(slot)</dd>
+	}
+	</dl>
+
 	@widget.recordList(slot, slot.permission)
 
 	@widget.assetList(slot)

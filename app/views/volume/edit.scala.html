@@ -1,12 +1,12 @@
 @(a : Either[Party,Volume], editForm : controllers.Volume.VolumeForm)(implicit request : SiteRequest[_])
 
-@template.crud(a.fold(_.toString + ": Create Volume", "Edit Volume: " + _.title)) {
+@template.crud(a.fold(_.toString + ": Create Volume", "Edit Volume: " + _.name)) {
     <article>
 	@a.fold(crud.partyHeader(_), crud.volumeHeader(_))
 
 	@helper.form(a.fold(p => routes.Volume.add(p.id), s => routes.Volume.change(s.id))) {
-            @helper.inputText(editForm("title"))
-            @helper.textarea(editForm("description"), 'cols -> 80, 'rows -> 8)
+            @helper.inputText(editForm("name"))
+            @helper.textarea(editForm("body"), 'cols -> 80, 'rows -> 8)
 	    <button type='submit'>@a.fold(_ => "Create", _ => "Change")</button>
         }
         @widget.formErrors(editForm)

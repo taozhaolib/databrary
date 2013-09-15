@@ -1,12 +1,12 @@
 @(volume: Volume, assetMap: (Map[String, Seq[AssetLink]], Map[String, Seq[AssetLink]]))(implicit request: SiteRequest[_])
 
-@template.crud("Volume: " + volume.title) {
+@template.crud("Volume: " + volume.name) {
 	<article id="volume_@volume.id.unId" class="volume">
 		@crud.volumeHeader(volume)
 
 		<div class="row">
 			<div class="description col_6">
-			@volume.description.map(display.plainText _)
+			@volume.body.map(display.plainText _)
 			</div>
 
 			<footer class="extended col_6">

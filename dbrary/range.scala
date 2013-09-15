@@ -34,12 +34,14 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
   val upperClosed : Boolean
   def lowerPoint : Option[A] = if (lowerClosed) lowerBound else lowerBound.flatMap(lb => dt.map(_.increment(lb)))
   def upperPoint : Option[A] = if (upperClosed) upperBound else upperBound.flatMap(ub => dt.map(_.decrement(ub)))
-  def isEmpty : Boolean = lowerBound.fold(false) { l => upperBound.fold(false) { u =>
-    if (lowerClosed && upperClosed) 
-      t.gt(l, u)
-    else
-      t.gteq(l, u)
-  } }
+  def isEmpty : Boolean =
+    (for { l <- lowerBound ; u <- upperBound }
+     yield {
+      if (lowerClosed && upperClosed) 
+        t.gt(l, u)
+      else
+        t.gteq(l, u)
+    }).getOrElse(false)
   def singleton : Option[A] = 
     if (isEmpty)
       None
@@ -111,6 +113,12 @@ object Range {
     val upperBound = Some(ub)
     val lowerClosed = true
     val upperClosed = implicitly[RangeType[A]].isInstanceOf[DiscreteRangeType[A]] || lb == ub
+  }
+  def apply[A : RangeType](lb : Option[A], ub : Option[A]) : Range[A] = new Range[A] {
+    val lowerBound = lb
+    val upperBound = ub
+    val lowerClosed = lb.isDefined
+    val upperClosed = ub.fold(false)(_ => implicitly[RangeType[A]].isInstanceOf[DiscreteRangeType[A]] || lb == ub)
   }
   def apply[A : RangeType](lc : Boolean, lb : Option[A], ub : Option[A], uc : Boolean) : Range[A] = new Range[A] {
     val lowerBound = lb

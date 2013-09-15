@@ -8,12 +8,18 @@ import dbrary.Anorm._
 import util._
 
 /** A particular asset occupying a specific position within a context. */
-private[models] abstract trait PositionedAsset {
-  def asset : Asset
-  def assetId : Asset.Id
+abstract trait SiteAsset extends SitePage {
+  def parent : SiteVolumeAssets
+  def link : ContainerAsset
+
+  /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
+    * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
+  def permission(implicit site : Site) : Permission.Value =
+    parent.dataPermission(link.asset.classification)
+
   /** Start point of this asset with respect to the start of this context, or None for "global/floating". */
   def offset : Option[Offset] = extent.flatMap(_.lowerBound)
-  protected def timeseries : Option[TimeseriesData] = cast[TimeseriesData](asset)
+  protected def timeseries : Option[TimeseriesData] = cast[TimeseriesData](link.asset)
   protected def duration : Offset = timeseries.fold(Offset(0))(_.duration)
   /** Range of times that this asset covers within this context, or None for "global/floating". */
   def extent : Option[Range[Offset]] = offset map { start =>
@@ -25,7 +31,9 @@ private[models] abstract trait PositionedAsset {
   * An asset link includes the asset and container, along with a name and description for that particular link.
   * Permissions are checked in msot cases, as indicated.
   */
-sealed class AssetContainer protected (override val asset : Asset, val container : Container, offset_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with SitePage with PositionedAsset {
+sealed class ContainerAsset protected (override val asset : Asset, val container : Container, offset_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with SiteAsset {
+  def parent = container
+  def link = this
   def assetId = asset.id
   def containerId = container.id
   def id = (assetId, containerId)
@@ -53,12 +61,12 @@ sealed class AssetContainer protected (override val asset : Asset, val container
   def pageURL = controllers.routes.Asset.view(containerId, assetId).url
 }
 
-final class TimeseriesContainer private[models] (override val asset : Asset with TimeseriesData, container : Container, offset : Option[Offset], name : String, body : Option[String]) extends AssetContainer(asset, container, offset, name, body)
+final class TimeseriesContainer private[models] (override val asset : Asset with TimeseriesData, container : Container, offset : Option[Offset], name : String, body : Option[String]) extends ContainerAsset(asset, container, offset, name, body)
 
-object AssetContainer extends Table[AssetContainer]("asset_container") {
+object ContainerAsset extends Table[ContainerAsset]("asset_container") {
   private def make(asset : Asset, container : Container)(offset : Option[Offset], name : String, body : Option[String]) = asset match {
     case ts : TimeseriesData => new TimeseriesContainer(ts, container, offset, name, body)
-    case _ => new AssetContainer(asset, container, offset, name, body)
+    case _ => new ContainerAsset(asset, container, offset, name, body)
   }
   private[models] val columns = Columns[
     Option[Offset], String,  Option[String]](
@@ -72,14 +80,14 @@ object AssetContainer extends Table[AssetContainer]("asset_container") {
   }
   private[models] override val src = containerSrc + " JOIN " + Container.src + " ON asset_container.container = container.id"
 
-  /** Retrieve a specific asset link by asset id.
+  /** Retrieve a specific asset link by asset id and container id.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access on the container. */
-  private[models] def get(asset : Asset.Id)(implicit site : Site) : Option[AssetContainer] =
-    SELECT("WHERE asset_container.asset = {asset} AND", Volume.condition).
-    on('asset -> asset, 'identity -> site.identity.id).singleOpt()
+  def get(asset : Asset.Id, container : Container.Id)(implicit site : Site) : Option[ContainerAsset] =
+    SELECT("WHERE asset_container.asset = {asset} AND asset_container.container = {cont} AND", Volume.condition).
+    on('asset -> asset, 'cont -> container, 'identity -> site.identity.id).singleOpt()
   /** Retrieve a specific asset link by asset.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access on the container. */
-  private[models] def get(asset : Asset)(implicit site : Site) : Option[AssetContainer] = {
+  private[models] def get(asset : Asset)(implicit site : Site) : Option[ContainerAsset] = {
     val row = (Container.row ~ columns) map {
       case (cont ~ link) => (make(asset, cont) _).tupled(link)
     }
@@ -88,7 +96,7 @@ object AssetContainer extends Table[AssetContainer]("asset_container") {
   }
   /** Retrieve a specific asset link by container and asset id.
     * This assumes that permissions have already been checked as the caller must already have the container. */
-  private[models] def get(container : Container, asset : Asset.Id)(implicit db : Site.DB) : Option[AssetContainer] = {
+  private[models] def get(container : Container, asset : Asset.Id)(implicit db : Site.DB) : Option[ContainerAsset] = {
     val row = containerRow(container)
     SQL("SELECT " + row.select + " FROM " + containerSrc + " WHERE asset_container.container = {container} AND asset_container.asset = {asset}").
       on('container -> container.id, 'asset -> asset).singleOpt(row)
@@ -96,7 +104,7 @@ object AssetContainer extends Table[AssetContainer]("asset_container") {
 
   /** Retrieve the set of assets directly contained by a single container.
     * This assumes that permissions have already been checked as the caller must already have the container. */
-  private[models] def getContainer(container : Container)(implicit db : Site.DB) : Seq[AssetContainer] = {
+  private[models] def getContainer(container : Container)(implicit db : Site.DB) : Seq[ContainerAsset] = {
     val row = containerRow(container)
     SQL("SELECT " + row.select + " FROM " + containerSrc + " WHERE asset_container.container = {container}").
       on('container -> container.id).list(row)
@@ -104,49 +112,69 @@ object AssetContainer extends Table[AssetContainer]("asset_container") {
 
   /** Create a new link between an asset and a container.
     * This can change effective permissions on this asset, so care must be taken when using this function with existing assets. */
-  def create(container : Container, asset : Asset, offset : Option[Offset] = None, name : String, body : Option[String] = None)(implicit site : Site) : AssetContainer = {
+  def create(container : Container, asset : Asset, offset : Option[Offset] = None, name : String, body : Option[String] = None)(implicit site : Site) : ContainerAsset = {
     Audit.add(table, SQLArgs('container -> container.id, 'asset -> asset.id, 'offset -> offset, 'name -> name, 'body -> body)).execute()
-    new AssetContainer(asset, container, offset, name, body)
+    new ContainerAsset(asset, container, offset, name, body)
   }
 }
 
 /** A segment of an asset as used in a slot.
-  * This is a "virtual" model representing an AssetContainer within the context of a Slot. */
-sealed class SlotAsset protected (val link : AssetContainer, val slot : Slot) extends PositionedAsset with BackedAsset {
-  def asset = link.asset
-  def assetId = link.assetId
+  * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
+sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot) extends SiteAsset with BackedAsset {
+  def parent = slot
+  def slotId = slot.id
   def source = link.asset.source
   def sourceId = link.asset.sourceId
   override def offset : Option[Offset] =
-    slot.segment.lowerBound.flatMap(s => link.offset.map(l => (l - s).max(0))).orElse(link.offset)
+    (for { s <- slot.segment.lowerBound ; l <- link.offset }
+      yield ((l - s).max(0))).
+      orElse(link.offset)
   override protected def duration : Offset =
-    slot.segment.upperBound.flatMap(s => link.offset.map(l => (s - l).min(super.duration))).getOrElse(super.duration)
+    (for { s <- slot.segment.upperBound ; l <- link.offset }
+      yield ((s - l).min(super.duration))).
+      getOrElse(super.duration)
 
-  /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
-    * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
-  def permission(implicit site : Site) : Permission.Value =
-    slot.dataPermission(link.asset.classification)
+  def pageName(implicit site : Site) = link.name
+  def pageParent(implicit site : Site) = Some(slot)
+  def pageURL = controllers.routes.Asset.view(slotId, assetId).url
 }
 
 case class SlotTimeseries private[models] (override val link : TimeseriesContainer, val slot : Slot) extends SlotAsset(link, slot) with TimeseriesData {
   def segment = {
     val b = link.asset.segment
     val lb = b.lowerBound.get
-    val lbn = slot.segment.lowerBound.flatMap(l => link.offset.map(l - _)).fold(lb)(lb + _.max(0))
     val ub = b.upperBound.get
-    val ubn = slot.segment.upperBound.flatMap(u => link.offset.map(u - _)).fold(ub)(lbn + _.min(ub - lbn))
+    val lbn = (for { s <- slot.segment.lowerBound ; l <- link.offset }
+      yield (lb + (s - l).max(0))).
+      getOrElse(lb)
+    val ubn = (for { s <- slot.segment.lowerBound ; l <- link.offset }
+      yield (lbn + (s - l).min(ub - lbn))).
+      getOrElse(ub)
     Range[Offset](lbn, ubn)(PGSegment)
   }
 }
 
 object SlotAsset {
-  private def make(link : AssetContainer, slot : Slot) = link match {
+  private def make(link : ContainerAsset, slot : Slot) = link match {
     case ts : TimeseriesContainer => new SlotTimeseries(ts, slot)
     case _ => new SlotAsset(link, slot)
   }
+  private val condition = "(asset_container.offset IS NULL OR asset_container.offset <@ slot.segment OR segment_shift(segment(" + Asset.duration + "), asset_container.offset) && slot.segment)"
+
+  /** Retrieve a single SlotAsset by asset id and slot id.
+    * This checks permissions on the slot('s container's volume). */
+  def get(asset : Asset.Id, slot : Slot.Id)(implicit db : Site.DB) : Option[SlotAsset] = {
+    val row = ContainerAsset.row ~ Slot.columns map {
+      case (link ~ slot) => make(link, (Slot.make(link.container) _).tupled(slot))
+    }
+    SQL("SELECT " + row.select + " FROM " + ContainerAsset.src + " JOIN " + Slot.baseSrc + " ON container.id = slot.source WHERE slot.id = {slot} AND asset.id = {asset} AND " + condition).
+      on('asset -> asset, 'slot -> slot).list(row)
+  }
+
+  /** Retrieve the list of all assets within the given slot. */
   private[models] def getSlot(slot : Slot)(implicit db : Site.DB) : Seq[SlotAsset] = {
-    val row = AssetContainer.containerRow(slot.container).map(make(_, slot))
-    SQL("SELECT " + row.select + " FROM " + AssetContainer.containerSrc + " WHERE asset_container.container = {container} AND (asset_container.offset IS NULL OR asset_container.offset <@ slot.segment OR segment_shift(segment(" + Asset.duration + "), asset_container.offset) && slot.segment)").
+    val row = ContainerAsset.containerRow(slot.container).map(make(_, slot))
+    SQL("SELECT " + row.select + " FROM " + ContainerAsset.containerSrc + " WHERE asset_container.container = {container} AND " + condition).
       on('container -> slot.container.id).list(row)
   }
 }

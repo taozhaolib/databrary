@@ -38,7 +38,7 @@ object Party extends SiteController {
         "password" -> optional(text(7)),
         "again" -> text,
         "openid" -> text(0,256)
-      ).verifying(Messages("password.again"), { f => f._2.fold(true)(_ == f._3) })))
+      ).verifying(Messages("password.again"), f => f._2.fold(true)(_ == f._3))))
     )).fill((e.name, e.orcid, acct.map(a => (a.email, None, "", a.openid.getOrElse("")))))
   }
 

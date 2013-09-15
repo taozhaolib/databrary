@@ -7,9 +7,9 @@
         @list.map { volume =>
             <article id="volume_@volume.id.unId" class="volume volume_roll cf">
                 <div class="row">
-                    <a href="@routes.Volume.view(volume.id)" class="block cf" title="@volume.title">
+                    <a href="@routes.Volume.view(volume.id)" class="block cf" title="@volume.name">
                         <header class="column_full">
-                            <h1>@volume.title</h1>
+                            <h1>@volume.name</h1>
                         </header>
 
                         <aside class="thumb col_4 cf">
@@ -30,7 +30,7 @@
                             </footer>
 
                             <div class="description">
-                            @display.plainTextSummary(volume.description.getOrElse(""), 2)
+			    @volume.body.map(display.plainTextSummary(_, 2))
                             </div>
                         </div>
                     </a>

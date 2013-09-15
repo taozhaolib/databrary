@@ -1,0 +1,42 @@
+@(container : Container)(implicit request : SiteRequest[_])
+
+@template.crud("Container: " + container.toString) {
+    <article>
+        <h1>@container.toString: @container.name</h1>
+
+	@if(container.permission >= Permission.EDIT) {
+		<a href="@routes.Container.edit(container.id)">edit</a>
+	}
+
+	<dl>
+	@container.date.map { d =>
+		<dt>Date</dt>
+		<dd>@display.fuzzyDate(d, container.permission < Permission.EDIT)</dd>
+	}
+	<dl>
+
+	@widget.assetList(container)
+
+	@if(container.permission >= Permission.CONTRIBUTE) {
+	    <div class="arealinks">
+		<a class="button mhead" href="@routes.Asset.create(container.id)" title="Add new asset">Add</a>
+	    </div>
+	}
+
+	<table>
+		<tr>
+			<th>Slot</th>
+			<th>Range</th>
+			<th>Consent</th>
+		</tr>
+		@container.slots.map { slot =>
+		<tr>
+			<td>@display(slot)</td>
+			<td>@slot.segment</td>
+			<td>@slot.consent</td>
+		</tr>
+		}
+	</table>
+
+    </article>
+}

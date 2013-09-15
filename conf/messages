@@ -7,3 +7,4 @@ measure.unknown=Invalid or unknown type of measure.
 measure.bad=Invalid value for measure.
 orcid.invalid=Invalid ORCID iD
 password.again=Passwords do not match.
+range.invalid=Invalid time range

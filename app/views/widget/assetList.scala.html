@@ -1,8 +1,9 @@
-@(container: Container)(implicit request: SiteRequest[_])
+@(container : HasAssets)(implicit request: SiteRequest[_])
 
 <table class="assets">
     <colgroup>
         <col class="main">
+        <col class="meta">
         <col class="meta">
         <col class="meta">
     </colgroup>
@@ -12,22 +13,19 @@
             <th class="main">Title</th>
             <th class="meta">Format</th>
             <th class="meta">Classification</th>
+            <th class="meta">Position</th>
         </tr>
     </thead>
 
     <tbody>
-        @container.assets.filter(_.permission >= Permission.VIEW).map { link =>
+        @container.assets.map { link =>
             <tr>
                 <td class="main">@display(link)</td>
 				<td>@link.asset.format.name</td>
 				<td>@link.asset.classification</td>
+				<td>@link.extent</td>
             </tr>
         }
     </tbody>
-</table>
 
-@if(container.permission >= Permission.CONTRIBUTE) {
-    <div class="arealinks">
-        <a class="button mhead" href="@routes.Asset.create(container.id)" title="Add new asset">Add</a>
-    </div>
-}
+</table>

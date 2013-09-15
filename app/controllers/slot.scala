@@ -25,17 +25,16 @@ object Slot extends SiteController {
     Ok(views.html.slot.view(slot))
   }
 
-  type SlotForm = Form[(Consent.Value, Date)]
-  private[this] val editForm = Form(tuple(
-    "consent" -> Field.enum(Consent),
-    "date" -> sqlDate
-  ))
-  private[this] def editFormFill(s : Slot) = editForm.fill((s.consent, s.date))
+  type EditForm = Form[(Consent.Value)]
+  private[this] val editForm = Form(
+    "consent" -> Field.enum(Consent)
+  )
+  private[this] def editFormFill(s : Slot) = editForm.fill((s.consent))
 
   private[this] def viewEdit(slot : Slot)(
     editForm : SlotForm = editFormFill(slot))(
     implicit request : SiteRequest[_]) = {
-    views.html.slot.edit(Right(slot), editForm)
+    views.html.slot.edit(slot, editForm)
   }
 
   def edit(i : models.Slot.Id) = check(i, Permission.EDIT) { slot => implicit request =>
@@ -43,28 +42,36 @@ object Slot extends SiteController {
   }
 
   def change(i : models.Slot.Id) = check(i, Permission.EDIT) { slot => implicit request =>
-    val form = editFormFill(slot).bindFromRequest
-    form.fold(
+    editFormFill(slot).bindFromRequest.fold(
       form => BadRequest(viewEdit(slot)(editForm = form)),
-      { case (consent, date) =>
-        slot.change(consent = consent, date = date)
+      { case (consent) =>
+        slot.change(consent = consent)
         Redirect(slot.pageURL)
       }
     )
   }
 
-  def create(s : models.Volume.Id) = Volume.check(s, Permission.CONTRIBUTE) { volume => implicit request =>
-    Ok(views.html.slot.edit(Left(volume), editForm))
+  type CreateForm = Form[(Offset, Offset)]
+  private[this] val createForm = Form(tuple(
+    "start" -> optional(Field.offset),
+    "end" -> optional(Field.offset)
+  ).verifying(Messages("range.invalid"), {
+    case (Some(s), Some(e)) => s <= e
+    case _ => true
+  }))
+
+  def create(c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { cont => implicit request =>
+    Ok(views.html.slot.create(cont, createForm))
   }
 
-  def add(s : models.Volume.Id) = Volume.check(s, Permission.CONTRIBUTE) { volume => implicit request =>
-    val form = editForm.bindFromRequest
-    form.fold(
-      form => BadRequest(views.html.slot.edit(Left(volume), form)),
-      { case (consent, date) =>
-        val slot = models.Slot.create(volume = volume, consent = consent, date = date)
-        Created(views.html.slot.view(slot))
+  def add(c : models.Container.Id) = Container.check(s, Permission.CONTRIBUTE) { cont => implicit request =>
+    createForm.bindFromRequest.fold(
+      form => BadRequest(views.html.slot.create(cont), form),
+      { case (start, end) =>
+        val slot = models.Slot.getOrCreate(cont, Range[Offset](start, end)(PGSegment))
+        Redirect(slot.pageURL)
       }
     )
   }
+
 }

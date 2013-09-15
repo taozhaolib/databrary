@@ -47,15 +47,16 @@ object display {
 
   def agerange(a : dbrary.Range[Long]) : String = range(age)(a)
 
-  private val dateFmtY = new SimpleDateFormat("yyyy")
-  private val dateFmtYM = new SimpleDateFormat("MMMM yyyy")
-  private val dateFmtYMD = new SimpleDateFormat("yyyy-MMM-dd")
+  val dateFmtY = new SimpleDateFormat("yyyy")
+  val dateFmtYM = new SimpleDateFormat("MMMM yyyy")
+  val dateFmtYMD = new SimpleDateFormat("yyyy-MMM-dd")
+  val dateFmtCite = new SimpleDateFormat("MMMM d, YYYY")
 
-  def date(t : java.util.Date, format : String) : String =
-    new SimpleDateFormat(format).format(t)
+  def fuzzyDate(date : Date, fuzzy : Boolean = true)(implicit site : Site) =
+    (if (fuzzy) dateFmtY else dateFmtYMD).format(date)
 
   def date(s : Slot)(implicit site : Site) =
-    (if (s.dataAccess() >= Permission.DOWNLOAD) dateFmtYMD else dateFmtY).format(s.date)
+    s.container.date.map(fuzzyDate(_, s.dataPermission() < Permission.DOWNLOAD))
 
   def plainText(text: String = "") =
     raw("<p>"+text.replaceAll("\\r?\\n", "</p><p>")+"</p>")
