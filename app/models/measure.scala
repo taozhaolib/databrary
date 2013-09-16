@@ -131,7 +131,7 @@ object Metric extends TableId[MetricBase]("metric") {
     * [[Classification.DEIDENTIFIED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
   object Ident extends Metric[String](IDENT, "ident", Classification.DEIDENTIFIED)
   /** Date of birth for any records representing organisms or other entities with dates of origination.
-    * These are treated specially in combination with [[Slot.date]] to compute ages.
+    * These are treated specially in combination with [[Container.date]] to compute ages.
     * [[Classification.IDENTIFIED]] implies all authorized researchers get full access to these. */
   object Birthdate extends Metric[Date](BIRTHDATE, "birthdate", Classification.IDENTIFIED)
   /** Gender is treated as a text enumeration. */

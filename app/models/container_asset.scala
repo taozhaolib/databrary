@@ -30,7 +30,7 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   def change(offset : Option[Offset] = _offset, name : String = _name, body : Option[String] = _body)(implicit site : Site) : Unit = {
     if (offset == _offset && name == _name && body == _body)
       return
-    Audit.change("asset_container", SQLArgs('offset -> offset, 'name -> name, 'body -> body), SQLArgs('container -> containerId, 'asset -> assetId)).execute()
+    Audit.change("container_asset", SQLArgs('offset -> offset, 'name -> name, 'body -> body), SQLArgs('container -> containerId, 'asset -> assetId)).execute()
     _name = name
     _body = body
   }
@@ -46,7 +46,7 @@ final class ContainerTimeseries private[models] (override val asset : Asset with
     Range[Offset](start, start + duration)(PGSegment))
 }
 
-object ContainerAsset extends Table[ContainerAsset]("asset_container") {
+object ContainerAsset extends Table[ContainerAsset]("container_asset") {
   private[models] def make(asset : Asset, container : Container)(offset : Option[Offset], name : String, body : Option[String]) = asset match {
     case ts : TimeseriesData => new ContainerTimeseries(ts, container, offset, name, body)
     case _ => new ContainerAsset(asset, container, offset, name, body)
@@ -57,16 +57,16 @@ object ContainerAsset extends Table[ContainerAsset]("asset_container") {
   private[models] def containerRow(cont : Container) = (Asset.row ~ columns) map {
     case (asset ~ link) => (make(asset, cont) _).tupled(link)
   }
-  private[models] val containerSrc = "asset_container JOIN " + Asset.src + " ON asset_container.asset = asset.id"
+  private[models] val containerSrc = "container_asset JOIN " + Asset.src + " ON container_asset.asset = asset.id"
   private[models] val row = (Asset.row ~ Container.row ~ columns) map {
     case (asset ~ cont ~ link) => (make(asset, cont) _).tupled(link)
   }
-  private[models] override val src = containerSrc + " JOIN " + Container.src + " ON asset_container.container = container.id"
+  private[models] override val src = containerSrc + " JOIN " + Container.src + " ON container_asset.container = container.id"
 
   /** Retrieve a specific asset link by asset id and container id.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access on the container. */
   def get(asset : Asset.Id, container : Container.Id)(implicit site : Site) : Option[ContainerAsset] =
-    SELECT("WHERE asset_container.asset = {asset} AND asset_container.container = {cont} AND", Volume.condition).
+    SELECT("WHERE container_asset.asset = {asset} AND container_asset.container = {cont} AND", Volume.condition).
     on('asset -> asset, 'cont -> container, 'identity -> site.identity.id).singleOpt()
   /** Retrieve a specific asset link by asset.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access on the container. */
@@ -74,14 +74,14 @@ object ContainerAsset extends Table[ContainerAsset]("asset_container") {
     val row = (Container.row ~ columns) map {
       case (cont ~ link) => (make(asset, cont) _).tupled(link)
     }
-    SQL("SELECT " + row.select + " FROM asset_container JOIN " + Container.src + " ON asset_container.container = container.id WHERE asset_container.asset = {asset} AND " + Volume.condition).
+    SQL("SELECT " + row.select + " FROM container_asset JOIN " + Container.src + " ON container_asset.container = container.id WHERE container_asset.asset = {asset} AND " + Volume.condition).
       on('asset -> asset.id, 'identity -> site.identity.id).singleOpt(row)
   }
   /** Retrieve a specific asset link by container and asset id.
     * This assumes that permissions have already been checked as the caller must already have the container. */
   private[models] def get(container : Container, asset : Asset.Id)(implicit db : Site.DB) : Option[ContainerAsset] = {
     val row = containerRow(container)
-    SQL("SELECT " + row.select + " FROM " + containerSrc + " WHERE asset_container.container = {container} AND asset_container.asset = {asset}").
+    SQL("SELECT " + row.select + " FROM " + containerSrc + " WHERE container_asset.container = {container} AND container_asset.asset = {asset}").
       on('container -> container.id, 'asset -> asset).singleOpt(row)
   }
 
@@ -89,7 +89,7 @@ object ContainerAsset extends Table[ContainerAsset]("asset_container") {
     * This assumes that permissions have already been checked as the caller must already have the container. */
   private[models] def getContainer(container : Container)(implicit db : Site.DB) : Seq[ContainerAsset] = {
     val row = containerRow(container)
-    SQL("SELECT " + row.select + " FROM " + containerSrc + " WHERE asset_container.container = {container}").
+    SQL("SELECT " + row.select + " FROM " + containerSrc + " WHERE container_asset.container = {container}").
       on('container -> container.id).list(row)
   }
 
@@ -187,7 +187,7 @@ object SlotAsset {
   private val columns = Columns[
     Option[Boolean]](
     SelectColumn("toplevel_asset", "excerpt"))
-  private val condition = "(asset_container.offset IS NULL OR asset_container.offset <@ slot.segment OR segment_shift(segment(" + Asset.duration + "), asset_container.offset) && slot.segment)"
+  private val condition = "(container_asset.offset IS NULL OR container_asset.offset <@ slot.segment OR segment_shift(segment(" + Asset.duration + "), container_asset.offset) && slot.segment)"
 
   /** Retrieve a single SlotAsset by asset id and slot id.
     * This checks permissions on the slot('s container's volume). */
@@ -204,7 +204,7 @@ object SlotAsset {
     val row = ContainerAsset.containerRow(slot.container) ~ columns map {
       case (link ~ excerpt) => make(link, slot, excerpt)
     }
-    SQL("SELECT " + row.select + " FROM " + ContainerAsset.containerSrc + " JOIN slot ON asset_container.container = slot.source LEFT JOIN toplevel_asset ON slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset WHERE slot.id = {slot} AND " + condition).
+    SQL("SELECT " + row.select + " FROM " + ContainerAsset.containerSrc + " JOIN slot ON container_asset.container = slot.source LEFT JOIN toplevel_asset ON slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset WHERE slot.id = {slot} AND " + condition).
       on('slot -> slot.id).list(row)
   }
 
@@ -213,7 +213,7 @@ object SlotAsset {
     val row = Asset.row ~ ContainerAsset.columns ~ Container.volumeRow(volume) ~ Slot.columns ~ columns map {
       case (asset ~ link ~ cont ~ slot ~ excerpt) => make((ContainerAsset.make(asset, cont) _).tupled(link), (Slot.make(cont) _).tupled(slot), excerpt)
     }
-    SQL("SELECT " + row.select + " FROM " + ContainerAsset.containerSrc + " JOIN container ON asset_container.container = container.id JOIN " + Slot.baseSrc + " ON container.id = slot.source LEFT JOIN toplevel_asset ON slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset WHERE container.volume = {vol} AND " + condition + " AND (toplevel.slot IS NOT NULL OR toplevel_asset.asset IS NOT NULL)").
+    SQL("SELECT " + row.select + " FROM " + ContainerAsset.containerSrc + " JOIN container ON container_asset.container = container.id JOIN " + Slot.baseSrc + " ON container.id = slot.source LEFT JOIN toplevel_asset ON slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset WHERE container.volume = {vol} AND " + condition + " AND (toplevel.slot IS NOT NULL OR toplevel_asset.asset IS NOT NULL)").
       on('vol -> volume.id).list(row)
   }
 }

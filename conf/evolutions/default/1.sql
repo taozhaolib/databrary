@@ -52,7 +52,7 @@ BEGIN
 END;; $create$;
 COMMENT ON FUNCTION "create_abstract_parent" (name, name[]) IS 'A "macro" to create an abstract parent table and trigger function.  This could be done with a single function using dynamic EXECUTE but this way is more efficient and not much more messy.';
 
-CREATE FUNCTION "cast_int" ("input" text) RETURNS integer LANGUAGE plpgsql IMMUTABLE STRICT AS $$
+CREATE FUNCTION cast_int ("input" text) RETURNS integer LANGUAGE plpgsql IMMUTABLE STRICT AS $$
 DECLARE
 	i integer;;
 BEGIN
@@ -61,6 +61,9 @@ BEGIN
 EXCEPTION WHEN invalid_text_representation THEN
 	RETURN NULL;;
 END;; $$;
+
+CREATE FUNCTION singleton (int4) RETURNS int4range LANGUAGE sql IMMUTABLE STRICT AS
+	$$ SELECT int4range($1, $1, '[]') $$;
 
 ----------------------------------------------------------- auditing
 
@@ -239,6 +242,8 @@ COMMENT ON FUNCTION "segment" (interval) IS 'The segment [0,X) but strict in X.'
 CREATE FUNCTION "duration" (segment) RETURNS interval HOUR TO SECOND LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT CASE WHEN isempty($1) THEN '0' ELSE interval_mi(upper($1), lower($1)) END $$;
 COMMENT ON FUNCTION "duration" (segment) IS 'Determine the length of a segment, or NULL if unbounded.';
+CREATE FUNCTION "singleton" (interval HOUR TO SECOND) RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS
+	$$ SELECT segment($1, $1, '[]') $$;
 CREATE FUNCTION "singleton" (segment) RETURNS interval LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT lower($1) WHERE lower_inc($1) AND upper_inc($1) AND lower($1) = upper($1) $$;
 COMMENT ON FUNCTION "singleton" (segment) IS 'Determine if a segment represents a single point and return it, or NULL if not.';
@@ -289,7 +294,7 @@ CREATE TABLE "slot" (
 	"segment" segment NOT NULL Default '(,)',
 	"consent" consent,
 	Unique ("source", "segment"),
-	Exclude ("source" WITH ==, "segment" WITH &&) WHERE "consent" IS NOT NULL
+	Exclude USING gist (singleton("source") WITH =, "segment" WITH &&) WHERE ("consent" IS NOT NULL)
 ) INHERITS ("object_segment");
 CREATE INDEX "slot_full_container_idx" ON "slot" ("source") WHERE "segment" = '(,)';
 COMMENT ON TABLE "slot" IS 'Sections of containers selected for referencing, annotating, consenting, etc.';
@@ -386,7 +391,7 @@ CREATE TABLE "container_asset" (
 	"container" integer NOT NULL References "container",
 	"offset" interval HOUR TO SECOND,
 	"name" text NOT NULL,
-	"body" text,
+	"body" text
 );
 CREATE INDEX ON "container_asset" ("container");
 COMMENT ON TABLE "container_asset" IS 'Asset linkages into containers along with "dynamic" metadata.';
@@ -405,7 +410,7 @@ COMMENT ON VIEW "asset_duration" IS 'All assets along with their temporal durati
 
 
 CREATE TABLE "toplevel_slot" (
-	"slot" integer NOT NULL Primary Key References "slot",
+	"slot" integer NOT NULL Primary Key References "slot"
 );
 COMMENT ON TABLE "toplevel_slot" IS 'Slots whose assets are promoted to the top volume level for display.';
 
@@ -542,14 +547,14 @@ COMMENT ON TABLE "slot_annotation" IS 'Attachment of annotations to slots.';
 
 
 CREATE FUNCTION "annotation_consent" ("annotation" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS
-	$$ SELECT MIN(consent) FROM slot_annotation JOIN slot_consent USING (slot) WHERE annotation = $1 $$;
+	$$ SELECT MIN(consent) FROM slot_annotation JOIN slot ON slot = slot.id WHERE annotation = $1 $$;
 COMMENT ON FUNCTION "annotation_consent" (integer) IS 'Effective (minimal) consent level granted on the specified annotation.';
 
 CREATE FUNCTION "annotation_daterange" ("annotation" integer) RETURNS daterange LANGUAGE sql STABLE STRICT AS $$
-	SELECT daterange(min(container.date), max(container.date), '[]') 
+	SELECT daterange(min(date), max(date), '[]') 
 	  FROM slot_annotation
 	  JOIN slot ON slot = slot.id
-	  JOIN container ON slot.container = container.id
+	  JOIN container ON slot.source = container.id
 	 WHERE annotation = $1
 $$;
 COMMENT ON FUNCTION "annotation_daterange" (integer) IS 'Range of container dates covered by the given annotation.';
@@ -577,7 +582,8 @@ DROP TABLE "annotation";
 DROP FUNCTION "annotation_trigger" ();
 DROP TYPE "annotation_kind";
 
-DROP TABLE "toplevel";
+DROP TABLE "toplevel_asset";
+DROP TABLE "toplevel_slot";
 DROP VIEW "asset_duration";
 DROP TABLE "container_asset";
 DROP TABLE "clip";
@@ -602,6 +608,7 @@ DROP FUNCTION "object_segment_contains" ("object_segment", "object_segment");
 DROP TABLE "object_segment";
 DROP FUNCTION "segment_shift" (segment, interval);
 DROP FUNCTION "singleton" (segment);
+DROP FUNCTION "singleton" (interval);
 DROP FUNCTION "duration" (segment);
 DROP FUNCTION "segment" (interval);
 DROP TYPE segment;
@@ -621,5 +628,6 @@ DROP TYPE permission;
 DROP TABLE "account";
 DROP TABLE "party";
 
+DROP FUNCTION singleton (int4);
 DROP FUNCTION cast_int (text);
 DROP FUNCTION create_abstract_parent (name, name[]);
