@@ -67,7 +67,7 @@ object Asset extends SiteController {
     link match {
       case ts : SlotTimeseries if offset >= 0 && offset < ts.duration =>
         assetResult(
-          "sframe:%d:%d:%d".format(link.slotId.unId, link.link.assetId.unId, offset.millis),
+          "sframe:%d:%d:%d".format(link.slotId.unId, link.link.assetId.unId, offset.millis.toLong),
           store.Asset.readFrame(ts, offset),
           ts.source.format.sampleFormat,
           None

@@ -90,6 +90,7 @@ object Container extends TableId[Container]("container") {
   * Primarily used for an individual session of data with a single date and place.
   * Critically, contained data are should be covered by a single consent level and share the same annotations. */
 final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE, toplevel_ : Boolean = false) extends TableRowId[Slot] with Annotated with SitePage {
+  import PGSegment.{column => segmentColumn,statement => segmentStatement}
   def containerId : Container.Id = container.id
   def volume = container.volume
   private[this] var _consent = consent_

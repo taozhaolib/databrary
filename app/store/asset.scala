@@ -95,7 +95,7 @@ private[store] object Segment extends StoreDir[models.Asset.Id]("store.cache") {
   }
 
   private def genSegment(id : models.Timeseries.Id, segment : Range[Offset], cache : Boolean = true) : Future[StreamEnumerator] = {
-    val f = file(id, ":%d-%d".format(segment.lowerBound.get.millis, segment.upperBound.get.millis))
+    val f = file(id, ":%d-%d".format(segment.lowerBound.get.millis.toLong, segment.upperBound.get.millis.toLong))
     generate(f, (f : File) => media.AV.segment(FileAsset.file(id), segment, f), cache)
   }
 

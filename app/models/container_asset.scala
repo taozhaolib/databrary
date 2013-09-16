@@ -191,12 +191,12 @@ object SlotAsset {
 
   /** Retrieve a single SlotAsset by asset id and slot id.
     * This checks permissions on the slot('s container's volume). */
-  def get(asset : Asset.Id, slot : Slot.Id)(implicit db : Site.DB) : Option[SlotAsset] = {
+  def get(asset : Asset.Id, slot : Slot.Id)(implicit site : Site) : Option[SlotAsset] = {
     val row = ContainerAsset.row ~ Slot.columns ~ columns map {
       case (link ~ slot ~ excerpt) => make(link, (Slot.make(link.container) _).tupled(slot), excerpt)
     }
     SQL("SELECT " + row.select + " FROM " + ContainerAsset.src + " JOIN " + Slot.baseSrc + " ON container.id = slot.source LEFT JOIN toplevel_asset ON slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset WHERE slot.id = {slot} AND asset.id = {asset} AND " + condition).
-      on('asset -> asset, 'slot -> slot).singleOpt(row)
+      on('asset -> asset, 'slot -> slot, 'identity -> site.identity.id).singleOpt(row)
   }
 
   /** Retrieve the list of all assets within the given slot. */
