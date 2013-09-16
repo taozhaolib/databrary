@@ -89,7 +89,7 @@ object Container extends TableId[Container]("container") {
 /** Smallest organizatonal unit of related data.
   * Primarily used for an individual session of data with a single date and place.
   * Critically, contained data are should be covered by a single consent level and share the same annotations. */
-final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE, toplevel_ : Boolean = false) extends TableRowId[Slot] with AnnotatedInVolume with SitePage {
+final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE, toplevel_ : Boolean = false) extends TableRowId[Slot] with Annotated with SitePage {
   def containerId : Container.Id = container.id
   def volume = container.volume
   private[this] var _consent = consent_
@@ -116,7 +116,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   }
 
   private[this] val _context = CachedVal[Option[Slot], Site.DB] { implicit db =>
-    if (consent != Consent.NONE) Some(this) else {
+    if (consent != Consent.NONE || segment.isFull) Some(this) else {
       val row = Slot.containerRow(container)
       SQL("SELECT " + row.select + " FROM " + Slot.baseSrc + " WHERE slot.source = {cont} AND slot.segment @> {seg} AND slot.consent IS NOT NULL").
         on('cont -> containerId, 'seg -> segment).singleOpt(row)
@@ -146,7 +146,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
 }
 
 object Slot extends TableId[Slot]("slot") {
-  import PGSegment.{column => segmentColumn}
+  import PGSegment.{column => segmentColumn,statement => segmentStatement}
   private[models] def make(container : Container)(id : Id, segment : Range[Offset], consent : Option[Consent.Value], toplevel : Boolean) =
     new Slot(id, container, segment, consent.getOrElse(Consent.NONE), toplevel)
   private[models] val columns = Columns[
@@ -192,7 +192,9 @@ object Slot extends TableId[Slot]("slot") {
   /** Create a new slot in the specified container or return a matching one if it already exists. */
   def getOrCreate(container : Container, segment : Range[Offset] = fullRange)(implicit db : Site.DB) : Slot =
     get(container, segment) getOrElse {
-      val row = containerRow(container)
-      SQL("INSERT INTO " + table + " " + SQLArgs('container -> container.id, 'segment -> segment).insert + " RETURNING " + row.select).single(row)
+      val args = SQLArgs('source -> container.id, 'segment -> segment)
+      val id = SQL("INSERT INTO " + table + " " + args.insert + " RETURNING id").
+        on(args : _*).single(scalar[Id])
+      new Slot(id, container, segment)
     }
 }

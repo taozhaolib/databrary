@@ -42,6 +42,7 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
       else
         t.gteq(l, u)
     }).getOrElse(false)
+  def isFull : Boolean = lowerBound.isEmpty && upperBound.isEmpty
   def singleton : Option[A] = 
     if (isEmpty)
       None
@@ -82,6 +83,7 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
 object Range {
   def empty[A : RangeType] : Range[A] = new Range[A] {
     override val isEmpty = true
+    override def isFull = false
     override val singleton = None
     val lowerBound = None
     val upperBound = None
@@ -92,6 +94,7 @@ object Range {
   }
   def singleton[A : RangeType](x : A) : Range[A] = new Range[A] {
     override val isEmpty = false
+    override def isFull = false
     override val singleton = Some(x)
     val lowerBound = Some(x)
     val upperBound = Some(x)
@@ -100,6 +103,7 @@ object Range {
   }
   def full[A : RangeType] : Range[A] = new Range[A] {
     override val isEmpty = false
+    override def isFull = true
     override val singleton = None
     val lowerBound = None
     val upperBound = None
@@ -109,6 +113,7 @@ object Range {
     override def @>(r : Range[A]) = true
   }
   def apply[A : RangeType](lb : A, ub : A) : Range[A] = new Range[A] {
+    override def isFull = false
     val lowerBound = Some(lb)
     val upperBound = Some(ub)
     val lowerClosed = true

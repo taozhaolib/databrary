@@ -96,15 +96,19 @@ private[models] sealed abstract class AnnotationView[R <: Annotation with TableR
     SELECT("WHERE " + table + ".id = {id}").
       on('id -> id).singleOpt()
 
+  private[models] def rowVolume(vol : Volume) : SelectParser[R]
+  private[models] val volumeSrc : String
+
   /** Retrieve the set of annotations of the instantiated object's type on the given target.
     * @param all include all indirect annotations on any containers, objects, or clips contained within the given target (which may be a lot) */
   private[models] def get(target : Annotated, all : Boolean = true)(implicit db : Site.DB) : Seq[R] = {
+    val row = rowVolume(target.volume)
     val j = target.annotationTable
-    SELECT(if (all) 
-        "JOIN " + j + "s({target}) ON " + table + ".id = " + j + "s"
+    SQL("SELECT " + row.select + " FROM " + volumeSrc + (if (all) 
+        " JOIN " + j + "s({target}) ON " + table + ".id = " + j + "s"
       else
-        "JOIN " + j + " ON " + table + ".id = annotation WHERE " + target.annotatedLevel + " = {target}").
-      on('target -> target.annotatedId).list()
+        " JOIN " + j + " ON " + table + ".id = annotation WHERE " + target.annotatedLevel + " = {target}")).
+      on('target -> target.annotatedId).list(row)
   }
 }
 
@@ -117,6 +121,8 @@ object Comment extends AnnotationView[Comment]("comment") {
     'id, 'who,       'when,     'text).map {
     (id, whoId, when, text) => new Comment(id, whoId, when, text)
   }
+  private[models] def rowVolume(vol : Volume) = row
+  private[models] val volumeSrc = src
 
   /** Retrieve the set of comments written by the specified user. */
   private[models] def getParty(user : Account)(implicit db : Site.DB) : Seq[Comment] =
@@ -148,10 +154,11 @@ object Record extends AnnotationView[Record]("record") {
   private[models] val row = (columns ~ Volume.row ~ RecordCategory.row.?) map {
     case (rec ~ vol ~ cls) => (make(vol, cls) _).tupled(rec)
   }
-  private[models] override val src = "record LEFT JOIN " + RecordCategory.src + " ON record.category = record_category.id JOIN " + Volume.src + " ON record.volume = volume.id"
-  private def rowVolume(vol : Volume) = (columns ~ RecordCategory.row.?) map {
+  private[models] def rowVolume(vol : Volume) = (columns ~ RecordCategory.row.?) map {
     case (rec ~ cls) => (make(vol, cls) _).tupled(rec)
   }
+  private[models] val volumeSrc = "record LEFT JOIN " + RecordCategory.src + " ON record.category = record_category.id"
+  private[models] override val src = volumeSrc + " JOIN " + Volume.src + " ON record.volume = volume.id"
   private[models] def rowVolCat(vol : Volume, category : Option[RecordCategory] = None) =
     category.fold(rowVolume(vol))(cat => columns.map(make(vol, Some(cat)) _))
 
@@ -187,7 +194,7 @@ object Record extends AnnotationView[Record]("record") {
 
 
 /** Objects on which annotations may be placed. */
-trait Annotated {
+trait Annotated extends InVolume {
   private[models] def annotatedId : IntId[_]
   private[models] def annotatedLevel : String
   private[models] def annotationTable = annotatedLevel + "_annotation"
@@ -202,9 +209,6 @@ trait Annotated {
     * @param all include indirect comments on any contained objects
     */
   def records(all : Boolean = true)(implicit db : Site.DB) : Seq[Record] = Record.get(this, all)(db)
-}
-
-trait AnnotatedInVolume extends Annotated with InVolume {
   /** The list of records and possibly measures on this object.
     * This is essentially equivalent to `this.records(false).filter(_.category == category).map(r => (r, r.measure[T](metric)))` but more efficient.
     * @param category if Some limit to the given category */

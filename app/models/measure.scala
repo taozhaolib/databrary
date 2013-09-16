@@ -224,7 +224,7 @@ object Measure extends Table[MeasureBase]("measure_all") {
     SELECT("WHERE record = {record} ORDER BY metric.id").on('record -> record).list
 
   /** Retrieve the set of all records and possibly measures of the given type on the given slot. */
-  private[models] def getAnnotated[T](target : AnnotatedInVolume, category : Option[RecordCategory] = None, metric : Metric[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] = {
+  private[models] def getAnnotated[T](target : Annotated, category : Option[RecordCategory] = None, metric : Metric[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] = {
     val tpe = metric.measureType
     val row = Record.rowVolCat(target.volume, category) ~ tpe.column.? map 
       { case (r ~ m) => (r, m) }
