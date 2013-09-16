@@ -1,11 +1,9 @@
 package dbrary 
 
-object cast {
+object Cast {
   import scala.language.experimental.macros
   import scala.reflect.macros.Context
 
-  /* cast[A](x) = x match { a : A => Some(a) ; _ => None } */
-  def apply[A](x : Any) = macro castImpl[A]
   def castImpl[A : c.WeakTypeTag](c : Context)(x : c.Expr[Any]) : c.Expr[Option[A]] = {
     import c.universe._
     val t = implicitly[WeakTypeTag[A]]
