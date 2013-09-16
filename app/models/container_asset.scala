@@ -11,14 +11,14 @@ import util._
   * An asset link includes the asset and container, along with a name and description for that particular link.
   * Permissions are checked in msot cases, as indicated.
   */
-sealed class ContainerAsset protected (val asset : Asset, val container : Container, offset_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with InVolume {
+sealed class ContainerAsset protected (val asset : Asset, val container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with InVolume {
   def assetId = asset.id
   def containerId = container.id
   def id = (assetId, containerId)
   def volume = container.volume
-  private[this] var _offset = offset_
+  private[this] var _position = position_
   /** Start point of this asset within the container. */
-  def offset : Option[Offset] = _offset
+  def position : Option[Offset] = _position
   private[this] var _name = name_
   /** Title or name of the asset as used in the container. */
   def name : String = _name
@@ -27,33 +27,33 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   def body : Option[String] = _body
 
   /** Update the given values in the database and this object in-place. */
-  def change(offset : Option[Offset] = _offset, name : String = _name, body : Option[String] = _body)(implicit site : Site) : Unit = {
-    if (offset == _offset && name == _name && body == _body)
+  def change(position : Option[Offset] = _position, name : String = _name, body : Option[String] = _body)(implicit site : Site) : Unit = {
+    if (position == _position && name == _name && body == _body)
       return
-    Audit.change("container_asset", SQLArgs('offset -> offset, 'name -> name, 'body -> body), SQLArgs('container -> containerId, 'asset -> assetId)).execute()
+    Audit.change("container_asset", SQLArgs('position -> position, 'name -> name, 'body -> body), SQLArgs('container -> containerId, 'asset -> assetId)).execute()
     _name = name
     _body = body
   }
 
   def duration : Offset = 0
   /** Range of times that this asset covers, or None for "global/floating". */
-  def extent : Option[Range[Offset]] = offset.map(Range.singleton[Offset](_)(PGSegment))
+  def extent : Option[Range[Offset]] = position.map(Range.singleton[Offset](_)(PGSegment))
 }
 
-final class ContainerTimeseries private[models] (override val asset : Asset with TimeseriesData, container : Container, offset_ : Option[Offset], name_ : String, body_ : Option[String]) extends ContainerAsset(asset, container, offset_, name_, body_) {
+final class ContainerTimeseries private[models] (override val asset : Asset with TimeseriesData, container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends ContainerAsset(asset, container, position_, name_, body_) {
   override def duration : Offset = asset.duration
-  override def extent : Option[Range[Offset]] = offset.map(start =>
+  override def extent : Option[Range[Offset]] = position.map(start =>
     Range[Offset](start, start + duration)(PGSegment))
 }
 
 object ContainerAsset extends Table[ContainerAsset]("container_asset") {
-  private[models] def make(asset : Asset, container : Container)(offset : Option[Offset], name : String, body : Option[String]) = asset match {
-    case ts : TimeseriesData => new ContainerTimeseries(ts, container, offset, name, body)
-    case _ => new ContainerAsset(asset, container, offset, name, body)
+  private[models] def make(asset : Asset, container : Container)(position : Option[Offset], name : String, body : Option[String]) = asset match {
+    case ts : TimeseriesData => new ContainerTimeseries(ts, container, position, name, body)
+    case _ => new ContainerAsset(asset, container, position, name, body)
   }
   private[models] val columns = Columns[
     Option[Offset], String,  Option[String]](
-    'offset,        'name,  'body)
+    'position,      'name,  'body)
   private[models] def containerRow(cont : Container) = (Asset.row ~ columns) map {
     case (asset ~ link) => (make(asset, cont) _).tupled(link)
   }
@@ -95,9 +95,9 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
 
   /** Create a new link between an asset and a container.
     * This can change effective permissions on this asset, so care must be taken when using this function with existing assets. */
-  def create(container : Container, asset : Asset, offset : Option[Offset] = None, name : String, body : Option[String] = None)(implicit site : Site) : ContainerAsset = {
-    Audit.add(table, SQLArgs('container -> container.id, 'asset -> asset.id, 'offset -> offset, 'name -> name, 'body -> body)).execute()
-    new ContainerAsset(asset, container, offset, name, body)
+  def create(container : Container, asset : Asset, position : Option[Offset] = None, name : String, body : Option[String] = None)(implicit site : Site) : ContainerAsset = {
+    Audit.add(table, SQLArgs('container -> container.id, 'asset -> asset.id, 'position -> position, 'name -> name, 'body -> body)).execute()
+    new ContainerAsset(asset, container, position, name, body)
   }
 }
 
@@ -112,12 +112,12 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
   def excerpt : Boolean = _excerpt.getOrElse(false)
   /** Whether if this clip has been promoted for toplevel display. */
   def toplevel : Boolean = _excerpt.isDefined
-  def offset : Option[Offset] =
-    (for { s <- slot.segment.lowerBound ; l <- link.offset }
+  def position : Option[Offset] =
+    (for { s <- slot.segment.lowerBound ; l <- link.position }
       yield ((l - s).max(0))).
-      orElse(link.offset)
+      orElse(link.position)
   def duration : Offset =
-    (for { s <- slot.segment.upperBound ; l <- link.offset }
+    (for { s <- slot.segment.upperBound ; l <- link.position }
       yield ((s - l).min(link.duration))).
       getOrElse(link.duration)
 
@@ -160,7 +160,7 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
 
 final class SlotTimeseries private[models] (override val link : ContainerTimeseries, slot : Slot, excerpt_ : Option[Boolean] = None) extends SlotAsset(link, slot, excerpt_) with TimeseriesData {
   override def source = link.asset.source
-  def entire = link.asset.entire && link.offset.fold(true) { l =>
+  def entire = link.asset.entire && link.position.fold(true) { l =>
     slot.segment.lowerBound.fold(true)(_ <= l) &&
     slot.segment.upperBound.fold(true)(_ >= l + link.asset.duration)
   }
@@ -168,10 +168,10 @@ final class SlotTimeseries private[models] (override val link : ContainerTimeser
     val b = link.asset.segment
     val lb = b.lowerBound.get
     val ub = b.upperBound.get
-    val lbn = (for { s <- slot.segment.lowerBound ; l <- link.offset }
+    val lbn = (for { s <- slot.segment.lowerBound ; l <- link.position }
       yield (lb + (s - l).max(0))).
       getOrElse(lb)
-    val ubn = (for { s <- slot.segment.lowerBound ; l <- link.offset }
+    val ubn = (for { s <- slot.segment.lowerBound ; l <- link.position }
       yield (lbn + (s - l).min(ub - lbn))).
       getOrElse(ub)
     Range[Offset](lbn, ubn)(PGSegment)
@@ -187,7 +187,7 @@ object SlotAsset {
   private val columns = Columns[
     Option[Boolean]](
     SelectColumn("toplevel_asset", "excerpt"))
-  private val condition = "(container_asset.offset IS NULL OR container_asset.offset <@ slot.segment OR segment_shift(segment(" + Asset.duration + "), container_asset.offset) && slot.segment)"
+  private val condition = "(container_asset.position IS NULL OR container_asset.position <@ slot.segment OR segment_shift(segment(" + Asset.duration + "), container_asset.position) && slot.segment)"
 
   /** Retrieve a single SlotAsset by asset id and slot id.
     * This checks permissions on the slot('s container's volume). */

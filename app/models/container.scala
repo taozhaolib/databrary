@@ -133,7 +133,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     Permission.data(permission, context.fold(consent)(_.consent), classification)
 
   /** Effective start point of this slot within the container. */
-  def offset : Offset = segment.lowerBound.getOrElse(0)
+  def position : Offset = segment.lowerBound.getOrElse(0)
 
   /** List of contained asset segments within this slot. */
   def assets(implicit db : Site.DB) : Seq[SlotAsset] = SlotAsset.getSlot(this)

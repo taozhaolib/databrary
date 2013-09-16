@@ -89,7 +89,7 @@ object Asset extends SiteController {
 
   private[this] def formFill(link : ContainerAsset)(implicit site : Site) : AssetForm = {
     /* TODO Under what conditions should FileAsset data be allowed to be changed? */
-    assetForm(false).fill((link.name, link.body.getOrElse(""), link.offset, None))
+    assetForm(false).fill((link.name, link.body.getOrElse(""), link.position, None))
   }
 
   /* FIXME this doesn't work in error cases */
@@ -102,8 +102,8 @@ object Asset extends SiteController {
   def change(s : models.Container.Id, o : models.Asset.Id) = checkContainer(s, o, Permission.EDIT) { link => implicit request =>
     formFill(link).bindFromRequest.fold(
       form => BadRequest(views.html.asset.edit(Right(link), form)), {
-      case (name, body, offset, file) =>
-        link.change(name = name, body = maybe(body), offset = offset)
+      case (name, body, position, file) =>
+        link.change(name = name, body = maybe(body), position = position)
         /* file foreach {
           () => link.asset.asInstanceOf[models.FileAsset].change
         } */
@@ -123,14 +123,14 @@ object Asset extends SiteController {
     val file = request.body.asMultipartFormData.flatMap(_.file("file"))
     (if (file.isEmpty) form.withError("file", "error.required") else form).fold(
       form => BadRequest(views.html.asset.edit(Left(container), form)), {
-      case (name, body, offset, fileData) =>
+      case (name, body, position, fileData) =>
         val (classification, ()) = fileData.get
         val f = file.get
         f.contentType.flatMap(AssetFormat.getMimetype(_)).fold(
           BadRequest(views.html.asset.edit(Left(container), form.withError("file", "file.format.unknown", f.contentType.getOrElse("unknown")))) : Result
         ) { format =>
           val asset = models.FileAsset.create(format, classification, f.ref)
-          val link = ContainerAsset.create(container, asset, offset, maybe(name).getOrElse(f.filename), maybe(body))
+          val link = ContainerAsset.create(container, asset, position, maybe(name).getOrElse(f.filename), maybe(body))
           Redirect(link.container.pageURL)
         }
       }

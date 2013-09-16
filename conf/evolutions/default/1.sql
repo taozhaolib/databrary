@@ -389,13 +389,13 @@ COMMENT ON TABLE "clip" IS 'Sections of timeseries assets selected for use.  Whe
 CREATE TABLE "container_asset" (
 	"asset" integer NOT NULL References "asset" Primary Key,
 	"container" integer NOT NULL References "container",
-	"offset" interval HOUR TO SECOND,
+	"position" interval HOUR TO SECOND,
 	"name" text NOT NULL,
 	"body" text
 );
 CREATE INDEX ON "container_asset" ("container");
 COMMENT ON TABLE "container_asset" IS 'Asset linkages into containers along with "dynamic" metadata.';
-COMMENT ON COLUMN "container_asset"."offset" IS 'Start point or position of this asset within the container, such that this asset occurs or starts offset time after the beginning of the container session.  NULL offsets are treated as universal (existing at all times).';
+COMMENT ON COLUMN "container_asset"."position" IS 'Start point or position of this asset within the container, such that this asset occurs or starts position time after the beginning of the container session.  NULL positions are treated as universal (existing at all times).';
 
 CREATE TABLE "audit_container_asset" (
 	LIKE "container_asset"
