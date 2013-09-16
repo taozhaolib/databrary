@@ -11,23 +11,17 @@ import models._
 
 object Record extends SiteController {
 
-  private[controllers] def check(i : models.Record.Id, p : Permission.Value = Permission.VIEW)(act : (Record, Permission.Value) => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
+  private[controllers] def check(i : models.Record.Id, p : Permission.Value = Permission.VIEW)(act : Record => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
     models.Record.get(i).fold(NotFound : Result) { record =>
-      val l = record.containers
-      if (l.isEmpty)
-        NotFound
-      else {
-        val perm = l.map(_.permission).max
-        if (perm < p)
-          Forbidden
-        else
-          act(record, perm)(request)
-      }
+      if (record.permission < p)
+        Forbidden
+      else
+        act(record)(request)
     }
   }
 
-  def view(i : models.Record.Id) = check(i) { (record, permission) => implicit request =>
-    Ok(views.html.record.view(record, permission))
+  def view(i : models.Record.Id) = check(i) { record => implicit request =>
+    Ok(views.html.record.view(record))
   }
 
   private type MeasureMapping = (Metric.Id, Option[String])
@@ -53,12 +47,12 @@ object Record extends SiteController {
     )))
   }
 
-  def edit(i : models.Record.Id) = check(i, Permission.EDIT) { (record, permission) => implicit request =>
+  def edit(i : models.Record.Id) = check(i, Permission.EDIT) { record => implicit request =>
     val (m, f) = recordFormFill(record)
     Ok(views.html.record.edit(record, m, f))
   }
 
-  def update(i : models.Record.Id) = check(i, Permission.EDIT) { (record, permission) => implicit request =>
+  def update(i : models.Record.Id) = check(i, Permission.EDIT) { record => implicit request =>
     val (meas, formin) = recordFormFill(record)
     val form = formin.bindFromRequest
     form.fold(

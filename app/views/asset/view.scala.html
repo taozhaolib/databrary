@@ -29,6 +29,6 @@
 		<a href='@routes.Asset.download(link.slotId, link.link.assetId, false)'>download</a>
 	}
 
-        @region.comments(Some(routes.Comment.postAsset(link.slotId, link.link.assetId)), link.comments())
+        @region.comments(Some(routes.Comment.postSlot(link.slotId)), link.slot.comments())
     </article>
 }

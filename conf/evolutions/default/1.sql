@@ -524,11 +524,20 @@ CREATE VIEW "measure_all" ("record", "metric", "datum_text", "datum_number", "da
 COMMENT ON VIEW "measure_all" IS 'Data from all measure tables, coerced to text.';
 
 
+CREATE TABLE "volume_annotation" (
+	"volume" integer NOT NULL References "volume",
+	"annotation" integer NOT NULL References "annotation",
+	Primary Key ("volume", "annotation")
+);
+CREATE INDEX ON "volume_annotation" ("annotation");
+COMMENT ON TABLE "volume_annotation" IS 'Attachment of annotations to volumes.';
+
 CREATE TABLE "slot_annotation" (
 	"slot" integer NOT NULL References "slot",
 	"annotation" integer NOT NULL References "annotation",
-	Primary Key ("annotation", "slot")
+	Primary Key ("slot", "annotation")
 );
+CREATE INDEX ON "slot_annotation" ("annotation");
 COMMENT ON TABLE "slot_annotation" IS 'Attachment of annotations to slots.';
 
 
@@ -554,6 +563,7 @@ DROP TYPE audit_action;
 DROP FUNCTION "annotation_daterange" (integer);
 DROP FUNCTION "annotation_consent" (integer);
 DROP TABLE "slot_annotation";
+DROP TABLE "volume_annotation";
 DROP VIEW "measure_all";
 DROP VIEW "measure_view";
 DROP TABLE "measure" CASCADE;

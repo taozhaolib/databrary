@@ -15,7 +15,7 @@
                 <footer class="meta cf">
                     <div class="date">
                     @volume.creationAudit(request.db).map { creation =>
-                        <time datetime="@creation.when" pubdate>@display.date(creation.when, "yyyy")</time>
+                        <time datetime="@creation.when" pubdate>@display.dateFmtY.format(creation.when)</time>
                     }
                     </div>
 
@@ -25,7 +25,7 @@
                 </footer>
 
                 <div class="description">
-                @display.plainTextSummary(volume.description.getOrElse(""), 2)
+                @display.plainTextSummary(volume.body.getOrElse(""), 2)
                 </div>
             </div>
         </a>

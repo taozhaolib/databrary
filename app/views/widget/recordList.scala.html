@@ -1,9 +1,9 @@
-@(target : Annotated, permission : Permission.Value, all : Boolean = false)(implicit request : SiteRequest[_])
+@(target : Annotated, all : Boolean = false)(implicit request : SiteRequest[_])
 
 @target.records(all).map { record =>
 	<h2><a href="@record.pageURL">@record.category.fold("Record")(_.name)</a></h2>
 	<dl>
-	@record.measures.filter(m => record.permission(permission, m.metric) >= Permission.DOWNLOAD).map { m =>
+	@record.measures.filter(m => record.dataPermission(m.metric) >= Permission.DOWNLOAD).map { m =>
 		<dt>@m.metric.name</dt>
 		<dd>@m.datum</dd>
 	}

@@ -27,7 +27,6 @@ final class Comment private (override val id : Comment.Id, val whoId : Account.I
 
 /** A set of Measures. */
 final class Record private (override val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE) extends Annotation(id) with TableRowId[Record] with SitePage with InVolume {
-  def volumeId = volume.id
   private[this] var _category = category_
   def category : Option[RecordCategory] = _category
   def categoryId = category.map(_.id)
@@ -82,7 +81,7 @@ final class Record private (override val id : Record.Id, val volume : Volume, va
   /** Effective permission the site user has over a given metric in this record, specifically in regards to the measure datum itself.
     * Record permissions depend on volume permissions, but can be further restricted by consent levels.
     */
-  def permission(metric : MetricBase)(implicit site : Site) : Permission.Value =
+  def dataPermission(metric : MetricBase)(implicit site : Site) : Permission.Value =
     Permission.data(volume.permission, consent, metric.classification)
 
   def pageName(implicit site : Site) = ident.orElse(category.map(_.name)).getOrElse("record")

@@ -20,7 +20,7 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
   private[this] var _date = date_
   /** The date at which the contained data were collected.
     * Note that this is covered (in part) by dataAccess permissions due to birthday/age restrictions. */
-  override def date = _date
+  def date = _date
 
   /** Update the given values in the database and this object in-place. */
   def change(name : Option[String] = _name, date : Option[Date] = _date)(implicit site : Site) : Unit = {

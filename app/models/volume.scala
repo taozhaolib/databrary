@@ -10,7 +10,7 @@ import util._
 /** Main organizational unit or package of data, within which everything else exists.
   * Usually represents a single project or dataset with a single set of procedures.
   * @param permission the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than [[Permission.VIEW]] except possibly for transient objects, as unavailable volumes should never be returned in the first place. */
-final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], override val permission : Permission.Value) extends TableRowId[Volume] with SitePage with InVolume {
+final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], override val permission : Permission.Value) extends TableRowId[Volume] with SitePage with AnnotatedInVolume {
   private[this] var _name = name_
   /** Title headline of this volume. */
   def name = _name
@@ -28,10 +28,6 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     _name = name
     _body = body
   }
-
-  def pageName(implicit site : Site) = name
-  def pageParent(implicit site : Site) = None
-  def pageURL = controllers.routes.Volume.view(id).url
 
   /** List of parties which have at least the specified level of access to this volume. */
   def partyAccess(p : Permission.Value = Permission.NONE)(implicit db : Site.DB) = VolumeAccess.getParties(this, p)
@@ -53,6 +49,13 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     * @param category restrict to the specified category
     * @return unique records sorted by category */
   def slotRecords(category : Option[RecordCategory] = None)(implicit db : Site.DB) = Record.getVolume(this, category)
+
+  private[models] def annotatedLevel = "volume"
+  private[models] def annotatedId = id
+
+  def pageName(implicit site : Site) = name
+  def pageParent(implicit site : Site) = None
+  def pageURL = controllers.routes.Volume.view(id).url
 }
 
 object Volume extends TableId[Volume]("volume") {

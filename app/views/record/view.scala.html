@@ -1,22 +1,22 @@
-@(record : models.Record, permission : Permission.Value)(implicit request : SiteRequest[_])
+@(record : models.Record)(implicit request : SiteRequest[_])
 
 @template.crud("Record: " + record.toString()) {
     <article>
         <h1>@record.toString()</h1>
 
-	@if(permission >= Permission.EDIT) {
+	@if(record.permission >= Permission.EDIT) {
 		<a href="@routes.Record.edit(record.id)">edit</a>
 	}
 
 	<dl>
-	@record.measures.filter(m => record.permission(permission, m.metric) >= Permission.DOWNLOAD).map { m =>
+	@record.measures.filter(m => record.dataPermission(m.metric) >= Permission.DOWNLOAD).map { m =>
 		<dt>@m.metric.name</dt>
 		<dd>@m.datum</dd>
 	}
 	</dl>
 
 	<ul>
-	@record.containers.map { c =>
+	@record.slots.map { c =>
 		<li>@display.path(c)</li>
 	}
 	</ul>

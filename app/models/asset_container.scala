@@ -11,15 +11,14 @@ import util._
   * An asset link includes the asset and container, along with a name and description for that particular link.
   * Permissions are checked in msot cases, as indicated.
   */
-sealed class ContainerAsset protected (override val asset : Asset, val container : Container, offset_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with InVolume {
+sealed class ContainerAsset protected (val asset : Asset, val container : Container, offset_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with InVolume {
   def assetId = asset.id
   def containerId = container.id
   def id = (assetId, containerId)
   def volume = container.volume
-  def volumeId = container.volumeId
   private[this] var _offset = offset_
   /** Start point of this asset within the container. */
-  override def offset : Option[Offset] = _offset
+  def offset : Option[Offset] = _offset
   private[this] var _name = name_
   /** Title or name of the asset as used in the container. */
   def name : String = _name
@@ -107,9 +106,7 @@ object ContainerAsset extends Table[ContainerAsset]("asset_container") {
 sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, excerpt_ : Option[Boolean] = None) extends SitePage with BackedAsset with InVolume {
   def slotId = slot.id
   def volume = link.volume
-  def volumeId = link.volumeId
   def source = link.asset.source
-  def sourceId = link.asset.sourceId
   private var _excerpt = excerpt_
   /** Whether this clip has been vetted for public release, permissions permitting. */
   def excerpt : Boolean = _excerpt.getOrElse(false)
@@ -161,9 +158,8 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
   def pageURL = controllers.routes.Asset.view(slotId, link.assetId).url
 }
 
-case class SlotTimeseries private[models] (override val link : ContainerTimeseries, val slot : Slot, excerpt_ : Option[Boolean] = None) extends SlotAsset(link, slot, excerpt_) with TimeseriesData {
-  def source = link.asset.source
-  def sourceId = link.asset.sourceId
+final class SlotTimeseries private[models] (override val link : ContainerTimeseries, slot : Slot, excerpt_ : Option[Boolean] = None) extends SlotAsset(link, slot, excerpt_) with TimeseriesData {
+  override def source = link.asset.source
   def entire = link.asset.entire && link.offset.fold(true) { l =>
     slot.segment.lowerBound.fold(true)(_ <= l) &&
     slot.segment.upperBound.fold(true)(_ >= l + link.asset.duration)
@@ -180,7 +176,7 @@ case class SlotTimeseries private[models] (override val link : ContainerTimeseri
       getOrElse(ub)
     Range[Offset](lbn, ubn)(PGSegment)
   }
-  override def format = if (segment.isSingleton) link.asset.format.sampleFormat else link.asset.format
+  override def duration : Offset = super[SlotAsset].duration
 }
 
 object SlotAsset {
