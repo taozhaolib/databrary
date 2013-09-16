@@ -80,19 +80,19 @@ NARROW TABLET
 
 	.column_narrow,
 	.column_small,
-	.study_roll .thumb { .grid_column(2); }
+	.volume_roll .thumb { .grid_column(2); }
 
 	.column_half { .grid_column(3); }
 
-	.study_roll .body,
+	.volume_roll .body,
 	.column_wide { .grid_column(4); }
 	.column_center { .grid_column(4, 1); }
 
 	.party .column_left,
 	.party .column_right,
 	.party .column_full,
-	.party .study_list .thumb,
-	.party .study_list .body,
+	.party .volume_list .thumb,
+	.party .volume_list .body,
 	#comments { .grid_column(6); }
 
 	.modal_small { .grid_max(4); }
@@ -121,8 +121,8 @@ NARROW TABLET
 
     .modal_full .party {
         .column_left,
-        .study_list .thumb,
-        .study_list .body,
+        .volume_list .thumb,
+        .volume_list .body,
         #comments,
         #comments .comment,
         .column_full,
@@ -144,22 +144,22 @@ WIDE TABLET
 	.row { .grid_row(); }
 	.column_full { .grid_column(@grid_columns); }
 
-	.party .study_list .thumb,
+	.party .volume_list .thumb,
 	.party .column_left { .grid_column(2); }
 
 	.extended,
 	.extended .col_6,
-	.study_roll .thumb,
+	.volume_roll .thumb,
 	.column_narrow { .grid_column(3); }
 
 	.column_small { .grid_column(4); }
 
 	.column_half { .grid_column(4.5); }
 
-	.party .study_list .body { .grid_column(5); }
+	.party .volume_list .body { .grid_column(5); }
 	.column_center { .grid_column(5, 2); }
 
-	.study_roll .body,
+	.volume_roll .body,
 	.column_wide { .grid_column(6); }
 
 	.party .column_right,
@@ -174,8 +174,8 @@ WIDE TABLET
 
     .modal_full .party {
         .column_left { .grid_column(2); }
-        .study_list .body,
-        .study_list .thumb,
+        .volume_list .body,
+        .volume_list .thumb,
         #comments,
         .column_full,
         .column_right {
@@ -196,15 +196,15 @@ NORMAL SCREEN
 	.row { .grid_row(); }
 	.column_full { .grid_column(@grid_columns); }
 
-	.modal_full .party .study_list .thumb,
-	.modal_full .party .study_list .column_left,
+	.modal_full .party .volume_list .thumb,
+	.modal_full .party .volume_list .column_left,
 	.party .column_left { .grid_column(2); }
 
 	.column_narrow,
-	.party .study_list .thumb { .grid_column(3); }
+	.party .volume_list .thumb { .grid_column(3); }
 
 	.column_small,
-	.study_roll .thumb { .grid_column(4); }
+	.volume_roll .thumb { .grid_column(4); }
 
 	.column_half,
 	.col_crud_main,
@@ -214,10 +214,10 @@ NORMAL SCREEN
 
 	.column_center { .grid_column(6, 3); }
 
-	.party .study_list .body { .grid_column(7); }
+	.party .volume_list .body { .grid_column(7); }
 
 	#comments,
-	.study_roll .body { .grid_column(8); }
+	.volume_roll .body { .grid_column(8); }
 
 	.party .column_right,
 	.party .column_full { .grid_column(10); }
@@ -233,7 +233,7 @@ NORMAL SCREEN
 			margin-left: @grid_margin;
 			width: 708px;
 		}
-        .study_list .body {
+        .volume_list .body {
             float: left;
             margin-left: @grid_margin;
             width: 548px;
