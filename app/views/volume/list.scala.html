@@ -12,11 +12,11 @@
                             <h1>@volume.name</h1>
                         </header>
 
-                        <aside class="thumb col_4 cf">
+                        <aside class="thumb cf">
                         @widget.volumeThumb(volume)
                         </aside>
 
-                        <div class="body col_8">
+                        <div class="body">
                             <footer class="meta cf">
 								<div class="date">
 									@volume.creationAudit(request.db).map { creation =>

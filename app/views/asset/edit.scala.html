@@ -1,15 +1,21 @@
 @(target : Either[Container,ContainerAsset], form : controllers.Asset.AssetForm)(implicit request : SiteRequest[_])
 
-@template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.toString())) {
+@import helper.FieldConstructor
+
+    @implicitField = @{
+        FieldConstructor(tag.minimalFieldConstructor.f)
+    }
+
+@template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.name)) {
     <article>
-	<h1>@target.fold(_ => "Upload Asset", _.toString())</h1>
+	<h1>@target.fold(_ => "Upload Asset", "Edit: "+_.name)</h1>
 
 	@helper.form(target.fold(
 		container => routes.Asset.upload(container.id),
 		link => routes.Asset.change(link.containerId, link.assetId)),
 		'enctype -> "multipart/form-data") {
-            @helper.inputText(form("name"))
-            @helper.textarea(form("body"), 'cols -> 80, 'rows -> 4)
+            @helper.inputText(form("name"), 'placeholder -> "Title", '_class -> "big")
+            @helper.textarea(form("body"), 'placeholder -> "Description")
             @helper.inputText(form("offset"))
 
             @if(controllers.Asset.formForFile(form)) {
@@ -17,7 +23,7 @@
 	        @helper.inputFile(form("file"))
             }
 
-	    <button type='submit'>@target.fold(_ => "Upload", _ => "Change")</button>
+	    <button type='submit' class="big button first">@target.fold(_ => "Upload", _ => "Change")</button>
         }
         @widget.formErrors(form)
 

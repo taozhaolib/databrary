@@ -78,6 +78,6 @@ object Login extends SiteController {
   def logout = SiteAction { implicit request =>
     if (request.isInstanceOf[UserRequest[_]])
       Audit.action(AuditAction.logout)
-    Ok(viewLogin(Messages("login.logout"))).withNewSession
+    Redirect(routes.Static.index).withNewSession
   }
 }

@@ -58,33 +58,33 @@
 
 		<section id="metadata" class="tabset">
 			<div id="media" class="view">
-				<h2 class='tab'>Media</h2>
+                <div id="highlights" class="view">
+                    <h2 class='tab' data-tip="All media in the Highlights tab is available for public use and sharing.">Highlights</h2>
+
+                    @widget.thumbList(excerpts.getOrElse("video", Nil))
+                    @widget.thumbList(excerpts.getOrElse("image", Nil))
+                    @widget.thumbList(excerpts.getOrElse("audio", Nil))
+                </div>
+
+                <h2 class='tab' data-tip="The Media tab lists top-level video, audio, and images asscoiated with the current study.">Media</h2>
 
 				@widget.thumbList(assetMap.getOrElse("video", Nil))
 				@widget.thumbList(assetMap.getOrElse("image", Nil))
 				@widget.thumbList(assetMap.getOrElse("audio", Nil))
 			</div>
 
-			<div id="highlights" class="view">
-				<h2 class='tab'>Highlights</h2>
-
-				@widget.thumbList(excerpts.getOrElse("video", Nil))
-				@widget.thumbList(excerpts.getOrElse("image", Nil))
-				@widget.thumbList(excerpts.getOrElse("audio", Nil))
-			</div>
-
 			<div id="documents" class="view">
-				<h2 class='tab'>Documents</h2>
+				<h2 class='tab' data-tip="The Documents tab lists non-media files associated with the current study.">Documents</h2>
 				@widget.assetList(assets)
 			</div>
 
 			<div id="participants" class="view">
-				<h2 class='tab'>Participants</h2>
+				<h2 class='tab' data-tip="The Participants tab lists basic information regarding the participants of the current study.">Participants</h2>
 				@widget.slotList(volume)
 			</div>
 
 			<div id="permission" class="view">
-				<h2 class='tab'>Permission</h2>
+				<h2 class='tab' data-tip="The Permissions tab lists who has access to the current study, and what that access allows.">Permission</h2>
 
 				@widget.volumePermission(volume)
 			</div>

@@ -10,7 +10,7 @@
 			@crud.headerCurrentLink(routes.Volume.edit(volume.id), "edit")
 
             @if(volume.permission >= Permission.ADMIN) {
-				@crud.headerCurrentLink(routes.Volume.admin(volume.id), "permissions")
+				@crud.headerCurrentLink(routes.Volume.admin(volume.id), "access")
             }
         }
         </ul>

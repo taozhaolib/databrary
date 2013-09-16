@@ -10,37 +10,41 @@
     <article>
 		@crud.volumeHeader(volume)
 
-	<table>
+	<table class="permission">
 	@defining(helper.FieldConstructor(widget.tableFieldConstructor.f)) { implicit fieldConstructor =>
-		<tr>
+			<thead>
+				<tr>
 			<th>Name</th>
 			<th>Individual</th>
 			<th>Group</th>
 			<th>Action</th>
 		</tr>
+			</thead>
 
+<tbody>
 		@accessForms.map { case (party,form) =>
 		@helper.form(routes.Volume.accessChange(volume.id, party.id)) {
 		<tr>
 			@accessFields(party, form)
 			<td>
-				<button type='submit'>Change</button>
+				<button type='submit' class="button first">Update</button>
 				@if(party.id != request.identity.id) {
-				<a href='@routes.Volume.accessDelete(volume.id, party.id)'>Revoke</a>
+				<a href='@routes.Volume.accessDelete(volume.id, party.id)' class="button second">Revoke</a>
 				}
 				@widget.formErrors(form)
 			</td>
 		</tr>
 		}
 		}
-
+</tbody>
+			<tfoot>
 		@helper.form(routes.Volume.accessSearch(volume.id)) {
-		<tr>
-			@helper.inputText(accessSearch("name"))
+		<tr class="null">
+			@helper.inputText(accessSearch("name"), 'placeholder -> "Search users and institutions...")
 			<td/>
 			<td/>
 			<td>
-				<button type='submit'>Search</button>
+				<button type='submit' class="button third">Search</button>
 				@widget.formErrors(accessSearch)
 			</td>
 		</tr>
@@ -51,13 +55,13 @@
 		<tr>
 			@accessFields(party, form)
 			<td>
-				<button type='submit'>Add</button>
+				<button type='submit' class="button first">Add</button>
 				@widget.formErrors(form)
 			</td>
 		</tr>
 		}
 		}
-	}
+	}</tfoot>
 	</table>
 	</article>
 }

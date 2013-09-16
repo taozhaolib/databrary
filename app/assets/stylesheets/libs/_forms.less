@@ -22,7 +22,7 @@ textarea {
 
 textarea {
 	resize: vertical;
-	width: 100%;
+	min-height: 200px;
 }
 
 input[type="search"] {
@@ -30,11 +30,19 @@ input[type="search"] {
 	.box-sizing(border-box);
 }
 
-input {
+textarea, input, select {
 	padding: 6px 8px;
 	.border-radius(3px);
 	width: 100%;
 	.grid_max(8);
+
+	&.half {
+		.grid_max(4);
+	}
+
+	&.quarter {
+		.grid_max(2);
+	}
 }
 
 // forms - fields and fieldsets
@@ -70,6 +78,14 @@ input {
 	&.big {
 		font-size: 1.25em;
 		padding: 6px 20px;
+	}
+}
+
+a.button {
+	display: inline-block;
+
+	&:hover {
+		text-decoration: none;
 	}
 }
 

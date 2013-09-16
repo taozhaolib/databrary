@@ -1,12 +1,18 @@
 @(slot : Slot, form : controllers.Slot.EditForm)(implicit request : SiteRequest[_])
 
+@import helper.FieldConstructor
+
+    @implicitField = @{
+        FieldConstructor(tag.minimalFieldConstructor.f)
+    }
+
 @template.crud("Edit Slot: " + slot.toString) {
     <article>
         <h1>@slot.toString</h1>
 
 	@helper.form(routes.Slot.change(slot.id)) {
 		@widget.enumSelect(form("consent"), Consent)
-		<button type='submit'>Change</button>
+		<button type='submit' class="big button first">Change</button>
 	}
 	@widget.formErrors(form)
     </article>

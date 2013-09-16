@@ -15,11 +15,11 @@ GET         /about/contact                                         controllers.S
 
 # Users
 GET         /login                                                 controllers.Login.view
-POST        /Login                                                 controllers.Login.post
+POST        /login                                                 controllers.Login.post
 GET         /OpenID                                         controllers.Login.openID(username = "")
 GET         /OpenID/:username                                 controllers.Login.openID(username : String)
 # TODO: should be POST:
-GET         /Logout                                         controllers.Login.logout
+GET         /logout                                         controllers.Login.logout
 
 # Entities
 GET         /party/:id                                         controllers.Party.view(id : models.Party.Id)
@@ -34,17 +34,17 @@ POST        /party/:id/Authorize/:other/parent                 controllers.Party
 # TODO: should be POST but currently used as link:
 GET         /party/:id/Authorize/:child/delete                 controllers.Party.authorizeDelete(id : models.Party.Id, child : models.Party.Id)
 
-GET 	    /study/create 						controllers.Volume.create(owner : Option[models.Party.Id] ?= None)
-POST 	    /study/Create/:owner 						controllers.Volume.add(owner : models.Party.Id)
+GET         /study/create                         controllers.Volume.create(owner : Option[models.Party.Id] ?= None)
+POST         /study/Create/:owner                         controllers.Volume.add(owner : models.Party.Id)
 GET         /study/:id                                         controllers.Volume.view(id : models.Volume.Id)
 GET         /study/:id/edit                                 controllers.Volume.edit(id : models.Volume.Id)
 POST        /study/:id/Edit                                 controllers.Volume.change(id : models.Volume.Id)
 GET         /study/:id/access                                 controllers.Volume.admin(id : models.Volume.Id)
-GET         /study/:id/Access/search                         controllers.Volume.accessSearch(id : models.Volume.Id)
-POST        /study/:id/Access/:party/add                         controllers.Volume.accessAdd(id : models.Volume.Id, party : models.Party.Id)
+GET         /study/:id/access/search                         controllers.Volume.accessSearch(id : models.Volume.Id)
+POST        /study/:id/access/:party/add                         controllers.Volume.accessAdd(id : models.Volume.Id, party : models.Party.Id)
 # TODO: should be POST:
-GET         /study/:id/Access/:party/delete                 controllers.Volume.accessDelete(id : models.Volume.Id, party : models.Party.Id)
-POST        /study/:id/Access/:party                         controllers.Volume.accessChange(id : models.Volume.Id, party : models.Party.Id)
+GET         /study/:id/access/:party/delete                 controllers.Volume.accessDelete(id : models.Volume.Id, party : models.Party.Id)
+POST        /study/:id/access/:party                         controllers.Volume.accessChange(id : models.Volume.Id, party : models.Party.Id)
 GET         /studies                                         controllers.Volume.listAll
 
 GET	/study/:id/container			controllers.Container.create(id : models.Volume.Id)
@@ -76,7 +76,7 @@ GET         /record/:id/edit                                controllers.Record.e
 POST        /record/:id/Edit                                controllers.Record.update(id : models.Record.Id)
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                                         controllers.Assets.at(path="/public", file)
+GET         /public/*file                                         controllers.Assets.at(path="/public", file)
 
 # ajax
 GET         /ajax/modal/login                                controllers.Login.ajaxView

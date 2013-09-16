@@ -6,7 +6,7 @@
 			<img src="@routes.Asset.head(assetLink.slotId, assetLink.link.assetId)" alt="@assetLink.link.name">
 		}
 	} else {
-		<img src="/assets/images/draft.png" alt="@volume.name">
+		<img src="@routes.Assets.at("images/draft.png")" alt="@volume.name">
 	}
 }
 

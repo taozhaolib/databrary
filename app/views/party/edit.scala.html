@@ -1,21 +1,26 @@
 @(party : Party, form : controllers.Party.EditForm)(implicit request : UserRequest[_])
 
+@import helper.FieldConstructor
+
+    @implicitField = @{
+        FieldConstructor(tag.minimalFieldConstructor.f)
+    }
 
 @template.crud("Admin Party: " + party.toString()) {
     <article>
         @crud.partyHeader(party)
 
 	@helper.form(routes.Party.change(party.id)) {
-		@helper.inputText(form("name"))
-		@helper.inputText(form("orcid"))
+		@helper.inputText(form("name"), 'placeholder -> "Full name", '_class -> "big")
+		@helper.inputText(form("orcid"), 'placeholder -> "ORCiD", '_class -> "big")
 		@if(controllers.Party.formForAccount(form, party)) {
-			@helper.inputText(form("email"))
-			@helper.inputPassword(form("password"))
-			@helper.inputPassword(form("again"))
-			@helper.inputText(form("openid"))
+			@helper.inputText(form("email"), 'placeholder -> "Email", '_class -> "big")
+			@helper.inputPassword(form("password"), 'placeholder -> "Password", '_class -> "big")
+			@helper.inputPassword(form("again"), 'placeholder -> "Password (repeat)", '_class -> "big")
+			@helper.inputText(form("openid"), 'placeholder -> "OpenID", '_class -> "big")
 		}
-		<button type='submit'>Change</button>
+		<button type='submit' class="big button first">Update</button>
         @widget.formErrors(form)
 	}
- </article>  
+ </article>
 }

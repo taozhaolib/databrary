@@ -102,7 +102,7 @@ object Volume extends SiteController {
     implicit request : SiteRequest[_]) = {
     val accessChange = accessChangeForm.map(_._1.id)
     val accessForms = volume.partyAccess().filter(a => Some(a.partyId) != accessChange).map(a => (a.party, accessForm(volume, a.partyId).fill(a))) ++ accessChangeForm
-    views.html.volume.admin(volume, accessForms, accessSearchForm, accessResults)
+    views.html.volume.access(volume, accessForms, accessSearchForm, accessResults)
   }
 
   def admin(i : models.Volume.Id) = check(i, Permission.ADMIN) { volume => implicit request =>

@@ -10,7 +10,7 @@
 			@crud.headerCurrentLink(routes.Party.edit(party.id), "edit")
 
             @if(party.delegated >= Permission.ADMIN) {
-				@crud.headerCurrentLink(routes.Party.admin(party.id), "access")
+				@crud.headerCurrentLink(routes.Party.admin(party.id), "authorization")
             }
 
             @if(party.delegated >= Permission.CONTRIBUTE) {
