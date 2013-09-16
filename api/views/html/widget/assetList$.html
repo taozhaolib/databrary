@@ -40,13 +40,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">assetList</span><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.api.templates.Html">Html</span>]] with <span class="extype" name="play.api.templates.Template2">Template2</span>[<a href="../../../models/Container.html" class="extype" name="models.Container">Container</a>, <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>]</span>
+        <span class="name">assetList</span><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.api.templates.Html">Html</span>]] with <span class="extype" name="play.api.templates.Template2">Template2</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>], <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>]</span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="play.api.templates.Template2">Template2</span>[<a href="../../../models/Container.html" class="extype" name="models.Container">Container</a>, <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>], <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.api.templates.Html">Html</span>]], <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="play.api.templates.Template2">Template2</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>], <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>], <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.api.templates.Html">Html</span>]], <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -169,15 +169,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>BaseScalaTemplate</dd></dl></div>
     </li><li name="views.html.widget.assetList#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="apply(container:models.Container)(implicitrequest:controllers.SiteRequest[_]):play.api.templates.Html"></a>
-      <a id="apply(Container)(SiteRequest[_]):Html"></a>
+      <a id="apply(assets:Seq[models.SlotAsset])(implicitrequest:controllers.SiteRequest[_]):play.api.templates.Html"></a>
+      <a id="apply(Seq[SlotAsset])(SiteRequest[_]):Html"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="container">container: <a href="../../../models/Container.html" class="extype" name="models.Container">Container</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.api.templates.Html">Html</span></span>
+        <span class="name">apply</span><span class="params">(<span name="assets">assets: <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.api.templates.Html">Html</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt"></p>
@@ -224,15 +224,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="views.html.widget.assetList#f" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="f:models.Container=&gt;(controllers.SiteRequest[_]=&gt;play.api.templates.Html)"></a>
-      <a id="f:(Container)⇒(SiteRequest[_])⇒Html"></a>
+      <a id="f:Seq[models.SlotAsset]=&gt;(controllers.SiteRequest[_]=&gt;play.api.templates.Html)"></a>
+      <a id="f:(Seq[SlotAsset])⇒(SiteRequest[_])⇒Html"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">f</span><span class="result">: (<a href="../../../models/Container.html" class="extype" name="models.Container">Container</a>) ⇒ (<a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]) ⇒ <span class="extype" name="play.api.templates.Html">Html</span></span>
+        <span class="name">f</span><span class="result">: (<span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>]) ⇒ (<a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]) ⇒ <span class="extype" name="play.api.templates.Html">Html</span></span>
       </span>
       </h4>
       
@@ -344,15 +344,15 @@
       </h4>
       
     </li><li name="views.html.widget.assetList#render" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="render(container:models.Container,request:controllers.SiteRequest[_]):play.api.templates.Html"></a>
-      <a id="render(Container,SiteRequest[_]):Html"></a>
+      <a id="render(assets:Seq[models.SlotAsset],request:controllers.SiteRequest[_]):play.api.templates.Html"></a>
+      <a id="render(Seq[SlotAsset],SiteRequest[_]):Html"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">render</span><span class="params">(<span name="container">container: <a href="../../../models/Container.html" class="extype" name="models.Container">Container</a></span>, <span name="request">request: <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.api.templates.Html">Html</span></span>
+        <span class="name">render</span><span class="params">(<span name="assets">assets: <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>]</span>, <span name="request">request: <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.api.templates.Html">Html</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="views.html.widget.assetList">assetList</a> → Template2</dd></dl></div>
@@ -427,7 +427,7 @@
 
         <div id="inheritedMembers">
         <div class="parent" name="play.api.templates.Template2">
-              <h3>Inherited from <span class="extype" name="play.api.templates.Template2">Template2</span>[<a href="../../../models/Container.html" class="extype" name="models.Container">Container</a>, <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>]</h3>
+              <h3>Inherited from <span class="extype" name="play.api.templates.Template2">Template2</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>], <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.api.templates.Html">Html</span>]</h3>
             </div><div class="parent" name="play.templates.BaseScalaTemplate">
               <h3>Inherited from <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.api.templates.Html">Html</span>]]</h3>
             </div><div class="parent" name="scala.Serializable">

@@ -44,7 +44,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>The possible levels of permission used for site access, user delegation, and study permissions.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>The possible levels of permission used for site access, user delegation, and volume permissions.
 Must match the corresponding postgres &quot;permission&quot; type.</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="dbrary.PGEnum">PGEnum</span>, <span class="extype" name="scala.Enumeration">Enumeration</span>, <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -282,6 +282,19 @@ Must match the corresponding postgres &quot;permission&quot; type.</p></div><div
       </span>
       </h4>
       <p class="shortcomment cmt">Alias for CONTRIBUTE.</p>
+    </li><li name="models.Permission#FULL" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="FULL:models.Permission.Value"></a>
+      <a id="FULL:Value"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">FULL</span><span class="result">: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Value</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Alias for CONTRIBUTE.</p><div class="fullcomment"><div class="comment cmt"><p>Alias for CONTRIBUTE. Grants full access to data, bypassing consent permissions.</p></div></div>
     </li><li name="models.Permission#NONE" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="NONE:models.Permission.Value"></a>
       <a id="NONE:Value"></a>
@@ -307,7 +320,7 @@ Must match the corresponding postgres &quot;permission&quot; type.</p></div><div
         <span class="name">OWN</span><span class="result">: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Value</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Alias for ADMIN.</p><div class="fullcomment"><div class="comment cmt"><p>Alias for ADMIN. Study ADMINs are considered OWNers.</p></div></div>
+      <p class="shortcomment cmt">Alias for ADMIN.</p><div class="fullcomment"><div class="comment cmt"><p>Alias for ADMIN. Volume ADMINs are considered OWNers.</p></div></div>
     </li><li name="models.Permission#VIEW" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="VIEW:models.Permission.Value"></a>
       <a id="VIEW:Value"></a>

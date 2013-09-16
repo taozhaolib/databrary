@@ -292,7 +292,7 @@ This does not respect access permissions on the comment targets.</p></div></div>
         <span class="name">delegated</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">List of delegations granted to this user.</p><div class="fullcomment"><div class="comment cmt"><p>List of delegations granted to this user.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Party.html" class="extype" name="models.Party">Party</a></dd></dl></div>
+      <p class="shortcomment cmt">Permission delegated by this party to the current user.</p><div class="fullcomment"><div class="comment cmt"><p>Permission delegated by this party to the current user.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Party.html" class="extype" name="models.Party">Party</a></dd></dl></div>
     </li><li name="models.Party#delegatedBy" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="delegatedBy(p:models.Party.Id)(implicitsite:util.Site):models.Permission.Value"></a>
       <a id="delegatedBy(Party.Id)(Site):Permission.Value"></a>
@@ -305,7 +305,7 @@ This does not respect access permissions on the comment targets.</p></div></div>
         <span class="name">delegatedBy</span><span class="params">(<span name="p">p: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">List of delegations granted by this user.</p><div class="fullcomment"><div class="comment cmt"><p>List of delegations granted by this user.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Party.html" class="extype" name="models.Party">Party</a></dd></dl></div>
+      <p class="shortcomment cmt">Permission delegated by the given party to this party.</p><div class="fullcomment"><div class="comment cmt"><p>Permission delegated by the given party to this party.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Party.html" class="extype" name="models.Party">Party</a></dd></dl></div>
     </li><li name="models.Account#email" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="email:String"></a>
       <a id="email:String"></a>
@@ -516,7 +516,7 @@ This does not respect access permissions on the comment targets.</p></div></div>
         <span class="name">pageName</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The title of the object/page in the hiearchy, which may only make sense within <a href="#pageParent(implicitsite:util.Site):None.type" class="extmbr" name="models.Account#pageParent">pageParent</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The title of the object/page in the hiearchy, which may only make sense within <a href="#pageParent(implicitsite:util.Site):None.type" class="extmbr" name="models.Account#pageParent">pageParent</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Party.html" class="extype" name="models.Party">Party</a> → <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></dd></dl></div>
+      <p class="shortcomment cmt">The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent(implicitsite:util.Site):None.type" class="extmbr" name="models.Account#pageParent">pageParent</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent(implicitsite:util.Site):None.type" class="extmbr" name="models.Account#pageParent">pageParent</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Party.html" class="extype" name="models.Party">Party</a> → <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.Party#pageParent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageParent(implicitsite:util.Site):None.type"></a>
       <a id="pageParent(Site):None.type"></a>
@@ -556,19 +556,6 @@ This does not respect access permissions on the comment targets.</p></div></div>
       </span>
       </h4>
       <p class="shortcomment cmt">Crypted password, using standard unix format, currently $2a$-style bcrypt</p>
-    </li><li name="models.Party#studyAccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="studyAccess(p:models.Permission.Value)(implicitsite:util.Site):Seq[models.StudyAccess]"></a>
-      <a id="studyAccess(Permission.Value)(Site):Seq[StudyAccess]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">studyAccess</span><span class="params">(<span name="p">p: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="StudyAccess.html" class="extype" name="models.StudyAccess">StudyAccess</a>]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">List of studies accessible by this user.</p><div class="fullcomment"><div class="comment cmt"><p>List of studies accessible by this user.</p></div><dl class="paramcmts block"><dt class="param">p</dt><dd class="cmt"><p>permission level to restrict to</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Party.html" class="extype" name="models.Party">Party</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -595,6 +582,19 @@ This does not respect access permissions on the comment targets.</p></div></div>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.Party#volumeAccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="volumeAccess(p:models.Permission.Value)(implicitsite:util.Site):Seq[models.VolumeAccess]"></a>
+      <a id="volumeAccess(Permission.Value)(Site):Seq[VolumeAccess]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">volumeAccess</span><span class="params">(<span name="p">p: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="VolumeAccess.html" class="extype" name="models.VolumeAccess">VolumeAccess</a>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">List of volumes accessible by this user.</p><div class="fullcomment"><div class="comment cmt"><p>List of volumes accessible by this user.</p></div><dl class="paramcmts block"><dt class="param">p</dt><dd class="cmt"><p>permission level to restrict to</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Party.html" class="extype" name="models.Party">Party</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>

@@ -86,16 +86,29 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="controllers.Slot.SlotForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="SlotForm=play.api.data.Form[(models.Consent.Value,java.sql.Date)]"></a>
-      <a id="SlotForm:SlotForm"></a>
+              <ol><li name="controllers.Slot.CreateForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CreateForm=play.api.data.Form[(Option[dbrary.Offset],Option[dbrary.Offset])]"></a>
+      <a id="CreateForm:CreateForm"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <span class="name">SlotForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<a href="../models/Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">models.Consent.Value</a>, <span class="extype" name="java.sql.Date">Date</span>)]</span>
+        <span class="name">CreateForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Offset">Offset</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Offset">Offset</span>])]</span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.Slot.EditForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EditForm=play.api.data.Form[models.Consent.Value]"></a>
+      <a id="EditForm:EditForm"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">EditForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[<a href="../models/Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">models.Consent.Value</a>]</span>
       </span>
       </h4>
       
@@ -2317,15 +2330,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="controllers.Slot#add" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="add(s:models.Study.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="add(models.Study.Id):Action[AnyContent]"></a>
+      <a id="add(c:models.Container.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="add(models.Container.Id):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">add</span><span class="params">(<span name="s">s: <a href="../models/Study$.html#Id=models.IntId[T]" class="extmbr" name="models.Study.Id">models.Study.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">add</span><span class="params">(<span name="c">c: <a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       
@@ -2372,15 +2385,15 @@
               
         </dd></dl></div>
     </li><li name="controllers.Slot#create" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="create(s:models.Study.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="create(models.Study.Id):Action[AnyContent]"></a>
+      <a id="create(c:models.Container.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="create(models.Container.Id):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">create</span><span class="params">(<span name="s">s: <a href="../models/Study$.html#Id=models.IntId[T]" class="extmbr" name="models.Study.Id">models.Study.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">create</span><span class="params">(<span name="c">c: <a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       

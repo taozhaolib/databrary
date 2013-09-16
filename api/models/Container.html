@@ -36,21 +36,20 @@
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier">sealed abstract </span>
+        <span class="modifier">final </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">Container</span><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Container">Container</a>] with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a> with <a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></span>
+        <span class="name">Container</span><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Container">Container</a>] with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Base class for all objects which can contain or serve as attachment point for assets.
-These objects, as they include user-specific permissions, are only valid for a single request.</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Collection of related assets.
+To be used, all assets must be placed into containers.
+These containers can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.
+</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a>, <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Container">Container</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
-        </div><div class="toggleContainer block">
-          <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a href="Slot.html" class="extype" name="models.Slot">Slot</a>, <a href="Study.html" class="extype" name="models.Study">Study</a></div>
+          <div class="superTypes hiddenContent"><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Container">Container</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -68,7 +67,7 @@ These objects, as they include user-specific permissions, are only valid for a s
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Container"><span>Container</span></li><li class="in" name="models.Annotated"><span>Annotated</span></li><li class="in" name="models.SitePage"><span>SitePage</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Container"><span>Container</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.SitePage"><span>SitePage</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -89,7 +88,7 @@ These objects, as they include user-specific permissions, are only valid for a s
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.Container#&lt;init&gt;" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(id:models.Container.Id):models.Container"></a>
+      <a id="&lt;init&gt;(id:models.Container.Id,volume:models.Volume,name_:Option[String],date_:Option[java.sql.Date]):models.Container"></a>
       <a id="&lt;init&gt;:Container"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -97,7 +96,7 @@ These objects, as they include user-specific permissions, are only valid for a s
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Container</span><span class="params">(<span name="id">id: <a href="Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">Container.Id</a></span>)</span>
+        <span class="name">Container</span><span class="params">(<span name="id">id: <a href="Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">Container.Id</a></span>, <span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="name_">name_: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="date_">date_: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Date">Date</span>]</span>)</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
@@ -106,91 +105,10 @@ These objects, as they include user-specific permissions, are only valid for a s
 
         
 
-        <div id="values" class="values members">
-              <h3>Abstract Value Members</h3>
-              <ol><li name="models.Container#consent" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="consent:models.Consent.Value"></a>
-      <a id="consent:Consent.Value"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">consent</span><span class="result">: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Participant consent level granted on contained data, or <a href="Consent$.html#NONE:models.Consent.Value" class="extmbr" name="models.Consent#NONE">Consent.NONE</a>.</p>
-    </li><li name="models.SitePage#pageName" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="pageName(implicitsite:util.Site):String"></a>
-      <a id="pageName(Site):String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">pageName</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The title of the object/page in the hiearchy, which may only make sense within <a href="#pageParent(implicitsite:util.Site):Option[models.SitePage]" class="extmbr" name="models.Container#pageParent">pageParent</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The title of the object/page in the hiearchy, which may only make sense within <a href="#pageParent(implicitsite:util.Site):Option[models.SitePage]" class="extmbr" name="models.Container#pageParent">pageParent</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></dd></dl></div>
-    </li><li name="models.SitePage#pageParent" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="pageParent(implicitsite:util.Site):Option[models.SitePage]"></a>
-      <a id="pageParent(Site):Option[SitePage]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">pageParent</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a>]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p><div class="fullcomment"><div class="comment cmt"><p>The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></dd></dl></div>
-    </li><li name="models.SitePage#pageURL" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="pageURL:String"></a>
-      <a id="pageURL:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">pageURL</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></dd></dl></div>
-    </li><li name="models.Container#study" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="study:models.Study"></a>
-      <a id="study:Study"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">study</span><span class="result">: <a href="Study.html" class="extype" name="models.Study">Study</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Study owning this container (which may be itself).</p>
-    </li><li name="models.Container#studyId" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="studyId:models.Study.Id"></a>
-      <a id="studyId:Study.Id"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">studyId</span><span class="result">: <a href="Study$.html#Id=models.IntId[T]" class="extmbr" name="models.Study.Id">Study.Id</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Study owning this container (which may be itself).</p>
-    </li></ol>
-            </div>
+        
 
         <div id="values" class="values members">
-              <h3>Concrete Value Members</h3>
+              <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:AnyRef):Boolean"></a>
       <a id="!=(AnyRef):Boolean"></a>
@@ -269,19 +187,33 @@ These objects, as they include user-specific permissions, are only valid for a s
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.Container#assets" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="assets(implicitdb:util.Site.DB):Seq[models.AssetLink]"></a>
-      <a id="assets(DB):Seq[AssetLink]"></a>
+    </li><li name="models.Container#assets" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="assets(implicitdb:util.Site.DB):Seq[models.ContainerAsset]"></a>
+      <a id="assets(DB):Seq[ContainerAsset]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">assets</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="AssetLink.html" class="extype" name="models.AssetLink">AssetLink</a>]</span>
+        <span class="name">assets</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">List of contained assets within this container.</p><div class="fullcomment"><div class="comment cmt"><p>List of contained assets within this container.
+In most cases calling <code>fullSlot.assets</code> makes more sense.</p></div></div>
+    </li><li name="models.Container#change" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="change(name:Option[String],date:Option[java.sql.Date])(implicitsite:util.Site):Unit"></a>
+      <a id="change(Option[String],Option[Date])(Site):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">change</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">_name</span></span>, <span name="date">date: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Date">Date</span>] = <span class="symbol">_date</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -298,20 +230,46 @@ These objects, as they include user-specific permissions, are only valid for a s
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="models.Annotated#comments" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="comments(all:Boolean)(implicitdb:util.Site.DB):Seq[models.Comment]"></a>
-      <a id="comments(Boolean)(DB):Seq[Comment]"></a>
+    </li><li name="models.Container#container" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="container:models.Container"></a>
+      <a id="container:Container"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">comments</span><span class="params">(<span name="all">all: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
+        <span class="name">container</span><span class="result">: <a href="" class="extype" name="models.Container">Container</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The list of comments on this object.</p><div class="fullcomment"><div class="comment cmt"><p>The list of comments on this object.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include indirect comments on any contained objects
-</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
+      
+    </li><li name="models.Container#date" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="date:Option[java.sql.Date]"></a>
+      <a id="date:Option[Date]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">date</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Date">Date</span>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The date at which the contained data were collected.</p><div class="fullcomment"><div class="comment cmt"><p>The date at which the contained data were collected.
+Note that this is covered (in part) by dataAccess permissions due to birthday/age restrictions.</p></div></div>
+    </li><li name="models.Container#date_" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="date_:Option[java.sql.Date]"></a>
+      <a id="date_:Option[Date]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">date_</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Date">Date</span>]</span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -367,19 +325,19 @@ These objects, as they include user-specific permissions, are only valid for a s
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="models.Container#getAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getAsset(o:models.Asset.Id)(implicitdb:util.Site.DB):Option[models.AssetLink]"></a>
-      <a id="getAsset(Asset.Id)(DB):Option[AssetLink]"></a>
+    </li><li name="models.Container#fullSlot" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="fullSlot(implicitdb:util.Site.DB):models.Slot"></a>
+      <a id="fullSlot(DB):Slot"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getAsset</span><span class="params">(<span name="o">o: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetLink.html" class="extype" name="models.AssetLink">AssetLink</a>]</span>
+        <span class="name">fullSlot</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Look up a specific contained asset.</p>
+      <p class="shortcomment cmt">Slot that covers this entire container and which thus serves as a proxy for display and metadata.</p><div class="fullcomment"><div class="comment cmt"><p>Slot that covers this entire container and which thus serves as a proxy for display and metadata. Cached.</p></div></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -419,20 +377,6 @@ These objects, as they include user-specific permissions, are only valid for a s
       </span>
       </h4>
       <p class="shortcomment cmt">Primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Container">Container</a> → TableRowId</dd></dl></div>
-    </li><li name="models.Annotated#idents" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="idents(implicitdb:util.Site.DB):Seq[String]"></a>
-      <a id="idents(DB):Seq[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">idents</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">A list of record identification strings that apply to this object.</p><div class="fullcomment"><div class="comment cmt"><p>A list of record identification strings that apply to this object.
-This is probably not a permanent solution for naming, but it's a start.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -446,6 +390,33 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.Container#name" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="name:Option[String]"></a>
+      <a id="name:Option[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">name</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Descriptive name to help with organization by contributors.</p><div class="fullcomment"><div class="comment cmt"><p>Descriptive name to help with organization by contributors.
+This (as with Container in general) is not necessarily intended for public consumption.</p></div></div>
+    </li><li name="models.Container#name_" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="name_:Option[String]"></a>
+      <a id="name_:Option[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">name_</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -485,7 +456,46 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.Container#permission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.Container#pageName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="pageName(implicitsite:util.Site):String"></a>
+      <a id="pageName(Site):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pageName</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent(implicitsite:util.Site):Some[models.Volume]" class="extmbr" name="models.Container#pageParent">pageParent</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent(implicitsite:util.Site):Some[models.Volume]" class="extmbr" name="models.Container#pageParent">pageParent</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Container">Container</a> → <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></dd></dl></div>
+    </li><li name="models.Container#pageParent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="pageParent(implicitsite:util.Site):Some[models.Volume]"></a>
+      <a id="pageParent(Site):Some[Volume]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pageParent</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Some">Some</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p><div class="fullcomment"><div class="comment cmt"><p>The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Container">Container</a> → <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></dd></dl></div>
+    </li><li name="models.Container#pageURL" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="pageURL:String"></a>
+      <a id="pageURL:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pageURL</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Container">Container</a> → <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></dd></dl></div>
+    </li><li name="models.InVolume#permission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="permission:models.Permission.Value"></a>
       <a id="permission:Permission.Value"></a>
       <h4 class="signature">
@@ -497,50 +507,20 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
         <span class="name">permission</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Permission granted to the current site user for this container, defined by the containing study and determined at lookup time.</p><div class="fullcomment"><div class="comment cmt"><p>Permission granted to the current site user for this container, defined by the containing study and determined at lookup time.
-This will never be less than <a href="Permission$.html#VIEW:models.Permission.Value" class="extmbr" name="models.Permission#VIEW">Permission.VIEW</a> except for newly created studies, as such objects would not be returned in the first place.</p></div></div>
-    </li><li name="models.Annotated#postComment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="postComment(text:String)(implicitsite:util.Site):models.Comment"></a>
-      <a id="postComment(String)(Site):Comment"></a>
+      <p class="shortcomment cmt">Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p><div class="fullcomment"><div class="comment cmt"><p>Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
+    </li><li name="models.Container#slots" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="slots(implicitdb:util.Site.DB):Seq[models.Slot]"></a>
+      <a id="slots(DB):Seq[Slot]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">postComment</span><span class="params">(<span name="text">text: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Comment.html" class="extype" name="models.Comment">Comment</a></span>
+        <span class="name">slots</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Post a new comment this object.</p><div class="fullcomment"><div class="comment cmt"><p>Post a new comment this object.
-This will throw an exception if there is no current user, but does not check permissions otherwise.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
-    </li><li name="models.Annotated#recordMeasures" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="recordMeasures[T](category:Option[models.RecordCategory],metric:models.Metric[T])(implicitdb:util.Site.DB):Seq[(models.Record,Option[T])]"></a>
-      <a id="recordMeasures[T](Option[RecordCategory],Metric[T])(DB):Seq[(Record,Option[T])]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">recordMeasures</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="category">category: <span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>, <span name="metric">metric: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="models.Annotated.recordMeasures.T">T</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[(<a href="Record.html" class="extype" name="models.Record">Record</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="models.Annotated.recordMeasures.T">T</span>])]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The list of records and possibly measures on this object.</p><div class="fullcomment"><div class="comment cmt"><p>The list of records and possibly measures on this object.
-This is essentially equivalent to <code>this.records(false).filter(_.category == category).map(r =&gt; (r, r.measure[T](metric)))</code> but more efficient.</p></div><dl class="paramcmts block"><dt class="param">category</dt><dd class="cmt"><p>if Some limit to the given category</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
-    </li><li name="models.Annotated#records" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="records(all:Boolean)(implicitdb:util.Site.DB):Seq[models.Record]"></a>
-      <a id="records(Boolean)(DB):Seq[Record]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">records</span><span class="params">(<span name="all">all: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The list of records on this object.</p><div class="fullcomment"><div class="comment cmt"><p>The list of records on this object.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include indirect comments on any contained objects
-</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
+      <p class="shortcomment cmt">List of slots on this container.</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -567,6 +547,32 @@ This is essentially equivalent to <code>this.records(false).filter(_.category ==
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.Container#volume" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="volume:models.Volume"></a>
+      <a id="volume:Volume"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">volume</span><span class="result">: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Container">Container</a> → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
+    </li><li name="models.InVolume#volumeId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="volumeId:models.Volume.Id"></a>
+      <a id="volumeId:Volume.Id"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">volumeId</span><span class="result">: <a href="Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">Volume.Id</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -624,8 +630,8 @@ This is essentially equivalent to <code>this.records(false).filter(_.category ==
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.Annotated">
-              <h3>Inherited from <a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></h3>
+        <div class="parent" name="models.InVolume">
+              <h3>Inherited from <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></h3>
             </div><div class="parent" name="models.SitePage">
               <h3>Inherited from <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></h3>
             </div><div class="parent" name="models.TableRowId">
