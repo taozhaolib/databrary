@@ -20,7 +20,14 @@ INSERT INTO authorize (child, parent, access, delegate) VALUES (2, 0, 'ADMIN', '
 INSERT INTO authorize (child, parent, access, delegate) VALUES (3, 0, 'CONTRIBUTE', 'NONE');
 
 INSERT INTO volume (id, name) VALUES (1, 'Demo sandbox');
+SELECT setval('volume_id_seq', 1);
+
+INSERT INTO container (id, volume, name) VALUES (1, 1, 'Container');
 SELECT setval('container_id_seq', 1);
+INSERT INTO slot (id, source) VALUES (1, 1);
+SELECT setval('slot_id_seq', 1);
+
+INSERT INTO toplevel_slot (slot) VALUES (1);
 
 INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, -1, 'DOWNLOAD', 'DOWNLOAD');
 INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 0, 'DOWNLOAD', 'DOWNLOAD');
@@ -30,7 +37,7 @@ INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 2, 'ADMIN'
 INSERT INTO timeseries (id, format, classification, duration) VALUES (1, -800, 'MATERIAL', interval '40');
 SELECT setval('asset_id_seq', 1);
 
--- INSERT INTO asset_link (container, asset, name) VALUES (1, 1, 'counting');
+INSERT INTO container_asset (container, asset, position, name) VALUES (1, 1, '0', 'counting');
 
 # --- !Downs
 ;
@@ -38,6 +45,8 @@ SELECT setval('asset_id_seq', 1);
 TRUNCATE party, volume, container, timeseries, asset CASCADE;
 SELECT setval('party_id_seq', 1, false);
 SELECT setval('container_id_seq', 1, false);
+SELECT setval('slot_id_seq', 1, false);
+SELECT setval('volume_id_seq', 1, false);
 SELECT setval('asset_id_seq', 1, false);
 
 INSERT INTO party VALUES (-1, 'Everybody');

@@ -583,6 +583,8 @@ DROP TYPE audit_action;
 
 DROP FUNCTION "annotation_daterange" (integer);
 DROP FUNCTION "annotation_consent" (integer);
+DROP FUNCTION "volume_annotations" (integer);
+DROP FUNCTION "slot_annotations" (integer);
 DROP TABLE "slot_annotation";
 DROP TABLE "volume_annotation";
 DROP VIEW "measure_all";
