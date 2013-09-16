@@ -50,10 +50,13 @@ dbjs.tabs = function (tabset, tab, body) {
 
     $tabs.each(function () {
         var $this = $(this),
-            id = $this.parent().attr('id');
+            id = $this.parent().attr('id'),
+            tip = $this.attr('data-tip');
 
-        $this.appendTo($tabs_el).replaceWith($('<li class="tab"><a href="#' + id + '">' + this.innerHTML + '</a></li>'));
+        $this.appendTo($tabs_el).replaceWith($('<li class="tab"><a href="#' + id + '" data-tip="' + tip + '">' + this.innerHTML + '</a></li>'));
     });
+
+    dbjs.tooltip(tabset+' .tab > a', 'data-tip');
 
     $bodies.each(function () {
         $(this).appendTo($body_el).addClass('rolled').slideUp(0);
@@ -89,7 +92,7 @@ dbjs.tabs = function (tabset, tab, body) {
         $currentBody = $body;
     };
 
-    $tablinks.click(function (e) {
+    $tablinks.click(function () {
         clickTab(this);
 
         return false;
@@ -119,7 +122,7 @@ dbjs.modal = function (clicker, toggle, now) {
         $('body').append('<div id="modal_back"></div>');
         $back = $(back);
 
-        $back.click(function (e) {
+        $back.click(function () {
             $(modals).slideUp(speed);
             $(this).fadeOut(speed);
         });
@@ -132,7 +135,7 @@ dbjs.modal = function (clicker, toggle, now) {
         $("html, body").animate({ scrollTop: 0 }, speed);
     };
 
-    $clicker.click(function (e) {
+    $clicker.click(function () {
         click();
         return false;
     });
@@ -175,7 +178,7 @@ dbjs.ajaxModal = function (clicker, url, now) {
                 $script.appendTo($('body'));
 
             if (now === true) {
-                dbjs.modal(clicker, toggle);
+                dbjs.modal(clicker, toggle, false);
             } else {
                 $clicker.off('click.ajaxModal');
                 dbjs.modal(clicker, toggle, true);
@@ -184,12 +187,12 @@ dbjs.ajaxModal = function (clicker, url, now) {
         }, 'html');
 
         $clicker.on('click');
-    }
+    };
 
     if (now === true) {
         setup(url);
     } else {
-        $clicker.on('click.ajaxModal', function (e) {
+        $clicker.on('click.ajaxModal', function () {
             setup(url);
         });
     }
@@ -205,7 +208,7 @@ dbjs.fold = function (region, clicker, toggle) {
     var $clicker = $(region + ' ' + clicker),
         $toggles = $(region + ' ' + toggle);
 
-    $clicker.click(function (e) {
+    $clicker.click(function () {
         $(this).next(toggle).slideToggle();
         $(this).toggleClass('unfolded');
     });
@@ -245,14 +248,14 @@ dbjs.sideMenu = function (menu, position) {
         }
     };
 
-    $(window).resize(function (e) {
+    $(window).resize(function () {
         reducer();
     });
 
     reducer();
 
     // make menu clickable
-    $menuLink.click(function (e) {
+    $menuLink.click(function () {
         $menu.toggleClass('dropped');
     });
 
@@ -260,7 +263,7 @@ dbjs.sideMenu = function (menu, position) {
         e.stopPropagation();
     });
 
-    $(document).click(function (e) {
+    $(document).click(function () {
         $menu.removeClass('dropped');
     });
 };
@@ -288,7 +291,7 @@ dbjs.stickyFooter = function (footer, above) {
             $footer.removeClass('fixed');
     };
 
-    $(window).resize(function (e) {
+    $(window).resize(function () {
         resize(footer, above);
     });
 
@@ -376,201 +379,127 @@ dbjs.simpleToggle = function (toggler, toggled) {
         clicker($active);
 };
 
-dbjs.tooltip = function (region, source, direction, event, now) {
-    console.log(region, source, direction, event, now);
-
+dbjs.tooltip = function (region, source, event, now) {
     var $regions = $(region),
-        directionArray = ['ordeal', 'diagonal', 'n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw'],
         sourceArray = ['auto', 'alt', 'title', 'data-tip', 'data-source'],
-        eventArray = ['hover', 'click', 'toggle', 'focus'];
-
-    console.log($regions, directionArray, sourceArray, eventArray);
+        eventArray = ['hover', 'click', 'toggle', 'focus'],
+        section = '#tooltips',
+        $section;
 
     // defaults
-    if (!$.inArray(direction, directionArray)) direction = 'ordeal';
-    if (!$.inArray(source, sourceArray)) source = 'auto';
-    if (!$.inArray(event, eventArray)) event = 'hover';
+    if ($.inArray(source, sourceArray) < 0) source = 'auto';
+    if ($.inArray(event, eventArray) < 0) event = 'hover';
     if (typeof(now) === 'undefined') now = false;
 
-    console.log(region, source, direction, event, now);
+    // modal background
+    if (!$(section).exists()) {
+        $('body').append('<section id="tooltips"><div class="wrapper"></div></section>');
+        $section = $(section);
+    }
 
     // source functions
     var prepareSource = function ($region, source) {
-        console.log($region, source);
-
-        var tipID = 'tip' + new Date().getTime(),
-            $tip = $('<aside id="' + tipID + '" class="tip"></aside>');
-
-        console.log(tipID, $tip);
+        var tipID = 'tip' + new Date().getTime() + Math.floor((Math.random() * 1000) + 1),
+            $tip;
 
         // pick 'auto' source
         if (source == 'auto') {
-            if ($region.attr('data-source'))
+            if ($region.attr('data-source') != '')
                 source = 'data-source';
-            else if ($region.attr('data-tip'))
+            else if ($region.attr('data-tip') != '')
                 source = 'data-tip';
-            else if ($region.attr('title'))
+            else if ($region.attr('title') != '')
                 source = 'title';
-            else if ($region.attr('alt'))
+            else if ($region.attr('alt') != '')
                 source = 'alt';
             else // no source? that's dumb.
                 return false;
         }
 
-        console.log(source);
-
         // grab the content
         if (source == 'data-source')
-            $tip.html($($region.attr('data-source')));
+            $tip = $($region.attr('data-source'));
         else
-            $tip.html($region.attr(source));
+            $tip = $('<div></div>').html($region.attr(source));
 
-        console.log($tip);
+        if ($tip.text() == '')
+            return false;
+
+        $tip.attr('id', tipID).addClass('tip');
 
         // place the content
         if (!now)
             $tip.hide();
 
-        $region.append($tip);
+        $section.find('.wrapper').append($tip);
 
         // clean up
-        $region.attr('data-source', '#' + tipID)
+        $region
+            .addClass('tip_toggle')
+            .attr('data-source', '#' + tipID)
             .removeAttr('alt')
             .removeAttr('title')
             .removeAttr('data-tip');
 
-        console.log($region);
-
         return true;
-    };
-
-    var setSource = function ($region, $source) {
-        return $region.attr('data-tip', $source.escape());
-    };
-
-    var getSource = function ($region) {
-        return $region.attr('data-tip').unescape();
-    };
-
-    // direction functions
-    var getDirection = function ($region, direction) {
-        // simple exit for pre-defined
-        if (direction.length <= 2)
-            return direction;
-
-        // setup for 'ordeal' and 'diagonal'
-        var $window = $(window),
-            wWidth = $window.width(),
-            wHeight = $window.height(),
-            rWidth = $region.width(),
-            rHeight = $region.height();
-
-        var compass = {
-                west: $region.position().left,
-                east: wWidth - $region.position().left - rWidth,
-                north: $region.position().top,
-                south: wHeight - $region.position().top - rHeight
-            },
-            compassSort = [];
-
-        for (var dir in compass)
-            compassSort.push([dir, compass[dir]]);
-
-        compassSort.sort(function (a, b) {
-            return a[1] - b[1]
-        });
-
-        // ordeal or diagnoal exit...
-        var dirClass = compassSort.shift()[0];
-
-        if (direction == 'ordeal')
-            return dirClass;
-
-        for (var pair in compassSort) {
-            if (dirClass == 'n' || dirClass == 's') {
-                if (pair[0] == 'e' || pair[0] == 'w') {
-                    dirClass = dirClass + pair[0];
-                    break;
-                }
-            } else {
-                if (pair[0] == 'n' || pair[0] == 's') {
-                    dirClass = pair[0] + dirClass;
-                    break;
-                }
-            }
-        }
-
-        return diag;
     };
 
     // display functions
     var showTip = function ($region) {
-        $region
-            .find($region.attr('data-source'))
-            .addClass(getDirection($region, direction))
-            .fadeIn(dbjs.vars.speedNorm);
+        $($region.attr('data-source')).slideDown(dbjs.vars.speedFast);
     };
 
     var hideTip = function ($region) {
-        $region
-            .find($region.attr('data-source'))
-            .removeClass(directionArray.join(' '))
-            .fadeOut(dbjs.vars.speedNorm);
+        $($region.attr('data-source')).slideUp(dbjs.vars.speedFast);
     };
 
-    console.log('');
-
     // register the events
-    $regions.each(function (i, e) {
+    $regions.each(function () {
         var $this = $(this);
-
-        console.log($this);
 
         if (prepareSource($this, source)) {
             switch (event) {
                 case 'hover':
-                    $this.hover(function (e) {
+                    $this.hover(function () {
                         showTip($this);
-                    }, function (e) {
+                    }, function () {
                         hideTip($this);
                     });
 
                     break;
 
                 case 'click':
-                    $this.click(function (e) {
+                    $this.click(function () {
                         showTip($this);
                     });
 
-                    $(document).click(function (e) {
+                    $(document).click(function () {
                         hideTip($this);
                     });
 
                     break;
 
                 case 'toggle':
-                    $this.toggle(function (e) {
+                    $this.toggle(function () {
                         showTip($this);
-                    }, function (e) {
+                    }, function () {
                         hideTip($this);
                     });
 
                     break;
 
                 case 'focus':
-                    $this.focusin(function (e) {
+                    $this.focusin(function () {
                         showTip($this);
                     });
 
-                    $this.focusout(function (e) {
+                    $this.focusout(function () {
                         hideTip($this);
                     });
 
                     break;
             }
         }
-
-        console.log('');
     });
 };
 
@@ -596,5 +525,5 @@ $(document).ready(function () {
     dbjs.tabs('.tabset', '.tab', '.view');
 
     // study list
-    dbjs.fadeOff('.study_roll a', '.body', '.thumb')
+    dbjs.fadeOff('.study_roll a', '.body', '.thumb');
 });

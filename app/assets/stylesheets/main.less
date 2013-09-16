@@ -35,9 +35,24 @@
 .col_11 { .grid_column(11); }
 .col_12 { .grid_column(12); }
 
-.demo {
-	background: #ffc;
-	.border-radius(5px);
+body {
+    position: relative;
+}
+
+#tooltips {
+    position: fixed;
+    top: @header_height - (@gutter/4);
+    left: 0;
+    right: 0;
+    z-index: 500;
+    background: @white;
+    .box-shadow(@shadow);
+
+    font-size: 0.75em;
+    color: @gray_50_third;
+}
+.tip {
+    padding: (@gutter/2) 0 (@gutter/4);
 }
 
 // queries
