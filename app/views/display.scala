@@ -78,13 +78,9 @@ object display {
 
   def citeName(name: String) = {
     val names = name.split(" +")
-    val out = new StringBuilder(names.last)
-    if (names.length > 1)
-      names.init foreach { n =>
-        out += n.head
-        out ++= ". "
-      }
-    out.result
+    names.last + (if (names.length > 1) {
+      ", " + names.init.map(_.head + ".").mkString(" ")
+    } else "")
   }
 
   def apply(x : SitePage, full : Boolean = false)(implicit site : Site) = if (full) path(x) else page(x)

@@ -67,7 +67,7 @@ object Container extends TableId[Container]("container") {
       }
       cont
     }
-    SELECT("SELECT " + cols.select + " FROM " + src + " LEFT JOIN " + Slot.baseSrc + " ON container.id = slot.source AND slot.segment = '(,)' WHERE container.id = {id} AND", Volume.condition).
+    SQL("SELECT " + cols.select + " FROM " + src + " LEFT JOIN " + Slot.baseSrc + " ON container.id = slot.source AND slot.segment = '(,)' WHERE container.id = {id} AND " + Volume.condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt(cols)
   }
 

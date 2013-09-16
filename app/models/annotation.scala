@@ -167,11 +167,10 @@ object Record extends AnnotationView[Record]("record") {
       }
     SQL("SELECT " + cols.select + " FROM record" +
         (if (category.isEmpty) " JOIN record_category ON record.category = record_category.id" else "") + 
-        " WHERE record.volume = {volume}" +
+        " LEFT JOIN measure_text ON record.id = " + metric.measureType.table + ".record AND measure_text.metric = {metric} WHERE record.volume = {volume}" +
         (if (category.isDefined) " AND record.category = {category}" else "") +
-        " LEFT JOIN measure_text ON record.id = " + metric.measureType.table + ".record AND measure_text.metric = {metric} ORDER BY" +
-        (if (category.isEmpty) " record.category," else "") +
-        " " + metric.measureType.column.select + ", record.id").
+        " ORDER BY " + (if (category.isEmpty) "record.category, " else "") +
+        metric.measureType.column.select + ", record.id").
       on('volume -> volume.id, 'metric -> metric.id, 'category -> category.map(_.id)).
       list(cols)
   }

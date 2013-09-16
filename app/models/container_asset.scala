@@ -213,7 +213,7 @@ object SlotAsset {
     val row = Asset.row ~ ContainerAsset.columns ~ Container.volumeRow(volume) ~ Slot.columns ~ columns map {
       case (asset ~ link ~ cont ~ slot ~ excerpt) => make((ContainerAsset.make(asset, cont) _).tupled(link), (Slot.make(cont) _).tupled(slot), excerpt)
     }
-    SQL("SELECT " + row.select + " FROM " + ContainerAsset.containerSrc + " JOIN container ON container_asset.container = container.id JOIN " + Slot.baseSrc + " ON container.id = slot.source LEFT JOIN toplevel_asset ON slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset WHERE container.volume = {vol} AND " + condition + " AND (toplevel.slot IS NOT NULL OR toplevel_asset.asset IS NOT NULL)").
+    SQL("SELECT " + row.select + " FROM " + ContainerAsset.containerSrc + " JOIN container ON container_asset.container = container.id JOIN " + Slot.baseSrc + " ON container.id = slot.source LEFT JOIN toplevel_asset ON slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset WHERE container.volume = {vol} AND " + condition + " AND (toplevel_slot.slot IS NOT NULL OR toplevel_asset.asset IS NOT NULL)").
       on('vol -> volume.id).list(row)
   }
 }

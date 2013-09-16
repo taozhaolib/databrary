@@ -546,6 +546,22 @@ CREATE INDEX ON "slot_annotation" ("annotation");
 COMMENT ON TABLE "slot_annotation" IS 'Attachment of annotations to slots.';
 
 
+CREATE FUNCTION "slot_annotations" ("slot" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
+	SELECT annotation 
+	  FROM slot_annotation
+	  JOIN slot target ON slot_annotation.slot = target.id
+	  JOIN slot this ON target <@ this
+	 WHERE this.id = $1
+$$;
+
+CREATE FUNCTION "volume_annotations" ("volume" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
+	SELECT annotation FROM volume_annotation WHERE volume = $1 UNION ALL
+	SELECT annotation FROM slot_annotation
+	  JOIN slot ON slot_annotation.slot = slot.id
+	  JOIN container ON slot.source = container.id
+	 WHERE container.volume = $1
+$$;
+
 CREATE FUNCTION "annotation_consent" ("annotation" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS
 	$$ SELECT MIN(consent) FROM slot_annotation JOIN slot ON slot = slot.id WHERE annotation = $1 $$;
 COMMENT ON FUNCTION "annotation_consent" (integer) IS 'Effective (minimal) consent level granted on the specified annotation.';
