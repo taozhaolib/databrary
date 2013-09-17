@@ -53,11 +53,11 @@ final case class Authorize(childId : Party.Id, parentId : Party.Id, access : Per
 object Authorize extends Table[Authorize]("authorize") {
   private[models] val row = Columns[
     Party.Id, Party.Id, Permission.Value, Permission.Value, Option[Timestamp], Option[Timestamp]](
-    'child,    'parent,   'access,          'delegate,        'authorized,       'expires).
+    'child,   'parent,  'access,          'delegate,        'authorized,       'expires).
     map(Authorize.apply _)
 
   private[this] def SELECT(all : Boolean, q : String) : SimpleSql[Authorize] = 
-    SELECT("WHERE " + (if (all) "" else "authorized < CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP) AND ") + q)
+    row.SQL("WHERE " + (if (all) "" else "authorized < CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP) AND ") + q)
 
   /** Retrieve a specific authorization identified by child and parent. */
   def get(child : Party.Id, parent : Party.Id)(implicit db : Site.DB) : Option[Authorize] =

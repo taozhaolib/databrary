@@ -85,8 +85,7 @@ object Party extends TableId[Party]("party") {
     Id,  String, Option[Orcid]](
     'id, 'name,  'orcid).
     map(make _)
-  private[models] override val src = "party LEFT JOIN account USING (id)"
-  private[models] val row = (columns ~ Account.columns.?) map {
+  private[models] val row = columns.leftJoin(Account.columns, using = 'id) map {
     case (e ~ None) => e
     case (e ~ Some(a)) => (Account.make(e) _).tupled(a)
   }
@@ -97,7 +96,7 @@ object Party extends TableId[Party]("party") {
     case ROOT => Some(Root)
     case site.identity.id => Some(site.identity)
     case _ =>
-      SELECT("WHERE id = {id}").
+      row.SQL("WHERE id = {id}").
         on('id -> i).singleOpt()
   }
 
@@ -115,7 +114,7 @@ object Party extends TableId[Party]("party") {
     * @param who party doing the authorization, to exclude parties already authorized
     */
   def searchForAuthorize(name : String, who : Party.Id)(implicit db : Site.DB) : Seq[Party] =
-    SELECT("WHERE " + byName + " AND id != {who} AND id NOT IN (SELECT child FROM authorize WHERE parent = {who} UNION SELECT parent FROM authorize WHERE child = {who}) LIMIT 8").
+    row.SQL("WHERE " + byName + " AND id != {who} AND id NOT IN (SELECT child FROM authorize WHERE parent = {who} UNION SELECT parent FROM authorize WHERE child = {who}) LIMIT 8").
       on(SQLArgs('who -> who) ++ byNameArgs(name) : _*).list()
 
   /** Search for parties by name for the purpose of volume access.
@@ -123,7 +122,7 @@ object Party extends TableId[Party]("party") {
     * @param volume volume to which to grant access, to exclude parties with access already.
     */
   def searchForVolumeAccess(name : String, volume : Volume.Id)(implicit db : Site.DB) : Seq[Party] =
-    SELECT("WHERE " + byName + " AND id NOT IN (SELECT party FROM volume_access WHERE volume = {volume}) LIMIT 8").
+    row.SQL("WHERE " + byName + " AND id NOT IN (SELECT party FROM volume_access WHERE volume = {volume}) LIMIT 8").
       on(SQLArgs('volume -> volume) ++ byNameArgs(name) : _*).list()
 
   private[models] final val NOBODY : Id = asId(-1)
@@ -144,8 +143,7 @@ object Account extends TableId[Account]("account") {
   private[models] val columns = Columns[
     String, Option[String], Option[String]](
     'email, 'password,      'openid)
-  private[models] override val src = "party JOIN account USING (id)"
-  private[models] val row = (Party.columns ~ columns) map {
+  private[models] val row = Party.columns.join(columns, using = 'id) map {
     case (e ~ a) => (make(e) _).tupled(a)
   }
 
@@ -153,7 +151,7 @@ object Account extends TableId[Account]("account") {
     * @return None if no party or no account for given party
     */
   def get_(i : Id)(implicit db : Site.DB) : Option[Account] =
-    SELECT("WHERE id = {id}").
+    row.SQL("WHERE id = {id}").
       on('id -> i).singleOpt()
   /** Look up a user by id.
     * @return None if no party or no account for given party
@@ -165,13 +163,13 @@ object Account extends TableId[Account]("account") {
       get_(i)
   /** Look up a user by email. */
   def getEmail(email : String)(implicit db : Site.DB) : Option[Account] = 
-    SELECT("WHERE email = {email}").
+    row.SQL("WHERE email = {email}").
       on('email -> email).singleOpt()
   /** Look up a user by openid.
     * @param email optionally limit results to the given email
     * @return an arbitrary account with the given openid, or the account for email if the openid matches */
   def getOpenid(openid : String, email : Option[String] = None)(implicit db : Site.DB) : Option[Account] = {
-    SELECT("WHERE openid = {openid} AND coalesce(email = {email}, 't') LIMIT 1").
+    row.SQL("WHERE openid = {openid} AND coalesce(email = {email}, 't') LIMIT 1").
       on('openid -> openid, 'email -> email).singleOpt()
   }
 }

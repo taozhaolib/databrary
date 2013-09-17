@@ -39,16 +39,15 @@ object AssetFormat extends TableId[AssetFormat]("format") {
       case TimeseriesFormat.VIDEO => TimeseriesFormat.Video
       case _ => new AssetFormat(id, mimetype, extension, name)
     }
-  }
-  private[models] override val src = "ONLY format"
+  } from "ONLY format"
 
   /** Lookup a format by its mimetime. */
   def getMimetype(mimetype : String)(implicit db : Site.DB) : Option[AssetFormat] =
-    SELECT("WHERE mimetype = {mimetype}").
-      on('mimetype -> mimetype).singleOpt(row)
+    row.SQL("WHERE mimetype = {mimetype}").
+      on('mimetype -> mimetype).singleOpt
   /** Get a list of all file formats in the database */
   def getAll(implicit db : Site.DB) : Seq[AssetFormat] =
-    SELECT("ORDER BY format.id").list(row)
+    row.SQL("ORDER BY format.id").list
 
   private[models] final val IMAGE : Id = asId(-700)
   /** File type for internal image data (jpeg).
@@ -147,8 +146,7 @@ object Asset extends AssetView[Asset]("asset") {
         val ts = new Timeseries(id.coerce[Timeseries], format, classification, duration)
         clip.fold(ts : Asset)(Clip.make(ts))
       }
-    }
-  private[models] override val src = """asset
+    } from """asset
     LEFT JOIN clip USING (id)
          JOIN file ON file.id = asset.id OR file.id = clip.source
     LEFT JOIN timeseries ON timeseries.id = file.id
@@ -158,23 +156,22 @@ object Asset extends AssetView[Asset]("asset") {
   /** Retrieve a single asset according to its type.
     * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
   def get(i : Id)(implicit db : Site.DB) : Option[Asset] =
-    SELECT("WHERE asset.id = {id}").on('id -> i).singleOpt()
+    row.SQL("WHERE asset.id = {id}").on('id -> i).singleOpt()
 }
 
 object FileAsset extends AssetView[FileAsset]("file") {
   private[models] val columns = Columns[
     Id,  Classification.Value](
     'id, 'classification)
-  private[models] val row = (columns ~ AssetFormat.row) map {
+  private[models] val row = columns.join(AssetFormat.row, "ONLY " + _ + " JOIN " + _ + " ON file.format = format.id") map {
     case ((id, classification) ~ format) => new FileAsset(id, format, classification)
   }
-  private[models] override val src = "ONLY file JOIN ONLY format ON file.format = format.id"
   
   /** Retrieve a single (non-timeseries) file asset.
     * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[FileAsset] =
-    SELECT("WHERE file.id = {id}").
-      on('id -> i).singleOpt()
+    row.SQL("WHERE file.id = {id}").
+      on('id -> i).singleOpt
 
   /** Create a new file asset based from an uploaded file.
     * @param format the format of the file, taken as given
@@ -189,7 +186,7 @@ object FileAsset extends AssetView[FileAsset]("file") {
 }
 
 object Timeseries extends AssetView[Timeseries]("timeseries") {
-  private[this] val columns = Columns[
+  private val columns = Columns[
     Id,  TimeseriesFormat.Id, Classification.Value, Offset](
     'id, 'format,             'classification,      'duration)
   private[models] val row = columns map {
@@ -199,26 +196,25 @@ object Timeseries extends AssetView[Timeseries]("timeseries") {
   /** Retrieve a single timeseries asset.
     * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[Timeseries] =
-    SELECT("WHERE timeseries.id = {id}").
+    row.SQL("WHERE timeseries.id = {id}").
       on('id -> i).singleOpt()
 }
 
 object Clip extends AssetView[Clip]("clip") {
   import PGSegment.{column => segmentColumn}
-  private[this] def makeSource(source : Timeseries)(id : Id, segment : Range[Offset]) = new Clip(id, source, segment)
+  private def makeSource(source : Timeseries)(id : Id, segment : Range[Offset]) = new Clip(id, source, segment)
   private[models] def make(source : Timeseries) = (makeSource(source) _).tupled
   private[models] val columns = Columns[
     Id,  Range[Offset]](
     'id, 'segment)
-  private[models] val row = (columns ~ Timeseries.row) map {
+  private[models] val row = columns.join(Timeseries.row, "clip.source = timeseries.id") map {
     case (clip ~ source) => make(source)(clip)
   }
-  private[models] override val src = "clip JOIN " + Timeseries.src + " ON clip.source = timeseries.id"
   
   /** Retrieve a single clip.
     * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[Clip] =
-    SELECT("WHERE clip.id = {id}").
+    row.SQL("WHERE clip.id = {id}").
       on('id -> i).singleOpt()
 }
 

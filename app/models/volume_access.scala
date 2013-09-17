@@ -53,21 +53,21 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
   /** Retrieve a specific volume access identified by volume and party.
     * This does not check for appropriate permissions on volume, so is unsafe. */
   private[models] def get(volume : Volume.Id, party : Party.Id)(implicit db : Site.DB) : Option[VolumeAccess] =
-    SELECT("WHERE volume = {volume} AND party = {party}").
+    row.SQL("WHERE volume = {volume} AND party = {party}").
       on('volume -> volume, 'party -> party).singleOpt()
 
   /** Retrieve the access entries for a volume at or above the specified permission level. */
-  private[models] def getParties(volume : Volume, permission : Permission.Value = Permission.NONE)(implicit db : Site.DB) =
-    JOIN(Party, "ON (party = id) WHERE volume = {volume} AND access >= {access} ORDER BY access DESC").
-      on('volume -> volume.id, 'access -> permission).list((row ~ Party.row).
-        map({ case (a ~ e) => a._party() = e; a._volume() = volume; a })
-      )
+  private[models] def getParties(volume : Volume, permission : Permission.Value = Permission.NONE)(implicit db : Site.DB) : Seq[VolumeAccess] =
+    row.join(Party.row, "party = id").
+      map({ case (a ~ e) => a._party() = e; a._volume() = volume; a }).
+      SQL("WHERE volume = {volume} AND access >= {access} ORDER BY access DESC").
+      on('volume -> volume.id, 'access -> permission).list
   /** Retrieve the volume access entries granted to a party at or above the specified permission level. */ 
-  private[models] def getVolumes(party : Party, permission : Permission.Value = Permission.NONE)(implicit site : Site) =
-    JOIN(Volume, "ON (volume = id) WHERE party = {party} AND access >= {access} AND " + Volume.condition + " ORDER BY access DESC").
-      on('party -> party.id, 'access -> permission, 'identity -> site.identity.id).list((row ~ Volume.row).
-        map({ case (a ~ s) => a._volume() = s; a._party() = party; a })
-      )
+  private[models] def getVolumes(party : Party, permission : Permission.Value = Permission.NONE)(implicit site : Site) : Seq[VolumeAccess] =
+    row.join(Volume.row, "volume = id").
+      map({ case (a ~ s) => a._volume() = s; a._party() = party; a }).
+      SQL("WHERE party = {party} AND access >= {access} AND " + Volume.condition + " ORDER BY access DESC").
+      on('party -> party.id, 'access -> permission, 'identity -> site.identity.id).list
 
   /** Remove a particular volume access from the database.
     * @return true if a matching volume access was found and deleted

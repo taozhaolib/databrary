@@ -34,10 +34,13 @@ case class Audit[T](when : Timestamp, who : Party.Id, ip : Inet, action : AuditA
 object Audit {
   private[this] def make[T](row : T)(when : Timestamp, who : Party.Id, ip : Inet, action : AuditAction.Value) =
     Audit[T](when, who, ip, action, row)
-  private[models] def row[T](row : T, tableName : String = "audit") = Columns[
-    Timestamp,                       Party.Id,                       Inet,                          AuditAction.Value](
-    SelectColumn(tableName, "when"), SelectColumn(tableName, "who"), SelectColumn(tableName, "ip"), SelectColumn(tableName, "action")).
-    map(make[T](row) _)
+  private[models] def row[T](row : T, tableName : String = "audit") = {
+    implicit val table : FromTable = FromTable(tableName)
+    Columns[
+      Timestamp,            Party.Id,            Inet,               AuditAction.Value](
+      SelectColumn("when"), SelectColumn("who"), SelectColumn("ip"), SelectColumn("action")).
+      map(make[T](row) _)
+  }
   private[models] val columns = row[Unit](())
 
   private[this] def acmd(action : AuditAction.Value) = action match {

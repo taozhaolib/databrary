@@ -93,22 +93,21 @@ final class Record private (override val id : Record.Id, val volume : Volume, va
 private[models] sealed abstract class AnnotationView[R <: Annotation with TableRowId[R]](table : String) extends TableId[R](table) {
   /** Retrieve a specific annotation of the instantiated object's type by id. */
   def get(id : Id)(implicit db : Site.DB) : Option[R] =
-    SELECT("WHERE " + table + ".id = {id}").
-      on('id -> id).singleOpt()
+    row.SQL("WHERE " + table + ".id = {id}").
+      on('id -> id).singleOpt
 
-  private[models] def rowVolume(vol : Volume) : SelectParser[R]
-  private[models] val volumeSrc : String
+  private[models] def rowVolume(vol : Volume) : Selector[R]
 
   /** Retrieve the set of annotations of the instantiated object's type on the given target.
     * @param all include all indirect annotations on any containers, objects, or clips contained within the given target (which may be a lot) */
   private[models] def get(target : Annotated, all : Boolean = true)(implicit db : Site.DB) : Seq[R] = {
-    val row = rowVolume(target.volume)
     val j = target.annotationTable
-    SQL("SELECT " + row.select + " FROM " + volumeSrc + (if (all) 
-        " JOIN " + j + "s({target}) ON " + table + ".id = " + j + "s"
+    rowVolume(target.volume).
+      SQL((if (all) 
+        "JOIN " + j + "s({target}) ON " + table + ".id = " + j + "s"
       else
-        " JOIN " + j + " ON " + table + ".id = annotation WHERE " + target.annotatedLevel + " = {target}")).
-      on('target -> target.annotatedId).list(row)
+        "JOIN " + j + " ON " + table + ".id = annotation WHERE " + target.annotatedLevel + " = {target}")).
+      on('target -> target.annotatedId).list
   }
 }
 
@@ -118,15 +117,13 @@ object Annotation extends HasId[Annotation] //AnnotationView[Annotation]("annota
 object Comment extends AnnotationView[Comment]("comment") {
   private[models] val row = Columns[
     Id,  Account.Id, Timestamp, String](
-    'id, 'who,       'when,     'text).map {
-    (id, whoId, when, text) => new Comment(id, whoId, when, text)
-  }
+    'id, 'who,       'when,     'text) map
+    { (id, whoId, when, text) => new Comment(id, whoId, when, text) }
   private[models] def rowVolume(vol : Volume) = row
-  private[models] val volumeSrc = src
 
   /** Retrieve the set of comments written by the specified user. */
   private[models] def getParty(user : Account)(implicit db : Site.DB) : Seq[Comment] =
-    SELECT("WHERE who = {who}").
+    row.SQL("WHERE who = {who}").
       on('who -> user.id).list(row map { a =>
         a._who() = user
         a
@@ -136,7 +133,7 @@ object Comment extends AnnotationView[Comment]("comment") {
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
   private[models] def post(target : Annotated, text : String)(implicit site : Site) : Comment = {
     val args = SQLArgs('who -> site.identity.id, 'text -> text)
-    val c = SQL("INSERT INTO " + table + " " + args.insert + " RETURNING " + *).
+    val c = SQL("INSERT INTO " + table + " " + args.insert + " RETURNING " + row.select).
       on(args : _*).single(row)
     c._who() = site.user.get
     SQL("INSERT INTO " + target.annotationTable + " (" + target.annotatedLevel + ", annotation) VALUES ({target}, {annotation})").
@@ -148,17 +145,16 @@ object Comment extends AnnotationView[Comment]("comment") {
 object Record extends AnnotationView[Record]("record") {
   private[models] def make(volume : Volume, category : Option[RecordCategory])(id : Id, consent : Option[Consent.Value]) =
     new Record(id, volume, category, consent.getOrElse(Consent.NONE))
-  private[models] val columns = Columns[
+  private val columns = Columns[
     Id,  Option[Consent.Value]](
     'id, SelectAs("annotation_consent(record.id)", "annotation_consent"))
-  private[models] val row = (columns ~ Volume.row ~ RecordCategory.row.?) map {
-    case (rec ~ vol ~ cls) => (make(vol, cls) _).tupled(rec)
+  private val colsCat = columns.leftJoin(RecordCategory.row, "record.category = record_category.id")
+  private[models] val row = colsCat.join(Volume.row, "record.volume = volume.id") map {
+    case (rec ~ cls ~ vol) => (make(vol, cls) _).tupled(rec)
   }
-  private[models] def rowVolume(vol : Volume) = (columns ~ RecordCategory.row.?) map {
+  private[models] def rowVolume(vol : Volume) = colsCat map {
     case (rec ~ cls) => (make(vol, cls) _).tupled(rec)
   }
-  private[models] val volumeSrc = "record LEFT JOIN " + RecordCategory.src + " ON record.category = record_category.id"
-  private[models] override val src = volumeSrc + " JOIN " + Volume.src + " ON record.volume = volume.id"
   private[models] def rowVolCat(vol : Volume, category : Option[RecordCategory] = None) =
     category.fold(rowVolume(vol))(cat => columns.map(make(vol, Some(cat)) _))
 
@@ -167,19 +163,18 @@ object Record extends AnnotationView[Record]("record") {
     * @return records sorted by category, ident */
   private[models] def getVolume(volume : Volume, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
     val metric = Metric.Ident
-    val cols = rowVolCat(volume, category) ~ metric.measureType.column.? map
+    val mtyp = metric.measureType
+    val cols = rowVolCat(volume, category).leftJoin(mtyp.column, "record.id = " + mtyp.table + ".record") map
       { case (record ~ ident) =>
         record._ident() = ident
         record
       }
-    SQL("SELECT " + cols.select + " FROM record" +
-        (if (category.isEmpty) " JOIN record_category ON record.category = record_category.id" else "") + 
-        " LEFT JOIN measure_text ON record.id = " + metric.measureType.table + ".record AND measure_text.metric = {metric} WHERE record.volume = {volume}" +
-        (if (category.isDefined) " AND record.category = {category}" else "") +
-        " ORDER BY " + (if (category.isEmpty) "record.category, " else "") +
+    cols.SQL("WHERE measure_text.metric = {metric} AND record.volume = {volume}",
+        (if (category.isDefined) "AND record.category = {category}" else ""),
+        "ORDER BY " + (if (category.isEmpty) "record.category, " else ""),
         metric.measureType.column.select + ", record.id").
       on('volume -> volume.id, 'metric -> metric.id, 'category -> category.map(_.id)).
-      list(cols)
+      list
   }
 
   /** Create a new record, initially unattached.

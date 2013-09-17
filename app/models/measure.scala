@@ -27,12 +27,12 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
 
   def get(id : Id)(implicit db : Site.DB) : Option[RecordCategory] = id match {
     case PARTICIPANT => Some(Participant)
-    case _ => SELECT("WHERE id = {id}").on('id -> id).singleOpt
+    case _ => row.SQL("WHERE id = {id}").on('id -> id).singleOpt
   }
 
   def getAll(implicit db : Site.DB) : Seq[RecordCategory] =
     Seq(Participant) ++
-    SELECT("WHERE id > 0 ORDER BY id").list
+    row.SQL("WHERE id > 0 ORDER BY id").list
 
   private final val PARTICIPANT : Id = asId(-500)
   /** RecordCategory representing participants, individuals whose data is contained in a particular sesion.
@@ -52,9 +52,10 @@ private[models] abstract sealed class MeasureType[T : Column] private (val dataT
   /** The name of this type, as used in database identifiers. */
   val name = dataType.toString
   /** The table storing measurements of this type. */
-  private[models] def table = "measure_" + name
+  private[models] val table = "measure_" + name
+  protected implicit val tableName : FromTable = FromTable(table)
   /** Column access to values of this type in the specific measurement table. */
-  private[models] val column = Columns[T](SelectColumn(table, "datum"))
+  private[models] val column = Columns[T](SelectColumn("datum"))
   /** Column access to values of this type in the joint measurement table. */
   private[models] val columnAll = Columns[T](SelectColumn("measure_all", "datum_" + name))
   private[models] def fromString(s : String) : Option[T]
@@ -94,10 +95,11 @@ sealed abstract trait MetricBase extends TableRowId[MetricBase] {
   def measureType = MeasureType(dataType)
 }
 /** Types of measurements (i.e., "units"). */
-sealed class Metric[T] private (val id : Metric.Id, val name : String, val classification : Classification.Value, val values : Array[String] = Array[String]())(implicit override val measureType : MeasureType[T]) extends MetricBase {
+sealed class Metric[T] private (id_ : Metric.Id, val name : String, val classification : Classification.Value, val values : Array[String] = Array[String]())(implicit override val measureType : MeasureType[T]) extends MetricBase with TableRowId[Metric[T]] {
+  val id = id_.coerce[Metric[T]]
   val dataType = measureType.dataType
 }
-object Metric extends TableId[MetricBase]("metric") {
+object Metric extends TableId[Metric[_]]("metric") {
   private[this] def make(id : Metric.Id, name : String, classification : Classification.Value, dataType : DataType.Value, values : Option[Array[String]]) = id match {
     case IDENT => Ident
     case BIRTHDATE => Birthdate
@@ -113,15 +115,15 @@ object Metric extends TableId[MetricBase]("metric") {
     case IDENT => Some(Ident)
     case BIRTHDATE => Some(Birthdate)
     case GENDER => Some(Gender)
-    case _ => SELECT("WHERE id = {id}").on('id -> id).singleOpt()
+    case _ => row.SQL("WHERE id = {id}").on('id -> id).singleOpt
   }
 
   def getAll(implicit db : Site.DB) : Seq[MetricBase] =
     Seq(Ident, Birthdate, Gender) ++
-    SELECT("WHERE id > 0 ORDER BY id").list
+    row.SQL("WHERE id > 0 ORDER BY id").list
 
   private[models] def getTemplate(category : RecordCategory.Id)(implicit db : Site.DB) : Seq[MetricBase] =
-    SELECT("JOIN record_template ON id = metric WHERE category = {category} ORDER BY id").
+    row.SQL("JOIN record_template ON id = metric WHERE category = {category} ORDER BY id").
       on('category -> category).list
 
   private final val IDENT : Id = asId(-900)
@@ -200,40 +202,37 @@ object Measure extends Table[MeasureBase]("measure_all") {
   private val columns = Columns[
     Record.Id](
     'record)
-  private[models] val row : SelectParser[MeasureBase] = SelectParser[MeasureBase](
-    columns.selects ++ DataType.values.map(t => SelectColumn(table, "datum_" + t.toString)) ++ Metric.row.selects,
+  private[models] val row : Selector[MeasureBase] = Selector[MeasureBase](
+    columns.selects ++ DataType.values.map(t => SelectColumn("datum_" + t.toString)) ++ Metric.row.selects,
+    "measure_all JOIN metric ON measure_all.metric = metric.id",
     row => for {
       record <- columns(row)
       metric <- Metric.row(row)
       value <- metric.measureType.columnAll(row)
     } yield (make(record, metric, value))
   )
-  private[models] override val src = "measure_all JOIN metric ON measure_all.metric = metric.id"
   
   /** Retrieve the specific measure of the specified metric in the given record.
     * @tparam T the type of the data value */
   private[models] def get[T](record : Record.Id, metric : Metric[T])(implicit db : Site.DB) : Option[T] = {
     val tpe = metric.measureType
-    val row = tpe.column
-    SQL("SELECT " + row.select + " FROM " + tpe.table + " WHERE record = {record} AND metric = {metric}").
-      on('record -> record, 'metric -> metric.id).singleOpt(row)
+    tpe.column.SQL("WHERE record = {record} AND metric = {metric}").
+      on('record -> record, 'metric -> metric.id).singleOpt
   }
 
   /** Retrieve the set of measures in the given record. */
   private[models] def getRecord(record : Record.Id)(implicit db : Site.DB) : Seq[MeasureBase] =
-    SELECT("WHERE record = {record} ORDER BY metric.id").on('record -> record).list
+    row.SQL("WHERE record = {record} ORDER BY metric.id").on('record -> record).list
 
   /** Retrieve the set of all records and possibly measures of the given type on the given slot. */
   private[models] def getAnnotated[T](target : Annotated, category : Option[RecordCategory] = None, metric : Metric[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] = {
     val tpe = metric.measureType
-    val row = Record.rowVolCat(target.volume, category) ~ tpe.column.? map 
+    val row = Record.rowVolCat(target.volume, category).leftJoin(tpe.column, "record.id = " + tpe.table + ".record") map 
       { case (r ~ m) => (r, m) }
-    SQL("SELECT " + row.select + " FROM " + tpe.table +
-      " RIGHT JOIN " + (if (category.isDefined) "record" else Record.src) +
-      " ON record = record.id JOIN " + target.annotationTable + " ON record.id = annotation WHERE metric = {metric}" +
-      (if (category.isDefined) " AND category = {category}" else "") +
-      " AND " + target.annotatedLevel + " = {target}").
-    on('target -> target.annotatedId, 'category -> category.map(_.id), 'metric -> metric.id).list(row)
+    row.SQL("JOIN", target.annotationTable, "ON record.id = annotation WHERE metric = {metric}",
+      (if (category.isDefined) " AND category = {category}" else ""),
+      "AND", target.annotatedLevel, "= {target}").
+      on('target -> target.annotatedId, 'category -> category.map(_.id), 'metric -> metric.id).list(row)
   }
 
   /** Add a new measure of a specific type and metric to the given record.

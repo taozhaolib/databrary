@@ -70,13 +70,13 @@ object Volume extends TableId[Volume]("volume") {
   /** Retrieve an individual Volume.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   def get(i : Id)(implicit site : Site) : Option[Volume] =
-    SELECT("WHERE id = {id} AND", condition).
+    row.SQL("WHERE id = {id} AND", condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt()
 
   /** Retrieve the set of all volumes in the system.
     * This only returns volumes for which the current user has [[Permission.VIEW]] access. */
   def getAll(implicit site : Site) : Seq[Volume] =
-    SELECT("WHERE", condition).
+    row.SQL("WHERE", condition).
       on('identity -> site.identity.id).list()
     
   /** Create a new, empty volume with no permissions.

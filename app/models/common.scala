@@ -91,25 +91,12 @@ private[models] abstract trait TableView {
   /** Type of TableRow this object can generate. */
   private[models] type Row <: TableRow
   /** Description of the database selection to produce a [[Row]]. */
-  private[models] val row : SelectParser[Row]
-  /** Shorthand for `row.select`, which provides the SELECT expressions. */
-  private[models] final def * : String = row.select
-  /** The full SELECT FROM source tables required for the row, which may include additional joins. */
-  private[models] val src : String = table
-
-  private[this] def unwords(s : String*) = s.mkString(" ")
-  protected def SELECT(q : String*) : SimpleSql[Row] = 
-    SQL(unwords(Seq("SELECT", *, "FROM", src) ++ q : _*)).using(row)
-  protected def JOIN[A](s : SelectParser[A], q : String*) : SimpleSql[Row ~ A] = {
-    val j = row ~ s
-    SQL(unwords(Seq("SELECT", j.select, "FROM", src) ++ q : _*)).using(j)
-  }
-  protected def JOIN(t : TableView, q : String*) : SimpleSql[Row ~ t.Row] =
-    JOIN(t.row, Seq("JOIN", t.src) ++ q : _*)
+  private[models] val row : Selector[Row]
 
   import scala.language.implicitConversions
+  protected implicit val tableName : FromTable = FromTable(table)
   /** Convenient creation of column names for this table from symbols. */
-  protected implicit def tableColumn(col : Symbol) = SelectColumn(table, col.name)
+  protected implicit def tableColumn(col : Symbol) = SelectColumn(col.name)
 }
 
 private[models] abstract class Table[R <: TableRow](private[models] val table : String) extends TableView {
