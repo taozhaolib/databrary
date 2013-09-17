@@ -32,10 +32,11 @@ object Slot extends SiteController {
   )
   private[this] def editFormFill(s : Slot) = editForm.fill((s.consent))
 
-  private[this] def viewEdit(slot : Slot)(
-    editForm : EditForm = editFormFill(slot))(
+  private[controllers] def viewEdit(slot : Slot)(
+    editForm : EditForm = editFormFill(slot),
+    recordForm : Record.SelectForm = Record.selectForm)(
     implicit request : SiteRequest[_]) = {
-    views.html.slot.edit(slot, editForm)
+    views.html.slot.edit(slot, editForm, recordForm)
   }
 
   def edit(i : models.Slot.Id) = check(i, Permission.EDIT) { slot => implicit request =>

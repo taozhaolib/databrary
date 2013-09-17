@@ -186,7 +186,7 @@ object Slot extends TableId[Slot]("slot") {
     * This checks permissions, though in fact this is not necessary in all cases. FIXME. */
   private[models] def getAnnotation(a : Annotation.Id)(implicit site : Site) : Seq[Slot] =
     row.SQL("JOIN slot_annotation ON slot.id = slot_annotation.slot WHERE slot_annotation.annotation = {annot} ORDER BY slot.source, slot.segment").
-      on('annot -> a).list
+    on('annot -> a, 'identity -> site.identity.id).list
     
   /** Create a new slot in the specified container or return a matching one if it already exists. */
   def getOrCreate(container : Container, segment : Range[Offset] = fullRange)(implicit db : Site.DB) : Slot =

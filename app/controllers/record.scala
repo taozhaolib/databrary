@@ -29,18 +29,18 @@ object Record extends SiteController {
     "metric" -> of[Metric.Id],
     "datum" -> optional(nonEmptyText)
   )
-  type RecordForm = Form[(Option[RecordCategory.Id], Seq[MeasureMapping], MeasureMapping)]
-  private val recordForm = Form(tuple(
+  type EditForm = Form[(Option[RecordCategory.Id], Seq[MeasureMapping], MeasureMapping)]
+  private val editForm = Form(tuple(
     "category" -> optional(of[RecordCategory.Id]),
     "measure" -> seq(measureMapping),
     "add" -> measureMapping
   ))
 
-  private def recordFormFill(r : Record)(implicit site : Site) : (Seq[MetricBase], RecordForm) = {
+  private def editFormFill(r : Record)(implicit site : Site) : (Seq[MetricBase], EditForm) = {
     val m = r.measures
     val mm = m.map(_.metric)
     val t = r.category.fold(Nil : Seq[MetricBase])(_.template).diff(mm)
-    (mm ++ t, recordForm.fill((
+    (mm ++ t, editForm.fill((
       r.categoryId,
       m.map(m => (m.metricId, Some(m.datum.toString))) ++ t.map(m => (m.id, None)),
       (Metric.asId(0), None)
@@ -48,12 +48,12 @@ object Record extends SiteController {
   }
 
   def edit(i : models.Record.Id) = check(i, Permission.EDIT) { record => implicit request =>
-    val (m, f) = recordFormFill(record)
+    val (m, f) = editFormFill(record)
     Ok(views.html.record.edit(record, m, f))
   }
 
   def update(i : models.Record.Id) = check(i, Permission.EDIT) { record => implicit request =>
-    val (meas, formin) = recordFormFill(record)
+    val (meas, formin) = editFormFill(record)
     val form = formin.bindFromRequest
     form.fold(
       form => BadRequest(views.html.record.edit(record, meas, form)),
@@ -84,6 +84,42 @@ object Record extends SiteController {
           _ => Redirect(record.pageURL)
         )
       }
+    )
+  }
+
+  type SelectForm = Form[Option[models.Record.Id]]
+  protected[controllers] val selectForm = Form(
+    "record" -> optional(of[models.Record.Id])
+  )
+
+  def selectList(target : Annotated)(implicit request : SiteRequest[_]) : Seq[(String, String)] = {
+    /* ideally we'd remove already used records here */
+    target.volume.allRecords() map { r : Record =>
+      (r.id.unId.toString, r.category.fold("")(_.name + ':') + r.ident.getOrElse("[" + r.id.unId.toString + "]"))
+    }
+  }
+
+  def slotRemove(s : models.Slot.Id, r : models.Record.Id) = Slot.check(s, Permission.EDIT) { slot => implicit request =>
+    slot.removeAnnotation(r)
+    Redirect(slot.pageURL)
+  }
+
+  def slotAdd(s : models.Slot.Id) = Slot.check(s, Permission.EDIT) { slot => implicit request =>
+    val form = selectForm.bindFromRequest
+    form.fold(
+      form => BadRequest(Slot.viewEdit(slot)(recordForm = form)),
+      _.fold({
+          val r = models.Record.create(slot.volume)
+          slot.addAnnotation(r)
+          Created(views.html.record.edit(r, Nil, editForm)) : Result
+        })(models.Record.get(_).
+          filter(r => r.permission >= Permission.DOWNLOAD && r.volumeId == slot.volumeId).
+          fold(
+            BadRequest(Slot.viewEdit(slot)(recordForm = form.withError("record", "record.bad"))) : Result){ r =>
+              slot.addAnnotation(r)
+              Redirect(slot.pageURL)
+            }
+        )
     )
   }
 

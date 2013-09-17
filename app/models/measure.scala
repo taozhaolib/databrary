@@ -176,9 +176,10 @@ private[models] sealed abstract class MeasureBase(val recordId : Record.Id, val 
   def datum : MeasureData
 
   /** Remove this measure from its associated record and delete it. */
-  def remove(implicit db : Site.DB) : Unit =
-    SQL("DELETE FROM " + measureType.table + " WHERE record = {record} AND metric = {metric}").
-      on('record -> recordId, 'metric -> metricId).execute
+  def remove(implicit db : Site.DB) : Unit = {
+    val args = SQLArgs('record -> recordId, 'metric -> metricId)
+    SQL("DELETE FROM " + measureType.table + " WHERE " + args.where).on(args : _*).execute
+  }
 }
 /** A measurement with a specific, tagged type. */
 final class Measure[T](recordId : Record.Id, metric : Metric[T], value_ : T) extends MeasureBase(recordId, metric) {

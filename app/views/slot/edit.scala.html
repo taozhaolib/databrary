@@ -1,4 +1,4 @@
-@(slot : Slot, form : controllers.Slot.EditForm)(implicit request : SiteRequest[_])
+@(slot : Slot, form : controllers.Slot.EditForm, recordForm : controllers.Record.SelectForm)(implicit request : SiteRequest[_])
 
 @import helper.FieldConstructor
 
@@ -15,5 +15,23 @@
 		<button type='submit' class="big button first">Change</button>
 	}
 	@widget.formErrors(form)
+
+	<h2>Records</h2>
+	<ul>
+	@slot.records(false).map { record =>
+		<li>@display(record):
+		@helper.form(routes.Record.slotRemove(slot.id, record.id)) {
+			<button type='submit'>remove</button>
+		}
+		</li>
+	}
+		<li>
+		@helper.form(routes.Record.slotAdd(slot.id)) {
+			@helper.select(recordForm("record"), controllers.Record.selectList(slot) :+ ("" -> "Create new record..."))
+			<button type='submit'>add</button>
+		}
+		</li>
+	</ul>
+
     </article>
 }

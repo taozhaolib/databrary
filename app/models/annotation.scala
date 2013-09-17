@@ -92,9 +92,9 @@ final class Record private (override val id : Record.Id, val volume : Volume, va
 
 private[models] sealed abstract class AnnotationView[R <: Annotation with TableRowId[R]](table : String) extends TableId[R](table) {
   /** Retrieve a specific annotation of the instantiated object's type by id. */
-  def get(id : Id)(implicit db : Site.DB) : Option[R] =
+  def get(id : Id)(implicit site : Site) : Option[R] =
     row.SQL("WHERE " + table + ".id = {id}").
-      on('id -> id).singleOpt
+      on('id -> id, 'identity -> site.identity.id).singleOpt
 
   private[models] def rowVolume(vol : Volume) : Selector[R]
 
@@ -136,8 +136,7 @@ object Comment extends AnnotationView[Comment]("comment") {
     val c = SQL("INSERT INTO " + table + " " + args.insert + " RETURNING " + row.select).
       on(args : _*).single(row)
     c._who() = site.user.get
-    SQL("INSERT INTO " + target.annotationTable + " (" + target.annotatedLevel + ", annotation) VALUES ({target}, {annotation})").
-      on('target -> target.annotatedId, 'annotation -> c.id).execute()
+    target.addAnnotation(c)
     c
   }
 }
@@ -201,16 +200,25 @@ trait Annotated extends InVolume {
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
   def postComment(text : String)(implicit site : Site) : Comment = Comment.post(this, text)(site)
   /** The list of records on this object.
-    * @param all include indirect comments on any contained objects
+    * @param all include indirect records on any contained objects
     */
   def records(all : Boolean = true)(implicit db : Site.DB) : Seq[Record] = Record.get(this, all)(db)
   /** The list of records and possibly measures on this object.
     * This is essentially equivalent to `this.records(false).filter(_.category == category).map(r => (r, r.measure[T](metric)))` but more efficient.
     * @param category if Some limit to the given category */
-  def recordMeasures[T](category : Option[RecordCategory] = None, metric : Metric[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] = Measure.getAnnotated[T](this, category, metric)
+  def recordMeasures[T](category : Option[RecordCategory] = None, metric : Metric[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] =
+    Measure.getAnnotated[T](this, category, metric)
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */
   def idents(implicit db : Site.DB) : Seq[(String)] = recordMeasures() map {
     case (r, i) => r.category.fold("")(_.name + ':') + i.getOrElse("[" + r.id.unId.toString + ']')
+  }
+  def addAnnotation(a : Annotation)(implicit db : Site.DB) : Unit = {
+    val args = SQLArgs('annotation -> a.id, Symbol(annotatedLevel) -> annotatedId)
+    SQL("INSERT INTO " + annotationTable + " " + args.insert).on(args : _*).execute
+  }
+  def removeAnnotation(a : Annotation.Id)(implicit db : Site.DB) : Unit = {
+    val args = SQLArgs('annotation -> a, Symbol(annotatedLevel) -> annotatedId)
+    SQL("DELETE FROM " + annotationTable + " WHERE " + args.where).on(args : _*).execute
   }
 }

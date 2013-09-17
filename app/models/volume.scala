@@ -43,10 +43,10 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     Audit.row[Unit]((), "audit_volume").SQL("WHERE id = {id} AND action = 'add'").
       on('id -> id).singleOpt
 
-  /** List of records associated with any slot in this volume.
+  /** List of records defined in this volume.
     * @param category restrict to the specified category
-    * @return unique records sorted by category */
-  def slotRecords(category : Option[RecordCategory] = None)(implicit db : Site.DB) = Record.getVolume(this, category)
+    * @return records sorted by category */
+  def allRecords(category : Option[RecordCategory] = None)(implicit db : Site.DB) = Record.getVolume(this, category)
 
   private[models] def annotatedLevel = "volume"
   private[models] def annotatedId = id

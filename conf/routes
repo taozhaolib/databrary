@@ -70,6 +70,8 @@ GET	/slot/:id/asset/:obj/frame/:offset	controllers.Asset.frame(id : models.Slot.
 
 POST        /study/:id/Comment                                 controllers.Comment.postVolume(id : models.Volume.Id)
 POST        /slot/:id/Comment                                 controllers.Comment.postSlot(id : models.Slot.Id)
+POST	/slot/:id/record/:rec/Remove		controllers.Record.slotRemove(id : models.Slot.Id, rec : models.Record.Id)
+POST	/slot/:id/Record			controllers.Record.slotAdd(id : models.Slot.Id)
 
 GET         /record/:id                                        controllers.Record.view(id : models.Record.Id)
 GET         /record/:id/edit                                controllers.Record.edit(id : models.Record.Id)
