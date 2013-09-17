@@ -261,6 +261,7 @@ COMMENT ON FUNCTION "segment_shift" (segment, interval) IS 'Shift both end point
 
 
 CREATE TABLE "object_segment" ( -- ABSTRACT
+	"id" integer NOT NULL,
 	"source" integer NOT NULL, -- References "source_table"
 	"segment" segment NOT NULL Check (NOT isempty("segment")),
 	Check (false) NO INHERIT
@@ -269,9 +270,9 @@ ALTER TABLE "object_segment" ALTER COLUMN "segment" SET STORAGE plain;
 COMMENT ON TABLE "object_segment" IS 'Generic table for objects defined as a temporal sub-sequence of another object.  Inherit from this table to use the functions below.';
 
 CREATE FUNCTION "object_segment_contains" ("object_segment", "object_segment") RETURNS boolean LANGUAGE sql IMMUTABLE STRICT AS
-	$$ SELECT $1.source = $2.source AND $1.segment @> $2.segment $$;
+	$$ SELECT $1.id = $2.id OR $1.source = $2.source AND $1.segment @> $2.segment $$;
 CREATE FUNCTION "object_segment_within" ("object_segment", "object_segment") RETURNS boolean LANGUAGE sql IMMUTABLE STRICT AS
-	$$ SELECT $1.source = $2.source AND $1.segment <@ $2.segment $$;
+	$$ SELECT $1.id = $2.id OR $1.source = $2.source AND $1.segment <@ $2.segment $$;
 CREATE OPERATOR @> (PROCEDURE = "object_segment_contains", LEFTARG = "object_segment", RIGHTARG = "object_segment", COMMUTATOR = <@);
 CREATE OPERATOR <@ (PROCEDURE = "object_segment_within", LEFTARG = "object_segment", RIGHTARG = "object_segment", COMMUTATOR = @>);
 
