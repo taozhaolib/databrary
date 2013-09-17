@@ -114,7 +114,7 @@ object Party extends TableId[Party]("party") {
     * @param who party doing the authorization, to exclude parties already authorized
     */
   def searchForAuthorize(name : String, who : Party.Id)(implicit db : Site.DB) : Seq[Party] =
-    row.SQL("WHERE " + byName + " AND id != {who} AND id NOT IN (SELECT child FROM authorize WHERE parent = {who} UNION SELECT parent FROM authorize WHERE child = {who}) LIMIT 8").
+    row.SQL("WHERE " + byName + " AND id != {who} AND id > 0 AND id NOT IN (SELECT child FROM authorize WHERE parent = {who} UNION SELECT parent FROM authorize WHERE child = {who}) LIMIT 8").
       on(SQLArgs('who -> who) ++ byNameArgs(name) : _*).list()
 
   /** Search for parties by name for the purpose of volume access.
