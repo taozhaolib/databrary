@@ -68,7 +68,7 @@ object Volume extends SiteController {
         form => BadRequest(views.html.volume.edit(Left(models.Party.get(owner).get), form)),
         { case (name, body) =>
           val volume = models.Volume.create(name, body)
-          VolumeAccess(volume.id, owner, Permission.ADMIN, Permission.CONTRIBUTE).set
+          VolumeAccess(volume, owner, Permission.ADMIN, Permission.CONTRIBUTE).set
           Redirect(volume.pageURL)
         }
       )
@@ -80,7 +80,7 @@ object Volume extends SiteController {
       "access" -> number(min=0, max=Permission.maxId-1),
       "inherit" -> number(min=0, max=(if (party.unId > 0) Permission.EDIT else Permission.DOWNLOAD).id)
     )((access, inherit) => VolumeAccess(
-      volume.id, party, 
+      volume, party, 
       Permission(access.max(inherit)),
       Permission(inherit)
     ))(a =>
@@ -101,7 +101,7 @@ object Volume extends SiteController {
     accessResults : Seq[(models.Party,AccessForm)] = Seq())(
     implicit request : SiteRequest[_]) = {
     val accessChange = accessChangeForm.map(_._1.id)
-    val accessForms = volume.partyAccess().filter(a => Some(a.partyId) != accessChange).map(a => (a.party, accessForm(volume, a.partyId).fill(a))) ++ accessChangeForm
+    val accessForms = volume.partyAccess.filter(a => Some(a.partyId) != accessChange).map(a => (a.party, accessForm(volume, a.partyId).fill(a))) ++ accessChangeForm
     views.html.volume.access(volume, accessForms, accessSearchForm, accessResults)
   }
 

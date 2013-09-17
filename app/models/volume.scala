@@ -29,8 +29,10 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     _body = body
   }
 
-  /** List of parties which have at least the specified level of access to this volume. */
-  def partyAccess(p : Permission.Value = Permission.NONE)(implicit db : Site.DB) = VolumeAccess.getParties(this, p)
+  private[this] val _partyAccess = CachedVal[Seq[VolumeAccess], Site.DB](VolumeAccess.getParties(this)(_))
+  /** List of parties access to this volume. Cached.
+    * @return VolumeAccess sorted by level (ADMIN first). */
+  def partyAccess(implicit db : Site.DB) : Seq[VolumeAccess] = _partyAccess
 
   /** List of containers within this volume. */
   def containers(implicit db : Site.DB) : Seq[Container] = Container.getVolume(this)

@@ -32,7 +32,7 @@
 						<aside class="investigators foot col_3">
 							<h2>Investigators</h2>
 
-							@volume.partyAccess(Permission.CONTRIBUTE)(request.db).map { a =>
+							@volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map { a =>
 								@widget.userinfo(a.party)
 							}
 						</aside>

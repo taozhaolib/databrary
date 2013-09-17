@@ -56,35 +56,40 @@ object Authorize extends Table[Authorize]("authorize") {
     'child,   'parent,  'access,          'delegate,        'authorized,       'expires).
     map(Authorize.apply _)
 
-  private[this] def SELECT(all : Boolean, q : String) : SimpleSql[Authorize] = 
-    row.SQL("WHERE " + (if (all) "" else "authorized < CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP) AND ") + q)
+  private[this] val condition = "AND authorized < CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP)"
+  private[this] def conditionIf(all : Boolean) =
+    if (all) "" else condition
 
   /** Retrieve a specific authorization identified by child and parent. */
-  def get(child : Party.Id, parent : Party.Id)(implicit db : Site.DB) : Option[Authorize] =
-    SELECT(true, "child = {child} AND parent = {parent}").
+  private[models] def get(child : Party.Id, parent : Party.Id)(implicit db : Site.DB) : Option[Authorize] =
+    row.SQL("WHERE child = {child} AND parent = {parent}").
       on('child -> child, 'parent -> parent).singleOpt()
 
   /** Get all authorizations granted to a particular child.
     * @param all include inactive authorizations
     */
-  private[models] def getParents(child : Party, all : Boolean)(implicit db : Site.DB) =
-    SELECT(all, "child = {child}").
-      on('child -> child.id).list(
-        row map { a => a._child() = child ; a }
-      )
+  private[models] def getParents(child : Party, all : Boolean = false)(implicit db : Site.DB) : Seq[Authorize] =
+    row.join(Party.row, "parent = party.id").map { case (a ~ p) =>
+        a._child() = child
+        a._parent() = p
+        a
+      }.SQL("WHERE child = {child}", conditionIf(all)).
+      on('child -> child.id).list
   /** Get all authorizations granted ba a particular parent.
     * @param all include inactive authorizations
     */
-  private[models] def getChildren(p : Party, all : Boolean)(implicit db : Site.DB) =
-    SELECT(all, "parent = {parent}").
-      on('parent -> p.id).list(
-        row map { a => a._parent() = p ; a }
-      )
+  private[models] def getChildren(parent : Party, all : Boolean = false)(implicit db : Site.DB) : Seq[Authorize] =
+    row.join(Party.row, "child = party.id").map { case (a ~ c) =>
+        a._child() = c
+        a._parent() = parent
+        a
+      }.SQL("WHERE parent = {parent}", conditionIf(all)).
+      on('parent -> parent.id).list
 
   /** Remove a particular authorization from the database.
     * @return true if a matching authorization was found and deleted
     */
-  def delete(child : Party.Id, parent : Party.Id)(implicit site : Site) =
+  def delete(child : Party.Id, parent : Party.Id)(implicit site : Site) : Boolean =
     Audit.remove("authorize", SQLArgs('child -> child, 'parent -> parent)).
       execute()
 

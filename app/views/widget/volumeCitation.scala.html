@@ -1,7 +1,7 @@
 @(volume: Volume)(implicit request: SiteRequest[_])
 
 <div class="citation">
-    @volume.partyAccess(Permission.CONTRIBUTE)(request.db).map(a => display.citeName(a.party.name) + ", " )
+    @volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map(a => display.citeName(a.party.name) + ", ")
     @display.dateFmtY.format(volume.creation).
     @volume.name.
     <em>Databrary</em>.

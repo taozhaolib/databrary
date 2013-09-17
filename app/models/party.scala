@@ -31,12 +31,15 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   def pageParent(implicit site : Site) = None
   def pageURL = controllers.routes.Party.view(id).url
 
-  /** List of authorizations granted to this user.
+  private[this] val _authorizeParents = CachedVal[Seq[Authorize], Site.DB](Authorize.getParents(this)(_))
+  /** List of authorizations granted to this user. Cached for !all.
     * @param all include inactive authorizations */
-  final def authorizeParents(all : Boolean = false)(implicit db : Site.DB) = Authorize.getParents(this, all)
+  final def authorizeParents(all : Boolean = false)(implicit db : Site.DB) : Seq[Authorize] =
+    if (all) Authorize.getParents(this, all)
+    else _authorizeParents
   /** List of authorizations granted by this user.
     * @param all include inactive authorizations */
-  final def authorizeChildren(all : Boolean = false)(implicit db : Site.DB) = Authorize.getChildren(this, all)
+  final def authorizeChildren(all : Boolean = false)(implicit db : Site.DB) : Seq[Authorize] = Authorize.getChildren(this, all)
 
   private[this] val _delegated = CachedVal[Permission.Value, Site](site => Authorize.delegate_check(site.identity.id, id)(site.db))
   /** Permission delegated by this party to the current user. */
@@ -44,8 +47,9 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   /** Permission delegated by the given party to this party. */
   final def delegatedBy(p : Party.Id)(implicit site : Site) : Permission.Value = Authorize.delegate_check(id, p)
 
-  /** List of volumes accessible by this user.
-    * @param p permission level to restrict to */
+  /** List of volumes to which this user has been granted access.
+    * @param p permission level to restrict to
+    * @return VolumeAccess sorted by level (ADMIN first). */
   final def volumeAccess(p : Permission.Value)(implicit site : Site) = VolumeAccess.getVolumes(this, p)
 }
 

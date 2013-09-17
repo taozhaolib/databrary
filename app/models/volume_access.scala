@@ -18,7 +18,7 @@ import util._
   * @param access the level of permission granted directly to the party. Levels at or above [[Permission.EDIT]] are considered volume "membership."
   * @param inherit the level of permission granted to all descendents/members of the party, which cannot be [[Permission.ADMIN]]
   */
-final case class VolumeAccess(volumeId : Volume.Id, partyId : Party.Id, access : Permission.Value, inherit : Permission.Value) extends TableRow {
+final case class VolumeAccess(volume : Volume, partyId : Party.Id, access : Permission.Value, inherit : Permission.Value) extends TableRow with InVolume {
   /** Update or add this access in the database.
     * If an access for the volume and party already exist, it is changed to match this.
     * Otherwise, a new one is added.
@@ -35,38 +35,37 @@ final case class VolumeAccess(volumeId : Volume.Id, partyId : Party.Id, access :
   def remove(implicit site : Site) : Unit =
     VolumeAccess.delete(volumeId, partyId)
 
-  private val _volume = CachedVal[Volume, Site](Volume.get(volumeId)(_).get)
-  /** The volume to which access is being granted. Cached.
-    * If the current user does not have access to volume, this may throw an exception. */
-  def volume(implicit site : Site) : Volume = _volume
   private val _party = CachedVal[Party, Site](Party.get(partyId)(_).get)
   /** The party being granted access. Cached. */
   def party(implicit site : Site) : Party = _party
 }
 
 object VolumeAccess extends Table[VolumeAccess]("volume_access") {
-  private[models] val row = Columns[
-    Volume.Id, Party.Id, Permission.Value, Permission.Value](
-    'volume,   'party,   'access,          'inherit).
-    map(VolumeAccess.apply _)
+  private def make(volume : Volume)(partyId : Party.Id, access : Permission.Value, inherit : Permission.Value) =
+    new VolumeAccess(volume, partyId, access, inherit)
+  private val columns = Columns[
+    Party.Id, Permission.Value, Permission.Value](
+    'party,   'access,          'inherit)
+  private[models] val row = columns.join(Volume.row, "volume_access.volume = volume.id") map
+    { case (a ~ vol) => (make(vol) _).tupled(a) }
+  private def volumeRow(volume : Volume) = columns map (make(volume) _)
 
   /** Retrieve a specific volume access identified by volume and party.
-    * This does not check for appropriate permissions on volume, so is unsafe. */
-  private[models] def get(volume : Volume.Id, party : Party.Id)(implicit db : Site.DB) : Option[VolumeAccess] =
-    row.SQL("WHERE volume = {volume} AND party = {party}").
-      on('volume -> volume, 'party -> party).singleOpt()
+    * This checks permissions on volume. */
+  private[models] def get(volume : Volume, party : Party.Id)(implicit db : Site.DB) : Option[VolumeAccess] =
+    volumeRow(volume).SQL("WHERE volume = {volume} AND party = {party}").
+      on('volume -> volume.id, 'party -> party).singleOpt()
 
-  /** Retrieve the access entries for a volume at or above the specified permission level. */
-  private[models] def getParties(volume : Volume, permission : Permission.Value = Permission.NONE)(implicit db : Site.DB) : Seq[VolumeAccess] =
-    row.join(Party.row, "party = id").
-      map({ case (a ~ e) => a._party() = e; a._volume() = volume; a }).
-      SQL("WHERE volume = {volume} AND access >= {access} ORDER BY access DESC").
-      on('volume -> volume.id, 'access -> permission).list
+  /** Retrieve the access entries for a volume. */
+  private[models] def getParties(volume : Volume)(implicit db : Site.DB) : Seq[VolumeAccess] =
+    volumeRow(volume).join(Party.row, "party = id").
+      map { case (a ~ e) => a._party() = e; a }.
+      SQL("WHERE volume = {volume} ORDER BY access DESC").
+      on('volume -> volume.id).list
   /** Retrieve the volume access entries granted to a party at or above the specified permission level. */ 
   private[models] def getVolumes(party : Party, permission : Permission.Value = Permission.NONE)(implicit site : Site) : Seq[VolumeAccess] =
-    row.join(Volume.row, "volume = id").
-      map({ case (a ~ s) => a._volume() = s; a._party() = party; a }).
-      SQL("WHERE party = {party} AND access >= {access} AND " + Volume.condition + " ORDER BY access DESC").
+    row.map { a => a._party() = party; a }.
+      SQL("WHERE party = {party} AND access >= {access} AND", Volume.condition, "ORDER BY access DESC").
       on('party -> party.id, 'access -> permission, 'identity -> site.identity.id).list
 
   /** Remove a particular volume access from the database.

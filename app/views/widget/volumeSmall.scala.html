@@ -18,7 +18,7 @@
                     </div>
 
                     <div class="people">
-                    @volume.partyAccess(Permission.CONTRIBUTE)(request.db).map { a => <img src="@display.gravatarUrlByParty(a.party, 16)"> @display.citeName(a.party.name)<span class="sep">,</span> }
+		    @volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map { a => <img src="@display.gravatarUrlByParty(a.party, 16)"> @display.citeName(a.party.name)<span class="sep">,</span> }
                     </div>
                 </footer>
 
