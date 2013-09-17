@@ -14,9 +14,7 @@
             <div class="body">
                 <footer class="meta cf">
                     <div class="date">
-                    @volume.creationAudit(request.db).map { creation =>
-                        <time datetime="@creation.when" pubdate>@display.dateFmtY.format(creation.when)</time>
-                    }
+                        <time datetime="@volume.creation" pubdate>@display.dateFmtY.format(volume.creation)</time>
                     </div>
 
                     <div class="people">

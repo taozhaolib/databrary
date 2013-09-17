@@ -2,7 +2,7 @@ package models
 
 import anorm._
 import anorm.SqlParser.scalar
-import java.sql.Date
+import java.sql.{Date,Timestamp}
 import dbrary._
 import dbrary.Anorm._
 import util._
@@ -10,7 +10,7 @@ import util._
 /** Main organizational unit or package of data, within which everything else exists.
   * Usually represents a single project or dataset with a single set of procedures.
   * @param permission the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than [[Permission.VIEW]] except possibly for transient objects, as unavailable volumes should never be returned in the first place. */
-final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], override val permission : Permission.Value) extends TableRowId[Volume] with SitePage with Annotated {
+final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], override val permission : Permission.Value, val creation : Timestamp) extends TableRowId[Volume] with SitePage with Annotated {
   private[this] var _name = name_
   /** Title headline of this volume. */
   def name = _name
@@ -39,11 +39,9 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   def toplevelAssets(implicit db : Site.DB) : Seq[SlotAsset] = SlotAsset.getToplevel(this)
 
   /** Get volume creation information */
-  def creationAudit(implicit db : Site.DB) : Option[Audit[Unit]] = {
-    def cols = Audit.row[Unit]((), "audit_volume")
-    SQL("SELECT " + cols.select + " FROM audit_volume WHERE id = {id} AND action = 'add'").
-      on('id -> id).singleOpt(cols)
-  }
+  private[this] def creationAudit(implicit db : Site.DB) : Option[Audit[Unit]] =
+    Audit.row[Unit]((), "audit_volume").SQL("WHERE id = {id} AND action = 'add'").
+      on('id -> id).singleOpt
 
   /** List of records associated with any slot in this volume.
     * @param category restrict to the specified category
@@ -62,9 +60,9 @@ object Volume extends TableId[Volume]("volume") {
   private val permission = "volume_access_check(volume.id, {identity})"
   private[models] val condition = permission + " >= 'VIEW'"
   private[models] val row = Columns[
-    Id,  String, Option[String], Option[Permission.Value]](
-    'id, 'name,  'body,   SelectAs(permission, "permission")) map {
-    (id, name, body, permission) => new Volume(id, name, body, permission.getOrElse(Permission.NONE))
+    Id,  String, Option[String], Option[Permission.Value],           Option[Timestamp]](
+    'id, 'name,  'body,          SelectAs(permission, "permission"), SelectAs("volume_creation(volume.id)", "creation")) map {
+    (id, name, body, permission, creation) => new Volume(id, name, body, permission.getOrElse(Permission.NONE), creation.getOrElse(new Timestamp(1357900000000L)))
   }
 
   /** Retrieve an individual Volume.
@@ -83,7 +81,7 @@ object Volume extends TableId[Volume]("volume") {
     * The caller should probably add a [[VolumeAccess]] for this volume to grant [[Permission.ADMIN]] access to some user. */
   def create(name : String, body : Option[String] = None)(implicit site : Site) : Volume = {
     val id = Audit.add(table, SQLArgs('name -> name, 'body -> body), "id").single(scalar[Id])
-    new Volume(id, name, body, Permission.NONE)
+    new Volume(id, name, body, Permission.NONE, new Timestamp(System.currentTimeMillis))
   }
 }
 

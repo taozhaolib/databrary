@@ -191,6 +191,9 @@ CREATE TABLE "audit_volume" (
 CREATE INDEX "volume_creation_idx" ON audit_volume ("id") WHERE "action" = 'add';
 COMMENT ON INDEX "volume_creation_idx" IS 'Allow efficient retrieval of volume creation information, specifically date.';
 
+CREATE FUNCTION "volume_creation" ("volume" integer) RETURNS timestamp LANGUAGE sql STABLE STRICT AS
+	$$ SELECT max("when") FROM audit_volume WHERE id = $1 AND "action" = 'add' $$;
+
 CREATE TABLE "volume_access" (
 	"volume" integer NOT NULL References "volume",
 	"party" integer NOT NULL References "party",
@@ -634,6 +637,7 @@ DROP FUNCTION "interval_mi_epoch" (interval, interval);
 
 DROP FUNCTION "volume_access_check" (integer, integer, permission);
 DROP TABLE "volume_access";
+DROP FUNCTION "volume_creation" (integer);
 DROP TABLE "volume";
 
 DROP FUNCTION "authorize_delegate_check" (integer, integer, permission);
