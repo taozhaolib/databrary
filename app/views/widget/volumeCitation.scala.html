@@ -2,7 +2,7 @@
 
 <div class="citation">
     @volume.partyAccess(Permission.CONTRIBUTE)(request.db).map(a => display.citeName(a.party.name) + ", " )
-    @display.dateFmtY.format(volume.creation)).
+    @display.dateFmtY.format(volume.creation).
     @volume.name.
     <em>Databrary</em>.
     Retrieved @display.dateFmtCite.format(new java.util.Date()) from <a href="@routes.Volume.view(volume.id).absoluteURL()" title="@volume.name on Databrary.org">@routes.Volume.view(volume.id).absoluteURL()</a>.
