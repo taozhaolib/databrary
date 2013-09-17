@@ -9,6 +9,7 @@ import models._
 import controllers._
 import java.text.SimpleDateFormat
 import java.util.Date
+import dbrary._
 
 object display {
   def page(page : SitePage)(implicit site : Site) = PathCrumb(page).toHtml
@@ -85,4 +86,5 @@ object display {
 
   def apply(x : SitePage, full : Boolean = false)(implicit site : Site) = if (full) path(x) else page(x)
   def apply(x : java.util.Date) = time(x)
+  def apply(x : Range[Offset]) = x.singleton.fold(x.lowerBound.fold("")(_.toString) + "-" + x.upperBound.fold("")(_.toString))(_.toString)
 }

@@ -32,11 +32,17 @@
 		@container.slots.map { slot =>
 		<tr>
 			<td>@display(slot)</td>
-			<td>@slot.segment</td>
+			<td>@display(slot.segment)</td>
 			<td>@slot.consent</td>
 		</tr>
 		}
 	</table>
+
+	@if(container.permission >= Permission.CONTRIBUTE) {
+	    <div class="arealinks">
+		<a class="button mhead" href="@routes.Slot.create(container.id)" title="Add new slot">Add</a>
+	    </div>
+	}
 
     </article>
 }
