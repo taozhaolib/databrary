@@ -49,5 +49,5 @@ SELECT setval('asset_id_seq', 1, false);
 
 INSERT INTO party VALUES (-1, 'Everybody');
 INSERT INTO party VALUES (0, 'Databrary');
-INSERT INTO authorize (child, parent, access) VALUES (0, -1, 'ADMIN');
+INSERT INTO authorize (child, parent, access, delegate) VALUES (0, -1, 'ADMIN', 'ADMIN');
 

@@ -637,8 +637,8 @@ DROP TYPE classification;
 DROP FUNCTION "slot_consent" (integer);
 DROP VIEW "slot_nesting";
 DROP TABLE "slot";
-DROP FUNCTION "slot_full_create" ();
 DROP TABLE "container";
+DROP FUNCTION "slot_full_create" ();
 
 DROP OPERATOR <@ ("object_segment", "object_segment");
 DROP OPERATOR @> ("object_segment", "object_segment");
