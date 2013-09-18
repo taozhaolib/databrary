@@ -157,6 +157,19 @@ Critically, contained data are should be covered by a single consent level and s
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.Annotated#addAnnotation" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="addAnnotation(a:models.Annotation)(implicitdb:util.Site.DB):Unit"></a>
+      <a id="addAnnotation(Annotation)(DB):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">addAnnotation</span><span class="params">(<span name="a">a: <a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -557,8 +570,21 @@ This is essentially equivalent to <code>this.records(false).filter(_.category ==
         <span class="name">records</span><span class="params">(<span name="all">all: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The list of records on this object.</p><div class="fullcomment"><div class="comment cmt"><p>The list of records on this object.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include indirect comments on any contained objects
+      <p class="shortcomment cmt">The list of records on this object.</p><div class="fullcomment"><div class="comment cmt"><p>The list of records on this object.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include indirect records on any contained objects
 </p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
+    </li><li name="models.Annotated#removeAnnotation" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="removeAnnotation(a:models.Annotation.Id)(implicitdb:util.Site.DB):Unit"></a>
+      <a id="removeAnnotation(Annotation.Id)(DB):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">removeAnnotation</span><span class="params">(<span name="a">a: <a href="Annotation$.html#Id=models.IntId[T]" class="extmbr" name="models.Annotation.Id">Annotation.Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
     </li><li name="models.Slot#segment" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="segment:dbrary.Range[dbrary.Offset]"></a>
       <a id="segment:Range[Offset]"></a>

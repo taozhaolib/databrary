@@ -119,6 +119,21 @@
       </span>
       </h4>
       
+    </li><li name="util.package#groupBy" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="groupBy[A,K](l:Seq[A],f:A=&gt;K):Seq[(K,Seq[A])]"></a>
+      <a id="groupBy[A,K](Seq[A],(A)⇒K):Seq[(K,Seq[A])]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">groupBy</span><span class="tparams">[<span name="A">A</span>, <span name="K">K</span>]</span><span class="params">(<span name="l">l: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="util.groupBy.A">A</span>]</span>, <span name="f">f: (<span class="extype" name="util.groupBy.A">A</span>) ⇒ <span class="extype" name="util.groupBy.K">K</span></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="util.groupBy.K">K</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="util.groupBy.A">A</span>])]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Group adjacent elements with identical keys into nested lists, such that the concatenation of the resulting _2 elements is the original list.</p><div class="fullcomment"><div class="comment cmt"><p>Group adjacent elements with identical keys into nested lists, such that the concatenation of the resulting _2 elements is the original list.
+This is more like Haskell's group than scala's <span class="extype" name="Seq#groupBy">Seq#groupBy</span>: only adjacent elements are grouped.</p></div><dl class="paramcmts block"><dt class="param">l</dt><dd class="cmt"><p>the list to group</p></dd><dt class="param">f</dt><dd class="cmt"><p>the key-generating function to group by
+</p></dd></dl></div>
     </li><li name="util.maybe" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="maybe"></a>
       <a id="maybe:maybe"></a>

@@ -363,7 +363,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">A measurement value with a specific type.</p>
     </li><li name="models.Metric" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Metric[T]extendsMetricBase"></a>
+      <a id="Metric[T]extendsMetricBasewithTableRowId[models.Metric[T]]"></a>
       <a id="Metric[T]:Metric[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -371,7 +371,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Metric.html"><span class="name">Metric</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a></span>
+        <a href="Metric.html"><span class="name">Metric</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="models.Metric.T">T</span>]]</span>
       </span>
       </h4>
       <p class="comment cmt">Types of measurements (i.</p>
@@ -545,7 +545,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">Main organizational unit or package of data, within which everything else exists.</p>
     </li><li name="models.VolumeAccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="VolumeAccessextendsTableRowwithProductwithSerializable"></a>
+      <a id="VolumeAccessextendsTableRowwithInVolumewithProductwithSerializable"></a>
       <a id="VolumeAccess:VolumeAccess"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -553,7 +553,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="VolumeAccess.html"><span class="name">VolumeAccess</span></a><span class="params">(<span name="volumeId">volumeId: <a href="Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">Volume.Id</a></span>, <span name="partyId">partyId: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="inherit">inherit: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="VolumeAccess.html"><span class="name">VolumeAccess</span></a><span class="params">(<span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="partyId">partyId: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="inherit">inherit: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       <p class="comment cmt">Access control over a volume granted to a party.</p>
@@ -820,7 +820,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Metric$.html"><span class="name">Metric</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a>]</span>
+        <a href="Metric$.html"><span class="name">Metric</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</span>
       </span>
       </h4>
       

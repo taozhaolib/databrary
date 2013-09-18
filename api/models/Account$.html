@@ -184,45 +184,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.TableView#JOIN" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="JOIN(t:models.TableView,q:String*):anorm.SimpleSql[anorm.~[TableView.this.Row,t.Row]]"></a>
-      <a id="JOIN(TableView,String*):SimpleSql[~[Row,TableView.Row]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">JOIN</span><span class="params">(<span name="t">t: <span class="extype" name="models.TableView">TableView</span></span>, <span name="q">q: <span class="extype" name="scala.Predef.String">String</span>*</span>)</span><span class="result">: <span class="extype" name="anorm.SimpleSql">SimpleSql</span>[<span class="extype" name="anorm.~">~</span>[<a href="#Row=R" class="extmbr" name="models.Account.Row">Row</a>, <span class="extype" name="models.TableView.Row">TableView.Row</span>]]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.TableView#JOIN" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="JOIN[A](s:dbrary.SelectParser[A],q:String*):anorm.SimpleSql[anorm.~[TableView.this.Row,A]]"></a>
-      <a id="JOIN[A](SelectParser[A],String*):SimpleSql[~[Row,A]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">JOIN</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="s">s: <span class="extype" name="dbrary.SelectParser">SelectParser</span>[<span class="extype" name="models.TableView.JOIN.A">A</span>]</span>, <span name="q">q: <span class="extype" name="scala.Predef.String">String</span>*</span>)</span><span class="result">: <span class="extype" name="anorm.SimpleSql">SimpleSql</span>[<span class="extype" name="anorm.~">~</span>[<a href="#Row=R" class="extmbr" name="models.Account.Row">Row</a>, <span class="extype" name="models.TableView.JOIN.A">A</span>]]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.TableView#SELECT" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="SELECT(q:String*):anorm.SimpleSql[TableView.this.Row]"></a>
-      <a id="SELECT(String*):SimpleSql[Row]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">SELECT</span><span class="params">(<span name="q">q: <span class="extype" name="scala.Predef.String">String</span>*</span>)</span><span class="result">: <span class="extype" name="anorm.SimpleSql">SimpleSql</span>[<a href="#Row=R" class="extmbr" name="models.Account.Row">Row</a>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.HasId#asId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asId(i:Int):HasId.this.Id"></a>
       <a id="asId(Int):Id"></a>
@@ -465,6 +426,19 @@
       </span>
       </h4>
       <p class="shortcomment cmt">Convenient creation of column names for this table from symbols.</p><div class="fullcomment"><div class="comment cmt"><p>Convenient creation of column names for this table from symbols.</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
+    </li><li name="models.TableView#tableName" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="tableName:dbrary.FromTable"></a>
+      <a id="tableName:FromTable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">tableName</span><span class="result">: <span class="extype" name="dbrary.FromTable">FromTable</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>

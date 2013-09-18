@@ -40,13 +40,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Metric</span><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a>]</span>
+        <span class="name">Metric</span><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="models.TableId">TableId</span>[<a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a>], <span class="extype" name="models.HasId">HasId</span>[<a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a>], <span class="extype" name="models.Table">Table</span>[<a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="models.TableId">TableId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]], <span class="extype" name="models.HasId">HasId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]], <span class="extype" name="models.Table">Table</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -95,7 +95,7 @@
         <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <span class="name">Id</span><span class="result"> = <a href="IntId.html" class="extype" name="models.IntId">IntId</a>[<a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a>]</span>
+        <span class="name">Id</span><span class="result"> = <a href="IntId.html" class="extype" name="models.IntId">IntId</a>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId</dd></dl></div>
@@ -108,7 +108,7 @@
         <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <span class="name">Row</span><span class="result"> = <a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a></span>
+        <span class="name">Row</span><span class="result"> = <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Type of TableRow this object can generate.</p><div class="fullcomment"><div class="comment cmt"><p>Type of TableRow this object can generate.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>Table → TableView</dd></dl></div>
@@ -223,45 +223,6 @@
       </span>
       </h4>
       <p class="comment cmt">Identifiers providing generic labels for records or data, such as participant id, condition name, etc.</p>
-    </li><li name="models.TableView#JOIN" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="JOIN(t:models.TableView,q:String*):anorm.SimpleSql[anorm.~[TableView.this.Row,t.Row]]"></a>
-      <a id="JOIN(TableView,String*):SimpleSql[~[Row,TableView.Row]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">JOIN</span><span class="params">(<span name="t">t: <span class="extype" name="models.TableView">TableView</span></span>, <span name="q">q: <span class="extype" name="scala.Predef.String">String</span>*</span>)</span><span class="result">: <span class="extype" name="anorm.SimpleSql">SimpleSql</span>[<span class="extype" name="anorm.~">~</span>[<a href="#Row=R" class="extmbr" name="models.Metric.Row">Row</a>, <span class="extype" name="models.TableView.Row">TableView.Row</span>]]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.TableView#JOIN" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="JOIN[A](s:dbrary.SelectParser[A],q:String*):anorm.SimpleSql[anorm.~[TableView.this.Row,A]]"></a>
-      <a id="JOIN[A](SelectParser[A],String*):SimpleSql[~[Row,A]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">JOIN</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="s">s: <span class="extype" name="dbrary.SelectParser">SelectParser</span>[<span class="extype" name="models.TableView.JOIN.A">A</span>]</span>, <span name="q">q: <span class="extype" name="scala.Predef.String">String</span>*</span>)</span><span class="result">: <span class="extype" name="anorm.SimpleSql">SimpleSql</span>[<span class="extype" name="anorm.~">~</span>[<a href="#Row=R" class="extmbr" name="models.Metric.Row">Row</a>, <span class="extype" name="models.TableView.JOIN.A">A</span>]]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.TableView#SELECT" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="SELECT(q:String*):anorm.SimpleSql[TableView.this.Row]"></a>
-      <a id="SELECT(String*):SimpleSql[Row]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">SELECT</span><span class="params">(<span name="q">q: <span class="extype" name="scala.Predef.String">String</span>*</span>)</span><span class="result">: <span class="extype" name="anorm.SimpleSql">SimpleSql</span>[<a href="#Row=R" class="extmbr" name="models.Metric.Row">Row</a>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.HasId#asId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asId(i:Int):HasId.this.Id"></a>
       <a id="asId(Int):Id"></a>
@@ -476,6 +437,19 @@
       </span>
       </h4>
       <p class="shortcomment cmt">Convenient creation of column names for this table from symbols.</p><div class="fullcomment"><div class="comment cmt"><p>Convenient creation of column names for this table from symbols.</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
+    </li><li name="models.TableView#tableName" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="tableName:dbrary.FromTable"></a>
+      <a id="tableName:FromTable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">tableName</span><span class="result">: <span class="extype" name="dbrary.FromTable">FromTable</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
@@ -547,11 +521,11 @@
 
         <div id="inheritedMembers">
         <div class="parent" name="models.TableId">
-              <h3>Inherited from <span class="extype" name="models.TableId">TableId</span>[<a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a>]</h3>
+              <h3>Inherited from <span class="extype" name="models.TableId">TableId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</h3>
             </div><div class="parent" name="models.HasId">
-              <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a>]</h3>
+              <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</h3>
             </div><div class="parent" name="models.Table">
-              <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a>]</h3>
+              <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</h3>
             </div><div class="parent" name="models.TableView">
               <h3>Inherited from <span class="extype" name="models.TableView">TableView</span></h3>
             </div><div class="parent" name="scala.AnyRef">

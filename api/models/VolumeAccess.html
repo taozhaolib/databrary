@@ -40,17 +40,17 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">VolumeAccess</span><span class="params">(<span name="volumeId">volumeId: <a href="Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">Volume.Id</a></span>, <span name="partyId">partyId: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="inherit">inherit: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">VolumeAccess</span><span class="params">(<span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="partyId">partyId: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="inherit">inherit: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Access control over a volume granted to a party.
 Volume access permissions (ACLs) are determined by a set of VolumeAccess entries (ACEs).
 Note that volume access can also be granted to descendents (&quot;members&quot;) of the assigned party in one of two ways: through explicit inheritance within VolumeAccess, or through delegated permissions within an Authorization.
-Only one of these is necessary to gain access (they are unioned, not intersected).</p><p>Unlike most [TableRow] classes, these may be constructed directly, and thus are not expected to reflect the current state of the database in the same way and have different update semantics.</p></div><dl class="paramcmts block"><dt class="param">volumeId</dt><dd class="cmt"><p>the volume to which access is being granted; the target</p></dd><dt class="param">partyId</dt><dd class="cmt"><p>the party being granted the access; the user</p></dd><dt class="param">access</dt><dd class="cmt"><p>the level of permission granted directly to the party. Levels at or above <a href="Permission$.html#EDIT:models.Permission.Value" class="extmbr" name="models.Permission#EDIT">Permission.EDIT</a> are considered volume &quot;membership.&quot;</p></dd><dt class="param">inherit</dt><dd class="cmt"><p>the level of permission granted to all descendents/members of the party, which cannot be <a href="Permission$.html#ADMIN:models.Permission.Value" class="extmbr" name="models.Permission#ADMIN">Permission.ADMIN</a>
+Only one of these is necessary to gain access (they are unioned, not intersected).</p><p>Unlike most [TableRow] classes, these may be constructed directly, and thus are not expected to reflect the current state of the database in the same way and have different update semantics.</p></div><dl class="paramcmts block"><dt class="param">partyId</dt><dd class="cmt"><p>the party being granted the access; the user</p></dd><dt class="param">access</dt><dd class="cmt"><p>the level of permission granted directly to the party. Levels at or above <a href="Permission$.html#EDIT:models.Permission.Value" class="extmbr" name="models.Permission#EDIT">Permission.EDIT</a> are considered volume &quot;membership.&quot;</p></dd><dt class="param">inherit</dt><dd class="cmt"><p>the level of permission granted to all descendents/members of the party, which cannot be <a href="Permission$.html#ADMIN:models.Permission.Value" class="extmbr" name="models.Permission#ADMIN">Permission.ADMIN</a>
 </p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -68,7 +68,7 @@ Only one of these is necessary to gain access (they are unioned, not intersected
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.VolumeAccess"><span>VolumeAccess</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.VolumeAccess"><span>VolumeAccess</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -89,7 +89,7 @@ Only one of these is necessary to gain access (they are unioned, not intersected
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.VolumeAccess#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(volumeId:models.Volume.Id,partyId:models.Party.Id,access:models.Permission.Value,inherit:models.Permission.Value):models.VolumeAccess"></a>
+      <a id="&lt;init&gt;(volume:models.Volume,partyId:models.Party.Id,access:models.Permission.Value,inherit:models.Permission.Value):models.VolumeAccess"></a>
       <a id="&lt;init&gt;:VolumeAccess"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -97,10 +97,10 @@ Only one of these is necessary to gain access (they are unioned, not intersected
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">VolumeAccess</span><span class="params">(<span name="volumeId">volumeId: <a href="Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">Volume.Id</a></span>, <span name="partyId">partyId: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="inherit">inherit: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span>
+        <span class="name">VolumeAccess</span><span class="params">(<span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="partyId">partyId: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="inherit">inherit: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">create an access object, not (yet) persisted to the database</p><div class="fullcomment"><div class="comment cmt"><p>create an access object, not (yet) persisted to the database</p></div><dl class="paramcmts block"><dt class="param">volumeId</dt><dd class="cmt"><p>the volume to which access is being granted; the target</p></dd><dt class="param">partyId</dt><dd class="cmt"><p>the party being granted the access; the user</p></dd><dt class="param">access</dt><dd class="cmt"><p>the level of permission granted directly to the party. Levels at or above <a href="Permission$.html#EDIT:models.Permission.Value" class="extmbr" name="models.Permission#EDIT">Permission.EDIT</a> are considered volume &quot;membership.&quot;</p></dd><dt class="param">inherit</dt><dd class="cmt"><p>the level of permission granted to all descendents/members of the party, which cannot be <a href="Permission$.html#ADMIN:models.Permission.Value" class="extmbr" name="models.Permission#ADMIN">Permission.ADMIN</a>
+      <p class="shortcomment cmt">create an access object, not (yet) persisted to the database</p><div class="fullcomment"><div class="comment cmt"><p>create an access object, not (yet) persisted to the database</p></div><dl class="paramcmts block"><dt class="param">partyId</dt><dd class="cmt"><p>the party being granted the access; the user</p></dd><dt class="param">access</dt><dd class="cmt"><p>the level of permission granted directly to the party. Levels at or above <a href="Permission$.html#EDIT:models.Permission.Value" class="extmbr" name="models.Permission#EDIT">Permission.EDIT</a> are considered volume &quot;membership.&quot;</p></dd><dt class="param">inherit</dt><dd class="cmt"><p>the level of permission granted to all descendents/members of the party, which cannot be <a href="Permission$.html#ADMIN:models.Permission.Value" class="extmbr" name="models.Permission#ADMIN">Permission.ADMIN</a>
 </p></dd></dl></div>
     </li></ol>
             </div>
@@ -352,6 +352,19 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       </span>
       </h4>
       <p class="shortcomment cmt">the party being granted the access; the user</p>
+    </li><li name="models.InVolume#permission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="permission:models.Permission.Value"></a>
+      <a id="permission:Permission.Value"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">permission</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p><div class="fullcomment"><div class="comment cmt"><p>Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="models.VolumeAccess#remove" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="remove(implicitsite:util.Site):Unit"></a>
       <a id="remove(Site):Unit"></a>
@@ -397,32 +410,31 @@ This may invalidate volume.access.</p></div></div>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.VolumeAccess#volume" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="volume(implicitsite:util.Site):models.Volume"></a>
-      <a id="volume(Site):Volume"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">volume</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The volume to which access is being granted.</p><div class="fullcomment"><div class="comment cmt"><p>The volume to which access is being granted. Cached.
-If the current user does not have access to volume, this may throw an exception.</p></div></div>
-    </li><li name="models.VolumeAccess#volumeId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="volumeId:models.Volume.Id"></a>
-      <a id="volumeId:Volume.Id"></a>
+      <a id="volume:models.Volume"></a>
+      <a id="volume:Volume"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
+        <span class="name">volume</span><span class="result">: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.VolumeAccess">VolumeAccess</a> → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
+    </li><li name="models.InVolume#volumeId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="volumeId:models.Volume.Id"></a>
+      <a id="volumeId:Volume.Id"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
         <span class="name">volumeId</span><span class="result">: <a href="Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">Volume.Id</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">the volume to which access is being granted; the target</p>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -488,6 +500,8 @@ If the current user does not have access to volume, this may throw an exception.
               <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
             </div><div class="parent" name="scala.Equals">
               <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
+            </div><div class="parent" name="models.InVolume">
+              <h3>Inherited from <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></h3>
             </div><div class="parent" name="models.TableRow">
               <h3>Inherited from <span class="extype" name="models.TableRow">TableRow</span></h3>
             </div><div class="parent" name="scala.AnyRef">

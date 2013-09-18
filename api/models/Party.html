@@ -227,7 +227,7 @@ Computed by [Authorize.access_check] and usually accessed through <a href="../ut
         <span class="name">authorizeParents</span><span class="params">(<span name="all">all: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Authorize.html" class="extype" name="models.Authorize">Authorize</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">List of authorizations granted to this user.</p><div class="fullcomment"><div class="comment cmt"><p>List of authorizations granted to this user.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include inactive authorizations</p></dd></dl></div>
+      <p class="shortcomment cmt">List of authorizations granted to this user.</p><div class="fullcomment"><div class="comment cmt"><p>List of authorizations granted to this user. Cached for !all.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include inactive authorizations</p></dd></dl></div>
     </li><li name="models.Party#change" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="change(name:String,orcid:Option[models.Orcid])(implicitsite:util.Site):Unit"></a>
       <a id="change(String,Option[Orcid])(Site):Unit"></a>
@@ -532,7 +532,7 @@ Computed by [Authorize.access_check] and usually accessed through <a href="../ut
         <span class="name">volumeAccess</span><span class="params">(<span name="p">p: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="VolumeAccess.html" class="extype" name="models.VolumeAccess">VolumeAccess</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">List of volumes accessible by this user.</p><div class="fullcomment"><div class="comment cmt"><p>List of volumes accessible by this user.</p></div><dl class="paramcmts block"><dt class="param">p</dt><dd class="cmt"><p>permission level to restrict to</p></dd></dl></div>
+      <p class="shortcomment cmt">List of volumes to which this user has been granted access.</p><div class="fullcomment"><div class="comment cmt"><p>List of volumes to which this user has been granted access.</p></div><dl class="paramcmts block"><dt class="param">p</dt><dd class="cmt"><p>permission level to restrict to</p></dd><dt>returns</dt><dd class="cmt"><p>VolumeAccess sorted by level (ADMIN first).</p></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
