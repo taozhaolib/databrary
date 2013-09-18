@@ -309,6 +309,13 @@ CREATE TABLE "audit_slot" (
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 COMMENT ON TABLE "audit_slot" IS 'Partial auditing for slot table covering only consent changes.';
 
+CREATE FUNCTION "slot_full_create" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+	INSERT INTO "slot" (source) VALUES (NEW.id);;
+	RETURN null;;
+END;; $$;
+CREATE TRIGGER "slot_full_create" AFTER INSERT ON "container" FOR EACH ROW EXECUTE PROCEDURE "slot_full_create" ();
+COMMENT ON TRIGGER "slot_full_create" ON "container" IS 'Always create a "full"-range slot for each container.  Unfortunately nothing currently prevents them from being removed/changed.';
+
 
 CREATE VIEW "slot_nesting" ("child", "parent", "consent") AS 
 	SELECT c.id, p.id, p.consent FROM slot c JOIN slot p ON c <@ p;
@@ -621,6 +628,7 @@ DROP TYPE classification;
 DROP FUNCTION "slot_consent" (integer);
 DROP VIEW "slot_nesting";
 DROP TABLE "slot";
+DROP FUNCTION "slot_full_create" ();
 DROP TABLE "container";
 
 DROP OPERATOR <@ ("object_segment", "object_segment");

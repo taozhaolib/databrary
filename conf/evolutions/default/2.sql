@@ -24,8 +24,6 @@ SELECT setval('volume_id_seq', 1);
 
 INSERT INTO container (id, volume, name) VALUES (1, 1, 'Container');
 SELECT setval('container_id_seq', 1);
-INSERT INTO slot (id, source) VALUES (1, 1);
-SELECT setval('slot_id_seq', 1);
 
 INSERT INTO toplevel_slot (slot) VALUES (1);
 

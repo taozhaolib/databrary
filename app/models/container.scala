@@ -38,7 +38,7 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
 
   /** List of slots on this container. */
   def slots(implicit db : Site.DB) : Seq[Slot] = Slot.getContainer(this)
-  private val _fullSlot = CachedVal[Slot, Site.DB](Slot.getOrCreate(this)(_))
+  private val _fullSlot = CachedVal[Slot, Site.DB](Slot.get(this)(_).get)
   /** Slot that covers this entire container and which thus serves as a proxy for display and metadata. Cached. */
   def fullSlot(implicit db : Site.DB) : Slot = _fullSlot
 
@@ -61,13 +61,11 @@ object Container extends TableId[Container]("container") {
   /** Retrieve an individual Container.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   def get(i : Id)(implicit site : Site) : Option[Container] = {
-    val cols = row.leftJoin(Slot.columns, "container.id = slot.source AND slot.segment = '(,)'") map { case (cont ~ slot) =>
-      slot foreach { s =>
-        cont._fullSlot() = (Slot.make(cont) _).tupled(s)
-      }
-      cont
-    }
-    cols.SQL("WHERE container.id = {id} AND", Volume.condition).
+    row.join(Slot.columns, "container.id = slot.source AND slot.segment = '(,)'").
+      map { case (cont ~ slot) =>
+        cont._fullSlot() = (Slot.make(cont) _).tupled(slot)
+        cont
+      }.SQL("WHERE container.id = {id} AND", Volume.condition).
       on('id -> i, 'identity -> site.identity.id).singleOpt
   }
 
@@ -189,7 +187,7 @@ object Slot extends TableId[Slot]("slot") {
     on('annot -> a, 'identity -> site.identity.id).list
     
   /** Create a new slot in the specified container or return a matching one if it already exists. */
-  def getOrCreate(container : Container, segment : Range[Offset] = fullRange)(implicit db : Site.DB) : Slot =
+  def getOrCreate(container : Container, segment : Range[Offset])(implicit db : Site.DB) : Slot =
     get(container, segment) getOrElse {
       val args = SQLArgs('source -> container.id, 'segment -> segment)
       val id = SQL("INSERT INTO " + table + " " + args.insert + " RETURNING id").
