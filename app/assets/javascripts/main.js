@@ -56,7 +56,7 @@ dbjs.tabs = function (tabset, tab, body) {
         $this.appendTo($tabs_el).replaceWith($('<li class="tab"><a href="#' + id + '" data-tip="' + tip + '">' + this.innerHTML + '</a></li>'));
     });
 
-    dbjs.tooltip(tabset+' .tab > a', 'data-tip');
+    $messages.data('messages').generate(tabset + ' .tab > a', 'data-tip', 'trace');
 
     $bodies.each(function () {
         $(this).appendTo($body_el).addClass('rolled').slideUp(0);
@@ -379,132 +379,334 @@ dbjs.simpleToggle = function (toggler, toggled) {
         clicker($active);
 };
 
-dbjs.tooltip = function (region, source, event, now) {
-    var $regions = $(region),
-        sourceArray = ['auto', 'alt', 'title', 'data-tip', 'data-source'],
-        eventArray = ['hover', 'click', 'toggle', 'focus'],
-        section = '#tooltips',
-        $section;
+/**
+ * MESSAGES AND MESSAGE HANDLER
+ */
+(function ($, window, document, undefined) {
+    // stock vars
+    var $handler,
+        sources = ['auto', 'alt', 'title', 'html', 'data-tip', 'data-source'],
+        types = ['alert', 'error', 'trace', 'null'];
 
-    // defaults
-    if ($.inArray(source, sourceArray) < 0) source = 'auto';
-    if ($.inArray(event, eventArray) < 0) event = 'hover';
-    if (typeof(now) === 'undefined') now = false;
+    var validMessage = function (message) {
+        return $.type(message) == 'string'
+    };
 
-    // modal background
-    if (!$(section).exists()) {
-        $('body').append('<section id="tooltips"><div class="wrapper"></div></section>');
-        $section = $(section);
-    }
+    var validType = function (type) {
+        return $.inArray(type, types) >= 0;
+    };
 
-    // source functions
-    var prepareSource = function ($region, source) {
-        var tipID = 'tip' + new Date().getTime() + Math.floor((Math.random() * 1000) + 1),
-            $tip;
+    $.extend($.fn, {
+        /**
+         *
+         * @param args
+         * @returns {*}
+         */
+        messageHandler: function (args) {
+            //options
+            args = $.extend({
+                speed: 150
+            }, args);
 
-        // pick 'auto' source
-        if (source == 'auto') {
-            if ($region.attr('data-source') != '')
-                source = 'data-source';
-            else if ($region.attr('data-tip') != '')
-                source = 'data-tip';
-            else if ($region.attr('title') != '')
-                source = 'title';
-            else if ($region.attr('alt') != '')
-                source = 'alt';
-            else // no source? that's dumb.
+            $handler = this;
+
+            var messages = {},
+                $alerts = $('<div class="alerts"></div>').appendTo($handler),
+                $errors = $('<div class="errors"></div>').appendTo($handler),
+                $traces = $('<div class="traces"></div>').appendTo($handler);
+
+            var router = {
+                alert: $alerts,
+                error: $errors,
+                trace: $traces
+            };
+
+            // methods
+            var initialize = function () {
+                generate('.alert', 'html', 'alert');
+                //generate('.error', 'html', 'error');
+            };
+
+            var generate = function (element, source, type, prepend) {
+                if ($.inArray(source, sources) < 0 && !$(source).exists()) source = 'auto';
+                if ($.inArray(type, types) < 0) type = 'trace';
+
+                var $elements = $(element),
+                    messages = {};
+
+                $elements.each(function () {
+                    var $element = $(this),
+                        $message;
+
+                    $message = getMessage($element, source, type);
+
+                    if ($message && create($element, $message, type, args, prepend))
+                        messages[$message.attr('id')] = $message;
+                });
+
+                return messages;
+            };
+
+            var getMessage = function ($element, source, type) {
+                var messageID = 'message-' + new Date().getTime().toString().substr(-5) + Math.floor((Math.random() * 1000) + 1),
+                    $message;
+
+                // pick 'auto' source
+                if (source == 'auto') {
+                    if ($element.attr('data-source') != '')
+                        source = 'data-source';
+                    else if ($element.attr('data-message') != '')
+                        source = 'data-message';
+                    else if ($element.attr('title') != '')
+                        source = 'title';
+                    else if ($element.attr('alt') != '')
+                        source = 'alt';
+                    else // no source? that's dumb.
+                        return false;
+                }
+
+                // grab the content
+                if (source == 'data-source')
+                    $message = $($element.attr('data-source'));
+                else if (source == 'html')
+                    $message = $('<div></div>').html($element.remove().html());
+                else if ($.inArray(source, sources) >= 0)
+                    $message = $('<div></div>').html($element.attr(source));
+                else
+                    $message = $(source);
+
+                if ($message.text() == '')
+                    return false;
+
+                $message.attr('id', messageID).addClass('message');
+
+                // clean up
+                $element
+                    .addClass('toggle_message toggle_' + type)
+                    .attr('data-source', '#' + messageID)
+                    .removeAttr('alt')
+                    .removeAttr('title')
+                    .removeAttr('data-message');
+
+                return $message;
+            };
+
+            var create = function ($element, $message, type, args, prepend) {
+                $message = $message.message(type, args);
+
+                if (!$message)
+                    return false;
+
+                move($element, $message, type, prepend);
+
+                addHook($element, $message, type);
+
+                return $message;
+            };
+
+            var update = function ($element, message, type, args, prepend) {
+                var $message = $($element.attr('data-source'));
+
+                if (!$message || $handler.children($message) == 0)
+                    return false;
+
+                if (!$message.hasClass(type)) {
+                    removeHook($element, $message, $message.attr('class').split(/\s+/).filter(function (n) {
+                        return types.indexOf(n) != -1;
+                    }).shift());
+                    addHook($element, $message, type);
+                }
+
+                if (!$message.data('message').update(message, type, args))
+                    return false;
+
+                move($element, $message, type, prepend);
+
+                return $message
+            };
+
+            var move = function ($element, $message, type, prepend) {
+                if (prepend !== true)
+                    router[type].append($message);
+                else
+                    router[type].prepend($message);
+
+                return $message;
+            };
+
+            var addHook = function ($element, $message, type) {
+                switch (type) {
+                    case 'trace':
+                        $element.hover(function () {
+                            show($message);
+                        }, function () {
+                            hide($message);
+                        });
+
+                        hide($message);
+
+                        break;
+                    case 'alert':
+                        show($message);
+
+                        addCloser($message);
+
+                        break;
+                    case 'error':
+                        $element.focusin(function () {
+                            show($message);
+                        });
+
+                        $element.focusout(function () {
+                            hide($message);
+                        });
+
+                        hide($message);
+
+                        break;
+                }
+            };
+
+            var addCloser = function ($message) {
+                $('<div class="x"></div>').on('click',function () {
+                    hide($message);
+                }).prependTo($message.find('.wrapper'));
+            };
+
+            var removeHook = function ($element, $message, type) {
+                switch (type) {
+                    case 'trace':
+                        $element.off('hover');
+
+                        hide($message);
+
+                        break;
+                    case 'alert':
+                        hide($message);
+
+                        removeCloser($message);
+
+                        break;
+                    case 'error':
+                        $element.off('focusin');
+
+                        $element.off('focusout');
+
+                        hide($message);
+
+                        break;
+                }
+            };
+
+            var removeCloser = function ($message) {
+                $message.find('.close').off('click').remove();
+            };
+
+            var remove = function ($message) {
+                return $message.data('message').remove();
+            };
+
+            var show = function ($message) {
+                return $message.data('message').show();
+            };
+
+            var hide = function ($message) {
+                return $message.data('message').hide();
+            };
+
+            // hooks
+            initialize();
+
+            // api
+            this.data('messages', {
+                generate: generate,
+                create: create,
+                update: update,
+                remove: remove,
+                show: show,
+                hide: hide
+            });
+
+            return this;
+        },
+
+        /**
+         *
+         * @param type
+         * @param args
+         * @returns {*}
+         */
+        message: function (type, args) {
+            var options,
+                defaults = {
+                    speed: 150
+                };
+
+            var $message = $('<div class="message"><div class="wrapper"></div></div>'),
+                $this = this,
+                message;
+
+            // methods
+            var test = function (message, type, args) {
+                if (!validMessage(message))
+                    return false;
+
+                if (!validType(type))
+                    return false;
+
+                options = $.extend(defaults, args);
+
+                return true;
+            };
+
+            var update = function (type, args) {
+                var messageID = $this.attr('id'),
+                    message = $this.html();
+
+                if (!test(message, type, args))
+                    return false;
+
+                $this = $message.removeClass(types.join(' ')).addClass(type).attr('id', messageID);
+                $this.find('.wrapper').html(message);
+
+                return $this;
+            };
+
+            var remove = function () {
+                return $this.hide(function () {
+                    $this.remove()
+                });
+            };
+
+            var show = function (callback) {
+                return $this.slideDown(options.speed, callback);
+            };
+
+            var hide = function (callback) {
+                return $this.slideUp(options.speed, callback);
+            };
+
+            // setup
+            if (!update(type, args))
                 return false;
-        }
 
-        // grab the content
-        if (source == 'data-source')
-            $tip = $($region.attr('data-source'));
-        else
-            $tip = $('<div></div>').html($region.attr(source));
+            // api
+            $this.data('message', {
+                update: update,
+                remove: remove,
+                show: show,
+                hide: hide
+            });
 
-        if ($tip.text() == '')
-            return false;
-
-        $tip.attr('id', tipID).addClass('tip');
-
-        // place the content
-        if (!now)
-            $tip.hide();
-
-        $section.find('.wrapper').append($tip);
-
-        // clean up
-        $region
-            .addClass('tip_toggle')
-            .attr('data-source', '#' + tipID)
-            .removeAttr('alt')
-            .removeAttr('title')
-            .removeAttr('data-tip');
-
-        return true;
-    };
-
-    // display functions
-    var showTip = function ($region) {
-        $($region.attr('data-source')).slideDown(dbjs.vars.speedFast);
-    };
-
-    var hideTip = function ($region) {
-        $($region.attr('data-source')).slideUp(dbjs.vars.speedFast);
-    };
-
-    // register the events
-    $regions.each(function () {
-        var $this = $(this);
-
-        if (prepareSource($this, source)) {
-            switch (event) {
-                case 'hover':
-                    $this.hover(function () {
-                        showTip($this);
-                    }, function () {
-                        hideTip($this);
-                    });
-
-                    break;
-
-                case 'click':
-                    $this.click(function () {
-                        showTip($this);
-                    });
-
-                    $(document).click(function () {
-                        hideTip($this);
-                    });
-
-                    break;
-
-                case 'toggle':
-                    $this.toggle(function () {
-                        showTip($this);
-                    }, function () {
-                        hideTip($this);
-                    });
-
-                    break;
-
-                case 'focus':
-                    $this.focusin(function () {
-                        showTip($this);
-                    });
-
-                    $this.focusout(function () {
-                        hideTip($this);
-                    });
-
-                    break;
-            }
+            return $this;
         }
     });
-};
+})(jQuery, window, document);
 
 // initialization
+var $messages;
 $(document).ready(function () {
+    $messages = $('#messages').messageHandler();
     // TODO: event registration should only appear on the pages it's need. In the works.
 
     // all pages
@@ -525,5 +727,5 @@ $(document).ready(function () {
     dbjs.tabs('.tabset', '.tab', '.view');
 
     // study list
-    dbjs.fadeOff('.study_roll a', '.body', '.thumb');
+    dbjs.fadeOff('.volume_roll a', '.body', '.thumb');
 });

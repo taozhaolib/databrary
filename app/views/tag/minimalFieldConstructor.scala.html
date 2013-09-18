@@ -1,19 +1,32 @@
-@(elements: helper.FieldElements)
+@(elements : helper.FieldElements)
 
 <div class="field cf @elements.args.get('_class) @if(elements.hasErrors) {error}" id="@elements.args.get('_id).getOrElse(elements.id + "_field")">
-    <label for="@elements.id" style="display: none;">@elements.label(elements.lang)</label>
+    <label for="@elements.id" class="hide">@elements.label(elements.lang)</label>
 
     <div class="input">
         @elements.input
 
-        @if(elements.hasErrors) {
-            <aside class="help">
-                <ul>
+        <div class="formtips hide" data-region="#@elements.id">
+            @if(elements.infos(elements.lang).nonEmpty) {
+                <aside class="help infos">
+                    <ul>
+                    @elements.infos(elements.lang).map { info =>
+                        <li class="info">@info</li>
+                    }
+                    </ul>
+                </aside>
+            }
+
+            @if(elements.hasErrors) {
+                <aside class="help errors">
+                    @if(elements.args.get('placeholder)) {<h3>@elements.args.get('placeholder)</h3>}
+                    <ul>
                     @elements.errors(elements.lang).map { error =>
                         <li class="error">@error</li>
                     }
-                </ul>
-            </aside>
-        }
+                    </ul>
+                </aside>
+            }
+        </div>
     </div>
 </div>
