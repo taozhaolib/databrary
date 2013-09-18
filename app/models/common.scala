@@ -105,23 +105,22 @@ private[models] abstract class Table[R <: TableRow](private[models] val table : 
 private[models] abstract class TableId[R <: TableRowId[R]](table : String) extends Table[R](table) with HasId[R]
 
 /** Parameters (names and values) that may be passed to SQL queries. */
-private[models] final class SQLArgs private (private val args : Seq[SQLArgs.Arg]) extends scala.collection.SeqProxy[SQLArgs.Arg] {
-  def self = args
+private[models] final class SQLArgs private (private val args : Seq[SQLArgs.Arg]) extends scala.collection.SeqProxy[(String,ParameterValue[_])] {
+  def self = args.map { case (p,v) => (p.name,v) }
   def ++(other : SQLArgs) = new SQLArgs(args ++ other.args)
+  private lazy val names = args.map(_._1.name)
 
   /** Terms appropriate for INSERT INTO statements.
     * @returns `(arg, ...) VALUES ({arg}, ...)`
     */
-  def insert = {
-    val names = args.map(_._1.name)
+  def insert =
     names.mkString("(", ", ", ")") + " VALUES " + names.mkString("({", "}, {", "})")
-  }
   /** Terms appropriate for UPDATE or WHERE statements.
     * @param sep separator string, ", " for UPDATE (default), " AND " for WHERE
     * @returns `arg = {arg} sep ...`
     */
   def set(sep : String = ", ") =
-    args.map(_._1.name).map(n => n + " = {" + n + "}").mkString(sep)
+    names.map(n => n + " = {" + n + "}").mkString(sep)
   def where = set(" AND ")
 }
 private[models] object SQLArgs {

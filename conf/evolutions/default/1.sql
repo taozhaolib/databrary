@@ -229,6 +229,15 @@ CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer, "acces
 $$;
 COMMENT ON FUNCTION "volume_access_check" (integer, integer, permission) IS 'Test if a given party has the given permission [any] on the given volume, either directly, inherited through site access, or delegated.';
 
+CREATE TABLE "volume_citation" (
+	"volume" integer NOT NULL References "volume",
+	"head" text NOT NULL,
+	"url" text,
+	"body" text
+);
+CREATE INDEX ON "volume_citation" ("volume");
+COMMENT ON TABLE "volume_citation" IS 'Quick and dirty citation list.  Not intended to be permanent.  No PK: only updated in bulk on volume.';
+
 ----------------------------------------------------------- time intervals
 
 CREATE FUNCTION "interval_mi_epoch" (interval, interval) RETURNS double precision LANGUAGE sql IMMUTABLE STRICT AS 
@@ -644,6 +653,7 @@ DROP FUNCTION "segment" (interval);
 DROP TYPE segment;
 DROP FUNCTION "interval_mi_epoch" (interval, interval);
 
+DROP TABLE "volume_citation";
 DROP FUNCTION "volume_access_check" (integer, integer, permission);
 DROP TABLE "volume_access";
 DROP FUNCTION "volume_creation" (integer);

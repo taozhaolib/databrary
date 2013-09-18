@@ -50,6 +50,9 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     * @return records sorted by category */
   def allRecords(category : Option[RecordCategory] = None)(implicit db : Site.DB) = Record.getVolume(this, category)
 
+  /** List of all citations on this volume. */
+  def citations(implicit db : Site.DB) = VolumeCitation.getVolume(this)
+
   private[models] def annotatedLevel = "volume"
   private[models] def annotatedId = id
 

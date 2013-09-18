@@ -31,12 +31,31 @@ object Volume extends SiteController {
     Ok(views.html.volume.list(models.Volume.getAll))
   }
 
-  type VolumeForm = Form[(String, Option[String])]
+  type CitationMapping = (Option[String], Option[String], Option[String])
+  private val citationMapping = tuple(
+    "head" -> optional(nonEmptyText),
+    "url" -> optional(nonEmptyText),
+    "body" -> optional(nonEmptyText)
+  ).verifying(Messages("citation.invalid"), _ match {
+    case (Some(head), url, body) => true // TODO: validate URL
+    case (None, None, None) => true
+    case _ => false
+  })
+  private def citationFill(cite : VolumeCitation) = (Some(cite.head), cite.url, cite.body)
+  private def citationSet(volume : Volume, cites : Seq[CitationMapping])(implicit site : Site) =
+    if (cites.nonEmpty) {
+      VolumeCitation.setVolume(volume, cites.flatMap(c =>
+        c._1.map(h => VolumeCitation(volume, h, c._2, c._3))
+      ))
+    }
+
+  type VolumeForm = Form[(String, Option[String], Seq[CitationMapping])]
   private[this] val editForm = Form(tuple(
     "name" -> nonEmptyText,
-    "body" -> optional(text)
+    "body" -> optional(text),
+    "citation" -> seq(citationMapping)
   ))
-  private[this] def editFormFill(s : Volume) = editForm.fill((s.name, s.body))
+  private[this] def editFormFill(v : Volume)(implicit site : Site) = editForm.fill((v.name, v.body, v.citations.map(citationFill(_)) :+ (Some(""), None, None)))
 
   def edit(i : models.Volume.Id) = check(i, Permission.EDIT) { volume => implicit request =>
     Ok(views.html.volume.edit(Right(volume), editFormFill(volume)))
@@ -45,8 +64,9 @@ object Volume extends SiteController {
   def change(i : models.Volume.Id) = check(i, Permission.EDIT) { volume => implicit request =>
     editFormFill(volume).bindFromRequest.fold(
       form => BadRequest(views.html.volume.edit(Right(volume), form)),
-      { case (name, body) =>
+      { case (name, body, cites) =>
         volume.change(name = name, body = body.flatMap(maybe(_)))
+        citationSet(volume, cites)
         Redirect(volume.pageURL)
       }
     )
@@ -66,8 +86,9 @@ object Volume extends SiteController {
     else
       editForm.bindFromRequest.fold(
         form => BadRequest(views.html.volume.edit(Left(models.Party.get(owner).get), form)),
-        { case (name, body) =>
+        { case (name, body, cites) =>
           val volume = models.Volume.create(name, body)
+          citationSet(volume, cites)
           VolumeAccess(volume, owner, Permission.ADMIN, Permission.CONTRIBUTE).set
           Redirect(volume.pageURL)
         }

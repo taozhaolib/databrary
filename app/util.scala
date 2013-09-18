@@ -51,7 +51,7 @@ package object util {
     */
   def groupBy[A,K](l : Seq[A], f : A => K) : Seq[(K,Seq[A])] = {
     val r = l.genericBuilder[(K,Seq[A])]
-    @scala.annotation.tailrec def next(l : Seq[A]) : Unit = if (!l.isEmpty) {
+    @scala.annotation.tailrec def next(l : Seq[A]) : Unit = if (l.nonEmpty) {
       val k = f(l.head)
       val (p, s) = l.span(f(_) == k)
       r += k -> p
