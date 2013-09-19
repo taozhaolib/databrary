@@ -1,27 +1,32 @@
 #!/bin/bash -e
 set -o pipefail
 
-conf=`git rev-parse --show-cdup`conf
+top=`git rev-parse --show-cdup`
+conf=${top}conf
 db=default
 evolutions=$conf/evolutions/$db
 
 getconfig () {
-	key=$1
 	# This isn't perfect but hopefully good enough
-	sed -n '/^db\.'"$db"'\.'"$key"'=\("\([^"]*\)"\|\([^# ]*\)\).*$/{s//\2\3/;p;q}' $conf/{local,application}.conf
+	sed -n '/^'"$1"'=\("\([^"]*\)"\|\([^# ]*\)\).*$/{s//\2\3/;p;q}' $conf/{local,application}.conf
+}
+
+getdbconfig () {
+	getconfig "db\.$db\.$1"
 }
 
 getdb () {
 	sed -n '/^jdbc:postgresql:\(\/\/\([^\/:]\+\)\(:\([0-9]\+\)\)\?\/\)\?\([^?]*\).*$/{s//host="\2";port="\4";database="\5"/;p}'
 }
 
-eval $(getconfig url | getdb)
-user=`getconfig user`
-password=`getconfig password`
+eval $(getdbconfig url | getdb)
+user=`getdbconfig user`
+password=`getdbconfig password`
+secret=`getconfig 'application\.secret'`
 : ${host:=localhost} ${port:=5432} ${database:=$user}
 
-if [[ $database = databrary && $HOSTNAME = *brary* ]] ; then
-	echo -n "This looks like the production environment.  Are you sure? "
+if [[ $secret != databrary ]] ; then
+	echo -n "This looks like a production environment. Continue? "
 	read y
 	[[ $y = y* ]] || exit 8
 fi
