@@ -1,0 +1,72 @@
+#!/bin/bash -e
+set -o pipefail
+
+conf=`git rev-parse --show-cdup`conf
+db=default
+
+getconfig () {
+	key=$1
+	# This isn't perfect but hopefully good enough
+	sed -n '/^db\.'"$db"'\.'"$key"'=\("\([^"]*\)"\|\([^# ]*\)\).*$/{s//\2\3/;p;q}' $conf/{local,application}.conf
+}
+
+getdb () {
+	sed -n '/^jdbc:postgresql:\(\/\/\([^\/:]\+\)\(:\([0-9]\+\)\)\?\/\)\?\([^?]*\).*$/{s//host="\2";port="\4";database="\5"/;p}'
+}
+
+eval $(getconfig url | getdb)
+user=`getconfig user`
+password=`getconfig password`
+: ${host:=localhost} ${port:=5432} ${database:=$user}
+
+if [[ ! -f ~/.pgpass ]] ; then
+	um=`umask -p`
+	umask 077
+	echo "$host:$port:$database:$user:$password" >> ~/.pgpass
+	$um
+fi
+
+args=(-h $host -p $port -U $user $database)
+while [[ $1 = -?* ]] ; do
+	args=("${args[@]}" $1)
+	shift
+done
+
+up () {
+	evo=$conf/evolutions/default/${1:-*}.sql
+	sed -n '0,/^# --- !Ups$/d;/^# --- !Downs$/,$d;/^#/d;s/;;/;/g;p' $evo | psql "${args[@]}" -f -
+}
+
+down () {
+	evo=$conf/evolutions/default/${1:-1}.sql
+	sed -n '1,/^# --- !Downs$/d;/^#/d;s/;;/;/g;p' $evo | psql "${args[@]}" -f -
+}
+
+if [[ $# -eq 0 ]] ; then
+	echo "Use '$0 help' for help"
+	exec psql "${args[@]}"
+elif [[ $# -eq 1 && ( $1 = - || -f $1 ) ]] ; then
+	exec psql "${args[@]}" -f "$1"
+elif [[ $# -eq 1 && $1 = reset ]] ; then
+	pg_dump -Fc -f unreset.dump "${args[@]}"
+	psql "${args[@]}" -f - <<EOF
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+EOF
+elif [[ $1 = up || $1 = down ]] ; then
+	cmd=$1 ; shift
+	$cmd "$@"
+elif [[ $1 = dump ]] ; then
+	shift
+	exec pg_dump "${args[@]}" "$@"
+else
+	cat <<EOF
+Usage:
+  runsql  		run psql interactively
+  runsql -|<file>	execute contents of file
+  runsql reset		reset the database (clear public schema)
+  runsql up|down NUM	run evolution NUM
+  runsql dump ARGS...	run pg_dump
+Any non-argument options are passed to the run command.
+EOF
+fi
