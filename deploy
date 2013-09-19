@@ -1,0 +1,49 @@
+#!/bin/bash -e
+if [[ ! -r prod.conf ]] ; then
+	echo "prod.conf does not exist."
+	if [[ ! -f prod.conf.example ]] ; then
+		cat <<EOF >>prod.conf.example
+include "/application.conf"
+application.secret="`openssl rand -base64 48`"
+db.default.user=$USER
+db.default.password="database password"
+store.master="./store"
+store.cache="./cache"
+http.port=8000
+EOF
+		echo "An example has been put in prod.conf.example."
+	fi
+	exit 1
+fi
+
+die () {
+	echo "Usage: $0 [/path/to/databrary-VER.zip|[databrary-]VER]"
+	exit 2
+}
+
+if [[ $1 = */databrary-*.zip && -r $1 ]] ; then
+	src=$1
+	base=${src%.zip}
+	ver=${base##*/databrary-}
+	unzip $src
+	chmod +x databrary-$ver/start
+elif [[ -n $1 && -d databrary-$1 ]] ; then
+	ver=$1
+elif [[ $1 = databrary-* && -d $1 ]] ; then
+	ver=${1#databrary-}
+elif [[ $# -ne 0 ]] ; then
+	die
+fi
+
+port=`sed -n '/^http\.port=\([0-9]*\)$/{s//\1/;p;q}' prod.conf`
+
+if [[ -n $ver ]] ; then
+	ln -sfT databrary-$ver databrary
+fi
+
+if [[ ! -d databrary ]] ; then
+	echo "No databrary found."
+	die
+fi
+
+exec databrary/start ${port:+-Dhttp.port=$port} -Dconfig.file=prod.conf
