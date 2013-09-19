@@ -85,5 +85,5 @@ object Audit {
     * @param returning optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
     */
   private[models] def change(table : String, sets : SQLArgs, where : SQLArgs, returning : String = "")(implicit site : Site) =
-    SQLon(AuditAction.change, table, "SET " + sets.set() + " WHERE " + where.where, returning)(SQLArgs(sets ++ where : _*))(site)
+    SQLon(AuditAction.change, table, "SET " + sets.set() + " WHERE " + where.where, returning)(sets ++ where)(site)
 }

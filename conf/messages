@@ -1,3 +1,4 @@
+citation.invalid=Invalid citation
 file.format.unknown=File format '{0}' is not supported.
 login.bad=Incorrect login.
 login.openID.notFound=No account is associated with that OpenID.

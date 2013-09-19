@@ -93,7 +93,7 @@ object Asset extends SiteController {
   }
 
   /* FIXME this doesn't work in error cases */
-  def formForFile(form : AssetForm) = form.value.fold(false)(!_._3.isEmpty)
+  def formForFile(form : AssetForm) = form.value.fold(false)(_._3.isDefined)
 
   def edit(s : models.Container.Id, o : models.Asset.Id) = checkContainer(s, o, Permission.EDIT) { link => implicit request =>
     Ok(views.html.asset.edit(Right(link), formFill(link)))

@@ -26,11 +26,12 @@ object Slot extends SiteController {
     Ok(views.html.slot.view(slot))
   }
 
-  type EditForm = Form[(Consent.Value)]
-  private[this] val editForm = Form(
-    "consent" -> Field.enum(Consent)
-  )
-  private[this] def editFormFill(s : Slot) = editForm.fill((s.consent))
+  type EditForm = Form[(Consent.Value, Boolean)]
+  private[this] val editForm = Form(tuple(
+    "consent" -> Field.enum(Consent),
+    "toplevel" -> boolean
+  ))
+  private[this] def editFormFill(s : Slot) = editForm.fill((s.consent, s.toplevel))
 
   private[controllers] def viewEdit(slot : Slot)(
     editForm : EditForm = editFormFill(slot),
@@ -46,8 +47,8 @@ object Slot extends SiteController {
   def change(i : models.Slot.Id) = check(i, Permission.EDIT) { slot => implicit request =>
     editFormFill(slot).bindFromRequest.fold(
       form => BadRequest(viewEdit(slot)(editForm = form)),
-      { case (consent) =>
-        slot.change(consent = consent)
+      { case (consent, toplevel) =>
+        slot.change(consent = consent, toplevel = toplevel)
         Redirect(slot.pageURL)
       }
     )

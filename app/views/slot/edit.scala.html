@@ -12,6 +12,7 @@
 
 	@helper.form(routes.Slot.change(slot.id)) {
 		@widget.enumSelect(form("consent"), Consent)
+		@helper.checkbox(form("toplevel"))
 		<button type='submit' class="big button first">Change</button>
 	}
 	@widget.formErrors(form)
