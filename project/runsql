@@ -1,23 +1,35 @@
 #!/bin/bash -e
 set -o pipefail
 
-conf=`git rev-parse --show-cdup`conf
+top=`git rev-parse --show-cdup`
+conf=${top}conf
 db=default
+evolutions=$conf/evolutions/$db
 
 getconfig () {
-	key=$1
 	# This isn't perfect but hopefully good enough
-	sed -n '/^db\.'"$db"'\.'"$key"'=\("\([^"]*\)"\|\([^# ]*\)\).*$/{s//\2\3/;p;q}' $conf/{local,application}.conf
+	sed -n '/^'"$1"'=\("\([^"]*\)"\|\([^# ]*\)\).*$/{s//\2\3/;p;q}' $conf/{local,application}.conf
+}
+
+getdbconfig () {
+	getconfig "db\.$db\.$1"
 }
 
 getdb () {
 	sed -n '/^jdbc:postgresql:\(\/\/\([^\/:]\+\)\(:\([0-9]\+\)\)\?\/\)\?\([^?]*\).*$/{s//host="\2";port="\4";database="\5"/;p}'
 }
 
-eval $(getconfig url | getdb)
-user=`getconfig user`
-password=`getconfig password`
+eval $(getdbconfig url | getdb)
+user=`getdbconfig user`
+password=`getdbconfig password`
+secret=`getconfig 'application\.secret'`
 : ${host:=localhost} ${port:=5432} ${database:=$user}
+
+if [[ $secret != databrary ]] ; then
+	echo -n "This looks like a production environment. Continue? "
+	read y
+	[[ $y = y* ]] || exit 8
+fi
 
 if [[ ! -f ~/.pgpass ]] ; then
 	um=`umask -p`
@@ -32,30 +44,59 @@ while [[ $1 = -?* ]] ; do
 	shift
 done
 
-up () {
-	evo=$conf/evolutions/default/${1:-*}.sql
-	sed -n '0,/^# --- !Ups$/d;/^# --- !Downs$/,$d;/^#/d;s/;;/;/g;p' $evo | psql "${args[@]}" -f -
+runsql () {
+	psql -q "${args[@]}" -vON_ERROR_STOP=on -f "${@:--}"
 }
 
-down () {
-	evo=$conf/evolutions/default/${1:-1}.sql
-	sed -n '1,/^# --- !Downs$/d;/^#/d;s/;;/;/g;p' $evo | psql "${args[@]}" -f -
+dbreset () {
+	if [[ -z $1 ]] ; then
+		pg_dump -Fc -f unreset.dump "${args[@]}"
+	fi
+	runsql - -a <<EOF
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+EOF
+}
+
+declare -A evoexpr=([up]='0,/^# --- !Ups$/d;/^# --- !Downs$/,$d' [down]='1,/^# --- !Downs$/d')
+evolve () {
+	local evo=$evolutions/$2.sql
+	sed -n "${evoexpr[$1]}"';/^#/d;s/;;/;/g;p' $evo | runsql
+}
+
+evolve_all () {
+	n=1
+	while [[ -f $evolutions/$n.sql ]] ; do
+		evolve up $n
+		: $[n++]
+	done
 }
 
 if [[ $# -eq 0 ]] ; then
 	echo "Use '$0 help' for help"
 	exec psql "${args[@]}"
 elif [[ $# -eq 1 && ( $1 = - || -f $1 ) ]] ; then
-	exec psql "${args[@]}" -f "$1"
+	runsql "$1"
 elif [[ $# -eq 1 && $1 = reset ]] ; then
-	pg_dump -Fc -f unreset.dump "${args[@]}"
-	psql "${args[@]}" -f - <<EOF
-DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
-EOF
-elif [[ $1 = up || $1 = down ]] ; then
-	cmd=$1 ; shift
-	$cmd "$@"
+	dbreset
+elif [[ $# -eq 1 && $1 = schema ]] ; then
+	dbreset
+	runsql $conf/schema.sql
+elif [[ $# -eq 1 && $1 = up ]] ; then
+	dbreset
+	evolve_all
+elif [[ $# -eq 2 && ( $1 = up || $1 = down ) ]] ; then
+	evolve "$@"
+elif [[ $1 = check ]] ; then
+	dbreset
+	runsql $conf/schema.sql
+	pg_dump -O -f $conf/check-schema.sql "${args[@]}"
+	dbreset 1
+	evolve_all
+	pg_dump -O -f $conf/check-evolve.sql "${args[@]}"
+	diff -F'^[A-Z]' -u0 $conf/check-evolve.sql $conf/check-schema.sql
+	echo "OK!"
+	rm -f $conf/check-evolve.sql $conf/check-schema.sql
 elif [[ $1 = dump ]] ; then
 	shift
 	exec pg_dump "${args[@]}" "$@"
