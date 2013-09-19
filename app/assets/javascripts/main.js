@@ -384,7 +384,8 @@ dbjs.simpleToggle = function (toggler, toggled) {
  */
 (function ($, window, document, undefined) {
     // stock vars
-    var $handler,
+    var $window = $(window),
+        $handler,
         sources = ['auto', 'alt', 'title', 'html', 'data-tip', 'data-source'],
         types = ['alert', 'error', 'trace', 'null'];
 
@@ -531,7 +532,18 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 else
                     router[type].prepend($message);
 
+                reorderMessages(type);
+
                 return $message;
+            };
+
+            var reorderMessages = function (type) {
+                var $messages = router[type].find('.message'),
+                    messageCount = $messages.length;
+
+                $messages.each(function (i, e) {
+                    $(e).css('z-index', messageCount - i);
+                });
             };
 
             var addHook = function ($element, $message, type) {
@@ -602,16 +614,35 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 $message.find('.close').off('click').remove();
             };
 
-            var remove = function ($message) {
-                return $message.data('message').remove();
+            var remove = function ($message, callback) {
+                return $message.data('message').remove(function () {
+                    if (callback && {}.toString.call(callback) === '[object Function]') callback();
+                    adjustPage();
+                });
             };
 
-            var show = function ($message) {
-                return $message.data('message').show();
+            var show = function ($message, callback) {
+                return $message.data('message').show(function () {
+                    if (callback && {}.toString.call(callback) === '[object Function]') callback();
+                    adjustPage();
+                });
             };
 
-            var hide = function ($message) {
-                return $message.data('message').hide();
+            var hide = function ($message, callback) {
+                return $message.data('message').hide(function () {
+                    if (callback && {}.toString.call(callback) === '[object Function]') callback();
+                    adjustPage();
+                });
+            };
+
+            var adjustPage = function () {
+                var scroll = $window.scrollTop(),
+                    $site_body = $('#site_body'),
+                    height = $('#messages').outerHeight(true),
+                    currentHeight = parseInt($site_body.css('margin-top'));
+
+                $site_body.css('margin-top', height);
+                $window.scrollTop(scroll + height - currentHeight);
             };
 
             // hooks
@@ -672,9 +703,10 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 return $this;
             };
 
-            var remove = function () {
+            var remove = function (callback) {
                 return $this.hide(function () {
-                    $this.remove()
+                    $this.remove();
+                    callback();
                 });
             };
 

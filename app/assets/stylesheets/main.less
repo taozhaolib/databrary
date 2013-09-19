@@ -41,7 +41,8 @@ body {
 
 #messages {
     position: fixed;
-    top: @header_height;
+    margin-top: @header_height;
+    top: 0;
     left: 0;
     right: 0;
     z-index: 500;
@@ -63,6 +64,7 @@ body {
     .error {
         padding: (@gutter/2) 0 (@gutter/4);
         .box-shadow(@shadow);
+        position: relative;
     }
 
     .trace {
@@ -75,11 +77,13 @@ body {
     }
 
     .error {
+        margin-top: -(@gutter/4);
         background: lighten(red, 40%);
         color: darken(red, 30%);
     }
 
     .alert {
+        margin-top: -(@gutter/4);
         background: lighten(blue, 40%);
         color: darken(blue, 30%);
     }
