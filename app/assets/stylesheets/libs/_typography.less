@@ -1,17 +1,15 @@
 // fonts
-	.font-face('SofiaProLight', '/public/fonts/SofiaProLight', normal, normal, true)
-
-;
-	.font-face('SofiaProMedium', '/public/fonts/SofiaProMedium', normal, normal, true)
-
-;
+.font-face('SofiaProLight', '/public/fonts/SofiaProLight', normal, normal, true);
+.font-face('SofiaProLight Fallback', 'http://databrary.org/fonts/SofiaProLight', normal, normal, true);
+.font-face('SofiaProMedium', '/public/fonts/SofiaProMedium', normal, normal, true);
+.font-face('SofiaProMedium Fallback', 'http://databrary.org/fonts/SofiaProMedium', normal, normal, true);
 
 .sofia_light() {
-	font-family: 'SofiaProLight', Helvetica, Verdana, sans-serif;
+	font-family: 'SofiaProLight', 'SofiaProLight Fallback', Helvetica, Verdana, sans-serif;
 }
 
 .sofia_medium() {
-	font-family: 'SofiaProMedium', Helvetica, Verdana, sans-serif;
+	font-family: 'SofiaProMedium', 'SofiaProMedium Fallback', Helvetica, Verdana, sans-serif;
 }
 
 // body
@@ -48,7 +46,7 @@ a {
 
 strong,
 b {
-	font-family: 'SofiaProMedium', Helvetica, Verdana, sans-serif;
+	.sofia_medium();
 }
 
 hr {
