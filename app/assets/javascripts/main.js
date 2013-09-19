@@ -165,7 +165,7 @@ dbjs.ajaxModal = function (clicker, url, now) {
 
         $.get(url, function (data) {
             var $data = $(data),
-                $script = $data.find('script');
+                $script = $data.filter('script');
 
             $toggle = $data.find('.modal');
             toggle = $clicker.attr('data-target');
@@ -329,20 +329,31 @@ dbjs.stickyFooter = function (footer, above) {
  * @param fader    element measured for height
  */
 dbjs.fadeOff = function (container, faded, fader) {
-    var $container = $(container),
-        fade = '<div class="fade"></div>';
+    var $containers = $(container),
+        fade = '<div class="fade"></div>',
+        $imgs = $containers.find(fader+' img');
 
-    // could replace this with img.load().each(if complete, load...)
-    // but which looks better to the user?
-    $(window).load(function () {
-        $container.each(function () {
-            var $this = $(this),
-                $faded = $this.find(faded),
-                $fader = $this.find(fader);
+    // $img.load().each(if this.complete, load...) doesn't work in modal.
+    // ridiculous workaround with height minimum.
+    var loaded = 0;
 
-            $faded.height($fader.height());
-            $faded.append($(fade));
-        });
+    $imgs.load(function () {
+        loaded++;
+
+        if ($imgs.length == loaded) {
+            $containers.each(function () {
+                var $this = $(this),
+                    $faded = $this.find(faded),
+                    $fader = $this.find(fader);
+
+                if($fader.height() > 150)
+                    $faded.height($fader.height());
+                else
+                    $faded.height(150);
+
+                $faded.append($(fade));
+            });
+        }
     });
 };
 

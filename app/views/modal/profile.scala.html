@@ -1,6 +1,10 @@
 @(party : Party)(implicit request : SiteRequest[_])
 
-@template.modal("profile", "full")() {
+@script = {
+    dbjs.fadeOff('.modal .volume_roll a', '.body', '.thumb');
+}
+
+@template.modal("profile", "full")(js = script) {
     <article class="party view">
         @views.html.party.viewFill(party)
     </article>

@@ -2,7 +2,11 @@
 
 <div id="title">@title</div>
 
-<div id="css">@css</div>
-<div id="js">@js</div>
+<style id="css">@css</style>
+<script id="js">
+$(document).ready(function () {
+    @js
+});
+</script>
 
 <div id="body">@body</div>

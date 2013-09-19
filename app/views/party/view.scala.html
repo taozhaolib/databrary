@@ -1,6 +1,10 @@
 @(party : Party)(implicit request : SiteRequest[_])
 
-@template.crud("Profile: " + party.name) {
+@script = {
+    dbjs.fadeOff('.party .volume_roll a', '.body', '.thumb');
+}
+
+@template.crud("Profile: " + party.name, js = script) {
     <article id="profile_@party.id.unId" class="party view">
         @views.html.party.viewFill(party)
     </article>
