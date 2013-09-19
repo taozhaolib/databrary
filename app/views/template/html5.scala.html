@@ -8,17 +8,37 @@
 
 		<title>@title || Databrary</title>
 
+        <!-- css -->
 		<link rel="stylesheet" href="@routes.Assets.at("stylesheets/main.min.css")">
-        @css
 
+        @if(css.body != ""){
+            <style>
+                @css
+            </style>
+        }
+
+        <!-- js -->
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
         <script>
             if (!window.jQuery) {
                 document.write('<script src="@routes.Assets.at("javascripts/libs/jquery/jquery-1.10.2.min.js")"><\/script>');
             }
         </script>
+
 		<script src="@routes.Assets.at("javascripts/main.js")"></script>
-        @js
+
+        <script>
+        $(document).ready(function () {
+            @request.flatMap(_.user).fold {
+                dbjs.ajaxModal('#modal_login_link', '/ajax/modal/login', true);
+            } { u =>
+                dbjs.ajaxModal('#modal_profile_link', '/ajax/modal/profile', true);
+            }
+
+            @js
+        });
+        </script>
 
         <!--[if lt IE 9]><script src="@routes.Assets.at("javascripts/libs/html5shiv/html5shiv.min.js")"></script><![endif]-->
 	</head>

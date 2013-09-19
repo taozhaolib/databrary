@@ -1,6 +1,10 @@
 @(title : String = "", css: Html = Html(""), js: Html = Html(""))(body : Html)(sidebar : Html = Html(""))(implicit request: SiteRequest[_])
 
-@template.html5(title, css, js, Some(request)) {
+@script = {
+    dbjs.sideMenu('.sidebar_menu', 'main > article > h1:first-child');
+}
+
+@template.html5(title, css, script+js, Some(request)) {
     @region.bodyHeaderSearch()
 
     <div class="row">

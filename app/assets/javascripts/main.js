@@ -737,27 +737,11 @@ dbjs.simpleToggle = function (toggler, toggled) {
 
 // initialization
 var $messages;
+
 $(document).ready(function () {
-    $messages = $('#messages').messageHandler();
-    // TODO: event registration should only appear on the pages it's need. In the works.
+    // global interfaces
+    $messages = $('#messages').messageHandler({});
 
     // all pages
     dbjs.stickyFooter('#site_footer', '#site_body');
-
-    // all static pages
-    dbjs.sideMenu('.sidebar_menu', 'main > article > h1:first-child');
-
-    // when logged out
-    dbjs.ajaxModal('#modal_login_link', '/ajax/modal/login', true);
-    // when logged in
-    dbjs.ajaxModal('#modal_profile_link', '/ajax/modal/profile', true);
-
-    // faq
-    dbjs.fold('.question', 'h2', 'div');
-
-    // study (none other currently)
-    dbjs.tabs('.tabset', '.tab', '.view');
-
-    // study list
-    dbjs.fadeOff('.volume_roll a', '.body', '.thumb');
 });
