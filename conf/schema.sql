@@ -1,57 +1,54 @@
--- Note that play only checks for changes in the most recent evolution, so
--- changing this file will not prompt an evolution while 2.sql is unchanged.
+-- This is currently the complete, authoritative schema, as it is easier to
+-- understand all in one place.
 
--- Note that double-semicolons are necessary for play's poor evolution parsing
-
-# --- !Ups
-;
+-- A general convention is that hard-coded fixtures get non-positive ids.
 
 ----------------------------------------------------------- utilities
 
 CREATE FUNCTION create_abstract_parent ("parent" name, "children" name[]) RETURNS void LANGUAGE plpgsql AS $create$
 DECLARE
-	parent_table CONSTANT text := quote_ident(parent);;
-	kind_type CONSTANT text := quote_ident(parent || '_kind');;
+	parent_table CONSTANT text := quote_ident(parent);
+	kind_type CONSTANT text := quote_ident(parent || '_kind');
 BEGIN
 	EXECUTE $macro$
-		CREATE TYPE $macro$ || kind_type || $macro$ AS ENUM ('$macro$ || array_to_string(children, $$','$$) || $macro$');;
+		CREATE TYPE $macro$ || kind_type || $macro$ AS ENUM ('$macro$ || array_to_string(children, $$','$$) || $macro$');
 		CREATE TABLE $macro$ || parent_table || $macro$ (
 			"id" serial NOT NULL Primary Key,
 			"kind" $macro$ || kind_type || $macro$ NOT NULL
-		);;
+		);
 		CREATE FUNCTION $macro$ || quote_ident(parent || '_trigger') || $macro$ () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
 			IF TG_OP = 'INSERT' THEN
-				INSERT INTO $macro$ || parent_table || $macro$ (id, kind) VALUES (NEW.id, TG_TABLE_NAME::$macro$ || kind_type || $macro$);;
+				INSERT INTO $macro$ || parent_table || $macro$ (id, kind) VALUES (NEW.id, TG_TABLE_NAME::$macro$ || kind_type || $macro$);
 			ELSIF TG_OP = 'DELETE' THEN
-				DELETE FROM $macro$ || parent_table || $macro$ WHERE id = OLD.id AND kind = TG_TABLE_NAME::$macro$ || kind_type || $macro$;;
+				DELETE FROM $macro$ || parent_table || $macro$ WHERE id = OLD.id AND kind = TG_TABLE_NAME::$macro$ || kind_type || $macro$;
 			ELSIF TG_OP = 'UPDATE' THEN
 				IF NEW.id = OLD.id THEN
-					RETURN NEW;;
-				END IF;;
-				UPDATE $macro$ || parent_table || $macro$ SET id = NEW.id WHERE id = OLD.id AND kind = TG_TABLE_NAME::$macro$ || kind_type || $macro$;;
-			END IF;;
+					RETURN NEW;
+				END IF;
+				UPDATE $macro$ || parent_table || $macro$ SET id = NEW.id WHERE id = OLD.id AND kind = TG_TABLE_NAME::$macro$ || kind_type || $macro$;
+			END IF;
 			IF NOT FOUND THEN
-				RAISE EXCEPTION 'inconsistency for %:% parent $macro$ || parent || $macro$', TG_TABLE_NAME::$macro$ || kind_type || $macro$, OLD.id;;
-			END IF;;
+				RAISE EXCEPTION 'inconsistency for %:% parent $macro$ || parent || $macro$', TG_TABLE_NAME::$macro$ || kind_type || $macro$, OLD.id;
+			END IF;
 			IF TG_OP = 'DELETE' THEN
-				RETURN OLD;;
+				RETURN OLD;
 			ELSE
-				RETURN NEW;;
-			END IF;;
-		END;;$$
-	$macro$;;
-END;; $create$;
+				RETURN NEW;
+			END IF;
+		END;$$
+	$macro$;
+END; $create$;
 COMMENT ON FUNCTION "create_abstract_parent" (name, name[]) IS 'A "macro" to create an abstract parent table and trigger function.  This could be done with a single function using dynamic EXECUTE but this way is more efficient and not much more messy.';
 
 CREATE FUNCTION cast_int ("input" text) RETURNS integer LANGUAGE plpgsql IMMUTABLE STRICT AS $$
 DECLARE
-	i integer;;
+	i integer;
 BEGIN
-	SELECT input::integer INTO i;;
-	RETURN i;;
+	SELECT input::integer INTO i;
+	RETURN i;
 EXCEPTION WHEN invalid_text_representation THEN
-	RETURN NULL;;
-END;; $$;
+	RETURN NULL;
+END; $$;
 
 CREATE FUNCTION singleton (int4) RETURNS int4range LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT int4range($1, $1, '[]') $$;
@@ -78,7 +75,7 @@ CREATE TABLE "party" (
 );
 COMMENT ON TABLE "party" IS 'Users, groups, organizations, and other logical identities';
 
--- special party (SERIAL starts at 1):
+-- special parties (SERIAL starts at 1):
 INSERT INTO "party" VALUES (-1, 'Everybody'); -- NOBODY
 INSERT INTO "party" VALUES (0, 'Databrary'); -- ROOT
 
@@ -310,9 +307,9 @@ CREATE TABLE "audit_slot" (
 COMMENT ON TABLE "audit_slot" IS 'Partial auditing for slot table covering only consent changes.';
 
 CREATE FUNCTION "slot_full_create" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
-	INSERT INTO "slot" (source) VALUES (NEW.id);;
-	RETURN null;;
-END;; $$;
+	INSERT INTO "slot" (source) VALUES (NEW.id);
+	RETURN null;
+END; $$;
 CREATE TRIGGER "slot_full_create" AFTER INSERT ON "container" FOR EACH ROW EXECUTE PROCEDURE "slot_full_create" ();
 COMMENT ON TRIGGER "slot_full_create" ON "container" IS 'Always create a "full"-range slot for each container.  Unfortunately nothing currently prevents them from being removed/changed.';
 
@@ -586,80 +583,40 @@ CREATE FUNCTION "annotation_daterange" ("annotation" integer) RETURNS daterange 
 $$;
 COMMENT ON FUNCTION "annotation_daterange" (integer) IS 'Range of container dates covered by the given annotation.';
 
-# --- !Downs
-;
+----------------------------------------------------------- bootstrap/test data
 
-DROP TABLE "audit" CASCADE;
-DROP TYPE audit_action;
+INSERT INTO party (id, name, orcid) VALUES (1, 'Dylan Simon', '0000000227931679');
+INSERT INTO party (id, name) VALUES (2, 'Mike Continues');
+INSERT INTO party (id, name) VALUES (3, 'Lisa Steiger');
+INSERT INTO party (id, name) VALUES (4, 'Andrea Byrne');
+INSERT INTO party (id, name) VALUES (5, 'Karen Adolph');
+INSERT INTO party (id, name) VALUES (6, 'Rick Gilmore');
+SELECT setval('party_id_seq', 6);
 
-DROP FUNCTION "annotation_daterange" (integer);
-DROP FUNCTION "annotation_consent" (integer);
-DROP FUNCTION "volume_annotations" (integer);
-DROP FUNCTION "slot_annotations" (integer);
-DROP TABLE "slot_annotation";
-DROP TABLE "volume_annotation";
-DROP VIEW "measure_all";
-DROP VIEW "measure_view";
-DROP TABLE "measure" CASCADE;
-DROP TABLE "record_template";
-DROP TABLE "metric";
-DROP TYPE data_type;
-DROP TABLE "record";
-DROP TABLE "record_category";
-DROP TABLE "comment";
-DROP TABLE "annotation";
-DROP FUNCTION "annotation_trigger" ();
-DROP TYPE "annotation_kind";
+INSERT INTO account (id, email, openid) VALUES (1, 'dylan@databrary.org', 'http://dylex.net/');
+INSERT INTO account (id, email, openid) VALUES (2, 'mike@databrary.org', NULL);
+INSERT INTO account (id, email, openid) VALUES (3, 'lisa@databrary.org', NULL);
+INSERT INTO account (id, email, openid) VALUES (4, 'andrea@databrary.org', NULL);
 
-DROP TABLE "toplevel_asset";
-DROP TABLE "toplevel_slot";
-DROP VIEW "asset_duration";
-DROP TABLE "container_asset";
-DROP TABLE "clip";
-DROP TABLE "timeseries";
-DROP TABLE "file";
-DROP TABLE "timeseries_format";
-DROP TABLE "format";
-DROP TABLE "asset";
-DROP FUNCTION "asset_trigger" ();
-DROP TYPE "asset_kind";
-DROP TYPE classification;
+INSERT INTO authorize (child, parent, access, delegate, authorized) VALUES (1, 0, 'ADMIN', 'ADMIN', '2013-3-1');
+INSERT INTO authorize (child, parent, access, delegate, authorized) VALUES (2, 0, 'ADMIN', 'ADMIN', '2013-8-1');
+INSERT INTO authorize (child, parent, access, delegate, authorized) VALUES (3, 0, 'CONTRIBUTE', 'NONE', '2013-4-1');
+INSERT INTO authorize (child, parent, access, delegate, authorized) VALUES (4, 0, 'CONTRIBUTE', 'NONE', '2013-9-1');
 
-DROP FUNCTION "slot_consent" (integer);
-DROP VIEW "slot_nesting";
-DROP TABLE "slot";
-DROP TABLE "container";
-DROP FUNCTION "slot_full_create" ();
+INSERT INTO volume (id, name) VALUES (1, 'Databrary');
+SELECT setval('volume_id_seq', 1);
 
-DROP OPERATOR <@ ("object_segment", "object_segment");
-DROP OPERATOR @> ("object_segment", "object_segment");
-DROP FUNCTION "object_segment_within" ("object_segment", "object_segment");
-DROP FUNCTION "object_segment_contains" ("object_segment", "object_segment");
-DROP TABLE "object_segment";
-DROP FUNCTION "segment_shift" (segment, interval);
-DROP FUNCTION "singleton" (segment);
-DROP FUNCTION "singleton" (interval);
-DROP FUNCTION "duration" (segment);
-DROP FUNCTION "segment" (interval);
-DROP TYPE segment;
-DROP FUNCTION "interval_mi_epoch" (interval, interval);
+INSERT INTO container (id, volume, name) VALUES (1, 1, 'Global');
+SELECT setval('container_id_seq', 1);
 
-DROP TABLE "volume_citation";
-DROP FUNCTION "volume_access_check" (integer, integer, permission);
-DROP TABLE "volume_access";
-DROP FUNCTION "volume_creation" (integer);
-DROP TABLE "volume";
+INSERT INTO toplevel_slot (slot) VALUES (1);
 
-DROP FUNCTION "authorize_delegate_check" (integer, integer, permission);
-DROP FUNCTION "authorize_access_check" (integer, integer, permission);
-DROP FUNCTION "authorize_access_parents" (integer, permission);
-DROP VIEW "authorize_valid";
-DROP TABLE "authorize";
-DROP TYPE consent;
-DROP TYPE permission;
-DROP TABLE "account";
-DROP TABLE "party";
+INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, -1, 'DOWNLOAD', 'DOWNLOAD');
+INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 1, 'ADMIN', 'NONE');
+INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 2, 'ADMIN', 'NONE');
 
-DROP FUNCTION singleton (int4);
-DROP FUNCTION cast_int (text);
-DROP FUNCTION create_abstract_parent (name, name[]);
+INSERT INTO timeseries (id, format, classification, duration) VALUES (1, -800, 'MATERIAL', interval '40');
+SELECT setval('asset_id_seq', 1);
+
+INSERT INTO container_asset (container, asset, position, name) VALUES (1, 1, '0', 'counting');
+

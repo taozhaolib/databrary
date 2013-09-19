@@ -1,9 +1,9 @@
-logs/
-project/project/
+/logs/
+/project/project/
 target/
-tmp
-.history
-dist
+/tmp
+/.history
+/dist
 /.idea
 /*.iml
 /out
@@ -15,3 +15,4 @@ dist
 /hs_err_pid*.log
 /store/
 /cache/
+unreset.dump
