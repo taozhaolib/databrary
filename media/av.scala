@@ -36,7 +36,7 @@ object AV {
     _frame(infile.getPath, offset.seconds, outfile.getPath)
   def segment(infile : File, segment : Range[Offset], outfile : File) : Unit = {
     /* XXX this rounds outwards to keyframes and does other strange things with timing */
-    val r = new ProcessBuilder("ffmpeg", "-loglevel", "error", "-accurate_seek", 
+    val r = new ProcessBuilder("ffmpeg", "-loglevel", "error", "-threads", "1", "-accurate_seek", 
       "-ss", segment.lowerBound.get.seconds.toString, 
       "-to", segment.upperBound.get.seconds.toString, 
       "-i", infile.getPath, 
