@@ -24,7 +24,7 @@ line like this in pg\_hba.conf:
     CREATE USER "databrary" WITH PASSWORD '<passwd>';
     CREATE DATABASE "databrary" WITH OWNER "databrary";
 
-Then create conf/local.conf with whatever password you used above:
+Then create local.conf with whatever password you used above:
 
     db.default.password="<passwd>" 
 
@@ -34,9 +34,9 @@ For other settings, see conf/application.conf.
 
 By default in development mode the site is completely insecure, meaning you can
 login with only a username once you have an account, and it uses a public
-"secret".  To switch to secure mode, add a line to conf/local.conf:
+"secret".  To switch to secure mode, add a line to local.conf:
 
-    echo application.secret=\"`openssl rand -base64 -out /dev/stdout 48`\" >> conf/local.conf
+    echo application.secret=\"`openssl rand -base64 -out /dev/stdout 48`\" >> local.conf
 
 ### Object storage
 

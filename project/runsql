@@ -8,7 +8,7 @@ evolutions=$conf/evolutions/$db
 
 getconfig () {
 	# This isn't perfect but hopefully good enough
-	sed -n '/^'"$1"'=\("\([^"]*\)"\|\([^# ]*\)\).*$/{s//\2\3/;p;q}' $conf/{local,application}.conf
+	sed -n '/^'"$1"'=\("\([^"]*\)"\|\([^# ]*\)\).*$/{s//\2\3/;p;q}' ${top}local.conf $conf/application.conf
 }
 
 getdbconfig () {
