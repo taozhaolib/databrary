@@ -56,7 +56,8 @@ dbjs.tabs = function (tabset, tab, body) {
         $this.appendTo($tabs_el).replaceWith($('<li class="tab"><a href="#' + id + '" data-tip="' + tip + '">' + this.innerHTML + '</a></li>'));
     });
 
-    $messages.data('messages').generate(tabset + ' .tab > a', 'data-tip', 'trace');
+    if ($messageHandler)
+        $messageHandler.data('messageHandler').generate(tabset + ' .tab > a', 'data-tip', 'trace');
 
     $bodies.each(function () {
         $(this).appendTo($body_el).addClass('rolled').slideUp(0);
@@ -331,7 +332,7 @@ dbjs.stickyFooter = function (footer, above) {
 dbjs.fadeOff = function (container, faded, fader) {
     var $containers = $(container),
         fade = '<div class="fade"></div>',
-        $imgs = $containers.find(fader+' img');
+        $imgs = $containers.find(fader + ' img');
 
     // $img.load().each(if this.complete, load...) doesn't work in modal.
     // ridiculous workaround with height minimum.
@@ -346,7 +347,7 @@ dbjs.fadeOff = function (container, faded, fader) {
                     $faded = $this.find(faded),
                     $fader = $this.find(fader);
 
-                if($fader.height() > 150)
+                if ($fader.height() > 150)
                     $faded.height($fader.height());
                 else
                     $faded.height(150);
@@ -393,12 +394,12 @@ dbjs.simpleToggle = function (toggler, toggled) {
 /**
  * MESSAGES AND MESSAGE HANDLER
  */
-(function ($, window, document, undefined) {
+(function ($, window, document) {
     // stock vars
     var $window = $(window),
         $handler,
         sources = ['auto', 'alt', 'title', 'html', 'data-tip', 'data-source'],
-        types = ['alert', 'error', 'trace', 'null'];
+        types = ['alert', 'error', 'trace', 'input', 'null'];
 
     var validMessage = function (message) {
         return $.type(message) == 'string'
@@ -406,6 +407,18 @@ dbjs.simpleToggle = function (toggler, toggled) {
 
     var validType = function (type) {
         return $.inArray(type, types) >= 0;
+    };
+
+    var defaultType = function ($source, type) {
+        if ($.inArray(type, types) < 0)
+            type = $source.attr('class').split(/\s+/).filter(function (n) {
+                return types.indexOf(n) != -1;
+            }).shift();
+
+        if (!$.inArray(type, types) < 0)
+            type = 'trace';
+
+        return type;
     };
 
     $.extend($.fn, {
@@ -425,12 +438,14 @@ dbjs.simpleToggle = function (toggler, toggled) {
             var messages = {},
                 $alerts = $('<div class="alerts"></div>').appendTo($handler),
                 $errors = $('<div class="errors"></div>').appendTo($handler),
+                $inputs = $('<div class="inputs"></div>').appendTo($handler),
                 $traces = $('<div class="traces"></div>').appendTo($handler);
 
             var router = {
                 alert: $alerts,
                 error: $errors,
-                trace: $traces
+                trace: $traces,
+                input: $inputs
             };
 
             // methods
@@ -440,8 +455,9 @@ dbjs.simpleToggle = function (toggler, toggled) {
             };
 
             var generate = function (element, source, type, prepend) {
+                // defaults
                 if ($.inArray(source, sources) < 0 && !$(source).exists()) source = 'auto';
-                if ($.inArray(type, types) < 0) type = 'trace';
+                type = defaultType($(source), type);
 
                 var $elements = $(element),
                     messages = {};
@@ -504,7 +520,8 @@ dbjs.simpleToggle = function (toggler, toggled) {
             };
 
             var create = function ($element, $message, type, args, prepend) {
-                $message = $message.message(type, args);
+                type = defaultType($message, type);
+                $message = $message.messageHelper(type, args);
 
                 if (!$message)
                     return false;
@@ -529,7 +546,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
                     addHook($element, $message, type);
                 }
 
-                if (!$message.data('message').update(message, type, args))
+                if (!$message.data('messageHelper').update(message, type, args))
                     return false;
 
                 move($element, $message, type, prepend);
@@ -575,6 +592,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
                         addCloser($message);
 
                         break;
+                    case 'input':
                     case 'error':
                         $element.focusin(function () {
                             show($message);
@@ -610,6 +628,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
                         removeCloser($message);
 
                         break;
+                    case 'input':
                     case 'error':
                         $element.off('focusin');
 
@@ -626,21 +645,21 @@ dbjs.simpleToggle = function (toggler, toggled) {
             };
 
             var remove = function ($message, callback) {
-                return $message.data('message').remove(function () {
+                return $message.data('messageHelper').remove(function () {
                     if (callback && {}.toString.call(callback) === '[object Function]') callback();
                     adjustPage();
                 });
             };
 
             var show = function ($message, callback) {
-                return $message.data('message').show(function () {
+                return $message.data('messageHelper').show(function () {
                     if (callback && {}.toString.call(callback) === '[object Function]') callback();
                     adjustPage();
                 });
             };
 
             var hide = function ($message, callback) {
-                return $message.data('message').hide(function () {
+                return $message.data('messageHelper').hide(function () {
                     if (callback && {}.toString.call(callback) === '[object Function]') callback();
                     adjustPage();
                 });
@@ -652,7 +671,9 @@ dbjs.simpleToggle = function (toggler, toggled) {
                     height = $('#messages').outerHeight(true),
                     currentHeight = parseInt($site_body.css('margin-top'));
 
-                $site_body.css('margin-top', height);
+                $site_body.animate({
+                    marginTop: height
+                }, args.speed);
                 $window.scrollTop(scroll + height - currentHeight);
             };
 
@@ -660,7 +681,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
             initialize();
 
             // api
-            this.data('messages', {
+            this.data('messageHandler', {
                 generate: generate,
                 create: create,
                 update: update,
@@ -678,7 +699,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
          * @param args
          * @returns {*}
          */
-        message: function (type, args) {
+        messageHelper: function (type, args) {
             var options,
                 defaults = {
                     speed: 150
@@ -734,7 +755,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 return false;
 
             // api
-            $this.data('message', {
+            $this.data('messageHelper', {
                 update: update,
                 remove: remove,
                 show: show,
@@ -746,12 +767,105 @@ dbjs.simpleToggle = function (toggler, toggled) {
     });
 })(jQuery, window, document);
 
+/**
+ * FORM HANDLER
+ */
+(function ($, window, document) {
+    var $handler;
+
+    $.extend($.fn, {
+        formHandler: function (args) {
+            //options
+            args = $.extend({
+                speed: 150
+            }, args);
+
+            $handler = this;
+
+
+            // methods
+            var initialize = function () {
+                generate('form');
+            };
+
+            var generate = function (element) {
+                var $forms = $(element),
+                    forms = {}, $form;
+
+                $forms.each(function () {
+                    if ($form = $(this).formHelper(args))
+                        forms[$form.attr('id')] = $form;
+                });
+
+                return forms;
+            };
+
+            // hooks
+            initialize();
+
+            // api
+            this.data('formHandler', {
+                generate: generate
+            });
+
+            return this;
+        },
+
+        formHelper: function (args) {
+            //options
+            var options,
+                defaults = {
+                    speed: 150
+                };
+
+            var $this = this,
+                $messages = {};
+
+            // methods
+            var update = function (args) {
+                options = $.extend(defaults, args);
+
+                $messages = getMessages();
+
+                return $this;
+            };
+
+            var getMessages = function () {
+                var $messages = $this.find('.message'),
+                    messages = {};
+
+                $messages.each(function () {
+                    var $message = $(this),
+                        $input = $($message.parent().attr('data-for'));
+
+                    if ($messageHandler && ($message = $messageHandler.data('messageHandler').create($input, $message)))
+                        messages[$message.attr('id')] = $message;
+                });
+            };
+
+            // setup
+            if (!update(args))
+                return false;
+
+            // api
+            $this.data('formHelper', {
+                update: update,
+                messages: $messages
+            });
+
+            return $this;
+
+        }
+    });
+})(jQuery, window, document);
+
 // initialization
-var $messages;
+var $messageHandler, $formHandler;
 
 $(document).ready(function () {
     // global interfaces
-    $messages = $('#messages').messageHandler({});
+    $messageHandler = $('#messages').messageHandler({});
+    $formHandler = $('#forms').formHandler({});
 
     // all pages
     dbjs.stickyFooter('#site_footer', '#site_body');

@@ -13,8 +13,8 @@
 	@helper.form(a.fold(p => routes.Volume.add(p.id), s => routes.Volume.change(s.id))) {
             @helper.inputText(editForm("name"), 'placeholder -> "Title", '_class -> "big")
             @helper.textarea(editForm("body"), 'placeholder -> "Description", '_class -> "")
-	    @helper.repeat(editForm("citation")) { f =>
-		@helper.inputText(f("head"), 'placeholder -> "Citation")
+	        @helper.repeat(editForm("citation")) { f =>
+		    @helper.inputText(f("head"), 'placeholder -> "Citation")
 	    	@helper.inputText(f("url"))
 	    	@helper.inputText(f("body"), 'placeholder -> "Abstract")
 	    }

@@ -6,26 +6,15 @@
     <div class="input">
         @elements.input
 
-        <div class="formtips hide" data-region="#@elements.id">
-            @if(elements.infos(elements.lang).nonEmpty) {
-                <aside class="help infos">
-                    <ul>
-                    @elements.infos(elements.lang).map { info =>
-                        <li class="info">@info</li>
-                    }
-                    </ul>
-                </aside>
-            }
-
-            @if(elements.hasErrors) {
-                <aside class="help errors">
-                    @if(elements.args.get('placeholder)) {<h3>@elements.args.get('placeholder)</h3>}
-                    <ul>
-                    @elements.errors(elements.lang).map { error =>
-                        <li class="error">@error</li>
-                    }
-                    </ul>
-                </aside>
+        <div class="messages hide" data-for="#@elements.id">
+            @if(elements.infos(elements.lang).nonEmpty || elements.hasErrors) {
+                <div class="message @if(elements.hasErrors) {error}else{input}">
+                    <dl>
+                        @if(elements.args.get('placeholder)) {<dt>@elements.args.get('placeholder):</dt>}
+                        @elements.infos(elements.lang).map { info => <dd>@info</dd>}
+                        @elements.errors(elements.lang).map { error => <dd>@error</dd>}
+                    </dl>
+                </div>
             }
         </div>
     </div>
