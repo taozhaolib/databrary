@@ -1,6 +1,10 @@
 @(volume : Volume, assets : Seq[SlotAsset], excerpts : Map[String, Seq[SlotAsset]], assetMap : Map[String, Seq[SlotAsset]])(implicit request : SiteRequest[_])
 
-@template.crud("Volume: " + volume.name) {
+@script = {
+    dbjs.tabs('.tabset', '.tab', '.view');
+}
+
+@template.crud("Volume: " + volume.name, js = script) {
     <article id="volume_@volume.id.unId" class="volume">
         @crud.volumeHeader(volume)
 

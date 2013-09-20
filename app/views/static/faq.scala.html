@@ -1,6 +1,10 @@
 @(implicit request: SiteRequest[_])
 
-@template.static("Frequently Asked Questions") {
+@script = {
+    dbjs.fold('.question', 'h2', 'div');
+}
+
+@template.static("Frequently Asked Questions", js = script) {
     <article id="static_faq">
         <h1>Frequently Asked Questions</h1>
 

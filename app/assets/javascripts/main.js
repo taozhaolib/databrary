@@ -165,7 +165,7 @@ dbjs.ajaxModal = function (clicker, url, now) {
 
         $.get(url, function (data) {
             var $data = $(data),
-                $script = $data.find('script');
+                $script = $data.filter('script');
 
             $toggle = $data.find('.modal');
             toggle = $clicker.attr('data-target');
@@ -329,20 +329,31 @@ dbjs.stickyFooter = function (footer, above) {
  * @param fader    element measured for height
  */
 dbjs.fadeOff = function (container, faded, fader) {
-    var $container = $(container),
-        fade = '<div class="fade"></div>';
+    var $containers = $(container),
+        fade = '<div class="fade"></div>',
+        $imgs = $containers.find(fader+' img');
 
-    // could replace this with img.load().each(if complete, load...)
-    // but which looks better to the user?
-    $(window).load(function () {
-        $container.each(function () {
-            var $this = $(this),
-                $faded = $this.find(faded),
-                $fader = $this.find(fader);
+    // $img.load().each(if this.complete, load...) doesn't work in modal.
+    // ridiculous workaround with height minimum.
+    var loaded = 0;
 
-            $faded.height($fader.height());
-            $faded.append($(fade));
-        });
+    $imgs.load(function () {
+        loaded++;
+
+        if ($imgs.length == loaded) {
+            $containers.each(function () {
+                var $this = $(this),
+                    $faded = $this.find(faded),
+                    $fader = $this.find(fader);
+
+                if($fader.height() > 150)
+                    $faded.height($fader.height());
+                else
+                    $faded.height(150);
+
+                $faded.append($(fade));
+            });
+        }
     });
 };
 
@@ -384,7 +395,8 @@ dbjs.simpleToggle = function (toggler, toggled) {
  */
 (function ($, window, document, undefined) {
     // stock vars
-    var $handler,
+    var $window = $(window),
+        $handler,
         sources = ['auto', 'alt', 'title', 'html', 'data-tip', 'data-source'],
         types = ['alert', 'error', 'trace', 'null'];
 
@@ -531,7 +543,18 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 else
                     router[type].prepend($message);
 
+                reorderMessages(type);
+
                 return $message;
+            };
+
+            var reorderMessages = function (type) {
+                var $messages = router[type].find('.message'),
+                    messageCount = $messages.length;
+
+                $messages.each(function (i, e) {
+                    $(e).css('z-index', messageCount - i);
+                });
             };
 
             var addHook = function ($element, $message, type) {
@@ -602,16 +625,35 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 $message.find('.close').off('click').remove();
             };
 
-            var remove = function ($message) {
-                return $message.data('message').remove();
+            var remove = function ($message, callback) {
+                return $message.data('message').remove(function () {
+                    if (callback && {}.toString.call(callback) === '[object Function]') callback();
+                    adjustPage();
+                });
             };
 
-            var show = function ($message) {
-                return $message.data('message').show();
+            var show = function ($message, callback) {
+                return $message.data('message').show(function () {
+                    if (callback && {}.toString.call(callback) === '[object Function]') callback();
+                    adjustPage();
+                });
             };
 
-            var hide = function ($message) {
-                return $message.data('message').hide();
+            var hide = function ($message, callback) {
+                return $message.data('message').hide(function () {
+                    if (callback && {}.toString.call(callback) === '[object Function]') callback();
+                    adjustPage();
+                });
+            };
+
+            var adjustPage = function () {
+                var scroll = $window.scrollTop(),
+                    $site_body = $('#site_body'),
+                    height = $('#messages').outerHeight(true),
+                    currentHeight = parseInt($site_body.css('margin-top'));
+
+                $site_body.css('margin-top', height);
+                $window.scrollTop(scroll + height - currentHeight);
             };
 
             // hooks
@@ -672,9 +714,10 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 return $this;
             };
 
-            var remove = function () {
+            var remove = function (callback) {
                 return $this.hide(function () {
-                    $this.remove()
+                    $this.remove();
+                    callback();
                 });
             };
 
@@ -705,27 +748,11 @@ dbjs.simpleToggle = function (toggler, toggled) {
 
 // initialization
 var $messages;
+
 $(document).ready(function () {
-    $messages = $('#messages').messageHandler();
-    // TODO: event registration should only appear on the pages it's need. In the works.
+    // global interfaces
+    $messages = $('#messages').messageHandler({});
 
     // all pages
     dbjs.stickyFooter('#site_footer', '#site_body');
-
-    // all static pages
-    dbjs.sideMenu('.sidebar_menu', 'main > article > h1:first-child');
-
-    // when logged out
-    dbjs.ajaxModal('#modal_login_link', '/ajax/modal/login', true);
-    // when logged in
-    dbjs.ajaxModal('#modal_profile_link', '/ajax/modal/profile', true);
-
-    // faq
-    dbjs.fold('.question', 'h2', 'div');
-
-    // study (none other currently)
-    dbjs.tabs('.tabset', '.tab', '.view');
-
-    // study list
-    dbjs.fadeOff('.volume_roll a', '.body', '.thumb');
 });
