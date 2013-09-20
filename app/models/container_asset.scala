@@ -26,6 +26,8 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   private[this] var _body = body_
   /** Optional description of this asset. */
   def body : Option[String] = _body
+  
+  private[this] def ids = SQLArgs('container -> containerId, 'asset -> assetId)
 
   /** Update the given values in the database and this object in-place. */
   def change(position : Option[Offset] = _position, name : String = _name, body : Option[String] = _body)(implicit site : Site) : Unit = {
@@ -35,6 +37,9 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
     _name = name
     _body = body
   }
+
+  def remove(implicit site : Site) : Unit =
+    Audit.remove("container_asset", SQLArgs('container -> containerId, 'asset -> assetId)).execute
 
   def duration : Offset = 0
   /** Range of times that this asset covers, or None for "global/floating". */

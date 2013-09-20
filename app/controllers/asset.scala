@@ -137,4 +137,8 @@ object Asset extends SiteController {
     )
   }
 
+  def remove(c : models.Container.Id, a : models.Asset.Id) = checkContainer(c, a, Permission.EDIT) { link => implicit request =>
+    link.remove
+    Redirect(link.container.pageURL)
+  }
 }

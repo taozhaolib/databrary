@@ -56,6 +56,7 @@ GET	/container/:id/asset			controllers.Asset.create(id : models.Container.Id)
 POST	/container/:id/Asset			controllers.Asset.upload(id : models.Container.Id)
 GET	/container/:id/asset/:obj/edit		controllers.Asset.edit(id : models.Container.Id, obj : models.Asset.Id)
 POST	/container/:id/asset/:obj/Edit		controllers.Asset.change(id : models.Container.Id, obj : models.Asset.Id)
+POST	/container/:id/asset/:obj/Remove	controllers.Asset.remove(id : models.Container.Id, obj : models.Asset.Id)
 
 GET	/container/:id/slot			controllers.Slot.create(id : models.Container.Id)
 POST	/container/:id/Slot			controllers.Slot.add(id : models.Container.Id)
