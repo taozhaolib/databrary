@@ -36,10 +36,10 @@ object Record extends SiteController {
     "add" -> measureMapping
   ))
 
-  private def editFormFill(r : Record)(implicit site : Site) : (Seq[MetricBase], EditForm) = {
+  private def editFormFill(r : Record)(implicit site : Site) : (Seq[Metric], EditForm) = {
     val m = r.measures
     val mm = m.map(_.metric)
-    val t = r.category.fold(Nil : Seq[MetricBase])(_.template).diff(mm)
+    val t = r.category.fold(Nil : Seq[Metric])(_.template).diff(mm)
     (mm ++ t, editForm.fill((
       r.categoryId,
       m.map(m => (m.metricId, Some(m.datum.toString))) ++ t.map(m => (m.id, None)),

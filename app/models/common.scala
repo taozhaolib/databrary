@@ -107,7 +107,9 @@ private[models] abstract class TableId[R <: TableRowId[R]](table : String) exten
 /** Parameters (names and values) that may be passed to SQL queries. */
 private[models] final class SQLArgs private (private val args : Seq[SQLArgs.Arg]) extends scala.collection.SeqProxy[(String,ParameterValue[_])] {
   def self = args.map { case (p,v) => (p.name,v) }
-  def ++(other : SQLArgs) = new SQLArgs(args ++ other.args)
+  def ++(other : SQLArgs) : SQLArgs = new SQLArgs(args ++ other.args)
+  // def :+(other : SQLArgs.Arg) : SQLArgs = new SQLArgs(args :+ other)
+  // def +:(other : SQLArgs.Arg) : SQLArgs = new SQLArgs(other +: args)
   private lazy val names = args.map(_._1.name)
 
   /** Terms appropriate for INSERT INTO statements.

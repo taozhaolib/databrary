@@ -41,19 +41,17 @@ final class Record private (override val id : Record.Id, val volume : Volume, va
   }
 
   /** A specific measure of the given type and metric. */
-  def measure[T](metric : Metric[T])(implicit db : Site.DB) : Option[T] = Measure.get[T](this.id, metric)
-  private[this] val _measures = CachedVal[Seq[MeasureBase], Site.DB](Measure.getRecord(this.id)(_))
+  def measure[T](metric : MetricT[T])(implicit db : Site.DB) : Option[T] = MeasureT.get[T](this.id, metric)
+  private[this] val _measures = CachedVal[Seq[Measure], Site.DB](Measure.getRecord(this.id)(_))
   /** All measures in this record. Cached. */
-  def measures(implicit db : Site.DB) : Seq[MeasureBase] = _measures
-  /** Add a measure to this record. */
-  def addMeasure[T](metric : Metric[T], datum : T)(implicit db : Site.DB) = Measure.add[T](this.id, metric, datum)
+  def measures(implicit db : Site.DB) : Seq[Measure] = _measures
 
   /** Add or change a measure on this record.
     * This is not type safe so may generate SQL exceptions, and may invalidate measures on this object. */
-  def setMeasure(metric : MetricBase, value : String)(implicit db : Site.DB) = Measure.set(this.id, metric, value)
+  def setMeasure(metric : Metric, value : String)(implicit db : Site.DB) = Measure(id, metric, value).set
   /** Remove a measure from this record.
     * This may invalidate measures on this object. */
-  def deleteMeasure(metric : MetricBase)(implicit db : Site.DB) = Measure.delete(this.id, metric)
+  def deleteMeasure(metric : Metric)(implicit db : Site.DB) = Measure.delete(id, metric)
 
   private val _ident = CachedVal[Option[String], Site.DB](measure(Metric.Ident)(_))
   /** Cached version of `measure(Metric.Ident)`.
@@ -81,7 +79,7 @@ final class Record private (override val id : Record.Id, val volume : Volume, va
   /** Effective permission the site user has over a given metric in this record, specifically in regards to the measure datum itself.
     * Record permissions depend on volume permissions, but can be further restricted by consent levels.
     */
-  def dataPermission(metric : MetricBase)(implicit site : Site) : Permission.Value =
+  def dataPermission(metric : Metric)(implicit site : Site) : Permission.Value =
     Permission.data(volume.permission, consent, metric.classification)
 
   def pageName(implicit site : Site) = ident.orElse(category.map(_.name)).getOrElse("record")
@@ -206,8 +204,8 @@ trait Annotated extends InVolume {
   /** The list of records and possibly measures on this object.
     * This is essentially equivalent to `this.records(false).filter(_.category == category).map(r => (r, r.measure[T](metric)))` but more efficient.
     * @param category if Some limit to the given category */
-  def recordMeasures[T](category : Option[RecordCategory] = None, metric : Metric[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] =
-    Measure.getAnnotated[T](this, category, metric)
+  def recordMeasures[T](category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] =
+    MeasureT.getAnnotated[T](this, category, metric)
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */
   def idents(implicit db : Site.DB) : Seq[(String)] = recordMeasures() map {
