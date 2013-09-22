@@ -1,6 +1,6 @@
-@(target : Annotated, all : Boolean = false)(implicit request : SiteRequest[_])
+@(target : Slot)(implicit request : SiteRequest[_])
 
-@target.records(all).map { record =>
+@target.records.map { record =>
 	<h2><a href="@record.pageURL">@record.category.fold("Record")(_.name)</a></h2>
 	<dl>
 	@record.measures.filter(m => record.dataPermission(m.metric) >= Permission.DOWNLOAD).map { m =>

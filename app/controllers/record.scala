@@ -92,7 +92,7 @@ object Record extends SiteController {
     "record" -> optional(of[models.Record.Id])
   )
 
-  def selectList(target : Annotated)(implicit request : SiteRequest[_]) : Seq[(String, String)] = {
+  def selectList(target : Slot)(implicit request : SiteRequest[_]) : Seq[(String, String)] = {
     /* ideally we'd remove already used records here */
     target.volume.allRecords() map { r : Record =>
       (r.id.unId.toString, r.category.fold("")(_.name + ':') + r.ident.getOrElse("[" + r.id.unId.toString + "]"))
@@ -100,7 +100,7 @@ object Record extends SiteController {
   }
 
   def slotRemove(s : models.Slot.Id, r : models.Record.Id) = Slot.check(s, Permission.EDIT) { slot => implicit request =>
-    slot.removeAnnotation(r)
+    slot.removeRecord(r)
     Redirect(slot.pageURL)
   }
 
@@ -110,13 +110,13 @@ object Record extends SiteController {
       form => BadRequest(Slot.viewEdit(slot)(recordForm = form)),
       _.fold({
           val r = models.Record.create(slot.volume)
-          slot.addAnnotation(r)
+          r.addSlot(slot)
           Created(views.html.record.edit(r, Nil, editForm)) : Result
         })(models.Record.get(_).
           filter(r => r.permission >= Permission.DOWNLOAD && r.volumeId == slot.volumeId).
           fold(
             BadRequest(Slot.viewEdit(slot)(recordForm = form.withError("record", "record.bad"))) : Result){ r =>
-              slot.addAnnotation(r)
+              r.addSlot(slot)
               Redirect(slot.pageURL)
             }
         )

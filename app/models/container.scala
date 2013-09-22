@@ -50,7 +50,7 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
 object Container extends TableId[Container]("container") {
   private[models] def make(volume : Volume)(id : Id, name : Option[String], date : Option[Date]) =
     new Container(id, volume, name, date)
-  private val columns = Columns[
+  private[models] val columns = Columns[
     Id,  Option[String], Option[Date]](
     'id, 'name,          'date)
   private[models] val row = Volume.row.join(columns, "container.volume = volume.id") map {
@@ -86,7 +86,7 @@ object Container extends TableId[Container]("container") {
 /** Smallest organizatonal unit of related data.
   * Primarily used for an individual session of data with a single date and place.
   * Critically, contained data are should be covered by a single consent level and share the same annotations. */
-final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE, toplevel_ : Boolean = false) extends TableRowId[Slot] with Annotated with SitePage {
+final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE, toplevel_ : Boolean = false) extends TableRowId[Slot] with Commented with SitePage {
   def containerId : Container.Id = container.id
   def volume = container.volume
   private[this] var _consent = consent_
@@ -133,8 +133,25 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   /** List of contained asset segments within this slot. */
   def assets(implicit db : Site.DB) : Seq[SlotAsset] = SlotAsset.getSlot(this)
 
-  private[models] def annotatedLevel = "slot"
-  private[models] def annotatedId = id
+  def comments(all : Boolean = true)(implicit db : Site.DB) : Seq[Comment] = Comment.getSlot(this, all)
+  def postComment(text : String)(implicit request : controllers.UserRequest[_]) : Comment = Comment.post(Right(this), text)
+
+  /** The list of records on this object.
+    * @param all include indirect records on any contained objects
+    */
+  def records(implicit db : Site.DB) : Seq[Record] = Record.getSlot(this)(db)
+  /** Remove the given record from this slot. */
+  def removeRecord(rec : Record.Id)(implicit db : Site.DB) : Unit = Record.removeSlot(rec, id)
+  /** The list of records and possibly measures on this object.
+    * This is essentially equivalent to `this.records(false).filter(_.category == category).map(r => (r, r.measure[T](metric)))` but more efficient.
+    * @param category if Some limit to the given category */
+  def recordMeasures[T](category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] =
+    MeasureT.getSlot[T](this, category, metric)
+  /** A list of record identification strings that apply to this object.
+    * This is probably not a permanent solution for naming, but it's a start. */
+  def idents(implicit db : Site.DB) : Seq[(String)] = recordMeasures() map {
+    case (r, i) => r.category.fold("")(_.name + ':') + i.getOrElse("[" + r.id.unId.toString + ']')
+  }
 
   def pageName(implicit site : Site) = this.toString // FIXME
   def pageParent(implicit site : Site) = Some(container)
@@ -144,17 +161,22 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
 object Slot extends TableId[Slot]("slot") {
   private[models] def make(container : Container)(id : Id, segment : Range[Offset], consent : Option[Consent.Value], toplevel : Boolean) =
     new Slot(id, container, segment, consent.getOrElse(Consent.NONE), toplevel)
-  private def source(top : Boolean = false) =
-    "slot " + (if (top) "" else "LEFT ") + "JOIN toplevel_slot ON slot.id = toplevel_slot.slot "
-  private val baseColumns = Columns[
+  private def columnsTop(top : Boolean = false) = Columns[
     Id,  Range[Offset], Option[Consent.Value], Boolean](
-    'id, 'segment,      'consent,              SelectAs("toplevel_slot.slot IS NOT NULL", "toplevel"))
-  private[models] val columns = baseColumns.from(source())
-  private[models] val row = Container.row.join(columns, "container.id = slot.source") map {
-    case (cont ~ slot) => (make(cont) _).tupled(slot) 
+    'id, 'segment,      'consent,              SelectAs("toplevel_slot.slot IS NOT NULL", "toplevel")).
+    from("slot " + (if (top) "" else "LEFT ") + "JOIN toplevel_slot ON slot.id = toplevel_slot.slot")
+  private[models] val columns = columnsTop()
+  private[models] val row = columns.join(Container.row, "slot.source = container.id") map {
+    case (slot ~ cont) => (make(cont) _).tupled(slot) 
   }
   private[models] def containerRow(container : Container, top : Boolean = false) =
-    baseColumns map (make(container) _) from source(top)
+    columnsTop(top) map (make(container) _).tupled
+  private[models] def volumeColumns(top : Boolean = false) =
+    columnsTop(top).join(Container.columns, "slot.source = container.id")
+  private[models] def volumeRow(volume : Volume, top : Boolean = false) =
+    volumeColumns(top) map {
+      case (slot ~ cont) => (make((Container.make(volume) _).tupled(cont)) _).tupled(slot)
+    }
 
   final val fullRange = Range.full[Offset](PGSegment)
 
@@ -180,12 +202,6 @@ object Slot extends TableId[Slot]("slot") {
       on('cont -> c.id).list
   }
 
-  /** Retrieve a lost of slots with the given annotation.
-    * This checks permissions, though in fact this is not necessary in all cases. FIXME. */
-  private[models] def getAnnotation(a : Annotation.Id)(implicit site : Site) : Seq[Slot] =
-    row.SQL("JOIN slot_annotation ON slot.id = slot_annotation.slot WHERE slot_annotation.annotation = {annot} ORDER BY slot.source, slot.segment").
-    on('annot -> a, 'identity -> site.identity.id).list
-    
   /** Create a new slot in the specified container or return a matching one if it already exists. */
   def getOrCreate(container : Container, segment : Range[Offset])(implicit db : Site.DB) : Slot =
     get(container, segment) getOrElse {

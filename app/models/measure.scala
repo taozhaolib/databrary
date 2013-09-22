@@ -269,14 +269,14 @@ object MeasureT extends MeasureView[MeasureT[_]]("measure_all") {
   }
 
   /** Retrieve the set of all records and possibly measures of the given type on the given slot. */
-  private[models] def getAnnotated[T](target : Annotated, category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] = {
+  private[models] def getSlot[T](slot : Slot, category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] = {
     val tpe = metric.measureType
-    val row = Record.rowVolCat(target.volume, category).leftJoin(tpe.column, "record.id = " + tpe.table + ".record") map 
+    val row = Record.volCatRow(slot.volume, category).leftJoin(tpe.column, "record.id = " + tpe.table + ".record") map 
       { case (r ~ m) => (r, m) }
-    row.SQL("JOIN", target.annotationTable, "ON record.id = annotation WHERE metric = {metric}",
+    row.SQL("JOIN slot_record ON record.id = slot_record.record WHERE metric = {metric}",
       (if (category.isDefined) " AND category = {category}" else ""),
-      "AND", target.annotatedLevel, "= {target}").
-      on('target -> target.annotatedId, 'category -> category.map(_.id), 'metric -> metric.id).list(row)
+      "AND slot_record.slot = {slot}").
+      on('slot -> slot.id, 'category -> category.map(_.id), 'metric -> metric.id).list(row)
   }
 }
 

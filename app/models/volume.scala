@@ -10,7 +10,7 @@ import util._
 /** Main organizational unit or package of data, within which everything else exists.
   * Usually represents a single project or dataset with a single set of procedures.
   * @param permission the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than [[Permission.VIEW]] except possibly for transient objects, as unavailable volumes should never be returned in the first place. */
-final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], override val permission : Permission.Value, val creation : Timestamp) extends TableRowId[Volume] with SitePage with Annotated {
+final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], override val permission : Permission.Value, val creation : Timestamp) extends TableRowId[Volume] with SitePage with Commented {
   private[this] var _name = name_
   /** Title headline of this volume. */
   def name = _name
@@ -53,8 +53,8 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   /** List of all citations on this volume. */
   def citations(implicit db : Site.DB) = VolumeCitation.getVolume(this)
 
-  private[models] def annotatedLevel = "volume"
-  private[models] def annotatedId = id
+  def comments(all : Boolean = true)(implicit db : Site.DB) : Seq[Comment] = Comment.getVolume(this, all)
+  def postComment(text : String)(implicit request : controllers.UserRequest[_]) : Comment = Comment.post(Left(this), text)
 
   def pageName(implicit site : Site) = name
   def pageParent(implicit site : Site) = None

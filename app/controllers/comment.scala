@@ -14,15 +14,18 @@ object Comment extends SiteController {
   type CommentForm = Form[String]
   val form = Form("text" -> nonEmptyText)
 
-  private[this] def post(node : Annotated with SitePage)(request : SiteRequest[_]) =
-    if (request.access < Permission.COMMENT)
-      Forbidden : Result
-    else
-      /* FIXME: poorly displayed and possibly untranslated error message: */
-      form.bindFromRequest()(request).fold(form => BadRequest(form.errors.head.message), { text =>
-        node.postComment(text)(request)
-        Redirect(node.pageURL)
-      })
+  private[this] def post(node : Commented with SitePage)(request : SiteRequest[_]) = request match {
+    /* FIXME: poorly displayed and possibly untranslated error message: */
+    case urequest : UserRequest[_] if urequest.access >= Permission.COMMENT =>
+      form.bindFromRequest()(request).fold(
+        form => BadRequest(form.errors.head.message), 
+        { text =>
+          node.postComment(text)(urequest)
+          Redirect(node.pageURL)
+        }
+      )
+    case _ => Forbidden
+  }
 
   def postVolume(s : models.Volume.Id) = Volume.check(s, Permission.COMMENT)(post _)
   def postSlot(s : models.Slot.Id) = Slot.check(s, Permission.COMMENT)(post _)
