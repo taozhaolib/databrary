@@ -125,7 +125,8 @@ Java_media_AV_00024__1frame(
 	const char *infile = (*env)->GetStringUTFChars(env, jinfile, 0);
 	const char *outfile = joutfile ? (*env)->GetStringUTFChars(env, joutfile, 0) : NULL;
 	AVFormatContext *in = NULL, *out = NULL;
-	AVCodec *codec;
+	static AVDictionary *opts = NULL;
+	AVCodec *codec = NULL;
 	AVStream *is = NULL, *os = NULL;
 	AVPacket pkt;
 	AVFrame *frame = NULL;
@@ -143,7 +144,8 @@ Java_media_AV_00024__1frame(
 		if (i != si)
 			in->streams[i]->discard = AVDISCARD_ALL;
 
-	CHECK(avcodec_open2(is->codec, codec, NULL), "opening input codec %s", codec->name);
+	av_dict_set(&opts, "threads", "1", 0);
+	CHECK(avcodec_open2(is->codec, codec, &opts), "opening input codec %s", codec->name);
 
 	int64_t off = offset*is->time_base.den/is->time_base.num;
 	CHECK(avformat_seek_file(in, 0, INT64_MIN, off, off, 0), "seeking to %ld", off);
@@ -195,7 +197,8 @@ Java_media_AV_00024__1frame(
 	}
 
 	CHECK(avformat_write_header(out, NULL), "writing header to '%s'", outfile);
-	CHECK(avcodec_open2(os->codec, codec, NULL), "opening output codec %s", codec->name);
+	av_dict_set(&opts, "threads", "1", 0);
+	CHECK(avcodec_open2(os->codec, codec, &opts), "opening output codec %s", codec->name);
 	CHECK(avcodec_encode_video2(os->codec, &pkt, frame, &gpp), "encoding frame");
 	CHECK(av_write_frame(out, &pkt), "writing frame to '%s'", outfile);
 	CHECK(av_write_trailer(out), "writing trailer to '%s'", outfile);
@@ -219,6 +222,7 @@ Java_media_AV_00024__1frame(
 	}
 
 error:
+	av_dict_free(&opts);
 	av_frame_free(&frame);
 	av_free_packet(&pkt);
 	if (out) {

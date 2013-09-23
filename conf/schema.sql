@@ -439,21 +439,20 @@ CREATE TABLE "audit_toplevel_asset" (
 	LIKE "toplevel_asset"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 
------------------------------------------------------------ annotations
-
-SELECT create_abstract_parent('annotation', ARRAY['comment','tag','record']);
-COMMENT ON TABLE "annotation" IS 'Parent table for metadata annotations.';
-
+----------------------------------------------------------- comments
 
 CREATE TABLE "comment" (
-	"id" integer NOT NULL DEFAULT nextval('annotation_id_seq') Primary Key References "annotation" Deferrable Initially Deferred,
+	"id" serial NOT NULL Primary Key,
 	"who" integer NOT NULL References "account",
 	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"volume" integer NOT NULL References "volume",
+	"slot" integer References "slot" ON DELETE SET NULL,
 	"text" text NOT NULL
 );
-CREATE TRIGGER "annotation" BEFORE INSERT OR UPDATE OR DELETE ON "comment" FOR EACH ROW EXECUTE PROCEDURE "annotation_trigger" ();
-COMMENT ON TABLE "comment" IS 'Free-text comments that can be added to nodes (unaudited, immutable).';
+CREATE INDEX ON "comment" ("volume");
+COMMENT ON TABLE "comment" IS 'Free-text comments on objects (unaudited, immutable).';
 
+----------------------------------------------------------- records
 
 CREATE TABLE "record_category" (
 	"id" smallserial Primary Key,
@@ -463,11 +462,10 @@ COMMENT ON TABLE "record_category" IS 'Types of records that are relevant for da
 INSERT INTO "record_category" ("id", "name") VALUES (-500, 'participant');
 
 CREATE TABLE "record" (
-	"id" integer NOT NULL DEFAULT nextval('annotation_id_seq') Primary Key References "annotation" Deferrable Initially Deferred,
+	"id" serial NOT NULL Primary Key,
 	"volume" integer NOT NULL References "volume",
 	"category" smallint References "record_category" ON DELETE SET NULL
 );
-CREATE TRIGGER "annotation" BEFORE INSERT OR UPDATE OR DELETE ON "record" FOR EACH ROW EXECUTE PROCEDURE "annotation_trigger" ();
 COMMENT ON TABLE "record" IS 'Sets of metadata measurements organized into or applying to a single cohesive unit.  These belong to the object(s) they''re attached to, which are expected to be within a single volume.';
 
 CREATE TYPE data_type AS ENUM ('text', 'number', 'date');
@@ -537,51 +535,27 @@ CREATE VIEW "measure_all" ("record", "metric", "datum_text", "datum_number", "da
 COMMENT ON VIEW "measure_all" IS 'Data from all measure tables, coerced to text.';
 
 
-CREATE TABLE "volume_annotation" (
-	"volume" integer NOT NULL References "volume",
-	"annotation" integer NOT NULL References "annotation",
-	Primary Key ("volume", "annotation")
-);
-CREATE INDEX ON "volume_annotation" ("annotation");
-COMMENT ON TABLE "volume_annotation" IS 'Attachment of annotations to volumes.';
-
-CREATE TABLE "slot_annotation" (
+CREATE TABLE "slot_record" (
 	"slot" integer NOT NULL References "slot",
-	"annotation" integer NOT NULL References "annotation",
-	Primary Key ("slot", "annotation")
+	"record" integer NOT NULL References "record",
+	Primary Key ("slot", "record")
 );
-CREATE INDEX ON "slot_annotation" ("annotation");
-COMMENT ON TABLE "slot_annotation" IS 'Attachment of annotations to slots.';
+CREATE INDEX ON "slot_record" ("record");
+COMMENT ON TABLE "slot_record" IS 'Attachment of records to slots.';
 
 
-CREATE FUNCTION "slot_annotations" ("slot" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
-	SELECT annotation 
-	  FROM slot_annotation
-	  JOIN slot target ON slot_annotation.slot = target.id
-	  JOIN slot this ON target <@ this
-	 WHERE this.id = $1
-$$;
+CREATE FUNCTION "record_consent" ("record" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS
+	$$ SELECT MIN(consent) FROM slot_record JOIN slot ON slot = slot.id WHERE record = $1 $$;
+COMMENT ON FUNCTION "record_consent" (integer) IS 'Effective (minimal) consent level granted on the specified record.  This should really consider containing slots, too, though for now this is sufficient because the only identified measure is on participants, which should coincide with consents.';
 
-CREATE FUNCTION "volume_annotations" ("volume" integer) RETURNS SETOF integer LANGUAGE sql STABLE STRICT AS $$
-	SELECT annotation FROM volume_annotation WHERE volume = $1 UNION ALL
-	SELECT annotation FROM slot_annotation
-	  JOIN slot ON slot_annotation.slot = slot.id
-	  JOIN container ON slot.source = container.id
-	 WHERE container.volume = $1
-$$;
-
-CREATE FUNCTION "annotation_consent" ("annotation" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS
-	$$ SELECT MIN(consent) FROM slot_annotation JOIN slot ON slot = slot.id WHERE annotation = $1 $$;
-COMMENT ON FUNCTION "annotation_consent" (integer) IS 'Effective (minimal) consent level granted on the specified annotation.';
-
-CREATE FUNCTION "annotation_daterange" ("annotation" integer) RETURNS daterange LANGUAGE sql STABLE STRICT AS $$
+CREATE FUNCTION "record_daterange" ("record" integer) RETURNS daterange LANGUAGE sql STABLE STRICT AS $$
 	SELECT daterange(min(date), max(date), '[]') 
-	  FROM slot_annotation
+	  FROM slot_record
 	  JOIN slot ON slot = slot.id
 	  JOIN container ON slot.source = container.id
-	 WHERE annotation = $1
+	 WHERE record = $1
 $$;
-COMMENT ON FUNCTION "annotation_daterange" (integer) IS 'Range of container dates covered by the given annotation.';
+COMMENT ON FUNCTION "record_daterange" (integer) IS 'Range of container dates covered by the given record.';
 
 ----------------------------------------------------------- bootstrap/test data
 

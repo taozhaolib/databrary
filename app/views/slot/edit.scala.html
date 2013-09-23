@@ -19,7 +19,7 @@
 
 	<h2>Records</h2>
 	<ul>
-	@slot.records(false).map { record =>
+	@slot.records.map { record =>
 		<li>@display(record):
 		@tag.form(routes.Record.slotRemove(slot.id, record.id)) {
 			<button type='submit'>remove</button>

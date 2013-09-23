@@ -5,7 +5,6 @@ import play.Project._
 object ApplicationBuild extends Build {
 
   val appName         = "databrary"
-  val appVersion      = "0-SNAPSHOT"
 
   val dbDependencies = Seq(
     jdbc,
@@ -29,7 +28,9 @@ object ApplicationBuild extends Build {
     "org.mindrot" % "jbcrypt" % "0.3m"
   )
 
-  val main = play.Project(appName, appVersion, appDependencies).
-    dependsOn(dbrary, media)
+  val main = play.Project(appName, "unknown", appDependencies).
+    dependsOn(dbrary, media).settings(
+      version <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown"))
+    )
 
 }

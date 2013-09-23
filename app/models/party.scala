@@ -75,8 +75,8 @@ final class Account protected (party : Party, email_ : String, password_ : Strin
   }
 
   /** List of comments by this individual.
-    * This does not respect access permissions on the comment targets. */
-  final def comments(implicit db : Site.DB) = Comment.getParty(this)(db)
+    * This checks permissions on the target volumes. */
+  def comments(implicit site : Site) = Comment.getParty(this)
 }
 
 object Party extends TableId[Party]("party") {

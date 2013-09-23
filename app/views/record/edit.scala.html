@@ -1,4 +1,4 @@
-@(record : models.Record, meas : Seq[MetricBase], form : controllers.Record.EditForm)(implicit request : SiteRequest[_])
+@(record : models.Record, meas : Seq[Metric], form : controllers.Record.EditForm)(implicit request : SiteRequest[_])
 
 @template.crud("Edit Record: " + record.toString()) {
     <article>

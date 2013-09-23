@@ -8,7 +8,7 @@ evolutions=$conf/evolutions/$db
 
 getconfig () {
 	# This isn't perfect but hopefully good enough
-	sed -n '/^'"$1"'=\("\([^"]*\)"\|\([^# ]*\)\).*$/{s//\2\3/;p;q}' $conf/{local,application}.conf
+	sed -n '/^'"$1"'=\("\([^"]*\)"\|\([^# ]*\)\).*$/{s//\2\3/;p;q}' ${top}local.conf $conf/application.conf
 }
 
 getdbconfig () {
@@ -106,7 +106,9 @@ Usage:
   runsql  		run psql interactively
   runsql -|<file>	execute contents of file
   runsql reset		reset the database (clear public schema)
-  runsql up|down NUM	run evolution NUM
+  runsql schema		apply master schema
+  runsql up|down NUM	run evolution NUM (no play_evolutions)
+  runsql check		apply and compare master schema and evolutions
   runsql dump ARGS...	run pg_dump
 Any non-argument options are passed to the run command.
 EOF
