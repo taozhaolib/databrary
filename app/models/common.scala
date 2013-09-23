@@ -132,6 +132,46 @@ private[models] object SQLArgs {
   def apply(args : Arg*) = new SQLArgs(args)
 }
 
+object DBUtil {
+  def selectOrInsert[A](select : => Option[A])(insert : => A)(implicit db : Site.DB) : A = {
+    @scala.annotation.tailrec def loop : A = select orElse {
+      val sp = db.setSavepoint
+      try {
+        Some(insert)
+      } catch {
+        case e : java.sql.SQLException if e.getMessage.startsWith("ERROR: duplicate key value violates unique constraint ") =>
+          db.rollback(sp)
+          None
+      } finally {
+        db.releaseSavepoint(sp)
+      }
+    } match {
+      case Some(r) => r
+      case None => loop
+    }
+    loop
+  }
+
+  def updateOrInsert(update : Sql)(insert : Sql)(implicit db : Site.DB) : Unit = {
+    @scala.annotation.tailrec def loop() : Unit = {
+      if (update.executeUpdate() == 0 && !{
+        val sp = db.setSavepoint
+        try {
+          insert.execute()
+          true
+        } catch {
+          case e : java.sql.SQLException if e.getMessage.startsWith("ERROR: duplicate key value violates unique constraint ") =>
+            db.rollback(sp)
+            false
+        } finally {
+          db.releaseSavepoint(sp)
+        }
+      }) loop()
+    }
+    loop()
+  }
+}
+
 /** An object with a corresponding page on the site. */
 trait SitePage {
   /** The title of the object/page in the hierarchy, which may only make sense within [[pageParent]]. */

@@ -26,8 +26,8 @@ final case class VolumeAccess(volume : Volume, partyId : Party.Id, access : Perm
   def set(implicit site : Site) : Unit = {
     val id = SQLArgs('volume -> volumeId, 'party -> partyId)
     val args =  SQLArgs('access -> access, 'inherit -> inherit)
-    if (Audit.change("volume_access", args, id).executeUpdate() == 0)
-      Audit.add("volume_access", args ++ id).execute()
+    DBUtil.updateOrInsert(Audit.change("volume_access", args, id))(
+      Audit.add("volume_access", args ++ id))
   }
   /** Remove this access from the database.
     * Only volume and party are relevant for this operation.

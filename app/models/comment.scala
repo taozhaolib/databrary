@@ -8,7 +8,7 @@ import dbrary.Anorm._
 import PGSegment.{column => segmentColumn,statement => segmentStatement}
 import util._
 
-/** A comment made by a particular user, usually only applied to exactly one object.
+/** A comment made by a particular user applied to exactly one object.
   * These are immutable (and unaudited), although the author may be considered to have ownership. */
 final class Comment private (val id : Comment.Id, val who : Account, val when : Timestamp, val slot : Slot, val text : String) extends TableRowId[Comment] with InVolume {
   def volume = slot.volume
@@ -76,8 +76,8 @@ object Comment extends TableId[Comment]("comment") {
 
   /** Post a new comment on a target by the current user.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
-  private[models] def post(target : Commented, text : String)(implicit request : controllers.UserRequest[_]) : Comment = {
-    val who = request.account
+  private[models] def post(target : Commented, text : String)(implicit site : AuthSite) : Comment = {
+    val who = site.identity
     val slot = target.commentSlot
     val args = SQLArgs('who -> who.id, 'slot -> slot.id, 'text -> text)
     SQL("INSERT INTO " + table + " " + args.insert + " RETURNING " + columns.select).
@@ -94,5 +94,5 @@ trait Commented extends InVolume {
   def comments(all : Boolean = true)(implicit db : Site.DB) : Seq[Comment]
   /** Post a new comment this object.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
-  def postComment(text : String)(implicit request : controllers.UserRequest[_]) : Comment = Comment.post(this, text)
+  def postComment(text : String)(implicit site : AuthSite) : Comment = Comment.post(this, text)
 }

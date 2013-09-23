@@ -24,7 +24,7 @@ object Party extends SiteController {
   }
 
   private def adminAccount(e : models.Party)(implicit request : UserRequest[_]) =
-    cast[models.Account](e).filter(_.equals(request.account))
+    cast[models.Account](e).filter(_.equals(request.identity))
 
   type EditForm = Form[(String, Option[Orcid], Option[(String, Option[String], String, String)])]
   private[this] def formFill(e : models.Party)(implicit request : UserRequest[_]) : EditForm = {

@@ -50,13 +50,13 @@ trait Selector[A] extends RowParser[A] with SelectExprs {
     Selector(selects ++ that.selects, joiner(source, that.source), super.~[B](that))
   def join[B](that : Selector[B], on : String) : Selector[A ~ B] =
     join(that, unwords(_, "JOIN", _, "ON", on))
-  private[this] def join[B](that : Selector[B], using : Seq[String]) : Selector[A ~ B] =
+  def join[B](that : Selector[B], using : Seq[String]) : Selector[A ~ B] =
     join(that, unwords(_, "JOIN", _, "USING", using.mkString("(", ", ", ")")))
   def join[B](that : Selector[B], using : Symbol) : Selector[A ~ B] =
     join(that, Seq(using.name))
   def leftJoin[B](that : Selector[B], on : String) : Selector[A ~ Option[B]] =
     join(that.?, unwords(_, "LEFT JOIN", _, "ON", on))
-  private[this] def leftJoin[B](that : Selector[B], using : Seq[String]) : Selector[A ~ Option[B]] =
+  def leftJoin[B](that : Selector[B], using : Seq[String]) : Selector[A ~ Option[B]] =
     join(that.?, unwords(_, "LEFT JOIN", _, "USING", using.mkString("(", ", ", ")")))
   def leftJoin[B](that : Selector[B], using : Symbol) : Selector[A ~ Option[B]] =
     leftJoin(that, Seq(using.name))
