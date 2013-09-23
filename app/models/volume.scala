@@ -53,8 +53,8 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   /** List of all citations on this volume. */
   def citations(implicit db : Site.DB) = VolumeCitation.getVolume(this)
 
+  private[models] def commentSlot = None
   def comments(all : Boolean = true)(implicit db : Site.DB) : Seq[Comment] = Comment.getVolume(this, all)
-  def postComment(text : String)(implicit request : controllers.UserRequest[_]) : Comment = Comment.post(Left(this), text)
 
   def pageName(implicit site : Site) = name
   def pageParent(implicit site : Site) = None

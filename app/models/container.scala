@@ -133,8 +133,8 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   /** List of contained asset segments within this slot. */
   def assets(implicit db : Site.DB) : Seq[SlotAsset] = SlotAsset.getSlot(this)
 
+  private[models] def commentSlot = Some(this)
   def comments(all : Boolean = true)(implicit db : Site.DB) : Seq[Comment] = Comment.getSlot(this, all)
-  def postComment(text : String)(implicit request : controllers.UserRequest[_]) : Comment = Comment.post(Right(this), text)
 
   /** The list of records on this object.
     * @param all include indirect records on any contained objects

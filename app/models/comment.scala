@@ -85,10 +85,10 @@ object Comment extends TableId[Comment]("comment") {
 
   /** Post a new comment on a target by the current user.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
-  private[models] def post(target : Either[Volume,Slot], text : String)(implicit request : controllers.UserRequest[_]) : Comment = {
+  private[models] def post(target : Commented, text : String)(implicit request : controllers.UserRequest[_]) : Comment = {
     val who = request.account
-    val vol = target.merge
-    val slot = target.right.toOption
+    val vol = target.commentVolume
+    val slot = target.commentSlot
     val args = SQLArgs('who -> who.id, 'volume -> vol.volumeId, 'slot -> slot.map(_.id), 'text -> text)
     SQL("INSERT INTO " + table + " " + args.insert + " RETURNING " + columns.select).
       on(args : _*).single(columns.map(make(who, vol.volume, slot) _))
@@ -97,11 +97,13 @@ object Comment extends TableId[Comment]("comment") {
 
 /** Objects on which comments may be placed. */
 trait Commented extends InVolume {
+  private[models] def commentVolume : Volume = volume
+  private[models] def commentSlot : Option[Slot]
   /** The list of comments on this object.
     * @param all include indirect comments on any contained objects
     */
   def comments(all : Boolean = true)(implicit db : Site.DB) : Seq[Comment]
   /** Post a new comment this object.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
-  def postComment(text : String)(implicit request : controllers.UserRequest[_]) : Comment
+  def postComment(text : String)(implicit request : controllers.UserRequest[_]) : Comment = Comment.post(this, text)
 }
