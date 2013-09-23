@@ -26,11 +26,6 @@ Most developmental scientists rely on video recordings to capture the complexity
 The Databrary project is dedicated to transforming the culture of developmental science by building a community of researchers committed to open video data sharing, training a new generation of developmental scientists and empowering them with an unprecedented set of tools for discovery, and raising the profile of behavioral science by bolstering interest in and support for scientific research among the general public.');
 SELECT setval('volume_id_seq', 1);
 
-INSERT INTO container (id, volume, name) VALUES (1, 1, 'Global');
-SELECT setval('container_id_seq', 1);
-
-INSERT INTO toplevel_slot (slot) VALUES (1);
-
 INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, -1, 'DOWNLOAD', 'DOWNLOAD');
 INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 1, 'ADMIN', 'NONE');
 INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 2, 'ADMIN', 'NONE');

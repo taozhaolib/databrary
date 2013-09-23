@@ -12,7 +12,7 @@ import util._
   * To be used, all assets must be placed into containers.
   * These containers can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.
   */
-final class Container protected (val id : Container.Id, val volume : Volume, val name_ : Option[String], val date_ : Option[Date]) extends TableRowId[Container] with SitePage with InVolume {
+final class Container protected (val id : Container.Id, val volume : Volume, val top : Boolean = false, val name_ : Option[String], val date_ : Option[Date]) extends TableRowId[Container] with SitePage with InVolume {
   def container = this
   private[this] var _name = name_
   /** Descriptive name to help with organization by contributors.
@@ -38,7 +38,7 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
 
   /** List of slots on this container. */
   def slots(implicit db : Site.DB) : Seq[Slot] = Slot.getContainer(this)
-  private val _fullSlot = CachedVal[Slot, Site.DB](Slot.get(this)(_).get)
+  private[models] val _fullSlot = CachedVal[Slot, Site.DB](Slot.get(this)(_).get)
   /** Slot that covers this entire container and which thus serves as a proxy for display and metadata. Cached. */
   def fullSlot(implicit db : Site.DB) : Slot = _fullSlot
 
@@ -48,11 +48,11 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
 }
 
 object Container extends TableId[Container]("container") {
-  private[models] def make(volume : Volume)(id : Id, name : Option[String], date : Option[Date]) =
-    new Container(id, volume, name, date)
+  private[models] def make(volume : Volume)(id : Id, top : Boolean, name : Option[String], date : Option[Date]) =
+    new Container(id, volume, top, name, date)
   private[models] val columns = Columns[
-    Id,  Option[String], Option[Date]](
-    'id, 'name,          'date)
+    Id,  Boolean, Option[String], Option[Date]](
+    'id, 'top,    'name,          'date)
   private[models] val row = Volume.row.join(columns, "container.volume = volume.id") map {
     case (vol ~ cont) => (make(vol) _).tupled(cont)
   }
@@ -69,17 +69,20 @@ object Container extends TableId[Container]("container") {
       on('id -> i, 'identity -> site.identity.id).singleOpt
   }
 
-  /** Retrieve all the containers in a given volume.
-    * This does not check permissions as an existing volume implies visibility. */
-  private[models] def getVolume(v : Volume)(implicit db : Site.DB) : Seq[Container] = {
+  /** Retrieve all the containers in a given volume. */
+  private[models] def getVolume(v : Volume)(implicit db : Site.DB) : Seq[Container] =
     volumeRow(v).SQL("WHERE container.volume = {vol} ORDER BY date, id").
       on('vol -> v.id).list
-  }
+
+  /** Retrieve the top container in a given volume. */
+  private[models] def getTop(v : Volume)(implicit db : Site.DB) : Container =
+    volumeRow(v).SQL("WHERE container.volume = {vol} AND top").
+      on('vol -> v.id).single
 
   /** Create a new container in the specified volume. */
   def create(volume : Volume, name : Option[String] = None, date : Option[Date] = None)(implicit site : Site) = {
     val id = Audit.add(table, SQLArgs('volume -> volume.id, 'name -> name, 'date -> date), "id").single(scalar[Id])
-    new Container(id, volume, name, date)
+    new Container(id, volume, false, name, date)
   }
 }
 
@@ -133,7 +136,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   /** List of contained asset segments within this slot. */
   def assets(implicit db : Site.DB) : Seq[SlotAsset] = SlotAsset.getSlot(this)
 
-  private[models] def commentSlot = Some(this)
+  private[models] def commentSlot(implicit db : Site.DB) = this
   def comments(all : Boolean = true)(implicit db : Site.DB) : Seq[Comment] = Comment.getSlot(this, all)
 
   /** The list of records on this object.
@@ -188,18 +191,22 @@ object Slot extends TableId[Slot]("slot") {
 
   /** Retrieve an individual Slot by Container and segment.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
-  private[models] def get(container : Container, segment : Range[Offset] = fullRange)(implicit db : Site.DB) : Option[Slot] = {
+  private[models] def get(container : Container, segment : Range[Offset] = fullRange)(implicit db : Site.DB) : Option[Slot] =
     containerRow(container).
       SQL("WHERE slot.source = {cont} AND slot.segment = {seg}").
       on('cont -> container.id, 'seg -> segment).singleOpt
-  }
 
-  /** Retrieve a list of slots within the given container.
-    * This does not check permissions as an existing volume implies visibility. */
-  private[models] def getContainer(c : Container, top : Boolean = false)(implicit db : Site.DB) : Seq[Slot] = {
+  /** Retrieve a list of slots within the given container. */
+  private[models] def getContainer(c : Container, top : Boolean = false)(implicit db : Site.DB) : Seq[Slot] =
     containerRow(c, top = top).
       SQL("WHERE slot.source = {cont} ORDER BY slot.segment").
       on('cont -> c.id).list
+
+  /** Retrieve the master slot for a volume. */
+  private[models] def getTop(v : Volume)(implicit db : Site.DB) : Slot = {
+    volumeRow(v).
+      SQL("WHERE slot.segment = '(,)' AND container.volume = {vol} AND container.top").
+      on('vol -> v.id).single
   }
 
   /** Create a new slot in the specified container or return a matching one if it already exists. */
