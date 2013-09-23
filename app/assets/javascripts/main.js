@@ -874,9 +874,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
 
         formRepeater: function (args) {
             var $repeater = this,
-                $repeats = $repeater.find('.repeat'),
-                repeatCount = $repeats.length,
-                $copy;
+                $repeats, repeatCount, $copy;
 
             var $tempControls = $('<div class="controls"></div>'),
                 $tempControlsCreate = $('<div class="mod create">+</div>'),
@@ -885,17 +883,22 @@ dbjs.simpleToggle = function (toggler, toggled) {
 
             // methods
             var initialize = function () {
+                updateRepeater($repeater);
+
                 $repeats.each(function (index) {
                     var $repeat = $(this),
-                        id = $repeat.attr('data-for'),
                         key = $repeat.find('label[for]').attr('for').split('__').shift().split('_').pop();
 
                     if (key == repeatCount - 1)
                         $copy = $repeat.clone();
 
-                    updateRepeater($repeater);
                     updateControls($repeat, index);
                 });
+            };
+
+            var updateRepeater = function ($repeater) {
+                $repeats = $repeater.find('.repeat');
+                repeatCount = $repeats.length;
             };
 
             var updateControls = function ($repeat, index) {
@@ -914,13 +917,9 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 $repeat.append($controls);
             };
 
-            var updateRepeater = function ($repeater) {
-                $repeats = $repeater.find('.repeat');
-                repeatCount = $repeats.length;
-            };
-
             var create = function ($repeater) {
                 var cID = $copy.find('label[for]').attr('for').split('__').shift().split('_').pop();
+
                 $repeater.append($($('<div>').append($copy).html().replace(new RegExp('_' + cID + '_', 'g'), '_' + repeatCount + '_').replace(new RegExp('\\[' + cID + '\\]', 'g'), '[' + repeatCount + ']')));
 
                 updateRepeater($repeater);
