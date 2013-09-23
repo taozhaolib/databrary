@@ -1,4 +1,4 @@
-@(a : Either[Party,Volume], editForm : controllers.Volume.VolumeForm)(implicit request : SiteRequest[_])
+@(a : Either[Party, Volume], editForm : controllers.Volume.VolumeForm)(implicit request : SiteRequest[_])
 
 @import helper.FieldConstructor
 
@@ -8,19 +8,32 @@
 
 @template.crud(a.fold(_.toString + ": Create Volume", "Edit Volume: " + _.name)) {
     <article>
-	@a.fold(crud.partyHeader(_), crud.volumeHeader(_))
+        @a.fold(crud.partyHeader(_), crud.volumeHeader(_))
 
-	@tag.form(a.fold(p => routes.Volume.add(p.id), s => routes.Volume.change(s.id))) {
+        @tag.form(a.fold(p => routes.Volume.add(p.id), s => routes.Volume.change(s.id))) {
+            @widget.formErrors(editForm)
+
             @tag.inputText(editForm("name"), 'placeholder -> "Title", '_class -> "big")
             @tag.textarea(editForm("body"), 'placeholder -> "Description", '_class -> "")
-	        @helper.repeat(editForm("citation")) { f =>
-		    @tag.inputText(f("head"), 'placeholder -> "Citation")
-	    	@tag.inputText(f("url"))
-	    	@tag.inputText(f("body"), 'placeholder -> "Abstract")
-	    }
-	    <button type="submit" class="big button first">@a.fold(_ => "Create", _ => "Change")</button>
+
+            <fieldset class="publications">
+                <legend>Publications</legend>
+
+                <div class="repeater" data-for="@editForm("citation").id">
+                @helper.repeat(editForm("citation")) { f =>
+                    <div class="repeat">
+                        <div class="repeated">
+                            @tag.inputText(f("head"), 'placeholder -> "Citation")
+                            @tag.inputText(f("url"), 'placeholder -> "DOI or URL")
+                            @tag.textarea(f("body"), 'placeholder -> "Abstract")
+                        </div>
+                    </div>
+                }
+                </div>
+            </fieldset>
+
+            <button type="submit" class="big button first">@a.fold(_ => "Create", _ => "Change")</button>
         }
-        @widget.formErrors(editForm)
 
     </article>
 }

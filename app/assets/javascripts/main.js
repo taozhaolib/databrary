@@ -817,13 +817,15 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 };
 
             var $this = this,
-                $messages = {};
+                $messages = {},
+                $repeaters = {};
 
             // methods
             var update = function (args) {
                 options = $.extend(defaults, args);
 
                 $messages = getMessages();
+                $repeaters = getRepeaters();
 
                 return $this;
             };
@@ -839,6 +841,22 @@ dbjs.simpleToggle = function (toggler, toggled) {
                     if ($messageHandler && ($message = $messageHandler.data('messageHandler').create($input, $message)))
                         messages[$message.attr('id')] = $message;
                 });
+
+                return messages;
+            };
+
+            var getRepeaters = function () {
+                var $repeaters = $this.find('.repeater'),
+                    repeaters = {};
+
+                $repeaters.each(function () {
+                    var $repeater = $(this);
+
+                    if ($repeater = $repeater.formRepeater({}))
+                        repeaters[$repeater.attr('id')] = $repeater;
+                });
+
+                return repeaters
             };
 
             // setup
@@ -852,7 +870,91 @@ dbjs.simpleToggle = function (toggler, toggled) {
             });
 
             return $this;
+        },
 
+        formRepeater: function (args) {
+            var $repeater = this,
+                $repeats = $repeater.find('.repeat'),
+                repeatCount = $repeats.length,
+                $copy;
+
+            var $tempControls = $('<div class="controls"></div>'),
+                $tempControlsCreate = $('<div class="mod create">+</div>'),
+                $tempControlsRemove = $('<div class="mod remove">-</div>'),
+                $tempControlsMove = $('<div class="move"></div>');
+
+            // methods
+            var initialize = function () {
+                $repeats.each(function (index) {
+                    var $repeat = $(this),
+                        id = $repeat.attr('data-for'),
+                        key = $repeat.find('label[for]').attr('for').split('__').shift().split('_').pop();
+
+                    if (key == repeatCount - 1)
+                        $copy = $repeat.clone();
+
+                    updateRepeater($repeater);
+                    updateControls($repeat, index);
+                });
+            };
+
+            var updateControls = function ($repeat, index) {
+                $repeat.find('.controls').remove();
+
+                var $controls = $tempControls.clone();
+
+                $controls.append($tempControlsRemove.clone());
+
+                if (repeatCount >= 2)
+                    $controls.append($tempControlsMove.clone());
+
+                if (index == repeatCount - 1)
+                    $controls.append($tempControlsCreate.clone());
+
+                $repeat.append($controls);
+            };
+
+            var updateRepeater = function ($repeater) {
+                $repeats = $repeater.find('.repeat');
+                repeatCount = $repeats.length;
+            };
+
+            var create = function ($repeater) {
+                var cID = $copy.find('label[for]').attr('for').split('__').shift().split('_').pop();
+                $repeater.append($($('<div>').append($copy).html().replace(new RegExp('_' + cID + '_', 'g'), '_' + repeatCount + '_').replace(new RegExp('\\[' + cID + '\\]', 'g'), '[' + repeatCount + ']')));
+
+                updateRepeater($repeater);
+
+                $repeats.each(function (index) {
+                    updateControls($(this), index);
+                })
+            };
+
+            var remove = function ($repeater, $repeat) {
+                if (repeatCount > 1)
+                    $repeat.remove();
+                else
+                    $repeat.find('input, textarea').val('');
+
+                updateRepeater($repeater);
+
+                $repeats.each(function (index) {
+                    updateControls($(this), index);
+                })
+            };
+
+            // setup
+            initialize();
+
+            $repeater.on('click', '.controls .remove', function () {
+                remove($repeater, $(this).closest('.repeat'));
+            });
+
+            $repeater.on('click', '.controls .create', function () {
+                create($repeater);
+            });
+
+            return $repeater;
         }
     });
 })(jQuery, window, document);

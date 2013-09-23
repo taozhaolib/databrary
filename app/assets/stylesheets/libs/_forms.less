@@ -59,7 +59,9 @@ textarea, input, select {
 }
 
 // forms - fields and fieldsets
+fieldset,
 .field {
+    .grid_max(8);
 	margin-bottom: @gutter / 2;
 
 	&.big {
@@ -69,6 +71,15 @@ textarea, input, select {
 	&.mini {
 		font-size: .75em;
 	}
+}
+
+fieldset {
+    border-width: 1px 0 0 0;
+    padding: (@gutter/4) 0 0 0;
+
+    legend {
+        margin-left: (@gutter/4);
+    }
 }
 
 // buttons
@@ -183,5 +194,55 @@ button.link {
 
     &:hover {
         color: darken(@second, 25%);
+    }
+}
+
+.repeat {
+    position: relative;
+    margin-bottom: (@gutter/2);
+
+    .controls {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: (@gutter);
+        border: 1px solid @gray_75_third;
+        .border-radius(16px);
+    }
+
+    .mod {
+        .size(18px);
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin: 4px;
+        border: 1px solid @third;
+        .border-radius(20px);
+        text-align: center;
+        line-height: .85;
+        cursor: pointer;
+
+        &.remove {
+            line-height: .8;
+            top: 0;
+        }
+
+        &.create {
+            bottom: 0;
+        }
+
+        &:hover {
+            background: @white_75_third;
+        }
+    }
+
+    .repeated {
+        margin-left: ((@gutter) + (@gutter/2));
+        padding: (@gutter/2) 0;
+    }
+
+    .field:last-child {
+        margin-bottom: 0;
     }
 }
