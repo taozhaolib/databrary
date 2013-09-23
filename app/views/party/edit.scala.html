@@ -10,14 +10,14 @@
     <article>
         @crud.partyHeader(party)
 
-	@helper.form(routes.Party.change(party.id)) {
-		@helper.inputText(form("name"), 'placeholder -> "Full name", '_class -> "big")
-		@helper.inputText(form("orcid"), 'placeholder -> "ORCiD", '_class -> "big")
+	@tag.form(routes.Party.change(party.id)) {
+		@tag.inputText(form("name"), 'placeholder -> "Full name", '_class -> "big")
+		@tag.inputText(form("orcid"), 'placeholder -> "ORCiD", '_class -> "big")
 		@if(controllers.Party.formForAccount(form, party)) {
-			@helper.inputText(form("email"), 'placeholder -> "Email", '_class -> "big")
-			@helper.inputPassword(form("password"), 'placeholder -> "Password", '_class -> "big")
-			@helper.inputPassword(form("again"), 'placeholder -> "Password (repeat)", '_class -> "big")
-			@helper.inputText(form("openid"), 'placeholder -> "OpenID", '_class -> "big")
+			@tag.inputText(form("email"), 'placeholder -> "Email", '_class -> "big")
+			@tag.inputPassword(form("password"), 'placeholder -> "Password", '_class -> "big")
+			@tag.inputPassword(form("again"), 'placeholder -> "Password (repeat)", '_class -> "big")
+			@tag.inputText(form("openid"), 'placeholder -> "OpenID", '_class -> "big")
 		}
 		<button type='submit' class="big button first">Update</button>
         @widget.formErrors(form)

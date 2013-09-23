@@ -15,9 +15,22 @@ textarea {
 
 	&:focus {
 		outline: none;
-		border-color: @first;
+		border-color: darken(@green, 30%);
+        background: lighten(@green, 35%);
 		.transition(all .2s ease-in-out);
 	}
+
+    &.error {
+        color: darken(@red, 30%);
+        border: 1px solid darken(@red, 30%);
+        background: lighten(@red, 25%);
+
+        &:focus {
+            color: darken(@red, 40%);
+            border-color: darken(@red, 40%);
+            background: lighten(@red, 20%);
+        }
+    }
 }
 
 textarea {
@@ -133,9 +146,9 @@ a.button {
 	&.inline {
 		.border-radius(3px);
 		padding: 0.5em .75em;
-		background: lighten(@second, 25%);
-		color: darken(@second, 20%);
-		border: 2px solid darken(@second, 10%);
+		background: lighten(@red, 25%);
+		color: darken(@red, 20%);
+		border: 2px solid darken(@red, 10%);
 		margin-bottom: @gutter/2;
 
 		ul {

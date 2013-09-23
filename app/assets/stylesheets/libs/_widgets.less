@@ -105,6 +105,7 @@
     z-index: 500;
     font-size: 0.8em;
 
+    .inputs,
     .traces,
     .alerts,
     .errors {
@@ -114,8 +115,10 @@
 
     .alerts { z-index: 490; }
     .errors { z-index: 480; }
-    .traces { z-index: 470; }
+    .inputs { z-index: 470; }
+    .traces { z-index: 460; }
 
+    .input,
     .trace,
     .alert,
     .error {
@@ -129,30 +132,57 @@
         top: 0;
         left: 0;
         right: 0;
-        background: lighten(yellow, 40%);
-        color: darken(yellow, 30%);
+        background: lighten(@yellow, 20%);
+        color: darken(@yellow, 40%);
+    }
+
+    .input {
+        margin-top: -(@gutter/4);
+        background: lighten(@green, 20%);
+        color: darken(@green, 40%);
     }
 
     .error {
         margin-top: -(@gutter/4);
-        background: lighten(red, 40%);
-        color: darken(red, 30%);
+        background: lighten(@red, 20%);
+        color: darken(@red, 40%);
     }
 
     .alert {
         margin-top: -(@gutter/4);
-        background: lighten(blue, 40%);
-        color: darken(blue, 30%);
+        background: lighten(@cyan, 20%);
+        color: darken(@cyan, 40%);
     }
 
     .message {
+        dl {
+            margin: 0;
+            padding: 0;
+        }
+
+        dt {
+            width: 18%;
+            margin: 0 2% 0 0;
+            font-weight: bold;
+            text-align: right;
+            float: left;
+        }
+
+        dd {
+            margin: 0;
+            width: 80%;
+            float: right;
+            text-align: left;
+        }
+
         .x {
             .size(16px);
-            background: blue;
+            background: url('/public/images/x.png') no-repeat 0 0;
             float: right;
+            opacity: .5;
 
             &:hover {
-                background: green;
+                opacity: .75;
             }
         }
     }
