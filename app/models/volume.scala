@@ -36,6 +36,17 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
   /** List of containers within this volume. */
   def containers(implicit db : Site.DB) : Seq[Container] = Container.getVolume(this)
+  private val _topContainer = CachedVal[Container, Site.DB](Container.getTop(this)(_))
+  /** The master container corresponding to this volume. Cached. */
+  def topContainer(implicit db : Site.DB) : Container = _topContainer
+  /** The master slot corresponding to this volume, which serves as a proxy target for many annotations. */
+  def topSlot(implicit db : Site.DB) : Slot = {
+    if (_topContainer.isEmpty) {
+      val s = Slot.getTop(this)
+      (_topContainer() = s.container)._fullSlot() = s
+    }
+    topContainer.fullSlot
+  }
 
   /** List of toplevel assets within this volume. */
   def toplevelAssets(implicit db : Site.DB) : Seq[SlotAsset] = SlotAsset.getToplevel(this)
@@ -53,7 +64,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   /** List of all citations on this volume. */
   def citations(implicit db : Site.DB) = VolumeCitation.getVolume(this)
 
-  private[models] def commentSlot = None
+  private[models] def commentSlot(implicit db : Site.DB) = topSlot
   def comments(all : Boolean = true)(implicit db : Site.DB) : Seq[Comment] = Comment.getVolume(this, all)
 
   def pageName(implicit site : Site) = name

@@ -78,7 +78,7 @@ CREATE TABLE "party" (
 );
 COMMENT ON TABLE "party" IS 'Users, groups, organizations, and other logical identities';
 
--- special party (SERIAL starts at 1):
+-- special parties (SERIAL starts at 1):
 INSERT INTO "party" VALUES (-1, 'Everybody'); -- NOBODY
 INSERT INTO "party" VALUES (0, 'Databrary'); -- ROOT
 
@@ -281,15 +281,24 @@ CREATE OPERATOR <@ (PROCEDURE = "object_segment_within", LEFTARG = "object_segme
 CREATE TABLE "container" (
 	"id" serial NOT NULL Primary Key,
 	"volume" integer NOT NULL References "volume",
+	"top" boolean NOT NULL Default false,
 	"name" text,
 	"date" date
 );
-COMMENT ON TABLE "container" IS 'Organizational unit within volume containing related files (with common annotations), often corresponding to an individual data session (single visit/acquisition/participant/group/day).';
 CREATE INDEX ON "container" ("volume");
+CREATE UNIQUE INDEX "container_top_idx" ON "container" ("volume") WHERE "top";
+COMMENT ON TABLE "container" IS 'Organizational unit within volume containing related files (with common annotations), often corresponding to an individual data session (single visit/acquisition/participant/group/day).';
 
 CREATE TABLE "audit_container" (
 	LIKE "container"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
+
+CREATE FUNCTION "container_top_create" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+	INSERT INTO container (volume, top) VALUES (NEW.id, true);;
+	RETURN null;;
+END;; $$;
+CREATE TRIGGER "container_top_create" AFTER INSERT ON "volume" FOR EACH ROW EXECUTE PROCEDURE "container_top_create" ();
+COMMENT ON TRIGGER "container_top_create" ON "volume" IS 'Always create a top container for each volume.  Unfortunately nothing currently prevents them from being removed/changed.';
 
 
 CREATE TABLE "slot" (
@@ -300,7 +309,7 @@ CREATE TABLE "slot" (
 	Unique ("source", "segment"),
 	Exclude USING gist (singleton("source") WITH =, "segment" WITH &&) WHERE ("consent" IS NOT NULL)
 ) INHERITS ("object_segment");
-CREATE INDEX "slot_full_container_idx" ON "slot" ("source") WHERE "segment" = '(,)';
+CREATE UNIQUE INDEX "slot_full_container_idx" ON "slot" ("source") WHERE "segment" = '(,)';
 COMMENT ON TABLE "slot" IS 'Sections of containers selected for referencing, annotating, consenting, etc.';
 COMMENT ON COLUMN "slot"."consent" IS 'Sharing/release permissions granted by participants on (portions of) contained data.  This could equally well be an annotation, but hopefully won''t add too much space here.';
 
@@ -309,8 +318,14 @@ CREATE TABLE "audit_slot" (
 ) INHERITS ("audit") WITH (OIDS = FALSE);
 COMMENT ON TABLE "audit_slot" IS 'Partial auditing for slot table covering only consent changes.';
 
-CREATE FUNCTION "slot_full_create" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
-	INSERT INTO "slot" (source) VALUES (NEW.id);;
+CREATE FUNCTION "slot_full_create" () RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE
+	slot_id integer;;
+BEGIN
+	INSERT INTO slot (source, segment) VALUES (NEW.id, '(,)') RETURNING id INTO STRICT slot_id;;
+	IF NEW.top THEN
+		INSERT INTO toplevel_slot VALUES (slot_id);;
+	END IF;;
 	RETURN null;;
 END;; $$;
 CREATE TRIGGER "slot_full_create" AFTER INSERT ON "container" FOR EACH ROW EXECUTE PROCEDURE "slot_full_create" ();
@@ -320,7 +335,6 @@ COMMENT ON TRIGGER "slot_full_create" ON "container" IS 'Always create a "full"-
 CREATE VIEW "slot_nesting" ("child", "parent", "consent") AS 
 	SELECT c.id, p.id, p.consent FROM slot c JOIN slot p ON c <@ p;
 COMMENT ON VIEW "slot_nesting" IS 'Transitive closure of slots containtained within other slots.';
-
 
 CREATE FUNCTION "slot_consent" ("slot" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS
 	$$ SELECT consent FROM slot_nesting WHERE child = $1 AND consent IS NOT NULL $$;
@@ -447,12 +461,11 @@ CREATE TABLE "audit_toplevel_asset" (
 CREATE TABLE "comment" (
 	"id" serial NOT NULL Primary Key,
 	"who" integer NOT NULL References "account",
+	"slot" integer NOT NULL References "slot",
 	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	"volume" integer NOT NULL References "volume",
-	"slot" integer References "slot" ON DELETE SET NULL,
 	"text" text NOT NULL
 );
-CREATE INDEX ON "comment" ("volume");
+CREATE INDEX ON "comment" ("slot");
 COMMENT ON TABLE "comment" IS 'Free-text comments on objects (unaudited, immutable).';
 
 ----------------------------------------------------------- records
@@ -618,6 +631,7 @@ DROP FUNCTION "volume_access_check" (integer, integer, permission);
 DROP TABLE "volume_access";
 DROP FUNCTION "volume_creation" (integer);
 DROP TABLE "volume";
+DROP FUNCTION "container_top_create" ();
 
 DROP FUNCTION "authorize_delegate_check" (integer, integer, permission);
 DROP FUNCTION "authorize_access_check" (integer, integer, permission);

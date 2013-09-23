@@ -20,6 +20,7 @@ class CachedVal[T, S](init : S => T) {
     x = Some(v)
     v
   }
+  def isEmpty : Boolean = x.isEmpty
 }
 object CachedVal {
   import scala.language.implicitConversions
