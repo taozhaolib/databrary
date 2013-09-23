@@ -1,10 +1,23 @@
 #!/bin/bash -e
 set -o pipefail
 
-top=`git rev-parse --show-cdup`
+top=`git rev-parse --show-cdup || echo "Assuming $PWD is top." >&2`
 conf=${top}conf
 db=default
 evolutions=$conf/evolutions/$db
+
+if [[ ! -f $conf/application.conf ]] ; then
+	echo "$conf/application.conf is missing.  You are probably in the wrong directory."
+	exit 1
+fi
+
+if [[ ! -f ${top}local.conf ]] ; then
+	echo "${top}local.conf is missing.  See README."
+	if [[ -f $conf/local.conf ]] ; then
+		echo "Note: local.conf should be moved from $conf to $top."
+	fi
+	exit 1
+fi
 
 getconfig () {
 	# This isn't perfect but hopefully good enough
