@@ -587,7 +587,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
 
                         break;
                     case 'alert':
-                        show($message);
+                        show($message, null, true);
 
                         addCloser($message);
 
@@ -610,7 +610,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
 
             var addCloser = function ($message) {
                 $('<div class="x"></div>').on('click',function () {
-                    hide($message);
+                    hide($message, null, true);
                 }).prependTo($message.find('.wrapper'));
             };
 
@@ -623,7 +623,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
 
                         break;
                     case 'alert':
-                        hide($message);
+                        hide($message, null, true);
 
                         removeCloser($message);
 
@@ -644,24 +644,24 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 $message.find('.close').off('click').remove();
             };
 
-            var remove = function ($message, callback) {
+            var remove = function ($message, callback, adjust) {
                 return $message.data('messageHelper').remove(function () {
                     if (callback && {}.toString.call(callback) === '[object Function]') callback();
-                    adjustPage();
+                    if (adjust === true) adjustPage();
                 });
             };
 
-            var show = function ($message, callback) {
+            var show = function ($message, callback, adjust) {
                 return $message.data('messageHelper').show(function () {
                     if (callback && {}.toString.call(callback) === '[object Function]') callback();
-                    adjustPage();
+                    if (adjust === true) adjustPage();
                 });
             };
 
-            var hide = function ($message, callback) {
+            var hide = function ($message, callback, adjust) {
                 return $message.data('messageHelper').hide(function () {
                     if (callback && {}.toString.call(callback) === '[object Function]') callback();
-                    adjustPage();
+                    if (adjust === true) adjustPage();
                 });
             };
 
@@ -671,9 +671,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
                     height = $('#messages').outerHeight(true),
                     currentHeight = parseInt($site_body.css('margin-top'));
 
-                $site_body.animate({
-                    marginTop: height
-                }, args.speed);
+                $site_body.css({ marginTop: height });
                 $window.scrollTop(scroll + height - currentHeight);
             };
 

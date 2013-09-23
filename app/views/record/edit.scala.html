@@ -4,8 +4,8 @@
     <article>
 	<h1><a href="@record.pageURL">@record.toString()</a></h1>
 
-	@helper.form(routes.Record.update(record.id)) {
-	    @helper.select(form("category"), ("", "") +: RecordCategory.getAll.map(c => (c.id.unId.toString, c.name)))</dt>
+	@tag.form(routes.Record.update(record.id)) {
+	    @tag.select(form("category"), ("", "") +: RecordCategory.getAll.map(c => (c.id.unId.toString, c.name)))</dt>
 
 	    <dl>
 	    @meas.zipWithIndex.map { case (m, i) =>
@@ -14,19 +14,19 @@
 	    	<dt>@m.name (@m.classification)</dt>
 		<dd>@m.dataType match {
 		case DataType.date => {
-			@helper.inputDate(field)
+			@tag.inputDate(field)
 		}
 		case _ if m.values.nonEmpty => {
-			@helper.select(field, ("", "") +: m.values.map(v => (v, v)))
+			@tag.select(field, ("", "") +: m.values.map(v => (v, v)))
 		}
 		case _ => {
-			@helper.inputText(field)
+			@tag.inputText(field)
 		}
 		}
 		</dd>
 	} }
-		<dt>@helper.select(form("add.metric"), Metric.getAll.map(m => (m.id.unId.toString, m.name + " (" + m.classification + ")")))</dt>
-		<dd>@helper.inputText(form("add.datum"))</dd>
+		<dt>@tag.select(form("add.metric"), Metric.getAll.map(m => (m.id.unId.toString, m.name + " (" + m.classification + ")")))</dt>
+		<dd>@tag.inputText(form("add.datum"))</dd>
 	    </dl>
 	    <button type='submit'>Update</button>
 	}

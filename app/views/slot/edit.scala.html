@@ -10,9 +10,9 @@
     <article>
         <h1>@slot.toString</h1>
 
-	@helper.form(routes.Slot.change(slot.id)) {
+	@tag.form(routes.Slot.change(slot.id)) {
 		@widget.enumSelect(form("consent"), Consent)
-		@helper.checkbox(form("toplevel"))
+		@tag.checkbox(form("toplevel"))
 		<button type='submit' class="big button first">Change</button>
 	}
 	@widget.formErrors(form)
@@ -21,14 +21,14 @@
 	<ul>
 	@slot.records(false).map { record =>
 		<li>@display(record):
-		@helper.form(routes.Record.slotRemove(slot.id, record.id)) {
+		@tag.form(routes.Record.slotRemove(slot.id, record.id)) {
 			<button type='submit'>remove</button>
 		}
 		</li>
 	}
 		<li>
-		@helper.form(routes.Record.slotAdd(slot.id)) {
-			@helper.select(recordForm("record"), controllers.Record.selectList(slot) :+ ("" -> "Create new record..."))
+		@tag.form(routes.Record.slotAdd(slot.id)) {
+			@tag.select(recordForm("record"), controllers.Record.selectList(slot) :+ ("" -> "Create new record..."))
 			<button type='submit'>add</button>
 		}
 		</li>

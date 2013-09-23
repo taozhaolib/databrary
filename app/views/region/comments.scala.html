@@ -13,9 +13,9 @@
             <div class="comment form">
                 @widget.userinfo(request.user.get)
 
-                @helper.form(post) {
+                @tag.form(post) {
                     <div class="body">
-                        @helper.textarea(controllers.Comment.form("text"))
+                        @tag.textarea(controllers.Comment.form("text"), 'placeholder -> "Comment")
                         <button type="submit" class="button first">Post</button>
                     </div>
                 }

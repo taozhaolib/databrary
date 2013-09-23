@@ -10,17 +10,17 @@
     <article>
 	<h1>@target.fold(_ => "Upload Asset", "Edit: "+_.name)</h1>
 
-	@helper.form(target.fold(
+	@tag.form(target.fold(
 		container => routes.Asset.upload(container.id),
 		link => routes.Asset.change(link.containerId, link.assetId)),
 		'enctype -> "multipart/form-data") {
-            @helper.inputText(form("name"), 'placeholder -> "Title", '_class -> "big")
-            @helper.textarea(form("body"), 'placeholder -> "Description")
-            @helper.inputText(form("offset"))
+            @tag.inputText(form("name"), 'placeholder -> "Title", '_class -> "big")
+            @tag.textarea(form("body"), 'placeholder -> "Description")
+            @tag.inputText(form("offset"))
 
             @if(controllers.Asset.formForFile(form)) {
 	        @widget.enumSelect(form("classification"), Classification)
-	        @helper.inputFile(form("file"))
+	        @tag.inputFile(form("file"))
             }
 
 	    <button type='submit' class="big button first">@target.fold(_ => "Upload", _ => "Change")</button>
