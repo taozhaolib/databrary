@@ -4,15 +4,7 @@
     <label for="@elements.id" class="hide">@elements.label(elements.lang)</label>
 
     <div class="input">
-        @if(!elements.hasErrors) {
-            @elements.input
-        } else {
-            @if(elements.input.body.contains("class=\"")) {
-                @Html(elements.input.body.replaceAllLiterally("class=\"", "class=\"error "))
-            } else {
-                @Html(elements.input.body.replaceAllLiterally(">", " class=\"error\">"))
-            }
-        }
+        @elements.input
 
         <div class="messages hide" data-for="#@elements.id">
             @if(elements.infos(elements.lang).nonEmpty || elements.hasErrors) {
