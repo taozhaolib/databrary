@@ -113,7 +113,7 @@ object Record extends TableId[Record]("record") {
         record._ident() = ident
         record
       }
-    cols.SQL("WHERE measure_text.metric = {metric} AND record.volume = {volume}",
+    cols.SQL("WHERE (measure_text.metric IS NULL OR measure_text.metric = {metric}) AND record.volume = {volume}",
         (if (category.isDefined) "AND record.category = {category}" else ""),
         "ORDER BY " + (if (category.isEmpty) "record.category, " else ""),
         metric.measureType.column.select + ", record.id").
