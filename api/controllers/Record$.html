@@ -2359,15 +2359,15 @@
               
         </dd></dl></div>
     </li><li name="controllers.Record#edit" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="edit(i:models.Record.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="edit(models.Record.Id):Action[AnyContent]"></a>
+      <a id="edit(v:models.Volume.Id,i:models.Record.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="edit(models.Volume.Id,models.Record.Id):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">edit</span><span class="params">(<span name="i">i: <a href="../models/Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">models.Record.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">edit</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="i">i: <a href="../models/Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">models.Record.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       
@@ -2557,15 +2557,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="package.html" class="extype" name="controllers">controllers</a>] </dd></dl></div>
     </li><li name="controllers.Record#selectList" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="selectList(target:models.Annotated)(implicitrequest:controllers.SiteRequest[_]):Seq[(String,String)]"></a>
-      <a id="selectList(Annotated)(SiteRequest[_]):Seq[(String,String)]"></a>
+      <a id="selectList(target:models.Slot)(implicitrequest:controllers.SiteRequest[_]):Seq[(String,String)]"></a>
+      <a id="selectList(Slot)(SiteRequest[_]):Seq[(String,String)]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">selectList</span><span class="params">(<span name="target">target: <a href="../models/Annotated.html" class="extype" name="models.Annotated">Annotated</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)]</span>
+        <span class="name">selectList</span><span class="params">(<span name="target">target: <a href="../models/Slot.html" class="extype" name="models.Slot">Slot</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)]</span>
       </span>
       </h4>
       
@@ -2583,28 +2583,28 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
     </li><li name="controllers.Record#slotAdd" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="slotAdd(s:models.Slot.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="slotAdd(models.Slot.Id):Action[AnyContent]"></a>
+      <a id="slotAdd(v:models.Volume.Id,s:models.Slot.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="slotAdd(models.Volume.Id,models.Slot.Id):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">slotAdd</span><span class="params">(<span name="s">s: <a href="../models/Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">models.Slot.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">slotAdd</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="s">s: <a href="../models/Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">models.Slot.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       
     </li><li name="controllers.Record#slotRemove" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="slotRemove(s:models.Slot.Id,r:models.Record.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="slotRemove(models.Slot.Id,models.Record.Id):Action[AnyContent]"></a>
+      <a id="slotRemove(v:models.Volume.Id,s:models.Slot.Id,r:models.Record.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="slotRemove(models.Volume.Id,models.Slot.Id,models.Record.Id):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">slotRemove</span><span class="params">(<span name="s">s: <a href="../models/Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">models.Slot.Id</a></span>, <span name="r">r: <a href="../models/Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">models.Record.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">slotRemove</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="s">s: <a href="../models/Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">models.Slot.Id</a></span>, <span name="r">r: <a href="../models/Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">models.Record.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       
@@ -2635,28 +2635,28 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="controllers.Record#update" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="update(i:models.Record.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="update(models.Record.Id):Action[AnyContent]"></a>
+      <a id="update(v:models.Volume.Id,i:models.Record.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="update(models.Volume.Id,models.Record.Id):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">update</span><span class="params">(<span name="i">i: <a href="../models/Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">models.Record.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">update</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="i">i: <a href="../models/Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">models.Record.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       
     </li><li name="controllers.Record#view" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="view(i:models.Record.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="view(models.Record.Id):Action[AnyContent]"></a>
+      <a id="view(v:models.Volume.Id,i:models.Record.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="view(models.Volume.Id,models.Record.Id):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">view</span><span class="params">(<span name="i">i: <a href="../models/Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">models.Record.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">view</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="i">i: <a href="../models/Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">models.Record.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       

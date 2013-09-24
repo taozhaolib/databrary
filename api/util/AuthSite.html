@@ -2,9 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>MeasureData - models.MeasureData</title>
-          <meta name="description" content="MeasureData - models.MeasureData" />
-          <meta name="keywords" content="MeasureData models.MeasureData" />
+          <title>AuthSite - util.AuthSite</title>
+          <meta name="description" content="AuthSite - util.AuthSite" />
+          <meta name="keywords" content="AuthSite util.AuthSite" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -17,7 +17,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
-            var hash = 'models.MeasureData';
+            var hash = 'util.AuthSite';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -29,28 +29,27 @@
         </head>
         <body class="type">
       <div id="definition">
-        <a href="MeasureData$.html" title="Go to companion"><img src="../lib/trait_to_object_big.png" /></a>
-        <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
-        <h1><a href="MeasureData$.html" title="Go to companion">MeasureData</a></h1>
+        <img src="../lib/trait_big.png" />
+        <p id="owner"><a href="package.html" class="extype" name="util">util</a></p>
+        <h1>AuthSite</h1>
       </div>
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier">sealed </span>
+        <span class="modifier"></span>
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <span class="name">MeasureData</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <span class="name">AuthSite</span><span class="result"> extends <a href="Site.html" class="extype" name="util.Site">Site</a></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A dynamically-typed measurement value.
-Should be called &quot;MeasureDatumBase&quot; but tha sounds silly.</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="Site.html" class="extype" name="util.Site">Site</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
           <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a href="MeasureDatum.html" class="extype" name="models.MeasureDatum">MeasureDatum</a></div>
+          <div class="subClasses hiddenContent"><a href="../controllers/UserRequest.html" class="extype" name="controllers.UserRequest">UserRequest</a></div>
         </div></div>
         
 
@@ -68,7 +67,7 @@ Should be called &quot;MeasureDatumBase&quot; but tha sounds silly.</p></div><di
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.MeasureData"><span>MeasureData</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="util.AuthSite"><span>AuthSite</span></li><li class="in" name="util.Site"><span>Site</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -88,52 +87,49 @@ Should be called &quot;MeasureDatumBase&quot; but tha sounds silly.</p></div><di
         <div id="allMembers">
         
 
-        <div id="types" class="types members">
-              <h3>Type Members</h3>
-              <ol><li name="models.MeasureData.Type" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="Type"></a>
-      <a id="Type:Type"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Type</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The scala type of the datum.</p>
-    </li></ol>
-            </div>
+        
 
         <div id="values" class="values members">
               <h3>Abstract Value Members</h3>
-              <ol><li name="models.MeasureData#measureType" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="measureType:models.MeasureType[MeasureData.this.Type]"></a>
-      <a id="measureType:MeasureType[Type]"></a>
+              <ol><li name="util.Site#clientIP" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="clientIP:dbrary.Inet"></a>
+      <a id="clientIP:Inet"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">clientIP</span><span class="result">: <span class="extype" name="dbrary.Inet">Inet</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">IP of the client's host.</p><div class="fullcomment"><div class="comment cmt"><p>IP of the client's host.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Site.html" class="extype" name="util.Site">Site</a></dd></dl></div>
+    </li><li name="util.Site#db" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="db:util.Site.DB"></a>
+      <a id="db:DB"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">measureType</span><span class="result">: <span class="extype" name="models.MeasureType">MeasureType</span>[<a href="#Type" class="extmbr" name="models.MeasureData.Type">Type</a>]</span>
+        <span class="name">db</span><span class="result">: <a href="Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>
       </span>
       </h4>
-      
-    </li><li name="models.MeasureData#value" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="value:MeasureData.this.Type"></a>
-      <a id="value:Type"></a>
+      <p class="shortcomment cmt">Database connection (with active transaction).</p><div class="fullcomment"><div class="comment cmt"><p>Database connection (with active transaction).</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Site.html" class="extype" name="util.Site">Site</a></dd></dl></div>
+    </li><li name="util.AuthSite#identity" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="identity:models.Account"></a>
+      <a id="identity:Account"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">value</span><span class="result">: <a href="#Type" class="extmbr" name="models.MeasureData.Type">Type</a></span>
+        <span class="name">identity</span><span class="result">: <a href="../models/Account.html" class="extype" name="models.Account">Account</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The value itself.</p>
+      <p class="shortcomment cmt"><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p><div class="fullcomment"><div class="comment cmt"><p><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="util.AuthSite">AuthSite</a> → <a href="Site.html" class="extype" name="util.Site">Site</a></dd></dl></div>
     </li></ol>
             </div>
 
@@ -204,6 +200,21 @@ Should be called &quot;MeasureDatumBase&quot; but tha sounds silly.</p></div><di
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="util.Site#access" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="access:models.Permission.Value"></a>
+      <a id="access:models.Permission.Value"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">access</span><span class="result">: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Level of site access <a href="../models/Permission$.html" class="extype" name="models.Permission">models.Permission</a> current user has.</p><div class="fullcomment"><div class="comment cmt"><p>Level of site access <a href="../models/Permission$.html" class="extype" name="models.Permission">models.Permission</a> current user has.
+VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for admins.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Site.html" class="extype" name="util.Site">Site</a></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -301,6 +312,19 @@ Should be called &quot;MeasureDatumBase&quot; but tha sounds silly.</p></div><di
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="util.Site#isAdmin" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isAdmin:Boolean"></a>
+      <a id="isAdmin:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isAdmin</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Site.html" class="extype" name="util.Site">Site</a></dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -366,7 +390,7 @@ Should be called &quot;MeasureDatumBase&quot; but tha sounds silly.</p></div><di
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.MeasureData#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
       <h4 class="signature">
@@ -375,10 +399,23 @@ Should be called &quot;MeasureDatumBase&quot; but tha sounds silly.</p></div><di
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.MeasureData">MeasureData</a> → AnyRef → Any</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="util.AuthSite#user" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="user:Some[models.Account]"></a>
+      <a id="user:Some[Account]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">user</span><span class="result">: <span class="extype" name="scala.Some">Some</span>[<a href="../models/Account.html" class="extype" name="models.Account">Account</a>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Some(<a href="#identity:models.Account" class="extmbr" name="util.AuthSite#identity">identity</a>) only if actual logged-in user.</p><div class="fullcomment"><div class="comment cmt"><p>Some(<a href="#identity:models.Account" class="extmbr" name="util.AuthSite#identity">identity</a>) only if actual logged-in user.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="util.AuthSite">AuthSite</a> → <a href="Site.html" class="extype" name="util.Site">Site</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -436,7 +473,9 @@ Should be called &quot;MeasureDatumBase&quot; but tha sounds silly.</p></div><di
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.AnyRef">
+        <div class="parent" name="util.Site">
+              <h3>Inherited from <a href="Site.html" class="extype" name="util.Site">Site</a></h3>
+            </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>

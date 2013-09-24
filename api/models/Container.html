@@ -88,7 +88,7 @@ These containers can represent a package of raw data acquired cotemporaneously o
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.Container#&lt;init&gt;" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(id:models.Container.Id,volume:models.Volume,name_:Option[String],date_:Option[java.sql.Date]):models.Container"></a>
+      <a id="&lt;init&gt;(id:models.Container.Id,volume:models.Volume,top:Boolean,name_:Option[String],date_:Option[java.sql.Date]):models.Container"></a>
       <a id="&lt;init&gt;:Container"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -96,7 +96,7 @@ These containers can represent a package of raw data acquired cotemporaneously o
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Container</span><span class="params">(<span name="id">id: <a href="Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">Container.Id</a></span>, <span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="name_">name_: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="date_">date_: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Date">Date</span>]</span>)</span>
+        <span class="name">Container</span><span class="params">(<span name="id">id: <a href="Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">Container.Id</a></span>, <span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="top">top: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>, <span name="name_">name_: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="date_">date_: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Date">Date</span>]</span>)</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
@@ -547,6 +547,19 @@ This (as with Container in general) is not necessarily intended for public consu
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.Container#top" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="top:Boolean"></a>
+      <a id="top:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">top</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      
     </li><li name="models.Container#volume" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volume:models.Volume"></a>
       <a id="volume:Volume"></a>

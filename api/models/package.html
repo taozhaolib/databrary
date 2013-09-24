@@ -102,32 +102,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       <p class="comment cmt">Refines Party for individuals with registered (but not necessarily authorized) accounts on the site.</p>
-    </li><li name="models.Annotated" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="AnnotatedextendsInVolume"></a>
-      <a id="Annotated:Annotated"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">trait</span>
-      </span>
-      <span class="symbol">
-        <a href="Annotated.html"><span class="name">Annotated</span></a><span class="result"> extends <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
-      </span>
-      </h4>
-      <p class="comment cmt">Objects on which annotations may be placed.</p>
-    </li><li name="models.Annotation" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="AnnotationextendsTableRowId[models.Annotation]"></a>
-      <a id="Annotation:Annotation"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">sealed abstract </span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="Annotation.html"><span class="name">Annotation</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a>]</span>
-      </span>
-      </h4>
-      <p class="comment cmt">One of a variety of types of metadata that may be attached to other objects in the system.</p>
     </li><li name="models.Asset" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="AssetextendsTableRowId[models.Asset]withBackedAsset"></a>
       <a id="Asset:Asset"></a>
@@ -220,7 +194,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">Base for clips of Timeseries.</p>
     </li><li name="models.Comment" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="CommentextendsAnnotationwithTableRowId[models.Comment]"></a>
+      <a id="CommentextendsTableRowId[models.Comment]withInVolume"></a>
       <a id="Comment:Comment"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -228,10 +202,23 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Comment.html"><span class="name">Comment</span></a><span class="result"> extends <a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
+        <a href="Comment.html"><span class="name">Comment</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>] with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
       </span>
       </h4>
-      <p class="comment cmt">A comment made by a particular user, usually only applied to exactly one object.</p>
+      <p class="comment cmt">A comment made by a particular user applied to exactly one object.</p>
+    </li><li name="models.Commented" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="CommentedextendsInVolume"></a>
+      <a id="Commented:Commented"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="Commented.html"><span class="name">Commented</span></a><span class="result"> extends <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Objects on which comments may be placed.</p>
     </li><li name="models.Container" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ContainerextendsTableRowId[models.Container]withSitePagewithInVolume"></a>
       <a id="Container:Container"></a>
@@ -324,70 +311,96 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt"><a href="GenericId.html" class="extype" name="models.GenericId">GenericId</a> specific to integers.</p>
     </li><li name="models.Measure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Measure[T]extendsMeasureBase"></a>
-      <a id="Measure[T]:Measure[T]"></a>
+      <a id="MeasureextendsMeasureBasewithProductwithSerializable"></a>
+      <a id="Measure:Measure"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="Measure.html"><span class="name">Measure</span></a><span class="params">(<span name="recordId">recordId: <a href="Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">Record.Id</a></span>, <span name="metric">metric: <a href="Metric.html" class="extype" name="models.Metric">Metric</a></span>, <span name="value">value: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="models.MeasureBase">MeasureBase</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">A measurement with an arbitrary (unconverted) type.</p>
+    </li><li name="models.MeasureDatum" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MeasureDatumextendsMeasureDatumBase"></a>
+      <a id="MeasureDatum:MeasureDatum"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Measure.html"><span class="name">Measure</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="models.MeasureBase">MeasureBase</span></span>
+        <a href="MeasureDatum.html"><span class="name">MeasureDatum</span></a><span class="result"> extends <a href="MeasureDatumBase.html" class="extype" name="models.MeasureDatumBase">MeasureDatumBase</a></span>
       </span>
       </h4>
-      <p class="comment cmt">A measurement with a specific, tagged type.</p>
-    </li><li name="models.MeasureData" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="MeasureDataextendsObject"></a>
-      <a id="MeasureData:MeasureData"></a>
+      <p class="comment cmt">A measurement value with an arbitrary (unconverted) type.</p>
+    </li><li name="models.MeasureDatumBase" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="MeasureDatumBaseextendsObject"></a>
+      <a id="MeasureDatumBase:MeasureDatumBase"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">sealed </span>
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="MeasureData.html"><span class="name">MeasureData</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <a href="MeasureDatumBase.html"><span class="name">MeasureDatumBase</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
       <p class="comment cmt">A dynamically-typed measurement value.</p>
-    </li><li name="models.MeasureDatum" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="MeasureDatum[T]extendsMeasureData"></a>
-      <a id="MeasureDatum[T]:MeasureDatum[T]"></a>
+    </li><li name="models.MeasureDatumT" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MeasureDatumT[T]extendsMeasureDatumBase"></a>
+      <a id="MeasureDatumT[T]:MeasureDatumT[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="MeasureDatum.html"><span class="name">MeasureDatum</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <a href="MeasureData.html" class="extype" name="models.MeasureData">MeasureData</a></span>
+        <a href="MeasureDatumT.html"><span class="name">MeasureDatumT</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <a href="MeasureDatumBase.html" class="extype" name="models.MeasureDatumBase">MeasureDatumBase</a></span>
       </span>
       </h4>
       <p class="comment cmt">A measurement value with a specific type.</p>
-    </li><li name="models.Metric" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Metric[T]extendsMetricBasewithTableRowId[models.Metric[T]]"></a>
-      <a id="Metric[T]:Metric[T]"></a>
+    </li><li name="models.MeasureT" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MeasureT[T]extendsMeasureBasewithProductwithSerializable"></a>
+      <a id="MeasureT[T]:MeasureT[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">sealed </span>
-        <span class="kind">class</span>
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="Metric.html"><span class="name">Metric</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="models.Metric.T">T</span>]]</span>
+        <a href="MeasureT.html"><span class="name">MeasureT</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="recordId">recordId: <a href="Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">Record.Id</a></span>, <span name="metric">metric: <a href="MetricT.html" class="extype" name="models.MetricT">MetricT</a>[<span class="extype" name="models.MeasureT.T">T</span>]</span>, <span name="value">value: <span class="extype" name="models.MeasureT.T">T</span></span>)</span><span class="result"> extends <span class="extype" name="models.MeasureBase">MeasureBase</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
-      <p class="comment cmt">Types of measurements (i.</p>
-    </li><li name="models.MetricBase" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="MetricBaseextendsTableRowId[models.MetricBase]"></a>
-      <a id="MetricBase:MetricBase"></a>
+      <p class="comment cmt">A measurement with a specific, tagged type.</p>
+    </li><li name="models.Metric" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="MetricextendsTableRowId[models.Metric]"></a>
+      <a id="Metric:Metric"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">sealed </span>
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="MetricBase.html"><span class="name">MetricBase</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a>]</span>
+        <a href="Metric.html"><span class="name">Metric</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>]</span>
       </span>
       </h4>
       <p class="comment cmt">Abstract type for Metric.</p>
+    </li><li name="models.MetricT" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MetricT[T]extendsMetricwithTableRowId[models.MetricT[T]]"></a>
+      <a id="MetricT[T]:MetricT[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="MetricT.html"><span class="name">MetricT</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <a href="Metric.html" class="extype" name="models.Metric">Metric</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="MetricT.html" class="extype" name="models.MetricT">MetricT</a>[<span class="extype" name="models.MetricT.T">T</span>]]</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Types of measurements (i.</p>
     </li><li name="models.Orcid" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="OrcidextendsWrappedString"></a>
       <a id="Orcid:Orcid"></a>
@@ -415,7 +428,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">Any real-world individual, group, institution, etc.</p>
     </li><li name="models.Record" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="RecordextendsAnnotationwithTableRowId[models.Record]withSitePagewithInVolume"></a>
+      <a id="RecordextendsTableRowId[models.Record]withSitePagewithInVolume"></a>
       <a id="Record:Record"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -423,7 +436,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Record.html"><span class="name">Record</span></a><span class="result"> extends <a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>] with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
+        <a href="Record.html"><span class="name">Record</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>] with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
       </span>
       </h4>
       <p class="comment cmt">A set of Measures.</p>
@@ -454,7 +467,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">An object with a corresponding page on the site.</p>
     </li><li name="models.Slot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="SlotextendsTableRowId[models.Slot]withAnnotatedwithSitePage"></a>
+      <a id="SlotextendsTableRowId[models.Slot]withCommentedwithSitePage"></a>
       <a id="Slot:Slot"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -462,7 +475,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Slot.html"><span class="name">Slot</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>] with <a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a> with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></span>
+        <a href="Slot.html"><span class="name">Slot</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>] with <a href="Commented.html" class="extype" name="models.Commented">Commented</a> with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></span>
       </span>
       </h4>
       <p class="comment cmt">Smallest organizatonal unit of related data.</p>
@@ -492,6 +505,45 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       
+    </li><li name="models.Tag" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TagextendsTableRowId[models.Tag]"></a>
+      <a id="Tag:Tag"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="Tag.html"><span class="name">Tag</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Tag.html" class="extype" name="models.Tag">Tag</a>]</span>
+      </span>
+      </h4>
+      <p class="comment cmt">All tags and their names used anywhere.</p>
+    </li><li name="models.TagUse" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TagUseextendsTableRowwithInVolume"></a>
+      <a id="TagUse:TagUse"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="TagUse.html"><span class="name">TagUse</span></a><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">A tag applied by a user to an object.</p>
+    </li><li name="models.TagWeight" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TagWeightextendsTableRowwithProductwithSerializable"></a>
+      <a id="TagWeight:TagWeight"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="TagWeight.html"><span class="name">TagWeight</span></a><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Summary representation of tag information for a single slot and current user.</p>
     </li><li name="models.Timeseries" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="TimeseriesextendsFileAssetwithTableRowId[models.Timeseries]withTimeseriesData"></a>
       <a id="Timeseries:Timeseries"></a>
@@ -532,7 +584,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">Specialization of <a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a> for timeseries files stored in special internal formats.</p>
     </li><li name="models.Volume" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="VolumeextendsTableRowId[models.Volume]withSitePagewithAnnotated"></a>
+      <a id="VolumeextendsTableRowId[models.Volume]withSitePagewithCommented"></a>
       <a id="Volume:Volume"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -540,7 +592,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Volume.html"><span class="name">Volume</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>] with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a> with <a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></span>
+        <a href="Volume.html"><span class="name">Volume</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>] with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a> with <a href="Commented.html" class="extype" name="models.Commented">Commented</a></span>
       </span>
       </h4>
       <p class="comment cmt">Main organizational unit or package of data, within which everything else exists.</p>
@@ -557,6 +609,19 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       <p class="comment cmt">Access control over a volume granted to a party.</p>
+    </li><li name="models.VolumeCitation" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="VolumeCitationextendsTableRowwithInVolumewithProductwithSerializable"></a>
+      <a id="VolumeCitation:VolumeCitation"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="VolumeCitation.html"><span class="name">VolumeCitation</span></a><span class="params">(<span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="head">head: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="url">url: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="body">body: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">A citation or reference to a publication or other external resource associated with a Volume.</p>
     </li></ol>
             </div>
 
@@ -577,19 +642,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       
-    </li><li name="models.Annotation" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Annotation"></a>
-      <a id="Annotation:Annotation"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="Annotation$.html"><span class="name">Annotation</span></a><span class="result"> extends <span class="extype" name="models.HasId">HasId</span>[<a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a>]</span>
-      </span>
-      </h4>
-      <p class="comment cmt">Dummy object for providing generic <a href="Annotation$.html#Id=models.IntId[T]" class="extmbr" name="models.Annotation.Id">Annotation.Id</a>s</p>
     </li><li name="models.Asset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Asset"></a>
       <a id="Asset:Asset"></a>
@@ -703,7 +755,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Comment$.html"><span class="name">Comment</span></a><span class="result"> extends <span class="extype" name="models.AnnotationView">AnnotationView</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
+        <a href="Comment$.html"><span class="name">Comment</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
       </span>
       </h4>
       
@@ -743,6 +795,19 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       <span class="symbol">
         <a href="ContainerAsset$.html"><span class="name">ContainerAsset</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a>]</span>
+      </span>
+      </h4>
+      
+    </li><li name="models.DBUtil" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DBUtil"></a>
+      <a id="DBUtil:DBUtil"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="DBUtil$.html"><span class="name">DBUtil</span></a>
       </span>
       </h4>
       
@@ -794,23 +859,36 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Measure$.html"><span class="name">Measure</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<span class="extype" name="models.MeasureBase">MeasureBase</span>]</span>
+        <a href="Measure$.html"><span class="name">Measure</span></a><span class="result"> extends <span class="extype" name="models.MeasureView">MeasureView</span>[<a href="Measure.html" class="extype" name="models.Measure">Measure</a>] with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
-      
-    </li><li name="models.MeasureData" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="MeasureData"></a>
-      <a id="MeasureData:MeasureData"></a>
+      <p class="comment cmt">A un-typed interface to measures.</p>
+    </li><li name="models.MeasureDatum" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MeasureDatum"></a>
+      <a id="MeasureDatum:MeasureDatum"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="MeasureData$.html"><span class="name">MeasureData</span></a>
+        <a href="MeasureDatum$.html"><span class="name">MeasureDatum</span></a>
       </span>
       </h4>
       
+    </li><li name="models.MeasureT" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MeasureT"></a>
+      <a id="MeasureT:MeasureT"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="MeasureT$.html"><span class="name">MeasureT</span></a><span class="result"> extends <span class="extype" name="models.MeasureView">MeasureView</span>[<a href="MeasureT.html" class="extype" name="models.MeasureT">MeasureT</a>[_]] with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">A typed interface to measures.</p>
     </li><li name="models.Metric" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Metric"></a>
       <a id="Metric:Metric"></a>
@@ -820,7 +898,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Metric$.html"><span class="name">Metric</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</span>
+        <a href="Metric$.html"><span class="name">Metric</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="MetricT.html" class="extype" name="models.MetricT">MetricT</a>[_]]</span>
       </span>
       </h4>
       
@@ -872,7 +950,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Record$.html"><span class="name">Record</span></a><span class="result"> extends <span class="extype" name="models.AnnotationView">AnnotationView</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]</span>
+        <a href="Record$.html"><span class="name">Record</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]</span>
       </span>
       </h4>
       
@@ -912,6 +990,45 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       <span class="symbol">
         <a href="SlotAsset$.html"><span class="name">SlotAsset</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="models.Tag" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Tag"></a>
+      <a id="Tag:Tag"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Tag$.html"><span class="name">Tag</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Tag.html" class="extype" name="models.Tag">Tag</a>]</span>
+      </span>
+      </h4>
+      
+    </li><li name="models.TagUse" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TagUse"></a>
+      <a id="TagUse:TagUse"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="TagUse$.html"><span class="name">TagUse</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="TagUse.html" class="extype" name="models.TagUse">TagUse</a>]</span>
+      </span>
+      </h4>
+      
+    </li><li name="models.TagWeight" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TagWeight"></a>
+      <a id="TagWeight:TagWeight"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="TagWeight$.html"><span class="name">TagWeight</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>] with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
@@ -964,6 +1081,19 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       <span class="symbol">
         <a href="VolumeAccess$.html"><span class="name">VolumeAccess</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="VolumeAccess.html" class="extype" name="models.VolumeAccess">VolumeAccess</a>] with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="models.VolumeCitation" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="VolumeCitation"></a>
+      <a id="VolumeCitation:VolumeCitation"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="VolumeCitation$.html"><span class="name">VolumeCitation</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="VolumeCitation.html" class="extype" name="models.VolumeCitation">VolumeCitation</a>] with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       

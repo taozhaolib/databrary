@@ -2,9 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>Annotation - models.Annotation</title>
-          <meta name="description" content="Annotation - models.Annotation" />
-          <meta name="keywords" content="Annotation models.Annotation" />
+          <title>TagWeight - models.TagWeight</title>
+          <meta name="description" content="TagWeight - models.TagWeight" />
+          <meta name="keywords" content="TagWeight models.TagWeight" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -17,7 +17,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
-            var hash = 'models.Annotation$';
+            var hash = 'models.TagWeight$';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -29,9 +29,9 @@
         </head>
         <body class="value">
       <div id="definition">
-        <a href="Annotation.html" title="Go to companion"><img src="../lib/object_to_class_big.png" /></a>
+        <a href="TagWeight.html" title="Go to companion"><img src="../lib/object_to_class_big.png" /></a>
         <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
-        <h1><a href="Annotation.html" title="Go to companion">Annotation</a></h1>
+        <h1><a href="TagWeight.html" title="Go to companion">TagWeight</a></h1>
       </div>
 
       <h4 id="signature" class="signature">
@@ -40,13 +40,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Annotation</span><span class="result"> extends <span class="extype" name="models.HasId">HasId</span>[<a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a>]</span>
+        <span class="name">TagWeight</span><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>] with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Dummy object for providing generic <a href="#Id=models.IntId[T]" class="extmbr" name="models.Annotation.Id">Annotation.Id</a>s</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="models.HasId">HasId</span>[<a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="models.Table">Table</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -64,7 +64,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Annotation"><span>Annotation</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.TagWeight"><span>TagWeight</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -86,19 +86,19 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="models.HasId.Id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Id=models.IntId[T]"></a>
-      <a id="Id:Id"></a>
+              <ol><li name="models.Table.Row" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Row=R"></a>
+      <a id="Row:Row"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <span class="name">Id</span><span class="result"> = <a href="IntId.html" class="extype" name="models.IntId">IntId</a>[<a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a>]</span>
+        <span class="name">Row</span><span class="result"> = <a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId</dd></dl></div>
+      <p class="shortcomment cmt">Type of TableRow this object can generate.</p><div class="fullcomment"><div class="comment cmt"><p>Type of TableRow this object can generate.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>Table → TableView</dd></dl></div>
     </li></ol>
             </div>
 
@@ -171,19 +171,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.HasId#asId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="asId(i:Int):HasId.this.Id"></a>
-      <a id="asId(Int):Id"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">asId</span><span class="params">(<span name="i">i: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Annotation.Id">Id</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Create an <a href="#Id=models.IntId[T]" class="extmbr" name="models.Annotation.Id">Id</a> value.</p><div class="fullcomment"><div class="comment cmt"><p>Create an <a href="#Id=models.IntId[T]" class="extmbr" name="models.Annotation.Id">Id</a> value.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -346,6 +333,32 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="models.TableView#tableColumn" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="tableColumn(col:Symbol):dbrary.SelectColumn"></a>
+      <a id="tableColumn(Symbol):SelectColumn"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">tableColumn</span><span class="params">(<span name="col">col: <span class="extype" name="scala.Symbol">Symbol</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SelectColumn">SelectColumn</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Convenient creation of column names for this table from symbols.</p><div class="fullcomment"><div class="comment cmt"><p>Convenient creation of column names for this table from symbols.</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
+    </li><li name="models.TableView#tableName" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="tableName:dbrary.FromTable"></a>
+      <a id="tableName:FromTable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">tableName</span><span class="result">: <span class="extype" name="dbrary.FromTable">FromTable</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
@@ -416,8 +429,14 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.HasId">
-              <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a>]</h3>
+        <div class="parent" name="scala.Serializable">
+              <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="java.io.Serializable">
+              <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="models.Table">
+              <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]</h3>
+            </div><div class="parent" name="models.TableView">
+              <h3>Inherited from <span class="extype" name="models.TableView">TableView</span></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">

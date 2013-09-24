@@ -40,13 +40,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Record</span><span class="result"> extends <span class="extype" name="models.AnnotationView">AnnotationView</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]</span>
+        <span class="name">Record</span><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]</span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="models.AnnotationView">AnnotationView</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>], <span class="extype" name="models.TableId">TableId</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>], <span class="extype" name="models.HasId">HasId</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>], <span class="extype" name="models.Table">Table</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="models.TableId">TableId</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>], <span class="extype" name="models.HasId">HasId</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>], <span class="extype" name="models.Table">Table</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -64,7 +64,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Record"><span>Record</span></li><li class="in" name="models.AnnotationView"><span>AnnotationView</span></li><li class="in" name="models.TableId"><span>TableId</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Record"><span>Record</span></li><li class="in" name="models.TableId"><span>TableId</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -226,7 +226,7 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="models.Record#create" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.Record#create" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="create(volume:models.Volume,category:Option[models.RecordCategory])(implicitdb:util.Site.DB):models.Record"></a>
       <a id="create(Volume,Option[RecordCategory])(DB):Record"></a>
       <h4 class="signature">
@@ -238,8 +238,7 @@
         <span class="name">create</span><span class="params">(<span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="category">category: <span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <a href="Record.html" class="extype" name="models.Record">Record</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Create a new record, initially unattached.</p><div class="fullcomment"><div class="comment cmt"><p>Create a new record, initially unattached.
-The result should be immediately attached to a target to make it accessible.</p></div></div>
+      <p class="shortcomment cmt">Create a new record, initially unattached.</p>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -282,8 +281,8 @@ The result should be immediately attached to a target to make it accessible.</p>
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="models.AnnotationView#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="get(id:AnnotationView.this.Id)(implicitsite:util.Site):Option[R]"></a>
+    </li><li name="models.Record#get" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="get(id:models.Record.Id)(implicitsite:util.Site):Option[models.Record]"></a>
       <a id="get(Id)(Site):Option[Record]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -294,7 +293,7 @@ The result should be immediately attached to a target to make it accessible.</p>
         <span class="name">get</span><span class="params">(<span name="id">id: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Retrieve a specific annotation of the instantiated object's type by id.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve a specific annotation of the instantiated object's type by id.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnnotationView</dd></dl></div>
+      <p class="shortcomment cmt">Retrieve a specific record by id.</p>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -482,9 +481,7 @@ The result should be immediately attached to a target to make it accessible.</p>
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.AnnotationView">
-              <h3>Inherited from <span class="extype" name="models.AnnotationView">AnnotationView</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]</h3>
-            </div><div class="parent" name="models.TableId">
+        <div class="parent" name="models.TableId">
               <h3>Inherited from <span class="extype" name="models.TableId">TableId</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]</h3>
             </div><div class="parent" name="models.HasId">
               <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]</h3>

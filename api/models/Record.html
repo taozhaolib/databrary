@@ -40,13 +40,13 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">Record</span><span class="result"> extends <a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Record">Record</a>] with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
+        <span class="name">Record</span><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Record">Record</a>] with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A set of Measures.</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a>, <a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Record">Record</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Record">Record</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -64,7 +64,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Record"><span>Record</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.SitePage"><span>SitePage</span></li><li class="in" name="models.Annotation"><span>Annotation</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Record"><span>Record</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.SitePage"><span>SitePage</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -155,19 +155,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.Record#addMeasure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="addMeasure[T](metric:models.Metric[T],datum:T)(implicitdb:util.Site.DB):models.Measure[T]"></a>
-      <a id="addMeasure[T](Metric[T],T)(DB):Measure[T]"></a>
+    </li><li name="models.Record#addSlot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="addSlot(s:models.Slot)(implicitdb:util.Site.DB):Unit"></a>
+      <a id="addSlot(Slot)(DB):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">addMeasure</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="metric">metric: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="models.Record.addMeasure.T">T</span>]</span>, <span name="datum">datum: <span class="extype" name="models.Record.addMeasure.T">T</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <a href="Measure.html" class="extype" name="models.Measure">Measure</a>[<span class="extype" name="models.Record.addMeasure.T">T</span>]</span>
+        <span class="name">addSlot</span><span class="params">(<span name="s">s: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Add a measure to this record.</p>
+      <p class="shortcomment cmt">Attach this record to a slot.</p>
     </li><li name="models.Record#age" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="age(date:java.sql.Date)(implicitdb:util.Site.DB):Option[Long]"></a>
       <a id="age(Date)(DB):Option[Long]"></a>
@@ -303,15 +303,15 @@ This may become invalid if the value is changed.</p></div></div>
       </h4>
       
     </li><li name="models.Record#dataPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="dataPermission(metric:models.MetricBase)(implicitsite:util.Site):models.Permission.Value"></a>
-      <a id="dataPermission(MetricBase)(Site):Permission.Value"></a>
+      <a id="dataPermission(metric:models.Metric)(implicitsite:util.Site):models.Permission.Value"></a>
+      <a id="dataPermission(Metric)(Site):Permission.Value"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">dataPermission</span><span class="params">(<span name="metric">metric: <a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
+        <span class="name">dataPermission</span><span class="params">(<span name="metric">metric: <a href="Metric.html" class="extype" name="models.Metric">Metric</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Effective permission the site user has over a given metric in this record, specifically in regards to the measure datum itself.</p><div class="fullcomment"><div class="comment cmt"><p>Effective permission the site user has over a given metric in this record, specifically in regards to the measure datum itself.
@@ -331,15 +331,15 @@ Record permissions depend on volume permissions, but can be further restricted b
       </h4>
       <p class="shortcomment cmt">The range of acquisition dates covered by associated slots.</p><div class="fullcomment"><div class="comment cmt"><p>The range of acquisition dates covered by associated slots. Cached.</p></div></div>
     </li><li name="models.Record#deleteMeasure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="deleteMeasure(metric:models.MetricBase)(implicitdb:util.Site.DB):Unit"></a>
-      <a id="deleteMeasure(MetricBase)(DB):Unit"></a>
+      <a id="deleteMeasure(metric:models.Metric)(implicitdb:util.Site.DB):Unit"></a>
+      <a id="deleteMeasure(Metric)(DB):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">deleteMeasure</span><span class="params">(<span name="metric">metric: <a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">deleteMeasure</span><span class="params">(<span name="metric">metric: <a href="Metric.html" class="extype" name="models.Metric">Metric</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Remove a measure from this record.</p><div class="fullcomment"><div class="comment cmt"><p>Remove a measure from this record.
@@ -437,7 +437,7 @@ This may invalidate measures on this object.</p></div></div>
         <span class="name">id</span><span class="result">: <a href="Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">Record.Id</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Record">Record</a> → <a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a> → TableRowId</dd></dl></div>
+      <p class="shortcomment cmt">Primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Record">Record</a> → TableRowId</dd></dl></div>
     </li><li name="models.Record#ident" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ident(implicitdb:util.Site.DB):Option[String]"></a>
       <a id="ident(DB):Option[String]"></a>
@@ -466,28 +466,28 @@ This may become invalid if the value is changed.</p></div></div>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.Record#measure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="measure[T](metric:models.Metric[T])(implicitdb:util.Site.DB):Option[T]"></a>
-      <a id="measure[T](Metric[T])(DB):Option[T]"></a>
+      <a id="measure[T](metric:models.MetricT[T])(implicitdb:util.Site.DB):Option[T]"></a>
+      <a id="measure[T](MetricT[T])(DB):Option[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">measure</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="metric">metric: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="models.Record.measure.T">T</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="models.Record.measure.T">T</span>]</span>
+        <span class="name">measure</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="metric">metric: <a href="MetricT.html" class="extype" name="models.MetricT">MetricT</a>[<span class="extype" name="models.Record.measure.T">T</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="models.Record.measure.T">T</span>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">A specific measure of the given type and metric.</p>
     </li><li name="models.Record#measures" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="measures(implicitdb:util.Site.DB):Seq[models.MeasureBase]"></a>
-      <a id="measures(DB):Seq[MeasureBase]"></a>
+      <a id="measures(implicitdb:util.Site.DB):Seq[models.Measure]"></a>
+      <a id="measures(DB):Seq[Measure]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">measures</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="models.MeasureBase">MeasureBase</span>]</span>
+        <span class="name">measures</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Measure.html" class="extype" name="models.Measure">Measure</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">All measures in this record.</p><div class="fullcomment"><div class="comment cmt"><p>All measures in this record. Cached.</p></div></div>
@@ -583,33 +583,32 @@ This may become invalid if the value is changed.</p></div></div>
       </h4>
       <p class="shortcomment cmt">Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p><div class="fullcomment"><div class="comment cmt"><p>Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="models.Record#setMeasure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="setMeasure(metric:models.MetricBase,value:String)(implicitdb:util.Site.DB):Boolean"></a>
-      <a id="setMeasure(MetricBase,String)(DB):Boolean"></a>
+      <a id="setMeasure(metric:models.Metric,value:String)(implicitdb:util.Site.DB):Boolean"></a>
+      <a id="setMeasure(Metric,String)(DB):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">setMeasure</span><span class="params">(<span name="metric">metric: <a href="MetricBase.html" class="extype" name="models.MetricBase">MetricBase</a></span>, <span name="value">value: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">setMeasure</span><span class="params">(<span name="metric">metric: <a href="Metric.html" class="extype" name="models.Metric">Metric</a></span>, <span name="value">value: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Add or change a measure on this record.</p><div class="fullcomment"><div class="comment cmt"><p>Add or change a measure on this record.
 This is not type safe so may generate SQL exceptions, and may invalidate measures on this object.</p></div></div>
-    </li><li name="models.Annotation#slots" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="slots(implicitsite:util.Site):Seq[models.Slot]"></a>
-      <a id="slots(Site):Seq[Slot]"></a>
+    </li><li name="models.Record#slots" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="slots(implicitdb:util.Site.DB):Seq[models.Slot]"></a>
+      <a id="slots(DB):Seq[Slot]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">slots</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>]</span>
+        <span class="name">slots</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The set of slots to which this annotation applies.</p><div class="fullcomment"><div class="comment cmt"><p>The set of slots to which this annotation applies.
-This checks permissions, so a non-empty list implies the annotation is visible to the current user.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a></dd></dl></div>
+      <p class="shortcomment cmt">The set of slots to which this record applies.</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -723,8 +722,6 @@ This checks permissions, so a non-empty list implies the annotation is visible t
               <h3>Inherited from <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></h3>
             </div><div class="parent" name="models.SitePage">
               <h3>Inherited from <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></h3>
-            </div><div class="parent" name="models.Annotation">
-              <h3>Inherited from <a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a></h3>
             </div><div class="parent" name="models.TableRowId">
               <h3>Inherited from <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Record">Record</a>]</h3>
             </div><div class="parent" name="models.TableRow">

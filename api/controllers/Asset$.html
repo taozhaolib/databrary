@@ -87,7 +87,7 @@
         <div id="types" class="types members">
               <h3>Type Members</h3>
               <ol><li name="controllers.Asset.AssetForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="AssetForm=play.api.data.Form[(String,String,Option[dbrary.Offset],Option[(models.Classification.Value,Unit)])]"></a>
+      <a id="AssetForm=play.api.data.Form[(String,String,Option[dbrary.Offset],Option[(Option[models.AssetFormat.Id],models.Classification.Value,Option[String],Unit)])]"></a>
       <a id="AssetForm:AssetForm"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -95,7 +95,7 @@
         <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <span class="name">AssetForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Offset">Offset</span>], <span class="extype" name="scala.Option">Option</span>[(<a href="../models/Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">models.Classification.Value</a>, <span class="extype" name="scala.Unit">Unit</span>)])]</span>
+        <span class="name">AssetForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Offset">Offset</span>], <span class="extype" name="scala.Option">Option</span>[(<span class="extype" name="scala.Option">Option</span>[<a href="../models/AssetFormat$.html#Id=models.IntId[T]" class="extmbr" name="models.AssetFormat.Id">models.AssetFormat.Id</a>], <a href="../models/Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">models.Classification.Value</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Unit">Unit</span>)])]</span>
       </span>
       </h4>
       
@@ -2330,15 +2330,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="controllers.Asset#change" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="change(s:models.Container.Id,o:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="change(models.Container.Id,models.Asset.Id):Action[AnyContent]"></a>
+      <a id="change(v:models.Volume.Id,s:models.Container.Id,o:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="change(models.Volume.Id,models.Container.Id,models.Asset.Id):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">change</span><span class="params">(<span name="s">s: <a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>, <span name="o">o: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">change</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="s">s: <a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>, <span name="o">o: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       
@@ -2359,41 +2359,41 @@
               
         </dd></dl></div>
     </li><li name="controllers.Asset#create" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="create(c:models.Container.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="create(models.Container.Id):Action[AnyContent]"></a>
+      <a id="create(v:models.Volume.Id,c:models.Container.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="create(models.Volume.Id,models.Container.Id):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">create</span><span class="params">(<span name="c">c: <a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">create</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="c">c: <a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       
     </li><li name="controllers.Asset#download" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="download(i:models.Slot.Id,o:models.Asset.Id,inline:Boolean):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="download(models.Slot.Id,models.Asset.Id,Boolean):Action[AnyContent]"></a>
+      <a id="download(v:models.Volume.Id,i:models.Slot.Id,o:models.Asset.Id,inline:Boolean):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="download(models.Volume.Id,models.Slot.Id,models.Asset.Id,Boolean):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">download</span><span class="params">(<span name="i">i: <a href="../models/Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">models.Slot.Id</a></span>, <span name="o">o: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>, <span name="inline">inline: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">download</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="i">i: <a href="../models/Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">models.Slot.Id</a></span>, <span name="o">o: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>, <span name="inline">inline: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       
     </li><li name="controllers.Asset#edit" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="edit(s:models.Container.Id,o:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="edit(models.Container.Id,models.Asset.Id):Action[AnyContent]"></a>
+      <a id="edit(v:models.Volume.Id,s:models.Container.Id,o:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="edit(models.Volume.Id,models.Container.Id,models.Asset.Id):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">edit</span><span class="params">(<span name="s">s: <a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>, <span name="o">o: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">edit</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="s">s: <a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>, <span name="o">o: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       
@@ -2453,28 +2453,28 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
     </li><li name="controllers.Asset#formForFile" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="formForFile(form:controllers.Asset.AssetForm):Boolean"></a>
-      <a id="formForFile(AssetForm):Boolean"></a>
+      <a id="formForFile(form:controllers.Asset.AssetForm,target:Either[models.Container,models.ContainerAsset]):Boolean"></a>
+      <a id="formForFile(AssetForm,Either[Container,ContainerAsset]):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">formForFile</span><span class="params">(<span name="form">form: <a href="#AssetForm=play.api.data.Form[(String,String,Option[dbrary.Offset],Option[(models.Classification.Value,Unit)])]" class="extmbr" name="controllers.Asset.AssetForm">AssetForm</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">formForFile</span><span class="params">(<span name="form">form: <a href="#AssetForm=play.api.data.Form[(String,String,Option[dbrary.Offset],Option[(Option[models.AssetFormat.Id],models.Classification.Value,Option[String],Unit)])]" class="extmbr" name="controllers.Asset.AssetForm">AssetForm</a></span>, <span name="target">target: <span class="extype" name="scala.Either">Either</span>[<a href="../models/Container.html" class="extype" name="models.Container">Container</a>, <a href="../models/ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
       
     </li><li name="controllers.Asset#frame" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="frame(i:models.Slot.Id,o:models.Asset.Id,offset:dbrary.Offset):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="frame(models.Slot.Id,models.Asset.Id,Offset):Action[AnyContent]"></a>
+      <a id="frame(v:models.Volume.Id,i:models.Slot.Id,o:models.Asset.Id,offset:dbrary.Offset):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="frame(models.Volume.Id,models.Slot.Id,models.Asset.Id,Offset):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">frame</span><span class="params">(<span name="i">i: <a href="../models/Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">models.Slot.Id</a></span>, <span name="o">o: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>, <span name="offset">offset: <span class="extype" name="dbrary.Offset">Offset</span> = <span class="symbol">0</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">frame</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="i">i: <a href="../models/Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">models.Slot.Id</a></span>, <span name="o">o: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>, <span name="offset">offset: <span class="extype" name="dbrary.Offset">Offset</span> = <span class="symbol">0</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       
@@ -2505,15 +2505,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="controllers.Asset#head" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="head(i:models.Slot.Id,o:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="head(models.Slot.Id,models.Asset.Id):Action[AnyContent]"></a>
+      <a id="head(v:models.Volume.Id,i:models.Slot.Id,o:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="head(models.Volume.Id,models.Slot.Id,models.Asset.Id):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">head</span><span class="params">(<span name="i">i: <a href="../models/Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">models.Slot.Id</a></span>, <span name="o">o: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">head</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="i">i: <a href="../models/Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">models.Slot.Id</a></span>, <span name="o">o: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       
@@ -2595,6 +2595,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="controllers.Asset#remove" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="remove(v:models.Volume.Id,c:models.Container.Id,a:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="remove(models.Volume.Id,models.Container.Id,models.Asset.Id):Action[AnyContent]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">remove</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="c">c: <a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>, <span name="a">a: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+      </span>
+      </h4>
+      
     </li><li name="play.api.mvc.Rendering#render" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="render(f:PartialFunction[play.api.http.MediaRange,play.api.mvc.Result])(implicitrequest:play.api.mvc.RequestHeader):play.api.mvc.Result"></a>
       <a id="render(PartialFunction[MediaRange,Result])(RequestHeader):Result"></a>
@@ -2648,28 +2661,28 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="controllers.Asset#upload" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="upload(c:models.Container.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="upload(models.Container.Id):Action[AnyContent]"></a>
+      <a id="upload(v:models.Volume.Id,c:models.Container.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="upload(models.Volume.Id,models.Container.Id):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">upload</span><span class="params">(<span name="c">c: <a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">upload</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="c">c: <a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       
     </li><li name="controllers.Asset#view" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="view(i:models.Slot.Id,a:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="view(models.Slot.Id,models.Asset.Id):Action[AnyContent]"></a>
+      <a id="view(v:models.Volume.Id,i:models.Slot.Id,a:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="view(models.Volume.Id,models.Slot.Id,models.Asset.Id):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">view</span><span class="params">(<span name="i">i: <a href="../models/Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">models.Slot.Id</a></span>, <span name="a">a: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">view</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="i">i: <a href="../models/Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">models.Slot.Id</a></span>, <span name="a">a: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       

@@ -267,19 +267,19 @@ Computed by [Authorize.access_check] and usually accessed through <a href="../ut
               
         </dd></dl></div>
     </li><li name="models.Account#comments" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="comments(implicitdb:util.Site.DB):Seq[models.Comment]"></a>
-      <a id="comments(DB):Seq[Comment]"></a>
+      <a id="comments(implicitsite:util.Site):Seq[models.Comment]"></a>
+      <a id="comments(Site):Seq[Comment]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
+        <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">comments</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
+        <span class="name">comments</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">List of comments by this individual.</p><div class="fullcomment"><div class="comment cmt"><p>List of comments by this individual.
-This does not respect access permissions on the comment targets.</p></div></div>
+This checks permissions on the target volumes.</p></div></div>
     </li><li name="models.Party#delegated" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="delegated(implicitsite:util.Site):models.Permission.Value"></a>
       <a id="delegated(Site):Permission.Value"></a>

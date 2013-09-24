@@ -40,7 +40,7 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">Slot</span><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Slot">Slot</a>] with <a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a> with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></span>
+        <span class="name">Slot</span><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Slot">Slot</a>] with <a href="Commented.html" class="extype" name="models.Commented">Commented</a> with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></span>
       </span>
       </h4>
       
@@ -48,7 +48,7 @@
 Primarily used for an individual session of data with a single date and place.
 Critically, contained data are should be covered by a single consent level and share the same annotations.</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a>, <a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Slot">Slot</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a>, <a href="Commented.html" class="extype" name="models.Commented">Commented</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Slot">Slot</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -66,7 +66,7 @@ Critically, contained data are should be covered by a single consent level and s
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Slot"><span>Slot</span></li><li class="in" name="models.SitePage"><span>SitePage</span></li><li class="in" name="models.Annotated"><span>Annotated</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Slot"><span>Slot</span></li><li class="in" name="models.SitePage"><span>SitePage</span></li><li class="in" name="models.Commented"><span>Commented</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -157,19 +157,6 @@ Critically, contained data are should be covered by a single consent level and s
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.Annotated#addAnnotation" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="addAnnotation(a:models.Annotation)(implicitdb:util.Site.DB):Unit"></a>
-      <a id="addAnnotation(Annotation)(DB):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">addAnnotation</span><span class="params">(<span name="a">a: <a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -225,7 +212,7 @@ Critically, contained data are should be covered by a single consent level and s
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="models.Annotated#comments" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.Slot#comments" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="comments(all:Boolean)(implicitdb:util.Site.DB):Seq[models.Comment]"></a>
       <a id="comments(Boolean)(DB):Seq[Comment]"></a>
       <h4 class="signature">
@@ -238,7 +225,7 @@ Critically, contained data are should be covered by a single consent level and s
       </span>
       </h4>
       <p class="shortcomment cmt">The list of comments on this object.</p><div class="fullcomment"><div class="comment cmt"><p>The list of comments on this object.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include indirect comments on any contained objects
-</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Slot">Slot</a> → <a href="Commented.html" class="extype" name="models.Commented">Commented</a></dd></dl></div>
     </li><li name="models.Slot#consent" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="consent:models.Consent.Value"></a>
       <a id="consent:Consent.Value"></a>
@@ -399,7 +386,7 @@ Users with FULL access fall back to the full container.</p></div></div>
       </span>
       </h4>
       <p class="shortcomment cmt">Primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Slot">Slot</a> → TableRowId</dd></dl></div>
-    </li><li name="models.Annotated#idents" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.Slot#idents" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="idents(implicitdb:util.Site.DB):Seq[String]"></a>
       <a id="idents(DB):Seq[String]"></a>
       <h4 class="signature">
@@ -412,7 +399,7 @@ Users with FULL access fall back to the full container.</p></div></div>
       </span>
       </h4>
       <p class="shortcomment cmt">A list of record identification strings that apply to this object.</p><div class="fullcomment"><div class="comment cmt"><p>A list of record identification strings that apply to this object.
-This is probably not a permanent solution for naming, but it's a start.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
+This is probably not a permanent solution for naming, but it's a start.</p></div></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -530,61 +517,60 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       </span>
       </h4>
       <p class="shortcomment cmt">Effective start point of this slot within the container.</p>
-    </li><li name="models.Annotated#postComment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="postComment(text:String)(implicitsite:util.Site):models.Comment"></a>
-      <a id="postComment(String)(Site):Comment"></a>
+    </li><li name="models.Commented#postComment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="postComment(text:String)(implicitsite:util.AuthSite):models.Comment"></a>
+      <a id="postComment(String)(AuthSite):Comment"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">postComment</span><span class="params">(<span name="text">text: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Comment.html" class="extype" name="models.Comment">Comment</a></span>
+        <span class="name">postComment</span><span class="params">(<span name="text">text: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/AuthSite.html" class="extype" name="util.AuthSite">AuthSite</a></span>)</span><span class="result">: <a href="Comment.html" class="extype" name="models.Comment">Comment</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Post a new comment this object.</p><div class="fullcomment"><div class="comment cmt"><p>Post a new comment this object.
-This will throw an exception if there is no current user, but does not check permissions otherwise.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
-    </li><li name="models.Annotated#recordMeasures" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="recordMeasures[T](category:Option[models.RecordCategory],metric:models.Metric[T])(implicitdb:util.Site.DB):Seq[(models.Record,Option[T])]"></a>
-      <a id="recordMeasures[T](Option[RecordCategory],Metric[T])(DB):Seq[(Record,Option[T])]"></a>
+This will throw an exception if there is no current user, but does not check permissions otherwise.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Commented.html" class="extype" name="models.Commented">Commented</a></dd></dl></div>
+    </li><li name="models.Slot#recordMeasures" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="recordMeasures[T](category:Option[models.RecordCategory],metric:models.MetricT[T])(implicitdb:util.Site.DB):Seq[(models.Record,Option[T])]"></a>
+      <a id="recordMeasures[T](Option[RecordCategory],MetricT[T])(DB):Seq[(Record,Option[T])]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">recordMeasures</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="category">category: <span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>, <span name="metric">metric: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="models.Annotated.recordMeasures.T">T</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[(<a href="Record.html" class="extype" name="models.Record">Record</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="models.Annotated.recordMeasures.T">T</span>])]</span>
+        <span class="name">recordMeasures</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="category">category: <span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>, <span name="metric">metric: <a href="MetricT.html" class="extype" name="models.MetricT">MetricT</a>[<span class="extype" name="models.Slot.recordMeasures.T">T</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[(<a href="Record.html" class="extype" name="models.Record">Record</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="models.Slot.recordMeasures.T">T</span>])]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">The list of records and possibly measures on this object.</p><div class="fullcomment"><div class="comment cmt"><p>The list of records and possibly measures on this object.
-This is essentially equivalent to <code>this.records(false).filter(_.category == category).map(r =&gt; (r, r.measure[T](metric)))</code> but more efficient.</p></div><dl class="paramcmts block"><dt class="param">category</dt><dd class="cmt"><p>if Some limit to the given category</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
-    </li><li name="models.Annotated#records" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="records(all:Boolean)(implicitdb:util.Site.DB):Seq[models.Record]"></a>
-      <a id="records(Boolean)(DB):Seq[Record]"></a>
+This is essentially equivalent to <code>this.records(false).filter(_.category == category).map(r =&gt; (r, r.measure[T](metric)))</code> but more efficient.</p></div><dl class="paramcmts block"><dt class="param">category</dt><dd class="cmt"><p>if Some limit to the given category</p></dd></dl></div>
+    </li><li name="models.Slot#records" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="records(implicitdb:util.Site.DB):Seq[models.Record]"></a>
+      <a id="records(DB):Seq[Record]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">records</span><span class="params">(<span name="all">all: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]</span>
+        <span class="name">records</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The list of records on this object.</p><div class="fullcomment"><div class="comment cmt"><p>The list of records on this object.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include indirect records on any contained objects
-</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
-    </li><li name="models.Annotated#removeAnnotation" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="removeAnnotation(a:models.Annotation.Id)(implicitdb:util.Site.DB):Unit"></a>
-      <a id="removeAnnotation(Annotation.Id)(DB):Unit"></a>
+      <p class="shortcomment cmt">The list of records on this object.</p>
+    </li><li name="models.Slot#removeRecord" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="removeRecord(rec:models.Record.Id)(implicitdb:util.Site.DB):Unit"></a>
+      <a id="removeRecord(Record.Id)(DB):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">removeAnnotation</span><span class="params">(<span name="a">a: <a href="Annotation$.html#Id=models.IntId[T]" class="extmbr" name="models.Annotation.Id">Annotation.Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">removeRecord</span><span class="params">(<span name="rec">rec: <a href="Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">Record.Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></dd></dl></div>
+      <p class="shortcomment cmt">Remove the given record from this slot.</p>
     </li><li name="models.Slot#segment" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="segment:dbrary.Range[dbrary.Offset]"></a>
       <a id="segment:Range[Offset]"></a>
@@ -611,6 +597,19 @@ This is essentially equivalent to <code>this.records(false).filter(_.category ==
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="models.Slot#tags" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="tags(implicitsite:util.Site):Seq[models.TagWeight]"></a>
+      <a id="tags(Site):Seq[TagWeight]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">tags</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]</span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
@@ -722,8 +721,8 @@ This is essentially equivalent to <code>this.records(false).filter(_.category ==
         <div id="inheritedMembers">
         <div class="parent" name="models.SitePage">
               <h3>Inherited from <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></h3>
-            </div><div class="parent" name="models.Annotated">
-              <h3>Inherited from <a href="Annotated.html" class="extype" name="models.Annotated">Annotated</a></h3>
+            </div><div class="parent" name="models.Commented">
+              <h3>Inherited from <a href="Commented.html" class="extype" name="models.Commented">Commented</a></h3>
             </div><div class="parent" name="models.InVolume">
               <h3>Inherited from <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></h3>
             </div><div class="parent" name="models.TableRowId">

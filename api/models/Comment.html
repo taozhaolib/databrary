@@ -40,14 +40,14 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">Comment</span><span class="result"> extends <a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Comment">Comment</a>]</span>
+        <span class="name">Comment</span><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Comment">Comment</a>] with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A comment made by a particular user, usually only applied to exactly one object.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A comment made by a particular user applied to exactly one object.
 These are immutable (and unaudited), although the author may be considered to have ownership.</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -65,7 +65,7 @@ These are immutable (and unaudited), although the author may be considered to ha
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Comment"><span>Comment</span></li><li class="in" name="models.Annotation"><span>Annotation</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Comment"><span>Comment</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -278,7 +278,7 @@ These are immutable (and unaudited), although the author may be considered to ha
         <span class="name">id</span><span class="result">: <a href="Comment$.html#Id=models.IntId[T]" class="extmbr" name="models.Comment.Id">Comment.Id</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Comment">Comment</a> → <a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a> → TableRowId</dd></dl></div>
+      <p class="shortcomment cmt">Primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Comment">Comment</a> → TableRowId</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -331,20 +331,45 @@ These are immutable (and unaudited), although the author may be considered to ha
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.Annotation#slots" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="slots(implicitsite:util.Site):Seq[models.Slot]"></a>
-      <a id="slots(Site):Seq[Slot]"></a>
+    </li><li name="models.InVolume#permission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="permission:models.Permission.Value"></a>
+      <a id="permission:Permission.Value"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">slots</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>]</span>
+        <span class="name">permission</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The set of slots to which this annotation applies.</p><div class="fullcomment"><div class="comment cmt"><p>The set of slots to which this annotation applies.
-This checks permissions, so a non-empty list implies the annotation is visible to the current user.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a></dd></dl></div>
+      <p class="shortcomment cmt">Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p><div class="fullcomment"><div class="comment cmt"><p>Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
+    </li><li name="models.Comment#slot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="slot:models.Slot"></a>
+      <a id="slot:Slot"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">slot</span><span class="result">: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="models.Comment#slotId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="slotId:models.Slot.Id"></a>
+      <a id="slotId:Slot.Id"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">slotId</span><span class="result">: <a href="Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">Slot.Id</a></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -384,6 +409,32 @@ This checks permissions, so a non-empty list implies the annotation is visible t
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.Comment#volume" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="volume:models.Volume"></a>
+      <a id="volume:Volume"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">volume</span><span class="result">: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Comment">Comment</a> → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
+    </li><li name="models.InVolume#volumeId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="volumeId:models.Volume.Id"></a>
+      <a id="volumeId:Volume.Id"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">volumeId</span><span class="result">: <a href="Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">Volume.Id</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -445,26 +496,26 @@ This checks permissions, so a non-empty list implies the annotation is visible t
       </span>
       </h4>
       
-    </li><li name="models.Comment#who" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="who(implicitsite:util.Site):models.Account"></a>
-      <a id="who(Site):Account"></a>
+    </li><li name="models.Comment#who" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="who:models.Account"></a>
+      <a id="who:Account"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">who</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Account.html" class="extype" name="models.Account">Account</a></span>
+        <span class="name">who</span><span class="result">: <a href="Account.html" class="extype" name="models.Account">Account</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The user who made the comment.</p><div class="fullcomment"><div class="comment cmt"><p>The user who made the comment.  Cached.</p></div></div>
+      
     </li><li name="models.Comment#whoId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="whoId:models.Account.Id"></a>
       <a id="whoId:Account.Id"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">val</span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">whoId</span><span class="result">: <a href="Account$.html#Id=models.IntId[T]" class="extmbr" name="models.Account.Id">Account.Id</a></span>
@@ -480,8 +531,8 @@ This checks permissions, so a non-empty list implies the annotation is visible t
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.Annotation">
-              <h3>Inherited from <a href="Annotation.html" class="extype" name="models.Annotation">Annotation</a></h3>
+        <div class="parent" name="models.InVolume">
+              <h3>Inherited from <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></h3>
             </div><div class="parent" name="models.TableRowId">
               <h3>Inherited from <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Comment">Comment</a>]</h3>
             </div><div class="parent" name="models.TableRow">

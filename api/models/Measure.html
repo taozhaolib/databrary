@@ -36,17 +36,17 @@
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">class</span>
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">Measure</span><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="models.MeasureBase">MeasureBase</span></span>
+        <span class="name">Measure</span><span class="params">(<span name="recordId">recordId: <a href="Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">Record.Id</a></span>, <span name="metric">metric: <a href="Metric.html" class="extype" name="models.Metric">Metric</a></span>, <span name="value">value: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="models.MeasureBase">MeasureBase</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A measurement with a specific, tagged type.</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A measurement with an arbitrary (unconverted) type.</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="models.MeasureBase">MeasureBase</span>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="models.MeasureBase">MeasureBase</span>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -64,7 +64,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Measure"><span>Measure</span></li><li class="in" name="models.MeasureBase"><span>MeasureBase</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Measure"><span>Measure</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="models.MeasureBase"><span>MeasureBase</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -85,15 +85,15 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.Measure#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(recordId:models.Record.Id,metric:models.Metric[T],value_:T):models.Measure[T]"></a>
-      <a id="&lt;init&gt;:Measure[T]"></a>
+      <a id="&lt;init&gt;(recordId:models.Record.Id,metric:models.Metric,value:String):models.Measure"></a>
+      <a id="&lt;init&gt;:Measure"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Measure</span><span class="params">(<span name="recordId">recordId: <a href="Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">Record.Id</a></span>, <span name="metric">metric: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="models.Measure.T">T</span>]</span>, <span name="value_">value_: <span class="extype" name="models.Measure.T">T</span></span>)</span>
+        <span class="name">Measure</span><span class="params">(<span name="recordId">recordId: <a href="Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">Record.Id</a></span>, <span name="metric">metric: <a href="Metric.html" class="extype" name="models.Metric">Metric</a></span>, <span name="value">value: <span class="extype" name="scala.Predef.String">String</span></span>)</span>
       </span>
       </h4>
       
@@ -184,19 +184,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.Measure#change" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="change(value:T)(implicitdb:util.Site.DB):Unit"></a>
-      <a id="change(T)(DB):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">change</span><span class="params">(<span name="value">value: <span class="extype" name="models.Measure.T">T</span> = <span class="symbol">_value</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -227,15 +214,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>MeasureBase</dd></dl></div>
     </li><li name="models.Measure#datum" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="datum:models.MeasureDatum[T]"></a>
-      <a id="datum:MeasureDatum[T]"></a>
+      <a id="datum:models.MeasureDatum"></a>
+      <a id="datum:MeasureDatum"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">datum</span><span class="result">: <a href="MeasureDatum.html" class="extype" name="models.MeasureDatum">MeasureDatum</a>[<span class="extype" name="models.Measure.T">T</span>]</span>
+        <span class="name">datum</span><span class="result">: <a href="MeasureDatum.html" class="extype" name="models.MeasureDatum">MeasureDatum</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Measure">Measure</a> → MeasureBase</dd></dl></div>
@@ -252,19 +239,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="equals(x$1:Any):Boolean"></a>
-      <a id="equals(Any):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -294,19 +268,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="hashCode():Int"></a>
-      <a id="hashCode():Int"></a>
+    </li><li name="models.MeasureBase#ids" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ids:models.SQLArgs"></a>
+      <a id="ids:SQLArgs"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+        <span class="name">ids</span><span class="result">: <span class="extype" name="models.SQLArgs">SQLArgs</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>MeasureBase</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -333,6 +307,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>MeasureBase</dd></dl></div>
+    </li><li name="models.Measure#metric" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="metric:models.Metric"></a>
+      <a id="metric:Metric"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">metric</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Measure">Measure</a> → MeasureBase</dd></dl></div>
     </li><li name="models.MeasureBase#metricId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="metricId:models.Metric.Id"></a>
       <a id="metricId:Metric.Id"></a>
@@ -385,6 +372,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="models.Measure#recordId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="recordId:models.Record.Id"></a>
+      <a id="recordId:Record.Id"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">recordId</span><span class="result">: <a href="Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">Record.Id</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Measure">Measure</a> → MeasureBase</dd></dl></div>
     </li><li name="models.MeasureBase#remove" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="remove(implicitdb:util.Site.DB):Unit"></a>
       <a id="remove(DB):Unit"></a>
@@ -398,6 +398,32 @@
       </span>
       </h4>
       <p class="shortcomment cmt">Remove this measure from its associated record and delete it.</p><div class="fullcomment"><div class="comment cmt"><p>Remove this measure from its associated record and delete it.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>MeasureBase</dd></dl></div>
+    </li><li name="models.Measure#set" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="set(implicitdb:util.Site.DB):Boolean"></a>
+      <a id="set(DB):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">set</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Add or update this measure in the database.</p><div class="fullcomment"><div class="comment cmt"><p>Add or update this measure in the database.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Measure">Measure</a> → MeasureBase</dd></dl></div>
+    </li><li name="models.Measure#stringValue" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="stringValue:String"></a>
+      <a id="stringValue:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">stringValue</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Measure">Measure</a> → MeasureBase</dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -411,29 +437,16 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="toString():String"></a>
-      <a id="toString():String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.Measure#value" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="value:T"></a>
-      <a id="value:T"></a>
+      <a id="value:String"></a>
+      <a id="value:String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">value</span><span class="result">: <span class="extype" name="models.Measure.T">T</span></span>
+        <span class="name">value</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
       
@@ -494,7 +507,15 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.MeasureBase">
+        <div class="parent" name="scala.Serializable">
+              <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="java.io.Serializable">
+              <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="scala.Product">
+              <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
+            </div><div class="parent" name="scala.Equals">
+              <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
+            </div><div class="parent" name="models.MeasureBase">
               <h3>Inherited from <span class="extype" name="models.MeasureBase">MeasureBase</span></h3>
             </div><div class="parent" name="models.TableRow">
               <h3>Inherited from <span class="extype" name="models.TableRow">TableRow</span></h3>

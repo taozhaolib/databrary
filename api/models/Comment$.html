@@ -40,13 +40,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Comment</span><span class="result"> extends <span class="extype" name="models.AnnotationView">AnnotationView</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
+        <span class="name">Comment</span><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="models.AnnotationView">AnnotationView</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.TableId">TableId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.HasId">HasId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.Table">Table</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="models.TableId">TableId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.HasId">HasId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.Table">Table</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -64,7 +64,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Comment"><span>Comment</span></li><li class="in" name="models.AnnotationView"><span>AnnotationView</span></li><li class="in" name="models.TableId"><span>TableId</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Comment"><span>Comment</span></li><li class="in" name="models.TableId"><span>TableId</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -268,8 +268,8 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="models.AnnotationView#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="get(id:AnnotationView.this.Id)(implicitsite:util.Site):Option[R]"></a>
+    </li><li name="models.Comment#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="get(id:models.Comment.Id)(implicitsite:util.Site):Option[models.Comment]"></a>
       <a id="get(Id)(Site):Option[Comment]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -280,7 +280,8 @@
         <span class="name">get</span><span class="params">(<span name="id">id: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Comment.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Retrieve a specific annotation of the instantiated object's type by id.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve a specific annotation of the instantiated object's type by id.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnnotationView</dd></dl></div>
+      <p class="shortcomment cmt">Retrieve a specific comment by id.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve a specific comment by id.
+This checks permissions on the commented object (volume).</p></div></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -468,9 +469,7 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.AnnotationView">
-              <h3>Inherited from <span class="extype" name="models.AnnotationView">AnnotationView</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</h3>
-            </div><div class="parent" name="models.TableId">
+        <div class="parent" name="models.TableId">
               <h3>Inherited from <span class="extype" name="models.TableId">TableId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</h3>
             </div><div class="parent" name="models.HasId">
               <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</h3>

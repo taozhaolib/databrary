@@ -40,13 +40,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Measure</span><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<span class="extype" name="models.MeasureBase">MeasureBase</span>]</span>
+        <span class="name">Measure</span><span class="result"> extends <span class="extype" name="models.MeasureView">MeasureView</span>[<a href="Measure.html" class="extype" name="models.Measure">Measure</a>] with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A un-typed interface to measures.</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="models.Table">Table</span>[<span class="extype" name="models.MeasureBase">MeasureBase</span>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="models.MeasureView">MeasureView</span>[<a href="Measure.html" class="extype" name="models.Measure">Measure</a>], <span class="extype" name="models.Table">Table</span>[<a href="Measure.html" class="extype" name="models.Measure">Measure</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -64,7 +64,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Measure"><span>Measure</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Measure"><span>Measure</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="models.MeasureView"><span>MeasureView</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -95,7 +95,7 @@
         <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <span class="name">Row</span><span class="result"> = <span class="extype" name="models.MeasureBase">MeasureBase</span></span>
+        <span class="name">Row</span><span class="result"> = <a href="Measure.html" class="extype" name="models.Measure">Measure</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Type of TableRow this object can generate.</p><div class="fullcomment"><div class="comment cmt"><p>Type of TableRow this object can generate.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>Table → TableView</dd></dl></div>
@@ -200,6 +200,19 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
+    </li><li name="models.MeasureView#columns" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="columns:dbrary.Columns1[models.Record.Id]"></a>
+      <a id="columns:Columns1[Record.Id]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">columns</span><span class="result">: <span class="extype" name="dbrary.Columns1">Columns1</span>[<a href="Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">Record.Id</a>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>MeasureView</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -429,8 +442,14 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.Table">
-              <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<span class="extype" name="models.MeasureBase">MeasureBase</span>]</h3>
+        <div class="parent" name="scala.Serializable">
+              <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="java.io.Serializable">
+              <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="models.MeasureView">
+              <h3>Inherited from <span class="extype" name="models.MeasureView">MeasureView</span>[<a href="Measure.html" class="extype" name="models.Measure">Measure</a>]</h3>
+            </div><div class="parent" name="models.Table">
+              <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="Measure.html" class="extype" name="models.Measure">Measure</a>]</h3>
             </div><div class="parent" name="models.TableView">
               <h3>Inherited from <span class="extype" name="models.TableView">TableView</span></h3>
             </div><div class="parent" name="scala.AnyRef">
