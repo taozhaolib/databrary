@@ -35,6 +35,7 @@ trait Site {
     * VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for admins.
     */
   def access = identity.access(db)
+  def isAdmin = access >= models.Permission.ADMIN
   /** IP of the client's host. */
   def clientIP : dbrary.Inet
 }

@@ -21,6 +21,10 @@
             @if(controllers.Asset.formForFile(form)) {
 	        @widget.enumSelect(form("classification"), Classification)
 	        @tag.inputFile(form("file"))
+		@if(request.isAdmin) {
+		  @tag.select(form("format"), (TimeseriesFormat.getAll ++ AssetFormat.getAll).map(f => (f.id.unId.toString, f.name + f.extension.fold("")("." + _))))
+		  @tag.inputText(form("localfile"))
+		}
             }
 
 	    <button type='submit' class="big button first">@target.fold(_ => "Upload", _ => "Change")</button>

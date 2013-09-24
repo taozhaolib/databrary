@@ -49,6 +49,13 @@ object Audit {
     case AuditAction.remove => "DELETE FROM"
   }
 
+  private[this] def atable(table : String) : String =
+    "audit_" + (table match {
+      case "slot" => "slot_consent"
+      case "timeseries" => "file"
+      case _ => table
+    })
+
   private[this] def aargs(action : AuditAction.Value)(implicit site : Site) : SQLArgs =
     SQLArgs('identity -> site.identity.id, 'audit_ip -> site.clientIP, 'audit_action -> action)
 
@@ -57,7 +64,7 @@ object Audit {
     SQL("INSERT INTO audit (who, ip, action) VALUES ({identity}, {audit_ip}, {audit_action}").on(aargs(action) : _*)
 
   private[this] def SQLon(action : AuditAction.Value, table : String, stmt : String, returning : String = "")(args : SQLArgs)(implicit site : Site) : Sql =
-    SQL("WITH audit_row AS (" + acmd(action) + " " + table + " " + stmt + " RETURNING *) INSERT INTO audit_" + table + " SELECT CURRENT_TIMESTAMP, {identity}, {audit_ip}, {audit_action}, * FROM audit_row" + maybe(returning).fold("")(" RETURNING " + _)).on(args ++ aargs(action) : _*)
+    SQL("WITH audit_row AS (" + acmd(action) + " " + table + " " + stmt + " RETURNING *) INSERT INTO " + atable(table) + " SELECT CURRENT_TIMESTAMP, {identity}, {audit_ip}, {audit_action}, * FROM audit_row" + maybe(returning).fold("")(" RETURNING " + _)).on(args ++ aargs(action) : _*)
 
   /** Record and perform an [[AuditAction.add]] event for a particular table.
     * This does the equivalent of `INSERT INTO table args VALUES args [RETURNING returning]`.
