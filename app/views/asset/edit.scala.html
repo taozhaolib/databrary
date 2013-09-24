@@ -18,7 +18,7 @@
             @tag.textarea(form("body"), 'placeholder -> "Description")
             @tag.inputText(form("offset"))
 
-            @if(controllers.Asset.formForFile(form)) {
+            @if(controllers.Asset.formForFile(form, target)) {
 	        @widget.enumSelect(form("classification"), Classification)
 	        @tag.inputFile(form("file"))
 		@if(request.isAdmin) {

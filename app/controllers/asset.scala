@@ -95,8 +95,8 @@ object Asset extends SiteController {
     assetForm(false).fill((link.name, link.body.getOrElse(""), link.position, None))
   }
 
-  /* FIXME this doesn't work in error cases */
-  def formForFile(form : AssetForm) = form.value.fold(false)(_._4.isDefined)
+  def formForFile(form : AssetForm, target : Either[Container,ContainerAsset]) =
+    form.value.fold(target.isLeft)(_._4.isDefined)
 
   def edit(v : models.Volume.Id, s : models.Container.Id, o : models.Asset.Id) = checkContainer(s, o, Permission.EDIT) { link => implicit request =>
     Ok(views.html.asset.edit(Right(link), formFill(link)))
@@ -115,9 +115,7 @@ object Asset extends SiteController {
     )
   }
 
-  private[this] val uploadForm = assetForm(true).
-    fill(("", "", None, Some((None, Classification.IDENTIFIED, None, ())))).
-    ensuring(formForFile _)
+  private[this] val uploadForm = assetForm(true)
 
   def create(v : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
     Ok(views.html.asset.edit(Left(container), uploadForm))
