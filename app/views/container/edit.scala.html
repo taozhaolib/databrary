@@ -4,7 +4,7 @@
     <article>
         <h1>@c.fold(_.toString + ": New Slot", c => c.toString + ": " + c.name)</h1>
 
-	@tag.form(c.fold(volume => routes.Container.add(volume.id), cont => routes.Container.change(cont.id))) {
+	@tag.form(c.fold(volume => routes.Container.add(volume.id), cont => routes.Container.change(cont.volumeId, cont.id))) {
 		@tag.inputText(form("name"))
 		@tag.inputDate(form("date"))
 		<button type='submit'>@c.fold(_ => "Add", _ => "Change")</button>

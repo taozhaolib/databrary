@@ -21,7 +21,7 @@ object Container extends SiteController {
     }
   }
 
-  def view(i : models.Container.Id) = check(i) { container => implicit request =>
+  def view(vid : models.Volume.Id, i : models.Container.Id) = check(i) { container => implicit request =>
     Ok(views.html.container.view(container))
   }
 
@@ -38,11 +38,11 @@ object Container extends SiteController {
     views.html.container.edit(Right(container), editForm)
   }
 
-  def edit(i : models.Container.Id) = check(i, Permission.EDIT) { cont => implicit request =>
+  def edit(vid : models.Volume.Id, i : models.Container.Id) = check(i, Permission.EDIT) { cont => implicit request =>
     Ok(viewEdit(cont)())
   }
 
-  def change(i : models.Container.Id) = check(i, Permission.EDIT) { cont => implicit request =>
+  def change(vid : models.Volume.Id, i : models.Container.Id) = check(i, Permission.EDIT) { cont => implicit request =>
     editFormFill(cont).bindFromRequest.fold(
       form => BadRequest(viewEdit(cont)(editForm = form)),
       { case (name, date) =>

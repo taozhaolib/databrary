@@ -11,8 +11,8 @@
 	<h1>@target.fold(_ => "Upload Asset", "Edit: "+_.name)</h1>
 
 	@tag.form(target.fold(
-		container => routes.Asset.upload(container.id),
-		link => routes.Asset.change(link.containerId, link.assetId)),
+		container => routes.Asset.upload(container.volumeId, container.id),
+		link => routes.Asset.change(link.volumeId, link.containerId, link.assetId)),
 		'enctype -> "multipart/form-data") {
             @tag.inputText(form("name"), 'placeholder -> "Title", '_class -> "big")
             @tag.textarea(form("body"), 'placeholder -> "Description")

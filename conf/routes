@@ -24,7 +24,7 @@ GET         /logout                                         controllers.Login.lo
 # Entities
 GET         /party/:id                                         controllers.Party.view(id : models.Party.Id)
 GET         /party/:id/edit                                 controllers.Party.edit(id : models.Party.Id)
-POST        /party/:id/Edit                                 controllers.Party.change(id : models.Party.Id)
+POST        /party/:id/edit                                 controllers.Party.change(id : models.Party.Id)
 GET         /party/:id/admin                                 controllers.Party.admin(id : models.Party.Id)
 GET         /party/:id/Authorize/search/child                 controllers.Party.authorizeSearch(id : models.Party.Id, which : Boolean = false)
 GET         /party/:id/Authorize/search/parent                 controllers.Party.authorizeSearch(id : models.Party.Id, which : Boolean = true)
@@ -34,51 +34,51 @@ POST        /party/:id/Authorize/:other/parent                 controllers.Party
 # TODO: should be POST but currently used as link:
 GET         /party/:id/Authorize/:child/delete                 controllers.Party.authorizeDelete(id : models.Party.Id, child : models.Party.Id)
 
-GET         /study/create                         controllers.Volume.create(owner : Option[models.Party.Id] ?= None)
-POST         /study/Create/:owner                         controllers.Volume.add(owner : models.Party.Id)
-GET         /study/:id                                         controllers.Volume.view(id : models.Volume.Id)
-GET         /study/:id/edit                                 controllers.Volume.edit(id : models.Volume.Id)
-POST        /study/:id/Edit                                 controllers.Volume.change(id : models.Volume.Id)
-GET         /study/:id/access                                 controllers.Volume.admin(id : models.Volume.Id)
-GET         /study/:id/access/search                         controllers.Volume.accessSearch(id : models.Volume.Id)
-POST        /study/:id/access/:party/add                         controllers.Volume.accessAdd(id : models.Volume.Id, party : models.Party.Id)
+GET         /volume/create                         controllers.Volume.create(owner : Option[models.Party.Id] ?= None)
+POST        /volume/Create/:owner                         controllers.Volume.add(owner : models.Party.Id)
+GET         /volume/:vid                                         controllers.Volume.view(vid : models.Volume.Id)
+GET         /volume/:vid/edit                                 controllers.Volume.edit(vid : models.Volume.Id)
+POST        /volume/:vid/edit                                 controllers.Volume.change(vid : models.Volume.Id)
+GET         /volume/:vid/access                                 controllers.Volume.admin(vid : models.Volume.Id)
+GET         /volume/:vid/access/search                         controllers.Volume.accessSearch(vid : models.Volume.Id)
+POST        /volume/:vid/access/:party/add                         controllers.Volume.accessAdd(vid : models.Volume.Id, party : models.Party.Id)
 # TODO: should be POST:
-GET         /study/:id/access/:party/delete                 controllers.Volume.accessDelete(id : models.Volume.Id, party : models.Party.Id)
-POST        /study/:id/access/:party                         controllers.Volume.accessChange(id : models.Volume.Id, party : models.Party.Id)
-GET         /studies                                         controllers.Volume.listAll
+GET         /volume/:vid/access/:party/delete                 controllers.Volume.accessDelete(vid : models.Volume.Id, party : models.Party.Id)
+POST        /volume/:vid/access/:party                         controllers.Volume.accessChange(vid : models.Volume.Id, party : models.Party.Id)
+GET         /volumes                                         controllers.Volume.listAll
 
-GET	/study/:id/container			controllers.Container.create(id : models.Volume.Id)
-POST	/study/:id/Container			controllers.Container.add(id : models.Volume.Id)
-GET	/container/:id				controllers.Container.view(id : models.Container.Id)
-GET	/container/:id/edit			controllers.Container.edit(id : models.Container.Id)
-POST	/container/:id/Edit			controllers.Container.change(id : models.Container.Id)
-GET	/container/:id/asset			controllers.Asset.create(id : models.Container.Id)
-POST	/container/:id/Asset			controllers.Asset.upload(id : models.Container.Id)
-GET	/container/:id/asset/:obj/edit		controllers.Asset.edit(id : models.Container.Id, obj : models.Asset.Id)
-POST	/container/:id/asset/:obj/Edit		controllers.Asset.change(id : models.Container.Id, obj : models.Asset.Id)
-POST	/container/:id/asset/:obj/Remove	controllers.Asset.remove(id : models.Container.Id, obj : models.Asset.Id)
+GET         /volume/:vid/container            controllers.Container.create(vid : models.Volume.Id)
+POST        /volume/:vid/container            controllers.Container.add(vid : models.Volume.Id)
+GET         /volume/:vid/container/:id                controllers.Container.view(vid : models.Volume.Id, id : models.Container.Id)
+GET         /volume/:vid/container/:id/edit            controllers.Container.edit(vid : models.Volume.Id, id : models.Container.Id)
+POST        /volume/:vid/container/:id/edit            controllers.Container.change(vid : models.Volume.Id, id : models.Container.Id)
+GET         /volume/:vid/container/:id/asset            controllers.Asset.create(vid : models.Volume.Id, id : models.Container.Id)
+POST        /volume/:vid/container/:id/Asset            controllers.Asset.upload(vid : models.Volume.Id, id : models.Container.Id)
+GET         /volume/:vid/container/:id/asset/:obj/edit        controllers.Asset.edit(vid : models.Volume.Id, id : models.Container.Id, obj : models.Asset.Id)
+POST        /volume/:vid/container/:id/asset/:obj/edit        controllers.Asset.change(vid : models.Volume.Id, id : models.Container.Id, obj : models.Asset.Id)
+POST        /volume/:vid/container/:id/asset/:obj/Remove    controllers.Asset.remove(vid : models.Volume.Id, id : models.Container.Id, obj : models.Asset.Id)
 
-GET	/container/:id/slot			controllers.Slot.create(id : models.Container.Id)
-POST	/container/:id/Slot			controllers.Slot.add(id : models.Container.Id)
-GET	/slot/:id				controllers.Slot.view(id : models.Slot.Id)
-GET	/slot/:id/edit				controllers.Slot.edit(id : models.Slot.Id)
-POST	/slot/:id/Edit				controllers.Slot.change(id : models.Slot.Id)
-GET	/slot/:id/asset/:obj			controllers.Asset.view(id : models.Slot.Id, obj : models.Asset.Id)
-GET	/slot/:id/asset/:obj/download		controllers.Asset.download(id : models.Slot.Id, obj : models.Asset.Id, inline : Boolean = false)
-GET	/slot/:id/asset/:obj/inline		controllers.Asset.download(id : models.Slot.Id, obj : models.Asset.Id, inline : Boolean = true)
-GET	/slot/:id/asset/:obj/head		controllers.Asset.head(id : models.Slot.Id, obj : models.Asset.Id)
-GET	/slot/:id/asset/:obj/frame/:offset	controllers.Asset.frame(id : models.Slot.Id, obj : models.Asset.Id, offset : dbrary.Offset)
+GET         /container/:id/slot            controllers.Slot.create(id : models.Container.Id)
+POST        /container/:id/Slot            controllers.Slot.add(id : models.Container.Id)
+GET         /slot/:id                controllers.Slot.view(id : models.Slot.Id)
+GET         /slot/:id/edit                controllers.Slot.edit(id : models.Slot.Id)
+POST        /slot/:id/edit                controllers.Slot.change(id : models.Slot.Id)
+GET         /slot/:id/asset/:obj            controllers.Asset.view(id : models.Slot.Id, obj : models.Asset.Id)
+GET         /slot/:id/asset/:obj/download        controllers.Asset.download(id : models.Slot.Id, obj : models.Asset.Id, inline : Boolean = false)
+GET         /slot/:id/asset/:obj/inline        controllers.Asset.download(id : models.Slot.Id, obj : models.Asset.Id, inline : Boolean = true)
+GET         /slot/:id/asset/:obj/head        controllers.Asset.head(id : models.Slot.Id, obj : models.Asset.Id)
+GET         /slot/:id/asset/:obj/frame/:offset    controllers.Asset.frame(id : models.Slot.Id, obj : models.Asset.Id, offset : dbrary.Offset)
 
-POST        /study/:id/Comment                                 controllers.Comment.postVolume(id : models.Volume.Id)
+POST        /volume/:vid/Comment                                 controllers.Comment.postVolume(vid : models.Volume.Id)
 POST        /slot/:id/Comment                                 controllers.Comment.postSlot(id : models.Slot.Id)
-POST	/slot/:id/record/:rec/Remove		controllers.Record.slotRemove(id : models.Slot.Id, rec : models.Record.Id)
-POST	/slot/:id/Record			controllers.Record.slotAdd(id : models.Slot.Id)
+POST        /slot/:id/record/:rec/Remove        controllers.Record.slotRemove(id : models.Slot.Id, rec : models.Record.Id)
+POST        /slot/:id/Record            controllers.Record.slotAdd(id : models.Slot.Id)
 
 GET         /record/:id                                        controllers.Record.view(id : models.Record.Id)
 GET         /record/:id/edit                                controllers.Record.edit(id : models.Record.Id)
-POST        /record/:id/Edit                                controllers.Record.update(id : models.Record.Id)
+POST        /record/:id/edit                                controllers.Record.update(id : models.Record.Id)
 
-# Map static resources from the /public folder to the /assets URL path
+# static resources
 GET         /public/*file                                         controllers.Assets.at(path="/public", file)
 
 # ajax
@@ -88,5 +88,5 @@ GET         /ajax/modal/profile                                controllers.Party
 # test
 GET         /test                                                 controllers.Site.test
 
-# redirect trailing slash
+# redirects
 GET         /*path/                                         controllers.Site.untrail(path: String)

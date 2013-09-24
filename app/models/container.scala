@@ -44,7 +44,7 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
 
   def pageName(implicit site : Site) = date.toString // FIXME date permissions/useful title
   def pageParent(implicit site : Site) = Some(volume)
-  def pageURL = controllers.routes.Container.view(id).url
+  def pageURL = controllers.routes.Container.view(volume.id, id).url
 }
 
 object Container extends TableId[Container]("container") {

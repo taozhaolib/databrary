@@ -95,11 +95,11 @@ object Asset extends SiteController {
   /* FIXME this doesn't work in error cases */
   def formForFile(form : AssetForm) = form.value.fold(false)(_._3.isDefined)
 
-  def edit(s : models.Container.Id, o : models.Asset.Id) = checkContainer(s, o, Permission.EDIT) { link => implicit request =>
+  def edit(vid : models.Volume.Id, s : models.Container.Id, o : models.Asset.Id) = checkContainer(s, o, Permission.EDIT) { link => implicit request =>
     Ok(views.html.asset.edit(Right(link), formFill(link)))
   }
 
-  def change(s : models.Container.Id, o : models.Asset.Id) = checkContainer(s, o, Permission.EDIT) { link => implicit request =>
+  def change(vid : models.Volume.Id, s : models.Container.Id, o : models.Asset.Id) = checkContainer(s, o, Permission.EDIT) { link => implicit request =>
     formFill(link).bindFromRequest.fold(
       form => BadRequest(views.html.asset.edit(Right(link), form)), {
       case (name, body, position, file) =>
@@ -114,11 +114,11 @@ object Asset extends SiteController {
 
   private[this] val uploadForm = assetForm(true)
 
-  def create(c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
+  def create(vid : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
     Ok(views.html.asset.edit(Left(container), uploadForm))
   }
 
-  def upload(c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
+  def upload(vid : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
     val form = uploadForm.bindFromRequest
     val file = request.body.asMultipartFormData.flatMap(_.file("file"))
     (if (file.isEmpty) form.withError("file", "error.required") else form).fold(
@@ -137,7 +137,7 @@ object Asset extends SiteController {
     )
   }
 
-  def remove(c : models.Container.Id, a : models.Asset.Id) = checkContainer(c, a, Permission.EDIT) { link => implicit request =>
+  def remove(vid : models.Volume.Id, c : models.Container.Id, a : models.Asset.Id) = checkContainer(c, a, Permission.EDIT) { link => implicit request =>
     link.remove
     Redirect(link.container.pageURL)
   }

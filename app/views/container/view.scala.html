@@ -5,7 +5,7 @@
         <h1>@container.toString: @container.name</h1>
 
 	@if(container.permission >= Permission.EDIT) {
-		<a href="@routes.Container.edit(container.id)">edit</a>
+		<a href="@routes.Container.edit(container.volumeId, container.id)">edit</a>
 	}
 
 	<dl>
@@ -19,7 +19,7 @@
 
 	@if(container.permission >= Permission.CONTRIBUTE) {
 	    <div class="arealinks">
-		<a class="button mhead" href="@routes.Asset.create(container.id)" title="Add new asset">Add</a>
+		<a class="button mhead" href="@routes.Asset.create(container.volumeId, container.id)" title="Add new asset">Add</a>
 	    </div>
 	}
 
