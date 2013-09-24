@@ -1,12 +1,8 @@
 @(slot : Slot)(implicit request : SiteRequest[_])
 
-@template.crud("Slot: " + slot.toString()) {
+@template.crud("Slot: " + slot.container.name + "-" + slot.id.unId) {
     <article>
-        <h1>@slot.toString(): @slot.idents</h1>
-
-	@if(slot.permission >= Permission.EDIT) {
-		<a href="@routes.Slot.edit(slot.volumeId, slot.id)">edit</a>
-	}
+        @crud.slotHeader(slot)
 
 	<dl>
 	@slot.container.date.map { _ =>

@@ -1,8 +1,8 @@
 @(container : Container)(implicit request : SiteRequest[_])
 
-@template.crud("Container: " + container.toString) {
+@template.crud("Container: " + container.name) {
     <article>
-        <h1>@container.toString: @container.name</h1>
+        <h1>Container: @container.name</h1>
 
 	@if(container.permission >= Permission.EDIT) {
 		<a href="@routes.Container.edit(container.volumeId, container.id)">edit</a>
@@ -24,18 +24,23 @@
 	}
 
 	<table>
-		<tr>
-			<th>Slot</th>
-			<th>Range</th>
-			<th>Consent</th>
-		</tr>
-		@container.slots.map { slot =>
-		<tr>
-			<td>@display(slot)</td>
-			<td>@display(slot.segment)</td>
-			<td>@slot.consent</td>
-		</tr>
-		}
+        <thead>
+            <tr>
+                <th class="main">Slot</th>
+                <th class="meta">Range</th>
+                <th class="meta">Consent</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        @container.slots.map { slot =>
+            <tr>
+                <td class="main">@display(slot)</td>
+                <td class="meta">@display(slot.segment)</td>
+                <td class="meta">@slot.consent</td>
+            </tr>
+        }
+        </tbody>
 	</table>
 
 	@if(container.permission >= Permission.CONTRIBUTE) {

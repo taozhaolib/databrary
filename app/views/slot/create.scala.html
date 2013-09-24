@@ -1,13 +1,19 @@
-@(cont : Container, form : controllers.Slot.CreateForm)(implicit request : SiteRequest[_])
+@(container : Container, form : controllers.Slot.CreateForm)(implicit request : SiteRequest[_])
 
-@template.crud("Create Slot in Container: " + cont.toString) {
+@import helper.FieldConstructor
+
+    @implicitField = @{
+        FieldConstructor(tag.minimalFieldConstructor.f)
+    }
+
+@template.crud("Create Slot in Container: " + container.toString) {
     <article>
-        <h1>@cont.toString: New Slot</h1>
+        <h1>New Slot</h1>
 
-	@tag.form(routes.Slot.add(cont.volumeId, cont.id)) {
+	@tag.form(routes.Slot.add(container.volumeId, container.id)) {
 		@tag.inputText(form("start"))
 		@tag.inputText(form("end"))
-		<button type='submit'>Add</button>
+		<button type='submit' class="big button first">Add</button>
 	}
 	@widget.formErrors(form)
     </article>

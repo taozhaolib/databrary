@@ -4,7 +4,7 @@
 	<td>@display(party)</td>
 	@widget.enumSelect(form("access"), Permission)
 	@widget.enumSelect(form("delegate"), Permission)
-	@tag.inputDate(form("expires"))
+	@tag.inputDate(form("expires"), 'placeholder -> "Expiration date", 'class -> "half")
 }
 
 @authorizeSearchWhich(which : Boolean)(implicit fieldConstructor : helper.FieldConstructor) = {

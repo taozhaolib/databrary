@@ -19,17 +19,11 @@
             <fieldset class="publications">
                 <legend>Publications</legend>
 
-                <div class="repeater" data-for="@editForm("citation").id">
-                @helper.repeat(editForm("citation")) { f =>
-                    <div class="repeat">
-                        <div class="repeated">
-                            @tag.inputText(f("head"), 'placeholder -> "Citation")
-                            @tag.inputText(f("url"), 'placeholder -> "DOI or URL")
-                            @tag.textarea(f("body"), 'placeholder -> "Abstract")
-                        </div>
-                    </div>
+                @tag.repeat(editForm("citation")) { f =>
+                    @tag.inputText(f("head"), 'placeholder -> "Citation")
+                    @tag.inputText(f("url"), 'placeholder -> "DOI or URL")
+                    @tag.textarea(f("body"), 'placeholder -> "Abstract")
                 }
-                </div>
             </fieldset>
 
             <button type="submit" class="big button first">@a.fold(_ => "Create", _ => "Change")</button>

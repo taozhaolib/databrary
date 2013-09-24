@@ -1,13 +1,19 @@
 @(c : Either[Volume,Container], form : controllers.Container.ContainerForm)(implicit request : SiteRequest[_])
 
+@import helper.FieldConstructor
+
+    @implicitField = @{
+        FieldConstructor(tag.minimalFieldConstructor.f)
+    }
+
 @template.crud(c.fold("Create Container in Volume: " + _.toString, "Edit Container: " + _.toString)) {
     <article>
-        <h1>@c.fold(_.toString + ": New Slot", c => c.toString + ": " + c.name)</h1>
+        <h1>@c.fold(v => "New Container", c => "Container: " + c.name.get)</h1>
 
 	@tag.form(c.fold(volume => routes.Container.add(volume.id), cont => routes.Container.change(cont.volumeId, cont.id))) {
-		@tag.inputText(form("name"))
-		@tag.inputDate(form("date"))
-		<button type='submit'>@c.fold(_ => "Add", _ => "Change")</button>
+		@tag.inputText(form("name"), 'placeholder -> "Name")
+		@tag.inputDate(form("date"), 'placeholder -> "Date", 'class -> "half")
+		<button type='submit' class="big button first">@c.fold(_ => "Add", _ => "Change")</button>
 	}
 	@widget.formErrors(form)
     </article>

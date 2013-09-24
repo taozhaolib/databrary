@@ -1,0 +1,14 @@
+@(slot : Slot)(implicit request : SiteRequest[_])
+
+<header>
+    <h1>@slot.container.name-@slot.id.unId</h1>
+
+    <nav class="menu">
+        <ul>
+        @if(slot.permission >= Permission.EDIT) {
+			@crud.headerCurrentLink(routes.Slot.view(slot.volume.id, slot.id), "view")
+			@crud.headerCurrentLink(routes.Slot.edit(slot.volume.id, slot.id), "edit")
+        }
+        </ul>
+    </nav>
+</header>

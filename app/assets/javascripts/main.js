@@ -827,6 +827,8 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 $messages = getMessages();
                 $repeaters = getRepeaters();
 
+                setClickers();
+
                 return $this;
             };
 
@@ -856,7 +858,32 @@ dbjs.simpleToggle = function (toggler, toggled) {
                         repeaters[$repeater.attr('id')] = $repeater;
                 });
 
-                return repeaters
+                return repeaters;
+            };
+
+            var setClickers = function () {
+                var check = function ($clicker) {
+                    var $input = $clicker.find('input');
+
+                    if($input.prop('checked'))
+                        $clicker.addClass('check');
+                    else
+                        $clicker.removeClass('check');
+                };
+
+                $this.on('click', '.clicker', function (e) {
+                    var $clicker = $(this),
+                        $input = $clicker.find('input');
+
+                    $input.trigger('click');
+                    check($clicker);
+
+                    e.stopPropagation();
+                });
+
+                $this.find('.clicker').each(function () {
+                    check($(this));
+                });
             };
 
             // setup

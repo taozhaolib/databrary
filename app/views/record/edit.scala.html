@@ -14,7 +14,7 @@
 	    	<dt>@m.name (@m.classification)</dt>
 		<dd>@m.dataType match {
 		case DataType.date => {
-			@tag.inputDate(field)
+			@tag.inputDate(field, 'placeholder -> "Date", 'class -> "half")
 		}
 		case _ if m.values.nonEmpty => {
 			@tag.select(field, ("", "") +: m.values.map(v => (v, v)))
@@ -28,7 +28,7 @@
 		<dt>@tag.select(form("add.metric"), Metric.getAll.map(m => (m.id.unId.toString, m.name + " (" + m.classification + ")")))</dt>
 		<dd>@tag.inputText(form("add.datum"))</dd>
 	    </dl>
-	    <button type='submit'>Update</button>
+	    <button type='submit' class="big button first">Update</button>
 	}
 	@widget.formErrors(form)
 
