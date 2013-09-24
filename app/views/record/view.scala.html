@@ -5,7 +5,7 @@
         <h1>@record.toString()</h1>
 
 	@if(record.permission >= Permission.EDIT) {
-		<a href="@routes.Record.edit(record.id)">edit</a>
+		<a href="@routes.Record.edit(record.volumeId, record.id)">edit</a>
 	}
 
 	<dl>

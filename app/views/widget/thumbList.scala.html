@@ -6,14 +6,14 @@
     <div class="thumb_list row">
     @assetList.map { assetLink =>
         <div class="thumb hover col_2">
-            <a href="@routes.Asset.view(assetLink.slotId, assetLink.link.assetId)" title="@assetLink.link.name">
+            <a href="@routes.Asset.view(assetLink.volumeId, assetLink.slotId, assetLink.link.assetId)" title="@assetLink.link.name">
                 <div class="media">
                 @assetLink.format.mimeSubTypes match {
                     case ("image", _) => {
-                        <img src='@routes.Asset.download(assetLink.slotId, assetLink.link.assetId, true)'/>
+                        <img src='@routes.Asset.download(assetLink.volumeId, assetLink.slotId, assetLink.link.assetId, true)'/>
                     }
                     case ("video", _) => {
-                        <img src='@routes.Asset.head(assetLink.slotId, assetLink.link.assetId)'/>
+                        <img src='@routes.Asset.head(assetLink.volumeId, assetLink.slotId, assetLink.link.assetId)'/>
                     }
                     case _ => {
                     }

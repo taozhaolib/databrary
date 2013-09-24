@@ -40,7 +40,7 @@
 
 	@if(container.permission >= Permission.CONTRIBUTE) {
 	    <div class="arealinks">
-		<a class="button mhead" href="@routes.Slot.create(container.id)" title="Add new slot">Add</a>
+		<a class="button mhead" href="@routes.Slot.create(container.volumeId, container.id)" title="Add new slot">Add</a>
 	    </div>
 	}
 

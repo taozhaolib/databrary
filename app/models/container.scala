@@ -158,7 +158,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
 
   def pageName(implicit site : Site) = this.toString // FIXME
   def pageParent(implicit site : Site) = Some(container)
-  def pageURL = controllers.routes.Slot.view(id).url
+  def pageURL = controllers.routes.Slot.view(container.volumeId, id).url
 }
 
 object Slot extends TableId[Slot]("slot") {

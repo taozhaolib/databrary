@@ -18,7 +18,7 @@
     <tbody>
     @volume.allRecords(Some(RecordCategory.Participant)).map { r =>
         <tr>
-	    <td class="main"><a href='@routes.Record.view(r.id)'>@r.ident(request.db)</a></td>
+	    <td class="main"><a href='@routes.Record.view(volume.id, r.id)'>@r.ident(request.db)</a></td>
             <td>@r.measure(Metric.Gender)(request.db)</td>
             <td>@r.agerange(request.db).map(display.agerange _)</td>
         </tr>

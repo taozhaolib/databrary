@@ -20,7 +20,7 @@ object Record extends SiteController {
     }
   }
 
-  def view(i : models.Record.Id) = check(i) { record => implicit request =>
+  def view(v : models.Volume.Id, i : models.Record.Id) = check(i) { record => implicit request =>
     Ok(views.html.record.view(record))
   }
 
@@ -47,12 +47,12 @@ object Record extends SiteController {
     )))
   }
 
-  def edit(i : models.Record.Id) = check(i, Permission.EDIT) { record => implicit request =>
+  def edit(v : models.Volume.Id, i : models.Record.Id) = check(i, Permission.EDIT) { record => implicit request =>
     val (m, f) = editFormFill(record)
     Ok(views.html.record.edit(record, m, f))
   }
 
-  def update(i : models.Record.Id) = check(i, Permission.EDIT) { record => implicit request =>
+  def update(v : models.Volume.Id, i : models.Record.Id) = check(i, Permission.EDIT) { record => implicit request =>
     val (meas, formin) = editFormFill(record)
     val form = formin.bindFromRequest
     form.fold(
@@ -99,12 +99,12 @@ object Record extends SiteController {
     }
   }
 
-  def slotRemove(s : models.Slot.Id, r : models.Record.Id) = Slot.check(s, Permission.EDIT) { slot => implicit request =>
+  def slotRemove(v : models.Volume.Id, s : models.Slot.Id, r : models.Record.Id) = Slot.check(s, Permission.EDIT) { slot => implicit request =>
     slot.removeRecord(r)
     Redirect(slot.pageURL)
   }
 
-  def slotAdd(s : models.Slot.Id) = Slot.check(s, Permission.EDIT) { slot => implicit request =>
+  def slotAdd(v : models.Volume.Id, s : models.Slot.Id) = Slot.check(s, Permission.EDIT) { slot => implicit request =>
     val form = selectForm.bindFromRequest
     form.fold(
       form => BadRequest(Slot.viewEdit(slot)(recordForm = form)),

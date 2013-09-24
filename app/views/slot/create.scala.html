@@ -4,7 +4,7 @@
     <article>
         <h1>@cont.toString: New Slot</h1>
 
-	@tag.form(routes.Slot.add(cont.id)) {
+	@tag.form(routes.Slot.add(cont.volumeId, cont.id)) {
 		@tag.inputText(form("start"))
 		@tag.inputText(form("end"))
 		<button type='submit'>Add</button>

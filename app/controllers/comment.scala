@@ -27,6 +27,6 @@ object Comment extends SiteController {
     case _ => Forbidden
   }
 
-  def postVolume(s : models.Volume.Id) = Volume.check(s, Permission.COMMENT)(post _)
-  def postSlot(s : models.Slot.Id) = Slot.check(s, Permission.COMMENT)(post _)
+  def postVolume(v : models.Volume.Id) = Volume.check(v, Permission.COMMENT)(post _)
+  def postSlot(v : models.Volume.Id, s : models.Slot.Id) = Slot.check(s, Permission.COMMENT)(post _)
 }

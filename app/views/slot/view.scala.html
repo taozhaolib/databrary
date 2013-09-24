@@ -5,7 +5,7 @@
         <h1>@slot.toString(): @slot.idents</h1>
 
 	@if(slot.permission >= Permission.EDIT) {
-		<a href="@routes.Slot.edit(slot.id)">edit</a>
+		<a href="@routes.Slot.edit(slot.volumeId, slot.id)">edit</a>
 	}
 
 	<dl>
@@ -19,6 +19,6 @@
 
 	@widget.assetList(slot.assets)
 
-	@region.comments(Some(routes.Comment.postSlot(slot.id)), slot.comments(true))
+	@region.comments(Some(routes.Comment.postSlot(slot.volumeId, slot.id)), slot.comments(true))
     </article>
 }

@@ -33,7 +33,7 @@ object Asset extends SiteController {
     }
   }
 
-  def view(i : models.Slot.Id, a : models.Asset.Id) = checkSlot(i, a) { link => implicit request =>
+  def view(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id) = checkSlot(i, a) { link => implicit request =>
     Ok(views.html.asset.view(link))
   }
 
@@ -54,7 +54,7 @@ object Asset extends SiteController {
         data)
     }) : Result) (_ => NotModified)
 
-  def download(i : models.Slot.Id, o : models.Asset.Id, inline : Boolean) = checkSlot(i, o, Permission.DOWNLOAD) { link => implicit request =>
+  def download(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, inline : Boolean) = checkSlot(i, o, Permission.DOWNLOAD) { link => implicit request =>
     assetResult(
       "sobj:%d:%d".format(link.slotId.unId, link.link.assetId.unId),
       store.Asset.read(link),
@@ -63,7 +63,7 @@ object Asset extends SiteController {
     )
   }
 
-  def frame(i : models.Slot.Id, o : models.Asset.Id, offset : Offset = 0) = checkSlot(i, o, Permission.DOWNLOAD) { link => implicit request =>
+  def frame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, offset : Offset = 0) = checkSlot(i, o, Permission.DOWNLOAD) { link => implicit request =>
     link match {
       case ts : SlotTimeseries if offset >= 0 && offset < ts.duration =>
         assetResult(
@@ -75,7 +75,7 @@ object Asset extends SiteController {
       case _ => NotFound
     }
   }
-  def head(i : models.Slot.Id, o : models.Asset.Id) = frame(i, o)
+  def head(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) = frame(v, i, o)
 
   type AssetForm = Form[(String, String, Option[Offset], Option[(Classification.Value, Unit)])]
   private[this] def assetForm(file : Boolean) : AssetForm = Form(tuple(
@@ -95,11 +95,11 @@ object Asset extends SiteController {
   /* FIXME this doesn't work in error cases */
   def formForFile(form : AssetForm) = form.value.fold(false)(_._3.isDefined)
 
-  def edit(vid : models.Volume.Id, s : models.Container.Id, o : models.Asset.Id) = checkContainer(s, o, Permission.EDIT) { link => implicit request =>
+  def edit(v : models.Volume.Id, s : models.Container.Id, o : models.Asset.Id) = checkContainer(s, o, Permission.EDIT) { link => implicit request =>
     Ok(views.html.asset.edit(Right(link), formFill(link)))
   }
 
-  def change(vid : models.Volume.Id, s : models.Container.Id, o : models.Asset.Id) = checkContainer(s, o, Permission.EDIT) { link => implicit request =>
+  def change(v : models.Volume.Id, s : models.Container.Id, o : models.Asset.Id) = checkContainer(s, o, Permission.EDIT) { link => implicit request =>
     formFill(link).bindFromRequest.fold(
       form => BadRequest(views.html.asset.edit(Right(link), form)), {
       case (name, body, position, file) =>
@@ -114,11 +114,11 @@ object Asset extends SiteController {
 
   private[this] val uploadForm = assetForm(true)
 
-  def create(vid : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
+  def create(v : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
     Ok(views.html.asset.edit(Left(container), uploadForm))
   }
 
-  def upload(vid : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
+  def upload(v : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
     val form = uploadForm.bindFromRequest
     val file = request.body.asMultipartFormData.flatMap(_.file("file"))
     (if (file.isEmpty) form.withError("file", "error.required") else form).fold(
@@ -137,7 +137,7 @@ object Asset extends SiteController {
     )
   }
 
-  def remove(vid : models.Volume.Id, c : models.Container.Id, a : models.Asset.Id) = checkContainer(c, a, Permission.EDIT) { link => implicit request =>
+  def remove(v : models.Volume.Id, c : models.Container.Id, a : models.Asset.Id) = checkContainer(c, a, Permission.EDIT) { link => implicit request =>
     link.remove
     Redirect(link.container.pageURL)
   }

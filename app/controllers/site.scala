@@ -60,6 +60,13 @@ object Site extends SiteController {
     Ok("Ok")
   } }
 
+  def tinyUrl(path : String, prefix : String) = Action {
+    prefix match {
+      case "party" => MovedPermanently("/party/" + path)
+      case "volume" => MovedPermanently("/volume/" + path)
+    }
+  }
+
   def untrail(path : String) = Action {
     MovedPermanently("/" + path)
   }

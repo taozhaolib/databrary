@@ -22,7 +22,7 @@ object Slot extends SiteController {
     }
   }
 
-  def view(i : models.Slot.Id) = check(i) { slot => implicit request =>
+  def view(v : models.Volume.Id, i : models.Slot.Id) = check(i) { slot => implicit request =>
     Ok(views.html.slot.view(slot))
   }
 
@@ -40,11 +40,11 @@ object Slot extends SiteController {
     views.html.slot.edit(slot, editForm, recordForm)
   }
 
-  def edit(i : models.Slot.Id) = check(i, Permission.EDIT) { slot => implicit request =>
+  def edit(v : models.Volume.Id, i : models.Slot.Id) = check(i, Permission.EDIT) { slot => implicit request =>
     Ok(viewEdit(slot)())
   }
 
-  def change(i : models.Slot.Id) = check(i, Permission.EDIT) { slot => implicit request =>
+  def change(v : models.Volume.Id, i : models.Slot.Id) = check(i, Permission.EDIT) { slot => implicit request =>
     editFormFill(slot).bindFromRequest.fold(
       form => BadRequest(viewEdit(slot)(editForm = form)),
       { case (consent, toplevel) =>
@@ -60,11 +60,11 @@ object Slot extends SiteController {
     "end" -> optional(Field.offset)
   ).verifying(Messages("range.invalid"), !_.zipped.exists(_ > _)))
 
-  def create(c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { cont => implicit request =>
+  def create(v : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { cont => implicit request =>
     Ok(views.html.slot.create(cont, createForm))
   }
 
-  def add(c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { cont => implicit request =>
+  def add(v : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { cont => implicit request =>
     createForm.bindFromRequest.fold(
       form => BadRequest(views.html.slot.create(cont, form)),
       { case (start, end) =>

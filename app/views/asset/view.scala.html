@@ -12,23 +12,23 @@
 	@if(link.permission >= Permission.DOWNLOAD) {
 		@link.link.asset.format.mimeSubTypes match {
             case ("image", _) => {
-                <img src='@routes.Asset.download(link.slotId, link.link.assetId, true)'/>
+                <img src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
             }
             case ("video", _) => {
                 <video controls>
-                    <source src="@routes.Asset.download(link.slotId, link.link.assetId, true)" type="video/mp4">
+                    <source src="@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)" type="video/mp4">
                 </video>
             }
             case ("text", _) => {
-                <iframe src='@routes.Asset.download(link.slotId, link.link.assetId, true)'/>
+                <iframe src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
             }
             case _ => {
             }
 		}
 
-		<a href='@routes.Asset.download(link.slotId, link.link.assetId, false)'>download</a>
+		<a href='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, false)'>download</a>
 	}
 
-        @region.comments(Some(routes.Comment.postSlot(link.slotId)), link.slot.comments())
+        @region.comments(Some(routes.Comment.postSlot(link.volumeId, link.slotId)), link.slot.comments())
     </article>
 }

@@ -160,7 +160,7 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
 
   def pageName(implicit site : Site) = link.name
   def pageParent(implicit site : Site) = Some(slot)
-  def pageURL = controllers.routes.Asset.view(slotId, link.assetId).url
+  def pageURL = controllers.routes.Asset.view(volume.id, slotId, link.assetId).url
 }
 
 final class SlotTimeseries private[models] (override val link : ContainerTimeseries, slot : Slot, excerpt_ : Option[Boolean] = None) extends SlotAsset(link, slot, excerpt_) with TimeseriesData {
