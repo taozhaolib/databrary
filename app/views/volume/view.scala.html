@@ -1,8 +1,8 @@
 @(volume : Volume, assets : Seq[SlotAsset], excerpts : Map[String, Seq[SlotAsset]], assetMap : Map[String, Seq[SlotAsset]])(implicit request : SiteRequest[_])
 
-@script = {
-    dbjs.tabs('.tabset', '.tab', '.view');
-}
+    @script = {
+        dbjs.tabs('.tabset', '.tab', '.view');
+    }
 
 @template.crud("Volume: " + volume.name, js = script) {
     <article id="volume_@volume.id.unId" class="volume">
@@ -81,6 +81,12 @@
                 <h2 class='tab' data-tip="The Documents tab lists non-media files associated with the current study.">
                     Documents</h2>
                 @widget.assetList(assets)
+            </div>
+
+            <div id="publications" class="view">
+                <h2 class='tab' data-tip="The Publications tab lists works derrived from this dataset.">
+                    Publications</h2>
+                @widget.publicationsList(volume)
             </div>
 
             <div id="participants" class="view">

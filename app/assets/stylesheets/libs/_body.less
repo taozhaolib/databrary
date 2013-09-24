@@ -183,6 +183,34 @@
 	color: @gray_50_third;
 }
 
+.publication {
+    h4 {
+        font-size: 0.9em;
+        text-align: left;
+        margin-bottom: 0;
+    }
+
+    .cit_link {
+        font-size: 0.7em;
+        .border-radius(3px);
+        border: 1px solid @second;
+        display: inline-block;
+        padding: 0 3px;
+        position: relative;
+        top: -2px;
+
+        &:hover {
+            border-color: darken(@second, 30%);
+            background: @white_75_second;
+        }
+    }
+
+    p {
+        font-size: 0.8em;
+        color: @gray_50_third;
+    }
+}
+
 .dates {
 	font-size: 0.7em;
 }
