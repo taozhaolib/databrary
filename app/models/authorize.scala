@@ -26,8 +26,7 @@ final case class Authorize(childId : Party.Id, parentId : Party.Id, access : Per
   def set(implicit site : Site) : Unit = {
     val id = SQLArgs('child -> childId, 'parent -> parentId)
     val args = SQLArgs('access -> access, 'delegate -> delegate, 'authorized -> authorized, 'expires -> expires)
-    if (Audit.change(Authorize.table, args, id).executeUpdate() == 0)
-      Audit.add(Authorize.table, args ++ id).execute()
+    Audit.changeOrAdd(Authorize.table, args, id)
   }
   /** Remove this authorization from the database.
     * Only child and parent are relevant for this operation.

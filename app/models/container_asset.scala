@@ -136,8 +136,7 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
       excerpt.fold {
         Audit.remove("toplevel_asset", ids).execute() : Unit
       } { e =>
-        if (Audit.change("toplevel_asset", SQLArgs('excerpt -> e), ids).executeUpdate() == 0)
-          Audit.add("toplevel_asset", SQLArgs('excerpt -> e) ++ ids).execute()
+        Audit.changeOrAdd("toplevel_asset", SQLArgs('excerpt -> e), ids)
       }
       _excerpt = excerpt
     }

@@ -39,6 +39,11 @@ trait Site {
   def clientIP : dbrary.Inet
 }
 
+trait AuthSite extends Site {
+  val identity : models.Account
+  override def user = Some(identity)
+}
+
 }
 
 package object util {

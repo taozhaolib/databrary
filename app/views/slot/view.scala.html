@@ -19,6 +19,12 @@
 
 	@widget.assetList(slot.assets)
 
+	<ul>
+	@slot.tags.map { case TagWeight(tag, weight, up) =>
+		<li>@tag.name @weight @up</li>
+	}
+	</ul>
+
 	@region.comments(Some(routes.Comment.postSlot(slot.volumeId, slot.id)), slot.comments(true))
     </article>
 }

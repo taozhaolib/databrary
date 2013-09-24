@@ -18,8 +18,8 @@ class AnonRequest[A](request : Request[A], db : util.Site.DB) extends SiteReques
   override def user = None
 }
 
-class UserRequest[A](request : Request[A], val account : Account, db : util.Site.DB) extends SiteRequest[A](request, account, db) {
-  override def user = Some(account)
+class UserRequest[A](request : Request[A], account : Account, db : util.Site.DB) extends SiteRequest[A](request, account, db) with AuthSite {
+  override val identity = account
 }
 
 object SiteAction {

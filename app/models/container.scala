@@ -139,6 +139,8 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   private[models] def commentSlot(implicit db : Site.DB) = this
   def comments(all : Boolean = true)(implicit db : Site.DB) : Seq[Comment] = Comment.getSlot(this, all)
 
+  def tags(implicit site : Site) : Seq[TagWeight] = TagWeight.getSlot(this)
+
   /** The list of records on this object.
     * @param all include indirect records on any contained objects
     */
@@ -211,9 +213,9 @@ object Slot extends TableId[Slot]("slot") {
 
   /** Create a new slot in the specified container or return a matching one if it already exists. */
   def getOrCreate(container : Container, segment : Range[Offset])(implicit db : Site.DB) : Slot =
-    get(container, segment) getOrElse {
+    DBUtil.selectOrInsert(get(container, segment)) {
       val args = SQLArgs('source -> container.id, 'segment -> segment)
-      val id = SQL("INSERT INTO " + table + " " + args.insert + " RETURNING id").
+      val id = SQL("INSERT INTO slot " + args.insert + " RETURNING id").
         on(args : _*).single(scalar[Id])
       new Slot(id, container, segment)
     }

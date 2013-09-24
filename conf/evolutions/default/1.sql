@@ -468,6 +468,27 @@ CREATE TABLE "comment" (
 CREATE INDEX ON "comment" ("slot");
 COMMENT ON TABLE "comment" IS 'Free-text comments on objects (unaudited, immutable).';
 
+----------------------------------------------------------- tags
+
+CREATE TABLE "tag" (
+	"id" serial NOT NULL Primary Key,
+	"name" varchar(32) NOT NULL Unique
+);
+COMMENT ON TABLE "tag" IS 'Tag/keywords that can be applied to objects.';
+
+CREATE TABLE "tag_use" (
+	"tag" integer NOT NULL References "tag",
+	"who" integer NOT NULL References "account",
+	"slot" integer NOT NULL References "slot",
+	"up" boolean NOT NULL Default true,
+	Primary Key ("tag", "who", "slot")
+);
+CREATE INDEX ON "tag_use" ("slot");
+COMMENT ON TABLE "tag_use" IS 'Applications of tags to objects along with their weight (+-1).';
+
+CREATE VIEW "tag_weight" ("tag", "slot", "weight") AS
+	SELECT tag, slot, SUM(CASE WHEN up THEN 1::int ELSE -1::int END)::int FROM tag_use GROUP BY tag, slot;
+
 ----------------------------------------------------------- records
 
 CREATE TABLE "record_category" (
@@ -591,6 +612,9 @@ DROP TYPE data_type;
 DROP TABLE "record";
 DROP TABLE "record_category";
 
+DROP VIEW "tag_weight";
+DROP TABLE "tag_use";
+DROP TABLE "tag";
 DROP TABLE "comment";
 
 DROP TABLE "toplevel_asset";

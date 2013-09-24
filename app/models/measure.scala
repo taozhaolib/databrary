@@ -199,8 +199,9 @@ case class MeasureT[T](override val recordId : Record.Id, override val metric : 
     val ids = this.ids
     val args = ids ++ SQLArgs('datum -> value)
     val tpe = measureType
-    if (SQL("UPDATE " + tpe.table + " SET datum = {datum} WHERE " + ids.where).on(args : _*).executeUpdate == 0)
-      SQL("INSERT INTO " + tpe.table + " " + args.insert).on(args : _*).execute
+    DBUtil.updateOrInsert(
+      SQL("UPDATE " + tpe.table + " SET datum = {datum} WHERE " + ids.where).on(args : _*))(
+      SQL("INSERT INTO " + tpe.table + " " + args.insert).on(args : _*))
     true
   }
 }
@@ -215,8 +216,9 @@ case class Measure(override val recordId : Record.Id, override val metric : Metr
     val tpe = metric.measureType
     val sp = db.setSavepoint
     try {
-      if (SQL("UPDATE " + tpe.table + " SET datum = {value}::" + tpe.pgType + " WHERE " + ids.where).on(args : _*).executeUpdate == 0)
-        SQL("INSERT INTO " + tpe.table + " (record, metric, datum) VALUES ({record}, {metric}, {value}::" + tpe.pgType + ")").on(args : _*).execute
+      DBUtil.updateOrInsert(
+        SQL("UPDATE " + tpe.table + " SET datum = {value}::" + tpe.pgType + " WHERE " + ids.where).on(args : _*))(
+        SQL("INSERT INTO " + tpe.table + " (record, metric, datum) VALUES ({record}, {metric}, {value}::" + tpe.pgType + ")").on(args : _*))
       true
     } catch {
       case e : java.sql.SQLException if e.getMessage.startsWith("ERROR: invalid input syntax for type") =>

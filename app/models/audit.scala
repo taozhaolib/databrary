@@ -56,7 +56,7 @@ object Audit {
   def action(action : AuditAction.Value)(implicit site : Site) =
     SQL("INSERT INTO audit (who, ip, action) VALUES ({identity}, {audit_ip}, {audit_action}").on(aargs(action) : _*)
 
-  private[this] def SQLon(action : AuditAction.Value, table : String, stmt : String, returning : String = "")(args : SQLArgs)(implicit site : Site) =
+  private[this] def SQLon(action : AuditAction.Value, table : String, stmt : String, returning : String = "")(args : SQLArgs)(implicit site : Site) : Sql =
     SQL("WITH audit_row AS (" + acmd(action) + " " + table + " " + stmt + " RETURNING *) INSERT INTO audit_" + table + " SELECT CURRENT_TIMESTAMP, {identity}, {audit_ip}, {audit_action}, * FROM audit_row" + maybe(returning).fold("")(" RETURNING " + _)).on(args ++ aargs(action) : _*)
 
   /** Record and perform an [[AuditAction.add]] event for a particular table.
@@ -65,7 +65,7 @@ object Audit {
     * @param args parameters for attached row data
     * @param returning optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
     */
-  private[models] def add(table : String, args : SQLArgs, returning : String = "")(implicit site : Site) =
+  private[models] def add(table : String, args : SQLArgs, returning : String = "")(implicit site : Site) : Sql =
     SQLon(AuditAction.add, table, args.insert, returning)(args)(site)
 
   /** Record an [[AuditAction.remove]] event to a particular audit table.
@@ -74,7 +74,7 @@ object Audit {
     * @param args parameters to select attached row data
     * @param returning optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
     */
-  private[models] def remove(table : String, args : SQLArgs, returning : String = "")(implicit site : Site) =
+  private[models] def remove(table : String, args : SQLArgs, returning : String = "")(implicit site : Site) : Sql =
     SQLon(AuditAction.remove, table, "WHERE " + args.where, returning)(args)(site)
 
   /** Record an [[AuditAction.change]] event to a particular audit table.
@@ -84,6 +84,9 @@ object Audit {
     * @param where parameters to select attached row data
     * @param returning optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
     */
-  private[models] def change(table : String, sets : SQLArgs, where : SQLArgs, returning : String = "")(implicit site : Site) =
+  private[models] def change(table : String, sets : SQLArgs, where : SQLArgs, returning : String = "")(implicit site : Site) : Sql =
     SQLon(AuditAction.change, table, "SET " + sets.set() + " WHERE " + where.where, returning)(sets ++ where)(site)
+
+  private[models] def changeOrAdd(table : String, sets : SQLArgs, ids : SQLArgs)(implicit site : Site) : Unit =
+    DBUtil.updateOrInsert(change(table, sets, ids))(add(table, sets ++ ids))
 }
