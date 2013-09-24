@@ -127,20 +127,20 @@ object Asset extends SiteController {
     val form = uploadForm.bindFromRequest
     uploadForm.bindFromRequest.fold(error _, {
       case (name, body, position, Some((format, classification, localfile, ()))) =>
+        val fmt = format.filter(_ => request.isAdmin).flatMap(AssetFormat.get(_))
         type ER = Either[AssetForm,(TemporaryFile,AssetFormat,String)]
         request.body.asMultipartFormData.flatMap(_.file("file")).fold {
           localfile.filter(_ => request.isAdmin).fold(
             Left(form.withError("file", "error.required")) : ER) { localfile =>
             val file = new java.io.File(localfile)
-            val fmt = format.flatMap(AssetFormat.get(_))
             if (file.isFile)
-              fmt.fold(Left(form.withError("format", "Invalid format")) : ER)(
+              fmt.fold(Left(form.withError("format", "Unknown format")) : ER)(
                 fmt => Right((TemporaryFile(file), fmt, file.getName)))
             else
               Left(form.withError("localfile", "File not found"))
           }
         } { file =>
-          file.contentType.flatMap(AssetFormat.getMimetype(_)).fold(
+          (fmt orElse file.contentType.flatMap(AssetFormat.getMimetype(_))).fold(
             Left(form.withError("file", "file.format.unknown", file.contentType.getOrElse("unknown"))) : ER)(
             fmt => Right((file.ref, fmt, file.filename)))
         }.fold(error _, {
