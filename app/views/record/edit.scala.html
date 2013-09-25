@@ -1,4 +1,4 @@
-@(record : models.Record, meas : Seq[Metric], form : controllers.Record.EditForm)(implicit request : SiteRequest[_])
+@(record : models.Record, meas : Seq[(Metric,Seq[RecordCategory])], form : controllers.Record.EditForm)(implicit request : SiteRequest[_])
 
 @template.crud("Edit Record: " + record.toString()) {
     <article>
@@ -8,7 +8,8 @@
 	    @tag.select(form("category"), ("", "") +: RecordCategory.getAll.map(c => (c.id.unId.toString, c.name)))</dt>
 
 	    <dl>
-	    @meas.zipWithIndex.map { case (m, i) =>
+	    @meas.zipWithIndex.map { case ((m, rcs), i) =>
+	    @* TODO: use rcs; if record.category not in rcs and datum is empty, hide *@
 		<input type='hidden' name='measure[@i].metric' value='@m.id.unId.toString'/>
 	    @defining(form("measure[" + i + "].datum")) { field =>
 	    	<dt>@m.name (@m.classification)</dt>

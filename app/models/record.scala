@@ -77,20 +77,15 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 }
 
 object Record extends TableId[Record]("record") {
-  private[models] def make(volume : Volume, category : Option[RecordCategory])(id : Id, consent : Option[Consent.Value]) =
-    new Record(id, volume, category, consent.getOrElse(Consent.NONE))
+  private[models] def make(volume : Volume)(id : Id, category : Option[RecordCategory.Id], consent : Option[Consent.Value]) =
+    new Record(id, volume, category.flatMap(RecordCategory.get(_)), consent.getOrElse(Consent.NONE))
   private val columns = Columns[
-    Id,  Option[Consent.Value]](
-    'id, SelectAs("record_consent(record.id)", "record_consent"))
-  private val catCols = columns.leftJoin(RecordCategory.row, "record.category = record_category.id")
-  private[models] val row = catCols.join(Volume.row, "record.volume = volume.id") map {
-    case (rec ~ cls ~ vol) => (make(vol, cls) _).tupled(rec)
+    Id,  Option[RecordCategory.Id], Option[Consent.Value]](
+    'id, 'category,                 SelectAs("record_consent(record.id)", "record_consent"))
+  private[models] val row = columns.join(Volume.row, "record.volume = volume.id") map {
+    case (rec ~ vol) => (make(vol) _).tupled(rec)
   }
-  private[models] def volumeRow(vol : Volume) = catCols map {
-    case (rec ~ cls) => (make(vol, cls) _).tupled(rec)
-  }
-  private[models] def volCatRow(vol : Volume, category : Option[RecordCategory] = None) =
-    category.fold(volumeRow(vol))(cat => columns.map(make(vol, Some(cat)) _))
+  private[models] def volumeRow(vol : Volume) = columns.map(make(vol) _)
 
   /** Retrieve a specific record by id. */
   def get(id : Id)(implicit site : Site) : Option[Record] =
@@ -108,7 +103,7 @@ object Record extends TableId[Record]("record") {
   private[models] def getVolume(volume : Volume, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
     val metric = Metric.Ident
     val mtyp = metric.measureType
-    val cols = volCatRow(volume, category).leftJoin(mtyp.column, "record.id = " + mtyp.table + ".record") map
+    val cols = volumeRow(volume).leftJoin(mtyp.column, "record.id = " + mtyp.table + ".record") map
       { case (record ~ ident) =>
         record._ident() = ident
         record
