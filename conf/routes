@@ -36,7 +36,7 @@ GET    /party/$pID<[0-9]+>/authorize/$child<[0-9]+>/remove                      
 
 # volumes
 GET    /volume/list                                                                              controllers.Volume.listAll
-GET    /volume/create                                                                            controllers.Volume.create(pID : Option[models.Party.Id] ?= None)
+GET    /volume/create                                                                            controllers.Volume.create(owner : Option[models.Party.Id] ?= None)
 POST   /volume/create/$pID<[0-9]+>                                                               controllers.Volume.add(pID : models.Party.Id)
 GET    /volume/$vID<[0-9]+>                                                                      controllers.Volume.view(vID : models.Volume.Id)
 GET    /volume/$vID<[0-9]+>/edit                                                                 controllers.Volume.edit(vID : models.Volume.Id)
@@ -55,7 +55,7 @@ GET    /volume/$vID<[0-9]+>/container/$cID<[0-9]+>                              
 GET    /volume/$vID<[0-9]+>/container/$cID<[0-9]+>/edit                                          controllers.Container.edit(vID : models.Volume.Id, cID : models.Container.Id)
 POST   /volume/$vID<[0-9]+>/container/$cID<[0-9]+>/edit                                          controllers.Container.change(vID : models.Volume.Id, cID : models.Container.Id)
 
-GET    /volume/$vID<[0-9]+>/container/$cID<[0-9]+>/asset                                         controllers.Asset.create(vID : models.Volume.Id, cID : models.Container.Id)
+GET    /volume/$vID<[0-9]+>/container/$cID<[0-9]+>/asset                                         controllers.Asset.create(vID : models.Volume.Id, cID : models.Container.Id, offset : Option[dbrary.Offset] ?= None)
 POST   /volume/$vID<[0-9]+>/container/$cID<[0-9]+>/asset                                         controllers.Asset.upload(vID : models.Volume.Id, cID : models.Container.Id)
 GET    /volume/$vID<[0-9]+>/container/$cID<[0-9]+>/asset/$aID<[0-9]+>/edit                       controllers.Asset.edit(vID : models.Volume.Id, cID : models.Container.Id, aID : models.Asset.Id)
 POST   /volume/$vID<[0-9]+>/container/$cID<[0-9]+>/asset/$aID<[0-9]+>/edit                       controllers.Asset.change(vID : models.Volume.Id, cID : models.Container.Id, aID : models.Asset.Id)
