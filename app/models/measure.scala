@@ -8,36 +8,30 @@ import util._
 
 /** Types of Records that are relevant for data organization.
   * Records that represent data buckets or other kinds of slot groupings (e.g., participants, days, conditions, etc.) can be assigned a particular RecordCategory for the purpose of display and templating.
-  * For now there is only one instance: [RecordCategory.Participant]
+  * For now, all instances are hard-coded.
   */
-final class RecordCategory private (val id : RecordCategory.Id, val name : String) extends TableRowId[RecordCategory] {
+sealed abstract class RecordCategory private (val id : RecordCategory.Id, val name : String) extends TableRowId[RecordCategory] {
   /** The default set of metrics which define records in this category. */
-  def template(implicit db : Site.DB) = Metric.getTemplate(id)
+  def template : Seq[Metric]
 }
 
-object RecordCategory extends TableId[RecordCategory]("record_category") {
-  private[models] val row = Columns[
-    Id,  String](
-    'id, 'name) map {
-    (id, name) => id match {
-      case PARTICIPANT => Participant
-      case _ => new RecordCategory(id, name)
-    }
-  }
-
-  def get(id : Id)(implicit db : Site.DB) : Option[RecordCategory] = id match {
+/** Interface to record categories.
+  * These are all hard-coded so bypass the database, though they are stored in record_category. */
+object RecordCategory extends HasId[RecordCategory] {
+  def get(id : Id) : Option[RecordCategory] = id match {
     case PARTICIPANT => Some(Participant)
-    case _ => row.SQL("WHERE id = {id}").on('id -> id).singleOpt
+    case _ => None
   }
 
-  def getAll(implicit db : Site.DB) : Seq[RecordCategory] =
-    Seq(Participant) ++
-    row.SQL("WHERE id > 0 ORDER BY id").list
+  def getAll : Seq[RecordCategory] =
+    Seq(Participant)
 
   private final val PARTICIPANT : Id = asId(-500)
   /** RecordCategory representing participants, individuals whose data is contained in a particular sesion.
     * Participants usually are associated with birthdate, gender, and other demographics. */
-  final val Participant = new RecordCategory(PARTICIPANT, "participant")
+  final val Participant = new RecordCategory(PARTICIPANT, "participant") {
+    val template = Seq(Metric.Ident, Metric.Birthdate, Metric.Gender)
+  }
 }
 
 /** Types of measurement data values. */
@@ -126,8 +120,10 @@ object Metric extends TableId[MetricT[_]]("metric") {
     Seq(Ident, Birthdate, Gender) ++
     row.SQL("WHERE id > 0 ORDER BY id").list
 
-  private[models] def getTemplate(category : RecordCategory.Id)(implicit db : Site.DB) : Seq[Metric] =
-    row.SQL("JOIN record_template ON id = metric WHERE category = {category} ORDER BY id").
+  private val rowTemplate = row.from("metric JOIN record_template ON metric.id = record_template.metric")
+  /** This is not used as they are for now hard-coded in RecordCategory above. */
+  private def getTemplate(category : RecordCategory.Id)(implicit db : Site.DB) : Seq[Metric] =
+    rowTemplate.SQL("WHERE record_template.category = {category} ORDER BY metric.id").
       on('category -> category).list
 
   private final val IDENT : Id = asId(-900)
@@ -273,7 +269,7 @@ object MeasureT extends MeasureView[MeasureT[_]]("measure_all") {
   /** Retrieve the set of all records and possibly measures of the given type on the given slot. */
   private[models] def getSlot[T](slot : Slot, category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] = {
     val tpe = metric.measureType
-    val row = Record.volCatRow(slot.volume, category).leftJoin(tpe.column, "record.id = " + tpe.table + ".record") map 
+    val row = Record.volumeRow(slot.volume).leftJoin(tpe.column, "record.id = " + tpe.table + ".record") map 
       { case (r ~ m) => (r, m) }
     row.SQL("JOIN slot_record ON record.id = slot_record.record WHERE metric = {metric}",
       (if (category.isDefined) " AND category = {category}" else ""),

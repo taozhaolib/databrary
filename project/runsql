@@ -107,6 +107,7 @@ elif [[ $1 = check ]] ; then
 	dbreset 1
 	evolve_all
 	pg_dump -O -f $conf/check-evolve.sql "${args[@]}"
+	dbreset 1
 	diff -F'^[A-Z]' -u0 $conf/check-evolve.sql $conf/check-schema.sql
 	echo "OK!"
 	rm -f $conf/check-evolve.sql $conf/check-schema.sql
