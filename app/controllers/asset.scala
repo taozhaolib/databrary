@@ -117,15 +117,15 @@ object Asset extends SiteController {
 
   private[this] val uploadForm = assetForm(true)
 
-  def create(v : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
-    Ok(views.html.asset.edit(Left(container), uploadForm))
+  def create(v : models.Volume.Id, c : models.Container.Id, offset : Option[Offset]) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
+    Ok(views.html.asset.edit(Left(container), uploadForm.fill(("", "", offset, Some((None, Classification.IDENTIFIED, None, ()))))))
   }
 
   def upload(v : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
     def error(form : AssetForm) : Result =
       BadRequest(views.html.asset.edit(Left(container), form))
     val form = uploadForm.bindFromRequest
-    uploadForm.bindFromRequest.fold(error _, {
+    form.fold(error _, {
       case (name, body, position, Some((format, classification, localfile, ()))) =>
         val ts = request.isAdmin
         val fmt = format.filter(_ => ts).flatMap(AssetFormat.get(_, ts))

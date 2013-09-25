@@ -4,7 +4,7 @@ import org.postgresql._
 import org.postgresql.util._
 import java.sql.{Timestamp,Date,SQLException}
 import anorm._
-import play.api.mvc.{PathBindable,JavascriptLitteral}
+import play.api.mvc.{PathBindable,QueryStringBindable,JavascriptLitteral}
 
 class PGObject(pgType : String, pgValue : String) extends PGobject {
   setType(pgType)
@@ -117,6 +117,7 @@ object Offset {
   }
 
   implicit val pathBindable : PathBindable[Offset] = PathBindable.bindableDouble.transform(apply _, _.seconds)
+  implicit val queryStringBindable : QueryStringBindable[Offset] = QueryStringBindable.bindableDouble.transform(apply _, _.seconds)
   implicit val javascriptLitteral : JavascriptLitteral[Offset] = new JavascriptLitteral[Offset] {
     def to(value : Offset) = value.seconds.toString
   }
