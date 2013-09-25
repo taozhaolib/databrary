@@ -10,12 +10,16 @@
     <article>
         @crud.slotHeader(slot)
 
-	@tag.form(routes.Slot.change(slot.volumeId, slot.id), 'id -> "slot_edit") {
-		@widget.enumSelect(form("consent"), Consent)
-		@tag.checkbox(form("toplevel"), 'placeholder -> "Top Level?", '_text -> "Top Level?")
+    @tag.form(routes.Slot.change(slot.volumeId, slot.id), 'id -> "slot_edit") {
+        @if(controllers.Slot.formForContainer(form, slot)) {
+            @tag.inputText(form("name"))
+            @tag.inputDate(form("date"))
+        }
+        @widget.enumSelect(form("consent"), Consent)
+        @tag.checkbox(form("toplevel"), 'placeholder -> "Top Level?", '_text -> "Top Level?")
     }
 
-	@widget.formErrors(form)
+    @widget.formErrors(form)
 
         <fieldset>
             <legend>Records</legend>
