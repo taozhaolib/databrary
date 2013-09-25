@@ -369,6 +369,7 @@ INSERT INTO "timeseries_format" ("id", "mimetype", "extension", "name") VALUES (
 -- The above video format will change to reflect internal storage, these are used for uploaded files:
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/plain', 'txt', 'Plain text');
 -- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/html', 'html', 'Hypertext markup');
+-- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/csv', 'csv', 'Comma-separated values');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/pdf', 'pdf', 'Portable document');
 -- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14');
 -- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/webm', 'webm', 'WebM');
@@ -519,7 +520,7 @@ INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-580, 'gender', 't
 
 CREATE TABLE "record_template" (
 	"category" smallint References "record_category" ON DELETE CASCADE,
-	"metric" int References "metric",
+	"metric" integer References "metric",
 	Primary Key ("category", "metric")
 );
 COMMENT ON TABLE "record_template" IS 'Default set of measures defining a given record category.';
