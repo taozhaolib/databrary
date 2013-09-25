@@ -310,10 +310,10 @@ CREATE UNIQUE INDEX "slot_full_container_idx" ON "slot" ("source") WHERE "segmen
 COMMENT ON TABLE "slot" IS 'Sections of containers selected for referencing, annotating, consenting, etc.';
 COMMENT ON COLUMN "slot"."consent" IS 'Sharing/release permissions granted by participants on (portions of) contained data.  This could equally well be an annotation, but hopefully won''t add too much space here.';
 
-CREATE TABLE "audit_slot" (
+CREATE TABLE "audit_slot_consent" (
 	LIKE "slot"
 ) INHERITS ("audit") WITH (OIDS = FALSE);
-COMMENT ON TABLE "audit_slot" IS 'Partial auditing for slot table covering only consent changes.';
+COMMENT ON TABLE "audit_slot_consent" IS 'Partial auditing for slot table covering only consent changes.';
 
 CREATE FUNCTION "slot_full_create" () RETURNS trigger LANGUAGE plpgsql AS $$
 DECLARE

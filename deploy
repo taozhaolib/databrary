@@ -2,6 +2,7 @@
 if [[ ! -r prod.conf ]] ; then
 	echo "prod.conf does not exist."
 	if [[ ! -f prod.conf.example ]] ; then
+		umask 077
 		cat <<EOF >>prod.conf.example
 include "/application.conf"
 application.secret="`openssl rand -base64 48`"

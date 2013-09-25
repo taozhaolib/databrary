@@ -41,13 +41,26 @@ object AssetFormat extends TableId[AssetFormat]("format") {
     }
   } from "ONLY format"
 
-  /** Lookup a format by its mimetime. */
-  def getMimetype(mimetype : String)(implicit db : Site.DB) : Option[AssetFormat] =
-    row.SQL("WHERE mimetype = {mimetype}").
-      on('mimetype -> mimetype).singleOpt
-  /** Get a list of all file formats in the database */
-  def getAll(implicit db : Site.DB) : Seq[AssetFormat] =
-    row.SQL("ORDER BY format.id").list
+  /** Lookup a format by its id.
+    * @param ts include TimeseriesFormats. Unlike other lookups, this is enabled by default. */
+  def get(id : Id, ts : Boolean = true)(implicit db : Site.DB) : Option[AssetFormat] =
+    (if (ts) TimeseriesFormat.get(id.coerce[TimeseriesFormat]) else None) orElse
+      row.SQL("WHERE id = {id}").on('id -> id).singleOpt
+  /** Lookup a format by its mimetime.
+    * @param ts include TimeseriesFormats. */
+  def getMimetype(mimetype : String, ts : Boolean = false)(implicit db : Site.DB) : Option[AssetFormat] =
+    (if (ts) TimeseriesFormat.getMimetype(mimetype) else None) orElse
+      row.SQL("WHERE mimetype = {mimetype}").on('mimetype -> mimetype).singleOpt
+  /** Lookup a format by its extension.
+    * @param ts include TimeseriesFormats. */
+  def getExtension(extension : String, ts : Boolean = false)(implicit db : Site.DB) : Option[AssetFormat] =
+    (if (ts) TimeseriesFormat.getExtension(extension) else None) orElse
+      row.SQL("WHERE extension = {extension}").on('extension -> extension).singleOpt
+  /** Get a list of all file formats in the database.
+    * @param ts include TimeseriesFormats. */
+  def getAll(implicit db : Site.DB, ts : Boolean = false) : Seq[AssetFormat] =
+    (if (ts) TimeseriesFormat.getAll else Nil) ++
+      row.SQL("ORDER BY format.id").list
 
   private[models] final val IMAGE : Id = asId(-700)
   /** File type for internal image data (jpeg).
@@ -60,11 +73,19 @@ object AssetFormat extends TableId[AssetFormat]("format") {
   * These formats are all hard-coded so do not rely on the database, although they do have a corresponding timeseries_format table.
   * Currently this only includes Video, but may be extended to audio or other timeseries data. */
 object TimeseriesFormat extends HasId[TimeseriesFormat] {
-  /** Retrieve a timeseries format by id. */
   def get(id : Id) = id match {
     case VIDEO => Some(Video)
     case _ => None
   }
+  def getMimetype(mimetype : String) : Option[TimeseriesFormat] = mimetype match {
+    case Video.mimetype => Some(Video)
+    case _ => None
+  }
+  def getExtension(extension : String) : Option[TimeseriesFormat] = Some(extension) match {
+    case Video.extension => Some(Video)
+    case _ => None
+  }
+  def getAll : Seq[TimeseriesFormat] = Seq(Video)
 
   private[models] final val VIDEO : Id = asId(-800)
   /** The designated internal video format. */
@@ -173,7 +194,7 @@ object FileAsset extends AssetView[FileAsset]("file") {
     row.SQL("WHERE file.id = {id}").
       on('id -> i).singleOpt
 
-  /** Create a new file asset based from an uploaded file.
+  /** Create a new file asset from an uploaded file.
     * @param format the format of the file, taken as given
     * @param file a complete, uploaded file which will be moved into the appropriate storage location
     */
@@ -198,6 +219,17 @@ object Timeseries extends AssetView[Timeseries]("timeseries") {
   private[models] def get(i : Id)(implicit db : Site.DB) : Option[Timeseries] =
     row.SQL("WHERE timeseries.id = {id}").
       on('id -> i).singleOpt()
+
+  /** Create a new timeseries asset from an uploaded file.
+    * @param format the format of the file, taken as given
+    * @param file a complete, uploaded file which will be moved into the appropriate storage location
+    */
+  def create(format : TimeseriesFormat, classification : Classification.Value, duration : Offset, file : TemporaryFile)(implicit site : Site) : Timeseries = {
+    val id = Audit.add(table, SQLArgs('format -> format.id, 'classification -> classification, 'duration -> duration), "id").single(scalar[Id])
+    store.FileAsset.store(id, file)
+    site.db.commit
+    new Timeseries(id, format, classification, duration)
+  }
 }
 
 object Clip extends AssetView[Clip]("clip") {
