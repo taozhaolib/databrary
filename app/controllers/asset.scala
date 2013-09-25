@@ -127,26 +127,31 @@ object Asset extends SiteController {
     val form = uploadForm.bindFromRequest
     uploadForm.bindFromRequest.fold(error _, {
       case (name, body, position, Some((format, classification, localfile, ()))) =>
-        val fmt = format.filter(_ => request.isAdmin).flatMap(AssetFormat.get(_))
+        val ts = request.isAdmin
+        val fmt = format.filter(_ => ts).flatMap(AssetFormat.get(_, ts))
+        def extFmt(s : String) =
+          maybe(s.lastIndexOf('.'), -1).
+            flatMap(i => AssetFormat.getExtension(s.substring(i + 1), ts))
         type ER = Either[AssetForm,(TemporaryFile,AssetFormat,String)]
         request.body.asMultipartFormData.flatMap(_.file("file")).fold {
-          localfile.filter(_ => request.isAdmin).fold(
+          localfile.filter(_ => ts).fold(
             Left(form.withError("file", "error.required")) : ER) { localfile =>
             val file = new java.io.File(localfile)
+            val name = file.getName
             if (file.isFile)
-              fmt.fold(Left(form.withError("format", "Unknown format")) : ER)(
-                fmt => Right((TemporaryFile(file), fmt, file.getName)))
+              (fmt orElse extFmt(name)).fold(Left(form.withError("format", "Unknown format")) : ER)(
+                fmt => Right((TemporaryFile(file), fmt, name)))
             else
               Left(form.withError("localfile", "File not found"))
           }
         } { file =>
-          (fmt orElse file.contentType.flatMap(AssetFormat.getMimetype(_))).fold(
+          (fmt orElse file.contentType.flatMap(AssetFormat.getMimetype(_, ts)) orElse extFmt(file.filename)).fold(
             Left(form.withError("file", "file.format.unknown", file.contentType.getOrElse("unknown"))) : ER)(
             fmt => Right((file.ref, fmt, file.filename)))
         }.fold(error _, {
           case (file, fmt, fname) =>
             val asset = fmt match {
-              case fmt : TimeseriesFormat =>
+              case fmt : TimeseriesFormat if ts => // "if ts" should be redundant
                 val probe = media.AV.probe(file.file)
                 models.Timeseries.create(fmt, classification, probe.duration, file)
               case _ =>
