@@ -11,6 +11,10 @@
         <h1>@slot.toString</h1>
 
 	@tag.form(routes.Slot.change(slot.volumeId, slot.id)) {
+		@if(controllers.Slot.formForContainer(form, slot)) {
+			@tag.inputText(form("name"))
+			@tag.inputDate(form("date"))
+		}
 		@widget.enumSelect(form("consent"), Consent)
 		@tag.checkbox(form("toplevel"))
 		<button type='submit' class="big button first">Change</button>

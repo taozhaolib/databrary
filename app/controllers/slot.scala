@@ -26,12 +26,23 @@ object Slot extends SiteController {
     Ok(views.html.slot.view(slot))
   }
 
-  type EditForm = Form[(Consent.Value, Boolean)]
-  private[this] val editForm = Form(tuple(
+  type EditForm = Form[(Option[(Option[String], Option[Date])], Consent.Value, Boolean)]
+  private[this] def editForm(container : Boolean) = Form(tuple(
+    "" -> MaybeMapping(if (container) Some(tuple(
+      "name" -> optional(nonEmptyText),
+      "date" -> optional(sqlDate)
+    )) else None),
     "consent" -> Field.enum(Consent),
     "toplevel" -> boolean
   ))
-  private[this] def editFormFill(s : Slot) = editForm.fill((s.consent, s.toplevel))
+  private[this] def editFormFill(s : Slot) = {
+    val full = s.isFull
+    val cont = (if (full) Some(s.container) else None)
+    editForm(full).fill((cont.map(c => (c.name, c.date)), s.consent, s.toplevel))
+  }
+
+  def formForContainer(form : EditForm, slot : Slot) =
+    form.value.fold(slot.isFull)(_._1.isDefined)
 
   private[controllers] def viewEdit(slot : Slot)(
     editForm : EditForm = editFormFill(slot),
@@ -47,7 +58,10 @@ object Slot extends SiteController {
   def change(v : models.Volume.Id, i : models.Slot.Id) = check(i, Permission.EDIT) { slot => implicit request =>
     editFormFill(slot).bindFromRequest.fold(
       form => BadRequest(viewEdit(slot)(editForm = form)),
-      { case (consent, toplevel) =>
+      { case (container, consent, toplevel) =>
+        container foreach {
+          case (name, date) => slot.container.change(name = name, date = date)
+        }
         slot.change(consent = consent, toplevel = toplevel)
         Redirect(slot.pageURL)
       }

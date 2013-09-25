@@ -98,6 +98,8 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   private[this] var _toplevel = toplevel_
   /** True if this slot has been promoted for toplevel display. */
   def toplevel = _toplevel
+  /** True if this is its container's full slot. */
+  def isFull = segment.isFull
 
   /** Update the given values in the database and this object in-place. */
   def change(consent : Consent.Value = _consent, toplevel : Boolean = _toplevel)(implicit site : Site) : Unit = {
@@ -116,7 +118,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   }
 
   private[this] val _context = CachedVal[Option[Slot], Site.DB] { implicit db =>
-    if (consent != Consent.NONE || segment.isFull) Some(this) else {
+    if (consent != Consent.NONE || isFull) Some(this) else {
       Slot.containerRow(container).SQL("WHERE slot.source = {cont} AND slot.segment @> {seg} AND slot.consent IS NOT NULL").
         on('cont -> containerId, 'seg -> segment).singleOpt()
     }
