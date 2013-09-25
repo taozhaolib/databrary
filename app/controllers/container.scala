@@ -61,7 +61,8 @@ object Container extends SiteController {
       form => BadRequest(views.html.container.edit(Left(volume), form)),
       { case (name, date) =>
         val cont = models.Container.create(volume, name = name, date = date)
-        Redirect(cont.pageURL)
+        Redirect(cont.fullSlot.pageURL)
+//        Redirect(cont.pageURL)
       }
     )
   }

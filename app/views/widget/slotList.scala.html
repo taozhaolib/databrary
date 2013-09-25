@@ -1,4 +1,4 @@
-@(volume: Volume)(implicit request: SiteRequest[_])
+@(volume : Volume)(implicit request : SiteRequest[_])
 
 <table class="assets">
     <thead>
@@ -10,25 +10,29 @@
     </thead>
 
     <tbody>
-    @volume.allRecords(Some(RecordCategory.Participant)).map { r =>
-        <tr>
-	    <td class="main"><a href='@routes.Record.view(volume.id, r.id)'>@r.ident(request.db)</a></td>
-            <td>@r.measure(Metric.Gender)(request.db)</td>
-            <td>@r.agerange(request.db).map(display.agerange _)</td>
-        </tr>
-    }
+        @volume.allRecords(Some(RecordCategory.Participant)).map { r =>
+            <tr>
+                <td class="main"><a href='@routes.Record.view(volume.id, r.id)'>@r.ident(request.db)</a></td>
+                <td>@r.measure(Metric.Gender)(request.db)</td>
+                <td>@r.agerange(request.db).map(display.agerange _)</td>
+            </tr>
+        }
     </tbody>
 </table>
 
-<h3>Containers</h3>
-    <ul>
-    @volume.containers.map { cont =>
-        <li><a href='@cont.pageURL'>@cont.name</a></li>
+<h3>Slots</h3>
+<ul class="csv">
+@volume.containers.map { container =>
+    @if(!container.top) {
+        @container.slots.map { slot =>
+            <li><a href='@slot.pageURL'>@container.name-@slot.id.unId</a></li>
+        }
     }
-    </ul>
-
-@if(volume.permission >= Permission.CONTRIBUTE) {
-    <div class="arealinks">
-        <a class="button mhead" href="@routes.Container.create(volume.id)" title="Add new container">Add</a>
-    </div>
 }
+</ul>
+
+    @if(volume.permission >= Permission.CONTRIBUTE) {
+        <div class="arealinks">
+            <a class="button mhead" href="@routes.Container.create(volume.id)" title="Add new slot">Add</a>
+        </div>
+    }

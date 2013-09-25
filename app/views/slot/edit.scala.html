@@ -12,11 +12,10 @@
 
     @tag.form(routes.Slot.change(slot.volumeId, slot.id), 'id -> "slot_edit") {
         @if(controllers.Slot.formForContainer(form, slot)) {
-            @tag.inputText(form("name"))
-            @tag.inputDate(form("date"))
+            @tag.inputText(form("name"), 'placeholder -> "Name")
+            @tag.inputDate(form("date"), 'placeholder -> "Date", 'class -> "half")
         }
         @widget.enumSelect(form("consent"), Consent)
-        @tag.checkbox(form("toplevel"), 'placeholder -> "Top Level?", '_text -> "Top Level?")
     }
 
     @widget.formErrors(form)
@@ -24,21 +23,7 @@
         <fieldset>
             <legend>Records</legend>
 
-            <ul>
-            @slot.records.map { record =>
-                <li>@display(record):
-                @tag.form(routes.Record.slotRemove(slot.volumeId, slot.id, record.id)) {
-                    <button type='submit' class="mini button">remove</button>
-                }
-                </li>
-            }
-                <li>
-                @tag.form(routes.Record.slotAdd(slot.volumeId, slot.id)) {
-                    @tag.select(recordForm("record"), controllers.Record.selectList(slot) :+ ("" -> "Create new record..."))
-                    <button type='submit' class="mini button first">add</button>
-                }
-                </li>
-            </ul>
+            @widget.recordAdminList(slot, recordForm)
         </fieldset>
 
         <button type='submit' class="big button first" form="slot_edit">Change</button>

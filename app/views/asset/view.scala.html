@@ -29,6 +29,8 @@
 		<a href='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, false)'>download</a>
 	}
 
+        <div class="row">
         @region.comments(Some(routes.Comment.postSlot(link.volumeId, link.slotId)), link.slot.comments())
+        </div>
     </article>
 }

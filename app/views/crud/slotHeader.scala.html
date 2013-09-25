@@ -8,6 +8,7 @@
         @if(slot.permission >= Permission.EDIT) {
 			@crud.headerCurrentLink(routes.Slot.view(slot.volume.id, slot.id), "view")
 			@crud.headerCurrentLink(routes.Slot.edit(slot.volume.id, slot.id), "edit")
+            @crud.headerCurrentLink(routes.Asset.create(slot.volume.id, slot.containerId), "upload")
         }
         </ul>
     </nav>

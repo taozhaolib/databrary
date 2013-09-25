@@ -1,0 +1,37 @@
+@(slot : Slot, recordForm : controllers.Record.SelectForm)(implicit request : SiteRequest[_])
+
+@defining(helper.FieldConstructor(tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
+<table class="records">
+    <thead>
+        <tr>
+            <th class="main">Record</th>
+            <th class="meta">Category</th>
+            <th class="meta">Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @slot.records(request.db).map { record =>
+            @tag.form(routes.Record.slotRemove(slot.volumeId, slot.id, record.id, true)) {
+            <tr>
+                <td class="main">@display(record)</td>
+                <td class="meta">@record.category.fold("")(_.name)</td>
+                <td class="meta">
+                    <a href="@routes.Record.edit(record.volume.id, record.id)" class="button">edit</a>
+                    <button type='submit' class="button second">remove</button>
+                </td>
+            </tr>
+            }
+        }
+    </tbody>
+
+    <tfoot>
+        @tag.form(routes.Record.slotAdd(slot.volumeId, slot.id, true)) {
+        <tr>
+            @tag.select(recordForm("record"), controllers.Record.selectList(slot), '_default -> "Create new record...", '_colspan -> 2)
+            <td><button type='submit' class="button first">add</button></td>
+        </tr>
+        }
+    </tfoot>
+</table>
+}

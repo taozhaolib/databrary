@@ -6,9 +6,9 @@
         FieldConstructor(tag.minimalFieldConstructor.f)
     }
 
-@template.crud(c.fold("Create Container in Volume: " + _.toString, "Edit Container: " + _.toString)) {
+@template.crud(c.fold("Create Slot in Volume: " + _.toString, "Edit Slot: " + _.toString)) {
     <article>
-        <h1>@c.fold(v => "New Container", c => "Container: " + c.name.get)</h1>
+        <h1>@c.fold(v => "New Slot", c => "Slot: " + c.name.get)</h1>
 
 	@tag.form(c.fold(volume => routes.Container.add(volume.id), cont => routes.Container.change(cont.volumeId, cont.id))) {
 		@tag.inputText(form("name"), 'placeholder -> "Name")

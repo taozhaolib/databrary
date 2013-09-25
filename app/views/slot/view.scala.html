@@ -11,9 +11,11 @@
 	}
 	</dl>
 
-	@widget.recordList(slot)
-
+        <h2>Assets</h2>
 	@widget.assetList(slot.assets)
+
+        <h2>Records</h2>
+        @widget.recordList(slot)
 
 	<ul>
 	@slot.tags.map { case TagWeight(tag, weight, up) =>
@@ -21,6 +23,8 @@
 	}
 	</ul>
 
-	@region.comments(Some(routes.Comment.postSlot(slot.volumeId, slot.id)), slot.comments(true))
+        <div class="row">
+        @region.comments(Some(routes.Comment.postSlot(slot.volumeId, slot.id)), slot.comments(true))
+        </div>
     </article>
 }
