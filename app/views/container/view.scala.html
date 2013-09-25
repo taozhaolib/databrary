@@ -17,6 +17,12 @@
 
 	@widget.assetList(container.fullSlot.assets)
 
+    @if(container.permission >= Permission.CONTRIBUTE) {
+        <div class="arealinks">
+            <a class="button mhead" href="@routes.Asset.create(container.volumeId, container.id)" title="Add new asset">Add</a>
+        </div>
+    }
+
 	@if(container.permission >= Permission.CONTRIBUTE) {
 	    <div class="arealinks">
 		<a class="button mhead" href="@routes.Asset.create(container.volumeId, container.id)" title="Add new asset">Add</a>

@@ -81,6 +81,12 @@
                 <h2 class='tab' data-tip="The Documents tab lists non-media files associated with the current study.">
                     Documents</h2>
                 @widget.assetList(assets)
+
+                @if(volume.topContainer.permission >= Permission.CONTRIBUTE) {
+                    <div class="arealinks">
+                        <a class="button mhead" href="@routes.Asset.create(volume.id, volume.topContainer.id)" title="Add new asset">Add</a>
+                    </div>
+                }
             </div>
 
             <div id="publications" class="view">

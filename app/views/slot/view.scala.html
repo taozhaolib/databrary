@@ -12,16 +12,66 @@
 	</dl>
 
         <h2>Assets</h2>
-	@widget.assetList(slot.assets)
+	    @widget.assetList(slot.assets)
+
+        @if(slot.id == slot.container.fullSlot.id && slot.container.permission >= Permission.CONTRIBUTE) {
+            <div class="arealinks">
+                <a class="button mhead" href="@routes.Asset.create(slot.volumeId, slot.container.id)" title="Add new asset">Add</a>
+            </div>
+        }
+
+        @if(slot.container.fullSlot.id == slot.id) {
+            <h2>Child Slots</h2>
+            @if(slot.container.slots.lengthCompare(1) > 0) {
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="main">Slot</th>
+                            <th class="meta">Range</th>
+                            <th class="meta">Consent</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    @slot.container.slots.map { s =>
+                        @if(s.id != slot.container.fullSlot.id) {
+                            <tr>
+                                <td class="main">@display(s)</td>
+                                <td class="meta">@display(s.segment)</td>
+                                <td class="meta">@s.consent</td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            }
+
+            @if(slot.container.permission >= Permission.CONTRIBUTE) {
+                <div class="arealinks">
+                    <a class="button mhead" href="@routes.Slot.create(slot.volumeId, slot.containerId)" title="Add new slot">Add</a>
+                </div>
+            }
+        }
 
         <h2>Records</h2>
-        @widget.recordList(slot)
+        @widget.recordAdminList(slot)
 
-	<ul>
-	@slot.tags.map { case TagWeight(tag, weight, up) =>
-		<li>@tag.name @weight @up</li>
-	}
-	</ul>
+        @if(slot.permission >= Permission.CONTRIBUTE) {
+            <div class="arealinks">
+                @tag.form(routes.Record.slotAdd(slot.volumeId, slot.id, false)) {
+                <button class="button mhead" title="Add new record">Add</button>
+                }
+            </div>
+        }
+
+        @if(slot.tags.nonEmpty) {
+        <h2>Tags</h2>
+	    <ul>
+        @slot.tags.map { case TagWeight(tag, weight, up) =>
+            <li>@tag.name @weight @up</li>
+        }
+        </ul>
+        }
 
         <div class="row">
         @region.comments(Some(routes.Comment.postSlot(slot.volumeId, slot.id)), slot.comments(true))

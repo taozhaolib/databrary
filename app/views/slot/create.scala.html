@@ -11,8 +11,8 @@
         <h1>New Slot</h1>
 
 	@tag.form(routes.Slot.add(container.volumeId, container.id)) {
-		@tag.inputText(form("start"))
-		@tag.inputText(form("end"))
+		@tag.inputText(form("start"), 'placeholder -> "Start offset")
+		@tag.inputText(form("end"), 'placeholder -> "End offset")
 		<button type='submit' class="big button first">Add</button>
 	}
 	@widget.formErrors(form)
