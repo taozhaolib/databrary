@@ -31,6 +31,6 @@ object CSV extends scala.util.parsing.combinator.RegexParsers {
   /** Parse a CSV string.
     * @return Left(error) or Right(result)
     */
-  def parseString(s : String, ignoreBlankLines : Boolean = false) : Either[String,T] =
+  def parseString(s : String, ignoreBlankLines : Boolean = false) : Parse.Result[T] =
     result(parseAll(all, s), ignoreBlankLines)
 }
