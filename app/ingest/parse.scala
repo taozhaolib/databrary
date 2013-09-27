@@ -9,6 +9,18 @@ object Parse {
   /** The result of parsing a T: Left(error) or Right(T). */
   type Result[T] = Either[String,T]
   type Parse[T] = String => Result[T]
+
+  def result[T](r : T) : Result[T] = Right(r)
+  def fail[T](e : String) : Result[T] = Left(e)
+
+  def foldResult[T,R](l : Seq[T])(z : R)(op : (R, T) => Result[R]) =
+    l.foldLeft(result(z)) { (r, x) =>
+      r.right.flatMap(op(_, x))
+    }
+
+  def sequence[T](l : Seq[Result[T]]) : Result[Seq[T]] =
+    l collectFirst { case Left(e) => e } toLeft l.map(_.right.get)
+
   /* A reader monad! */
   case class Parser[A](parse : Parse[A]) extends Parse[A] {
     final def apply(s : String) : Result[A] = parse(s)
@@ -31,10 +43,10 @@ object Parse {
     }
   }
 
-  val string : Parser[String] = Parser(Right(_))
+  val string : Parser[String] = Parser(result(_))
 
   def option[T](p : Parser[T]) : Parser[Option[T]] = Parser { s =>
-    if (s.isEmpty) Right(None) else p(s).right.map(Some(_))
+    if (s.isEmpty) result(None) else p(s).right.map(Some(_))
   }
 
   private val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
@@ -51,11 +63,11 @@ object Parse {
       enum(s.toInt)
     )).fold {
       enum.values.filter(_.toString.startsWith(s)).toSeq match {
-        case Seq(r) => Right(r)
-        case Seq() => Left("Unknown " + name + ": " + s)
-        case _ => Left("Ambiguous " + name + ": " + s)
+        case Seq(r) => result(r)
+        case Seq() => fail("Unknown " + name + ": " + s)
+        case _ => fail("Ambiguous " + name + ": " + s)
       }
-    } (Right(_))
+    } (result(_))
   }
 
   /** Enumeration that allows case-insensitive parsing assuming all values are upper-case. */
@@ -73,11 +85,8 @@ object Parse {
   }
 
   def regex(p : Regex, name : String = "pattern") : Parser[Unit] = Parser { s =>
-    if (p.matcher(s).matches) Right(()) else Left("mismatching " + name + " (" + p + "): " + s)
+    if (p.matcher(s).matches) result(()) else fail("mismatching " + name + " (" + p + "): " + s)
   }
-
-  def sequence[T](l : Seq[Result[T]]) : Result[Seq[T]] =
-    l collectFirst { case Left(e) => e } toLeft l.map(_.right.get)
 
 
   type ListResult[T] = Result[(T, List[String])]
@@ -93,19 +102,19 @@ object Parse {
       parse(l).right map { case (r, l) => (f(r), l) }
     }
     def run(l : List[String]) : Result[A] = parse(l).right.flatMap {
-      case (r, Nil) => Right(r)
-      case (_, l) => Left("unexpected extra fields: " + l.mkString(","))
+      case (r, Nil) => result(r)
+      case (_, l) => fail("unexpected extra fields: " + l.mkString(","))
     }
   }
 
   def listHead[T](p : Parser[T], name : String) : ListParser[T] = ListParser[T] {
-    case Nil => Left(name + " expected")
+    case Nil => fail(name + " expected")
     case x :: l => p(x).right.map((_, l))
   }
 
   def listParse_(ps : (String, Parser[Unit])*) : ListParser[Unit] = ListParser[Unit] { l =>
-    ps.foldLeft(Right[String,List[String]](l) : Result[List[String]]) { (l, sp) =>
-      l.right.flatMap(listHead(sp._2, sp._1)(_).right.map(_._2))
+    foldResult(ps)(l) { (l, sp) =>
+      listHead(sp._2, sp._1)(l).right.map(_._2)
     }.right.map(((), _))
   }
   

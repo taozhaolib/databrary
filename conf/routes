@@ -88,6 +88,9 @@ GET    /volume/$vID<[0-9]+>/record/$rID<[0-9]+>                                 
 GET    /volume/$vID<[0-9]+>/record/$rID<[0-9]+>/edit                                             controllers.Record.edit(vID : models.Volume.Id, rID : models.Record.Id)
 POST   /volume/$vID<[0-9]+>/record/$rID<[0-9]+>/edit                                             controllers.Record.update(vID : models.Volume.Id, rID : models.Record.Id)
 
+GET    /volume/$vID<[0-9]+>/ingest/csv                                         			 controllers.Ingest.csv(vID : models.Volume.Id)
+POST   /volume/$vID<[0-9]+>/ingest/preview                                     			 controllers.Ingest.preview(vID : models.Volume.Id)
+
 # static resources
 GET    /public/*file                                                                             controllers.Assets.at(path="/public", file)
 

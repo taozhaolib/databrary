@@ -1,0 +1,32 @@
+@(slot : Slot, form : controllers.Slot.EditForm, recordForm : controllers.Record.SelectForm)(implicit request : SiteRequest[_])
+
+@import helper.FieldConstructor
+
+    @implicitField = @{
+        FieldConstructor(tag.minimalFieldConstructor.f)
+    }
+
+@template.crud("Edit Slot: " + slot.container.name + "-" + slot.id.unId) {
+    <article>
+        @crud.slotHeader(slot)
+
+    @tag.form(routes.Slot.change(slot.volumeId, slot.id), 'id -> "slot_edit") {
+        @if(controllers.Slot.formForContainer(form, slot)) {
+            @tag.inputText(form("name"), 'placeholder -> "Name")
+            @tag.inputDate(form("date"), 'placeholder -> "Date", 'class -> "half")
+        }
+        @widget.enumSelect(form("consent"), Consent)
+    }
+
+    @widget.formErrors(form)
+
+        <fieldset>
+            <legend>Records</legend>
+
+            @widget.recordAdminList(slot, recordForm)
+        </fieldset>
+
+        <button type='submit' class="big button first" form="slot_edit">Change</button>
+
+    </article>
+}

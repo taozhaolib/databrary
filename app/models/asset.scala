@@ -58,9 +58,17 @@ object AssetFormat extends TableId[AssetFormat]("format") {
       row.SQL("WHERE extension = {extension}").on('extension -> extension).singleOpt
   /** Get a list of all file formats in the database.
     * @param ts include TimeseriesFormats. */
-  def getAll(implicit db : Site.DB, ts : Boolean = false) : Seq[AssetFormat] =
+  def getAll(ts : Boolean = false)(implicit db : Site.DB) : Seq[AssetFormat] =
     (if (ts) TimeseriesFormat.getAll else Nil) ++
       row.SQL("ORDER BY format.id").list
+
+  def getFilename(filename : String, ts : Boolean = false)(implicit db : util.Site.DB) =
+    maybe(filename.lastIndexOf('.'), -1).
+      flatMap(i => getExtension(filename.substring(i + 1), ts))
+  def getFilePart(file : play.api.mvc.MultipartFormData.FilePart[_], ts : Boolean = false)(implicit db : util.Site.DB) =
+    file.contentType.flatMap(getMimetype(_, ts)) orElse
+      getFilename(file.filename, ts)
+
 
   private[models] final val IMAGE : Id = asId(-700)
   /** File type for internal image data (jpeg).

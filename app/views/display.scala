@@ -62,7 +62,7 @@ object display {
   def plainText(text: String = "") =
     raw("<p>"+text.replaceAll("\\r?\\n", "</p><p>")+"</p>")
 
-  /** Displays the first length lines of text.
+  /** Displays the first length paragraphs of text.
     * Is this really correct?  Should length be in characters?
     */
   def plainTextSummary(text: String = "", length: Int = 1000) =

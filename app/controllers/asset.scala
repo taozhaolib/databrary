@@ -129,9 +129,6 @@ object Asset extends SiteController {
       case (name, body, position, Some((format, classification, localfile, ()))) =>
         val ts = request.isAdmin
         val fmt = format.filter(_ => ts).flatMap(AssetFormat.get(_, ts))
-        def extFmt(s : String) =
-          maybe(s.lastIndexOf('.'), -1).
-            flatMap(i => AssetFormat.getExtension(s.substring(i + 1), ts))
         type ER = Either[AssetForm,(TemporaryFile,AssetFormat,String)]
         request.body.asMultipartFormData.flatMap(_.file("file")).fold {
           localfile.filter(_ => ts).fold(
@@ -139,13 +136,13 @@ object Asset extends SiteController {
             val file = new java.io.File(localfile)
             val name = file.getName
             if (file.isFile)
-              (fmt orElse extFmt(name)).fold(Left(form.withError("format", "Unknown format")) : ER)(
+              (fmt orElse AssetFormat.getFilename(name, ts)).fold(Left(form.withError("format", "Unknown format")) : ER)(
                 fmt => Right((TemporaryFile(file), fmt, name)))
             else
               Left(form.withError("localfile", "File not found"))
           }
         } { file =>
-          (fmt orElse file.contentType.flatMap(AssetFormat.getMimetype(_, ts)) orElse extFmt(file.filename)).fold(
+          (fmt orElse AssetFormat.getFilePart(file, ts)).fold(
             Left(form.withError("file", "file.format.unknown", file.contentType.getOrElse("unknown"))) : ER)(
             fmt => Right((file.ref, fmt, file.filename)))
         }.fold(error _, {

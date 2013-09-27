@@ -1,0 +1,12 @@
+@(vol : models.Volume.Id, form : controllers.Ingest.CSVForm, text : String = "")(implicit request : SiteRequest[_])
+
+@template.crud("CSV Ingest") {
+
+    @tag.form(routes.Ingest.preview(vol)) {
+        @tag.inputFile(form("file"))
+    }
+    @widget.formErrors(form)
+
+    @display.plainText(text)
+
+}
