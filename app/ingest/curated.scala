@@ -12,14 +12,18 @@ object Curated {
 
   private def optString[A](v : Option[A]) : String = v.fold("")(_.toString)
 
-  /* these are all upper-case to allow case-folding insensitive matches */
-  private object Gender extends ENUM("gender") {
+  /* These are all upper-case to allow case-folding insensitive matches.
+   * They also must match (in order) the option in the various metrics. */
+  private class MetricENUM(metric : MetricT[String]) extends ENUM(metric.name) {
+    def valueOf(e : Value) = metric.values(e.id)
+  }
+  private object Gender extends MetricENUM(Metric.Gender) {
     val FEMALE, MALE = Value
   }
-  private object Race extends ENUM("race") {
+  private object Race extends MetricENUM(Metric.Race) {
     val INDIAN, ASIAN, PACIFIC, BLACK, WHITE, MULTIPLE = Value
   }
-  private object Ethnicity extends ENUM("ethnicity") {
+  private object Ethnicity extends MetricENUM(Metric.Ethnicity) {
     val NONHISPANIC, HISPANIC = Value
   }
   private type RaceEthnicity = (Option[Race.Value], Option[Ethnicity.Value])
