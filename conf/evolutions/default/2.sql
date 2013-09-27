@@ -46,7 +46,7 @@ SELECT setval('volume_id_seq', 1, false);
 SELECT setval('asset_id_seq', 1, false);
 
 -- Restore fixtures
-INSERT INTO party VALUES (-1, 'Everybody');
-INSERT INTO party VALUES (0, 'Databrary');
-INSERT INTO authorize (child, parent, access, delegate) VALUES (0, -1, 'ADMIN', 'ADMIN');
+INSERT INTO "party" VALUES (-1, 'Everybody'); -- NOBODY
+INSERT INTO "party" VALUES (0, 'Databrary'); -- ROOT
+INSERT INTO "authorize" ("child", "parent", "access", "delegate", "authorized") VALUES (0, -1, 'ADMIN', 'ADMIN', '2013-1-1');
 
