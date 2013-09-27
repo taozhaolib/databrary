@@ -30,7 +30,7 @@ object RecordCategory extends HasId[RecordCategory] {
   /** RecordCategory representing participants, individuals whose data is contained in a particular sesion.
     * Participants usually are associated with birthdate, gender, and other demographics. */
   final val Participant = new RecordCategory(PARTICIPANT, "participant") {
-    val template = Seq(Metric.Ident, Metric.Birthdate, Metric.Gender)
+    val template = Seq(Metric.Ident, Metric.Birthdate, Metric.Gender, Metric.Race, Metric.Ethnicity)
   }
 }
 
@@ -102,6 +102,8 @@ object Metric extends TableId[MetricT[_]]("metric") {
     case IDENT => Ident
     case BIRTHDATE => Birthdate
     case GENDER => Gender
+    case RACE => Race
+    case ETHNICITY => Ethnicity
     case _ => new MetricT(id, name, classification, values.getOrElse(Array[String]()))(MeasureType(dataType))
   }
   private[models] val row = Columns[
@@ -113,11 +115,13 @@ object Metric extends TableId[MetricT[_]]("metric") {
     case IDENT => Some(Ident)
     case BIRTHDATE => Some(Birthdate)
     case GENDER => Some(Gender)
+    case RACE => Some(Gender)
+    case ETHNICITY => Some(Ethnicity)
     case _ => row.SQL("WHERE id = {id}").on('id -> id).singleOpt
   }
 
   def getAll(implicit db : Site.DB) : Seq[Metric] =
-    Seq(Ident, Birthdate, Gender) ++
+    Seq(Ident, Birthdate, Gender, Race, Ethnicity) ++
     row.SQL("WHERE id > 0 ORDER BY id").list
 
   private val rowTemplate = row.from("metric JOIN record_template ON metric.id = record_template.metric")
@@ -126,18 +130,22 @@ object Metric extends TableId[MetricT[_]]("metric") {
     rowTemplate.SQL("WHERE record_template.category = {category} ORDER BY metric.id").
       on('category -> category).list
 
-  private final val IDENT : Id = asId(-900)
+  private final val IDENT     : Id = asId(-900)
   private final val BIRTHDATE : Id = asId(-590)
-  private final val GENDER : Id = asId(-580)
+  private final val GENDER    : Id = asId(-580)
+  private final val RACE      : Id = asId(-550)
+  private final val ETHNICITY : Id = asId(-540)
   /** Identifiers providing generic labels for records or data, such as participant id, condition name, etc.
     * [[Classification.DEIDENTIFIED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
-  object Ident extends MetricT[String](IDENT, "ident", Classification.DEIDENTIFIED)
+  object Ident     extends MetricT[String](IDENT, "ident", Classification.DEIDENTIFIED)
   /** Date of birth for any records representing organisms or other entities with dates of origination.
     * These are treated specially in combination with [[Container.date]] to compute ages.
     * [[Classification.IDENTIFIED]] implies all authorized researchers get full access to these. */
   object Birthdate extends MetricT[Date](BIRTHDATE, "birthdate", Classification.IDENTIFIED)
   /** Gender is treated as a text enumeration. */
-  object Gender extends MetricT[String](GENDER, "gender", Classification.DEIDENTIFIED, Array[String]("F", "M"))
+  object Gender    extends MetricT[String](GENDER, "gender", Classification.DEIDENTIFIED, Array[String]("F", "M"))
+  object Race      extends MetricT[String](RACE, "race", Classification.DEIDENTIFIED, Array[String]("American Indian or Alaska Native","Asian","Native Hawaiian or Other Pacific Islander","Black or African American","White","Multiple"))
+  object Ethnicity extends MetricT[String](ETHNICITY, "ethnicity", Classification.DEIDENTIFIED, Array[String]("Not Hispanic or Latino","Hispanic or Latino"))
 }
 
 
