@@ -40,13 +40,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">RecordCategory</span><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>
+        <span class="name">RecordCategory</span><span class="result"> extends <span class="extype" name="models.HasId">HasId</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Interface to record categories.
+These are all hard-coded so bypass the database, though they are stored in record_category.</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="models.TableId">TableId</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>], <span class="extype" name="models.HasId">HasId</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>], <span class="extype" name="models.Table">Table</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="models.HasId">HasId</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -64,7 +65,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.RecordCategory"><span>RecordCategory</span></li><li class="in" name="models.TableId"><span>TableId</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.RecordCategory"><span>RecordCategory</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -99,19 +100,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId</dd></dl></div>
-    </li><li name="models.Table.Row" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Row=R"></a>
-      <a id="Row:Row"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Row</span><span class="result"> = <a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Type of TableRow this object can generate.</p><div class="fullcomment"><div class="comment cmt"><p>Type of TableRow this object can generate.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>Table → TableView</dd></dl></div>
     </li></ol>
             </div>
 
@@ -185,15 +173,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.RecordCategory#Participant" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Participant:models.RecordCategory"></a>
-      <a id="Participant:RecordCategory"></a>
+      <a id="Participant:models.RecordCategory{valtemplate:Seq[models.MetricT[_&gt;:Stringwithjava.sql.Date&lt;:Comparable[_&gt;:Stringwithjava.util.Date&lt;:Comparable[_&gt;:Stringwithjava.util.Date&lt;:java.io.Serializable]withjava.io.Serializable]withjava.io.Serializable]]}"></a>
+      <a id="Participant:RecordCategory{valtemplate:Seq[models.MetricT[_&gt;:Stringwithjava.sql.Date&lt;:Comparable[_&gt;:Stringwithjava.util.Date&lt;:Comparable[_&gt;:Stringwithjava.util.Date&lt;:java.io.Serializable]withjava.io.Serializable]withjava.io.Serializable]]}"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Participant</span><span class="result">: <a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a></span>
+        <span class="name">Participant</span><span class="result">: <a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a> { val template: Seq[models.MetricT[_ &gt;: String with java.sql.Date &lt;: Comparable[_ &gt;: String with java.util.Date &lt;: Comparable[_ &gt;: String with java.util.Date &lt;: java.io.Serializable] with java.io.Serializable] with java.io.Serializable]] }</span>
       </span>
       </h4>
       <p class="shortcomment cmt">RecordCategory representing participants, individuals whose data is contained in a particular sesion.</p><div class="fullcomment"><div class="comment cmt"><p>RecordCategory representing participants, individuals whose data is contained in a particular sesion.
@@ -283,28 +271,28 @@ Participants usually are associated with birthdate, gender, and other demographi
               
         </dd></dl></div>
     </li><li name="models.RecordCategory#get" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="get(id:models.RecordCategory.Id)(implicitdb:util.Site.DB):Option[models.RecordCategory]"></a>
-      <a id="get(Id)(DB):Option[RecordCategory]"></a>
+      <a id="get(id:models.RecordCategory.Id):Option[models.RecordCategory]"></a>
+      <a id="get(Id):Option[RecordCategory]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">get</span><span class="params">(<span name="id">id: <a href="#Id=models.IntId[T]" class="extmbr" name="models.RecordCategory.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>
+        <span class="name">get</span><span class="params">(<span name="id">id: <a href="#Id=models.IntId[T]" class="extmbr" name="models.RecordCategory.Id">Id</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>
       </span>
       </h4>
       
     </li><li name="models.RecordCategory#getAll" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getAll(implicitdb:util.Site.DB):Seq[models.RecordCategory]"></a>
-      <a id="getAll(DB):Seq[RecordCategory]"></a>
+      <a id="getAll:Seq[models.RecordCategory]"></a>
+      <a id="getAll:Seq[RecordCategory]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getAll</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>
+        <span class="name">getAll</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>
       </span>
       </h4>
       
@@ -399,32 +387,6 @@ Participants usually are associated with birthdate, gender, and other demographi
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.TableView#tableColumn" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="tableColumn(col:Symbol):dbrary.SelectColumn"></a>
-      <a id="tableColumn(Symbol):SelectColumn"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">tableColumn</span><span class="params">(<span name="col">col: <span class="extype" name="scala.Symbol">Symbol</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SelectColumn">SelectColumn</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Convenient creation of column names for this table from symbols.</p><div class="fullcomment"><div class="comment cmt"><p>Convenient creation of column names for this table from symbols.</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.TableView#tableName" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="tableName:dbrary.FromTable"></a>
-      <a id="tableName:FromTable"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">tableName</span><span class="result">: <span class="extype" name="dbrary.FromTable">FromTable</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
@@ -495,14 +457,8 @@ Participants usually are associated with birthdate, gender, and other demographi
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.TableId">
-              <h3>Inherited from <span class="extype" name="models.TableId">TableId</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</h3>
-            </div><div class="parent" name="models.HasId">
+        <div class="parent" name="models.HasId">
               <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</h3>
-            </div><div class="parent" name="models.Table">
-              <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</h3>
-            </div><div class="parent" name="models.TableView">
-              <h3>Inherited from <span class="extype" name="models.TableView">TableView</span></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
