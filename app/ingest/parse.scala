@@ -2,6 +2,7 @@ package ingest
 
 import scala.util.control.Exception.catching
 import java.sql.Date
+import java.util.regex.{Pattern=>Regex}
 import models._
 
 object Parse {
@@ -25,11 +26,14 @@ object Parse {
     def |(p : Parser[A]) = Parser[A] { s =>
       parse(s).left.flatMap(_ => p(s))
     }
+    def mapInput(f : String => String) : Parser[A] = Parser[A] { s =>
+      parse(f(s))
+    }
   }
 
   val string : Parser[String] = Parser(Right(_))
 
-  def maybe[T](p : Parser[T]) : Parser[Option[T]] = Parser { s =>
+  def option[T](p : Parser[T]) : Parser[Option[T]] = Parser { s =>
     if (s.isEmpty) Right(None) else p(s).right.map(Some(_))
   }
 
@@ -46,27 +50,34 @@ object Parse {
     ) orElse catching(classOf[java.lang.NumberFormatException], classOf[java.util.NoSuchElementException]).opt(
       enum(s.toInt)
     )).fold {
-      enum.values.filter(_.toString.startsWith(s)) match {
-        case Seq(r : enum.Value) => Right(r)
+      enum.values.filter(_.toString.startsWith(s)).toSeq match {
+        case Seq(r) => Right(r)
         case Seq() => Left("Unknown " + name + ": " + s)
         case _ => Left("Ambiguous " + name + ": " + s)
       }
     } (Right(_))
   }
 
-  abstract class Enum(name : String) extends Enumeration {
-    val parse : Parser[Value] = enum(this, name)
-    val parseMaybe : Parser[Option[Value]] = maybe(parse)
+  /** Enumeration that allows case-insensitive parsing assuming all values are upper-case. */
+  abstract class ENUM(name : String) extends Enumeration {
+    val parse : Parser[Value] = enum(this, name).mapInput(_.toUpperCase)
   }
 
-  def consent : Parser[Consent.Value] =
+  val consent : Parser[Consent.Value] =
     enum(Consent, "consent level")
 
-  def offset : Parser[dbrary.Offset] = Parser { s =>
+  val offset : Parser[dbrary.Offset] = Parser { s =>
     catching(classOf[java.lang.NumberFormatException]).opt(
       dbrary.Offset(s.toDouble)
     ).toRight("invalid offset (seconds)")
   }
+
+  def regex(p : Regex, name : String = "pattern") : Parser[Unit] = Parser { s =>
+    if (p.matcher(s).matches) Right(()) else Left("mismatching " + name + " (" + p + "): " + s)
+  }
+
+  def sequence[T](l : Seq[Result[T]]) : Result[Seq[T]] =
+    l collectFirst { case Left(e) => e } toLeft l.map(_.right.get)
 
 
   type ListResult[T] = Result[(T, List[String])]
@@ -92,6 +103,20 @@ object Parse {
     case x :: l => p(x).right.map((_, l))
   }
 
-  def sequence[T](l : Seq[Result[T]]) : Result[Seq[T]] =
-    l collectFirst { case Left(e) => e } toLeft l.map(_.right.get)
+  def listParse_(ps : (String, Parser[Unit])*) : ListParser[Unit] = ListParser[Unit] { l =>
+    ps.foldLeft(Right[String,List[String]](l) : Result[List[String]]) { (l, sp) =>
+      l.right.flatMap(listHead(sp._2, sp._1)(_).right.map(_._2))
+    }.right.map(((), _))
+  }
+  
+  trait ListData {
+    def fields : Seq[String]
+  }
+  abstract class ListDataParser[T <: ListData] {
+    final protected def makeHeaders(s : String*) = s.map(Regex.compile(_, Regex.CASE_INSENSITIVE))
+    val headers : Seq[Regex]
+    def parse : ListParser[T]
+    def parseHeaders : ListParser[Unit] =
+      listParse_(headers.map(p => "header (" + p + ")" -> regex(p, "header")) : _*)
+  }
 }
