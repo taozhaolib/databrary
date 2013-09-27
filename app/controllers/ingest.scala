@@ -30,7 +30,7 @@ object Ingest extends SiteController {
           ingest.Curated.preview(file.ref.file).fold(
             e => BadRequest(views.html.ingest.csv(v, form, e)),
             r => Ok(views.html.ingest.csv(v, form, r)))
-        case _ => BadRequest(views.html.ingest.csv(v, form.withError("file", "file.format.unknown")))
+        case f => BadRequest(views.html.ingest.csv(v, form.withError("file", "file.format.unknown", f.fold("unknown")(_.toString))))
       }
     }
   }

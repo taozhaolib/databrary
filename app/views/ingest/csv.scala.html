@@ -2,8 +2,9 @@
 
 @template.crud("CSV Ingest") {
 
-    @tag.form(routes.Ingest.preview(vol)) {
+    @tag.form(routes.Ingest.preview(vol), 'enctype -> "multipart/form-data") {
         @tag.inputFile(form("file"))
+        <button type='submit'>Preview</button>
     }
     @widget.formErrors(form)
 
