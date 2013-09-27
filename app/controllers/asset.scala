@@ -82,7 +82,7 @@ object Asset extends SiteController {
   private[this] def assetForm(file : Boolean) : AssetForm = Form(tuple(
     "name" -> nonEmptyText,
     "body" -> text,
-    "offset" -> optional(Field.offset),
+    "offset" -> optional(of[Offset]),
     "" -> MaybeMapping(if (file) Some(tuple(
       "format" -> optional(of[AssetFormat.Id]),
       "classification" -> Field.enum(Classification),

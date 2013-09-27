@@ -57,6 +57,7 @@ object Parse {
   }
 
   def enum(enum : Enumeration, name : String) : Parser[enum.Value] = Parser { s =>
+    if (s.isEmpty) fail("Missing " + name) else
     (catching(classOf[java.util.NoSuchElementException]).opt(
       enum.withName(s)
     ) orElse catching(classOf[java.lang.NumberFormatException], classOf[java.util.NoSuchElementException]).opt(
@@ -80,7 +81,7 @@ object Parse {
 
   val offset : Parser[dbrary.Offset] = Parser { s =>
     catching(classOf[java.lang.NumberFormatException]).opt(
-      dbrary.Offset(s.toDouble)
+      dbrary.Offset.fromString(s)
     ).toRight("invalid offset (seconds)")
   }
 

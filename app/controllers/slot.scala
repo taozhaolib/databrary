@@ -69,8 +69,8 @@ object Slot extends SiteController {
 
   type CreateForm = Form[(Option[Offset], Option[Offset])]
   private[this] val createForm : CreateForm = Form(tuple(
-    "start" -> optional(Field.offset),
-    "end" -> optional(Field.offset)
+    "start" -> optional(of[Offset]),
+    "end" -> optional(of[Offset])
   ).verifying(Messages("range.invalid"), !_.zipped.exists(_ > _)))
 
   def create(v : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { cont => implicit request =>
