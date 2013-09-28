@@ -5,7 +5,7 @@ import java.sql.Date
 import java.util.regex.{Pattern=>Regex}
 import models._
 
-case class ParseException(message : String, line : Int = 0, column : Int = 0) extends IngestException(message) {
+final case class ParseException(message : String, line : Int = 0, column : Int = 0) extends IngestException(message) {
   override def getMessage =
     if (line > 0 || column > 0)
       "at " + (if (line > 0) line.toString else "?") +

@@ -47,9 +47,44 @@ object Curated {
       }
     }
 
-  private case class Subject(id : String, gender : Gender.Value, birthdate : Date, race : RaceEthnicity) extends KeyedData {
-    def fields = Seq(id, gender.toString, birthdate.toString, optString(race._1) + "/" + optString(race._2))
+  final case class PopulateException(message : String, target : Option[SitePage] = None) extends IngestException(message)
+  object PopulateException {
+    def apply(message : String, target : SitePage) : PopulateException = PopulateException(message, Some(target))
+  }
+
+  private final case class Subject(id : String, gender : Gender.Value, birthdate : Date, race : Option[Race.Value], ethnicity : Option[Ethnicity.Value]) extends KeyedData {
+    def fields = Seq(id, gender.toString, birthdate.toString, optString(race) + "/" + optString(ethnicity))
     def key = id
+
+    private def measures : Seq[(Metric,String)] = Seq(
+        Metric.Ident -> id
+      , Metric.Gender -> Gender.valueOf(gender)
+      , Metric.Birthdate -> birthdate.toString) ++
+      race.map(Metric.Race -> Race.valueOf(_)) ++
+      ethnicity.map(Metric.Ethnicity -> Ethnicity.valueOf(_))
+    def populate(volume : Volume)(implicit site : Site) : models.Record =
+      models.Record.findMeasure(volume, Some(RecordCategory.Participant), Metric.Ident, id) match {
+        case Nil =>
+          val rec = Record.create(volume, Some(RecordCategory.Participant))
+          measures.foreach { case (m,v) =>
+            if (!rec.setMeasure(m,v))
+              throw PopulateException("failed to set measure for subject " + id + " " + m.name + ": " + v, rec)
+          }
+          rec
+        case Seq(rec) =>
+          measures.foreach { case (m,v) =>
+            rec.measure(m).fold {
+              if (!rec.setMeasure(m,v))
+                throw PopulateException("failed to set measure for subject " + id + " " + m.name + ": " + v, rec)
+            } { c =>
+              if (!c.value.equals(v))
+                throw PopulateException("inconsistent mesaure for subject " + id + " " + m.name + ": " + v + " <> " + c.value, rec)
+            }
+          }
+          rec
+        case _ =>
+          throw PopulateException("multiple records for subject " + id)
+      }
   }
   private object Subject extends ListDataParser[Subject] {
     val headers = makeHeaders("subj(ect)? ?id", "gender|sex", "b(irth)?da(y|te)", "race(/ethnicity)?")
@@ -57,13 +92,29 @@ object Curated {
       id <- listHead(string, "subject id")
       gender <- listHead(Gender.parse, "gender")
       birthday <- listHead(date, "birthdate")
-      race <- listHead(parseRaceEthnicity, "race/ethnicity")
-    } yield (Subject(id, gender, birthday, race))
+      (race, ethnicity) <- listHead(parseRaceEthnicity, "race/ethnicity")
+    } yield (Subject(id, gender, birthday, race, ethnicity))
   }
 
-  private case class Session(name : String, date : Date, consent : Consent.Value) extends KeyedData {
+  private final case class Session(name : String, date : Date, consent : Consent.Value) extends KeyedData {
     def fields = Seq(name, date.toString, consent.toString)
     def key = name
+
+    def populate(volume : Volume)(implicit site : Site) : models.Container =
+      Container.findName(volume, name) match {
+        case Nil =>
+          val con = Container.create(volume, Some(name), Some(date))
+          con.fullSlot.change(consent = consent)
+          con
+        case Seq(con) =>
+          if (!con.date.equals(Some(date)))
+            throw PopulateException("inconsistent date for session " + name + ": " + date + " <> " + con.date, con)
+          if (!con.fullSlot.consent.equals(consent))
+            throw PopulateException("inconsistent consent for session " + name + ": " + consent + " <> " + con.fullSlot.consent, con)
+          con
+        case _ =>
+          throw PopulateException("multiple containers for session " + name)
+      }
   }
   private object Session extends ListDataParser[Session] {
     val headers = makeHeaders("(session|folder) ?(id|name)?", "(test|session) ?date|dot", "consent|sharing")
@@ -74,31 +125,85 @@ object Curated {
     } yield (Session(name, date, consent))
   }
 
-  private case class SubjectSession(subjectKey : String, sessionKey : String)
+  private final case class SubjectSession(subjectKey : String, sessionKey : String) {
+    def populate(record : Record, container : Container)(implicit site : Site) =
+      record.addSlot(container.fullSlot)
+  }
 
-  private case class Asset(name : String, offset : Option[Offset], path : File) extends KeyedData {
-    def fields = Seq(name, optString(offset), path.getPath)
-    def key = path.getPath
+  private final case class Asset(name : String, position : Option[Offset], classification : Classification.Value, file : File) extends KeyedData {
+    def fields = Seq(name, optString(position), classification.toString, file.getPath)
+    def key = file.getPath
+
+    def info(implicit db : Site.DB) : Asset.Info =
+      AssetFormat.getExtension(file.getPath).fold {
+        throw PopulateException("no file format found for " + file.getPath)
+      } {
+        case fmt : TimeseriesFormat =>
+          val probe = media.AV.probe(file)
+          if (!probe.format.equals("FIXME"))
+            throw PopulateException("invalid format for timeseries " + file.getPath + ": " + probe.format)
+          Asset.TimeseriesInfo(fmt, probe.duration)
+        case fmt =>
+          Asset.FileInfo(fmt)
+      }
+
+    def populate(info : Asset.Info)(implicit site : Site) : models.Asset = {
+      val infile = play.api.libs.Files.TemporaryFile(file)
+      info match {
+        case Asset.TimeseriesInfo(fmt, duration) =>
+          models.Timeseries.create(fmt, classification, duration, infile)
+        case Asset.FileInfo(fmt) =>
+          models.FileAsset.create(fmt, classification, infile)
+      }
+    }
   }
   private object Asset extends ListDataParser[Asset] {
-    val headers = makeHeaders("file ?name", "(file ?)?(offset|onset|pos(ition)?)", "(file ?)?path")
+    val headers = makeHeaders("file ?name", "(file ?)?(offset|onset|pos(ition)?)", "(file ?)?class(ification)?", "(file ?)?path")
     def parse : ListParser[Asset] = for {
       name <- listHead(string, "file name")
-      offset <- listHead(option(offset), "offset")
+      pos <- listHead(option(offset), "offset")
+      classification <- listHead(enum(Classification, "classification").mapInput(_.toUpperCase), "classification")
       path <- listHead(string.map { p =>
         val f = new java.io.File(p)
         if (!f.isFile) fail("file not found: " + p)
         f
       }, "file path")
-    } yield (Asset(name, offset, path))
+    } yield (Asset(name, pos, classification, path))
+    sealed abstract class Info(val format : AssetFormat)
+    final case class FileInfo(override val format : AssetFormat) extends Info(format)
+    final case class TimeseriesInfo(override val format : TimeseriesFormat, duration : Offset) extends Info(format)
   }
 
-  private case class SessionAsset(sessionKey : String, asset : Asset) extends KeyedData {
+  private final case class SessionAsset(sessionKey : String, asset : Asset) extends KeyedData {
     def fields = sessionKey +: asset.fields
     def key = asset.key
+    def name = sessionKey + "/" + asset.name
+
+    def populate(container : Container)(implicit site : Site) : models.ContainerAsset = {
+      val info = asset.info
+      ContainerAsset.findName(container, asset.name) match {
+        case Nil =>
+          ContainerAsset.create(container, asset.populate(info), asset.position, name, None)
+        case Seq(ca) =>
+          if (ca.asset.format != info.format)
+            throw PopulateException("inconsistent format for asset " + name + ": " + info.format.name + " <> " + ca.asset.format.name)
+          if (ca.asset.classification != asset.classification)
+            throw PopulateException("inconsistent classification for asset " + name + ": " + asset.classification + " <> " + ca.asset.classification)
+          info match {
+            case Asset.TimeseriesInfo(_, duration) if (ca.asset.asInstanceOf[Timeseries].duration != duration) =>
+              throw PopulateException("inconsistent duration for asset " + name + ": " + duration + " <> " + ca.asset.asInstanceOf[Timeseries].duration)
+            case _ => ()
+          }
+          if (!ca.position.equals(asset.position))
+            throw PopulateException("inconsistent position for asset " + name + ": " + asset.position + " <> " + ca.position)
+          ca
+        case _ =>
+          throw PopulateException("multiple assets for " + name)
+      }
+    }
   }
 
-  private case class Row(subject : Subject, session : Session, asset : Asset) extends ListData {
+  private final case class Row(subject : Subject, session : Session, asset : Asset) extends ListData {
     def fields = Seq(subject, session, asset).flatMap(_.fields)
   }
   private object Row extends ListDataParser[Row] {
@@ -110,7 +215,7 @@ object Curated {
     } yield (Row(subj, sess, asset))
   }
 
-  private case class Data
+  private final case class Data
     ( subjects : Map[String,Subject]
     , sessions : Map[String,Session]
     , subjectSessions : Iterable[SubjectSession]
@@ -134,6 +239,20 @@ object Curated {
       data.sessions.size + " sessions: " + data.sessions.keys.mkString(",") + "\n" +
       data.assets.size + " files"
 
+  private def populate(data : Data, volume : Volume)(implicit site : Site) : Unit = {
+    val subjs = data.subjects.mapValues(_.populate(volume))
+    val sess = data.sessions.mapValues(_.populate(volume))
+    data.subjectSessions.foreach { ss =>
+      ss.populate(subjs(ss.subjectKey), sess(ss.sessionKey))
+    }
+    data.assets.foreach { sa =>
+      sa.populate(sess(sa.sessionKey))
+    }
+  }
+
   def preview(f : java.io.File) : String =
     preview(process(CSV.parseFile(f)))
+
+  def populate(f : java.io.File, volume : Volume)(implicit site : Site) : Unit =
+    populate(process(CSV.parseFile(f)), volume)
 }

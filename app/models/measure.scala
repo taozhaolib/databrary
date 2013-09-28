@@ -195,7 +195,7 @@ private[models] sealed abstract class MeasureBase(val recordId : Record.Id, val 
     Measure.delete(recordId, metric)
 }
 /** A measurement with a specific, tagged type. */
-case class MeasureT[T](override val recordId : Record.Id, override val metric : MetricT[T], value : T) extends MeasureBase(recordId, metric) {
+final case class MeasureT[T](override val recordId : Record.Id, override val metric : MetricT[T], value : T) extends MeasureBase(recordId, metric) {
   def datum = new MeasureDatumT[T](value)(metric.measureType)
   override def stringValue = value.toString
 
@@ -210,7 +210,7 @@ case class MeasureT[T](override val recordId : Record.Id, override val metric : 
   }
 }
 /** A measurement with an arbitrary (unconverted) type. */
-case class Measure(override val recordId : Record.Id, override val metric : Metric, value : String) extends MeasureBase(recordId, metric) {
+final case class Measure(override val recordId : Record.Id, override val metric : Metric, value : String) extends MeasureBase(recordId, metric) {
   def datum = new MeasureDatum(value)
   override def stringValue = value
 
@@ -275,15 +275,13 @@ object MeasureT extends MeasureView[MeasureT[_]]("measure_all") {
   }
 
   /** Retrieve the set of all records and possibly measures of the given type on the given slot. */
-  private[models] def getSlot[T](slot : Slot, category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] = {
-    val tpe = metric.measureType
-    val row = Record.volumeRow(slot.volume).leftJoin(tpe.column, "record.id = " + tpe.table + ".record") map 
-      { case (r ~ m) => (r, m) }
-    row.SQL("JOIN slot_record ON record.id = slot_record.record WHERE metric = {metric}",
-      (if (category.isDefined) " AND category = {category}" else ""),
-      "AND slot_record.slot = {slot}").
-      on('slot -> slot.id, 'category -> category.map(_.id), 'metric -> metric.id).list(row)
-  }
+  private[models] def getSlot[T](slot : Slot, category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] =
+    Record.measureRow[T](slot.volume, metric).
+      SQL("JOIN slot_record ON record.id = slot_record.record",
+        (if (category.isDefined) " AND record.category = {category}" else ""),
+        "AND slot_record.slot = {slot}").
+      on('slot -> slot.id, 'category -> category.map(_.id), 'metric -> metric.id).
+      list
 }
 
 /** A un-typed interface to measures. */

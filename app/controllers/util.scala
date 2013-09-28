@@ -23,7 +23,7 @@ object EmptyMapping extends Mapping[Unit] {
 /* Useful for forms that have dynamically optional content (as opposed to user-optional) */
 abstract sealed class MaybeMapping[T] extends Mapping[Option[T]]
 
-case class NoMapping[T]() extends MaybeMapping[T] {
+final case class NoMapping[T]() extends MaybeMapping[T] {
   val key = ""
   val mappings = Nil
   val constraints = Nil
@@ -34,7 +34,7 @@ case class NoMapping[T]() extends MaybeMapping[T] {
   def verifying(constraints : Constraint[Option[T]]*) : Mapping[Option[T]] = this
 }
 
-case class SomeMapping[T](wrapped : Mapping[T]) extends MaybeMapping[T] {
+final case class SomeMapping[T](wrapped : Mapping[T]) extends MaybeMapping[T] {
   val key = wrapped.key
   val mappings = wrapped.mappings
   override val format = wrapped.format

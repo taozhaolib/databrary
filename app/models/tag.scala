@@ -75,7 +75,7 @@ object TagUse extends Table[TagUse]("tag_use") {
 }
 
 /** Summary representation of tag information for a single slot and current user. */
-case class TagWeight private (tag : Tag, weight : Int, user : Option[Boolean] = None) extends TableRow
+final case class TagWeight private (tag : Tag, weight : Int, user : Option[Boolean] = None) extends TableRow
 
 object TagWeight extends Table[TagWeight]("tag_weight") {
   private val columns = Columns[

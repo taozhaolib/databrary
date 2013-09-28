@@ -22,8 +22,8 @@ object AV {
   }
 
   /* These are referenced by native code so must match their use there */
-  final class Error(msg : String, err : Int) extends RuntimeException(msg)
-  final class Probe(format : String, _duration : Double) {
+  final class Error(msg : String, val err : Int) extends RuntimeException(msg)
+  final class Probe(val format : String, _duration : Double) {
     def duration : Offset = _duration
   }
 

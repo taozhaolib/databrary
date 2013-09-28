@@ -79,6 +79,11 @@ object Container extends TableId[Container]("container") {
     volumeRow(v).SQL("WHERE container.volume = {vol} AND top").
       on('vol -> v.id).single
 
+  /** Find the containers in a given volume with the given name. */
+  def findName(v : Volume, name : String)(implicit db : Site.DB) : Seq[Container] =
+    volumeRow(v).SQL("WHERE container.volume = {vol} AND continer.name = {name}").
+      on('vol -> v.id, 'name -> name).list
+
   /** Create a new container in the specified volume. */
   def create(volume : Volume, name : Option[String] = None, date : Option[Date] = None)(implicit site : Site) = {
     val id = Audit.add(table, SQLArgs('volume -> volume.id, 'name -> name, 'date -> date), "id").single(scalar[Id])

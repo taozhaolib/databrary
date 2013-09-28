@@ -84,19 +84,23 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
   }
   /** Retrieve a specific asset link by container and asset id.
     * This assumes that permissions have already been checked as the caller must already have the container. */
-  private[models] def get(container : Container, asset : Asset.Id)(implicit db : Site.DB) : Option[ContainerAsset] = {
+  private[models] def get(container : Container, asset : Asset.Id)(implicit db : Site.DB) : Option[ContainerAsset] =
     containerRow(container).
       SQL("WHERE container_asset.container = {container} AND container_asset.asset = {asset}").
       on('container -> container.id, 'asset -> asset).singleOpt
-  }
 
   /** Retrieve the set of assets directly contained by a single container.
     * This assumes that permissions have already been checked as the caller must already have the container. */
-  private[models] def getContainer(container : Container)(implicit db : Site.DB) : Seq[ContainerAsset] = {
+  private[models] def getContainer(container : Container)(implicit db : Site.DB) : Seq[ContainerAsset] =
     containerRow(container).
       SQL("WHERE container_asset.container = {container}").
       on('container -> container.id).list
-  }
+
+  /** Find the assets in a container with the given name. */
+  def findName(container : Container, name : String)(implicit db : Site.DB) : Seq[ContainerAsset] =
+    containerRow(container).
+      SQL("WHERE container_asset.container = {container} AND container_asset.name = {name}").
+      on('container -> container.id, 'name -> name).list
 
   /** Create a new link between an asset and a container.
     * This can change effective permissions on this asset, so care must be taken when using this function with existing assets. */

@@ -22,7 +22,7 @@ object AuditAction extends PGEnum("audit_action") {
   * @param action the type of event
   * @param row the remaining data columns
   */
-case class Audit[T](when : Timestamp, who : Party.Id, ip : Inet, action : AuditAction.Value, row : T) extends TableRow {
+final case class Audit[T](when : Timestamp, who : Party.Id, ip : Inet, action : AuditAction.Value, row : T) extends TableRow {
   private val _party = CachedVal[Option[Party], Site](Party.get(who)(_))
   /** Look up the party who generated this event, if still valid. */
   def party(implicit site : Site) : Option[Party] = _party
