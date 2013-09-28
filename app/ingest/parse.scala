@@ -5,71 +5,72 @@ import java.sql.Date
 import java.util.regex.{Pattern=>Regex}
 import models._
 
+case class ParseException(message : String, line : Option[Int] = None, column : Option[Int] = None) extends IngestException(message) {
+  override def getMessage =
+    if (line.isEmpty && column.isEmpty)
+      message
+    else
+      "at " + line.fold("?")(_.toString) + ":" + column.fold("")(_.toString + ":") + " " + message
+}
+
 object Parse {
-  /** The result of parsing a T: Left(error) or Right(T). */
-  type Result[T] = Either[String,T]
-  type Parse[T] = String => Result[T]
+  def fail[T](e : String) : T = throw ParseException(e)
 
-  def result[T](r : T) : Result[T] = Right(r)
-  def fail[T](e : String) : Result[T] = Left(e)
+  sealed abstract class AbstractParser[I,A](parse : I => A) extends (I => A) {
+    type Self <: AbstractParser[I,A]
+    protected def copy(parse : I => A) : Self
+    final def apply(s : I) : A = parse(s)
 
-  def foldResult[T,R](l : Seq[T])(z : R)(op : (R, T) => Result[R]) =
-    l.foldLeft(result(z)) { (r, x) =>
-      r.right.flatMap(op(_, x))
+    def |(p : Self) : Self = copy { s =>
+      catching(classOf[ParseException]).opt(parse(s)) getOrElse p(s)
     }
-
-  def sequence[T](l : Seq[Result[T]]) : Result[Seq[T]] =
-    l collectFirst { case Left(e) => e } toLeft l.map(_.right.get)
-
-  /* A reader monad! */
-  case class Parser[A](parse : Parse[A]) extends Parse[A] {
-    final def apply(s : String) : Result[A] = parse(s)
-
-    /* not particularly useful */
-    def flatMap[B](f : A => Parser[B]) : Parser[B] = Parser[B] { s =>
-      parse(s).right.flatMap(f(_)(s))
-    }
-    def cmap[B](f : A => Result[B]) : Parser[B] = Parser[B] { s =>
-      parse(s).right.flatMap(f(_))
-    }
-    def map[B](f : A => B) : Parser[B] = Parser[B] { s =>
-      parse(s).right.map(f)
-    }
-    def |(p : Parser[A]) = Parser[A] { s =>
-      parse(s).left.flatMap(_ => p(s))
-    }
-    def mapInput(f : String => String) : Parser[A] = Parser[A] { s =>
+    def mapInput(f : I => I) : Self = copy { s =>
       parse(f(s))
     }
+    def failingOn(exceptions : Class[_]*) : Self = copy { s =>
+      catching(exceptions : _*).withApply(e => throw ParseException(e.getMessage).initCause(e)) {
+        parse(s)
+      }
+    }
   }
 
-  val string : Parser[String] = Parser(result(_))
+  case class Parser[A](parse : String => A) extends AbstractParser[String,A](parse) {
+    type Self = Parser[A]
+    protected def copy(parse : String => A) = Parser[A](parse)
 
-  def option[T](p : Parser[T]) : Parser[Option[T]] = Parser { s =>
-    if (s.isEmpty) result(None) else p(s).right.map(Some(_))
+    /* not particularly useful */
+    def flatMap[B](f : A => Parser[B]) = Parser[B] { s =>
+      f(parse(s))(s)
+    }
+    def map[B](f : A => B) = Parser[B] { s =>
+      f(parse(s))
+    }
+
+    def onEmpty(r : => A) = Parser[A] { s =>
+      if (s.isEmpty) r else parse(s)
+    }
   }
+
+  val string : Parser[String] = Parser(s => s)
+
+  def option[T](p : Parser[T]) : Parser[Option[T]] = 
+    p.map(Some(_) : Option[T]).onEmpty(None)
 
   private val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
-  val date : Parser[Date] = Parser { s =>
-    catching(classOf[java.text.ParseException]).either(
+  val date : Parser[Date] = Parser(s =>
       new java.sql.Date(dateFormat.parse(s).getTime)
-    ).left.map(_.getMessage)
-  }
+    ).failingOn(classOf[java.text.ParseException])
 
-  def enum(enum : Enumeration, name : String) : Parser[enum.Value] = Parser { s =>
-    if (s.isEmpty) fail("Missing " + name) else
-    (catching(classOf[java.util.NoSuchElementException]).opt(
-      enum.withName(s)
-    ) orElse catching(classOf[java.lang.NumberFormatException], classOf[java.util.NoSuchElementException]).opt(
-      enum(s.toInt)
-    )).fold {
+  def enum(enum : Enumeration, name : String) : Parser[enum.Value] =
+    Parser(enum.withName(_)).failingOn(classOf[java.util.NoSuchElementException]) |
+    Parser(s => enum(s.toInt)).failingOn(classOf[java.lang.NumberFormatException], classOf[java.util.NoSuchElementException]) |
+    Parser { s =>
       enum.values.filter(_.toString.startsWith(s)).toSeq match {
-        case Seq(r) => result(r)
+        case Seq(r) => r
         case Seq() => fail("Unknown " + name + ": " + s)
         case _ => fail("Ambiguous " + name + ": " + s)
       }
-    } (result(_))
-  }
+    } onEmpty fail("Missing " + name)
 
   /** Enumeration that allows case-insensitive parsing assuming all values are upper-case. */
   abstract class ENUM(name : String) extends Enumeration {
@@ -79,44 +80,43 @@ object Parse {
   val consent : Parser[Consent.Value] =
     enum(Consent, "consent level")
 
-  val offset : Parser[dbrary.Offset] = Parser { s =>
-    catching(classOf[java.lang.NumberFormatException]).opt(
-      dbrary.Offset.fromString(s)
-    ).toRight("invalid offset (seconds)")
-  }
+  val offset : Parser[dbrary.Offset] =
+    Parser(dbrary.Offset.fromString(_)).failingOn(classOf[java.lang.NumberFormatException])
 
   def regex(p : Regex, name : String = "pattern") : Parser[Unit] = Parser { s =>
-    if (p.matcher(s).matches) result(()) else fail("mismatching " + name + " (" + p + "): " + s)
+    if (p.matcher(s).matches) () else fail("mismatching " + name + " (" + p + "): " + s)
   }
 
 
-  type ListResult[T] = Result[(T, List[String])]
-  type ListParse[T] = List[String] => Result[(T, List[String])]
+  type ListResult[T] = (T, List[String])
   /* A state[List[String]] monad! */
-  case class ListParser[A](parse : ListParse[A]) extends ListParse[A] {
-    final def apply(l : List[String]) : ListResult[A] = parse(l)
+  case class ListParser[A](parse : List[String] => ListResult[A]) extends AbstractParser[List[String], ListResult[A]](parse) {
+    type Self = ListParser[A]
+    protected def copy(parse : List[String] => ListResult[A]) = ListParser[A](parse)
 
     def flatMap[B](f : A => ListParser[B]) : ListParser[B] = ListParser[B] { l =>
-      parse(l).right flatMap { case (r, l) => f(r)(l) }
+      parse(l) match { case (r, l) => f(r)(l) }
     }
     def map[B](f : A => B) : ListParser[B] = ListParser[B] { l =>
-      parse(l).right map { case (r, l) => (f(r), l) }
+      parse(l) match { case (r, l) => (f(r), l) }
     }
-    def run(l : List[String]) : Result[A] = parse(l).right.flatMap {
-      case (r, Nil) => result(r)
+
+    def run(l : List[String]) : A = parse(l) match {
+      case (r, Nil) => r
       case (_, l) => fail("unexpected extra fields: " + l.mkString(","))
+    }
+    def onEmpty(r : => A) = ListParser[A] { l =>
+      if (l.isEmpty) (r, l) else parse(l)
     }
   }
 
   def listHead[T](p : Parser[T], name : String) : ListParser[T] = ListParser[T] {
     case Nil => fail(name + " expected")
-    case x :: l => p(x).right.map((_, l))
+    case x :: l => (p(x), l)
   }
 
   def listParse_(ps : (String, Parser[Unit])*) : ListParser[Unit] = ListParser[Unit] { l =>
-    foldResult(ps)(l) { (l, sp) =>
-      listHead(sp._2, sp._1)(l).right.map(_._2)
-    }.right.map(((), _))
+    ((), ps.foldLeft(l) { (l, sp) => listHead(sp._2, sp._1)(l)._2 })
   }
   
   trait ListData {

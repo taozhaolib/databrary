@@ -10,8 +10,6 @@ import models._
 object Curated {
   import Parse._
 
-  private def optString[A](v : Option[A]) : String = v.fold("")(_.toString)
-
   /* These are all upper-case to allow case-folding insensitive matches.
    * They also must match (in order) the option in the various metrics. */
   private class MetricENUM(metric : MetricT[String]) extends ENUM(metric.name) {
@@ -33,21 +31,18 @@ object Curated {
         Ethnicity.parse.map(e => (None, Some(e))))(s)
     } { i =>
       val (r, e) = s.splitAt(i)
-      for {
-        r <- option(Race.parse)(r).right
-        e <- option(Ethnicity.parse)(e.tail).right
-      } yield ((r,e))
+      (option(Race.parse)(r), option(Ethnicity.parse)(e.tail))
     }
   }
 
   private trait KeyedData extends ListData {
     def key : String
   }
-  private def collect[T <: KeyedData](l : Seq[T]) : Result[Map[String,T]] =
-    foldResult(l)(Map.empty[String,T]) { (m, d) =>
+  private def collect[T <: KeyedData](l : Seq[T]) : Map[String,T] =
+    l.foldLeft(Map.empty[String,T]) { (m, d) =>
       val k = d.key
-      m.get(k).fold(result(m.updated(k, d))) { o =>
-        if (o.equals(d)) result(m)
+      m.get(k).fold(m.updated(k, d)) { o =>
+        if (o.equals(d)) m
         else fail("inconsistent values for " + k + ": " + d + " <> " + o)
       }
     }
@@ -90,10 +85,10 @@ object Curated {
     def parse : ListParser[Asset] = for {
       name <- listHead(string, "file name")
       offset <- listHead(option(offset), "offset")
-      path <- listHead(string.cmap { p =>
+      path <- listHead(string.map { p =>
         val f = new java.io.File(p)
-        if (f.isFile) result(f)
-        else fail("file not found: " + p)
+        if (!f.isFile) fail("file not found: " + p)
+        f
       }, "file path")
     } yield (Asset(name, offset, path))
   }
@@ -122,15 +117,14 @@ object Curated {
     , assets : Iterable[SessionAsset]
     )
 
-  private def process(l : List[List[String]]) : Result[Data] = l match {
-    case h :: l => 
-      for {
-        _ <- Row.parseHeaders.run(h).right
-        rows <- sequence(l.map(Row.parse.run _)).right
-        subjs <- collect(rows.map(_.subject)).right
-        sess <- collect(rows.map(_.session)).right
-        assets <- collect(rows.map(r => SessionAsset(r.session.key, r.asset))).right
-      } yield (Data(subjs, sess, rows.map(r => SubjectSession(r.subject.key, r.session.key)), assets.values))
+  private def process(l : List[List[String]]) : Data = l match {
+    case h :: l =>
+      Row.parseHeaders.run(h)
+      val rows = l.map(Row.parse.run _)
+      val subjs = collect(rows.map(_.subject))
+      val sess = collect(rows.map(_.session))
+      val assets = collect(rows.map(r => SessionAsset(r.session.key, r.asset)))
+      Data(subjs, sess, rows.map(r => SubjectSession(r.subject.key, r.session.key)), assets.values)
     case Nil => fail("no data")
   }
 
@@ -140,6 +134,6 @@ object Curated {
       data.sessions.size + " sessions: " + data.sessions.keys.mkString(",") + "\n" +
       data.assets.size + " files"
 
-  def preview(f : java.io.File) : Result[String] =
-    CSV.parseFile(f, true).right.flatMap(process _).right.map(preview _)
+  def preview(f : java.io.File) : String =
+    preview(process(CSV.parseFile(f)))
 }

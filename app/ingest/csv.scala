@@ -1,6 +1,7 @@
 package ingest
 
-/** Simple CSV parser based on RFC 4180.*/
+/** Simple CSV parser based on RFC 4180.
+  * Throws a ParseException on failure. */
 object CSV extends scala.util.parsing.combinator.RegexParsers {
   type T = List[List[String]]
 
@@ -19,21 +20,19 @@ object CSV extends scala.util.parsing.combinator.RegexParsers {
   private def unescaped1 : Parser[String] = "[^,\"\r\n]+".r
   private def nl = '\r'.? ~ '\n'
 
-  /* inefficient, but no worse than any other straight-forward solution */
+  /* inefficient, but no worse than any straight-forward parser-based solution */
   private def trim(l : T) =
     if (l.last.isEmpty) l.init else l
 
-  private def result(r : ParseResult[T], ignoreBlankLines : Boolean = false) : Either[String,T] = r match {
-    case Success(r, _) => Right(if (ignoreBlankLines) r.filter(_.nonEmpty) else trim(r))
-    case e : NoSuccess => Left(e.msg)
+  private def result(r : ParseResult[T], ignoreBlankLines : Boolean) : T = r match {
+    case Success(r, _) if ignoreBlankLines => r.filter(_.nonEmpty)
+    case Success(r, _) => trim(r)
+    case e : NoSuccess => throw ParseException(e.msg, Some(e.next.pos.line), Some(e.next.pos.column))
   }
 
-  /** Parse a CSV string.
-    * @return Left(error) or Right(result)
-    */
-  def parseString(s : String, ignoreBlankLines : Boolean = true) : Parse.Result[T] =
+  def parseString(s : String, ignoreBlankLines : Boolean = true) : T =
     result(parseAll(all, s), ignoreBlankLines)
 
-  def parseFile(f : java.io.File, ignoreBlankLines : Boolean = false) : Parse.Result[T] =
+  def parseFile(f : java.io.File, ignoreBlankLines : Boolean = false) : T =
     result(parseAll(all, new java.io.FileReader(f)), ignoreBlankLines)
 }
