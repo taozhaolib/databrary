@@ -27,7 +27,7 @@ object CSV extends scala.util.parsing.combinator.RegexParsers {
   private def result(r : ParseResult[T], ignoreBlankLines : Boolean) : T = r match {
     case Success(r, _) if ignoreBlankLines => r.filter(_.nonEmpty)
     case Success(r, _) => trim(r)
-    case e : NoSuccess => throw ParseException(e.msg, Some(e.next.pos.line), Some(e.next.pos.column))
+    case e : NoSuccess => throw ParseException(e.msg, line = e.next.pos.line, column = e.next.pos.column)
   }
 
   def parseString(s : String, ignoreBlankLines : Boolean = true) : T =

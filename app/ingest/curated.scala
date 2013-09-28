@@ -117,10 +117,10 @@ object Curated {
     , assets : Iterable[SessionAsset]
     )
 
-  private def process(l : List[List[String]]) : Data = l match {
+  private def process(l : List[List[String]]) : Data = l.zipWithIndex match {
     case h :: l =>
-      Row.parseHeaders.run(h)
-      val rows = l.map(Row.parse.run _)
+      (Row.parseHeaders.run _).tupled(h)
+      val rows = l.map((Row.parse.run _).tupled)
       val subjs = collect(rows.map(_.subject))
       val sess = collect(rows.map(_.session))
       val assets = collect(rows.map(r => SessionAsset(r.session.key, r.asset)))

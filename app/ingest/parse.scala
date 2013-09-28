@@ -5,12 +5,20 @@ import java.sql.Date
 import java.util.regex.{Pattern=>Regex}
 import models._
 
-case class ParseException(message : String, line : Option[Int] = None, column : Option[Int] = None) extends IngestException(message) {
+case class ParseException(message : String, line : Int = 0, column : Int = 0) extends IngestException(message) {
   override def getMessage =
-    if (line.isEmpty && column.isEmpty)
-      message
+    if (line > 0 || column > 0)
+      "at " + (if (line > 0) line.toString else "?") +
+      ":" + (if (column != 0) column.toString + ":" else "") + 
+      " " + message
     else
-      "at " + line.fold("?")(_.toString) + ":" + column.fold("")(_.toString + ":") + " " + message
+      message
+}
+object ParseException {
+  def adjPosition[T](line : Int = 0, column : Int = 0)(r : => T) : T =
+    try { r } catch {
+      case ParseException(m, l, c) => throw ParseException(m, l + line, c + column)
+    }
 }
 
 object Parse {
@@ -88,6 +96,9 @@ object Parse {
   }
 
 
+  def listFail[T](l : List[String], e : String) : T =
+    throw ParseException(e, column = -l.length)
+
   type ListResult[T] = (T, List[String])
   /* A state[List[String]] monad! */
   case class ListParser[A](parse : List[String] => ListResult[A]) extends AbstractParser[List[String], ListResult[A]](parse) {
@@ -101,9 +112,11 @@ object Parse {
       parse(l) match { case (r, l) => (f(r), l) }
     }
 
-    def run(l : List[String]) : A = parse(l) match {
-      case (r, Nil) => r
-      case (_, l) => fail("unexpected extra fields: " + l.mkString(","))
+    def run(l : List[String], line : Int = 0) : A = ParseException.adjPosition(line = line+1, column = l.length+1) {
+      parse(l) match {
+        case (r, Nil) => r
+        case (_, l) => listFail(l, "unexpected extra fields: " + l.mkString(","))
+      }
     }
     def onEmpty(r : => A) = ListParser[A] { l =>
       if (l.isEmpty) (r, l) else parse(l)
@@ -112,7 +125,7 @@ object Parse {
 
   def listHead[T](p : Parser[T], name : String) : ListParser[T] = ListParser[T] {
     case Nil => fail(name + " expected")
-    case x :: l => (p(x), l)
+    case x :: l => (ParseException.adjPosition(column = -l.length-1)(p(x)), l)
   }
 
   def listParse_(ps : (String, Parser[Unit])*) : ListParser[Unit] = ListParser[Unit] { l =>
