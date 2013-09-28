@@ -44,7 +44,8 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Simple CSV parser based on RFC 4180.</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Simple CSV parser based on RFC 4180.
+Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/ingest/csv.scala" target="_blank">csv.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.util.parsing.combinator.RegexParsers">RegexParsers</span>, <span class="extype" name="scala.util.parsing.combinator.Parsers">Parsers</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -828,32 +829,31 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RegexParsers</dd></dl></div>
     </li><li name="ingest.CSV#parseFile" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="parseFile(f:java.io.File,ignoreBlankLines:Boolean):ingest.Parse.Result[ingest.CSV.T]"></a>
-      <a id="parseFile(File,Boolean):Result[T]"></a>
+      <a id="parseFile(f:java.io.File,ignoreBlankLines:Boolean):ingest.CSV.T"></a>
+      <a id="parseFile(File,Boolean):T"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">parseFile</span><span class="params">(<span name="f">f: <span class="extype" name="java.io.File">File</span></span>, <span name="ignoreBlankLines">ignoreBlankLines: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <a href="Parse$.html#Result[T]=Either[String,T]" class="extmbr" name="ingest.Parse.Result">Result</a>[<a href="#T=List[List[String]]" class="extmbr" name="ingest.CSV.T">T</a>]</span>
+        <span class="name">parseFile</span><span class="params">(<span name="f">f: <span class="extype" name="java.io.File">File</span></span>, <span name="ignoreBlankLines">ignoreBlankLines: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <a href="#T=List[List[String]]" class="extmbr" name="ingest.CSV.T">T</a></span>
       </span>
       </h4>
       
-    </li><li name="ingest.CSV#parseString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="parseString(s:String,ignoreBlankLines:Boolean):ingest.Parse.Result[ingest.CSV.T]"></a>
-      <a id="parseString(String,Boolean):Result[T]"></a>
+    </li><li name="ingest.CSV#parseString" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="parseString(s:String,ignoreBlankLines:Boolean):ingest.CSV.T"></a>
+      <a id="parseString(String,Boolean):T"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">parseString</span><span class="params">(<span name="s">s: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="ignoreBlankLines">ignoreBlankLines: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="result">: <a href="Parse$.html#Result[T]=Either[String,T]" class="extmbr" name="ingest.Parse.Result">Result</a>[<a href="#T=List[List[String]]" class="extmbr" name="ingest.CSV.T">T</a>]</span>
+        <span class="name">parseString</span><span class="params">(<span name="s">s: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="ignoreBlankLines">ignoreBlankLines: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="result">: <a href="#T=List[List[String]]" class="extmbr" name="ingest.CSV.T">T</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Parse a CSV string.</p><div class="fullcomment"><div class="comment cmt"><p>Parse a CSV string.</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>Left(error) or Right(result)
-</p></dd></dl></div>
+      
     </li><li name="scala.util.parsing.combinator.RegexParsers#phrase" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="phrase[T](p:RegexParsers.this.Parser[T]):RegexParsers.this.Parser[T]"></a>
       <a id="phrase[T](Parser[T]):Parser[T]"></a>

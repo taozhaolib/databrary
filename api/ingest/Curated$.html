@@ -44,7 +44,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/ingest/curated.scala" target="_blank">curated.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -84,7 +84,23 @@
         <div id="allMembers">
         
 
-        
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="ingest.Curated.PopulateException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="PopulateExceptionextendsIngestExceptionwithProductwithSerializable"></a>
+      <a id="PopulateException:PopulateException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="Curated$$PopulateException.html"><span class="name">PopulateException</span></a><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="target">target: <span class="extype" name="scala.Option">Option</span>[<a href="../models/SitePage.html" class="extype" name="models.SitePage">SitePage</a>] = <span class="symbol">scala.None</span></span>)</span><span class="result"> extends <a href="IngestException.html" class="extype" name="ingest.IngestException">IngestException</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
 
         
 
@@ -155,6 +171,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="ingest.Curated.PopulateException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="PopulateException"></a>
+      <a id="PopulateException:PopulateException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Curated$$PopulateException$.html"><span class="name">PopulateException</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -304,16 +333,29 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="ingest.Curated#preview" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="preview(f:java.io.File):ingest.Parse.Result[String]"></a>
-      <a id="preview(File):Result[String]"></a>
+    </li><li name="ingest.Curated#populate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="populate(f:java.io.File,volume:models.Volume)(implicitsite:util.Site):Unit"></a>
+      <a id="populate(File,Volume)(Site):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">preview</span><span class="params">(<span name="f">f: <span class="extype" name="java.io.File">File</span></span>)</span><span class="result">: <a href="Parse$.html#Result[T]=Either[String,T]" class="extmbr" name="ingest.Parse.Result">Result</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+        <span class="name">populate</span><span class="params">(<span name="f">f: <span class="extype" name="java.io.File">File</span></span>, <span name="volume">volume: <a href="../models/Volume.html" class="extype" name="models.Volume">Volume</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="ingest.Curated#preview" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="preview(f:java.io.File):String"></a>
+      <a id="preview(File):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">preview</span><span class="params">(<span name="f">f: <span class="extype" name="java.io.File">File</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
       

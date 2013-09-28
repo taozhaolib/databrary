@@ -40,13 +40,13 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">Parser</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="parse">parse: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <a href="Parse$.html#Result[T]=Either[String,T]" class="extmbr" name="ingest.Parse.Result">Result</a>[<span class="extype" name="ingest.Parse.Parser.A">A</span>]</span>)</span><span class="result"> extends (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <a href="Parse$.html#Result[T]=Either[String,T]" class="extmbr" name="ingest.Parse.Result">Result</a>[<span class="extype" name="ingest.Parse.Parser.A">A</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">Parser</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="parse">parse: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="ingest.Parse.Parser.A">A</span></span>)</span><span class="result"> extends <a href="Parse$$AbstractParser.html" class="extype" name="ingest.Parse.AbstractParser">AbstractParser</a>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="ingest.Parse.Parser.A">A</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/ingest/parse.scala" target="_blank">parse.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <a href="Parse$.html#Result[T]=Either[String,T]" class="extmbr" name="ingest.Parse.Result">Result</a>[<span class="extype" name="ingest.Parse.Parser.A">A</span>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="Parse$$AbstractParser.html" class="extype" name="ingest.Parse.AbstractParser">AbstractParser</a>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="ingest.Parse.Parser.A">A</span>], (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="ingest.Parse.Parser.A">A</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -64,7 +64,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="ingest.Parse.Parser"><span>Parser</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="scala.Function1"><span>Function1</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="ingest.Parse.Parser"><span>Parser</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="ingest.Parse.AbstractParser"><span>AbstractParser</span></li><li class="in" name="scala.Function1"><span>Function1</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -85,7 +85,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="ingest.Parse.Parser#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(parse:String=&gt;ingest.Parse.Result[A]):ingest.Parse.Parser[A]"></a>
+      <a id="&lt;init&gt;(parse:String=&gt;A):ingest.Parse.Parser[A]"></a>
       <a id="&lt;init&gt;:Parser[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -93,14 +93,30 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Parser</span><span class="params">(<span name="parse">parse: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <a href="Parse$.html#Result[T]=Either[String,T]" class="extmbr" name="ingest.Parse.Result">Result</a>[<span class="extype" name="ingest.Parse.Parser.A">A</span>]</span>)</span>
+        <span class="name">Parser</span><span class="params">(<span name="parse">parse: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="ingest.Parse.Parser.A">A</span></span>)</span>
       </span>
       </h4>
       
     </li></ol>
             </div>
 
-        
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="ingest.Parse.Parser.Self" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Self=ingest.Parse.Parser[A]"></a>
+      <a id="Self:Self"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Self</span><span class="result"> = <a href="" class="extype" name="ingest.Parse.Parser">Parser</a>[<span class="extype" name="ingest.Parse.Parser.A">A</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="ingest.Parse.Parser">Parser</a> → <a href="Parse$$AbstractParser.html" class="extype" name="ingest.Parse.AbstractParser">AbstractParser</a></dd></dl></div>
+    </li></ol>
+            </div>
 
         
 
@@ -173,33 +189,33 @@
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="scala.Function1#andThen" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="andThen[A](g:R=&gt;A):T1=&gt;A"></a>
-      <a id="andThen[A]((Result[A])⇒A):(String)⇒A"></a>
+      <a id="andThen[A]((A)⇒A):(String)⇒A"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">andThen</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="g">g: (<a href="Parse$.html#Result[T]=Either[String,T]" class="extmbr" name="ingest.Parse.Result">Result</a>[<span class="extype" name="ingest.Parse.Parser.A">A</span>]) ⇒ <span class="extype" name="scala.Function1.andThen.A">A</span></span>)</span><span class="result">: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="scala.Function1.andThen.A">A</span></span>
+        <span class="name">andThen</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="g">g: (<span class="extype" name="ingest.Parse.Parser.A">A</span>) ⇒ <span class="extype" name="scala.Function1.andThen.A">A</span></span>)</span><span class="result">: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="scala.Function1.andThen.A">A</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Function1</dd><dt>Annotations</dt><dd>
                 <span class="name">@unspecialized</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="ingest.Parse.Parser#apply" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="apply(s:String):ingest.Parse.Result[A]"></a>
-      <a id="apply(String):Result[A]"></a>
+    </li><li name="ingest.Parse.AbstractParser#apply" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="apply(s:I):A"></a>
+      <a id="apply(String):A"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="s">s: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="Parse$.html#Result[T]=Either[String,T]" class="extmbr" name="ingest.Parse.Result">Result</a>[<span class="extype" name="ingest.Parse.Parser.A">A</span>]</span>
+        <span class="name">apply</span><span class="params">(<span name="s">s: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="ingest.Parse.Parser.A">A</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="ingest.Parse.Parser">Parser</a> → Function1</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Parse$$AbstractParser.html" class="extype" name="ingest.Parse.AbstractParser">AbstractParser</a> → Function1</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -229,35 +245,35 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="ingest.Parse.Parser#cmap" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="cmap[B](f:A=&gt;ingest.Parse.Result[B]):ingest.Parse.Parser[B]"></a>
-      <a id="cmap[B]((A)⇒Result[B]):Parser[B]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">cmap</span><span class="tparams">[<span name="B">B</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="ingest.Parse.Parser.A">A</span>) ⇒ <a href="Parse$.html#Result[T]=Either[String,T]" class="extmbr" name="ingest.Parse.Result">Result</a>[<span class="extype" name="ingest.Parse.Parser.cmap.B">B</span>]</span>)</span><span class="result">: <a href="" class="extype" name="ingest.Parse.Parser">Parser</a>[<span class="extype" name="ingest.Parse.Parser.cmap.B">B</span>]</span>
-      </span>
-      </h4>
-      
     </li><li name="scala.Function1#compose" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="compose[A](g:A=&gt;T1):A=&gt;R"></a>
-      <a id="compose[A]((A)⇒String):(A)⇒Result[A]"></a>
+      <a id="compose[A]((A)⇒String):(A)⇒A"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">compose</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="g">g: (<span class="extype" name="scala.Function1.compose.A">A</span>) ⇒ <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: (<span class="extype" name="scala.Function1.compose.A">A</span>) ⇒ <a href="Parse$.html#Result[T]=Either[String,T]" class="extmbr" name="ingest.Parse.Result">Result</a>[<span class="extype" name="ingest.Parse.Parser.A">A</span>]</span>
+        <span class="name">compose</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="g">g: (<span class="extype" name="scala.Function1.compose.A">A</span>) ⇒ <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: (<span class="extype" name="scala.Function1.compose.A">A</span>) ⇒ <span class="extype" name="ingest.Parse.Parser.A">A</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Function1</dd><dt>Annotations</dt><dd>
                 <span class="name">@unspecialized</span><span class="args">()</span>
               
         </dd></dl></div>
+    </li><li name="ingest.Parse.Parser#copy" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="copy(parse:String=&gt;A):ingest.Parse.Parser[A]"></a>
+      <a id="copy((String)⇒A):Parser[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">copy</span><span class="params">(<span name="parse">parse: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="ingest.Parse.Parser.A">A</span></span>)</span><span class="result">: <a href="" class="extype" name="ingest.Parse.Parser">Parser</a>[<span class="extype" name="ingest.Parse.Parser.A">A</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="" class="extype" name="ingest.Parse.Parser">Parser</a> → <a href="Parse$$AbstractParser.html" class="extype" name="ingest.Parse.AbstractParser">AbstractParser</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -271,6 +287,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="ingest.Parse.AbstractParser#failingOn" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="failingOn(exceptions:Class[_]*):AbstractParser.this.Self"></a>
+      <a id="failingOn(Class[_]*):Self"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">failingOn</span><span class="params">(<span name="exceptions">exceptions: <span class="extype" name="scala.Predef.Class">Class</span>[_]*</span>)</span><span class="result">: <a href="#Self=ingest.Parse.Parser[A]" class="extmbr" name="ingest.Parse.Parser.Self">Self</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Parse$$AbstractParser.html" class="extype" name="ingest.Parse.AbstractParser">AbstractParser</a></dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -339,19 +368,19 @@
       </span>
       </h4>
       
-    </li><li name="ingest.Parse.Parser#mapInput" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="mapInput(f:String=&gt;String):ingest.Parse.Parser[A]"></a>
-      <a id="mapInput((String)⇒String):Parser[A]"></a>
+    </li><li name="ingest.Parse.AbstractParser#mapInput" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="mapInput(f:I=&gt;I):AbstractParser.this.Self"></a>
+      <a id="mapInput((String)⇒String):Self"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">mapInput</span><span class="params">(<span name="f">f: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="" class="extype" name="ingest.Parse.Parser">Parser</a>[<span class="extype" name="ingest.Parse.Parser.A">A</span>]</span>
+        <span class="name">mapInput</span><span class="params">(<span name="f">f: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="#Self=ingest.Parse.Parser[A]" class="extmbr" name="ingest.Parse.Parser.Self">Self</a></span>
       </span>
       </h4>
-      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Parse$$AbstractParser.html" class="extype" name="ingest.Parse.AbstractParser">AbstractParser</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -391,16 +420,29 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="ingest.Parse.Parser#onEmpty" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="onEmpty(r:=&gt;A):ingest.Parse.Parser[A]"></a>
+      <a id="onEmpty(⇒A):Parser[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">onEmpty</span><span class="params">(<span name="r">r: ⇒ <span class="extype" name="ingest.Parse.Parser.A">A</span></span>)</span><span class="result">: <a href="" class="extype" name="ingest.Parse.Parser">Parser</a>[<span class="extype" name="ingest.Parse.Parser.A">A</span>]</span>
+      </span>
+      </h4>
+      
     </li><li name="ingest.Parse.Parser#parse" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="parse:String=&gt;ingest.Parse.Result[A]"></a>
-      <a id="parse:(String)⇒Result[A]"></a>
+      <a id="parse:String=&gt;A"></a>
+      <a id="parse:(String)⇒A"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">parse</span><span class="result">: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <a href="Parse$.html#Result[T]=Either[String,T]" class="extmbr" name="ingest.Parse.Result">Result</a>[<span class="extype" name="ingest.Parse.Parser.A">A</span>]</span>
+        <span class="name">parse</span><span class="result">: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="ingest.Parse.Parser.A">A</span></span>
       </span>
       </h4>
       
@@ -478,19 +520,19 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="ingest.Parse.Parser#|" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="|(p:ingest.Parse.Parser[A]):ingest.Parse.Parser[A]"></a>
-      <a id="|(Parser[A]):Parser[A]"></a>
+    </li><li name="ingest.Parse.AbstractParser#|" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="|(p:AbstractParser.this.Self):AbstractParser.this.Self"></a>
+      <a id="|(Self):Self"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span title="gt4s: $bar" class="name">|</span><span class="params">(<span name="p">p: <a href="" class="extype" name="ingest.Parse.Parser">Parser</a>[<span class="extype" name="ingest.Parse.Parser.A">A</span>]</span>)</span><span class="result">: <a href="" class="extype" name="ingest.Parse.Parser">Parser</a>[<span class="extype" name="ingest.Parse.Parser.A">A</span>]</span>
+        <span title="gt4s: $bar" class="name">|</span><span class="params">(<span name="p">p: <a href="#Self=ingest.Parse.Parser[A]" class="extmbr" name="ingest.Parse.Parser.Self">Self</a></span>)</span><span class="result">: <a href="#Self=ingest.Parse.Parser[A]" class="extmbr" name="ingest.Parse.Parser.Self">Self</a></span>
       </span>
       </h4>
-      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Parse$$AbstractParser.html" class="extype" name="ingest.Parse.AbstractParser">AbstractParser</a></dd></dl></div>
     </li></ol>
             </div>
 
@@ -508,8 +550,10 @@
               <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
             </div><div class="parent" name="scala.Equals">
               <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
+            </div><div class="parent" name="ingest.Parse.AbstractParser">
+              <h3>Inherited from <a href="Parse$$AbstractParser.html" class="extype" name="ingest.Parse.AbstractParser">AbstractParser</a>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="ingest.Parse.Parser.A">A</span>]</h3>
             </div><div class="parent" name="scala.Function1">
-              <h3>Inherited from (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <a href="Parse$.html#Result[T]=Either[String,T]" class="extmbr" name="ingest.Parse.Result">Result</a>[<span class="extype" name="ingest.Parse.Parser.A">A</span>]</h3>
+              <h3>Inherited from (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="ingest.Parse.Parser.A">A</span></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">

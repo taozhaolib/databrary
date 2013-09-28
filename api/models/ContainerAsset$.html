@@ -44,7 +44,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/container_asset.scala" target="_blank">container_asset.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="models.Table">Table</span>[<a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -256,6 +256,19 @@ This can change effective permissions on this asset, so care must be taken when 
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
+    </li><li name="models.ContainerAsset#findName" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="findName(container:models.Container,name:String)(implicitdb:util.Site.DB):Seq[models.ContainerAsset]"></a>
+      <a id="findName(Container,String)(DB):Seq[ContainerAsset]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">findName</span><span class="params">(<span name="container">container: <a href="Container.html" class="extype" name="models.Container">Container</a></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Find the assets in a container with the given name.</p>
     </li><li name="models.ContainerAsset#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="get(asset:models.Asset.Id,container:models.Container.Id)(implicitsite:util.Site):Option[models.ContainerAsset]"></a>
       <a id="get(Asset.Id,Container.Id)(Site):Option[ContainerAsset]"></a>
