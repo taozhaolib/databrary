@@ -15,7 +15,7 @@ object AuditAction extends PGEnum("audit_action") {
 
 /** Represents an event row in an audit table of a particular type.  Currently unused as there is intentionally no read/modify access to audit tables.
   * @constructor Create a new unpersisted audit record. There is no reason to do this.
-  * @tparam T the type of data attached to this record. Usually this is a [[models.TableRow]] instance for a corresponding audit_t table.
+  * @tparam T the type of data attached to this record. Usually this is a TableRow instance for a corresponding audit_t table.
   * @param when the time of this event
   * @param who the user who generated this event. May no longer be a valid party.
   * @param ip the ip of the client machine that generated this event
@@ -30,7 +30,7 @@ final case class Audit[T](when : Timestamp, who : Party.Id, ip : Inet, action : 
   def withRow[A](row : A) = copy[A](row = row)
 }
 
-/** Helper for audit tables.  Not a [[models.TableView]] because it corresponds to multiple underlying tables. */
+/** Helper for audit tables.  Not a TableView because it corresponds to multiple underlying tables. */
 object Audit {
   private[this] def make[T](row : T)(when : Timestamp, who : Party.Id, ip : Inet, action : AuditAction.Value) =
     Audit[T](when, who, ip, action, row)
