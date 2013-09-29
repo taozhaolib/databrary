@@ -23,7 +23,7 @@ object AV {
 
   /* These are referenced by native code so must match their use there */
   final class Error(msg : String, val err : Int) extends RuntimeException(msg)
-  final class Probe(val format : String, _duration : Double) {
+  final class Probe(val format : String, _duration : Double, val streams : Array[String]) {
     def duration : Offset = _duration
   }
 
