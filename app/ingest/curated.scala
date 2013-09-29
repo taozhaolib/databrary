@@ -140,8 +140,8 @@ object Curated {
       } {
         case fmt : TimeseriesFormat =>
           val probe = media.AV.probe(file)
-          if (!probe.format.equals("FIXME"))
-            throw PopulateException("invalid format for timeseries " + file.getPath + ": " + probe.format)
+          if (!probe.isVideo)
+            throw PopulateException("invalid format for timeseries " + file.getPath + ": " + probe.format + " " + probe.streams.mkString(","))
           Asset.TimeseriesInfo(fmt, probe.duration)
         case fmt =>
           Asset.FileInfo(fmt)
