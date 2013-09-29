@@ -135,7 +135,7 @@ object Curated {
     def key = file.getPath
 
     def info(implicit db : Site.DB) : Asset.Info =
-      AssetFormat.getExtension(file.getPath).fold {
+      AssetFormat.getFilename(file.getPath, true).fold {
         throw PopulateException("no file format found for " + file.getPath)
       } {
         case fmt : TimeseriesFormat =>
@@ -239,20 +239,21 @@ object Curated {
       data.sessions.size + " sessions: " + data.sessions.keys.mkString(",") + "\n" +
       data.assets.size + " files"
 
-  private def populate(data : Data, volume : Volume)(implicit site : Site) : Unit = {
+  private def populate(data : Data, volume : Volume)(implicit site : Site) : (Iterable[Record], Iterable[ContainerAsset]) = {
     val subjs = data.subjects.mapValues(_.populate(volume))
     val sess = data.sessions.mapValues(_.populate(volume))
     data.subjectSessions.foreach { ss =>
       ss.populate(subjs(ss.subjectKey), sess(ss.sessionKey))
     }
-    data.assets.foreach { sa =>
+    val assets = data.assets.map { sa =>
       sa.populate(sess(sa.sessionKey))
     }
+    (subjs.values, assets)
   }
 
   def preview(f : java.io.File) : String =
     preview(process(CSV.parseFile(f)))
 
-  def populate(f : java.io.File, volume : Volume)(implicit site : Site) : Unit =
+  def populate(f : java.io.File, volume : Volume)(implicit site : Site) : (Iterable[Record], Iterable[ContainerAsset]) =
     populate(process(CSV.parseFile(f)), volume)
 }

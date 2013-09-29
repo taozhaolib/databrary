@@ -44,6 +44,8 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   def duration : Offset = 0
   /** Range of times that this asset covers, or None for "global/floating". */
   def extent : Option[Range[Offset]] = position.map(Range.singleton[Offset](_)(PGSegment))
+
+  def fullSlot(implicit db : Site.DB) : SlotAsset = SlotAsset.getFull(this)
 }
 
 final class ContainerTimeseries private[models] (override val asset : Asset with TimeseriesData, container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends ContainerAsset(asset, container, position_, name_, body_) {
@@ -219,6 +221,22 @@ object SlotAsset {
     }
     row.SQL("WHERE container_asset.container = {container} AND", condition("{segment}")).
     on('slot -> slot.id, 'container -> slot.containerId, 'segment -> slot.segment).list
+  }
+
+  /** Build the SlotAsset for the given ContainerAsset#container.fullSlot. */
+  private[models] def getFull(ca : ContainerAsset)(implicit db : Site.DB) : SlotAsset = {
+    if (ca.container._fullSlot.isEmpty) {
+      Slot.containerRow(ca.container).leftJoin(columns, "slot.id = toplevel_asset.slot AND toplevel_asset.asset = {asset}").
+        map { case (slot ~ excerpt) =>
+          ca.container._fullSlot() = slot
+          make(ca, slot, excerpt)
+        }.SQL("WHERE slot.source = {container} AND slot.segment = '(,)'").
+        on('container -> ca.containerId, 'asset -> ca.assetId).single
+    } else {
+      val excerpt = columns.SQL("WHERE slot.id = {slot} AND asset.id = {asset}").
+        on('slot -> ca.container.fullSlot.id, 'asset -> ca.assetId).singleOpt
+      make(ca, ca.container.fullSlot, excerpt)
+    }
   }
 
   /** Retrieve the list of all top-level assets. */

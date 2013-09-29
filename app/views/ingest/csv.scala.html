@@ -1,13 +1,15 @@
-@(vol : models.Volume.Id, form : controllers.Ingest.CSVForm, text : String = "")(implicit request : SiteRequest[_])
+@(vol : models.Volume, form : controllers.Ingest.CSVForm, text : String = "", target : Option[SitePage] = None)(implicit request : SiteRequest[_])
 
 @template.crud("CSV Ingest") {
 
-    @tag.form(routes.Ingest.preview(vol), 'enctype -> "multipart/form-data") {
+    @tag.form(routes.Ingest.curated(vol.id), 'enctype -> "multipart/form-data") {
         @tag.inputFile(form("file"))
-        <button type='submit'>Preview</button>
+        <button type='submit' name='run' value='false'>Preview</button>
+        <button type='submit' name='run' value='true'>Ingest</button>
     }
     @widget.formErrors(form)
 
     @display.plainText(text)
+    @target.map(display(_))
 
 }

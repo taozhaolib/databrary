@@ -81,7 +81,7 @@ object Container extends TableId[Container]("container") {
 
   /** Find the containers in a given volume with the given name. */
   def findName(v : Volume, name : String)(implicit db : Site.DB) : Seq[Container] =
-    volumeRow(v).SQL("WHERE container.volume = {vol} AND continer.name = {name}").
+    volumeRow(v).SQL("WHERE container.volume = {vol} AND container.name = {name}").
       on('vol -> v.id, 'name -> name).list
 
   /** Create a new container in the specified volume. */
