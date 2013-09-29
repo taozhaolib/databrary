@@ -84,6 +84,7 @@ case class Offset(seconds : Double)
   def compare(other : Offset) = seconds.compare(other.seconds)
   def min(other : Offset) = Offset(seconds.min(other.seconds))
   def max(other : Offset) = Offset(seconds.max(other.seconds))
+  def approx(other : Offset) = (other.seconds - seconds).abs < 0.001
 
   /* This is unfortuante but I can't find any other reasonable formatting options outside the postgres server itself: */
   override def toString = {

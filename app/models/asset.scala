@@ -53,7 +53,7 @@ object AssetFormat extends TableId[AssetFormat]("format") {
       row.SQL("WHERE mimetype = {mimetype}").on('mimetype -> mimetype).singleOpt
   /** Lookup a format by its extension.
     * @param ts include TimeseriesFormats. */
-  def getExtension(extension : String, ts : Boolean = false)(implicit db : Site.DB) : Option[AssetFormat] =
+  private def getExtension(extension : String, ts : Boolean = false)(implicit db : Site.DB) : Option[AssetFormat] =
     (if (ts) TimeseriesFormat.getExtension(extension) else None) orElse
       row.SQL("WHERE extension = {extension}").on('extension -> extension).singleOpt
   /** Get a list of all file formats in the database.
@@ -64,7 +64,7 @@ object AssetFormat extends TableId[AssetFormat]("format") {
 
   def getFilename(filename : String, ts : Boolean = false)(implicit db : util.Site.DB) =
     maybe(filename.lastIndexOf('.'), -1).
-      flatMap(i => getExtension(filename.substring(i + 1), ts))
+      flatMap(i => getExtension(filename.substring(i + 1).toLowerCase, ts))
   def getFilePart(file : play.api.mvc.MultipartFormData.FilePart[_], ts : Boolean = false)(implicit db : util.Site.DB) =
     file.contentType.flatMap(getMimetype(_, ts)) orElse
       getFilename(file.filename, ts)
@@ -89,7 +89,7 @@ object TimeseriesFormat extends HasId[TimeseriesFormat] {
     case Video.mimetype => Some(Video)
     case _ => None
   }
-  def getExtension(extension : String) : Option[TimeseriesFormat] = Some(extension) match {
+  private[models] def getExtension(extension : String) : Option[TimeseriesFormat] = Some(extension) match {
     case Video.extension => Some(Video)
     case _ => None
   }

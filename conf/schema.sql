@@ -396,6 +396,10 @@ CREATE TABLE "file" (
 CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "file" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
 COMMENT ON TABLE "file" IS 'Assets in storage along with their "constant" metadata.';
 
+CREATE TABLE "audit_file" (
+	LIKE "file"
+) INHERITS ("audit") WITH (OIDS = FALSE);
+
 CREATE TABLE "timeseries" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
 	"format" smallint NOT NULL References "timeseries_format",
@@ -404,9 +408,15 @@ CREATE TABLE "timeseries" (
 CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "timeseries" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
 COMMENT ON TABLE "timeseries" IS 'File assets representing interpretable and sub-selectable timeseries data (e.g., videos).';
 
-CREATE TABLE "audit_file" (
-	LIKE "file"
-) INHERITS ("audit") WITH (OIDS = FALSE);
+CREATE VIEW "audit_timeseries" AS
+	SELECT *, NULL::interval AS "duration" FROM audit_file;
+COMMENT ON VIEW "audit_timeseries" IS 'Timeseries are audited together with files.  This view provides glue to make that transparent.';
+CREATE FUNCTION "audit_timeseries_file" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+	INSERT INTO audit_file ("when", who, ip, action, id, format, classification) VALUES (NEW."when", NEW.who, NEW.ip, NEW.action, NEW.id, NEW.format, NEW.classification);
+	RETURN NEW;
+END; $$;
+COMMENT ON FUNCTION "audit_timeseries_file" () IS 'Trigger function for INSTEAD OF INSERT ON audit_timeseries to propagate to audit_file.';
+CREATE TRIGGER "audit_file" INSTEAD OF INSERT ON "audit_timeseries" FOR EACH ROW EXECUTE PROCEDURE "audit_timeseries_file" ();
 
 
 CREATE TABLE "clip" (

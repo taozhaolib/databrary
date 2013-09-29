@@ -3,6 +3,7 @@ package ingest
 import java.io.File
 import java.sql.Date
 import java.util.regex.{Pattern=>Regex}
+import play.api.libs.Files
 import dbrary._
 import util._
 import models._
@@ -148,7 +149,13 @@ object Curated {
       }
 
     def populate(info : Asset.Info)(implicit site : Site) : models.Asset = {
-      val infile = play.api.libs.Files.TemporaryFile(file)
+      val infile = new Files.TemporaryFile(file) {
+        /* for now copy and don't delete */
+        override def clean() : Boolean = false
+        override def moveTo(to : File, replace : Boolean = false) {
+          Files.copyFile(file, to, copyAttributes = false, replaceExisting = replace)
+        }
+      }
       info match {
         case Asset.TimeseriesInfo(fmt, duration) =>
           models.Timeseries.create(fmt, classification, duration, infile)
@@ -183,14 +190,14 @@ object Curated {
       val info = asset.info
       ContainerAsset.findName(container, asset.name) match {
         case Nil =>
-          ContainerAsset.create(container, asset.populate(info), asset.position, name, None)
+          ContainerAsset.create(container, asset.populate(info), asset.position, asset.name, None)
         case Seq(ca) =>
           if (ca.asset.format != info.format)
             throw PopulateException("inconsistent format for asset " + name + ": " + info.format.name + " <> " + ca.asset.format.name)
           if (ca.asset.classification != asset.classification)
             throw PopulateException("inconsistent classification for asset " + name + ": " + asset.classification + " <> " + ca.asset.classification)
           info match {
-            case Asset.TimeseriesInfo(_, duration) if (ca.asset.asInstanceOf[Timeseries].duration != duration) =>
+            case Asset.TimeseriesInfo(_, duration) if !ca.asset.asInstanceOf[Timeseries].duration.approx(duration) =>
               throw PopulateException("inconsistent duration for asset " + name + ": " + duration + " <> " + ca.asset.asInstanceOf[Timeseries].duration)
             case _ => ()
           }

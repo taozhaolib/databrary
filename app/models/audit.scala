@@ -52,7 +52,6 @@ object Audit {
   private[this] def atable(table : String) : String =
     "audit_" + (table match {
       case "slot" => "slot_consent"
-      case "timeseries" => "file"
       case _ => table
     })
 

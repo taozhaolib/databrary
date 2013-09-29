@@ -233,7 +233,7 @@ object SlotAsset {
         }.SQL("WHERE slot.source = {container} AND slot.segment = '(,)'").
         on('container -> ca.containerId, 'asset -> ca.assetId).single
     } else {
-      val excerpt = columns.SQL("WHERE slot.id = {slot} AND asset.id = {asset}").
+      val excerpt = columns.SQL("WHERE toplevel_asset.slot = {slot} AND toplevel_asset.asset = {asset}").
         on('slot -> ca.container.fullSlot.id, 'asset -> ca.assetId).singleOpt
       make(ca, ca.container.fullSlot, excerpt)
     }
