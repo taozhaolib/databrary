@@ -90,7 +90,7 @@ object Curated {
   private object Subject extends ListDataParser[Subject] {
     val headers = makeHeaders("subj(ect)? ?id", "gender|sex", "b(irth)?da(y|te)", "race(/ethnicity)?")
     def parse : ListParser[Subject] = for {
-      id <- listHead(string, "subject id")
+      id <- listHead(trimmed, "subject id")
       gender <- listHead(Gender.parse, "gender")
       birthday <- listHead(date, "birthdate")
       (race, ethnicity) <- listHead(parseRaceEthnicity, "race/ethnicity")
@@ -120,7 +120,7 @@ object Curated {
   private object Session extends ListDataParser[Session] {
     val headers = makeHeaders("(session|folder) ?(id|name)?", "(test|session) ?date|dot", "consent|sharing")
     def parse : Parse.ListParser[Session] = for {
-      name <- listHead(string, "folder name")
+      name <- listHead(trimmed, "folder name")
       date <- listHead(date, "session date")
       consent <- listHead(option(consent).map(_.getOrElse(Consent.NONE)), "consent level")
     } yield (Session(name, date, consent))
@@ -167,10 +167,10 @@ object Curated {
   private object Asset extends ListDataParser[Asset] {
     val headers = makeHeaders("file ?name", "(file ?)?(offset|onset|pos(ition)?)", "(file ?)?class(ification)?", "(file ?)?path")
     def parse : ListParser[Asset] = for {
-      name <- listHead(string, "file name")
+      name <- listHead(trimmed, "file name")
       pos <- listHead(option(offset), "offset")
       classification <- listHead(enum(Classification, "classification").mapInput(_.toUpperCase), "classification")
-      path <- listHead(string.map { p =>
+      path <- listHead(trimmed.map { p =>
         val f = new java.io.File(p)
         if (!f.isFile) fail("file not found: " + p)
         f

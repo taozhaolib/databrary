@@ -59,7 +59,7 @@ object Parse {
     }
   }
 
-  val string : Parser[String] = Parser(s => s)
+  val trimmed : Parser[String] = Parser(_.trim)
 
   def option[T](p : Parser[T]) : Parser[Option[T]] = 
     p.map(Some(_) : Option[T]).onEmpty(None)

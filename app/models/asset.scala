@@ -235,7 +235,7 @@ object Timeseries extends AssetView[Timeseries]("timeseries") {
   def create(format : TimeseriesFormat, classification : Classification.Value, duration : Offset, file : TemporaryFile)(implicit site : Site) : Timeseries = {
     val id = Audit.add(table, SQLArgs('format -> format.id, 'classification -> classification, 'duration -> duration), "id").single(scalar[Id])
     store.FileAsset.store(id, file)
-    site.db.commit
+    site.db.commit // XXX if we do things per-transaction
     new Timeseries(id, format, classification, duration)
   }
 }
