@@ -64,10 +64,12 @@ object Parse {
   def option[T](p : Parser[T]) : Parser[Option[T]] = 
     p.map(Some(_) : Option[T]).onEmpty(None)
 
-  private val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
-  val date : Parser[Date] = Parser(s =>
-      new java.sql.Date(dateFormat.parse(s).getTime)
+  private val dateFormat1 = new java.text.SimpleDateFormat("yyyy-MM-dd")
+  private val dateFormat2 = new java.text.SimpleDateFormat("MM/dd/yy")
+  private def dateFormat(fmt : java.text.DateFormat) : Parser[Date] = Parser(s =>
+      new java.sql.Date(fmt.parse(s).getTime)
     ).failingOn(classOf[java.text.ParseException])
+  val date : Parser[Date] = dateFormat(dateFormat2) | dateFormat(dateFormat1)
 
   def enum(enum : Enumeration, name : String) : Parser[enum.Value] =
     Parser(enum.withName(_)).failingOn(classOf[java.util.NoSuchElementException]) |
