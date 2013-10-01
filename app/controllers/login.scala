@@ -38,19 +38,22 @@ object Login extends SiteController {
 
   private[this] def login(a : Account)(implicit request : Request[_], db : util.Site.DB) = {
     implicit val arequest = new UserRequest(request, a, db)
-    Audit.action(AuditAction.login)
+    Audit.action(Audit.Action.open)
     Redirect(routes.Party.view(a.id)).withSession("user" -> a.id.unId.toString)
   }
 
   def post = Action { implicit request =>
     val form = loginForm.bindFromRequest
-    def error : Result = BadRequest(views.html.account.login(form.copy(data = form.data.updated("password", "")).withGlobalError(Messages("login.bad"))))
     form.fold(
       form => BadRequest(views.html.account.login(form)),
       { case (email, password, openid) => DB.withConnection { implicit db =>
         val acct = email.flatMap(Account.getEmail _)
+        def error() : Result = {
+          acct.foreach(a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)))
+          BadRequest(views.html.account.login(form.copy(data = form.data.updated("password", "")).withGlobalError(Messages("login.bad"))))
+        }
         if (!password.isEmpty) {
-          acct.filter(a => BCrypt.checkpw(password, a.password)).fold(error)(login)
+          acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(password, a.password)).fold(error)(login)
         } else if (!openid.isEmpty)
           AsyncResult {
             OpenID.redirectURL(openid, routes.Login.openID(email.getOrElse("")).absoluteURL(), realm = Some("http://" + request.host)).extend1 {
@@ -77,7 +80,7 @@ object Login extends SiteController {
 
   def logout = SiteAction { implicit request =>
     if (request.isInstanceOf[UserRequest[_]])
-      Audit.action(AuditAction.logout)
+      Audit.action(Audit.Action.close)
     Redirect(routes.Static.index).withNewSession
   }
 }

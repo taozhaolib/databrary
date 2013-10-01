@@ -10,18 +10,18 @@ import util._
 
 /** A comment made by a particular user applied to exactly one object.
   * These are immutable (and unaudited), although the author may be considered to have ownership. */
-final class Comment private (val id : Comment.Id, val who : Account, val when : Timestamp, val slot : Slot, val text : String) extends TableRowId[Comment] with InVolume {
+final class Comment private (val id : Comment.Id, val who : Account, val time : Timestamp, val slot : Slot, val text : String) extends TableRowId[Comment] with InVolume {
   def volume = slot.volume
   def slotId = slot.id
   def whoId = who.id
 }
 
 object Comment extends TableId[Comment]("comment") {
-  private def make(who : Account, slot : Slot)(id : Comment.Id, when : Timestamp, text : String) =
-    new Comment(id, who, when, slot, text)
+  private def make(who : Account, slot : Slot)(id : Comment.Id, time : Timestamp, text : String) =
+    new Comment(id, who, time, slot, text)
   private val columns = Columns[
     Id,  Timestamp, String](
-    'id, 'when,     'text)
+    'id, 'time,     'text)
   private[models] val row = columns.
     join(Account.row, "comment.who = party.id").
     join(Slot.row, "comment.slot = slot.id") map {
@@ -45,7 +45,7 @@ object Comment extends TableId[Comment]("comment") {
     join(Account.row, "comment.who = party.id") map {
       case (comment ~ who) => (make(who, slot) _).tupled(comment)
     }
-  private val order = "ORDER BY comment.when DESC"
+  private val order = "ORDER BY comment.time DESC"
 
   /** Retrieve a specific comment by id.
     * This checks permissions on the commented object (volume). */

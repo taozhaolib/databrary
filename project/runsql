@@ -65,10 +65,7 @@ dbreset () {
 	if [[ -z $1 ]] ; then
 		pg_dump -Fc -f unreset.dump "${args[@]}"
 	fi
-	runsql - -a <<EOF
-DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
-EOF
+	evolve down 1
 }
 
 declare -A evoexpr=([up]='0,/^# --- !Ups$/d;/^# --- !Downs$/,$d' [down]='1,/^# --- !Downs$/d')
