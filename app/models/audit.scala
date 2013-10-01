@@ -59,8 +59,8 @@ object Audit {
     SQLArgs('identity -> site.identity.id, 'audit_ip -> site.clientIP, 'audit_action -> action)
 
   /** Record an audit event of the specified type to the generic audit table. */
-  def action(action : AuditAction.Value)(implicit site : Site) =
-    SQL("INSERT INTO audit (who, ip, action) VALUES ({identity}, {audit_ip}, {audit_action}").on(aargs(action) : _*)
+  def action(action : AuditAction.Value)(implicit site : Site) : Unit =
+    SQL("INSERT INTO audit (who, ip, action) VALUES ({identity}, {audit_ip}, {audit_action})").on(aargs(action) : _*).execute
 
   private[this] def SQLon(action : AuditAction.Value, table : String, stmt : String, returning : String = "")(args : SQLArgs)(implicit site : Site) : Sql =
     SQL("WITH audit_row AS (" + acmd(action) + " " + table + " " + stmt + " RETURNING *) INSERT INTO " + atable(table) + " SELECT CURRENT_TIMESTAMP, {identity}, {audit_ip}, {audit_action}, * FROM audit_row" + maybe(returning).fold("")(" RETURNING " + _)).on(args ++ aargs(action) : _*)
