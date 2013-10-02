@@ -171,7 +171,7 @@ object Curated {
       pos <- listHead(option(offset), "offset")
       classification <- listHead(enum(Classification, "classification").mapInput(_.toUpperCase), "classification")
       path <- listHead(trimmed.map { p =>
-        val f = new java.io.File(p)
+        val f = new java.io.File(if (p.headOption.equals(Some('/'))) "" else "/databrary/stage", p)
         if (!f.isFile) fail("file not found: " + p)
         f
       }, "file path")
