@@ -18,7 +18,7 @@ object CSV extends scala.util.parsing.combinator.RegexParsers {
   }
   private def unescaped : Parser[String] = "[^,\"\r\n]*".r
   private def unescaped1 : Parser[String] = "[^,\"\r\n]+".r
-  private def nl = '\r'.? ~ '\n'
+  private def nl = "\n|\r\n?".r
 
   /* inefficient, but no worse than any straight-forward parser-based solution */
   private def trim(l : T) =

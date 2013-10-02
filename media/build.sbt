@@ -6,7 +6,7 @@ resourceGenerators in Compile <+= (streams, baseDirectory in Compile, resourceMa
 		val pkg = try {
 			"pkg-config --cflags --libs libavformat".!!
 		} catch {
-			case e : java.io.IOException => "-I/usr/local/lib -L/usr/local/lib -lavformat -lavcodec -lavutil"
+			case _ : java.lang.Exception => "-I/usr/local/lib -L/usr/local/lib -lavformat -lavcodec -lavutil"
 		}
 		val jh = Option(System.getenv("JAVA_HOME")).getOrElse(System.getProperty("java.home") + slash + "..") + slash + "include"
 		// This does not handle spaces in paths properly:
