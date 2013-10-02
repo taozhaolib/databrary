@@ -42,7 +42,7 @@
                 @if(request.isAdmin) {
                     <fieldset>
                         <legend>Admin Options</legend>
-                        @tag.select(form("format"), AssetFormat.getAll(true).map(f => (f.id.unId.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)).sortBy(v => (v._2, v._1)))
+                        @tag.select(form("format"), ("", "") +: AssetFormat.getAll(true).map(f => (f.id.unId.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)))
                         @tag.inputText(form("localfile"), 'placeholder -> "Local location (overridden by file upload)")
                     </fieldset>
                 }
