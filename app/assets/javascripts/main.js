@@ -284,7 +284,7 @@ dbjs.stickyFooter = function (footer, above) {
         var windowHeight = $(window).height(),
             $footer = $(footer),
             $above = $(above),
-            footerOffset = $footer.outerHeight() + $above.outerHeight(true) + $above.position().top;
+            footerOffset = $footer.outerHeight() + $above.outerHeight(true);
 
         if (windowHeight > footerOffset)
             $footer.addClass('fixed');
@@ -901,7 +901,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
 
         formRepeater: function (args) {
             var $repeater = this,
-                $repeats, repeatCount, $copy;
+                $repeats, repeatCount, $copy, newIndex = 0;
 
             var $tempControls = $('<div class="controls"></div>'),
                 $tempControlsCreate = $('<div class="mod create">+</div>'),
@@ -920,6 +920,8 @@ dbjs.simpleToggle = function (toggler, toggled) {
                         $copy = $repeat.clone();
 
                     updateControls($repeat, index);
+
+                    newIndex++;
                 });
             };
 
@@ -947,13 +949,15 @@ dbjs.simpleToggle = function (toggler, toggled) {
             var create = function ($repeater) {
                 var cID = $copy.find('label[for]').attr('for').split('__').shift().split('_').pop();
 
-                $repeater.append($($('<div>').append($copy).html().replace(new RegExp('_' + cID + '_', 'g'), '_' + repeatCount + '_').replace(new RegExp('\\[' + cID + '\\]', 'g'), '[' + repeatCount + ']')));
+                $repeater.append($($('<div>').append($copy).html().replace(new RegExp('_' + cID + '_', 'g'), '_' + newIndex + '_').replace(new RegExp('\\[' + cID + '\\]', 'g'), '[' + newIndex + ']')));
 
                 updateRepeater($repeater);
 
                 $repeats.each(function (index) {
                     updateControls($(this), index);
-                })
+                });
+
+                newIndex++;
             };
 
             var remove = function ($repeater, $repeat) {

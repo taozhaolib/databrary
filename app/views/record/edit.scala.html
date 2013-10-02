@@ -1,37 +1,61 @@
-@(record : models.Record, meas : Seq[(Metric,Seq[RecordCategory])], form : controllers.Record.EditForm)(implicit request : SiteRequest[_])
+@(record : models.Record, meas : Seq[(Metric, Seq[RecordCategory])], form : controllers.Record.EditForm)(implicit request : SiteRequest[_])
 
-@template.crud("Edit Record: " + record.toString()) {
+@import helper.FieldConstructor
+
+    @implicitField = @{
+        FieldConstructor(tag.minimalFieldConstructor.f)
+    }
+
+    @script = {
+
+    }
+
+@template.crud("Edit Record: " + record.toString(), js = script) {
     <article>
         @crud.recordHeader(record)
 
-	@tag.form(routes.Record.update(record.volumeId, record.id)) {
-	    @tag.select(form("category"), ("", "") +: RecordCategory.getAll.map(c => (c.id.unId.toString, c.name)))</dt>
+        @tag.form(routes.Record.update(record.volumeId, record.id)) {
+            @tag.select(form("category"), ("", "") +: RecordCategory.getAll.map(c => (c.id.unId.toString, c.name))) </dt>
 
-	    <dl>
-	    @meas.zipWithIndex.map { case ((m, rcs), i) =>
-	    @* TODO: use rcs; if record.category not in rcs and datum is empty, hide *@
-		<input type='hidden' name='measure[@i].metric' value='@m.id.unId.toString'/>
-	    @defining(form("measure[" + i + "].datum")) { field =>
-	    	<dt>@m.name (@m.classification)</dt>
-		<dd>@m.dataType match {
-		case DataType.date => {
-			@tag.inputDate(field, 'placeholder -> "Date", 'class -> "half")
-		}
-		case _ if m.values.nonEmpty => {
-			@tag.select(field, ("", "") +: m.values.map(v => (v, v)))
-		}
-		case _ => {
-			@tag.inputText(field)
-		}
-		}
-		</dd>
-	} }
-		<dt>@tag.select(form("add.metric"), Metric.getAll.map(m => (m.id.unId.toString, m.name + " (" + m.classification + ")")))</dt>
-		<dd>@tag.inputText(form("add.datum"))</dd>
-	    </dl>
-	    <button type='submit' class="big button first">Update</button>
-	}
-	@widget.formErrors(form)
+            <dl>
+                @meas.zipWithIndex.map { case ((m, rcs), i) =>
+                        @* TODO: use rcs; if record.category not in rcs and datum is empty, hide *@
+                    <input type='hidden' name='measure[@i].metric' value='@m.id.unId.toString'/>
+                        @defining(form("measure[" + i + "].datum")) { field =>
+                            <dt>@m.name (@m.classification)</dt>
+                            <dd>@m.dataType match {
+                                case DataType.date => {
+                                    @tag.inputDate(field, 'placeholder -> "Date", 'class -> "half")
+                                }
+                                case _ if m.values.nonEmpty => {
+                                    @tag.select(field, ("", "") +: m.values.map(v => (v, v)))
+                                }
+                                case _ => {
+                                    @tag.inputText(field)
+                                }
+                            }
+                            </dd>
+                        }
+                }
+
+                <dt>@tag.select(form("add.metric"), Metric.getAll.map(m => (m.id.unId.toString, m.name + " (" + m.classification + ")")))</dt>
+                <dd>@tag.inputText(form("add.datum"))</dd>
+            </dl>
+
+
+
+            <fieldset class="publications">
+                <legend>Custom Metrics</legend>
+
+                @tag.repeat(form("add")) { f =>
+                    @tag.select(f("metric"), Metric.getAll.map(m => (m.id.unId.toString, m.name + " (" + m.classification + ")")), 'placeholder -> "Metric")
+                    @tag.inputText(f("datum"), 'placeholder -> "Value")
+                }
+            </fieldset>
+
+            <button type='submit' class="big button first">Update</button>
+        }
+        @widget.formErrors(form)
 
     </article>
 }

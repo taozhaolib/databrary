@@ -115,7 +115,7 @@ object Metric extends TableId[MetricT[_]]("metric") {
     case IDENT => Some(Ident)
     case BIRTHDATE => Some(Birthdate)
     case GENDER => Some(Gender)
-    case RACE => Some(Gender)
+    case RACE => Some(Race)
     case ETHNICITY => Some(Ethnicity)
     case _ => row.SQL("WHERE id = {id}").on('id -> id).singleOpt
   }
