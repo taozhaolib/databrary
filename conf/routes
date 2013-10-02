@@ -28,11 +28,11 @@ POST   /party/$pID<[0-9]+>/edit                                                 
 GET    /party/$pID<[0-9]+>/admin                                                                 controllers.Party.admin(pID : models.Party.Id)
 GET    /party/$pID<[0-9]+>/authorize/search/child                                                controllers.Party.authorizeSearch(pID : models.Party.Id, which : Boolean = false)
 GET    /party/$pID<[0-9]+>/authorize/search/parent                                               controllers.Party.authorizeSearch(pID : models.Party.Id, which : Boolean = true)
-POST   /party/$pID<[0-9]+>/authorize/$child<[0-9]+>                                              controllers.Party.authorizeChange(pID : models.Party.Id, child : models.Party.Id)
-POST   /party/$pID<[0-9]+>/authorize/$other<[0-9]+>/child                                        controllers.Party.authorizeAdd(pID : models.Party.Id, which : Boolean = false, other : models.Party.Id)
-POST   /party/$pID<[0-9]+>/authorize/$other<[0-9]+>/parent                                       controllers.Party.authorizeAdd(pID : models.Party.Id, which : Boolean = true, other : models.Party.Id)
+POST   /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>                                            controllers.Party.authorizeChange(pID : models.Party.Id, child : models.Party.Id)
+POST   /party/$pID<[0-9]+>/authorize/$other<-?[0-9]+>/child                                      controllers.Party.authorizeAdd(pID : models.Party.Id, which : Boolean = false, other : models.Party.Id)
+POST   /party/$pID<[0-9]+>/authorize/$other<-?[0-9]+>/parent                                     controllers.Party.authorizeAdd(pID : models.Party.Id, which : Boolean = true, other : models.Party.Id)
 # TODO: should be POST but currently used as link:
-GET    /party/$pID<[0-9]+>/authorize/$child<[0-9]+>/remove                                       controllers.Party.authorizeDelete(pID : models.Party.Id, child : models.Party.Id)
+GET    /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>/remove                                     controllers.Party.authorizeDelete(pID : models.Party.Id, child : models.Party.Id)
 
 # volumes
 GET    /volume/list                                                                              controllers.Volume.listAll
@@ -43,10 +43,10 @@ GET    /volume/$vID<[0-9]+>/edit                                                
 POST   /volume/$vID<[0-9]+>/edit                                                                 controllers.Volume.change(vID : models.Volume.Id)
 GET    /volume/$vID<[0-9]+>/access                                                               controllers.Volume.admin(vID : models.Volume.Id)
 GET    /volume/$vID<[0-9]+>/access/search                                                        controllers.Volume.accessSearch(vID : models.Volume.Id)
-POST   /volume/$vID<[0-9]+>/access/$pID<[0-9]+>/add                                              controllers.Volume.accessAdd(vID : models.Volume.Id, pID : models.Party.Id)
+POST   /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>/add                                            controllers.Volume.accessAdd(vID : models.Volume.Id, pID : models.Party.Id)
 # TODO: should be POST:
-GET    /volume/$vID<[0-9]+>/access/$pID<[0-9]+>/remove                                           controllers.Volume.accessDelete(vID : models.Volume.Id, pID : models.Party.Id)
-POST   /volume/$vID<[0-9]+>/access/$pID<[0-9]+>                                                  controllers.Volume.accessChange(vID : models.Volume.Id, pID : models.Party.Id)
+GET    /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>/remove                                         controllers.Volume.accessDelete(vID : models.Volume.Id, pID : models.Party.Id)
+POST   /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                                                controllers.Volume.accessChange(vID : models.Volume.Id, pID : models.Party.Id)
 
 #containers
 GET    /volume/$vID<[0-9]+>/container/create                                                     controllers.Container.create(vID : models.Volume.Id)
