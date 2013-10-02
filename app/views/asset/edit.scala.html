@@ -11,8 +11,10 @@
         <header>
             <h1>@target.fold(_ => "Upload Asset", "Edit: " + _.name)</h1>
 
-            @if(target.isRight) {
-                @target match { case Right(link) =>
+	    @target match {
+	    case Left(_) => {
+	    }
+	    case Right(link) => {
                 <nav class="menu">
                     <ul>
                 @if(link.permission >= Permission.EDIT) {
