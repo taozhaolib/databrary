@@ -2,7 +2,7 @@
 
 @template.crud("Edit Record: " + record.toString()) {
     <article>
-	<h1><a href="@record.pageURL">@record.toString()</a></h1>
+        @crud.recordHeader(record)
 
 	@tag.form(routes.Record.update(record.volumeId, record.id)) {
 	    @tag.select(form("category"), ("", "") +: RecordCategory.getAll.map(c => (c.id.unId.toString, c.name)))</dt>

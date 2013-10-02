@@ -110,7 +110,7 @@ object Asset extends SiteController {
         /* file foreach {
           () => link.asset.asInstanceOf[models.FileAsset].change
         } */
-        Redirect(link.container.pageURL)
+        Redirect(link.container.fullSlot.pageURL)
       }
     )
   }
@@ -165,6 +165,6 @@ object Asset extends SiteController {
 
   def remove(v : models.Volume.Id, c : models.Container.Id, a : models.Asset.Id) = checkContainer(c, a, Permission.EDIT) { link => implicit request =>
     link.remove
-    Redirect(link.container.pageURL)
+    Redirect(link.container.fullSlot.pageURL)
   }
 }

@@ -1,4 +1,4 @@
-@(target : Either[Container,ContainerAsset], form : controllers.Asset.AssetForm)(implicit request : SiteRequest[_])
+@(target : Either[Container, ContainerAsset], form : controllers.Asset.AssetForm)(implicit request : SiteRequest[_])
 
 @import helper.FieldConstructor
 
@@ -8,26 +8,45 @@
 
 @template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.name)) {
     <article>
-	<h1>@target.fold(_ => "Upload Asset", "Edit: "+_.name)</h1>
+        <header>
+            <h1>@target.fold(_ => "Upload Asset", "Edit: " + _.name)</h1>
 
-	@tag.form(target.fold(
-		container => routes.Asset.upload(container.volumeId, container.id),
-		link => routes.Asset.change(link.volumeId, link.containerId, link.assetId)),
-		'enctype -> "multipart/form-data") {
+            @if(target.isRight) {
+                @target match { case Right(link) =>
+                <nav class="menu">
+                    <ul>
+                @if(link.permission >= Permission.EDIT) {
+                        @crud.headerCurrentLink(routes.Asset.view(link.volumeId, link.container.fullSlot.id, link.assetId), "view")
+                        @crud.headerCurrentLink(routes.Asset.edit(link.volumeId, link.containerId, link.assetId), "edit")
+                    }
+            </ul>
+            </nav>
+            }
+            }
+        </header>
+
+        @tag.form(target.fold(
+            container => routes.Asset.upload(container.volumeId, container.id),
+            link => routes.Asset.change(link.volumeId, link.containerId, link.assetId)),
+            'enctype -> "multipart/form-data") {
             @tag.inputText(form("name"), 'placeholder -> "Title", '_class -> "big")
             @tag.textarea(form("body"), 'placeholder -> "Description")
-            @tag.inputText(form("offset"))
+            @tag.inputText(form("offset"), 'placeholder -> "Offset in seconds", 'class -> "half")
 
             @if(controllers.Asset.formForFile(form, target)) {
-	        @widget.enumSelect(form("classification"), Classification)
-	        @tag.inputFile(form("file"))
-		@if(request.isAdmin) {
-		  @tag.select(form("format"), AssetFormat.getAll(true).map(f => (f.id.unId.toString, f.name + f.extension.fold("")("." + _))))
-		  @tag.inputText(form("localfile"))
-		}
+                @widget.enumSelect(form("classification"), Classification)
+                @tag.inputFile(form("file"))
+
+                @if(request.isAdmin) {
+                    <fieldset>
+                        <legend>Admin Options</legend>
+                        @tag.select(form("format"), AssetFormat.getAll(true).map(f => (f.id.unId.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)).sortBy(v => (v._2, v._1)))
+                        @tag.inputText(form("localfile"), 'placeholder -> "Local location (overridden by file upload)")
+                    </fieldset>
+                }
             }
 
-	    <button type='submit' class="big button first">@target.fold(_ => "Upload", _ => "Change")</button>
+            <button type='submit' class="big button first">@target.fold(_ => "Upload", _ => "Change")</button>
         }
         @widget.formErrors(form)
 

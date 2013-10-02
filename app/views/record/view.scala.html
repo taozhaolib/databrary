@@ -2,24 +2,20 @@
 
 @template.crud("Record: " + record.toString()) {
     <article>
-        <h1>@record.toString()</h1>
+        @crud.recordHeader(record)
 
-	@if(record.permission >= Permission.EDIT) {
-		<a href="@routes.Record.edit(record.volumeId, record.id)">edit</a>
-	}
+        <dl>
+        @record.measures.filter(m => record.dataPermission(m.metric) >= Permission.DOWNLOAD).map { m =>
+            <dt>@m.metric.name</dt>
+            <dd>@m.datum</dd>
+        }
+        </dl>
 
-	<dl>
-	@record.measures.filter(m => record.dataPermission(m.metric) >= Permission.DOWNLOAD).map { m =>
-		<dt>@m.metric.name</dt>
-		<dd>@m.datum</dd>
-	}
-	</dl>
-
-	<ul>
-	@record.slots.map { c =>
-		<li>@display.path(c)</li>
-	}
-	</ul>
+        <ul>
+        @record.slots.map { c =>
+            <li>@display.path(c)</li>
+        }
+        </ul>
 
     </article>
 }

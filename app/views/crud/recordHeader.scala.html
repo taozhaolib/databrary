@@ -1,0 +1,14 @@
+@(record : Record)(implicit request : SiteRequest[_])
+
+<header>
+    <h1>@record.toString()</h1>
+
+    <nav class="menu">
+        <ul>
+        @if(record.permission >= Permission.EDIT) {
+			@crud.headerCurrentLink(routes.Record.view(record.volume.id, record.id), "view")
+			@crud.headerCurrentLink(routes.Record.edit(record.volume.id, record.id), "edit")
+        }
+        </ul>
+    </nav>
+</header>
