@@ -2,6 +2,8 @@ package dbrary
 
 import anorm.{Column,ToStatement}
 
+/** Enumerations which reflect types in the database.
+  * Any PGEnum should exactly match the correspending database type. */
 abstract class PGEnum(name : String) extends Enumeration {
   object pgType extends PGType[Value] {
     val pgType = name

@@ -24,13 +24,14 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   /** A specific measure of the given type and metric. */
   def measure[T](metric : MetricT[T])(implicit db : Site.DB) : Option[T] = MeasureT.get[T](this.id, metric)
+  def measure(metric : Metric)(implicit db : Site.DB) : Option[Measure] = Measure.get(this.id, metric)
   private[this] val _measures = CachedVal[Seq[Measure], Site.DB](Measure.getRecord(this.id)(_))
   /** All measures in this record. Cached. */
   def measures(implicit db : Site.DB) : Seq[Measure] = _measures
 
   /** Add or change a measure on this record.
     * This is not type safe so may generate SQL exceptions, and may invalidate measures on this object. */
-  def setMeasure(metric : Metric, value : String)(implicit db : Site.DB) = Measure(id, metric, value).set
+  def setMeasure(metric : Metric, value : String)(implicit db : Site.DB) : Boolean = Measure(id, metric, value).set
   /** Remove a measure from this record.
     * This may invalidate measures on this object. */
   def deleteMeasure(metric : Metric)(implicit db : Site.DB) = Measure.delete(id, metric)
@@ -86,6 +87,17 @@ object Record extends TableId[Record]("record") {
     case (rec ~ vol) => (make(vol) _).tupled(rec)
   }
   private[models] def volumeRow(vol : Volume) = columns.map(make(vol) _)
+  private[models] def measureRow[T](vol : Volume, metric : MetricT[T]) = {
+    val mt = metric.measureType
+    volumeRow(vol).leftJoin(mt.column, "record.id = " + mt.table + ".record AND " + mt.table + ".metric = {metric}") map {
+      case (record ~ meas) =>
+        metric match {
+          case Metric.Ident => record._ident() = meas
+          case _ => ()
+        }
+        (record, meas)
+    }
+  }
 
   /** Retrieve a specific record by id. */
   def get(id : Id)(implicit site : Site) : Option[Record] =
@@ -97,24 +109,32 @@ object Record extends TableId[Record]("record") {
     volumeRow(slot.volume).SQL("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.slot = {slot}").
       on('slot -> slot.id).list
 
-  /** Retrieve all the categorized records associated the given volume.
+  /** Retrieve all the categorized records associated with the given volume.
     * @param category restrict to the specified category, or include all categories
     * @return records sorted by category, ident */
   private[models] def getVolume(volume : Volume, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
     val metric = Metric.Ident
-    val mtyp = metric.measureType
-    val cols = volumeRow(volume).leftJoin(mtyp.column, "record.id = " + mtyp.table + ".record") map
-      { case (record ~ ident) =>
-        record._ident() = ident
-        record
-      }
-    cols.SQL("WHERE (measure_text.metric IS NULL OR measure_text.metric = {metric}) AND record.volume = {volume}",
+    measureRow(volume, metric).map(_._1).
+      SQL("WHERE record.volume = {volume}",
         (if (category.isDefined) "AND record.category = {category}" else ""),
         "ORDER BY " + (if (category.isEmpty) "record.category, " else ""),
         metric.measureType.column.select + ", record.id").
       on('volume -> volume.id, 'metric -> metric.id, 'category -> category.map(_.id)).
       list
   }
+
+  /** Retrieve the records in the given volume with a measure of the given value.
+    * @param category restrict to the specified category, or include all categories
+    * @param metric search by metric
+    * @param value measure value that must match
+    */
+  def findMeasure[T](volume : Volume, category : Option[RecordCategory] = None, metric : MetricT[T], value : T)(implicit db : Site.DB) : Seq[Record] =
+    measureRow(volume, metric).map(_._1).
+      SQL("WHERE record.volume = {volume}",
+        (if (category.isDefined) "AND record.category = {category}" else ""),
+        "AND " + metric.measureType.column.select + " = {value}").
+      on('volume -> volume.id, 'metric -> metric.id, 'category -> category.map(_.id), 'value -> value).
+      list
 
   /** Create a new record, initially unattached. */
   def create(volume : Volume, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Record = {
@@ -126,7 +146,15 @@ object Record extends TableId[Record]("record") {
 
   private[models] def addSlot(r : Record.Id, s : Slot.Id)(implicit db : Site.DB) : Unit = {
     val args = SQLArgs('record -> r, 'slot -> s)
-    SQL("INSERT INTO slot_record " + args.insert).on(args : _*).execute
+    val sp = db.setSavepoint
+    try {
+      SQL("INSERT INTO slot_record " + args.insert).on(args : _*).execute
+    } catch {
+      case e : java.sql.SQLException if e.getMessage.startsWith("ERROR: duplicate key value violates unique constraint ") =>
+        db.rollback(sp)
+    } finally {
+      db.releaseSavepoint(sp)
+    }
   }
   private[models] def removeSlot(r : Record.Id, s : Slot.Id)(implicit db : Site.DB) : Unit = {
     val args = SQLArgs('record -> r, 'slot -> s)

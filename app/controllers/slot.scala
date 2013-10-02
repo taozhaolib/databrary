@@ -69,8 +69,8 @@ object Slot extends SiteController {
 
   type CreateForm = Form[(Option[Offset], Option[Offset])]
   private[this] val createForm : CreateForm = Form(tuple(
-    "start" -> optional(Field.offset),
-    "end" -> optional(Field.offset)
+    "start" -> optional(of[Offset]),
+    "end" -> optional(of[Offset])
   ).verifying(Messages("range.invalid"), !_.zipped.exists(_ > _)))
 
   def create(v : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { cont => implicit request =>
@@ -85,6 +85,22 @@ object Slot extends SiteController {
         Redirect(slot.pageURL)
       }
     )
+  }
+
+  type CommentForm = Form[String]
+  val commentForm : CommentForm = Form("text" -> nonEmptyText)
+
+  def comment(v : models.Volume.Id, s : models.Slot.Id) = Slot.check(s, Permission.COMMENT) { slot => implicit request =>
+    if (request.access < Permission.COMMENT)
+      Forbidden
+    else
+      commentForm.bindFromRequest().fold(
+        form => BadRequest(views.html.slot.view(slot, form)),
+        { text =>
+          slot.postComment(text)(request.asInstanceOf[AuthSite])
+          Redirect(slot.pageURL)
+        }
+      )
   }
 
 }

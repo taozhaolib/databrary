@@ -79,6 +79,11 @@ object Container extends TableId[Container]("container") {
     volumeRow(v).SQL("WHERE container.volume = {vol} AND top").
       on('vol -> v.id).single
 
+  /** Find the containers in a given volume with the given name. */
+  def findName(v : Volume, name : String)(implicit db : Site.DB) : Seq[Container] =
+    volumeRow(v).SQL("WHERE container.volume = {vol} AND container.name = {name}").
+      on('vol -> v.id, 'name -> name).list
+
   /** Create a new container in the specified volume. */
   def create(volume : Volume, name : Option[String] = None, date : Option[Date] = None)(implicit site : Site) = {
     val id = Audit.add(table, SQLArgs('volume -> volume.id, 'name -> name, 'date -> date), "id").single(scalar[Id])
@@ -89,7 +94,7 @@ object Container extends TableId[Container]("container") {
 /** Smallest organizatonal unit of related data.
   * Primarily used for an individual session of data with a single date and place.
   * Critically, contained data are should be covered by a single consent level and share the same annotations. */
-final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE, toplevel_ : Boolean = false) extends TableRowId[Slot] with Commented with SitePage {
+final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE, toplevel_ : Boolean = false) extends TableRowId[Slot] with InVolume with SitePage {
   def containerId : Container.Id = container.id
   def volume = container.volume
   private[this] var _consent = consent_
@@ -138,8 +143,13 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   /** List of contained asset segments within this slot. */
   def assets(implicit db : Site.DB) : Seq[SlotAsset] = SlotAsset.getSlot(this)
 
-  private[models] def commentSlot(implicit db : Site.DB) = this
+  /** The list of comments on this object.
+    * @param all include indirect comments on any contained objects
+    */
   def comments(all : Boolean = true)(implicit db : Site.DB) : Seq[Comment] = Comment.getSlot(this, all)
+  /** Post a new comment this object.
+    * This will throw an exception if there is no current user, but does not check permissions otherwise. */
+  def postComment(text : String)(implicit site : AuthSite) : Comment = Comment.post(this, text)
 
   def tags(implicit site : Site) : Seq[TagWeight] = TagWeight.getSlot(this)
 

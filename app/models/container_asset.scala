@@ -44,6 +44,8 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   def duration : Offset = 0
   /** Range of times that this asset covers, or None for "global/floating". */
   def extent : Option[Range[Offset]] = position.map(Range.singleton[Offset](_)(PGSegment))
+
+  def fullSlot(implicit db : Site.DB) : SlotAsset = SlotAsset.getFull(this)
 }
 
 final class ContainerTimeseries private[models] (override val asset : Asset with TimeseriesData, container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends ContainerAsset(asset, container, position_, name_, body_) {
@@ -84,19 +86,23 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
   }
   /** Retrieve a specific asset link by container and asset id.
     * This assumes that permissions have already been checked as the caller must already have the container. */
-  private[models] def get(container : Container, asset : Asset.Id)(implicit db : Site.DB) : Option[ContainerAsset] = {
+  private[models] def get(container : Container, asset : Asset.Id)(implicit db : Site.DB) : Option[ContainerAsset] =
     containerRow(container).
       SQL("WHERE container_asset.container = {container} AND container_asset.asset = {asset}").
       on('container -> container.id, 'asset -> asset).singleOpt
-  }
 
   /** Retrieve the set of assets directly contained by a single container.
     * This assumes that permissions have already been checked as the caller must already have the container. */
-  private[models] def getContainer(container : Container)(implicit db : Site.DB) : Seq[ContainerAsset] = {
+  private[models] def getContainer(container : Container)(implicit db : Site.DB) : Seq[ContainerAsset] =
     containerRow(container).
       SQL("WHERE container_asset.container = {container}").
       on('container -> container.id).list
-  }
+
+  /** Find the assets in a container with the given name. */
+  def findName(container : Container, name : String)(implicit db : Site.DB) : Seq[ContainerAsset] =
+    containerRow(container).
+      SQL("WHERE container_asset.container = {container} AND container_asset.name = {name}").
+      on('container -> container.id, 'name -> name).list
 
   /** Create a new link between an asset and a container.
     * This can change effective permissions on this asset, so care must be taken when using this function with existing assets. */
@@ -215,6 +221,22 @@ object SlotAsset {
     }
     row.SQL("WHERE container_asset.container = {container} AND", condition("{segment}")).
     on('slot -> slot.id, 'container -> slot.containerId, 'segment -> slot.segment).list
+  }
+
+  /** Build the SlotAsset for the given ContainerAsset#container.fullSlot. */
+  private[models] def getFull(ca : ContainerAsset)(implicit db : Site.DB) : SlotAsset = {
+    if (ca.container._fullSlot.isEmpty) {
+      Slot.containerRow(ca.container).leftJoin(columns, "slot.id = toplevel_asset.slot AND toplevel_asset.asset = {asset}").
+        map { case (slot ~ excerpt) =>
+          ca.container._fullSlot() = slot
+          make(ca, slot, excerpt)
+        }.SQL("WHERE slot.source = {container} AND slot.segment = '(,)'").
+        on('container -> ca.containerId, 'asset -> ca.assetId).single
+    } else {
+      val excerpt = columns.SQL("WHERE toplevel_asset.slot = {slot} AND toplevel_asset.asset = {asset}").
+        on('slot -> ca.container.fullSlot.id, 'asset -> ca.assetId).singleOpt
+      make(ca, ca.container.fullSlot, excerpt)
+    }
   }
 
   /** Retrieve the list of all top-level assets. */

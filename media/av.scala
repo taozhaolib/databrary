@@ -21,10 +21,19 @@ object AV {
     file.delete/*OnExit -- may be necessary on some platforms? */
   }
 
+  val videoFormat = "mov,mp4,m4a,3gp,3g2,mj2"
+  val videoCodecs = Iterable("h264", "aac")
+
   /* These are referenced by native code so must match their use there */
-  final class Error(msg : String, err : Int) extends RuntimeException(msg)
-  final class Probe(format : String, _duration : Double) {
+  final class Error(msg : String, val err : Int) extends RuntimeException(msg)
+  final class Probe(val format : String, _duration : Double, val streams : Array[String]) {
     def duration : Offset = _duration
+
+    /** Test if this represents a video in primary format. */
+    def isVideo : Boolean =
+      format.equals(videoFormat) &&
+      !streams.isEmpty &&
+      streams.zip(videoCodecs).forall { case (s,c) => s.equals(c) }
   }
 
   @native def _probe(file : String) : Probe

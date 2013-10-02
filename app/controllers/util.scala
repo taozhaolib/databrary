@@ -8,9 +8,6 @@ import dbrary.Offset
 
 object Field {
   def enum(enum : Enumeration) = number(min=0, max=enum.maxId-1).transform[enum.Value](enum(_), _.id)
-  /** Form field formatter for time offsets.
-    * Currently this just uses a dumb seconds-only format. */
-  val offset = bigDecimal(8, 3).transform[Offset](Offset(_), _.seconds)
 }
 
 object EmptyMapping extends Mapping[Unit] {
@@ -26,7 +23,7 @@ object EmptyMapping extends Mapping[Unit] {
 /* Useful for forms that have dynamically optional content (as opposed to user-optional) */
 abstract sealed class MaybeMapping[T] extends Mapping[Option[T]]
 
-case class NoMapping[T]() extends MaybeMapping[T] {
+final case class NoMapping[T]() extends MaybeMapping[T] {
   val key = ""
   val mappings = Nil
   val constraints = Nil
@@ -37,7 +34,7 @@ case class NoMapping[T]() extends MaybeMapping[T] {
   def verifying(constraints : Constraint[Option[T]]*) : Mapping[Option[T]] = this
 }
 
-case class SomeMapping[T](wrapped : Mapping[T]) extends MaybeMapping[T] {
+final case class SomeMapping[T](wrapped : Mapping[T]) extends MaybeMapping[T] {
   val key = wrapped.key
   val mappings = wrapped.mappings
   override val format = wrapped.format

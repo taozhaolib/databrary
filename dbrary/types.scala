@@ -5,6 +5,7 @@ import org.postgresql.util._
 import java.sql.{Timestamp,Date,SQLException}
 import anorm._
 import play.api.mvc.{PathBindable,QueryStringBindable,JavascriptLitteral}
+import play.api.data.format.Formatter
 
 class PGObject(pgType : String, pgValue : String) extends PGobject {
   setType(pgType)
@@ -83,6 +84,7 @@ case class Offset(seconds : Double)
   def compare(other : Offset) = seconds.compare(other.seconds)
   def min(other : Offset) = Offset(seconds.min(other.seconds))
   def max(other : Offset) = Offset(seconds.max(other.seconds))
+  def approx(other : Offset) = (other.seconds - seconds).abs < 0.001
 
   /* This is unfortuante but I can't find any other reasonable formatting options outside the postgres server itself: */
   override def toString = {
@@ -98,6 +100,15 @@ object Offset {
   def apply(d : BigDecimal) : Offset = Offset(d.toDouble)
   def apply(i : PGInterval) : Offset =
     Offset(60*(60*(24*(30*(12.175*i.getYears + i.getMonths) + i.getDays) + i.getHours) + i.getMinutes) + i.getSeconds)
+
+  private val multipliers : Seq[Double] = Seq(60,60,24).scanLeft(1.)(_ * _)
+  def fromString(s : String) : Offset = {
+    s.split(':').reverseIterator.zipAll(multipliers.iterator, "", 0.).map {
+      case (_, 0) => throw new java.lang.NumberFormatException("For offset string: " + s)
+      case ("", _) => 0.
+      case (s, m) => m*s.toDouble
+    }.sum
+  }
 
   object pgType extends PGType[Offset] {
     val pgType = "interval"
@@ -120,6 +131,17 @@ object Offset {
   implicit val queryStringBindable : QueryStringBindable[Offset] = QueryStringBindable.bindableDouble.transform(apply _, _.seconds)
   implicit val javascriptLitteral : JavascriptLitteral[Offset] = new JavascriptLitteral[Offset] {
     def to(value : Offset) = value.seconds.toString
+  }
+
+  implicit val offsetFormat : Formatter[Offset] = new Formatter[Offset] {
+    override val format = Some(("format.offset", Nil))
+    def bind(key: String, data: Map[String, String]) =
+      play.api.data.format.Formats.stringFormat.bind(key, data).right.flatMap { s =>
+        scala.util.control.Exception.catching(classOf[java.lang.NumberFormatException]).
+          either(fromString(s)).
+          left.map(_ => Seq(play.api.data.FormError(key, "error.offset", Nil)))
+      }
+    def unbind(key: String, value: Offset) = Map(key -> value.toString)
   }
 
   import scala.language.implicitConversions

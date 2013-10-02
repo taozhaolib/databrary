@@ -5,14 +5,15 @@
 static struct construct {
 	jclass class;
 	jmethodID init;
-} Error, Probe;
+} String, Error, Probe;
 
 static inline int construct_init(JNIEnv *env, struct construct *c, const char *name, const char *type)
 {
 	jclass cl;
 	if (!((cl = (*env)->FindClass(env, name))
-	   && (c->class = (*env)->NewGlobalRef(env, cl))
-	   && (c->init = (*env)->GetMethodID(env, c->class, "<init>", type))))
+	   && (c->class = (*env)->NewGlobalRef(env, cl))))
+		return -1;
+	if (type && !(c->init = (*env)->GetMethodID(env, c->class, "<init>", type)))
 		return -1;
 	return 0;
 }
@@ -37,8 +38,10 @@ JNI_OnLoad(JavaVM *jvm, void *reserved)
 	if (construct_init(env, &NAME, PKG #NAME, TYPE) < 0) \
 		return -1
 
+	if (construct_init(env, &String, "java/lang/String", NULL) < 0)
+		return -1;
 	CONSTRUCT_INIT(Error, "(Ljava/lang/String;I)V");
-	CONSTRUCT_INIT(Probe, "(Ljava/lang/String;D)V");
+	CONSTRUCT_INIT(Probe, "(Ljava/lang/String;D[Ljava/lang/String;)V");
 
 	av_register_all();
 
@@ -50,6 +53,7 @@ JNI_OnUnload(JavaVM *jvm, void *reserved)
 {
 	JNIEnv *env;
 	(*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_6);
+	construct_fini(env, &String);
 	construct_fini(env, &Error);
 	construct_fini(env, &Probe);
 }
@@ -96,13 +100,22 @@ Java_media_AV_00024__1probe(
 	const char *infile = (*env)->GetStringUTFChars(env, jinfile, 0);
 	AVFormatContext *in = NULL;
 	jobject probe = NULL;
+	jobjectArray jstreams = NULL;
+	int i;
 
 	CHECK(avformat_open_input(&in, infile, NULL, NULL), "opening");
 	CHECK(avformat_find_stream_info(in, NULL), "reading stream info");
 
+	if (!(jstreams = (*env)->NewObjectArray(env, in->nb_streams, String.class, NULL)))
+		goto error;
+	for (i = 0; i < in->nb_streams; i ++)
+		(*env)->SetObjectArrayElement(env, jstreams, i,
+				(*env)->NewStringUTF(env, avcodec_get_name(in->streams[i]->codec->codec_id)));
+
 	probe = CONSTRUCT(Probe, 
 			(*env)->NewStringUTF(env, in->iformat->name),
-			(double)in->duration/(double)AV_TIME_BASE);
+			(double)in->duration/(double)AV_TIME_BASE,
+			jstreams);
 
 error:
 	if (in)

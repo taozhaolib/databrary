@@ -47,6 +47,14 @@ class SiteController extends Controller {
   def isAjax[A](implicit request : Request[A]) = {
     request.headers.get("X-Requested-With") == Some("XMLHttpRequest")
   }
+
+  def AdminAction(act : SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
+    if (request.isAdmin)
+      act(request)
+    else
+      Forbidden
+  }
+
 }
 
 object Site extends SiteController {

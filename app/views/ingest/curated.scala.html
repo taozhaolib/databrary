@@ -1,0 +1,16 @@
+@(vol : models.Volume, res : (Iterable[Record], Iterable[ContainerAsset]))(implicit request : SiteRequest[_])
+
+@template.crud("CSV Ingest Result") {
+	<h2>Participant records:</h2>
+	<ul>
+	@res._1.map { rec =>
+		<li>@display(rec)</li>
+	}
+	</ul>
+	<h2>Assets:</h2>
+	<ul>
+	@res._2.map { ca =>
+		<li>@display(ca.fullSlot)</li>
+	}
+	</ul>
+}

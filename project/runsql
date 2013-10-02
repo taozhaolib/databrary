@@ -65,10 +65,7 @@ dbreset () {
 	if [[ -z $1 ]] ; then
 		pg_dump -Fc -f unreset.dump "${args[@]}"
 	fi
-	runsql - -a <<EOF
-DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
-EOF
+	evolve down 1
 }
 
 declare -A evoexpr=([up]='0,/^# --- !Ups$/d;/^# --- !Downs$/,$d' [down]='1,/^# --- !Downs$/d')
@@ -77,11 +74,24 @@ evolve () {
 	sed -n "${evoexpr[$1]}"';/^#/d;s/;;/;/g;p' $evo | runsql
 }
 
+check_dump() {
+	pg_dump -O -f $conf/check-$1.sql "${args[@]}"
+}
+
+check_diff() {
+	check_dump $2
+	echo "Checking $1 vs. $2..."
+	diff -F'^[A-Z]' -u0 $conf/check-$1.sql $conf/check-$2.sql
+}
+
 evolve_all () {
-	n=1
-	while [[ -f $evolutions/$n.sql ]] ; do
+	n=0
+	while [[ -f $evolutions/$[++n].sql ]] ; do
+		if [[ -n $1 ]] ; then
+			check_dump up-$n
+		fi
+		echo "Running evolution up $n..."
 		evolve up $n
-		: $[n++]
 	done
 }
 
@@ -102,15 +112,19 @@ elif [[ $# -eq 2 && ( $1 = up || $1 = down ) ]] ; then
 	evolve "$@"
 elif [[ $1 = check ]] ; then
 	dbreset
+	echo "Running schema..."
 	runsql $conf/schema.sql
-	pg_dump -O -f $conf/check-schema.sql "${args[@]}"
+	check_dump schema
 	dbreset 1
-	evolve_all
-	pg_dump -O -f $conf/check-evolve.sql "${args[@]}"
-	dbreset 1
-	diff -F'^[A-Z]' -u0 $conf/check-evolve.sql $conf/check-schema.sql
-	echo "OK!"
-	rm -f $conf/check-evolve.sql $conf/check-schema.sql
+	evolve_all 1
+	check_diff schema evolve
+	while [[ $[--n] -ge 1 ]] ; do
+		echo "Running evolution down $n..."
+		evolve down $n
+		check_diff up-$n down-$n
+	done
+	echo "All OK!"
+	rm -f $conf/check-*.sql
 elif [[ $1 = dump ]] ; then
 	shift
 	exec pg_dump "${args[@]}" "$@"

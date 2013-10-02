@@ -1,11 +1,16 @@
 -- This is currently the complete, authoritative schema, as it is easier to
 -- understand all in one place.
 
+-- Whenever you make changes to this file, you must also write a new evolution
+-- in evolutions/default and check the result using "project/runsql check".
+-- Note that this while this file is valid SQL, evolutions require semi-colons
+-- to be doubled when they do not terminate statements.
+
 -- A general convention is that hard-coded fixtures get non-positive ids.
 
 ----------------------------------------------------------- utilities
 
-CREATE FUNCTION create_abstract_parent ("parent" name, "children" name[]) RETURNS void LANGUAGE plpgsql AS $create$
+CREATE FUNCTION CREATE_ABSTRACT_PARENT ("parent" name, "children" name[]) RETURNS void LANGUAGE plpgsql AS $create$
 DECLARE
 	parent_table CONSTANT text := quote_ident(parent);
 	kind_type CONSTANT text := quote_ident(parent || '_kind');
@@ -38,7 +43,7 @@ BEGIN
 		END;$$
 	$macro$;
 END; $create$;
-COMMENT ON FUNCTION "create_abstract_parent" (name, name[]) IS 'A "macro" to create an abstract parent table and trigger function.  This could be done with a single function using dynamic EXECUTE but this way is more efficient and not much more messy.';
+COMMENT ON FUNCTION CREATE_ABSTRACT_PARENT (name, name[]) IS 'A "macro" to create an abstract parent table and trigger function.  This could be done with a single function using dynamic EXECUTE but this way is more efficient and not much more messy.';
 
 CREATE FUNCTION cast_int ("input" text) RETURNS integer LANGUAGE plpgsql IMMUTABLE STRICT AS $$
 DECLARE
@@ -55,16 +60,33 @@ CREATE FUNCTION singleton (int4) RETURNS int4range LANGUAGE sql IMMUTABLE STRICT
 
 ----------------------------------------------------------- auditing
 
-CREATE TYPE audit_action AS ENUM ('login', 'logout', 'add', 'change', 'remove', 'download');
-COMMENT ON TYPE audit_action IS 'The various activities for which we keep audit records (in audit or a derived table).';
+CREATE SCHEMA audit;
 
-CREATE TABLE "audit" (
-	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	"who" int NOT NULL, -- References "account" ("party"),
-	"ip" inet NOT NULL,
-	"action" audit_action NOT NULL
+CREATE TYPE audit_action AS ENUM ('attempt', 'open', 'close', 'add', 'change', 'remove', 'download');
+COMMENT ON TYPE audit_action IS 'The various activities for which we keep audit records (in audit or a derived table).  This is not kept in the audit schema due to jdbc type search limitations.';
+
+CREATE FUNCTION audit.SET_PRIVILEGES (name) RETURNS void LANGUAGE plpgsql AS $set$ BEGIN
+	EXECUTE $$REVOKE UPDATE, DELETE, TRUNCATE ON TABLE audit.$$ || quote_ident($1) || $$ FROM $$ || quote_ident(current_user);
+END; $set$;
+COMMENT ON FUNCTION audit.SET_PRIVILEGES (name) IS 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE audit.$1 FROM current_user.  Unfortunately you cannot remove default privileges per-schema, so we do this instead for each audit table.  The function is necessary to interpolate current_user.';
+
+CREATE TABLE audit."audit" (
+	"audit_time" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"audit_user" int NOT NULL, -- References "account" ("party"),
+	"audit_ip" inet NOT NULL,
+	"audit_action" audit_action NOT NULL
 ) WITH (OIDS = FALSE);
-COMMENT ON TABLE "audit" IS 'Logs of all activities on the site, including access and modifications to any data. Each table has an associated audit table inheriting from this one.';
+COMMENT ON TABLE audit."audit" IS 'Logs of all activities on the site, including access and modifications to any data. Each table has an associated audit table inheriting from this one.';
+SELECT audit.SET_PRIVILEGES ('audit');
+
+CREATE FUNCTION audit.CREATE_TABLE (name) RETURNS void LANGUAGE plpgsql AS $create$
+DECLARE
+	table_name CONSTANT text := quote_ident($1);
+BEGIN
+	EXECUTE $$CREATE TABLE audit.$$ || table_name || $$ (LIKE public.$$ || table_name || $$) INHERITS (audit."audit") WITH (OIDS = FALSE)$$;
+	PERFORM audit.SET_PRIVILEGES($1);
+END; $create$;
+COMMENT ON FUNCTION audit.CREATE_TABLE (name) IS 'Create an audit.$1 table mirroring public.$1.';
 
 ----------------------------------------------------------- users
 
@@ -79,9 +101,7 @@ COMMENT ON TABLE "party" IS 'Users, groups, organizations, and other logical ide
 INSERT INTO "party" VALUES (-1, 'Everybody'); -- NOBODY
 INSERT INTO "party" VALUES (0, 'Databrary'); -- ROOT
 
-CREATE TABLE "audit_party" (
-	LIKE "party"
-) INHERITS ("audit") WITH (OIDS = FALSE);
+SELECT audit.CREATE_TABLE ('party');
 
 
 CREATE TABLE "account" (
@@ -92,9 +112,7 @@ CREATE TABLE "account" (
 );
 COMMENT ON TABLE "account" IS 'Login information for parties associated with registered individuals.';
 
-CREATE TABLE "audit_account" (
-	LIKE "account"
-) INHERITS ("audit") WITH (OIDS = FALSE);
+SELECT audit.CREATE_TABLE ('account');
 
 ----------------------------------------------------------- permissions
 
@@ -131,9 +149,7 @@ COMMENT ON COLUMN "authorize"."parent" IS 'Party granting permissions';
 COMMENT ON COLUMN "authorize"."access" IS 'Level of independent site access granted to child (effectively minimum level on path to ROOT)';
 COMMENT ON COLUMN "authorize"."delegate" IS 'Permissions for which child may act as parent (not inherited)';
 
-CREATE TABLE "audit_authorize" (
-	LIKE "authorize"
-) INHERITS ("audit") WITH (OIDS = FALSE);
+SELECT audit.CREATE_TABLE ('authorize');
 
 -- To allow normal users to inherit from nobody:
 INSERT INTO "authorize" ("child", "parent", "access", "delegate", "authorized") VALUES (0, -1, 'ADMIN', 'ADMIN', '2013-1-1');
@@ -173,14 +189,12 @@ CREATE TABLE "volume" (
 );
 COMMENT ON TABLE "volume" IS 'Basic organizational unit for data.';
 
-CREATE TABLE "audit_volume" (
-	LIKE "volume"
-) INHERITS ("audit") WITH (OIDS = FALSE);
-CREATE INDEX "volume_creation_idx" ON audit_volume ("id") WHERE "action" = 'add';
-COMMENT ON INDEX "volume_creation_idx" IS 'Allow efficient retrieval of volume creation information, specifically date.';
+SELECT audit.CREATE_TABLE ('volume');
+CREATE INDEX "volume_creation_idx" ON audit."volume" ("id") WHERE "audit_action" = 'add';
+COMMENT ON INDEX audit."volume_creation_idx" IS 'Allow efficient retrieval of volume creation information, specifically date.';
 
 CREATE FUNCTION "volume_creation" ("volume" integer) RETURNS timestamp LANGUAGE sql STABLE STRICT AS
-	$$ SELECT max("when") FROM audit_volume WHERE id = $1 AND "action" = 'add' $$;
+	$$ SELECT max("audit_time") FROM audit."volume" WHERE "id" = $1 AND "audit_action" = 'add' $$;
 
 CREATE TABLE "volume_access" (
 	"volume" integer NOT NULL References "volume",
@@ -192,9 +206,7 @@ CREATE TABLE "volume_access" (
 );
 COMMENT ON TABLE "volume_access" IS 'Permissions over volumes assigned to users.';
 
-CREATE TABLE "audit_volume_access" (
-	LIKE "volume_access"
-) INHERITS ("audit") WITH (OIDS = FALSE);
+SELECT audit.CREATE_TABLE ('volume_access');
 
 CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer, "access" permission = NULL) RETURNS permission LANGUAGE sql STABLE AS $$
 	WITH sa AS (
@@ -286,9 +298,7 @@ CREATE INDEX ON "container" ("volume");
 CREATE UNIQUE INDEX "container_top_idx" ON "container" ("volume") WHERE "top";
 COMMENT ON TABLE "container" IS 'Organizational unit within volume containing related files (with common annotations), often corresponding to an individual data session (single visit/acquisition/participant/group/day).';
 
-CREATE TABLE "audit_container" (
-	LIKE "container"
-) INHERITS ("audit") WITH (OIDS = FALSE);
+SELECT audit.CREATE_TABLE ('container');
 
 CREATE FUNCTION "container_top_create" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
 	INSERT INTO container (volume, top) VALUES (NEW.id, true);
@@ -310,10 +320,8 @@ CREATE UNIQUE INDEX "slot_full_container_idx" ON "slot" ("source") WHERE "segmen
 COMMENT ON TABLE "slot" IS 'Sections of containers selected for referencing, annotating, consenting, etc.';
 COMMENT ON COLUMN "slot"."consent" IS 'Sharing/release permissions granted by participants on (portions of) contained data.  This could equally well be an annotation, but hopefully won''t add too much space here.';
 
-CREATE TABLE "audit_slot_consent" (
-	LIKE "slot"
-) INHERITS ("audit") WITH (OIDS = FALSE);
-COMMENT ON TABLE "audit_slot_consent" IS 'Partial auditing for slot table covering only consent changes.';
+SELECT audit.CREATE_TABLE ('slot');
+COMMENT ON TABLE audit."slot" IS 'Partial auditing for slot table covering only consent changes.';
 
 CREATE FUNCTION "slot_full_create" () RETURNS trigger LANGUAGE plpgsql AS $$
 DECLARE
@@ -368,13 +376,24 @@ INSERT INTO "timeseries_format" ("id", "mimetype", "extension", "name") VALUES (
 
 -- The above video format will change to reflect internal storage, these are used for uploaded files:
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/plain', 'txt', 'Plain text');
--- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/html', 'html', 'Hypertext markup');
--- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/csv', 'csv', 'Comma-separated values');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/csv', 'csv', 'Comma-separated values');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/html', 'html', 'Hypertext markup');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/rtf', 'rtf', 'Rich text format');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('image/png', 'png', 'Portable network graphics');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/pdf', 'pdf', 'Portable document');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/msword', 'doc', 'Microsoft Word document');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.oasis.opendocument.text', 'odf', 'OpenDocument text');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'docx', 'Microsoft Word (Office Open XML) document');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.ms-excel', 'xls', 'Microsoft Excel spreadsheet');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.oasis.opendocument.spreadsheet', 'ods', 'OpenDocument spreadsheet');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'xlsx', 'Microsoft Excel (Office Open XML) workbook');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.ms-powerpoint', 'ppt', 'Microsoft PowerPoint presentation');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.oasis.opendocument.presentation', 'odp', 'OpenDocument presentation');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.openxmlformats-officedocument.presentationml.presentation', 'pptx', 'Microsoft PowerPoint (Office Open XML) presentation');
 -- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14');
 -- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/webm', 'webm', 'WebM');
 
-SELECT create_abstract_parent('asset', ARRAY['file', 'timeseries', 'clip']);
+SELECT CREATE_ABSTRACT_PARENT ('asset', ARRAY['file', 'timeseries', 'clip']);
 COMMENT ON TABLE "asset" IS 'Parent table for all uploaded data in storage.';
 
 CREATE TABLE "file" (
@@ -385,6 +404,8 @@ CREATE TABLE "file" (
 CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "file" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
 COMMENT ON TABLE "file" IS 'Assets in storage along with their "constant" metadata.';
 
+SELECT audit.CREATE_TABLE ('file');
+
 CREATE TABLE "timeseries" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
 	"format" smallint NOT NULL References "timeseries_format",
@@ -393,9 +414,15 @@ CREATE TABLE "timeseries" (
 CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "timeseries" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
 COMMENT ON TABLE "timeseries" IS 'File assets representing interpretable and sub-selectable timeseries data (e.g., videos).';
 
-CREATE TABLE "audit_file" (
-	LIKE "file"
-) INHERITS ("audit") WITH (OIDS = FALSE);
+CREATE VIEW audit."timeseries" AS
+	SELECT *, NULL::interval AS "duration" FROM audit."file";
+COMMENT ON VIEW audit."timeseries" IS 'Timeseries are audited together with files.  This view provides glue to make that transparent.';
+CREATE FUNCTION audit."timeseries_file" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+	INSERT INTO audit."file" (audit_time, audit_user, audit_ip, audit_action, id, format, classification) VALUES (NEW.audit_time, NEW.audit_user, NEW.audit_ip, NEW.audit_action, NEW.id, NEW.format, NEW.classification);
+	RETURN NEW;
+END; $$;
+COMMENT ON FUNCTION audit."timeseries_file" () IS 'Trigger function for INSTEAD OF INSERT ON audit.timeseries to propagate to audit.file.';
+CREATE TRIGGER "file" INSTEAD OF INSERT ON audit."timeseries" FOR EACH ROW EXECUTE PROCEDURE audit."timeseries_file" ();
 
 
 CREATE TABLE "clip" (
@@ -420,9 +447,7 @@ CREATE INDEX ON "container_asset" ("container");
 COMMENT ON TABLE "container_asset" IS 'Asset linkages into containers along with "dynamic" metadata.';
 COMMENT ON COLUMN "container_asset"."position" IS 'Start point or position of this asset within the container, such that this asset occurs or starts position time after the beginning of the container session.  NULL positions are treated as universal (existing at all times).';
 
-CREATE TABLE "audit_container_asset" (
-	LIKE "container_asset"
-) INHERITS ("audit") WITH (OIDS = FALSE);
+SELECT audit.CREATE_TABLE ('container_asset');
 
 
 CREATE VIEW "asset_duration" ("id", "duration") AS
@@ -437,9 +462,7 @@ CREATE TABLE "toplevel_slot" (
 );
 COMMENT ON TABLE "toplevel_slot" IS 'Slots whose assets are promoted to the top volume level for display.';
 
-CREATE TABLE "audit_toplevel_slot" (
-	LIKE "toplevel_slot"
-) INHERITS ("audit") WITH (OIDS = FALSE);
+SELECT audit.CREATE_TABLE ('toplevel_slot');
 
 CREATE TABLE "toplevel_asset" (
 	"slot" integer NOT NULL References "slot",
@@ -450,9 +473,7 @@ CREATE TABLE "toplevel_asset" (
 COMMENT ON TABLE "toplevel_asset" IS 'Slot assets which are promoted to the top volume level for display.';
 COMMENT ON COLUMN "toplevel_asset"."excerpt" IS 'Asset segments that may be released publically if so permitted.';
 
-CREATE TABLE "audit_toplevel_asset" (
-	LIKE "toplevel_asset"
-) INHERITS ("audit") WITH (OIDS = FALSE);
+SELECT audit.CREATE_TABLE ('toplevel_asset');
 
 ----------------------------------------------------------- comments
 
@@ -460,7 +481,7 @@ CREATE TABLE "comment" (
 	"id" serial NOT NULL Primary Key,
 	"who" integer NOT NULL References "account",
 	"slot" integer NOT NULL References "slot",
-	"when" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"time" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"text" text NOT NULL
 );
 CREATE INDEX ON "comment" ("slot");
@@ -517,6 +538,8 @@ COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$
 INSERT INTO "metric" ("id", "name", "type") VALUES (-900, 'ident', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-590, 'birthdate', 'IDENTIFIED', 'date');
 INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-580, 'gender', 'text', ARRAY['F','M']);
+INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-550, 'race', 'text', ARRAY['American Indian or Alaska Native','Asian','Native Hawaiian or Other Pacific Islander','Black or African American','White','Multiple']);
+INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-540, 'ethnicity', 'text', ARRAY['Not Hispanic or Latino','Hispanic or Latino']);
 
 CREATE TABLE "record_template" (
 	"category" smallint References "record_category" ON DELETE CASCADE,
@@ -527,6 +550,8 @@ COMMENT ON TABLE "record_template" IS 'Default set of measures defining a given 
 INSERT INTO "record_template" ("category", "metric") VALUES (-500, -900);
 INSERT INTO "record_template" ("category", "metric") VALUES (-500, -590);
 INSERT INTO "record_template" ("category", "metric") VALUES (-500, -580);
+INSERT INTO "record_template" ("category", "metric") VALUES (-500, -550);
+INSERT INTO "record_template" ("category", "metric") VALUES (-500, -540);
 
 CREATE TABLE "measure" ( -- ABSTRACT
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,

@@ -53,14 +53,22 @@ object AssetFormat extends TableId[AssetFormat]("format") {
       row.SQL("WHERE mimetype = {mimetype}").on('mimetype -> mimetype).singleOpt
   /** Lookup a format by its extension.
     * @param ts include TimeseriesFormats. */
-  def getExtension(extension : String, ts : Boolean = false)(implicit db : Site.DB) : Option[AssetFormat] =
+  private def getExtension(extension : String, ts : Boolean = false)(implicit db : Site.DB) : Option[AssetFormat] =
     (if (ts) TimeseriesFormat.getExtension(extension) else None) orElse
       row.SQL("WHERE extension = {extension}").on('extension -> extension).singleOpt
   /** Get a list of all file formats in the database.
     * @param ts include TimeseriesFormats. */
-  def getAll(implicit db : Site.DB, ts : Boolean = false) : Seq[AssetFormat] =
+  def getAll(ts : Boolean = false)(implicit db : Site.DB) : Seq[AssetFormat] =
     (if (ts) TimeseriesFormat.getAll else Nil) ++
       row.SQL("ORDER BY format.id").list
+
+  def getFilename(filename : String, ts : Boolean = false)(implicit db : util.Site.DB) =
+    maybe(filename.lastIndexOf('.'), -1).
+      flatMap(i => getExtension(filename.substring(i + 1).toLowerCase, ts))
+  def getFilePart(file : play.api.mvc.MultipartFormData.FilePart[_], ts : Boolean = false)(implicit db : util.Site.DB) =
+    file.contentType.flatMap(getMimetype(_, ts)) orElse
+      getFilename(file.filename, ts)
+
 
   private[models] final val IMAGE : Id = asId(-700)
   /** File type for internal image data (jpeg).
@@ -81,7 +89,7 @@ object TimeseriesFormat extends HasId[TimeseriesFormat] {
     case Video.mimetype => Some(Video)
     case _ => None
   }
-  def getExtension(extension : String) : Option[TimeseriesFormat] = Some(extension) match {
+  private[models] def getExtension(extension : String) : Option[TimeseriesFormat] = Some(extension) match {
     case Video.extension => Some(Video)
     case _ => None
   }
@@ -227,7 +235,7 @@ object Timeseries extends AssetView[Timeseries]("timeseries") {
   def create(format : TimeseriesFormat, classification : Classification.Value, duration : Offset, file : TemporaryFile)(implicit site : Site) : Timeseries = {
     val id = Audit.add(table, SQLArgs('format -> format.id, 'classification -> classification, 'duration -> duration), "id").single(scalar[Id])
     store.FileAsset.store(id, file)
-    site.db.commit
+    site.db.commit // XXX if we do things per-transaction
     new Timeseries(id, format, classification, duration)
   }
 }

@@ -1,5 +1,7 @@
 citation.invalid=Invalid citation
+error.offset=Position in seconds expected
 file.format.unknown=File format '{0}' is not supported.
+format.offset=Position in seconds
 login.bad=Incorrect login.
 login.openID.notFound=No account is associated with that OpenID.
 login.noCookie=You must be logged in to perform that action. Please make sure you have cookies enabled.
