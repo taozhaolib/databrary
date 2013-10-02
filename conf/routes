@@ -75,8 +75,7 @@ GET    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/head           
 GET    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>        controllers.Asset.frame(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, offset : dbrary.Offset)
 
 # comments
-POST   /volume/$vID<[0-9]+>/comment/create                                                       controllers.Comment.postVolume(vID : models.Volume.Id)
-POST   /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/comment/create                                     controllers.Comment.postSlot(vID : models.Volume.Id, sID : models.Slot.Id)
+POST   /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/comment/create                                     controllers.Slot.comment(vID : models.Volume.Id, sID : models.Slot.Id)
 
 # records
 POST   /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                         controllers.Record.slotRemove(vID : models.Volume.Id, sID : models.Slot.Id, rID : models.Record.Id, editRedirect : Boolean = false)

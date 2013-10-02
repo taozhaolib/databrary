@@ -87,4 +87,20 @@ object Slot extends SiteController {
     )
   }
 
+  type CommentForm = Form[String]
+  val commentForm : CommentForm = Form("text" -> nonEmptyText)
+
+  def comment(v : models.Volume.Id, s : models.Slot.Id) = Slot.check(s, Permission.COMMENT) { slot => implicit request =>
+    if (request.access < Permission.COMMENT)
+      Forbidden
+    else
+      commentForm.bindFromRequest().fold(
+        form => BadRequest(views.html.slot.view(slot, form)),
+        { text =>
+          slot.postComment(text)(request.asInstanceOf[AuthSite])
+          Redirect(slot.pageURL)
+        }
+      )
+  }
+
 }

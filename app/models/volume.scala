@@ -10,7 +10,7 @@ import util._
 /** Main organizational unit or package of data, within which everything else exists.
   * Usually represents a single project or dataset with a single set of procedures.
   * @param permission the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than [[Permission.VIEW]] except possibly for transient objects, as unavailable volumes should never be returned in the first place. */
-final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], override val permission : Permission.Value, val creation : Timestamp) extends TableRowId[Volume] with SitePage with Commented {
+final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], override val permission : Permission.Value, val creation : Timestamp) extends TableRowId[Volume] with SitePage with InVolume {
   private[this] var _name = name_
   /** Title headline of this volume. */
   def name = _name
@@ -23,7 +23,6 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   def change(name : String = _name, body : Option[String] = _body)(implicit site : Site) : Unit = {
     if (name == _name && body == _body)
       return
-    val args = 
     Audit.change("volume", SQLArgs('name -> name, 'body -> body), SQLArgs('id -> id)).execute()
     _name = name
     _body = body
@@ -64,8 +63,8 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   /** List of all citations on this volume. */
   def citations(implicit db : Site.DB) = VolumeCitation.getVolume(this)
 
-  private[models] def commentSlot(implicit db : Site.DB) = topSlot
-  def comments(all : Boolean = true)(implicit db : Site.DB) : Seq[Comment] = Comment.getVolume(this, all)
+  /** The list of comments in this volume. */
+  def comments(implicit db : Site.DB) : Seq[Comment] = Comment.getVolume(this)
 
   def pageName(implicit site : Site) = name
   def pageParent(implicit site : Site) = None

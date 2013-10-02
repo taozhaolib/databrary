@@ -104,7 +104,7 @@
         </section>
 
         <div class="row">
-        @region.comments(Some(routes.Comment.postVolume(volume.id)), volume.comments(true)(request.db))
+        @region.comments(Some((routes.Slot.comment(volume.id, volume.topSlot.id), controllers.Slot.commentForm)), volume.comments)
         </div>
     </article>
 }

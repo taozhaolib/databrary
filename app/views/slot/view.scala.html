@@ -1,4 +1,4 @@
-@(slot : Slot)(implicit request : SiteRequest[_])
+@(slot : models.Slot, commentForm : controllers.Slot.CommentForm = controllers.Slot.commentForm)(implicit request : SiteRequest[_])
 
 @template.crud("Slot: " + slot.container.name + "-" + slot.id.unId) {
     <article>
@@ -24,7 +24,7 @@
 	</ul>
 
         <div class="row">
-        @region.comments(Some(routes.Comment.postSlot(slot.volumeId, slot.id)), slot.comments(true))
+        @region.comments(Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), slot.comments(true))
         </div>
     </article>
 }

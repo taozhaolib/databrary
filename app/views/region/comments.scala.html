@@ -1,4 +1,4 @@
-@(post : Option[Call], comments : Seq[Comment])(implicit request : SiteRequest[_])
+@(post : Option[(Call, controllers.Slot.CommentForm)], comments : Seq[Comment])(implicit request : SiteRequest[_])
 
 @import helper.FieldConstructor
     @implicitField = @{
@@ -8,17 +8,18 @@
 <section id="comments">
     <h1>Comments</h1>
 
-    @post.map { post =>
+    @post.map { case (post, form) =>
         @if(request.access >= Permission.COMMENT) {
             <div class="comment form">
                 @widget.userinfo(request.user.get)
 
                 @tag.form(post) {
                     <div class="body">
-                        @tag.textarea(controllers.Comment.form("text"), 'placeholder -> "Comment")
+                        @tag.textarea(form("text"), 'placeholder -> "Comment")
                         <button type="submit" class="button first">Post</button>
                     </div>
                 }
+		@widget.formErrors(form)
             </div>
 
         }
