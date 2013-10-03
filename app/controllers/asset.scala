@@ -38,22 +38,34 @@ object Asset extends SiteController {
     Ok(views.html.asset.view(link))
   }
 
-  private def assetResult(tag : String, data_ : => Future[store.StreamEnumerator], fmt : AssetFormat, saveAs : Option[String])(implicit request : SiteRequest[_]) : Result =
+  private def assetResult(tag : String, data_ : => Future[store.StreamEnumerator], fmt : AssetFormat, saveAs : Option[String])(implicit request : SiteRequest[_]) : Result = {
+    /* The split works because we never use commas within etags. */
+    val ifNoneMatch = request.headers.getAll(IF_NONE_MATCH).flatMap(_.split(',').map(_.trim))
     /* Assuming assets are immutable, any if-modified-since header is good enough */
-    request.headers.get(IF_NONE_MATCH).filter(_ == tag).orElse(
-      request.headers.get(IF_MODIFIED_SINCE)
-    ).fold(AsyncResult(data_.map { data =>
+    if (ifNoneMatch.exists(t => t.equals("*") || HTTP.unquote(t).equals(tag)) ||
+      ifNoneMatch.isEmpty && request.headers.get(IF_MODIFIED_SINCE).isDefined)
+      NotModified
+    else AsyncResult(data_.map { data =>
+      val size = data.size
+      val range = if (request.headers.get(IF_RANGE).forall(HTTP.unquote(_).equals(tag)))
+          request.headers.get(RANGE).flatMap(HTTP.parseRange(_, size))
+        else
+          None
+      val subdata = range.fold(data)((data.range _).tupled)
       val headers = Seq[Option[(String, String)]](
-        data.size.map(CONTENT_LENGTH -> _.toString),
+        Some(CONTENT_LENGTH -> subdata.size.toString),
+        range.map(r => CONTENT_RANGE -> ("bytes " + (if (r._1 >= size) "*" else r._1.toString + "-" + r._2.toString) + "/" + data.size.toString)),
         Some(CONTENT_TYPE -> fmt.mimetype),
-        saveAs.map(name => CONTENT_DISPOSITION -> ("attachment; filename=\"" + (name + fmt.extension.fold("")("." + _)).replaceAll("([\\p{Cntrl}\"\\\\])", "\\\\$2") + "\"")),
-        Some(ETAG -> tag),
+        saveAs.map(name => CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + fmt.extension.fold("")("." + _)))),
+        Some(ETAG -> HTTP.quote(tag)),
         Some(CACHE_CONTROL -> "max-age=31556926, private") /* this needn't be private for public data */
       ).flatten
-      SimpleResult(
-        header = ResponseHeader(OK, Map(headers : _*)),
-        data)
-    }) : Result) (_ => NotModified)
+        SimpleResult(
+          header = ResponseHeader(range.fold(OK)(r => if (r._1 >= size) REQUESTED_RANGE_NOT_SATISFIABLE else PARTIAL_CONTENT),
+            Map(headers : _*)),
+          subdata)
+      })
+  }
 
   def download(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, inline : Boolean) = checkSlot(i, o, Permission.DOWNLOAD) { link => implicit request =>
     assetResult(

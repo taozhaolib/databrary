@@ -13,34 +13,52 @@ import dbrary.{Offset,Range}
 import util._
 import models._
 
-trait StreamEnumerator extends Enumerator[Array[Byte]] {
-  val size : Option[Long]
+sealed trait StreamEnumerator extends Enumerator[Array[Byte]] {
+  parent =>
+  val size : Long
+  def range(start : Long = 0, end : Long = size - 1) : StreamEnumerator = new StreamEnumerator {
+    val size = end - start + 1
+    def apply[A](it : Iteratee[Array[Byte], A]) : Future[Iteratee[Array[Byte], A]] =
+      parent.through(StreamEnumerator.range(start, end+1)).apply[A](it)
+  }
 }
 object StreamEnumerator {
-  def apply(buf : Array[Byte]) = new StreamEnumerator {
-    val size = Some(buf.length.toLong)
-    def apply[A](it : Iteratee[Array[Byte], A]) : Future[Iteratee[Array[Byte], A]] = 
+  type Data = Array[Byte]
+  def fromData(buf : Data) = new StreamEnumerator {
+    val size = buf.length.toLong
+    def apply[A](it : Iteratee[Data, A]) : Future[Iteratee[Data, A]] = 
       Enumerator.apply(buf).apply[A](it)
   }
-  def fromStream(input : InputStream, chunkSize : Int = 8192) = new StreamEnumerator {
-    val size = None /* input.available */
-    def apply[A](it : Iteratee[Array[Byte], A]) : Future[Iteratee[Array[Byte], A]] = 
-      Enumerator.fromStream(input, chunkSize).apply[A](it)
-  }
-  def fromFile(file : File, chunkSize : Int = 8192) = new StreamEnumerator {
-    val size = Some(file.length)
+  def fromFile(file : File, chunkSize : Int = 32768) = new StreamEnumerator {
+    val size = file.length
     private[this] val input = new FileInputStream(file)
-    def apply[A](it : Iteratee[Array[Byte], A]) : Future[Iteratee[Array[Byte], A]] = 
+    def apply[A](it : Iteratee[Data, A]) : Future[Iteratee[Data, A]] = 
       Enumerator.fromStream(input, chunkSize).apply[A](it)
   }
   def fromFileGenerator(name : String, gen : File => Unit) : StreamEnumerator = {
     val t = File.createTempFile(name, null)
     try {
       gen(t)
-      StreamEnumerator.fromFile(t)
+      fromFile(t)
     } finally {
       t.delete
     }
+  }
+  /** Composition of Enumeratee.take and Enumeratee.drop with Longs. */
+  def range(start : Long, stop : Long) : Enumeratee[Data, Data] = new Enumeratee.CheckDone[Data, Data] {
+    private def next[A](pos : Long, i : Iteratee[Data, A]) =
+      new Enumeratee.CheckDone[Data, Data] { def continue[A](k: K[Data, A]) = Cont(step(pos)(k)) } &> i
+    def step[A](pos : Long)(k : K[Data, A]) : K[Data, Iteratee[Data, A]] = {
+      case in @ Input.El(a) if pos + a.length <= start => Cont(step(pos+a.length)(k))
+      case in @ Input.El(a) if pos < start && pos + a.length > stop => Done(k(Input.El(a.slice((start-pos).toInt, (stop-pos).toInt))), Input.Empty)
+      case in @ Input.El(a) if pos < start => next(pos+a.length, k(Input.El(a.drop((start-pos).toInt))))
+      case in @ Input.El(a) if pos + a.length <= stop => next(pos+a.length, k(in))
+      case in @ Input.El(a) if pos < stop => Done(k(Input.El(a.take((stop-pos).toInt))), Input.Empty)
+      case in @ Input.Empty if pos < start => Cont(step(pos)(k))
+      case in @ Input.Empty if pos < stop => next(pos, k(in))
+      case in => Done(Cont(k), in)
+    }
+    def continue[A](k: K[Data, A]) = Cont(step(0)(k))
   }
 }
 
@@ -90,7 +108,7 @@ private[store] object Segment extends StoreDir[models.Asset.Id]("store.cache") {
     if (cache && cacheEnabled)
       generate(f, (f : File) => media.AV.frame(FileAsset.file(id), offset, f), cache)
     else Future {
-      StreamEnumerator(media.AV.frame(FileAsset.file(id), offset))
+      StreamEnumerator.fromData(media.AV.frame(FileAsset.file(id), offset))
     }
   }
 
