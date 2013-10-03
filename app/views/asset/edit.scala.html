@@ -11,8 +11,10 @@
         <header>
             <h1>@target.fold(_ => "Upload Asset", "Edit: " + _.name)</h1>
 
-            @if(target.isRight) {
-                @target match { case Right(link) =>
+	    @target match {
+	    case Left(_) => {
+	    }
+	    case Right(link) => {
                 <nav class="menu">
                     <ul>
                 @if(link.permission >= Permission.EDIT) {
@@ -40,7 +42,7 @@
                 @if(request.isAdmin) {
                     <fieldset>
                         <legend>Admin Options</legend>
-                        @tag.select(form("format"), AssetFormat.getAll(true).map(f => (f.id.unId.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)).sortBy(v => (v._2, v._1)))
+                        @tag.select(form("format"), ("", "") +: AssetFormat.getAll(true).map(f => (f.id.unId.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)))
                         @tag.inputText(form("localfile"), 'placeholder -> "Local location (overridden by file upload)")
                     </fieldset>
                 }

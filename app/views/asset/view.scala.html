@@ -30,7 +30,10 @@
                     <source src="@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)" type="video/mp4">
                 </video>
             }
-            case ("text", _) => {
+            case ("text", "html") => {
+                <iframe src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
+            }
+            case ("text", "plain") => {
                 <iframe src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
             }
             case _ => {
