@@ -4,6 +4,9 @@ import dbrary._
 
 /** Utility that creates [[scala.Option]]s out of values. */
 object maybe {
+  def guard[A](g : Boolean, v : => A) : Option[A] =
+    if (g) Some(v) else None
+
   /** A more concise version of the common `Some(_).filter(_)` idiom.
     * @return Some(a) if f(a), None otherwise
     */

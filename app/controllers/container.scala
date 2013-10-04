@@ -12,8 +12,8 @@ import models._
 
 object Container extends SiteController {
 
-  private[controllers] def check(i : models.Container.Id, p : Permission.Value = Permission.VIEW)(act : Container => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
-    models.Container.get(i).fold(NotFound : Result) { c =>
+  private[controllers] def check(v : models.Volume.Id, i : models.Container.Id, p : Permission.Value = Permission.VIEW)(act : Container => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
+    models.Container.get(i).filter(_.volumeId == v).fold(NotFound : Result) { c =>
       if (c.permission < p)
         Forbidden
       else
@@ -21,7 +21,7 @@ object Container extends SiteController {
     }
   }
 
-  def view(v : models.Volume.Id, i : models.Container.Id) = check(i) { container => implicit request =>
+  def view(v : models.Volume.Id, i : models.Container.Id) = check(v, i) { container => implicit request =>
     Ok(views.html.container.view(container))
   }
 
@@ -38,11 +38,11 @@ object Container extends SiteController {
     views.html.container.edit(Right(container), editForm)
   }
 
-  def edit(v : models.Volume.Id, i : models.Container.Id) = check(i, Permission.EDIT) { cont => implicit request =>
+  def edit(v : models.Volume.Id, i : models.Container.Id) = check(v, i, Permission.EDIT) { cont => implicit request =>
     Ok(viewEdit(cont)())
   }
 
-  def change(v : models.Volume.Id, i : models.Container.Id) = check(i, Permission.EDIT) { cont => implicit request =>
+  def change(v : models.Volume.Id, i : models.Container.Id) = check(v, i, Permission.EDIT) { cont => implicit request =>
     editFormFill(cont).bindFromRequest.fold(
       form => BadRequest(viewEdit(cont)(editForm = form)),
       { case (name, date) =>

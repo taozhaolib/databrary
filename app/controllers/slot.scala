@@ -13,8 +13,8 @@ import models._
 
 object Slot extends SiteController {
 
-  private[controllers] def check(i : models.Slot.Id, p : Permission.Value = Permission.VIEW)(act : Slot => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
-    models.Slot.get(i).fold(NotFound : Result) { s =>
+  private[controllers] def check(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW, a : Permission.Value = Permission.NONE)(act : Slot => SiteRequest[AnyContent] => Result) = SiteAction(a) { implicit request =>
+    models.Slot.get(i).filter(_.volumeId == v).fold(NotFound : Result) { s =>
       if (s.permission < p)
         Forbidden
       else
@@ -22,7 +22,7 @@ object Slot extends SiteController {
     }
   }
 
-  def view(v : models.Volume.Id, i : models.Slot.Id) = check(i) { slot => implicit request =>
+  def view(v : models.Volume.Id, i : models.Slot.Id) = check(v, i) { slot => implicit request =>
     Ok(views.html.slot.view(slot))
   }
 
@@ -50,11 +50,11 @@ object Slot extends SiteController {
     views.html.slot.edit(slot, editForm, recordForm)
   }
 
-  def edit(v : models.Volume.Id, i : models.Slot.Id) = check(i, Permission.EDIT) { slot => implicit request =>
+  def edit(v : models.Volume.Id, i : models.Slot.Id) = check(v, i, Permission.EDIT) { slot => implicit request =>
     Ok(viewEdit(slot)())
   }
 
-  def change(v : models.Volume.Id, i : models.Slot.Id) = check(i, Permission.EDIT) { slot => implicit request =>
+  def change(v : models.Volume.Id, i : models.Slot.Id) = check(v, i, Permission.EDIT) { slot => implicit request =>
     editFormFill(slot).bindFromRequest.fold(
       form => BadRequest(viewEdit(slot)(editForm = form)),
       { case (container, consent) =>
@@ -73,11 +73,11 @@ object Slot extends SiteController {
     "end" -> optional(of[Offset])
   ).verifying(Messages("range.invalid"), !_.zipped.exists(_ > _)))
 
-  def create(v : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { cont => implicit request =>
+  def create(v : models.Volume.Id, c : models.Container.Id) = Container.check(v, c, Permission.CONTRIBUTE) { cont => implicit request =>
     Ok(views.html.slot.create(cont, createForm))
   }
 
-  def add(v : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { cont => implicit request =>
+  def add(v : models.Volume.Id, c : models.Container.Id) = Container.check(v, c, Permission.CONTRIBUTE) { cont => implicit request =>
     createForm.bindFromRequest.fold(
       form => BadRequest(views.html.slot.create(cont, form)),
       { case (start, end) =>
@@ -90,17 +90,20 @@ object Slot extends SiteController {
   type CommentForm = Form[String]
   val commentForm : CommentForm = Form("text" -> nonEmptyText)
 
-  def comment(v : models.Volume.Id, s : models.Slot.Id) = Slot.check(s, Permission.COMMENT) { slot => implicit request =>
-    if (request.access < Permission.COMMENT)
-      Forbidden
-    else
-      commentForm.bindFromRequest().fold(
-        form => BadRequest(views.html.slot.view(slot, form)),
-        { text =>
-          slot.postComment(text)(request.asInstanceOf[AuthSite])
-          Redirect(slot.pageURL)
-        }
-      )
+  def comment(v : models.Volume.Id, s : models.Slot.Id) = Slot.check(v, s, Permission.VIEW, Permission.VIEW) { slot => implicit request =>
+    commentForm.bindFromRequest().fold(
+      form => BadRequest(views.html.slot.view(slot, form)),
+      { text =>
+        slot.postComment(text)(request.asInstanceOf[AuthSite])
+        Redirect(slot.pageURL)
+      }
+    )
   }
 
+  def tag(v : models.Volume.Id, s : models.Slot.Id, t : String, up : Option[Boolean]) = Slot.check(v, s, Permission.VIEW, Permission.VIEW) { slot => implicit request =>
+    if (!slot.setTag(t, up)(request.asInstanceOf[AuthSite]))
+      BadRequest(views.html.slot.view(slot))
+    else
+      Redirect(slot.pageURL)
+  }
 }

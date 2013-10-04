@@ -10,7 +10,11 @@ import util._
 /** All tags and their names used anywhere.
   * Immutable (create only).
   */
-final class Tag private (val id : Tag.Id, val name : String) extends TableRowId[Tag]
+final class Tag private (val id : Tag.Id, val name : String) extends TableRowId[Tag] {
+  /** Set the current user's tag value (up, down, or none) for the slot. */
+  def set(slot : Slot, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Unit =
+    up.fold(TagUse.remove(this, slot))(TagUse.set(this, slot, _))
+}
 
 object Tag extends TableId[Tag]("tag") {
   private def make(id : Id, name : String) =
@@ -27,6 +31,14 @@ object Tag extends TableId[Tag]("tag") {
   /** Retrieve an individual tag by name. */
   private[models] def get(name : String)(implicit db : Site.DB) : Option[Tag] =
     row.SQL("WHERE name = {name}").on('name -> name).singleOpt
+
+  /** Determine if the given tag name is valid.
+    * @return the normalized name if valid */
+  private[models] def valid(name : String) : Option[String] =
+    if (name.length > 1 && name.length <= 32) /* TODO */
+      Some(name.toLowerCase)
+    else
+      None
 
   /** Retrieve or, if none exists, create an individual tag by name. */
   private[models] def getOrCreate(name : String)(implicit db : Site.DB) : Tag =
@@ -62,6 +74,11 @@ object TagUse extends Table[TagUse]("tag_use") {
     join(Slot.row, "comment.slot = slot.id") map {
       case (up ~ tag ~ who ~ slot) => make(tag, who, slot)(up)
     }
+
+  private[models] def remove(tag : Tag, slot : Slot)(implicit site : Site) : Unit = {
+    val ids = SQLArgs('tag -> tag.id, 'slot -> slot.id, 'who -> site.identity.id)
+    SQL("DELETE FROM tag_use WHERE " + ids).execute
+  }
 
   private[models] def set(tag : Tag, slot : Slot, up : Boolean = true)(implicit site : AuthSite) : TagUse = {
     val who = site.identity

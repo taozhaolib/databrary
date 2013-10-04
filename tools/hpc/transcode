@@ -1,0 +1,54 @@
+#!/bin/bash
+
+usage() {
+	echo "Usage: $0 FILE ..."
+	echo "Transcodes files (under $SCRATCH)."
+	exit 1
+}
+
+rate=50000
+while getopts 'r:f' opt ; do case "$opt" in
+	(r) rate=$OPTARG ;;
+	(f) force=1 ;;
+esac ; done
+shift $[OPTIND-1]
+
+if [[ $# -eq 0 ]] ; then
+	usage
+fi
+
+home=`dirname $0`
+home=${home%/bin}
+pbs=$home/transcode.pbs
+
+if [[ ! -f $pbs ]] ; then
+	echo "$pbs not found!"
+	exit 1
+fi
+
+owd=$PWD
+cd $SCRATCH
+mkdir -p log
+for file in "$@" ; do
+	if [[ ! -f $file ]] ; then
+		echo "$file: file not found"
+		if [[ $owd != $PWD ]] ; then
+			echo "Files are relative to $PWD, so you may want to cd there first."
+		fi
+		continue
+	fi
+	dir=`dirname $file`
+	tdir=$dir/transcoded
+	base=`basename $file`
+	base=${base%.*}
+	mkdir -p $tdir
+	lock=$tdir/.$base.lock
+	if [[ -e $lock && ! $force ]] ; then
+		echo "$file: Transcoding already in progress.  Use -f to force."
+		continue
+	fi
+	touch $lock
+	name=`echo $base | tr -cd '[:alnum:]' | cut -c-14`
+	sec=$[60+`stat -c %s $file`/$rate]
+	qsub -d $SCRATCH -q ser2 -N t$name -v FILE="$file" -l walltime=$sec $pbs
+done

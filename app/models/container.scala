@@ -151,7 +151,14 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
   def postComment(text : String)(implicit site : AuthSite) : Comment = Comment.post(this, text)
 
+  /** The list of tags on the current slot along with the current user's applications. */
   def tags(implicit site : Site) : Seq[TagWeight] = TagWeight.getSlot(this)
+  /** Tag this slot.
+    * @param up Some(true) for up, Some(false) for down, or None to remove
+    * @return true if the tag name is valid
+    */
+  def setTag(tag : String, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Boolean =
+    Tag.valid(tag).fold(false)(Tag.getOrCreate(_).set(this, up).equals(()))
 
   /** The list of records on this object.
     * @param all include indirect records on any contained objects

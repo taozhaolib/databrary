@@ -11,7 +11,7 @@ import models._
 
 object Volume extends SiteController {
 
-  private[controllers] def check(i : models.Volume.Id, p : Permission.Value = Permission.VIEW)(act : Volume => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
+  private[controllers] def check(i : models.Volume.Id, p : Permission.Value = Permission.VIEW, a : Permission.Value = Permission.NONE)(act : Volume => SiteRequest[AnyContent] => Result) = SiteAction(a) { implicit request =>
     models.Volume.get(i).fold(NotFound : Result) { s =>
       if (s.permission < p)
         Forbidden
@@ -73,26 +73,29 @@ object Volume extends SiteController {
   }
 
   def create(e : Option[models.Party.Id]) = UserAction { implicit request =>
-    val owner = e.getOrElse(request.identity.id)
-    if (request.identity.delegatedBy(owner) < Permission.CONTRIBUTE)
-      Forbidden
-    else
-      Ok(views.html.volume.edit(Left(models.Party.get(owner).get), editForm))
+    e.fold(Some(request.identity) : Option[Party])(models.Party.get(_)).fold(NotFound : Result) { owner =>
+      if (owner.access < Permission.CONTRIBUTE || request.identity.delegatedBy(owner.id) < Permission.CONTRIBUTE)
+        Forbidden
+      else
+        Ok(views.html.volume.edit(Left(owner), editForm))
+    }
   }
 
-  def add(owner : models.Party.Id) = UserAction { implicit request =>
-    if (request.identity.delegatedBy(owner) < Permission.CONTRIBUTE)
-      Forbidden
-    else
-      editForm.bindFromRequest.fold(
-        form => BadRequest(views.html.volume.edit(Left(models.Party.get(owner).get), form)),
-        { case (name, body, cites) =>
-          val volume = models.Volume.create(name, body)
-          citationSet(volume, cites)
-          VolumeAccess(volume, owner, Permission.ADMIN, Permission.CONTRIBUTE).set
-          Redirect(volume.pageURL)
-        }
-      )
+  def add(e : models.Party.Id) = UserAction { implicit request =>
+    models.Party.get(e).fold(NotFound : Result) { owner =>
+      if (owner.access < Permission.CONTRIBUTE || request.identity.delegatedBy(owner.id) < Permission.CONTRIBUTE)
+        Forbidden
+      else
+        editForm.bindFromRequest.fold(
+          form => BadRequest(views.html.volume.edit(Left(owner), form)),
+          { case (name, body, cites) =>
+            val volume = models.Volume.create(name, body)
+            citationSet(volume, cites)
+            VolumeAccess(volume, owner.id, Permission.ADMIN, Permission.CONTRIBUTE).set
+            Redirect(volume.pageURL)
+          }
+        )
+    }
   }
 
   type AccessForm = Form[VolumeAccess]
