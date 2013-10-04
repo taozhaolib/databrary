@@ -1,0 +1,19 @@
+#!/bin/sh
+
+#PBS -j oe
+#PBS -o log/${PBS_JOBNAME}_${PBS_JOBID}.log
+#PBS -q ser2
+#PBS -l nodes=1:ppn=1,mem=1024mb
+
+file=$FILE
+if [[ ! -f $file ]] ; then
+	echo "$file: file not found"
+	exit 1
+fi
+dir=`dirname $file`
+tdir=$dir/transcoded
+base=`basename $file`
+base=${base%.*}
+trap 'rm -f $tdir/.$base.lock' EXIT
+echo "Transcoding $file"
+time ffmpeg -loglevel warning -threads 1 -i "$file" -threads 1 -c:v libx264 -c:a libfdk_aac -y "$tdir/$base-01.mp4"
