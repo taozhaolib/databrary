@@ -11,8 +11,8 @@ import models._
 
 object Record extends SiteController {
 
-  private[controllers] def check(i : models.Record.Id, p : Permission.Value = Permission.VIEW)(act : Record => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
-    models.Record.get(i).fold(NotFound : Result) { record =>
+  private[controllers] def check(v : models.Volume.Id, i : models.Record.Id, p : Permission.Value = Permission.VIEW)(act : Record => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
+    models.Record.get(i).filter(_.volumeId == v).fold(NotFound : Result) { record =>
       if (record.permission < p)
         Forbidden
       else
@@ -20,7 +20,7 @@ object Record extends SiteController {
     }
   }
 
-  def view(v : models.Volume.Id, i : models.Record.Id) = check(i) { record => implicit request =>
+  def view(v : models.Volume.Id, i : models.Record.Id) = check(v, i) { record => implicit request =>
     Ok(views.html.record.view(record))
   }
 
@@ -51,12 +51,12 @@ object Record extends SiteController {
     )))
   }
 
-  def edit(v : models.Volume.Id, i : models.Record.Id) = check(i, Permission.EDIT) { record => implicit request =>
+  def edit(v : models.Volume.Id, i : models.Record.Id) = check(v, i, Permission.EDIT) { record => implicit request =>
     val (m, f) = editFormFill(record)
     Ok(views.html.record.edit(record, m, f))
   }
 
-  def update(v : models.Volume.Id, i : models.Record.Id) = check(i, Permission.EDIT) { record => implicit request =>
+  def update(v : models.Volume.Id, i : models.Record.Id) = check(v, i, Permission.EDIT) { record => implicit request =>
     val (meas, formin) = editFormFill(record)
     val form = formin.bindFromRequest
     form.fold(
@@ -103,7 +103,7 @@ object Record extends SiteController {
     }
   }
 
-  def slotRemove(v : models.Volume.Id, s : models.Slot.Id, r : models.Record.Id, editRedirect : Boolean = false) = Slot.check(s, Permission.EDIT) { slot => implicit request =>
+  def slotRemove(v : models.Volume.Id, s : models.Slot.Id, r : models.Record.Id, editRedirect : Boolean = false) = Slot.check(v, s, Permission.EDIT) { slot => implicit request =>
     slot.removeRecord(r)
     if (editRedirect)
       Redirect(routes.Slot.edit(slot.volume.id, slot.id))
@@ -111,7 +111,7 @@ object Record extends SiteController {
       Redirect(slot.pageURL)
   }
 
-  def slotAdd(v : models.Volume.Id, s : models.Slot.Id, editRedirect : Boolean = false) = Slot.check(s, Permission.EDIT) { slot => implicit request =>
+  def slotAdd(v : models.Volume.Id, s : models.Slot.Id, editRedirect : Boolean = false) = Slot.check(v, s, Permission.EDIT) { slot => implicit request =>
     val form = selectForm.bindFromRequest
     form.fold(
       form => BadRequest(Slot.viewEdit(slot)(recordForm = form)),

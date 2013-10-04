@@ -16,8 +16,8 @@ import dbrary.Offset
 
 object Asset extends SiteController {
 
-  private[controllers] def checkContainer(i : models.Container.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW)(act : ContainerAsset => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
-    ContainerAsset.get(a, i).fold(NotFound : Result) { link =>
+  private[controllers] def checkContainer(v : models.Volume.Id, i : models.Container.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW)(act : ContainerAsset => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
+    ContainerAsset.get(a, i).filter(_.volumeId == v).fold(NotFound : Result) { link =>
       if (link.permission < p)
         Forbidden
       else
@@ -25,8 +25,8 @@ object Asset extends SiteController {
     }
   }
 
-  private[controllers] def checkSlot(i : models.Slot.Id, o : models.Asset.Id, p : Permission.Value = Permission.VIEW)(act : SlotAsset => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
-    SlotAsset.get(o, i).fold(NotFound : Result) { link =>
+  private[controllers] def checkSlot(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, p : Permission.Value = Permission.VIEW)(act : SlotAsset => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
+    SlotAsset.get(o, i).filter(_.volumeId == v).fold(NotFound : Result) { link =>
       if (link.permission < p)
         Forbidden
       else
@@ -34,7 +34,7 @@ object Asset extends SiteController {
     }
   }
 
-  def view(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id) = checkSlot(i, a) { link => implicit request =>
+  def view(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id) = checkSlot(v, i, a) { link => implicit request =>
     Ok(views.html.asset.view(link))
   }
 
@@ -67,7 +67,7 @@ object Asset extends SiteController {
       })
   }
 
-  def download(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, inline : Boolean) = checkSlot(i, o, Permission.DOWNLOAD) { link => implicit request =>
+  def download(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, inline : Boolean) = checkSlot(v, i, o, Permission.DOWNLOAD) { link => implicit request =>
     assetResult(
       "sobj:%d:%d".format(link.slotId.unId, link.link.assetId.unId),
       store.Asset.read(link),
@@ -76,7 +76,7 @@ object Asset extends SiteController {
     )
   }
 
-  def frame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, offset : Offset = 0) = checkSlot(i, o, Permission.DOWNLOAD) { link => implicit request =>
+  def frame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, offset : Offset = 0) = checkSlot(v, i, o, Permission.DOWNLOAD) { link => implicit request =>
     link match {
       case ts : SlotTimeseries if offset >= 0 && offset < ts.duration =>
         assetResult(
@@ -110,11 +110,11 @@ object Asset extends SiteController {
   def formForFile(form : AssetForm, target : Either[Container,ContainerAsset]) =
     form.value.fold(target.isLeft)(_._4.isDefined)
 
-  def edit(v : models.Volume.Id, s : models.Container.Id, o : models.Asset.Id) = checkContainer(s, o, Permission.EDIT) { link => implicit request =>
+  def edit(v : models.Volume.Id, s : models.Container.Id, o : models.Asset.Id) = checkContainer(v, s, o, Permission.EDIT) { link => implicit request =>
     Ok(views.html.asset.edit(Right(link), formFill(link)))
   }
 
-  def change(v : models.Volume.Id, s : models.Container.Id, o : models.Asset.Id) = checkContainer(s, o, Permission.EDIT) { link => implicit request =>
+  def change(v : models.Volume.Id, s : models.Container.Id, o : models.Asset.Id) = checkContainer(v, s, o, Permission.EDIT) { link => implicit request =>
     formFill(link).bindFromRequest.fold(
       form => BadRequest(views.html.asset.edit(Right(link), form)), {
       case (name, body, position, file) =>
@@ -129,11 +129,11 @@ object Asset extends SiteController {
 
   private[this] val uploadForm = assetForm(true)
 
-  def create(v : models.Volume.Id, c : models.Container.Id, offset : Option[Offset]) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
+  def create(v : models.Volume.Id, c : models.Container.Id, offset : Option[Offset]) = Container.check(v, c, Permission.CONTRIBUTE) { container => implicit request =>
     Ok(views.html.asset.edit(Left(container), uploadForm.fill(("", "", offset, Some((None, Classification.IDENTIFIED, None, ()))))))
   }
 
-  def upload(v : models.Volume.Id, c : models.Container.Id) = Container.check(c, Permission.CONTRIBUTE) { container => implicit request =>
+  def upload(v : models.Volume.Id, c : models.Container.Id) = Container.check(v, c, Permission.CONTRIBUTE) { container => implicit request =>
     def error(form : AssetForm) : Result =
       BadRequest(views.html.asset.edit(Left(container), form))
     val form = uploadForm.bindFromRequest
@@ -175,7 +175,7 @@ object Asset extends SiteController {
     )
   }
 
-  def remove(v : models.Volume.Id, c : models.Container.Id, a : models.Asset.Id) = checkContainer(c, a, Permission.EDIT) { link => implicit request =>
+  def remove(v : models.Volume.Id, c : models.Container.Id, a : models.Asset.Id) = checkContainer(v, c, a, Permission.EDIT) { link => implicit request =>
     link.remove
     Redirect(link.container.fullSlot.pageURL)
   }
