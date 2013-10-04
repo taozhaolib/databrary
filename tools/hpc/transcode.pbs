@@ -6,14 +6,12 @@
 #PBS -l nodes=1:ppn=1,mem=1024mb
 
 file=$FILE
-if [[ ! -f $file ]] ; then
-	echo "$file: file not found"
-	exit 1
-fi
 dir=`dirname $file`
 tdir=$dir/transcoded
 base=`basename $file`
 base=${base%.*}
+out=$tdir/$base-01.mp4
 trap 'rm -f $tdir/.$base.lock' EXIT
 echo "Transcoding $file"
-time ffmpeg -loglevel warning -threads 1 -i "$file" -threads 1 -c:v libx264 -c:a libfdk_aac -y "$tdir/$base-01.mp4"
+ls -l $file
+time ffmpeg -loglevel warning -threads 1 -i "$file" -threads 1 -c:v libx264 -c:a libfdk_aac -y "$out"

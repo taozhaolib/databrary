@@ -7,9 +7,10 @@ usage() {
 }
 
 rate=50000
-while getopts 'r:f' opt ; do case "$opt" in
+while getopts 'r:fu' opt ; do case "$opt" in
 	(r) rate=$OPTARG ;;
 	(f) force=1 ;;
+	(u) update=1 ;;
 esac ; done
 shift $[OPTIND-1]
 
@@ -41,14 +42,20 @@ for file in "$@" ; do
 	tdir=$dir/transcoded
 	base=`basename $file`
 	base=${base%.*}
-	mkdir -p $tdir
+	out=$tdir/$base-01.mp4
+	if [[ -s $out && $update ]] ; then
+		echo "$file: Transcoding already done.  Skipping."
+		continue
+	fi
 	lock=$tdir/.$base.lock
 	if [[ -e $lock && ! $force ]] ; then
 		echo "$file: Transcoding already in progress.  Use -f to force."
 		continue
 	fi
+	mkdir -p $tdir
 	touch $lock
 	name=`echo $base | tr -cd '[:alnum:]' | cut -c-14`
 	sec=$[60+`stat -c %s $file`/$rate]
+	echo -n "$file: "
 	qsub -d $SCRATCH -q ser2 -N t$name -v FILE="$file" -l walltime=$sec $pbs
 done
