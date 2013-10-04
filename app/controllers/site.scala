@@ -36,6 +36,14 @@ object SiteAction {
 
   def apply(block : SiteRequest[AnyContent] => Result) : Action[AnyContent] =
     apply(block, block)
+
+  def apply(access : Permission.Value)(block : SiteRequest[AnyContent] => Result) : Action[AnyContent] =
+    apply { request =>
+      if (request.access < access)
+        Results.Forbidden
+      else
+        block(request)
+    }
 }
 
 object UserAction {
@@ -44,17 +52,8 @@ object UserAction {
 }
 
 class SiteController extends Controller {
-  def isAjax[A](implicit request : Request[A]) = {
-    request.headers.get("X-Requested-With") == Some("XMLHttpRequest")
-  }
-
-  def AdminAction(act : SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
-    if (request.isAdmin)
-      act(request)
-    else
-      Forbidden
-  }
-
+  def isAjax[A](implicit request : Request[A]) =
+    request.headers.get("X-Requested-With").equals(Some("XMLHttpRequest"))
 }
 
 object Site extends SiteController {

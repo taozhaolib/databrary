@@ -13,7 +13,7 @@ import models._
 
 object Slot extends SiteController {
 
-  private[controllers] def check(i : models.Slot.Id, p : Permission.Value = Permission.VIEW)(act : Slot => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
+  private[controllers] def check(i : models.Slot.Id, p : Permission.Value = Permission.VIEW, a : Permission.Value = Permission.NONE)(act : Slot => SiteRequest[AnyContent] => Result) = SiteAction(a) { implicit request =>
     models.Slot.get(i).fold(NotFound : Result) { s =>
       if (s.permission < p)
         Forbidden
@@ -90,17 +90,20 @@ object Slot extends SiteController {
   type CommentForm = Form[String]
   val commentForm : CommentForm = Form("text" -> nonEmptyText)
 
-  def comment(v : models.Volume.Id, s : models.Slot.Id) = Slot.check(s, Permission.COMMENT) { slot => implicit request =>
-    if (request.access < Permission.COMMENT)
-      Forbidden
-    else
-      commentForm.bindFromRequest().fold(
-        form => BadRequest(views.html.slot.view(slot, form)),
-        { text =>
-          slot.postComment(text)(request.asInstanceOf[AuthSite])
-          Redirect(slot.pageURL)
-        }
-      )
+  def comment(v : models.Volume.Id, s : models.Slot.Id) = Slot.check(s, Permission.VIEW, Permission.VIEW) { slot => implicit request =>
+    commentForm.bindFromRequest().fold(
+      form => BadRequest(views.html.slot.view(slot, form)),
+      { text =>
+        slot.postComment(text)(request.asInstanceOf[AuthSite])
+        Redirect(slot.pageURL)
+      }
+    )
   }
 
+  def tag(v : models.Volume.Id, s : models.Slot.Id, t : String, up : Option[Boolean]) = Slot.check(s, Permission.VIEW, Permission.VIEW) { slot => implicit request =>
+    if (!slot.setTag(t, up)(request.asInstanceOf[AuthSite]))
+      BadRequest(views.html.slot.view(slot))
+    else
+      Redirect(slot.pageURL)
+  }
 }

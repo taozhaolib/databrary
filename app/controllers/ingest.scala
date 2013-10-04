@@ -12,10 +12,7 @@ import ingest._
 
 object Ingest extends SiteController {
   private def check(i : models.Volume.Id)(act : Volume => SiteRequest[AnyContent] => Result) =
-    Volume.check(i, Permission.EDIT) { volume => implicit request =>
-      if (!request.isAdmin) Forbidden
-      else act(volume)(request)
-    }
+    Volume.check(i, Permission.EDIT, Permission.ADMIN)(act)
 
   type CSVForm = Form[(Unit, Boolean)]
   private val csvForm : CSVForm = Form(tuple(

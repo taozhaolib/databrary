@@ -11,7 +11,7 @@ import models._
 
 object Volume extends SiteController {
 
-  private[controllers] def check(i : models.Volume.Id, p : Permission.Value = Permission.VIEW)(act : Volume => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
+  private[controllers] def check(i : models.Volume.Id, p : Permission.Value = Permission.VIEW, a : Permission.Value = Permission.NONE)(act : Volume => SiteRequest[AnyContent] => Result) = SiteAction(a) { implicit request =>
     models.Volume.get(i).fold(NotFound : Result) { s =>
       if (s.permission < p)
         Forbidden

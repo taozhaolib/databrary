@@ -9,7 +9,7 @@
     <h1>Comments</h1>
 
     @post.map { case (post, form) =>
-        @if(request.access >= Permission.COMMENT) {
+        @if(request.access >= Permission.VIEW) {
             <div class="comment form">
                 @widget.userinfo(request.user.get)
 
