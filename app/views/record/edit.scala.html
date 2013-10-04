@@ -1,4 +1,4 @@
-@(record : models.Record, meas : Seq[(Metric, Seq[RecordCategory])], form : controllers.Record.EditForm)(implicit request : SiteRequest[_])
+@(record : models.Record, meas : Seq[Metric], form : controllers.Record.EditForm, json : Html)(implicit request : SiteRequest[_])
 
 @import helper.FieldConstructor
 
@@ -6,56 +6,53 @@
         FieldConstructor(tag.minimalFieldConstructor.f)
     }
 
-    @script = {
-
-    }
-
-@template.crud("Edit Record: " + record.toString(), js = script) {
+@template.crud("Edit Record: " + record.toString()) {
     <article>
         @crud.recordHeader(record)
 
         @tag.form(routes.Record.update(record.volumeId, record.id)) {
-            @tag.select(form("category"), ("", "") +: RecordCategory.getAll.map(c => (c.id.unId.toString, c.name))) </dt>
+            @widget.formErrors(form)
 
-            <dl>
-                @meas.zipWithIndex.map { case ((m, rcs), i) =>
-                        @* TODO: use rcs; if record.category not in rcs and datum is empty, hide *@
-                    <input type='hidden' name='measure[@i].metric' value='@m.id.unId.toString'/>
-                        @defining(form("measure[" + i + "].datum")) { field =>
-                            <dt>@m.name (@m.classification)</dt>
-                            <dd>@m.dataType match {
-                                case DataType.date => {
-                                    @tag.inputDate(field, 'placeholder -> "Date", 'class -> "half")
+            @tag.select(form("category"), ("0", "Custom...") +: RecordCategory.getAll.map(c => (c.id.unId.toString, c.name)), 'placeholder -> "Record category", '_label -> true)
+
+
+            <fieldset class="metrics">
+                <legend>Metrics</legend>
+
+                <div class="repeater repeater-metrics" data-rows="@json.toString">
+                    @meas.zipWithIndex.map { case (m, i) =>
+                        <div class="repeat">
+                            <div class="repeated">
+                                @defining(form("measure[" + i + "]")) { form =>
+                                    @tag.inputHidden(form("metric"), 'class -> "metric")
+
+                                    <label>@m.name (@m.classification)</label>
+                                    @m.dataType match {
+                                        case DataType.date => {
+                                            @tag.inputDate(form("datum"), 'placeholder -> "Date", 'class -> "half datum")
+                                        }
+                                        case _ if m.values.nonEmpty => {
+                                            @tag.select(form("datum"), ("", "") +: m.values.map(v => (v, v)), 'class -> "datum")
+                                        }
+                                        case _ => {
+                                            @tag.inputText(form("datum"), 'class -> "datum")
+                                        }
+                                    }
                                 }
-                                case _ if m.values.nonEmpty => {
-                                    @tag.select(field, ("", "") +: m.values.map(v => (v, v)))
-                                }
-                                case _ => {
-                                    @tag.inputText(field)
-                                }
-                            }
-                            </dd>
-                        }
-                }
+                            </div>
+                        </div>
+                    }
 
-                <dt>@tag.select(form("add.metric"), Metric.getAll.map(m => (m.id.unId.toString, m.name + " (" + m.classification + ")")))</dt>
-                <dd>@tag.inputText(form("add.datum"))</dd>
-            </dl>
-
-
-
-            <fieldset class="publications">
-                <legend>Custom Metrics</legend>
-
-                @tag.repeat(form("add")) { f =>
-                    @tag.select(f("metric"), Metric.getAll.map(m => (m.id.unId.toString, m.name + " (" + m.classification + ")")), 'placeholder -> "Metric")
-                    @tag.inputText(f("datum"), 'placeholder -> "Value")
-                }
+                    <div class="repeat">
+                        <div class="repeated">
+                            @tag.select(form("measure["+meas.length+"].metric"), Metric.getAll.map(m => (m.id.unId.toString, m.name + " (" + m.classification + ")")), 'placeholder -> "Metric", 'class -> "metric", '_class -> "metric-div")
+                            @tag.inputText(form("measure["+meas.length+"].datum"), 'placeholder -> "Value", 'class -> "datum", '_class -> "datum-div")
+                        </div>
+                    </div>
+                </div>
             </fieldset>
 
             <button type='submit' class="big button first">Update</button>
         }
-        @widget.formErrors(form)
-
     </article>
 }

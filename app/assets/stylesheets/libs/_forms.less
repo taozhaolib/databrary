@@ -33,6 +33,22 @@ textarea {
     }
 }
 
+input, textarea, select {
+    &::-webkit-input-placeholder,
+    &:-moz-placeholder,
+    &::-moz-placeholder,
+    &:-ms-input-placeholder {
+        color: @gray_50_third;
+    }
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled,
+option:disabled {
+    color: @gray_50_third;
+}
+
 textarea {
 	resize: vertical;
 	min-height: 200px;

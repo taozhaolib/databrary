@@ -2,11 +2,13 @@ package controllers
 
 import util._
 import play.api._
+import          templates.Html
 import          Play.current
 import          mvc._
 import          data._
 import               Forms._
 import          i18n.Messages
+import          libs.json._
 import models._
 
 object Record extends SiteController {
@@ -29,39 +31,56 @@ object Record extends SiteController {
     "metric" -> of[Metric.Id],
     "datum" -> optional(nonEmptyText)
   )
-  type EditForm = Form[(Option[RecordCategory.Id], Seq[MeasureMapping], MeasureMapping)]
+  type EditForm = Form[(Option[RecordCategory.Id], Seq[MeasureMapping])]
   private val editForm = Form(tuple(
     "category" -> optional(of[RecordCategory.Id]),
-    "measure" -> seq(measureMapping),
-    "add" -> measureMapping
+    "measure" -> seq(measureMapping)
   ))
 
-  private val allTemplates : Map[Metric,Seq[RecordCategory]] =
-    RecordCategory.getAll.flatMap(c => c.template.map((_, c))).groupBy(_._1).mapValues(_.map(_._2))
+  private val js = {
+    Html(Json.stringify(Json.toJson(RecordCategory.getAll.map {
+      case c =>
+        Json.toJson(Map(
+          "id" -> Json.toJson(c.id.unId.toString),
+          "name" -> Json.toJson(c.name),
+          "template" -> Json.toJson(c.template.map {
+            case m =>
+              Json.toJson(Map(
+                "id" -> Json.toJson(m.id.unId.toString),
+                "name" -> Json.toJson(m.name),
+                "dataType" -> Json.toJson(m.dataType.toString),
+                "classification" -> Json.toJson(m.classification.toString),
+                "values" -> Json.toJson(m.values)
+              ))
+          })
+        ))
+    }
+    )))
+  }
 
-  private def editFormFill(r : Record)(implicit site : Site) : (Seq[(Metric,Seq[RecordCategory])], EditForm) = {
+  private def editFormFill(r : Record)(implicit site : Site) : (Seq[Metric],  EditForm) = {
     val m = r.measures
     val mm = m.map(_.metric)
-    val om = (allTemplates -- mm).toList.sortBy(_._1.id.unId)
-    val am = mm.map(m => (m, allTemplates.getOrElse(m, Nil))) ++ om
-    (am, editForm.fill((
-      r.categoryId,
-      m.map(m => (m.metricId, Some(m.datum.toString))),
-      (Metric.asId(0), None)
-    )))
+    val t = r.category.fold(Nil : Seq[Metric])(_.template).diff(mm)
+    (mm ++ t, editForm.fill(
+      (
+        r.categoryId,
+        m.map(m => (m.metricId, Some(m.datum.toString))) ++ t.map(_.id -> None)
+      )
+    ))
   }
 
   def edit(v : models.Volume.Id, i : models.Record.Id) = check(i, Permission.EDIT) { record => implicit request =>
     val (m, f) = editFormFill(record)
-    Ok(views.html.record.edit(record, m, f))
+    Ok(views.html.record.edit(record, m, f, js))
   }
 
   def update(v : models.Volume.Id, i : models.Record.Id) = check(i, Permission.EDIT) { record => implicit request =>
     val (meas, formin) = editFormFill(record)
     val form = formin.bindFromRequest
     form.fold(
-      form => BadRequest(views.html.record.edit(record, meas, form)),
-      { case (category, data, (metric, datum)) =>
+      form => BadRequest(views.html.record.edit(record, meas, form, js)),
+      { case (category, data) =>
         record.change(category = category.flatMap(RecordCategory.get(_)))
         def update(metric : Metric.Id, datum : Option[String]) : Option[String] =
           Metric.get(metric).fold(Some("measure.unknown") : Option[String]) { m =>
@@ -76,15 +95,12 @@ object Record extends SiteController {
             }
           }
         data.zipWithIndex.foldLeft {
-          if (metric == 0)
-            form
-          else
-            update(metric, datum).fold(form)(form.withError("add.datum", _))
+          form
         } { (form, measure) =>
           val ((metric, datum), i) = measure
           update(metric, datum).fold(form)(form.withError("measure.datum[" + i + "]", _))
         }.fold(
-          form => BadRequest(views.html.record.edit(record, meas, form)),
+          form => BadRequest(views.html.record.edit(record, meas, form, js)),
           _ => Redirect(record.pageURL)
         )
       }
@@ -118,7 +134,7 @@ object Record extends SiteController {
       _.fold {
         val r = models.Record.create(slot.volume)
         r.addSlot(slot)
-        Created(views.html.record.edit(r, Nil, editForm)) : Result
+        Created(views.html.record.edit(r, Nil, editForm, js)) : Result
       } (models.Record.get(_).
         filter(r => r.permission >= Permission.DOWNLOAD && r.volumeId == slot.volumeId).
         fold(
