@@ -38,9 +38,9 @@ for file in "$@" ; do
 		fi
 		continue
 	fi
-	dir=`dirname $file`
+	dir=`dirname "$file"`
 	tdir=$dir/transcoded
-	base=`basename $file`
+	base=`basename "$file"`
 	base=${base%.*}
 	out=$tdir/$base-01.mp4
 	if [[ -s $out && $update ]] ; then
@@ -57,5 +57,5 @@ for file in "$@" ; do
 	name=`echo $base | tr -cd '[:alnum:]' | cut -c-14`
 	sec=$[60+`stat -c %s $file`/$rate]
 	echo -n "$file: "
-	qsub -d $SCRATCH -q ser2 -N t$name -v FILE="$file" -l walltime=$sec $pbs
+	qsub -d $SCRATCH -q ser2 -N t$name -v "IN=$file,OUT=$out,LOCK=$lock", -l walltime=$sec $pbs
 done

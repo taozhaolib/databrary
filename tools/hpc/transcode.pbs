@@ -5,13 +5,7 @@
 #PBS -q ser2
 #PBS -l nodes=1:ppn=1,mem=1024mb
 
-file=$FILE
-dir=`dirname $file`
-tdir=$dir/transcoded
-base=`basename $file`
-base=${base%.*}
-out=$tdir/$base-01.mp4
-trap 'rm -f $tdir/.$base.lock' EXIT
-echo "Transcoding $file"
-ls -l $file
-time ffmpeg -loglevel warning -threads 1 -i "$file" -threads 1 -c:v libx264 -c:a libfdk_aac -y "$out"
+trap 'rm -f "$LOCK"' EXIT
+echo "Transcoding $IN -> $OUT"
+ls -l "$IN"
+time ffmpeg -threads 1 -i "$IN" -threads 1 -c:v libx264 -c:a libfdk_aac -y "$OUT" || rm -f "$OUT"
