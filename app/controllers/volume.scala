@@ -55,7 +55,7 @@ object Volume extends SiteController {
     "body" -> optional(text),
     "citation" -> seq(citationMapping)
   ))
-  private[this] def editFormFill(v : Volume)(implicit site : Site) = editForm.fill((v.name, v.body, v.citations.map(citationFill(_)) :+ (Some(""), None, None)))
+  private[this] def editFormFill(v : Volume)(implicit site : Site) = editForm.fill((v.name, v.body, v.citations.map(citationFill(_)) :+ ((Some(""), None, None))))
 
   def edit(i : models.Volume.Id) = check(i, Permission.EDIT) { volume => implicit request =>
     Ok(views.html.volume.edit(Right(volume), editFormFill(volume)))

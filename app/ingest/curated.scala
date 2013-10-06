@@ -93,8 +93,8 @@ object Curated {
       id <- listHead(trimmed, "subject id")
       gender <- listHead(Gender.parse, "gender")
       birthday <- listHead(date, "birthdate")
-      (race, ethnicity) <- listHead(parseRaceEthnicity, "race/ethnicity")
-    } yield (Subject(id, gender, birthday, race, ethnicity))
+      re <- listHead(parseRaceEthnicity, "race/ethnicity")
+    } yield (Subject(id, gender, birthday, re._1, re._2))
   }
 
   private final case class Session(name : String, date : Date, consent : Consent.Value) extends KeyedData {

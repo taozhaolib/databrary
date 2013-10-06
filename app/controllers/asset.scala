@@ -63,7 +63,7 @@ object Asset extends SiteController {
         SimpleResult(
           header = ResponseHeader(range.fold(OK)(r => if (r._1 >= size) REQUESTED_RANGE_NOT_SATISFIABLE else PARTIAL_CONTENT),
             Map(headers : _*)),
-          subdata)
+          body = subdata)
       })
   }
 
