@@ -94,32 +94,21 @@ object Container extends TableId[Container]("container") {
 /** Smallest organizatonal unit of related data.
   * Primarily used for an individual session of data with a single date and place.
   * Critically, contained data are should be covered by a single consent level and share the same annotations. */
-final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE, toplevel_ : Boolean = false) extends TableRowId[Slot] with InVolume with SitePage {
+final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE) extends TableRowId[Slot] with InVolume with SitePage {
   def containerId : Container.Id = container.id
   def volume = container.volume
   private[this] var _consent = consent_
   /** Effective consent for covered assets, or [[Consent.NONE]] if no matching consent. */
   def consent = _consent
-  private[this] var _toplevel = toplevel_
-  /** True if this slot has been promoted for toplevel display. */
-  def toplevel = _toplevel
   /** True if this is its container's full slot. */
   def isFull = segment.isFull
 
   /** Update the given values in the database and this object in-place. */
-  def change(consent : Consent.Value = _consent, toplevel : Boolean = _toplevel)(implicit site : Site) : Unit = {
-    if (consent != _consent)
-    {
-      Audit.change("slot", SQLArgs('consent -> consent), SQLArgs('id -> id)).execute()
-      _consent = consent
-    }
-    if (toplevel != _toplevel)
-    {
-      if (toplevel)
-        Audit.add("toplevel_slot", SQLArgs('slot -> id)).execute()
-      else
-        Audit.remove("toplevel_slot", SQLArgs('slot -> id)).execute()
-    }
+  def change(consent : Consent.Value = _consent)(implicit site : Site) : Unit = {
+    if (consent == _consent)
+      return
+    Audit.change("slot", SQLArgs('consent -> consent), SQLArgs('id -> id)).execute()
+    _consent = consent
   }
 
   private[this] val _context = CachedVal[Option[Slot], Site.DB] { implicit db =>
@@ -183,22 +172,20 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
 }
 
 object Slot extends TableId[Slot]("slot") {
-  private[models] def make(container : Container)(id : Id, segment : Range[Offset], consent : Option[Consent.Value], toplevel : Boolean) =
-    new Slot(id, container, segment, consent.getOrElse(Consent.NONE), toplevel)
-  private def columnsTop(top : Boolean = false) = Columns[
-    Id,  Range[Offset], Option[Consent.Value], Boolean](
-    'id, 'segment,      'consent,              SelectAs("toplevel_slot.slot IS NOT NULL", "toplevel")).
-    from("slot " + (if (top) "" else "LEFT ") + "JOIN toplevel_slot ON slot.id = toplevel_slot.slot")
-  private[models] val columns = columnsTop()
+  private[models] def make(container : Container)(id : Id, segment : Range[Offset], consent : Option[Consent.Value]) =
+    new Slot(id, container, segment, consent.getOrElse(Consent.NONE))
+  private[models] val columns = Columns[
+    Id,  Range[Offset], Option[Consent.Value]](
+    'id, 'segment,      'consent)
   private[models] val row = columns.join(Container.row, "slot.source = container.id") map {
     case (slot ~ cont) => (make(cont) _).tupled(slot) 
   }
-  private[models] def containerRow(container : Container, top : Boolean = false) =
-    columnsTop(top) map (make(container) _).tupled
-  private[models] def volumeColumns(top : Boolean = false) =
-    columnsTop(top).join(Container.columns, "slot.source = container.id")
-  private[models] def volumeRow(volume : Volume, top : Boolean = false) =
-    volumeColumns(top) map {
+  private[models] def containerRow(container : Container) =
+    columns map (make(container) _).tupled
+  private[models] val volumeColumns =
+    columns.join(Container.columns, "slot.source = container.id")
+  private[models] def volumeRow(volume : Volume) =
+    volumeColumns map {
       case (slot ~ cont) => (make((Container.make(volume) _).tupled(cont)) _).tupled(slot)
     }
 
@@ -218,8 +205,8 @@ object Slot extends TableId[Slot]("slot") {
       on('cont -> container.id, 'seg -> segment).singleOpt
 
   /** Retrieve a list of slots within the given container. */
-  private[models] def getContainer(c : Container, top : Boolean = false)(implicit db : Site.DB) : Seq[Slot] =
-    containerRow(c, top = top).
+  private[models] def getContainer(c : Container)(implicit db : Site.DB) : Seq[Slot] =
+    containerRow(c).
       SQL("WHERE slot.source = {cont} ORDER BY slot.segment").
       on('cont -> c.id).list
 

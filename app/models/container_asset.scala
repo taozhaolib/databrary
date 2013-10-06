@@ -244,10 +244,10 @@ object SlotAsset {
     val row = ContainerAsset.containerColumns.
       join(Container.volumeRow(volume), "container_asset.container = container.id").
       join(Slot.columns, "container.id = slot.source").
-      leftJoin(columns, "slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset") map {
-      case (link ~ asset ~ cont ~ slot ~ excerpt) => make((ContainerAsset.make(asset, cont) _).tupled(link), (Slot.make(cont) _).tupled(slot), excerpt)
+      join(columns, "slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset") map {
+      case (link ~ asset ~ cont ~ slot ~ excerpt) => make((ContainerAsset.make(asset, cont) _).tupled(link), (Slot.make(cont) _).tupled(slot), Some(excerpt))
     }
-    row.SQL("WHERE container.volume = {vol} AND", condition(), "AND (toplevel_slot.slot IS NOT NULL OR toplevel_asset.asset IS NOT NULL)").
+    getSlot(volume.topSlot) ++ row.SQL("WHERE container.volume = {vol} AND", condition()).
       on('vol -> volume.id).list
   }
 }

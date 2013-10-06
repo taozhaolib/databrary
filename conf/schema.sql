@@ -328,9 +328,6 @@ DECLARE
 	slot_id integer;
 BEGIN
 	INSERT INTO slot (source, segment) VALUES (NEW.id, '(,)') RETURNING id INTO STRICT slot_id;
-	IF NEW.top THEN
-		INSERT INTO toplevel_slot VALUES (slot_id);
-	END IF;
 	RETURN null;
 END; $$;
 CREATE TRIGGER "slot_full_create" AFTER INSERT ON "container" FOR EACH ROW EXECUTE PROCEDURE "slot_full_create" ();
@@ -456,13 +453,6 @@ CREATE VIEW "asset_duration" ("id", "duration") AS
 	SELECT id, duration(segment) FROM clip;
 COMMENT ON VIEW "asset_duration" IS 'All assets along with their temporal durations, NULL for non-timeseries.';
 
-
-CREATE TABLE "toplevel_slot" (
-	"slot" integer NOT NULL Primary Key References "slot"
-);
-COMMENT ON TABLE "toplevel_slot" IS 'Slots whose assets are promoted to the top volume level for display.';
-
-SELECT audit.CREATE_TABLE ('toplevel_slot');
 
 CREATE TABLE "toplevel_asset" (
 	"slot" integer NOT NULL References "slot",
