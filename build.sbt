@@ -1,5 +1,3 @@
-scalaVersion in ThisBuild := "2.10.2"
-
 scalacOptions in ThisBuild ++= Seq("-feature","-Xlint")
 
 // scalacOptions += "-Ymacro-debug-lite"
