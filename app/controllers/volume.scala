@@ -11,7 +11,8 @@ import models._
 
 object Volume extends SiteController {
 
-  private[controllers] def check(i : models.Volume.Id, p : Permission.Value = Permission.VIEW, a : Permission.Value = Permission.NONE)(act : Volume => SiteRequest[AnyContent] => Result) = SiteAction(a) { implicit request =>
+  /* FIXME: access is wrong */
+  private[controllers] def check(i : models.Volume.Id, p : Permission.Value = Permission.VIEW, a : Permission.Value = Permission.NONE)(act : Volume => SiteRequest[AnyContent] => Result) = SiteAction.access(a) { implicit request =>
     models.Volume.get(i).fold(NotFound : Result) { s =>
       if (s.permission < p)
         Forbidden
@@ -72,7 +73,7 @@ object Volume extends SiteController {
     )
   }
 
-  def create(e : Option[models.Party.Id]) = UserAction { implicit request =>
+  def create(e : Option[models.Party.Id]) = SiteAction.user { implicit request =>
     e.fold(Some(request.identity) : Option[Party])(models.Party.get(_)).fold(NotFound : Result) { owner =>
       if (owner.access < Permission.CONTRIBUTE || request.identity.delegatedBy(owner.id) < Permission.CONTRIBUTE)
         Forbidden
@@ -81,7 +82,7 @@ object Volume extends SiteController {
     }
   }
 
-  def add(e : models.Party.Id) = UserAction { implicit request =>
+  def add(e : models.Party.Id) = SiteAction.user { implicit request =>
     models.Party.get(e).fold(NotFound : Result) { owner =>
       if (owner.access < Permission.CONTRIBUTE || request.identity.delegatedBy(owner.id) < Permission.CONTRIBUTE)
         Forbidden

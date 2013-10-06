@@ -30,11 +30,13 @@ object Login extends SiteController {
   def needLogin =
     Forbidden(viewLogin(Some(Messages("login.noCookie"))))
 
-  def view = SiteAction(request => Ok(viewLogin()), implicit request =>
-    Ok(views.html.party.view(request.identity)))
+  def view = SiteAction { implicit request =>
+    Ok(request.user.fold(viewLogin())(views.html.party.view(_)))
+  }
 
-  def ajaxView = SiteAction(request => Ok(views.html.modal.login(loginForm)), implicit request =>
-    Ok(views.html.modal.profile(request.identity)))
+  def ajaxView = SiteAction { implicit request =>
+    Ok(request.user.fold(views.html.modal.login(loginForm))(views.html.modal.profile(_)))
+  }
 
   private[this] def login(a : Account)(implicit request : Request[_], db : util.Site.DB) = {
     implicit val arequest = new UserRequest(request, a, db)
@@ -56,10 +58,9 @@ object Login extends SiteController {
           acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(password, a.password)).fold(error)(login)
         } else if (!openid.isEmpty)
           AsyncResult {
-            OpenID.redirectURL(openid, routes.Login.openID(email.getOrElse("")).absoluteURL(), realm = Some("http://" + request.host)).extend1 {
-              case Redeemed(url) => Redirect(url)
-              case Thrown(t) => InternalServerError(viewLogin(t.toString))
-            }
+            OpenID.redirectURL(openid, routes.Login.openID(email.getOrElse("")).absoluteURL(), realm = Some("http://" + request.host))
+              .map(Redirect(_))
+              .recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
           }
         else
           acct.filterNot(_ => Site.isSecure).fold(error)(login)
@@ -68,18 +69,17 @@ object Login extends SiteController {
   }
 
   def openID(email : String) = Action { implicit request =>
-    AsyncResult(OpenID.verifiedId.extend1(
-      { case Redeemed(info) => DB.withConnection { implicit db =>
-          Account.getOpenid(info.id, maybe(email)).fold(
-            BadRequest(views.html.account.login(loginForm.fill((maybe(email), "", info.id)).withError("openid", "login.openID.notFound"))) : Result
-          )(login)
-      } case Thrown(t) => InternalServerError(viewLogin(t.toString))
-      }
-    ))
+    AsyncResult(OpenID.verifiedId
+      .map(info => DB.withConnection { implicit db =>
+        Account.getOpenid(info.id, maybe(email)).fold(
+          BadRequest(views.html.account.login(loginForm.fill((maybe(email), "", info.id)).withError("openid", "login.openID.notFound"))) : Result
+        )(login)
+      }).recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
+    )
   }
 
   def logout = SiteAction { implicit request =>
-    if (request.isInstanceOf[UserRequest[_]])
+    if (request.user.isDefined)
       Audit.action(Audit.Action.close)
     Redirect(routes.Static.index).withNewSession
   }

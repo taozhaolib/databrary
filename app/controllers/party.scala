@@ -87,7 +87,7 @@ object Party extends SiteController {
     views.html.party.admin(party, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
   }
   
-  private[this] def checkAdmin(i : models.Party.Id, delegate : Boolean = true)(act : models.Party => UserRequest[AnyContent] => Result) = UserAction { implicit request =>
+  private[this] def checkAdmin(i : models.Party.Id, delegate : Boolean = true)(act : models.Party => UserRequest[AnyContent] => Result) = SiteAction.user { implicit request =>
     if (request.identity.id != i && (!delegate || request.identity.delegatedBy(i) < Permission.ADMIN))
       Forbidden
     else

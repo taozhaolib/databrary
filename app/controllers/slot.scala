@@ -13,7 +13,8 @@ import models._
 
 object Slot extends SiteController {
 
-  private[controllers] def check(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW, a : Permission.Value = Permission.NONE)(act : Slot => SiteRequest[AnyContent] => Result) = SiteAction(a) { implicit request =>
+  /* FIXME: access is wrong */
+  private[controllers] def check(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW, a : Permission.Value = Permission.NONE)(act : Slot => SiteRequest[AnyContent] => Result) = SiteAction.access(a) { implicit request =>
     models.Slot.get(i).filter(_.volumeId == v).fold(NotFound : Result) { s =>
       if (s.permission < p)
         Forbidden

@@ -5,7 +5,7 @@ import          Play.current
 import          mvc._
 import          data._
 import          i18n.Messages
-import          db.DB
+import scala.concurrent.Future
 import dbrary._
 import util._
 import models._
@@ -22,48 +22,68 @@ class UserRequest[A](request : Request[A], account : Account, db : util.Site.DB)
   override val identity = account
 }
 
-object SiteAction {
+object SiteRequest {
+  def apply[A](request : Request[A], identity : Option[Account])(implicit db : util.Site.DB) : SiteRequest[A] =
+    identity.fold(new AnonRequest[A](request, db) : SiteRequest[A])(new UserRequest[A](request, _, db))
+}
+
+object SiteAction extends ActionHandler[SiteRequest] {
   private[this] def getUser(request : Request[_])(implicit db : util.Site.DB) : Option[Account] =
     request.session.get("user").flatMap { i =>
       try { Some(models.Account.asId(i.toInt)) }
       catch { case e:java.lang.NumberFormatException => None }
     }.flatMap(models.Account.get_ _)
 
-  def apply(anon : AnonRequest[AnyContent] => Result, user : UserRequest[AnyContent] => Result) : Action[AnyContent] =
-    Action { request => DB.withTransaction { implicit db =>
-      getUser(request).fold(anon(new AnonRequest(request, db)))(u => user(new UserRequest(request, u, db)))
-    } }
-
-  def apply(block : SiteRequest[AnyContent] => Result) : Action[AnyContent] =
-    apply(block, block)
-
-  def apply(access : Permission.Value)(block : SiteRequest[AnyContent] => Result) : Action[AnyContent] =
-    apply { request =>
-      if (request.access < access)
-        Results.Forbidden
-      else
-        block(request)
+  def invokeBlock[A](request : Request[A], block : SiteRequest[A] => Future[SimpleResult]) =
+    db.DB.withTransaction { implicit db =>
+      block(SiteRequest(request, getUser(request)))
     }
-}
 
-object UserAction {
-  def apply(block : UserRequest[AnyContent] => Result) : Action[AnyContent] =
-    SiteAction(_ => Login.needLogin, block)
+  object user extends SimpleRefiner[UserRequest] {
+    protected def refineSimple[B](request : SiteRequest[B]) = request match {
+      case request : UserRequest[B] => Right(request)
+      case _ => Left(Login.needLogin)
+    }
+  }
+
+  def access(access : Permission.Value) : ActionHandler[UserRequest] = new user.SimpleHandler {
+    protected def handleSimple[B](request : UserRequest[B]) =
+      if (request.access >= access) None
+      else Some(Results.Forbidden)
+  }
+
+    /*
+  object user extends ActionBuilder[UserRequest] {
+    def invokeBlock[A](request : Request[A], block : UserRequest[A] => Future[SimpleResult]) =
+      SiteAction.invokeBlock(request, {
+        case request : UserRequest[A] => block(request)
+        case _ => Future.successful(Login.needLogin)
+      } : SiteRequest[A] => Future[SimpleResult])
+  }
+
+  def access(access : Permission.Value) = new ActionBuilder[UserRequest] {
+    def invokeBlock[A](request : Request[A], block : UserRequest[A] => Future[SimpleResult]) =
+      user.invokeBlock(request, { request : UserRequest[A] =>
+        if (request.access >= access) block(request)
+        else Future.successful(Results.Forbidden)
+      })
+  }
+  */
 }
 
 class SiteController extends Controller {
   def isAjax[A](implicit request : Request[A]) =
     request.headers.get("X-Requested-With").equals(Some("XMLHttpRequest"))
-}
 
-object Site extends SiteController {
   def isSecure : Boolean =
     current.configuration.getString("application.secret").exists(_ != "databrary").
       ensuring(_ || !Play.isProd, "Running insecure in production")
+}
 
+object Site extends SiteController {
   def start = Login.view
 
-  def test = Action { request => DB.withConnection { implicit db =>
+  def test = Action { request => db.DB.withConnection { implicit db =>
     Ok("Ok")
   } }
 

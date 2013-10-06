@@ -1,10 +1,36 @@
 package controllers
+import scala.language.higherKinds
 
+import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.data.validation._
+import scala.concurrent.Future
 import util._
 import dbrary.Offset
+
+trait ActionHandler[R[_]] extends ActionBuilder[R] {
+  parent =>
+  trait Refiner[Q[_]] extends ActionHandler[Q] {
+    protected def refine[A](request : R[A]) : Either[Future[SimpleResult],Q[A]]
+    def invokeBlock[A](request : Request[A], block : Q[A] => Future[SimpleResult]) =
+      parent.invokeBlock(request, { r : R[A] =>
+        refine(r).fold(identity, block)
+      })
+  }
+  trait SimpleRefiner[Q[_]] extends Refiner[Q] {
+    protected def refineSimple[A](request : R[A]) : Either[SimpleResult,Q[A]]
+    final protected def refine[A](request : R[A]) = refineSimple(request).left.map(Future.successful _)
+  }
+  trait Handler extends Refiner[R] {
+    protected def handle[A](request : R[A]) : Option[Future[SimpleResult]]
+    final protected def refine[A](request : R[A]) = handle(request).toLeft(request)
+  }
+  trait SimpleHandler extends Refiner[R] {
+    protected def handleSimple[A](request : R[A]) : Option[SimpleResult]
+    final protected def refine[A](request : R[A]) = handleSimple(request).map(Future.successful _).toLeft(request)
+  }
+}
 
 object Field {
   def enum(enum : Enumeration) = number(min=0, max=enum.maxId-1).transform[enum.Value](enum(_), _.id)
