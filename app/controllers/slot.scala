@@ -12,7 +12,7 @@ import dbrary.{Offset,Range}
 import models._
 
 object Slot extends SiteController {
-  type Request[A] = RequestObject[Slot]#T[A]
+  type Request[A] = RequestObject[Slot]#Site[A]
 
   private[controllers] def action(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW) =
     RequestObject.check(v, models.Slot.get(i)(_), p)

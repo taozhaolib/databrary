@@ -15,8 +15,8 @@ import models._
 import dbrary.Offset
 
 object Asset extends SiteController {
-  type ContainerRequest[A] = RequestObject[ContainerAsset]#T[A]
-  type SlotRequest[A] = RequestObject[SlotAsset]#T[A]
+  type ContainerRequest[A] = RequestObject[ContainerAsset]#Site[A]
+  type SlotRequest[A] = RequestObject[SlotAsset]#Site[A]
 
   private[controllers] def containerAction(v : models.Volume.Id, i : models.Container.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW) =
     RequestObject.check(v, models.ContainerAsset.get(a, i)(_), p)

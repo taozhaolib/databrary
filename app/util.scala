@@ -43,6 +43,11 @@ trait Site {
   def clientIP : dbrary.Inet
 }
 
+trait AnonSite extends Site {
+  val identity = models.Party.Nobody
+  override def user = None
+}
+
 trait AuthSite extends Site {
   val identity : models.Account
   override def user = Some(identity)

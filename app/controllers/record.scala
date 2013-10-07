@@ -12,7 +12,7 @@ import          libs.json._
 import models._
 
 object Record extends SiteController {
-  type Request[A] = RequestObject[Record]#T[A]
+  type Request[A] = RequestObject[Record]#Site[A]
 
   private[controllers] def action(v : models.Volume.Id, i : models.Record.Id, p : Permission.Value = Permission.VIEW) =
     RequestObject.check(v, models.Record.get(i)(_), p)

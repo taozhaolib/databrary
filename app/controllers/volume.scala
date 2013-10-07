@@ -10,7 +10,7 @@ import          i18n.Messages
 import models._
 
 object Volume extends SiteController {
-  type Request[A] = RequestObject[Volume]#T[A]
+  type Request[A] = RequestObject[Volume]#Site[A]
 
   private[controllers] def action(i : models.Volume.Id, p : Permission.Value = Permission.VIEW) =
     RequestObject.check(models.Volume.get(i)(_), p)
@@ -70,7 +70,7 @@ object Volume extends SiteController {
     )
   }
 
-  def create(e : Option[models.Party.Id]) = SiteAction.user { implicit request =>
+  def create(e : Option[models.Party.Id]) = SiteAction.auth { implicit request =>
     e.fold(Some(request.identity) : Option[Party])(models.Party.get(_)).fold(NotFound : Result) { owner =>
       if (owner.access < Permission.CONTRIBUTE || request.identity.delegatedBy(owner.id) < Permission.CONTRIBUTE)
         Forbidden
@@ -79,7 +79,7 @@ object Volume extends SiteController {
     }
   }
 
-  def add(e : models.Party.Id) = SiteAction.user { implicit request =>
+  def add(e : models.Party.Id) = SiteAction.auth { implicit request =>
     models.Party.get(e).fold(NotFound : Result) { owner =>
       if (owner.access < Permission.CONTRIBUTE || request.identity.delegatedBy(owner.id) < Permission.CONTRIBUTE)
         Forbidden

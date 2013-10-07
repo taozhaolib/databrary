@@ -12,7 +12,7 @@ import util._
 import models._
 
 object Party extends SiteController {
-  type Request[A] = RequestObject[Party]#T[A]
+  type Request[A] = RequestObject[Party]#Site[A]
 
   def view(i : models.Party.Id) = SiteAction { implicit request =>
     models.Party.get(i).fold(NotFound : Result)(
@@ -90,8 +90,8 @@ object Party extends SiteController {
   }
   
   private[this] def AdminAction(i : models.Party.Id, delegate : Boolean = true) =
-    SiteAction.user ~> new ActionRefiner[UserRequest,Request] {
-      protected def refine[A](request : UserRequest[A]) =
+    SiteAction.auth ~> new ActionRefiner[SiteRequest.Auth,Request] {
+      protected def refine[A](request : SiteRequest.Auth[A]) =
         if (request.identity.id != i && (!delegate || request.identity.delegatedBy(i)(request) < Permission.ADMIN))
           simple(Forbidden)
         else

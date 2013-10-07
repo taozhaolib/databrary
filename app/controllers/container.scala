@@ -11,7 +11,7 @@ import java.sql.Date
 import models._
 
 object Container extends SiteController {
-  type Request[A] = RequestObject[Volume]#T[A]
+  type Request[A] = RequestObject[Volume]#Site[A]
 
   private[controllers] def action(v : models.Volume.Id, i : models.Container.Id, p : Permission.Value = Permission.VIEW) =
     RequestObject.check(v, models.Container.get(i)(_), p)
