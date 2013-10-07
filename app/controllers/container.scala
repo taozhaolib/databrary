@@ -11,18 +11,16 @@ import java.sql.Date
 import models._
 
 object Container extends SiteController {
+  type Request[A] = RequestObject[Volume]#T[A]
 
-  private[controllers] def check(v : models.Volume.Id, i : models.Container.Id, p : Permission.Value = Permission.VIEW)(act : Container => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
-    models.Container.get(i).filter(_.volumeId == v).fold(NotFound : Result) { c =>
-      if (c.permission < p)
-        Forbidden
-      else
-        act(c)(request)
-    }
-  }
+  private[controllers] def action(v : models.Volume.Id, i : models.Container.Id, p : Permission.Value = Permission.VIEW) =
+    RequestObject.check(v, models.Container.get(i)(_), p)
 
-  def view(v : models.Volume.Id, i : models.Container.Id) = check(v, i) { container => implicit request =>
-    Ok(views.html.container.view(container))
+  private[controllers] def Action(v : models.Volume.Id, i : models.Container.Id, p : Permission.Value = Permission.VIEW) =
+    SiteAction ~> action(v, i, p)
+
+  def view(v : models.Volume.Id, i : models.Container.Id) = Action(v, i) { implicit request =>
+    Ok(views.html.container.view(request.obj))
   }
 
   type ContainerForm = Form[(Option[String], Option[Date])]
@@ -38,31 +36,30 @@ object Container extends SiteController {
     views.html.container.edit(Right(container), editForm)
   }
 
-  def edit(v : models.Volume.Id, i : models.Container.Id) = check(v, i, Permission.EDIT) { cont => implicit request =>
-    Ok(viewEdit(cont)())
+  def edit(v : models.Volume.Id, i : models.Container.Id) = Action(v, i, Permission.EDIT) { implicit request =>
+    Ok(viewEdit(request.obj)())
   }
 
-  def change(v : models.Volume.Id, i : models.Container.Id) = check(v, i, Permission.EDIT) { cont => implicit request =>
-    editFormFill(cont).bindFromRequest.fold(
-      form => BadRequest(viewEdit(cont)(editForm = form)),
+  def change(v : models.Volume.Id, i : models.Container.Id) = Action(v, i, Permission.EDIT) { implicit request =>
+    editFormFill(request.obj).bindFromRequest.fold(
+      form => BadRequest(viewEdit(request.obj)(editForm = form)),
       { case (name, date) =>
-        cont.change(name = name, date = date)
-        Redirect(cont.pageURL)
+        request.obj.change(name = name, date = date)
+        Redirect(request.obj.pageURL)
       }
     )
   }
 
-  def create(s : models.Volume.Id) = Volume.check(s, Permission.CONTRIBUTE) { volume => implicit request =>
-    Ok(views.html.container.edit(Left(volume), editForm))
+  def create(s : models.Volume.Id) = Volume.Action(s, Permission.CONTRIBUTE) { implicit request =>
+    Ok(views.html.container.edit(Left(request.obj), editForm))
   }
 
-  def add(s : models.Volume.Id) = Volume.check(s, Permission.CONTRIBUTE) { volume => implicit request =>
+  def add(s : models.Volume.Id) = Volume.Action(s, Permission.CONTRIBUTE) { implicit request =>
     editForm.bindFromRequest.fold(
-      form => BadRequest(views.html.container.edit(Left(volume), form)),
+      form => BadRequest(views.html.container.edit(Left(request.obj), form)),
       { case (name, date) =>
-        val cont = models.Container.create(volume, name = name, date = date)
+        val cont = models.Container.create(request.obj, name = name, date = date)
         Redirect(cont.fullSlot.pageURL)
-//        Redirect(cont.pageURL)
       }
     )
   }

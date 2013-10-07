@@ -1,4 +1,4 @@
-@(party : Party, form : controllers.Party.EditForm)(implicit request : UserRequest[_])
+@(form : controllers.Party.EditForm)(implicit request : controllers.Party.Request[_])
 
 @import helper.FieldConstructor
 
@@ -6,14 +6,14 @@
         FieldConstructor(tag.minimalFieldConstructor.f)
     }
 
-@template.crud("Admin Party: " + party.toString()) {
+@template.crud("Admin Party: " + request.obj.toString()) {
     <article>
-        @crud.partyHeader(party)
+        @crud.partyHeader(request.obj)
 
-	@tag.form(routes.Party.change(party.id)) {
+	@tag.form(routes.Party.change(request.obj.id)) {
 		@tag.inputText(form("name"), 'placeholder -> "Full name", '_class -> "big")
 		@tag.inputText(form("orcid"), 'placeholder -> "ORCiD", '_class -> "big")
-		@if(controllers.Party.formForAccount(form, party)) {
+		@if(controllers.Party.formForAccount(form)) {
 			@tag.inputText(form("email"), 'placeholder -> "Email", '_class -> "big")
 			@tag.inputPassword(form("password"), 'placeholder -> "Password", '_class -> "big")
 			@tag.inputPassword(form("again"), 'placeholder -> "Password (repeat)", '_class -> "big")

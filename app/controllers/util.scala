@@ -9,26 +9,66 @@ import scala.concurrent.Future
 import util._
 import dbrary.Offset
 
-trait ActionHandler[R[_]] extends ActionBuilder[R] {
+trait RequestValue[V] {
+  case class T[A](_1 : V) extends Product1[V] {
+    def apply[B](f : V => B) : B = f(_1)
+  }
+}
+object RequestValue {
+  def apply[V,A](v : V) : RequestValue[V]#T[A] = {
+    object Value extends RequestValue[V]
+    new Value.T[A](v)
+  }
+}
+
+trait RequestPair[R[_],P[_]] {
+  case class T[A](_1 : R[A], _2 : P[A]) extends Product2[R[A], P[A]] {
+    def apply[B](f : (R[A], P[A]) => B) : B = f(_1, _2)
+  }
+}
+object RequestPair {
+  def apply[R[_],P[_],A](r : R[A], p : P[A]) : RequestPair[R,P]#T[A] = {
+    object Pair extends RequestPair[R,P]
+    new Pair.T[A](r, p)
+  }
+}
+
+trait ActionFunction[-R[_],P[_]] {
   parent =>
-  trait Refiner[Q[_]] extends ActionHandler[Q] {
-    protected def refine[A](request : R[A]) : Either[Future[SimpleResult],Q[A]]
+  def invokeBlock[A](request : R[A], block : P[A] => Future[SimpleResult]) : Future[SimpleResult]
+
+  def ~>[Q[_]](child : ActionFunction[P,Q]) : ActionFunction[R,Q] = new ActionFunction[R,Q] {
+    def invokeBlock[A](request : R[A], block : Q[A] => Future[SimpleResult]) =
+      parent.invokeBlock(request, (p : P[A]) => child.invokeBlock(p, block))
+  }
+
+  def ~[Q[_]](child : ActionFunction[P,Q]) : ActionFunction[R,RequestPair[P,Q]#T] = new ActionFunction[R,RequestPair[P,Q]#T] {
+    def invokeBlock[A](request : R[A], block : RequestPair[P,Q]#T[A] => Future[SimpleResult]) =
+      parent.invokeBlock(request, (p : P[A]) => child.invokeBlock(p, (q : Q[A]) =>
+        block(RequestPair(p, q))))
+  }
+
+  // def simple(r : SimpleResult) : Future[SimpleResult] = Future.successful(r)
+}
+
+trait ActionRefiner[-R[_],P[_]] extends ActionFunction[R,P] {
+  protected def refine[A](request : R[A]) : Either[Future[SimpleResult],P[A]]
+  final def invokeBlock[A](request : R[A], block : P[A] => Future[SimpleResult]) =
+    refine(request).fold(identity, block)
+  def simple[A](r : SimpleResult) : Either[Future[SimpleResult],P[A]] = Left(Future.successful(r))
+}
+
+trait ActionHandler[R[_]] extends ActionRefiner[R,R] {
+  protected def handle[A](request : R[A]) : Option[Future[SimpleResult]]
+  final protected def refine[A](request : R[A]) = handle(request).toLeft(request)
+  def simple(r : SimpleResult) : Option[Future[SimpleResult]] = Some(Future.successful(r))
+}
+
+trait ActionCreator[P[_]] extends ActionBuilder[P] with ActionFunction[Request,P] {
+  parent =>
+  override def ~>[Q[_]](child : ActionFunction[P,Q]) : ActionCreator[Q] = new ActionCreator[Q] {
     def invokeBlock[A](request : Request[A], block : Q[A] => Future[SimpleResult]) =
-      parent.invokeBlock(request, { r : R[A] =>
-        refine(r).fold(identity, block)
-      })
-  }
-  trait SimpleRefiner[Q[_]] extends Refiner[Q] {
-    protected def refineSimple[A](request : R[A]) : Either[SimpleResult,Q[A]]
-    final protected def refine[A](request : R[A]) = refineSimple(request).left.map(Future.successful _)
-  }
-  trait Handler extends Refiner[R] {
-    protected def handle[A](request : R[A]) : Option[Future[SimpleResult]]
-    final protected def refine[A](request : R[A]) = handle(request).toLeft(request)
-  }
-  trait SimpleHandler extends Refiner[R] {
-    protected def handleSimple[A](request : R[A]) : Option[SimpleResult]
-    final protected def refine[A](request : R[A]) = handleSimple(request).map(Future.successful _).toLeft(request)
+      parent.invokeBlock(request, (p : P[A]) => child.invokeBlock(p, block))
   }
 }
 

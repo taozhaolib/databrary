@@ -12,18 +12,16 @@ import          libs.json._
 import models._
 
 object Record extends SiteController {
+  type Request[A] = RequestObject[Record]#T[A]
 
-  private[controllers] def check(v : models.Volume.Id, i : models.Record.Id, p : Permission.Value = Permission.VIEW)(act : Record => SiteRequest[AnyContent] => Result) = SiteAction { implicit request =>
-    models.Record.get(i).filter(_.volumeId == v).fold(NotFound : Result) { record =>
-      if (record.permission < p)
-        Forbidden
-      else
-        act(record)(request)
-    }
-  }
+  private[controllers] def action(v : models.Volume.Id, i : models.Record.Id, p : Permission.Value = Permission.VIEW) =
+    RequestObject.check(v, models.Record.get(i)(_), p)
 
-  def view(v : models.Volume.Id, i : models.Record.Id) = check(v, i) { record => implicit request =>
-    Ok(views.html.record.view(record))
+  private[controllers] def Action(v : models.Volume.Id, i : models.Record.Id, p : Permission.Value = Permission.VIEW) =
+    SiteAction ~> action(v, i, p)
+
+  def view(v : models.Volume.Id, i : models.Record.Id) = Action(v, i) { implicit request =>
+    Ok(views.html.record.view(request.obj))
   }
 
   private type MeasureMapping = (Metric.Id, Option[String])
@@ -58,7 +56,8 @@ object Record extends SiteController {
     )))
   }
 
-  private def editFormFill(r : Record)(implicit site : Site) : (Seq[Metric],  EditForm) = {
+  private def editFormFill(implicit request : Request[_]) : (Seq[Metric],  EditForm) = {
+    val r = request.obj
     val m = r.measures
     val mm = m.map(_.metric)
     val t = r.category.fold(Nil : Seq[Metric])(_.template).diff(mm)
@@ -70,25 +69,25 @@ object Record extends SiteController {
     ))
   }
 
-  def edit(v : models.Volume.Id, i : models.Record.Id) = check(v, i, Permission.EDIT) { record => implicit request =>
-    val (m, f) = editFormFill(record)
-    Ok(views.html.record.edit(record, m, f, js))
+  def edit(v : models.Volume.Id, i : models.Record.Id) = Action(v, i, Permission.EDIT) { implicit request =>
+    val (m, f) = editFormFill
+    Ok(views.html.record.edit(request.obj, m, f, js))
   }
 
-  def update(v : models.Volume.Id, i : models.Record.Id) = check(v, i, Permission.EDIT) { record => implicit request =>
-    val (meas, formin) = editFormFill(record)
+  def update(v : models.Volume.Id, i : models.Record.Id) = Action(v, i, Permission.EDIT) { implicit request =>
+    val (meas, formin) = editFormFill
     val form = formin.bindFromRequest
     form.fold(
-      form => BadRequest(views.html.record.edit(record, meas, form, js)),
+      form => BadRequest(views.html.record.edit(request.obj, meas, form, js)),
       { case (category, data) =>
-        record.change(category = category.flatMap(RecordCategory.get(_)))
+        request.obj.change(category = category.flatMap(RecordCategory.get(_)))
         def update(metric : Metric.Id, datum : Option[String]) : Option[String] =
           Metric.get(metric).fold(Some("measure.unknown") : Option[String]) { m =>
             datum.fold {
-              record.deleteMeasure(m)
+              request.obj.deleteMeasure(m)
               None : Option[String]
             } { value =>
-              if (!record.setMeasure(m, value))
+              if (!request.obj.setMeasure(m, value))
                 Some("measure.bad")
               else
                 None
@@ -100,8 +99,8 @@ object Record extends SiteController {
           val ((metric, datum), i) = measure
           update(metric, datum).fold(form)(form.withError("measure.datum[" + i + "]", _))
         }.fold(
-          form => BadRequest(views.html.record.edit(record, meas, form, js)),
-          _ => Redirect(record.pageURL)
+          form => BadRequest(views.html.record.edit(request.obj, meas, form, js)),
+          _ => Redirect(request.obj.pageURL)
         )
       }
     )
@@ -119,31 +118,31 @@ object Record extends SiteController {
     }
   }
 
-  def slotRemove(v : models.Volume.Id, s : models.Slot.Id, r : models.Record.Id, editRedirect : Boolean = false) = Slot.check(v, s, Permission.EDIT) { slot => implicit request =>
-    slot.removeRecord(r)
+  def slotRemove(v : models.Volume.Id, s : models.Slot.Id, r : models.Record.Id, editRedirect : Boolean = false) = Slot.Action(v, s, Permission.EDIT) { implicit request =>
+    request.obj.removeRecord(r)
     if (editRedirect)
-      Redirect(routes.Slot.edit(slot.volume.id, slot.id))
+      Redirect(routes.Slot.edit(v, s))
     else
-      Redirect(slot.pageURL)
+      Redirect(request.obj.pageURL)
   }
 
-  def slotAdd(v : models.Volume.Id, s : models.Slot.Id, editRedirect : Boolean = false) = Slot.check(v, s, Permission.EDIT) { slot => implicit request =>
+  def slotAdd(v : models.Volume.Id, s : models.Slot.Id, editRedirect : Boolean = false) = Slot.Action(v, s, Permission.EDIT) { implicit request =>
     val form = selectForm.bindFromRequest
     form.fold(
-      form => BadRequest(Slot.viewEdit(slot)(recordForm = form)),
+      form => BadRequest(Slot.viewEdit(request.obj)(recordForm = form)),
       _.fold {
-        val r = models.Record.create(slot.volume)
-        r.addSlot(slot)
+        val r = models.Record.create(request.obj.volume)
+        r.addSlot(request.obj)
         Created(views.html.record.edit(r, Nil, editForm, js)) : Result
       } (models.Record.get(_).
-        filter(r => r.permission >= Permission.DOWNLOAD && r.volumeId == slot.volumeId).
+        filter(r => r.permission >= Permission.DOWNLOAD && r.volumeId == v).
         fold(
-          BadRequest(Slot.viewEdit(slot)(recordForm = form.withError("record", "record.bad"))) : Result) { r =>
-          r.addSlot(slot)
+          BadRequest(Slot.viewEdit(request.obj)(recordForm = form.withError("record", "record.bad"))) : Result) { r =>
+          r.addSlot(request.obj)
           if (editRedirect)
-            Redirect(routes.Slot.edit(slot.volume.id, slot.id))
+            Redirect(routes.Slot.edit(v, s))
           else
-            Redirect(slot.pageURL)
+            Redirect(request.obj.pageURL)
         }
       )
     )

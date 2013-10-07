@@ -10,22 +10,19 @@ import          i18n.Messages
 import models._
 
 object Volume extends SiteController {
+  type Request[A] = RequestObject[Volume]#T[A]
 
-  /* FIXME: access is wrong */
-  private[controllers] def check(i : models.Volume.Id, p : Permission.Value = Permission.VIEW, a : Permission.Value = Permission.NONE)(act : Volume => SiteRequest[AnyContent] => Result) = SiteAction.access(a) { implicit request =>
-    models.Volume.get(i).fold(NotFound : Result) { s =>
-      if (s.permission < p)
-        Forbidden
-      else
-        act(s)(request)
-    }
-  }
+  private[controllers] def action(i : models.Volume.Id, p : Permission.Value = Permission.VIEW) =
+    RequestObject.check(models.Volume.get(i)(_), p)
 
-  def view(i : models.Volume.Id) = check(i) { volume => implicit request =>
-    val top = volume.toplevelAssets
+  private[controllers] def Action(i : models.Volume.Id, p : Permission.Value = Permission.VIEW) =
+    SiteAction ~> action(i, p)
+
+  def view(i : models.Volume.Id) = Action(i) { implicit request =>
+    val top = request.obj.toplevelAssets
     def group(x : Seq[SlotAsset]) = x.groupBy(_.format.mimeSubTypes._1)
     val (excerpts, files) = top.filter(_.permission >= Permission.DOWNLOAD).partition(_.excerpt)
-    Ok(views.html.volume.view(volume, top, group(excerpts), group(files)))
+    Ok(views.html.volume.view(request.obj, top, group(excerpts), group(files)))
   }
 
   def listAll = SiteAction { implicit request =>
@@ -58,17 +55,17 @@ object Volume extends SiteController {
   ))
   private[this] def editFormFill(v : Volume)(implicit site : Site) = editForm.fill((v.name, v.body, v.citations.map(citationFill(_)) :+ ((Some(""), None, None))))
 
-  def edit(i : models.Volume.Id) = check(i, Permission.EDIT) { volume => implicit request =>
-    Ok(views.html.volume.edit(Right(volume), editFormFill(volume)))
+  def edit(i : models.Volume.Id) = Action(i, Permission.EDIT) { implicit request =>
+    Ok(views.html.volume.edit(Right(request.obj), editFormFill(request.obj)))
   }
 
-  def change(i : models.Volume.Id) = check(i, Permission.EDIT) { volume => implicit request =>
-    editFormFill(volume).bindFromRequest.fold(
-      form => BadRequest(views.html.volume.edit(Right(volume), form)),
+  def change(i : models.Volume.Id) = Action(i, Permission.EDIT) { implicit request =>
+    editFormFill(request.obj).bindFromRequest.fold(
+      form => BadRequest(views.html.volume.edit(Right(request.obj), form)),
       { case (name, body, cites) =>
-        volume.change(name = name, body = body.flatMap(maybe(_)))
-        citationSet(volume, cites)
-        Redirect(volume.pageURL)
+        request.obj.change(name = name, body = body.flatMap(maybe(_)))
+        citationSet(request.obj, cites)
+        Redirect(request.obj.pageURL)
       }
     )
   }
@@ -120,54 +117,54 @@ object Volume extends SiteController {
     "name" -> nonEmptyText
   )
 
-  private[this] def viewAdmin(volume : Volume)(
+  private[this] def viewAdmin(
     accessChangeForm : Option[(models.Party,AccessForm)] = None,
     accessSearchForm : Form[String] = accessSearchForm,
     accessResults : Seq[(models.Party,AccessForm)] = Seq())(
-    implicit request : SiteRequest[_]) = {
+    implicit request : Request[_]) = {
     val accessChange = accessChangeForm.map(_._1.id)
-    val accessForms = volume.partyAccess.filter(a => Some(a.partyId) != accessChange).map(a => (a.party, accessForm(volume, a.partyId).fill(a))) ++ accessChangeForm
-    views.html.volume.access(volume, accessForms, accessSearchForm, accessResults)
+    val accessForms = request.obj.partyAccess.filter(a => Some(a.partyId) != accessChange).map(a => (a.party, accessForm(request.obj, a.partyId).fill(a))) ++ accessChangeForm
+    views.html.volume.access(request.obj, accessForms, accessSearchForm, accessResults)
   }
 
-  def admin(i : models.Volume.Id) = check(i, Permission.ADMIN) { volume => implicit request =>
-    Ok(viewAdmin(volume)())
+  def admin(id : models.Volume.Id) = Action(id, Permission.ADMIN) { implicit request =>
+    Ok(viewAdmin())
   }
 
-  def accessChange(i : models.Volume.Id, e : models.Party.Id) = check(i, Permission.ADMIN) { volume => implicit request =>
-    accessForm(volume, e).bindFromRequest.fold(
-      form => BadRequest(viewAdmin(volume)(accessChangeForm = Some((models.Party.get(e).get, form)))),
+  def accessChange(id : models.Volume.Id, e : models.Party.Id) = Action(id, Permission.ADMIN) { implicit request =>
+    accessForm(request.obj, e).bindFromRequest.fold(
+      form => BadRequest(viewAdmin(accessChangeForm = Some((models.Party.get(e).get, form)))),
       access => {
         access.set
-        Redirect(routes.Volume.admin(volume.id))
+        Redirect(routes.Volume.admin(id))
       }
     )
   }
 
-  def accessDelete(i : models.Volume.Id, e : models.Party.Id) = check(i, Permission.ADMIN) { volume => implicit request =>
+  def accessDelete(id : models.Volume.Id, e : models.Party.Id) = Action(id, Permission.ADMIN) { implicit request =>
     if (e != request.identity.id)
-      VolumeAccess.delete(volume.id, e)
-    Redirect(routes.Volume.admin(volume.id))
+      VolumeAccess.delete(id, e)
+    Redirect(routes.Volume.admin(id))
   }
 
-  def accessSearch(i : models.Volume.Id) = check(i, Permission.ADMIN) { volume => implicit request =>
+  def accessSearch(id : models.Volume.Id) = Action(id, Permission.ADMIN) { implicit request =>
     val form = accessSearchForm.bindFromRequest
     form.fold(
-      form => BadRequest(viewAdmin(volume)(accessSearchForm = form)),
+      form => BadRequest(viewAdmin(accessSearchForm = form)),
       name => {
-        val res = models.Party.searchForVolumeAccess(name, volume.id)
-        Ok(viewAdmin(volume)(accessSearchForm = form, 
-          accessResults = res.map(e => (e,accessForm(volume,e.id)))))
+        val res = models.Party.searchForVolumeAccess(name, id)
+        Ok(viewAdmin(accessSearchForm = form, 
+          accessResults = res.map(e => (e,accessForm(request.obj, e.id)))))
       }
     )
   }
 
-  def accessAdd(i : models.Volume.Id, e : models.Party.Id) = check(i, Permission.ADMIN) { volume => implicit request =>
-    accessForm(volume, e).bindFromRequest.fold(
-      form => BadRequest(viewAdmin(volume)(accessResults = Seq((models.Party.get(e).get, form)))),
+  def accessAdd(id : models.Volume.Id, e : models.Party.Id) = Action(id, Permission.ADMIN) { implicit request =>
+    accessForm(request.obj, e).bindFromRequest.fold(
+      form => BadRequest(viewAdmin(accessResults = Seq((models.Party.get(e).get, form)))),
       access => {
         access.set
-        Redirect(routes.Volume.admin(volume.id))
+        Redirect(routes.Volume.admin(id))
       }
     )
   }

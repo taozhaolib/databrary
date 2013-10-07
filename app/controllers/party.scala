@@ -12,6 +12,7 @@ import util._
 import models._
 
 object Party extends SiteController {
+  type Request[A] = RequestObject[Party]#T[A]
 
   def view(i : models.Party.Id) = SiteAction { implicit request =>
     models.Party.get(i).fold(NotFound : Result)(
@@ -23,12 +24,13 @@ object Party extends SiteController {
       e => Ok(views.html.modal.profile(request.identity)))
   }
 
-  private def adminAccount(e : models.Party)(implicit request : UserRequest[_]) =
-    cast[models.Account](e).filter(_.equals(request.identity))
+  private def adminAccount(implicit request : Request[_]) =
+    cast[models.Account](request.obj).filter(_.equals(request.identity))
 
   type EditForm = Form[(String, Option[Orcid], Option[(String, Option[String], String, String)])]
-  private[this] def formFill(e : models.Party)(implicit request : UserRequest[_]) : EditForm = {
-    val acct = adminAccount(e)
+  private[this] def formFill(implicit request : Request[_]) : EditForm = {
+    val e = request.obj
+    val acct = adminAccount
     Form(tuple(
       "name" -> nonEmptyText,
       "orcid" -> text(0,20).transform[Option[Orcid]](maybe(_).map(Orcid.apply _), _.fold("")(_.toString))
@@ -42,8 +44,8 @@ object Party extends SiteController {
     )).fill((e.name, e.orcid, acct.map(a => (a.email, None, "", a.openid.getOrElse("")))))
   }
 
-  def formForAccount(form : EditForm, party : Party)(implicit request : UserRequest[_]) =
-    form.value.fold(adminAccount(party) : Option[Any])(_._3).isDefined
+  def formForAccount(form : EditForm)(implicit request : Request[_]) =
+    form.value.fold(adminAccount : Option[Any])(_._3).isDefined
 
   private[this] def authorizeForm(child : models.Party.Id, parent : models.Party.Id, which : Boolean = false) : Form[Authorize] = Form(
     mapping(
@@ -73,87 +75,89 @@ object Party extends SiteController {
     "name" -> nonEmptyText
   )
 
-  private[this] def viewEdit(party : models.Party)(editForm : Option[EditForm] = None)(implicit request : UserRequest[_]) = {
-    views.html.party.edit(party, editForm.getOrElse(formFill(party)))
-  }
+  private[this] def viewEdit(editForm : Option[EditForm] = None)(implicit request : Request[_]) =
+    views.html.party.edit(editForm.getOrElse(formFill))
 
-  private[this] def viewAdmin(party : models.Party)(
+  private[this] def viewAdmin(
     authorizeChangeForm : Option[(models.Party,Form[Authorize])] = None,
     authorizeWhich : Option[Boolean] = None,
     authorizeSearchForm : Form[String] = authorizeSearchForm,
-    authorizeResults : Seq[(models.Party,Form[Authorize])] = Seq())(implicit request : UserRequest[_]) = {
+    authorizeResults : Seq[(models.Party,Form[Authorize])] = Seq())(
+    implicit request : Request[_]) = {
     val authorizeChange = authorizeChangeForm.map(_._1.id)
-    val authorizeForms = party.authorizeChildren(true).filter(t => Some(t.childId) != authorizeChange).map(t => (t.child, authorizeForm(t.childId, t.parentId).fill(t))) ++ authorizeChangeForm
-    views.html.party.admin(party, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
+    val authorizeForms = request.obj.authorizeChildren(true).filter(t => Some(t.childId) != authorizeChange).map(t => (t.child, authorizeForm(t.childId, t.parentId).fill(t))) ++ authorizeChangeForm
+    views.html.party.admin(authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults)
   }
   
-  private[this] def checkAdmin(i : models.Party.Id, delegate : Boolean = true)(act : models.Party => UserRequest[AnyContent] => Result) = SiteAction.user { implicit request =>
-    if (request.identity.id != i && (!delegate || request.identity.delegatedBy(i) < Permission.ADMIN))
-      Forbidden
-    else
-      act(models.Party.get(i).get)(request)
+  private[this] def AdminAction(i : models.Party.Id, delegate : Boolean = true) =
+    SiteAction.user ~> new ActionRefiner[UserRequest,Request] {
+      protected def refine[A](request : UserRequest[A]) =
+        if (request.identity.id != i && (!delegate || request.identity.delegatedBy(i)(request) < Permission.ADMIN))
+          simple(Forbidden)
+        else
+          Right(RequestObject[Party,A](request, models.Party.get(i)(request).get))
+    }
+
+  def edit(i : models.Party.Id) = AdminAction(i) { implicit request =>
+    Ok(viewEdit())
   }
 
-  def edit(i : models.Party.Id) = checkAdmin(i) { party => implicit request =>
-    Ok(viewEdit(party)())
-  }
-
-  def change(i : models.Party.Id) = checkAdmin(i) { party => implicit request =>
-    formFill(party).bindFromRequest.fold(
-      form => BadRequest(viewEdit(party)(editForm = Some(form))),
+  def change(i : models.Party.Id) = AdminAction(i) { implicit request =>
+    formFill.bindFromRequest.fold(
+      form => BadRequest(viewEdit(editForm = Some(form))),
       { case (name, orcid, acct) =>
-        party.change(name = name, orcid = orcid)
+        request.obj.change(name = name, orcid = orcid)
         acct foreach {
           case (email, password, _, openid) =>
-            val acct = party.asInstanceOf[models.Account]
+            val acct = request.obj.asInstanceOf[models.Account]
             acct.changeAccount(
               email = email,
               password = password.fold(acct.password)(BCrypt.hashpw(_, BCrypt.gensalt)),
               openid = maybe(openid))
         }
-        Redirect(party.pageURL)
+        Redirect(request.obj.pageURL)
       }
     )
   }
 
-  def admin(i : models.Party.Id) = checkAdmin(i) { party => implicit request =>
-    Ok(viewAdmin(party)())
+  def admin(i : models.Party.Id) = AdminAction(i) { implicit request =>
+    Ok(viewAdmin())
   }
 
-  def authorizeChange(i : models.Party.Id, child : models.Party.Id) = checkAdmin(i) { party => implicit request =>
-    authorizeForm(child, party.id).bindFromRequest.fold(
-      form => BadRequest(viewAdmin(party)(authorizeChangeForm = Some((models.Party.get(child).get, form)))),
+  def authorizeChange(id : models.Party.Id, child : models.Party.Id) = AdminAction(id) { implicit request =>
+    authorizeForm(child, id).bindFromRequest.fold(
+      form => BadRequest(viewAdmin(authorizeChangeForm = Some((models.Party.get(child).get, form)))),
       authorize => {
         authorize.set
-        Redirect(routes.Party.admin(party.id))
+        Redirect(routes.Party.admin(id))
       }
     )
   }
 
-  def authorizeDelete(i : models.Party.Id, child : models.Party.Id) = checkAdmin(i) { party => implicit request =>
-    models.Authorize.delete(child, party.id)
-    Redirect(routes.Party.admin(party.id))
+  def authorizeDelete(id : models.Party.Id, child : models.Party.Id) = AdminAction(id) { implicit request =>
+    models.Authorize.delete(child, id)
+    Redirect(routes.Party.admin(id))
   }
 
-  def authorizeSearch(i : models.Party.Id, which : Boolean) = checkAdmin(i) { party => implicit request =>
+  def authorizeSearch(id : models.Party.Id, which : Boolean) = AdminAction(id) { implicit request =>
     val form = authorizeSearchForm.bindFromRequest
     form.fold(
-      form => BadRequest(viewAdmin(party)(authorizeWhich = Some(which), authorizeSearchForm = form)),
+      form => BadRequest(viewAdmin(authorizeWhich = Some(which), authorizeSearchForm = form)),
       name => {
-        val res = models.Party.searchForAuthorize(name, party.id)
-        Ok(viewAdmin(party)(authorizeWhich = Some(which), authorizeSearchForm = form, 
-          authorizeResults = res.map(e => (e,authorizeFormWhich(party, e.id, which)
+        val res = models.Party.searchForAuthorize(name, id)
+        Ok(viewAdmin(authorizeWhich = Some(which), authorizeSearchForm = form, 
+          authorizeResults = res.map(e => (e,authorizeFormWhich(request.obj, e.id, which)
             /* TODO: fill expires */))))
       }
     )
   }
 
-  def authorizeAdd(i : models.Party.Id, which : Boolean, other : models.Party.Id) = checkAdmin(i) { party => implicit request =>
-    authorizeFormWhich(party, other, which).bindFromRequest.fold(
-      form => BadRequest(viewAdmin(party)(authorizeWhich = Some(which), authorizeResults = Seq((models.Party.get(other).get, form)))),
+  def authorizeAdd(id : models.Party.Id, which : Boolean, other : models.Party.Id) = AdminAction(id) { implicit request =>
+    authorizeFormWhich(request.obj, other, which).bindFromRequest.fold(
+      form => BadRequest(viewAdmin(authorizeWhich = Some(which), authorizeResults = Seq((models.Party.get(other).get, form)))),
       authorize => {
         authorize.set
-        Redirect(routes.Party.admin(party.id))
+        Redirect(routes.Party.admin(id))
       }
     )
   }

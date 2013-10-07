@@ -1,4 +1,5 @@
 package controllers
+import scala.language.higherKinds
 
 import play.api._
 import          Play.current
@@ -18,8 +19,7 @@ class AnonRequest[A](request : Request[A], db : util.Site.DB) extends SiteReques
   override def user = None
 }
 
-class UserRequest[A](request : Request[A], account : Account, db : util.Site.DB) extends SiteRequest[A](request, account, db) with AuthSite {
-  override val identity = account
+class UserRequest[A](request : Request[A], override val identity : Account, db : util.Site.DB) extends SiteRequest[A](request, identity, db) with AuthSite {
 }
 
 object SiteRequest {
@@ -27,7 +27,33 @@ object SiteRequest {
     identity.fold(new AnonRequest[A](request, db) : SiteRequest[A])(new UserRequest[A](request, _, db))
 }
 
-object SiteAction extends ActionHandler[SiteRequest] {
+class RequestObject[O] {
+  case class T[A](request : SiteRequest[A], obj : O) extends SiteRequest[A](request, request.identity, request.db)
+}
+object RequestObject {
+  def apply[O,A](request : SiteRequest[A], obj : O) : RequestObject[O]#T[A] = {
+    object RO extends RequestObject[O]
+    new RO.T[A](request, obj)
+  }
+  def getter[O](get : SiteRequest[_] => Option[O]) = new ActionRefiner[SiteRequest,RequestObject[O]#T] {
+    protected def refine[A](request : SiteRequest[A]) =
+      get(request) match {
+        case None => simple(Results.NotFound)
+        case Some(o) => Right(RequestObject[O,A](request, o))
+      }
+  }
+  def permission[O <: InVolume](perm : Permission.Value = Permission.VIEW) = new ActionHandler[RequestObject[O]#T] {
+    protected def handle[A](request : RequestObject[O]#T[A]) =
+      if (request.obj.permission < perm) simple(Results.Forbidden)
+      else None
+  }
+  def check[O <: InVolume](get : SiteRequest[_] => Option[O], perm : Permission.Value = Permission.VIEW) =
+    getter(get) ~> permission(perm)
+  def check[O <: InVolume](v : models.Volume.Id, get : SiteRequest[_] => Option[O], perm : Permission.Value = Permission.VIEW) =
+    getter(get(_).filter(_.volumeId == v)) ~> permission(perm)
+}
+
+object SiteAction extends ActionCreator[SiteRequest] {
   private[this] def getUser(request : Request[_])(implicit db : util.Site.DB) : Option[Account] =
     request.session.get("user").flatMap { i =>
       try { Some(models.Account.asId(i.toInt)) }
@@ -39,36 +65,22 @@ object SiteAction extends ActionHandler[SiteRequest] {
       block(SiteRequest(request, getUser(request)))
     }
 
-  object user extends SimpleRefiner[UserRequest] {
-    protected def refineSimple[B](request : SiteRequest[B]) = request match {
-      case request : UserRequest[B] => Right(request)
-      case _ => Left(Login.needLogin)
+  object User extends ActionRefiner[SiteRequest,UserRequest] {
+    protected def refine[A](request : SiteRequest[A]) = request match {
+      case request : UserRequest[A] => Right(request)
+      case _ => simple(Login.needLogin)
     }
   }
 
-  def access(access : Permission.Value) : ActionHandler[UserRequest] = new user.SimpleHandler {
-    protected def handleSimple[B](request : UserRequest[B]) =
+  val user : ActionCreator[UserRequest] = ~>(User)
+
+  case class Access[R[_] <: SiteRequest[_]](access : Permission.Value) extends ActionHandler[R] {
+    def handle[A](request : R[A]) =
       if (request.access >= access) None
-      else Some(Results.Forbidden)
+      else simple(Results.Forbidden)
   }
 
-    /*
-  object user extends ActionBuilder[UserRequest] {
-    def invokeBlock[A](request : Request[A], block : UserRequest[A] => Future[SimpleResult]) =
-      SiteAction.invokeBlock(request, {
-        case request : UserRequest[A] => block(request)
-        case _ => Future.successful(Login.needLogin)
-      } : SiteRequest[A] => Future[SimpleResult])
-  }
-
-  def access(access : Permission.Value) = new ActionBuilder[UserRequest] {
-    def invokeBlock[A](request : Request[A], block : UserRequest[A] => Future[SimpleResult]) =
-      user.invokeBlock(request, { request : UserRequest[A] =>
-        if (request.access >= access) block(request)
-        else Future.successful(Results.Forbidden)
-      })
-  }
-  */
+  def access(access : Permission.Value) = user ~> Access[UserRequest](access)
 }
 
 class SiteController extends Controller {
