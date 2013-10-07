@@ -958,7 +958,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
                                 input.append($('<option value="' + rows[c]['template'][m]['values'][v] + '">' + rows[c]['template'][m]['values'][v] + '</option>'));
                             }
                         } else {
-                            if(rows[c]['template'][m]['dataType'] == 'number')
+                            if (rows[c]['template'][m]['dataType'] == 'number')
                                 atts = ' step="any"';
 
                             input = $('<input type="' + rows[c]['template'][m]['dataType'] + '"' + atts + ' id="measure_0__datum" name="measure[0].datum" value="" placeholder="Select ' + rows[c]['template'][m]['name'] + '..." class="datum">');
@@ -976,8 +976,11 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 });
 
                 $repeater.on('change', metricSelect, function () {
-                    updateDatum($(this).closest('.repeat'));
-                })
+                    var $metric = $(this);
+
+                    updateMetrics();
+                    updateDatum($metric.closest('.repeat'));
+                });
             };
 
             var updateDatum = function ($repeat) {
@@ -1018,19 +1021,6 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 repeatCount = $repeats.length;
             };
 
-            var updateRepeaterMetrics = function ($repeater) {
-                var val, vals = [];
-
-                $repeats.each(function () {
-                    val = $(this).find(metricSelect).val();
-
-                    if (vals.indexOf(val) == -1)
-                        vals.push(val);
-                });
-
-
-            };
-
             var updateControls = function ($repeat, index) {
                 $repeat.find('.controls').remove();
 
@@ -1047,23 +1037,71 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 $repeat.append($controls);
             };
 
-            var update = function () {
+            var update = function ($repeater, id, val) {
                 updateRepeater($repeater);
 
                 if (metricsRepeater)
-                    updateRepeaterMetrics($repeater);
+                    updateMetrics();
 
                 $repeats.each(function (index) {
-                    updateControls($(this), index);
+                    var $repeat = $(this);
+
+                    updateControls($repeat, index);
+
+                    if(metricsRepeater && $repeat.find(metricSelect).find('option:enabled').length == 0)
+                        remove($repeater, $repeat);
+                });
+
+            };
+
+            var updateMetrics = function () {
+                var $metrics = $repeater.find(metricSelect),
+                    usedMetrics = [], setMetrics = [];
+
+                $metrics.each(function () {
+                    var $metric = $(this),
+                        id = $metric.val();
+
+                    if (usedMetrics.indexOf(id) == -1)
+                        usedMetrics.push(id);
+                });
+
+                $metrics.each(function () {
+                    var $metric = $(this),
+                        $options = $(this).find('option'),
+                        id = $metric.val();
+
+                    $options.each(function () {
+                        var $option = $(this),
+                            oid = $option.val();
+
+                        if ($option.is(':selected')) {
+                            if (setMetrics.indexOf(oid) > -1)
+                                $option.attr('disabled', 'disabled');
+                            else
+                                $option.removeAttr('disabled');
+                        } else {
+                            if (usedMetrics.indexOf(oid) > -1)
+                                $option.attr('disabled', 'disabled');
+                            else
+                                $option.removeAttr('disabled');
+                        }
+                    });
+
+                    if ($metric.find('option[value="' + id + '"]').is(':disabled') && $metric.find('option:enabled').length > 0)
+                        $metric.val($metric.find('option:enabled').first().val());
+
+                    if (setMetrics.indexOf(id) == -1)
+                        setMetrics.push(id);
                 });
             };
 
-            var create = function ($repeater) {
+            var create = function ($repeater, id, val) {
                 var cID = $copy.find('label[for]').attr('for').split('__').shift().split('_').pop();
 
                 $repeater.append($($('<div>').append($copy).html().replace(new RegExp('_' + cID + '_', 'g'), '_' + newIndex + '_').replace(new RegExp('\\[' + cID + '\\]', 'g'), '[' + newIndex + ']')));
 
-                update();
+                update($repeater, id, val);
 
                 newIndex++;
 
@@ -1071,17 +1109,20 @@ dbjs.simpleToggle = function (toggler, toggled) {
             };
 
             var createMetrics = function ($repeater, id, val) {
-                var newIndex = create($repeater);
+                var newIndex = create($repeater, id, val);
 
                 var $new = $repeats.last(),
                     $metric = $new.find(metricSelect),
                     $datum = $new.find(datumSelect);
 
+                if(!$metric.find('option[value="' + id + '"]'))
+                    id = $metric.find('option:enabled').first().val();
+
                 $metric.val(id);
 
                 $datum.replaceWith($($('<div>').append(metrics[0][id].clone()).html().replace(new RegExp('_' + 0 + '_', 'g'), '_' + newIndex + '_').replace(new RegExp('\\[' + 0 + '\\]', 'g'), '[' + newIndex + ']')));
 
-                if(typeof val !== 'undefined')
+                if (typeof val !== 'undefined')
                     $datum.val(val);
             };
 
@@ -1091,7 +1132,14 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 else
                     $repeat.find('input, textarea, select').val('');
 
-                update();
+                if(metricsRepeater){
+                    var $metric = $repeat.find(metricSelect);
+
+                    $metric.val($metric.find('option:enabled').first().val());
+                    $metric.trigger('change');
+                }
+
+                update($repeater);
             };
 
             // setup
@@ -1116,9 +1164,17 @@ dbjs.simpleToggle = function (toggler, toggled) {
                         newIndex = $repeat.find(datumSelect).attr('id').split('__').shift().split('_').pop();
 
                     $metric.replaceWith($($('<div>').append($metricsSelector.clone()).html().replace(new RegExp('_' + 0 + '_', 'g'), '_' + newIndex + '_').replace(new RegExp('\\[' + 0 + '\\]', 'g'), '[' + newIndex + ']')));
-                    $repeat.find(metricSelect).val(metricID);
+
+                    $metric = $repeat.find(metricSelect);
+
+                    if (metricID == null)
+                        metricID = $metric.find('option:enabled').first().val();
+
+                    $metric.val(metricID);
                     $repeat.find('.repeated > label').remove();
                 });
+
+                update($repeater);
             }
 
             return $repeater;
