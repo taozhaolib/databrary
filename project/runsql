@@ -51,19 +51,19 @@ if [[ ! -f ~/.pgpass ]] ; then
 	$um
 fi
 
-args=(-h $host -p $port -U $user $database)
+args=(-h $host -p $port -U $user)
 while [[ $1 = -?* ]] ; do
 	args=("${args[@]}" $1)
 	shift
 done
 
 runsql () {
-	psql -q "${args[@]}" -vON_ERROR_STOP=on -f "${@:--}"
+	psql -q "${args[@]}" "${database}" -vON_ERROR_STOP=on -f "${@:--}"
 }
 
 dbreset () {
 	if [[ -z $1 ]] ; then
-		pg_dump -Fc -f unreset.dump "${args[@]}"
+		pg_dump -Fc -f unreset.dump "${args[@]}" "${database}"
 	fi
 	evolve down 1
 }
@@ -75,7 +75,7 @@ evolve () {
 }
 
 check_dump() {
-	pg_dump -O -f $conf/check-$1.sql "${args[@]}"
+	pg_dump -O -f $conf/check-$1.sql "${args[@]}" "${database}"
 }
 
 check_diff() {
@@ -97,7 +97,7 @@ evolve_all () {
 
 if [[ $# -eq 0 ]] ; then
 	echo "Use '$0 help' for help"
-	exec psql "${args[@]}"
+	exec psql "${args[@]}" "${database}"
 elif [[ $# -eq 1 && ( $1 = - || -f $1 ) ]] ; then
 	runsql "$1"
 elif [[ $# -eq 1 && $1 = reset ]] ; then
@@ -127,7 +127,11 @@ elif [[ $1 = check ]] ; then
 	rm -f $conf/check-*.sql
 elif [[ $1 = dump ]] ; then
 	shift
-	exec pg_dump "${args[@]}" "$@"
+	exec pg_dump "${args[@]}" "${database}" "$@"
+elif [[ $1 = restore ]] ; then
+	shift
+	dbreset
+	exec pg_restore "${args[@]}" -d "${database}" -O "$@"
 else
 	cat <<EOF
 Usage:
@@ -138,6 +142,7 @@ Usage:
   runsql up|down NUM	run evolution NUM (no play_evolutions)
   runsql check		apply and compare master schema and evolutions
   runsql dump ARGS...	run pg_dump
+  runsql restore ARGS...	run pg_restore
 Any non-argument options are passed to the run command.
 EOF
 fi
