@@ -1,13 +1,46 @@
-citation.invalid=Invalid citation
-error.offset=Position in seconds expected
-file.format.unknown=File format '{0}' is not supported.
-format.offset=Position in seconds
+# MESSAGES
+
+# --- Login
 login.bad=Incorrect login.
 login.openID.notFound=No account is associated with that OpenID.
 login.noCookie=You must be logged in to perform that action. Please make sure you have cookies enabled.
 login.logout=You have been logged out.
+password.again=Passwords do not match.
+
+# --- Constraints
+constraint.required=This field is required.
+constraint.min=Minimum value: {0}
+constraint.max=Maximum value: {0}
+constraint.minLength=Minimum length: {0}
+constraint.maxLength=Maximum length: {0}
+constraint.email=Email
+
+# --- Formats
+format.date=Select a valid date.
+format.numeric=Numeric
+format.offset=Position in seconds
+format.real=Real
+
+# --- Errors
+error.invalid=Invalid value
+error.required=This field is required
+error.number=Numeric value expected
+error.offset=Position in seconds expected
+error.real=Real number value expected
+error.real.precision=Real number value with no more than {0} digit(s) including {1} decimal(s) expected
+error.min=Must be greater or equal to {0}
+error.min.strict=Must be strictly greater than {0}
+error.max=Must be less or equal to {0}
+error.max.strict=Must be strictly less than {0}
+error.minLength=Minimum length is {0}
+error.maxLength=Maximum length is {0}
+error.email=Valid email required
+error.pattern=Must satisfy {0}
+
+# --- Unsorted
+citation.invalid=Invalid citation
+file.format.unknown=File format '{0}' is not supported.
 measure.unknown=Invalid or unknown type of measure.
 measure.bad=Invalid value for measure.
 orcid.invalid=Invalid ORCID iD
-password.again=Passwords do not match.
 range.invalid=Invalid time range

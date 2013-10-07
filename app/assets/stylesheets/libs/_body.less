@@ -390,6 +390,11 @@ dl.inline-measures {
     dt, dd {
         display: inline;
         margin: 0;
+
+        &:after {
+            content: ":";
+            color: @gray_50_third;
+        }
     }
 
     dt {

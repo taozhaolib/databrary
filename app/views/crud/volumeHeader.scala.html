@@ -1,19 +1,27 @@
 @(volume : Volume)(implicit request : SiteRequest[_])
 
 <header>
-    <div class="type">Volume</div>
+    <div class="type">Dataset</div>
     <h1>@volume.name</h1>
 
+    @if(volume.permission >= Permission.EDIT) {
     <nav class="menu">
         <ul>
-        @if(volume.permission >= Permission.EDIT) {
 			@crud.headerCurrentLink(routes.Volume.view(volume.id), "view")
 			@crud.headerCurrentLink(routes.Volume.edit(volume.id), "edit")
 
             @if(volume.permission >= Permission.ADMIN) {
 				@crud.headerCurrentLink(routes.Volume.admin(volume.id), "access")
             }
-        }
+
+            @if(volume.topContainer.permission >= Permission.CONTRIBUTE) {
+                @crud.headerCurrentLink(routes.Asset.create(volume.id, volume.topContainer.id), "add asset")
+            }
+
+            @if(volume.permission >= Permission.CONTRIBUTE) {
+                @crud.headerCurrentLink(routes.Container.create(volume.id), "add slot")
+            }
         </ul>
     </nav>
+    }
 </header>

@@ -18,7 +18,7 @@
                             <td class="main">
                                 @display(record)
                                 <dl class="inline-measures">
-                                @record.measures.map { measure =>
+                                @record.measures.filter(m => record.dataPermission(m.metric) >= Permission.DOWNLOAD).map { measure =>
                                     @if(measure.metric.name != "ident") {
                                         <dt>@measure.metric.name</dt>
                                         <dd>@measure.value</dd>
