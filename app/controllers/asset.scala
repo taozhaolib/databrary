@@ -130,7 +130,7 @@ object Asset extends SiteController {
   }
 
   def upload(v : models.Volume.Id, c : models.Container.Id) = Container.Action(v, c, Permission.CONTRIBUTE) { implicit request =>
-    def error(form : AssetForm) : Result =
+    def error(form : AssetForm) : SimpleResult =
       BadRequest(views.html.asset.edit(Left(request.obj), form))
     val form = uploadForm.bindFromRequest
     form.fold(error _, {
@@ -139,19 +139,19 @@ object Asset extends SiteController {
         val fmt = format.filter(_ => ts).flatMap(AssetFormat.get(_, ts))
         type ER = Either[AssetForm,(TemporaryFile,AssetFormat,String)]
         request.body.asMultipartFormData.flatMap(_.file("file")).fold {
-          localfile.filter(_ => ts).fold(
-            Left(form.withError("file", "error.required")) : ER) { localfile =>
+          localfile.filter(_ => ts).fold[ER](
+            Left(form.withError("file", "error.required"))) { localfile =>
             val file = new java.io.File(localfile)
             val name = file.getName
             if (file.isFile)
-              (fmt orElse AssetFormat.getFilename(name, ts)).fold(Left(form.withError("format", "Unknown format")) : ER)(
+              (fmt orElse AssetFormat.getFilename(name, ts)).fold[ER](Left(form.withError("format", "Unknown format")))(
                 fmt => Right((TemporaryFile(file), fmt, name)))
             else
               Left(form.withError("localfile", "File not found"))
           }
         } { file =>
-          (fmt orElse AssetFormat.getFilePart(file, ts)).fold(
-            Left(form.withError("file", "file.format.unknown", file.contentType.getOrElse("unknown"))) : ER)(
+          (fmt orElse AssetFormat.getFilePart(file, ts)).fold[ER](
+            Left(form.withError("file", "file.format.unknown", file.contentType.getOrElse("unknown"))))(
             fmt => Right((file.ref, fmt, file.filename)))
         }.fold(error _, {
           case (file, fmt, fname) =>

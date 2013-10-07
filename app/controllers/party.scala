@@ -15,12 +15,12 @@ object Party extends SiteController {
   type Request[A] = RequestObject[Party]#Site[A]
 
   def view(i : models.Party.Id) = SiteAction { implicit request =>
-    models.Party.get(i).fold(NotFound : Result)(
+    models.Party.get(i).fold[SimpleResult](NotFound)(
       e => Ok(views.html.party.view(e)))
   }
 
   def ajaxView() = SiteAction { implicit request =>
-    request.user.fold(NotFound : Result)(
+    request.user.fold[SimpleResult](NotFound)(
       e => Ok(views.html.modal.profile(request.identity)))
   }
 
@@ -45,7 +45,7 @@ object Party extends SiteController {
   }
 
   def formForAccount(form : EditForm)(implicit request : Request[_]) =
-    form.value.fold(adminAccount : Option[Any])(_._3).isDefined
+    form.value.fold[Option[Any]](adminAccount)(_._3).isDefined
 
   private[this] def authorizeForm(child : models.Party.Id, parent : models.Party.Id, which : Boolean = false) : Form[Authorize] = Form(
     mapping(

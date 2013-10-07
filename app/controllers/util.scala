@@ -65,7 +65,7 @@ final case class NoMapping[T]() extends MaybeMapping[T] {
   val constraints = Nil
   def bind(data : Map[String, String]) : Either[Seq[FormError], Option[T]] = Right(None)
   def unbind(value : Option[T]) : (Map[String, String], Seq[FormError]) = 
-    Map.empty -> value.fold(Nil : Seq[FormError])(_ => Seq(FormError("", "non-empty NoMapping value")))
+    Map.empty -> value.fold[Seq[FormError]](Nil)(_ => Seq(FormError("", "non-empty NoMapping value")))
   def withPrefix(prefix : String) : Mapping[Option[T]] = this
   def verifying(constraints : Constraint[Option[T]]*) : Mapping[Option[T]] = this
 }
@@ -75,7 +75,7 @@ final case class SomeMapping[T](wrapped : Mapping[T]) extends MaybeMapping[T] {
   val mappings = wrapped.mappings
   override val format = wrapped.format
   val constraints = wrapped.constraints.map { c =>
-    Constraint[Option[T]](c.name, c.args)(_.fold(Invalid(ValidationError("error.required")) : ValidationResult)(c(_)))
+    Constraint[Option[T]](c.name, c.args)(_.fold[ValidationResult](Invalid(ValidationError("error.required")))(c(_)))
   }
   def bind(data : Map[String, String]) : Either[Seq[FormError], Option[T]] =
     wrapped.bind(data).right.map(Some(_))
@@ -90,5 +90,5 @@ final case class SomeMapping[T](wrapped : Mapping[T]) extends MaybeMapping[T] {
 }
 
 object MaybeMapping {
-  def apply[T](m : Option[Mapping[T]]) : MaybeMapping[T] = m.fold(NoMapping[T] : MaybeMapping[T])(SomeMapping[T](_))
+  def apply[T](m : Option[Mapping[T]]) : MaybeMapping[T] = m.fold[MaybeMapping[T]](NoMapping[T])(SomeMapping[T](_))
 }

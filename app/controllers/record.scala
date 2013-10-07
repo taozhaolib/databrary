@@ -60,7 +60,7 @@ object Record extends SiteController {
     val r = request.obj
     val m = r.measures
     val mm = m.map(_.metric)
-    val t = r.category.fold(Nil : Seq[Metric])(_.template).diff(mm)
+    val t = r.category.fold[Seq[Metric]](Nil)(_.template).diff(mm)
     (mm ++ t, editForm.fill(
       (
         r.categoryId,
@@ -82,7 +82,7 @@ object Record extends SiteController {
       { case (category, data) =>
         request.obj.change(category = category.flatMap(RecordCategory.get(_)))
         def update(metric : Metric.Id, datum : Option[String]) : Option[String] =
-          Metric.get(metric).fold(Some("measure.unknown") : Option[String]) { m =>
+          Metric.get(metric).fold[Option[String]](Some("measure.unknown")) { m =>
             datum.fold {
               request.obj.deleteMeasure(m)
               None : Option[String]
@@ -130,14 +130,14 @@ object Record extends SiteController {
     val form = selectForm.bindFromRequest
     form.fold(
       form => BadRequest(Slot.viewEdit(request.obj)(recordForm = form)),
-      _.fold {
+      _.fold[SimpleResult] {
         val r = models.Record.create(request.obj.volume)
         r.addSlot(request.obj)
-        Created(views.html.record.edit(r, Nil, editForm, js)) : Result
+        Created(views.html.record.edit(r, Nil, editForm, js))
       } (models.Record.get(_).
         filter(r => r.permission >= Permission.DOWNLOAD && r.volumeId == v).
-        fold(
-          BadRequest(Slot.viewEdit(request.obj)(recordForm = form.withError("record", "record.bad"))) : Result) { r =>
+        fold[SimpleResult](
+          BadRequest(Slot.viewEdit(request.obj)(recordForm = form.withError("record", "record.bad")))) { r =>
           r.addSlot(request.obj)
           if (editRedirect)
             Redirect(routes.Slot.edit(v, s))

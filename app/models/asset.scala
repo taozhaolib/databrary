@@ -173,7 +173,7 @@ object Asset extends AssetView[Asset]("asset") {
       case (id, classification, None) ~ format ~ None => new FileAsset(id, format, classification)
       case (id, classification, Some(duration)) ~ (format : TimeseriesFormat) ~ clip => {
         val ts = new Timeseries(id.coerce[Timeseries], format, classification, duration)
-        clip.fold(ts : Asset)(Clip.make(ts))
+        clip.fold[Asset](ts)(Clip.make(ts))
       }
     } from """asset
     LEFT JOIN clip USING (id)

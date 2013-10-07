@@ -71,7 +71,7 @@ object Volume extends SiteController {
   }
 
   def create(e : Option[models.Party.Id]) = SiteAction.auth { implicit request =>
-    e.fold(Some(request.identity) : Option[Party])(models.Party.get(_)).fold(NotFound : Result) { owner =>
+    e.fold[Option[Party]](Some(request.identity))(models.Party.get(_)).fold[SimpleResult](NotFound) { owner =>
       if (owner.access < Permission.CONTRIBUTE || request.identity.delegatedBy(owner.id) < Permission.CONTRIBUTE)
         Forbidden
       else
@@ -80,7 +80,7 @@ object Volume extends SiteController {
   }
 
   def add(e : models.Party.Id) = SiteAction.auth { implicit request =>
-    models.Party.get(e).fold(NotFound : Result) { owner =>
+    models.Party.get(e).fold[SimpleResult](NotFound) { owner =>
       if (owner.access < Permission.CONTRIBUTE || request.identity.delegatedBy(owner.id) < Permission.CONTRIBUTE)
         Forbidden
       else
