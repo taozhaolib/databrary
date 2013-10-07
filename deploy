@@ -27,7 +27,6 @@ if [[ $1 = */databrary-*.zip && -r $1 ]] ; then
 	base=${src%.zip}
 	ver=${base##*/databrary-}
 	unzip $src
-	chmod +x databrary-$ver/start
 elif [[ -n $1 && -d databrary-$1 ]] ; then
 	ver=$1
 elif [[ $1 = databrary-* && -d $1 ]] ; then
@@ -47,4 +46,4 @@ if [[ ! -d databrary ]] ; then
 	die
 fi
 
-exec databrary/start ${port:+-Dhttp.port=$port} -Dconfig.file=prod.conf
+exec databrary/bin/databrary ${port:+-Dhttp.port=$port} -Dconfig.file=prod.conf
