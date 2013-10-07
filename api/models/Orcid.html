@@ -9,11 +9,6 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../lib/template.js"></script>
-      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
-      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -102,7 +97,10 @@ They are stored as a string of length 16, but displayed with dashes.
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>IndexedSeqLike</dd><dt>Annotations</dt><dd>
-                <span class="name">@SerialVersionUID</span><span class="args">()</span>
+                <span class="name">@SerialVersionUID</span><span class="args">(<span>
+      
+      <span class="symbol">1756321872811029277L</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.collection.TraversableLike.Self" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -501,8 +499,11 @@ They are stored as a string of length 16, but displayed with dashes.
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.collection.TraversableLike#collect" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -858,8 +859,11 @@ They are stored as a string of length 16, but displayed with dashes.
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.collection.IndexedSeqOptimized#find" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -2166,7 +2170,7 @@ They are stored as a string of length 16, but displayed with dashes.
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>IndexedSeqOptimized → TraversableLike → GenTraversableLike</dd></dl></div>
     </li><li name="scala.collection.immutable.StringLike#split" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="split(separators:&lt;?&gt;):Array[String]"></a>
+      <a id="split(separators:Array[Char]):Array[String]"></a>
       <a id="split(Array[Char]):Array[String]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -2178,11 +2182,14 @@ They are stored as a string of length 16, but displayed with dashes.
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>StringLike</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.util.regex.PatternSyntaxException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.collection.immutable.StringLike#split" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="split(separator:&lt;?&gt;):Array[String]"></a>
+      <a id="split(separator:Char):Array[String]"></a>
       <a id="split(Char):Array[String]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -2194,7 +2201,10 @@ They are stored as a string of length 16, but displayed with dashes.
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>StringLike</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.util.regex.PatternSyntaxException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.collection.IndexedSeqOptimized#splitAt" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -2837,7 +2847,10 @@ They are stored as a string of length 16, but displayed with dashes.
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -2853,7 +2866,10 @@ They are stored as a string of length 16, but displayed with dashes.
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -2869,7 +2885,10 @@ They are stored as a string of length 16, but displayed with dashes.
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.collection.TraversableLike#withFilter" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -3044,7 +3063,6 @@ They are stored as a string of length 16, but displayed with dashes.
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-
-
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

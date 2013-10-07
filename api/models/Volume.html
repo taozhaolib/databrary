@@ -9,11 +9,6 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../lib/template.js"></script>
-      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
-      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -40,14 +35,14 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">Volume</span><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Volume">Volume</a>] with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a> with <a href="Commented.html" class="extype" name="models.Commented">Commented</a></span>
+        <span class="name">Volume</span><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Volume">Volume</a>] with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Main organizational unit or package of data, within which everything else exists.
 Usually represents a single project or dataset with a single set of procedures.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/volume.scala" target="_blank">volume.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="Commented.html" class="extype" name="models.Commented">Commented</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Volume">Volume</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Volume">Volume</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -65,7 +60,7 @@ Usually represents a single project or dataset with a single set of procedures.<
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Volume"><span>Volume</span></li><li class="in" name="models.Commented"><span>Commented</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.SitePage"><span>SitePage</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Volume"><span>Volume</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.SitePage"><span>SitePage</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -233,24 +228,26 @@ Usually represents a single project or dataset with a single set of procedures.<
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.Volume#comments" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="comments(all:Boolean)(implicitdb:util.Site.DB):Seq[models.Comment]"></a>
-      <a id="comments(Boolean)(DB):Seq[Comment]"></a>
+    </li><li name="models.Volume#comments" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="comments(implicitdb:util.Site.DB):Seq[models.Comment]"></a>
+      <a id="comments(DB):Seq[Comment]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">comments</span><span class="params">(<span name="all">all: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
+        <span class="name">comments</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The list of comments on this object.</p><div class="fullcomment"><div class="comment cmt"><p>The list of comments on this object.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include indirect comments on any contained objects
-</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Volume">Volume</a> → <a href="Commented.html" class="extype" name="models.Commented">Commented</a></dd></dl></div>
+      <p class="shortcomment cmt">The list of comments in this volume.</p>
     </li><li name="models.Volume#containers" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="containers(implicitdb:util.Site.DB):Seq[models.Container]"></a>
       <a id="containers(DB):Seq[Container]"></a>
@@ -328,8 +325,11 @@ Usually represents a single project or dataset with a single set of procedures.<
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -501,20 +501,6 @@ Usually represents a single project or dataset with a single set of procedures.<
       </span>
       </h4>
       <p class="shortcomment cmt">the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request.</p><div class="fullcomment"><div class="comment cmt"><p>the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than <a href="Permission$.html#VIEW:models.Permission.Value" class="extmbr" name="models.Permission#VIEW">Permission.VIEW</a> except possibly for transient objects, as unavailable volumes should never be returned in the first place.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Volume">Volume</a> → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
-    </li><li name="models.Commented#postComment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="postComment(text:String)(implicitsite:util.AuthSite):models.Comment"></a>
-      <a id="postComment(String)(AuthSite):Comment"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">postComment</span><span class="params">(<span name="text">text: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/AuthSite.html" class="extype" name="util.AuthSite">AuthSite</a></span>)</span><span class="result">: <a href="Comment.html" class="extype" name="models.Comment">Comment</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Post a new comment this object.</p><div class="fullcomment"><div class="comment cmt"><p>Post a new comment this object.
-This will throw an exception if there is no current user, but does not check permissions otherwise.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Commented.html" class="extype" name="models.Commented">Commented</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -619,7 +605,10 @@ This will throw an exception if there is no current user, but does not check per
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -635,7 +624,10 @@ This will throw an exception if there is no current user, but does not check per
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -651,7 +643,10 @@ This will throw an exception if there is no current user, but does not check per
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li></ol>
@@ -663,9 +658,7 @@ This will throw an exception if there is no current user, but does not check per
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.Commented">
-              <h3>Inherited from <a href="Commented.html" class="extype" name="models.Commented">Commented</a></h3>
-            </div><div class="parent" name="models.InVolume">
+        <div class="parent" name="models.InVolume">
               <h3>Inherited from <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></h3>
             </div><div class="parent" name="models.SitePage">
               <h3>Inherited from <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></h3>
@@ -693,7 +686,6 @@ This will throw an exception if there is no current user, but does not check per
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-
-
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

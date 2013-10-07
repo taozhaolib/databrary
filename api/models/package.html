@@ -9,11 +9,6 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../lib/template.js"></script>
-      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
-      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -47,7 +42,7 @@
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Models provide an interface to the postgres database.
 In general, models provide all of the information necessary to serve requests, but do not do any validation or permission checking beyond what the database does itself.
 Controllers and other callers should do any necessary checking to ensure appropriate semantics.
-</p></div><div class="toggleContainer block">
+</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/package.scala" target="_blank">package.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -137,7 +132,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="Audit.html"><span class="name">Audit</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="when">when: <span class="extype" name="java.sql.Timestamp">Timestamp</span></span>, <span name="who">who: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="ip">ip: <span class="extype" name="dbrary.Inet">Inet</span></span>, <span name="action">action: <a href="AuditAction$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.AuditAction.Value">AuditAction.Value</a></span>, <span name="row">row: <span class="extype" name="models.Audit.T">T</span></span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="Audit.html"><span class="name">Audit</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="when">when: <span class="extype" name="java.sql.Timestamp">Timestamp</span></span>, <span name="who">who: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="ip">ip: <span class="extype" name="dbrary.Inet">Inet</span></span>, <span name="action">action: <a href="Audit$$Action$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Audit.Action.Value</a></span>, <span name="row">row: <span class="extype" name="models.Audit.T">T</span></span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       <p class="comment cmt">Represents an event row in an audit table of a particular type.</p>
@@ -155,7 +150,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">A specific authorization by one party of another.</p>
     </li><li name="models.BackedAsset" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="BackedAssetextendsObject"></a>
+      <a id="BackedAssetextendsAnyRef"></a>
       <a id="BackedAsset:BackedAsset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -168,7 +163,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">Assets which are backed by files on disk.</p>
     </li><li name="models.CachedVal" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="CachedVal[T,S]extendsObject"></a>
+      <a id="CachedVal[T,S]extendsAnyRef"></a>
       <a id="CachedVal[T,S]:CachedVal[T,S]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -206,19 +201,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       <p class="comment cmt">A comment made by a particular user applied to exactly one object.</p>
-    </li><li name="models.Commented" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="CommentedextendsInVolume"></a>
-      <a id="Commented:Commented"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">trait</span>
-      </span>
-      <span class="symbol">
-        <a href="Commented.html"><span class="name">Commented</span></a><span class="result"> extends <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
-      </span>
-      </h4>
-      <p class="comment cmt">Objects on which comments may be placed.</p>
     </li><li name="models.Container" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ContainerextendsTableRowId[models.Container]withSitePagewithInVolume"></a>
       <a id="Container:Container"></a>
@@ -272,7 +254,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">Base for simple &quot;opaque&quot; file assets, uploaded, stored, and downloaded as individual files with no special processing.</p>
     </li><li name="models.GenericId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="GenericId[I,+T]extendsObject"></a>
+      <a id="GenericId[I,+T]extendsAnyRef"></a>
       <a id="GenericId[I,+T]:GenericId[I,T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -285,7 +267,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">Wrap identifiers and tag them with a particular type.</p>
     </li><li name="models.InVolume" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="InVolumeextendsObject"></a>
+      <a id="InVolumeextendsAnyRef"></a>
       <a id="InVolume:InVolume"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -337,7 +319,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">A measurement value with an arbitrary (unconverted) type.</p>
     </li><li name="models.MeasureDatumBase" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="MeasureDatumBaseextendsObject"></a>
+      <a id="MeasureDatumBaseextendsAnyRef"></a>
       <a id="MeasureDatumBase:MeasureDatumBase"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -454,7 +436,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">Types of Records that are relevant for data organization.</p>
     </li><li name="models.SitePage" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="SitePageextendsObject"></a>
+      <a id="SitePageextendsAnyRef"></a>
       <a id="SitePage:SitePage"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -467,7 +449,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">An object with a corresponding page on the site.</p>
     </li><li name="models.Slot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="SlotextendsTableRowId[models.Slot]withCommentedwithSitePage"></a>
+      <a id="SlotextendsTableRowId[models.Slot]withInVolumewithSitePage"></a>
       <a id="Slot:Slot"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -475,7 +457,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Slot.html"><span class="name">Slot</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>] with <a href="Commented.html" class="extype" name="models.Commented">Commented</a> with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></span>
+        <a href="Slot.html"><span class="name">Slot</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>] with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></span>
       </span>
       </h4>
       <p class="comment cmt">Smallest organizatonal unit of related data.</p>
@@ -584,7 +566,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">Specialization of <a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a> for timeseries files stored in special internal formats.</p>
     </li><li name="models.Volume" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="VolumeextendsTableRowId[models.Volume]withSitePagewithCommented"></a>
+      <a id="VolumeextendsTableRowId[models.Volume]withSitePagewithInVolume"></a>
       <a id="Volume:Volume"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -592,7 +574,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Volume.html"><span class="name">Volume</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>] with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a> with <a href="Commented.html" class="extype" name="models.Commented">Commented</a></span>
+        <a href="Volume.html"><span class="name">Volume</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>] with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
       </span>
       </h4>
       <p class="comment cmt">Main organizational unit or package of data, within which everything else exists.</p>
@@ -681,19 +663,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       <p class="comment cmt">Helper for audit tables.</p>
-    </li><li name="models.AuditAction" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="AuditAction"></a>
-      <a id="AuditAction:AuditAction"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="AuditAction$.html"><span class="name">AuditAction</span></a><span class="result"> extends <span class="extype" name="dbrary.PGEnum">PGEnum</span></span>
-      </span>
-      </h4>
-      <p class="comment cmt">The possible events or actions on the site that can be put into audit tables.</p>
     </li><li name="models.Authorize" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Authorize"></a>
       <a id="Authorize:Authorize"></a>
@@ -1126,7 +1095,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-
-
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

@@ -9,11 +9,6 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../lib/template.js"></script>
-      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
-      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -36,7 +31,7 @@
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">sealed </span>
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
@@ -44,9 +39,12 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/store/asset.scala" target="_blank">asset.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Self Type</dt><dd><a href="" class="extype" name="store.StreamEnumerator">StreamEnumerator</a></dd><dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/store/asset.scala" target="_blank">asset.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="play.api.libs.iteratee.Enumerator">Enumerator</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div><div class="toggleContainer block">
+          <span class="toggle">Known Subclasses</span>
+          <div class="subClasses hiddenContent"><a href="StreamEnumerator$Range.html" class="extype" name="store.StreamEnumerator.Range">Range</a></div>
         </div></div>
         
 
@@ -84,7 +82,23 @@
         <div id="allMembers">
         
 
-        
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="store.StreamEnumerator.Range" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="RangeextendsStreamEnumerator"></a>
+      <a id="Range:Range"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="StreamEnumerator$Range.html"><span class="name">Range</span></a><span class="result"> extends <a href="" class="extype" name="store.StreamEnumerator">StreamEnumerator</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li></ol>
+            </div>
 
         <div id="values" class="values members">
               <h3>Abstract Value Members</h3>
@@ -102,15 +116,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Enumerator</dd></dl></div>
     </li><li name="store.StreamEnumerator#size" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="size:Option[Long]"></a>
-      <a id="size:Option[Long]"></a>
+      <a id="size:Long"></a>
+      <a id="size:Long"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">size</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Long">Long</span>]</span>
+        <span class="name">size</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
       </span>
       </h4>
       
@@ -261,8 +275,11 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -303,20 +320,23 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="play.api.libs.iteratee.Enumerator#flatMap" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="flatMap[U&lt;:&lt;?&gt;](f:&lt;?&gt;):play.api.libs.iteratee.Enumerator[U]"></a>
-      <a id="flatMap[U]((Array[Byte])⇒Enumerator[U]):Enumerator[U]"></a>
+      <a id="flatMap[U&lt;:&lt;?&gt;](f:&lt;?&gt;)(implicitec:&lt;?&gt;):play.api.libs.iteratee.Enumerator[U]"></a>
+      <a id="flatMap[U]((Array[Byte])⇒Enumerator[U])(ExecutionContext):Enumerator[U]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">flatMap</span><span class="tparams">[<span name="U">U</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]) ⇒ <span class="extype" name="play.api.libs.iteratee.Enumerator">Enumerator</span>[<span class="extype" name="play.api.libs.iteratee.Enumerator.flatMap.U">U</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumerator">Enumerator</span>[<span class="extype" name="play.api.libs.iteratee.Enumerator.flatMap.U">U</span>]</span>
+        <span class="name">flatMap</span><span class="tparams">[<span name="U">U</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]) ⇒ <span class="extype" name="play.api.libs.iteratee.Enumerator">Enumerator</span>[<span class="extype" name="play.api.libs.iteratee.Enumerator.flatMap.U">U</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ec">ec: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumerator">Enumerator</span>[<span class="extype" name="play.api.libs.iteratee.Enumerator.flatMap.U">U</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Enumerator</dd></dl></div>
@@ -373,28 +393,28 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="play.api.libs.iteratee.Enumerator#map" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="map[U&lt;:&lt;?&gt;](f:&lt;?&gt;):play.api.libs.iteratee.Enumerator[U]"></a>
-      <a id="map[U]((Array[Byte])⇒U):Enumerator[U]"></a>
+      <a id="map[U&lt;:&lt;?&gt;](f:&lt;?&gt;)(implicitec:&lt;?&gt;):play.api.libs.iteratee.Enumerator[U]"></a>
+      <a id="map[U]((Array[Byte])⇒U)(ExecutionContext):Enumerator[U]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">map</span><span class="tparams">[<span name="U">U</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]) ⇒ <span class="extype" name="play.api.libs.iteratee.Enumerator.map.U">U</span></span>)</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumerator">Enumerator</span>[<span class="extype" name="play.api.libs.iteratee.Enumerator.map.U">U</span>]</span>
+        <span class="name">map</span><span class="tparams">[<span name="U">U</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]) ⇒ <span class="extype" name="play.api.libs.iteratee.Enumerator.map.U">U</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ec">ec: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumerator">Enumerator</span>[<span class="extype" name="play.api.libs.iteratee.Enumerator.map.U">U</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Enumerator</dd></dl></div>
     </li><li name="play.api.libs.iteratee.Enumerator#mapInput" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="mapInput[U&lt;:&lt;?&gt;](f:&lt;?&gt;):play.api.libs.iteratee.Enumerator[U]"></a>
-      <a id="mapInput[U]((Input[Array[Byte]])⇒Input[U]):Enumerator[U]"></a>
+      <a id="mapInput[U&lt;:&lt;?&gt;](f:&lt;?&gt;)(implicitec:&lt;?&gt;):play.api.libs.iteratee.Enumerator[U]"></a>
+      <a id="mapInput[U]((Input[Array[Byte]])⇒Input[U])(ExecutionContext):Enumerator[U]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">mapInput</span><span class="tparams">[<span name="U">U</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="play.api.libs.iteratee.Input">Input</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]]) ⇒ <span class="extype" name="play.api.libs.iteratee.Input">Input</span>[<span class="extype" name="play.api.libs.iteratee.Enumerator.mapInput.U">U</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumerator">Enumerator</span>[<span class="extype" name="play.api.libs.iteratee.Enumerator.mapInput.U">U</span>]</span>
+        <span class="name">mapInput</span><span class="tparams">[<span name="U">U</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="play.api.libs.iteratee.Input">Input</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]]) ⇒ <span class="extype" name="play.api.libs.iteratee.Input">Input</span>[<span class="extype" name="play.api.libs.iteratee.Enumerator.mapInput.U">U</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ec">ec: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumerator">Enumerator</span>[<span class="extype" name="play.api.libs.iteratee.Enumerator.mapInput.U">U</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Enumerator</dd></dl></div>
@@ -438,18 +458,32 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="play.api.libs.iteratee.Enumerator#onDoneEnumerating" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onDoneEnumerating(callback:&lt;?&gt;):play.api.libs.iteratee.Enumerator[E]"></a>
-      <a id="onDoneEnumerating(⇒Unit):Enumerator[Array[Byte]]"></a>
+      <a id="onDoneEnumerating(callback:&lt;?&gt;)(implicitec:&lt;?&gt;):play.api.libs.iteratee.Enumerator[E]{valpec:scala.concurrent.ExecutionContext}"></a>
+      <a id="onDoneEnumerating(⇒Unit)(ExecutionContext):Enumerator[Array[Byte]]{valpec:scala.concurrent.ExecutionContext}"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onDoneEnumerating</span><span class="params">(<span name="callback">callback: ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumerator">Enumerator</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]]</span>
+        <span class="name">onDoneEnumerating</span><span class="params">(<span name="callback">callback: ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ec">ec: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumerator">Enumerator</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]] { val pec: scala.concurrent.ExecutionContext }</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Enumerator</dd></dl></div>
+    </li><li name="store.StreamEnumerator#range" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="range(start:Long,end:Long):StreamEnumerator.this.Range"></a>
+      <a id="range(Long,Long):Range"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">range</span><span class="params">(<span name="start">start: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">0</span></span>, <span name="end">end: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="#size:Long">size - 1</a></span></span></span>)</span><span class="result">: <a href="StreamEnumerator$Range.html" class="extype" name="store.StreamEnumerator.Range">Range</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Produce a new Enumerator reflecting a segment of the current one.</p><div class="fullcomment"><div class="comment cmt"><p>Produce a new Enumerator reflecting a segment of the current one.
+This may invalidate the current enumerator.</p></div></div>
     </li><li name="play.api.libs.iteratee.Enumerator#run" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="run[A&lt;:&lt;?&gt;](i:&lt;?&gt;):scala.concurrent.Future[A]"></a>
       <a id="run[A](Iteratee[Array[Byte],A]):Future[A]"></a>
@@ -477,7 +511,7 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="play.api.libs.iteratee.Enumerator#through" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="through[To&lt;:&lt;?&gt;](enumeratee:&lt;?&gt;):play.api.libs.iteratee.Enumerator[To]"></a>
+      <a id="through[To](enumeratee:play.api.libs.iteratee.Enumeratee[E,To]):play.api.libs.iteratee.Enumerator[To]"></a>
       <a id="through[To](Enumeratee[Array[Byte],To]):Enumerator[To]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -515,7 +549,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -531,7 +568,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -547,7 +587,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="play.api.libs.iteratee.Enumerator#|&gt;&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -620,7 +663,6 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-
-
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

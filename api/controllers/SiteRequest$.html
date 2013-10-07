@@ -2,22 +2,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>Commented - models.Commented</title>
-          <meta name="description" content="Commented - models.Commented" />
-          <meta name="keywords" content="Commented models.Commented" />
+          <title>SiteRequest - controllers.SiteRequest</title>
+          <meta name="description" content="SiteRequest - controllers.SiteRequest" />
+          <meta name="keywords" content="SiteRequest controllers.SiteRequest" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../lib/template.js"></script>
-      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
-      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
-            var hash = 'models.Commented';
+            var hash = 'controllers.SiteRequest$';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -27,29 +22,26 @@
    	  </script>
     
         </head>
-        <body class="type">
+        <body class="value">
       <div id="definition">
-        <img src="../lib/trait_big.png" />
-        <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
-        <h1>Commented</h1>
+        <a href="SiteRequest.html" title="Go to companion"><img src="../lib/object_to_trait_big.png" /></a>
+        <p id="owner"><a href="package.html" class="extype" name="controllers">controllers</a></p>
+        <h1><a href="SiteRequest.html" title="Go to companion">SiteRequest</a></h1>
       </div>
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">trait</span>
+        <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Commented</span><span class="result"> extends <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
+        <span class="name">SiteRequest</span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Objects on which comments may be placed.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/comment.scala" target="_blank">comment.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/controllers/site.scala" target="_blank">site.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
-        </div><div class="toggleContainer block">
-          <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a href="Slot.html" class="extype" name="models.Slot">Slot</a>, <a href="Volume.html" class="extype" name="models.Volume">Volume</a></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -67,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Commented"><span>Commented</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="controllers.SiteRequest"><span>SiteRequest</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -87,42 +79,54 @@
         <div id="allMembers">
         
 
-        
-
-        <div id="values" class="values members">
-              <h3>Abstract Value Members</h3>
-              <ol><li name="models.Commented#comments" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="comments(all:Boolean)(implicitdb:util.Site.DB):Seq[models.Comment]"></a>
-      <a id="comments(Boolean)(DB):Seq[Comment]"></a>
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="controllers.SiteRequest.Anon" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Anon[A]extendsSiteRequest.Base[A]withAnonSitewithProductwithSerializable"></a>
+      <a id="Anon[A]:Anon[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
+        <span class="modifier">final </span>
+        <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">comments</span><span class="params">(<span name="all">all: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
+        <a href="SiteRequest$$Anon.html"><span class="name">Anon</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.Anon.A">A</span>]</span>, <span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result"> extends <a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>[<span class="extype" name="controllers.SiteRequest.Anon.A">A</span>] with <a href="../util/AnonSite.html" class="extype" name="util.AnonSite">AnonSite</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The list of comments on this object.</p><div class="fullcomment"><div class="comment cmt"><p>The list of comments on this object.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include indirect comments on any contained objects
-</p></dd></dl></div>
-    </li><li name="models.InVolume#volume" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="volume:models.Volume"></a>
-      <a id="volume:Volume"></a>
+      
+    </li><li name="controllers.SiteRequest.Auth" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Auth[A]extendsSiteRequest.Base[A]withAuthSitewithProductwithSerializable"></a>
+      <a id="Auth[A]:Auth[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
+        <span class="modifier">final </span>
+        <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">volume</span><span class="result">: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>
+        <a href="SiteRequest$$Auth.html"><span class="name">Auth</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.Auth.A">A</span>]</span>, <span name="identity">identity: <a href="../models/Account.html" class="extype" name="models.Account">Account</a></span>, <span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result"> extends <a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>[<span class="extype" name="controllers.SiteRequest.Auth.A">A</span>] with <a href="../util/AuthSite.html" class="extype" name="util.AuthSite">AuthSite</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
+      
+    </li><li name="controllers.SiteRequest.Base" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="Base[A]extendsWrappedRequest[A]withSiteRequest[A]"></a>
+      <a id="Base[A]:Base[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="SiteRequest$$Base.html"><span class="name">Base</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <span class="extype" name="play.api.mvc.WrappedRequest">WrappedRequest</span>[<span class="extype" name="controllers.SiteRequest.Base.A">A</span>] with <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[<span class="extype" name="controllers.SiteRequest.Base.A">A</span>]</span>
+      </span>
+      </h4>
+      
     </li></ol>
             </div>
 
+        
+
         <div id="values" class="values members">
-              <h3>Concrete Value Members</h3>
+              <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:AnyRef):Boolean"></a>
       <a id="!=(AnyRef):Boolean"></a>
@@ -188,6 +192,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="controllers.SiteRequest#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="apply[A](request:play.api.mvc.Request[A],identity:Option[models.Account])(implicitdb:util.Site.DB):controllers.SiteRequest.Base[A]"></a>
+      <a id="apply[A](Request[A],Option[Account])(DB):Base[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">apply</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.apply.A">A</span>]</span>, <span name="identity">identity: <span class="extype" name="scala.Option">Option</span>[<a href="../models/Account.html" class="extype" name="models.Account">Account</a>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>[<span class="extype" name="controllers.SiteRequest.apply.A">A</span>]</span>
+      </span>
+      </h4>
+      
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -213,8 +230,11 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -255,8 +275,11 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -337,33 +360,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.InVolume#permission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="permission:models.Permission.Value"></a>
-      <a id="permission:Permission.Value"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">permission</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p><div class="fullcomment"><div class="comment cmt"><p>Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
-    </li><li name="models.Commented#postComment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="postComment(text:String)(implicitsite:util.AuthSite):models.Comment"></a>
-      <a id="postComment(String)(AuthSite):Comment"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">postComment</span><span class="params">(<span name="text">text: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/AuthSite.html" class="extype" name="util.AuthSite">AuthSite</a></span>)</span><span class="result">: <a href="Comment.html" class="extype" name="models.Comment">Comment</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Post a new comment this object.</p><div class="fullcomment"><div class="comment cmt"><p>Post a new comment this object.
-This will throw an exception if there is no current user, but does not check permissions otherwise.</p></div></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -390,19 +386,6 @@ This will throw an exception if there is no current user, but does not check per
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.InVolume#volumeId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="volumeId:models.Volume.Id"></a>
-      <a id="volumeId:Volume.Id"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">volumeId</span><span class="result">: <a href="Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">Volume.Id</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -416,7 +399,10 @@ This will throw an exception if there is no current user, but does not check per
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -432,7 +418,10 @@ This will throw an exception if there is no current user, but does not check per
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -448,7 +437,10 @@ This will throw an exception if there is no current user, but does not check per
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li></ol>
@@ -460,9 +452,7 @@ This will throw an exception if there is no current user, but does not check per
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.InVolume">
-              <h3>Inherited from <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></h3>
-            </div><div class="parent" name="scala.AnyRef">
+        <div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
@@ -482,7 +472,6 @@ This will throw an exception if there is no current user, but does not check per
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-
-
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

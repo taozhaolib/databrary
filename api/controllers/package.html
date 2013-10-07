@@ -9,11 +9,6 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../lib/template.js"></script>
-      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
-      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -44,36 +39,13 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
-          <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
-        </div></div>
+          <div id="comment" class="fullcommenttop"></div>
         
 
       <div id="mbrsel">
         <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
-        <div id="order">
-              <span class="filtertype">Ordering</span>
-              <ol>
-                
-                <li class="alpha in"><span>Alphabetic</span></li>
-                <li class="inherit out"><span>By inheritance</span></li>
-              </ol>
-            </div>
-        <div id="ancestors">
-                <span class="filtertype">Inherited<br />
-                </span>
-                <ol id="linearization">
-                  <li class="in" name="controllers"><span>controllers</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
-                </ol>
-              </div><div id="ancestors">
-            <span class="filtertype"></span>
-            <ol>
-              <li class="hideall out"><span>Hide All</span></li>
-              <li class="showall in"><span>Show all</span></li>
-            </ol>
-            <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#members" target="_blank">Learn more about member selection</a>
-          </div>
+        
+        
         <div id="visbl">
             <span class="filtertype">Visibility</span>
             <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
@@ -86,16 +58,55 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="controllers.AnonRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="AnonRequest[A]extendsSiteRequest[A]"></a>
-      <a id="AnonRequest[A]:AnonRequest[A]"></a>
+              <ol><li name="controllers.ActionCreator" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ActionCreator[P[_]]extendsActionBuilder[P]withActionFunction[play.api.mvc.Request,P]"></a>
+      <a id="ActionCreator[P[_]]:ActionCreator[P]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">class</span>
+        <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="AnonRequest.html"><span class="name">AnonRequest</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[<span class="extype" name="controllers.AnonRequest.A">A</span>]</span>
+        <a href="ActionCreator.html"><span class="name">ActionCreator</span></a><span class="tparams">[<span name="P">P<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="result"> extends <span class="extype" name="play.api.mvc.ActionBuilder">ActionBuilder</span>[<span class="extype" name="controllers.ActionCreator.P">P</span>] with <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<span class="extype" name="play.api.mvc.Request">Request</span>, <span class="extype" name="controllers.ActionCreator.P">P</span>]</span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.ActionFunction" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ActionFunction[-R[_],P[_]]extendsAnyRef"></a>
+      <a id="ActionFunction[-R[_],P[_]]:ActionFunction[R,P]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="ActionFunction.html"><span class="name">ActionFunction</span></a><span class="tparams">[<span name="R">-R<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="P">P<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.ActionHandler" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ActionHandler[R[_]]extendsActionRefiner[R,R]"></a>
+      <a id="ActionHandler[R[_]]:ActionHandler[R]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="ActionHandler.html"><span class="name">ActionHandler</span></a><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="result"> extends <a href="ActionRefiner.html" class="extype" name="controllers.ActionRefiner">ActionRefiner</a>[<span class="extype" name="controllers.ActionHandler.R">R</span>, <span class="extype" name="controllers.ActionHandler.R">R</span>]</span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.ActionRefiner" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ActionRefiner[-R[_],P[_]]extendsActionFunction[R,P]"></a>
+      <a id="ActionRefiner[-R[_],P[_]]:ActionRefiner[R,P]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="ActionRefiner.html"><span class="name">ActionRefiner</span></a><span class="tparams">[<span name="R">-R<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="P">P<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="result"> extends <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<span class="extype" name="controllers.ActionRefiner.R">R</span>, <span class="extype" name="controllers.ActionRefiner.P">P</span>]</span>
       </span>
       </h4>
       
@@ -125,8 +136,21 @@
       </span>
       </h4>
       
+    </li><li name="controllers.RequestObject" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="RequestObject[O]extendsAnyRef"></a>
+      <a id="RequestObject[O]:RequestObject[O]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="RequestObject.html"><span class="name">RequestObject</span></a><span class="tparams">[<span name="O">O</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
     </li><li name="controllers.ReverseAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReverseAssetextendsObject"></a>
+      <a id="ReverseAssetextendsAnyRef"></a>
       <a id="ReverseAsset:ReverseAsset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -139,7 +163,7 @@
       </h4>
       
     </li><li name="controllers.ReverseAssets" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReverseAssetsextendsObject"></a>
+      <a id="ReverseAssetsextendsAnyRef"></a>
       <a id="ReverseAssets:ReverseAssets"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -151,21 +175,8 @@
       </span>
       </h4>
       
-    </li><li name="controllers.ReverseComment" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReverseCommentextendsObject"></a>
-      <a id="ReverseComment:ReverseComment"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="ReverseComment.html"><span class="name">ReverseComment</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
-      </span>
-      </h4>
-      
     </li><li name="controllers.ReverseContainer" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReverseContainerextendsObject"></a>
+      <a id="ReverseContainerextendsAnyRef"></a>
       <a id="ReverseContainer:ReverseContainer"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -178,7 +189,7 @@
       </h4>
       
     </li><li name="controllers.ReverseIngest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReverseIngestextendsObject"></a>
+      <a id="ReverseIngestextendsAnyRef"></a>
       <a id="ReverseIngest:ReverseIngest"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -191,7 +202,7 @@
       </h4>
       
     </li><li name="controllers.ReverseLogin" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReverseLoginextendsObject"></a>
+      <a id="ReverseLoginextendsAnyRef"></a>
       <a id="ReverseLogin:ReverseLogin"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -204,7 +215,7 @@
       </h4>
       
     </li><li name="controllers.ReverseParty" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReversePartyextendsObject"></a>
+      <a id="ReversePartyextendsAnyRef"></a>
       <a id="ReverseParty:ReverseParty"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -217,7 +228,7 @@
       </h4>
       
     </li><li name="controllers.ReverseRecord" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReverseRecordextendsObject"></a>
+      <a id="ReverseRecordextendsAnyRef"></a>
       <a id="ReverseRecord:ReverseRecord"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -230,7 +241,7 @@
       </h4>
       
     </li><li name="controllers.ReverseSite" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReverseSiteextendsObject"></a>
+      <a id="ReverseSiteextendsAnyRef"></a>
       <a id="ReverseSite:ReverseSite"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -243,7 +254,7 @@
       </h4>
       
     </li><li name="controllers.ReverseSlot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReverseSlotextendsObject"></a>
+      <a id="ReverseSlotextendsAnyRef"></a>
       <a id="ReverseSlot:ReverseSlot"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -256,7 +267,7 @@
       </h4>
       
     </li><li name="controllers.ReverseStatic" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReverseStaticextendsObject"></a>
+      <a id="ReverseStaticextendsAnyRef"></a>
       <a id="ReverseStatic:ReverseStatic"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -269,7 +280,7 @@
       </h4>
       
     </li><li name="controllers.ReverseVolume" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReverseVolumeextendsObject"></a>
+      <a id="ReverseVolumeextendsAnyRef"></a>
       <a id="ReverseVolume:ReverseVolume"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -295,15 +306,15 @@
       </h4>
       
     </li><li name="controllers.SiteRequest" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="SiteRequest[A]extendsWrappedRequest[A]withSite"></a>
+      <a id="SiteRequest[A]extendsRequest[A]withSite"></a>
       <a id="SiteRequest[A]:SiteRequest[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">class</span>
+        <span class="modifier">sealed </span>
+        <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="SiteRequest.html"><span class="name">SiteRequest</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <span class="extype" name="play.api.mvc.WrappedRequest">WrappedRequest</span>[<span class="extype" name="controllers.SiteRequest.A">A</span>] with <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>
+        <a href="SiteRequest.html"><span class="name">SiteRequest</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.A">A</span>] with <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>
       </span>
       </h4>
       
@@ -317,19 +328,6 @@
       </span>
       <span class="symbol">
         <a href="SomeMapping.html"><span class="name">SomeMapping</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="wrapped">wrapped: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="controllers.SomeMapping.T">T</span>]</span>)</span><span class="result"> extends <a href="MaybeMapping.html" class="extype" name="controllers.MaybeMapping">MaybeMapping</a>[<span class="extype" name="controllers.SomeMapping.T">T</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4>
-      
-    </li><li name="controllers.UserRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="UserRequest[A]extendsSiteRequest[A]withAuthSite"></a>
-      <a id="UserRequest[A]:UserRequest[A]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="UserRequest.html"><span class="name">UserRequest</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[<span class="extype" name="controllers.UserRequest.A">A</span>] with <a href="../util/AuthSite.html" class="extype" name="util.AuthSite">AuthSite</a></span>
       </span>
       </h4>
       
@@ -363,19 +361,6 @@
       </span>
       <span class="symbol">
         <a href="Asset$.html"><span class="name">Asset</span></a><span class="result"> extends <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></span>
-      </span>
-      </h4>
-      
-    </li><li name="controllers.Comment" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Comment"></a>
-      <a id="Comment:Comment"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="Comment$.html"><span class="name">Comment</span></a><span class="result"> extends <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></span>
       </span>
       </h4>
       
@@ -415,6 +400,19 @@
       </span>
       <span class="symbol">
         <a href="Field$.html"><span class="name">Field</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.HTTP" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="HTTP"></a>
+      <a id="HTTP:HTTP"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="HTTP$.html"><span class="name">HTTP</span></a>
       </span>
       </h4>
       
@@ -483,6 +481,19 @@
       </span>
       </h4>
       
+    </li><li name="controllers.RequestObject" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="RequestObject"></a>
+      <a id="RequestObject:RequestObject"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="RequestObject$.html"><span class="name">RequestObject</span></a>
+      </span>
+      </h4>
+      
     </li><li name="controllers.Site" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Site"></a>
       <a id="Site:Site"></a>
@@ -505,7 +516,20 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="SiteAction$.html"><span class="name">SiteAction</span></a>
+        <a href="SiteAction$.html"><span class="name">SiteAction</span></a><span class="result"> extends <a href="ActionCreator.html" class="extype" name="controllers.ActionCreator">ActionCreator</a>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>]</span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.SiteRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SiteRequest"></a>
+      <a id="SiteRequest:SiteRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="SiteRequest$.html"><span class="name">SiteRequest</span></a>
       </span>
       </h4>
       
@@ -532,19 +556,6 @@
       </span>
       <span class="symbol">
         <a href="Static$.html"><span class="name">Static</span></a><span class="result"> extends <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></span>
-      </span>
-      </h4>
-      
-    </li><li name="controllers.UserAction" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="UserAction"></a>
-      <a id="UserAction:UserAction"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="UserAction$.html"><span class="name">UserAction</span></a>
       </span>
       </h4>
       
@@ -596,11 +607,7 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.AnyRef">
-              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
-            </div><div class="parent" name="scala.Any">
-              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
-            </div>
+        
         
         </div>
 
@@ -616,7 +623,6 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-
-
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

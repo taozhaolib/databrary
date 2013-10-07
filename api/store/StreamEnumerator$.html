@@ -9,11 +9,6 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../lib/template.js"></script>
-      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
-      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -84,7 +79,23 @@
         <div id="allMembers">
         
 
-        
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="store.StreamEnumerator.Data" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Data=Array[Byte]"></a>
+      <a id="Data:Data"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Data</span><span class="result"> = <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
 
         
 
@@ -155,19 +166,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="store.StreamEnumerator#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="apply(buf:Array[Byte]):store.StreamEnumerator{valsize:Some[Long]}"></a>
-      <a id="apply(Array[Byte]):StreamEnumerator{valsize:Some[Long]}"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="buf">buf: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>)</span><span class="result">: <a href="StreamEnumerator.html" class="extype" name="store.StreamEnumerator">StreamEnumerator</a> { val size: Some[Long] }</span>
-      </span>
-      </h4>
-      
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -193,8 +191,11 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -235,20 +236,36 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
               
         </dd></dl></div>
-    </li><li name="store.StreamEnumerator#fromFile" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="fromFile(file:java.io.File,chunkSize:Int):store.StreamEnumerator{valsize:Some[Long]}"></a>
-      <a id="fromFile(File,Int):StreamEnumerator{valsize:Some[Long]}"></a>
+    </li><li name="store.StreamEnumerator#fromData" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="fromData(buf:store.StreamEnumerator.Data):store.StreamEnumerator"></a>
+      <a id="fromData(Data):StreamEnumerator"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">fromFile</span><span class="params">(<span name="file">file: <span class="extype" name="java.io.File">File</span></span>, <span name="chunkSize">chunkSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">8192</span></span>)</span><span class="result">: <a href="StreamEnumerator.html" class="extype" name="store.StreamEnumerator">StreamEnumerator</a> { val size: Some[Long] }</span>
+        <span class="name">fromData</span><span class="params">(<span name="buf">buf: <a href="#Data=Array[Byte]" class="extmbr" name="store.StreamEnumerator.Data">Data</a></span>)</span><span class="result">: <a href="StreamEnumerator.html" class="extype" name="store.StreamEnumerator">StreamEnumerator</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="store.StreamEnumerator#fromFile" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="fromFile(file:java.io.File,chunkSize:Int):store.StreamEnumerator"></a>
+      <a id="fromFile(File,Int):StreamEnumerator"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">fromFile</span><span class="params">(<span name="file">file: <span class="extype" name="java.io.File">File</span></span>, <span name="chunkSize">chunkSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">32768</span></span>)</span><span class="result">: <a href="StreamEnumerator.html" class="extype" name="store.StreamEnumerator">StreamEnumerator</a></span>
       </span>
       </h4>
       
@@ -262,19 +279,6 @@
       </span>
       <span class="symbol">
         <span class="name">fromFileGenerator</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="gen">gen: (<span class="extype" name="java.io.File">File</span>) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <a href="StreamEnumerator.html" class="extype" name="store.StreamEnumerator">StreamEnumerator</a></span>
-      </span>
-      </h4>
-      
-    </li><li name="store.StreamEnumerator#fromStream" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="fromStream(input:java.io.InputStream,chunkSize:Int):store.StreamEnumerator{valsize:None.type}"></a>
-      <a id="fromStream(InputStream,Int):StreamEnumerator{valsize:None.type}"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">fromStream</span><span class="params">(<span name="input">input: <span class="extype" name="java.io.InputStream">InputStream</span></span>, <span name="chunkSize">chunkSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">8192</span></span>)</span><span class="result">: <a href="StreamEnumerator.html" class="extype" name="store.StreamEnumerator">StreamEnumerator</a> { val size: None.type }</span>
       </span>
       </h4>
       
@@ -356,6 +360,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="store.StreamEnumerator#range" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="range(start:Long,stop:Long):play.api.libs.iteratee.Enumeratee[store.StreamEnumerator.Data,store.StreamEnumerator.Data]"></a>
+      <a id="range(Long,Long):Enumeratee[Data,Data]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">range</span><span class="params">(<span name="start">start: <span class="extype" name="scala.Long">Long</span></span>, <span name="stop">stop: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumeratee">Enumeratee</span>[<a href="#Data=Array[Byte]" class="extmbr" name="store.StreamEnumerator.Data">Data</a>, <a href="#Data=Array[Byte]" class="extmbr" name="store.StreamEnumerator.Data">Data</a>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Composition of Enumeratee.</p><div class="fullcomment"><div class="comment cmt"><p>Composition of Enumeratee.take and Enumeratee.drop with Longs.</p></div></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -395,7 +412,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -411,7 +431,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -427,7 +450,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li></ol>
@@ -459,7 +485,6 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-
-
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

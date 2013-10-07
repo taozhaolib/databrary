@@ -9,11 +9,6 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../lib/template.js"></script>
-      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
-      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -40,7 +35,7 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">Slot</span><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Slot">Slot</a>] with <a href="Commented.html" class="extype" name="models.Commented">Commented</a> with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></span>
+        <span class="name">Slot</span><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Slot">Slot</a>] with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></span>
       </span>
       </h4>
       
@@ -48,7 +43,7 @@
 Primarily used for an individual session of data with a single date and place.
 Critically, contained data are should be covered by a single consent level and share the same annotations.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/container.scala" target="_blank">container.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a>, <a href="Commented.html" class="extype" name="models.Commented">Commented</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Slot">Slot</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Slot">Slot</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -66,7 +61,7 @@ Critically, contained data are should be covered by a single consent level and s
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Slot"><span>Slot</span></li><li class="in" name="models.SitePage"><span>SitePage</span></li><li class="in" name="models.Commented"><span>Commented</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Slot"><span>Slot</span></li><li class="in" name="models.SitePage"><span>SitePage</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -184,15 +179,15 @@ Critically, contained data are should be covered by a single consent level and s
       </h4>
       <p class="shortcomment cmt">List of contained asset segments within this slot.</p>
     </li><li name="models.Slot#change" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="change(consent:models.Consent.Value,toplevel:Boolean)(implicitsite:util.Site):Unit"></a>
-      <a id="change(Consent.Value,Boolean)(Site):Unit"></a>
+      <a id="change(consent:models.Consent.Value)(implicitsite:util.Site):Unit"></a>
+      <a id="change(Consent.Value)(Site):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">change</span><span class="params">(<span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a> = <span class="symbol">_consent</span></span>, <span name="toplevel">toplevel: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">_toplevel</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">change</span><span class="params">(<span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a> = <span class="symbol">_consent</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p>
@@ -208,8 +203,11 @@ Critically, contained data are should be covered by a single consent level and s
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="models.Slot#comments" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -225,7 +223,7 @@ Critically, contained data are should be covered by a single consent level and s
       </span>
       </h4>
       <p class="shortcomment cmt">The list of comments on this object.</p><div class="fullcomment"><div class="comment cmt"><p>The list of comments on this object.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include indirect comments on any contained objects
-</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Slot">Slot</a> → <a href="Commented.html" class="extype" name="models.Commented">Commented</a></dd></dl></div>
+</p></dd></dl></div>
     </li><li name="models.Slot#consent" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="consent:models.Consent.Value"></a>
       <a id="consent:Consent.Value"></a>
@@ -343,8 +341,11 @@ Users with FULL access fall back to the full container.</p></div></div>
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -530,7 +531,7 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       </span>
       </h4>
       <p class="shortcomment cmt">Effective start point of this slot within the container.</p>
-    </li><li name="models.Commented#postComment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.Slot#postComment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="postComment(text:String)(implicitsite:util.AuthSite):models.Comment"></a>
       <a id="postComment(String)(AuthSite):Comment"></a>
       <h4 class="signature">
@@ -543,7 +544,7 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       </span>
       </h4>
       <p class="shortcomment cmt">Post a new comment this object.</p><div class="fullcomment"><div class="comment cmt"><p>Post a new comment this object.
-This will throw an exception if there is no current user, but does not check permissions otherwise.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Commented.html" class="extype" name="models.Commented">Commented</a></dd></dl></div>
+This will throw an exception if there is no current user, but does not check permissions otherwise.</p></div></div>
     </li><li name="models.Slot#recordMeasures" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="recordMeasures[T](category:Option[models.RecordCategory],metric:models.MetricT[T])(implicitdb:util.Site.DB):Seq[(models.Record,Option[T])]"></a>
       <a id="recordMeasures[T](Option[RecordCategory],MetricT[T])(DB):Seq[(Record,Option[T])]"></a>
@@ -553,7 +554,7 @@ This will throw an exception if there is no current user, but does not check per
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">recordMeasures</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="category">category: <span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>, <span name="metric">metric: <a href="MetricT.html" class="extype" name="models.MetricT">MetricT</a>[<span class="extype" name="models.Slot.recordMeasures.T">T</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[(<a href="Record.html" class="extype" name="models.Record">Record</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="models.Slot.recordMeasures.T">T</span>])]</span>
+        <span class="name">recordMeasures</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="category">category: <span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>] = <span class="symbol">None</span></span>, <span name="metric">metric: <a href="MetricT.html" class="extype" name="models.MetricT">MetricT</a>[<span class="extype" name="models.Slot.recordMeasures.T">T</span>] = <span class="symbol"><span class="name"><a href="Metric$.html">Metric.Ident</a></span></span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[(<a href="Record.html" class="extype" name="models.Record">Record</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="models.Slot.recordMeasures.T">T</span>])]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">The list of records and possibly measures on this object.</p><div class="fullcomment"><div class="comment cmt"><p>The list of records and possibly measures on this object.
@@ -597,6 +598,20 @@ This is essentially equivalent to <code>this.records(false).filter(_.category ==
       </span>
       </h4>
       
+    </li><li name="models.Slot#setTag" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="setTag(tag:String,up:Option[Boolean])(implicitsite:util.AuthSite):Boolean"></a>
+      <a id="setTag(String,Option[Boolean])(AuthSite):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setTag</span><span class="params">(<span name="tag">tag: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="up">up: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">Some(true)</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/AuthSite.html" class="extype" name="util.AuthSite">AuthSite</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Tag this slot.</p><div class="fullcomment"><div class="comment cmt"><p>Tag this slot.</p></div><dl class="paramcmts block"><dt class="param">up</dt><dd class="cmt"><p>Some(true) for up, Some(false) for down, or None to remove</p></dd><dt>returns</dt><dd class="cmt"><p>true if the tag name is valid
+</p></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -622,7 +637,7 @@ This is essentially equivalent to <code>this.records(false).filter(_.category ==
         <span class="name">tags</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">The list of tags on the current slot along with the current user's applications.</p>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
@@ -636,19 +651,6 @@ This is essentially equivalent to <code>this.records(false).filter(_.category ==
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.Slot#toplevel" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="toplevel:Boolean"></a>
-      <a id="toplevel:Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">toplevel</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">True if this slot has been promoted for toplevel display.</p>
     </li><li name="models.Slot#volume" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volume:models.Volume"></a>
       <a id="volume:Volume"></a>
@@ -688,7 +690,10 @@ This is essentially equivalent to <code>this.records(false).filter(_.category ==
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -704,7 +709,10 @@ This is essentially equivalent to <code>this.records(false).filter(_.category ==
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -720,7 +728,10 @@ This is essentially equivalent to <code>this.records(false).filter(_.category ==
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li></ol>
@@ -734,8 +745,6 @@ This is essentially equivalent to <code>this.records(false).filter(_.category ==
         <div id="inheritedMembers">
         <div class="parent" name="models.SitePage">
               <h3>Inherited from <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></h3>
-            </div><div class="parent" name="models.Commented">
-              <h3>Inherited from <a href="Commented.html" class="extype" name="models.Commented">Commented</a></h3>
             </div><div class="parent" name="models.InVolume">
               <h3>Inherited from <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></h3>
             </div><div class="parent" name="models.TableRowId">
@@ -762,7 +771,6 @@ This is essentially equivalent to <code>this.records(false).filter(_.category ==
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-
-
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

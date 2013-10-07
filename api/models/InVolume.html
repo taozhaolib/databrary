@@ -9,11 +9,6 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../lib/template.js"></script>
-      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
-      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -49,7 +44,7 @@
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
           <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a href="Comment.html" class="extype" name="models.Comment">Comment</a>, <a href="Commented.html" class="extype" name="models.Commented">Commented</a>, <a href="Container.html" class="extype" name="models.Container">Container</a>, <a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a>, <a href="ContainerTimeseries.html" class="extype" name="models.ContainerTimeseries">ContainerTimeseries</a>, <a href="Record.html" class="extype" name="models.Record">Record</a>, <a href="Slot.html" class="extype" name="models.Slot">Slot</a>, <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>, <a href="SlotTimeseries.html" class="extype" name="models.SlotTimeseries">SlotTimeseries</a>, <a href="TagUse.html" class="extype" name="models.TagUse">TagUse</a>, <a href="Volume.html" class="extype" name="models.Volume">Volume</a>, <a href="VolumeAccess.html" class="extype" name="models.VolumeAccess">VolumeAccess</a>, <a href="VolumeCitation.html" class="extype" name="models.VolumeCitation">VolumeCitation</a></div>
+          <div class="subClasses hiddenContent"><a href="Comment.html" class="extype" name="models.Comment">Comment</a>, <a href="Container.html" class="extype" name="models.Container">Container</a>, <a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a>, <a href="ContainerTimeseries.html" class="extype" name="models.ContainerTimeseries">ContainerTimeseries</a>, <a href="Record.html" class="extype" name="models.Record">Record</a>, <a href="Slot.html" class="extype" name="models.Slot">Slot</a>, <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>, <a href="SlotTimeseries.html" class="extype" name="models.SlotTimeseries">SlotTimeseries</a>, <a href="TagUse.html" class="extype" name="models.TagUse">TagUse</a>, <a href="Volume.html" class="extype" name="models.Volume">Volume</a>, <a href="VolumeAccess.html" class="extype" name="models.VolumeAccess">VolumeAccess</a>, <a href="VolumeCitation.html" class="extype" name="models.VolumeCitation">VolumeCitation</a></div>
         </div></div>
         
 
@@ -199,8 +194,11 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -241,8 +239,11 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -388,7 +389,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -404,7 +408,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -420,7 +427,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li></ol>
@@ -452,7 +462,6 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-
-
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

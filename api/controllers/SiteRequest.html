@@ -9,11 +9,6 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../lib/template.js"></script>
-      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
-      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -29,27 +24,27 @@
         </head>
         <body class="type">
       <div id="definition">
-        <img src="../lib/class_big.png" />
+        <a href="SiteRequest$.html" title="Go to companion"><img src="../lib/trait_to_object_big.png" /></a>
         <p id="owner"><a href="package.html" class="extype" name="controllers">controllers</a></p>
-        <h1>SiteRequest</h1>
+        <h1><a href="SiteRequest$.html" title="Go to companion">SiteRequest</a></h1>
       </div>
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">class</span>
+        <span class="modifier">sealed </span>
+        <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <span class="name">SiteRequest</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <span class="extype" name="play.api.mvc.WrappedRequest">WrappedRequest</span>[<span class="extype" name="controllers.SiteRequest.A">A</span>] with <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>
+        <span class="name">SiteRequest</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.A">A</span>] with <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/controllers/site.scala" target="_blank">site.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="../util/Site.html" class="extype" name="util.Site">Site</a>, <span class="extype" name="play.api.mvc.WrappedRequest">WrappedRequest</span>[<span class="extype" name="controllers.SiteRequest.A">A</span>], <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.A">A</span>], <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="../util/Site.html" class="extype" name="util.Site">Site</a>, <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.A">A</span>], <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
           <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a href="AnonRequest.html" class="extype" name="controllers.AnonRequest">AnonRequest</a>, <a href="UserRequest.html" class="extype" name="controllers.UserRequest">UserRequest</a></div>
+          <div class="subClasses hiddenContent"><a href="RequestObject$Anon.html" class="extype" name="controllers.RequestObject.Anon">Anon</a>, <a href="SiteRequest$$Anon.html" class="extype" name="controllers.SiteRequest.Anon">Anon</a>, <a href="RequestObject$Auth.html" class="extype" name="controllers.RequestObject.Auth">Auth</a>, <a href="SiteRequest$$Auth.html" class="extype" name="controllers.SiteRequest.Auth">Auth</a>, <a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>, <a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">Site</a></div>
         </div></div>
         
 
@@ -67,7 +62,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="controllers.SiteRequest"><span>SiteRequest</span></li><li class="in" name="util.Site"><span>Site</span></li><li class="in" name="play.api.mvc.WrappedRequest"><span>WrappedRequest</span></li><li class="in" name="play.api.mvc.Request"><span>Request</span></li><li class="in" name="play.api.mvc.RequestHeader"><span>RequestHeader</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="controllers.SiteRequest"><span>SiteRequest</span></li><li class="in" name="util.Site"><span>Site</span></li><li class="in" name="play.api.mvc.Request"><span>Request</span></li><li class="in" name="play.api.mvc.RequestHeader"><span>RequestHeader</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -85,30 +80,173 @@
 
       <div id="template">
         <div id="allMembers">
-        <div id="constructors" class="members">
-              <h3>Instance Constructors</h3>
-              <ol><li name="controllers.SiteRequest#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(request:play.api.mvc.Request[A],identity:models.Party,db:util.Site.DB):controllers.SiteRequest[A]"></a>
-      <a id="&lt;init&gt;:SiteRequest[A]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">new</span>
-      </span>
-      <span class="symbol">
-        <span class="name">SiteRequest</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.A">A</span>]</span>, <span name="identity">identity: <a href="../models/Party.html" class="extype" name="models.Party">Party</a></span>, <span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span>
-      </span>
-      </h4>
-      
-    </li></ol>
-            </div>
-
         
 
         
 
         <div id="values" class="values members">
-              <h3>Value Members</h3>
+              <h3>Abstract Value Members</h3>
+              <ol><li name="play.api.mvc.Request#body" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="body:A"></a>
+      <a id="body:A"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">body</span><span class="result">: <span class="extype" name="controllers.SiteRequest.A">A</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Request</dd></dl></div>
+    </li><li name="util.Site#db" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="db:util.Site.DB"></a>
+      <a id="db:DB"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">db</span><span class="result">: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Database connection (with active transaction).</p><div class="fullcomment"><div class="comment cmt"><p>Database connection (with active transaction).</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../util/Site.html" class="extype" name="util.Site">Site</a></dd></dl></div>
+    </li><li name="play.api.mvc.RequestHeader#headers" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="headers:play.api.mvc.Headers"></a>
+      <a id="headers:Headers"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">headers</span><span class="result">: <span class="extype" name="play.api.mvc.Headers">Headers</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
+    </li><li name="play.api.mvc.RequestHeader#id" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="id:Long"></a>
+      <a id="id:Long"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">id</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
+    </li><li name="util.Site#identity" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="identity:models.Party"></a>
+      <a id="identity:Party"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">identity</span><span class="result">: <a href="../models/Party.html" class="extype" name="models.Party">Party</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt"><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p><div class="fullcomment"><div class="comment cmt"><p><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../util/Site.html" class="extype" name="util.Site">Site</a></dd></dl></div>
+    </li><li name="play.api.mvc.RequestHeader#method" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="method:String"></a>
+      <a id="method:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">method</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
+    </li><li name="play.api.mvc.RequestHeader#path" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="path:String"></a>
+      <a id="path:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">path</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
+    </li><li name="play.api.mvc.RequestHeader#queryString" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="queryString:Map[String,Seq[String]]"></a>
+      <a id="queryString:Map[String,Seq[String]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">queryString</span><span class="result">: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
+    </li><li name="play.api.mvc.RequestHeader#remoteAddress" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="remoteAddress:String"></a>
+      <a id="remoteAddress:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">remoteAddress</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
+    </li><li name="play.api.mvc.RequestHeader#tags" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="tags:Map[String,String]"></a>
+      <a id="tags:Map[String,String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">tags</span><span class="result">: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
+    </li><li name="play.api.mvc.RequestHeader#uri" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="uri:String"></a>
+      <a id="uri:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">uri</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
+    </li><li name="play.api.mvc.RequestHeader#version" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="version:String"></a>
+      <a id="version:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">version</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
+    </li></ol>
+            </div>
+
+        <div id="values" class="values members">
+              <h3>Concrete Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:AnyRef):Boolean"></a>
       <a id="!=(AnyRef):Boolean"></a>
@@ -174,19 +312,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="play.api.mvc.RequestHeader#accept" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="accept:Seq[String]"></a>
-      <a id="accept:Seq[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">lazy val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">accept</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#acceptLanguages" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="acceptLanguages:Seq[play.api.i18n.Lang]"></a>
       <a id="acceptLanguages:Seq[Lang]"></a>
@@ -254,19 +379,6 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="play.api.mvc.WrappedRequest#body" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="body:A"></a>
-      <a id="body:A"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">body</span><span class="result">: <span class="extype" name="controllers.SiteRequest.A">A</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → Request</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#charset" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="charset:Option[String]"></a>
       <a id="charset:Option[String]"></a>
@@ -305,8 +417,11 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#contentType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -348,19 +463,6 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
-    </li><li name="controllers.SiteRequest#db" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="db:util.Site.DB"></a>
-      <a id="db:DB"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">db</span><span class="result">: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Database connection (with active transaction).</p><div class="fullcomment"><div class="comment cmt"><p>Database connection (with active transaction).</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.SiteRequest">SiteRequest</a> → <a href="../util/Site.html" class="extype" name="util.Site">Site</a></dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#domain" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="domain:String"></a>
       <a id="domain:String"></a>
@@ -412,8 +514,11 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#flash" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -468,19 +573,6 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="play.api.mvc.WrappedRequest#headers" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="headers:play.api.mvc.Headers"></a>
-      <a id="headers:Headers"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">headers</span><span class="result">: <span class="extype" name="play.api.mvc.Headers">Headers</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#host" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="host:String"></a>
       <a id="host:String"></a>
@@ -494,32 +586,6 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
-    </li><li name="play.api.mvc.WrappedRequest#id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="id:Long"></a>
-      <a id="id:Long"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">id</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
-    </li><li name="controllers.SiteRequest#identity" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="identity:models.Party"></a>
-      <a id="identity:Party"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">identity</span><span class="result">: <a href="../models/Party.html" class="extype" name="models.Party">Party</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt"><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p><div class="fullcomment"><div class="comment cmt"><p><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.SiteRequest">SiteRequest</a> → <a href="../util/Site.html" class="extype" name="util.Site">Site</a></dd></dl></div>
     </li><li name="util.Site#isAdmin" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isAdmin:Boolean"></a>
       <a id="isAdmin:Boolean"></a>
@@ -559,19 +625,19 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Request</dd></dl></div>
-    </li><li name="play.api.mvc.WrappedRequest#method" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="method:String"></a>
-      <a id="method:String"></a>
+    </li><li name="play.api.mvc.RequestHeader#mediaType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="mediaType:Option[play.api.http.MediaType]"></a>
+      <a id="mediaType:Option[MediaType]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">lazy val</span>
       </span>
       <span class="symbol">
-        <span class="name">method</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">mediaType</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="play.api.http.MediaType">MediaType</span>]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -611,32 +677,6 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="play.api.mvc.WrappedRequest#path" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="path:String"></a>
-      <a id="path:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">path</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
-    </li><li name="play.api.mvc.WrappedRequest#queryString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="queryString:Map[String,Seq[String]]"></a>
-      <a id="queryString:Map[String,Seq[String]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">queryString</span><span class="result">: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#rawQueryString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="rawQueryString:String"></a>
       <a id="rawQueryString:String"></a>
@@ -650,19 +690,6 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
-    </li><li name="play.api.mvc.WrappedRequest#remoteAddress" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="remoteAddress:String"></a>
-      <a id="remoteAddress:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">remoteAddress</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#session" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="session:play.api.mvc.Session"></a>
       <a id="session:Session"></a>
@@ -689,19 +716,6 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="play.api.mvc.WrappedRequest#tags" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="tags:Map[String,String]"></a>
-      <a id="tags:Map[String,String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">tags</span><span class="result">: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
@@ -715,19 +729,6 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader → AnyRef → Any</dd></dl></div>
-    </li><li name="play.api.mvc.WrappedRequest#uri" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="uri:String"></a>
-      <a id="uri:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">uri</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
     </li><li name="util.Site#user" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="user:Option[models.Account]"></a>
       <a id="user:Option[Account]"></a>
@@ -741,19 +742,6 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <p class="shortcomment cmt">Some(<a href="#identity:models.Party" class="extmbr" name="controllers.SiteRequest#identity">identity</a>) only if actual logged-in user.</p><div class="fullcomment"><div class="comment cmt"><p>Some(<a href="#identity:models.Party" class="extmbr" name="controllers.SiteRequest#identity">identity</a>) only if actual logged-in user.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../util/Site.html" class="extype" name="util.Site">Site</a></dd></dl></div>
-    </li><li name="play.api.mvc.WrappedRequest#version" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="version:String"></a>
-      <a id="version:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">version</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -767,7 +755,10 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -783,7 +774,10 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -799,7 +793,10 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li></ol>
@@ -807,14 +804,31 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
 
         
 
-        
+        <div id="values" class="values members">
+              <h3>Deprecated Value Members</h3>
+              <ol><li name="play.api.mvc.RequestHeader#accept" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="accept:Seq[String]"></a>
+      <a id="accept:Seq[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">lazy val</span>
+      </span>
+      <span class="symbol">
+        <span class="name deprecated" title="Deprecated: (Since version 2.1) Use acceptedTypes instead">accept</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd><dt>Annotations</dt><dd>
+                <span class="name">@deprecated</span>
+              
+        </dd><dt>Deprecated</dt><dd class="cmt"><p><i>(Since version 2.1)</i> Use acceptedTypes instead</p></dd></dl></div>
+    </li></ol>
+            </div>
         </div>
 
         <div id="inheritedMembers">
         <div class="parent" name="util.Site">
               <h3>Inherited from <a href="../util/Site.html" class="extype" name="util.Site">Site</a></h3>
-            </div><div class="parent" name="play.api.mvc.WrappedRequest">
-              <h3>Inherited from <span class="extype" name="play.api.mvc.WrappedRequest">WrappedRequest</span>[<span class="extype" name="controllers.SiteRequest.A">A</span>]</h3>
             </div><div class="parent" name="play.api.mvc.Request">
               <h3>Inherited from <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.A">A</span>]</h3>
             </div><div class="parent" name="play.api.mvc.RequestHeader">
@@ -839,7 +853,6 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-
-
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

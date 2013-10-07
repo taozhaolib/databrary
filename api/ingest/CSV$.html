@@ -9,11 +9,6 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../lib/template.js"></script>
-      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
-      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -166,7 +161,7 @@ Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>S
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Parsers</dd></dl></div>
     </li><li name="scala.util.parsing.combinator.Parsers.ParseResult" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="ParseResult[+T]extendsObject"></a>
+      <a id="ParseResult[+T]extendsAnyRef"></a>
       <a id="ParseResult[+T]:ParseResult[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -311,7 +306,7 @@ Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>S
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">OnceParser</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="f">f: (<a href="#Input=scala.util.parsing.input.Reader[Parsers.this.Elem]" class="extmbr" name="ingest.CSV.Input">Input</a>) ⇒ <a href="#ParseResult[+T]extendsObject" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.Parsers.OnceParser.T">T</span>]</span>)</span><span class="result">: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.Parsers.OnceParser.T">T</span>] with <a href="#OnceParser[+T]extendsParsers.this.Parser[T]" class="extmbr" name="ingest.CSV.OnceParser">OnceParser</a>[<span class="extype" name="scala.util.parsing.combinator.Parsers.OnceParser.T">T</span>]</span>
+        <span class="name">OnceParser</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="f">f: (<a href="#Input=scala.util.parsing.input.Reader[Parsers.this.Elem]" class="extmbr" name="ingest.CSV.Input">Input</a>) ⇒ <a href="#ParseResult[+T]extendsAnyRef" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.Parsers.OnceParser.T">T</span>]</span>)</span><span class="result">: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.Parsers.OnceParser.T">T</span>] with <a href="#OnceParser[+T]extendsParsers.this.Parser[T]" class="extmbr" name="ingest.CSV.OnceParser">OnceParser</a>[<span class="extype" name="scala.util.parsing.combinator.Parsers.OnceParser.T">T</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Parsers</dd></dl></div>
@@ -324,7 +319,7 @@ Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>S
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Parser</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="f">f: (<a href="#Input=scala.util.parsing.input.Reader[Parsers.this.Elem]" class="extmbr" name="ingest.CSV.Input">Input</a>) ⇒ <a href="#ParseResult[+T]extendsObject" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.Parsers.Parser.T">T</span>]</span>)</span><span class="result">: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.Parsers.Parser.T">T</span>]</span>
+        <span class="name">Parser</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="f">f: (<a href="#Input=scala.util.parsing.input.Reader[Parsers.this.Elem]" class="extmbr" name="ingest.CSV.Input">Input</a>) ⇒ <a href="#ParseResult[+T]extendsAnyRef" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.Parsers.Parser.T">T</span>]</span>)</span><span class="result">: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.Parsers.Parser.T">T</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Parsers</dd></dl></div>
@@ -470,8 +465,11 @@ Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>S
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.util.parsing.combinator.Parsers#commit" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -577,8 +575,11 @@ Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>S
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -759,7 +760,7 @@ Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>S
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">parse</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="p">p: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parse.T">T</span>]</span>, <span name="in">in: <span class="extype" name="java.io.Reader">Reader</span></span>)</span><span class="result">: <a href="#ParseResult[+T]extendsObject" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parse.T">T</span>]</span>
+        <span class="name">parse</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="p">p: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parse.T">T</span>]</span>, <span name="in">in: <span class="extype" name="java.io.Reader">Reader</span></span>)</span><span class="result">: <a href="#ParseResult[+T]extendsAnyRef" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parse.T">T</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RegexParsers</dd></dl></div>
@@ -772,7 +773,7 @@ Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>S
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">parse</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="p">p: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parse.T">T</span>]</span>, <span name="in">in: <span class="extype" name="java.lang.CharSequence">CharSequence</span></span>)</span><span class="result">: <a href="#ParseResult[+T]extendsObject" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parse.T">T</span>]</span>
+        <span class="name">parse</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="p">p: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parse.T">T</span>]</span>, <span name="in">in: <span class="extype" name="java.lang.CharSequence">CharSequence</span></span>)</span><span class="result">: <a href="#ParseResult[+T]extendsAnyRef" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parse.T">T</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RegexParsers</dd></dl></div>
@@ -785,7 +786,7 @@ Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>S
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">parse</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="p">p: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parse.T">T</span>]</span>, <span name="in">in: <span class="extype" name="scala.util.parsing.input.Reader">Reader</span>[<span class="extype" name="scala.Char">Char</span>]</span>)</span><span class="result">: <a href="#ParseResult[+T]extendsObject" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parse.T">T</span>]</span>
+        <span class="name">parse</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="p">p: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parse.T">T</span>]</span>, <span name="in">in: <span class="extype" name="scala.util.parsing.input.Reader">Reader</span>[<span class="extype" name="scala.Char">Char</span>]</span>)</span><span class="result">: <a href="#ParseResult[+T]extendsAnyRef" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parse.T">T</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RegexParsers</dd></dl></div>
@@ -798,7 +799,7 @@ Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>S
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">parseAll</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="p">p: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parseAll.T">T</span>]</span>, <span name="in">in: <span class="extype" name="java.lang.CharSequence">CharSequence</span></span>)</span><span class="result">: <a href="#ParseResult[+T]extendsObject" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parseAll.T">T</span>]</span>
+        <span class="name">parseAll</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="p">p: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parseAll.T">T</span>]</span>, <span name="in">in: <span class="extype" name="java.lang.CharSequence">CharSequence</span></span>)</span><span class="result">: <a href="#ParseResult[+T]extendsAnyRef" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parseAll.T">T</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RegexParsers</dd></dl></div>
@@ -811,7 +812,7 @@ Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>S
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">parseAll</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="p">p: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parseAll.T">T</span>]</span>, <span name="in">in: <span class="extype" name="java.io.Reader">Reader</span></span>)</span><span class="result">: <a href="#ParseResult[+T]extendsObject" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parseAll.T">T</span>]</span>
+        <span class="name">parseAll</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="p">p: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parseAll.T">T</span>]</span>, <span name="in">in: <span class="extype" name="java.io.Reader">Reader</span></span>)</span><span class="result">: <a href="#ParseResult[+T]extendsAnyRef" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parseAll.T">T</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RegexParsers</dd></dl></div>
@@ -824,7 +825,7 @@ Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>S
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">parseAll</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="p">p: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parseAll.T">T</span>]</span>, <span name="in">in: <span class="extype" name="scala.util.parsing.input.Reader">Reader</span>[<span class="extype" name="scala.Char">Char</span>]</span>)</span><span class="result">: <a href="#ParseResult[+T]extendsObject" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parseAll.T">T</span>]</span>
+        <span class="name">parseAll</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="p">p: <a href="#Parser[+T]extendsParsers.this.Input=&gt;Parsers.this.ParseResult[T]" class="extmbr" name="ingest.CSV.Parser">Parser</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parseAll.T">T</span>]</span>, <span name="in">in: <span class="extype" name="scala.util.parsing.input.Reader">Reader</span>[<span class="extype" name="scala.Char">Char</span>]</span>)</span><span class="result">: <a href="#ParseResult[+T]extendsAnyRef" class="extmbr" name="ingest.CSV.ParseResult">ParseResult</a>[<span class="extype" name="scala.util.parsing.combinator.RegexParsers.parseAll.T">T</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RegexParsers</dd></dl></div>
@@ -1039,7 +1040,10 @@ Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>S
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -1055,7 +1059,10 @@ Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>S
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -1071,7 +1078,10 @@ Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>S
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="ingest.CSV#whiteSpace" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -1155,7 +1165,6 @@ Throws a ParseException on failure.</p></div><dl class="attributes block"> <dt>S
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-
-
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

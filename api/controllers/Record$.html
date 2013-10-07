@@ -9,11 +9,6 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../lib/template.js"></script>
-      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
-      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -46,7 +41,7 @@
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/controllers/record.scala" target="_blank">record.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a>, <span class="extype" name="play.api.mvc.Controller">Controller</span>, <span class="extype" name="play.api.mvc.Rendering">Rendering</span>, <span class="extype" name="play.api.mvc.RequestExtractors">RequestExtractors</span>, <span class="extype" name="play.api.mvc.AcceptExtractors">AcceptExtractors</span>, <span class="extype" name="play.api.http.ContentTypes">ContentTypes</span>, <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span>, <span class="extype" name="play.api.http.Status">play.api.http.Status</span>, <span class="extype" name="play.api.mvc.BodyParsers">BodyParsers</span>, <span class="extype" name="play.api.mvc.Results">Results</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a>, <span class="extype" name="play.api.mvc.Controller">Controller</span>, <span class="extype" name="play.api.mvc.Rendering">Rendering</span>, <span class="extype" name="play.api.mvc.RequestExtractors">RequestExtractors</span>, <span class="extype" name="play.api.mvc.AcceptExtractors">AcceptExtractors</span>, <span class="extype" name="play.api.http.ContentTypes">ContentTypes</span>, <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span>, <span class="extype" name="play.api.http.Status">play.api.http.Status</span>, <span class="extype" name="play.api.http.HttpProtocol">HttpProtocol</span>, <span class="extype" name="play.api.mvc.BodyParsers">BodyParsers</span>, <span class="extype" name="play.api.mvc.Results">Results</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -64,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="controllers.Record"><span>Record</span></li><li class="in" name="controllers.SiteController"><span>SiteController</span></li><li class="in" name="play.api.mvc.Controller"><span>Controller</span></li><li class="in" name="play.api.mvc.Rendering"><span>Rendering</span></li><li class="in" name="play.api.mvc.RequestExtractors"><span>RequestExtractors</span></li><li class="in" name="play.api.mvc.AcceptExtractors"><span>AcceptExtractors</span></li><li class="in" name="play.api.http.ContentTypes"><span>ContentTypes</span></li><li class="in" name="play.api.http.HeaderNames"><span>HeaderNames</span></li><li class="in" name="play.api.http.Status"><span>Status</span></li><li class="in" name="play.api.mvc.BodyParsers"><span>BodyParsers</span></li><li class="in" name="play.api.mvc.Results"><span>Results</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="controllers.Record"><span>Record</span></li><li class="in" name="controllers.SiteController"><span>SiteController</span></li><li class="in" name="play.api.mvc.Controller"><span>Controller</span></li><li class="in" name="play.api.mvc.Rendering"><span>Rendering</span></li><li class="in" name="play.api.mvc.RequestExtractors"><span>RequestExtractors</span></li><li class="in" name="play.api.mvc.AcceptExtractors"><span>AcceptExtractors</span></li><li class="in" name="play.api.http.ContentTypes"><span>ContentTypes</span></li><li class="in" name="play.api.http.HeaderNames"><span>HeaderNames</span></li><li class="in" name="play.api.http.Status"><span>Status</span></li><li class="in" name="play.api.http.HttpProtocol"><span>HttpProtocol</span></li><li class="in" name="play.api.mvc.BodyParsers"><span>BodyParsers</span></li><li class="in" name="play.api.mvc.Results"><span>Results</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -87,7 +82,7 @@
         <div id="types" class="types members">
               <h3>Type Members</h3>
               <ol><li name="controllers.Record.EditForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="EditForm=play.api.data.Form[(Option[models.RecordCategory.Id],Seq[(models.Metric.Id,Option[String])],(models.Metric.Id,Option[String]))]"></a>
+      <a id="EditForm=play.api.data.Form[(Option[models.RecordCategory.Id],Seq[(models.Metric.Id,Option[String])])]"></a>
       <a id="EditForm:EditForm"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -95,7 +90,20 @@
         <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <span class="name">EditForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Option">Option</span>[<a href="../models/RecordCategory$.html#Id=models.IntId[T]" class="extmbr" name="models.RecordCategory.Id">models.RecordCategory.Id</a>], <span class="extype" name="scala.Seq">Seq</span>[(<a href="../models/Metric$.html#Id=models.IntId[T]" class="extmbr" name="models.Metric.Id">models.Metric.Id</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>])], (<a href="../models/Metric$.html#Id=models.IntId[T]" class="extmbr" name="models.Metric.Id">models.Metric.Id</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]))]</span>
+        <span class="name">EditForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Option">Option</span>[<a href="../models/RecordCategory$.html#Id=models.IntId[T]" class="extmbr" name="models.RecordCategory.Id">models.RecordCategory.Id</a>], <span class="extype" name="scala.Seq">Seq</span>[(<a href="../models/Metric$.html#Id=models.IntId[T]" class="extmbr" name="models.Metric.Id">models.Metric.Id</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>])])]</span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.Record.Request" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Request[A]=controllers.RequestObject[models.Record]#Site[A]"></a>
+      <a id="Request[A]:Request[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Request</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> = <a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">Site</a>[<span class="extype" name="controllers.Record.Request.A">A</span>]</span>
       </span>
       </h4>
       
@@ -113,7 +121,7 @@
       </h4>
       
     </li><li name="play.api.mvc.Results.Status" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]"></a>
+      <a id="StatusextendsSimpleResult"></a>
       <a id="Status:Status"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -121,7 +129,7 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">Status</span><span class="result"> extends <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>[<span class="extype" name="play.api.mvc.Results.EmptyContent">EmptyContent</span>]</span>
+        <span class="name">Status</span><span class="result"> extends <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -427,33 +435,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Accepted</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
-    </li><li name="controllers.SiteController#AdminAction" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="AdminAction(act:controllers.SiteRequest[play.api.mvc.AnyContent]=&gt;play.api.mvc.Result):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="AdminAction((SiteRequest[AnyContent])⇒Result):Action[AnyContent]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">AdminAction</span><span class="params">(<span name="act">act: (<a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]) ⇒ <span class="extype" name="play.api.mvc.Result">Result</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></dd></dl></div>
-    </li><li name="play.api.mvc.Results#Async" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Async(promise:scala.concurrent.Future[play.api.mvc.Result]):play.api.mvc.AsyncResult"></a>
-      <a id="Async(Future[Result]):AsyncResult"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Async</span><span class="params">(<span name="promise">promise: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.AsyncResult">AsyncResult</span></span>
+        <span class="name">Accepted</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -505,7 +487,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">BadGateway</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">BadGateway</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -518,7 +500,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">BadRequest</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">BadRequest</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -535,6 +517,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
+    </li><li name="play.api.http.HttpProtocol#CHUNKED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="CHUNKED:String"></a>
+      <a id="CHUNKED:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">CHUNKED</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HttpProtocol</dd></dl></div>
     </li><li name="play.api.http.Status#CONFLICT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CONFLICT:Int"></a>
       <a id="CONFLICT:Int"></a>
@@ -739,7 +734,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Conflict</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">Conflict</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -752,7 +747,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Created</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">Created</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -843,7 +838,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">EntityTooLarge</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">EntityTooLarge</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -856,7 +851,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">ExpectationFailed</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">ExpectationFailed</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -934,7 +929,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">FailedDependency</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">FailedDependency</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -947,20 +942,20 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Forbidden</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">Forbidden</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Found" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Found(url:String):play.api.mvc.SimpleResult[play.api.mvc.Results.EmptyContent]"></a>
-      <a id="Found(String):SimpleResult[EmptyContent]"></a>
+      <a id="Found(url:String):play.api.mvc.SimpleResult"></a>
+      <a id="Found(String):SimpleResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Found</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>[<span class="extype" name="play.api.mvc.Results.EmptyContent">EmptyContent</span>]</span>
+        <span class="name">Found</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -999,7 +994,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">GatewayTimeout</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">GatewayTimeout</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1012,7 +1007,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Gone</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">Gone</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1042,6 +1037,32 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ContentTypes</dd></dl></div>
+    </li><li name="play.api.http.HttpProtocol#HTTP_1_0" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="HTTP_1_0:String"></a>
+      <a id="HTTP_1_0:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">HTTP_1_0</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HttpProtocol</dd></dl></div>
+    </li><li name="play.api.http.HttpProtocol#HTTP_1_1" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="HTTP_1_1:String"></a>
+      <a id="HTTP_1_1:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">HTTP_1_1</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HttpProtocol</dd></dl></div>
     </li><li name="play.api.http.Status#HTTP_VERSION_NOT_SUPPORTED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="HTTP_VERSION_NOT_SUPPORTED:Int"></a>
       <a id="HTTP_VERSION_NOT_SUPPORTED:Int"></a>
@@ -1064,7 +1085,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">HttpVersionNotSupported</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">HttpVersionNotSupported</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1168,7 +1189,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">InsufficientStorage</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">InsufficientStorage</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1181,7 +1202,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">InternalServerError</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">InternalServerError</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1272,7 +1293,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Locked</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">Locked</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1350,20 +1371,20 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">MethodNotAllowed</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">MethodNotAllowed</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#MovedPermanently" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="MovedPermanently(url:String):play.api.mvc.SimpleResult[play.api.mvc.Results.EmptyContent]"></a>
-      <a id="MovedPermanently(String):SimpleResult[EmptyContent]"></a>
+      <a id="MovedPermanently(url:String):play.api.mvc.SimpleResult"></a>
+      <a id="MovedPermanently(String):SimpleResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">MovedPermanently</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>[<span class="extype" name="play.api.mvc.Results.EmptyContent">EmptyContent</span>]</span>
+        <span class="name">MovedPermanently</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1376,7 +1397,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">MultiStatus</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">MultiStatus</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1459,15 +1480,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.mvc.Results#NoContent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="NoContent:play.api.mvc.SimpleResult[play.api.mvc.Results.EmptyContent]"></a>
-      <a id="NoContent:SimpleResult[EmptyContent]"></a>
+      <a id="NoContent:play.api.mvc.SimpleResult"></a>
+      <a id="NoContent:SimpleResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NoContent</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>[<span class="extype" name="play.api.mvc.Results.EmptyContent">EmptyContent</span>]</span>
+        <span class="name">NoContent</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1480,7 +1501,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NonAuthoritativeInformation</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">NonAuthoritativeInformation</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1493,7 +1514,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NotAcceptable</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">NotAcceptable</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1506,7 +1527,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NotFound</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">NotFound</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1519,20 +1540,20 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NotImplemented</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">NotImplemented</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#NotModified" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="NotModified:play.api.mvc.SimpleResult[play.api.mvc.Results.EmptyContent]"></a>
-      <a id="NotModified:SimpleResult[EmptyContent]"></a>
+      <a id="NotModified:play.api.mvc.SimpleResult"></a>
+      <a id="NotModified:SimpleResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NotModified</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>[<span class="extype" name="play.api.mvc.Results.EmptyContent">EmptyContent</span>]</span>
+        <span class="name">NotModified</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1571,7 +1592,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Ok</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">Ok</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1675,7 +1696,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">PartialContent</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">PartialContent</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1688,7 +1709,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">PreconditionFailed</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">PreconditionFailed</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1797,41 +1818,41 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.mvc.Results#Redirect" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Redirect(call:play.api.mvc.Call):play.api.mvc.SimpleResult[play.api.mvc.Results.EmptyContent]"></a>
-      <a id="Redirect(Call):SimpleResult[EmptyContent]"></a>
+      <a id="Redirect(call:play.api.mvc.Call):play.api.mvc.SimpleResult"></a>
+      <a id="Redirect(Call):SimpleResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Redirect</span><span class="params">(<span name="call">call: <span class="extype" name="play.api.mvc.Call">Call</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>[<span class="extype" name="play.api.mvc.Results.EmptyContent">EmptyContent</span>]</span>
+        <span class="name">Redirect</span><span class="params">(<span name="call">call: <span class="extype" name="play.api.mvc.Call">Call</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Redirect" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Redirect(url:String,queryString:Map[String,Seq[String]],status:Int):play.api.mvc.SimpleResult[play.api.mvc.Results.EmptyContent]"></a>
-      <a id="Redirect(String,Map[String,Seq[String]],Int):SimpleResult[EmptyContent]"></a>
+      <a id="Redirect(url:String,queryString:Map[String,Seq[String]],status:Int):play.api.mvc.SimpleResult"></a>
+      <a id="Redirect(String,Map[String,Seq[String]],Int):SimpleResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Redirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="queryString">queryString: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>, <span name="status">status: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>[<span class="extype" name="play.api.mvc.Results.EmptyContent">EmptyContent</span>]</span>
+        <span class="name">Redirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="queryString">queryString: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>, <span name="status">status: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Redirect" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Redirect(url:String,status:Int):play.api.mvc.SimpleResult[play.api.mvc.Results.EmptyContent]"></a>
-      <a id="Redirect(String,Int):SimpleResult[EmptyContent]"></a>
+      <a id="Redirect(url:String,status:Int):play.api.mvc.SimpleResult"></a>
+      <a id="Redirect(String,Int):SimpleResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Redirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="status">status: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>[<span class="extype" name="play.api.mvc.Results.EmptyContent">EmptyContent</span>]</span>
+        <span class="name">Redirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="status">status: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1844,20 +1865,20 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">RequestTimeout</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">RequestTimeout</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#ResetContent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ResetContent:play.api.mvc.SimpleResult[play.api.mvc.Results.EmptyContent]"></a>
-      <a id="ResetContent:SimpleResult[EmptyContent]"></a>
+      <a id="ResetContent:play.api.mvc.SimpleResult"></a>
+      <a id="ResetContent:SimpleResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">ResetContent</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>[<span class="extype" name="play.api.mvc.Results.EmptyContent">EmptyContent</span>]</span>
+        <span class="name">ResetContent</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1940,15 +1961,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.mvc.Results#SeeOther" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="SeeOther(url:String):play.api.mvc.SimpleResult[play.api.mvc.Results.EmptyContent]"></a>
-      <a id="SeeOther(String):SimpleResult[EmptyContent]"></a>
+      <a id="SeeOther(url:String):play.api.mvc.SimpleResult"></a>
+      <a id="SeeOther(String):SimpleResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">SeeOther</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>[<span class="extype" name="play.api.mvc.Results.EmptyContent">EmptyContent</span>]</span>
+        <span class="name">SeeOther</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1961,7 +1982,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">ServiceUnavailable</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">ServiceUnavailable</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -1974,7 +1995,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Status</span><span class="params">(<span name="code">code: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">Status</span><span class="params">(<span name="code">code: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -2070,15 +2091,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.mvc.Results#TemporaryRedirect" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="TemporaryRedirect(url:String):play.api.mvc.SimpleResult[play.api.mvc.Results.EmptyContent]"></a>
-      <a id="TemporaryRedirect(String):SimpleResult[EmptyContent]"></a>
+      <a id="TemporaryRedirect(url:String):play.api.mvc.SimpleResult"></a>
+      <a id="TemporaryRedirect(String):SimpleResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">TemporaryRedirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>[<span class="extype" name="play.api.mvc.Results.EmptyContent">EmptyContent</span>]</span>
+        <span class="name">TemporaryRedirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -2091,7 +2112,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">TooManyRequest</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">TooManyRequest</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -2182,7 +2203,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Unauthorized</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">Unauthorized</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -2195,7 +2216,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">UnprocessableEntity</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">UnprocessableEntity</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -2208,7 +2229,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">UnsupportedMediaType</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">UnsupportedMediaType</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -2221,7 +2242,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">UriTooLong</span><span class="result">: <a href="#StatusextendsSimpleResult[play.api.mvc.Results.EmptyContent]" class="extmbr" name="controllers.Record.Status">Status</a></span>
+        <span class="name">UriTooLong</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.Record.Status">Status</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
@@ -2355,6 +2376,32 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="play.api.mvc.Results#chunk" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="chunk(trailers:Option[play.api.libs.iteratee.Iteratee[Array[Byte],Seq[(String,String)]]]):play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]"></a>
+      <a id="chunk(Option[Iteratee[Array[Byte],Seq[(String,String)]]]):Enumeratee[Array[Byte],Array[Byte]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">chunk</span><span class="params">(<span name="trailers">trailers: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="play.api.libs.iteratee.Iteratee">Iteratee</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>], <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)]]]</span>)</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumeratee">Enumeratee</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>], <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
+    </li><li name="play.api.mvc.Results#chunk" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="chunk:play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]"></a>
+      <a id="chunk:Enumeratee[Array[Byte],Array[Byte]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">chunk</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumeratee">Enumeratee</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>], <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -2367,10 +2414,26 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
+    </li><li name="play.api.mvc.Results#dechunk" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="dechunk:play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]"></a>
+      <a id="dechunk:Enumeratee[Array[Byte],Array[Byte]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">dechunk</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumeratee">Enumeratee</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>], <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="controllers.Record#edit" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="edit(v:models.Volume.Id,i:models.Record.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
       <a id="edit(models.Volume.Id,models.Record.Id):Action[AnyContent]"></a>
@@ -2422,8 +2485,11 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="play.api.mvc.Controller#flash" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -2467,14 +2533,14 @@
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="controllers.SiteController#isAjax" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isAjax[A](implicitrequest:play.api.mvc.Request[A]):Boolean"></a>
-      <a id="isAjax[A](Request[A]):Boolean"></a>
+      <a id="isAjax[A](play.api.mvc.Request[A]):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">isAjax</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteController.isAjax.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">isAjax</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.Request">play.api.mvc.Request</span>[<span class="extype" name="controllers.SiteController.isAjax.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></dd></dl></div>
@@ -2491,6 +2557,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="controllers.SiteController#isSecure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isSecure:Boolean"></a>
+      <a id="isSecure:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isSecure</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></dd></dl></div>
     </li><li name="play.api.mvc.Controller#lang" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="lang(implicitrequest:play.api.mvc.RequestHeader):play.api.i18n.Lang"></a>
       <a id="lang(RequestHeader):Lang"></a>
@@ -2543,19 +2622,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="play.api.mvc.Rendering#render" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="render(f:PartialFunction[play.api.http.MediaRange,play.api.mvc.Result])(implicitrequest:play.api.mvc.RequestHeader):play.api.mvc.Result"></a>
-      <a id="render(PartialFunction[MediaRange,Result])(RequestHeader):Result"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">render</span><span class="params">(<span name="f">f: <span class="extype" name="scala.PartialFunction">PartialFunction</span>[<span class="extype" name="play.api.http.MediaRange">MediaRange</span>, <span class="extype" name="play.api.mvc.Result">Result</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Rendering</dd></dl></div>
     </li><li name="controllers.Record#selectForm" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="selectForm:play.api.data.Form[Option[models.Record.Id]]"></a>
       <a id="selectForm:Form[Option[models.Record.Id]]"></a>
@@ -2686,7 +2752,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -2702,7 +2771,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -2718,7 +2790,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="play.api.http.ContentTypes#withCharset" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -2739,7 +2814,26 @@
 
         
 
-        
+        <div id="values" class="values members">
+              <h3>Deprecated Value Members</h3>
+              <ol><li name="play.api.mvc.Results#Async" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Async(promise:scala.concurrent.Future[play.api.mvc.Result]):play.api.mvc.AsyncResult"></a>
+      <a id="Async(Future[Result]):AsyncResult"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name deprecated" title="Deprecated: (Since version 2.2.0) Use Action.async to build async actions instead">Async</span><span class="params">(<span name="promise">promise: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.AsyncResult">AsyncResult</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd><dt>Annotations</dt><dd>
+                <span class="name">@deprecated</span>
+              
+        </dd><dt>Deprecated</dt><dd class="cmt"><p><i>(Since version 2.2.0)</i> Use Action.async to build async actions instead</p></dd></dl></div>
+    </li></ol>
+            </div>
         </div>
 
         <div id="inheritedMembers">
@@ -2759,6 +2853,8 @@
               <h3>Inherited from <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span></h3>
             </div><div class="parent" name="play.api.http.Status">
               <h3>Inherited from <span class="extype" name="play.api.http.Status">play.api.http.Status</span></h3>
+            </div><div class="parent" name="play.api.http.HttpProtocol">
+              <h3>Inherited from <span class="extype" name="play.api.http.HttpProtocol">HttpProtocol</span></h3>
             </div><div class="parent" name="play.api.mvc.BodyParsers">
               <h3>Inherited from <span class="extype" name="play.api.mvc.BodyParsers">BodyParsers</span></h3>
             </div><div class="parent" name="play.api.mvc.Results">
@@ -2783,7 +2879,6 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-
-
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>
