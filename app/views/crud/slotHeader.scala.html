@@ -1,15 +1,27 @@
 @(slot : Slot)(implicit request : SiteRequest[_])
 
 <header>
-    <h1>@slot.container.name-@slot.id.unId</h1>
+    <div class="type">Slot</div>
+    <h1>@slot.container.name (#@slot.id.unId)</h1>
 
+    @if(slot.permission >= Permission.EDIT) {
     <nav class="menu">
         <ul>
-        @if(slot.permission >= Permission.EDIT) {
 			@crud.headerCurrentLink(routes.Slot.view(slot.volume.id, slot.id), "view")
 			@crud.headerCurrentLink(routes.Slot.edit(slot.volume.id, slot.id), "edit")
-            @crud.headerCurrentLink(routes.Asset.create(slot.volume.id, slot.containerId), "upload")
-        }
+
+            @if(slot.container.permission >= Permission.CONTRIBUTE) {
+                @if(slot.id == slot.container.fullSlot.id) {
+                    @crud.headerCurrentLink(routes.Asset.create(slot.volume.id, slot.containerId), "add asset")
+                }
+
+                @crud.headerCurrentLink(routes.Slot.create(slot.volumeId, slot.containerId), "add slot")
+
+                @tag.form(routes.Record.slotAdd(slot.volumeId, slot.id, false)) {
+                    <li><button class="link">add record</button></li>
+                }
+            }
         </ul>
     </nav>
+    }
 </header>

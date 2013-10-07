@@ -1,35 +1,73 @@
 @(volume : Volume)(implicit request : SiteRequest[_])
 
-<table class="assets">
+<h3>Records</h3>
+
+<table class="records">
     <thead>
         <tr>
-            <th class="main">Ident</th>
-            <th class="meta">Gender</th>
-            <th class="meta">Age</th>
+            <th class="main">Record</th>
+            <th class="meta">Category</th>
         </tr>
     </thead>
 
     <tbody>
-        @volume.allRecords(Some(RecordCategory.Participant)).map { r =>
+        @if(volume.allRecords(Some(RecordCategory.Participant)).nonEmpty) {
+            @volume.allRecords(Some(RecordCategory.Participant)).map { record =>
+                <tr>
+                    <td class="main">
+                        @display(record)
+                    <dl class="inline-measures">
+                    @record.measures.map { measure =>
+                        @if(measure.metric.name != "ident") {
+                            <dt>@measure.metric.name</dt>
+                            <dd>@measure.value</dd>
+                        }
+
+                    }
+                    </dl>
+                    </td>
+                    <td class="meta">@record.category.fold("")(_.name)</td>
+                </tr>
+            }
+        } else {
             <tr>
-                <td class="main"><a href='@routes.Record.view(volume.id, r.id)'>@r.ident(request.db)</a></td>
-                <td>@r.measure(Metric.Gender)(request.db)</td>
-                <td>@r.agerange(request.db).map(display.agerange _)</td>
+                <td class="empty" colspan="2">This slot has no records.</td>
             </tr>
         }
     </tbody>
 </table>
 
-<h3>Slots</h3>
-<ul class="csv">
-@volume.containers.map { container =>
-    @if(!container.top) {
-        @container.slots.map { slot =>
-            <li><a href='@slot.pageURL'>@container.name-@slot.id.unId</a></li>
+<h3>Containers</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th class="main">Slot</th>
+            <th class="meta">Range</th>
+            <th class="meta">Consent</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    @if(volume.containers.nonEmpty) {
+        @volume.containers.map { container =>
+            @if(!container.top) {
+                @container.slots.map { slot =>
+                    <tr>
+                        <td class="main"><a href='@slot.pageURL'>@container.name (#@slot.id.unId)</a></td>
+                        <td class="meta">@display(slot.segment)</td>
+                        <td class="meta">@slot.consent</td>
+                    </tr>
+                }
+            }
         }
+    } else {
+        <tr>
+            <td class="empty" colspan="3">This container has no child slots.</td>
+        </tr>
     }
-}
-</ul>
+    </tbody>
+</table>
 
     @if(volume.permission >= Permission.CONTRIBUTE) {
         <div class="arealinks">

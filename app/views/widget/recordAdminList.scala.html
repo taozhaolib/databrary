@@ -1,41 +1,58 @@
 @(slot : Slot, recordForm : Option[controllers.Record.SelectForm] = None)(implicit request : SiteRequest[_])
 
-@defining(helper.FieldConstructor(tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
-<table class="records">
-    <thead>
-        <tr>
-            <th class="main">Record</th>
-            <th class="meta">Category</th>
-            @recordForm.map {f => <th class="meta">Action</th>}
-        </tr>
-    </thead>
+    @defining(helper.FieldConstructor(tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
+        <table class="records">
+            <thead>
+                <tr>
+                    <th class="main">Record</th>
+                    <th class="meta">Category</th>
+                    @recordForm.map { f => <th class="meta">Action</th>}
+                    </tr>
+            </thead>
 
-    <tbody>
-        @slot.records(request.db).map { record =>
-            @tag.form(routes.Record.slotRemove(slot.volumeId, slot.id, record.id, true)) {
-            <tr>
-                <td class="main">@display(record)</td>
-                <td class="meta">@record.category.fold("")(_.name)</td>
-                @recordForm.map { f =>
-                <td class="meta">
-                    <a href="@routes.Record.edit(record.volume.id, record.id)" class="button">edit</a>
-                    <button type='submit' class="button second">remove</button>
-                </td>
+            <tbody>
+            @if(slot.records(request.db).nonEmpty) {
+                @slot.records(request.db).map { record =>
+                    @tag.form(routes.Record.slotRemove(slot.volumeId, slot.id, record.id, true)) {
+                        <tr>
+                            <td class="main">
+                                @display(record)
+                                <dl class="inline-measures">
+                                @record.measures.map { measure =>
+                                    @if(measure.metric.name != "ident") {
+                                        <dt>@measure.metric.name</dt>
+                                        <dd>@measure.value</dd>
+                                    }
+
+                                }
+                                </dl>
+                            </td>
+                            <td class="meta">@record.category.fold("")(_.name)</td>
+                            @recordForm.map { f =>
+                                <td class="meta">
+                                    <a href="@routes.Record.edit(record.volume.id, record.id)" class="button">edit</a>
+                                    <button type='submit' class="button second">remove</button>
+                                </td>
+                            }
+                        </tr>
+                    }
                 }
-            </tr>
+            } else {
+                <tr>
+                    <td class="empty" colspan="@if(recordForm.nonEmpty) {3} else {2}">This slot has no records.</td>
+                </tr>
             }
-        }
-    </tbody>
+            </tbody>
 
-    @recordForm.map { f =>
-    <tfoot>
-        @tag.form(routes.Record.slotAdd(slot.volumeId, slot.id, true)) {
-        <tr>
-            @tag.select(f("record"), controllers.Record.selectList(slot), '_default -> "Create new record...", '_colspan -> 2)
-            <td><button type='submit' class="button first">add</button></td>
-        </tr>
-        }
-    </tfoot>
+            @recordForm.map { f =>
+                <tfoot>
+                    @tag.form(routes.Record.slotAdd(slot.volumeId, slot.id, true)) {
+                        <tr>
+                            @tag.select(f("record"), controllers.Record.selectList(slot), '_default -> "Create new record...", '_colspan -> 2)
+                            <td><button type='submit' class="button first">add</button></td>
+                        </tr>
+                    }
+                </tfoot>
+            }
+        </table>
     }
-</table>
-}

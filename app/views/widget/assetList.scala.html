@@ -1,4 +1,4 @@
-@(assets : Seq[SlotAsset])(implicit request: SiteRequest[_])
+@(assets : Seq[SlotAsset])(implicit request : SiteRequest[_])
 
 <table class="assets">
     <thead>
@@ -11,12 +11,18 @@
     </thead>
 
     <tbody>
-        @assets.map { link =>
+        @if(assets.lengthCompare(1) > 0) {
+            @assets.map { link =>
+                <tr>
+                    <td class="main">@display(link)</td>
+                    <td>@link.format.name</td>
+                    <td>@link.classification</td>
+                    <td>@link.position</td>
+                </tr>
+            }
+        } else {
             <tr>
-                <td class="main">@display(link)</td>
-				<td>@link.format.name</td>
-				<td>@link.classification</td>
-				<td>@link.position</td>
+                <td class="empty" colspan="4">This container is empty.</td>
             </tr>
         }
     </tbody>

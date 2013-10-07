@@ -29,6 +29,18 @@
 		header {
 			margin-bottom: @gutter/2;
 
+            .type {
+                font-size: 0.65em;
+                color: darken(@first, 20%);
+                text-transform: uppercase;
+                height: 5px;
+                overflow: visible;
+
+                &:after {
+                    content: ":";
+                }
+            }
+
 			h1 {
 				margin: 0;
 			}
@@ -68,7 +80,7 @@
 			text-transform: lowercase;
 
 			&.current {
-				a {
+				a, button {
 					background: lighten(@white_75_second, 5%);
 
 					&:hover {
@@ -367,7 +379,35 @@ dl.metalist {
 		bottom: 0;
 		left: 0;
 		right: 0;
-		height: 75px;
+		height: 60px;
 		#gradient > .vertical(transparent, @white);
 	}
+}
+
+dl.inline-measures {
+    margin: 0;
+
+    dt, dd {
+        display: inline;
+        margin: 0;
+    }
+
+    dt {
+        font-size: 0.75em;
+        color: @gray_50_third;
+    }
+
+    dd {
+        font-size: 0.85em;
+        color: @gray_25_third;
+
+        &:after {
+            content: ", ";
+            color: @gray_50_third;
+        }
+
+        &:last-child:after {
+            content: "";
+        }
+    }
 }
