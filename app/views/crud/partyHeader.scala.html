@@ -1,12 +1,11 @@
 @(party : Party)(implicit request : SiteRequest[_])
 
 <header>
-    <div class="type">Party</div>
     <h1>@party.name</h1>
 
+    @if(party.delegated >= Permission.EDIT) {
     <nav class="menu">
         <ul>
-        @if(party.delegated >= Permission.EDIT) {
 			@crud.headerCurrentLink(routes.Party.view(party.id), "view")
 			@crud.headerCurrentLink(routes.Party.edit(party.id), "edit")
 
@@ -17,7 +16,7 @@
             @if(party.delegated >= Permission.CONTRIBUTE) {
                 @crud.headerCurrentLink(routes.Volume.create(Some(party.id)), "new volume", true)
             }
-        }
         </ul>
     </nav>
+    }
 </header>

@@ -11,11 +11,32 @@
         }
         </dl>
 
-        <ul>
-        @record.slots.map { c =>
-            <li>@display.path(c)</li>
-        }
-        </ul>
+        <h2>Slots</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th class="main">Slot</th>
+                    <th class="meta">Range</th>
+                    <th class="meta">Consent</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            @if(record.slots.lengthCompare(1) > 0) {
+                @record.slots.map { s =>
+                    <tr>
+                        <td class="main"><a href='@s.pageURL'>@s.container.name (#@s.id.unId)</a></td>
+                        <td class="meta">@display(s.segment)</td>
+                        <td class="meta">@s.consent</td>
+                    </tr>
+                }
+            } else {
+                <tr>
+                    <td class="empty" colspan="3">This container has no child slots.</td>
+                </tr>
+            }
+            </tbody>
+        </table>
 
     </article>
 }
