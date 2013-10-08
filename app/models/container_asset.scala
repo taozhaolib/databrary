@@ -6,7 +6,7 @@ import anorm.SqlParser.scalar
 import dbrary._
 import dbrary.Anorm._
 import PGSegment.{column => segmentColumn,statement => segmentStatement}
-import util._
+import site._
 
 /** An embedding or link (in the filesystem sense) of an asset within a container.
   * An asset link includes the asset and container, along with a name and description for that particular link.

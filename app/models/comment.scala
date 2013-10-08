@@ -6,7 +6,7 @@ import anorm.SqlParser.scalar
 import dbrary._
 import dbrary.Anorm._
 import PGSegment.{column => segmentColumn,statement => segmentStatement}
-import util._
+import site._
 
 /** A comment made by a particular user applied to exactly one object.
   * These are immutable (and unaudited), although the author may be considered to have ownership. */

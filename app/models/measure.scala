@@ -4,7 +4,7 @@ import java.sql.Date
 import anorm._
 import dbrary._
 import dbrary.Anorm._
-import util._
+import site._
 
 /** Types of Records that are relevant for data organization.
   * Records that represent data buckets or other kinds of slot groupings (e.g., participants, days, conditions, etc.) can be assigned a particular RecordCategory for the purpose of display and templating.

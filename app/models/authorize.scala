@@ -5,7 +5,7 @@ import anorm._
 import anorm.SqlParser.scalar
 import dbrary._
 import dbrary.Anorm._
-import util._
+import site._
 
 /** A specific authorization by one party of another.
   * An authorization represents granting of certain permissions to a party by/under another, which can also be viewed as group membership.

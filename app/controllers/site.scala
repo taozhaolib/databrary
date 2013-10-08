@@ -8,7 +8,7 @@ import          data._
 import          i18n.Messages
 import scala.concurrent.Future
 import dbrary._
-import util._
+import site._
 import models._
 
 sealed trait SiteRequest[A] extends Request[A] with Site {
@@ -16,11 +16,11 @@ sealed trait SiteRequest[A] extends Request[A] with Site {
 }
 
 object SiteRequest {
-  sealed abstract class Base[A](request : Request[A], db : util.Site.DB) extends WrappedRequest[A](request) with SiteRequest[A]
-  final case class Anon[A](request : Request[A], db : util.Site.DB) extends Base[A](request, db) with AnonSite
-  final case class Auth[A](request : Request[A], identity : Account, db : util.Site.DB) extends Base[A](request, db) with AuthSite
+  sealed abstract class Base[A](request : Request[A], db : site.Site.DB) extends WrappedRequest[A](request) with SiteRequest[A]
+  final case class Anon[A](request : Request[A], db : site.Site.DB) extends Base[A](request, db) with AnonSite
+  final case class Auth[A](request : Request[A], identity : Account, db : site.Site.DB) extends Base[A](request, db) with AuthSite
 
-  def apply[A](request : Request[A], identity : Option[Account])(implicit db : util.Site.DB) : SiteRequest.Base[A] =
+  def apply[A](request : Request[A], identity : Option[Account])(implicit db : site.Site.DB) : SiteRequest.Base[A] =
     identity.fold[SiteRequest.Base[A]](Anon[A](request, db))(Auth[A](request, _, db))
 }
 
@@ -29,8 +29,8 @@ trait RequestObject[O] {
     val obj : O
   }
   sealed trait Site[A] extends SiteRequest[A] with Base[A]
-  final class Anon[A](request : Request[A], val db : util.Site.DB, val obj : O) extends WrappedRequest[A](request) with Site[A] with AnonSite
-  final class Auth[A](request : Request[A], val identity : Account, val db : util.Site.DB, val obj : O) extends WrappedRequest[A](request) with Site[A] with AuthSite
+  final class Anon[A](request : Request[A], val db : site.Site.DB, val obj : O) extends WrappedRequest[A](request) with Site[A] with AnonSite
+  final class Auth[A](request : Request[A], val identity : Account, val db : site.Site.DB, val obj : O) extends WrappedRequest[A](request) with Site[A] with AuthSite
 }
 object RequestObject {
   def apply[O,A](request : SiteRequest.Base[A], obj : O) : RequestObject[O]#Site[A] = {
@@ -59,7 +59,7 @@ object RequestObject {
 }
 
 object SiteAction extends ActionCreator[SiteRequest.Base] {
-  private[this] def getUser(request : Request[_])(implicit db : util.Site.DB) : Option[Account] =
+  private[this] def getUser(request : Request[_])(implicit db : site.Site.DB) : Option[Account] =
     request.session.get("user").flatMap { i =>
       try { Some(models.Account.asId(i.toInt)) }
       catch { case e:java.lang.NumberFormatException => None }

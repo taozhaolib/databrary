@@ -1,7 +1,7 @@
 package controllers
 
 import scala.util.control.Exception.catching
-import util._
+import site._
 
 object HTTP {
   def quote(s : String) = '"' + s.replaceAll("([\\p{Cntrl}\"\\\\])", "\\\\$2") + '"'

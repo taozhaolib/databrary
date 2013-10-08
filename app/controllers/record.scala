@@ -1,6 +1,6 @@
 package controllers
 
-import util._
+import site._
 import play.api._
 import          templates.Html
 import          Play.current

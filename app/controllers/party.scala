@@ -8,7 +8,7 @@ import               Forms._
 import          i18n.Messages
 import org.mindrot.jbcrypt.BCrypt
 import dbrary._
-import util._
+import site._
 import models._
 
 object Party extends SiteController {

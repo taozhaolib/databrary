@@ -5,7 +5,7 @@ import anorm.SqlParser.scalar
 import java.sql.{Date,Timestamp}
 import dbrary._
 import dbrary.Anorm._
-import util._
+import site._
 
 /** Main organizational unit or package of data, within which everything else exists.
   * Usually represents a single project or dataset with a single set of procedures.

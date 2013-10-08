@@ -5,7 +5,7 @@ import anorm._
 import anorm.SqlParser.scalar
 import dbrary._
 import dbrary.Anorm._
-import util._
+import site._
 
 /** A set of Measures. */
 final class Record private (val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE) extends TableRowId[Record] with SitePage with InVolume {
