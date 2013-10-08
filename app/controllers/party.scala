@@ -19,7 +19,7 @@ object Party extends SiteController {
       e => Ok(views.html.party.view(e)))
   }
 
-  def ajaxView() = SiteAction { implicit request =>
+  def ajaxView = SiteAction { implicit request =>
     request.user.fold[SimpleResult](NotFound)(
       e => Ok(views.html.modal.profile(request.identity)))
   }
@@ -27,7 +27,18 @@ object Party extends SiteController {
   private def adminAccount(implicit request : Request[_]) =
     cast[models.Account](request.obj).filter(_.equals(request.identity))
 
-  type EditForm = Form[(String, Option[Orcid], Option[(String, Option[String], String, String)])]
+  type PasswordMapping = Mapping[Option[String]]
+  val passwordMapping : PasswordMapping = 
+    tuple(
+      "once" -> optional(text(7)),
+      "again" -> text
+    ).verifying(Messages("password.again"), pa => pa._1.fold(true)(_ == pa._2))
+      .transform[Option[String]](
+        _._1.map(BCrypt.hashpw(_, BCrypt.gensalt)),
+        _.map(_ => "") -> ""
+      )
+
+  type EditForm = Form[(String, Option[Orcid], Option[(String, Option[String], String)])]
   private[this] def formFill(implicit request : Request[_]) : EditForm = {
     val e = request.obj
     val acct = adminAccount
@@ -37,11 +48,10 @@ object Party extends SiteController {
         .verifying(Messages("orcid.invalid"), _.fold(true)(_.valid)),
       "" -> MaybeMapping(acct.map(_ => tuple(
         "email" -> email,
-        "password" -> optional(text(7)),
-        "again" -> text,
+        "password" -> passwordMapping,
         "openid" -> text(0,256)
-      ).verifying(Messages("password.again"), f => f._2.fold(true)(_ == f._3))))
-    )).fill((e.name, e.orcid, acct.map(a => (a.email, None, "", a.openid.getOrElse("")))))
+      )))
+    )).fill((e.name, e.orcid, acct.map(a => (a.email, None, a.openid.getOrElse("")))))
   }
 
   def formForAccount(form : EditForm)(implicit request : Request[_]) =
@@ -108,11 +118,11 @@ object Party extends SiteController {
       { case (name, orcid, acct) =>
         request.obj.change(name = name, orcid = orcid)
         acct foreach {
-          case (email, password, _, openid) =>
+          case (email, password, openid) =>
             val acct = request.obj.asInstanceOf[models.Account]
             acct.changeAccount(
               email = email,
-              password = password.fold(acct.password)(BCrypt.hashpw(_, BCrypt.gensalt)),
+              password = password.getOrElse(acct.password),
               openid = maybe(openid))
         }
         Redirect(request.obj.pageURL)

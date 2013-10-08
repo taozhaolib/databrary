@@ -15,8 +15,8 @@
 		@tag.inputText(form("orcid"), 'placeholder -> "ORCiD", '_class -> "big")
 		@if(controllers.Party.formForAccount(form)) {
 			@tag.inputText(form("email"), 'placeholder -> "Email", '_class -> "big")
-			@tag.inputPassword(form("password"), 'placeholder -> "Password", '_class -> "big")
-			@tag.inputPassword(form("again"), 'placeholder -> "Password (repeat)", '_class -> "big")
+			@tag.inputPassword(form("password.once"), 'placeholder -> "Password", '_class -> "big")
+			@tag.inputPassword(form("password.again"), 'placeholder -> "Password (repeat)", '_class -> "big")
 			@tag.inputText(form("openid"), 'placeholder -> "OpenID", '_class -> "big")
 		}
 		<button type='submit' class="big button first">Update</button>

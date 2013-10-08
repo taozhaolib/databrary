@@ -39,7 +39,7 @@ object Login extends SiteController {
     Ok(request.user.fold(views.html.modal.login(loginForm))(views.html.modal.profile(_)))
   }
 
-  private[this] def login(a : Account)(implicit request : Request[_], db : site.Site.DB) = {
+  private[controllers] def login(a : Account)(implicit request : Request[_], db : site.Site.DB) = {
     implicit val arequest = new SiteRequest.Auth(request, a, db)
     Audit.action(Audit.Action.open)
     Redirect(routes.Party.view(a.id)).withSession("user" -> a.id.unId.toString)

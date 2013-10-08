@@ -290,7 +290,7 @@ CREATE OPERATOR <@ (PROCEDURE = "object_segment_within", LEFTARG = "object_segme
 CREATE TABLE "container" (
 	"id" serial NOT NULL Primary Key,
 	"volume" integer NOT NULL References "volume",
-	"top" boolean NOT NULL Default false,
+	"top" boolean NOT NULL DEFAULT false,
 	"name" text,
 	"date" date
 );
@@ -311,7 +311,7 @@ COMMENT ON TRIGGER "container_top_create" ON "volume" IS 'Always create a top co
 CREATE TABLE "slot" (
 	"id" serial NOT NULL Primary Key,
 	"source" integer NOT NULL References "container",
-	"segment" segment NOT NULL Default '(,)',
+	"segment" segment NOT NULL DEFAULT '(,)',
 	"consent" consent,
 	Unique ("source", "segment"),
 	Exclude USING gist (singleton("source") WITH =, "segment" WITH &&) WHERE ("consent" IS NOT NULL)
@@ -457,7 +457,7 @@ COMMENT ON VIEW "asset_duration" IS 'All assets along with their temporal durati
 CREATE TABLE "toplevel_asset" (
 	"slot" integer NOT NULL References "slot",
 	"asset" integer NOT NULL References "asset",
-	"excerpt" boolean NOT NULL Default false,
+	"excerpt" boolean NOT NULL DEFAULT false,
 	Primary Key ("slot", "asset")
 );
 COMMENT ON TABLE "toplevel_asset" IS 'Slot assets which are promoted to the top volume level for display.';
@@ -489,7 +489,7 @@ CREATE TABLE "tag_use" (
 	"tag" integer NOT NULL References "tag",
 	"who" integer NOT NULL References "account",
 	"slot" integer NOT NULL References "slot",
-	"up" boolean NOT NULL Default true,
+	"up" boolean NOT NULL DEFAULT true,
 	Primary Key ("tag", "who", "slot")
 );
 CREATE INDEX ON "tag_use" ("slot");
@@ -520,7 +520,7 @@ COMMENT ON TYPE data_type IS 'Types of measurement data corresponding to measure
 CREATE TABLE "metric" (
 	"id" serial Primary Key,
 	"name" varchar(64) NOT NULL,
-	"classification" classification NOT NULL Default 'DEIDENTIFIED',
+	"classification" classification NOT NULL DEFAULT 'DEIDENTIFIED',
 	"type" data_type NOT NULL,
 	"values" text[] -- options for text enumerations, not enforced (could be pulled out to separate kind/table)
 );
@@ -606,6 +606,27 @@ CREATE FUNCTION "record_daterange" ("record" integer) RETURNS daterange LANGUAGE
 	 WHERE record = $1
 $$;
 COMMENT ON FUNCTION "record_daterange" (integer) IS 'Range of container dates covered by the given record.';
+
+----------------------------------------------------------- tokens
+
+CREATE FUNCTION "random_string" ("length" smallint, "charset" text = '()-0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz~') RETURNS varchar LANGUAGE sql VOLATILE STRICT AS
+	$$ SELECT string_agg(substr($2, (length($2)*random()+0.5)::smallint, 1), '') FROM generate_series(1,$1) $$;
+COMMENT ON FUNCTION "random_string" (smallint, text) IS 'Generate a random string of the given length drawn from the given list of characters.  This uses the postgres random function, which is not cryptographically secure.';
+
+CREATE TABLE "token" (
+	"token" char(64) Primary Key NOT NULL,
+	"expires" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '1 week'
+);
+COMMENT ON TABLE "token" IS 'Generic tokens issued to automatically perform actions such as logins or authorizations.';
+
+CREATE TABLE "login_token" (
+	"token" char(64) Primary Key NOT NULL DEFAULT "random_string"(64::smallint), -- could generate pk violations
+	"expires" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '1 week',
+	"party" integer NOT NULL References "party",
+	"password" boolean NOT NULL 'f'
+) INHERITS ("token");
+CREATE UNIQUE INDEX "login_token_party_idx" ON "login_token" ("party") WHERE "password";
+COMMENT ON TABLE "login_token" IS 'Tokens issued to automatically login/register users or reset passwords.';
 
 ----------------------------------------------------------- bootstrap/test data
 
