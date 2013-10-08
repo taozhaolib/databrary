@@ -5,7 +5,7 @@ import anorm.SqlParser.scalar
 import dbrary._
 import dbrary.Anorm._
 import PGSegment.{column => segmentColumn,statement => segmentStatement}
-import util._
+import site._
 
 /** All tags and their names used anywhere.
   * Immutable (create only).

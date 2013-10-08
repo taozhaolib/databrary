@@ -4,7 +4,7 @@ import java.sql.Date
 import anorm._
 import dbrary._
 import dbrary.Anorm._
-import util._
+import site._
 
 /** Types of Records that are relevant for data organization.
   * Records that represent data buckets or other kinds of slot groupings (e.g., participants, days, conditions, etc.) can be assigned a particular RecordCategory for the purpose of display and templating.
@@ -143,7 +143,7 @@ object Metric extends TableId[MetricT[_]]("metric") {
     * [[Classification.IDENTIFIED]] implies all authorized researchers get full access to these. */
   object Birthdate extends MetricT[Date](BIRTHDATE, "birthdate", Classification.IDENTIFIED)
   /** Gender is treated as a text enumeration. */
-  object Gender    extends MetricT[String](GENDER, "gender", Classification.DEIDENTIFIED, Array[String]("F", "M"))
+  object Gender    extends MetricT[String](GENDER, "gender", Classification.DEIDENTIFIED, Array[String]("female", "male"))
   object Race      extends MetricT[String](RACE, "race", Classification.DEIDENTIFIED, Array[String]("American Indian or Alaska Native","Asian","Native Hawaiian or Other Pacific Islander","Black or African American","White","Multiple"))
   object Ethnicity extends MetricT[String](ETHNICITY, "ethnicity", Classification.DEIDENTIFIED, Array[String]("Not Hispanic or Latino","Hispanic or Latino"))
 }

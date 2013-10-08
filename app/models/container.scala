@@ -6,7 +6,7 @@ import java.sql.Date
 import dbrary._
 import dbrary.Anorm._
 import PGSegment.{column => segmentColumn,statement => segmentStatement}
-import util._
+import site._
 
 /** Collection of related assets.
   * To be used, all assets must be placed into containers.

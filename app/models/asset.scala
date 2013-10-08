@@ -6,7 +6,7 @@ import anorm._
 import anorm.SqlParser.scalar
 import dbrary._
 import dbrary.Anorm._
-import util._
+import site._
 
 /** File formats for assets.
   * id should actually be a ShortId but it's just simpler to have Ints everywhere. */
@@ -62,10 +62,10 @@ object AssetFormat extends TableId[AssetFormat]("format") {
     (if (ts) TimeseriesFormat.getAll else Nil) ++
       row.SQL("ORDER BY format.id").list
 
-  def getFilename(filename : String, ts : Boolean = false)(implicit db : util.Site.DB) =
+  def getFilename(filename : String, ts : Boolean = false)(implicit db : site.Site.DB) =
     maybe(filename.lastIndexOf('.'), -1).
       flatMap(i => getExtension(filename.substring(i + 1).toLowerCase, ts))
-  def getFilePart(file : play.api.mvc.MultipartFormData.FilePart[_], ts : Boolean = false)(implicit db : util.Site.DB) =
+  def getFilePart(file : play.api.mvc.MultipartFormData.FilePart[_], ts : Boolean = false)(implicit db : site.Site.DB) =
     file.contentType.flatMap(getMimetype(_, ts)) orElse
       getFilename(file.filename, ts)
 

@@ -81,7 +81,7 @@ check_dump() {
 check_diff() {
 	check_dump $2
 	echo "Checking $1 vs. $2..."
-	diff -F'^[A-Z]' -u0 $conf/check-$1.sql $conf/check-$2.sql
+	diff -F'^[A-Z]' -u0 $conf/check-$1.sql $conf/check-$2.sql || true
 }
 
 evolve_all () {
@@ -123,7 +123,6 @@ elif [[ $1 = check ]] ; then
 		evolve down $n
 		check_diff up-$n down-$n
 	done
-	echo "All OK!"
 	rm -f $conf/check-*.sql
 elif [[ $1 = dump ]] ; then
 	shift
@@ -141,8 +140,8 @@ Usage:
   runsql schema		apply master schema
   runsql up|down NUM	run evolution NUM (no play_evolutions)
   runsql check		apply and compare master schema and evolutions
-  runsql dump ARGS...	run pg_dump
-  runsql restore ARGS...	run pg_restore
+  runsql dump ARGS.. 	run pg_dump
+  runsql restore ARGS.. run pg_restore
 Any non-argument options are passed to the run command.
 EOF
 fi

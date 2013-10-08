@@ -3,7 +3,7 @@ package models
 import anorm._
 import anorm.SqlParser.scalar
 import dbrary._
-import util._
+import site._
 
 /** Any real-world individual, group, institution, etc.
   * Instances are generally obtained from [[Party.get]] or [[Party.create]]. */
@@ -24,7 +24,7 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
 
   private val _access = CachedVal[Permission.Value, Site.DB](Authorize.access_check(id)(_))
   /** Level of access user has to the site.
-    * Computed by [Authorize.access_check] and usually accessed through [[util.Site.access]]. */
+    * Computed by [Authorize.access_check] and usually accessed through [[site.Site.access]]. */
   def access(implicit db : Site.DB) : Permission.Value = _access
 
   def pageName(implicit site : Site) = name

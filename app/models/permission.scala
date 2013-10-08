@@ -1,7 +1,7 @@
 package models
 
 import dbrary._
-import util._
+import site._
 
 /** The possible levels of permission used for site access, user delegation, and volume permissions.
   * Must match the corresponding postgres "permission" type. */

@@ -4,7 +4,7 @@ package views.html
  */
 
 import play.api.templates.HtmlFormat._
-import util._
+import site._
 import models._
 import controllers._
 

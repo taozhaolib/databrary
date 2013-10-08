@@ -4,7 +4,7 @@ import anorm._
 import anorm.SqlParser.scalar
 import dbrary._
 import dbrary.Anorm._
-import util._
+import site._
 
 /** Access control over a volume granted to a party.
   * Volume access permissions (ACLs) are determined by a set of VolumeAccess entries (ACEs).
