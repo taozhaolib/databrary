@@ -163,7 +163,7 @@ object Asset extends SiteController {
                 models.FileAsset.create(fmt, classification, file)
             }
             val link = ContainerAsset.create(request.obj, asset, position, maybe(name).getOrElse(fname), maybe(body))
-            Redirect(link.container.fullSlot.pageURL)
+            Redirect(routes.Asset.view(link.volumeId, link.container.fullSlot.id, link.asset.id))
         })
       case _ => error(uploadForm) /* should not happen */
     })

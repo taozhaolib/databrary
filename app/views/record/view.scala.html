@@ -22,7 +22,7 @@
             </thead>
 
             <tbody>
-            @if(record.slots.lengthCompare(1) > 0) {
+            @if(record.slots.nonEmpty) {
                 @record.slots.map { s =>
                     <tr>
                         <td class="main"><a href='@s.pageURL'>@s.container.name (#@s.id.unId)</a></td>

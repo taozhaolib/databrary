@@ -1,0 +1,16 @@
+@(asset : ContainerAsset, slotAsset : Option[SlotAsset] = None)(implicit request : SiteRequest[_])
+
+    @if(asset.permission >= Permission.EDIT) {
+    <nav class="menu">
+        <ul>
+            @crud.headerCurrentLink(routes.Asset.view(asset.volumeId, asset.container.fullSlot.id, asset.assetId), "view")
+            @crud.headerCurrentLink(routes.Asset.edit(asset.volumeId, asset.containerId, asset.assetId), "edit")
+
+            @slotAsset.map { sa =>
+                @if(sa.slot.isFull) {
+                    @crud.headerCurrentLink(routes.Asset.remove(asset.volumeId, asset.containerId, asset.assetId), "remove")
+                }
+            }
+        </ul>
+    </nav>
+    }

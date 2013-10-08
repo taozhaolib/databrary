@@ -12,19 +12,12 @@
             <h1>@target.fold(_ => "Upload Asset", "Edit: " + _.name)</h1>
 
 	    @target match {
-	    case Left(_) => {
-	    }
-	    case Right(link) => {
-                <nav class="menu">
-                    <ul>
-                @if(link.permission >= Permission.EDIT) {
-                        @crud.headerCurrentLink(routes.Asset.view(link.volumeId, link.container.fullSlot.id, link.assetId), "view")
-                        @crud.headerCurrentLink(routes.Asset.edit(link.volumeId, link.containerId, link.assetId), "edit")
-                    }
-            </ul>
-            </nav>
+            case Left(_) => {
             }
+            case Right(link) => {
+                @crud.assetMenu(link)
             }
+        }
         </header>
 
         @tag.form(target.fold(

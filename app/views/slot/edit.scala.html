@@ -1,32 +1,39 @@
-@(slot : Slot, form : controllers.Slot.EditForm, recordForm : controllers.Record.SelectForm)(implicit request : SiteRequest[_])
+@(c : Either[Volume, Slot], form : controllers.Slot.EditForm, recordForm : Option[controllers.Record.SelectForm] )(implicit request : SiteRequest[_])
 
-@import helper.FieldConstructor
+    @import helper.FieldConstructor
 
     @implicitField = @{
         FieldConstructor(tag.minimalFieldConstructor.f)
     }
 
-@template.crud("Edit Slot: " + slot.container.name + "-" + slot.id.unId) {
-    <article>
-        @crud.slotHeader(slot)
+    @template.crud(c.fold(v => "Create Slot in Volume: " + v.name.toString, s => "Edit Slot: " + s.container.name + " (#" + s.id.unId.toString + ")")) {
+        <article>
+            @c.fold(volume => Html("<header><h1>Add Slot to Volume: "+volume.name+"</h1></header>"), slot => crud.slotHeader(slot))
 
-    @tag.form(routes.Slot.change(slot.volumeId, slot.id), 'id -> "slot_edit") {
-        @if(controllers.Slot.formForContainer(form, slot)) {
-            @tag.inputText(form("name"), 'placeholder -> "Name")
-            @tag.inputDate(form("date"), 'placeholder -> "Date", 'class -> "half")
+            @widget.formErrors(form)
+
+            @tag.form(c.fold(volume => routes.Slot.addContainer(volume.id), slot => routes.Slot.change(slot.volumeId, slot.id)), 'id -> "slot_edit") {
+                @if(form("name").name) {
+                    @tag.inputText(form("name"), 'placeholder -> "Name")
+                    @tag.inputDate(form("date"), 'placeholder -> "Date", 'class -> "half")
+                }
+                @widget.enumSelect(form("consent"), Consent)
+            }
+
+            @c match {
+                case Right(slot) => {
+                <fieldset>
+                    <legend>Records</legend>
+
+                    @widget.recordAdminList(slot, recordForm)
+                </fieldset>
+                }
+                case _ => {
+
+                }
+            }
+
+            <button type='submit' class="big button first" form="slot_edit">Change</button>
+
+        </article>
         }
-        @widget.enumSelect(form("consent"), Consent)
-    }
-
-    @widget.formErrors(form)
-
-        <fieldset>
-            <legend>Records</legend>
-
-            @widget.recordAdminList(slot, Option(recordForm))
-        </fieldset>
-
-        <button type='submit' class="big button first" form="slot_edit">Change</button>
-
-    </article>
-}
