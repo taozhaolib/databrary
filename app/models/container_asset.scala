@@ -95,7 +95,7 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
     * This assumes that permissions have already been checked as the caller must already have the container. */
   private[models] def getContainer(container : Container)(implicit db : Site.DB) : Seq[ContainerAsset] =
     containerRow(container).
-      SQL("WHERE container_asset.container = {container}").
+      SQL("WHERE container_asset.container = {container} ORDER BY container_asset.position NULLS FIRST").
       on('container -> container.id).list
 
   /** Find the assets in a container with the given name. */
@@ -219,7 +219,7 @@ object SlotAsset {
       leftJoin(columns, "asset.id = toplevel_asset.asset AND toplevel_asset.slot = {slot}") map {
       case (link ~ excerpt) => make(link, slot, excerpt)
     }
-    row.SQL("WHERE container_asset.container = {container} AND", condition("{segment}")).
+    row.SQL("WHERE container_asset.container = {container} AND", condition("{segment}"), "ORDER BY container_asset.position NULLS FIRST").
     on('slot -> slot.id, 'container -> slot.containerId, 'segment -> slot.segment).list
   }
 
