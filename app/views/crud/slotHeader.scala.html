@@ -11,10 +11,7 @@
 			@crud.headerCurrentLink(routes.Slot.edit(slot.volume.id, slot.id), "edit")
 
             @if(slot.container.permission >= Permission.CONTRIBUTE) {
-                @if(slot.id == slot.container.fullSlot.id) {
-                    @crud.headerCurrentLink(routes.Asset.create(slot.volume.id, slot.containerId), "add asset")
-                }
-
+                @crud.headerCurrentLink(routes.Asset.create(slot.volume.id, slot.containerId, slot.segment.lowerBound), "add asset")
                 @crud.headerCurrentLink(routes.Slot.create(slot.volumeId, slot.containerId), "add slot")
 
                 @tag.form(routes.Record.slotAdd(slot.volumeId, slot.id, false)) {

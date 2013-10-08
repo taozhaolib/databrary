@@ -23,37 +23,6 @@
             <h2>Assets</h2>
             @widget.assetList(slot.assets)
 
-            @if(slot.container.fullSlot.id == slot.id) {
-                <h2>Child Slots</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="main">Slot</th>
-                            <th class="meta">Range</th>
-                            <th class="meta">Consent</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                    @if(slot.container.slots.lengthCompare(1) > 0) {
-                        @slot.container.slots.map { s =>
-                            @if(s.id != slot.container.fullSlot.id) {
-                                <tr>
-                                    <td class="main">@display(s)</td>
-                                    <td class="meta">@display(s.segment)</td>
-                                    <td class="meta">@s.consent</td>
-                                </tr>
-                            }
-                        }
-                    } else {
-                        <tr>
-                            <td class="empty" colspan="3">This container has no child slots.</td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
-            }
-
             <div class="row">
             @region.comments(Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), slot.comments(true))
             </div>

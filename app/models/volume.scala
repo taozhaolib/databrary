@@ -68,7 +68,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
   def pageName(implicit site : Site) = name
   def pageParent(implicit site : Site) = None
-  def pageURL = controllers.routes.Volume.view(id).url
+  def pageURL(implicit site : Site) = controllers.routes.Volume.view(id).url
 }
 
 object Volume extends TableId[Volume]("volume") {

@@ -39,5 +39,5 @@ trait SitePage {
   /** The object "above" this one (in terms of breadcrumbs and nesting). */
   def pageParent(implicit site : Site) : Option[SitePage]
   /** The URL of the page, usually determined by [[controllers.routes]]. */
-  def pageURL : String
+  def pageURL(implicit site : Site) : String
 }

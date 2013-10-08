@@ -8,14 +8,7 @@
         <header>
             <h1>@link.link.name</h1>
 
-            <nav class="menu">
-                <ul>
-                @if(link.permission >= Permission.EDIT) {
-                    @crud.headerCurrentLink(routes.Asset.view(link.link.volumeId, link.slotId, link.link.assetId), "view")
-                    @crud.headerCurrentLink(routes.Asset.edit(link.link.volumeId, link.link.containerId, link.link.assetId), "edit")
-                }
-                </ul>
-            </nav>
+            @crud.assetMenu(link.link, Some(link))
         </header>
 
         <p>@link.link.body</p>

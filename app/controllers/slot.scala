@@ -21,7 +21,10 @@ object Slot extends SiteController {
     SiteAction ~> action(v, i, p)
 
   def view(v : models.Volume.Id, i : models.Slot.Id) = Action(v, i) { implicit request =>
-    Ok(views.html.slot.view(request.obj))
+    if (request.obj.isFull && request.obj.container.top)
+      Redirect(routes.Volume.view(request.obj.volumeId))
+    else
+      Ok(views.html.slot.view(request.obj))
   }
 
   type EditForm = Form[(Option[(Option[String], Option[Date])], Consent.Value)]
@@ -45,11 +48,15 @@ object Slot extends SiteController {
     editForm : EditForm = editFormFill(slot),
     recordForm : Record.SelectForm = Record.selectForm)(
     implicit request : SiteRequest[_]) = {
-    views.html.slot.edit(slot, editForm, recordForm)
+    views.html.slot.edit(Right(slot), editForm, Some(recordForm))
   }
 
   def edit(v : models.Volume.Id, i : models.Slot.Id) = Action(v, i, Permission.EDIT) { implicit request =>
     Ok(viewEdit(request.obj)())
+  }
+
+  def createContainer(v : models.Volume.Id) = Volume.Action(v, Permission.EDIT) { implicit request =>
+    Ok(views.html.slot.edit(Left(request.obj), editForm(true), None))
   }
 
   def change(v : models.Volume.Id, i : models.Slot.Id) = Action(v, i, Permission.EDIT) { implicit request =>
@@ -62,6 +69,17 @@ object Slot extends SiteController {
         request.obj.change(consent = consent)
         Redirect(request.obj.pageURL)
       }
+    )
+  }
+
+  def addContainer(s : models.Volume.Id) = Volume.Action(s, Permission.CONTRIBUTE) { implicit request =>
+    editForm(true).bindFromRequest.fold(
+      form => BadRequest(views.html.slot.edit(Left(request.obj), form, None)),
+    { case (Some((name, date)), consent) =>
+      val cont = models.Container.create(request.obj, name = name, date = date)
+      cont.fullSlot.change(consent = consent)
+      Redirect(cont.fullSlot.pageURL)
+    }
     )
   }
 
