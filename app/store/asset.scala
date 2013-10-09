@@ -7,7 +7,6 @@ import scala.concurrent._
 import scala.collection.mutable.{Map,Queue}
 import play.api.Play.current
 import play.api.libs.Files.TemporaryFile
-import play.api.libs.concurrent.{Akka,Execution}
 import play.api.libs.iteratee._
 import dbrary.{Offset,Range}
 import site._
@@ -42,7 +41,7 @@ object StreamEnumerator {
     val size = file.length
     private[this] val input = new FileInputStream(file)
     def apply[A](it : Iteratee[Data, A]) : Future[Iteratee[Data, A]] = 
-      Enumerator.fromStream(input, chunkSize)(Execution.defaultContext).apply[A](it)
+      Enumerator.fromStream(input, chunkSize)(context.main).apply[A](it)
     override def range(start : Long = 0, end : Long = size - 1) = new Range(start, end) {
       input.skip(start)
       override def apply[A](it : Iteratee[Data, A]) : Future[Iteratee[Data, A]] = {
@@ -97,7 +96,7 @@ object FileAsset extends StoreDir[models.FileAsset.Id]("store.master") {
 private[store] object Segment extends StoreDir[models.Asset.Id]("store.cache") {
   /* Cache filenames use millisecond resolution */
   private def cacheEnabled = base.exists
-  implicit val executionContext : ExecutionContext = Akka.system.dispatchers.lookup("excerpt")
+  implicit val executionContext = site.context.process
 
   private def generate(file : File, gen : File => Unit, cache : Boolean = true) : Future[StreamEnumerator] =
     try {
