@@ -42,7 +42,10 @@
                             <aside class="funding foot">
                                 <h2>Funding</h2>
 
-                                @widget.userinfo(models.Party.Root)
+				@volume.funding.map { f =>
+					@widget.userinfo(f.funder)
+					@f.grant
+				}
                             </aside>
 
                             <aside class="access cf foot">

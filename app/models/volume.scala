@@ -63,6 +63,9 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   /** List of all citations on this volume. */
   def citations(implicit db : Site.DB) = VolumeCitation.getVolume(this)
 
+  /** List of all funding on this volume. */
+  def funding(implicit db : Site.DB) = VolumeFunding.getVolume(this)
+
   /** The list of comments in this volume. */
   def comments(implicit db : Site.DB) : Seq[Comment] = Comment.getVolume(this)
 

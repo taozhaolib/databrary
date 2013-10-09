@@ -1,9 +1,11 @@
 package controllers
 
+import play.api._
 import play.api.mvc._
 import play.api.data._
 import               Forms._
 import play.api.i18n.Messages
+import scala.concurrent.Future
 import site._
 import models._
 
@@ -20,12 +22,11 @@ object Token extends SiteController {
       if (!token.valid) {
         token.remove
         Gone
-      } else token.party match {
-        case a : Account if token.password =>
-          Ok(views.html.token.password(a.id, passwordForm.fill((token.token, None))))
-        case a : Account =>
-          Login.login(a) /* TODO: don't allow password resets through this path */
-        case _ => NotImplemented
+      } else if (token.password)
+        Ok(views.html.token.password(token.accountId, passwordForm.fill((token.token, None))))
+      else {
+        token.remove
+        Login.login(token.account) /* TODO: don't allow password resets through this path */
       }
     }
   }
@@ -34,13 +35,41 @@ object Token extends SiteController {
     passwordForm.bindFromRequest.fold(
       form => BadRequest(views.html.token.password(a, form)),
       { case (token, password) =>
-        models.LoginToken.get(token).filter(t => t.valid && t.password && t.party.id == a)
+        models.LoginToken.get(token).filter(t => t.valid && t.password && t.accountId == a)
           .fold[SimpleResult](Forbidden) { token =>
-          val acct = token.party.asInstanceOf[models.Account] // hopefully
-          password.foreach(p => acct.changeAccount(password = p))
-          Login.login(acct)
+          password.foreach(p => token.account.changeAccount(password = p))
+          Login.login(token.account)
         }
       }
+    )
+  }
+
+  private def mailer = Play.current.plugin[com.typesafe.plugin.MailerPlugin]
+
+  val issuePasswordForm = Form("email" -> email)
+
+  def getPassword = SiteAction { implicit request =>
+    mailer.fold[SimpleResult](ServiceUnavailable) { mailer =>
+      Ok(views.html.token.getPassword(issuePasswordForm))
+    }
+  }
+
+  def issuePassword = SiteAction.async { implicit request =>
+    issuePasswordForm.bindFromRequest.fold(
+      form => Future.successful(BadRequest(views.html.token.getPassword(form))),
+      email => mailer.fold[Future[SimpleResult]](Future.successful(ServiceUnavailable)) { mailer => Future {
+        val mail = mailer.email
+        mail.setSubject(Messages("token.password.subject"))
+        mail.setRecipient(email)
+        mail.setFrom("Databrary <help@databrary.org>")
+        Account.getEmail(email).filter(_.access < Permission.ADMIN).fold {
+          mail.send(Messages("token.password.none"))
+        } { acct =>
+          val token = LoginToken.create(acct, true)
+          mail.send(Messages("token.password.body", token.redeemURL.absoluteURL()))
+        }
+        Ok("sent")
+      }(context.process) }
     )
   }
 }

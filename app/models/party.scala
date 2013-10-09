@@ -75,6 +75,8 @@ final class Account protected (party : Party, email_ : String, password_ : Strin
     if (email == _email && password == _password && openid == _openid)
       return
     Audit.change(Account.table, SQLArgs('email -> email, 'password -> password, 'openid -> openid), SQLArgs('id -> id)).execute()
+    if (password != _password)
+      clearTokens
     _email = email
     _password = password
     _openid = openid
@@ -83,6 +85,9 @@ final class Account protected (party : Party, email_ : String, password_ : Strin
   /** List of comments by this individual.
     * This checks permissions on the target volumes. */
   def comments(implicit site : Site) = Comment.getParty(this)
+
+  /** Remove any issued login tokens for this user. */
+  def clearTokens(implicit db : Site.DB) = LoginToken.clearAccount(id)
 }
 
 object Party extends TableId[Party]("party") {
