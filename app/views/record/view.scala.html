@@ -4,39 +4,48 @@
     <article>
         @crud.recordHeader(record)
 
-        <dl>
-        @record.measures.filter(m => record.dataPermission(m.metric) >= Permission.DOWNLOAD).map { m =>
-            <dt>@m.metric.name</dt>
-            <dd>@m.datum</dd>
-        }
-        </dl>
+        <div class="row">
+            <div class="col_laptop_3 col_tablet_2 col_mobile_2">
+                <div class="siderim">
+                    <h2>Measures</h2>
 
-        <h2>Slots</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th class="main">Slot</th>
-                    <th class="meta">Range</th>
-                    <th class="meta">Consent</th>
-                </tr>
-            </thead>
+                    <dl class="measures">
+                    @record.measures.filter(m => record.dataPermission(m.metric) >= Permission.DOWNLOAD).map { m =>
+                        <dt>@m.metric.name</dt>
+                        <dd>@m.datum</dd>
+                    }
+                    </dl>
+                </div>
+            </div>
 
-            <tbody>
-            @if(record.slots.nonEmpty) {
-                @record.slots.map { s =>
-                    <tr>
-                        <td class="main"><a href='@s.pageURL'>@s.container.name (#@s.id.unId)</a></td>
-                        <td class="meta">@display(s.segment)</td>
-                        <td class="meta">@s.consent</td>
-                    </tr>
-                }
-            } else {
-                <tr>
-                    <td class="empty" colspan="3">This container has no child slots.</td>
-                </tr>
-            }
-            </tbody>
-        </table>
+            <div class="col_laptop_9 col_tablet_7 col_mobile_4">
+                <h2>Slots</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="main">Slot</th>
+                            <th class="meta">Range</th>
+                            <th class="meta">Consent</th>
+                        </tr>
+                    </thead>
 
+                    <tbody>
+                    @if(record.slots.nonEmpty) {
+                        @record.slots.map { s =>
+                            <tr>
+                                <td class="main"><a href='@s.pageURL'>@s.container.name (#@s.id.unId)</a></td>
+                                <td class="meta">@display(s.segment)</td>
+                                <td class="meta">@s.consent</td>
+                            </tr>
+                        }
+                    } else {
+                        <tr>
+                            <td class="empty" colspan="3">This container has no child slots.</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </article>
 }

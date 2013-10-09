@@ -416,3 +416,37 @@ dl.inline-measures {
         }
     }
 }
+
+.siderim {
+    border: 1px solid @gray_50_third;
+    background: mix(@white, @gray_75_third, 90%);
+    padding: (@gutter/2);
+    .border-radius(5px);
+
+    h2 {
+        margin-top: 0;
+        font-weight: normal;
+        border-bottom: 1px solid @gray_50_third;
+    }
+}
+
+dl.measures {
+    dt, dd {
+
+    }
+
+    dt {
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 0.9em;
+        margin-top: 1em;
+
+        &:after {
+            content: ":";
+        }
+    }
+
+    dd {
+        margin-left: 0;
+    }
+}
