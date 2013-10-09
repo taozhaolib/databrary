@@ -135,7 +135,7 @@ object Asset extends SiteController {
     val form = uploadForm.bindFromRequest
     form.fold(error _, {
       case (name, body, position, Some((format, classification, localfile, ()))) =>
-        val ts = request.isAdmin
+        val ts = request.access >= Permission.ADMIN
         val fmt = format.filter(_ => ts).flatMap(AssetFormat.get(_, ts))
         type ER = Either[AssetForm,(TemporaryFile,AssetFormat,String)]
         request.body.asMultipartFormData.flatMap(_.file("file")).fold {

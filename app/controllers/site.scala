@@ -13,15 +13,26 @@ import models._
 
 sealed trait SiteRequest[A] extends Request[A] with Site {
   def clientIP = Inet(remoteAddress)
+  def withObj[O](obj : O) : RequestObject[O]#Site[A]
 }
 
 object SiteRequest {
-  sealed abstract class Base[A](request : Request[A], db : site.Site.DB) extends WrappedRequest[A](request) with SiteRequest[A]
-  final case class Anon[A](request : Request[A], db : site.Site.DB) extends Base[A](request, db) with AnonSite
-  final case class Auth[A](request : Request[A], identity : Account, db : site.Site.DB) extends Base[A](request, db) with AuthSite
+  sealed abstract class Base[A](request : Request[A], val db : site.Site.DB) extends WrappedRequest[A](request) with SiteRequest[A]
+  sealed class Anon[A](request : Request[A], db : site.Site.DB) extends Base[A](request, db) with AnonSite {
+    def withObj[O](obj : O) : RequestObject[O]#Anon[A] = {
+      object ro extends RequestObject[O]
+      new ro.Anon(request, db, obj)
+    }
+  }
+  sealed class Auth[A](request : Request[A], val identity : Account, db : site.Site.DB) extends Base[A](request, db) with AuthSite {
+    def withObj[O](obj : O) : RequestObject[O]#Auth[A] = {
+      object ro extends RequestObject[O]
+      new ro.Auth(request, identity, db, obj)
+    }
+  }
 
   def apply[A](request : Request[A], identity : Option[Account])(implicit db : site.Site.DB) : SiteRequest.Base[A] =
-    identity.fold[SiteRequest.Base[A]](Anon[A](request, db))(Auth[A](request, _, db))
+    identity.fold[SiteRequest.Base[A]](new Anon[A](request, db))(new Auth[A](request, _, db))
 }
 
 trait RequestObject[O] {
@@ -29,23 +40,15 @@ trait RequestObject[O] {
     val obj : O
   }
   sealed trait Site[A] extends SiteRequest[A] with Base[A]
-  final class Anon[A](request : Request[A], val db : site.Site.DB, val obj : O) extends WrappedRequest[A](request) with Site[A] with AnonSite
-  final class Auth[A](request : Request[A], val identity : Account, val db : site.Site.DB, val obj : O) extends WrappedRequest[A](request) with Site[A] with AuthSite
+  final class Anon[A](request : Request[A], db : site.Site.DB, val obj : O) extends SiteRequest.Anon[A](request, db) with Site[A]
+  final class Auth[A](request : Request[A], identity : Account, db : site.Site.DB, val obj : O) extends SiteRequest.Auth[A](request, identity, db) with Site[A]
 }
 object RequestObject {
-  def apply[O,A](request : SiteRequest.Base[A], obj : O) : RequestObject[O]#Site[A] = {
-    object RO extends RequestObject[O]
-    request match {
-      case SiteRequest.Anon(request, db) => new RO.Anon[A](request, db, obj)
-      case SiteRequest.Auth(request, identity, db) => new RO.Auth[A](request, identity, db, obj)
-    }
-  }
   def getter[O](get : SiteRequest[_] => Option[O]) = new ActionRefiner[SiteRequest.Base,RequestObject[O]#Site] {
     protected def refine[A](request : SiteRequest.Base[A]) =
-      get(request) match {
-        case None => simple(Results.NotFound)
-        case Some(o) => Right(RequestObject[O,A](request, o))
-      }
+      get(request).fold[Either[Future[SimpleResult],RequestObject[O]#Site[A]]](
+        simple(Results.NotFound))(
+        o => Right(request.withObj(o)))
   }
   def permission[O <: InVolume](perm : Permission.Value = Permission.VIEW) = new ActionHandler[RequestObject[O]#Site] {
     protected def handle[A](request : RequestObject[O]#Site[A]) =
@@ -61,8 +64,8 @@ object RequestObject {
 object SiteAction extends ActionCreator[SiteRequest.Base] {
   private[this] def getUser(request : Request[_])(implicit db : site.Site.DB) : Option[Account] =
     request.session.get("user").flatMap { i =>
-      try { Some(models.Account.asId(i.toInt)) }
-      catch { case e:java.lang.NumberFormatException => None }
+      scala.util.control.Exception.catching(classOf[java.lang.NumberFormatException])
+        .opt(models.Account.asId(i.toInt))
     }.flatMap(models.Account.get_ _)
 
   def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) =

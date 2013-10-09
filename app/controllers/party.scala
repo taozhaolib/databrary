@@ -105,7 +105,7 @@ object Party extends SiteController {
         if (request.identity.id != i && (!delegate || request.identity.delegatedBy(i)(request) < Permission.ADMIN))
           simple(Forbidden)
         else
-          Right(RequestObject[Party,A](request, models.Party.get(i)(request).get))
+          Right(request.withObj(models.Party.get(i)(request).get))
     }
 
   def edit(i : models.Party.Id) = AdminAction(i) { implicit request =>

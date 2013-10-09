@@ -17,7 +17,7 @@ trait Site {
     * VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for admins.
     */
   def access = identity.access(db)
-  def isAdmin = access >= models.Permission.ADMIN
+  val superuser : Boolean
   /** IP of the client's host. */
   def clientIP : dbrary.Inet
 }
@@ -25,11 +25,14 @@ trait Site {
 trait AnonSite extends Site {
   val identity = models.Party.Nobody
   override def user = None
+  val superuser = false
+  override val access = models.Permission.NONE
 }
 
 trait AuthSite extends Site {
   val identity : models.Account
   override def user = Some(identity)
+  val superuser = false /* temporary */
 }
 
 /** An object with a corresponding page on the site. */

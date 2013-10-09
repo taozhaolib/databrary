@@ -22,7 +22,7 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
     _orcid = orcid
   }
 
-  private val _access = CachedVal[Permission.Value, Site.DB](Authorize.access_check(id)(_))
+  protected val _access = CachedVal[Permission.Value, Site.DB](Authorize.access_check(id)(_))
   /** Level of access user has to the site.
     * Computed by [Authorize.access_check] and usually accessed through [[site.Site.access]]. */
   def access(implicit db : Site.DB) : Permission.Value = _access
@@ -54,7 +54,7 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
-final class Account protected (party : Party, email_ : String, password_ : String, openid_ : Option[String]) extends Party(party.id, party.name, party.orcid) with TableRowId[Account] {
+final class Account protected (party : Party, email_ : String, password_ : String, openid_ : Option[String], val access : Permission.Value) extends Party(party.id, party.name, party.orcid) with TableRowId[Account] {
   override val id = Account.asId(party.id.unId)
   private[this] var _email = email_
   def email = _email
@@ -147,11 +147,11 @@ object Party extends TableId[Party]("party") {
 }
 
 object Account extends TableId[Account]("account") {
-  private[models] def make(e : Party)(email : String, password : Option[String], openid : Option[String]) =
-    new Account(e, email, password.getOrElse(""), openid)
+  private[models] def make(e : Party)(email : String, password : Option[String], openid : Option[String], access : Option[Permission.Value]) =
+    new Account(e, email, password.getOrElse(""), openid, access.getOrElse(Permission.NONE))
   private[models] val columns = Columns[
-    String, Option[String], Option[String]](
-    'email, 'password,      'openid)
+    String, Option[String], Option[String], Option[Permission.Value]](
+    'email, 'password,      'openid,        SelectAs("authorize_access_check(party.id)", "access"))
   private[models] val row = Party.columns.join(columns, using = 'id) map {
     case (e ~ a) => (make(e) _).tupled(a)
   }

@@ -32,7 +32,7 @@
                 @widget.enumSelect(form("classification"), Classification)
                 @tag.inputFile(form("file"))
 
-                @if(request.isAdmin) {
+		@if(request.access >= Permission.ADMIN) {
                     <fieldset>
                         <legend>Admin Options</legend>
                         @tag.select(form("format"), ("", "") +: AssetFormat.getAll(true).map(f => (f.id.unId.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)))

@@ -12,7 +12,7 @@
                 <h2>Connect</h2>
 
                 <ul class="flat">
-                    @if(request.identity.access >= Permission.VIEW) {
+                    @if(request.access >= Permission.VIEW) {
                         @if(a.email != "") {
                             <li><a href="mailto:@a.email" title="Email @party.name"><img src="@routes.Assets.at("images/social/16px/email.png")" alt="Email @party.name">email</a></li>
                         }
