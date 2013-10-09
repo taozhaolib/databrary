@@ -159,17 +159,16 @@ object Account extends TableId[Account]("account") {
   /** Look up a user by id, without an active session.
     * @return None if no party or no account for given party
     */
-  def get_(i : Id)(implicit db : Site.DB) : Option[Account] =
+  def get_(i : Int)(implicit db : Site.DB) : Option[Account] =
     row.SQL("WHERE id = {id}").
       on('id -> i).singleOpt()
   /** Look up a user by id.
     * @return None if no party or no account for given party
     */
   def get(i : Id)(implicit site : Site) : Option[Account] =
-    if (i == site.identity.id)
-      site.user
-    else
-      get_(i)
+    if (i == site.identity.id) site.user
+    else row.SQL("WHERE id = {id}").
+      on('id -> i).singleOpt()
   /** Look up a user by email. */
   def getEmail(email : String)(implicit db : Site.DB) : Option[Account] = 
     row.SQL("WHERE email = {email}").

@@ -32,7 +32,6 @@ trait AnonSite extends Site {
 trait AuthSite extends Site {
   val identity : models.Account
   override def user = Some(identity)
-  val superuser = false /* temporary */
 }
 
 /** An object with a corresponding page on the site. */

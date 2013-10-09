@@ -19,4 +19,13 @@ object maybe {
   /** Default empty value for Strings. */
   def apply(s : String, f : String => Boolean = !_.isEmpty) =
     Some(s).filter(f)
+
+  /** Compute the value, usually a string parse, catching NumberFormatException.
+    * @return Some(f) unless f throws NumberFormatException
+    */
+  private def toNumber[A](f : => A) : Option[A] =
+    scala.util.control.Exception.catching(classOf[java.lang.NumberFormatException]).opt(f)
+  def toInt(s : String) : Option[Int] = toNumber(s.toInt)
+  def toLong(s : String) : Option[Long] = toNumber(s.toLong)
+  def toDouble(s : String) : Option[Double] = toNumber(s.toDouble)
 }

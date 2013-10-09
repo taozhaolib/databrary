@@ -24,15 +24,15 @@ object SiteRequest {
       new ro.Anon(request, db, obj)
     }
   }
-  sealed class Auth[A](request : Request[A], val identity : Account, db : site.Site.DB) extends Base[A](request, db) with AuthSite {
+  sealed class Auth[A](request : Request[A], val identity : Account, val superuser : Boolean, db : site.Site.DB) extends Base[A](request, db) with AuthSite {
     def withObj[O](obj : O) : RequestObject[O]#Auth[A] = {
       object ro extends RequestObject[O]
-      new ro.Auth(request, identity, db, obj)
+      new ro.Auth(request, identity, superuser, db, obj)
     }
   }
 
-  def apply[A](request : Request[A], identity : Option[Account])(implicit db : site.Site.DB) : SiteRequest.Base[A] =
-    identity.fold[SiteRequest.Base[A]](new Anon[A](request, db))(new Auth[A](request, _, db))
+  def apply[A](request : Request[A], identity : Option[Account], superuser : Boolean)(implicit db : site.Site.DB) : SiteRequest.Base[A] =
+    identity.fold[SiteRequest.Base[A]](new Anon[A](request, db))(a => new Auth[A](request, a, superuser && a.access == Permission.ADMIN, db))
 }
 
 trait RequestObject[O] {
@@ -41,7 +41,7 @@ trait RequestObject[O] {
   }
   sealed trait Site[A] extends SiteRequest[A] with Base[A]
   final class Anon[A](request : Request[A], db : site.Site.DB, val obj : O) extends SiteRequest.Anon[A](request, db) with Site[A]
-  final class Auth[A](request : Request[A], identity : Account, db : site.Site.DB, val obj : O) extends SiteRequest.Auth[A](request, identity, db) with Site[A]
+  final class Auth[A](request : Request[A], identity : Account, superuser : Boolean, db : site.Site.DB, val obj : O) extends SiteRequest.Auth[A](request, identity, superuser, db) with Site[A]
 }
 object RequestObject {
   def getter[O](get : SiteRequest[_] => Option[O]) = new ActionRefiner[SiteRequest.Base,RequestObject[O]#Site] {
@@ -52,7 +52,7 @@ object RequestObject {
   }
   def permission[O <: InVolume](perm : Permission.Value = Permission.VIEW) = new ActionHandler[RequestObject[O]#Site] {
     protected def handle[A](request : RequestObject[O]#Site[A]) =
-      if (request.obj.permission < perm) simple(Results.Forbidden)
+      if (request.obj.permission < perm && !request.superuser) simple(Results.Forbidden)
       else None
   }
   def check[O <: InVolume](get : SiteRequest[_] => Option[O], perm : Permission.Value = Permission.VIEW) =
@@ -63,14 +63,14 @@ object RequestObject {
 
 object SiteAction extends ActionCreator[SiteRequest.Base] {
   private[this] def getUser(request : Request[_])(implicit db : site.Site.DB) : Option[Account] =
-    request.session.get("user").flatMap { i =>
-      scala.util.control.Exception.catching(classOf[java.lang.NumberFormatException])
-        .opt(models.Account.asId(i.toInt))
-    }.flatMap(models.Account.get_ _)
+    request.session.get("user").flatMap(maybe.toInt _).flatMap(models.Account.get_ _)
+
+  private[this] def getSuperuser(request : Request[_]) : Boolean =
+    request.session.get("superuser").flatMap(maybe.toLong _).exists(_ > System.currentTimeMillis)
 
   def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) =
     db.DB.withTransaction { implicit db =>
-      block(SiteRequest(request, getUser(request)))
+      block(SiteRequest(request, getUser(request), getSuperuser(request)))
     }
 
   object Auth extends ActionRefiner[SiteRequest,SiteRequest.Auth] {
