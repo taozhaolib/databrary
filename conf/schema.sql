@@ -238,6 +238,14 @@ CREATE TABLE "volume_citation" (
 CREATE INDEX ON "volume_citation" ("volume");
 COMMENT ON TABLE "volume_citation" IS 'Quick and dirty citation list.  Not intended to be permanent.  No PK: only updated in bulk on volume.';
 
+CREATE TABLE "volume_funding" (
+	"volume" integer NOT NULL References "volume",
+	"funder" integer NOT NULL References "party",
+	"grant" text
+);
+CREATE INDEX ON "volume_funding" ("volume");
+COMMENT ON TABLE "volume_funding" IS 'Quick and dirty funding list.  No PK: only updated in bulk on volume.';
+
 ----------------------------------------------------------- time intervals
 
 CREATE FUNCTION "interval_mi_epoch" (interval, interval) RETURNS double precision LANGUAGE sql IMMUTABLE STRICT AS 
