@@ -1,4 +1,4 @@
-@(target : Either[Container, ContainerAsset], form : controllers.Asset.AssetForm)(implicit request : SiteRequest[_])
+@(target : Either[Container, ContainerAsset], form : controllers.Asset.AssetForm)(implicit request : RequestObject[SitePage]#Site[_])
 
 @import helper.FieldConstructor
 

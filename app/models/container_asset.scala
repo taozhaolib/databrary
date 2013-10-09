@@ -12,7 +12,7 @@ import site._
   * An asset link includes the asset and container, along with a name and description for that particular link.
   * Permissions are checked in msot cases, as indicated.
   */
-sealed class ContainerAsset protected (val asset : Asset, val container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with InVolume {
+sealed class ContainerAsset protected (val asset : Asset, val container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with SitePage with InVolume {
   def assetId = asset.id
   def containerId = container.id
   def id = (assetId, containerId)
@@ -46,6 +46,11 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   def extent : Option[Range[Offset]] = position.map(Range.singleton[Offset](_)(PGSegment))
 
   def fullSlot(implicit db : Site.DB) : SlotAsset = SlotAsset.getFull(this)
+
+  def pageName(implicit site : Site) = name
+  def pageParent(implicit site : Site) = Some(volume)
+  def pageURL(implicit site : Site) = controllers.routes.Asset.view(volume.id, container.fullSlot.id, assetId)
+  def pageActions(implicit site : Site) = Seq()
 }
 
 final class ContainerTimeseries private[models] (override val asset : Asset with TimeseriesData, container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends ContainerAsset(asset, container, position_, name_, body_) {
@@ -165,7 +170,8 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
 
   def pageName(implicit site : Site) = link.name
   def pageParent(implicit site : Site) = Some(slot)
-  def pageURL(implicit site : Site) = controllers.routes.Asset.view(volume.id, slotId, link.assetId).url
+  def pageURL(implicit site : Site) = controllers.routes.Asset.view(volume.id, slotId, link.assetId)
+  def pageActions(implicit site : Site) = Seq()
 }
 
 final class SlotTimeseries private[models] (override val link : ContainerTimeseries, slot : Slot, excerpt_ : Option[Boolean] = None) extends SlotAsset(link, slot, excerpt_) with TimeseriesData {

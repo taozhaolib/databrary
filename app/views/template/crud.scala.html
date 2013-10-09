@@ -1,4 +1,4 @@
-@(title : String = "", css: Html = Html(""), js: Html = Html(""))(body : Html)(implicit request: SiteRequest[_])
+@(title : String = "", css: Html = Html(""), js: Html = Html(""))(body : Html)(implicit request : RequestObject[SitePage]#Site[_])
 
 @script = {}
 
@@ -7,6 +7,7 @@
 
     <div class="row">
         <main id="body_main" class="main column_full">
+
             @body
         </main>
     </div>

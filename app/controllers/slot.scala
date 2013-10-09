@@ -47,7 +47,7 @@ object Slot extends SiteController {
   private[controllers] def viewEdit(slot : Slot)(
     editForm : EditForm = editFormFill(slot),
     recordForm : Record.SelectForm = Record.selectForm)(
-    implicit request : SiteRequest[_]) = {
+    implicit request : Request[_]) = {
     views.html.slot.edit(Right(slot), editForm, Some(recordForm))
   }
 

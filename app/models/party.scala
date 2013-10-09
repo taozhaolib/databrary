@@ -29,7 +29,8 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
 
   def pageName(implicit site : Site) = name
   def pageParent(implicit site : Site) = None
-  def pageURL(implicit site : Site) = controllers.routes.Party.view(id).url
+  def pageURL(implicit site : Site) = controllers.routes.Party.view(id)
+  def pageActions(implicit site : Site) = Seq()
 
   private[this] val _authorizeParents = CachedVal[Seq[Authorize], Site.DB](Authorize.getParents(this)(_))
   /** List of authorizations granted to this user. Cached for !all.

@@ -44,7 +44,10 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
 
   def pageName(implicit site : Site) = date.toString // FIXME date permissions/useful title
   def pageParent(implicit site : Site) = Some(volume)
-  def pageURL(implicit site : Site) = controllers.routes.Slot.view(volume.id, fullSlot.id).url
+  def pageURL(implicit site : Site) = controllers.routes.Slot.view(volume.id, fullSlot.id)
+  def pageActions(implicit site : Site) = Seq(
+    ("view", controllers.routes.Slot.view(volume.id, fullSlot.id), Permission.VIEW)
+  ).filter(a => permission >= a._3)
 }
 
 object Container extends TableId[Container]("container") {
@@ -168,7 +171,14 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
 
   def pageName(implicit site : Site) = this.toString // FIXME
   def pageParent(implicit site : Site) = Some(container)
-  def pageURL(implicit site : Site) = controllers.routes.Slot.view(container.volumeId, id).url
+  def pageURL(implicit site : Site) = controllers.routes.Slot.view(container.volumeId, id)
+  def pageActions(implicit site : Site) = Seq(
+    ("view", controllers.routes.Slot.view(volumeId, id), Permission.VIEW),
+    ("edit", controllers.routes.Slot.edit(volumeId, id), Permission.EDIT),
+    ("add asset", controllers.routes.Asset.create(volumeId, containerId, segment.lowerBound), Permission.CONTRIBUTE),
+    ("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
+    ("add record", controllers.routes.Record.slotAdd(volumeId, id, false), Permission.CONTRIBUTE)
+  ).filter(a => permission >= a._3)
 }
 
 object Slot extends TableId[Slot]("slot") {

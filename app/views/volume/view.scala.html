@@ -1,4 +1,4 @@
-@(volume : Volume, assets : Seq[SlotAsset], excerpts : Map[String, Seq[SlotAsset]], assetMap : Map[String, Seq[SlotAsset]])(implicit request : SiteRequest[_])
+@(volume : Volume, assets : Seq[SlotAsset], excerpts : Map[String, Seq[SlotAsset]], assetMap : Map[String, Seq[SlotAsset]])(implicit request : RequestObject[Volume]#Site[_])
 
     @script = {
         dbjs.tabs('.tabset', '.tab', '.view');

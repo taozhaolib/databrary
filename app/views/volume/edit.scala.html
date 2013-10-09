@@ -1,4 +1,4 @@
-@(a : Either[Party, Volume], editForm : controllers.Volume.VolumeForm)(implicit request : SiteRequest[_])
+@(a : Either[Party, Volume], editForm : controllers.Volume.VolumeForm)(implicit request : RequestObject[SitePage]#Site[_])
 
 @import helper.FieldConstructor
 

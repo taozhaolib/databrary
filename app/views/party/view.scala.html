@@ -1,4 +1,4 @@
-@(party : Party)(implicit request : SiteRequest[_])
+@(party : Party)(implicit request : RequestObject[SitePage]#Site[_])
 
 @script = {
     dbjs.fadeOff('.party .volume_roll a', '.body', '.thumb');

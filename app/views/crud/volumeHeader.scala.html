@@ -6,6 +6,7 @@
 
     @if(volume.permission >= Permission.EDIT) {
     <nav class="menu">
+        <div class="breadcrumb"></div>
         <ul>
 			@crud.headerCurrentLink(routes.Volume.view(volume.id), "view")
 			@crud.headerCurrentLink(routes.Volume.edit(volume.id), "edit")

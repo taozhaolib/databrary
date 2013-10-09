@@ -24,13 +24,13 @@ object SiteRequest {
     identity.fold[SiteRequest.Base[A]](Anon[A](request, db))(Auth[A](request, _, db))
 }
 
-trait RequestObject[O] {
+trait RequestObject[+O] {
   sealed trait Base[A] extends Request[A] {
     val obj : O
   }
   sealed trait Site[A] extends SiteRequest[A] with Base[A]
-  final class Anon[A](request : Request[A], val db : site.Site.DB, val obj : O) extends WrappedRequest[A](request) with Site[A] with AnonSite
-  final class Auth[A](request : Request[A], val identity : Account, val db : site.Site.DB, val obj : O) extends WrappedRequest[A](request) with Site[A] with AuthSite
+  final case class Anon[A](request : Request[A], db : site.Site.DB, obj : O) extends WrappedRequest[A](request) with Site[A] with AnonSite
+  final case class Auth[A](request : Request[A], identity : Account, db : site.Site.DB, obj : O) extends WrappedRequest[A](request) with Site[A] with AuthSite
 }
 object RequestObject {
   def apply[O,A](request : SiteRequest.Base[A], obj : O) : RequestObject[O]#Site[A] = {
