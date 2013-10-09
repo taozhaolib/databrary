@@ -1,9 +1,6 @@
 @(record : models.Record)(implicit request : RequestObject[Record]#Site[_])
 
 @template.crud("Record: " + record.toString()) {
-    <article>
-        @crud.recordHeader(record)
-
         <div class="row">
             <div class="col_laptop_3 col_tablet_2 col_mobile_2">
                 <div class="siderim">
@@ -47,5 +44,4 @@
                 </table>
             </div>
         </div>
-    </article>
 }

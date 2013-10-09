@@ -30,7 +30,12 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   def pageName(implicit site : Site) = name
   def pageParent(implicit site : Site) = None
   def pageURL(implicit site : Site) = controllers.routes.Party.view(id)
-  def pageActions(implicit site : Site) = Seq()
+  def pageActions(implicit site : Site) = Seq(
+    ("view", controllers.routes.Party.view(id), Permission.VIEW),
+    ("edit", controllers.routes.Party.edit(id), Permission.EDIT),
+    ("authorization", controllers.routes.Party.admin(id), Permission.ADMIN),
+    ("add volume", controllers.routes.Volume.create(Some(id)), Permission.CONTRIBUTE)
+  ).filter(a => delegated >= a._3)
 
   private[this] val _authorizeParents = CachedVal[Seq[Authorize], Site.DB](Authorize.getParents(this)(_))
   /** List of authorizations granted to this user. Cached for !all.

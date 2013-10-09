@@ -11,7 +11,7 @@
     </thead>
 
     <tbody>
-        @if(assets.lengthCompare(1) > 0) {
+        @if(assets.nonEmpty) {
             @assets.map { link =>
                 <tr>
                     <td class="main">@display(link)</td>

@@ -133,7 +133,7 @@ object Record extends SiteController {
       _.fold[SimpleResult] {
         val r = models.Record.create(request.obj.volume)
         r.addSlot(request.obj)
-        Redirect(routes.Record.edit(r.volumeId, r.id))
+        Created(views.html.record.edit(r, Nil, editForm, js))
       } (models.Record.get(_).
         filter(r => r.permission >= Permission.DOWNLOAD && r.volumeId == v).
         fold[SimpleResult](

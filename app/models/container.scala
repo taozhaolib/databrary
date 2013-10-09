@@ -42,11 +42,15 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
   /** Slot that covers this entire container and which thus serves as a proxy for display and metadata. Cached. */
   def fullSlot(implicit db : Site.DB) : Slot = _fullSlot
 
-  def pageName(implicit site : Site) = date.toString // FIXME date permissions/useful title
+  def pageName(implicit site : Site) = name.getOrElse(date.toString) // TODO: still needs fixin...
   def pageParent(implicit site : Site) = Some(volume)
   def pageURL(implicit site : Site) = controllers.routes.Slot.view(volume.id, fullSlot.id)
   def pageActions(implicit site : Site) = Seq(
-    ("view", controllers.routes.Slot.view(volume.id, fullSlot.id), Permission.VIEW)
+    ("view", controllers.routes.Slot.view(volumeId, fullSlot.id), Permission.VIEW),
+    ("edit", controllers.routes.Slot.edit(volumeId, fullSlot.id), Permission.EDIT),
+    ("add asset", controllers.routes.Asset.create(volumeId, id, fullSlot.segment.lowerBound), Permission.CONTRIBUTE),
+    ("add slot", controllers.routes.Slot.create(volumeId, id), Permission.CONTRIBUTE),
+    ("add record", controllers.routes.Record.slotAdd(volumeId, fullSlot.id, false), Permission.CONTRIBUTE)
   ).filter(a => permission >= a._3)
 }
 
@@ -169,7 +173,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     case (r, i) => r.category.fold("")(_.name + ':') + i.getOrElse("[" + r.id.unId.toString + ']')
   }
 
-  def pageName(implicit site : Site) = this.toString // FIXME
+  def pageName(implicit site : Site) = container.pageName + " (#" + id.unId.toString + ")" // FIXME
   def pageParent(implicit site : Site) = Some(container)
   def pageURL(implicit site : Site) = controllers.routes.Slot.view(container.volumeId, id)
   def pageActions(implicit site : Site) = Seq(

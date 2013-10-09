@@ -84,11 +84,16 @@ NARROW TABLET
 	.column_wide { .grid_column(4); }
 	.column_center { .grid_column(4, 1); }
 
-	.party .column_left,
-	.party .column_right,
-	.party .column_full,
-	.party .volume_list .thumb,
-	.party .volume_list .body,
+    .party .column_left,
+    .party .column_right,
+    .party .column_full,
+    .party .volume_list .thumb,
+    .party .volume_list .body,
+	.account .column_left,
+	.account .column_right,
+	.account .column_full,
+	.account .volume_list .thumb,
+	.account .volume_list .body,
 	#comments { .grid_column(6); }
 
     .col_mobile_2 { .grid_column(2); }
@@ -118,7 +123,7 @@ NARROW TABLET
 		}
 	}
 
-    .modal_full .party {
+    .modal_full .account {
         .column_left,
         .volume_list .thumb,
         .volume_list .body,
@@ -143,8 +148,10 @@ WIDE TABLET
 	.row { .grid_row(); }
 	.column_full { .grid_column(@grid_columns); }
 
-	.party .volume_list .thumb,
-	.party .column_left { .grid_column(2); }
+    .party .volume_list .thumb,
+    .party .column_left,
+	.account .volume_list .thumb,
+	.account .column_left { .grid_column(2); }
 
 	.extended,
 	.extended .col_6,
@@ -155,14 +162,17 @@ WIDE TABLET
 
 	.column_half { .grid_column(4.5); }
 
-	.party .volume_list .body { .grid_column(5); }
+	.party .volume_list .body,
+	.account .volume_list .body { .grid_column(5); }
 	.column_center { .grid_column(5, 2); }
 
 	.volume_roll .body,
 	.column_wide { .grid_column(6); }
 
 	.party .column_right,
-	.party .column_full { .grid_column(7); }
+	.account .column_right,
+	.party .column_full,
+	.account .column_full { .grid_column(7); }
 
 	#comments { .grid_column(8); }
 
@@ -174,7 +184,7 @@ WIDE TABLET
 
 	.banner { font-size: 0.9em; }
 
-    .modal_full .party {
+    .modal_full .account {
         .column_left { .grid_column(2); }
         .volume_list .body,
         .volume_list .thumb,
@@ -198,12 +208,14 @@ NORMAL SCREEN
 	.row { .grid_row(); }
 	.column_full { .grid_column(@grid_columns); }
 
-	.modal_full .party .volume_list .thumb,
-	.modal_full .party .volume_list .column_left,
-	.party .column_left { .grid_column(2); }
+	.modal_full .account .volume_list .thumb,
+	.modal_full .account .volume_list .column_left,
+	.party .column_left,
+	.account .column_left { .grid_column(2); }
 
 	.column_narrow,
-	.party .volume_list .thumb { .grid_column(3); }
+	.party .volume_list .thumb,
+	.account .volume_list .thumb { .grid_column(3); }
 
 	.column_small,
 	.volume_roll .thumb { .grid_column(4); }
@@ -216,13 +228,16 @@ NORMAL SCREEN
 
 	.column_center { .grid_column(6, 3); }
 
-	.party .volume_list .body { .grid_column(7); }
+	.party .volume_list .body,
+	.account .volume_list .body { .grid_column(7); }
 
 	#comments,
 	.volume_roll .body { .grid_column(8); }
 
 	.party .column_right,
-	.party .column_full { .grid_column(10); }
+	.account .column_right,
+	.party .column_full,
+	.account .column_full { .grid_column(10); }
 
     .col_laptop_3 { .grid_column(3); }
     .col_laptop_9 { .grid_column(9); }
@@ -230,7 +245,7 @@ NORMAL SCREEN
 	.modal_small { .grid_max(6); }
 	.modal_full { .grid_max(12); }
 
-	.modal_full .party {
+	.modal_full .account {
 		#comments,
         .column_full,
 		.column_right {

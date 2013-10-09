@@ -1,4 +1,4 @@
-@(record : models.Record, meas : Seq[Metric], form : controllers.Record.EditForm, json : Html)(implicit request : RequestObject[Record]#Site[_])
+@(record : models.Record, meas : Seq[Metric], form : controllers.Record.EditForm, json : Html)(implicit request : RequestObject[SitePage]#Site[_])
 
 @import helper.FieldConstructor
 
@@ -7,9 +7,6 @@
     }
 
 @template.crud("Edit Record: " + record.toString()) {
-    <article>
-        @crud.recordHeader(record)
-
         @tag.form(routes.Record.update(record.volumeId, record.id)) {
             @widget.formErrors(form)
 
@@ -54,5 +51,4 @@
 
             <button type='submit' class="big button first">Update</button>
         }
-    </article>
 }

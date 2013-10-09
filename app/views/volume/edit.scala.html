@@ -7,9 +7,6 @@
     }
 
 @template.crud(a.fold(_.toString + ": Create Volume", "Edit Volume: " + _.name)) {
-    <article>
-        @a.fold(crud.partyHeader(_), crud.volumeHeader(_))
-
         @tag.form(a.fold(p => routes.Volume.add(p.id), s => routes.Volume.change(s.id))) {
             @widget.formErrors(editForm)
 
@@ -28,6 +25,4 @@
 
             <button type="submit" class="big button first">@a.fold(_ => "Create", _ => "Change")</button>
         }
-
-    </article>
 }

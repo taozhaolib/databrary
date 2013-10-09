@@ -7,9 +7,6 @@
 }
 
 @template.crud("Edit Volume Permissions: " + volume.name) {
-    <article>
-		@crud.volumeHeader(volume)
-
 	<table class="permission">
 	@defining(helper.FieldConstructor(tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
 			<thead>
@@ -63,5 +60,4 @@
 		}
 	}</tfoot>
 	</table>
-	</article>
 }

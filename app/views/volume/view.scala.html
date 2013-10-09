@@ -5,9 +5,6 @@
     }
 
 @template.crud("Volume: " + volume.name, js = script) {
-    <article id="volume_@volume.id.unId" class="volume">
-        @crud.volumeHeader(volume)
-
         <div class="row">
             <div class="description col_6">
             @volume.body.map(display.plainText _)
@@ -106,5 +103,4 @@
         <div class="row">
         @region.comments(Some((routes.Slot.comment(volume.id, volume.topSlot.id), controllers.Slot.commentForm)), volume.comments)
         </div>
-    </article>
 }

@@ -186,6 +186,19 @@
 			}
 		}
 
+        ul.inline {
+            li {
+                margin: 0;
+
+                &:after {
+                    content: ", ";
+                }
+
+                &:last-child:after {
+                    content: "";
+                }
+            }
+        }
 	}
 
 	.date {

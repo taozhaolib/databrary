@@ -7,19 +7,6 @@
     }
 
 @template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.name)) {
-    <article>
-        <header>
-            <h1>@target.fold(_ => "Upload Asset", "Edit: " + _.name)</h1>
-
-	    @target match {
-            case Left(_) => {
-            }
-            case Right(link) => {
-                @crud.assetMenu(link)
-            }
-        }
-        </header>
-
         @tag.form(target.fold(
             container => routes.Asset.upload(container.volumeId, container.id),
             link => routes.Asset.change(link.volumeId, link.containerId, link.assetId)),
@@ -44,6 +31,4 @@
             <button type='submit' class="big button first">@target.fold(_ => "Upload", _ => "Change")</button>
         }
         @widget.formErrors(form)
-
-    </article>
 }

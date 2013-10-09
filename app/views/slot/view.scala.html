@@ -1,9 +1,6 @@
 @(slot : models.Slot, commentForm : controllers.Slot.CommentForm = controllers.Slot.commentForm)(implicit request : RequestObject[Slot]#Site[_])
 
     @template.crud("Slot: " + slot.container.name + "-" + slot.id.unId) {
-        <article>
-            @crud.slotHeader(slot)
-
             @slot.container.date.map { _ =>
                 <p><time>Data collected @display.date(slot)</time></p>
             }
@@ -26,5 +23,4 @@
             <div class="row">
             @region.comments(Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), slot.comments(true))
             </div>
-        </article>
     }
