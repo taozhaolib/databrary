@@ -117,13 +117,12 @@ object Party extends SiteController {
       form => BadRequest(viewEdit(editForm = Some(form))),
       { case (name, orcid, acct) =>
         request.obj.change(name = name, orcid = orcid)
-        acct foreach {
-          case (email, password, openid) =>
-            val acct = request.obj.asInstanceOf[models.Account]
-            acct.changeAccount(
-              email = email,
-              password = password.getOrElse(acct.password),
-              openid = maybe(openid))
+        acct foreach { case (email, password, openid) =>
+          val acct = request.obj.asInstanceOf[models.Account]
+          acct.changeAccount(
+            email = email,
+            password = password.getOrElse(acct.password),
+            openid = maybe(openid))
         }
         Redirect(request.obj.pageURL)
       }

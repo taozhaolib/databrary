@@ -6,6 +6,9 @@ login.openID.notFound=No account is associated with that OpenID.
 login.noCookie=You must be logged in to perform that action. Please make sure you have cookies enabled.
 login.logout=You have been logged out.
 password.again=Passwords do not match.
+token.password.subject=Databrary password reset
+token.password.none=No account found.
+token.password.body={0}
 
 # --- Constraints
 constraint.required=This field is required.

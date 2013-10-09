@@ -81,7 +81,11 @@ check_dump() {
 check_diff() {
 	check_dump $2
 	echo "Checking $1 vs. $2..."
-	diff -F'^[A-Z]' -u0 $conf/check-$1.sql $conf/check-$2.sql || true
+	diff -F'^[A-Z]' -u0 $conf/check-$1.sql $conf/check-$2.sql || (
+		echo -n "OK? "
+		read y
+		[[ -z $y || $y = y* ]]
+	)
 }
 
 evolve_all () {

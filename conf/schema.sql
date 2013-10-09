@@ -622,10 +622,10 @@ COMMENT ON TABLE "token" IS 'Generic tokens issued to automatically perform acti
 CREATE TABLE "login_token" (
 	"token" char(64) Primary Key NOT NULL DEFAULT "random_string"(64::smallint), -- could generate pk violations
 	"expires" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '1 week',
-	"party" integer NOT NULL References "party",
-	"password" boolean NOT NULL 'f'
+	"account" integer NOT NULL References "account",
+	"password" boolean NOT NULL DEFAULT false
 ) INHERITS ("token");
-CREATE UNIQUE INDEX "login_token_party_idx" ON "login_token" ("party") WHERE "password";
+CREATE UNIQUE INDEX "login_token_account_idx" ON "login_token" ("account") WHERE "password";
 COMMENT ON TABLE "login_token" IS 'Tokens issued to automatically login/register users or reset passwords.';
 
 ----------------------------------------------------------- bootstrap/test data
