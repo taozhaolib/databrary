@@ -1,5 +1,6 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
+# vim:setl et:
 # ~~~~
 
 # Static content
@@ -21,10 +22,10 @@ GET         /OpenID/$email<.+\@.+\..+>                                          
 # TODO: should be POST:
 GET         /logout                                                                                   controllers.Login.logout
 GET         /token/:token                                                                             controllers.Token.token(token : String)
-GET    /logout                                                                                   controllers.Login.logout
-GET    /token/password										 controllers.Token.getPassword
-POST   /token/password										 controllers.Token.issuePassword
-GET    /token/:token                                                                             controllers.Token.token(token : String)
+GET         /logout                                                                                   controllers.Login.logout
+GET         /token/password										                                      controllers.Token.getPassword
+POST        /token/password										                                      controllers.Token.issuePassword
+GET         /token/:token                                                                             controllers.Token.token(token : String)
 
 # parties
 GET         /party/$pID<[0-9]+>                                                                       controllers.Party.view(pID : models.Party.Id)
