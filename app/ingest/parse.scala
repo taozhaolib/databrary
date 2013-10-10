@@ -68,8 +68,8 @@ object Parse {
     case s => throw ParseException("unexpected: " + s)
   }
   def guard[T](b : Boolean, p : Parser[T]) : Parser[Option[T]] = 
-    if (b) empty.map[Option[T]](_ => None)
-    else p.map[Option[T]](Some(_))
+    if (b) p.map[Option[T]](Some(_))
+    else empty.map[Option[T]](_ => None)
 
   private val dateFormat1 = new java.text.SimpleDateFormat("yyyy-MM-dd")
   private val dateFormat2 = new java.text.SimpleDateFormat("MM/dd/yy")
