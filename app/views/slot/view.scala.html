@@ -4,6 +4,7 @@
             @slot.container.date.map { _ =>
                 <p><time>Data collected @display.date(slot)</time></p>
             }
+            <p>This slot is @slot.consent.toString.</p>
 
             <h2>Records</h2>
             @widget.recordAdminList(slot)
