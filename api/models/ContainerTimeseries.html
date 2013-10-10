@@ -41,7 +41,7 @@
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/container_asset.scala" target="_blank">container_asset.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.ContainerTimeseries"><span>ContainerTimeseries</span></li><li class="in" name="models.ContainerAsset"><span>ContainerAsset</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.ContainerTimeseries"><span>ContainerTimeseries</span></li><li class="in" name="models.ContainerAsset"><span>ContainerAsset</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="site.SitePage"><span>SitePage</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -203,7 +203,7 @@
       </h4>
       <p class="shortcomment cmt">Optional description of this asset.</p><div class="fullcomment"><div class="comment cmt"><p>Optional description of this asset.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a></dd></dl></div>
     </li><li name="models.ContainerAsset#change" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="change(position:Option[dbrary.Offset],name:String,body:Option[String])(implicitsite:util.Site):Unit"></a>
+      <a id="change(position:Option[dbrary.Offset],name:String,body:Option[String])(implicitsite:site.Site):Unit"></a>
       <a id="change(Option[Offset],String,Option[String])(Site):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -211,7 +211,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">change</span><span class="params">(<span name="position">position: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Offset">Offset</span>] = <span class="symbol">_position</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">_name</span></span>, <span name="body">body: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">_body</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">change</span><span class="params">(<span name="position">position: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Offset">Offset</span>] = <span class="symbol">_position</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">_name</span></span>, <span name="body">body: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">_body</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p><div class="fullcomment"><div class="comment cmt"><p>Update the given values in the database and this object in-place.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a></dd></dl></div>
@@ -319,7 +319,7 @@
               
         </dd></dl></div>
     </li><li name="models.ContainerAsset#fullSlot" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="fullSlot(implicitdb:util.Site.DB):models.SlotAsset"></a>
+      <a id="fullSlot(implicitdb:site.Site.DB):models.SlotAsset"></a>
       <a id="fullSlot(DB):SlotAsset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -327,7 +327,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">fullSlot</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a></span>
+        <span class="name">fullSlot</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a></dd></dl></div>
@@ -435,6 +435,58 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="models.ContainerAsset#pageActions" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="pageActions(implicitsite:site.Site):Seq[(String,play.api.mvc.Call,models.Permission.Value)]"></a>
+      <a id="pageActions(Site):Seq[(String,Call,Permission.Value)]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pageActions</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="play.api.mvc.Call">Call</span>, <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a>)]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The actions available for this page, as (action, route, permission)</p><div class="fullcomment"><div class="comment cmt"><p>The actions available for this page, as (action, route, permission)</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
+    </li><li name="models.ContainerAsset#pageName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="pageName(implicitsite:site.Site):String"></a>
+      <a id="pageName(Site):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pageName</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent(implicitsite:site.Site):Some[models.Volume]" class="extmbr" name="models.ContainerTimeseries#pageParent">pageParent</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent(implicitsite:site.Site):Some[models.Volume]" class="extmbr" name="models.ContainerTimeseries#pageParent">pageParent</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
+    </li><li name="models.ContainerAsset#pageParent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="pageParent(implicitsite:site.Site):Some[models.Volume]"></a>
+      <a id="pageParent(Site):Some[Volume]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pageParent</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Some">Some</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p><div class="fullcomment"><div class="comment cmt"><p>The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
+    </li><li name="models.ContainerAsset#pageURL" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="pageURL(implicitsite:site.Site):play.api.mvc.Call"></a>
+      <a id="pageURL(Site):Call"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pageURL</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.InVolume#permission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="permission:models.Permission.Value"></a>
       <a id="permission:Permission.Value"></a>
@@ -462,7 +514,7 @@
       </h4>
       <p class="shortcomment cmt">Start point of this asset within the container.</p><div class="fullcomment"><div class="comment cmt"><p>Start point of this asset within the container.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a></dd></dl></div>
     </li><li name="models.ContainerAsset#remove" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="remove(implicitsite:util.Site):Unit"></a>
+      <a id="remove(implicitsite:site.Site):Unit"></a>
       <a id="remove(Site):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -470,7 +522,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">remove</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">remove</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a></dd></dl></div>
@@ -596,6 +648,8 @@
               <h3>Inherited from <a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a></h3>
             </div><div class="parent" name="models.InVolume">
               <h3>Inherited from <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></h3>
+            </div><div class="parent" name="site.SitePage">
+              <h3>Inherited from <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></h3>
             </div><div class="parent" name="models.TableRow">
               <h3>Inherited from <span class="extype" name="models.TableRow">TableRow</span></h3>
             </div><div class="parent" name="scala.AnyRef">

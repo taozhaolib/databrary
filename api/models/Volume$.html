@@ -225,7 +225,7 @@
               
         </dd></dl></div>
     </li><li name="models.Volume#create" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="create(name:String,body:Option[String])(implicitsite:util.Site):models.Volume"></a>
+      <a id="create(name:String,body:Option[String])(implicitsite:site.Site):models.Volume"></a>
       <a id="create(String,Option[String])(Site):Volume"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -233,7 +233,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">create</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="body">body: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>
+        <span class="name">create</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="body">body: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Create a new, empty volume with no permissions.</p><div class="fullcomment"><div class="comment cmt"><p>Create a new, empty volume with no permissions.
@@ -284,7 +284,7 @@ The caller should probably add a <a href="VolumeAccess.html" class="extype" name
               
         </dd></dl></div>
     </li><li name="models.Volume#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="get(i:models.Volume.Id)(implicitsite:util.Site):Option[models.Volume]"></a>
+      <a id="get(i:models.Volume.Id)(implicitsite:site.Site):Option[models.Volume]"></a>
       <a id="get(Id)(Site):Option[Volume]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -292,13 +292,13 @@ The caller should probably add a <a href="VolumeAccess.html" class="extype" name
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">get</span><span class="params">(<span name="i">i: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>]</span>
+        <span class="name">get</span><span class="params">(<span name="i">i: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Retrieve an individual Volume.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve an individual Volume.
 This checks user permissions and returns None if the user lacks <a href="Permission$.html#VIEW:models.Permission.Value" class="extmbr" name="models.Permission#VIEW">Permission.VIEW</a> access.</p></div></div>
     </li><li name="models.Volume#getAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getAll(implicitsite:util.Site):Seq[models.Volume]"></a>
+      <a id="getAll(implicitsite:site.Site):Seq[models.Volume]"></a>
       <a id="getAll(Site):Seq[Volume]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -306,7 +306,7 @@ This checks user permissions and returns None if the user lacks <a href="Permiss
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getAll</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>]</span>
+        <span class="name">getAll</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Retrieve the set of all volumes in the system.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve the set of all volumes in the system.

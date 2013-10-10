@@ -225,7 +225,7 @@
               
         </dd></dl></div>
     </li><li name="models.Container#create" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="create(volume:models.Volume,name:Option[String],date:Option[java.sql.Date])(implicitsite:util.Site):models.Container"></a>
+      <a id="create(volume:models.Volume,name:Option[String],date:Option[java.sql.Date])(implicitsite:site.Site):models.Container"></a>
       <a id="create(Volume,Option[String],Option[Date])(Site):Container"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -233,7 +233,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">create</span><span class="params">(<span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="name">name: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="date">date: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Date">Date</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Container.html" class="extype" name="models.Container">Container</a></span>
+        <span class="name">create</span><span class="params">(<span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="name">name: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="date">date: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Date">Date</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="Container.html" class="extype" name="models.Container">Container</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Create a new container in the specified volume.</p>
@@ -283,7 +283,7 @@
               
         </dd></dl></div>
     </li><li name="models.Container#findName" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="findName(v:models.Volume,name:String)(implicitdb:util.Site.DB):Seq[models.Container]"></a>
+      <a id="findName(v:models.Volume,name:String)(implicitdb:site.Site.DB):Seq[models.Container]"></a>
       <a id="findName(Volume,String)(DB):Seq[Container]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -291,12 +291,12 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">findName</span><span class="params">(<span name="v">v: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Container.html" class="extype" name="models.Container">Container</a>]</span>
+        <span class="name">findName</span><span class="params">(<span name="v">v: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Container.html" class="extype" name="models.Container">Container</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Find the containers in a given volume with the given name.</p>
     </li><li name="models.Container#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="get(i:models.Container.Id)(implicitsite:util.Site):Option[models.Container]"></a>
+      <a id="get(i:models.Container.Id)(implicitsite:site.Site):Option[models.Container]"></a>
       <a id="get(Id)(Site):Option[Container]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -304,7 +304,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">get</span><span class="params">(<span name="i">i: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Container.html" class="extype" name="models.Container">Container</a>]</span>
+        <span class="name">get</span><span class="params">(<span name="i">i: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Container.html" class="extype" name="models.Container">Container</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Retrieve an individual Container.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve an individual Container.

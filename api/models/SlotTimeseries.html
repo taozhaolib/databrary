@@ -41,7 +41,7 @@
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/container_asset.scala" target="_blank">container_asset.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a>, <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a>, <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a>, <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.SlotTimeseries"><span>SlotTimeseries</span></li><li class="in" name="models.TimeseriesData"><span>TimeseriesData</span></li><li class="in" name="models.SlotAsset"><span>SlotAsset</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.BackedAsset"><span>BackedAsset</span></li><li class="in" name="models.SitePage"><span>SitePage</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.SlotTimeseries"><span>SlotTimeseries</span></li><li class="in" name="models.TimeseriesData"><span>TimeseriesData</span></li><li class="in" name="models.SlotAsset"><span>SlotAsset</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.BackedAsset"><span>BackedAsset</span></li><li class="in" name="site.SitePage"><span>SitePage</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -164,7 +164,7 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.SlotAsset#change" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="change(excerpt:Option[Boolean])(implicitsite:util.Site):Unit"></a>
+      <a id="change(excerpt:Option[Boolean])(implicitsite:site.Site):Unit"></a>
       <a id="change(Option[Boolean])(Site):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -172,7 +172,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">change</span><span class="params">(<span name="excerpt">excerpt: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">_excerpt</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">change</span><span class="params">(<span name="excerpt">excerpt: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">_excerpt</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p><div class="fullcomment"><div class="comment cmt"><p>Update the given values in the database and this object in-place.</p></div><dl class="paramcmts block"><dt class="param">excerpt</dt><dd class="cmt"><p>changes both toplevel (<code>None</code> or <code>Some(false)</code>) and excerpt (<code>Some(true)</code>)
@@ -397,8 +397,21 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="models.SlotAsset#pageActions" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="pageActions(implicitsite:site.Site):Seq[(String,play.api.mvc.Call,models.Permission.Value)]"></a>
+      <a id="pageActions(Site):Seq[(String,Call,Permission.Value)]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pageActions</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="play.api.mvc.Call">Call</span>, <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a>)]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The actions available for this page, as (action, route, permission)</p><div class="fullcomment"><div class="comment cmt"><p>The actions available for this page, as (action, route, permission)</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.SlotAsset#pageName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="pageName(implicitsite:util.Site):String"></a>
+      <a id="pageName(implicitsite:site.Site):String"></a>
       <a id="pageName(Site):String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -406,12 +419,12 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">pageName</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">pageName</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent(implicitsite:util.Site):Some[models.Slot]" class="extmbr" name="models.SlotTimeseries#pageParent">pageParent</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent(implicitsite:util.Site):Some[models.Slot]" class="extmbr" name="models.SlotTimeseries#pageParent">pageParent</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></dd></dl></div>
+      <p class="shortcomment cmt">The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent(implicitsite:site.Site):Some[models.Slot]" class="extmbr" name="models.SlotTimeseries#pageParent">pageParent</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent(implicitsite:site.Site):Some[models.Slot]" class="extmbr" name="models.SlotTimeseries#pageParent">pageParent</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.SlotAsset#pageParent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="pageParent(implicitsite:util.Site):Some[models.Slot]"></a>
+      <a id="pageParent(implicitsite:site.Site):Some[models.Slot]"></a>
       <a id="pageParent(Site):Some[Slot]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -419,25 +432,25 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">pageParent</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Some">Some</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>]</span>
+        <span class="name">pageParent</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Some">Some</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p><div class="fullcomment"><div class="comment cmt"><p>The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></dd></dl></div>
+      <p class="shortcomment cmt">The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p><div class="fullcomment"><div class="comment cmt"><p>The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.SlotAsset#pageURL" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="pageURL:String"></a>
-      <a id="pageURL:String"></a>
+      <a id="pageURL(implicitsite:site.Site):play.api.mvc.Call"></a>
+      <a id="pageURL(Site):Call"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">pageURL</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">pageURL</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></dd></dl></div>
+      <p class="shortcomment cmt">The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.SlotAsset#permission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="permission(implicitsite:util.Site):models.Permission.Value"></a>
+      <a id="permission(implicitsite:site.Site):models.Permission.Value"></a>
       <a id="permission(Site):Permission.Value"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -445,7 +458,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">permission</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
+        <span class="name">permission</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Effective permission the site user has over this segment, specifically in regards to the asset itself.</p><div class="fullcomment"><div class="comment cmt"><p>Effective permission the site user has over this segment, specifically in regards to the asset itself.
@@ -668,8 +681,8 @@ Should be a valid, finite, bounded range.</p></div><dl class="attributes block">
               <h3>Inherited from <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></h3>
             </div><div class="parent" name="models.BackedAsset">
               <h3>Inherited from <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></h3>
-            </div><div class="parent" name="models.SitePage">
-              <h3>Inherited from <a href="SitePage.html" class="extype" name="models.SitePage">SitePage</a></h3>
+            </div><div class="parent" name="site.SitePage">
+              <h3>Inherited from <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">

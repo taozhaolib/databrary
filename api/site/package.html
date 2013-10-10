@@ -2,9 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>util - util</title>
-          <meta name="description" content="util - util" />
-          <meta name="keywords" content="util util" />
+          <title>site - site</title>
+          <meta name="description" content="site - site" />
+          <meta name="keywords" content="site site" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -12,7 +12,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
-            var hash = 'util.package';
+            var hash = 'site.package';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -26,7 +26,7 @@
       <div id="definition">
         <img src="../lib/package_big.png" />
         
-        <h1>util</h1>
+        <h1>site</h1>
       </div>
 
       <h4 id="signature" class="signature">
@@ -35,11 +35,11 @@
         <span class="kind">package</span>
       </span>
       <span class="symbol">
-        <span class="name">util</span>
+        <span class="name">site</span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/util.scala" target="_blank">util.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/site/package.scala" target="_blank">package.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="util"><span>util</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="site"><span>site</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -81,7 +81,7 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="util.AnonSite" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+              <ol><li name="site.AnonSite" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="AnonSiteextendsSite"></a>
       <a id="AnonSite:AnonSite"></a>
       <h4 class="signature">
@@ -90,11 +90,11 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="AnonSite.html"><span class="name">AnonSite</span></a><span class="result"> extends <a href="Site.html" class="extype" name="util.Site">Site</a></span>
+        <a href="AnonSite.html"><span class="name">AnonSite</span></a><span class="result"> extends <a href="Site.html" class="extype" name="site.Site">Site</a></span>
       </span>
       </h4>
       
-    </li><li name="util.AuthSite" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+    </li><li name="site.AuthSite" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="AuthSiteextendsSite"></a>
       <a id="AuthSite:AuthSite"></a>
       <h4 class="signature">
@@ -103,11 +103,24 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="AuthSite.html"><span class="name">AuthSite</span></a><span class="result"> extends <a href="Site.html" class="extype" name="util.Site">Site</a></span>
+        <a href="AuthSite.html"><span class="name">AuthSite</span></a><span class="result"> extends <a href="Site.html" class="extype" name="site.Site">Site</a></span>
       </span>
       </h4>
       
-    </li><li name="util.Site" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+    </li><li name="site.CachedVal" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CachedVal[T,S]extendsAnyRef"></a>
+      <a id="CachedVal[T,S]:CachedVal[T,S]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="CachedVal.html"><span class="name">CachedVal</span></a><span class="tparams">[<span name="T">T</span>, <span name="S">S</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">A variable with a default value depending on some state.</p>
+    </li><li name="site.Site" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="SiteextendsAnyRef"></a>
       <a id="Site:Site"></a>
       <h4 class="signature">
@@ -120,6 +133,19 @@
       </span>
       </h4>
       <p class="comment cmt">Basic information about each request.</p>
+    </li><li name="site.SitePage" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="SitePageextendsAnyRef"></a>
+      <a id="SitePage:SitePage"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="SitePage.html"><span class="name">SitePage</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">An object with a corresponding page on the site.</p>
     </li></ol>
             </div>
 
@@ -127,7 +153,33 @@
 
         <div id="values" class="values members">
               <h3>Value Members</h3>
-              <ol><li name="util.Site" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="site.CachedVal" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CachedVal"></a>
+      <a id="CachedVal:CachedVal"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="CachedVal$.html"><span class="name">CachedVal</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="site.Global" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Global"></a>
+      <a id="Global:Global"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Global$.html"><span class="name">Global</span></a><span class="result"> extends <span class="extype" name="play.api.GlobalSettings">GlobalSettings</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="site.Site" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Site"></a>
       <a id="Site:Site"></a>
       <h4 class="signature">
@@ -140,7 +192,20 @@
       </span>
       </h4>
       
-    </li><li name="util.package#groupBy" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="site.context" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="context"></a>
+      <a id="context:context"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="context$.html"><span class="name">context</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="site.package#groupBy" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="groupBy[A,K](l:Seq[A],f:A=&gt;K):Seq[(K,Seq[A])]"></a>
       <a id="groupBy[A,K](Seq[A],(A)⇒K):Seq[(K,Seq[A])]"></a>
       <h4 class="signature">
@@ -149,13 +214,13 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">groupBy</span><span class="tparams">[<span name="A">A</span>, <span name="K">K</span>]</span><span class="params">(<span name="l">l: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="util.groupBy.A">A</span>]</span>, <span name="f">f: (<span class="extype" name="util.groupBy.A">A</span>) ⇒ <span class="extype" name="util.groupBy.K">K</span></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="util.groupBy.K">K</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="util.groupBy.A">A</span>])]</span>
+        <span class="name">groupBy</span><span class="tparams">[<span name="A">A</span>, <span name="K">K</span>]</span><span class="params">(<span name="l">l: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="site.groupBy.A">A</span>]</span>, <span name="f">f: (<span class="extype" name="site.groupBy.A">A</span>) ⇒ <span class="extype" name="site.groupBy.K">K</span></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="site.groupBy.K">K</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="site.groupBy.A">A</span>])]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Group adjacent elements with identical keys into nested lists, such that the concatenation of the resulting _2 elements is the original list.</p><div class="fullcomment"><div class="comment cmt"><p>Group adjacent elements with identical keys into nested lists, such that the concatenation of the resulting _2 elements is the original list.
 This is more like Haskell's group than scala's <span class="extype" name="Seq#groupBy">Seq#groupBy</span>: only adjacent elements are grouped.</p></div><dl class="paramcmts block"><dt class="param">l</dt><dd class="cmt"><p>the list to group</p></dd><dt class="param">f</dt><dd class="cmt"><p>the key-generating function to group by
 </p></dd></dl></div>
-    </li><li name="util.maybe" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="site.maybe" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="maybe"></a>
       <a id="maybe:maybe"></a>
       <h4 class="signature">
@@ -168,8 +233,8 @@ This is more like Haskell's group than scala's <span class="extype" name="Seq#gr
       </span>
       </h4>
       <p class="comment cmt">Utility that creates <span class="extype" name="scala.Option">scala.Option</span>s out of values.</p>
-    </li><li name="util.package#siteDB" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="siteDB(implicitsite:util.Site):util.Site.DB"></a>
+    </li><li name="site.package#siteDB" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="siteDB(implicitsite:site.Site):site.Site.DB"></a>
       <a id="siteDB(Site):DB"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -177,7 +242,7 @@ This is more like Haskell's group than scala's <span class="extype" name="Seq#gr
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">siteDB</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>
+        <span class="name">siteDB</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>
       </span>
       </h4>
       

@@ -270,7 +270,7 @@
               
         </dd></dl></div>
     </li><li name="models.Account#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="get(i:models.Account.Id)(implicitsite:util.Site):Option[models.Account]"></a>
+      <a id="get(i:models.Account.Id)(implicitsite:site.Site):Option[models.Account]"></a>
       <a id="get(Id)(Site):Option[Account]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -278,7 +278,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">get</span><span class="params">(<span name="i">i: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Account.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Account.html" class="extype" name="models.Account">Account</a>]</span>
+        <span class="name">get</span><span class="params">(<span name="i">i: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Account.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Account.html" class="extype" name="models.Account">Account</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Look up a user by id.</p><div class="fullcomment"><div class="comment cmt"><p>Look up a user by id.</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>None if no party or no account for given party
@@ -297,7 +297,7 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.Account#getEmail" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getEmail(email:String)(implicitdb:util.Site.DB):Option[models.Account]"></a>
+      <a id="getEmail(email:String)(implicitdb:site.Site.DB):Option[models.Account]"></a>
       <a id="getEmail(String)(DB):Option[Account]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -305,12 +305,12 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getEmail</span><span class="params">(<span name="email">email: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Account.html" class="extype" name="models.Account">Account</a>]</span>
+        <span class="name">getEmail</span><span class="params">(<span name="email">email: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Account.html" class="extype" name="models.Account">Account</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Look up a user by email.</p>
     </li><li name="models.Account#getOpenid" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getOpenid(openid:String,email:Option[String])(implicitdb:util.Site.DB):Option[models.Account]"></a>
+      <a id="getOpenid(openid:String,email:Option[String])(implicitdb:site.Site.DB):Option[models.Account]"></a>
       <a id="getOpenid(String,Option[String])(DB):Option[Account]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -318,20 +318,20 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getOpenid</span><span class="params">(<span name="openid">openid: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="email">email: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Account.html" class="extype" name="models.Account">Account</a>]</span>
+        <span class="name">getOpenid</span><span class="params">(<span name="openid">openid: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="email">email: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Account.html" class="extype" name="models.Account">Account</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Look up a user by openid.</p><div class="fullcomment"><div class="comment cmt"><p>Look up a user by openid.</p></div><dl class="paramcmts block"><dt class="param">email</dt><dd class="cmt"><p>optionally limit results to the given email</p></dd><dt>returns</dt><dd class="cmt"><p>an arbitrary account with the given openid, or the account for email if the openid matches</p></dd></dl></div>
     </li><li name="models.Account#get_" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="get_(i:models.Account.Id)(implicitdb:util.Site.DB):Option[models.Account]"></a>
-      <a id="get_(Id)(DB):Option[Account]"></a>
+      <a id="get_(i:Int)(implicitdb:site.Site.DB):Option[models.Account]"></a>
+      <a id="get_(Int)(DB):Option[Account]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">get_</span><span class="params">(<span name="i">i: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Account.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Account.html" class="extype" name="models.Account">Account</a>]</span>
+        <span class="name">get_</span><span class="params">(<span name="i">i: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Account.html" class="extype" name="models.Account">Account</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Look up a user by id, without an active session.</p><div class="fullcomment"><div class="comment cmt"><p>Look up a user by id, without an active session.</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>None if no party or no account for given party

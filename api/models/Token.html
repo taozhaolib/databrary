@@ -2,17 +2,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>Global - Global</title>
-          <meta name="description" content="Global - Global" />
-          <meta name="keywords" content="Global Global" />
+          <title>Token - models.Token</title>
+          <meta name="description" content="Token - models.Token" />
+          <meta name="keywords" content="Token models.Token" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
-      <link href="lib/template.css" media="screen" type="text/css" rel="stylesheet" />
-      <link href="lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
       <script type="text/javascript">
          if(top === self) {
-            var url = 'index.html';
-            var hash = 'Global$';
+            var url = '../index.html';
+            var hash = 'models.Token';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -22,26 +22,29 @@
    	  </script>
     
         </head>
-        <body class="value">
+        <body class="type">
       <div id="definition">
-        <img src="lib/object_big.png" />
-        
-        <h1>Global</h1>
+        <a href="Token$.html" title="Go to companion"><img src="../lib/class_to_object_big.png" /></a>
+        <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
+        <h1><a href="Token$.html" title="Go to companion">Token</a></h1>
       </div>
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
+        <span class="modifier">sealed </span>
+        <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">Global</span><span class="result"> extends <span class="extype" name="play.api.GlobalSettings">GlobalSettings</span></span>
+        <span class="name">Token</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/global.scala" target="_blank">global.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/token.scala" target="_blank">token.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="play.api.GlobalSettings">GlobalSettings</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div><div class="toggleContainer block">
+          <span class="toggle">Known Subclasses</span>
+          <div class="subClasses hiddenContent"><a href="LoginToken.html" class="extype" name="models.LoginToken">LoginToken</a></div>
         </div></div>
         
 
@@ -59,7 +62,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="Global"><span>Global</span></li><li class="in" name="play.api.GlobalSettings"><span>GlobalSettings</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Token"><span>Token</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -77,7 +80,23 @@
 
       <div id="template">
         <div id="allMembers">
-        
+        <div id="constructors" class="members">
+              <h3>Instance Constructors</h3>
+              <ol><li name="models.Token#&lt;init&gt;" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="&lt;init&gt;(token:String,expires:java.sql.Timestamp):models.Token"></a>
+      <a id="&lt;init&gt;:Token"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">new</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Token</span><span class="params">(<span name="token">token: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="expires">expires: <span class="extype" name="java.sql.Timestamp">Timestamp</span></span>)</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li></ol>
+            </div>
 
         
 
@@ -163,19 +182,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="play.api.GlobalSettings#beforeStart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="beforeStart(app:&lt;?&gt;):Unit"></a>
-      <a id="beforeStart(Application):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">beforeStart</span><span class="params">(<span name="app">app: <span class="extype" name="play.api.Application">Application</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>GlobalSettings</dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -188,52 +194,13 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
       <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="play.api.GlobalSettings#configuration" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="configuration:play.api.Configuration"></a>
-      <a id="configuration:Configuration"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">configuration</span><span class="result">: <span class="extype" name="play.api.Configuration">Configuration</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>GlobalSettings</dd></dl></div>
-    </li><li name="play.api.GlobalSettings#doFilter" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="doFilter(next:&lt;?&gt;):play.api.mvc.EssentialAction"></a>
-      <a id="doFilter(EssentialAction):EssentialAction"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">doFilter</span><span class="params">(<span name="next">next: <span class="extype" name="play.api.mvc.EssentialAction">EssentialAction</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.EssentialAction">EssentialAction</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>GlobalSettings</dd></dl></div>
-    </li><li name="play.api.GlobalSettings#doFilter" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="doFilter(next:&lt;?&gt;):play.api.mvc.RequestHeader=&gt;play.api.mvc.Handler"></a>
-      <a id="doFilter((RequestHeader)⇒Handler):(RequestHeader)⇒Handler"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">doFilter</span><span class="params">(<span name="next">next: (<span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span>) ⇒ <span class="extype" name="play.api.mvc.Handler">Handler</span></span>)</span><span class="result">: (<span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span>) ⇒ <span class="extype" name="play.api.mvc.Handler">Handler</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>GlobalSettings</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -260,6 +227,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.Token#expires" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="expires:java.sql.Timestamp"></a>
+      <a id="expires:Timestamp"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">expires</span><span class="result">: <span class="extype" name="java.sql.Timestamp">Timestamp</span></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -272,7 +252,7 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
       <span class="symbol">classOf[java.lang.Throwable]</span>
@@ -292,19 +272,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="play.api.GlobalSettings#getControllerInstance" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getControllerInstance[A&lt;:&lt;?&gt;](controllerClass:&lt;?&gt;):A"></a>
-      <a id="getControllerInstance[A](Class[A]):A"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getControllerInstance</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="controllerClass">controllerClass: <span class="extype" name="scala.Predef.Class">Class</span>[<span class="extype" name="play.api.GlobalSettings.getControllerInstance.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.GlobalSettings.getControllerInstance.A">A</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>GlobalSettings</dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <a id="hashCode():Int"></a>
@@ -370,123 +337,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="Global#onBadRequest" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onBadRequest(request:play.api.mvc.RequestHeader,error:String):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="onBadRequest(RequestHeader,String):Future[SimpleResult]"></a>
+    </li><li name="models.Token#redeemURL" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="redeemURL:play.api.mvc.Call"></a>
+      <a id="redeemURL:Call"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onBadRequest</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>, <span name="error">error: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+        <span class="name">redeemURL</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="Global">Global</a> → GlobalSettings</dd></dl></div>
-    </li><li name="Global#onError" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onError(request:play.api.mvc.RequestHeader,throwable:Throwable):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="onError(RequestHeader,Throwable):Future[SimpleResult]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onError</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>, <span name="throwable">throwable: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="Global">Global</a> → GlobalSettings</dd></dl></div>
-    </li><li name="Global#onHandlerNotFound" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onHandlerNotFound(request:play.api.mvc.RequestHeader):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="onHandlerNotFound(RequestHeader):Future[SimpleResult]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onHandlerNotFound</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="Global">Global</a> → GlobalSettings</dd></dl></div>
-    </li><li name="play.api.GlobalSettings#onLoadConfig" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onLoadConfig(config:&lt;?&gt;,path:&lt;?&gt;,classloader:&lt;?&gt;,mode:&lt;?&gt;):play.api.Configuration"></a>
-      <a id="onLoadConfig(Configuration,File,ClassLoader,Mode):Configuration"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onLoadConfig</span><span class="params">(<span name="config">config: <span class="extype" name="play.api.Configuration">Configuration</span></span>, <span name="path">path: <span class="extype" name="java.io.File">File</span></span>, <span name="classloader">classloader: <span class="extype" name="java.lang.ClassLoader">ClassLoader</span></span>, <span name="mode">mode: <span class="extype" name="play.api.Mode.Mode">Mode</span></span>)</span><span class="result">: <span class="extype" name="play.api.Configuration">Configuration</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>GlobalSettings</dd></dl></div>
-    </li><li name="play.api.GlobalSettings#onRequestCompletion" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onRequestCompletion(request:&lt;?&gt;):Unit"></a>
-      <a id="onRequestCompletion(RequestHeader):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onRequestCompletion</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>GlobalSettings</dd></dl></div>
-    </li><li name="play.api.GlobalSettings#onRequestReceived" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onRequestReceived(request:&lt;?&gt;):(play.api.mvc.RequestHeader,play.api.mvc.Handler)"></a>
-      <a id="onRequestReceived(RequestHeader):(RequestHeader,Handler)"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onRequestReceived</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: (<span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span>, <span class="extype" name="play.api.mvc.Handler">Handler</span>)</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>GlobalSettings</dd></dl></div>
-    </li><li name="play.api.GlobalSettings#onRouteRequest" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onRouteRequest(request:&lt;?&gt;):Option[play.api.mvc.Handler]"></a>
-      <a id="onRouteRequest(RequestHeader):Option[Handler]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onRouteRequest</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="play.api.mvc.Handler">Handler</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>GlobalSettings</dd></dl></div>
-    </li><li name="play.api.GlobalSettings#onStart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onStart(app:&lt;?&gt;):Unit"></a>
-      <a id="onStart(Application):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onStart</span><span class="params">(<span name="app">app: <span class="extype" name="play.api.Application">Application</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>GlobalSettings</dd></dl></div>
-    </li><li name="play.api.GlobalSettings#onStop" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onStop(app:&lt;?&gt;):Unit"></a>
-      <a id="onStop(Application):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onStop</span><span class="params">(<span name="app">app: <span class="extype" name="play.api.Application">Application</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>GlobalSettings</dd></dl></div>
+      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -513,6 +376,32 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.Token#token" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="token:String"></a>
+      <a id="token:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">token</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="models.Token#valid" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="valid:Boolean"></a>
+      <a id="valid:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">valid</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -579,8 +468,8 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="play.api.GlobalSettings">
-              <h3>Inherited from <span class="extype" name="play.api.GlobalSettings">GlobalSettings</span></h3>
+        <div class="parent" name="models.TableRow">
+              <h3>Inherited from <span class="extype" name="models.TableRow">TableRow</span></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
@@ -601,6 +490,6 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="lib/template.js"></script>
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

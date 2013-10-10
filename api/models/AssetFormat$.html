@@ -283,7 +283,7 @@
               
         </dd></dl></div>
     </li><li name="models.AssetFormat#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="get(id:models.AssetFormat.Id,ts:Boolean)(implicitdb:util.Site.DB):Option[models.AssetFormat]"></a>
+      <a id="get(id:models.AssetFormat.Id,ts:Boolean)(implicitdb:site.Site.DB):Option[models.AssetFormat]"></a>
       <a id="get(Id,Boolean)(DB):Option[AssetFormat]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -291,12 +291,12 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">get</span><span class="params">(<span name="id">id: <a href="#Id=models.IntId[T]" class="extmbr" name="models.AssetFormat.Id">Id</a></span>, <span name="ts">ts: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
+        <span class="name">get</span><span class="params">(<span name="id">id: <a href="#Id=models.IntId[T]" class="extmbr" name="models.AssetFormat.Id">Id</a></span>, <span name="ts">ts: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Lookup a format by its id.</p><div class="fullcomment"><div class="comment cmt"><p>Lookup a format by its id.</p></div><dl class="paramcmts block"><dt class="param">ts</dt><dd class="cmt"><p>include TimeseriesFormats. Unlike other lookups, this is enabled by default.</p></dd></dl></div>
     </li><li name="models.AssetFormat#getAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getAll(ts:Boolean)(implicitdb:util.Site.DB):Seq[models.AssetFormat]"></a>
+      <a id="getAll(ts:Boolean)(implicitdb:site.Site.DB):Seq[models.AssetFormat]"></a>
       <a id="getAll(Boolean)(DB):Seq[AssetFormat]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -304,7 +304,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getAll</span><span class="params">(<span name="ts">ts: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
+        <span class="name">getAll</span><span class="params">(<span name="ts">ts: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Get a list of all file formats in the database.</p><div class="fullcomment"><div class="comment cmt"><p>Get a list of all file formats in the database.</p></div><dl class="paramcmts block"><dt class="param">ts</dt><dd class="cmt"><p>include TimeseriesFormats.</p></dd></dl></div>
@@ -322,7 +322,7 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.AssetFormat#getFilePart" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getFilePart(file:play.api.mvc.MultipartFormData.FilePart[_],ts:Boolean)(implicitdb:util.Site.DB):Option[models.AssetFormat]"></a>
+      <a id="getFilePart(file:play.api.mvc.MultipartFormData.FilePart[_],ts:Boolean)(implicitdb:site.Site.DB):Option[models.AssetFormat]"></a>
       <a id="getFilePart(FilePart[_],Boolean)(DB):Option[AssetFormat]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -330,12 +330,12 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getFilePart</span><span class="params">(<span name="file">file: <span class="extype" name="play.api.mvc.MultipartFormData.FilePart">FilePart</span>[_]</span>, <span name="ts">ts: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
+        <span class="name">getFilePart</span><span class="params">(<span name="file">file: <span class="extype" name="play.api.mvc.MultipartFormData.FilePart">FilePart</span>[_]</span>, <span name="ts">ts: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
       </span>
       </h4>
       
     </li><li name="models.AssetFormat#getFilename" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getFilename(filename:String,ts:Boolean)(implicitdb:util.Site.DB):Option[models.AssetFormat]"></a>
+      <a id="getFilename(filename:String,ts:Boolean)(implicitdb:site.Site.DB):Option[models.AssetFormat]"></a>
       <a id="getFilename(String,Boolean)(DB):Option[AssetFormat]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -343,12 +343,12 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getFilename</span><span class="params">(<span name="filename">filename: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="ts">ts: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
+        <span class="name">getFilename</span><span class="params">(<span name="filename">filename: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="ts">ts: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
       </span>
       </h4>
       
     </li><li name="models.AssetFormat#getMimetype" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getMimetype(mimetype:String,ts:Boolean)(implicitdb:util.Site.DB):Option[models.AssetFormat]"></a>
+      <a id="getMimetype(mimetype:String,ts:Boolean)(implicitdb:site.Site.DB):Option[models.AssetFormat]"></a>
       <a id="getMimetype(String,Boolean)(DB):Option[AssetFormat]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -356,7 +356,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getMimetype</span><span class="params">(<span name="mimetype">mimetype: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="ts">ts: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
+        <span class="name">getMimetype</span><span class="params">(<span name="mimetype">mimetype: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="ts">ts: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Lookup a format by its mimetime.</p><div class="fullcomment"><div class="comment cmt"><p>Lookup a format by its mimetime.</p></div><dl class="paramcmts block"><dt class="param">ts</dt><dd class="cmt"><p>include TimeseriesFormats.</p></dd></dl></div>

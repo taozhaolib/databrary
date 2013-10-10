@@ -210,7 +210,7 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
       </h4>
       <p class="shortcomment cmt">the time at which this authorization takes/took effect, or never (not yet) if None</p>
     </li><li name="models.Authorize#child" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="child(implicitsite:util.Site):models.Party"></a>
+      <a id="child(implicitsite:site.Site):models.Party"></a>
       <a id="child(Site):Party"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -218,7 +218,7 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">child</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
+        <span class="name">child</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">The child party being authorized.</p><div class="fullcomment"><div class="comment cmt"><p>The child party being authorized. Cached.</p></div></div>
@@ -379,7 +379,7 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.Authorize#parent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="parent(implicitsite:util.Site):models.Party"></a>
+      <a id="parent(implicitsite:site.Site):models.Party"></a>
       <a id="parent(Site):Party"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -387,7 +387,7 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">parent</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
+        <span class="name">parent</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">The parent party granting the authorization.</p><div class="fullcomment"><div class="comment cmt"><p>The parent party granting the authorization. Cached.</p></div></div>
@@ -405,7 +405,7 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
       </h4>
       <p class="shortcomment cmt">the party whose permissions are being authorized, the &quot;group&quot;</p>
     </li><li name="models.Authorize#remove" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="remove(implicitsite:util.Site):Unit"></a>
+      <a id="remove(implicitsite:site.Site):Unit"></a>
       <a id="remove(Site):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -413,14 +413,14 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">remove</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">remove</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Remove this authorization from the database.</p><div class="fullcomment"><div class="comment cmt"><p>Remove this authorization from the database.
 Only child and parent are relevant for this operation.
 This may invalidate child.access.</p></div></div>
     </li><li name="models.Authorize#set" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="set(implicitsite:util.Site):Unit"></a>
+      <a id="set(implicitsite:site.Site):Unit"></a>
       <a id="set(Site):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -428,7 +428,7 @@ This may invalidate child.access.</p></div></div>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">set</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">set</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Update or add this authorization in the database.</p><div class="fullcomment"><div class="comment cmt"><p>Update or add this authorization in the database.

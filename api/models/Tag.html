@@ -198,18 +198,18 @@ Immutable (create only).
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.TableRowId#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="equals(a:TableRowId.this.type):Boolean"></a>
-      <a id="equals(Tag.this.type):Boolean"></a>
+      <a id="equals(a:models.TableRowId[_]):Boolean"></a>
+      <a id="equals(TableRowId[_]):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">equals</span><span class="params">(<span name="a">a: <a href="" class="extype" name="models.Tag">Tag</a>.this.type</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">equals</span><span class="params">(<span name="a">a: <span class="extype" name="models.TableRowId">TableRowId</span>[_]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Equality is based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality is based on primary key.  This assumes that two objects representing the same row are the same (even if they aren't).</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId</dd></dl></div>
+      <p class="shortcomment cmt">Equality is based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality is based on primary key.  This assumes that two objects representing the same row are the same (even if they aren't), and also doesn't properly check types.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId</dd></dl></div>
     </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="equals(x$1:Any):Boolean"></a>
       <a id="equals(Any):Boolean"></a>
@@ -347,7 +347,7 @@ Immutable (create only).
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.Tag#set" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="set(slot:models.Slot,up:Option[Boolean])(implicitsite:util.AuthSite):Unit"></a>
+      <a id="set(slot:models.Slot,up:Option[Boolean])(implicitsite:site.AuthSite):Unit"></a>
       <a id="set(Slot,Option[Boolean])(AuthSite):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -355,7 +355,7 @@ Immutable (create only).
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">set</span><span class="params">(<span name="slot">slot: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>, <span name="up">up: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">Some(true)</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/AuthSite.html" class="extype" name="util.AuthSite">AuthSite</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">set</span><span class="params">(<span name="slot">slot: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>, <span name="up">up: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">Some(true)</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/AuthSite.html" class="extype" name="site.AuthSite">AuthSite</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Set the current user's tag value (up, down, or none) for the slot.</p>

@@ -2,17 +2,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>ReverseContainer - controllers.ref.ReverseContainer</title>
-          <meta name="description" content="ReverseContainer - controllers.ref.ReverseContainer" />
-          <meta name="keywords" content="ReverseContainer controllers.ref.ReverseContainer" />
+          <title>CachedVal - site.CachedVal</title>
+          <meta name="description" content="CachedVal - site.CachedVal" />
+          <meta name="keywords" content="CachedVal site.CachedVal" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
-      <link href="../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
-      <link href="../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
       <script type="text/javascript">
          if(top === self) {
-            var url = '../../index.html';
-            var hash = 'controllers.ref.ReverseContainer';
+            var url = '../index.html';
+            var hash = 'site.CachedVal';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -24,9 +24,9 @@
         </head>
         <body class="type">
       <div id="definition">
-        <img src="../../lib/class_big.png" />
-        <p id="owner"><a href="../package.html" class="extype" name="controllers">controllers</a>.<a href="package.html" class="extype" name="controllers.ref">ref</a></p>
-        <h1>ReverseContainer</h1>
+        <a href="CachedVal$.html" title="Go to companion"><img src="../lib/class_to_object_big.png" /></a>
+        <p id="owner"><a href="package.html" class="extype" name="site">site</a></p>
+        <h1><a href="CachedVal$.html" title="Go to companion">CachedVal</a></h1>
       </div>
 
       <h4 id="signature" class="signature">
@@ -35,11 +35,11 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">ReverseContainer</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <span class="name">CachedVal</span><span class="tparams">[<span name="T">T</span>, <span name="S">S</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/target/scala-2.10/src_managed/main/routes_reverseRouting.scala" target="_blank">routes_reverseRouting.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A variable with a default value depending on some state.</p></div><dl class="paramcmts block"><dt class="tparam">T</dt><dd class="cmt"><p>the type of the variable/value</p></dd><dt class="tparam">S</dt><dd class="cmt"><p>the type of state required to access/compute the value.</p></dd></dl><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/site/cachedval.scala" target="_blank">cachedval.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="controllers.ref.ReverseContainer"><span>ReverseContainer</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="site.CachedVal"><span>CachedVal</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -79,19 +79,20 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="controllers.ref.ReverseContainer#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;():controllers.ref.ReverseContainer"></a>
-      <a id="&lt;init&gt;:ReverseContainer"></a>
+              <ol><li name="site.CachedVal#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="&lt;init&gt;(init:S=&gt;T):site.CachedVal[T,S]"></a>
+      <a id="&lt;init&gt;:CachedVal[T,S]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ReverseContainer</span><span class="params">()</span>
+        <span class="name">CachedVal</span><span class="params">(<span name="init">init: (<span class="extype" name="site.CachedVal.S">S</span>) ⇒ <span class="extype" name="site.CachedVal.T">T</span></span>)</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">init</dt><dd class="cmt"><p>function to compute the initial default value from state
+</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -166,19 +167,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="controllers.ref.ReverseContainer#add" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="add(vID:models.Volume.Id):play.api.mvc.HandlerRef[_]"></a>
-      <a id="add(models.Volume.Id):HandlerRef[_]"></a>
+    </li><li name="site.CachedVal#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="apply(state:S):T"></a>
+      <a id="apply(S):T"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">add</span><span class="params">(<span name="vID">vID: <a href="../../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.HandlerRef">HandlerRef</span>[_]</span>
+        <span class="name">apply</span><span class="params">(<span name="state">state: <span class="extype" name="site.CachedVal.S">S</span></span>)</span><span class="result">: <span class="extype" name="site.CachedVal.T">T</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">(Compute and) return the current value from a state.</p>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -192,19 +193,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="controllers.ref.ReverseContainer#change" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="change(vID:models.Volume.Id,cID:models.Container.Id):play.api.mvc.HandlerRef[_]"></a>
-      <a id="change(models.Volume.Id,models.Container.Id):HandlerRef[_]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">change</span><span class="params">(<span name="vID">vID: <a href="../../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="cID">cID: <a href="../../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.HandlerRef">HandlerRef</span>[_]</span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -217,39 +205,13 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
       <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="controllers.ref.ReverseContainer#create" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="create(vID:models.Volume.Id):play.api.mvc.HandlerRef[_]"></a>
-      <a id="create(models.Volume.Id):HandlerRef[_]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">create</span><span class="params">(<span name="vID">vID: <a href="../../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.HandlerRef">HandlerRef</span>[_]</span>
-      </span>
-      </h4>
-      
-    </li><li name="controllers.ref.ReverseContainer#edit" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="edit(vID:models.Volume.Id,cID:models.Container.Id):play.api.mvc.HandlerRef[_]"></a>
-      <a id="edit(models.Volume.Id,models.Container.Id):HandlerRef[_]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">edit</span><span class="params">(<span name="vID">vID: <a href="../../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="cID">cID: <a href="../../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.HandlerRef">HandlerRef</span>[_]</span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -288,7 +250,7 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
       <span class="symbol">classOf[java.lang.Throwable]</span>
@@ -321,6 +283,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="site.CachedVal#isEmpty" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="isEmpty:Boolean"></a>
+      <a id="isEmpty:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isEmpty</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -399,19 +374,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="controllers.ref.ReverseContainer#view" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="view(vID:models.Volume.Id,cID:models.Container.Id):play.api.mvc.HandlerRef[_]"></a>
-      <a id="view(models.Volume.Id,models.Container.Id):HandlerRef[_]"></a>
+    </li><li name="site.CachedVal#update" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="update(v:T):T"></a>
+      <a id="update(T):T"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">view</span><span class="params">(<span name="vID">vID: <a href="../../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="cID">cID: <a href="../../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.HandlerRef">HandlerRef</span>[_]</span>
+        <span class="name">update</span><span class="params">(<span name="v">v: <span class="extype" name="site.CachedVal.T">T</span></span>)</span><span class="result">: <span class="extype" name="site.CachedVal.T">T</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Change the value, discarding any current computation or future state.</p>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -498,6 +473,6 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../../lib/template.js"></script>
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

@@ -2,9 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>SitePage - models.SitePage</title>
-          <meta name="description" content="SitePage - models.SitePage" />
-          <meta name="keywords" content="SitePage models.SitePage" />
+          <title>LoginToken - models.LoginToken</title>
+          <meta name="description" content="LoginToken - models.LoginToken" />
+          <meta name="keywords" content="LoginToken models.LoginToken" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -12,7 +12,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
-            var hash = 'models.SitePage';
+            var hash = 'models.LoginToken$';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -22,29 +22,26 @@
    	  </script>
     
         </head>
-        <body class="type">
+        <body class="value">
       <div id="definition">
-        <img src="../lib/trait_big.png" />
+        <a href="LoginToken.html" title="Go to companion"><img src="../lib/object_to_class_big.png" /></a>
         <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
-        <h1>SitePage</h1>
+        <h1><a href="LoginToken.html" title="Go to companion">LoginToken</a></h1>
       </div>
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">trait</span>
+        <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">SitePage</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <span class="name">LoginToken</span><span class="result"> extends <span class="extype" name="models.TokenTable">TokenTable</span>[<a href="LoginToken.html" class="extype" name="models.LoginToken">LoginToken</a>]</span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>An object with a corresponding page on the site.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/common.scala" target="_blank">common.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/token.scala" target="_blank">token.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
-        </div><div class="toggleContainer block">
-          <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a href="Account.html" class="extype" name="models.Account">Account</a>, <a href="Container.html" class="extype" name="models.Container">Container</a>, <a href="Party.html" class="extype" name="models.Party">Party</a>, <a href="Record.html" class="extype" name="models.Record">Record</a>, <a href="Slot.html" class="extype" name="models.Slot">Slot</a>, <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>, <a href="SlotTimeseries.html" class="extype" name="models.SlotTimeseries">SlotTimeseries</a>, <a href="Volume.html" class="extype" name="models.Volume">Volume</a></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="models.TokenTable">TokenTable</span>[<a href="LoginToken.html" class="extype" name="models.LoginToken">LoginToken</a>], <span class="extype" name="models.Table">Table</span>[<a href="LoginToken.html" class="extype" name="models.LoginToken">LoginToken</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -62,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.SitePage"><span>SitePage</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.LoginToken"><span>LoginToken</span></li><li class="in" name="models.TokenTable"><span>TokenTable</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -82,54 +79,28 @@
         <div id="allMembers">
         
 
-        
-
-        <div id="values" class="values members">
-              <h3>Abstract Value Members</h3>
-              <ol><li name="models.SitePage#pageName" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="pageName(implicitsite:util.Site):String"></a>
-      <a id="pageName(Site):String"></a>
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="models.Table.Row" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Row=R"></a>
+      <a id="Row:Row"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
+        <span class="modifier"></span>
+        <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <span class="name">pageName</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">Row</span><span class="result"> = <a href="LoginToken.html" class="extype" name="models.LoginToken">LoginToken</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent(implicitsite:util.Site):Option[models.SitePage]" class="extmbr" name="models.SitePage#pageParent">pageParent</a>.</p>
-    </li><li name="models.SitePage#pageParent" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="pageParent(implicitsite:util.Site):Option[models.SitePage]"></a>
-      <a id="pageParent(Site):Option[SitePage]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">pageParent</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="" class="extype" name="models.SitePage">SitePage</a>]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p>
-    </li><li name="models.SitePage#pageURL" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="pageURL:String"></a>
-      <a id="pageURL:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">pageURL</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p>
+      <p class="shortcomment cmt">Type of TableRow this object can generate.</p><div class="fullcomment"><div class="comment cmt"><p>Type of TableRow this object can generate.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>Table → TableView</dd></dl></div>
     </li></ol>
             </div>
 
+        
+
         <div id="values" class="values members">
-              <h3>Concrete Value Members</h3>
+              <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:AnyRef):Boolean"></a>
       <a id="!=(AnyRef):Boolean"></a>
@@ -227,6 +198,33 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="models.LoginToken#create" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="create(account:models.Account,password:Boolean)(implicitdb:site.Site.DB):models.LoginToken"></a>
+      <a id="create(Account,Boolean)(DB):LoginToken"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">create</span><span class="params">(<span name="account">account: <a href="Account.html" class="extype" name="models.Account">Account</a></span>, <span name="password">password: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <a href="LoginToken.html" class="extype" name="models.LoginToken">LoginToken</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Issue a new token for the given party.</p><div class="fullcomment"><div class="comment cmt"><p>Issue a new token for the given party.</p></div><dl class="paramcmts block"><dt class="param">password</dt><dd class="cmt"><p>if this token allows a password reset. There can be only one active password reset per user at a time, so this deletes any previous ones.
+</p></dd></dl></div>
+    </li><li name="models.TokenTable#delete" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="delete(token:String)(implicitdb:site.Site.DB):Unit"></a>
+      <a id="delete(String)(DB):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">delete</span><span class="params">(<span name="token">token: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TokenTable</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -272,6 +270,19 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="models.TokenTable#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="get(token:String)(implicitdb:site.Site.DB):Option[T]"></a>
+      <a id="get(String)(DB):Option[LoginToken]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">get</span><span class="params">(<span name="token">token: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="LoginToken.html" class="extype" name="models.LoginToken">LoginToken</a>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TokenTable</dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -363,6 +374,32 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="models.TableView#tableColumn" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="tableColumn(col:Symbol):dbrary.SelectColumn"></a>
+      <a id="tableColumn(Symbol):SelectColumn"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">tableColumn</span><span class="params">(<span name="col">col: <span class="extype" name="scala.Symbol">Symbol</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SelectColumn">SelectColumn</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Convenient creation of column names for this table from symbols.</p><div class="fullcomment"><div class="comment cmt"><p>Convenient creation of column names for this table from symbols.</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
+    </li><li name="models.TableView#tableName" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="tableName:dbrary.FromTable"></a>
+      <a id="tableName:FromTable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">tableName</span><span class="result">: <span class="extype" name="dbrary.FromTable">FromTable</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
@@ -442,7 +479,13 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.AnyRef">
+        <div class="parent" name="models.TokenTable">
+              <h3>Inherited from <span class="extype" name="models.TokenTable">TokenTable</span>[<a href="LoginToken.html" class="extype" name="models.LoginToken">LoginToken</a>]</h3>
+            </div><div class="parent" name="models.Table">
+              <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="LoginToken.html" class="extype" name="models.LoginToken">LoginToken</a>]</h3>
+            </div><div class="parent" name="models.TableView">
+              <h3>Inherited from <span class="extype" name="models.TableView">TableView</span></h3>
+            </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>

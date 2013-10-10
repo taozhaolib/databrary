@@ -328,7 +328,7 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.VolumeAccess#party" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="party(implicitsite:util.Site):models.Party"></a>
+      <a id="party(implicitsite:site.Site):models.Party"></a>
       <a id="party(Site):Party"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -336,7 +336,7 @@ Only one of these is necessary to gain access (they are unioned, not intersected
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">party</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
+        <span class="name">party</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">The party being granted access.</p><div class="fullcomment"><div class="comment cmt"><p>The party being granted access. Cached.</p></div></div>
@@ -367,7 +367,7 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       </h4>
       <p class="shortcomment cmt">Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p><div class="fullcomment"><div class="comment cmt"><p>Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="models.VolumeAccess#remove" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="remove(implicitsite:util.Site):Unit"></a>
+      <a id="remove(implicitsite:site.Site):Unit"></a>
       <a id="remove(Site):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -375,14 +375,14 @@ Only one of these is necessary to gain access (they are unioned, not intersected
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">remove</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">remove</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Remove this access from the database.</p><div class="fullcomment"><div class="comment cmt"><p>Remove this access from the database.
 Only volume and party are relevant for this operation.
 This may invalidate volume.access.</p></div></div>
     </li><li name="models.VolumeAccess#set" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="set(implicitsite:util.Site):Unit"></a>
+      <a id="set(implicitsite:site.Site):Unit"></a>
       <a id="set(Site):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -390,7 +390,7 @@ This may invalidate volume.access.</p></div></div>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">set</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">set</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Update or add this access in the database.</p><div class="fullcomment"><div class="comment cmt"><p>Update or add this access in the database.

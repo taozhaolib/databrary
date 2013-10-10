@@ -237,18 +237,18 @@ These represent a selected, contiguous range (segment) of time within a Timeseri
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.TableRowId#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="equals(a:TableRowId.this.type):Boolean"></a>
-      <a id="equals(Clip.this.type):Boolean"></a>
+      <a id="equals(a:models.TableRowId[_]):Boolean"></a>
+      <a id="equals(TableRowId[_]):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">equals</span><span class="params">(<span name="a">a: <a href="" class="extype" name="models.Clip">Clip</a>.this.type</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">equals</span><span class="params">(<span name="a">a: <span class="extype" name="models.TableRowId">TableRowId</span>[_]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Equality is based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality is based on primary key.  This assumes that two objects representing the same row are the same (even if they aren't).</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId</dd></dl></div>
+      <p class="shortcomment cmt">Equality is based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality is based on primary key.  This assumes that two objects representing the same row are the same (even if they aren't), and also doesn't properly check types.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId</dd></dl></div>
     </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="equals(x$1:Any):Boolean"></a>
       <a id="equals(Any):Boolean"></a>
@@ -347,7 +347,7 @@ These represent a selected, contiguous range (segment) of time within a Timeseri
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.Asset#link" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="link(implicitsite:util.Site):Option[models.ContainerAsset]"></a>
+      <a id="link(implicitsite:site.Site):Option[models.ContainerAsset]"></a>
       <a id="link(Site):Option[ContainerAsset]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -355,7 +355,7 @@ These represent a selected, contiguous range (segment) of time within a Timeseri
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">link</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a>]</span>
+        <span class="name">link</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">ContainerAsset via which this asset is linked into a container.</p><div class="fullcomment"><div class="comment cmt"><p>ContainerAsset via which this asset is linked into a container.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a></dd></dl></div>

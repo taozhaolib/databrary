@@ -283,7 +283,7 @@
       </h4>
       
     </li><li name="models.Slot#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="get(i:models.Slot.Id)(implicitsite:util.Site):Option[models.Slot]"></a>
+      <a id="get(i:models.Slot.Id)(implicitsite:site.Site):Option[models.Slot]"></a>
       <a id="get(Id)(Site):Option[Slot]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -291,7 +291,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">get</span><span class="params">(<span name="i">i: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../util/Site.html" class="extype" name="util.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>]</span>
+        <span class="name">get</span><span class="params">(<span name="i">i: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Retrieve an individual Slot.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve an individual Slot.
@@ -310,7 +310,7 @@ This checks user permissions and returns None if the user lacks <a href="Permiss
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.Slot#getOrCreate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getOrCreate(container:models.Container,segment:dbrary.Range[dbrary.Offset])(implicitdb:util.Site.DB):models.Slot"></a>
+      <a id="getOrCreate(container:models.Container,segment:dbrary.Range[dbrary.Offset])(implicitdb:site.Site.DB):models.Slot"></a>
       <a id="getOrCreate(Container,Range[Offset])(DB):Slot"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -318,7 +318,7 @@ This checks user permissions and returns None if the user lacks <a href="Permiss
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getOrCreate</span><span class="params">(<span name="container">container: <a href="Container.html" class="extype" name="models.Container">Container</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Range">Range</span>[<span class="extype" name="dbrary.Offset">Offset</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../util/Site$.html#DB=java.sql.Connection" class="extmbr" name="util.Site.DB">DB</a></span>)</span><span class="result">: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>
+        <span class="name">getOrCreate</span><span class="params">(<span name="container">container: <a href="Container.html" class="extype" name="models.Container">Container</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Range">Range</span>[<span class="extype" name="dbrary.Offset">Offset</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Create a new slot in the specified container or return a matching one if it already exists.</p>
