@@ -5,7 +5,10 @@
 }
 
 @template.modal("profile", "full")(js = script) {
-    <article class="party view">
+    <article class="account view">
+        <header>
+            <h1>@party.name</h1>
+        </header>
         @views.html.party.viewFill(party)
     </article>
 }

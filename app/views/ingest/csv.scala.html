@@ -1,4 +1,4 @@
-@(vol : models.Volume, form : controllers.Ingest.CSVForm, text : String = "", target : Option[SitePage] = None)(implicit request : SiteRequest[_])
+@(vol : models.Volume, form : controllers.Ingest.CSVForm, text : String = "", target : Option[SitePage] = None)(implicit request : RequestObject[SitePage]#Site[_])
 
 @template.crud("CSV Ingest") {
 

@@ -12,7 +12,7 @@ import site._
   * An asset link includes the asset and container, along with a name and description for that particular link.
   * Permissions are checked in msot cases, as indicated.
   */
-sealed class ContainerAsset protected (val asset : Asset, val container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with InVolume {
+sealed class ContainerAsset protected (val asset : Asset, val container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with SitePage with InVolume {
   def assetId = asset.id
   def containerId = container.id
   def id = (assetId, containerId)
@@ -46,6 +46,15 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   def extent : Option[Range[Offset]] = position.map(Range.singleton[Offset](_)(PGSegment))
 
   def fullSlot(implicit db : Site.DB) : SlotAsset = SlotAsset.getFull(this)
+
+  def pageName(implicit site : Site) = name
+  def pageParent(implicit site : Site) = Some(volume)
+  def pageURL(implicit site : Site) = controllers.routes.Asset.view(volume.id, container.fullSlot.id, assetId)
+  def pageActions(implicit site : Site) = Seq(
+    ("view", controllers.routes.Asset.view(volumeId, fullSlot.slot.id, assetId), Permission.VIEW, true),
+    ("edit", controllers.routes.Asset.edit(volumeId, containerId, assetId), Permission.EDIT, true),
+    ("remove", controllers.routes.Asset.remove(volumeId, containerId, assetId), Permission.CONTRIBUTE, true)
+  ).filter(a => a._4 == true && permission >= a._3).map(a => (a._1, a._2, a._3))
 }
 
 final class ContainerTimeseries private[models] (override val asset : Asset with TimeseriesData, container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends ContainerAsset(asset, container, position_, name_, body_) {
@@ -165,7 +174,12 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
 
   def pageName(implicit site : Site) = link.name
   def pageParent(implicit site : Site) = Some(slot)
-  def pageURL(implicit site : Site) = controllers.routes.Asset.view(volume.id, slotId, link.assetId).url
+  def pageURL(implicit site : Site) = controllers.routes.Asset.view(volume.id, slotId, link.assetId)
+  def pageActions(implicit site : Site) = Seq(
+    ("view", controllers.routes.Asset.view(volumeId, slotId, link.assetId), Permission.VIEW, true),
+    ("edit", controllers.routes.Asset.edit(volumeId, link.containerId, link.assetId), Permission.EDIT, true),
+    ("remove", controllers.routes.Asset.remove(volumeId, link.containerId, link.assetId), Permission.CONTRIBUTE, slot.isFull)
+  ).filter(a => a._4 == true && permission >= a._3).map(a => (a._1, a._2, a._3))
 }
 
 final class SlotTimeseries private[models] (override val link : ContainerTimeseries, slot : Slot, excerpt_ : Option[Boolean] = None) extends SlotAsset(link, slot, excerpt_) with TimeseriesData {

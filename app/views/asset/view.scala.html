@@ -1,16 +1,9 @@
-@(link : SlotAsset)(implicit request : SiteRequest[_])
+@(link : SlotAsset)(implicit request : RequestObject[SlotAsset]#Site[_])
 
 @fileData(asset : FileAsset) = {
 }
 
 @template.crud("Asset: " + link.link.name) {
-    <article>
-        <header>
-            <h1>@link.link.name</h1>
-
-            @crud.assetMenu(link.link, Some(link))
-        </header>
-
         <p>@link.link.body</p>
 
 	@if(link.permission >= Permission.DOWNLOAD) {
@@ -39,5 +32,4 @@
         <div class="row">
         @region.comments(Some((routes.Slot.comment(link.volumeId, link.slotId), controllers.Slot.commentForm)), link.slot.comments())
         </div>
-    </article>
 }

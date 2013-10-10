@@ -60,12 +60,9 @@ object display {
     s.container.date.map(fuzzyDate(_, s.dataPermission() < Permission.DOWNLOAD))
 
   def plainText(text: String = "") =
-    raw("<p>"+text.replaceAll("\\r?\\n", "</p><p>")+"</p>")
+    raw("<p>"+text.replaceAll("\\r?\\n\\r?\\n", "</p><p>")+"</p>")
 
-  /** Displays the first length paragraphs of text.
-    * Is this really correct?  Should length be in characters?
-    */
-  def plainTextSummary(text: String = "", length: Int = 1000) =
+  def plainTextSummary(text: String = "", length: Int = 3) =
     raw("<p>"+text.split("\\r?\\n\\r?\\n").take(length).mkString("</p><p>")+"</p>")
 
   def gravatarUrlByEmailOpt(email: Option[String] = None, size: Int = 64) =

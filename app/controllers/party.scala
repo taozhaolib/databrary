@@ -16,12 +16,12 @@ object Party extends SiteController {
 
   def view(i : models.Party.Id) = SiteAction { implicit request =>
     models.Party.get(i).fold[SimpleResult](NotFound)(
-      e => Ok(views.html.party.view(e)))
+      e => Ok(views.html.party.view(e)(request.withObj(e))))
   }
 
   def ajaxView = SiteAction { implicit request =>
     request.user.fold[SimpleResult](NotFound)(
-      e => Ok(views.html.modal.profile(request.identity)))
+      e => Ok(views.html.modal.profile(request.identity)(request.withObj(e))))
   }
 
   private def adminAccount(implicit request : Request[_]) =

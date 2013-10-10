@@ -18,9 +18,12 @@
             </div>
         } else {
             <div class="institution">
-            @party.authorizeParents().map { t =>
-                @display(t.parent)
-            }
+                <ul class="inline">
+                @party.authorizeParents().map { t =>
+                    <li>@display(t.parent)</li>
+                }
+                </ul>
+
             </div>
         }
     </div>

@@ -75,7 +75,7 @@ object Volume extends SiteController {
       if (owner.access < Permission.CONTRIBUTE || request.identity.delegatedBy(owner.id) < Permission.CONTRIBUTE)
         Forbidden
       else
-        Ok(views.html.volume.edit(Left(owner), editForm))
+        Ok(views.html.volume.edit(Left(owner), editForm)(request.withObj(owner)))
     }
   }
 
@@ -85,7 +85,7 @@ object Volume extends SiteController {
         Forbidden
       else
         editForm.bindFromRequest.fold(
-          form => BadRequest(views.html.volume.edit(Left(owner), form)),
+          form => BadRequest(views.html.volume.edit(Left(owner), form)(request.withObj(owner))),
           { case (name, body, cites) =>
             val volume = models.Volume.create(name, body)
             citationSet(volume, cites)

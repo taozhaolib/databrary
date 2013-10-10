@@ -8,11 +8,11 @@ import site._
 import models._
 import controllers._
 
-case class PathCrumb(name : String, url : Option[String] = None) {
+case class PathCrumb(name : String, url : Option[play.api.mvc.Call] = None) {
   override def toString = name
   def toHtml = url.fold(escape(name)) { url => 
     val r = raw("<a href='")
-    r += escape(url)
+    r += raw(url.url)
     r += raw("'>")
     r += escape(name)
     r += raw("</a>")
@@ -20,7 +20,7 @@ case class PathCrumb(name : String, url : Option[String] = None) {
   }
 }
 object PathCrumb {
-  def apply(name : String, url : String) : PathCrumb = PathCrumb(name, Some(url))
+  def apply(name : String, url : play.api.mvc.Call) : PathCrumb = PathCrumb(name, Some(url))
   def apply(x : SitePage)(implicit site : Site) : PathCrumb = PathCrumb(x.pageName, Some(x.pageURL))
 }
 

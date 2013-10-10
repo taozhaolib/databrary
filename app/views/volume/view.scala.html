@@ -1,13 +1,10 @@
-@(volume : Volume, assets : Seq[SlotAsset], excerpts : Map[String, Seq[SlotAsset]], assetMap : Map[String, Seq[SlotAsset]])(implicit request : SiteRequest[_])
+@(volume : Volume, assets : Seq[SlotAsset], excerpts : Map[String, Seq[SlotAsset]], assetMap : Map[String, Seq[SlotAsset]])(implicit request : RequestObject[Volume]#Site[_])
 
     @script = {
         dbjs.tabs('.tabset', '.tab', '.view');
     }
 
 @template.crud("Volume: " + volume.name, js = script) {
-    <article id="volume_@volume.id.unId" class="volume">
-        @crud.volumeHeader(volume)
-
         <div class="row">
             <div class="description col_6">
             @volume.body.map(display.plainText _)
@@ -109,5 +106,4 @@
         <div class="row">
         @region.comments(Some((routes.Slot.comment(volume.id, volume.topSlot.id), controllers.Slot.commentForm)), volume.comments)
         </div>
-    </article>
 }

@@ -7,9 +7,6 @@
     }
 
 @template.crud("Admin Party: " + request.obj.toString()) {
-    <article>
-        @crud.partyHeader(request.obj)
-
 	@tag.form(routes.Party.change(request.obj.id)) {
 		@tag.inputText(form("name"), 'placeholder -> "Full name", '_class -> "big")
 		@tag.inputText(form("orcid"), 'placeholder -> "ORCiD", '_class -> "big")
@@ -22,5 +19,4 @@
 		<button type='submit' class="big button first">Update</button>
         @widget.formErrors(form)
 	}
- </article>
 }

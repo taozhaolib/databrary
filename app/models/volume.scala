@@ -71,7 +71,14 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
   def pageName(implicit site : Site) = name
   def pageParent(implicit site : Site) = None
-  def pageURL(implicit site : Site) = controllers.routes.Volume.view(id).url
+  def pageURL(implicit site : Site) = controllers.routes.Volume.view(id)
+  def pageActions(implicit site : Site) = Seq(
+    ("view", controllers.routes.Volume.view(id), Permission.VIEW),
+    ("edit", controllers.routes.Volume.edit(id), Permission.EDIT),
+    ("access", controllers.routes.Volume.admin(id), Permission.ADMIN),
+    ("add asset", controllers.routes.Asset.create(id, topContainer.id), Permission.CONTRIBUTE),
+    ("add slot", controllers.routes.Slot.createContainer(id), Permission.CONTRIBUTE)
+  ).filter(a => permission >= a._3)
 }
 
 object Volume extends TableId[Volume]("volume") {

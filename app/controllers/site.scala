@@ -35,7 +35,7 @@ object SiteRequest {
     identity.fold[SiteRequest.Base[A]](new Anon[A](request, db))(a => new Auth[A](request, a, superuser && a.access == Permission.ADMIN, db))
 }
 
-trait RequestObject[O] {
+trait RequestObject[+O] {
   sealed trait Base[A] extends Request[A] {
     val obj : O
   }

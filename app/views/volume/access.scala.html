@@ -1,4 +1,4 @@
-@(volume : Volume, accessForms : Seq[(Party,controllers.Volume.AccessForm)], accessSearch : Form[String], accessResults : Seq[(Party,controllers.Volume.AccessForm)])(implicit request : SiteRequest[_])
+@(volume : Volume, accessForms : Seq[(Party,controllers.Volume.AccessForm)], accessSearch : Form[String], accessResults : Seq[(Party,controllers.Volume.AccessForm)])(implicit request : RequestObject[Volume]#Site[_])
 
 @accessFields(party : Party, form : Form[VolumeAccess])(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@display(party)</td>
@@ -7,9 +7,6 @@
 }
 
 @template.crud("Edit Volume Permissions: " + volume.name) {
-    <article>
-		@crud.volumeHeader(volume)
-
 	<table class="permission">
 	@defining(helper.FieldConstructor(tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
 			<thead>
@@ -63,5 +60,4 @@
 		}
 	}</tfoot>
 	</table>
-	</article>
 }
