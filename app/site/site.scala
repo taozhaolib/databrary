@@ -43,6 +43,8 @@ trait AuthSite extends Site {
 trait SitePage { self =>
   /** The title of the object/page in the hierarchy, which may only make sense within [[pageParent]]. */
   def pageName(implicit site : Site) : String
+  /** Optional override of pageName for breadcrumbs and other abbreviated locations */
+  def pageCrumbName(implicit site : Site) : Option[String] = None
   /** The object "above" this one (in terms of breadcrumbs and nesting). */
   def pageParent(implicit site : Site) : Option[SitePage]
   /** The URL of the page, usually determined by [[controllers.routes]]. */

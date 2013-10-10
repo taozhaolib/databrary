@@ -26,7 +26,7 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   private[this] var _body = body_
   /** Optional description of this asset. */
   def body : Option[String] = _body
-  
+
   private[this] def ids = SQLArgs('container -> containerId, 'asset -> assetId)
 
   /** Update the given values in the database and this object in-place. */
@@ -173,7 +173,7 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
     slot.dataPermission(classification)
 
   def pageName(implicit site : Site) = link.name
-  def pageParent(implicit site : Site) = Some(slot)
+  def pageParent(implicit site : Site) = if(slot.container.top) { Some(slot.volume) } else { Some(slot) }
   def pageURL(implicit site : Site) = controllers.routes.Asset.view(volume.id, slotId, link.assetId)
   def pageActions(implicit site : Site) = Seq(
     ("view", controllers.routes.Asset.view(volumeId, slotId, link.assetId), Permission.VIEW, true),

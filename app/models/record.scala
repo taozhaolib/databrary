@@ -72,7 +72,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   /** Attach this record to a slot. */
   def addSlot(s : Slot)(implicit db : Site.DB) = Record.addSlot(id, s.id)
 
-  def pageName(implicit site : Site) = ident.orElse(category.map(_.name)).getOrElse("record")
+  def pageName(implicit site : Site) = ident.orElse(category.map(_.name)).getOrElse("record-"+id)
   def pageParent(implicit site : Site) = Some(volume)
   def pageURL(implicit site : Site) = controllers.routes.Record.view(volume.id, id)
   def pageActions(implicit site : Site) = Seq(

@@ -51,7 +51,7 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
     ("add asset", controllers.routes.Asset.create(volumeId, id, fullSlot.segment.lowerBound), Permission.CONTRIBUTE),
     ("add slot", controllers.routes.Slot.create(volumeId, id), Permission.CONTRIBUTE),
     ("add record", controllers.routes.Record.slotAdd(volumeId, fullSlot.id, false), Permission.CONTRIBUTE)
-  ).filter(a => permission >= a._3)
+  ).filter(a => permission >= a._3) // TODO: This isn't actually accessible.
 }
 
 object Container extends TableId[Container]("container") {
@@ -173,8 +173,10 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     case (r, i) => r.category.fold("")(_.name + ':') + i.getOrElse("[" + r.id.unId.toString + ']')
   }
 
-  def pageName(implicit site : Site) = container.pageName + " (#" + id.unId.toString + ")" // FIXME
-  def pageParent(implicit site : Site) = Some(container)
+  def pageName(implicit site : Site) = if (isFull == true) { container.pageName }  else {
+      container.pageName + " [" + segment.lowerBound.getOrElse("") + " - " + segment.upperBound.getOrElse("")+"]" }
+  override def pageCrumbName(implicit site : Site) = if (isFull == true) { None }  else { Option(segment.lowerBound.getOrElse("") + " - " + segment.upperBound.getOrElse("")) }
+  def pageParent(implicit site : Site) = if (!context.isEmpty && context.get.id != id) { context } else { Some(volume) }
   def pageURL(implicit site : Site) = controllers.routes.Slot.view(container.volumeId, id)
   def pageActions(implicit site : Site) = Seq(
     ("view", controllers.routes.Slot.view(volumeId, id), Permission.VIEW),
@@ -192,7 +194,7 @@ object Slot extends TableId[Slot]("slot") {
     Id,  Range[Offset], Option[Consent.Value]](
     'id, 'segment,      'consent)
   private[models] val row = columns.join(Container.row, "slot.source = container.id") map {
-    case (slot ~ cont) => (make(cont) _).tupled(slot) 
+    case (slot ~ cont) => (make(cont) _).tupled(slot)
   }
   private[models] def containerRow(container : Container) =
     columns map (make(container) _).tupled

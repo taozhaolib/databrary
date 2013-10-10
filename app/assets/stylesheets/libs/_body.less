@@ -1,14 +1,14 @@
 // flex
 #site_flex {
-    .flex-display();
-    min-height: 100vh;
-    .flex-direction(column);
+	.flex-display();
+	min-height: 100vh;
+	.flex-direction(column);
 }
 
 // body - page
 #site_body {
 	margin: @header_height 0 @gutter;
-    .flex(1);
+	.flex(1);
 }
 
 .page {
@@ -20,26 +20,26 @@
 		}
 	}
 
-    video {
-        width: 100%;
-        height: auto;
-    }
+	video {
+		width: 100%;
+		height: auto;
+	}
 
 	article {
 		header {
 			margin-bottom: @gutter/2;
 
-            .type {
-                font-size: 0.65em;
-                color: darken(@first, 20%);
-                text-transform: uppercase;
-                height: 5px;
-                overflow: visible;
+			.type {
+				font-size: 0.65em;
+				color: darken(@first, 20%);
+				text-transform: uppercase;
+				height: 5px;
+				overflow: visible;
 
-                &:after {
-                    content: ":";
-                }
-            }
+				&:after {
+					content: ":";
+				}
+			}
 
 			h1 {
 				margin: 0;
@@ -65,6 +65,7 @@
 	}
 
 	.menu {
+		position: relative;
 		border-bottom: 1px solid @gray_50_third;
 
 		ul {
@@ -75,8 +76,32 @@
 
 		li {
 			display: inline;
-			margin-left: 10px;
 			font-size: 0.9em;
+		}
+
+		ul.breadcrumbs{
+			li {
+				&:after {
+					content: "";
+					display: inline-block;
+					border: 5px solid transparent;
+					border-left-color: @gray_25_third;
+					position: relative;
+					left: 3px;
+				}
+
+				a {
+					color: darken(@first, 10%);
+
+					&:hover {
+						color: darken(@first, 25%);
+					}
+				}
+			}
+		}
+
+		ul.actions li {
+			margin-left: 10px;
 			text-transform: lowercase;
 
 			&.current {
@@ -88,19 +113,21 @@
 					}
 				}
 			}
+
+			a, button.link {
+				&:hover {
+					background: @white_75_second;
+				}
+			}
 		}
 
-        form {
-            display: inline;
-        }
+		form {
+			display: inline;
+		}
 
 		a, button.link {
 			display: inline-block;
 			padding: 5px 10px;
-
-			&:hover {
-				background: @white_75_second;
-			}
 		}
 	}
 
@@ -186,19 +213,19 @@
 			}
 		}
 
-        ul.inline {
-            li {
-                margin: 0;
+		ul.inline {
+			li {
+				margin: 0;
 
-                &:after {
-                    content: ", ";
-                }
+				&:after {
+					content: ", ";
+				}
 
-                &:last-child:after {
-                    content: "";
-                }
-            }
-        }
+				&:last-child:after {
+					content: "";
+				}
+			}
+		}
 	}
 
 	.date {
@@ -212,7 +239,7 @@
 }
 
 .focus {
-  padding: (@gutter*4) 0;
+	padding: (@gutter*4) 0;
 }
 
 .citation {
@@ -222,31 +249,31 @@
 }
 
 .publication {
-    h4 {
-        font-size: 0.9em;
-        text-align: left;
-        margin-bottom: 0;
-    }
+	h4 {
+		font-size: 0.9em;
+		text-align: left;
+		margin-bottom: 0;
+	}
 
-    .cit_link {
-        font-size: 0.7em;
-        .border-radius(3px);
-        border: 1px solid @second;
-        display: inline-block;
-        padding: 0 3px;
-        position: relative;
-        top: -2px;
+	.cit_link {
+		font-size: 0.7em;
+		.border-radius(3px);
+		border: 1px solid @second;
+		display: inline-block;
+		padding: 0 3px;
+		position: relative;
+		top: -2px;
 
-        &:hover {
-            border-color: darken(@second, 30%);
-            background: @white_75_second;
-        }
-    }
+		&:hover {
+			border-color: darken(@second, 30%);
+			background: @white_75_second;
+		}
+	}
 
-    p {
-        font-size: 0.8em;
-        color: @gray_50_third;
-    }
+	p {
+		font-size: 0.8em;
+		color: @gray_50_third;
+	}
 }
 
 .dates {
@@ -289,14 +316,13 @@ dl.metalist {
 	}
 
 	&.hover {
-		a{
+		a {
 			display: block;
 			position: relative;
 			color: @white;
 			line-height: 1;
 
 			.media {
-
 			}
 
 			.text {
@@ -314,7 +340,6 @@ dl.metalist {
 
 			&:hover {
 				.media {
-
 				}
 
 				.text {
@@ -350,14 +375,14 @@ dl.metalist {
 		}
 	}
 
-		h1 {
-			border: 0;
-			margin: 0;
-			padding: (@gutter/4) (@gutter/2);
-			.border-radius(15px 0 0 0);
-			background: @white_75_first;
-			.transition(@transition);
-		}
+	h1 {
+		border: 0;
+		margin: 0;
+		padding: (@gutter/4) (@gutter/2);
+		.border-radius(15px 0 0 0);
+		background: @white_75_first;
+		.transition(@transition);
+	}
 
 	.date {
 		float: right;
@@ -398,68 +423,67 @@ dl.metalist {
 }
 
 dl.inline-measures {
-    margin: 0;
+	margin: 0;
 
-    dt, dd {
-        display: inline;
-        margin: 0;
+	dt, dd {
+		display: inline;
+		margin: 0;
 
-        &:after {
-            content: ":";
-            color: @gray_50_third;
-        }
-    }
+		&:after {
+			content: ":";
+			color: @gray_50_third;
+		}
+	}
 
-    dt {
-        font-size: 0.75em;
-        color: @gray_50_third;
-    }
+	dt {
+		font-size: 0.75em;
+		color: @gray_50_third;
+	}
 
-    dd {
-        font-size: 0.85em;
-        color: @gray_25_third;
+	dd {
+		font-size: 0.85em;
+		color: @gray_25_third;
 
-        &:after {
-            content: ", ";
-            color: @gray_50_third;
-        }
+		&:after {
+			content: ", ";
+			color: @gray_50_third;
+		}
 
-        &:last-child:after {
-            content: "";
-        }
-    }
+		&:last-child:after {
+			content: "";
+		}
+	}
 }
 
 .siderim {
-    border: 1px solid @gray_50_third;
-    background: mix(@white, @gray_75_third, 90%);
-    padding: (@gutter/2);
-    .border-radius(5px);
+	border: 1px solid @gray_50_third;
+	background: mix(@white, @gray_75_third, 90%);
+	padding: (@gutter/2);
+	.border-radius(5px);
 
-    h2 {
-        margin-top: 0;
-        font-weight: normal;
-        border-bottom: 1px solid @gray_50_third;
-    }
+	h2 {
+		margin-top: 0;
+		font-weight: normal;
+		border-bottom: 1px solid @gray_50_third;
+	}
 }
 
 dl.measures {
-    dt, dd {
+	dt, dd {
+	}
 
-    }
+	dt {
+		text-transform: uppercase;
+		font-weight: bold;
+		font-size: 0.9em;
+		margin-top: 1em;
 
-    dt {
-        text-transform: uppercase;
-        font-weight: bold;
-        font-size: 0.9em;
-        margin-top: 1em;
+		&:after {
+			content: ":";
+		}
+	}
 
-        &:after {
-            content: ":";
-        }
-    }
-
-    dd {
-        margin-left: 0;
-    }
+	dd {
+		margin-left: 0;
+	}
 }
