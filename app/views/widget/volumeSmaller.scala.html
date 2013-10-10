@@ -3,15 +3,15 @@
 <article id="volume_@volume.id.unId" class="volume volume_roll cf">
     <div class="row">
         <a href="@routes.Volume.view(volume.id)" class="block cf" title="@volume.name">
-            <header class="col-desktop-10 col-laptop-10 col-tablet-7 col-mobile-6">
+            <header class="col-desktop-9 col-laptop-9 col-tablet-6">
                 <h1>@volume.name</h1>
             </header>
 
-            <aside class="thumb cf col-desktop-3 col-laptop-3 col-tablet-2 col-mobile-2">
+            <aside class="thumb cf col-desktop-2 col-laptop-2 col-tablet-2">
             @widget.volumeThumb(volume)
             </aside>
 
-            <div class="body col-desktop-7 col-laptop-7 col-tablet-5 col-mobile-4">
+            <div class="body col-desktop-7 col-laptop-7 col-tablet-4">
                 <footer class="meta cf">
                     <div class="date">
                         <time datetime="@volume.creation" pubdate>@display.dateFmtY.format(volume.creation)</time>

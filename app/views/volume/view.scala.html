@@ -1,109 +1,109 @@
-@(volume : Volume, assets : Seq[SlotAsset], excerpts : Map[String, Seq[SlotAsset]], assetMap : Map[String, Seq[SlotAsset]])(implicit request : RequestObject[Volume]#Site[_])
+@(volume: Volume, assets: Seq[SlotAsset], excerpts: Map[String, Seq[SlotAsset]], assetMap: Map[String, Seq[SlotAsset]])(implicit request: RequestObject[Volume]#Site[_])
 
-    @script = {
-        dbjs.tabs('.tabset', '.tab', '.view');
-    }
+	@script = {
+		dbjs.tabs('.tabset', '.tab', '.view');
+	}
 
 @template.crud("Volume: " + volume.name, js = script) {
-        <div class="row">
-            <div class="description col-desktop-8 push-desktop-1 col-laptop-6 col-tablet-6 col-mobile-6">
-            @volume.body.map(display.plainText _)
-            </div>
+	<div class="row">
+		<div class="description col-desktop-6 push-desktop-2 col-laptop-6 col-tablet-6 col-mobile-6">
+		@volume.body.map(display.plainText _)
+		</div>
 
-            <footer class="extended col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
-                <div class="row">
-                    <div class="col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
-                        <aside class="thumb">
-                        @widget.volumeThumb(volume)
-                        </aside>
+		<footer class="extended col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
+			<div>
+				<aside class="thumb">
+				@widget.volumeThumb(volume)
+				</aside>
 
-                        <aside class="dates foot">
-                            <span class="date created">
-                                Created <time datetime="@volume.creation" pubdate>@display.dateFmtYM.format(volume.creation)</time></span>
-                        </aside>
+				<aside class="dates foot">
+					<span class="date created">
+						Created <time datetime="@volume.creation" pubdate>@display.dateFmtYM.format(volume.creation)</time></span>
+				</aside>
 
-                        <aside class="citing foot">
-                            <h2>Citation</h2>
+				<aside class="citing foot">
+					<h2>Citation</h2>
 
-                            @widget.volumeCitation(volume)
-                        </aside>
-                    </div>
+					@widget.volumeCitation(volume)
+				</aside>
+			</div>
 
-                    <div class="col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
-                        <aside class="investigators foot col-3">
-                            <h2>Investigators</h2>
+			<div>
+				<div class="row">
+					<aside class="investigators foot col-3">
+						<h2>Investigators</h2>
 
-                            @volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map { a =>
-                                @widget.userinfo(a.party)
-                            }
-                        </aside>
+						@volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map { a =>
+							@widget.userinfo(a.party)
+						}
+					</aside>
 
-                        <div class="col-3">
-                            <aside class="funding foot">
-                                <h2>Funding</h2>
+					<div class="col-3">
+						<aside class="funding foot">
+							<h2>Funding</h2>
 
-								@volume.funding.map { f =>
-									@widget.userinfo(f.funder)
-									@f.grant
-								}
-                            </aside>
+							@volume.funding.map { f =>
+								@widget.userinfo(f.funder)
+								@f.grant
+							}
+						</aside>
 
-                            <aside class="access cf foot">
-                                <h2>Sharing</h2>
-                                @widget.volumeAccess(volume)
-                            </aside>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-        </div>
+						<aside class="access cf foot">
+							<h2>Sharing</h2>
+							@widget.volumeAccess(volume)
+						</aside>
+					</div>
+				</div>
+			</div>
+		</footer>
+	</div>
 
-        <section id="metadata" class="tabset">
-            <div id="highlights" class="view">
-                <h2 class='tab' data-tip="All media in the Highlights tab is available for public use and sharing.">
-                    Highlights</h2>
+	<section id="metadata" class="tabset">
+		<div id="highlights" class="view">
+			<h2 class='tab' data-tip="All media in the Highlights tab is available for public use and sharing.">
+				Highlights</h2>
 
-                @widget.thumbList(excerpts.getOrElse("video", Nil))
-                @widget.thumbList(excerpts.getOrElse("image", Nil))
-                @widget.thumbList(excerpts.getOrElse("audio", Nil))
-            </div>
+			@widget.thumbList(excerpts.getOrElse("video", Nil))
+			@widget.thumbList(excerpts.getOrElse("image", Nil))
+			@widget.thumbList(excerpts.getOrElse("audio", Nil))
+		</div>
 
-            <div id="media" class="view">
-                <h2 class='tab' data-tip="The Media tab lists top-level video, audio, and images asscoiated with the current study.">
-                    Media</h2>
+		<div id="media" class="view">
+			<h2 class='tab' data-tip="The Media tab lists top-level video, audio, and images asscoiated with the current study.">
+				Media</h2>
 
-                @widget.thumbList(assetMap.getOrElse("video", Nil))
-                @widget.thumbList(assetMap.getOrElse("image", Nil))
-                @widget.thumbList(assetMap.getOrElse("audio", Nil))
-            </div>
+			@widget.thumbList(assetMap.getOrElse("video", Nil))
+			@widget.thumbList(assetMap.getOrElse("image", Nil))
+			@widget.thumbList(assetMap.getOrElse("audio", Nil))
+		</div>
 
-            <div id="documents" class="view">
-                <h2 class='tab' data-tip="The Documents tab lists non-media files associated with the current study.">
-                    Documents</h2>
-                @widget.assetList(assets)
-            </div>
+		<div id="documents" class="view">
+			<h2 class='tab' data-tip="The Documents tab lists non-media files associated with the current study.">
+				Documents</h2>
+			@widget.assetList(assets)
+		</div>
 
-            <div id="publications" class="view">
-                <h2 class='tab' data-tip="The Publications tab lists works derrived from this dataset.">
-                    Publications</h2>
-                @widget.publicationsList(volume)
-            </div>
+		<div id="publications" class="view">
+			<h2 class='tab' data-tip="The Publications tab lists works derrived from this dataset.">
+				Publications</h2>
+			@widget.publicationsList(volume)
+		</div>
 
-            <div id="participants" class="view">
-                <h2 class='tab' data-tip="The Participants tab lists basic information regarding the participants of the current study.">
-                    Participants</h2>
-                @widget.slotList(volume)
-            </div>
+		<div id="participants" class="view">
+			<h2 class='tab' data-tip="The Participants tab lists basic information regarding the participants of the current study.">
+				Participants</h2>
+			@widget.slotList(volume)
+		</div>
 
-            <div id="permission" class="view">
-                <h2 class='tab' data-tip="The Permissions tab lists who has access to the current study, and what that access allows.">
-                    Permission</h2>
+		<div id="permission" class="view">
+			<h2 class='tab' data-tip="The Permissions tab lists who has access to the current study, and what that access allows.">
+				Permission</h2>
 
-                @widget.volumePermission(volume)
-            </div>
-        </section>
+			@widget.volumePermission(volume)
+		</div>
+	</section>
 
-        <div class="row">
-        @region.comments(Some((routes.Slot.comment(volume.id, volume.topSlot.id), controllers.Slot.commentForm)), volume.comments)
-        </div>
+	<div class="row">
+	@region.comments(Some((routes.Slot.comment(volume.id, volume.topSlot.id), controllers.Slot.commentForm)), volume.comments)
+	</div>
 }

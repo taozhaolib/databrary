@@ -88,10 +88,10 @@
 @gridcolumn: 64px;
 @gridgutter: 16px;
 
-@desktop: 1280px;
-@laptop: 960px;
-@tablet: 720px;
-@mobile: 480px;
+@desktop: (1280px + @gutter);
+@laptop: (960px + @gutter);
+@tablet: (720px + @gutter);
+@mobile: (480px + @gutter);
 
 // sprites
 @sprite_image: '/example.png';

@@ -7,6 +7,9 @@ No text column span greater than 6.
 PHONE
 */
 @media (max-width: (@mobile - 1)) {
+	.modal_small,
+	.modal_full {}
+
 	.site_content {
 		font-size: 0.85em;
 	}
@@ -45,6 +48,9 @@ PHONE
 MOBILE
 */
 @media (min-width: @mobile) and (max-width: (@tablet - 1)) {
+	.modal_small { .grid-width(max, 4); }
+	.modal_full { .grid-width(max, 6); }
+
 	.site_content { font-size: 0.85em; }
 
 	.banner { font-size: 0.8em; }
@@ -75,8 +81,8 @@ MOBILE
 TABLET
 */
 @media (min-width: @tablet) and (max-width: (@laptop - 1)) {
-//	.modal_small { .grid_max(5); }
-//	.modal_full { .grid_max(9); }
+	.modal_small { .grid-width(max, 5); }
+	.modal_full { .grid-width(max, 9); }
 
 	.banner { font-size: 0.9em; }
 }
@@ -85,6 +91,6 @@ TABLET
 LAPTOP
 */
 @media (min-width: @laptop) {
-//	.modal_small { .grid_max(6); }
-//	.modal_full { .grid_max(12); }
+	.modal_small { .grid-width(max, 6); }
+	.modal_full { .grid-width(max, 12); }
 }

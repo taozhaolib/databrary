@@ -171,7 +171,7 @@ dbjs.ajaxModal = function (clicker, url, now) {
             $toggle = $data.find('.modal');
             toggle = $clicker.attr('data-target');
 
-            $toggle.attr('id', toggle).appendTo($('#site_body'));
+            $toggle.attr('id', toggle).appendTo($('#site_content'));
 
             toggle = '#' + toggle;
 
@@ -667,11 +667,11 @@ dbjs.simpleToggle = function (toggler, toggled) {
 
             var adjustPage = function () {
                 var scroll = $window.scrollTop(),
-                    $site_body = $('#site_body'),
+                    $site_content = $('#site_content'),
                     height = $('#messages').outerHeight(true),
-                    currentHeight = parseInt($site_body.css('margin-top'));
+                    currentHeight = parseInt($site_content.css('margin-top'));
 
-                $site_body.css({ marginTop: height });
+                $site_content.css({ marginTop: height });
                 $window.scrollTop(scroll + height - currentHeight);
             };
 

@@ -1,6 +1,6 @@
 @(party : Party, time : Option[java.sql.Timestamp] = None, float : Boolean = false)(implicit request : SiteRequest[_])
 
-<@if(time.isDefined){header}else{section} class="userinfo cf @if(float == true){col_3}">
+<@if(time.isDefined){header}else{section} class="userinfo cf @if(float == true){col-3}">
     <div class="avatar">
         <a href="@party.pageURL" title="@party.name">
             <img src="@display.gravatarUrlByParty(party, 36)" alt="@party.name">
