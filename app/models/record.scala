@@ -105,8 +105,8 @@ object Record extends TableId[Record]("record") {
 
   /** Retrieve a specific record by id. */
   def get(id : Id)(implicit site : Site) : Option[Record] =
-    row.SQL("WHERE record.id = {id}").
-      on('id -> id, 'identity -> site.identity.id).singleOpt
+    row.SQL("WHERE record.id = {id} AND", Volume.condition).
+      on('id -> id, 'identity -> site.identity.id, 'superuser -> site.superuser).singleOpt
 
   /** Retrieve the set of records on the given slot. */
   private[models] def getSlot(slot : Slot)(implicit db : Site.DB) : Seq[Record] =

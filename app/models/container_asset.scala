@@ -83,7 +83,7 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access on the container. */
   def get(asset : Asset.Id, container : Container.Id)(implicit site : Site) : Option[ContainerAsset] =
     row.SQL("WHERE container_asset.asset = {asset} AND container_asset.container = {cont} AND", Volume.condition).
-    on('asset -> asset, 'cont -> container, 'identity -> site.identity.id).singleOpt()
+      on('asset -> asset, 'cont -> container, 'identity -> site.identity.id, 'superuser -> site.superuser).singleOpt()
   /** Retrieve a specific asset link by asset.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access on the container. */
   private[models] def get(asset : Asset)(implicit site : Site) : Option[ContainerAsset] = {
@@ -91,7 +91,7 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
       case (link ~ cont) => (make(asset, cont) _).tupled(link)
     }
     row.SQL("WHERE container_asset.asset = {asset} AND", Volume.condition).
-      on('asset -> asset.id, 'identity -> site.identity.id).singleOpt
+      on('asset -> asset.id, 'identity -> site.identity.id, 'superuser -> site.superuser).singleOpt
   }
   /** Retrieve a specific asset link by container and asset id.
     * This assumes that permissions have already been checked as the caller must already have the container. */
@@ -224,7 +224,7 @@ object SlotAsset {
       case (link ~ slot ~ excerpt) => make(link, (Slot.make(link.container) _).tupled(slot), excerpt)
     }
     row.SQL("WHERE slot.id = {slot} AND asset.id = {asset} AND", condition()).
-      on('asset -> asset, 'slot -> slot, 'identity -> site.identity.id).singleOpt
+      on('asset -> asset, 'slot -> slot, 'identity -> site.identity.id, 'superuser -> site.superuser).singleOpt
   }
 
   /** Retrieve the list of all assets within the given slot. */
