@@ -60,7 +60,7 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
-final class Account protected (party : Party, email_ : String, password_ : String, openid_ : Option[String], val access : Permission.Value) extends Party(party.id, party.name, party.orcid) with TableRowId[Account] {
+final class Account protected (party : Party, email_ : String, password_ : String, openid_ : Option[String], access_ : Permission.Value) extends Party(party.id, party.name, party.orcid) with TableRowId[Account] {
   override val id = Account.asId(party.id.unId)
   private[this] var _email = email_
   def email = _email
@@ -81,6 +81,8 @@ final class Account protected (party : Party, email_ : String, password_ : Strin
     _password = password
     _openid = openid
   }
+
+  override def access(implicit db : Site.DB) = access_
 
   /** List of comments by this individual.
     * This checks permissions on the target volumes. */
@@ -157,7 +159,7 @@ object Account extends TableId[Account]("account") {
     new Account(e, email, password.getOrElse(""), openid, access.getOrElse(Permission.NONE))
   private[models] val columns = Columns[
     String, Option[String], Option[String], Option[Permission.Value]](
-    'email, 'password,      'openid,        SelectAs("authorize_access_check(party.id)", "access"))
+    'email, 'password,      'openid,        SelectAs("authorize_access_check(party.id)", "party_access"))
   private[models] val row = Party.columns.join(columns, using = 'id) map {
     case (e ~ a) => (make(e) _).tupled(a)
   }
