@@ -54,7 +54,7 @@
             @if(!container.top) {
                 @container.slots.map { slot =>
                     <tr>
-                        <td class="main"><a href='@slot.pageURL'>@container.name (#@slot.id.unId)</a></td>
+                        <td class="main"><a href='@slot.pageURL'>@slot.pageName</a></td>
                         <td class="meta">@display(slot.segment)</td>
                         <td class="meta">@slot.consent</td>
                     </tr>
