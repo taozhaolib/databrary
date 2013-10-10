@@ -1,12 +1,15 @@
 @(volume: Volume)(implicit request: SiteRequest[_])
 
-@defining(volume.toplevelAssets.find(_.link.asset.format.name == "Video")) { thumb =>
-	@if(thumb.nonEmpty) {
-		@thumb.map { assetLink =>
-			<img src="@routes.Asset.head(assetLink.volumeId, assetLink.slotId, assetLink.link.assetId)" alt="@assetLink.link.name">
-		}
+@volume.thumb.fold {
+	<img src="@routes.Assets.at("images/draft.png")" alt="@volume.name">
+} { thumb =>
+	@defining(thumb.link.asset.format) { fmt =>
+	@if(fmt.mimetype.startsWith("image/")) {
+                <img src='@routes.Asset.download(thumb.volumeId, thumb.slotId, thumb.link.assetId, true)' alt="@thumb.link.name"/>
 	} else {
-		<img src="@routes.Assets.at("images/draft.png")" alt="@volume.name">
+	@if(dbrary.cast[TimeseriesFormat](fmt).fold(false)(_.sampleFormat.mimetype.startsWith("image/"))) {
+		<img src="@routes.Asset.head(thumb.volumeId, thumb.slotId, thumb.link.assetId)" alt="@thumb.link.name"/>
+	}
+	}
 	}
 }
-

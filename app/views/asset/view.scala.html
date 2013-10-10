@@ -13,8 +13,11 @@
             }
             case ("video", _) => {
                 <video controls>
-                    <source src="@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)" type="video/mp4">
+                    <source src="@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)" type="@link.link.asset.format.mimetype">
                 </video>
+		@if(!link.link.asset.format.equals(TimeseriesFormat.Video)) {
+			Warning: This video has not (yet) been converted to Databrary's standand format, so some features may not work.
+		}
             }
             case ("text", "html") => {
                 <iframe src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>

@@ -28,7 +28,7 @@ final case class Audit[T](when : Timestamp, who : Party.Id, ip : Inet, action : 
 object Audit {
   /** The possible events or actions on the site that can be put into audit tables. */
   object Action extends PGEnum("audit_action") {
-    val attempt, open, close, add, change, remove, download = Value
+    val attempt, open, close, add, change, remove, superuser = Value
   }
 
   private[this] def make[T](row : T)(when : Timestamp, who : Party.Id, ip : Inet, action : Action.Value) =
