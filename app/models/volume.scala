@@ -83,7 +83,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
 object Volume extends TableId[Volume]("volume") {
   private val permission = "volume_access_check(volume.id, {identity})"
-  private[models] val condition = permission + " >= 'VIEW'"
+  private[models] val condition = permission + " >= 'VIEW' OR {superuser}"
   private[models] val row = Columns[
     Id,  String, Option[String], Option[Permission.Value],           Option[Timestamp]](
     'id, 'name,  'body,          SelectAs(permission, "permission"), SelectAs("volume_creation(volume.id)", "creation")) map {
@@ -94,13 +94,13 @@ object Volume extends TableId[Volume]("volume") {
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   def get(i : Id)(implicit site : Site) : Option[Volume] =
     row.SQL("WHERE id = {id} AND", condition).
-      on('id -> i, 'identity -> site.identity.id).singleOpt()
+      on('id -> i, 'identity -> site.identity.id, 'superuser -> site.superuser).singleOpt()
 
   /** Retrieve the set of all volumes in the system.
     * This only returns volumes for which the current user has [[Permission.VIEW]] access. */
   def getAll(implicit site : Site) : Seq[Volume] =
     row.SQL("WHERE", condition).
-      on('identity -> site.identity.id).list()
+      on('identity -> site.identity.id, 'superuser -> site.superuser).list()
     
   /** Create a new, empty volume with no permissions.
     * The caller should probably add a [[VolumeAccess]] for this volume to grant [[Permission.ADMIN]] access to some user. */
