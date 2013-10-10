@@ -34,7 +34,7 @@ object Asset extends SiteController {
     Ok(views.html.asset.view(request.obj))
   }
 
-  private def assetResult(tag : String, data_ : => Future[store.StreamEnumerator], fmt : AssetFormat, saveAs : Option[String])(implicit request : SiteRequest[_]) : Future[SimpleResult] = {
+  private def assetResult(tag : String, data_ : => Future[store.StreamEnumerator], fmt : AssetFormat, saveAs : Option[String])(request : Request[_]) : Future[SimpleResult] = {
     /* The split works because we never use commas within etags. */
     val ifNoneMatch = request.headers.getAll(IF_NONE_MATCH).flatMap(_.split(',').map(_.trim))
     /* Assuming assets are immutable, any if-modified-since header is good enough */
@@ -69,7 +69,7 @@ object Asset extends SiteController {
       store.Asset.read(request.obj),
       request.obj.link.asset.format,
       if (inline) None else Some(request.obj.link.name)
-    )
+    )(request)
   }
 
   def frame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, offset : Offset = 0) = SlotAction(v, i, o, Permission.DOWNLOAD).async { implicit request =>
@@ -80,7 +80,7 @@ object Asset extends SiteController {
           store.Asset.readFrame(ts, offset),
           ts.source.format.sampleFormat,
           None
-        )
+        )(request)
       case _ => Future.successful(NotFound)
     }
   }

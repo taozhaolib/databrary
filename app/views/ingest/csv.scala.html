@@ -1,6 +1,6 @@
-@(vol : models.Volume, form : controllers.Ingest.CSVForm, text : String = "", target : Option[SitePage] = None)(implicit request : RequestObject[SitePage]#Site[_])
+@(vol : models.Volume, form : controllers.Ingest.CSVForm, text : String = "", target : Option[SitePage] = None)(implicit site : Site)
 
-@template.crud("CSV Ingest") {
+@template.raw("CSV Ingest") {
 
     @tag.form(routes.Ingest.curated(vol.id), 'enctype -> "multipart/form-data") {
         @tag.inputFile(form("file"))

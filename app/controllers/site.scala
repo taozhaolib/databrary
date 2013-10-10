@@ -6,25 +6,34 @@ import          Play.current
 import          mvc._
 import          data._
 import          i18n.Messages
-import scala.concurrent.Future
+import scala.concurrent.{Future,ExecutionContext}
 import dbrary._
 import site._
 import models._
 
 sealed trait SiteRequest[A] extends Request[A] with Site {
   def clientIP = Inet(remoteAddress)
+  def withDB(db : site.Site.DB) : SiteRequest[A]
   def withObj[O](obj : O) : RequestObject[O]#Site[A]
+  def future[B](f : Request[A] => B)(implicit execctx : ExecutionContext) : Future[B] =
+    Future(f(this))(execctx)
+  def futureDB[B](f : SiteRequest[A] => B)(implicit execctx : ExecutionContext) : Future[B] =
+    Future(play.api.db.DB.withTransaction(db => f(withDB(db))))(execctx)
 }
 
 object SiteRequest {
   sealed abstract class Base[A](request : Request[A], val db : site.Site.DB) extends WrappedRequest[A](request) with SiteRequest[A]
   sealed class Anon[A](request : Request[A], db : site.Site.DB) extends Base[A](request, db) with AnonSite {
+    def withDB(db : site.Site.DB) : Anon[A] =
+      new Anon(request, db)
     def withObj[O](obj : O) : RequestObject[O]#Anon[A] = {
       object ro extends RequestObject[O]
       new ro.Anon(request, db, obj)
     }
   }
   sealed class Auth[A](request : Request[A], val identity : Account, val superuser : Boolean, db : site.Site.DB) extends Base[A](request, db) with AuthSite {
+    def withDB(db : site.Site.DB) : Auth[A] =
+      new Auth(request, identity, superuser, db)
     def withObj[O](obj : O) : RequestObject[O]#Auth[A] = {
       object ro extends RequestObject[O]
       new ro.Auth(request, identity, superuser, db, obj)

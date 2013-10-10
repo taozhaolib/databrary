@@ -1,6 +1,6 @@
-@(vol : models.Volume, res : (Iterable[Record], Iterable[ContainerAsset]))(implicit request : RequestObject[SitePage]#Site[_])
+@(vol : models.Volume, res : (Iterable[Record], Iterable[ContainerAsset]))(implicit site : Site)
 
-@template.crud("CSV Ingest Result") {
+@template.raw("CSV Ingest Result") {
 	<h2>Participant records:</h2>
 	<ul>
 	@res._1.map { rec =>
