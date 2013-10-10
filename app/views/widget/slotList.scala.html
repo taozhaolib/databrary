@@ -7,6 +7,8 @@
         <tr>
             <th class="main">Record</th>
             <th class="meta">Category</th>
+            <th class="meta">Gender</th>
+            <th class="meta">Age</th>
         </tr>
     </thead>
 
@@ -27,6 +29,8 @@
                     </dl>
                     </td>
                     <td class="meta">@record.category.fold("")(_.name)</td>
+					<td>@record.measure(Metric.Gender)(request.db)</td>
+            		<td>@record.agerange(request.db).map(display.agerange _)</td>
                 </tr>
             }
         } else {
