@@ -6,31 +6,31 @@
 
 @template.crud("Volume: " + volume.name, js = script) {
         <div class="row">
-            <div class="description col_6">
+            <div class="description col-desktop-8 push-desktop-1 col-laptop-6 col-tablet-6 col-mobile-6">
             @volume.body.map(display.plainText _)
             </div>
 
-            <footer class="extended col_6">
+            <footer class="extended col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
                 <div class="row">
-                    <div class="wide_col_6">
-                        <aside class="thumb col_6">
+                    <div class="col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
+                        <aside class="thumb">
                         @widget.volumeThumb(volume)
                         </aside>
 
-                        <aside class="dates foot col_6">
+                        <aside class="dates foot">
                             <span class="date created">
                                 Created <time datetime="@volume.creation" pubdate>@display.dateFmtYM.format(volume.creation)</time></span>
                         </aside>
 
-                        <aside class="citing foot col_6">
+                        <aside class="citing foot">
                             <h2>Citation</h2>
 
                             @widget.volumeCitation(volume)
                         </aside>
                     </div>
 
-                    <div class="wide_col_3">
-                        <aside class="investigators foot col_3">
+                    <div class="col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
+                        <aside class="investigators foot col-3">
                             <h2>Investigators</h2>
 
                             @volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map { a =>
@@ -38,14 +38,14 @@
                             }
                         </aside>
 
-                        <div class="col_3">
+                        <div class="col-3">
                             <aside class="funding foot">
                                 <h2>Funding</h2>
 
-				@volume.funding.map { f =>
-					@widget.userinfo(f.funder)
-					@f.grant
-				}
+								@volume.funding.map { f =>
+									@widget.userinfo(f.funder)
+									@f.grant
+								}
                             </aside>
 
                             <aside class="access cf foot">

@@ -5,6 +5,7 @@
 	padding: @gutter 0;
 	margin-top: @gutter;
 	overflow: hidden;
+	position: relative;
 
 	&.fixed {
 		position: fixed;
@@ -79,6 +80,7 @@
 			height: 16px;
 			position: relative;
 			top: 1px;
+			.transition(@transition);
 		}
 
 		a:hover img {

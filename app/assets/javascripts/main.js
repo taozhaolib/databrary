@@ -1191,5 +1191,5 @@ $(document).ready(function () {
     $formHandler = $('#forms').formHandler({});
 
     // all pages
-    dbjs.stickyFooter('#site_footer', '#site_body');
+    dbjs.stickyFooter('#site_footer', '#site_content');
 });
