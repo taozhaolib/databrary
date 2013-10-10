@@ -73,7 +73,7 @@ object Container extends TableId[Container]("container") {
         cont._fullSlot() = (Slot.make(cont) _).tupled(slot)
         cont
       }.SQL("WHERE container.id = {id} AND", Volume.condition).
-      on('id -> i, 'identity -> site.identity.id).singleOpt
+      on('id -> i, 'identity -> site.identity.id, 'superuser -> site.superuser).singleOpt
   }
 
   /** Retrieve all the containers in a given volume. */
@@ -210,7 +210,7 @@ object Slot extends TableId[Slot]("slot") {
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   def get(i : Id)(implicit site : Site) : Option[Slot] =
     row.SQL("WHERE slot.id = {id} AND", Volume.condition).
-      on('id -> i, 'identity -> site.identity.id).singleOpt
+      on('id -> i, 'identity -> site.identity.id, 'superuser -> site.superuser).singleOpt
 
   /** Retrieve an individual Slot by Container and segment.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
