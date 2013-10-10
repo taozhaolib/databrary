@@ -16,7 +16,7 @@ trait Site {
   val identity : models.Party
   /** Database connection (with active transaction). */
   val db : Site.DB
-  /** Some([[identity]]) only if actual logged-in user. */
+  /** Some(identity) only if actual logged-in user. */
   def user : Option[models.Account] = cast[models.Account](identity)
   /** Level of site access [[models.Permission]] current user has.
     * VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for admins.
