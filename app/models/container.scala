@@ -125,13 +125,13 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     }
   }
   /** The relevant consented slot containing this one. Cached.
-    * Users with FULL access fall back to the full container. */
-  def context(implicit db : Site.DB) : Option[Slot] =
-    _context.orElse(if (permission >= Permission.FULL) Some(container.fullSlot) else None)
+    * Defaults to fullSlot. */
+  def context(implicit db : Site.DB) : Slot =
+    _context.getOrElse(container.fullSlot)
 
   /** The level of access granted on data covered by this slot to the current user. */
   def dataPermission(classification : Classification.Value = Classification.RESTRICTED)(implicit site : Site) =
-    Permission.data(permission, context.fold(consent)(_.consent), classification)
+    Permission.data(permission, _context.fold(consent)(_.consent), classification)
 
   /** Effective start point of this slot within the container. */
   def position : Offset = segment.lowerBound.getOrElse(0)
@@ -173,10 +173,9 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     case (r, i) => r.category.fold("")(_.name + ':') + i.getOrElse("[" + r.id.unId.toString + ']')
   }
 
-  def pageName(implicit site : Site) = if (isFull == true) { container.pageName }  else {
-      container.pageName + " [" + segment.lowerBound.getOrElse("") + " - " + segment.upperBound.getOrElse("")+"]" }
-  override def pageCrumbName(implicit site : Site) = if (isFull == true) { None }  else { Option(segment.lowerBound.getOrElse("") + " - " + segment.upperBound.getOrElse("")) }
-  def pageParent(implicit site : Site) = if (!context.isEmpty && context.get.id != id) { context } else { Some(volume) }
+  def pageName(implicit site : Site) = container.pageName + pageCrumbName.fold("")(" [" + _ + "]")
+  override def pageCrumbName(implicit site : Site) = if (segment.isFull) None else Some(segment.lowerBound.fold("")(_.toString) + " - " + segment.upperBound.fold("")(_.toString))
+  def pageParent(implicit site : Site) = Some(if (context.equals(this)) volume else context)
   def pageURL(implicit site : Site) = controllers.routes.Slot.view(container.volumeId, id)
   def pageActions(implicit site : Site) = Seq(
     ("view", controllers.routes.Slot.view(volumeId, id), Permission.VIEW),
@@ -184,7 +183,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     ("add asset", controllers.routes.Asset.create(volumeId, containerId, segment.lowerBound), Permission.CONTRIBUTE),
     ("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
     ("add record", controllers.routes.Record.slotAdd(volumeId, id, false), Permission.CONTRIBUTE)
-  ).filter(a => permission >= a._3)
+  ).filter(permission >= _._3)
 }
 
 object Slot extends TableId[Slot]("slot") {
