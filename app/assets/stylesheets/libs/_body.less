@@ -1,14 +1,13 @@
-// flex
-#site_flex {
-	.flex-display();
-	min-height: 100vh;
-	.flex-direction(column);
+//
+
+html {
+	overflow: scroll;
+	overflow-x: hidden;
 }
 
 // body - page
 #site_body {
 	margin: @header_height 0 @gutter;
-	.flex(1);
 }
 
 .page {
@@ -147,7 +146,7 @@
 	}
 
 	.comment {
-		.grid_width(6);
+		.grid-width(fix, 6);
 
 		&.form {
 			border-bottom: 2px solid @gray_50_third;

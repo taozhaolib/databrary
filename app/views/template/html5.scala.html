@@ -50,17 +50,15 @@
 	</head>
 
 	<body>
-		@region.siteHeader()
+		@region.siteHeader(request)
 
         <div id="site_body" class="page">
-            <div class="wrapper">
+            <div class="wrap">
                 @body
             </div>
         </div>
 
         @region.siteFooter()
-
-		@region.siteHeaderNav(request)
 
         <section id="messages"></section>
 	</body>
