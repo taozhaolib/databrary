@@ -176,6 +176,16 @@ object Curated {
         f
       }, "file path")
     } yield (Asset(name, pos, classification, path))
+    def parseOpt : ListParser[Option[Asset]] = for {
+      name <- listHead(option(trimmed), "file name")
+      pos <- listHead(guard(name.isDefined, option(offset)), "offset")
+      classification <- listHead(guard(name.isDefined, enum(Classification, "classification").mapInput(_.toUpperCase)), "classification")
+      path <- listHead(guard(name.isDefined, trimmed.map { p =>
+        val f = new java.io.File(if (p.headOption.equals(Some('/'))) "" else "/databrary/stage", p)
+        if (!f.isFile) fail("file not found: " + p)
+        f
+      }), "file path")
+    } yield (name.map(Asset(_, pos.get, classification.get, path.get)))
     sealed abstract class Info(val format : AssetFormat)
     final case class FileInfo(override val format : AssetFormat) extends Info(format)
     final case class TimeseriesInfo(override val format : TimeseriesFormat, duration : Offset) extends Info(format)
@@ -210,15 +220,15 @@ object Curated {
     }
   }
 
-  private final case class Row(subject : Subject, session : Session, asset : Asset) extends ListData {
-    def fields = Seq(subject, session, asset).flatMap(_.fields)
+  private final case class Row(subject : Subject, session : Session, asset : Option[Asset]) extends ListData {
+    def fields = Seq(subject, session).flatMap(_.fields) ++ asset.fold(Seq("", "", "", ""))(_.fields)
   }
   private object Row extends ListDataParser[Row] {
     val headers = Seq(Subject, Session, Asset).flatMap(_.headers)
     def parse : ListParser[Row] = for {
       subj <- Subject.parse
       sess <- Session.parse
-      asset <- Asset.parse
+      asset <- Asset.parseOpt
     } yield (Row(subj, sess, asset))
   }
 
@@ -235,7 +245,7 @@ object Curated {
       val rows = l.map((Row.parse.run _).tupled)
       val subjs = collect(rows.map(_.subject))
       val sess = collect(rows.map(_.session))
-      val assets = collect(rows.map(r => SessionAsset(r.session.key, r.asset)))
+      val assets = collect(rows.flatMap(r => r.asset.map(SessionAsset(r.session.key, _))))
       Data(subjs, sess, rows.map(r => SubjectSession(r.subject.key, r.session.key)), assets.values)
     case Nil => fail("no data")
   }
