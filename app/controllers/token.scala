@@ -57,19 +57,22 @@ object Token extends SiteController {
   def issuePassword = SiteAction.async { implicit request =>
     issuePasswordForm.bindFromRequest.fold(
       form => Future.successful(BadRequest(views.html.token.getPassword(form))),
-      email => mailer.fold[Future[SimpleResult]](Future.successful(ServiceUnavailable)) { mailer => Future {
-        val mail = mailer.email
-        mail.setSubject(Messages("token.password.subject"))
-        mail.setRecipient(email)
-        mail.setFrom("Databrary <help@databrary.org>")
-        Account.getEmail(email).filter(_.access < Permission.ADMIN).fold {
-          mail.send(Messages("token.password.none"))
-        } { acct =>
-          val token = LoginToken.create(acct, true)
-          mail.send(Messages("token.password.body", token.redeemURL.absoluteURL()))
-        }
-        Ok("sent")
-      }(context.process) }
+      email => mailer.fold[Future[SimpleResult]](Future.successful(ServiceUnavailable)) { mailer =>
+        val token = Account.getEmail(email).filter(_.access < Permission.ADMIN)
+          .map(LoginToken.create(_, true))
+        Future {
+          val mail = mailer.email
+          mail.setSubject(Messages("token.password.subject"))
+          mail.setRecipient(email)
+          mail.setFrom("Databrary <help@databrary.org>")
+          token.fold {
+            mail.send(Messages("token.password.none"))
+          } { token =>
+            mail.send(Messages("token.password.body", token.redeemURL.absoluteURL()))
+          }
+          Ok("sent")
+        }(context.process)
+      }
     )
   }
 }
