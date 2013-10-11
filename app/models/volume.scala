@@ -69,6 +69,9 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   /** The list of comments in this volume. */
   def comments(implicit db : Site.DB) : Seq[Comment] = Comment.getVolume(this)
 
+  /** An image-able "asset" that may be used as the volume's thumbnail. */
+  def thumb(implicit db : Site.DB) : Option[SlotAsset] = SlotAsset.getThumb(this)
+
   def pageName(implicit site : Site) = name
   def pageParent(implicit site : Site) = None
   def pageURL(implicit site : Site) = controllers.routes.Volume.view(id)
@@ -83,7 +86,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
 object Volume extends TableId[Volume]("volume") {
   private val permission = "volume_access_check(volume.id, {identity})"
-  private[models] val condition = permission + " >= 'VIEW' OR {superuser}"
+  private[models] val condition = "(" + permission + " >= 'VIEW' OR {superuser})"
   private[models] val row = Columns[
     Id,  String, Option[String], Option[Permission.Value],           Option[Timestamp]](
     'id, 'name,  'body,          SelectAs(permission, "permission"), SelectAs("volume_creation(volume.id)", "creation")) map {

@@ -62,7 +62,14 @@ object Parse {
   val trimmed : Parser[String] = Parser(_.trim)
 
   def option[T](p : Parser[T]) : Parser[Option[T]] = 
-    p.map(Some(_) : Option[T]).onEmpty(None)
+    p.map[Option[T]](Some(_)).onEmpty(None)
+  val empty : Parser[Unit] = Parser {
+    case "" => ()
+    case s => throw ParseException("unexpected: " + s)
+  }
+  def guard[T](b : Boolean, p : Parser[T]) : Parser[Option[T]] = 
+    if (b) p.map[Option[T]](Some(_))
+    else empty.map[Option[T]](_ => None)
 
   private val dateFormat1 = new java.text.SimpleDateFormat("yyyy-MM-dd")
   private val dateFormat2 = new java.text.SimpleDateFormat("MM/dd/yy")

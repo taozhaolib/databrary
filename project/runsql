@@ -58,7 +58,7 @@ while [[ $1 = -?* ]] ; do
 done
 
 runsql () {
-	psql -q "${args[@]}" "${database}" -vON_ERROR_STOP=on -f "${@:--}"
+	psql -q "${args[@]}" -vON_ERROR_STOP=on -f "${@:--}" "${database}"
 }
 
 dbreset () {
@@ -127,7 +127,7 @@ elif [[ $1 = check ]] ; then
 	rm -f $conf/check-*.sql
 elif [[ $1 = dump ]] ; then
 	shift
-	exec pg_dump "${args[@]}" "${database}" "$@"
+	exec pg_dump "${args[@]}" "$@" "${database}"
 elif [[ $1 = restore ]] ; then
 	shift
 	dbreset

@@ -214,6 +214,12 @@ object SlotAsset {
     SelectColumn("excerpt"))
   private def condition(segment : String = "slot.segment") =
     "(container_asset.position IS NULL OR container_asset.position <@ " + segment + " OR segment_shift(segment(" + Asset.duration + "), container_asset.position) && " + segment + ")"
+  private def volumeRow(vol : Volume) = ContainerAsset.containerColumns.
+    join(Container.volumeRow(vol), "container_asset.container = container.id").
+    join(Slot.columns, "container.id = slot.source").
+    leftJoin(columns, "slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset") map {
+      case (link ~ asset ~ cont ~ slot ~ excerpt) => make((ContainerAsset.make(asset, cont) _).tupled(link), (Slot.make(cont) _).tupled(slot), excerpt)
+    }
 
   /** Retrieve a single SlotAsset by asset id and slot id.
     * This checks permissions on the slot('s container's volume). */
@@ -254,14 +260,17 @@ object SlotAsset {
   }
 
   /** Retrieve the list of all top-level assets. */
-  private[models] def getToplevel(volume : Volume)(implicit db : Site.DB) : Seq[SlotAsset] = {
-    val row = ContainerAsset.containerColumns.
-      join(Container.volumeRow(volume), "container_asset.container = container.id").
-      join(Slot.columns, "container.id = slot.source").
-      join(columns, "slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset") map {
-      case (link ~ asset ~ cont ~ slot ~ excerpt) => make((ContainerAsset.make(asset, cont) _).tupled(link), (Slot.make(cont) _).tupled(slot), Some(excerpt))
-    }
-    getSlot(volume.topSlot) ++ row.SQL("WHERE container.volume = {vol} AND", condition()).
+  private[models] def getToplevel(volume : Volume)(implicit db : Site.DB) : Seq[SlotAsset] =
+    getSlot(volume.topSlot) ++
+      volumeRow(volume).SQL("WHERE toplevel_asset.excerpt IS NOT NULL AND container.volume = {vol} AND", condition()).
       on('vol -> volume.id).list
-  }
+
+  /** Find an asset suitable for use as a volume thumbnail.
+    * TODO: check permissions, and find a better way to do this altogether */
+  private[models] def getThumb(volume : Volume)(implicit db : Site.DB) : Option[SlotAsset] =
+    volumeRow(volume).SQL("""
+        WHERE (toplevel_asset.excerpt IS NOT NULL OR container.top AND slot.segment = '(,)')
+          AND (format.id = {video} OR format.mimetype LIKE 'image/%')
+          AND container.volume = {vol} AND""", condition(), "LIMIT 1").
+      on('vol -> volume.id, 'video -> TimeseriesFormat.VIDEO).singleOpt
 }
