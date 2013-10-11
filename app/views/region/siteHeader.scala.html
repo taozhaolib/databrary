@@ -1,9 +1,34 @@
-<header id="site_header_head" class="site_header">
-	<div class="wrapper">
+@(request: Option[SiteRequest[_]])
+
+<header id="site_header" class="site_header">
+	<div class="wrap">
         <div class="row">
-            <h1 class="column_full">
+            <h1 class="col-2">
                 <a href="@routes.Static.index" title="Databrary: An Open Data Library"><strong>Data</strong>brary</a>
             </h1>
+
+            <div class="usernow col-desktop-14 col-laptop-10 col-tablet-7 col-mobile-4">
+                @request.flatMap(_.user).fold {
+                    <a href="@routes.Login.view" id="modal_login_link" class="modal_link" data-target="modal_login">login</a>
+                    <span>|</span>
+                    <a href="@routes.Login.view">register</a>
+                } { u =>
+                    <a href="@u.pageURL(request.get)" id="modal_profile_link" class="modal_link" data-target="modal_profile"><img src="@display.gravatarUrlByEmail(u.email, 16)" alt="@u.name"> @u.name</a>
+
+                    @if(u.access(request.get.db) == Permission.ADMIN) {
+                        @if(request.get.superuser) {
+                            <span>|</span>
+                            <a class="first message" data-message="<strong>Superuser!</strong> Click to re-enter normalcy." href="@routes.Login.superuserOff">SU</a>
+                        }else{
+                            <span>|</span>
+                            <a class="second message" data-message="<strong>Beware!</strong> With great power comes great responsibility. Click to enter superuser mode." href="@routes.Login.superuserOn">SU</a>
+                        }
+                    }
+
+                    <span>|</span>
+                    <a href="@routes.Login.logout">logout</a>
+                }
+            </div>
         </div>
 	</div>
 </header>

@@ -21,10 +21,10 @@ GET         /OpenID                                                             
 GET         /OpenID/$email<.+\@.+\..+>                                                                controllers.Login.openID(email : String)
 # TODO: should be POST:
 GET         /logout                                                                                   controllers.Login.logout
-GET         /SUPERUSER                                                                                controllers.Login.superuser
-GET         /SUPERUSER/off                                                                            controllers.Login.superuserOff
-GET         /token/password					                                      controllers.Token.getPassword
-POST        /token/password					                                      controllers.Token.issuePassword
+GET         /superuser/on                                                                             controllers.Login.superuserOn
+GET         /superuser/off                                                                            controllers.Login.superuserOff
+GET         /token/password                                                                           controllers.Token.getPassword
+POST        /token/password                                                                           controllers.Token.issuePassword
 GET         /token/:token                                                                             controllers.Token.token(token : String)
 
 # parties

@@ -63,14 +63,14 @@ textarea, input, select {
 	padding: 6px 8px;
 	.border-radius(3px);
 	width: 100%;
-	.grid_max(8);
+	.grid-width(max, 8);
 
 	&.half {
-		.grid_max(4);
+		.grid-width(max, 4);
 	}
 
 	&.quarter {
-		.grid_max(2);
+		.grid-width(max, 2);
 	}
 }
 
@@ -82,7 +82,7 @@ input[type="checkbox"] {
 // forms - fields and fieldsets
 fieldset,
 .field {
-    .grid_max(8);
+    .grid-width(max, 8);
 	margin-bottom: @gutter / 2;
 
 	&.big {

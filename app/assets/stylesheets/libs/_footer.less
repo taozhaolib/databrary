@@ -1,10 +1,11 @@
 // footer
-#site_footer {
+.site_footer {
 	background: lighten(@third, 25%);
 	border-top: 1px solid @gray_75_third;
 	padding: @gutter 0;
 	margin-top: @gutter;
 	overflow: hidden;
+	position: relative;
 
 	&.fixed {
 		position: fixed;
@@ -38,7 +39,7 @@
 		bottom: -@gutter;
 		width: 200px;
 		height: 190px;
-		right: -50px;
+		right: -20px;
 	}
 
 	.grants {
@@ -79,6 +80,7 @@
 			height: 16px;
 			position: relative;
 			top: 1px;
+			.transition(@transition);
 		}
 
 		a:hover img {

@@ -81,12 +81,12 @@ object Login extends SiteController {
     Redirect(routes.Static.index).withNewSession
   }
 
-  def superuser = SiteAction.access(Permission.ADMIN) { implicit request =>
+  def superuserOn = SiteAction.access(Permission.ADMIN) { implicit request =>
     Audit.action(Audit.Action.superuser)
-    Ok("great responsibility").withSession("user" -> request.identity.id.unId.toString, "superuser" -> (System.currentTimeMillis + 60*60*1000).toString)
+    Redirect(request.headers.get(REFERER).getOrElse(routes.Static.index.url)).withSession("user" -> request.identity.id.unId.toString, "superuser" -> (System.currentTimeMillis + 60*60*1000).toString)
   }
 
   def superuserOff = SiteAction.access(Permission.ADMIN) { implicit request =>
-    Ok("irresponsible").withSession("user" -> request.identity.id.unId.toString)
+    Redirect(request.headers.get(REFERER).getOrElse(routes.Static.index.url)).withSession("user" -> request.identity.id.unId.toString)
   }
 }
