@@ -10,7 +10,7 @@ import site._
 /** Main organizational unit or package of data, within which everything else exists.
   * Usually represents a single project or dataset with a single set of procedures.
   * @param permission the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than [[Permission.VIEW]] except possibly for transient objects, as unavailable volumes should never be returned in the first place. */
-final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], override val permission : Permission.Value, val creation : Timestamp) extends TableRowId[Volume] with SitePage with InVolume {
+final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], val permission : Permission.Value, val creation : Timestamp) extends TableRowId[Volume] with SitePage with InVolume {
   private[this] var _name = name_
   /** Title headline of this volume. */
   def name = _name
@@ -82,7 +82,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     ("add asset", controllers.routes.Asset.create(id, topContainer.id), Permission.CONTRIBUTE),
     ("add slot", controllers.routes.Slot.createContainer(id), Permission.CONTRIBUTE),
     ("add participant", controllers.routes.Record.add(id, IntId[models.RecordCategory](-500)), Permission.CONTRIBUTE)
-  ).filter(a => permission >= a._3)
+  ).filter(a => checkPermission(a._3))
 }
 
 object Volume extends TableId[Volume]("volume") {
@@ -94,17 +94,20 @@ object Volume extends TableId[Volume]("volume") {
     (id, name, body, permission, creation) => new Volume(id, name, body, permission.getOrElse(Permission.NONE), creation.getOrElse(new Timestamp(1357900000000L)))
   }
 
+  private[models] def conditionArgs(args : SQLArgs.Arg*)(implicit site : Site) =
+    args ++ SQLArgs('identity -> site.identity.id, 'superuser -> site.superuser)
+
   /** Retrieve an individual Volume.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   def get(i : Id)(implicit site : Site) : Option[Volume] =
     row.SQL("WHERE id = {id} AND", condition).
-      on('id -> i, 'identity -> site.identity.id, 'superuser -> site.superuser).singleOpt()
+      on(conditionArgs('id -> i) : _*).singleOpt()
 
   /** Retrieve the set of all volumes in the system.
     * This only returns volumes for which the current user has [[Permission.VIEW]] access. */
   def getAll(implicit site : Site) : Seq[Volume] =
     row.SQL("WHERE", condition).
-      on('identity -> site.identity.id, 'superuser -> site.superuser).list()
+      on(conditionArgs() : _*).list()
     
   /** Create a new, empty volume with no permissions.
     * The caller should probably add a [[VolumeAccess]] for this volume to grant [[Permission.ADMIN]] access to some user. */
@@ -114,9 +117,9 @@ object Volume extends TableId[Volume]("volume") {
   }
 }
 
-trait InVolume {
+trait InVolume extends HasPermission {
   def volumeId : Volume.Id = volume.id
   def volume : Volume
   /** Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time. */
-  def permission : Permission.Value = volume.permission
+  def getPermission(implicit site : Site) : Permission.Value = volume.permission
 }

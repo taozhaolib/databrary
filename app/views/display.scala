@@ -57,7 +57,7 @@ object display {
     (if (fuzzy) dateFmtY else dateFmtYMD).format(date)
 
   def date(s : Slot)(implicit site : Site) =
-    s.container.date.map(fuzzyDate(_, s.dataPermission() < Permission.DOWNLOAD))
+    s.container.date.map(fuzzyDate(_, !s.dataPermission().checkPermission(Permission.DOWNLOAD)))
 
   def plainText(text: String = "") =
     raw("<p>"+text.replaceAll("\\r?\\n\\r?\\n", "</p><p>")+"</p>")

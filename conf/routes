@@ -28,7 +28,7 @@ POST        /token/password                                                     
 GET         /token/:token                                                                             controllers.Token.token(token : String)
 
 # parties
-GET         /party/$pID<[0-9]+>                                                                       controllers.Party.view(pID : models.Party.Id)
+GET         /party/$pID<-?[0-9]+>                                                                       controllers.Party.view(pID : models.Party.Id)
 GET         /party/$pID<[0-9]+>/edit                                                                  controllers.Party.edit(pID : models.Party.Id)
 POST        /party/$pID<[0-9]+>/edit                                                                  controllers.Party.change(pID : models.Party.Id)
 POST        /party/$pID<[0-9]+>/token                                                                 controllers.Token.password(pID : models.Account.Id)

@@ -40,7 +40,7 @@ trait AuthSite extends Site {
 }
 
 /** An object with a corresponding page on the site. */
-trait SitePage { self =>
+trait SitePage extends HasPermission {
   /** The title of the object/page in the hierarchy, which may only make sense within [[pageParent]]. */
   def pageName(implicit site : Site) : String
   /** Optional override of pageName for breadcrumbs and other abbreviated locations */

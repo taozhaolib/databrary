@@ -51,7 +51,7 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
     ("add asset", controllers.routes.Asset.create(volumeId, id, fullSlot.segment.lowerBound), Permission.CONTRIBUTE),
     ("add slot", controllers.routes.Slot.create(volumeId, id), Permission.CONTRIBUTE),
     ("add participant", controllers.routes.Record.slotAdd(volumeId, fullSlot.id, IntId[models.RecordCategory](-500), false), Permission.CONTRIBUTE)
-  ).filter(a => permission >= a._3) // TODO: This isn't actually accessible.
+  ).filter(a => checkPermission(a._3)) // TODO: This isn't actually accessible.
 }
 
 object Container extends TableId[Container]("container") {
@@ -73,7 +73,7 @@ object Container extends TableId[Container]("container") {
         cont._fullSlot() = (Slot.make(cont) _).tupled(slot)
         cont
       }.SQL("WHERE container.id = {id} AND", Volume.condition).
-      on('id -> i, 'identity -> site.identity.id, 'superuser -> site.superuser).singleOpt
+      on(Volume.conditionArgs('id -> i) : _*).singleOpt
   }
 
   /** Retrieve all the containers in a given volume. */
@@ -130,8 +130,8 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     _context.getOrElse(container.fullSlot)
 
   /** The level of access granted on data covered by this slot to the current user. */
-  def dataPermission(classification : Classification.Value = Classification.RESTRICTED)(implicit site : Site) =
-    Permission.data(permission, _context.fold(consent)(_.consent), classification)
+  def dataPermission(classification : Classification.Value = Classification.RESTRICTED) : HasPermission =
+    Permission.data(volume.permission, implicit site => _context.fold(consent)(_.consent), classification)
 
   /** Effective start point of this slot within the container. */
   def position : Offset = segment.lowerBound.getOrElse(0)
@@ -183,7 +183,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     ("add asset", controllers.routes.Asset.create(volumeId, containerId, segment.lowerBound), Permission.CONTRIBUTE),
     ("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
     ("add participant", controllers.routes.Record.slotAdd(volumeId, id, IntId[models.RecordCategory](-500), false), Permission.CONTRIBUTE)
-  ).filter(permission >= _._3)
+  ).filter(a => checkPermission(a._3))
 }
 
 object Slot extends TableId[Slot]("slot") {
@@ -210,7 +210,7 @@ object Slot extends TableId[Slot]("slot") {
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   def get(i : Id)(implicit site : Site) : Option[Slot] =
     row.SQL("WHERE slot.id = {id} AND", Volume.condition).
-      on('id -> i, 'identity -> site.identity.id, 'superuser -> site.superuser).singleOpt
+      on(Volume.conditionArgs('id -> i) : _*).singleOpt
 
   /** Retrieve an individual Slot by Container and segment.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */

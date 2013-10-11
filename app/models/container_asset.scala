@@ -51,10 +51,10 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   def pageParent(implicit site : Site) = Some(volume)
   def pageURL(implicit site : Site) = controllers.routes.Asset.view(volume.id, container.fullSlot.id, assetId)
   def pageActions(implicit site : Site) = Seq(
-    ("view", controllers.routes.Asset.view(volumeId, fullSlot.slot.id, assetId), Permission.VIEW, true),
-    ("edit", controllers.routes.Asset.edit(volumeId, containerId, assetId), Permission.EDIT, true),
-    ("remove", controllers.routes.Asset.remove(volumeId, containerId, assetId), Permission.CONTRIBUTE, true)
-  ).filter(a => a._4 == true && permission >= a._3).map(a => (a._1, a._2, a._3))
+    ("view", controllers.routes.Asset.view(volumeId, fullSlot.slot.id, assetId), Permission.VIEW),
+    ("edit", controllers.routes.Asset.edit(volumeId, containerId, assetId), Permission.EDIT),
+    ("remove", controllers.routes.Asset.remove(volumeId, containerId, assetId), Permission.CONTRIBUTE)
+  ).filter(a => checkPermission(a._3))
 }
 
 final class ContainerTimeseries private[models] (override val asset : Asset with TimeseriesData, container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends ContainerAsset(asset, container, position_, name_, body_) {
@@ -83,7 +83,7 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access on the container. */
   def get(asset : Asset.Id, container : Container.Id)(implicit site : Site) : Option[ContainerAsset] =
     row.SQL("WHERE container_asset.asset = {asset} AND container_asset.container = {cont} AND", Volume.condition).
-      on('asset -> asset, 'cont -> container, 'identity -> site.identity.id, 'superuser -> site.superuser).singleOpt()
+      on(Volume.conditionArgs('asset -> asset, 'cont -> container) : _*).singleOpt()
   /** Retrieve a specific asset link by asset.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access on the container. */
   private[models] def get(asset : Asset)(implicit site : Site) : Option[ContainerAsset] = {
@@ -91,7 +91,7 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
       case (link ~ cont) => (make(asset, cont) _).tupled(link)
     }
     row.SQL("WHERE container_asset.asset = {asset} AND", Volume.condition).
-      on('asset -> asset.id, 'identity -> site.identity.id, 'superuser -> site.superuser).singleOpt
+      on(Volume.conditionArgs('asset -> asset.id) : _*).singleOpt
   }
   /** Retrieve a specific asset link by container and asset id.
     * This assumes that permissions have already been checked as the caller must already have the container. */
@@ -169,8 +169,8 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
 
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
     * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
-  def permission(implicit site : Site) : Permission.Value =
-    slot.dataPermission(classification)
+  override def getPermission(implicit site : Site) : Permission.Value =
+    slot.dataPermission(classification).getPermission
 
   def pageName(implicit site : Site) = link.name
   def pageParent(implicit site : Site) = if(slot.container.top) { Some(slot.volume) } else { Some(slot) }
@@ -179,7 +179,7 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
     ("view", controllers.routes.Asset.view(volumeId, slotId, link.assetId), Permission.VIEW, true),
     ("edit", controllers.routes.Asset.edit(volumeId, link.containerId, link.assetId), Permission.EDIT, true),
     ("remove", controllers.routes.Asset.remove(volumeId, link.containerId, link.assetId), Permission.CONTRIBUTE, slot.isFull)
-  ).filter(a => a._4 == true && permission >= a._3).map(a => (a._1, a._2, a._3))
+  ).filter(a => a._4 && checkPermission(a._3)).map(a => (a._1, a._2, a._3))
 }
 
 final class SlotTimeseries private[models] (override val link : ContainerTimeseries, slot : Slot, excerpt_ : Option[Boolean] = None) extends SlotAsset(link, slot, excerpt_) with TimeseriesData {
@@ -230,7 +230,7 @@ object SlotAsset {
       case (link ~ slot ~ excerpt) => make(link, (Slot.make(link.container) _).tupled(slot), excerpt)
     }
     row.SQL("WHERE slot.id = {slot} AND asset.id = {asset} AND", condition()).
-      on('asset -> asset, 'slot -> slot, 'identity -> site.identity.id, 'superuser -> site.superuser).singleOpt
+      on(Volume.conditionArgs('asset -> asset, 'slot -> slot) : _*).singleOpt
   }
 
   /** Retrieve the list of all assets within the given slot. */
