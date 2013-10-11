@@ -50,7 +50,7 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
     ("edit", controllers.routes.Slot.edit(volumeId, fullSlot.id), Permission.EDIT),
     ("add asset", controllers.routes.Asset.create(volumeId, id, fullSlot.segment.lowerBound), Permission.CONTRIBUTE),
     ("add slot", controllers.routes.Slot.create(volumeId, id), Permission.CONTRIBUTE),
-    ("add record", controllers.routes.Record.slotAdd(volumeId, fullSlot.id, false), Permission.CONTRIBUTE)
+    ("add participant", controllers.routes.Record.slotAdd(volumeId, fullSlot.id, IntId[models.RecordCategory](-500), false), Permission.CONTRIBUTE)
   ).filter(a => permission >= a._3) // TODO: This isn't actually accessible.
 }
 
@@ -182,7 +182,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     ("edit", controllers.routes.Slot.edit(volumeId, id), Permission.EDIT),
     ("add asset", controllers.routes.Asset.create(volumeId, containerId, segment.lowerBound), Permission.CONTRIBUTE),
     ("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
-    ("add record", controllers.routes.Record.slotAdd(volumeId, id, false), Permission.CONTRIBUTE)
+    ("add participant", controllers.routes.Record.slotAdd(volumeId, id, IntId[models.RecordCategory](-500), false), Permission.CONTRIBUTE)
   ).filter(permission >= _._3)
 }
 

@@ -465,7 +465,6 @@ dbjs.simpleToggle = function (toggler, toggled) {
 
                     if ($.inArray(source, sources) < 0 && !$(source).exists()) source = 'auto';
                     type = defaultType($element, type);
-                    console.log(source, type);
 
                     $message = getMessage($element, source, type);
 
@@ -904,10 +903,6 @@ dbjs.simpleToggle = function (toggler, toggled) {
             var $repeater = this,
                 $repeats, repeatCount, $copy, newIndex = 0;
 
-            var metricsRepeater, metrics = {}, $metricsSelector,
-                datumSelect = 'input.datum, select.datum',
-                metricSelect = 'input.metric, select.metric';
-
             var $tempControls = $('<div class="controls"></div>'),
                 $tempControlsCreate = $('<div class="mod create">+</div>'),
                 $tempControlsRemove = $('<div class="mod remove">-</div>'),
@@ -915,9 +910,6 @@ dbjs.simpleToggle = function (toggler, toggled) {
 
             // methods
             var initialize = function () {
-                if ($repeater.hasClass('repeater-metrics'))
-                    initializeMetrics();
-
                 updateRepeater($repeater);
 
                 $repeats.each(function (index) {
@@ -931,90 +923,6 @@ dbjs.simpleToggle = function (toggler, toggled) {
 
                     newIndex++;
                 });
-            };
-
-            var initializeMetrics = function () {
-                metricsRepeater = true;
-
-                var rows = JSON.parse($repeater.attr('data-rows'));
-                $repeater.removeAttr('data-rows');
-
-                metrics[0] = {};
-                var input, type, atts = '', name;
-
-                for (var c = 0; c < rows.length; c++) {
-                    metrics[rows[c]['id']] = {};
-
-                    $metricsSelector = $('<select' + atts + ' id="measure_0__metric" name="measure[0].metric" class="metric">');
-
-                    for (var m = 0; m < rows[c]['template'].length; m++) {
-                        name = rows[c]['template'][m]['name'].charAt(0).toUpperCase() + rows[c]['template'][m]['name'].slice(1) + ' (' + rows[c]['template'][m]['classification'] + ')';
-
-                        if (rows[c]['template'][m]['values'].length > 0) {
-                            input = $('<select' + atts + ' id="measure_0__datum" name="measure[0].datum" class="datum">');
-
-                            input.append($('<option value="" disabled selected>Select ' + rows[c]['template'][m]['name'] + '...</option>'));
-
-                            for (var v = 0; v < rows[c]['template'][m]['values'].length; v++) {
-                                input.append($('<option value="' + rows[c]['template'][m]['values'][v] + '">' + rows[c]['template'][m]['values'][v] + '</option>'));
-                            }
-                        } else {
-                            if (rows[c]['template'][m]['dataType'] == 'number')
-                                atts = ' step="any"';
-
-                            input = $('<input type="' + rows[c]['template'][m]['dataType'] + '"' + atts + ' id="measure_0__datum" name="measure[0].datum" value="" placeholder="Select ' + rows[c]['template'][m]['name'] + '..." class="datum">');
-                        }
-
-                        $metricsSelector.append($('<option value="' + rows[c]['template'][m]['id'] + '">' + name + '</option>'));
-
-                        metrics[0][rows[c]['template'][m]['id']] = input;
-                        metrics[rows[c]['id']][rows[c]['template'][m]['id']] = input;
-                    }
-                }
-
-                $('#category').change(function () {
-                    updateRecordCategory($(this).val());
-                });
-
-                $repeater.on('change', metricSelect, function () {
-                    var $metric = $(this);
-
-                    updateMetrics();
-                    updateDatum($metric.closest('.repeat'));
-                });
-            };
-
-            var updateDatum = function ($repeat) {
-                $repeat.find(datumSelect).replaceWith(metrics[0][$repeat.find(metricSelect).val()]);
-            };
-
-            var updateRecordCategory = function (id) {
-                if (id == 0) {
-                    $repeats.filter(function () {
-                        var value = $(this).find(datumSelect).val();
-                        return value == '' || value == false || value == null || value == undefined;
-                    }).each(function (i) {
-                            remove($repeater, $(this));
-                        });
-
-                    return true;
-                }
-
-                var $matches;
-
-                for (var input in metrics[id]) {
-                    if (!metrics[id].hasOwnProperty(input))
-                        continue;
-
-                    $matches = $repeats.filter(function () {
-                        return $(this).find(metricSelect).val() == input;
-                    });
-
-                    if ($matches.length == 0)
-                        createMetrics($repeater, input);
-                }
-
-                return true;
             };
 
             var updateRepeater = function ($repeater) {
@@ -1038,109 +946,31 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 $repeat.append($controls);
             };
 
-            var update = function ($repeater, id, val) {
-                updateRepeater($repeater);
-
-                if (metricsRepeater)
-                    updateMetrics();
-
-                $repeats.each(function (index) {
-                    var $repeat = $(this);
-
-                    updateControls($repeat, index);
-
-                    if(metricsRepeater && $repeat.find(metricSelect).find('option:enabled').length == 0)
-                        remove($repeater, $repeat);
-                });
-
-            };
-
-            var updateMetrics = function () {
-                var $metrics = $repeater.find(metricSelect),
-                    usedMetrics = [], setMetrics = [];
-
-                $metrics.each(function () {
-                    var $metric = $(this),
-                        id = $metric.val();
-
-                    if (usedMetrics.indexOf(id) == -1)
-                        usedMetrics.push(id);
-                });
-
-                $metrics.each(function () {
-                    var $metric = $(this),
-                        $options = $(this).find('option'),
-                        id = $metric.val();
-
-                    $options.each(function () {
-                        var $option = $(this),
-                            oid = $option.val();
-
-                        if ($option.is(':selected')) {
-                            if (setMetrics.indexOf(oid) > -1)
-                                $option.attr('disabled', 'disabled');
-                            else
-                                $option.removeAttr('disabled');
-                        } else {
-                            if (usedMetrics.indexOf(oid) > -1)
-                                $option.attr('disabled', 'disabled');
-                            else
-                                $option.removeAttr('disabled');
-                        }
-                    });
-
-                    if ($metric.find('option[value="' + id + '"]').is(':disabled') && $metric.find('option:enabled').length > 0)
-                        $metric.val($metric.find('option:enabled').first().val());
-
-                    if (setMetrics.indexOf(id) == -1)
-                        setMetrics.push(id);
-                });
-            };
-
-            var create = function ($repeater, id, val) {
+            var create = function ($repeater) {
                 var cID = $copy.find('label[for]').attr('for').split('__').shift().split('_').pop();
 
                 $repeater.append($($('<div>').append($copy).html().replace(new RegExp('_' + cID + '_', 'g'), '_' + newIndex + '_').replace(new RegExp('\\[' + cID + '\\]', 'g'), '[' + newIndex + ']')));
 
-                update($repeater, id, val);
+                updateRepeater($repeater);
+
+                $repeats.each(function (index) {
+                    updateControls($(this), index);
+                });
 
                 newIndex++;
-
-                return newIndex - 1;
-            };
-
-            var createMetrics = function ($repeater, id, val) {
-                var newIndex = create($repeater, id, val);
-
-                var $new = $repeats.last(),
-                    $metric = $new.find(metricSelect),
-                    $datum = $new.find(datumSelect);
-
-                if(!$metric.find('option[value="' + id + '"]'))
-                    id = $metric.find('option:enabled').first().val();
-
-                $metric.val(id);
-
-                $datum.replaceWith($($('<div>').append(metrics[0][id].clone()).html().replace(new RegExp('_' + 0 + '_', 'g'), '_' + newIndex + '_').replace(new RegExp('\\[' + 0 + '\\]', 'g'), '[' + newIndex + ']')));
-
-                if (typeof val !== 'undefined')
-                    $datum.val(val);
             };
 
             var remove = function ($repeater, $repeat) {
                 if (repeatCount > 1)
                     $repeat.remove();
                 else
-                    $repeat.find('input, textarea, select').val('');
+                    $repeat.find('input, textarea').val('');
 
-                if(metricsRepeater){
-                    var $metric = $repeat.find(metricSelect);
+                updateRepeater($repeater);
 
-                    $metric.val($metric.find('option:enabled').first().val());
-                    $metric.trigger('change');
-                }
-
-                update($repeater);
+                $repeats.each(function (index) {
+                    updateControls($(this), index);
+                })
             };
 
             // setup
@@ -1153,30 +983,6 @@ dbjs.simpleToggle = function (toggler, toggled) {
             $repeater.on('click', '.controls .create', function () {
                 create($repeater);
             });
-
-            if (metricsRepeater) {
-                updateRecordCategory(0);
-                updateRecordCategory($('#category').val());
-
-                $repeats.each(function () {
-                    var $repeat = $(this),
-                        $metric = $repeat.find(metricSelect),
-                        metricID = $metric.val(),
-                        newIndex = $repeat.find(datumSelect).attr('id').split('__').shift().split('_').pop();
-
-                    $metric.replaceWith($($('<div>').append($metricsSelector.clone()).html().replace(new RegExp('_' + 0 + '_', 'g'), '_' + newIndex + '_').replace(new RegExp('\\[' + 0 + '\\]', 'g'), '[' + newIndex + ']')));
-
-                    $metric = $repeat.find(metricSelect);
-
-                    if (metricID == null)
-                        metricID = $metric.find('option:enabled').first().val();
-
-                    $metric.val(metricID);
-                    $repeat.find('.repeated > label').remove();
-                });
-
-                update($repeater);
-            }
 
             return $repeater;
         }

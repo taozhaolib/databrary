@@ -10,8 +10,8 @@
         @tag.form(routes.Record.update(record.volumeId, record.id)) {
             @widget.formErrors(form)
 
-            @tag.select(form("category"), ("0", "Custom...") +: RecordCategory.getAll.map(c => (c.id.unId.toString, c.name)), 'placeholder -> "Record category", '_label -> true)
-
+            <h2>@record.category.get.name.capitalize Record</h2>
+            @tag.inputHidden(form("category"), 'placeholder -> record.category.get.name)
 
             <fieldset class="metrics">
                 <legend>Metrics</legend>

@@ -88,10 +88,11 @@ POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/tag/clear                    
 # records
 POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                         controllers.Record.slotRemove(vID : models.Volume.Id, sID : models.Slot.Id, rID : models.Record.Id, editRedirect : Boolean = false)
 POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove/return                  controllers.Record.slotRemove(vID : models.Volume.Id, sID : models.Slot.Id, rID : models.Record.Id, editRedirect : Boolean = true)
-POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/create                                      controllers.Record.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, editRedirect : Boolean = false)
-POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/create/return                               controllers.Record.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, editRedirect : Boolean = true)
+POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create                       controllers.Record.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = false)
+POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create/return                controllers.Record.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = true)
 
 GET         /volume/$vID<[0-9]+>/record/$rID<[0-9]+>                                                  controllers.Record.view(vID : models.Volume.Id, rID : models.Record.Id)
+GET         /volume/$vID<[0-9]+>/record/$cID<-?[0-9]+>/create                                         controllers.Record.add(vID : models.Volume.Id, cID : models.RecordCategory.Id)
 GET         /volume/$vID<[0-9]+>/record/$rID<[0-9]+>/edit                                             controllers.Record.edit(vID : models.Volume.Id, rID : models.Record.Id)
 POST        /volume/$vID<[0-9]+>/record/$rID<[0-9]+>/edit                                             controllers.Record.update(vID : models.Volume.Id, rID : models.Record.Id)
 

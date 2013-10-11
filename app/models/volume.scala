@@ -80,7 +80,8 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     ("edit", controllers.routes.Volume.edit(id), Permission.EDIT),
     ("access", controllers.routes.Volume.admin(id), Permission.ADMIN),
     ("add asset", controllers.routes.Asset.create(id, topContainer.id), Permission.CONTRIBUTE),
-    ("add slot", controllers.routes.Slot.createContainer(id), Permission.CONTRIBUTE)
+    ("add slot", controllers.routes.Slot.createContainer(id), Permission.CONTRIBUTE),
+    ("add participant", controllers.routes.Record.add(id, IntId[models.RecordCategory](-500)), Permission.CONTRIBUTE)
   ).filter(a => permission >= a._3)
 }
 

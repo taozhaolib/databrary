@@ -126,14 +126,18 @@ object Record extends SiteController {
       Redirect(request.obj.pageURL)
   }
 
-  def slotAdd(v : models.Volume.Id, s : models.Slot.Id, editRedirect : Boolean = false) = Slot.Action(v, s, Permission.EDIT) { implicit request =>
+  def slotAdd(v : models.Volume.Id, s : models.Slot.Id, catID : models.RecordCategory.Id, editRedirect : Boolean = false) = Slot.Action(v, s, Permission.EDIT) { implicit request =>
     val form = selectForm.bindFromRequest
     form.fold(
       form => BadRequest(Slot.viewEdit(request.obj)(recordForm = form)),
       _.fold[SimpleResult] {
-        val r = models.Record.create(request.obj.volume)
+        RecordCategory.get(catID).fold[SimpleResult](
+          BadRequest
+        ) { cat =>
+        val r = models.Record.create(request.obj.volume, Some(cat))
         r.addSlot(request.obj)
-        Created(views.html.record.edit(r, Nil, editForm, js))
+        Created(views.html.record.edit(r, cat.template, editForm.fill((Some(cat.id), Seq())), js))
+        }
       } (models.Record.get(_).
         filter(r => r.permission >= Permission.DOWNLOAD && r.volumeId == v).
         fold[SimpleResult](
@@ -146,6 +150,15 @@ object Record extends SiteController {
         }
       )
     )
+  }
+
+  def add(v : models.Volume.Id, catID : models.RecordCategory.Id) = Volume.Action(v, Permission.EDIT) { implicit request =>
+    RecordCategory.get(catID).fold[SimpleResult](
+    BadRequest
+    ) { cat =>
+      val r = models.Record.create(request.obj.volume, Some(cat))
+      Created(views.html.record.edit(r, cat.template, editForm.fill((Some(cat.id), Seq())), js))
+    }
   }
 
 }
