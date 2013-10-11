@@ -398,7 +398,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
     // stock vars
     var $window = $(window),
         $handler,
-        sources = ['auto', 'alt', 'title', 'html', 'data-tip', 'data-source'],
+        sources = ['auto', 'alt', 'title', 'html', 'data-message', 'data-source'],
         types = ['alert', 'error', 'trace', 'input', 'null'];
 
     var validMessage = function (message) {
@@ -451,20 +451,21 @@ dbjs.simpleToggle = function (toggler, toggled) {
             // methods
             var initialize = function () {
                 generate('.alert', 'html', 'alert');
+                generate('#site_header .message', 'data-message', 'trace');
                 //generate('.error', 'html', 'error');
             };
 
             var generate = function (element, source, type, prepend) {
-                // defaults
-                if ($.inArray(source, sources) < 0 && !$(source).exists()) source = 'auto';
-                type = defaultType($(source), type);
-
                 var $elements = $(element),
                     messages = {};
 
                 $elements.each(function () {
                     var $element = $(this),
                         $message;
+
+                    if ($.inArray(source, sources) < 0 && !$(source).exists()) source = 'auto';
+                    type = defaultType($element, type);
+                    console.log(source, type);
 
                     $message = getMessage($element, source, type);
 
@@ -611,7 +612,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
             var addCloser = function ($message) {
                 $('<div class="x"></div>').on('click',function () {
                     hide($message, null, true);
-                }).prependTo($message.find('.wrapper'));
+                }).prependTo($message.find('.wrap'));
             };
 
             var removeHook = function ($element, $message, type) {
@@ -703,7 +704,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
                     speed: 150
                 };
 
-            var $message = $('<div class="message"><div class="wrapper"></div></div>'),
+            var $message = $('<div class="message"><div class="wrap"></div></div>'),
                 $this = this,
                 message;
 
@@ -728,7 +729,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
                     return false;
 
                 $this = $message.removeClass(types.join(' ')).addClass(type).attr('id', messageID);
-                $this.find('.wrapper').html(message);
+                $this.find('.wrap').html(message);
 
                 return $this;
             };
