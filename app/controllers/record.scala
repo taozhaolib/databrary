@@ -135,7 +135,7 @@ object Record extends SiteController {
         r.addSlot(request.obj)
         Created(views.html.record.edit(r, Nil, editForm, js))
       } (models.Record.get(_).
-        filter(r => r.permission >= Permission.DOWNLOAD && r.volumeId == v).
+        filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId == v).
         fold[SimpleResult](
           BadRequest(Slot.viewEdit(request.obj)(recordForm = form.withError("record", "record.bad")))) { r =>
           r.addSlot(request.obj)

@@ -21,7 +21,7 @@ object Volume extends SiteController {
   def view(i : models.Volume.Id) = Action(i) { implicit request =>
     val top = request.obj.toplevelAssets
     def group(x : Seq[SlotAsset]) = x.groupBy(_.format.mimeSubTypes._1)
-    val (excerpts, files) = top.filter(_.permission >= Permission.DOWNLOAD).partition(_.excerpt)
+    val (excerpts, files) = top.filter(_.checkPermission(Permission.DOWNLOAD)).partition(_.excerpt)
     Ok(views.html.volume.view(request.obj, top, group(excerpts), group(files)))
   }
 
@@ -72,7 +72,7 @@ object Volume extends SiteController {
 
   def create(e : Option[models.Party.Id]) = SiteAction.auth { implicit request =>
     e.fold[Option[Party]](Some(request.identity))(models.Party.get(_)).fold[SimpleResult](NotFound) { owner =>
-      if (owner.access < Permission.CONTRIBUTE || request.identity.delegatedBy(owner.id) < Permission.CONTRIBUTE)
+      if (owner.access < Permission.CONTRIBUTE || !owner.checkPermission(Permission.CONTRIBUTE))
         Forbidden
       else
         Ok(views.html.volume.edit(Left(owner), editForm)(request.withObj(owner)))
@@ -81,7 +81,7 @@ object Volume extends SiteController {
 
   def add(e : models.Party.Id) = SiteAction.auth { implicit request =>
     models.Party.get(e).fold[SimpleResult](NotFound) { owner =>
-      if (owner.access < Permission.CONTRIBUTE || request.identity.delegatedBy(owner.id) < Permission.CONTRIBUTE)
+      if (owner.access < Permission.CONTRIBUTE || !owner.checkPermission(Permission.CONTRIBUTE))
         Forbidden
       else
         editForm.bindFromRequest.fold(

@@ -61,8 +61,7 @@ object RequestObject {
   }
   def permission[O <: InVolume](perm : Permission.Value = Permission.VIEW) = new ActionHandler[RequestObject[O]#Site] {
     protected def handle[A](request : RequestObject[O]#Site[A]) =
-      if (request.obj.permission < perm && !request.superuser) simple(Results.Forbidden)
-      else None
+      if (request.obj.checkPermission(perm)(request)) None else simple(Results.Forbidden)
   }
   def check[O <: InVolume](get : SiteRequest[_] => Option[O], perm : Permission.Value = Permission.VIEW) =
     getter(get) ~> permission(perm)

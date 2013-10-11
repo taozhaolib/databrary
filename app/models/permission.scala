@@ -17,19 +17,29 @@ object Permission extends PGEnum("permission") {
   /** Alias for DOWNLOAD. DOWNLOAD permissions grant access to shared data, while non-data only requires VIEW. */
   def DATA = DOWNLOAD
 
+  def check(has : Value, need : Value)(implicit site : Site) : Boolean =
+    has >= need || site.superuser
+
   /** The effective permission for data objects with the given attributes. */
-  final def data(p : Value, consent : Consent.Value, classification : Classification.Value)(implicit site : Site) : Value = {
-    if (p >= FULL)
-      p
-    else if (p >= DOWNLOAD && classification >= Classification.access(consent))
-      DOWNLOAD
-    else if (p >= VIEW && classification >= Classification.UNRESTRICTED)
-      DOWNLOAD
-    else if (p >= VIEW)
-      VIEW
-    else
-      NONE
+  def data(p : Value, consent : Site => Consent.Value, classification : Classification.Value) : HasPermission = new HasPermission {
+    def getPermission(implicit site : Site) =
+      if (p >= FULL)
+        p
+      else if (p >= DOWNLOAD && classification >= Classification.access(consent(site)))
+        DOWNLOAD
+      else if (p >= VIEW && classification >= Classification.UNRESTRICTED)
+        DOWNLOAD
+      else if (p >= VIEW)
+        VIEW
+      else
+        NONE
   }
+}
+
+trait HasPermission {
+  def getPermission(implicit site : Site) : Permission.Value
+  final def checkPermission(need : Permission.Value)(implicit site : Site) : Boolean =
+    Permission.check(getPermission, need)
 }
 
 /** The possible levels of participant consent governing [Classification.IDENTIFIED] data.

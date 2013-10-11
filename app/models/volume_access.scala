@@ -66,7 +66,7 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
   private[models] def getVolumes(party : Party, permission : Permission.Value = Permission.NONE)(implicit site : Site) : Seq[VolumeAccess] =
     row.map { a => a._party() = party; a }.
       SQL("WHERE party = {party} AND access >= {access} AND", Volume.condition, "ORDER BY access DESC").
-      on('party -> party.id, 'access -> permission, 'identity -> site.identity.id, 'superuser -> site.superuser).list
+      on(Volume.conditionArgs('party -> party.id, 'access -> permission) : _*).list
 
   /** Remove a particular volume access from the database.
     * @return true if a matching volume access was found and deleted

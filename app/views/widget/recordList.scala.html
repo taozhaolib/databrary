@@ -3,7 +3,7 @@
 @target.records.map { record =>
 	<h2><a href="@record.pageURL">@record.category.fold("Record")(_.name)</a></h2>
 	<dl>
-	@record.measures.filter(m => record.dataPermission(m.metric) >= Permission.DOWNLOAD).map { m =>
+	@record.measures.filter(m => record.dataPermission(m.metric).checkPermission(Permission.DOWNLOAD)).map { m =>
 		<dt>@m.metric.name</dt>
 		<dd>@m.datum</dd>
 	}

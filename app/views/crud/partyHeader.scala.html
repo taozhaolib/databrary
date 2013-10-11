@@ -3,17 +3,17 @@
 <header>
     <h1>@party.name</h1>
 
-    @if(party.delegated >= Permission.EDIT) {
+    @if(party.checkPermission(Permission.EDIT)) {
     <nav class="menu">
         <ul>
 			@crud.headerCurrentLink(routes.Party.view(party.id), "view")
 			@crud.headerCurrentLink(routes.Party.edit(party.id), "edit")
 
-            @if(party.delegated >= Permission.ADMIN) {
+            @if(party.checkPermission(Permission.ADMIN)) {
 				@crud.headerCurrentLink(routes.Party.admin(party.id), "authorization")
             }
 
-            @if(party.delegated >= Permission.CONTRIBUTE) {
+            @if(party.checkPermission(Permission.CONTRIBUTE)) {
                 @crud.headerCurrentLink(routes.Volume.create(Some(party.id)), "new volume", true)
             }
         </ul>

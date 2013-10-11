@@ -25,7 +25,7 @@ object Party extends SiteController {
   }
 
   private def adminAccount(implicit request : Request[_]) =
-    cast[models.Account](request.obj).filter(_.equals(request.identity))
+    cast[models.Account](request.obj).filter(_.equals(request.identity) || request.superuser)
 
   type PasswordMapping = Mapping[Option[String]]
   val passwordMapping : PasswordMapping = 
@@ -102,7 +102,7 @@ object Party extends SiteController {
   private[this] def AdminAction(i : models.Party.Id, delegate : Boolean = true) =
     SiteAction.auth ~> new ActionRefiner[SiteRequest.Auth,Request] {
       protected def refine[A](request : SiteRequest.Auth[A]) =
-        if (request.identity.id != i && (!delegate || request.identity.delegatedBy(i)(request) < Permission.ADMIN))
+        if (request.identity.id != i && (!delegate || request.identity.delegatedBy(i)(request) < Permission.ADMIN) && !request.superuser)
           simple(Forbidden)
         else
           Right(request.withObj(models.Party.get(i)(request).get))

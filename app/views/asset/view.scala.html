@@ -6,7 +6,7 @@
 @template.crud("Asset: " + link.link.name) {
         <p>@link.link.body</p>
 
-	@if(link.permission >= Permission.DOWNLOAD) {
+	@if(link.checkPermission(Permission.DOWNLOAD)) {
 		@link.link.asset.format.mimeSubTypes match {
             case ("image", _) => {
                 <img src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>

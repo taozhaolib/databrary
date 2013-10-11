@@ -51,7 +51,7 @@ object Comment extends TableId[Comment]("comment") {
     * This checks permissions on the commented object (volume). */
   def get(id : Id)(implicit site : Site) : Option[Comment] =
     row.SQL("WHERE comment.id = {id} AND", Volume.condition).
-      on('id -> id, 'identity -> site.identity.id, 'superuser -> site.superuser).singleOpt
+      on(Volume.conditionArgs('id -> id) : _*).singleOpt
 
   /** Retrieve the set of all comments within the given volume. */
   private[models] def getVolume(volume : Volume)(implicit db : Site.DB) : Seq[Comment] =
@@ -71,7 +71,7 @@ object Comment extends TableId[Comment]("comment") {
     * This checks permissions on the commented object (volume). */
   private[models] def getParty(who : Account)(implicit site : Site) : Seq[Comment] =
     whoRow(who).SQL("WHERE who = {who} AND", Volume.condition, order).
-      on('who -> who.id, 'identity -> site.identity.id, 'superuser -> site.superuser).list
+      on(Volume.conditionArgs('who -> who.id) : _*).list
 
   /** Post a new comment on a target by the current user.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */

@@ -62,8 +62,8 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   /** Effective permission the site user has over a given metric in this record, specifically in regards to the measure datum itself.
     * Record permissions depend on volume permissions, but can be further restricted by consent levels.
     */
-  def dataPermission(metric : Metric)(implicit site : Site) : Permission.Value =
-    Permission.data(volume.permission, consent, metric.classification)
+  def dataPermission(metric : Metric)(implicit site : Site) : HasPermission =
+    Permission.data(volume.permission, _ => consent, metric.classification)
 
   /** The set of slots to which this record applies. */
   def slots(implicit db : Site.DB) : Seq[Slot] =
@@ -78,7 +78,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def pageActions(implicit site : Site) = Seq(
     ("view", controllers.routes.Record.view(volumeId, id), Permission.VIEW),
     ("edit", controllers.routes.Record.edit(volumeId, id), Permission.EDIT)
-  ).filter(a => permission >= a._3)
+  ).filter(a => checkPermission(a._3))
 }
 
 object Record extends TableId[Record]("record") {
@@ -106,7 +106,7 @@ object Record extends TableId[Record]("record") {
   /** Retrieve a specific record by id. */
   def get(id : Id)(implicit site : Site) : Option[Record] =
     row.SQL("WHERE record.id = {id} AND", Volume.condition).
-      on('id -> id, 'identity -> site.identity.id, 'superuser -> site.superuser).singleOpt
+      on(Volume.conditionArgs('id -> id) : _*).singleOpt
 
   /** Retrieve the set of records on the given slot. */
   private[models] def getSlot(slot : Slot)(implicit db : Site.DB) : Seq[Record] =

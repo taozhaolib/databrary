@@ -7,7 +7,7 @@ import site._
 
 /** Any real-world individual, group, institution, etc.
   * Instances are generally obtained from [[Party.get]] or [[Party.create]]. */
-sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid] = None) extends TableRowId[Party] with SitePage {
+sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid] = None) extends TableRowId[Party] with SitePage with HasPermission {
   private[this] var _name = name_
   def name = _name
   private[this] var _orcid = orcid_
@@ -26,16 +26,6 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   /** Level of access user has to the site.
     * Computed by [Authorize.access_check] and usually accessed through [[site.Site.access]]. */
   def access(implicit db : Site.DB) : Permission.Value = _access
-
-  def pageName(implicit site : Site) = name
-  def pageParent(implicit site : Site) = None
-  def pageURL(implicit site : Site) = controllers.routes.Party.view(id)
-  def pageActions(implicit site : Site) = Seq(
-    ("view", controllers.routes.Party.view(id), Permission.VIEW),
-    ("edit", controllers.routes.Party.edit(id), Permission.EDIT),
-    ("authorization", controllers.routes.Party.admin(id), Permission.ADMIN),
-    ("add volume", controllers.routes.Volume.create(Some(id)), Permission.CONTRIBUTE)
-  ).filter(a => delegated >= a._3)
 
   private[this] val _authorizeParents = CachedVal[Seq[Authorize], Site.DB](Authorize.getParents(this)(_))
   /** List of authorizations granted to this user. Cached for !all.
@@ -57,6 +47,18 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
     * @param p permission level to restrict to
     * @return VolumeAccess sorted by level (ADMIN first). */
   final def volumeAccess(p : Permission.Value)(implicit site : Site) = VolumeAccess.getVolumes(this, p)
+
+  def getPermission(implicit site : Site) = delegated
+
+  def pageName(implicit site : Site) = name
+  def pageParent(implicit site : Site) = None
+  def pageURL(implicit site : Site) = controllers.routes.Party.view(id)
+  def pageActions(implicit site : Site) = Seq(
+    ("view", controllers.routes.Party.view(id), Permission.VIEW),
+    ("edit", controllers.routes.Party.edit(id), Permission.EDIT),
+    ("authorization", controllers.routes.Party.admin(id), Permission.ADMIN),
+    ("add volume", controllers.routes.Volume.create(Some(id)), Permission.CONTRIBUTE)
+  ).filter(a => checkPermission(a._3))
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
