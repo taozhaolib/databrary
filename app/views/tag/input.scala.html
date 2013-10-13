@@ -1,16 +1,16 @@
 @**
  * Prepare a generic HTML input.
  *@
-@(field: play.api.data.Field, args: (Symbol, Any)* )(inputDef: (String, String, Option[String], Map[Symbol,Any]) => Html)(implicit handler: helper.FieldConstructor, lang: play.api.i18n.Lang)
+@(field: play.api.data.Field, args: Map[Symbol, Any])(inputDef: (String, String, Option[String], Map[Symbol,Any]) => Html)(implicit handler: helper.FieldConstructor, lang: play.api.i18n.Lang)
 
-@id = @{ args.toMap.get('id).map(_.toString).getOrElse(field.id) }
+@id = @{ args.get('id).fold(field.id)(_.toString) }
 
 @handler(
     helper.FieldElements(
         id,
         field,
-        inputDef(id, field.name, field.value, args.filter(arg => !arg._1.name.startsWith("_") && arg._1 != 'id).toMap ++ Map(('class, if(field.hasErrors) "error "+args.toMap.getOrElse('class, "") else args.toMap.getOrElse('class, "")))),
-        args.toMap,
+        inputDef(id, field.name, field.value, args.filterKeys(arg => !arg.name.startsWith("_") && arg != 'id).updated('class, (if(field.hasErrors) "error " else "")+args.getOrElse('class, ""))),
+        args,
         lang
     )
 )
