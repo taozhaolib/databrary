@@ -54,11 +54,11 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   def pageParent(implicit site : Site) = None
   def pageURL(implicit site : Site) = controllers.routes.Party.view(id)
   def pageActions(implicit site : Site) = Seq(
-    ("view", controllers.routes.Party.view(id), Permission.VIEW),
-    ("edit", controllers.routes.Party.edit(id), Permission.EDIT),
-    ("authorization", controllers.routes.Party.admin(id), Permission.ADMIN),
-    ("add volume", controllers.routes.Volume.create(Some(id)), Permission.CONTRIBUTE)
-  ).filter(a => checkPermission(a._3))
+    Action("view", controllers.routes.Party.view(id), Permission.VIEW),
+    Action("edit", controllers.routes.Party.edit(id), Permission.EDIT),
+    Action("authorization", controllers.routes.Party.admin(id), Permission.ADMIN),
+    Action("add volume", controllers.routes.Volume.create(Some(id)), Permission.CONTRIBUTE)
+  )
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */

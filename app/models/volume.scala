@@ -76,13 +76,13 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   def pageParent(implicit site : Site) = None
   def pageURL(implicit site : Site) = controllers.routes.Volume.view(id)
   def pageActions(implicit site : Site) = Seq(
-    ("view", controllers.routes.Volume.view(id), Permission.VIEW),
-    ("edit", controllers.routes.Volume.edit(id), Permission.EDIT),
-    ("access", controllers.routes.Volume.admin(id), Permission.ADMIN),
-    ("add asset", controllers.routes.Asset.create(id, topContainer.id), Permission.CONTRIBUTE),
-    ("add slot", controllers.routes.Slot.createContainer(id), Permission.CONTRIBUTE),
-    ("add participant", controllers.routes.Record.add(id, IntId[models.RecordCategory](-500)), Permission.CONTRIBUTE)
-  ).filter(a => checkPermission(a._3))
+    Action("view", controllers.routes.Volume.view(id), Permission.VIEW),
+    Action("edit", controllers.routes.Volume.edit(id), Permission.EDIT),
+    Action("access", controllers.routes.Volume.admin(id), Permission.ADMIN),
+    Action("add asset", controllers.routes.Asset.create(id, topContainer.id), Permission.CONTRIBUTE),
+    Action("add slot", controllers.routes.Slot.createContainer(id), Permission.CONTRIBUTE),
+    Action("add participant", controllers.routes.Record.add(id, IntId[models.RecordCategory](-500)), Permission.CONTRIBUTE)
+  )
 }
 
 object Volume extends TableId[Volume]("volume") {

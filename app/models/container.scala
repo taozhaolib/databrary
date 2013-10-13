@@ -44,14 +44,8 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
 
   def pageName(implicit site : Site) = name.getOrElse(date.toString) // TODO: still needs fixin...
   def pageParent(implicit site : Site) = Some(volume)
-  def pageURL(implicit site : Site) = controllers.routes.Slot.view(volume.id, fullSlot.id)
-  def pageActions(implicit site : Site) = Seq(
-    ("view", controllers.routes.Slot.view(volumeId, fullSlot.id), Permission.VIEW),
-    ("edit", controllers.routes.Slot.edit(volumeId, fullSlot.id), Permission.EDIT),
-    ("add asset", controllers.routes.Asset.create(volumeId, id, fullSlot.segment.lowerBound), Permission.CONTRIBUTE),
-    ("add slot", controllers.routes.Slot.create(volumeId, id), Permission.CONTRIBUTE),
-    ("add participant", controllers.routes.Record.slotAdd(volumeId, fullSlot.id, IntId[models.RecordCategory](-500), false), Permission.CONTRIBUTE)
-  ).filter(a => checkPermission(a._3)) // TODO: This isn't actually accessible.
+  def pageURL(implicit site : Site) = fullSlot.pageURL
+  def pageActions(implicit site : Site) = fullSlot.pageActions
 }
 
 object Container extends TableId[Container]("container") {
@@ -178,12 +172,12 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   def pageParent(implicit site : Site) = Some(if (context.equals(this)) volume else context)
   def pageURL(implicit site : Site) = controllers.routes.Slot.view(container.volumeId, id)
   def pageActions(implicit site : Site) = Seq(
-    ("view", controllers.routes.Slot.view(volumeId, id), Permission.VIEW),
-    ("edit", controllers.routes.Slot.edit(volumeId, id), Permission.EDIT),
-    ("add asset", controllers.routes.Asset.create(volumeId, containerId, segment.lowerBound), Permission.CONTRIBUTE),
-    ("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
-    ("add participant", controllers.routes.Record.slotAdd(volumeId, id, IntId[models.RecordCategory](-500), false), Permission.CONTRIBUTE)
-  ).filter(a => checkPermission(a._3))
+    Action("view", controllers.routes.Slot.view(volumeId, id), Permission.VIEW),
+    Action("edit", controllers.routes.Slot.edit(volumeId, id), Permission.EDIT),
+    Action("add asset", controllers.routes.Asset.create(volumeId, containerId, segment.lowerBound), Permission.CONTRIBUTE),
+    Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
+    Action("add participant", controllers.routes.Record.slotAdd(volumeId, id, IntId[models.RecordCategory](-500), false), Permission.CONTRIBUTE)
+  )
 }
 
 object Slot extends TableId[Slot]("slot") {

@@ -51,10 +51,10 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   def pageParent(implicit site : Site) = Some(volume)
   def pageURL(implicit site : Site) = controllers.routes.Asset.view(volume.id, container.fullSlot.id, assetId)
   def pageActions(implicit site : Site) = Seq(
-    ("view", controllers.routes.Asset.view(volumeId, fullSlot.slot.id, assetId), Permission.VIEW),
-    ("edit", controllers.routes.Asset.edit(volumeId, containerId, assetId), Permission.EDIT),
-    ("remove", controllers.routes.Asset.remove(volumeId, containerId, assetId), Permission.CONTRIBUTE)
-  ).filter(a => checkPermission(a._3))
+    Action("view", controllers.routes.Asset.view(volumeId, container.fullSlot.id, assetId), Permission.VIEW),
+    Action("edit", controllers.routes.Asset.edit(volumeId, containerId, assetId), Permission.EDIT),
+    Action("remove", controllers.routes.Asset.remove(volumeId, containerId, assetId), Permission.CONTRIBUTE)
+  )
 }
 
 final class ContainerTimeseries private[models] (override val asset : Asset with TimeseriesData, container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends ContainerAsset(asset, container, position_, name_, body_) {
@@ -175,11 +175,12 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
   def pageName(implicit site : Site) = link.name
   def pageParent(implicit site : Site) = if(slot.container.top) { Some(slot.volume) } else { Some(slot) }
   def pageURL(implicit site : Site) = controllers.routes.Asset.view(volume.id, slotId, link.assetId)
-  def pageActions(implicit site : Site) = Seq(
-    ("view", controllers.routes.Asset.view(volumeId, slotId, link.assetId), Permission.VIEW, true),
-    ("edit", controllers.routes.Asset.edit(volumeId, link.containerId, link.assetId), Permission.EDIT, true),
-    ("remove", controllers.routes.Asset.remove(volumeId, link.containerId, link.assetId), Permission.CONTRIBUTE, slot.isFull)
-  ).filter(a => a._4 && checkPermission(a._3)).map(a => (a._1, a._2, a._3))
+  def pageActions(implicit site : Site) =
+    if (slot.isFull) link.pageActions
+    else Seq(
+      Action("view", controllers.routes.Asset.view(volumeId, slotId, link.assetId), Permission.VIEW),
+      Action("edit", controllers.routes.Asset.edit(volumeId, link.containerId, link.assetId), Permission.EDIT)
+    )
 }
 
 final class SlotTimeseries private[models] (override val link : ContainerTimeseries, slot : Slot, excerpt_ : Option[Boolean] = None) extends SlotAsset(link, slot, excerpt_) with TimeseriesData {

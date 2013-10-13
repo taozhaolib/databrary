@@ -76,9 +76,9 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def pageParent(implicit site : Site) = Some(volume)
   def pageURL(implicit site : Site) = controllers.routes.Record.view(volume.id, id)
   def pageActions(implicit site : Site) = Seq(
-    ("view", controllers.routes.Record.view(volumeId, id), Permission.VIEW),
-    ("edit", controllers.routes.Record.edit(volumeId, id), Permission.EDIT)
-  ).filter(a => checkPermission(a._3))
+    Action("view", controllers.routes.Record.view(volumeId, id), Permission.VIEW),
+    Action("edit", controllers.routes.Record.edit(volumeId, id), Permission.EDIT)
+  )
 }
 
 object Record extends TableId[Record]("record") {

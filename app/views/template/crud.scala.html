@@ -1,13 +1,14 @@
 @(title : String = "", css : Html = Html(""), js : Html = Html(""))(body : Html)(implicit request : RequestObject[SitePage]#Site[_])
 
     @script = {}
+@actions = @{ request.obj.pageActions }
 
 @template.html5(title, css, script += js, Some(request)) {
     @region.bodyHeaderSearch()
 
     <div class="row">
         <main id="body_content" class="body_content col">
-            <article class="@request.obj.getClass.getName.split("\\.").last.toLowerCase @request.obj.pageActions.filter(a => request.path.toString() == a._2.toString()).map(a => a._1).headOption.getOrElse("").replaceAll(" ", "-").toLowerCase">
+            <article class="@request.obj.getClass.getSimpleName.toLowerCase @actions.find(_.route.url.equals(request.path)).fold("")(_.name.replaceAllLiterally(" ", "-").toLowerCase)">
                 <header>
                     <h1>@request.obj.pageName</h1>
 
@@ -17,18 +18,18 @@
                         </ul>
 
                         <ul class="actions">
-                        @request.obj.pageActions.map { case (title, route, permission) =>
+			@actions.filter(_.available).map { act =>
                             <li class="@{
-                                if(request.path.toString() == route.toString()) {
+                                if(request.path == act.route.url) {
                                     "current"
                                 }
                             }">
-                            @if(route.method != "GET") {
-                                @tag.form(route) {
-                                    <button type="submit" class="link">@title</button>
+                            @if(act.route.method != "GET") {
+                                @tag.form(act.route) {
+                                    <button type="submit" class="link">@act.name</button>
                                 }
                             } else {
-                                <a href="@route" alt="@title">@title</a>
+                                <a href="@act.route" alt="@act.name">@act.name</a>
                             }
                             </li>
                         }
