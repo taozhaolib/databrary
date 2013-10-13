@@ -40,6 +40,12 @@ object Tag extends TableId[Tag]("tag") {
     else
       None
 
+  /** Search for all tags containing the given string within their name. */
+  def search(name : String)(implicit db : Site.DB) : Seq[Tag] =
+    valid(name).fold[Seq[Tag]](Nil) { name =>
+      row.SQL("WHERE name LIKE {name}").on('name -> ("%" + name + "%")).list
+    }
+
   /** Retrieve or, if none exists, create an individual tag by name. */
   private[models] def getOrCreate(name : String)(implicit db : Site.DB) : Tag =
     DBUtil.selectOrInsert(get(name)) {
