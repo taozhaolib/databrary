@@ -51,7 +51,7 @@ object Tag extends TableId[Tag]("tag") {
   private[models] def getOrCreate(name : String)(implicit db : Site.DB) : Tag =
     DBUtil.selectOrInsert(get(name)) {
       val args = SQLArgs('name -> name)
-      SQL("INSERT INTO tag " + args.insert + " RETURNING id").
+      SQL("INSERT INTO tag " + args.insert + " RETURNING " + row.select).
         on(args : _*).single(row)
     }
 }

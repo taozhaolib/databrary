@@ -149,13 +149,8 @@ object Curated {
       }
 
     def populate(info : Asset.Info)(implicit site : Site) : models.Asset = {
-      val infile = new Files.TemporaryFile(file) {
-        /* for now copy and don't delete */
-        override def clean() : Boolean = false
-        override def moveTo(to : File, replace : Boolean = false) {
-          Files.copyFile(file, to, copyAttributes = false, replaceExisting = replace)
-        }
-      }
+      /* for now copy and don't delete */
+      val infile = store.TemporaryFileCopy(file)
       info match {
         case Asset.TimeseriesInfo(fmt, duration) =>
           models.Timeseries.create(fmt, classification, duration, infile)

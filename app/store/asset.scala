@@ -6,7 +6,7 @@ import java.nio.file.{StandardOpenOption,FileSystemException}
 import scala.concurrent._
 import scala.collection.mutable.{Map,Queue}
 import play.api.Play.current
-import play.api.libs.Files.TemporaryFile
+import play.api.libs.Files
 import play.api.libs.iteratee._
 import dbrary.{Offset,Range}
 import site._
@@ -86,8 +86,18 @@ private[store] class StoreDir[Id <: IntId[_]](conf : String) {
   protected def file(id : Id, ext : String) : File = new File(file(id).getPath + ext)
 }
 
+class TemporaryFileCopy(file : File) extends Files.TemporaryFile(file) {
+  override def clean() : Boolean = false
+  override def moveTo(to : File, replace : Boolean = false) {
+    Files.copyFile(file, to, copyAttributes = false, replaceExisting = replace)
+  }
+}
+object TemporaryFileCopy {
+  def apply(file : File) = new TemporaryFileCopy(file)
+}
+
 object FileAsset extends StoreDir[models.FileAsset.Id]("store.master") {
-  def store(id : models.FileAsset.Id, f : TemporaryFile) =
+  def store(id : models.FileAsset.Id, f : Files.TemporaryFile) =
     f.moveTo(file(id))
   def read(f : models.BackedAsset) : StreamEnumerator =
     StreamEnumerator.fromFile(file(f.sourceId))

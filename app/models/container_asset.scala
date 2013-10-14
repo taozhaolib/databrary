@@ -198,7 +198,7 @@ final class SlotTimeseries private[models] (override val link : ContainerTimeser
       yield (a0 + (s0 - p).max(0))). /* shifted forward if the slot starts later than the asset */
       getOrElse(a0)
     val t1 = (for { s1 <- slot.segment.upperBound ; p <- link.position }
-      yield (t0 + (s1 - p).min(a1 - t0))). /* plus the shorter of the slot remaining and the asset remaining */
+      yield ((a0 + s1 - p).min(a1))). /* the lesser of the slot end and the asset end */
       getOrElse(a1)
     Range[Offset](t0, t1)(PGSegment)
   }
