@@ -4,7 +4,7 @@ resourceGenerators in Compile <+= (streams, baseDirectory in Compile, resourceMa
 	if (FileInfo.lastModified(src).lastModified >= FileInfo.lastModified(out).lastModified) {
 		val slash = java.io.File.separator
 		val pkg = try {
-			"pkg-config --cflags --libs libavformat".!!
+			"pkg-config --cflags --libs libavformat libswscale".!!
 		} catch {
 			case _ : java.lang.Exception => "-I/usr/local/lib -L/usr/local/lib -lavformat -lavcodec -lavutil"
 		}

@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <libavformat/avformat.h>
+#include <libswscale/swscale.h>
 
 #define PKG	"media/AV$"
 static struct construct {
@@ -193,20 +194,22 @@ Java_media_AV_00024__1frame(
 
 	if (os->codec->pix_fmt != frame->format)
 	{
-		/* This will only be necessary to support certain video formats */
-		throw(env, 0, "pixel format conversion not supported");
-		goto error;
-
-		/*
-		AVPicture pict;
-		CHECK(avpicture_alloc(&pict, os->codec->pix_fmt, os->codec->width, os->codec->height));
-		struct SwsContext *sws = sws_getCachedContext(NULL,
+		// printf("converting pixfmts: %d <- %d\n", os->codec->pix_fmt, frame->format);
+		AVFrame tmp;
+		memset(&tmp, 0, sizeof(tmp));
+		tmp.format = os->codec->pix_fmt;
+		tmp.width = os->codec->width;
+		tmp.height = os->codec->height;
+		av_frame_copy_props(&tmp, frame);
+		CHECK(av_frame_get_buffer(&tmp, 32), "allocating conversion buffers");
+		struct SwsContext *sws = sws_getContext(
 				frame->width, frame->height, frame->format,
-				os->codec->width, os->codec->height, os->codec->pix_fmt,
+				tmp.width, tmp.height, tmp.format,
 				SWS_POINT, NULL, NULL, NULL);
-		int h = sws_scale(sws, frame->data, frame->linesize, 0, frame->height, pict.data, pict.linesize);
+		sws_scale(sws, frame->data, frame->linesize, 0, frame->height, tmp.data, tmp.linesize);
 		sws_freeContext(sws);
-		*/
+		av_frame_unref(frame);
+		av_frame_move_ref(frame, &tmp);
 	}
 
 	CHECK(avformat_write_header(out, NULL), "writing header to '%s'", outfile);
