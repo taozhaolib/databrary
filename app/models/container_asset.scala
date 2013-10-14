@@ -190,16 +190,17 @@ final class SlotTimeseries private[models] (override val link : ContainerTimeser
     slot.segment.upperBound.fold(true)(_ >= l + link.asset.duration)
   }
   def segment = {
-    val b = link.asset.segment
-    val lb = b.lowerBound.get
-    val ub = b.upperBound.get
-    val lbn = (for { s <- slot.segment.lowerBound ; l <- link.position }
-      yield (lb + (s - l).max(0))).
-      getOrElse(lb)
-    val ubn = (for { s <- slot.segment.lowerBound ; l <- link.position }
-      yield (lbn + (s - l).min(ub - lbn))).
-      getOrElse(ub)
-    Range[Offset](lbn, ubn)(PGSegment)
+    /* We need to determine the portion of this asset and the slot which overlap, in asset-source space: */
+    val b = link.asset.segment /* it must be within (and default to) this asset's own space */
+    val a0 = b.lowerBound.get
+    val a1 = b.upperBound.get
+    val t0 = (for { s0 <- slot.segment.lowerBound ; p <- link.position }
+      yield (a0 + (s0 - p).max(0))). /* shifted forward if the slot starts later than the asset */
+      getOrElse(a0)
+    val t1 = (for { s1 <- slot.segment.upperBound ; p <- link.position }
+      yield (t0 + (s1 - p).min(a1 - t0))). /* plus the shorter of the slot remaining and the asset remaining */
+      getOrElse(a1)
+    Range[Offset](t0, t1)(PGSegment)
   }
   override def duration : Offset = super[SlotAsset].duration
 }
