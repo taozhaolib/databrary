@@ -203,6 +203,11 @@ final class SlotTimeseries private[models] (override val link : ContainerTimeser
     Range[Offset](t0, t1)(PGSegment)
   }
   override def duration : Offset = super[SlotAsset].duration
+  override def format =
+    if (slot.segment.isSingleton) link.asset.format match {
+      case t : TimeseriesFormat => t.sampleFormat
+      case f => f
+    } else link.asset.format
 }
 
 object SlotAsset {

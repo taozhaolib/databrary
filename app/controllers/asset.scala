@@ -67,7 +67,7 @@ object Asset extends SiteController {
     assetResult(
       "sobj:%d:%d".format(request.obj.slotId.unId, request.obj.link.assetId.unId),
       store.Asset.read(request.obj),
-      request.obj.link.asset.format,
+      request.obj.format,
       if (inline) None else Some(request.obj.link.name)
     )(request)
   }
