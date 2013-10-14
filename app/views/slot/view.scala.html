@@ -9,19 +9,11 @@
             <h2>Records</h2>
             @widget.recordAdminList(slot)
 
-            @if(slot.tags.nonEmpty) {
-                <h2>Tags</h2>
-                <ul>
-                @slot.tags.map { case TagWeight(tag, weight, up) =>
-                <li>@tag.name @weight @up</li>
-                }
-                </ul>
-            }
-
             <h2>Assets</h2>
             @widget.assetList(slot.assets)
 
             <div class="row">
             @region.comments(Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), slot.comments(true))
+            @region.tags(slot)
             </div>
     }

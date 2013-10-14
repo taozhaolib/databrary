@@ -117,10 +117,19 @@ object Slot extends SiteController {
     )
   }
 
-  def tag(v : models.Volume.Id, s : models.Slot.Id, t : String, up : Option[Boolean]) = (SiteAction.access(Permission.VIEW) ~> action(v, s)) { implicit request =>
-    if (!request.obj.setTag(t, up)(request.asInstanceOf[AuthSite]))
-      BadRequest(views.html.slot.view(request.obj))
-    else
-      Redirect(request.obj.pageURL)
+  type TagForm = Form[(String, Option[Boolean])]
+  val tagForm : TagForm = Form(tuple(
+    "name" -> nonEmptyText,
+    "vote" -> optional(boolean)
+  ))
+
+  def tag(v : models.Volume.Id, s : models.Slot.Id) = (SiteAction.access(Permission.VIEW) ~> action(v, s)) { implicit request =>
+    tagForm.bindFromRequest().fold(
+    form => if(Site.isAjax) Ok(views.html.ajax.tags(request.obj, form)) else BadRequest(views.html.slot.view(request.obj)),
+    { case (name, vote) =>
+      request.obj.setTag(name, vote)(request.asInstanceOf[AuthSite])
+      if(Site.isAjax) Ok(views.html.ajax.tags(request.obj, tagForm)) else Redirect(request.obj.pageURL)
+    }
+    )
   }
 }

@@ -1,0 +1,17 @@
+@(slot : models.Slot, form : controllers.Slot.TagForm)(implicit request : RequestObject[models.Slot]#Site[_])
+
+@template.modal("login")() {
+	<section id="tags-region">
+        @region.tags(slot)
+	</section>
+
+    <section id="form-region">
+        <div class="name">
+            @tag.inputText(form("name"))
+        </div>
+
+        <div class="vote">
+            @tag.inputText(form("vote"))
+        </div>
+    </section>
+}

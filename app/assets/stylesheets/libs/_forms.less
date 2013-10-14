@@ -3,6 +3,7 @@ button,
 input,
 select,
 textarea {
+    color: @text;
 	.sofia_light();
 	.box-sizing(border-box);
 }
@@ -16,19 +17,19 @@ textarea {
 	&:focus {
 		outline: none;
 		border-color: darken(@green, 30%);
-        background: lighten(@green, 35%);
+        background: mix(@white, @green, 95%);
 		.transition(all .2s ease-in-out);
 	}
 
     &.error {
         color: darken(@red, 30%);
         border: 1px solid darken(@red, 30%);
-        background: lighten(@red, 25%);
+        background: mix(@white, @red, 90%);
 
         &:focus {
             color: darken(@red, 40%);
             border-color: darken(@red, 40%);
-            background: lighten(@red, 20%);
+            background: mix(@white, @red, 95%);
         }
     }
 }
@@ -91,6 +92,10 @@ fieldset,
 
 	&.mini {
 		font-size: .75em;
+
+        input {
+            padding: 3px 6px;
+        }
 	}
 }
 
@@ -228,9 +233,9 @@ button.link {
         top: 0;
         bottom: 0;
         left: 0;
-        width: (@gutter);
+        width: (@gutter + 4);
         border: 1px solid @gray_75_third;
-        .border-radius(16px);
+        .border-radius(@gutter);
     }
 
     .mod {
@@ -240,7 +245,7 @@ button.link {
         right: 0;
         margin: 4px;
         border: 1px solid @third;
-        .border-radius(20px);
+        .border-radius(@gutter);
         text-align: center;
         line-height: .85;
         cursor: pointer;

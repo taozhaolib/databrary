@@ -51,13 +51,13 @@ dbjs.tabs = function (tabset, tab, body) {
     $tabs.each(function () {
         var $this = $(this),
             id = $this.parent().attr('id'),
-            tip = $this.attr('data-tip');
+            tip = $this.attr('data-message');
 
-        $this.appendTo($tabs_el).replaceWith($('<li class="tab"><a href="#' + id + '" data-tip="' + tip + '">' + this.innerHTML + '</a></li>'));
+        $this.appendTo($tabs_el).replaceWith($('<li class="tab"><a href="#' + id + '" data-message="' + tip + '">' + this.innerHTML + '</a></li>'));
     });
 
     if ($messageHandler)
-        $messageHandler.data('messageHandler').generate(tabset + ' .tab > a', 'data-tip', 'trace');
+        $messageHandler.data('messageHandler').generate(tabset + ' .tab > a', 'data-message', 'trace');
 
     $bodies.each(function () {
         $(this).appendTo($body_el).addClass('rolled').slideUp(0);
@@ -828,6 +828,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 $repeaters = getRepeaters();
 
                 setClickers();
+                setAjax();
 
                 return $this;
             };
@@ -884,6 +885,29 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 $this.find('.clicker').each(function () {
                     check($(this));
                 });
+            };
+
+            var setAjax = function () {
+                if($this.hasClass('ajax'))
+                    $this.submit(function () {
+                        var $this = $(this),
+                            $li = $this.closest('li'),
+                            liID = '#'+$li.attr('id');
+
+                        $this.find('input, select, button, textarea').prop('disabled', true);
+
+                        $.post($this.attr('action'), function (data) {
+                            var $data = $(data);
+
+                            console.log(data);
+
+                            $li.replaceWith($data.find(liID));
+
+                            $formHandler.data('formHandler').generate(liID + ' form');
+                        });
+
+                        return false;
+                    });
             };
 
             // setup

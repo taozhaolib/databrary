@@ -50,7 +50,7 @@ object Tag extends TableId[Tag]("tag") {
   private[models] def getOrCreate(name : String)(implicit db : Site.DB) : Tag =
     DBUtil.selectOrInsert(get(name)) {
       val args = SQLArgs('name -> name)
-      SQL("INSERT INTO tag " + args.insert + " RETURNING id").
+      SQL("INSERT INTO tag " + args.insert + " RETURNING " + row.select).
         on(args : _*).single(row)
     }
 }
@@ -83,7 +83,7 @@ object TagUse extends Table[TagUse]("tag_use") {
 
   private[models] def remove(tag : Tag, slot : Slot)(implicit site : Site) : Unit = {
     val ids = SQLArgs('tag -> tag.id, 'slot -> slot.id, 'who -> site.identity.id)
-    SQL("DELETE FROM tag_use WHERE " + ids).execute
+    SQL("DELETE FROM tag_use WHERE " + ids.where).on(ids:_*).execute
   }
 
   private[models] def set(tag : Tag, slot : Slot, up : Boolean = true)(implicit site : AuthSite) : TagUse = {
@@ -110,6 +110,6 @@ object TagWeight extends Table[TagWeight]("tag_weight") {
       case (weight ~ up ~ tag) => TagWeight(tag, weight, up)
     }
   private[models] def getSlot(slot : Slot)(implicit site : Site) : Seq[TagWeight] =
-    row.SQL("WHERE tag_weight.slot = {slot} AND (tag_use.who IS NULL OR tag_use.who = {who}) ORDER BY weight DESC").
+    row.SQL("WHERE tag_weight.slot = {slot} AND (tag_use.who IS NULL AND weight > 0 OR tag_use.who = {who}) ORDER BY weight DESC, name ASC").
       on('slot -> slot.id, 'who -> site.identity.id).list
 }
