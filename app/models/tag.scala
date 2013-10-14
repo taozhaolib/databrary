@@ -32,13 +32,14 @@ object Tag extends TableId[Tag]("tag") {
   private[models] def get(name : String)(implicit db : Site.DB) : Option[Tag] =
     row.SQL("WHERE name = {name}").on('name -> name).singleOpt
 
+  private val validRegex = """ *\p{Alpha}[-\p{Alpha} ]{0,31} *""".r
+
   /** Determine if the given tag name is valid.
     * @return the normalized name if valid */
-  private[models] def valid(name : String) : Option[String] =
-    if (name.length > 1 && name.length <= 32) /* TODO */
-      Some(name.toLowerCase)
-    else
-      None
+  private[models] def valid(name : String) : Option[String] = name match
+    { case validRegex() => Some(name.trim.toLowerCase)
+      case _ => None
+    }
 
   /** Search for all tags containing the given string within their name. */
   def search(name : String)(implicit db : Site.DB) : Seq[Tag] =
