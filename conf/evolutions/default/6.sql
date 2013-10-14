@@ -1,6 +1,6 @@
 # --- !Ups
 
-INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-510, 'language', 'text');
+INSERT INTO "metric" ("id", "name", "type") VALUES (-510, 'language', 'text');
 
 # --- !Downs
 
