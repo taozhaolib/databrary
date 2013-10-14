@@ -104,6 +104,7 @@ object Metric extends TableId[MetricT[_]]("metric") {
     case GENDER => Gender
     case RACE => Race
     case ETHNICITY => Ethnicity
+    case LANGUAGE => Language
     case _ => new MetricT(id, name, classification, values.getOrElse(Array[String]()))(MeasureType(dataType))
   }
   private[models] val row = Columns[
@@ -117,11 +118,12 @@ object Metric extends TableId[MetricT[_]]("metric") {
     case GENDER => Some(Gender)
     case RACE => Some(Race)
     case ETHNICITY => Some(Ethnicity)
+    case LANGUAGE => Some(Language)
     case _ => row.SQL("WHERE id = {id}").on('id -> id).singleOpt
   }
 
   def getAll(implicit db : Site.DB) : Seq[Metric] =
-    Seq(Ident, Birthdate, Gender, Race, Ethnicity) ++
+    Seq(Ident, Birthdate, Gender, Race, Ethnicity, Language) ++
     row.SQL("WHERE id > 0 ORDER BY id").list
 
   private val rowTemplate = row.from("metric JOIN record_template ON metric.id = record_template.metric")
@@ -135,6 +137,7 @@ object Metric extends TableId[MetricT[_]]("metric") {
   private final val GENDER    : Id = asId(-580)
   private final val RACE      : Id = asId(-550)
   private final val ETHNICITY : Id = asId(-540)
+  private final val LANGUAGE  : Id = asId(-510)
   /** Identifiers providing generic labels for records or data, such as participant id, condition name, etc.
     * [[Classification.DEIDENTIFIED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
   object Ident     extends MetricT[String](IDENT, "ident", Classification.DEIDENTIFIED)
@@ -146,6 +149,7 @@ object Metric extends TableId[MetricT[_]]("metric") {
   object Gender    extends MetricT[String](GENDER, "gender", Classification.DEIDENTIFIED, Array[String]("female", "male"))
   object Race      extends MetricT[String](RACE, "race", Classification.DEIDENTIFIED, Array[String]("American Indian or Alaska Native","Asian","Native Hawaiian or Other Pacific Islander","Black or African American","White","Multiple"))
   object Ethnicity extends MetricT[String](ETHNICITY, "ethnicity", Classification.DEIDENTIFIED, Array[String]("Not Hispanic or Latino","Hispanic or Latino"))
+  object Language extends MetricT[String](LANGUAGE, "language", Classification.DEIDENTIFIED)
 }
 
 

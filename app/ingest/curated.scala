@@ -53,8 +53,8 @@ object Curated {
     def apply(message : String, target : SitePage) : PopulateException = PopulateException(message, Some(target))
   }
 
-  private final case class Subject(id : String, gender : Gender.Value, birthdate : Date, race : Option[Race.Value], ethnicity : Option[Ethnicity.Value]) extends KeyedData {
-    def fields = Seq(id, gender.toString, birthdate.toString, optString(race) + "/" + optString(ethnicity))
+  private final case class Subject(id : String, gender : Gender.Value, birthdate : Date, race : Option[Race.Value], ethnicity : Option[Ethnicity.Value], language : Option[String]) extends KeyedData {
+    def fields = Seq(id, gender.toString, birthdate.toString, optString(race) + "/" + optString(ethnicity), optString(language))
     def key = id
 
     private def measures : Seq[(Metric,String)] = Seq(
@@ -62,7 +62,8 @@ object Curated {
       , Metric.Gender -> Gender.valueOf(gender)
       , Metric.Birthdate -> birthdate.toString) ++
       race.map(Metric.Race -> Race.valueOf(_)) ++
-      ethnicity.map(Metric.Ethnicity -> Ethnicity.valueOf(_))
+      ethnicity.map(Metric.Ethnicity -> Ethnicity.valueOf(_)) ++
+      language.map(Metric.Language -> _)
     def populate(volume : Volume)(implicit site : Site) : models.Record =
       models.Record.findMeasure(volume, Some(RecordCategory.Participant), Metric.Ident, id) match {
         case Nil =>
@@ -88,13 +89,14 @@ object Curated {
       }
   }
   private object Subject extends ListDataParser[Subject] {
-    val headers = makeHeaders("subj(ect)? ?id", "gender|sex", "b(irth)?da(y|te)", "race(/ethnicity)?")
+    val headers = makeHeaders("subj(ect)? ?id", "gender|sex", "b(irth)?da(y|te)", "race(/ethnicity)?", "lang(uage)?")
     def parse : ListParser[Subject] = for {
       id <- listHead(trimmed, "subject id")
       gender <- listHead(Gender.parse, "gender")
       birthday <- listHead(date, "birthdate")
       re <- listHead(parseRaceEthnicity, "race/ethnicity")
-    } yield (Subject(id, gender, birthday, re._1, re._2))
+      lang <- listHead(option(trimmed), "language")
+    } yield (Subject(id, gender, birthday, re._1, re._2, lang))
   }
 
   private final case class Session(name : String, date : Date, consent : Consent.Value) extends KeyedData {
