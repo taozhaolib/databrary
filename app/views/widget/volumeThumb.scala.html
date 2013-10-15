@@ -1,6 +1,6 @@
 @(volume: Volume)(implicit request: SiteRequest[_])
 
-@volume.thumb.fold {
+@volume.thumb.filter(_.checkPermission(Permission.DOWNLOAD)).fold {
 	<img src="@routes.Assets.at("images/draft.png")" alt="@volume.name">
 } { thumb =>
 	@defining(thumb.link.asset.format) { fmt =>

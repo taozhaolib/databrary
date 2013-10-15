@@ -538,6 +538,7 @@ INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-590, 'bir
 INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-580, 'gender', 'text', ARRAY['female','male']);
 INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-550, 'race', 'text', ARRAY['American Indian or Alaska Native','Asian','Native Hawaiian or Other Pacific Islander','Black or African American','White','Multiple']);
 INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-540, 'ethnicity', 'text', ARRAY['Not Hispanic or Latino','Hispanic or Latino']);
+INSERT INTO "metric" ("id", "name", "type") VALUES (-510, 'language', 'text');
 
 CREATE TABLE "record_template" (
 	"category" smallint References "record_category" ON DELETE CASCADE,

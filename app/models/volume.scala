@@ -68,6 +68,8 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
   /** The list of comments in this volume. */
   def comments(implicit db : Site.DB) : Seq[Comment] = Comment.getVolume(this)
+  /** The list of tags on this volume and their use on the topSlot by the current user. */
+  def tags(implicit site : Site) : Seq[TagWeight] = TagWeight.getVolume(this)
 
   /** An image-able "asset" that may be used as the volume's thumbnail. */
   def thumb(implicit db : Site.DB) : Option[SlotAsset] = SlotAsset.getThumb(this)

@@ -1,11 +1,14 @@
 #include <jni.h>
+#include <pthread.h>
 #include <libavformat/avformat.h>
+#include <libswscale/swscale.h>
 
 #define PKG	"media/AV$"
 static struct construct {
 	jclass class;
 	jmethodID init;
-} String, Error, Probe;
+} Object, String, Error, Probe;
+static JNIEnv *Env; /* for lockmgr only */
 
 static inline int construct_init(JNIEnv *env, struct construct *c, const char *name, const char *type)
 {
@@ -26,24 +29,90 @@ static inline void construct_fini(JNIEnv *env, struct construct *c)
 
 #define CONSTRUCT(NAME, ARGS...) (*env)->NewObject(env, NAME.class, NAME.init, ##ARGS)
 
+static int lockmgr(void **mtx, enum AVLockOp op)
+{
+#ifdef USE_JAVA_LOCKMGR // seems to be broken
+	JNIEnv *env = Env;
+	if (!env)
+		return -1;
+	jobject *obj = (jobject *)mtx;
+	switch (op) {
+		case AV_LOCK_CREATE: {
+			jobject o;
+			if (!(o = CONSTRUCT(Object)))
+				goto error;
+			if (!(*obj = (*env)->NewGlobalRef(env, o)))
+				goto error;
+			break;
+		}
+		case AV_LOCK_OBTAIN:
+			if ((*env)->MonitorEnter(env, *obj))
+				goto error;
+			break;
+		case AV_LOCK_RELEASE:
+			if ((*env)->MonitorExit(env, *obj))
+				goto error;
+			break;
+		case AV_LOCK_DESTROY:
+			(*env)->DeleteGlobalRef(env, *obj);
+			*obj = NULL;
+			break;
+	}
+#else
+	pthread_mutex_t **pmtx = (pthread_mutex_t **)mtx;
+	switch (op) {
+		case AV_LOCK_CREATE: {
+			if (!(*pmtx = malloc(sizeof(pthread_mutex_t))))
+				goto error;
+			if (pthread_mutex_init(*pmtx, NULL))
+				goto error;
+			break;
+		}
+		case AV_LOCK_OBTAIN:
+			if (pthread_mutex_lock(*pmtx))
+				goto error;
+			break;
+		case AV_LOCK_RELEASE:
+			if (pthread_mutex_unlock(*pmtx))
+				goto error;
+			break;
+		case AV_LOCK_DESTROY:
+			if (pthread_mutex_destroy(*pmtx))
+				goto error;
+			free(*pmtx);
+			*pmtx = NULL;
+			break;
+	}
+#endif
+	return 0;
+error:
+	fprintf(stderr, "lockmgr %d failed\n", op);
+	return -1;
+}
+
 JNIEXPORT jint JNICALL
 JNI_OnLoad(JavaVM *jvm, void *reserved)
 {
-	JNIEnv *env;
-
-	if ((*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_6) != 0)
+	if ((*jvm)->GetEnv(jvm, (void **)&Env, JNI_VERSION_1_6) != 0)
 		return -1;
 
 #define CONSTRUCT_INIT(NAME, TYPE) \
-	if (construct_init(env, &NAME, PKG #NAME, TYPE) < 0) \
+	if (construct_init(Env, &NAME, PKG #NAME, TYPE) < 0) \
 		return -1
 
-	if (construct_init(env, &String, "java/lang/String", NULL) < 0)
+	if (construct_init(Env, &Object, "java/lang/Object", "()V") < 0)
+		return -1;
+	if (construct_init(Env, &String, "java/lang/String", NULL) < 0)
 		return -1;
 	CONSTRUCT_INIT(Error, "(Ljava/lang/String;I)V");
 	CONSTRUCT_INIT(Probe, "(Ljava/lang/String;D[Ljava/lang/String;)V");
 
+#undef CONSTRUCT_INIT
+
 	av_register_all();
+
+	if (av_lockmgr_register(lockmgr))
+		return -1;
 
 	return JNI_VERSION_1_6;
 }
@@ -52,10 +121,13 @@ JNIEXPORT void JNICALL
 JNI_OnUnload(JavaVM *jvm, void *reserved)
 {
 	JNIEnv *env;
+	av_lockmgr_register(NULL);
 	(*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_6);
 	construct_fini(env, &String);
 	construct_fini(env, &Error);
 	construct_fini(env, &Probe);
+	if (Env == env)
+		Env = NULL;
 }
 
 static void throw(JNIEnv *env, int r, const char *fmt, ...) __attribute__((format(printf, 3, 4)));
@@ -138,7 +210,7 @@ Java_media_AV_00024__1frame(
 	const char *infile = (*env)->GetStringUTFChars(env, jinfile, 0);
 	const char *outfile = joutfile ? (*env)->GetStringUTFChars(env, joutfile, 0) : NULL;
 	AVFormatContext *in = NULL, *out = NULL;
-	static AVDictionary *opts = NULL;
+	AVDictionary *opts = NULL;
 	AVCodec *codec = NULL;
 	AVStream *is = NULL, *os = NULL;
 	AVPacket pkt;
@@ -193,20 +265,22 @@ Java_media_AV_00024__1frame(
 
 	if (os->codec->pix_fmt != frame->format)
 	{
-		/* This will only be necessary to support certain video formats */
-		throw(env, 0, "pixel format conversion not supported");
-		goto error;
-
-		/*
-		AVPicture pict;
-		CHECK(avpicture_alloc(&pict, os->codec->pix_fmt, os->codec->width, os->codec->height));
-		struct SwsContext *sws = sws_getCachedContext(NULL,
+		// printf("converting pixfmts: %d <- %d\n", os->codec->pix_fmt, frame->format);
+		AVFrame tmp;
+		memset(&tmp, 0, sizeof(tmp));
+		tmp.format = os->codec->pix_fmt;
+		tmp.width = os->codec->width;
+		tmp.height = os->codec->height;
+		av_frame_copy_props(&tmp, frame);
+		CHECK(av_frame_get_buffer(&tmp, 32), "allocating conversion buffers");
+		struct SwsContext *sws = sws_getContext(
 				frame->width, frame->height, frame->format,
-				os->codec->width, os->codec->height, os->codec->pix_fmt,
+				tmp.width, tmp.height, tmp.format,
 				SWS_POINT, NULL, NULL, NULL);
-		int h = sws_scale(sws, frame->data, frame->linesize, 0, frame->height, pict.data, pict.linesize);
+		sws_scale(sws, frame->data, frame->linesize, 0, frame->height, tmp.data, tmp.linesize);
 		sws_freeContext(sws);
-		*/
+		av_frame_unref(frame);
+		av_frame_move_ref(frame, &tmp);
 	}
 
 	CHECK(avformat_write_header(out, NULL), "writing header to '%s'", outfile);

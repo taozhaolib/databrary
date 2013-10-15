@@ -67,7 +67,7 @@ object Asset extends SiteController {
     assetResult(
       "sobj:%d:%d".format(request.obj.slotId.unId, request.obj.link.assetId.unId),
       store.Asset.read(request.obj),
-      request.obj.link.asset.format,
+      request.obj.format,
       if (inline) None else Some(request.obj.link.name)
     )(request)
   }
@@ -141,11 +141,12 @@ object Asset extends SiteController {
         request.body.asMultipartFormData.flatMap(_.file("file")).fold {
           localfile.filter(_ => ts).fold[ER](
             Left(form.withError("file", "error.required"))) { localfile =>
+            /* local file handling, for admin only: */
             val file = new java.io.File(localfile)
             val name = file.getName
             if (file.isFile)
               (fmt orElse AssetFormat.getFilename(name, ts)).fold[ER](Left(form.withError("format", "Unknown format")))(
-                fmt => Right((TemporaryFile(file), fmt, name)))
+                fmt => Right((store.TemporaryFileCopy(file), fmt, name)))
             else
               Left(form.withError("localfile", "File not found"))
           }

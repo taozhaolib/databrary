@@ -32,13 +32,14 @@ object Tag extends TableId[Tag]("tag") {
   private[models] def get(name : String)(implicit db : Site.DB) : Option[Tag] =
     row.SQL("WHERE name = {name}").on('name -> name).singleOpt
 
+  private val validRegex = """ *\p{Alpha}[-\p{Alpha} ]{0,31} *""".r
+
   /** Determine if the given tag name is valid.
     * @return the normalized name if valid */
-  private[models] def valid(name : String) : Option[String] =
-    if (name.length > 1 && name.length <= 32) /* TODO */
-      Some(name.toLowerCase)
-    else
-      None
+  private[models] def valid(name : String) : Option[String] = name match
+    { case validRegex() => Some(name.trim.toLowerCase)
+      case _ => None
+    }
 
   /** Search for all tags containing the given string within their name. */
   def search(name : String)(implicit db : Site.DB) : Seq[Tag] =
@@ -74,6 +75,8 @@ object TagUse extends Table[TagUse]("tag_use") {
   private[models] val columns = Columns[
     Boolean](
     'up)
+  private[models] val aggregate =
+    Columns[Boolean](SelectAs("bool_or(tag_use.up)", "agg_up"))
   private[models] val row = columns.
     join(Tag.row, "tag_use.tag = tag.id").
     join(Account.row, "comment.who = party.id").
@@ -104,12 +107,39 @@ object TagWeight extends Table[TagWeight]("tag_weight") {
   private val columns = Columns[
     Int](
     'weight)
+  private val useJoinOn = "tag_weight.tag = tag_use.tag AND tag_use.slot = {mainslot} AND tag_use.who = {who}"
   private[models] val row = columns.
-    leftJoin(TagUse.columns, using = Seq("tag", "slot")).
-    join(Tag.row, "tag_weight.tag = tag.id") map {
-      case (weight ~ up ~ tag) => TagWeight(tag, weight, up)
+    join(Tag.row, "tag_weight.tag = tag.id").
+    leftJoin(TagUse.columns, useJoinOn).map {
+      case (weight ~ tag ~ up) => TagWeight(tag, weight, up)
     }
-  private[models] def getSlot(slot : Slot)(implicit site : Site) : Seq[TagWeight] =
-    row.SQL("WHERE tag_weight.slot = {slot} AND (tag_use.who IS NULL AND weight > 0 OR tag_use.who = {who}) ORDER BY weight DESC, name ASC").
-      on('slot -> slot.id, 'who -> site.identity.id).list
+  private val aggregate =
+    Columns[Int](SelectAs("sum(tag_weight.weight)::int", "agg_weight")).
+    join(Tag.row, "tag_weight.tag = tag.id").
+    leftJoin(TagUse.aggregate, useJoinOn).map {
+      case (weight ~ tag ~ up) => TagWeight(tag, weight, up)
+    }
+
+  private[models] def getSlot(slot : Slot, all : Boolean = true)(implicit site : Site) : Seq[TagWeight] =
+    if (all)
+      aggregate.SQL("""
+         JOIN slot ON tag_weight.slot = slot.id 
+        WHERE slot.source = {cont} AND slot.segment <@ {seg}
+        GROUP BY tag.id, tag.name
+        HAVING sum(tag_weight.weight) > 0
+        ORDER BY agg_weight DESC""").
+        on('mainslot -> slot.id, 'cont -> slot.containerId, 'seg -> slot.segment, 'who -> site.identity.id).list
+    else
+      row.SQL("WHERE tag_weight.slot = {slot} ORDER BY weight DESC").
+        on('mainslot -> slot.id, 'slot -> slot.id, 'who -> site.identity.id).list
+
+  private[models] def getVolume(volume : Volume)(implicit site : Site) : Seq[TagWeight] =
+    aggregate.SQL("""
+       JOIN slot ON tag_weight.slot = slot.id 
+       JOIN container ON slot.source = container.id 
+      WHERE container.volume = {volume} 
+      GROUP BY tag.id, tag.name
+      HAVING sum(tag_weight.weight) > 0
+      ORDER BY agg_weight DESC""").
+      on('volume -> volume.id, 'mainslot -> volume.topSlot.id, 'who -> site.identity.id).list
 }
