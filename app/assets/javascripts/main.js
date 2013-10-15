@@ -887,27 +887,34 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 });
             };
 
+            var $last = null;
+
             var setAjax = function () {
-                if($this.hasClass('ajax'))
-                    $this.submit(function () {
-                        var $this = $(this),
-                            $li = $this.closest('li'),
-                            liID = '#'+$li.attr('id');
+                if (!$this.hasClass('ajax'))
+                    return;
 
-                        $this.find('input, select, button, textarea').prop('disabled', true);
+                $this.on('focus', ':input', function () {
+                    $last = $(this);
+                });
 
-                        $.post($this.attr('action'), function (data) {
-                            var $data = $(data);
+                $this.submit(function (e) {
+                    var $this = $(this),
+                        $li = $this.closest('li'),
+                        liID = '#' + $li.attr('id');
 
-                            console.log(data);
+                    $.post($this.attr('action'), {
+                        name: $this.find('[name="name"]').val(),
+                        vote: $last.val()
+                    }, function (data) {
+                        var $data = $(data);
 
-                            $li.replaceWith($data.find(liID));
+                        $li.replaceWith($data.find(liID));
 
-                            $formHandler.data('formHandler').generate(liID + ' form');
-                        });
-
-                        return false;
+                        $formHandler.data('formHandler').generate(liID + ' form');
                     });
+
+                    e.preventDefault();
+                });
             };
 
             // setup
