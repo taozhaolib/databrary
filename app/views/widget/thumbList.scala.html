@@ -1,38 +1,68 @@
-@(assetList: Seq[SlotAsset])(implicit request: SiteRequest[_])
+@(excerpts: Seq[SlotAsset], assetList: Seq[SlotAsset])(implicit request: SiteRequest[_])
 
-@if(assetList.nonEmpty) {
-    <h3>@assetList.head.format.mimeSubTypes._1</h3>
+@if(excerpts.nonEmpty || assetList.nonEmpty) {
+    <h3>@excerpts.headOption.getOrElse(assetList.head).format.mimeSubTypes._1</h3>
 
     <div class="thumb_list row">
-    @assetList.map { assetLink =>
-        <div class="thumb hover col-2">
-            <a href="@routes.Asset.view(assetLink.volumeId, assetLink.slotId, assetLink.link.assetId)" title="@assetLink.link.name">
-                <div class="media">
-                @assetLink.format.mimeSubTypes match {
-                    case ("image", _) => {
-                        <img src='@routes.Asset.download(assetLink.volumeId, assetLink.slotId, assetLink.link.assetId, true)'/>
-                    }
-                    case ("video", _) => {
-                        <img src='@routes.Asset.head(assetLink.volumeId, assetLink.slotId, assetLink.link.assetId)'/>
-                    }
-                    case _ => {
-                    }
-                }
-                </div>
-
-                <div class="text">
-                    <div class="title">
-                    @assetLink.link.name
-                    </div>
-
-                    <div class="time">
-                    @dbrary.cast[Timeseries](assetLink.link.asset).map { timeseries =>
-                        @timeseries.duration
+        @excerpts.map { assetLink =>
+            <div class="thumb hover excerpt col-2" data-message="<strong>Excerpt:</strong> You may share this with the public.">
+                <a href="@routes.Asset.view(assetLink.volumeId, assetLink.slotId, assetLink.link.assetId)" title="@assetLink.link.name">
+                    <div class="media">
+                    @assetLink.format.mimeSubTypes match {
+                        case ("image", _) => {
+                            <img src='@routes.Asset.download(assetLink.volumeId, assetLink.slotId, assetLink.link.assetId, true)'/>
+                        }
+                        case ("video", _) => {
+                            <img src='@routes.Asset.head(assetLink.volumeId, assetLink.slotId, assetLink.link.assetId)'/>
+                        }
+                        case _ => {
+                        }
                     }
                     </div>
-                </div>
-            </a>
-        </div>
-    }
+
+                    <div class="text">
+                        <div class="title">
+                        @assetLink.link.name
+                        </div>
+
+                        <div class="time">
+                        @dbrary.cast[Timeseries](assetLink.link.asset).map { timeseries =>
+                            @timeseries.duration
+                        }
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+        @assetList.map { assetLink =>
+            <div class="thumb hover col-2">
+                <a href="@routes.Asset.view(assetLink.volumeId, assetLink.slotId, assetLink.link.assetId)" title="@assetLink.link.name">
+                    <div class="media">
+                    @assetLink.format.mimeSubTypes match {
+                        case ("image", _) => {
+                            <img src='@routes.Asset.download(assetLink.volumeId, assetLink.slotId, assetLink.link.assetId, true)'/>
+                        }
+                        case ("video", _) => {
+                            <img src='@routes.Asset.head(assetLink.volumeId, assetLink.slotId, assetLink.link.assetId)'/>
+                        }
+                        case _ => {
+                        }
+                    }
+                    </div>
+
+                    <div class="text">
+                        <div class="title">
+                        @assetLink.link.name
+                        </div>
+
+                        <div class="time">
+                        @dbrary.cast[Timeseries](assetLink.link.asset).map { timeseries =>
+                            @timeseries.duration
+                        }
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
     </div>
 }

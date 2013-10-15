@@ -1,45 +1,6 @@
 @(volume : Volume)(implicit request : SiteRequest[_])
 
-<h3>Records</h3>
-
-<table class="records">
-    <thead>
-        <tr>
-            <th class="main">Record</th>
-            <th class="meta">Category</th>
-            <th class="meta">Age</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @if(volume.allRecords(Some(RecordCategory.Participant)).nonEmpty) {
-            @volume.allRecords(Some(RecordCategory.Participant)).map { record =>
-                <tr>
-                    <td class="main">
-                        @display(record)
-                    <dl class="inline-measures">
-                    @record.measures.filter(m => record.dataPermission(m.metric).checkPermission(Permission.DOWNLOAD)).map { measure =>
-                        @if(measure.metric.name != "ident") {
-                            <dt>@measure.metric.name</dt>
-                            <dd>@measure.value</dd>
-                        }
-
-                    }
-                    </dl>
-                    </td>
-                    <td class="meta">@record.category.fold("")(_.name)</td>
-            		<td>@record.agerange(request.db).map(display.agerange _)</td>
-                </tr>
-            }
-        } else {
-            <tr>
-                <td class="empty" colspan="2">This slot has no records.</td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<h3>Containers</h3>
+<h3>Slots</h3>
 
 <table>
     <thead>
@@ -56,7 +17,27 @@
             @if(!container.top) {
                 @container.slots.map { slot =>
                     <tr>
-                        <td class="main"><a href='@slot.pageURL'>@slot.pageName</a></td>
+                        <td class="main">
+                            <a href='@slot.pageURL'>@slot.pageName</a>
+                            @if(slot.records.nonEmpty) {
+                                <div class="records">
+                                    @slot.records.map { record =>
+                                        <div class="ident">
+                                            @record.ident.getOrElse(record.id.unId.toString)
+                                        </div>
+                                            <dl class="inline-measures">
+                                            @record.measures.filter(m => record.dataPermission(m.metric).checkPermission(Permission.DOWNLOAD)).map { measure =>
+                                                @if(measure.metric.name != "ident") {
+                                                    <dt>@measure.metric.name</dt>
+                                                    <dd>@measure.value</dd>
+                                                }
+
+                                            }
+                                            </dl>
+                                    }
+                                </div>
+                            }
+                        </td>
                         <td class="meta">@display(slot.segment)</td>
                         <td class="meta">@slot.consent</td>
                     </tr>

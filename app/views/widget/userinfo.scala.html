@@ -1,4 +1,4 @@
-@(party : Party, time : Option[java.sql.Timestamp] = None, float : Boolean = false)(implicit request : SiteRequest[_])
+@(party : Party, time : Option[java.sql.Timestamp] = None, float : Boolean = false, grant : Option[String] = None)(implicit request : SiteRequest[_])
 
 <@if(time.isDefined){header}else{section} class="userinfo cf @if(float == true){col-3}">
     <div class="avatar">
@@ -8,23 +8,29 @@
     </div>
 
     <div class="info">
-        <div class="name">
+        <div class="overflow name">
             <a href="@party.pageURL" title="@party.name">@party.name</a>
         </div>
 
         @if(time.isDefined) {
-            <div class="date">
+            <div class="overflow more date">
             @display(time.get)
             </div>
         } else {
-            <div class="institution">
-                <ul class="inline">
-                @party.authorizeParents().map { t =>
-                    <li>@display(t.parent)</li>
-                }
-                </ul>
+            @if(grant.nonEmpty) {
+                <div class="overflow more grant">
+                    @grant.get
+                </div>
+            } else {
+                <div class="overflow more institution">
+                    <ul class="inline">
+                    @party.authorizeParents().map { t =>
+                        <li>@display(t.parent)</li>
+                    }
+                    </ul>
 
-            </div>
+                </div>
+            }
         }
     </div>
 </@if(time.isDefined){header}else{section}>

@@ -6,7 +6,6 @@
             <th class="main">Title</th>
             <th class="meta">Format</th>
             <th class="meta">Classification</th>
-            <th class="meta">Offset</th>
         </tr>
     </thead>
 
@@ -17,12 +16,11 @@
                     <td class="main">@display(link)</td>
                     <td>@link.format.name</td>
                     <td>@link.classification</td>
-                    <td>@link.position</td>
                 </tr>
             }
         } else {
             <tr>
-                <td class="empty" colspan="4">This container is empty.</td>
+                <td class="empty" colspan="3">This container is empty.</td>
             </tr>
         }
     </tbody>

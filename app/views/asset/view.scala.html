@@ -7,7 +7,7 @@
         <p>@link.link.body</p>
 
 	@if(link.checkPermission(Permission.DOWNLOAD)) {
-		@link.link.asset.format.mimeSubTypes match {
+		@link.format.mimeSubTypes match {
             case ("image", _) => {
                 <img src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
             }
