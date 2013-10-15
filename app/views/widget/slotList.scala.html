@@ -12,16 +12,17 @@
     </thead>
 
     <tbody>
-    @if(volume.containers.nonEmpty) {
-        @volume.containers.map { container =>
-            @if(!container.top) {
+    @defining(volume.containers) { containers =>
+    @if(containers.nonEmpty) {
+        @containers.map { container =>
                 @container.slots.map { slot =>
                     <tr>
                         <td class="main">
                             <a href='@slot.pageURL'>@slot.pageName</a>
-                            @if(slot.records.nonEmpty) {
+			    @defining(slot.records) { records =>
+                            @if(records.nonEmpty) {
                                 <div class="records">
-                                    @slot.records.map { record =>
+                                    @records.map { record =>
                                         <div class="ident">
                                             @record.ident.getOrElse(record.id.unId.toString)
                                         </div>
@@ -37,17 +38,18 @@
                                     }
                                 </div>
                             }
+			    }
                         </td>
                         <td class="meta">@display(slot.segment)</td>
                         <td class="meta">@slot.consent</td>
                     </tr>
-                }
             }
         }
     } else {
         <tr>
             <td class="empty" colspan="3">This container has no child slots.</td>
         </tr>
+    }
     }
     </tbody>
 </table>

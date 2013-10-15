@@ -282,8 +282,8 @@ object MeasureT extends MeasureView[MeasureT[_]]("measure_all") {
   private[models] def getSlot[T](slot : Slot, category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] =
     Record.measureRow[T](slot.volume, metric).
       SQL("JOIN slot_record ON record.id = slot_record.record",
-        (if (category.isDefined) " AND record.category = {category}" else ""),
-        "AND slot_record.slot = {slot}").
+        "AND record.category", (if (category.isDefined) "= {category}" else " IS NOT NULL"),
+        "AND slot_record.slot = {slot} ORDER BY record.category").
       on('slot -> slot.id, 'category -> category.map(_.id), 'metric -> metric.id).
       list
 }

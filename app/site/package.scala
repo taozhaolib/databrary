@@ -10,7 +10,7 @@ package object site {
     val r = l.genericBuilder[(K,Seq[A])]
     @scala.annotation.tailrec def next(l : Seq[A]) : Unit = if (l.nonEmpty) {
       val k = f(l.head)
-      val (p, s) = l.span(f(_) == k)
+      val (p, s) = l.span(f(_).equals(k))
       r += k -> p
       next(s)
     }

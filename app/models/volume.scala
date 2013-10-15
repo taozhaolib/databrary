@@ -33,7 +33,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     * @return VolumeAccess sorted by level (ADMIN first). */
   def partyAccess(implicit db : Site.DB) : Seq[VolumeAccess] = _partyAccess
 
-  /** List of containers within this volume. */
+  /** List of containers within this volume, except the top. */
   def containers(implicit db : Site.DB) : Seq[Container] = Container.getVolume(this)
   private val _topContainer = CachedVal[Container, Site.DB](Container.getTop(this)(_))
   /** The master container corresponding to this volume. Cached. */
