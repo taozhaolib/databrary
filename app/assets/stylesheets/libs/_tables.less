@@ -24,6 +24,10 @@ table {
 
 	tbody {
 		tr {
+            &:nth-child(even) {
+                background: lighten(@gray_75, 18%);
+            }
+
 			&:hover {
 				background: lighten(@white_75_first, 4%);
 			}

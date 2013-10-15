@@ -133,6 +133,8 @@ html {
 	.extended {
 		h2 {
 			margin-top: 0;
+            margin-bottom: (@gutter/2);
+            line-height: 36px;
 		}
 	}
 }
@@ -151,20 +153,24 @@ html {
 	.avatar {
 		float: left;
 		margin-right: @gutter/4;
+        .size(36px);
 	}
 
 	.info {
+        float: right;
+        .size(182px, 36px);
 	}
+
+    .name, .more {
+        width: 182px;
+    }
 
 	.name {
-		a {
-			display: inline-block;
-			font-size: 1.1em;
-			padding: 3px 0 1px;
-		}
+        font-size: 1.1em;
+        padding: 3px 0 1px;
 	}
 
-	.institution, .date {
+	.more {
 		font-size: 0.8em;
 		color: @gray_50_third;
 
@@ -190,9 +196,6 @@ html {
 			}
 		}
 	}
-
-	.date {
-	}
 }
 
 .arealinks {
@@ -203,6 +206,12 @@ html {
 
 .focus {
 	padding: (@gutter*4) 0;
+}
+
+.overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .citation {
@@ -271,6 +280,10 @@ dl.metalist {
 	}
 }
 
+.thumb_list {
+    margin-bottom: @gutter;
+}
+
 .thumb {
 	img {
 		display: block;
@@ -318,6 +331,12 @@ dl.metalist {
 		.time {
 			font-size: 0.7em;
 		}
+
+        &.excerpt {
+            .text {
+                background: @third;
+            }
+        }
 	}
 }
 
@@ -449,4 +468,12 @@ dl.measures {
 	dd {
 		margin-left: 0;
 	}
+}
+
+a.lighter {
+    margin-left: 20px;
+}
+
+table .records {
+    margin-left: @gutter;
 }

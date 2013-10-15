@@ -45,4 +45,11 @@ object Static extends SiteController {
     implicit request =>
       Ok(views.html.static.contact(request))
   }
+
+  // TODO: Temporary for demo...
+
+  def search() = SiteAction {
+    implicit request =>
+      Ok(views.html.temporary.search(request.queryString.getOrElse("query", Seq("")).head.toString)(request))
+  }
 }

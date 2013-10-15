@@ -126,7 +126,7 @@ object TagWeight extends Table[TagWeight]("tag_weight") {
          JOIN slot ON tag_weight.slot = slot.id 
         WHERE slot.source = {cont} AND slot.segment <@ {seg}
         GROUP BY tag.id, tag.name
-        HAVING sum(tag_weight.weight) > 0
+        HAVING sum(tag_weight.weight) > 0 OR count(tag_use.up) > 0
         ORDER BY agg_weight DESC""").
         on('mainslot -> slot.id, 'cont -> slot.containerId, 'seg -> slot.segment, 'who -> site.identity.id).list
     else
@@ -139,7 +139,7 @@ object TagWeight extends Table[TagWeight]("tag_weight") {
        JOIN container ON slot.source = container.id 
       WHERE container.volume = {volume} 
       GROUP BY tag.id, tag.name
-      HAVING sum(tag_weight.weight) > 0
+      HAVING sum(tag_weight.weight) > 0 OR count(tag_use.up) > 0
       ORDER BY agg_weight DESC""").
       on('volume -> volume.id, 'mainslot -> volume.topSlot.id, 'who -> site.identity.id).list
 }

@@ -311,14 +311,10 @@ dbjs.stickyFooter = function (footer, above) {
         return false;
     };
 
-    if (screen.height > aboveH * (2 / 3)) {
-        // skip the interval check if the content is sufficiently long
-        // this estimate can be greatly improved by comparing screen and browser width
         var contentCheck = setInterval(function () {
             if (checkResize())
                 resize(footer, above);
         }, 50);
-    }
 
     resize(footer, above);
 };
@@ -452,6 +448,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
             var initialize = function () {
                 generate('.alert', 'html', 'alert');
                 generate('#site_header .message', 'data-message', 'trace');
+                generate('.thumb', 'data-message', 'trace');
                 //generate('.error', 'html', 'error');
             };
 

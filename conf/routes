@@ -112,3 +112,6 @@ GET         /test                                                               
 GET         /p/*path                                                                                  controllers.Site.tinyUrl(path : String, prefix : String = "party")
 GET         /v/*path                                                                                  controllers.Site.tinyUrl(path : String, prefix : String = "volume")
 GET         /*path/                                                                                   controllers.Site.untrail(path: String)
+
+# temporary demo
+GET         /search                                                                                   controllers.Static.search
