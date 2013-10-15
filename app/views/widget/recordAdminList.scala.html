@@ -11,8 +11,9 @@
             </thead>
 
             <tbody>
-            @if(slot.records(request.db).nonEmpty) {
-                @slot.records(request.db).map { record =>
+	    @defining(slot.records) { records =>
+            @if(records.nonEmpty) {
+                @records.map { record =>
                     @tag.form(routes.Record.slotRemove(slot.volumeId, slot.id, record.id, true)) {
                         <tr>
                             <td class="main">
@@ -42,6 +43,7 @@
                     <td class="empty" colspan="@if(recordForm.nonEmpty) {3} else {2}">There are no records assigned.</td>
                 </tr>
             }
+	    }
             </tbody>
 
             @recordForm.map { f =>

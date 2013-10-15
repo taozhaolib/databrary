@@ -27,8 +27,9 @@
                     </thead>
 
                     <tbody>
-                    @if(record.slots.nonEmpty) {
-                        @record.slots.map { s =>
+	            @defining(record.slots) { slots =>
+                    @if(slots.nonEmpty) {
+                        @slots.map { s =>
                             <tr>
                                 <td class="main"><a href='@s.pageURL'>@s.container.name (#@s.id.unId)</a></td>
                                 <td class="meta">@display(s.segment)</td>
@@ -40,6 +41,7 @@
                             <td class="empty" colspan="3">This container has no child slots.</td>
                         </tr>
                     }
+		    }
                     </tbody>
                 </table>
             </div>

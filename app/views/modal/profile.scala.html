@@ -33,28 +33,32 @@
 		    </div>
 		}
 
-		@if(party.authorizeParents().nonEmpty) {
+		@defining(party.authorizeParents()) { parents =>
+		@if(parents.nonEmpty) {
 		    <div class="memberships">
 			<h2>Memberships</h2>
 
 			<ul class="flat">
-			@party.authorizeParents().map { t =>
+			@parents.map { t =>
 			    <li>@display(t.parent)</li>
 			}
 			</ul>
 		    </div>
 		}
+		}
 
-		@if(party.authorizeChildren().nonEmpty) {
+		@defining(party.authorizeChildren()) { children =>
+		@if(children.nonEmpty) {
 		    <div class="memberships">
-		    @if(dbrary.cast[Account](party)) { <h2>Dependents</h2> } else { <h2>Members</h2> }
+		    @if(party.isInstanceOf[Account]) { <h2>Dependents</h2> } else { <h2>Members</h2> }
 
 			<ul class="flat">
-			@party.authorizeChildren().map { t =>
+			@children.map { t =>
 			    <li>@display(t.child)</li>
 			}
 			</ul>
 		    </div>
+		}
 		}
 		</section>
 
@@ -68,7 +72,7 @@
 		    </section>
 
 		    <div class="row">
-		    @region.comments(None, dbrary.cast[Account](party).fold(Nil : Seq[models.Comment])(_.comments))
+		    @region.comments(None, dbrary.cast[Account](party).fold[Seq[models.Comment]](Nil)(_.comments))
 		    </div>
 		</div>
 	    </div>
