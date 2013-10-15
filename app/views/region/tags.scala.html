@@ -12,29 +12,32 @@
     <h1>Tags</h1>
 
     <ol class="sort-list tag-list">
-        @if(slot.tags.nonEmpty) {
-            @slot.tags.map { case TagWeight(tag, weight, user) =>
+        @defining(slot.tags()) { tags =>
+            @if(tags.nonEmpty) {
+                @tags.map { case TagWeight(tag, weight, user) =>
                 <li id="tag-@tag.id.unId.toString" class="tag cf">
-                    @views.html.tag.form(routes.Slot.tag(slot.volumeId, slot.id), 'class -> "ajax") {
-                        @views.html.tag.inputHidden(form("name").copy(value = Some(tag.name)), 'id -> Html("name-"+tag.id.unId.toString))(views.html.tag.rawFieldConstructor.f, Lang("en"))
+                @views.html.tag.form(routes.Slot.tag(slot.volumeId, slot.id), 'class -> "ajax") {
+                    @views.html.tag.inputHidden(form("name").copy(value = Some(tag.name)), 'id -> Html("name-"+tag.id.unId.toString))(views.html.tag.rawFieldConstructor.f, Lang("en"))
 
-                        <div class="controls">
-                            <button class="vote down" name="vote" value="false" @if(user.nonEmpty && !user.get){disabled}>-</button>
-                            <button class="vote null" name="vote" value="" @if(user.isEmpty){disabled}>0</button>
-                            <button class="vote up" name="vote" value="true" @if(user.nonEmpty && user.get){disabled}>+</button>
-                        </div>
-                        <div class="weight">@weight</div>
-                        <span class="name">@tag.name</span>
-                    }
+                    <div class="controls">
+                        <button class="vote down" name="vote" value="false" @if(user.nonEmpty && !user.get){disabled}>-</button>
+                        <button class="vote null" name="vote" value="" @if(user.isEmpty){disabled}>0</button>
+                        <button class="vote up" name="vote" value="true" @if(user.nonEmpty && user.get){disabled}>+</button>
+                    </div>
+                    <div class="weight">@weight</div>
+                    <span class="name">@tag.name</span>
+                }
                 </li>
+                }
             }
+
+            <li id="tag-add" class="add">
+            @tag.form(routes.Slot.tag(slot.volumeId, slot.id)) {
+                @tag.inputText(form("name"), 'placeholder -> "tag", '_class -> "mini")
+                <button name="vote" value="@true" class="hide">add</button>
+            }
+            </li>
         }
 
-        <li id="tag-add" class="add">
-        @tag.form(routes.Slot.tag(slot.volumeId, slot.id)) {
-            @tag.inputText(form("name"), 'placeholder -> "tag", '_class -> "mini")
-            <button name="vote" value="@true" class="hide">add</button>
-        }
-        </li>
     </ol>
 </section>
