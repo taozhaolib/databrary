@@ -269,7 +269,7 @@ object SlotAsset {
   /** Retrieve the list of all top-level assets. */
   private[models] def getToplevel(volume : Volume)(implicit db : Site.DB) : Seq[SlotAsset] =
     getSlot(volume.topSlot) ++
-      volumeRow(volume).SQL("WHERE toplevel_asset.excerpt IS NOT NULL AND container.volume = {vol} AND", condition()).
+      volumeRow(volume).SQL("WHERE toplevel_asset.excerpt IS NOT NULL AND container.volume = {vol} AND", condition(), "ORDER BY toplevel_asset.excerpt DESC").
       on('vol -> volume.id).list
 
   /** Find an asset suitable for use as a volume thumbnail.

@@ -164,7 +164,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     MeasureT.getSlot[T](this, category, metric)
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */
-  def idents(implicit db : Site.DB) : Seq[(String)] = recordMeasures() map {
+  def idents(implicit db : Site.DB) : Seq[String] = recordMeasures() map {
     case (r, i) => r.category.fold("")(_.name + ':') + i.getOrElse("[" + r.id.unId.toString + ']')
   }
 

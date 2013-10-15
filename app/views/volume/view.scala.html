@@ -1,8 +1,18 @@
-@(volume: Volume, assets: Seq[SlotAsset], excerpts: Map[String, Seq[SlotAsset]], assetMap: Map[String, Seq[SlotAsset]])(implicit request: RequestObject[Volume]#Site[_])
+@()(implicit request: RequestObject[Volume]#Site[_])
 
 	@script = {
 		dbjs.tabs('.tabset', '.tab', '.view');
 	}
+
+@defining(request.obj) { volume =>
+@defining(volume.toplevelAssets groupBy {
+	_.format.mimeSubTypes._1 match {
+		case "image" => 'i'
+		case "video" => 'v'
+		case "audio" => 'a'
+		case _ => 'o'
+	}
+}) { assets =>
 
 @template.crud("Volume: " + volume.name, js = script) {
 	<div class="row">
@@ -63,24 +73,21 @@
 			<h2 class='tab' data-message="All media in the Highlights tab is available for public use and sharing.">
 				Highlights</h2>
 
-			@widget.thumbList(excerpts.getOrElse("video", Nil))
-			@widget.thumbList(excerpts.getOrElse("image", Nil))
-			@widget.thumbList(excerpts.getOrElse("audio", Nil))
 		</div>
 
 		<div id="media" class="view">
 			<h2 class='tab' data-message="The Media tab lists top-level video, audio, and images asscoiated with the current study.">
 				Media</h2>
 
-			@widget.thumbList(assetMap.getOrElse("video", Nil))
-			@widget.thumbList(assetMap.getOrElse("image", Nil))
-			@widget.thumbList(assetMap.getOrElse("audio", Nil))
+			@widget.thumbList(assets.getOrElse('v', Nil))
+			@widget.thumbList(assets.getOrElse('i', Nil))
+			@widget.thumbList(assets.getOrElse('a', Nil))
 		</div>
 
 		<div id="documents" class="view">
 			<h2 class='tab' data-message="The Documents tab lists non-media files associated with the current study.">
 				Documents</h2>
-			@widget.assetList(assets)
+			@widget.assetList(assets.getOrElse('o', Nil))
 		</div>
 
 		<div id="publications" class="view">
@@ -108,3 +115,5 @@
     @region.tags(volume.topSlot)
 	</div>
 }
+
+}}
