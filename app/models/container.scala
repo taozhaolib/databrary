@@ -70,9 +70,9 @@ object Container extends TableId[Container]("container") {
       on(Volume.conditionArgs('id -> i) : _*).singleOpt
   }
 
-  /** Retrieve all the containers in a given volume. */
+  /** Retrieve all the (non-top) containers in a given volume. */
   private[models] def getVolume(v : Volume)(implicit db : Site.DB) : Seq[Container] =
-    volumeRow(v).SQL("WHERE container.volume = {vol} ORDER BY date, id").
+    volumeRow(v).SQL("WHERE container.volume = {vol} AND NOT top ORDER BY date, id").
       on('vol -> v.id).list
 
   /** Retrieve the top container in a given volume. */
