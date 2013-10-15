@@ -1,8 +1,9 @@
 @(field: play.api.data.Field, args: (Symbol,Any)*)(implicit handler: helper.FieldConstructor, lang: play.api.i18n.Lang)
 
-@map = @{ args.toMap }
-@inputType = @{ map.getOrElse('type, "hidden") }
+@defining(args.toMap) { map =>
 
 @input(field, map - 'type) { (id, name, value, htmlArgs) =>
-    <input type="@inputType" id="@id" name="@name" value="@value" @toHtmlArgs(htmlArgs)>
+    <input type="@map.getOrElse('type, "hidden")" id="@id" name="@name" value="@value" @toHtmlArgs(htmlArgs)>
+}
+
 }

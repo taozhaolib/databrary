@@ -12,7 +12,7 @@
  *@
 @(field: play.api.data.Field, options: Seq[(String,String)], args: (Symbol,Any)*)(implicit handler: helper.FieldConstructor, lang: play.api.i18n.Lang)
 
-@map = @{ args.toMap }
+@defining(args.toMap) { map =>
 
 @input(field, map) { (id, name, value, htmlArgs) =>
     <select id="@id" name="@name" @toHtmlArgs(htmlArgs)>
@@ -23,4 +23,6 @@
             <option value="@v._1" @(if(value == Some(v._1)) "selected" else "")>@v._2</option>
         }
     </select>
+}
+
 }
