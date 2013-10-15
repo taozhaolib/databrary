@@ -42,7 +42,7 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
   /** Slot that covers this entire container and which thus serves as a proxy for display and metadata. Cached. */
   def fullSlot(implicit db : Site.DB) : Slot = _fullSlot
 
-  def pageName(implicit site : Site) = name.getOrElse(date.toString) // TODO: still needs fixin...
+  def pageName(implicit site : Site) = fullSlot.pageName
   def pageParent(implicit site : Site) = Some(volume)
   def pageURL(implicit site : Site) = fullSlot.pageURL
   def pageActions(implicit site : Site) = fullSlot.pageActions
@@ -112,8 +112,10 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     _consent = consent
   }
 
+  def isContext : Boolean = consent != Consent.NONE || isFull
+
   private[this] val _context = CachedVal[Option[Slot], Site.DB] { implicit db =>
-    if (consent != Consent.NONE || isFull) Some(this) else {
+    if (isContext) Some(this) else {
       Slot.containerRow(container).SQL("WHERE slot.source = {cont} AND slot.segment @> {seg} AND slot.consent IS NOT NULL").
         on('cont -> containerId, 'seg -> segment).singleOpt()
     }
@@ -164,13 +166,22 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     MeasureT.getSlot[T](this, category, metric)
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */
-  def idents(implicit db : Site.DB) : Seq[String] = recordMeasures() map {
-    case (r, i) => r.category.fold("")(_.name + ':') + i.getOrElse("[" + r.id.unId.toString + ']')
-  }
+  def idents(implicit db : Site.DB) : Seq[String] =
+    groupBy(recordMeasures[String](), (ri : (Record,Option[String])) => ri._1.category).map { case (c,l) =>
+      c.fold("")(_.name + ":") + l.map { case (r,i) => i.getOrElse("[" + r.id.unId.toString + "]") }.mkString(",")
+    }
 
-  def pageName(implicit site : Site) = container.pageName + pageCrumbName.fold("")(" [" + _ + "]")
+  def pageName(implicit site : Site) =
+    if (isContext) {
+      val i = container.name ++: idents
+      if (i.isEmpty)
+        "[" + id.unId.toString + "]"
+      else
+        i.mkString("/")
+    } else
+      context.pageName + pageCrumbName.fold("")(" [" + _ + "]")
   override def pageCrumbName(implicit site : Site) = if (segment.isFull) None else Some(segment.lowerBound.fold("")(_.toString) + " - " + segment.upperBound.fold("")(_.toString))
-  def pageParent(implicit site : Site) = Some(if (context.equals(this)) volume else context)
+  def pageParent(implicit site : Site) = Some(if (isContext) volume else context)
   def pageURL(implicit site : Site) = controllers.routes.Slot.view(container.volumeId, id)
   def pageActions(implicit site : Site) = Seq(
     Action("view", controllers.routes.Slot.view(volumeId, id), Permission.VIEW),
