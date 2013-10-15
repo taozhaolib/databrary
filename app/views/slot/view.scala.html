@@ -1,19 +1,24 @@
 @(slot : models.Slot, commentForm : controllers.Slot.CommentForm = controllers.Slot.commentForm)(implicit request : RequestObject[Slot]#Site[_])
 
     @template.crud("Slot: " + slot.container.name + "-" + slot.id.unId) {
-            @slot.container.date.map { _ =>
-                <p><time>Data collected @display.date(slot)</time></p>
-            }
-            <p>This slot is @slot.consent.toString.</p>
+        <div class="row">
+            <div class="description col-desktop-6 push-desktop-2 col-laptop-6 col-tablet-6 col-mobile-6">
+                @slot.container.date.map { _ =>
+                    <p><time>Data collected @display.date(slot)</time></p>
+                }
+                <p>This slot is @slot.consent.toString.</p>
 
-            <h2>Records</h2>
-            @widget.recordAdminList(slot)
-
-            <h2>Assets</h2>
-            @widget.assetList(slot.assets)
-
-            <div class="row">
-            @region.comments(Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), slot.comments(true))
-            @region.tags(slot)
+                <h2>Records</h2>
+                @widget.recordAdminList(slot)
             </div>
+
+            <div class="extended col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
+                @widget.assetFrame(slot.assets)
+            </div>
+        </div>
+
+        <div class="row">
+        @region.comments(Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), slot.comments(true))
+        @region.tags(slot)
+        </div>
     }

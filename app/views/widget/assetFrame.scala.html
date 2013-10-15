@@ -1,0 +1,39 @@
+@(assets : Seq[SlotAsset])(implicit request : SiteRequest[_])
+
+<section class="asset_frame">
+    <div class="frame">
+        @if(assets.nonEmpty) {
+            @assets.map { link =>
+                <div id="asset-@link.sourceId">
+
+                </div>
+            }
+        }
+    </div>
+
+    <table class="assets">
+        <thead>
+            <tr>
+                <th class="main">Title</th>
+                <th class="meta">Format</th>
+                <th class="meta">Classification</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        @if(assets.nonEmpty) {
+            @assets.map { link =>
+                <tr>
+                    <td class="main">@display(link)</td>
+                    <td class="meta">@link.format.name</td>
+                    <td class="meta">@link.classification</td>
+                </tr>
+            }
+        } else {
+            <tr>
+                <td class="empty" colspan="3">There are no assets here.</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</section>
