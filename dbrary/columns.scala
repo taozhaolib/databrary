@@ -43,8 +43,8 @@ trait Selector[A] extends RowParser[A] with SelectExprs {
     Selector[B](selects, source, super.map[B](f))
   override def ? : Selector[Option[A]] =
     Selector[Option[A]](selects, source, super.?)
-  def from[B >: A](from : String) : Selector[B] =
-    Selector[B](selects, from, this)
+  def from(from : String) : Selector[A] =
+    Selector[A](selects, from, this)
 
   def join[B](that : Selector[B], joiner : (String, String) => String) : Selector[A ~ B] =
     Selector(selects ++ that.selects, joiner(source, that.source), super.~[B](that))

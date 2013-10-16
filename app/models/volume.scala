@@ -74,6 +74,11 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   /** An image-able "asset" that may be used as the volume's thumbnail. */
   def thumb(implicit db : Site.DB) : Option[SlotAsset] = SlotAsset.getThumb(this)
 
+  /** Return the cross-product of all sessions and participants on this volume. */
+  def sessions(implicit db : Site.DB) : Seq[(Slot,Option[Record])] =
+    Record.Participant.sessions(this).SQL("WHERE container.volume = {volume} AND (slot.consent IS NOT NULL OR slot.segment = '(,)' AND NOT container.top) ORDER BY slot.consent DESC, " + Record.Participant.table + ".ident, " + Record.Participant.table + ".id").
+      on('volume -> id).list
+
   def pageName(implicit site : Site) = name
   def pageParent(implicit site : Site) = None
   def pageURL(implicit site : Site) = controllers.routes.Volume.view(id)

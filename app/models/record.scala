@@ -46,6 +46,11 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
     * This may become invalid if the value is changed. */
   def birthdate(implicit db : Site.DB) : Option[Date] = _birthdate
 
+  private val _gender = CachedVal[Option[String], Site.DB](measure(Metric.Gender)(_))
+  /** Cached version of `measure(Metric.Gender)`.
+    * This may become invalid if the value is changed. */
+  def gender(implicit db : Site.DB) : Option[String] = _gender
+
   private val _daterange = CachedVal[Range[Date], Site.DB] { implicit db =>
     SQL("SELECT record_daterange({id})").
       on('id -> id).single(scalar[Range[Date]](PGDateRange.column))
@@ -163,5 +168,28 @@ object Record extends TableId[Record]("record") {
   private[models] def removeSlot(r : Record.Id, s : Slot.Id)(implicit db : Site.DB) : Unit = {
     val args = SQLArgs('record -> r, 'slot -> s)
     SQL("DELETE FROM slot_record WHERE " + args.where).on(args : _*).execute
+  }
+
+  private[models] object Participant extends Table[Record]("record_participant_view") {
+    private[models] val row = Record.row
+
+    private def volumeRow(vol : Volume) = Columns[
+      Id,  Option[String], Option[Date], Option[String], Option[Date],                            Option[Consent.Value]](
+      'id, 'ident,         'birthdate,   'gender,        SelectAs("container.date", "record_date"), SelectAs("slot.consent", "record_consent")).
+      map { (id, ident, birthdate, gender, date, consent) =>
+        val r = new Record(id, vol, Some(RecordCategory.Participant), consent.getOrElse(Consent.NONE))
+        r._ident() = ident
+        r._birthdate() = birthdate
+        r._gender() = gender
+        date foreach { d =>
+          r._daterange() = Range.singleton(d)(PGDateRange)
+        }
+        r
+      }.
+      from("slot_record JOIN record_participant_view ON slot_record.record = record_participant_view.id")
+    def sessions(vol : Volume) =
+      Slot.volumeRow(vol).leftJoin(volumeRow(vol), "slot.id = slot_record.slot") map {
+        case (slot ~ rec) => (slot, rec)
+      }
   }
 }

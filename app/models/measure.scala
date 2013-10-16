@@ -278,7 +278,7 @@ object MeasureT extends MeasureView[MeasureT[_]]("measure_all") {
       on('record -> record, 'metric -> metric.id).singleOpt
   }
 
-  /** Retrieve the set of all records and possibly measures of the given type on the given slot. */
+  /** Retrieve the set of all categorized records and possibly measures of the given type on the given slot. */
   private[models] def getSlot[T](slot : Slot, category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] =
     Record.measureRow[T](slot.volume, metric).
       SQL("JOIN slot_record ON record.id = slot_record.record",

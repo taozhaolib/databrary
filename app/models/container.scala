@@ -162,14 +162,16 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   /** The list of records and possibly measures on this object.
     * This is essentially equivalent to `this.records(false).filter(_.category == category).map(r => (r, r.measure[T](metric)))` but more efficient.
     * @param category if Some limit to the given category */
-  def recordMeasures[T](category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] =
+  private def recordMeasures[T](category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] =
     MeasureT.getSlot[T](this, category, metric)
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */
-  def idents(implicit db : Site.DB) : Seq[String] =
+  private val _idents = CachedVal[Seq[String],Site.DB] { implicit db =>
     groupBy(recordMeasures[String](), (ri : (Record,Option[String])) => ri._1.category).map { case (c,l) =>
       c.fold("")(_.name + ":") + l.map { case (r,i) => i.getOrElse("[" + r.id.unId.toString + "]") }.mkString(",")
     }
+  }
+  private def idents(implicit db : Site.DB) : Seq[String] = _idents
 
   def pageName(implicit site : Site) =
     if (isContext) {
