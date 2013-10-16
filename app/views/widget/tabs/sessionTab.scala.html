@@ -8,36 +8,19 @@
             <h3>Sessions</h3>
 
             <div class="row">
-                @sessions.filter(s => s._1.consent != Consent.PRIVATE).map { case (slot, record)  =>
+                @sessions.filter(s => s._1.consent != Consent.PRIVATE).map { case (slot, records)  =>
                     <article class="session-panel thumb hover col-3">
                         <a href="@slot.pageURL" class="block">
                             <div class="media">
-                                @slot.assets.find(a => List("image", "video").indexOf(a.format.mimeSubTypes._1) >= 0) match {
-                                    case Some(slotAsset) => {
-                                        @slotAsset.format.mimeSubTypes._1 match {
-                                            case "image" => {
-                                                <img src='@routes.Asset.download(slotAsset.volumeId, slotAsset.slotId, slotAsset.sourceId, true)'>
-                                            }
-                                            case "video" => {
-                                                <img src='@routes.Asset.frame(slotAsset.volumeId, slotAsset.slotId, slotAsset.sourceId, (slotAsset.duration.seconds * .25))'>
-                                            }
-                                            case _ => {
-                                                <img src='@routes.Assets.at("images/draft.png")'>
-                                            }
-                                        }
-                                    }
-                                    case None => {
-                                        <img src='@routes.Assets.at("images/draft.png")' style="min-height: 150px;">
-                                    }
-                                }
+				@widget.mediaThumb(slot.thumb)
                             </div>
 
                             <div class="text">
                                 <h1>@slot.container.name</h1>
 
                                 <ul class="participants flat">
-                                @slot.records.filter(r => r.category.nonEmpty).map { record =>
-                                    @if(record.category.get == RecordCategory.Participant) {
+                                @records.map { record =>
+                                    @if(record.category.equals(Some(RecordCategory.Participant))) {
                                         <li>
                                             <span class="consent @slot.consent"></span>
                                             <span class="gender">@record.gender</span><span class="sep">,</span>

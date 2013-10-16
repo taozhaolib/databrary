@@ -77,6 +77,7 @@ GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>           
 GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                        controllers.Asset.download(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, inline : Boolean = false)
 GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/inline                          controllers.Asset.download(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, inline : Boolean = true)
 GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/head                            controllers.Asset.head(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id)
+GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb                           controllers.Asset.thumb(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id)
 GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>        controllers.Asset.frame(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, offset : dbrary.Offset)
 
 # annotations

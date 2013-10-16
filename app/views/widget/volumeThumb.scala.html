@@ -1,15 +1,3 @@
 @(volume: Volume)(implicit request: SiteRequest[_])
 
-@volume.thumb.filter(_.checkPermission(Permission.DOWNLOAD)).fold {
-	<img src="@routes.Assets.at("images/draft.png")" alt="@volume.name">
-} { thumb =>
-	@defining(thumb.link.asset.format) { fmt =>
-        @if(fmt.mimetype.startsWith("image/")) {
-            <img src='@routes.Asset.download(thumb.volumeId, thumb.slotId, thumb.link.assetId, true)' alt="@thumb.link.name"/>
-        } else {
-            @if(dbrary.cast[TimeseriesFormat](fmt).fold(false)(_.sampleFormat.mimetype.startsWith("image/"))) {
-                <img src="@routes.Asset.head(thumb.volumeId, thumb.slotId, thumb.link.assetId)" alt="@thumb.link.name"/>
-            }
-        }
-	}
-}
+@mediaThumb(volume.thumb)

@@ -221,11 +221,16 @@ object SlotAsset {
     SelectColumn("excerpt"))
   private def condition(segment : String = "slot.segment") =
     "(container_asset.position IS NULL OR container_asset.position <@ " + segment + " OR segment_shift(segment(" + Asset.duration + "), container_asset.position) && " + segment + ")"
+  private val classification = "CASE WHEN toplevel_asset.excerpt AND file.classification = 'IDENTIFIED' THEN 'EXCERPT' else file.classification"
   private def volumeRow(vol : Volume) = ContainerAsset.containerColumns.
     join(Container.volumeRow(vol), "container_asset.container = container.id").
     join(Slot.columns, "container.id = slot.source").
     leftJoin(columns, "slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset") map {
       case (link ~ asset ~ cont ~ slot ~ excerpt) => make((ContainerAsset.make(asset, cont) _).tupled(link), (Slot.make(cont) _).tupled(slot), excerpt)
+    }
+  private def slotRow(slot : Slot) = ContainerAsset.containerRow(slot.container).
+    leftJoin(columns, "asset.id = toplevel_asset.asset AND toplevel_asset.slot = {slot}") map {
+      case (link ~ excerpt) => make(link, slot, excerpt)
     }
 
   /** Retrieve a single SlotAsset by asset id and slot id.
@@ -241,14 +246,9 @@ object SlotAsset {
   }
 
   /** Retrieve the list of all assets within the given slot. */
-  private[models] def getSlot(slot : Slot)(implicit db : Site.DB) : Seq[SlotAsset] = {
-    val row = ContainerAsset.containerRow(slot.container).
-      leftJoin(columns, "asset.id = toplevel_asset.asset AND toplevel_asset.slot = {slot}") map {
-      case (link ~ excerpt) => make(link, slot, excerpt)
-    }
-    row.SQL("WHERE container_asset.container = {container} AND", condition("{segment}"), "ORDER BY container_asset.position NULLS FIRST").
-    on('slot -> slot.id, 'container -> slot.containerId, 'segment -> slot.segment).list
-  }
+  private[models] def getSlot(slot : Slot)(implicit db : Site.DB) : Seq[SlotAsset] =
+    slotRow(slot).SQL("WHERE container_asset.container = {container} AND", condition("{segment}"), "ORDER BY container_asset.position NULLS FIRST").
+      on('slot -> slot.id, 'container -> slot.containerId, 'segment -> slot.segment).list
 
   /** Build the SlotAsset for the given ContainerAsset#container.fullSlot. */
   private[models] def getFull(ca : ContainerAsset)(implicit db : Site.DB) : SlotAsset = {
@@ -274,10 +274,21 @@ object SlotAsset {
 
   /** Find an asset suitable for use as a volume thumbnail.
     * TODO: check permissions, and find a better way to do this altogether */
-  private[models] def getThumb(volume : Volume)(implicit db : Site.DB) : Option[SlotAsset] =
+  private[models] def getThumb(volume : Volume)(implicit site : Site) : Option[SlotAsset] =
     volumeRow(volume).SQL("""
         WHERE (toplevel_asset.excerpt IS NOT NULL OR container.top AND slot.segment = '(,)')
           AND (format.id = {video} OR format.mimetype LIKE 'image/%')
-          AND container.volume = {vol} AND""", condition(), "LIMIT 1").
-      on('vol -> volume.id, 'video -> TimeseriesFormat.VIDEO).singleOpt
+          AND data_permission({permission}, slot.consent, file.classification, {access}, toplevel_asset.excerpt) >= 'DOWNLOAD'
+          AND container.volume = {vol}
+          AND""", condition(), "LIMIT 1").
+  on('vol -> volume.id, 'video -> TimeseriesFormat.VIDEO, 'permission -> volume.getPermission, 'access -> site.access).singleOpt
+
+  /** Find an asset suitable for use as a slot thumbnail.
+    * TODO: check permissions, and find a better way to do this altogether */
+  private[models] def getThumb(slot : Slot)(implicit site : Site) : Option[SlotAsset] =
+    slotRow(slot).SQL("""
+      WHERE (format.id = {video} OR format.mimetype LIKE 'image/%') 
+        AND data_permission({permission}, {consent}, file.classification, {access}, COALESCE(toplevel_asset.excerpt, false)) >= 'DOWNLOAD'
+        AND""", condition("{segment}"), "LIMIT 1").
+      on('slot -> slot.id, 'segment -> slot.segment, 'video -> TimeseriesFormat.VIDEO, 'permission -> slot.getPermission, 'consent -> slot.consent, 'access -> site.access).singleOpt
 }

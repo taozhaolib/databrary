@@ -1,0 +1,17 @@
+@(thumb : Option[SlotAsset])(implicit request : SiteRequest[_])
+
+@thumb.fold {
+	<img src="@routes.Assets.at("images/draft.png")"/>
+} { thumb =>
+	@defining(thumb.link.asset.format) { fmt =>
+        @if(fmt.mimetype.startsWith("image/")) {
+            <img src='@routes.Asset.download(thumb.volumeId, thumb.slotId, thumb.link.assetId, true)'/>
+        } else {
+            @if(dbrary.cast[TimeseriesFormat](fmt).fold(false)(_.sampleFormat.mimetype.startsWith("image/"))) {
+                <img src="@routes.Asset.thumb(thumb.volumeId, thumb.slotId, thumb.link.assetId)"/>
+            }
+        }
+	}
+}
+
+

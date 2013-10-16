@@ -173,6 +173,9 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   }
   private def idents(implicit db : Site.DB) : Seq[String] = _idents
 
+  /** An image-able "asset" that may be used as the slot's thumbnail. */
+  def thumb(implicit site : Site) : Option[SlotAsset] = SlotAsset.getThumb(this)
+
   def pageName(implicit site : Site) =
     if (isContext) {
       val i = container.name ++: idents

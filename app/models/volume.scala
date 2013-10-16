@@ -72,12 +72,22 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   def tags(implicit site : Site) : Seq[TagWeight] = TagWeight.getVolume(this)
 
   /** An image-able "asset" that may be used as the volume's thumbnail. */
-  def thumb(implicit db : Site.DB) : Option[SlotAsset] = SlotAsset.getThumb(this)
+  def thumb(implicit site : Site) : Option[SlotAsset] = SlotAsset.getThumb(this)
 
-  /** Return the cross-product of all sessions and participants on this volume. */
-  def sessions(implicit db : Site.DB) : Seq[(Slot,Option[Record])] =
-    Record.Participant.sessions(this).SQL("WHERE container.volume = {volume} AND (slot.consent IS NOT NULL OR slot.segment = '(,)' AND NOT container.top) ORDER BY slot.consent DESC, " + Record.Participant.table + ".ident, " + Record.Participant.table + ".id").
+  /** The list of all sessions and their associated participants on this volume. */
+  def sessions(implicit db : Site.DB) : Seq[(Slot,Seq[Record])] = {
+    val l = Record.Participant.sessions(this).SQL("WHERE container.volume = {volume} AND (slot.consent IS NOT NULL OR slot.segment = '(,)' AND NOT container.top) ORDER BY slot.consent DESC, slot.id").
       on('volume -> id).list
+    val r = l.genericBuilder[(Slot,Seq[Record])]
+    @scala.annotation.tailrec def next(l : Seq[(Slot,Option[Record])]) : Unit = if (l.nonEmpty) {
+      val k = l.head._1
+      val (p, s) = l.span(_._1.equals(k))
+      r += k -> p.flatMap(_._2)
+      next(s)
+    }
+    next(l)
+    r.result
+  }
 
   def pageName(implicit site : Site) = name
   def pageParent(implicit site : Site) = None

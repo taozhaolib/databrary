@@ -72,19 +72,24 @@ object Asset extends SiteController {
     )(request)
   }
 
-  def frame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, offset : Offset = 0) = SlotAction(v, i, o, Permission.DOWNLOAD).async { implicit request =>
+  private def getFrame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, offset : Either[Float,Offset]) = SlotAction(v, i, o, Permission.DOWNLOAD).async { implicit request =>
     request.obj match {
-      case ts : SlotTimeseries if offset >= 0 && offset < ts.duration =>
-        assetResult(
-          "sframe:%d:%d:%d".format(ts.slotId.unId, ts.link.assetId.unId, offset.millis.toLong),
-          store.Asset.readFrame(ts, offset),
+      case ts : SlotTimeseries =>
+        val off = offset.fold(f => Offset(10*(f*ts.duration.seconds/10).floor), identity)
+        if (off < 0 || off >= ts.duration)
+          Future.successful(NotFound)
+        else assetResult(
+          "sframe:%d:%d:%d".format(ts.slotId.unId, ts.link.assetId.unId, off.millis.toLong),
+          store.Asset.readFrame(ts, off),
           ts.source.format.sampleFormat,
           None
         )(request)
       case _ => Future.successful(NotFound)
     }
   }
-  def head(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) = frame(v, i, o)
+  def frame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, eo : Offset) = getFrame(v, i, o, Right(eo))
+  def head(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) = getFrame(v, i, o, Right(0))
+  def thumb(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) = getFrame(v, i, o, Left(0.25f))
 
   type AssetForm = Form[(String, String, Option[Offset], Option[(Option[AssetFormat.Id], Classification.Value, Option[String], Unit)])]
   private[this] def assetForm(file : Boolean) : AssetForm = Form(tuple(
