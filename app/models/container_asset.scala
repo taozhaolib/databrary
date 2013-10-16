@@ -276,19 +276,20 @@ object SlotAsset {
     * TODO: check permissions, and find a better way to do this altogether */
   private[models] def getThumb(volume : Volume)(implicit site : Site) : Option[SlotAsset] =
     volumeRow(volume).SQL("""
-        WHERE (toplevel_asset.excerpt IS NOT NULL OR container.top AND slot.segment = '(,)')
-          AND (format.id = {video} OR format.mimetype LIKE 'image/%')
-          AND data_permission({permission}, slot.consent, file.classification, {access}, toplevel_asset.excerpt) >= 'DOWNLOAD'
-          AND container.volume = {vol}
-          AND""", condition(), "LIMIT 1").
-  on('vol -> volume.id, 'video -> TimeseriesFormat.VIDEO, 'permission -> volume.getPermission, 'access -> site.access).singleOpt
+      WHERE (toplevel_asset.excerpt IS NOT NULL OR container.top AND slot.segment = '(,)')
+        AND (format.id = {video} OR format.mimetype LIKE 'image/%')
+        AND data_permission({permission}, slot.consent, file.classification, {access}, COALESCE(toplevel_asset.excerpt, false)) >= 'DOWNLOAD'
+        AND container.volume = {vol}
+        AND""", condition(), "LIMIT 1").
+      on('vol -> volume.id, 'video -> TimeseriesFormat.VIDEO, 'permission -> volume.getPermission, 'access -> site.access).singleOpt
 
   /** Find an asset suitable for use as a slot thumbnail.
     * TODO: check permissions, and find a better way to do this altogether */
   private[models] def getThumb(slot : Slot)(implicit site : Site) : Option[SlotAsset] =
     slotRow(slot).SQL("""
-      WHERE (format.id = {video} OR format.mimetype LIKE 'image/%') 
+      WHERE container_asset.container = {container}
+        AND (format.id = {video} OR format.mimetype LIKE 'image/%') 
         AND data_permission({permission}, {consent}, file.classification, {access}, COALESCE(toplevel_asset.excerpt, false)) >= 'DOWNLOAD'
         AND""", condition("{segment}"), "LIMIT 1").
-      on('slot -> slot.id, 'segment -> slot.segment, 'video -> TimeseriesFormat.VIDEO, 'permission -> slot.getPermission, 'consent -> slot.consent, 'access -> site.access).singleOpt
+      on('slot -> slot.id, 'container -> slot.containerId, 'segment -> slot.segment, 'video -> TimeseriesFormat.VIDEO, 'permission -> slot.getPermission, 'consent -> slot.consent, 'access -> site.access).singleOpt
 }
