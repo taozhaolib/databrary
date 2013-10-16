@@ -2,15 +2,17 @@
 
 @defining(volume.sessions) { sessions =>
     @if(sessions.nonEmpty) {
-        <section id="sessions" class="sessions view">
-            <h1 class='tab' data-message="The <strong>Sessions tab</strong> organizes study data by session.">Sessions</h1>
+        <div id="sessions" class="sessions view">
+            <h2 class='tab' data-message="The <strong>Sessions tab</strong> organizes study data by session.">Sessions</h2>
+
+            <h3>Sessions</h3>
 
             <div class="row">
                 @sessions.filter(s => s._1.consent != Consent.PRIVATE).map { case (slot, record)  =>
                     <article class="session-panel thumb hover col-3">
                         <a href="@slot.pageURL" class="block">
                             <div class="media">
-                                @slot.assets.filter(a => List("image", "video").indexOf(a.format.mimeSubTypes._1) >= 0).headOption match {
+                                @slot.assets.find(a => List("image", "video").indexOf(a.format.mimeSubTypes._1) >= 0) match {
                                     case Some(slotAsset) => {
                                         @slotAsset.format.mimeSubTypes._1 match {
                                             case "image" => {
@@ -51,6 +53,6 @@
             </div>
 
             <p class="note">...and <em>@sessions.filter(s => s._1.consent == Consent.PRIVATE).length other participants</em> who have elected not to share their data.</p>
-        </section>
+        </div>
     }
 }
