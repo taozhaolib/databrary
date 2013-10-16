@@ -1,8 +1,5 @@
-@(volume: Volume)(implicit request: SiteRequest[_])
+@(citations : Seq[VolumeCitation])(implicit request: SiteRequest[_])
 
-@defining(volume.citations) { citations =>
-@if(citations.nonEmpty) {
-    <h3>Publications</h3>
 
     @for(citation <- citations) {
         <div class="publication">
@@ -10,5 +7,3 @@
             <p>@citation.body</p>
         </div>
     }
-}
-}

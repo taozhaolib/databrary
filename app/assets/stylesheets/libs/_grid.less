@@ -37,11 +37,11 @@
 //
 
 .grid-width(max, @spread: @gridspread, @column: @gridcolumn, @gutter: @gridgutter) {
-	max-width: (@column + @gutter) * @spread;
+	max-width: (@column + @gutter) * @spread - @gutter;
 }
 
 .grid-width(min, @spread: @gridspread, @column: @gridcolumn, @gutter: @gridgutter) {
-	min-width: (@column + @gutter) * @spread;
+	min-width: (@column + @gutter) * @spread - @gutter;
 }
 
 .grid-width(fix, @spread: @gridspread, @column: @gridcolumn, @gutter: @gridgutter) {

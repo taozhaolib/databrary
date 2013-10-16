@@ -1,0 +1,7 @@
+@(volume : Volume)(implicit request : SiteRequest[_])
+
+<div id="access" class="view">
+    <h2 class='tab' data-message="The <strong>Access tab</strong> lists who has access to the current study, and what that access allows.">Access</h2>
+
+    @widget.volumePermission(volume)
+</div>

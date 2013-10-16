@@ -41,7 +41,7 @@ object display {
       val (a, s) = as
       val (u, t) = ut
       val n = a / t
-      (a - n*t, if (n != 0) s + n + u(0) else s)
+      (a - n*t, if (n != 0) s + " " + n + u(0) else s)
   }
     if (s.isEmpty) "0" else s
   }

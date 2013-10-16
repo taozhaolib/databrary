@@ -156,16 +156,20 @@
 // comments
 
 .page {
-    .comments, .tags {
+    .comments, .tags, .sessions {
         h1 {
             border: 0;
             padding: 0;
-            margin-top: (@gutter * 2);
+            margin-top: 0;
             font-weight: normal;
             font-size: 1.5em;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+    }
+
+    .sessions h1 {
+        margin-top: (@gutter * 2);
     }
 }
 
@@ -330,5 +334,51 @@
 
     .add {
         margin-top: (@gutter/6);
+    }
+}
+
+//
+
+.page .session-panel {
+    margin-bottom: @gutter;
+
+    h1 {
+        margin: 0 0 0.5em;
+        font-size: 1em;
+        padding: 0;
+        font-weight: bold;
+    }
+
+    a {
+        color: @text;
+    }
+
+    header, ul {
+        margin: 0;
+    }
+
+    .media {
+        max-height: 150px;
+        overflow: hidden;
+    }
+
+    li {
+        font-size: 0.9em;
+        margin-bottom: 0.25em;
+    }
+
+    &.thumb.hover a .text {
+        background: @second;
+    }
+}
+
+.hr-wide {
+    margin: (@gutter * 2) 0;
+}
+
+.sessions {
+    .note {
+        font-size: 0.75em;
+        text-align: right;
     }
 }

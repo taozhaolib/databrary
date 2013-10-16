@@ -1,0 +1,56 @@
+@(volume : Volume)(implicit request : SiteRequest[_])
+
+@defining(volume.sessions) { sessions =>
+    @if(sessions.nonEmpty) {
+        <section id="sessions" class="sessions view">
+            <h1 class='tab' data-message="The <strong>Sessions tab</strong> organizes study data by session.">Sessions</h1>
+
+            <div class="row">
+                @sessions.filter(s => s._1.consent != Consent.PRIVATE).map { case (slot, record)  =>
+                    <article class="session-panel thumb hover col-3">
+                        <a href="@slot.pageURL" class="block">
+                            <div class="media">
+                                @slot.assets.filter(a => List("image", "video").indexOf(a.format.mimeSubTypes._1) >= 0).headOption match {
+                                    case Some(slotAsset) => {
+                                        @slotAsset.format.mimeSubTypes._1 match {
+                                            case "image" => {
+                                                <img src='@routes.Asset.download(slotAsset.volumeId, slotAsset.slotId, slotAsset.sourceId, true)'>
+                                            }
+                                            case "video" => {
+                                                <img src='@routes.Asset.frame(slotAsset.volumeId, slotAsset.slotId, slotAsset.sourceId, (slotAsset.duration.seconds * .25))'>
+                                            }
+                                            case _ => {
+                                                <img src='@routes.Assets.at("images/draft.png")'>
+                                            }
+                                        }
+                                    }
+                                    case None => {
+                                        <img src='@routes.Assets.at("images/draft.png")' style="min-height: 150px;">
+                                    }
+                                }
+                            </div>
+
+                            <div class="text">
+                                <h1>@slot.container.name</h1>
+
+                                <ul class="participants flat">
+                                @slot.records.filter(r => r.category.nonEmpty).map { record =>
+                                    @if(record.category.get == RecordCategory.Participant) {
+                                        <li>
+                                            <span class="consent @slot.consent"></span>
+                                            <span class="gender">@record.gender</span><span class="sep">,</span>
+                                            <span class="age">@display.age(slot.container.date.flatMap(record.age _).get)</span>
+                                        </li>
+                                    }
+                                }
+                                </ul>
+                            </div>
+                        </a>
+                    </article>
+                }
+            </div>
+
+            <p class="note">...and <em>@sessions.filter(s => s._1.consent == Consent.PRIVATE).length other participants</em> who have elected not to share their data.</p>
+        </section>
+    }
+}
