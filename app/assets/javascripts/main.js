@@ -449,6 +449,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
                 generate('.alert', 'html', 'alert');
                 generate('#site_header .message', 'data-message', 'trace');
                 generate('.thumb', 'data-message', 'trace');
+                generate('.message-trace', 'data-message', 'trace');
                 //generate('.error', 'html', 'error');
             };
 
@@ -1013,6 +1014,72 @@ dbjs.simpleToggle = function (toggler, toggled) {
             });
 
             return $repeater;
+        }
+    });
+})(jQuery, window, document);
+
+/**
+ * EASY FRAME
+ */
+(function ($, window, document) {
+    var $handler;
+
+    $.extend($.fn, {
+        easyFrame: function (args) {
+            var $easy = this,
+                $frame = $easy.find('.frame'),
+                $assets = $easy.find('.assets');
+
+            var $currentView = null;
+
+            // methods
+            var initialize = function () {
+                $frame.find('.view').each(function () {
+                    $(this).addClass('rolled').slideUp(0);
+                });
+
+                $assets.on('click', '.viewer', function (e) {
+                    var $this = $(this),
+                        $view = $frame.find($this.attr('data-target'));
+
+                    if ($this.hasClass('current')) {
+                        $currentView.fadeOut(150, function () {
+                            $currentView.fadeIn(150);
+                        });
+
+                        return;
+                    }
+
+                    if($currentView)
+                        $currentView.slideUp(250, function () {
+                            $view.slideDown(250);
+                        });
+                    else
+                        $view.slideDown(250);
+
+                    $assets.find('.viewer').removeClass('current');
+                    $this.addClass('current');
+
+                    $currentView = $view;
+
+                    e.preventDefault();
+                });
+
+                $assets.find('.viewer').first().trigger('click');
+
+                $frame.removeClass('hide');
+            };
+
+            // setup
+            initialize();
+
+            // api
+
+            $easy.data('easyFrame', {
+
+            });
+
+            return $easy;
         }
     });
 })(jQuery, window, document);

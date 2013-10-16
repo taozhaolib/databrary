@@ -168,7 +168,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     * This is probably not a permanent solution for naming, but it's a start. */
   private val _idents = CachedVal[Seq[String],Site.DB] { implicit db =>
     groupBy(recordMeasures[String](), (ri : (Record,Option[String])) => ri._1.category).map { case (c,l) =>
-      c.fold("")(_.name + ":") + l.map { case (r,i) => i.getOrElse("[" + r.id.unId.toString + "]") }.mkString(",")
+      c.fold("")(_.name.capitalize + ": ") + l.map { case (r,i) => i.getOrElse("[" + r.id.unId.toString + "]") }.mkString(", ")
     }
   }
   private def idents(implicit db : Site.DB) : Seq[String] = _idents
@@ -180,7 +180,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     if (isContext) {
       val i = container.name ++: idents
       if (i.isEmpty)
-        "[" + id.unId.toString + "]"
+        "Session: [" + id.unId.toString + "]"
       else
         i.mkString("/")
     } else
