@@ -1,39 +1,60 @@
 @(assets : Seq[SlotAsset])(implicit request : SiteRequest[_])
 
 <section class="asset_frame">
-    <div class="frame">
+    <div class="frame hide">
         @if(assets.nonEmpty) {
             @assets.map { link =>
-                <div id="asset-@link.sourceId">
+                @if(link.checkPermission(Permission.DOWNLOAD)) {
+                    <div id="asset-@link.sourceId.unId.toString" class="view">
+                        <h2>@link.pageName.@link.format.extension <a href='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, false)' class="link">link</a></h2>
+                        @link.format.mimeSubTypes match {
+                            case ("image", _) => {
+                                <img src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
+                            }
+                            case ("video", _) => {
+                                <video controls>
+                                    <source src="@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)" type="@link.link.asset.format.mimetype">
+                                </video>
+                                @if(!link.link.asset.format.equals(TimeseriesFormat.Video)) {
+                                    Warning: This video has not (yet) been converted to Databrary's standand format, so some features may not work.
+                                }
+                            }
+                            case ("text", "html") => {
+                                <iframe src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
+                            }
+                            case ("text", "plain") => {
+                                <iframe src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
+                            }
+                            case _ => {
+                            }
+                        }
 
-                </div>
+                        @display.plainText(link.link.body.getOrElse(""))
+                    </div>
+                }
             }
         }
     </div>
 
-    <table class="assets">
-        <thead>
-            <tr>
-                <th class="main">Title</th>
-                <th class="meta">Format</th>
-                <th class="meta">Classification</th>
-            </tr>
-        </thead>
-
-        <tbody>
+    <ul class="assets flat">
         @if(assets.nonEmpty) {
             @assets.map { link =>
-                <tr>
-                    <td class="main">@display(link)</td>
-                    <td class="meta">@link.format.name</td>
-                    <td class="meta">@link.classification</td>
-                </tr>
+                    <li>
+                        <a href="@link.pageURL" class="block viewer @link.classification message-trace" data-target="#asset-@link.sourceId.unId.toString" data-message="@if(link.classification == Classification.IDENTIFIED){<strong>Notice!</strong> This file contains <em>identifying data</em> and should be treated with care.}@if(link.classification == Classification.DEIDENTIFIED){<strong>Notice!</strong> This file contains <em>no identifying data</em>.}@if(link.classification == Classification.EXCERPT){<strong>Notice!</strong> This file is <em>an excerpt</em>, and may be shared with the public at your discretion.}">
+                            <img src="@routes.Assets.at("images/filetypes/16px/"+link.format.extension.get+".png")" class="filetype @link.format.extension">
+                            @link.pageName.@link.format.extension <span class="duration">@if(link.duration.seconds != 0) {@link.duration}</span>
+                            <span class="classification">@link.classification.toString.substring(0, 1)</span>
+                        </a>
+                    </li>
             }
         } else {
-            <tr>
-                <td class="empty" colspan="3">There are no assets here.</td>
-            </tr>
+            <li class="empty">There are no assets here.</li>
         }
-        </tbody>
-    </table>
+    </ul>
 </section>
+
+    <script>
+        $(document ).ready(function () {
+            $('.asset_frame' ).easyFrame({});
+        });
+    </script>
