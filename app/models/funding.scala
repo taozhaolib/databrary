@@ -19,7 +19,7 @@ object VolumeFunding extends Table[VolumeFunding]("volume_funding") {
   private val columns = Columns[
     Party.Id, Option[String]](
     'funder,  'grant)
-  private[models] val row = columns.join(Volume.row, "volume_citation.volume = volume.id").
+  private[models] val row = columns.join(Volume.row, "volume_funding.volume = volume.id").
     map { case (fund ~ vol) => (make(vol) _).tupled(fund) }
   private def volumeRow(vol : Volume) = columns.join(Party.row, "volume_funding.funder = party.id").
     map { case (fund ~ party) =>
@@ -31,11 +31,18 @@ object VolumeFunding extends Table[VolumeFunding]("volume_funding") {
   private[models] def getVolume(vol : Volume)(implicit db : Site.DB) : Seq[VolumeFunding] =
     volumeRow(vol).SQL("WHERE volume = {vol}").on('vol -> vol.id).list
 
+  private[models] def getFunder(party : Party)(implicit site : Site) : Seq[VolumeFunding] =
+    row.map { f =>
+        f._funder() = party
+        f
+      }.SQL("WHERE funder = {party} AND", Volume.condition).
+      on(Volume.conditionArgs('party -> party.id) : _*).list
+
   def setVolume(vol : Volume, list : Seq[VolumeFunding])(implicit db : Site.DB) : Unit = {
     SQL("DELETE FROM volume_funding WHERE volume = {vol}").on('vol -> vol.id).execute
     if (list.isEmpty)
       return
     val l = list.map(_.ensuring(_.volume == vol).args)
-    SQL("INSERT INTO volume_citation " + l.head.insert).addBatchList(l).execute
+    SQL("INSERT INTO volume_funding " + l.head.insert).addBatchList(l).execute
   }
 }

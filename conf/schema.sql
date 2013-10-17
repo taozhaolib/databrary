@@ -244,6 +244,7 @@ CREATE TABLE "volume_funding" (
 	"grant" text
 );
 CREATE INDEX ON "volume_funding" ("volume");
+CREATE INDEX ON "volume_funding" ("funder");
 COMMENT ON TABLE "volume_funding" IS 'Quick and dirty funding list.  No PK: only updated in bulk on volume.';
 
 ----------------------------------------------------------- time intervals

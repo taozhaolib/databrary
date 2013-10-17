@@ -48,6 +48,9 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
     * @return VolumeAccess sorted by level (ADMIN first). */
   final def volumeAccess(p : Permission.Value)(implicit site : Site) = VolumeAccess.getVolumes(this, p)
 
+  /** List of volumes which this party is funding. */
+  final def funding(implicit site : Site) : Seq[VolumeFunding] = VolumeFunding.getFunder(this)
+
   def getPermission(implicit site : Site) = delegated
 
   def pageName(implicit site : Site) = name

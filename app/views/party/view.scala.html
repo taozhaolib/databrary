@@ -65,6 +65,10 @@
 			    @party.volumeAccess(Permission.CONTRIBUTE).map { a =>
 				    @widget.volumeSmall(a.volume)
 			    }
+
+			    @party.funding.map { v =>
+				    @widget.volumeSmall(v.volume)
+			    }
 		    </section>
 
 		    <div class="row">
