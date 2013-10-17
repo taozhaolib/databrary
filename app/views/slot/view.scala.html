@@ -3,13 +3,21 @@
     @template.crud("Slot: " + slot.container.name + "-" + slot.id.unId) {
         <div class="row">
             <div class="description col-desktop-6 push-desktop-2 col-laptop-6 col-tablet-6 col-mobile-6">
-                @slot.container.date.map { _ =>
-                    <p><time>Data collected @display.date(slot)</time></p>
-                }
-                <p>This slot is @slot.consent.toString.</p>
+                <div class="siderim">
+                    <h2>Metadata</h2>
 
-                <h2>Records</h2>
-                @widget.recordAdminList(slot)
+                    <dl class="measures">
+                        @slot.container.date.map { _ =>
+                            <dt>Data collected</dt>
+                            <dd><time>@display.date(slot)</time></dd>
+                        }
+
+                        <dt>Consent</dt>
+                        <dd>@slot.consent.toString.toLowerCase.capitalize</dd>
+                    </dl>
+                </div>
+
+                @widget.participantList(slot, slot.records)
             </div>
 
             <div class="extended col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">

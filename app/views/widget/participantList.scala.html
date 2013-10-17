@@ -1,0 +1,39 @@
+@(slot : Slot, records : Seq[Record])(implicit request : SiteRequest[_])
+
+@defining(records.filter(r => r.category.equals(Some(RecordCategory.Participant)))) { records =>
+    @if(records.nonEmpty) {
+        <h2>Participants</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th class="main">Record</th>
+                    <th class="meta">Gender</th>
+                    <th class="meta">Age</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @records.map { record =>
+                    <tr>
+                        <th class="main">
+                            @display(record)
+
+                            <dl class="inline-measures">
+                            @record.measures.filter(m => record.dataPermission(m.metric).checkPermission(Permission.DOWNLOAD)).map { measure =>
+                                @if(List("ident", "gender").indexOf(measure.metric.name) == -1) {
+                                    <dt>@measure.metric.name</dt>
+                                    <dd>@measure.value</dd>
+                                }
+
+                            }
+                            </dl>
+                        </th>
+                        <th class="meta">@record.gender</th>
+                        <th class="meta">@display.age(slot.container.date.flatMap(record.age _).get)</th>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

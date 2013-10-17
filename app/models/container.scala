@@ -176,15 +176,16 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   /** An image-able "asset" that may be used as the slot's thumbnail. */
   def thumb(implicit site : Site) : Option[SlotAsset] = SlotAsset.getThumb(this)
 
-  def pageName(implicit site : Site) =
-    if (isContext) {
-      val i = container.name ++: idents
-      if (i.isEmpty)
-        "Session: [" + id.unId.toString + "]"
-      else
-        i.mkString("/")
-    } else
-      context.pageName + pageCrumbName.fold("")(" [" + _ + "]")
+//  def pageName(implicit site : Site) =
+//    if (isContext) {
+//      val i = container.name ++: idents
+//      if (i.isEmpty)
+//        "Session: [" + id.unId.toString + "]"
+//      else
+//        i.mkString("/")
+//    } else
+//      context.pageName + pageCrumbName.fold("")(" [" + _ + "]")
+  def pageName(implicit site : Site) = if (container.name.nonEmpty) { container.name.get } else { "Session " + id.unId.toString }
   override def pageCrumbName(implicit site : Site) = if (segment.isFull) None else Some(segment.lowerBound.fold("")(_.toString) + " - " + segment.upperBound.fold("")(_.toString))
   def pageParent(implicit site : Site) = Some(if (isContext) volume else context)
   def pageURL(implicit site : Site) = controllers.routes.Slot.view(container.volumeId, id)
