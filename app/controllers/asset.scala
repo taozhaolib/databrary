@@ -72,8 +72,8 @@ object Asset extends SiteController {
     )(request)
   }
 
-  private def getFrame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, offset : Either[Float,Offset]) = SlotAction(v, i, o, Permission.DOWNLOAD).async { implicit request =>
-    request.obj match {
+  private[controllers] def getFrame(sa : SlotAsset, offset : Either[Float,Offset])(implicit request : Request[_]) =
+    sa match {
       case ts : SlotTimeseries =>
         val off = offset.fold(f => Offset(10*(f*ts.duration.seconds/10).floor), identity)
         if (off < 0 || off > ts.duration)
@@ -84,12 +84,24 @@ object Asset extends SiteController {
           ts.source.format.sampleFormat,
           None
         )(request)
-      case _ => Future.successful(NotFound)
+      case _ =>
+        if (!offset.fold(_ => true, _ == 0))
+          Future.successful(NotFound)
+        else assetResult(
+          "sobj:%d:%d".format(sa.slotId.unId, sa.link.assetId.unId),
+          store.Asset.read(sa),
+          sa.format,
+          None
+        )(request)
     }
+  def frame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, eo : Offset) = SlotAction(v, i, o, Permission.DOWNLOAD).async { implicit request =>
+    getFrame(request.obj, Right(eo))
   }
-  def frame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, eo : Offset) = getFrame(v, i, o, Right(eo))
-  def head(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) = getFrame(v, i, o, Right(0))
-  def thumb(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) = getFrame(v, i, o, Left(0.25f))
+  def head(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) =
+    frame(v, i, o, 0)
+  def thumb(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) = SlotAction(v, i, o, Permission.DOWNLOAD).async { implicit request =>
+    getFrame(request.obj, Left(0.25f))
+  }
 
   type AssetForm = Form[(String, String, Option[Offset], Option[(Option[AssetFormat.Id], Classification.Value, Option[String], Unit)])]
   private[this] def assetForm(file : Boolean) : AssetForm = Form(tuple(

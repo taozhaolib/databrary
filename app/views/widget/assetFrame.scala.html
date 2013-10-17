@@ -43,14 +43,14 @@
         <ul class="assets flat">
         @if(assets.nonEmpty) {
             @assets.map { link =>
-                <li>
-                    <a href="@link.pageURL" class="block viewer @link.classification message-trace" data-target="#asset-@link.sourceId.unId.toString" data-message="@if(link.classification == Classification.IDENTIFIED){<strong>Notice!</strong> This file contains <em>identifying data</em> and should be treated with care.}@if(link.classification == Classification.DEIDENTIFIED){<strong>Notice!</strong> This file contains <em>no identifying data</em>.}@if(link.classification == Classification.EXCERPT){<strong>Notice!</strong> This file is <em>an excerpt</em>, and may be shared with the public at your discretion.}">
-                    <img src="@routes.Assets.at("images/filetypes/16px/"+link.format.extension.get+".png")" class="filetype @link.format.extension">
-                    @if(showSession) {<span class="session">@link.slot.container.name/</span> }
-                    @link.pageName.@link.format.extension <span class="duration">@if(link.duration.seconds != 0) {@link.duration}</span>
-                <span class="classification">@link.classification.toString.substring(0, 1)</span>
-                </a>
-            </li>
+                    <li>
+                        <a href="@link.pageURL" class="block viewer @link.classification message-trace" data-target="#asset-@link.sourceId.unId.toString" data-message="@if(link.classification == Classification.IDENTIFIED){<strong>Notice!</strong> This file contains <em>identifying data</em> and should be treated with care.}@if(link.classification == Classification.DEIDENTIFIED){<strong>Notice!</strong> This file contains <em>no identifying data</em>.}@if(link.classification == Classification.EXCERPT){<strong>Notice!</strong> This file is <em>an excerpt</em>, and may be shared with the public at your discretion.}">
+                            <img src="@routes.Assets.at("images/filetypes/16px/"+link.format.extension.getOrElse("_blank")+".png")" class="filetype @link.format.extension">
+                        @if(showSession) {<span class="session">@link.slot.container.name/</span> }
+                            @link.pageName.@link.format.extension <span class="duration">@if(link.duration.seconds != 0) {@link.duration}</span>
+                            <span class="classification">@link.classification.toString.substring(0, 1)</span>
+                        </a>
+                    </li>
             }
         } else {
             <li class="empty">There are no assets here.</li>

@@ -108,7 +108,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   def change(consent : Consent.Value = _consent)(implicit site : Site) : Unit = {
     if (consent == _consent)
       return
-    Audit.change("slot", SQLArgs('consent -> consent), SQLArgs('id -> id)).execute()
+    Audit.change("slot", SQLArgs('consent -> maybe(consent, Consent.NONE)), SQLArgs('id -> id)).execute()
     _consent = consent
   }
 
@@ -125,9 +125,12 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   def context(implicit db : Site.DB) : Slot =
     _context.getOrElse(container.fullSlot)
 
+  def getConsent(implicit db : Site.DB) : Consent.Value =
+    _context.fold(consent)(_.consent)
+
   /** The level of access granted on data covered by this slot to the current user. */
   def dataPermission(classification : Classification.Value = Classification.RESTRICTED) : HasPermission =
-    Permission.data(volume.permission, implicit site => _context.fold(consent)(_.consent), classification)
+    Permission.data(volume.permission, implicit site => getConsent, classification)
 
   /** Effective start point of this slot within the container. */
   def position : Offset = segment.lowerBound.getOrElse(0)

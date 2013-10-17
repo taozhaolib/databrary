@@ -8,11 +8,8 @@
             <h3>Sessions</h3>
 
             <div class="row">
-                @sessions.filter(s => s._1.consent != Consent.PRIVATE).map { case (slot, records)  =>
-                    @widget.sessionThumb(slot, records)
-                }
-                @sessions.filter(s => s._1.consent == Consent.PRIVATE).map { case (slot, records)  =>
-                    @widget.sessionThumb(slot, records, true)
+                @sessions.map { case (slot, records)  =>
+                    @widget.sessionThumb(slot, records, slot.consent == Consent.PRIVATE)
                 }
             </div>
 
