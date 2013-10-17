@@ -31,7 +31,7 @@
                                 }
 
 				<td class="mini tc"><a href="@slot.pageURL">
-				    <img src="@routes.Slot.thumb(slot.volumeId, slot.id)" class="block">
+				    @widget.slotThumb(slot)
 				</a></td>
                                 <td class="meta tc">@display.age(slot.container.date.flatMap(record.age _).get)</td>
                                 <td class="meta tc"><span class="consent">@slot.consent</span></td>

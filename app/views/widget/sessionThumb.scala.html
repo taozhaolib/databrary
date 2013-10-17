@@ -3,7 +3,7 @@
 <article class="session-panel thumb hover col-3 @if(hide) {shrink}">
     <a href="@slot.pageURL" class="block">
         <div class="media">
-            <img src="@routes.Slot.thumb(slot.volumeId, slot.id)" class="block">
+	    @widget.slotThumb(slot)
         </div>
 
         <div class="text">

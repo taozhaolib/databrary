@@ -44,7 +44,7 @@
                 <tbody>
                 @link.link.container.slots.map { slot  =>
                     <tr class="message-trace" data-message="@if(slot.consent == Consent.PRIVATE){<strong>Notice!</strong> This session is <em>private</em>, and must not be shared.}@if(slot.consent == Consent.PUBLIC){<strong>Notice!</strong> This session is <em>public</em>, and is open to the world.}@if(slot.consent == Consent.SHARED){<strong>Notice!</strong> This session is <em>shared</em> with all Databrary users.}@if(slot.consent == Consent.EXCERPTS){<strong>Notice!</strong> Users may create <em>public excerpts</em> of this session.}">
-                    <td class="mini tc"><a href="@slot.pageURL">@widget.mediaThumb(slot.thumb)</a></td>
+                    <td class="mini tc"><a href="@slot.pageURL">@widget.slotThumb(slot)</a></td>
                     <td class="meta tc"><span class="consent">@slot.consent</span></td>
                     <td class="main"><a href="@slot.pageURL">@slot.container.name</a></td>
                     </tr>
