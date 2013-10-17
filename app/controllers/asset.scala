@@ -76,7 +76,7 @@ object Asset extends SiteController {
     request.obj match {
       case ts : SlotTimeseries =>
         val off = offset.fold(f => Offset(10*(f*ts.duration.seconds/10).floor), identity)
-        if (off < 0 || off >= ts.duration)
+        if (off < 0 || off > ts.duration)
           Future.successful(NotFound)
         else assetResult(
           "sframe:%d:%d:%d".format(ts.slotId.unId, ts.link.assetId.unId, off.millis.toLong),
