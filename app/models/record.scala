@@ -187,8 +187,8 @@ object Record extends TableId[Record]("record") {
         r
       }.
       from("slot_record JOIN record_participant_view ON slot_record.record = record_participant_view.id")
-    def sessions(vol : Volume) =
-      Slot.volumeRow(vol).leftJoin(volumeRow(vol), "slot.id = slot_record.slot") map {
+    def getSlots(vol : Volume) =
+      Slot.volumeRow(vol).?.join(volumeRow(vol).?, _ + " FULL JOIN " + _ + " ON slot.id = slot_record.slot") map {
         case (slot ~ rec) => (slot, rec)
       }
   }
