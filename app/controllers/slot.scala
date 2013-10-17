@@ -132,4 +132,10 @@ object Slot extends SiteController {
     }
     )
   }
+
+  def thumb(v : models.Volume.Id, s : models.Slot.Id) = Action(v, s, Permission.VIEW).async { implicit request =>
+    request.obj.thumb.fold(
+      Assets.at("/public", "images/draft.png")(request))(
+      Asset.getFrame(_, Left(0.25f)))
+  }
 }

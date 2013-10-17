@@ -54,6 +54,7 @@ POST        /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>/add                      
 # TODO: should be POST:
 GET         /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>/remove                                         controllers.Volume.accessDelete(vID : models.Volume.Id, pID : models.Party.Id)
 POST        /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                                                controllers.Volume.accessChange(vID : models.Volume.Id, pID : models.Party.Id)
+GET         /volume/$vID<[0-9]+>/thumb                                                                controllers.Volume.thumb(vID : models.Volume.Id)
 
 # slots
 POST        /volume/$vID<[0-9]+>/slot/container                                                       controllers.Slot.addContainer(vID : models.Volume.Id)
@@ -65,6 +66,7 @@ POST        /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                  
 GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>                                                    controllers.Slot.view(vID : models.Volume.Id, sID : models.Slot.Id)
 GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/edit                                               controllers.Slot.edit(vID : models.Volume.Id, sID : models.Slot.Id)
 POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/edit                                               controllers.Slot.change(vID : models.Volume.Id, sID : models.Slot.Id)
+GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/thumb                                              controllers.Slot.thumb(vID : models.Volume.Id, sID : models.Slot.Id)
 
 # assets
 GET         /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.Asset.create(vID : models.Volume.Id, cID : models.Container.Id, offset : Option[dbrary.Offset] ?= None)

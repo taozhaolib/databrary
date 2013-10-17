@@ -289,5 +289,5 @@ object SlotAsset {
         AND (format.id = {video} OR format.mimetype LIKE 'image/%') 
         AND data_permission({permission}, {consent}, file.classification, {access}, toplevel_asset.excerpt) >= 'DOWNLOAD'
         AND""", condition("{segment}"), "LIMIT 1").
-      on('slot -> slot.id, 'container -> slot.containerId, 'segment -> slot.segment, 'video -> TimeseriesFormat.VIDEO, 'permission -> slot.getPermission, 'consent -> slot.consent, 'access -> site.access).singleOpt
+      on('slot -> slot.id, 'container -> slot.containerId, 'segment -> slot.segment, 'video -> TimeseriesFormat.VIDEO, 'permission -> slot.getPermission, 'consent -> maybe(slot.consent, Consent.NONE), 'access -> site.access).singleOpt
 }
