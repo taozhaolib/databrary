@@ -85,7 +85,7 @@ object Asset extends SiteController {
           None
         )(request)
       case _ =>
-        if (offset.fold(_ => true, _ != 0))
+        if (!offset.fold(_ => true, _ == 0))
           Future.successful(NotFound)
         else assetResult(
           "sobj:%d:%d".format(sa.slotId.unId, sa.link.assetId.unId),
