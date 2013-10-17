@@ -5,8 +5,8 @@
 	}
 
 @defining(request.obj) { volume =>
-@defining(volume.toplevelAssets groupBy {
-	_.format.mimeSubTypes._1 match {
+@defining(volume.toplevelAssets groupBy { sa =>
+	if (!sa.checkPermission(Permission.DOWNLOAD)) 'o' else sa.format.mimeSubTypes._1 match {
 		case "image" => 'i'
 		case "video" => 'v'
 		case "audio" => 'a'
