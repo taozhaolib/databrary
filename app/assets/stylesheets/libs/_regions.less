@@ -337,6 +337,14 @@
 
 .page .session-panel {
     margin-bottom: @gutter;
+    .transition(@transition);
+    overflow: hidden;
+    height: 126px;
+
+    &.shrink {
+        height: 0;
+        margin-bottom: 0;
+    }
 
     h1 {
         margin: 0 0 0.5em;
@@ -354,7 +362,7 @@
     }
 
     .media {
-        max-height: 150px;
+        height: 126px;
         overflow: hidden;
     }
 

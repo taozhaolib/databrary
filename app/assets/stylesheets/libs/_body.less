@@ -486,4 +486,31 @@ table .records {
     margin-left: @gutter;
 }
 
+.consent {
+    font-family: monospace;
+    font-size: 0.75em;
+    background: @gray_75;
+    position: relative;
+    top: -2px;
+    padding: 2px (@gutter/3);
+    line-height: 18px;
+    .border-radius(@gutter/4);
+    .transition(@transition);
+    opacity: 0.75;
+}
 
+tr:hover .consent {
+    opacity: 1;
+}
+
+.record-holder {
+    text-align: center;
+
+    .record {
+        font-size: 1.1em;
+    }
+
+    .gender {
+        color: @gray_50;
+    }
+}

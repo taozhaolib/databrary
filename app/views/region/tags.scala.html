@@ -1,4 +1,4 @@
-@(slot : Slot, form : controllers.Slot.TagForm = controllers.Slot.tagForm)(implicit request : SiteRequest[_])
+@(slot : Slot, volume : Option[Volume] = None, form : controllers.Slot.TagForm = controllers.Slot.tagForm)(implicit request : SiteRequest[_])
 
 @import play.api.data.Form
 @import play.api.data.Forms._
@@ -12,7 +12,7 @@
     <h1>Tags</h1>
 
     <ol class="sort-list tag-list">
-        @defining(slot.tags()) { tags =>
+        @defining(if(volume.nonEmpty) {volume.get.tags} else {slot.tags()}) { tags =>
             @if(tags.nonEmpty) {
                 @tags.map { case TagWeight(tag, weight, user) =>
                 <li id="tag-@tag.id.unId.toString" class="tag cf">

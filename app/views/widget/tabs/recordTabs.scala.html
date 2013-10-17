@@ -1,0 +1,6 @@
+@(volume : Volume)(implicit request : SiteRequest[_])
+
+@defining(volume.recordSlots) { recordSlots =>
+    @* eventually, if recordsSlots has "participant" *@
+    @if(recordSlots.nonEmpty) {@widget.tabs.participantsTab(volume, recordSlots)}
+}

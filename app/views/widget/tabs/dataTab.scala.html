@@ -1,7 +1,7 @@
 @(volume : Volume, assets : Map[Char,Seq[models.SlotAsset]])(implicit request : SiteRequest[_])
 
 <div id="data" class="view">
-    <h2 class='tab' data-message="The <strong>Data tab</strong> lists top-level media and documents asscoiated with this study.">Data</h2>
+    <h2 class='tab' data-message="The <strong>Materials tab</strong> lists top-level media and documents asscoiated with this study.">Materials</h2>
 
     @widget.thumbList(assets.getOrElse('v', Nil))
     @widget.thumbList(assets.getOrElse('i', Nil))

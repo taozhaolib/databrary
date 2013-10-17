@@ -70,13 +70,14 @@
 	<section id="metadata" class="tabset">
         @widget.tabs.sessionTab(volume)
         @widget.tabs.dataTab(volume, assets)
+        @widget.tabs.recordTabs(volume)
         @widget.tabs.publicationsTab(volume)
         @widget.tabs.accessTab(volume)
 	</section>
 
 	<div class="row">
 	@region.comments(Some((routes.Slot.comment(volume.id, volume.topSlot.id), controllers.Slot.commentForm)), volume.comments)
-    @region.tags(volume.topSlot)
+    @region.tags(volume.topSlot, Some(volume))
 	</div>
 }
 

@@ -1,0 +1,24 @@
+@(slot : Slot, records : Seq[Record], hide : Boolean = false)(implicit request : SiteRequest[_])
+
+<article class="session-panel thumb hover col-3 @if(hide) {shrink}">
+    <a href="@slot.pageURL" class="block">
+        <div class="media">
+        @widget.mediaThumb(slot.thumb)
+        </div>
+
+        <div class="text">
+            <h1>@slot.container.name</h1>
+
+            <ul class="participants flat">
+            @records.map { record =>
+                @if(record.category.equals(Some(RecordCategory.Participant))) {
+                    <li>
+                        <span class="gender">@record.gender</span><span class="sep">,</span>
+                        <span class="age">@display.age(slot.container.date.flatMap(record.age _).get)</span>
+                    </li>
+                }
+            }
+            </ul>
+        </div>
+    </a>
+</article>

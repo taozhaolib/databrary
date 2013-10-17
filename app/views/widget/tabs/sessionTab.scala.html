@@ -9,33 +9,24 @@
 
             <div class="row">
                 @sessions.filter(s => s._1.consent != Consent.PRIVATE).map { case (slot, records)  =>
-                    <article class="session-panel thumb hover col-3">
-                        <a href="@slot.pageURL" class="block">
-                            <div class="media">
-				@widget.mediaThumb(slot.thumb)
-                            </div>
-
-                            <div class="text">
-                                <h1>@slot.container.name</h1>
-
-                                <ul class="participants flat">
-                                @records.map { record =>
-                                    @if(record.category.equals(Some(RecordCategory.Participant))) {
-                                        <li>
-                                            <span class="consent @slot.consent"></span>
-                                            <span class="gender">@record.gender</span><span class="sep">,</span>
-                                            <span class="age">@display.age(slot.container.date.flatMap(record.age _).get)</span>
-                                        </li>
-                                    }
-                                }
-                                </ul>
-                            </div>
-                        </a>
-                    </article>
+                    @widget.sessionThumb(slot, records)
+                }
+                @sessions.filter(s => s._1.consent == Consent.PRIVATE).map { case (slot, records)  =>
+                    @widget.sessionThumb(slot, records, true)
                 }
             </div>
 
-            <p class="note">...and <em>@sessions.filter(s => s._1.consent == Consent.PRIVATE).length other participants</em> who have elected not to share their data.</p>
+            <p class="note">...and <em><a class="show_hidden">@sessions.filter(s => s._1.consent == Consent.PRIVATE).length other participants</a></em> who have elected not to share their data.</p>
+
+            <script>
+                $(document).ready(function () {
+                    var $hidden = $('#sessions .row article.shrink');
+
+                    $('.show_hidden' ).click(function() {
+                        $hidden.toggleClass('shrink');
+                    });
+                });
+            </script>
         </div>
     }
 }
