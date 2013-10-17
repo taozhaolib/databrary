@@ -76,7 +76,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
   private type Session = (Option[Slot],Option[Record])
   private val _sessions = CachedVal[Seq[Session],Site.DB] { implicit db =>
-    Record.Participant.getSlots(this).SQL("WHERE container.volume = {volume} AND (slot.consent IS NOT NULL OR slot.segment = '(,)' AND NOT container.top)").
+    Record.Participant.getSlots(this).SQL("WHERE (container.volume = {volume} AND (slot.consent IS NOT NULL OR slot.segment = '(,)') AND NOT container.top) OR (record_participant_view.volume = {volume})").
       on('volume -> id).list
   }
 

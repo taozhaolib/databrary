@@ -31,15 +31,15 @@ owd=$PWD
 cd $SCRATCH
 mkdir -p log
 for file in "$@" ; do
-	if [[ ! -f $file ]] ; then
-		echo "$file: file not found"
+	if [[ ! -f $SCRATCH/$file ]] ; then
+		echo "$SCRATCH/$file: file not found"
 		if [[ $owd != $PWD ]] ; then
 			echo "Files are relative to $PWD, so you may want to cd there first."
 		fi
 		continue
 	fi
 	dir=`dirname "$file"`
-	tdir=$dir/transcoded
+	tdir=transcoded/$dir
 	base=`basename "$file"`
 	base=${base%.*}
 	out=$tdir/$base-01.mp4
