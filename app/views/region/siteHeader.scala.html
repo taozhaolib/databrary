@@ -3,11 +3,21 @@
 <header id="site_header" class="site_header">
 	<div class="wrap">
         <div class="row">
-            <h1 class="col-2">
-                <a href="@routes.Static.index" title="Databrary: An Open Data Library"><strong>Data</strong>brary</a>
-            </h1>
+            <div class="title cf col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-2 hide-cell">
+                <h1>
+                    <a href="@routes.Static.index" title="Databrary: An Open Data Library"><strong>Data</strong>brary</a>
+                </h1>
 
-            <div class="usernow col-desktop-14 col-laptop-10 col-tablet-7 col-mobile-4">
+                <nav class="cf hide-mobile hide-cell">
+                    <ul class="major_nav inline cf">
+                        <li><a href="@routes.Volume.listAll">Explore</a></li>
+                        <li><a href="@routes.Static.about">Discover</a></li>
+                        <li><a href="" class="off">Share</a></li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="usernow col-desktop-11 col-laptop-17 col-tablet-4 col-mobile-4">
                 @request.flatMap(_.user).fold {
                     <a href="@routes.Login.view" id="modal_login_link" class="modal_link" data-target="modal_login">login</a>
                     <span>|</span>

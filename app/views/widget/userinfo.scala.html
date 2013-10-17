@@ -22,6 +22,7 @@
                     @grant.get
                 </div>
             } else {
+                @if(party.id.unId.toString != "0") {
                 <div class="overflow more institution">
                     <ul class="inline">
                     @party.authorizeParents().map { t =>
@@ -30,6 +31,7 @@
                     </ul>
 
                 </div>
+                }
             }
         }
     </div>

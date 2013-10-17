@@ -3,10 +3,6 @@
 <div id="data" class="view">
     <h2 class='tab' data-message="The <strong>Materials tab</strong> lists top-level media and documents asscoiated with this study.">Materials</h2>
 
-    @widget.thumbList(assets.getOrElse('v', Nil))
-    @widget.thumbList(assets.getOrElse('i', Nil))
-    @widget.thumbList(assets.getOrElse('a', Nil))
-
-        <h3>Documents</h3>
-    @widget.assetList(assets.getOrElse('o', Nil))
+    <h3>Materials</h3>
+    @widget.assetFrame(assets.values.toSeq.flatten)
 </div>

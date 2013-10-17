@@ -49,6 +49,7 @@
 					</aside>
 
 					<div class="col-3">
+                        @if(volume.funding.nonEmpty) {
 						<aside class="funding foot">
 							<h2>Funding</h2>
 
@@ -56,6 +57,7 @@
 								@widget.userinfo(f.funder, grant = f.grant)
 							}
 						</aside>
+                        }
 
 						<aside class="access cf foot">
 							<h2>Sharing</h2>

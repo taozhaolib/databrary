@@ -1034,8 +1034,9 @@ dbjs.simpleToggle = function (toggler, toggled) {
 
             // methods
             var initialize = function () {
-                $frame.find('.view').each(function () {
-                    $(this).addClass('rolled').slideUp(0);
+                $frame.find('.vw').each(function () {
+                    console.log($(this));
+                    $(this).addClass('rlld').slideUp(0);
                 });
 
                 $assets.on('click', '.viewer', function (e) {
