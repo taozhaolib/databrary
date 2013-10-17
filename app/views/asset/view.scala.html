@@ -6,6 +6,9 @@
 @template.crud("Asset: " + link.link.name) {
         <p>@link.link.body</p>
 
+	Position: @link.position
+	Duration: @link.duration
+
 	@if(link.checkPermission(Permission.DOWNLOAD)) {
 		@link.format.mimeSubTypes match {
             case ("image", _) => {

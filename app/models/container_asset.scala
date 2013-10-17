@@ -137,8 +137,8 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
       yield ((l - s).max(0))).
       orElse(link.position)
   def duration : Offset =
-    (for { s <- slot.segment.upperBound ; l <- position }
-      yield ((s - l).min(link.duration))).
+    (for { s0 <- slot.segment.lowerBound ; s1 <- slot.segment.upperBound; l <- link.position }
+      yield ((s1 - l.max(s0)).min(link.duration))).
       getOrElse(link.duration)
 
   /** Update the given values in the database and this object in-place.
