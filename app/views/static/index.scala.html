@@ -1,8 +1,44 @@
 @(implicit request: SiteRequest[_])
 
-@template.wide("An Open Data Library for Developmental Science") {
-    <article class="banner">
-        <h1><strong>Data</strong>brary is an <span class="keyword">open data library</span> for developmental science. Share video, audio, and related metadata. Discover more, faster.</h1>
-        <h2><a href="@routes.Volume.listAll">Browse data &gt;&gt;</a> <a class="lighter" href="@routes.Static.about">Learn more &gt;&gt;</a></h2>
-    </article>
+@import scala.util.Random
+
+@script = {
+    dbjs.carousel('#carousel .panels', '.panel');
+}
+
+@template.wide("An Open Data Library for Developmental Science", js = script) {
+    <section id="carousel" class="carousel">
+        <div class="panels">
+            @* Did it this way to ensure view permission, but I wanted better thumbnails than the current volume thumbs. *@
+            @Random.shuffle(models.Volume.getAll.flatMap(v => v.containers).flatMap(c => c.slots).flatMap(s => s.thumb)).take(10).map { thumb =>
+            <div class="panel" id="panel_@thumb.sourceId.unId.toString">
+                <img src="@routes.Asset.thumb(thumb.volumeId, thumb.slotId, thumb.sourceId)">
+            </div>
+            }
+        </div>
+
+        <div class="text">
+                <h1><strong>Data</strong>brary is an <span class="keyword">open data library</span> for developmental science. Share video, audio, and related metadata. Discover more, faster.</h1>
+                <h2><a href="@routes.Volume.listAll">Browse data &gt;&gt;</a> <a class="lighter" href="@routes.Static.about">Learn more &gt;&gt;</a></h2>
+        </div>
+    </section>
+
+    <section class="about_boxes">
+        <div class="row">
+            <div class="sect col-laptop-4 col-tablet-3 col-mobile-2">
+                <h3>Explore</h3>
+                <p>Databaray is a repository of discoveries waiting to happen. Dig into the source materials of renouned researchers world-wide. Spark your ideas, engage your students, and learn about the world.</p>
+            </div>
+
+            <div class="sect col-laptop-4 col-tablet-3 col-mobile-2">
+                <h3>Discover</h3>
+                <p>Databrary offers tools for managing your lab, coding your data, and organizing your resources. Get the most out of your research and never fear data-loss again.</p>
+            </div>
+
+            <div class="sect col-laptop-4 col-tablet-3 col-mobile-2">
+                <h3>Share</h3>
+                <p>Advance science today! Upload your data with our lightning-fast importer, set permissions with ease, and connect with researchers interested in your work.</p>
+            </div>
+        </div>
+    </section>
 }

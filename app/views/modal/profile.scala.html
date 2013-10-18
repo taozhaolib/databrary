@@ -64,15 +64,17 @@
 
 		<div class="content col-desktop-9 col-laptop-9 col-tablet-6">
 		    <section class="volume_list">
-			    <h2>Studies</h2>
-
 			    @party.volumeAccess(Permission.CONTRIBUTE).map { a =>
-				    @widget.volumeSmaller(a.volume)
+				    @widget.volumeList(a.volume)
 			    }
 		    </section>
 
 		    <div class="row">
-		    @region.comments(None, dbrary.cast[Account](party).fold[Seq[models.Comment]](Nil)(_.comments))
+            @dbrary.cast[Account](party).map(a => a.comments).map { comments =>
+                @if(comments.nonEmpty) {
+                    @region.comments(None, comments)
+                }
+            }
 		    </div>
 		</div>
 	    </div>

@@ -206,16 +206,30 @@ dbjs.ajaxModal = function (clicker, url, now) {
  * @param toggle    toggled area, child of fold
  */
 dbjs.fold = function (region, clicker, toggle) {
-    var $clicker = $(region + ' ' + clicker),
-        $toggles = $(region + ' ' + toggle);
+    var $region = $(region),
+        $clicker = $region.find(clicker),
+        $toggles = $region.find(toggle);
 
     $clicker.click(function () {
-        $(this).next(toggle).slideToggle();
-        $(this).toggleClass('unfolded');
+        var $this = $(this);
+
+        $this.closest(region).find(toggle).slideToggle();
+        $this.toggleClass('unfolded');
     });
 
     $clicker.prepend('<span class="arrow"></span>');
     $toggles.toggle();
+};
+
+dbjs.carousel = function (region, panel) {
+    var $region = $(region),
+        $panels = $region.find(panel);
+
+    var interval = setInterval(function (e) {
+        $region.find(">"+panel+":last-child").fadeOut(1000, function () {
+            $(this).prependTo($region).fadeIn(1000);
+        });
+    }, 5000);
 };
 
 /**

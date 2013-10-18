@@ -1,7 +1,6 @@
 @(party : Party)(implicit request : RequestObject[SitePage]#Site[_])
 
 @script = {
-    dbjs.fadeOff('.volume_roll a', '.body', '.thumb');
 }
 
 @template.crud("Profile: " + party.name, js = script) {
@@ -60,20 +59,20 @@
 
 		<div class="content col-desktop-10 col-laptop-10 col-tablet-7 col-mobile-6">
 		    <section class="volume_list">
-			    <h2>Studies</h2>
+                @party.volumeAccess(Permission.CONTRIBUTE).map { a =>
+                    @widget.volumeList(a.volume)
+                }
 
-			    @party.volumeAccess(Permission.CONTRIBUTE).map { a =>
-				    @widget.volumeSmall(a.volume)
-			    }
-
-			    @party.funding.map { v =>
-				    @widget.volumeSmall(v.volume)
-			    }
+                @party.funding.map { v =>
+                    @widget.volumeList(v.volume)
+                }
 		    </section>
 
 		    <div class="row">
-                @dbrary.cast[Account](party).map { account =>
-                    @region.comments(None, dbrary.cast[Account](party).fold[Seq[models.Comment]](Nil)(_.comments))
+                @dbrary.cast[Account](party).map(a => a.comments).map { comments =>
+                    @if(comments.nonEmpty) {
+                        @region.comments(None, comments)
+                    }
                 }
 		    </div>
 		</div>

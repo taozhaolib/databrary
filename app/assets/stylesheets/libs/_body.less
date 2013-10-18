@@ -348,8 +348,8 @@ dl.metalist {
 	}
 }
 
-.volume_roll {
-	margin-bottom: @gutter;
+article.volume_roll {
+    margin-bottom: @gutter/2;
 
 	a.block {
 		display: block;
@@ -361,6 +361,7 @@ dl.metalist {
 			h1 {
 				color: @text;
 				background: @white_75_second;
+                border: 1px solid @black_50_second;
 			}
 		}
 	}
@@ -372,6 +373,31 @@ dl.metalist {
 		.border-radius(15px 0 0 0);
 		background: @white_75_first;
 		.transition(@transition);
+        border: 1px solid @black_50_first;
+        font-size: 1.5em;
+        cursor: pointer;
+
+        .arrow {
+            .arrow-north(8px, @text);
+            margin: 0 5px;
+            position: relative;
+            .rotate(90deg);
+            .transition(all .1s linear);
+        }
+
+        &:hover {
+            color: @gray_25_first;
+
+            .arrow {
+                .rotate(135deg);
+                .transition(all .1s linear);
+            }
+        }
+
+        &.unfolded .arrow {
+            .rotate(180deg);
+            .transition(all .1s linear);
+        }
 	}
 
 	.date {
