@@ -6,7 +6,7 @@
 
 @template.wide("Volume List", js = script) {
     <div class="roll">
-        <h1>Volume list</h1>
+        <h1>Explore</h1>
 
         @list.map { volume =>
             <article id="volume_@volume.id.unId" class="volume volume_roll cf push-desktop-3 push-laptop-1 col-desktop-10 col-laptop-10">
@@ -17,22 +17,28 @@
                         </header>
 
                         <aside class="thumb cf col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-2">
-                        @widget.volumeThumb(volume)
+                            @widget.volumeThumb(volume)
                         </aside>
 
                         <div class="body col-desktop-7 col-laptop-7 col-tablet-6 col-mobile-4">
                             <footer class="meta cf">
-				<div class="date">
-					<time datetime="@volume.creation" pubdate>@display.dateFmtY.format(volume.creation)</time>
-				</div>
+                                <div class="date">
+                                    <time datetime="@volume.creation" pubdate>@display.dateFmtY.format(volume.creation)</time>
+                                </div>
 
                                 <div class="people">
-				@volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map { a => <img src="@display.gravatarUrlByParty(a.party, 16)"> @display.citeName(a.party.name)<span class="sep">,</span> }
+				                    @volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map { a => <img src="@display.gravatarUrlByParty(a.party, 16)"> @display.citeName(a.party.name)<span class="sep">,</span> }
                                 </div>
+
+                                @if(volume.funding.nonEmpty) {
+                                <div class="funding">
+                                    @volume.funding.map { f => <img src="@display.gravatarUrlByParty(f.funder, 16)"> @f.funder.name<span class="sep">,</span> }
+                                </div>
+                                }
                             </footer>
 
                             <div class="description">
-			    @volume.body.map(display.plainTextSummary(_, 2))
+			                    @volume.body.map(display.plainTextSummary(_, 2))
                             </div>
                         </div>
                     </a>

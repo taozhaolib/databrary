@@ -379,7 +379,7 @@ dl.metalist {
 		color: @gray_50;
 	}
 
-	.people {
+	.people, .funding {
 		font-weight: bold;
 		margin-bottom: @gutter/4;
 		float: left;
@@ -389,10 +389,22 @@ dl.metalist {
 			top: 2px;
 		}
 
+        .sep {
+            font-weight: normal;
+            color: @gray_50;
+        }
+
 		.sep:last-child {
 			display: none;
 		}
 	}
+
+    .funding {
+        clear: both;
+        border-top: 1px solid @gray_75_third;
+        width: 100%;
+        padding-top: @gutter/4;
+    }
 
 	.body {
 		position: relative;
