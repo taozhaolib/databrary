@@ -112,6 +112,35 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     r.result
   }
 
+  /** Basic summary information on this volume.
+    * For now this only includes session (cross participant) information. */
+  def summary(implicit db : Site.DB) : Volume.Summary = {
+    var sessions, shared, ages = 0
+    var agemin, agemax, agesum = 0L
+    _sessions.foreach {
+      case (Some(s), Some(r)) if r.category.equals(Some(RecordCategory.Participant)) =>
+        sessions = sessions + 1
+        if (s.consent >= Consent.SHARED) shared = shared + 1
+        s.container.date.flatMap(r.age _).foreach { a =>
+          if (ages == 0) {
+            agemin = a
+            agemax = a
+          } else {
+            agemin = agemin.min(a)
+            agemax = agemax.max(a)
+          }
+          ages = ages + 1
+          agesum = agesum + a
+        }
+      case _ => ()
+    }
+    Volume.Summary(
+      sessions = sessions,
+      shared = shared,
+      agerange = Range(agemin, agemax),
+      agemean = agesum / ages)
+  }
+
   def pageName(implicit site : Site) = name
   def pageParent(implicit site : Site) = None
   def pageURL(implicit site : Site) = controllers.routes.Volume.view(id)
@@ -155,6 +184,8 @@ object Volume extends TableId[Volume]("volume") {
     val id = Audit.add(table, SQLArgs('name -> name, 'body -> body), "id").single(scalar[Id])
     new Volume(id, name, body, Permission.NONE, new Timestamp(System.currentTimeMillis))
   }
+
+  case class Summary(sessions : Int, shared : Int, agerange : Range[Long], agemean : Long)
 }
 
 trait InVolume extends HasPermission {
