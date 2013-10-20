@@ -39,12 +39,12 @@ object Record extends SiteController {
     Html(Json.stringify(Json.toJson(RecordCategory.getAll.map {
       case c =>
         Json.toJson(Map(
-          "id" -> Json.toJson(c.id.unId.toString),
+          "id" -> Json.toJson(c.id.toString),
           "name" -> Json.toJson(c.name),
           "template" -> Json.toJson(c.template.map {
             case m =>
               Json.toJson(Map(
-                "id" -> Json.toJson(m.id.unId.toString),
+                "id" -> Json.toJson(m.id.toString),
                 "name" -> Json.toJson(m.name),
                 "dataType" -> Json.toJson(m.dataType.toString),
                 "classification" -> Json.toJson(m.classification.toString),
@@ -114,7 +114,7 @@ object Record extends SiteController {
   def selectList(target : Slot)(implicit request : SiteRequest[_]) : Seq[(String, String)] = {
     /* ideally we'd remove already used records here */
     target.volume.allRecords() map { r : Record =>
-      (r.id.unId.toString, r.category.fold("")(_.name + ':') + r.ident.getOrElse("[" + r.id.unId.toString + "]"))
+      (r.id.toString, r.category.fold("")(_.name + ':') + r.ident.getOrElse("[" + r.id.toString + "]"))
     }
   }
 

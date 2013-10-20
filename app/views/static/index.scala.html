@@ -11,7 +11,7 @@
         <div class="panels">
             @* Did it this way to ensure view permission, but I wanted better thumbnails than the current volume thumbs. *@
             @Random.shuffle(models.Volume.getAll.flatMap(v => v.containers).flatMap(c => c.slots).flatMap(s => s.thumb)).take(10).map { thumb =>
-            <div class="panel" id="panel_@thumb.sourceId.unId.toString">
+            <div class="panel" id="panel_@thumb.sourceId">
                 <img src="@routes.Asset.thumb(thumb.volumeId, thumb.slotId, thumb.sourceId)">
             </div>
             }

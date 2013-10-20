@@ -13,7 +13,7 @@ private[models] trait TableRowId[+T] extends TableRow {
   val id : IntId[T]
   override def hashCode = id.unId
   /** Equality is based on primary key.  This assumes that two objects representing the same row are the same (even if they aren't), and also doesn't properly check types. */
-  def equals(a : TableRowId[_]) = a.id == id
+  def equals(a : TableRowId[_]) = a.id.equals(id)
 }
 
 /** Factory/helper object for a particular table.  Usually these are used to produce [[TableRow]]s. */

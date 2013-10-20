@@ -15,9 +15,9 @@
         @defining(if(volume.nonEmpty) {volume.get.tags} else {slot.tags()}) { tags =>
             @if(tags.nonEmpty) {
                 @tags.map { case TagWeight(tag, weight, user) =>
-                <li id="tag-@tag.id.unId.toString" class="tag cf">
+                <li id="tag-@tag.id" class="tag cf">
                 @views.html.tag.form(routes.Slot.tag(slot.volumeId, slot.id), 'class -> "ajax") {
-                    @views.html.tag.inputHidden(form("name").copy(value = Some(tag.name)), 'id -> Html("name-"+tag.id.unId.toString))(views.html.tag.rawFieldConstructor.f, Lang("en"))
+                    @views.html.tag.inputHidden(form("name").copy(value = Some(tag.name)), 'id -> Html("name-"+tag.id.toString))(views.html.tag.rawFieldConstructor.f, Lang("en"))
 
                     <div class="controls">
                         <button class="vote down" name="vote" value="false" @if(user.nonEmpty && !user.get){disabled}>-</button>

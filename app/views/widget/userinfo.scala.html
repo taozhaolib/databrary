@@ -22,7 +22,7 @@
                     @grant.get
                 </div>
             } else {
-                @if(party.id.unId.toString != "0") {
+                @if(!party.equals(models.Party.Root)) {
                 <div class="overflow more institution">
                     <ul class="inline">
                     @party.authorizeParents().map { t =>

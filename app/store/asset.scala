@@ -82,7 +82,7 @@ private[store] class StoreDir[Id <: IntId[_]](conf : String) {
     c.getString(path).getOrElse(throw c.globalError("Missing configuration for " + path))
   }
   protected lazy val base = new java.io.File(getConfString(conf))
-  protected[store] def file(id : Id) : File = new File(base, id.unId.formatted("%010d"))
+  protected[store] def file(id : Id) : File = new File(base, id.formatted("%010d"))
   protected def file(id : Id, ext : String) : File = new File(file(id).getPath + ext)
 }
 

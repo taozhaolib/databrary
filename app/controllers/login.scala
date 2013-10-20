@@ -41,7 +41,7 @@ object Login extends SiteController {
 
   private[controllers] def login(a : Account)(implicit request : Request[_], db : site.Site.DB) = {
     Audit.actionFor(Audit.Action.open, a.id, dbrary.Inet(request.remoteAddress))
-    Redirect(routes.Party.view(a.id)).withSession("user" -> a.id.unId.toString)
+    Redirect(routes.Party.view(a.id)).withSession("user" -> a.id.toString)
   }
 
   def post = Action.async { implicit request =>
@@ -83,10 +83,10 @@ object Login extends SiteController {
 
   def superuserOn = SiteAction.access(Permission.ADMIN) { implicit request =>
     Audit.action(Audit.Action.superuser)
-    Redirect(request.headers.get(REFERER).getOrElse(routes.Static.index.url)).withSession("user" -> request.identity.id.unId.toString, "superuser" -> (System.currentTimeMillis + 60*60*1000).toString)
+    Redirect(request.headers.get(REFERER).getOrElse(routes.Static.index.url)).withSession("user" -> request.identity.id.toString, "superuser" -> (System.currentTimeMillis + 60*60*1000).toString)
   }
 
   def superuserOff = SiteAction.access(Permission.ADMIN) { implicit request =>
-    Redirect(request.headers.get(REFERER).getOrElse(routes.Static.index.url)).withSession("user" -> request.identity.id.unId.toString)
+    Redirect(request.headers.get(REFERER).getOrElse(routes.Static.index.url)).withSession("user" -> request.identity.id.toString)
   }
 }

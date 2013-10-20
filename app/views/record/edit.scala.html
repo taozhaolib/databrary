@@ -42,7 +42,7 @@
 
                     <div class="repeat">
                         <div class="repeated">
-                            @tag.select(form("measure["+meas.length+"].metric"), Metric.getAll.map(m => (m.id.unId.toString, m.name + " (" + m.classification + ")")), 'placeholder -> "Metric", 'class -> "metric", '_class -> "metric-div")
+                            @tag.select(form("measure["+meas.length+"].metric"), Metric.getAll.map(m => (m.id.toString, m.name + " (" + m.classification + ")")), 'placeholder -> "Metric", 'class -> "metric", '_class -> "metric-div")
                             @tag.inputText(form("measure["+meas.length+"].datum"), 'placeholder -> "Value", 'class -> "datum", '_class -> "datum-div")
                         </div>
                     </div>

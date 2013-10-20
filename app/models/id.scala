@@ -14,13 +14,14 @@ class GenericId[I,+T](val unId : I) {
   def ==(i : GenericId[I,_]) = i.unId == unId
   def !=(i : GenericId[I,_]) = !(this == i)
   override def hashCode = unId.hashCode
-  override def toString = "Id(" + unId.toString + ")"
+  override def toString = unId.toString
 }
 /** [[GenericId]] specific to integers.  The most common (only?) type of identifier we have. */
 final class IntId[+T](unId : Int) extends GenericId[Int,T](unId) {
   override def hashCode = unId
   /** Forcibly coerce to a different type. */
   private[models] def coerce[A] = new IntId[A](unId)
+  def formatted(s : String) = unId.formatted(s)
 }
 object IntId {
   def apply[T](i : Int) = new IntId[T](i)
