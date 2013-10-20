@@ -138,7 +138,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       sessions = sessions,
       shared = shared,
       agerange = Range(agemin, agemax),
-      agemean = agesum / ages)
+      agemean = if (ages == 0) 0 else agesum / ages)
   }
 
   def pageName(implicit site : Site) = name
