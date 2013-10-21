@@ -275,11 +275,11 @@ object SlotAsset {
   /** Find an asset suitable for use as a volume thumbnail. */
   private[models] def getThumb(volume : Volume)(implicit site : Site) : Option[SlotAsset] =
     volumeRow(volume).SQL("""
-      WHERE (toplevel_asset.excerpt IS NOT NULL OR container.top AND slot.segment = '(,)')
+      WHERE (toplevel_asset.excerpt IS NOT NULL OR container.top AND slot.segment = '(,)' OR slot.consent >= 'PRIVATE')
         AND (format.id = {video} OR format.mimetype LIKE 'image/%')
         AND data_permission({permission}, slot_consent(slot.id), file.classification, {access}, toplevel_asset.excerpt) >= 'DOWNLOAD'
         AND container.volume = {vol}
-        AND""", condition(), "LIMIT 1").
+        AND""", condition(), " ORDER BY toplevel_asset.excerpt DESC NULLS LAST, container.top DESC, slot.consent DESC NULLS LAST LIMIT 1").
       on('vol -> volume.id, 'video -> TimeseriesFormat.VIDEO, 'permission -> volume.getPermission, 'access -> site.access).singleOpt
 
   /** Find an asset suitable for use as a slot thumbnail. */
