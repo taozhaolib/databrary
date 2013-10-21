@@ -42,6 +42,7 @@ POST        /party/$pID<[0-9]+>/authorize/$other<-?[0-9]+>/parent               
 GET         /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>/remove                                     controllers.Party.authorizeDelete(pID : models.Party.Id, child : models.Party.Id)
 
 # volumes
+GET         /search                                                                                   controllers.Volume.listAll
 GET         /volume/list                                                                              controllers.Volume.listAll
 GET         /volume/create                                                                            controllers.Volume.create(owner : Option[models.Party.Id] ?= None)
 POST        /volume/create/$pID<[0-9]+>                                                               controllers.Volume.add(pID : models.Party.Id)
@@ -115,6 +116,3 @@ GET         /test                                                               
 GET         /p/*path                                                                                  controllers.Site.tinyUrl(path : String, prefix : String = "party")
 GET         /v/*path                                                                                  controllers.Site.tinyUrl(path : String, prefix : String = "volume")
 GET         /*path/                                                                                   controllers.Site.untrail(path: String)
-
-# temporary demo
-GET         /search                                                                                   controllers.Static.search

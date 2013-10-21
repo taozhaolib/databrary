@@ -1,103 +1,102 @@
 // modals
 .modal {
-	display: none;
-	position: absolute;
-	z-index: 950;
-	margin: 0 auto;
-	top: -@header_height;
-	left: 0;
-	right: 0;
-	background: @white;
-	padding-top: @gutter;
+    display: none;
+    position: absolute;
+    z-index: 950;
+    margin: 0 auto;
+    top: -@header_height;
+    left: 0;
+    right: 0;
+    background: @white;
+    padding-top: @gutter;
 
-	.border-radius(20px);
-	.box-shadow(@shadow);
-	border: 10px solid @gray_50_second;
+    .border-radius(20px);
+    .box-shadow(@shadow);
+    border: 10px solid @gray_50_second;
 
-	h1 {
-		margin: 0 0 @gutter;
-		padding: @gutter @gutter .2em @gutter;
-		border-bottom: 1px solid @gray_50_third;
-	}
+    h1 {
+        margin: 0 0 @gutter;
+        padding: @gutter @gutter .2em @gutter;
+        border-bottom: 1px solid @gray_50_third;
+    }
 
-	header {
-		nav.menu {
-			padding: 0 @gutter;
-		}
-	}
+    header {
+        nav.menu {
+            padding: 0 @gutter;
+        }
+    }
 
-	.modal_content {
-		padding: 0 @gutter @gutter @gutter;
-	}
+    .modal_content {
+        padding: 0 @gutter @gutter @gutter;
+    }
 }
 
 #modal_back {
-	display: none;
-	position: fixed;
-	z-index: 900;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-
-	background: fadeout(@white, 10%);
+    display: none;
+    position: fixed;
+    z-index: 900;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: fadeout(@white, 10%);
 }
 
 // tabs
 .tabset {
-	ul.tabs {
-		margin: 0;
-		padding: 0;
-		width: 100%;
+    ul.tabs {
+        margin: 0;
+        padding: 0;
+        width: 100%;
 
-		li {
-			display: inline;
-			float: left;
+        li {
+            display: inline;
+            float: left;
 
-			&.current {
-				a {
-					background: @white;
-					position: relative;
-					bottom: -1px;
+            &.current {
+                a {
+                    background: @white;
+                    position: relative;
+                    bottom: -1px;
 
-					&:hover {
-						#gradient > .vertical(@white_75_second, @white);
-					}
-				}
-			}
-		}
+                    &:hover {
+                        #gradient > .vertical(@white_75_second, @white);
+                    }
+                }
+            }
+        }
 
-		a {
-			display: block;
-			padding: 5px 10px 2px;
-			margin-left: 10px;
-			color: @text;
-			border: 1px solid @gray_50_second;
-			#gradient > .vertical(@white, lighten(@white_50_second, 10%));
-			.border-radius(5px 5px 0 0);
-			border-bottom: 0;
+        a {
+            display: block;
+            padding: 5px 10px 2px;
+            margin-left: 10px;
+            color: @text;
+            border: 1px solid @gray_50_second;
+            #gradient > .vertical(@white, lighten(@white_50_second, 10%));
+            .border-radius(5px 5px 0 0);
+            border-bottom: 0;
 
-			&:hover {
-				#gradient > .vertical(@white_75_second, @white);
-			}
-		}
-	}
+            &:hover {
+                #gradient > .vertical(@white_75_second, @white);
+            }
+        }
+    }
 
-	.views {
-		border-top: 1px solid @gray_50_third;
-		border-bottom: 1px solid @gray_50_third;
-		.border-radius(5px);
-		padding: 5px 0;
+    .views {
+        border-top: 1px solid @gray_50_third;
+        border-bottom: 1px solid @gray_50_third;
+        .border-radius(5px);
+        padding: 5px 0;
 
         :last-child {
             margin-bottom: 0;
         }
-	}
+    }
 
-	.rolled {
-		overflow: hidden;
-		padding: (@gutter - 5) 0;
-	}
+    .rolled {
+        overflow: hidden;
+        padding: (@gutter - 5) 0;
+    }
 }
 
 // messages
@@ -201,11 +200,6 @@
     height: 500px;
     overflow: hidden;
     display: table;
-    border-left: 1px solid @gray_50_third;
-    border-right: 1px solid @gray_50_third;
-    border-top: 2px solid @gray_25_third;
-    border-bottom: 2px solid @gray_25_third;
-    .border-radius(@gutter/2);
 
     img {
         width: 100%;
@@ -228,7 +222,8 @@
     }
 
     .text {
-        background: fadeout(@white, 10%);
+        border: 1px solid @gray_75_third;
+        background: fadeout(@white, 5%);
         padding: (@gutter/2) @gutter;
         position: absolute;
         bottom: 0;
@@ -264,6 +259,27 @@
     p {
         font-size: 1.1em;
         line-height: 1.5;
-        margin-top: @gutter;
+        margin-top: @gutter/4;
+    }
+}
+
+//
+
+.filters {
+    input[type="text"], select {
+        font-size: 0.9em;
+        padding: 2px;
+    }
+
+    input.inline {
+        max-width: 50px;
+    }
+
+    .around {
+        margin: @gutter 0;
+    }
+
+    .bridge {
+        font-size: 0.8em;
     }
 }

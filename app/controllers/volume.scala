@@ -23,7 +23,7 @@ object Volume extends SiteController {
   }
 
   def listAll = SiteAction { implicit request =>
-    Ok(views.html.volume.list(models.Volume.getAll))
+    Ok(views.html.volume.list(models.Volume.getAll, request.queryString.getOrElse("query", Seq("")).head.toString))
   }
 
   type CitationMapping = (Option[String], Option[String], Option[String])

@@ -1,15 +1,14 @@
-@(list : Seq[Volume])(implicit request : SiteRequest[_])
+@(list : Seq[Volume], query : String = "")(implicit request : SiteRequest[_])
 
-@script = {
-    dbjs.fadeOff('.volume_roll a', '.body', '.thumb');
-}
+    @script = {
+        dbjs.fadeOff('.volume_roll a', '.body', '.thumb');
+    }
 
-@template.wide("Volume List", js = script) {
-    <div class="roll">
-        <h1>Explore</h1>
-
+@template.wide("Volume List", js = script, query = query) {
+    <div class="roll row">
+        <div class="cf col-desktop-10 push-desktop-6 col-laptop-10 push-laptop-2">
         @list.map { volume =>
-            <article id="volume_@volume.id" class="volume volume_roll cf push-desktop-3 push-laptop-1 col-desktop-10 col-laptop-10">
+            <article id="volume_@volume.id" class="volume volume_roll cf">
                 <div class="row">
                     <a href="@routes.Volume.view(volume.id)" class="block cf" title="@volume.name">
                         <header class="col-desktop-10 col-laptop-10 col-tablet-9 col-mobile-6">
@@ -28,12 +27,16 @@
                                     </div>
 
                                     <div class="people">
-                                    @volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map { a => <img src="@display.gravatarUrlByParty(a.party, 16)"> @display.citeName(a.party.name)<span class="sep">,</span> }
+                                    @volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map { a => <img src="@display.gravatarUrlByParty(a.party, 16)"> @display.citeName(a.party.name) <span class="sep">
+                                        ,</span>
+                                    }
                                     </div>
 
                                     @if(volume.funding.nonEmpty) {
                                         <div class="funding">
-                                        @volume.funding.map { f => <img src="@display.gravatarUrlByParty(f.funder, 16)"> @f.funder.name<span class="sep">,</span> }
+                                        @volume.funding.map { f => <img src="@display.gravatarUrlByParty(f.funder, 16)"> @f.funder.name <span class="sep">
+                                            ,</span>
+                                        }
                                         </div>
                                     }
                                 </footer>
@@ -47,5 +50,81 @@
                 </div>
             </article>
         }
+        </div>
+
+        <section id="filters" class="extended filters col-desktop-6 pull-desktop-16 col-laptop-2 pull-laptop-12 hide-tablet hide-mobile hide-cell">
+            <h2>Access</h2>
+
+            <div class="around">
+                <div class="field">
+                    <label class="block"><input type="checkbox"> Excerptable</label>
+                </div>
+
+                <div class="field">
+                    <label class="block">Duration</label>
+                    <input type="text" name="excerpt-low" class="mini inline">
+                    <span class="bridge">to</span>
+                    <input type="text" name="excerpt-high" class="mini inline">
+                </div>
+
+                <div class="field">
+                    <label class="block">Data sharing</label>
+                    <select name="sharing" class="mini">
+                        <option disabled selected></option>
+                        <option>With public</option>
+                        <option>With databrary</option>
+                        <option>With you</option>
+                    </select>
+                </div>
+            </div>
+
+            <h2>Participants</h2>
+
+            <div class="around">
+                <div class="field">
+                    <label class="block">Age</label>
+                    <input type="text" name="age-low" class="mini inline">
+                    <span class="bridge">to</span>
+                    <input type="text" name="age-high" class="mini inline">
+                </div>
+
+                <div class="field">
+                    <label class="block">Gender</label>
+                    <select name="gender" class="mini">
+                        <option disabled selected></option>
+                        <option>Female</option>
+                        <option>Male</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="block">Race</label>
+                    <select name="race" class="mini">
+                        <option disabled selected></option>
+                        <option>American Indian or Alaska Native</option>
+                        <option>Asian</option>
+                        <option>Black or African American</option>
+                        <option>Native Hawaiian or Other Pacific Islander</option>
+                        <option>White</option>
+                        <option>Multiple</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="block">Ethnicity</label>
+                    <select name="ethnicity" class="mini">
+                        <option disabled selected></option>
+                        <option>Hispanic or Latino</option>
+                        <option>Not Hispanic or Latino</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field">
+                <button class="first button">Filter</button>
+                <button class="second button">Reset</button>
+            </div>
+
+        </section>
     </div>
 }

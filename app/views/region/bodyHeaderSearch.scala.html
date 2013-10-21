@@ -1,3 +1,5 @@
+@(query : String = "")
+
 <div class="row">
 	<div class="col">
 		<section id="body_header" class="body_header">
@@ -5,8 +7,8 @@
 				<a href="@routes.Static.index" title="Databrary: An Open Data Library"><img src="@routes.Assets.at("images/logo/databrary-small.png")" alt="Databrary"> <strong>Data</strong>brary</a>
 			</div>
 
-			<form class="search" method="get" action="@routes.Static.search">
-				<input type="search" class="searchbox" name="query" placeholder="Start your search...">
+			<form class="search" method="get" action="@routes.Volume.listAll">
+				<input type="search" class="searchbox" name="query" placeholder="Start your search..." value="@query">
 			</form>
 		</section>
 	</div>
