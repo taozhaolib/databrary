@@ -37,13 +37,13 @@ object display {
   }
 
   def age(a : Long) : String = {
-    val (_, s) = timeUnits.take(3).foldLeft[(Long,Seq[String])]((a, Nil)) { (as, ut) =>
-      val (a, s) = as
-      val (u, t) = ut
-      val n = a / t
-      (a - n*t, if (n != 0) s :+ (n.toString + u(0)) else s)
+    val (n, u) = timeUnits.take(3).map(a.toDouble/_._2.toDouble) match {
+      case Seq(_, m, d) if m < 3 => (d, "dys")
+      case Seq(_, m, _) if m < 37 => (m, "mos")
+      case Seq(y, _, _) => (y, "yrs")
+      case _ => (0, "???")
     }
-    if (s.isEmpty) "0" else s.mkString(" ")
+    "%.1f %s".format(n, u)
   }
 
   def agerange(a : dbrary.Range[Long]) : String = range(age)(a)

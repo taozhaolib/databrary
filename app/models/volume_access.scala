@@ -60,12 +60,12 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
   private[models] def getParties(volume : Volume)(implicit db : Site.DB) : Seq[VolumeAccess] =
     volumeRow(volume).join(Party.row, "party = id").
       map { case (a ~ e) => a._party() = e; a }.
-      SQL("WHERE volume = {volume} ORDER BY access DESC").
+      SQL("WHERE volume = {volume} ORDER BY access DESC, party.name").
       on('volume -> volume.id).list
   /** Retrieve the volume access entries granted to a party at or above the specified permission level. */ 
   private[models] def getVolumes(party : Party, permission : Permission.Value = Permission.NONE)(implicit site : Site) : Seq[VolumeAccess] =
     row.map { a => a._party() = party; a }.
-      SQL("WHERE party = {party} AND access >= {access} AND", Volume.condition, "ORDER BY access DESC").
+      SQL("WHERE party = {party} AND access >= {access} AND", Volume.condition, "ORDER BY access DESC, volume.body").
       on(Volume.conditionArgs('party -> party.id, 'access -> permission) : _*).list
 
   /** Remove a particular volume access from the database.
