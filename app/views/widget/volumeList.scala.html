@@ -1,21 +1,23 @@
 @(volume : Volume)(implicit request : SiteRequest[_])
 
-<article id="volume_@volume.id" class="volume volume_roll cf">
-        <a href="@routes.Volume.view(volume.id)" class="block cf" title="@volume.name">
-            <header class="">
-                <h1>@volume.name</h1>
-            </header>
-
-            <div class="body">
-                <footer class="meta cf">
-                    <div class="date">
-                        <time datetime="@volume.creation" pubdate>@display.dateFmtY.format(volume.creation)</time>
-                    </div>
-
-                    <div class="people">
-		                @volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map { a => <img src="@display.gravatarUrlByParty(a.party, 16)"> @display.citeName(a.party.name)<span class="sep">,</span> }
-                    </div>
-                </footer>
-            </div>
+<article id="volume_@volume.id" class="volume volume_list cf">
+    <header class="">
+        <a href="@routes.Volume.view(volume.id)" title="@volume.name">
+            <h1>@volume.name</h1>
         </a>
+    </header>
+
+    <div class="body">
+        <footer class="meta cf">
+            <div class="date">
+                <time datetime="@volume.creation" pubdate>@display.dateFmtY.format(volume.creation)</time>
+            </div>
+
+            <div class="people">
+            @volume.partyAccess.takeWhile(_.access >= Permission.ADMIN).map { a => <img src="@display.gravatarUrlByParty(a.party, 16)"> @display.citeName(a.party.name) <span class="sep">
+                ,</span>
+            }
+            </div>
+        </footer>
+    </div>
 </article>

@@ -255,6 +255,7 @@ html {
 
 .dates {
 	font-size: 0.7em;
+    text-align: right;
 }
 
 .foot {
@@ -450,6 +451,58 @@ article.volume_roll {
 	}
 }
 
+article.volume_list {
+    margin-bottom: @gutter/2;
+
+    a.block {
+        display: block;
+        color: @text;
+
+        &:hover {
+            color: @second;
+        }
+    }
+
+    header {
+        margin-bottom: 0;
+    }
+
+    h1 {
+        font-size: 1.2em;
+        cursor: pointer;
+        border: 0;
+        .transition(@transition);
+
+        &:hover {
+            color: @second;
+        }
+    }
+
+    .date {
+        float: right;
+        color: @gray_50;
+    }
+
+    .people {
+        margin-bottom: @gutter/4;
+        float: left;
+
+        img {
+            position: relative;
+            top: 2px;
+        }
+
+        .sep {
+            font-weight: normal;
+            color: @gray_50;
+        }
+
+        .sep:last-child {
+            display: none;
+        }
+    }
+}
+
 dl.inline-measures {
 	margin: 0;
 
@@ -494,6 +547,18 @@ dl.inline-measures {
 		font-weight: normal;
 		border-bottom: 1px solid @gray_50_third;
 	}
+
+    &.volume {
+        margin-bottom: @gutter;
+
+        dl {
+            margin-bottom: 0;
+        }
+    }
+
+    &.minor {
+        padding: (@gutter/12) (@gutter/4) (@gutter/6) (@gutter/4);
+    }
 }
 
 dl.measures {
@@ -555,4 +620,9 @@ tr:hover .consent {
 
 .show_hidden {
     cursor: pointer;
+}
+
+.spiff .thumb {
+    max-height: 150px;
+    overflow: hidden;
 }

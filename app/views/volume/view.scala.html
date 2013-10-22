@@ -17,10 +17,8 @@
 @template.crud("Volume: " + volume.name, js = script) {
 	<div class="row">
 		<div class="description col-desktop-6 push-desktop-2 col-laptop-6 col-tablet-6 col-mobile-6">
-		@volume.body.map(display.plainText _)
-		@defining(volume.summary) { s =>
-			Contains: @s.sessions sessions (@s.shared shared), ages @display.agerange(s.agerange) (<em>M</em> = @display.age(s.agemean))
-		}
+            @widget.volumeSummary(volume)
+		    @volume.body.map(display.plainText _)
 		</div>
 
 		<footer class="extended col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
@@ -46,7 +44,7 @@
 					<aside class="investigators foot col-3">
 						<h2>Investigators</h2>
 
-						@volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map { a =>
+						@volume.partyAccess.takeWhile(_.access >= Permission.ADMIN).map { a =>
 							@widget.userinfo(a.party)
 						}
 					</aside>

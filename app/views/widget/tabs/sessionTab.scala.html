@@ -20,7 +20,8 @@
                     var $hidden = $('#sessions .row article.shrink');
 
                     $('.show_hidden' ).click(function() {
-                        $hidden.toggleClass('shrink');
+                        $hidden.removeClass('shrink');
+                        $(this).parent().slideUp();
                     });
                 });
             </script>
