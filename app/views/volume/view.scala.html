@@ -79,7 +79,7 @@
 	</section>
 
 	<div class="row">
-	@region.comments(Some((routes.Slot.comment(volume.id, volume.topSlot.id), controllers.Slot.commentForm)), volume.comments)
+	@region.comments(Some(request.obj.topSlot), Some((routes.Slot.comment(volume.id, volume.topSlot.id), controllers.Slot.commentForm)), volume.comments)
     @region.tags(volume.topSlot, Some(volume))
 	</div>
 }

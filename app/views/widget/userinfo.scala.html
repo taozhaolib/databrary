@@ -1,4 +1,4 @@
-@(party : Party, time : Option[java.sql.Timestamp] = None, float : Boolean = false, grant : Option[String] = None)(implicit request : SiteRequest[_])
+@(party : Party, time : Option[java.sql.Timestamp] = None, float : Boolean = false, grant : Option[String] = None, slots : Tuple2[Option[Slot], Option[Slot]] = Tuple2(None, None))(implicit request : SiteRequest[_])
 
 <@if(time.isDefined){header}else{section} class="userinfo cf @if(float == true){col-3}">
     <div class="avatar">
@@ -14,7 +14,17 @@
 
         @if(time.isDefined) {
             <div class="overflow more date">
-            @display(time.get)
+                @display(time.get)
+
+                @defining(slots) { case (thisSlot, commentSlot) =>
+                    @if(thisSlot.isEmpty || (thisSlot.nonEmpty && thisSlot.get.id.unId.toString != commentSlot.get.id.unId.toString)) {
+                        @if(commentSlot.get.container.top) {
+                            on <a class="location" href="@routes.Volume.view(commentSlot.get.volumeId)">@commentSlot.get.volume.pageName</a>
+                        } else {
+                            on <a class="location" href="@routes.Slot.view(commentSlot.get.volumeId, commentSlot.get.id)">@commentSlot.get.pageName</a>
+                        }
+                    }
+                }
             </div>
         } else {
             @if(grant.nonEmpty) {

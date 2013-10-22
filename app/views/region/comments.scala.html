@@ -1,4 +1,4 @@
-@(post : Option[(Call, controllers.Slot.CommentForm)], comments : Seq[Comment])(implicit request : SiteRequest[_])
+@(slot : Option[Slot], post : Option[(Call, controllers.Slot.CommentForm)], comments : Seq[Comment])(implicit request : SiteRequest[_])
 
 @import helper.FieldConstructor
     @implicitField = @{
@@ -29,7 +29,7 @@
 
         @comments.map { c =>
             <article class="comment">
-                @widget.userinfo(c.who, Some(c.time))
+                @widget.userinfo(c.who, Some(c.time), slots = Tuple2(slot, Some(c.slot)))
 
                 <div class="body">
                 @display.plainText(c.text)

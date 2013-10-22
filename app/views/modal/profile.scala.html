@@ -72,7 +72,7 @@
 		    <div class="row">
             @dbrary.cast[Account](party).map(a => a.comments).map { comments =>
                 @if(comments.nonEmpty) {
-                    @region.comments(None, comments)
+                    @region.comments(None, None, comments)
                 }
             }
 		    </div>

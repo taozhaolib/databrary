@@ -7,7 +7,7 @@
                 @assets.map { link =>
                     @if(link.checkPermission(Permission.DOWNLOAD)) {
                         <div id="asset-@link.sourceId.toString" class="vw">
-                            <h2>@link.pageName.@link.format.extension <a href='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, false)' class="link">link</a></h2>
+                            <h2>@link.pageName.@link.format.extension <a href='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, false)' class="link">download</a></h2>
 
                             @link.format.mimeSubTypes match {
                                 case ("image", _) => {
