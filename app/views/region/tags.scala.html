@@ -12,7 +12,7 @@
     <h1>Tags</h1>
 
     <ol class="sort-list tag-list">
-        @defining(if(volume.nonEmpty) {volume.get.tags} else {slot.tags()}) { tags =>
+        @defining(volume.fold(slot.tags())(_.tags)) { tags =>
             @if(tags.nonEmpty) {
                 @tags.map { case TagWeight(tag, weight, user) =>
                 <li id="tag-@tag.id" class="tag cf">
@@ -20,9 +20,9 @@
                     @views.html.tag.inputHidden(form("name").copy(value = Some(tag.name)), 'id -> Html("name-"+tag.id.toString))(views.html.tag.rawFieldConstructor.f, Lang("en"))
 
                     <div class="controls">
-                        <button class="vote down" name="vote" value="false" @if(user.nonEmpty && !user.get){disabled}>-</button>
+                        <button class="vote down" name="vote" value="false" @if(!user.getOrElse(true)){disabled}>-</button>
                         <button class="vote null" name="vote" value="" @if(user.isEmpty){disabled}>0</button>
-                        <button class="vote up" name="vote" value="true" @if(user.nonEmpty && user.get){disabled}>+</button>
+                        <button class="vote up" name="vote" value="true" @if(user.getOrElse(false)){disabled}>+</button>
                     </div>
                     <div class="weight">@weight</div>
                     <span class="name">@tag.name</span>
