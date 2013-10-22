@@ -27,13 +27,24 @@
                                     </div>
 
                                     <div class="people">
-                                    @volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map { a => <img src="@display.gravatarUrlByParty(a.party, 16)"> @display.citeName(a.party.name) <span class="sep">
+                                    @volume.partyAccess.takeWhile(_.access >= Permission.ADMIN).map { a => <img src="@display.gravatarUrlByParty(a.party, 16)"> @display.citeName(a.party.name) <span class="sep">
                                         ,</span>
                                     }
                                     </div>
                                 </footer>
 
                                 <div class="description">
+
+                                    @defining(volume.summary) { s =>
+                                        <div class="siderim minor">
+                                            <dl class="inline-measures">
+                                                <dt>sessions</dt>
+                                                <dd>@s.shared shared (@s.sessions total)</dd>
+                                                <dt>ages</dt>
+                                                <dd>@display.agerange(s.agerange) (<em>M</em> = @display.age(s.agemean))</dd>
+                                            </dl>
+                                        </div>
+                                    }
                                 @volume.body.map(display.plainTextSummary(_, 2))
                                 </div>
                             </div>
