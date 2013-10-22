@@ -171,7 +171,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     * This is probably not a permanent solution for naming, but it's a start. */
   private val _idents = CachedVal[Seq[String],Site.DB] { implicit db =>
     groupBy(recordMeasures[String](), (ri : (Record,Option[String])) => ri._1.category).map { case (c,l) =>
-      c.fold("")(_.name.capitalize + ": ") + l.map { case (r,i) => i.getOrElse("[" + r.id.toString + "]") }.mkString(", ")
+      c.fold("")(_.name.capitalize + " ") + l.map { case (r,i) => i.getOrElse("[" + r.id.toString + "]") }.mkString(", ")
     }
   }
   private def idents(implicit db : Site.DB) : Seq[String] = _idents
@@ -179,24 +179,21 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   /** An image-able "asset" that may be used as the slot's thumbnail. */
   def thumb(implicit site : Site) : Option[SlotAsset] = SlotAsset.getThumb(this)
 
-//  def pageName(implicit site : Site) =
-//    if (isContext) {
-//      val i = container.name ++: idents
-//      if (i.isEmpty)
-//        "Session: [" + id.toString + "]"
-//      else
-//        i.mkString("/")
-//    } else
-//      context.pageName + pageCrumbName.fold("")(" [" + _ + "]")
-  def pageName(implicit site : Site) = if (container.name.nonEmpty) { container.name.get } else { "Session " + id.toString }
+  def pageName(implicit site : Site) = container.name.getOrElse { 
+    val i = idents
+    if (i.isEmpty)
+      "Session [" + id + "]"
+    else
+      i.mkString(", ")
+  }
   override def pageCrumbName(implicit site : Site) = if (segment.isFull) None else Some(segment.lowerBound.fold("")(_.toString) + " - " + segment.upperBound.fold("")(_.toString))
   def pageParent(implicit site : Site) = Some(if (isContext) volume else context)
   def pageURL(implicit site : Site) = controllers.routes.Slot.view(container.volumeId, id)
   def pageActions(implicit site : Site) = Seq(
     Action("view", controllers.routes.Slot.view(volumeId, id), Permission.VIEW),
     Action("edit", controllers.routes.Slot.edit(volumeId, id), Permission.EDIT),
-    Action("add asset", controllers.routes.Asset.create(volumeId, containerId, segment.lowerBound), Permission.CONTRIBUTE),
-    Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
+    Action("add file", controllers.routes.Asset.create(volumeId, containerId, segment.lowerBound), Permission.CONTRIBUTE),
+    // Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
     Action("add participant", controllers.routes.Record.slotAdd(volumeId, id, IntId[models.RecordCategory](-500), false), Permission.CONTRIBUTE)
   )
 }

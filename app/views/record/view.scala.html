@@ -1,6 +1,6 @@
 @(record : models.Record)(implicit request : RequestObject[Record]#Site[_])
 
-@template.crud("Record: " + record.toString()) {
+@template.crud("Record: " + record.pageName) {
     <div class="row">
         <div class="description col-desktop-6 push-desktop-2 col-laptop-6 col-tablet-6 col-mobile-6">
             <div class="siderim">
@@ -28,7 +28,7 @@
 
                 <tbody>
                 @record.slots.map { slot  =>
-                    <tr class="message-trace" data-message="@if(slot.consent == Consent.PRIVATE){<strong>Notice!</strong> This session is <em>private</em>, and must not be shared.}@if(slot.consent == Consent.PUBLIC){<strong>Notice!</strong> This session is <em>public</em>, and is open to the world.}@if(slot.consent == Consent.SHARED){<strong>Notice!</strong> This session is <em>shared</em> with all Databrary users.}@if(slot.consent == Consent.EXCERPTS){<strong>Notice!</strong> Users may create <em>public excerpts</em> of this session.}">
+		<tr class="message-trace" data-message="<strong>Notice!</strong> @Consent.description(slot.consent)">
 	        <td class="mini tc"><a href="@slot.pageURL">@widget.slotThumb(slot)</a></td>
                 <td class="meta tc">@display.age(slot.container.date.flatMap(record.age _).get)</td>
                 <td class="meta tc"><span class="consent">@slot.consent</span></td>

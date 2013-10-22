@@ -47,3 +47,9 @@ measure.unknown=Invalid or unknown type of measure.
 measure.bad=Invalid value for measure.
 orcid.invalid=Invalid ORCID iD
 range.invalid=Invalid time range
+
+consent.NONE=
+consent.PRIVATE=The identifying data in this session has not been released for sharing.
+consent.SHARED=The identifying data in this session has been released for sharing on Databrary.
+consent.EXCERPTS=The identifying data in this session has been released for sharing on Databrary, and selected excerpts may be used in public settings.
+consent.PUBLIC=The identifying data in this session has been released publically.

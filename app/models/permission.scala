@@ -1,5 +1,6 @@
 package models
 
+import play.api.i18n.Messages
 import dbrary._
 import site._
 
@@ -47,6 +48,7 @@ trait HasPermission {
   * Should thus often be constructed as `consent.getOrElse(Consent.NONE)` and used as `util.maybe(consent, Consent.NONE)`. */
 object Consent extends PGEnum("consent") {
   val NONE, PRIVATE, SHARED, EXCERPTS, PUBLIC = Value
+  def description(v : Value) = Messages("consent." + v.toString)
 }
 
 /** The possible types of data sensitivity according to the presence of identifying user data.

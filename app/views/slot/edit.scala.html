@@ -6,7 +6,7 @@
     FieldConstructor(tag.minimalFieldConstructor.f)
 }
 
-@template.crud(c.fold(v => "Create Slot in Volume: " + v.name, s => "Edit Slot: " + s.container.name + " (#" + s.id.toString + ")")) {
+@template.crud(c.fold(v => "Create Session in Volume: " + v.name, s => "Edit Session: " + s.container.name + " (#" + s.id.toString + ")")) {
     @widget.formErrors(form)
 
     @tag.form(c.fold(volume => routes.Slot.addContainer(volume.id), slot => routes.Slot.change(slot.volumeId, slot.id)), 'id -> "slot_edit") {

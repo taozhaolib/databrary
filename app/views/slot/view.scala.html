@@ -1,6 +1,6 @@
 @(slot : models.Slot, commentForm : controllers.Slot.CommentForm = controllers.Slot.commentForm)(implicit request : RequestObject[Slot]#Site[_])
 
-    @template.crud("Slot: " + slot.container.name + "-" + slot.id) {
+    @template.crud("Session: " + slot.pageName) {
         <div class="row">
             <div class="description col-desktop-6 push-desktop-2 col-laptop-6 col-tablet-6 col-mobile-6">
                 <div class="siderim">
@@ -12,8 +12,10 @@
                             <dd><time>@display.date(slot)</time></dd>
                         }
 
+			@if(slot.consent != Consent.NONE) {
                         <dt>Consent</dt>
-                        <dd>@slot.consent.toString.toLowerCase.capitalize</dd>
+                        <dd>@Consent.description(slot.consent)</dd>
+			}
                     </dl>
                 </div>
 
