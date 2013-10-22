@@ -528,6 +528,7 @@ CREATE TABLE "record_category" (
 );
 COMMENT ON TABLE "record_category" IS 'Types of records that are relevant for data organization.';
 INSERT INTO "record_category" ("id", "name") VALUES (-500, 'participant');
+INSERT INTO "record_category" ("id", "name") VALUES (-200, 'visit');
 
 CREATE TABLE "record" (
 	"id" serial NOT NULL Primary Key,
@@ -565,6 +566,7 @@ INSERT INTO "record_template" ("category", "metric") VALUES (-500, -590);
 INSERT INTO "record_template" ("category", "metric") VALUES (-500, -580);
 INSERT INTO "record_template" ("category", "metric") VALUES (-500, -550);
 INSERT INTO "record_template" ("category", "metric") VALUES (-500, -540);
+INSERT INTO "record_template" ("category", "metric") VALUES (-200, -900);
 
 CREATE TABLE "measure" ( -- ABSTRACT
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,
