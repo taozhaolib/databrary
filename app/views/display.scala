@@ -45,6 +45,8 @@ object display {
     }
     "%.1f %s".format(n, u)
   }
+  def age(record : models.Record, slot : models.Slot)(implicit db : site.Site.DB) : Option[String] =
+    slot.container.date.flatMap(record.age _).map(age _)
 
   def agerange(a : dbrary.Range[Long]) : String = range(age)(a)
 

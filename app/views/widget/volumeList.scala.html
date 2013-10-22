@@ -15,12 +15,6 @@
                     <div class="people">
 		                @volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map { a => <img src="@display.gravatarUrlByParty(a.party, 16)"> @display.citeName(a.party.name)<span class="sep">,</span> }
                     </div>
-
-                    @if(volume.funding.nonEmpty) {
-                        <div class="funding">
-                        @volume.funding.map { f => <img src="@display.gravatarUrlByParty(f.funder, 16)"> @f.funder.name<span class="sep">,</span> }
-                        </div>
-                    }
                 </footer>
             </div>
         </a>

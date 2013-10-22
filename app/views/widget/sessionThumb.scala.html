@@ -14,7 +14,7 @@
                 @if(record.category.equals(Some(RecordCategory.Participant))) {
                     <li>
                         <span class="gender">@record.gender</span><span class="sep">,</span>
-                        <span class="age">@display.age(slot.container.date.flatMap(record.age _).get)</span>
+                        <span class="age">@display.age(record, slot)</span>
                     </li>
                 }
             }

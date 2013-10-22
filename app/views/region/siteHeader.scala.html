@@ -18,15 +18,15 @@
             </div>
 
             <div class="usernow col-desktop-11 col-laptop-17 col-tablet-4 col-mobile-4">
-                @request.flatMap(_.user).fold {
+                @request.filter(_.user.nonEmpty).fold {
                     <a href="@routes.Login.view" id="modal_login_link" class="modal_link" data-target="modal_login">login</a>
                     <span>|</span>
                     <a href="@routes.Login.view">register</a>
-                } { u =>
-                    <a href="@u.pageURL(request.get)" id="modal_profile_link" class="modal_link" data-target="modal_profile"><img src="@display.gravatarUrlByEmail(u.email, 16)" alt="@u.name"> @u.name</a>
+                } { request =>
+                    <a href="@request.identity.pageURL(request)" id="modal_profile_link" class="modal_link" data-target="modal_profile"><img src="@display.gravatarUrlByEmail(request.user.get.email, 16)" alt="@request.identity.name"> @request.identity.name</a>
 
-                    @if(u.access(request.get.db) == Permission.ADMIN) {
-                        @if(request.get.superuser) {
+                    @if(request.user.get.access(request.db) == Permission.ADMIN) {
+                        @if(request.superuser) {
                             <span>|</span>
                             <a class="first message" data-message="<strong>Superuser!</strong> Click to re-enter normalcy." href="@routes.Login.superuserOff">SU</a>
                         }else{

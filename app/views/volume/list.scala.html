@@ -31,14 +31,6 @@
                                         ,</span>
                                     }
                                     </div>
-
-                                    @if(volume.funding.nonEmpty) {
-                                        <div class="funding">
-                                        @volume.funding.map { f => <img src="@display.gravatarUrlByParty(f.funder, 16)"> @f.funder.name <span class="sep">
-                                            ,</span>
-                                        }
-                                        </div>
-                                    }
                                 </footer>
 
                                 <div class="description">

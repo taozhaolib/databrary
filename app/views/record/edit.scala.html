@@ -10,7 +10,7 @@
         @tag.form(routes.Record.update(record.volumeId, record.id)) {
             @widget.formErrors(form)
 
-            <h2>@record.category.get.name.capitalize Record</h2>
+            <h2>@record.category.map(_.name.capitalize) Record</h2>
             @tag.inputHidden(form("category"), 'placeholder -> record.category.get.name)
 
             <fieldset class="metrics">
