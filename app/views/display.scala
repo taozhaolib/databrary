@@ -67,14 +67,19 @@ object display {
   def plainTextSummary(text: String = "", length: Int = 3) =
     raw("<p>"+text.split("\\r?\\n\\r?\\n").take(length).mkString("</p><p>")+"</p>")
 
-  def gravatarUrlByEmailOpt(email: Option[String] = None, size: Int = 64) =
+  private def gravatarUrlByEmailOpt(email: Option[String] = None, size: Int = 64) =
     "http://gravatar.com/avatar/"+email.fold("none")(e => md5(e.toLowerCase.replaceAll("\\s+", "")).hash)+"?s="+size+"&d=mm"
 
-  def gravatarUrlByEmail(email: String, size: Int = 64) =
+  private def gravatarUrlByEmail(email: String, size: Int = 64) =
     gravatarUrlByEmailOpt(Some(email), size)
 
-  def gravatarUrlByParty(party: Party, size: Int = 64) =
+  private def gravatarUrlByParty(party: Party, size: Int = 64) =
     gravatarUrlByEmailOpt(dbrary.cast[Account](party).map(_.email), size)
+
+  def avatar(party : Party, size : Int = 64) = party.name match {
+    /* Temporary hack */
+    case _ => gravatarUrlByParty(party, size)
+  }
 
   def citeName(name: String) = {
     val names = name.split(" +")
