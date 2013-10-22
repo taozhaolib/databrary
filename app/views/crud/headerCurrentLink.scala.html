@@ -1,3 +1,0 @@
-@(route: play.api.mvc.Call, title: String, post : Boolean = false)(implicit request : SiteRequest[_])
-
-<li class="@{if(request.path.toString() == route.toString()) {"current"}}">@if(post){@tag.form(route){<button type="submit" class="link">@title</button>}}else{<a href="@route" alt="@title">@title</a>}</li>
