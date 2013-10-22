@@ -214,6 +214,7 @@
         left: 0;
         right: 0;
         bottom: 0;
+        overflow: hidden;
     }
 
     .panel {
@@ -222,7 +223,7 @@
     }
 
     .text {
-        border: 1px solid @gray_75_third;
+        border: 1px solid fadeout(@gray_75_third, 5%);
         background: fadeout(@white, 5%);
         padding: (@gutter/2) @gutter;
         position: absolute;
