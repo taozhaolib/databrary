@@ -7,6 +7,34 @@ import dbrary._
 import dbrary.Anorm._
 import site._
 
+/** Types of Records that are relevant for data organization.
+  * Records that represent data buckets or other kinds of slot groupings (e.g., participants, days, conditions, etc.) can be assigned a particular RecordCategory for the purpose of display and templating.
+  * For now, all instances are hard-coded.
+  */
+sealed abstract class RecordCategory private (val id : RecordCategory.Id, val name : String) extends TableRowId[RecordCategory] {
+  /** The default set of metrics which define records in this category. */
+  def template : Seq[Metric]
+}
+
+/** Interface to record categories.
+  * These are all hard-coded so bypass the database, though they are stored in record_category. */
+object RecordCategory extends HasId[RecordCategory] {
+  def get(id : Id) : Option[RecordCategory] = id match {
+    case PARTICIPANT => Some(Participant)
+    case _ => None
+  }
+
+  def getAll : Seq[RecordCategory] =
+    Seq(Participant)
+
+  private final val PARTICIPANT : Id = asId(-500)
+  /** RecordCategory representing participants, individuals whose data is contained in a particular sesion.
+    * Participants usually are associated with birthdate, gender, and other demographics. */
+  final val Participant = new RecordCategory(PARTICIPANT, "participant") {
+    val template = Seq(Metric.Ident, Metric.Birthdate, Metric.Gender, Metric.Race, Metric.Ethnicity)
+  }
+}
+
 /** A set of Measures. */
 final class Record private (val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE) extends TableRowId[Record] with SitePage with InVolume {
   private[this] var _category = category_
