@@ -177,7 +177,30 @@ final class Columns6[C1 : Column, C2 : Column, C3 : Column, C4 : Column, C5 : Co
       r6 <- a6.get[C6].apply(row)
     } yield (r1, r2, r3, r4, r5, r6)
   def map[A](f : (C1, C2, C3, C4, C5, C6) => A) : Selector[A] = map[A](f.tupled)
-  def ~+[C7 : Column](a7 : SelectExpr) = ???
+  def ~+[C7 : Column](a7 : SelectExpr) = new Columns7[C1,C2,C3,C4,C5,C6,C7](a1,a2,a3,a4,a5,a6,a7)
+}
+final class Columns7[C1 : Column, C2 : Column, C3 : Column, C4 : Column, C5 : Column, C6 : Column, C7 : Column](
+    a1 : SelectExpr
+  , a2 : SelectExpr
+  , a3 : SelectExpr
+  , a4 : SelectExpr
+  , a5 : SelectExpr
+  , a6 : SelectExpr
+  , a7 : SelectExpr
+  )(implicit from : FromTable)
+  extends Columns[(C1,C2,C3,C4,C5,C6,C7)](a1, a2, a3, a4, a5, a6, a7) {
+  def apply(row : Row) = 
+    for {
+      r1 <- a1.get[C1].apply(row)
+      r2 <- a2.get[C2].apply(row)
+      r3 <- a3.get[C3].apply(row)
+      r4 <- a4.get[C4].apply(row)
+      r5 <- a5.get[C5].apply(row)
+      r6 <- a6.get[C6].apply(row)
+      r7 <- a7.get[C7].apply(row)
+    } yield (r1, r2, r3, r4, r5, r6, r7)
+  def map[A](f : (C1, C2, C3, C4, C5, C6, C7) => A) : Selector[A] = map[A](f.tupled)
+  def ~+[C8 : Column](a8 : SelectExpr) = ???
 }
 
 object Columns {
@@ -188,4 +211,5 @@ object Columns {
   def apply[C1 : Column, C2 : Column, C3 : Column, C4 : Column](a1 : SelectExpr, a2 : SelectExpr, a3 : SelectExpr, a4 : SelectExpr)(implicit from : FromTable) = new Columns4[C1,C2,C3,C4](a1,a2,a3,a4)
   def apply[C1 : Column, C2 : Column, C3 : Column, C4 : Column, C5 : Column](a1 : SelectExpr, a2 : SelectExpr, a3 : SelectExpr, a4 : SelectExpr, a5 : SelectExpr)(implicit from : FromTable) = new Columns5[C1,C2,C3,C4,C5](a1,a2,a3,a4,a5)
   def apply[C1 : Column, C2 : Column, C3 : Column, C4 : Column, C5 : Column, C6 : Column](a1 : SelectExpr, a2 : SelectExpr, a3 : SelectExpr, a4 : SelectExpr, a5 : SelectExpr, a6 : SelectExpr)(implicit from : FromTable) = new Columns6[C1,C2,C3,C4,C5,C6](a1,a2,a3,a4,a5,a6)
+  def apply[C1 : Column, C2 : Column, C3 : Column, C4 : Column, C5 : Column, C6 : Column, C7 : Column](a1 : SelectExpr, a2 : SelectExpr, a3 : SelectExpr, a4 : SelectExpr, a5 : SelectExpr, a6 : SelectExpr, a7 : SelectExpr)(implicit from : FromTable) = new Columns7[C1,C2,C3,C4,C5,C6,C7](a1,a2,a3,a4,a5,a6,a7)
 }

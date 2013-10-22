@@ -11,12 +11,18 @@
 
             <ul class="participants flat">
             @records.map { record =>
-                @if(record.category.equals(Some(RecordCategory.Participant))) {
+	    	@record.category match {
+		case Some(RecordCategory.Participant) => {
                     <li>
                         <span class="gender">@record.gender</span><span class="sep">,</span>
                         <span class="age">@display.age(record, slot)</span>
                     </li>
-                }
+		}
+		case Some(_) => {
+		    <li>@record.pageName</li>
+		}
+		case None => {}
+		}
             }
             </ul>
         </div>

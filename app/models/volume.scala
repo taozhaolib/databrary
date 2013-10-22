@@ -76,16 +76,16 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
   private type Session = (Option[Slot],Option[Record])
   private val _sessions = CachedVal[Seq[Session],Site.DB] { implicit db =>
-    Record.Participant.getSlots(this).SQL("WHERE (container.volume = {volume} AND (slot.consent IS NOT NULL OR slot.segment = '(,)') AND NOT container.top) OR (record_participant_view.volume = {volume})").
+    Record.View.getSlots(this).SQL("WHERE (container.volume = {volume} AND (slot.consent IS NOT NULL OR slot.segment = '(,)') AND NOT container.top) OR (record_view.volume = {volume})").
       on('volume -> id).list
   }
 
-  /** The list of all sessions and their associated participants on this volume. */
+  /** The list of all sessions and their associated record on this volume. */
   def slotRecords(implicit db : Site.DB) : Seq[(Slot,Seq[Record])] = {
-    val l = _sessions.sortBy(_._1.map(_.id.unId))
+    val l = _sessions.sortBy(_._1.map(s => (s.consent == Some(Consent.PRIVATE)) -> s.id.unId))
     val r = l.genericBuilder[(Slot,Seq[Record])]
-    @scala.annotation.tailrec def group(l : Seq[Session]) : Unit = l match {
-      case Nil => Nil
+    @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Slot,Seq[Record])] = l match {
+      case Nil => r.result
       case (None, _) :: r => group(r)
       case (Some(k), _) :: _ =>
         val (p, s) = l.span(_._1.get.equals(k)) // safe because sorted
@@ -93,23 +93,21 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
         group(s)
     }
     group(l)
-    r.result
   }
 
   /** The list of all records and their associated sessions on this volume. */
-  def recordSlots(implicit db : Site.DB) : Seq[(Record,Seq[Slot])] = {
+  def recordSlots(implicit db : Site.DB) : Seq[(RecordCategory,Seq[(Record,Seq[Slot])])] = {
     val l = _sessions.sortBy(_._2.map(r => r.category.map(_.id.unId) -> r.id.unId))
     val r = l.genericBuilder[(Record,Seq[Slot])]
-    @scala.annotation.tailrec def group(l : Seq[Session]) : Unit = l match {
-      case Nil => Nil
-      case (_, None) :: r => group(r)
-      case (_, Some(k)) :: _ =>
+    @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Record,Seq[Slot])] = l match {
+      case Nil => r.result
+      case (_, Some(k)) :: _ if k.category.isDefined =>
         val (p, s) = l.span(_._2.get.equals(k)) // safe because sorted
         r += k -> p.flatMap(_._1)
         group(s)
+      case _ :: r => group(r)
     }
-    group(l)
-    r.result
+    groupBy(group(l), (r : (Record, Seq[Slot])) => r._1.category.get)
   }
 
   /** Basic summary information on this volume.

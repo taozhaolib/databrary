@@ -81,12 +81,15 @@ object Record extends SiteController {
       form => BadRequest(views.html.record.edit(request.obj, meas, form, js)),
       { case (category, data) =>
         request.obj.change(category = category.flatMap(RecordCategory.get(_)))
+        val filled = scala.collection.mutable.Set.empty[Int] // temporary hack to prevent data corruption with duplicate metrics
         def update(metric : Metric.Id, datum : Option[String]) : Option[String] =
           Metric.get(metric).fold[Option[String]](Some("measure.unknown")) { m =>
             datum.fold {
-              request.obj.deleteMeasure(m)
+              if (!filled.contains(metric.unId))
+                request.obj.deleteMeasure(m)
               None : Option[String]
             } { value =>
+              filled.add(metric.unId)
               if (!request.obj.setMeasure(m, value))
                 Some("measure.bad")
               else

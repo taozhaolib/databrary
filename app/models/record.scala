@@ -109,7 +109,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   /** Attach this record to a slot. */
   def addSlot(s : Slot)(implicit db : Site.DB) = Record.addSlot(id, s.id)
 
-  def pageName(implicit site : Site) = ident.orElse(category.map(_.name)).getOrElse("Record ["+id+"]")
+  def pageName(implicit site : Site) = category.fold("")(_.name.capitalize + " ") + ident.getOrElse("Record ["+id+"]")
   def pageParent(implicit site : Site) = Some(volume)
   def pageURL(implicit site : Site) = controllers.routes.Record.view(volume.id, id)
   def pageActions(implicit site : Site) = Seq(
@@ -202,14 +202,14 @@ object Record extends TableId[Record]("record") {
     SQL("DELETE FROM slot_record WHERE " + args.where).on(args : _*).execute
   }
 
-  private[models] object Participant extends Table[Record]("record_participant_view") {
+  private[models] object View extends Table[Record]("record_view") {
     private[models] val row = Record.row
 
     private def volumeRow(vol : Volume) = Columns[
-      Id,  Option[String], Option[Date], Option[String], Option[Date],                            Option[Consent.Value]](
-      'id, 'ident,         'birthdate,   'gender,        SelectAs("container.date", "record_date"), SelectAs("slot.consent", "record_consent")).
-      map { (id, ident, birthdate, gender, date, consent) =>
-        val r = new Record(id, vol, Some(RecordCategory.Participant), consent.getOrElse(Consent.NONE))
+      Id,  Option[RecordCategory.Id], Option[String], Option[Date], Option[String], Option[Date],                            Option[Consent.Value]](
+      'id, 'category,                 'ident,         'birthdate,   'gender,        SelectAs("container.date", "record_date"), SelectAs("slot.consent", "record_consent")).
+      map { (id, category, ident, birthdate, gender, date, consent) =>
+        val r = new Record(id, vol, category.flatMap(RecordCategory.get _), consent.getOrElse(Consent.NONE))
         r._ident() = ident
         r._birthdate() = birthdate
         r._gender() = gender
@@ -218,9 +218,9 @@ object Record extends TableId[Record]("record") {
         }
         r
       }.
-      from("slot_record JOIN record_participant_view ON slot_record.record = record_participant_view.id")
+      from("slot_record JOIN record_view ON slot_record.record = record_view.id")
     def getSlots(vol : Volume) =
-      Slot.volumeRow(vol).?.join(volumeRow(vol).?, _ + " FULL JOIN " + _ + " ON slot.id = slot_record.slot AND container.volume = record_participant_view.volume") map {
+      Slot.volumeRow(vol).?.join(volumeRow(vol).?, _ + " FULL JOIN " + _ + " ON slot.id = slot_record.slot AND container.volume = record_view.volume") map {
         case (slot ~ rec) => (slot, rec)
       }
   }
