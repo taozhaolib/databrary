@@ -1,6 +1,6 @@
 // footer
 .site_footer {
-	background: lighten(@third, 25%);
+//	background: lighten(@third, 25%);
 	border-top: 1px solid @gray_75_third;
 	padding: @gutter 0;
 	margin-top: @gutter;
@@ -31,15 +31,19 @@
 		}
 	}
 
+    .row {
+        position: relative;
+    }
+
 	.watermark {
 		background: url("/public/images/logo/databrary-watermark.png") no-repeat;
 		.user-select(none);
 		position: absolute;
 		float: right;
-		bottom: -@gutter;
+		bottom: -170px;
 		width: 200px;
 		height: 190px;
-		right: -20px;
+		right: -40px;
 	}
 
 	.grants {
