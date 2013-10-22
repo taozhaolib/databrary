@@ -11,7 +11,7 @@
         <div class="panels">
             @Random.shuffle(models.Volume.getAll).take(10).map { vol =>
             <div class="panel" id="panel_@vol.id">
-                <img src="@routes.Volume.thumb(vol.id)">
+                <a href="@routes.Volume.view(vol.id)" class="block"><img src="@routes.Volume.thumb(vol.id)"></a>
             </div>
             }
         </div>
