@@ -21,11 +21,12 @@ sealed abstract class RecordCategory private (val id : RecordCategory.Id, val na
 object RecordCategory extends HasId[RecordCategory] {
   def get(id : Id) : Option[RecordCategory] = id match {
     case PARTICIPANT => Some(Participant)
+    case VISIT => Some(Visit)
     case _ => None
   }
 
   def getAll : Seq[RecordCategory] =
-    Seq(Participant)
+    Seq(Participant, Visit)
 
   private final val PARTICIPANT : Id = asId(-500)
   private final val VISIT : Id = asId(-200)
