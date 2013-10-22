@@ -450,6 +450,58 @@ article.volume_roll {
 	}
 }
 
+article.volume_list {
+    margin-bottom: @gutter/2;
+
+    a.block {
+        display: block;
+        color: @text;
+
+        &:hover {
+            color: @second;
+        }
+    }
+
+    header {
+        margin-bottom: 0;
+    }
+
+    h1 {
+        font-size: 1.2em;
+        cursor: pointer;
+        border: 0;
+        .transition(@transition);
+
+        &:hover {
+            color: @second;
+        }
+    }
+
+    .date {
+        float: right;
+        color: @gray_50;
+    }
+
+    .people {
+        margin-bottom: @gutter/4;
+        float: left;
+
+        img {
+            position: relative;
+            top: 2px;
+        }
+
+        .sep {
+            font-weight: normal;
+            color: @gray_50;
+        }
+
+        .sep:last-child {
+            display: none;
+        }
+    }
+}
+
 dl.inline-measures {
 	margin: 0;
 
