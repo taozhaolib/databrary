@@ -10,7 +10,7 @@
             <table class="expander">
                 <thead>
                     <tr>
-                        <th class="meta">Record</th>
+                        <th class="meta"></th>
                         <th class="mini tc">Media</th>
                         <th class="meta tc">Age</th>
                         <th class="meta tc">Consent</th>
@@ -25,7 +25,7 @@
 
                                 @if(slots.headOption.nonEmpty && slots.head.id == slot.id) {
                                     <td class="meta record-holder" rowspan="@slots.length">
-                                        <div class="record">@display(record)</div>
+					<div class="record">@record.ident.getOrElse("["+record.id+"]")</div>
                                         <div class="gender">@record.gender</div>
                                     </td>
                                 }

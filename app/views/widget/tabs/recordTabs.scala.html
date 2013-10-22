@@ -1,6 +1,10 @@
 @(volume : Volume)(implicit request : SiteRequest[_])
 
 @defining(volume.recordSlots) { recordSlots =>
-    @* eventually, if recordsSlots has "participant" *@
-    @if(recordSlots.nonEmpty) {@widget.tabs.participantsTab(volume, recordSlots)}
+    @{recordSlots.map {
+	    case (_, Nil) => ()
+	    case (RecordCategory.Participant, rs) =>
+		    widget.tabs.participantsTab(volume, rs)
+	    case _ => ()
+    }}
 }
