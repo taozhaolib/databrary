@@ -82,7 +82,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
   /** The list of all sessions and their associated record on this volume. */
   def slotRecords(implicit db : Site.DB) : Seq[(Slot,Seq[Record])] = {
-    val l = _sessions.sortBy(_._1.map(s => (s.consent == Some(Consent.PRIVATE)) -> s.id.unId))
+    val l = _sessions.sortBy(_._1.map(s => (s.consent == Consent.PRIVATE) -> s.id.unId))
     val r = l.genericBuilder[(Slot,Seq[Record])]
     @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Slot,Seq[Record])] = l match {
       case Nil => r.result
