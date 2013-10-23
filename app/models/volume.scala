@@ -173,7 +173,7 @@ object Volume extends TableId[Volume]("volume") {
   /** Retrieve the set of all volumes in the system.
     * This only returns volumes for which the current user has [[Permission.VIEW]] access. */
   def getAll(implicit site : Site) : Seq[Volume] =
-    row.SQL("WHERE", condition).
+    row.SQL("WHERE", condition, "ORDER BY volume.name").
       on(conditionArgs() : _*).list()
     
   /** Create a new, empty volume with no permissions.

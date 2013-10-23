@@ -148,7 +148,7 @@ object Record extends TableId[Record]("record") {
 
   /** Retrieve the set of records on the given slot. */
   private[models] def getSlot(slot : Slot)(implicit db : Site.DB) : Seq[Record] =
-    volumeRow(slot.volume).SQL("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.slot = {slot}").
+    volumeRow(slot.volume).SQL("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.slot = {slot} ORDER BY record.category").
       on('slot -> slot.id).list
 
   /** Retrieve all the categorized records associated with the given volume.
