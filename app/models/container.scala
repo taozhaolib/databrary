@@ -182,7 +182,10 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   def pageName(implicit site : Site) = container.name.getOrElse { 
     val i = idents
     if (i.isEmpty)
-      "Session [" + id + "]"
+      if (container.top)
+        volume.name
+      else
+        "Session [" + id + "]"
     else
       i.mkString(", ")
   }
