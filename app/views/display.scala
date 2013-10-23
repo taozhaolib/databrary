@@ -78,6 +78,16 @@ object display {
 
   def avatar(party : Party, size : Int = 64) = party.name match {
     /* Temporary hack */
+    case "Karen Adolph" => routes.Assets.at("images/profiles/karen.jpg")
+    case "Rick Gilmore" => routes.Assets.at("images/profiles/rick.jpg")
+    case "David Millman" => routes.Assets.at("images/profiles/david.jpg")
+    case "Catherine Tamis-LeMonda" => routes.Assets.at("images/profiles/cathy.jpg")
+    case "Dylan Simon" => routes.Assets.at("images/profiles/dylan.jpg")
+    case "Lisa Steiger" => routes.Assets.at("images/profiles/lisa.jpg")
+    case "Lina Wictoren Roy" => routes.Assets.at("images/profiles/lina.jpg")
+    case "Andrea Byrne" => routes.Assets.at("images/profiles/andrea.jpg")
+    case "National Institute of Child Health and Human Development" => routes.Assets.at("images/profiles/nih.jpg")
+    case "National Science Foundation" => routes.Assets.at("images/profiles/nsf.png")
     case _ => gravatarUrlByParty(party, size)
   }
 
