@@ -13,8 +13,8 @@
         <div class="modal_content">
 	    <div class="row">
 		<section class="personal col-desktop-2 col-laptop-2 col-tablet-2">
+            <img src="@display.avatar(party, 144)" alt="@party.name" class="avatar s144">
 		@dbrary.cast[Account](party).map { a =>
-		    <img src="@display.avatar(a, 144)" alt="@party.name" class="avatar s144">
 
 		    <div class="connect">
 			<h2>Connect</h2>

@@ -1062,7 +1062,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
                             $currentView.fadeIn(150);
                         });
 
-                        e.preventDefault();
+//                        e.preventDefault();
                         return;
                     }
 
