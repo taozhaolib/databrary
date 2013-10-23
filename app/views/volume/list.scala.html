@@ -36,6 +36,7 @@
                                 <div class="description">
 
                                     @defining(volume.summary) { s =>
+				    	@if(s.sessions > 0) {
                                         <div class="siderim minor">
                                             <dl class="inline-measures">
                                                 <dt>sessions</dt>
@@ -44,6 +45,7 @@
                                                 <dd>@display.agerange(s.agerange) (<em>M</em> = @display.age(s.agemean))</dd>
                                             </dl>
                                         </div>
+					}
                                     }
                                 @volume.body.map(display.plainTextSummary(_, 2))
                                 </div>
