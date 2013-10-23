@@ -1,3 +1,7 @@
 @(slot : Slot)(implicit request : SiteRequest[_])
 
-<img src="@routes.Slot.thumb(slot.volumeId, slot.id)" class="block"/>
+@if(slot.consent.equals(Some(Consent.PRIVATE))) {
+	<img src="@routes.Assets.at("images/draft.png")" class="block"/>
+} else {
+	<img src="@routes.Slot.thumb(slot.volumeId, slot.id)" class="block"/>
+}
