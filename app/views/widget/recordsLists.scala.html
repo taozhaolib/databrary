@@ -1,0 +1,12 @@
+@(slot : Slot, records : Seq[Record])(implicit request : SiteRequest[_])
+
+@* for displaying non-participant records on the slot page *@
+@defining(records.filter(r => !r.category.equals(Some(RecordCategory.Participant)))) { records =>
+    @if(records.nonEmpty) {
+        <h2>Records</h2>
+
+        @records.map { r =>
+            @display(r)@if(r.id != records.last.id){,}
+        }
+    }
+}
