@@ -1078,7 +1078,7 @@ dbjs.simpleToggle = function (toggler, toggled) {
 
                     $currentView = $view;
 
-                    e.preventDefault();
+//                    e.preventDefault();
                 });
 
                 $assets.find('.viewer').first().trigger('click');

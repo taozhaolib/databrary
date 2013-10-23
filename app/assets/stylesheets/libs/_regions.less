@@ -443,7 +443,7 @@
     }
 
     .assets {
-        li a {
+        li > div {
             display: block;
             margin-bottom: (@gutter/4);
             .border-radius(@gutter/6);
@@ -453,6 +453,8 @@
             color: @text;
             line-height: 16px;
             position: relative;
+            .transition(@transition);
+            cursor: pointer;
 
             .classification {
                 font-family: monospace;
