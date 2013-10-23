@@ -21,10 +21,10 @@
                 <tbody>
                     @recordSlots.map { case (record, slots)  =>
                         @slots.map { slot =>
-                            <tr class="message-trace" data-message="<strong>Notice!</strong> @Consent.description(slot.consent)">
+                            <tr class="message-trace @if(slot.id == slots.last.id){trborder}" data-message="<strong>Notice!</strong> @Consent.description(slot.consent)">
 
                                 @if(slots.headOption.nonEmpty && slots.head.id == slot.id) {
-                                    <td class="meta record-holder" rowspan="@slots.length">
+                                    <td class="meta record-holder bgwhite" rowspan="@slots.length">
 					<div class="record">@record.ident.getOrElse("["+record.id+"]")</div>
                                         <div class="gender">@record.gender</div>
                                     </td>

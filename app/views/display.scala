@@ -88,6 +88,7 @@ object display {
     case "Andrea Byrne" => routes.Assets.at("images/profiles/andrea.jpg")
     case "National Institute of Child Health and Human Development" => routes.Assets.at("images/profiles/nih.jpg")
     case "National Science Foundation" => routes.Assets.at("images/profiles/nsf.png")
+    case "Databrary" => routes.Assets.at("images/profiles/databrary.png")
     case _ => gravatarUrlByParty(party, size)
   }
 
