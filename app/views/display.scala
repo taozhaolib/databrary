@@ -90,7 +90,7 @@ object display {
     case "National Institute of Child Health and Human Development" => routes.Assets.at("private/profiles/nih.jpg")
     case "National Science Foundation" => routes.Assets.at("private/profiles/nsf.png")
     case "Databrary" => routes.Assets.at("private/profiles/databrary.png")
-    case "New York University" => routes.Assets.at("private/profiles/nyu.png")
+    case "New York University" => routes.Assets.at("private/profiles/nyu.jpg")
     case _ => gravatarUrlByParty(party, size)
   }
 
