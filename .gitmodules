@@ -1,3 +1,6 @@
 [submodule "public/images/libs/teambox-filetypes"]
 	path = public/images/libs/teambox-filetypes
 	url = https://github.com/teambox/Free-file-icons.git
+[submodule "private"]
+	path = public/private
+	url = https://github.com/databrary/play-private.git

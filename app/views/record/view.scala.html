@@ -28,7 +28,7 @@
 
                 <tbody>
                 @record.slots.map { slot  =>
-		<tr class="message-trace" data-message="<strong>Notice!</strong> @Consent.description(slot.consent)">
+		<tr class="message-trace">
 	        <td class="mini tc"><a href="@slot.pageURL">@widget.slotThumb(slot)</a></td>
                 <td class="meta tc">@display.age(record, slot)</td>
                 <td class="meta tc"><span class="consent">@slot.consent</span></td>
