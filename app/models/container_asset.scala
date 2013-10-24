@@ -104,7 +104,7 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
     * This assumes that permissions have already been checked as the caller must already have the container. */
   private[models] def getContainer(container : Container)(implicit db : Site.DB) : Seq[ContainerAsset] =
     containerRow(container).
-      SQL("WHERE container_asset.container = {container} ORDER BY container_asset.position NULLS FIRST").
+      SQL("WHERE container_asset.container = {container} ORDER BY container_asset.position NULLS LAST, format.id").
       on('container -> container.id).list
 
   /** Find the assets in a container with the given name. */
@@ -247,7 +247,7 @@ object SlotAsset {
 
   /** Retrieve the list of all assets within the given slot. */
   private[models] def getSlot(slot : Slot)(implicit db : Site.DB) : Seq[SlotAsset] =
-    slotRow(slot).SQL("WHERE container_asset.container = {container} AND", condition("{segment}"), "ORDER BY container_asset.position NULLS FIRST").
+    slotRow(slot).SQL("WHERE container_asset.container = {container} AND", condition("{segment}"), "ORDER BY container_asset.position NULLS LAST, format.id").
       on('slot -> slot.id, 'container -> slot.containerId, 'segment -> slot.segment).list
 
   /** Build the SlotAsset for the given ContainerAsset#container.fullSlot. */
