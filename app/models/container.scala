@@ -187,7 +187,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
       else
         "Session [" + id + "]"
     else
-      i.mkString(", ")
+      "Session: " + i.mkString(", ")
   }
   override def pageCrumbName(implicit site : Site) = if (segment.isFull) None else Some(segment.lowerBound.fold("")(_.toString) + " - " + segment.upperBound.fold("")(_.toString))
   def pageParent(implicit site : Site) = Some(if (isContext) volume else context)
