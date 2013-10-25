@@ -1,7 +1,5 @@
 @(implicit request: SiteRequest[_])
 
-@import scala.util.Random
-
 @script = {
     dbjs.carousel('#carousel .panels', '.panel');
 }
@@ -10,10 +8,7 @@
     <section id="carousel" class="carousel">
         <div class="panels">
             <div class="panel" id="panel_8">
-                <img style="position: relative; top: -100px;" src="@routes.Volume.thumb(IntId(8))">
-            </div>
-            <div class="panel" id="panel_1">
-                <img src="@routes.Assets.at("private/carousel/carousel-1.jpg")">
+                <img style="position: relative; top: -100px;" src="@routes.Volume.thumb(models.Volume.asId(8))">
             </div>
             <div class="panel" id="panel_2">
                 <img src="@routes.Assets.at("private/carousel/carousel-2.jpg")">
@@ -25,10 +20,7 @@
                 <img src="@routes.Assets.at("private/carousel/carousel-3.jpg")">
             </div>
             <div class="panel" id="panel_4">
-                <img src="@routes.Volume.thumb(IntId(2))">
-            </div>
-            <div class="panel" id="panel_5">
-                <img src="@routes.Assets.at("private/carousel/carousel-4.jpg")">
+                <img src="@routes.Volume.thumb(models.Volume.asId(2))">
             </div>
             <div class="panel" id="panel_6">
                 <img src="@routes.Assets.at("private/carousel/carousel-5.jpg")">
