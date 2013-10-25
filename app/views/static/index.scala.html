@@ -9,11 +9,30 @@
 @template.wide("An Open Data Library for Developmental Science", js = script) {
     <section id="carousel" class="carousel">
         <div class="panels">
-            @Random.shuffle(models.Volume.getAll).take(10).map { vol =>
-            <div class="panel" id="panel_@vol.id">
-                <a href="@routes.Volume.view(vol.id)" class="block"><img src="@routes.Volume.thumb(vol.id)"></a>
+            <div class="panel" id="panel_1">
+                <img src="@routes.Assets.at("private/carousel/carousel-1.jpg")">
             </div>
-            }
+            <div class="panel" id="panel_2">
+                <img src="@routes.Assets.at("private/carousel/carousel-2.jpg")">
+            </div>
+            <div class="panel" id="panel_3">
+                <img src="@routes.Assets.at("private/carousel/carousel-3.jpg")">
+            </div>
+            <div class="panel" id="panel_4">
+                <img src="@routes.Volume.thumb(IntId(2))">
+            </div>
+            <div class="panel" id="panel_5">
+                <img src="@routes.Assets.at("private/carousel/carousel-4.jpg")">
+            </div>
+            <div class="panel" id="panel_6">
+                <img src="@routes.Assets.at("private/carousel/carousel-5.jpg")">
+            </div>
+            <div class="panel" id="panel_7">
+                <img src="@routes.Assets.at("private/carousel/carousel-6.jpg")">
+            </div>
+            <div class="panel" id="panel_8">
+                <img src="@routes.Volume.thumb(IntId(8))">
+            </div>
         </div>
 
         <div class="text">
