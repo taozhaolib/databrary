@@ -3,7 +3,7 @@
 <article class="profile">
     <div class="row">
         <div class="col-2">
-            <img src="@routes.Assets.at("images/profiles/"+image)" alt="@name" class="avatar">
+            <img src="@routes.Assets.at((if (image.equals("unknown.png")) "images" else "private")+"/profiles/"+image)" alt="@name" class="avatar">
         </div>
 
         <div class="col-desktop-6 col-laptop-6 col-tablet-5 col-mobile-4">
