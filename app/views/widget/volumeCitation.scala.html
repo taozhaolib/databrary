@@ -5,5 +5,5 @@
     @display.dateFmtY.format(volume.creation).
     @volume.name.
     <em>Databrary</em>.
-    Retrieved @display.dateFmtCite.format(new java.util.Date()) from <a href="@routes.Volume.view(volume.id).absoluteURL()" title="@volume.name on Databrary.org">@routes.Volume.view(volume.id).absoluteURL()</a>.
+    Retrieved @display.dateFmtCite.format(new java.util.Date()) from <a href="@routes.Volume.view(volume.id).absoluteURL()" title="@volume.name on Databrary.org">http://databrary.org/volume/@volume.id</a>.
 </div>
