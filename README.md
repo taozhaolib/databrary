@@ -1,6 +1,6 @@
 # Databrary
 
-http://databrary.github.io/play
+http://databrary.github.io/databrary
 
 ## Layout
 
