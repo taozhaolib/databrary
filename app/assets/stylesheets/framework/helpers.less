@@ -1,0 +1,84 @@
+// MIXINS
+
+.clearfix() {
+	&:after {
+		content: "";
+		display: table;
+		clear: both;
+	}
+}
+
+//
+
+.hide() {
+	display: none !important;
+	visibility: hidden !important;
+}
+
+.hide-text() {
+	font: 0/0 a;
+	color: transparent;
+	text-shadow: none;
+	background-color: transparent;
+	border: 0;
+}
+
+.hide-eyes() {
+	visibility: hidden;
+}
+
+//
+
+.size(@x) {
+	width: @x;
+	height: @x;
+}
+
+.size(@w, @h) {
+	width: @w;
+	height: @h;
+}
+
+// STYLES
+
+.hide { .hide(); }
+.hide-text { .hide-text(); }
+.hide-eyes { .hide-eyes(); }
+
+//
+
+.cf { .clearfix(); }
+
+.cl { clear: left; }
+.cr { clear: right; }
+.cb { clear: both; }
+.cn { clear: none; }
+.ci { clear: inherit; }
+
+.fl { float: left; }
+.fr { float: right; }
+.fn { float: none; }
+.fi { float: inherit; }
+
+//
+
+.db { display: block; }
+.di { display: inline; }
+.dib { display: inline-block; }
+.dli { display: list-item; }
+.dn { display: none; }
+.din { display: inherit; }
+
+//
+
+.tal { text-align: left; }
+.tar { text-align: right; }
+.tac { text-align: center; }
+.taj { text-align: justify; }
+.tai { text-align: inherit; }
+
+.ttu { text-transform: uppercase; }
+.ttl { text-transform: lowercase; }
+.ttc { text-transform: capitalize; }
+.ttn { text-transform: none; }
+.tti { text-transform: inherit; }
