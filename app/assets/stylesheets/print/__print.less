@@ -1,11 +1,11 @@
 // MEDIA
 
 @media screen {
-	.show-print { .hidden(); }
+	.show-print { .hide(); }
 }
 
 @media print {
-	.hide-print { .hidden(); }
+	.hide-print { .hide(); }
 
 	* {
 		text-shadow: none !important;
@@ -14,7 +14,8 @@
 		box-shadow: none !important;
 	}
 
-	a, a:visited {
+	a,
+	a:visited {
 		text-decoration: underline;
 	}
 
@@ -31,7 +32,8 @@
 		content: "";
 	}
 
-	pre, blockquote {
+	pre,
+	blockquote {
 		page-break-inside: avoid;
 	}
 
@@ -39,7 +41,8 @@
 		display: table-header-group;
 	}
 
-	tr, img {
+	tr,
+	img {
 		page-break-inside: avoid;
 	}
 

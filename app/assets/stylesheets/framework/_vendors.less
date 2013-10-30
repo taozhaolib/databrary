@@ -1,0 +1,236 @@
+// MIXINS
+
+.box-sizing(@x: @box-sizing) {
+	-moz-box-sizing: @x;
+	-webkit-box-sizing: @x;
+	box-sizing: @x;
+}
+
+//
+
+.border-radius(@x: @border-radius) {
+	-webkit-border-radius: @x;
+	-moz-border-radius: @x;
+	border-radius: @x;
+}
+
+//
+
+.box-shadow(@x: @box-shadow) {
+	-webkit-box-shadow: @x;
+	-moz-box-shadow: @x;
+	box-shadow: @x;
+}
+
+//
+
+.transition(@x: @transition) {
+	-webkit-transition: @x;
+	-moz-transition: @x;
+	transition: @x;
+}
+
+//
+
+.filter(@x) {
+	-webkit-filter: @x;
+	-moz-filter: @x;
+	-ms-filter: @x;
+	-o-filter: @x;
+	filter: @x;
+}
+
+.filter-grayscale(@x) {
+	.filter(grayscale(@x));
+}
+
+.filter-sepia(@x) {
+	.filter(sepia(@x));
+}
+
+.filter-hue-rotate(@x) {
+	.filter(hue-rotate(@x));
+}
+
+.filter-saturate(@x) {
+	.filter(saturate(@x));
+}
+
+.filter-brightness(@x) {
+	.filter(brightness(@x));
+}
+
+.filter-opacity(@x) {
+	.filter(opacity(@x));
+}
+
+.filter-contrast(@x) {
+	.filter(contrast(@x));
+}
+
+.filter-invert(@x) {
+	.filter(invert(@x));
+}
+
+.filter-blur(@x) {
+	.filter(blur(@x));
+}
+
+.filter-drop-shadow(@x) {
+	.filter(drop-shadow(@x));
+}
+
+.filter-url(@x) {
+	.filter(url(@x));
+}
+
+//
+
+.transform(@x) {
+	-webkit-transform: @x;
+	-moz-transform: @x;
+	-o-transform: @x;
+	-ms-transform: @x;
+	transform: @x;
+}
+
+.transform-rotate(@x) {
+	.transform(rotate(@x));
+}
+.transform-rotateX(@x) {
+	.transform(rotateX(@x));
+}
+.transform-rotateY(@x) {
+	.transform(rotateY(@x));
+}
+.transform-rotateZ(@x) {
+	.transform(rotateZ(@x));
+}
+.transform-rotate3d(@x) {
+	.transform(rotate3d(@x));
+}
+
+.transform-scale(@x) {
+	.transform(scale(@x));
+}
+.transform-scaleX(@x) {
+	.transform(scaleX(@x));
+}
+.transform-scaleY(@x) {
+	.transform(scaleY(@x));
+}
+.transform-scaleZ(@x) {
+	.transform(scaleZ(@x));
+}
+.transform-scale3d(@x) {
+	.transform(scale3d(@x));
+}
+
+.transform-skew(@x) {
+	.transform(skew(@x));
+}
+.transform-skewX(@x) {
+	.transform(skewX(@x));
+}
+.transform-skewY(@x) {
+	.transform(skewY(@x));
+}
+
+.transform-translate(@x) {
+	.transform(translate(@x));
+}
+.transform-translateX(@x) {
+	.transform(translateX(@x));
+}
+.transform-translateY(@x) {
+	.transform(translateY(@x));
+}
+.transform-translateZ(@x) {
+	.transform(translateZ(@x));
+}
+.transform-translate3d(@x) {
+	.transform(translate3d(@x));
+}
+
+.transform-matrix(@x) {
+	.transform(matrix(@x));
+}
+.transform-matrix3d(@x) {
+	.transform(matrix3d(@x));
+}
+
+.transform-perspective(@x) {
+	.transform(perspective(@x));
+}
+
+//
+
+.user-select(@select) {
+	-webkit-user-select: @select;
+	-moz-user-select: @select;
+	-ms-user-select: @select;
+	-o-user-select: @select;
+	user-select: @select;
+}
+
+.placeholder(@color: #ddd) {
+	:-moz-placeholder {
+		color: @color;
+	}
+	::-webkit-input-placeholder {
+		color: @color;
+	}
+}
+
+//
+
+#gradient {
+	.horizontal (@start-color, @end-color) {
+		background-repeat: repeat-x;
+		background-image: -khtml-gradient(linear, left top, right top, from(@start-color), to(@end-color)); /* Konqueror */
+		background-image: -moz-linear-gradient(left, @start-color, @end-color); /* FF 3.6+ */
+		background-image: -ms-linear-gradient(left, @start-color, @end-color); /* IE10 */
+		background-image: -webkit-gradient(linear, left top, right top, color-stop(0%, @start-color), color-stop(100%, @end-color)); /* Safari 4+, Chrome 2+ */
+		background-image: -webkit-linear-gradient(left, @start-color, @end-color); /* Safari 5.1+, Chrome 10+ */
+		background-image: -o-linear-gradient(left, @start-color, @end-color); /* Opera 11.10 */
+		background-image: -ms-linear-gradient(left, @start-color 0%, @end-color 100%); /* IE10+ */
+		background-image: linear-gradient(left, @start-color, @end-color); /* the standard */
+		filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=1)",@start-color,@end-color)); /* IE6 & IE7 */
+		-ms-filter: %("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=1)",@start-color,@end-color); /* IE8+ */
+	}
+	.vertical (@start-color, @end-color) {
+		background-repeat: repeat-x;
+		background-image: -khtml-gradient(linear, left top, left bottom, from(@start-color), to(@end-color)); /* Konqueror */
+		background-image: -moz-linear-gradient(@start-color, @end-color); /* FF 3.6+ */
+		background-image: -ms-linear-gradient(@start-color, @end-color); /* IE10 */
+		background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, @start-color), color-stop(100%, @end-color)); /* Safari 4+, Chrome 2+ */
+		background-image: -webkit-linear-gradient(@start-color, @end-color); /* Safari 5.1+, Chrome 10+ */
+		background-image: -o-linear-gradient(@start-color, @end-color); /* Opera 11.10 */
+		background-image: -ms-linear-gradient(top, @start-color 0%, @end-color 100%); /* IE10+ */
+		background-image: linear-gradient(@start-color, @end-color); /* the standard */
+		filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",@start-color,@end-color)); /* IE6 & IE7 */
+		-ms-filter: %("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",@start-color,@end-color); /* IE8+ */
+	}
+}
+
+//
+
+.font-face( @family-name, @font-path, @font-weight:normal, @font-style:normal, @svg:false ) when not (@svg) {
+	@font-face {
+		font-family: @family-name;
+		src: url('@{font-path}.eot');
+		src: url('@{font-path}.eot?#iefix') format('embedded-opentype'), url('@{font-path}.woff') format('woff'), url('@{font-path}.ttf') format('truetype');
+		font-weight: @font-weight;
+		font-style: @font-style;
+	}
+}
+
+.font-face( @family-name, @font-path, @font-weight:normal, @font-style:normal, @svg:false ) when (@svg) {
+	@font-face {
+		font-family: @family-name;
+		src: url('@{font-path}.eot');
+		src: url('@{font-path}.eot?#iefix') format('embedded-opentype'), url('@{font-path}.woff') format('woff'), url('@{font-path}.ttf') format('truetype'), url('@{font-path}.svg#@{family-name}') format('svg');
+		font-weight: @font-weight;
+		font-style: @font-style;
+	}
+}
