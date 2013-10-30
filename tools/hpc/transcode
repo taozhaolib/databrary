@@ -1,15 +1,20 @@
 #!/bin/bash
 
+SCRATCH=/scratch/databrary
+
 usage() {
-	echo "Usage: $0 FILE ..."
-	echo "Transcodes files (under $SCRATCH)."
+	echo "Usage: $0 [-d OUTDIR] FILE ..."
+	echo "Transcodes files to OUTDIR/FILE (transcoded by default)."
 	exit 1
 }
 
 rate=50000
-while getopts 'r:f' opt ; do case "$opt" in
-	(r) rate=$OPTARG ;;
-	(f) (( force++ )) ;;
+outdir=transcoded
+while getopts 'r:fd:n' opt ; do case "$opt" in
+	r) rate=$OPTARG ;;
+	f) (( force++ )) ;;
+	d) outdir=$OTPARG ;;
+	n) optn=1 ;;
 esac ; done
 shift $[OPTIND-1]
 
@@ -26,35 +31,45 @@ if [[ ! -f $pbs ]] ; then
 	exit 1
 fi
 
-owd=$PWD
-cd $SCRATCH
+#if [[ $PWD != /scratch/* ]] ; then
+#	echo "Should be run from /scratch."
+#	exit 1
+#fi
+
+cmd=qsub
+if [[ $optn ]] ; then
+	cmd="echo $cmd"
+fi
+
 mkdir -p log
 for file in "$@" ; do
-	if [[ ! -f $PWD/$file ]] ; then
-		echo "$PWD/$file: file not found"
-		if [[ $owd != $PWD ]] ; then
-			echo "Files are relative to $PWD, so you may want to cd there first."
-		fi
+	if [[ ! -f $file ]] ; then
+		echo "$file: file not found"
 		continue
 	fi
-	dir=`dirname "$file"`
-	tdir=transcoded/$dir
+	if [[ $file = /* ]] ; then
+		tdir=$outdir
+	else
+		tdir=$outdir/`dirname "$file"`
+	fi
 	base=`basename "$file"`
 	base=${base%.*}
 	out=$tdir/$base-01.mp4
 	if [[ -s $out && $force -lt 1 ]] ; then
-		echo "$file: Transcoding already done.  Skipping.  Use -f to force."
+		echo "$file: Transcoding already done. Skipping. Use -f to force."
 		continue
 	fi
 	lock=$tdir/.$base.lock
 	if [[ -e $lock && $force -lt 2 ]] ; then
-		echo "$file: Transcoding already in progress.  Use -ff to force."
+		echo "$file: Transcoding already in progress. Skipping. Use -ff to force."
 		continue
 	fi
 	mkdir -p $tdir
-	touch $lock
-	name=`echo $base | tr -cd '[:alnum:]' | cut -c-14`
+	if [[ ! $optn ]] ; then
+		touch $lock
+	fi
+	name=`echo $base | tr -cd '[:alnum:]' | cut -c-15`
 	sec=$[60+`stat -c %s $file`/$rate]
 	echo -n "$file: "
-	qsub -d $PWD -q ser2 -N t$name -v "IN=$file,OUT=$out,LOCK=$lock", -l walltime=$sec $pbs
+	$cmd -d $PWD -q ser2 -N $name -v "IN=$file,OUT=$out,LOCK=$lock", -l walltime=$sec $pbs
 done

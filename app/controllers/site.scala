@@ -105,7 +105,7 @@ class SiteController extends Controller {
 
   def isSecure : Boolean =
     current.configuration.getString("application.secret").exists(_ != "databrary").
-      ensuring(_ || !Play.isProd, "Running insecure in production")
+      ensuring(s => s, "Application is insecure. You must set application.secret appropriately (see README).")
 }
 
 object Site extends SiteController {

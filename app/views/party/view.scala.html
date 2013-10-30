@@ -45,7 +45,7 @@
 		@defining(party.authorizeChildren()) { children =>
 		@if(children.nonEmpty) {
 		    <div class="memberships">
-		    @if(party.isInstanceOf[Account]) { <h2>Dependents</h2> } else { <h2>Members</h2> }
+		    @if(party.isInstanceOf[Account]) { <h2>Affiliates</h2> } else { <h2>Members</h2> }
 
 			<ul class="flat">
 			@children.map { t =>

@@ -1,11 +1,11 @@
 # Databrary
 
-http://databrary.github.io/play
+http://databrary.github.io/databrary
 
 ## Layout
 
 * [MVC Application](app/)
-* [Master database schema](conf/evolutions/default/1.sql)
+* [Master database schema](conf/schema.sql)
 * [Database interface](dbrary/)
 * [ffmpeg interface](media/)
 
