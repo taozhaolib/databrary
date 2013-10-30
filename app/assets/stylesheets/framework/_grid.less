@@ -28,8 +28,8 @@
 //
 
 .grid-wrap(@spread: @gridspread, @column: @gridcolumn, @gutter: @gridgutter) when (@spread > 0) {
-	margin-left: auto;
-	margin-right: auto;
+	margin-left: (@gutter/2);
+	margin-right: (@gutter/2);
 	.grid-width(min, @spread, @column, @gutter);
 	.grid-padding(@gutter);
 	.clearfix();
@@ -73,6 +73,20 @@
 
 .grid-width(fix, @spread: @gridspread, @total: @gridspread) {
 	width: percentage(@spread / @total);
+}
+
+//
+
+.grid-height(max, @spread: @gridspread, @column: @gridcolumn, @gutter: @gridgutter) {
+	max-height: (@column + @gutter) * @spread - @gutter;
+}
+
+.grid-height(min, @spread: @gridspread, @column: @gridcolumn, @gutter: @gridgutter) {
+	min-height: (@column + @gutter) * @spread - @gutter;
+}
+
+.grid-height(fix, @spread: @gridspread, @column: @gridcolumn, @gutter: @gridgutter) {
+	height: (@column + @gutter) * @spread;
 }
 
 //

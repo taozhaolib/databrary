@@ -70,6 +70,11 @@
 	@gridgutter: 1rem;
 
 	.grid(desktop, @gridspread, @gridcolumn, @gridgutter);
+	.wrap {
+		.grid-width(max, @gridspread, @gridcolumn, @gridgutter);
+		margin-left: auto;
+		margin-right: auto;
+	}
 
 	.show-cell { .hide(); }
 	.show-mobile { .hide(); }

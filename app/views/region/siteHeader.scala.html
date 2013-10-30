@@ -4,12 +4,12 @@
 	<div class="wrap">
         <div class="row">
             <div class="title cf col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-2 hide-cell">
-                <h1>
-                    <a href="@routes.Static.index" title="Databrary: An Open Data Library"><strong>Data</strong>brary</a>
+                <h1 class="site_header_h1">
+                    <a href="@routes.Static.index" title="Databrary: An Open Data Library"><span>Databrary</span></a>
                 </h1>
 
-                <nav class="cf hide-mobile hide-cell">
-                    <ul class="major_nav inline cf">
+                <nav class="site_header_nav cf hide-mobile hide-cell">
+                    <ul class="site_header_nav_ul inline cf">
                         <li><a href="@routes.Volume.listAll">Explore</a></li>
                         <li><a href="@routes.Static.about">Discover</a></li>
                         <li><a href="@routes.Static.about">Share</a></li>
@@ -17,25 +17,23 @@
                 </nav>
             </div>
 
-            <div class="usernow col-desktop-11 col-laptop-17 col-tablet-4 col-mobile-4">
+            <div class="site_header_user col-desktop-11 col-laptop-7 col-tablet-4 col-mobile-4">
                 @request.filter(_.user.nonEmpty).fold {
                     <a href="@routes.Login.view" id="modal_login_link" class="modal_link" data-target="modal_login">login</a>
-                    <span>|</span>
-                    <a href="@routes.Login.view">register</a>
                 } { request =>
                     <a href="@request.identity.pageURL(request)" id="modal_profile_link" class="modal_link" data-target="modal_profile"><img src="@display.avatar(request.identity, 16)" alt="@request.identity.name" class="s16"> @request.identity.name</a>
 
                     @if(request.user.get.access(request.db) == Permission.ADMIN) {
                         @if(request.superuser) {
-                            <span>|</span>
+                            <span class="sep">|</span>
                             <a class="first message" data-message="<strong>Superuser!</strong> Click to re-enter normalcy." href="@routes.Login.superuserOff">SU</a>
                         }else{
-                            <span>|</span>
+                            <span class="sep">|</span>
                             <a class="second message" data-message="<strong>Beware!</strong> With great power comes great responsibility. Click to enter superuser mode." href="@routes.Login.superuserOn">SU</a>
                         }
                     }
 
-                    <span>|</span>
+                    <span class="sep">|</span>
                     <a href="@routes.Login.logout">logout</a>
                 }
             </div>

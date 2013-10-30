@@ -1,0 +1,513 @@
+// MIXINS
+
+.quote-double() {
+	&:before {
+		content: '\201C';
+		content: open-quote;
+	}
+	&:after {
+		content: '\201D';
+		content: close-quote;
+	}
+}
+
+.quote-single() {
+	&:before {
+		content: '\2018';
+		content: open-quote;
+	}
+	&:after {
+		content: '\2019';
+		content: close-quote;
+	}
+}
+
+//
+
+.link-clear() {
+	a {
+		&:link, &:visited, &:hover, &:active {
+			color: inherit;
+		}
+	}
+}
+
+// STYLES
+
+body {
+	.font-size();
+	.line-height();
+	color: @text;
+	background: @back;
+}
+
+//
+
+p, .p,
+ul,
+ol,
+dl,
+table,
+figure, .figure,
+embed,
+audio,
+video,
+canvas,
+pre {
+	.margin(all, 0, 0, 1);
+}
+
+//
+
+u, .u {
+	text-decoration: underline;
+}
+
+b, .b
+strong, .strong {
+	font-weight: bold;
+}
+
+i, .i,
+em, .em {
+	font-style: italic;
+}
+
+//
+
+a, .a {
+	text-decoration: none;
+	cursor: pointer;
+	.transition(@transition);
+
+	&:link, &.link,
+	&:visited, &.visited {
+		color: @c4;
+	}
+
+	&:hover, &.hover {
+		color: @c4g4m25;
+	}
+
+	&:active, &.active {
+		color: @c4g5m25;
+	}
+}
+
+//
+
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5 {
+	font-weight: 300;
+}
+
+h1, .h1 {
+	.font-size(3);
+	.line-height(2.5);
+	.margin(all, 3, 0, 1);
+}
+
+h2, .h2 {
+	.font-size(2.75);
+	.line-height(2);
+	.margin(all, 3, 0, 1);
+}
+
+h3, .h3 {
+	.font-size(2.5);
+	.line-height(2);
+	.margin(all, 2, 0, .5);
+}
+
+h4, .h4 {
+	.font-size(2);
+	.line-height(1.5);
+	.margin(all, 2, 0, 0);
+}
+
+h5, .h5 {
+	.font-size(1.25);
+	.line-height(1);
+	.margin(all, 1, 0, 0);
+}
+
+h6, .h6 {
+	font-weight: normal;
+	text-align: center;
+	text-transform: uppercase;
+	letter-spacing: (1em/16);
+	.font-size(.75);
+	.line-height(1);
+	.margin(all, 2, 0);
+}
+
+//
+
+hr {
+	@color: @white;
+	@color_diamond: @g4;
+	@size: @b8;
+	@shift: @size * 2;
+	border-width: 0;
+	border-bottom: 1px solid @color;
+	width: 50%;
+	padding: 0;
+	.margin(top, 2);
+	.border-margin(bottom, 1px, 2);
+
+	&:before,
+	&:after {
+		float: left;
+		position: relative;
+		content: "";
+		width: 0;
+		height: 0;
+		border-color: transparent;
+		border-width: @size;
+		border-style: solid;
+	}
+
+	&:before {
+		left: 50%;
+		top: -@shift;
+		margin-left: -@size;
+		border-bottom-color: @color_diamond;
+	}
+
+	&:after {
+		left: 50%;
+		top: 1px;
+		margin-left: -@shift;
+		border-top-color: @color_diamond;
+	}
+}
+
+//
+
+code, .code,
+kbd, .kbd,
+samp, .samp,
+pre, .pre {
+	@color: @c10;
+
+	font-family: 'Lucida Console', monospace;
+	.font-size(.9);
+	background: mix(@color, @white, 15%);
+	border-color: @color;
+	border-style: solid;
+}
+
+code, .code,
+kbd, .kbd,
+samp, .samp {
+	@border: 1px;
+
+	.line-height(2/3);
+	border-width: @border 0;
+	.border-padding(vertical, @border, .125);
+	.padding(horizontal, .25);
+}
+
+pre, .pre {
+	@border: 2px;
+
+	border-width: @border 0;
+	.border-padding(vertical, @border, .5);
+	.padding(horizontal, .5);
+}
+
+//
+
+ol,
+ul {
+	position: relative;
+	.padding(left, 1.5);
+
+	ul,
+	ol {
+		.margin(bottom, 0);
+	}
+}
+
+ol, ul {
+	list-style: none;
+
+	> li {
+		&:before {
+			position: relative;
+			float: left;
+		}
+	}
+}
+
+ol {
+	counter-reset: li;
+
+	> li {
+		&:before {
+			content: counter(li) ".";
+			counter-increment: li;
+
+			.font-size(.75);
+			font-style: italic;
+			text-align: right;
+			color: @c8;
+			width: @b1;
+			top: @b12;
+			left: -@b4;
+			margin-left: -@b1;
+		}
+	}
+}
+
+ul {
+	> li {
+		&:before {
+			content: "";
+			border-color: transparent;
+			border-style: solid;
+			border-left-color: @c8;
+			border-width: @b6;
+			width: 0;
+			height: 0;
+			top: @b3;
+			left: -@b6;
+			margin-left: -@b3;
+		}
+	}
+}
+
+//
+
+dl, .dl {
+	dt, .dt {
+		font-style: normal;
+		font-weight: 600;
+	}
+
+	dd, .dd {
+		.margin(left, 2.5);
+	}
+}
+
+//
+
+q, .q {
+	quotes: '\201C' '\201D' '\2018' '\2019' '\201C' '\201D' '\2018' '\2019';
+
+	.quote-double();
+
+	q, .q {
+		.quote-single();
+
+		q, .q {
+			.quote-double();
+
+			q, .q {
+				.quote-single();
+			}
+		}
+	}
+}
+
+cite, .cite, q[cite] {
+	font-style: italic;
+	color: @c6;
+
+	&.u {
+		text-decoration: underline;
+		font-style: normal;
+	}
+}
+
+blockquote, .blockquote {
+	@color: @c6;
+
+	.margin(all, 2, 2.5, 1.5);
+
+	&:before, &:after {
+		.font-size(5);
+		color: @color;
+		position: relative;
+		line-height: 0;
+	}
+
+	&:before {
+		content: open-quote;
+		top: .25em;
+		left: -.425em;
+		float: left;
+	}
+
+	&:after {
+		content: no-close-quote;
+	}
+
+	p {
+		.margin(bottom, .5);
+	}
+
+	cite, .cite {
+		display: block;
+		color: @color;
+		border-bottom: 0;
+		text-align: right;
+
+		&:before {
+			color: @color;
+			content: "\2014 \0020";
+		}
+	}
+}
+
+// TODO: q/blockquote cite tooltip
+
+//
+
+sub, .sub,
+sup, .sup {
+	font-size: 50%;
+	line-height: 0;
+	position: relative;
+	padding: 0 1px;
+}
+
+sub, .sub {
+	vertical-align: bottom;
+	bottom: .5em;
+}
+
+sup, .sup {
+	vertical-align: top;
+	top: 1em;
+}
+
+//
+
+small, .small {
+	.font-line(.75);
+}
+
+.smaller {
+	.font-line(.5);
+}
+
+.smallest {
+	.font-line(.25);
+}
+
+.big {
+	.font-line(2);
+}
+
+.bigger {
+	.font-line(3);
+}
+
+.biggest {
+	.font-line(4);
+}
+
+//
+
+ins, .ins,
+del, .del {
+	color: @white;
+}
+
+// TODO: ins/del cite/datetime tooltip.
+
+ins, .ins {
+	color: @c0;
+	text-decoration: underline;
+}
+
+del, .del {
+	color: @c8;
+	text-decoration: line-through;
+}
+
+//
+
+mark, .mark,
+s, .s {
+	@border: 1px;
+
+	.font-size(.9);
+	.line-height(2/3);
+
+	border-width: @border 0;
+	border-style: solid;
+
+	.border-padding(vertical, @border, .125);
+	.padding(horizontal, .25);
+
+	text-decoration: none;
+}
+
+mark, .mark {
+	@color: @c0;
+
+	background-color: mix(@color, @white, 15%);
+	border-color: @color;
+}
+
+s, .s {
+	@color: @c8;
+
+	background-color: mix(@color, @white, 15%);
+	border-color: @color;
+}
+
+//
+
+dfn, .dfn,
+var, .var,
+abbr, .abbr,
+abbr[title] {
+	@border: 1px;
+
+	.font-size(.9);
+	.line-height(2/3);
+
+	border-width: @border 0;
+	border-style: solid;
+
+	.border-padding(vertical, @border, .125);
+	.padding(horizontal, .25);
+
+	text-decoration: none;
+	font-style: normal;
+
+	@color: @c2;
+
+	background-color: mix(@color, @white, 15%);
+	border-color: @color;
+}
+
+// TODO: abbr title tooltip; * title tooltip
+
+//
+
+time, .time {
+}
+
+// TODO: time datetime hover
+
+address, .address {
+	display: block;
+	font-style: normal;
+}
+
+//
+
+p, .p {
+	text-align: justify;
+
+	small, .small {
+		.line-height(.5);
+	}
+}
