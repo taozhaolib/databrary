@@ -1,17 +1,12 @@
 package dbrary
 
-import anorm.{Column,ToStatement}
+import macros._
 
 /** Enumerations which reflect types in the database.
   * Any PGEnum should exactly match the correspending database type. */
 abstract class PGEnum(name : String) extends Enumeration {
-  object pgType extends PGType[Value] {
-    val pgType = name
-    def pgGet(s : String) = withName(s)
-    def pgPut(v : Value) = v.toString
-  }
-  implicit val column = pgType.column
-  implicit val statement = pgType.statement
+  val sqlType : SQLType[Value] =
+    SQLType.mapping[String,Value](name, classOf[Value])(s => Some(withName(s)))(_.toString)
 }
 
 object PGEnum {
@@ -25,7 +20,7 @@ object PGEnum {
   def makeImpl(c : Context)(enumName : c.Expr[String]) : c.Expr[Any] = {
     import c.universe._
     val name = getString(c)(enumName)
-    val labels = Connection.enumLabels(name)
+    val labels = Connection.Static.enumLabels(name)
     val obj = newTermName(name)
 
     c.Expr(Block(

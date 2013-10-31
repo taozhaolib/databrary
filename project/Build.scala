@@ -7,17 +7,23 @@ object ApplicationBuild extends Build {
   val appName         = "databrary"
 
   val dbDependencies = Seq(
-    jdbc,
-    anorm,
-    "org.postgresql" % "postgresql" % "9.2-1003-jdbc4"
+    "com.github.mauricio" %% "postgresql-async" % "0.2.8"
   )
 
   val avDependencies = Seq(
     "commons-io" % "commons-io" % "2.4"
   )
 
-  val dbrary = Project("dbrary", file("dbrary")).settings(
-    libraryDependencies ++= dbDependencies
+  val macros = Project("macros", file("macros")).settings(
+    libraryDependencies +=
+      "org.scala-lang" % "scala-reflect" % "2.10.3"
+  )
+
+  val dbrary = Project("dbrary", file("dbrary")).dependsOn(macros).settings(
+    libraryDependencies ++= dbDependencies ++ Seq(
+      component("play"),
+      "org.postgresql" % "postgresql" % "9.2-1003-jdbc4"
+    )
   )
 
   val media = Project("media", file("media")).dependsOn(dbrary).settings(
@@ -30,7 +36,7 @@ object ApplicationBuild extends Build {
   )
 
   val main = play.Project(appName, "unknown", appDependencies).
-    dependsOn(dbrary, media).settings(
+    dependsOn(macros, dbrary, media).settings(
       version <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown"))
     )
 

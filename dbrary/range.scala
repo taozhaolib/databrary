@@ -1,7 +1,6 @@
 package dbrary
 
-import java.sql.{SQLException,Date}
-import java.util.Calendar
+import macros._
 
 trait RangeType[A] extends Ordering[A]
 trait DiscreteRangeType[A] extends RangeType[A] {
@@ -133,50 +132,43 @@ object Range {
   }
 }
 
-abstract class PGRangeType[A](val pgType : String)(implicit baseType : PGType[A]) extends RangeType[A] with PGType[Range[A]] {
-  def pgGet(s : String) : Range[A] = {
-    if (s == "empty" || s.isEmpty)
-      return Range.empty[A](this)
-    val lc = s.head match {
-      case '[' => true
-      case '(' => false
-      case _ => throw new SQLException("Invalid range: " + s)
-    }
-    val c = s.indexOf(',', 1)
-    if (c < 0)
-      throw new SQLException("Invalid range: " + s)
-    val lb = if (c == 1) None else Some(baseType.pgGet(s.substring(1,c)))
-    val l = s.size
-    val ub = if (c == l-2) None else Some(baseType.pgGet(s.substring(c+1,l-1)))
-    val uc = s.last match {
-      case ']' => true
-      case ')' => false
-      case _ => throw new SQLException("Invalid range: " + s)
-    }
-    Range[A](lc, lb, ub, uc)(this)
-  }
-  def pgPut(r : Range[A]) : String =
+abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends RangeType[A] {
+  val sqlType = SQLType.mapping[String,Range[A]](name, classOf[Range[A]]) { s =>
+    if (s.equals("empty") || s.isEmpty)
+      Some(Range.empty[A](this))
+    else for {
+      lc <- s.head match {
+        case '[' => Some(true)
+        case '(' => Some(false)
+        case _ => None
+      }
+      c <- maybe(s.indexOf(',', 1), -1)
+      lb <- if (c == 1) Some(None) else base.read(s.substring(1,c)).map(Some(_))
+      l = s.size
+      ub <- if (c == l-2) Some(None) else base.read(s.substring(c+1,l-1)).map(Some(_))
+      uc <- s.last match {
+        case ']' => Some(true)
+        case ')' => Some(false)
+        case _ => None
+      }
+    } yield (Range[A](lc, lb, ub, uc)(this))
+  } { r =>
     if (r.isEmpty)
       "empty"
     else
       (if (r.lowerClosed) '[' else '(') +
-      r.lowerBound.fold("")(baseType.pgPut(_)) + ',' +
-      r.upperBound.fold("")(baseType.pgPut(_)) +
+      r.lowerBound.fold("")(base.show(_)) + ',' +
+      r.upperBound.fold("")(base.show(_)) +
       (if (r.upperClosed) ']' else ')')
+  }
 }
 
-object PGSegment extends PGRangeType[Offset]("segment")(Offset.pgType) {
+object PGSegment extends PGRangeType[Offset]("segment") {
   def compare(a : Offset, b : Offset) = a compare b
 }
 
-object PGDateRange extends PGRangeType[Date]("daterange")(
-  new PGType[Date] {
-    val pgType = "date"
-    def pgGet(s : String) = dbutil.timestampUtils.toDate(null, s)
-    def pgPut(d : Date) = dbutil.timestampUtils.toString(null, d)
-  }) with DiscreteRangeType[Date] {
+object PGDateRange extends PGRangeType[Date]("daterange") with DiscreteRangeType[Date] {
   def compare(a : Date, b : Date) = a compareTo b
-  private[this] def addDate(a : Date, i : Int) = new Date({ val cal = Calendar.getInstance ; cal.setTime(a) ; cal.add(Calendar.DATE, i) ; cal.getTimeInMillis })
-  def increment(a : Date) = addDate(a, +1)
-  def decrement(a : Date) = addDate(a, -1)
+  def increment(a : Date) = a.plusDays(1)
+  def decrement(a : Date) = a.minusDays(1)
 }

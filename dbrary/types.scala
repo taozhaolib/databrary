@@ -1,156 +1,70 @@
 package dbrary
 
-import org.postgresql._
-import org.postgresql.util._
-import java.sql.{Timestamp,Date,SQLException}
-import anorm._
-import play.api.mvc.{PathBindable,QueryStringBindable,JavascriptLitteral}
-import play.api.data.format.Formatter
+import scala.util.control.Exception.catching
+import com.github.mauricio.async.db
+import macros._
 
-class PGObject(pgType : String, pgValue : String) extends PGobject {
-  setType(pgType)
-  setValue(pgValue)
+class SQLTypeMismatch(value : Any, sqltype : SQLType[_], where : String = "")
+  extends db.exceptions.DatabaseException("Type mismatch converting " + value.toString + ":" + value.getClass + " to " + sqltype.name + (if (where.isEmpty) "" else " for " + where)) {
+  def amend(msg : String) : SQLTypeMismatch = new SQLTypeMismatch(value, sqltype, (if (where.isEmpty) "" else " in ") + msg)
 }
 
-trait PGType[A] {
-  val pgType : String
-  def pgGet(s : String) : A
-  def pgPut(t : A) : String
+abstract class SQLType[A](val name : String, val aClass : Class[A]) {
+  parent =>
+  def read(s : String) : Option[A]
+  def get(x : Any) : Option[A] = x match {
+    case a /* : A */ if aClass.isAssignableFrom(x.getClass) => Some(x.asInstanceOf[A])
+    case s : String => read(s)
+    case _ => None
+  }
+  def show(a : A) : String = a.toString
+  def put(a : A) : Any = a
 
-  implicit val column : Column[A] = Column.nonNull[A] { (value, meta) =>
-    value match {
-      case obj: PGobject if obj.getType == pgType => Right(pgGet(obj.getValue))
-      case obj: PGobject => Left(TypeDoesNotMatch("Incorrect type of object " + value + ":" + obj.getType + " for column " + meta.column + ":" + pgType))
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to PGobject for column " + meta.column))
+  final def make(x : Any, where : String = "") : A =
+    get(x).getOrElse(throw new SQLTypeMismatch(x, this, where))
+
+  def mapping[B](n : String, bc : Class[B])(f : A => Option[B])(g : B => A) : SQLType[B] =
+    new SQLType[B](n, bc) {
+      def read(s : String) : Option[B] = parent.read(s).flatMap(f)
+      override def get(x : Any) : Option[B] = parent.get(x).flatMap(f)
+      override def show(b : B) : String = parent.show(g(b))
+      override def put(b : B) : Any = parent.put(g(b))
     }
-  }
-
-  implicit val statement : ToStatement[A] = new ToStatement[A] {
-    def set(s: java.sql.PreparedStatement, index: Int, a: A) =
-      s.setObject(index, new PGObject(pgType, pgPut(a)))
-  }
 }
 
-object Anorm {
-  implicit val columnTimestamp : Column[Timestamp] = Column.nonNull { (value, meta) =>
-    value match {
-      case ts: Timestamp => Right(ts)
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to Timestamp for column " + meta.column))
+object SQLType {
+  def mapping[A,B](name : String, cls : Class[B])(get : A => Option[B])(put : B => A)(implicit base : SQLType[A]) : SQLType[B] =
+    base.mapping(name, cls)(get)(put)
+
+  implicit object string extends SQLType[String]("text", classOf[String]) {
+    def read(s : String) = Some(s)
+  }
+
+  implicit object int extends SQLType[Int]("integer", classOf[Int]) {
+    def read(s : String) = maybe.toInt(s)
+  }
+
+  implicit object date extends SQLType[Date]("date", classOf[Date]) {
+    def read(s : String) =
+      catching(classOf[java.lang.IllegalArgumentException]).opt(
+        org.joda.time.LocalDate.parse(s))
+  }
+
+  implicit def option[A](implicit t : SQLType[A]) : SQLType[Option[A]] =
+    new SQLType[Option[A]](t.name + " NULL", classOf[Option[A]]) {
+      def read(s : String) : Option[Option[A]] = Option(s).map(t.read _)
+      override def get(x : Any) : Option[Option[A]] = Option(x).map(t.get _)
+      override def put(a : Option[A]) = a.map(t.put _).orNull
     }
-  }
 
-  implicit val columnDate : Column[Date] = Column.nonNull { (value, meta) =>
-    value match {
-      case d: Date => Right(d)
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to Date for column " + meta.column))
-    }
-  }
-
-  implicit val columnArrayString : Column[Array[String]] = Column.nonNull { (value, meta) =>
-    value match {
-      case a: java.sql.Array => a.getArray match {
-        case a : Array[String] => Right(a)
-        case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":Array[" + a.getBaseTypeName + "] to Array[String] for column " + meta.column))
-      }
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to Array[String] for column " + meta.column))
-    }
-  }
-
-  def toStatementMap[A,S](f : A => S)(implicit ts : ToStatement[S]) : ToStatement[A] = new ToStatement[A] {
-    def set(s: java.sql.PreparedStatement, index: Int, a: A) =
-      ts.set(s, index, f(a))
-  }
-  def columnMap[A,S](f : S => A)(implicit c : Column[S]) : Column[A] = Column(
-    c(_, _).map(f(_))
-  )
-}
-
-/* A length of time; called "interval" in postgres, offset is a better name for our purposes */
-case class Offset(seconds : Double) 
-  extends scala.math.Ordered[Offset] {
-  /*
-     with scala.runtime.FractionalProxy[Double] 
-     with scala.runtime.OrderedProxy[Double] {
-     def self = seconds
-  protected def ord = scala.math.Ordering.Double
-  protected def integralNum = scala.math.Numeric.DoubleAsIfIntegral
-  protected def num = scala.math.Numeric.DoubleIsFractional
-  */
-  def millis = 1000*seconds
-  def nanos = 1000000000*seconds
-  def samples(rate : Double) = math.round(rate*seconds)
-  def +(other : Offset) = Offset(seconds + other.seconds)
-  def -(other : Offset) = Offset(seconds - other.seconds)
-  def compare(other : Offset) = seconds.compare(other.seconds)
-  def min(other : Offset) = Offset(seconds.min(other.seconds))
-  def max(other : Offset) = Offset(seconds.max(other.seconds))
-  def approx(other : Offset) = (other.seconds - seconds).abs < 0.001
-
-  /* This is unfortuante but I can't find any other reasonable formatting options outside the postgres server itself: */
-  override def toString = {
-    val s = "%06.3f".format(seconds % 60)
-    val m = seconds.toInt / 60
-    if (m >= 60)
-      "%02d:%02d:%s".format(m / 60, m % 60, s)
-    else
-      "%02d:%s".format(m, s)
-  }
-}
-object Offset {
-  def apply(d : BigDecimal) : Offset = Offset(d.toDouble)
-  def apply(i : PGInterval) : Offset =
-    Offset(60*(60*(24*(30*(12.175*i.getYears + i.getMonths) + i.getDays) + i.getHours) + i.getMinutes) + i.getSeconds)
-
-  private val multipliers : Seq[Double] = Seq(60,60,24).scanLeft(1.)(_ * _)
-  def fromString(s : String) : Offset = {
-    s.split(':').reverseIterator.zipAll(multipliers.iterator, "", 0.).map {
-      case (_, 0) => throw new java.lang.NumberFormatException("For offset string: " + s)
-      case ("", _) => 0.
-      case (s, m) => m*s.toDouble
-    }.sum
-  }
-
-  object pgType extends PGType[Offset] {
-    val pgType = "interval"
-    def pgGet(s : String) = Offset(new PGInterval(s))
-    def pgPut(i : Offset) = i.seconds.toString
-  }
-
-  implicit val column : Column[Offset] = Column.nonNull[Offset] { (value, meta) =>
-    value match {
-      case int : PGInterval => Right(Offset(int))
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to PGInterval for column " + meta.column))
-    }
-  }
-  implicit val statement : ToStatement[Offset] = new ToStatement[Offset] {
-    def set(s: java.sql.PreparedStatement, index: Int, a: Offset) =
-      s.setObject(index, new PGInterval(0, 0, 0, 0, 0, a.seconds))
-  }
-
-  implicit val pathBindable : PathBindable[Offset] = PathBindable.bindableDouble.transform(apply _, _.seconds)
-  implicit val queryStringBindable : QueryStringBindable[Offset] = QueryStringBindable.bindableDouble.transform(apply _, _.seconds)
-  implicit val javascriptLitteral : JavascriptLitteral[Offset] = new JavascriptLitteral[Offset] {
-    def to(value : Offset) = value.seconds.toString
-  }
-
-  implicit val offsetFormat : Formatter[Offset] = new Formatter[Offset] {
-    override val format = Some(("format.offset", Nil))
-    def bind(key: String, data: Map[String, String]) =
-      play.api.data.format.Formats.stringFormat.bind(key, data).right.flatMap { s =>
-        scala.util.control.Exception.catching(classOf[java.lang.NumberFormatException]).
-          either(fromString(s)).
-          left.map(_ => Seq(play.api.data.FormError(key, "error.offset", Nil)))
-      }
-    def unbind(key: String, value: Offset) = Map(key -> value.toString)
-  }
-
-  import scala.language.implicitConversions
-  implicit def ofSeconds(seconds : Double) : Offset = Offset(seconds)
+  def get[A](row : db.RowData, name : String)(implicit t : SQLType[A]) =
+    t.make(row(name), "column " + name)
+  def get[A](row : db.RowData, number : Int)(implicit t : SQLType[A]) =
+    t.make(row(number), "column " + number)
 }
 
 case class Inet(ip : String)
-object Inet extends PGType[Inet]{
-  val pgType = "inet"
-  def pgGet(s : String) = Inet(s)
-  def pgPut(i : Inet) = i.ip
+object Inet {
+  implicit val sqlType : SQLType[Inet] =
+    SQLType.mapping[String,Inet]("inet", classOf[Inet])(s => Some(Inet(s)))(_.ip)
 }

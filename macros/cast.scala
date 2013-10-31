@@ -1,4 +1,4 @@
-package dbrary 
+package macros
 
 object Cast {
   import scala.language.experimental.macros

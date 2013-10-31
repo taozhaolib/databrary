@@ -1,4 +1,4 @@
-package site
+package macros
 
 /** Utility that creates [[scala.Option]]s out of values. */
 object maybe {
@@ -23,7 +23,7 @@ object maybe {
   /** Compute the value, usually a string parse, catching NumberFormatException.
     * @return Some(f) unless f throws NumberFormatException
     */
-  private def toNumber[A](f : => A) : Option[A] =
+  def toNumber[A](f : => A) : Option[A] =
     scala.util.control.Exception.catching(classOf[java.lang.NumberFormatException]).opt(f)
   def toInt(s : String) : Option[Int] = toNumber(s.toInt)
   def toLong(s : String) : Option[Long] = toNumber(s.toLong)

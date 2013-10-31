@@ -1,8 +1,19 @@
 package dbrary
 
+import com.github.mauricio.async.db
 import org.postgresql.Driver
 
-private[dbrary] object Connection {
+object Connection {
+  def factory(app : play.api.Configuration = play.api.Configuration.load(new java.io.File(".")), database : String = "default") = {
+    val conf = app.getConfig("db." + database).getOrElse(play.api.Configuration.empty)
+    val c = conf.getString("url").fold(db.Configuration.Default)(db.postgresql.util.URLParser.parse(_))
+    new db.postgresql.pool.PostgreSQLConnectionFactory(c.copy(
+      username = conf.getString("user").getOrElse(c.username),
+      password = conf.getString("password").orElse(c.password)
+    ))
+  }
+
+private[dbrary] object Static {
   private def getConnection = {
     val conf = play.api.Configuration.load(new java.io.File(".")).getConfig("db.default").getOrElse(throw new Exception("No default database found in configuration."))
     val Seq(url, user, password) : Seq[String] = Seq("url", "user", "password").map(c =>
@@ -38,7 +49,7 @@ private[dbrary] object Connection {
   def enumLabels(name : String) : List[String] = {
     val stmt = enumLabelsStmt
     val buf = new scala.collection.mutable.ListBuffer[String]
-    Connection { _ =>
+    apply { _ =>
       stmt.setString(1, name)
       val res = stmt.executeQuery
       while (res.next)
@@ -46,4 +57,6 @@ private[dbrary] object Connection {
     }
     buf.toList
   }
+}
+
 }

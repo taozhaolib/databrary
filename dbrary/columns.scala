@@ -1,5 +1,6 @@
 package dbrary
 
+/*
 import anorm._
 
 case class FromTable(table : String) {
@@ -213,3 +214,4 @@ object Columns {
   def apply[C1 : Column, C2 : Column, C3 : Column, C4 : Column, C5 : Column, C6 : Column](a1 : SelectExpr, a2 : SelectExpr, a3 : SelectExpr, a4 : SelectExpr, a5 : SelectExpr, a6 : SelectExpr)(implicit from : FromTable) = new Columns6[C1,C2,C3,C4,C5,C6](a1,a2,a3,a4,a5,a6)
   def apply[C1 : Column, C2 : Column, C3 : Column, C4 : Column, C5 : Column, C6 : Column, C7 : Column](a1 : SelectExpr, a2 : SelectExpr, a3 : SelectExpr, a4 : SelectExpr, a5 : SelectExpr, a6 : SelectExpr, a7 : SelectExpr)(implicit from : FromTable) = new Columns7[C1,C2,C3,C4,C5,C6,C7](a1,a2,a3,a4,a5,a6,a7)
 }
+*/
