@@ -1,4 +1,8 @@
 @(title : String = "The Databrary Project", css: Html = Html(""), js: Html = Html(""), request : Option[SiteRequest[_]])(body : Html)
+
+@import play.api._
+@import play.api.Play.current
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -49,7 +53,7 @@
         <!--[if lt IE 9]><script src="@routes.Assets.at("javascripts/libs/html5shiv/html5shiv.min.js")"></script><![endif]-->
 	</head>
 
-	<body>
+	<body class="@if(Play.isDev){dev}">
 		@region.siteHeader(request)
 
         <div id="site_content" class="site_content page">

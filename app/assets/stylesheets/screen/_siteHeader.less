@@ -1,0 +1,109 @@
+.site_header {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	.height(fix, 1.5);
+	background: @black;
+	.line-height(1.5);
+	.box-shadow();
+}
+
+.site_header_h1 {
+	.font-size();
+	.line-height(1.5);
+	.margin(vertical, 0);
+	display: inline-block;
+
+	a {
+		color: @white;
+		display: block;
+		background: url('/public/images/logo/databrary-nav.png') no-repeat 0 center;
+		.height(1.5);
+		padding-left: 1.75rem;
+		padding-right: @b1;
+
+		&:hover {
+			color: @white;
+			text-shadow: 0 0 3px @g4;
+		}
+	}
+}
+
+.site_header_nav {
+	display: inline-block;
+
+	a {
+		color: @c10;
+		text-transform: lowercase;
+
+		&:before {
+			content: "/";
+			color: @c11;
+		}
+
+		&:hover {
+			color: @c11g5m25;
+			text-shadow: 0 0 2px fadeout(@c11g5m50, 75%);
+		}
+	}
+}
+
+.site_header_nav_ul {
+	li {
+		margin-right: @gutter;
+	}
+}
+
+.site_header_user {
+	text-align: right;
+
+	a {
+		color: @g4;
+
+		&:hover {
+			color: @white;
+			text-shadow: 0 0 2px @g4;
+		}
+	}
+
+	a.img {
+		position: relative;
+		top: @b8;
+
+		img {
+			display: inline-block;
+			border: 1px solid @g4;
+			.size(18px);
+		}
+
+		&:hover {
+			img {
+				border-color: @g5;
+				.box-shadow(0 0 3px @g4);
+			}
+		}
+	}
+
+	a.superuser {
+		&.on {
+			color: @c0g5m75;
+
+			&:hover {
+				color: @c0g5m25;
+				text-shadow: 0 0 2px fadeout(@c0g5m50, 75%);
+			}
+		}
+		&.off {
+			color: @c8g5m75;
+
+			&:hover {
+				color: @c8g5m25;
+				text-shadow: 0 0 2px fadeout(@c8g5m50, 75%);
+			}
+		}
+	}
+}
+
+.site_content {
+	.margin(top, 2);
+}

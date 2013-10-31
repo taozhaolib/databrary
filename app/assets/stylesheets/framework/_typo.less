@@ -245,7 +245,7 @@
 
 //
 
-.rules(hide, @baseline: @baseline, @offset: -(@baseline / 6), @odd: #eff, @even: #dff, @back: @back) {
+.rules(hide, @baseline: @baseline, @offset: -(@baseline / 6), @odd: #dff, @even: #dff, @back: @back) {
 	background: @back;
 
 	&:hover {
@@ -253,7 +253,7 @@
 	}
 }
 
-.rules(show, @baseline: @baseline, @offset: -(@baseline / 6), @odd: #eff, @even: #dff, @back: @back) {
+.rules(show, @baseline: @baseline, @offset: -(@baseline / 6), @odd: #dff, @even: #dff, @back: @back) {
 	._rules(@baseline, @offset, @odd, @even, @back);
 
 	&:hover {
@@ -261,7 +261,7 @@
 	}
 }
 
-._rules(@baseline: @baseline, @offset: -(@baseline / 6), @odd: #eff, @even: #dff, @back: @back) {
+._rules(@baseline: @baseline, @offset: -(@baseline / 6), @odd: #dff, @even: #dff, @back: @back) {
 	@half: @baseline / 2;
 	background: -webkit-linear-gradient(top,
 	@back, @back (@half - 1),
