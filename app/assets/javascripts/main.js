@@ -1107,7 +1107,4 @@ $(document).ready(function () {
     // global interfaces
     $messageHandler = $('#messages').messageHandler({});
     $formHandler = $('#forms').formHandler({});
-
-    // all pages
-    dbjs.stickyFooter('#site_footer', '#site_content');
 });

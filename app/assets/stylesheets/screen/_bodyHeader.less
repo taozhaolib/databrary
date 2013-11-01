@@ -1,7 +1,9 @@
 // STYLES
 
 .body_header {
-
+	border-bottom: 1px solid @g4;
+	.border-padding(bottom, 1px, 1);
+	.margin(bottom, 1);
 }
 
 .body_header_h1 {
@@ -13,8 +15,8 @@
 	a {
 		display: block;
 		color: @text;
-		background: url("/public/images/logo/databrary-small.png") no-repeat 0 @b2;
-		.padding(left, 2.5);
+		background: url("/public/images/logo/databrary-small.png") no-repeat 0 (@b2+@b4);
+		.padding(left, 3);
 	}
 }
 
@@ -27,7 +29,7 @@
 	}
 
 	input[type="search"] {
-		.grid-width(max, 6);
+		.grid-width(max, 5);
 		margin-bottom: 0;
 	}
 }

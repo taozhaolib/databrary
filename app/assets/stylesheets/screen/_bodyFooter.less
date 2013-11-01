@@ -1,0 +1,65 @@
+// STYLES
+
+.body_footer {
+	overflow: hidden;
+	position: relative;
+	border-top: 1px solid @g4;
+	.border-padding(top, 1px, 1);
+	.padding(bottom, 1);
+	.margin(top, 1);
+
+	a {
+		color: @c10;
+
+		&:hover, &.hover {
+			color: @c10g4m25;
+		}
+
+		&:active, &.active {
+			color: @c10g5m25;
+		}
+	}
+
+	li {
+		.margin(right, .5);
+	}
+
+	.watermark {
+		background: url("/public/images/logo/databrary-watermark.png") no-repeat;
+		.user-select(none);
+		position: absolute;
+		float: right;
+		bottom: 0px;
+		width: 200px;
+		height: 210px;
+		right: 20px;
+	}
+}
+
+.body_footer_social {
+	p {
+		text-align: right;
+	}
+
+	a:hover img {
+		.box-shadow(0 0 @b6 @c10);
+	}
+}
+
+.body_footer_grants {
+	ul, img {
+		position: relative;
+	}
+
+	ul {
+		top: -8px;
+	}
+
+	.nsf {
+		top: 10px;
+	}
+
+	.nih {
+		top: 6px;
+	}
+}

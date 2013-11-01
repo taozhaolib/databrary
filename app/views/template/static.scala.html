@@ -5,15 +5,15 @@
 }
 
 @template.html5(title, css, script+=js, Some(request)) {
-    @region.bodyHeaderSearch()
+    @region.bodyHeaderStatic()
 
     <div class="row">
-        <main id="body_main" class="main col-desktop-8 push-desktop-3 col-laptop-8 push-laptop-1 col-tablet-7 col-mobile-6">
+        <main id="static_main" class="body_main static_main col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-6">
             @body
         </main>
 
-        <aside id="body_sidebar" class="body_sidebar col-desktop-2 col-laptop-2 col-tablet-2">
-            @widget.staticLinks()
+        <aside id="static_sidebar" class="body_sidebar static_sidebar col-desktop-2 col-laptop-2 col-tablet-2">
+            @region.bodySidebarStatic()
             @sidebar
         </aside>
     </div>

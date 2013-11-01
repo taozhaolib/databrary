@@ -3,7 +3,7 @@
 <header id="site_header" class="site_header">
 	<div class="wrap">
         <div class="row">
-            <div class="title cf col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-2 hide-cell">
+            <div class="title cf col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-4 hide-cell">
                 <h1 class="site_header_h1">
                     <a href="@routes.Static.index" title="Databrary: An Open Data Library"><span>Databrary</span></a>
                 </h1>
@@ -17,7 +17,7 @@
                 </nav>
             </div>
 
-            <div class="site_header_user col-desktop-11 col-laptop-7 col-tablet-4 col-mobile-4">
+            <div class="site_header_user col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
                 @request.filter(_.user.nonEmpty).fold {
                     <a href="@routes.Login.view" id="modal_login_link" class="modal_link" data-target="modal_login">login</a>
                 } { request =>

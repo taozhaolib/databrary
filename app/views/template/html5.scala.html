@@ -4,7 +4,7 @@
 @import play.api.Play.current
 
 <!DOCTYPE html>
-<html>
+<html ng-app>
 	<head>
     	<meta charset="utf-8">
     	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -29,10 +29,14 @@
 
         <!-- js -->
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
 
         <script>
             if (!window.jQuery) {
-                document.write('<script src="@routes.Assets.at("javascripts/libs/jquery/jquery-1.10.2.min.js")"><\/script>');
+                document.write('<script src="@routes.Assets.at("javascripts/libs/jquery-1.10.2/jquery-1.10.2.min.js")"><\/script>');
+            }
+            if (!window.angular) {
+                document.write('<script src="@routes.Assets.at("javascripts/libs/angular-1.0.8/angular.min.js")"><\/script>');
             }
         </script>
 
@@ -59,10 +63,10 @@
         <div id="site_content" class="site_content page">
             <div class="wrap">
                 @body
+
+                @region.bodyFooterStatic()
             </div>
         </div>
-
-        @region.siteFooter()
 
         <section id="messages"></section>
         <section id="forms"></section>
