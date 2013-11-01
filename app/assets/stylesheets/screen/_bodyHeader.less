@@ -8,21 +8,26 @@
 	margin: 0;
 	float: left;
 	.font-size(4.5);
-	.line-height(3);
+	.line-height(4);
 
 	a {
 		display: block;
 		color: @text;
-		background: url("/public/images/logo/databrary-small.png") no-repeat 0 6px;
+		background: url("/public/images/logo/databrary-small.png") no-repeat 0 @b2;
 		.padding(left, 2.5);
 	}
 }
 
 .body_header_search {
 	overflow: hidden;
-	.line-height(3);
+
+	.w {
+		.margin(all, 1.75, .125, .25, .25);
+		text-align: right;
+	}
 
 	input[type="search"] {
-		width: 100%;
+		.grid-width(max, 6);
+		margin-bottom: 0;
 	}
 }

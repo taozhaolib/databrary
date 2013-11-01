@@ -1,0 +1,65 @@
+// STYLES
+
+table {
+	width: 100%;
+	overflow: hidden;
+	z-index: 1;
+	.margin(bottom, 1);
+}
+
+caption,
+th,
+td {
+	.line-height(2/3);
+	.border-padding(vertical, 2px, .25);
+	.padding(horizontal, .25);
+}
+
+caption {
+	caption-side: bottom;
+	font-style: italic;
+	.font-size(.75);
+	border-top: 1px solid @g5;
+	.border-padding(top, 3px, .25);
+	color: @g5;
+}
+
+th, td {
+	text-align: left;
+
+	> a:only-child {
+		display: block;
+	}
+}
+
+thead {
+	th, td {
+		.border-padding(bottom, 4px, .25);
+		border-bottom: 2px solid @g5;
+	}
+}
+
+tfoot {
+	tr {
+		&:hover {
+			background: mix(@g4, @g5, 50%);
+		}
+	}
+
+	th, td {
+		.border-padding(top, 4px, .25);
+		border-top: 2px solid @g5;
+	}
+}
+
+tbody {
+	tr {
+		&:nth-child(even) {
+			background: mix(@g4, @g5, 25%);
+		}
+
+		&:hover {
+			background: mix(@g4, @g5, 50%);
+		}
+	}
+}

@@ -1,0 +1,98 @@
+// STYLES
+
+button, .button {
+	display: inline-block;
+	text-shadow: 0 0 2px fadeout(@g5, 25%);
+	.line-height(1);
+	.border-padding(vertical, 1px, .25);
+	.padding(horizontal, .5);
+	.border-radius(@b8);
+	color: @text !important;
+
+	border: 1px solid @c4g3m75;
+	#gradient > .vertical(@c4g5m75, @c4g5m50);
+
+	&:hover {
+		#gradient > .vertical(@c4g5m50, @c4g5m75);
+		text-decoration: none;
+	}
+
+	&:active {
+		#gradient > .vertical(@c4g5m25, @c4g5m50);
+	}
+
+	&.first, &.c8 {
+		border: 1px solid @c8g3m75;
+		#gradient > .vertical(@c8g5m75, @c8g5m50);
+
+		&:hover {
+			#gradient > .vertical(@c8g5m50, @c8g5m75);
+		}
+
+		&:active {
+			#gradient > .vertical(@c8g5m25, @c8g5m50);
+		}
+	}
+
+	&.second, &.c0 {
+		border: 1px solid @c0g3m75;
+		#gradient > .vertical(@c0g5m75, @c0g5m50);
+
+		&:hover {
+			#gradient > .vertical(@c0g5m50, @c0g5m75);
+		}
+
+		&:active {
+			#gradient > .vertical(@c0g5m25, @c0g5m50);
+		}
+	}
+
+	&.third, &.c10 {
+		border: 1px solid @c10g3m75;
+		#gradient > .vertical(@c10g5m75, @c10g5m50);
+
+		&:hover {
+			#gradient > .vertical(@c10g5m50, @c10g5m75);
+		}
+
+		&:active {
+			#gradient > .vertical(@c10g5m25, @c10g5m50);
+		}
+	}
+
+	&:disabled, &.disabled {
+		border: 1px solid @g3;
+		#gradient > .vertical(mix(@g3, @g5, 75%), mix(@g3, @g5, 50%));
+		background: @g4;
+		cursor: not-allowed;
+
+		&:hover {
+			#gradient > .vertical(mix(@g3, @g5, 50%), mix(@g3, @g5, 75%));
+		}
+
+		&:active {
+			#gradient > .vertical(mix(@g3, @g5, 25%), mix(@g3, @g5, 50%));
+		}
+	}
+}
+
+//
+
+button.link {
+	border: inherit;
+	background: inherit;
+	display: inline;
+	padding: 0;
+	margin: 0;
+	.transition(@transition);
+	color: @second;
+	font: inherit;
+	margin: 0;
+	padding: 0;
+	outline: none;
+	outline-offset: 0;
+
+	&:hover {
+		color: darken(@second, 25%);
+	}
+}

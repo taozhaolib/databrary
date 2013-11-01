@@ -27,6 +27,7 @@
 
 @import "_elements.less";
 @import "_forms.less";
+@import "_buttons.less";
 @import "_tables.less";
 
 // debug
@@ -43,8 +44,44 @@ html {
 *:after,
 *:before {
 	.box-sizing();
+
+	&:focus {
+		outline: 0;
+	}
 }
 
-a, a *, h1, h2, h3, h4, h5, h6, p, dl, ol, ul, blockquote, pre, img, figure, table {
+a, a *, h1, h2, h3, h4, h5, h6, p, dl, ol, ul,
+blockquote, pre, img, figure, figure *, table, table *, button {
 	.transition();
 }
+
+//
+
+.text {
+	color: @text;
+}
+
+.text-inv {
+	color: @back;
+}
+
+.back {
+	background-color: @back;
+}
+
+.back-inv {
+	background-color: @text;
+}
+
+//
+
+.w10 { width: 10%; }
+.w20 { width: 20%; }
+.w30 { width: 30%; }
+.w40 { width: 40%; }
+.w50 { width: 50%; }
+.w60 { width: 60%; }
+.w70 { width: 70%; }
+.w80 { width: 80%; }
+.w90 { width: 90%; }
+.w100 { width: 100%; }
