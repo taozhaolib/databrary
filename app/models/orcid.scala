@@ -1,6 +1,5 @@
 package models
 
-import anorm._
 import dbrary._
 
 /** An [[http://orcid.org/ ORCID]] identifier.
@@ -29,6 +28,6 @@ object Orcid {
   def apply(s : String) : Orcid =
     new Orcid(s.filterNot(c => c == '-' || c.isSpaceChar).stripPrefix("http://").stripPrefix("orcid.org/"))
 
-  implicit val column : Column[Orcid] = Anorm.columnMap[Orcid,String](new Orcid(_))
-  implicit val statement : ToStatement[Orcid] = Anorm.toStatementMap[Orcid,String](_.orcid)
+  implicit val sqlType : SQLType[Orcid] =
+    SQLType[Orcid]("orcid", classOf[Orcid])(s => Some(new Orcid(s)))(_.orcid)
 }

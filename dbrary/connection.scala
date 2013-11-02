@@ -4,8 +4,7 @@ import com.github.mauricio.async.db
 import org.postgresql.Driver
 
 object Connection {
-  def factory(app : play.api.Configuration = play.api.Configuration.load(new java.io.File(".")), database : String = "default") = {
-    val conf = app.getConfig("db." + database).getOrElse(play.api.Configuration.empty)
+  def factory(conf : play.api.Configuration) = {
     val c = conf.getString("url").fold(db.Configuration.Default)(db.postgresql.util.URLParser.parse(_))
     new db.postgresql.pool.PostgreSQLConnectionFactory(c.copy(
       username = conf.getString("user").getOrElse(c.username),

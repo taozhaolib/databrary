@@ -1,9 +1,6 @@
 package models
 
-import java.sql.Timestamp
-import anorm._
 import dbrary._
-import dbrary.Anorm._
 import site._
 
 sealed class Token protected (val token : String, val expires : Timestamp) extends TableRow {

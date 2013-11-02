@@ -1,10 +1,6 @@
 package models
 
-import java.sql.Timestamp
-import anorm._
-import anorm.SqlParser.scalar
 import dbrary._
-import dbrary.Anorm._
 import site._
 
 /** A specific authorization by one party of another.

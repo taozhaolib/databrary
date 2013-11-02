@@ -1,15 +1,18 @@
 package models
 
-import anorm._
 import site._
 
+case class SQLTerm[A : SQLType](name : String, value : A) {
+  def put : Any = SQLType.put[A](value)
+}
+
 /** Parameters (names and values) that may be passed to SQL queries. */
-private[models] final class SQLArgs private (private val args : Seq[SQLArgs.Arg]) extends scala.collection.SeqProxy[(String,ParameterValue[_])] {
-  def self = args.map { case (p,v) => (p.name,v) }
-  def ++(other : SQLArgs) : SQLArgs = new SQLArgs(args ++ other.args)
-  // def :+(other : SQLArgs.Arg) : SQLArgs = new SQLArgs(args :+ other)
-  // def +:(other : SQLArgs.Arg) : SQLArgs = new SQLArgs(other +: args)
-  private lazy val names = args.map(_._1.name)
+private[models] final class SQLTerms private (private val terms : Seq[SQLTerm[_]]) extends SQLArgs {
+  def ++(other : SQLTerms) : SQLTerms = new SQLTerms(terms ++ other.terms)
+  def :+(other : SQLTerm[_]) : SQLTerms = new SQLTerms(terms :+ other)
+  def +:(other : SQLTerm[_]) : SQLTerms = new SQLTerms(other +: terms)
+  def args : Seq[Any] = terms.map(_.put)
+  private lazy val names = terms.map(_.name)
 
   /** Terms appropriate for INSERT INTO statements.
     * @returns `(arg, ...) VALUES ({arg}, ...)`
@@ -21,13 +24,11 @@ private[models] final class SQLArgs private (private val args : Seq[SQLArgs.Arg]
     * @returns `arg = {arg} sep ...`
     */
   def set(sep : String = ", ") =
-    names.map(n => n + " = {" + n + "}").mkString(sep)
+    names.map(_ + " = ?").mkString(sep)
   def where = set(" AND ")
 }
-private[models] object SQLArgs {
-  /** A single SQL placeholder parameter and its value. */
-  type Arg = (Symbol, ParameterValue[_])
-  def apply(args : Arg*) = new SQLArgs(args)
+private[models] object SQLTerms {
+  def apply(terms : SQLTerm[_]*) = new SQLTerms(terms)
 }
 
 object DBUtil {

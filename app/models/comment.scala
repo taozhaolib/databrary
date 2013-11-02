@@ -1,10 +1,6 @@
 package models
 
-import java.sql.{Timestamp,Date}
-import anorm._
-import anorm.SqlParser.scalar
 import dbrary._
-import dbrary.Anorm._
 import PGSegment.{column => segmentColumn,statement => segmentStatement}
 import site._
 

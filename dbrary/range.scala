@@ -133,7 +133,7 @@ object Range {
 }
 
 abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends RangeType[A] {
-  val sqlType = SQLType.mapping[String,Range[A]](name, classOf[Range[A]]) { s =>
+  val sqlType = SQLType[Range[A]](name, classOf[Range[A]]) { s =>
     if (s.equals("empty") || s.isEmpty)
       Some(Range.empty[A](this))
     else for {

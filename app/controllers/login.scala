@@ -8,10 +8,10 @@ import               Forms._
 import          libs.openid._
 import          libs.concurrent._
 import                          Execution.Implicits.defaultContext
-import          db.DB
 import          i18n.Messages
 import scala.concurrent.Future
 import org.mindrot.jbcrypt.BCrypt
+import macros._
 import site._
 import models._
 
@@ -48,7 +48,8 @@ object Login extends SiteController {
     val form = loginForm.bindFromRequest
     form.fold(
       form => Future.successful(BadRequest(views.html.account.login(form))),
-      { case (email, password, openid) => DB.withConnection { implicit db =>
+      { case (email, password, openid) =>
+        implicit val dbc = Site.dbPool
         val acct = email.flatMap(Account.getEmail _)
         def error() : SimpleResult = {
           acct.foreach(a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)))
@@ -62,17 +63,18 @@ object Login extends SiteController {
             .recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
         else
           Future.successful(acct.filterNot(_ => Site.isSecure).fold(error)(login))
-      } }
+      }
     )
   }
 
   def openID(email : String) = Action.async { implicit request =>
     OpenID.verifiedId
-      .map(info => DB.withConnection { implicit db =>
+      .map { info =>
+        implicit val dbc = Site.dbPool
         Account.getOpenid(info.id, maybe(email)).fold[SimpleResult](
           BadRequest(views.html.account.login(loginForm.fill((maybe(email), "", info.id)).withError("openid", "login.openID.notFound")))
         )(login)
-      }).recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
+      }.recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
   }
 
   def logout = SiteAction { implicit request =>

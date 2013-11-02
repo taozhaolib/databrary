@@ -4,11 +4,11 @@ import dbrary.cast
 import models._
 import play.api.mvc._
 import scala._
-import scala.Tuple3
-import scala.Some
 
 object Site {
-  type DB = java.sql.Connection
+  type DB = com.github.mauricio.async.db.Connection
+  def dbPool(implicit app : play.api.Application) : DB =
+    app.plugin[PostgresAsyncPlugin].fold(throw new Exception("PostgresAsyncPlugin not registered"))(_.pool)
 }
 /** Basic information about each request.  Primarily implemented by [[controllers.SiteRequest]]. */
 trait Site {

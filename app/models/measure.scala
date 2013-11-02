@@ -1,9 +1,6 @@
 package models
 
-import java.sql.Date
-import anorm._
 import dbrary._
-import dbrary.Anorm._
 import site._
 
 /** Types of measurement data values. */

@@ -1,8 +1,6 @@
 package models
 
-import anorm._
 import dbrary._
-import dbrary.Anorm._
 import site._
 
 /** A citation or reference to a publication or other external resource associated with a Volume.

@@ -6,7 +6,7 @@ import macros._
   * Any PGEnum should exactly match the correspending database type. */
 abstract class PGEnum(name : String) extends Enumeration {
   val sqlType : SQLType[Value] =
-    SQLType.mapping[String,Value](name, classOf[Value])(s => Some(withName(s)))(_.toString)
+    SQLType[Value](name, classOf[Value])(s => Some(withName(s)))(_.toString)
 }
 
 object PGEnum {

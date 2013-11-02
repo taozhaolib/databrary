@@ -1,10 +1,7 @@
 package models
 
 import play.api.Play.current
-import anorm._
-import java.sql.Timestamp
 import dbrary._
-import dbrary.Anorm._
 import site._
 
 /** Represents an event row in an audit table of a particular type.  Currently unused as there is intentionally no read/modify access to audit tables.

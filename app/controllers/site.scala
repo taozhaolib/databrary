@@ -15,14 +15,10 @@ sealed trait SiteRequest[A] extends Request[A] with Site {
   def clientIP = Inet(remoteAddress)
   def withDB(db : site.Site.DB) : SiteRequest[A]
   def withObj[O](obj : O) : RequestObject[O]#Site[A]
-  def future[B](f : Request[A] => B)(implicit execctx : ExecutionContext) : Future[B] =
-    Future(f(this))(execctx)
-  def futureDB[B](f : SiteRequest[A] => B)(implicit execctx : ExecutionContext) : Future[B] =
-    Future(play.api.db.DB.withTransaction(db => f(withDB(db))))(execctx)
 }
 
 object SiteRequest {
-  sealed abstract class Base[A](request : Request[A], val db : site.Site.DB) extends WrappedRequest[A](request) with SiteRequest[A]
+  sealed abstract class Base[A](request : Request[A], val dbc : site.Site.DB) extends WrappedRequest[A](request) with SiteRequest[A]
   sealed class Anon[A](request : Request[A], db : site.Site.DB) extends Base[A](request, db) with AnonSite {
     def withDB(db : site.Site.DB) : Anon[A] =
       new Anon(request, db)
@@ -40,7 +36,7 @@ object SiteRequest {
     }
   }
 
-  def apply[A](request : Request[A], identity : Option[Account], superuser : Boolean)(implicit db : site.Site.DB) : SiteRequest.Base[A] =
+  def apply[A](request : Request[A], identity : Option[Account], superuser : Boolean, db : site.Site.DB) : SiteRequest.Base[A] =
     identity.fold[SiteRequest.Base[A]](new Anon[A](request, db))(a => new Auth[A](request, a, superuser && a.access == Permission.ADMIN, db))
 }
 
@@ -77,9 +73,7 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
     request.session.get("superuser").flatMap(maybe.toLong _).exists(_ > System.currentTimeMillis)
 
   def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) =
-    db.DB.withTransaction { implicit db =>
-      block(SiteRequest(request, getUser(request), getSuperuser(request)))
-    }
+    block(SiteRequest(request, getUser(request), getSuperuser(request), Site.dbPool))
 
   object Auth extends ActionRefiner[SiteRequest,SiteRequest.Auth] {
     protected def refine[A](request : SiteRequest[A]) = request match {
@@ -109,11 +103,14 @@ class SiteController extends Controller {
 }
 
 object Site extends SiteController {
+  private[controllers] val dbPool = site.Site.dbPool(current)
+
   def start = Login.view
 
-  def test = Action { request => db.DB.withConnection { implicit db =>
+  def test = Action { request =>
+    implicit val dbc = dbPool
     Ok("Ok")
-  } }
+  }
 
   def tinyUrl(path : String, prefix : String) = Action {
     prefix match {

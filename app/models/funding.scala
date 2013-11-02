@@ -1,8 +1,6 @@
 package models
 
-import anorm._
 import dbrary._
-import dbrary.Anorm._
 import site._
 
 /** A funding source associated with a Volume, where the agency is represented as a party.

@@ -1,8 +1,8 @@
 package models
 
-import anorm._
 import play.api.data.format.{Formats,Formatter}
 import play.api.mvc.{PathBindable,QueryStringBindable}
+import dbrary._
 
 /** Wrap identifiers and tag them with a particular type. This is primarily useful to tag primary keys with a specific type corresponding to the source table.
   * @tparam I the type of the identifier
@@ -28,8 +28,7 @@ object IntId {
   // The normal family of conversions for database and web i/o:
   implicit def pathBindable[T] : PathBindable[IntId[T]] = PathBindable.bindableInt.transform(apply[T] _, _.unId)
   implicit def queryStringBindable[T] : QueryStringBindable[IntId[T]] = QueryStringBindable.bindableInt.transform(apply[T] _, _.unId)
-  implicit def statement[T] : ToStatement[IntId[T]] = dbrary.Anorm.toStatementMap[IntId[T],Int](_.unId)
-  implicit def column[T] : Column[IntId[T]] = dbrary.Anorm.columnMap[IntId[T],Int](apply[T] _)
+  implicit def sqlType[T] : SQLType[IntId[T]] = dbrary.SQLType.transform[Int,IntId[T]](apply[T] _, _.unId)
   implicit def formatter[T] : Formatter[IntId[T]] = new Formatter[IntId[T]] {
     def bind(key : String, data : Map[String, String]) =
       Formats.intFormat.bind(key, data).right.map(apply _)

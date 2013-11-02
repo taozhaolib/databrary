@@ -1,6 +1,7 @@
 package controllers
 
 import scala.util.control.Exception.catching
+import macros._
 import site._
 
 object HTTP {

@@ -1,10 +1,6 @@
 package models
 
-import java.sql.{Timestamp,Date}
-import anorm._
-import anorm.SqlParser.scalar
 import dbrary._
-import dbrary.Anorm._
 import site._
 
 /** Types of Records that are relevant for data organization.

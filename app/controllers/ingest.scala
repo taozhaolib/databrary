@@ -7,7 +7,7 @@ import          mvc._
 import          data._
 import               Forms._
 import          i18n.Messages
-import scala.concurrent.Future.successful
+import scala.concurrent.Future
 import models._
 import ingest._
 
@@ -29,18 +29,18 @@ object Ingest extends SiteController {
     val volume = request.obj
     val form = csvForm.bindFromRequest
     def bad(form : CSVForm, text : String = "") =
-      successful(BadRequest(views.html.ingest.csv(volume, form, text)))
+      Future.successful(BadRequest(views.html.ingest.csv(volume, form, text)))
     form.fold(
       form => bad(form),
       { case ((), run) => request.body.asMultipartFormData.flatMap(_.file("file")).fold(
         bad(form.withError("file", "error.required"))
       ) { file => AssetFormat.getFilePart(file).map(_.mimetype).orElse(file.contentType) match
         { case Some("text/csv") if !run => try {
-            successful(Ok(views.html.ingest.csv(volume, form, ingest.Curated.preview(file.ref.file))))
+            Future.successful(Ok(views.html.ingest.csv(volume, form, ingest.Curated.preview(file.ref.file))))
           } catch { case e : IngestException =>
             bad(form, e.getMessage)
           }
-          case Some("text/csv") if run => request.futureDB { implicit request => try {
+          case Some("text/csv") if run => Future { try {
             Ok(views.html.ingest.curated(volume, ingest.Curated.populate(file.ref.file, volume)))
           } catch {
             case e : ingest.Curated.PopulateException =>

@@ -1,6 +1,5 @@
 package models
 
-import anorm._
 import dbrary._
 import site._
 
@@ -32,7 +31,7 @@ private[models] abstract trait TableView {
   import scala.language.implicitConversions
   protected implicit val tableName : FromTable = FromTable(table)
   /** Convenient creation of column names for this table from symbols. */
-  protected implicit def tableColumn(col : Symbol) = SelectColumn(col.name)
+  protected implicit def tableColumn[A : SQLType](col : Symbol) = SelectColumn[A](col.name)
 }
 
 private[models] abstract class Table[R <: TableRow](private[models] val table : String) extends TableView {

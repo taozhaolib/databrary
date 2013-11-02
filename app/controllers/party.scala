@@ -7,6 +7,7 @@ import          data._
 import               Forms._
 import          i18n.Messages
 import org.mindrot.jbcrypt.BCrypt
+import macros._
 import dbrary._
 import site._
 import models._
@@ -62,14 +63,14 @@ object Party extends SiteController {
       "access" -> Field.enum(Permission),
       "delegate" -> Field.enum(Permission),
       "pending" -> boolean,
-      "expires" -> optional(sqlDate)
+      "expires" -> optional(jodaLocalDate)
     )((access, delegate, pending, expires) => Authorize(
       child, parent, access, delegate, 
-      if (pending || which) None else Some(new java.sql.Timestamp(System.currentTimeMillis)),
-      expires.map(e => new java.sql.Timestamp(e.getTime))
+      if (pending || which) None else Some(new Timestamp),
+      expires.map(_.toDateTimeAtStartOfDay)
     ))(t => 
       if (t.childId == child && t.parentId == parent)
-        Some((t.access, t.delegate, t.authorized.fold(true)(_ => false), t.expires.map(e => new java.sql.Date(e.getTime))))
+        Some((t.access, t.delegate, t.authorized.fold(true)(_ => false), t.expires.map(_.toLocalDate)))
       else
         None
     )

@@ -52,7 +52,7 @@ object Offset {
   }
 
   implicit val sqlType : SQLType[Offset] =
-    SQLType.mapping[String,Offset]("interval", classOf[Offset]) { s =>
+    SQLType[Offset]("interval", classOf[Offset]) { s =>
       /* FIXME: > 1 day. see https://github.com/mauricio/postgresql-async/pull/56 for a fix */
       maybe.toNumber(fromString(s))
     } { i =>

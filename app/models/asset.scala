@@ -1,11 +1,8 @@
 package models
 
-import java.sql.Date
 import play.api.libs.Files.TemporaryFile
-import anorm._
-import anorm.SqlParser.scalar
+import macros._
 import dbrary._
-import dbrary.Anorm._
 import site._
 
 /** File formats for assets.

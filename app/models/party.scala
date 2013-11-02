@@ -1,7 +1,5 @@
 package models
 
-import anorm._
-import anorm.SqlParser.scalar
 import dbrary._
 import site._
 

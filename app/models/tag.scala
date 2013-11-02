@@ -1,10 +1,7 @@
 package models
 
-import anorm._
-import anorm.SqlParser.scalar
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import dbrary._
-import dbrary.Anorm._
-import PGSegment.{column => segmentColumn,statement => segmentStatement}
 import site._
 
 /** All tags and their names used anywhere.
@@ -25,8 +22,8 @@ object Tag extends TableId[Tag]("tag") {
     map(make _)
 
   /** Retrieve an individual tag by id. */
-  private[models] def get(id : Id)(implicit db : Site.DB) : Option[Tag] =
-    row.SQL("WHERE id = {id}").on('id -> id).singleOpt
+  private[models] def get(id : Id)(implicit db : Site.DB) : Future[Option[Tag]] =
+    row.SELECT0("WHERE id = ?")(SQLArgseq(id)).singleOpt
 
   /** Retrieve an individual tag by name. */
   private[models] def get(name : String)(implicit db : Site.DB) : Option[Tag] =
