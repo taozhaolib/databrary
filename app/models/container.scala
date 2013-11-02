@@ -1,5 +1,6 @@
 package models
 
+import scala.concurrent.Future
 import dbrary._
 import site._
 
@@ -81,10 +82,9 @@ object Container extends TableId[Container]("container") {
       on('vol -> v.id, 'name -> name).list
 
   /** Create a new container in the specified volume. */
-  def create(volume : Volume, name : Option[String] = None, date : Option[Date] = None)(implicit site : Site) = {
-    val id = Audit.add(table, SQLTerms('volume -> volume.id, 'name -> name, 'date -> date), "id").single(scalar[Id])
-    new Container(id, volume, false, name, date)
-  }
+  def create(volume : Volume, name : Option[String] = None, date : Option[Date] = None)(implicit site : Site) : Future[Container] =
+    Audit.add(table, SQLTerms('volume -> volume.id, 'name -> name, 'date -> date), "id")
+      .single(SQLCols[Id].map(new Container(_, volume, false, name, date)))
 }
 
 /** Smallest organizatonal unit of related data.

@@ -116,16 +116,16 @@ class SQLResub[A](val arity : Int, val get : IndexedSeq[Any] => A) extends SQLRe
     catching(classOf[SQLUnexpectedNull]).opt(get(l)))
 }
 
-object SQLResub {
-  // def get[A](i : Iterator[Any])(implicit t : SQLType[A]) : A = t.get(i.next)
-}
-
 abstract sealed class SQLCols[A] protected (n : Int, f : Iterator[Any] => A) extends SQLResub[A](n, l => f(l.iterator)) {
   // def ~+[C : SQLType] : SQLCols[_]
 }
 
 object SQLCols {
   def get[A](i : Iterator[Any])(implicit t : SQLType[A]) : A = t.get(i.next)
+
+  def apply = new SQLCols0
+  def apply[C1 : SQLType] = new SQLCols1[C1]
+  def apply[C1 : SQLType, C2 : SQLType] = new SQLCols2[C1, C2]
 }
 
 import SQLCols.get

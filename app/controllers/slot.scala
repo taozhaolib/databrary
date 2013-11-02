@@ -71,15 +71,16 @@ object Slot extends SiteController {
     )
   }
 
-  def addContainer(s : models.Volume.Id) = Volume.Action(s, Permission.CONTRIBUTE) { implicit request =>
+  def addContainer(s : models.Volume.Id) = Volume.Action(s, Permission.CONTRIBUTE).async { implicit request =>
     val form = editForm(true).bindFromRequest
     form.fold(
       form => BadRequest(views.html.slot.edit(Left(request.obj), form, None)),
     { case (Some((name, date)), consent) =>
-      val cont = models.Container.create(request.obj, name = name, date = date)
-      cont.fullSlot.change(consent = consent)
-      Redirect(cont.fullSlot.pageURL)
-      case _ => BadRequest(views.html.slot.edit(Left(request.obj), form, None))
+      models.Container.create(request.obj, name = name, date = date).flatMap { cont =>
+        cont.fullSlot.change(consent = consent)
+        Redirect(cont.fullSlot.pageURL)
+        case _ => BadRequest(views.html.slot.edit(Left(request.obj), form, None))
+      }
     })
   }
 
