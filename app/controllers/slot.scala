@@ -7,8 +7,7 @@ import          mvc._
 import          data._
 import               Forms._
 import          i18n.Messages
-import java.sql.Date
-import dbrary.{Offset,Range}
+import dbrary._
 import models._
 
 object Slot extends SiteController {
@@ -28,10 +27,10 @@ object Slot extends SiteController {
   }
 
   type EditForm = Form[(Option[(Option[String], Option[Date])], Consent.Value)]
-  private[this] def editForm(container : Boolean) = Form(tuple(
+  private[this] def editForm(container : Boolean) : EditForm = Form(tuple(
     "" -> MaybeMapping(if (container) Some(tuple(
       "name" -> optional(nonEmptyText),
-      "date" -> optional(sqlDate)
+      "date" -> optional(jodaLocalDate)
     )) else None),
     "consent" -> Field.enum(Consent)
   ))

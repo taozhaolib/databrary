@@ -7,6 +7,7 @@ import          mvc._
 import          data._
 import          i18n.Messages
 import scala.concurrent.{Future,ExecutionContext}
+import macros._
 import dbrary._
 import site._
 import models._
@@ -37,7 +38,7 @@ object SiteRequest {
   }
 
   def apply[A](request : Request[A], identity : Option[Account], superuser : Boolean, db : site.Site.DB) : SiteRequest.Base[A] =
-    identity.fold[SiteRequest.Base[A]](new Anon[A](request, db))(a => new Auth[A](request, a, superuser && a.access == Permission.ADMIN, db))
+    identity.fold[SiteRequest.Base[A]](new Anon[A](request, db))(a => new Auth[A](request, a, superuser && a.access(db) == Permission.ADMIN, db))
 }
 
 trait RequestObject[+O] {
@@ -72,8 +73,10 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
   private[this] def getSuperuser(request : Request[_]) : Boolean =
     request.session.get("superuser").flatMap(maybe.toLong _).exists(_ > System.currentTimeMillis)
 
-  def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) =
-    block(SiteRequest(request, getUser(request), getSuperuser(request), Site.dbPool))
+  def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) = {
+    val dbc = Site.dbPool
+    block(SiteRequest(request, getUser(request)(dbc), getSuperuser(request), dbc))
+  }
 
   object Auth extends ActionRefiner[SiteRequest,SiteRequest.Auth] {
     protected def refine[A](request : SiteRequest[A]) = request match {

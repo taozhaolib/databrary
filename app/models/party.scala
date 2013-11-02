@@ -122,7 +122,7 @@ object Party extends TableId[Party]("party") {
 
   /** Create a new party. */
   def create(name : String)(implicit site : Site) : Party = {
-    val id = Audit.add(table, SQLArgs('name -> name), "id").single(scalar[Id])
+    val id = Audit.add(table, SQLTerms('name -> name), "id").single(scalar[Id])
     new Party(id, name)
   }
 

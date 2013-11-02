@@ -53,7 +53,7 @@ case class Selector[A](selects : Seq[SelectExpr[_]], source : String, res : SQLR
     join(that, _ + " NATURAL JOIN " + _)
 
   private[this] def selectStmt(q : String*) : String = unwords(Seq("SELECT", select, "FROM", source) ++ q : _*)
-  def SELECT(q : String*)(args : SQLArgs)(implicit dbc : db.Connection, executionContext : ExecutionContext) : SQLFuture[A] =
+  def SELECT(q : String*)(args : SQLArgs)(implicit dbc : db.Connection, executionContext : ExecutionContext) : SQLResult[A] =
     args.query(selectStmt(q : _*)).as(res)
 }
 

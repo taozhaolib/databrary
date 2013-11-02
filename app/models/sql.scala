@@ -1,9 +1,14 @@
 package models
 
+import dbrary._
 import site._
 
 case class SQLTerm[A : SQLType](name : String, value : A) {
   def put : Any = SQLType.put[A](value)
+}
+object SQLTerm {
+  import scala.language.implicitConversions
+  implicit def apply[A : SQLType](x : (Symbol, A)) : SQLTerm[A] = SQLTerm[A](x._1.name, x._2)
 }
 
 /** Parameters (names and values) that may be passed to SQL queries. */

@@ -1,7 +1,6 @@
 package models
 
 import dbrary._
-import PGSegment.{column => segmentColumn,statement => segmentStatement}
 import site._
 
 /** Collection of related assets.
@@ -23,7 +22,7 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
   def change(name : Option[String] = _name, date : Option[Date] = _date)(implicit site : Site) : Unit = {
     if (name == _name && date == _date)
       return
-    Audit.change("container", SQLArgs('name -> name, 'date -> date), SQLArgs('id -> id)).execute()
+    Audit.change("container", SQLTerms('name -> name, 'date -> date), SQLTerms('id -> id)).execute()
     _name = name
     _date = date
   }
@@ -83,7 +82,7 @@ object Container extends TableId[Container]("container") {
 
   /** Create a new container in the specified volume. */
   def create(volume : Volume, name : Option[String] = None, date : Option[Date] = None)(implicit site : Site) = {
-    val id = Audit.add(table, SQLArgs('volume -> volume.id, 'name -> name, 'date -> date), "id").single(scalar[Id])
+    val id = Audit.add(table, SQLTerms('volume -> volume.id, 'name -> name, 'date -> date), "id").single(scalar[Id])
     new Container(id, volume, false, name, date)
   }
 }
@@ -104,7 +103,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   def change(consent : Consent.Value = _consent)(implicit site : Site) : Unit = {
     if (consent == _consent)
       return
-    Audit.change("slot", SQLArgs('consent -> maybe(consent, Consent.NONE)), SQLArgs('id -> id)).execute()
+    Audit.change("slot", SQLTerms('consent -> maybe(consent, Consent.NONE)), SQLTerms('id -> id)).execute()
     _consent = consent
   }
 
@@ -246,7 +245,7 @@ object Slot extends TableId[Slot]("slot") {
   /** Create a new slot in the specified container or return a matching one if it already exists. */
   def getOrCreate(container : Container, segment : Range[Offset])(implicit db : Site.DB) : Slot =
     DBUtil.selectOrInsert(get(container, segment)) {
-      val args = SQLArgs('source -> container.id, 'segment -> segment)
+      val args = SQLTerms('source -> container.id, 'segment -> segment)
       val id = SQL("INSERT INTO slot " + args.insert + " RETURNING id").
         on(args : _*).single(scalar[Id])
       new Slot(id, container, segment)

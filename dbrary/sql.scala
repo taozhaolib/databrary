@@ -6,9 +6,9 @@ import com.github.mauricio.async.db
 
 trait SQLArgs {
   def args : Seq[Any]
-  final def query(query : String)(implicit conn : db.Connection, context : ExecutionContext) : SQLFuture[db.RowData] = {
+  final def query(query : String)(implicit conn : db.Connection, context : ExecutionContext) : SQLRawsult = {
     val a = args
-    SQLFuture(
+    new SQLRawsult(
       if (a.isEmpty)
         conn.sendQuery(query)
       else
@@ -35,22 +35,28 @@ object SQLArgseq {
 
 class SQLResultException(message : String) extends db.exceptions.DatabaseException(message)
 
-case class SQLFuture[A](result : Future[db.QueryResult], parse : SQLRes[A] = SQLRes.identity)(implicit context : ExecutionContext) {
+class SQLRawsult(result : Future[db.QueryResult])(implicit context : ExecutionContext) {
   private[this] def fail(res : db.QueryResult, msg : String) = throw new SQLResultException(res.statusMessage + ": " + msg)
   private[this] def rows(res : db.QueryResult) = res.rows.getOrElse(fail(res, "no results"))
   private[this] def singleOpt(res : db.QueryResult) = rows(res) match {
     case Seq() => None
-    case Seq(r) => Some(parse(r))
+    case Seq(r) => Some(r)
     case l => fail(res, "got " + l.length + " rows, expected 1")
   }
   private[this] def single(res : db.QueryResult) = singleOpt(res).getOrElse(fail(res, "got no rows, expected 1"))
 
-  def as[B](parse : SQLRes[B]) = copy[B](parse = parse)
-  def map[B](f : A => B) = copy[B](parse = parse.map(f))
+  def as[A](parse : SQLRes[A]) : SQLResult[A] = new SQLResult[A](result, parse)
 
-  def list : Future[IndexedSeq[A]] = result.map(rows(_).map(parse(_)))
-  def singleOpt : Future[Option[A]] = result.map(singleOpt(_))
-  def single : Future[A] = result.map(single(_))
+  def list[A](parse : SQLRes[A]) : Future[IndexedSeq[A]] = result.map(rows(_).map(parse(_)))
+  def singleOpt[A](parse : SQLRes[A]) : Future[Option[A]] = result.map(singleOpt(_).map(parse(_)))
+  def single[A](parse : SQLRes[A]) : Future[A] = result.map(r => parse(single(r)))
+}
+
+case class SQLResult[A](result : Future[db.QueryResult], parse : SQLRes[A])(implicit context : ExecutionContext) extends SQLRawsult(result) {
+  def map[B](f : A => B) : SQLResult[B] = copy[B](parse = parse.map(f))
+  def list : Future[IndexedSeq[A]] = list(parse)
+  def singleOpt : Future[Option[A]] = singleOpt(parse)
+  def single : Future[A] = single(parse)
 }
 
 trait SQLRes[A] extends (db.RowData => A) {
