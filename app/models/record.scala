@@ -1,5 +1,6 @@
 package models
 
+import org.joda.time.Period
 import dbrary._
 import site._
 
@@ -88,10 +89,10 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def daterange(implicit db : Site.DB) : Range[Date] = _daterange.normalize
 
   /** The range of ages as defined by `daterange - birthdate`. */
-  def agerange(implicit db : Site.DB) : Option[Range[Long]] = birthdate.map(dob => daterange.map(_.getTime - dob.getTime))
+  def agerange(implicit db : Site.DB) : Option[Range[Age]] = birthdate.map(dob => daterange.map(d => Age(dob, d)))
 
   /** The age at test for a specific date, as defined by `date - birthdate`. */
-  def age(date : Date)(implicit db : Site.DB) : Option[Long] = birthdate.map(date.getTime - _.getTime)
+  def age(date : Date)(implicit db : Site.DB) : Option[Age] = birthdate.map(dob => Age(dob, date))
 
   /** Effective permission the site user has over a given metric in this record, specifically in regards to the measure datum itself.
     * Record permissions depend on volume permissions, but can be further restricted by consent levels.
