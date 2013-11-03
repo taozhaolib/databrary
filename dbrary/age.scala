@@ -3,9 +3,9 @@ package dbrary
 import org.joda.time.{Duration,Period,PeriodType}
 
 case class Age(days : Int) {
-  lazy val period : Period = Period.days(days)
-  lazy val duration : Duration = Duration.standardDays(days)
-  lazy val millis : Long = 86400000L*days // duration.getMillis
+  def period : Period = Period.days(days)
+  def duration : Duration = Duration.standardDays(days)
+  def millis : Long = 86400000L*days // duration.getMillis
 }
 
 object Age {

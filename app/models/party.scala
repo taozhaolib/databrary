@@ -15,7 +15,7 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Unit = {
     if (name == _name && orcid == _orcid)
       return
-    Audit.change("party", SQLArgs('name -> name, 'orcid -> orcid), SQLArgs('id -> id)).execute()
+    Audit.change("party", SQLTerms('name -> name, 'orcid -> orcid), SQLArgs('id -> id)).run()
     _name = name
     _orcid = orcid
   }

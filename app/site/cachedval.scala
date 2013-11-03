@@ -6,15 +6,15 @@ package site
   * @param init function to compute the initial default value from state
   */
 class CachedVal[T, S](init : S => T) {
-  private var x : Option[T] = None
+  protected var x : Option[T] = None
   /** (Compute and) return the current value from a state. */
-  def apply(state : S) : T = synchronized(x.getOrElse(update(init(state))))
+  final def apply(state : S) : T = synchronized(x.getOrElse(update(init(state))))
   /** Change the value, discarding any current computation or future state. */
-  def update(v : T) : T = {
+  final def update(v : T) : T = {
     x = Some(v)
     v
   }
-  def isEmpty : Boolean = x.isEmpty
+  final def isEmpty : Boolean = x.isEmpty
 }
 object CachedVal {
   import scala.language.implicitConversions
@@ -22,4 +22,11 @@ object CachedVal {
   def apply[T, S](init : S => T) = new CachedVal[T,S](init)
   /** Evaluate the cached value from an implicit state. */
   implicit def implicitGetCached[T, S](x : CachedVal[T, S])(implicit s : S) : T = x(s)
+}
+
+class CachedFuture[T, S](init : S => Future[T]) extends CachedVal[Future[T], S](init) {
+  def get : T = x.get.value.get.get
+}
+object CachedFuture {
+  def apply[T, S](init : S => Future[T]) = new CachedFuture[T,S](init)
 }

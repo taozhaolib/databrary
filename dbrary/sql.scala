@@ -25,7 +25,7 @@ object SQLQuery extends SQLArgs {
 }
 
 /** A list of marshalled arguments for passing to a query. */
-final class SQLArgseq private (val args : /*=>*/ Seq[Any]) extends SQLArgs {
+final class SQLArgseq(val args : /*=>*/ Seq[Any]) extends SQLArgs {
   import SQLType.put
 
   def ++(other : SQLArgseq) : SQLArgseq = new SQLArgseq(args ++ other.args)
@@ -33,11 +33,20 @@ final class SQLArgseq private (val args : /*=>*/ Seq[Any]) extends SQLArgs {
   def +:[A : SQLType](other : A) : SQLArgseq = new SQLArgseq(put[A](other) +: args)
 }
 
-object SQLArgseq {
+object SQLArgs {
   import SQLType.put
 
   def apply[A1 : SQLType](a1 : A1) = new SQLArgseq(Seq(put[A1](a1)))
   def apply[A1 : SQLType, A2 : SQLType](a1 : A1, a2 : A2) = new SQLArgseq(Seq(put[A1](a1), put[A2](a2)))
+}
+
+object SQL {
+  def apply(query : String)(implicit conn : db.Connection, context : ExecutionContext) : SQLResult =
+    SQLQuery.query(query)
+  def apply[A1 : SQLType](query : String, a1 : A1)(implicit conn : db.Connection, context : ExecutionContext) : SQLResult =
+    SQLArgs(a1).query(query)
+  def apply[A1 : SQLType, A2 : SQLType](query : String, a1 : A1, a2 : A2)(implicit conn : db.Connection, context : ExecutionContext) : SQLResult =
+    SQLArgs(a1, a2).query(query)
 }
 
 /** Exceptions that may occur during parsing query results, usually indicating type or arity mismatches. */
@@ -57,6 +66,9 @@ class SQLResult(val result : Future[db.QueryResult])(implicit context : Executio
   def map[A](f : db.QueryResult => A) : Future[A] = result.map(f)
   def flatMap[A](f : db.QueryResult => Future[A]) : Future[A] = result.flatMap(f)
   def rowsAffected : Future[Long] = map(_.rowsAffected)
+  /** A dummy marker to show where we execute independent queries. */
+  @deprecated("this usage will not catch errors") def run() : Unit = ()
+  def execute : Future[Unit] = map(_ => ())
 
   def as[A](parse : SQLRow[A]) : SQLRows[A] = new SQLRows[A](result, parse)
 

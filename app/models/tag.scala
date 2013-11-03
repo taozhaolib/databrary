@@ -23,7 +23,7 @@ object Tag extends TableId[Tag]("tag") {
 
   /** Retrieve an individual tag by id. */
   private[models] def get(id : Id)(implicit db : Site.DB) : Future[Option[Tag]] =
-    row.SELECT0("WHERE id = ?")(SQLArgseq(id)).singleOpt
+    row.SELECT("WHERE id = ?")(SQLArgs(id)).singleOpt
 
   /** Retrieve an individual tag by name. */
   private[models] def get(name : String)(implicit db : Site.DB) : Option[Tag] =
@@ -61,8 +61,8 @@ final class TagUse private (val tag : Tag, val who : Account, val slot : Slot, v
   def weight = if (up) 1 else -1
 
   def remove(implicit db : Site.DB) : Unit = {
-    val ids = SQLArgs('tag -> tag.id, 'slot -> slot.id, 'who -> who.id)
-    SQL("DELETE FROM tag_use WHERE " + ids).execute
+    val ids = SQLTerms('tag -> tag.id, 'slot -> slot.id, 'who -> who.id)
+    ids.query("DELETE FROM tag_use WHERE " + ids.where).run()
   }
 }
 
@@ -82,17 +82,17 @@ object TagUse extends Table[TagUse]("tag_use") {
     }
 
   private[models] def remove(tag : Tag, slot : Slot)(implicit site : Site) : Unit = {
-    val ids = SQLArgs('tag -> tag.id, 'slot -> slot.id, 'who -> site.identity.id)
-    SQL("DELETE FROM tag_use WHERE " + ids.where).on(ids:_*).execute
+    val ids = SQLTerms('tag -> tag.id, 'slot -> slot.id, 'who -> site.identity.id)
+    ids.query("DELETE FROM tag_use WHERE " + ids.where).run()
   }
 
   private[models] def set(tag : Tag, slot : Slot, up : Boolean = true)(implicit site : AuthSite) : TagUse = {
     val who = site.identity
-    val ids = SQLArgs('tag -> tag.id, 'slot -> slot.id, 'who -> who.id)
-    val args = ids ++ SQLArgs('up -> up)
+    val ids = SQLTerms('tag -> tag.id, 'slot -> slot.id, 'who -> who.id)
+    val args = ('up -> up) +: ids
     DBUtil.updateOrInsert(
-      SQL("UPDATE tag_use SET up = {up} WHERE " + ids.where).on(args : _*))(
-      SQL("INSERT INTO tag_use " + args.insert).on(args : _*))
+      args.query("UPDATE tag_use SET up = ? WHERE " + ids.where))(
+      args.query("INSERT INTO tag_use " + args.insert))
     new TagUse(tag, who, slot, up)
   }
 }

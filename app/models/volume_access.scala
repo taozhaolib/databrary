@@ -68,9 +68,8 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
   /** Remove a particular volume access from the database.
     * @return true if a matching volume access was found and deleted
     */
-  def delete(volume : Volume.Id, party : Party.Id)(implicit site : Site) =
-    Audit.remove("volume_access", SQLTerms('volume -> volume, 'party -> party)).
-      execute()
+  def delete(volume : Volume.Id, party : Party.Id)(implicit site : Site) : Unit =
+    Audit.remove("volume_access", SQLTerms('volume -> volume, 'party -> party)).run()
 
   /** Determine what permission level the party has over the volume.
     * This takes into account full permission semantics including inheritance.

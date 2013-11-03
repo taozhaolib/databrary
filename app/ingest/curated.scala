@@ -1,7 +1,6 @@
 package ingest
 
 import java.io.File
-import java.sql.Date
 import java.util.regex.{Pattern=>Regex}
 import play.api.libs.Files
 import macros._

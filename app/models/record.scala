@@ -47,8 +47,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def change(category : Option[RecordCategory] = _category)(implicit db : Site.DB) : Unit = {
     if (category == _category)
       return
-    SQL("UPDATE record SET category = {category} WHERE id = {id}").
-      on('id -> id, 'category -> category.map(_.id)).execute()
+    SQL("UPDATE record SET category = ? WHERE id = ?", id, category.map(_.id)).run()
     _category = category
   }
 
@@ -82,8 +81,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def gender(implicit db : Site.DB) : Option[String] = _gender
 
   private val _daterange = CachedVal[Range[Date], Site.DB] { implicit db =>
-    SQL("SELECT record_daterange({id})").
-      on('id -> id).single(scalar[Range[Date]](PGDateRange.column))
+    SQL("SELECT record_daterange(?)", id).single(SQLCols[Range[Date]])
   }
   /** The range of acquisition dates covered by associated slots. Cached. */
   def daterange(implicit db : Site.DB) : Range[Date] = _daterange.normalize
@@ -184,16 +182,10 @@ object Record extends TableId[Record]("record") {
   }
 
   private[models] def addSlot(r : Record.Id, s : Slot.Id)(implicit db : Site.DB) : Unit = {
-    val args = SQLArgs('record -> r, 'slot -> s)
-    val sp = db.setSavepoint
-    try {
-      SQL("INSERT INTO slot_record " + args.insert).on(args : _*).execute
-    } catch {
-      case e : java.sql.SQLException if e.getMessage.startsWith("ERROR: duplicate key value violates unique constraint ") =>
-        db.rollback(sp)
-    } finally {
-      db.releaseSavepoint(sp)
-    }
+    val args = SQLTerms('record -> r, 'slot -> s)
+    args.query("INSERT INTO slot_record " + args.insert).recoverWith {
+      case SQLDuplicateKeyException => ()
+    }.run
   }
   private[models] def removeSlot(r : Record.Id, s : Slot.Id)(implicit db : Site.DB) : Unit = {
     val args = SQLArgs('record -> r, 'slot -> s)

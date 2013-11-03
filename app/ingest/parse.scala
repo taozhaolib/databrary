@@ -1,8 +1,8 @@
 package ingest
 
 import scala.util.control.Exception.catching
-import java.sql.Date
 import java.util.regex.{Pattern=>Regex}
+import dbrary._
 import models._
 
 final case class ParseException(message : String, line : Int = 0, column : Int = 0) extends IngestException(message) {

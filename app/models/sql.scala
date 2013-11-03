@@ -57,12 +57,14 @@ object DBUtil {
     loop()
   }
 
-  def updateOrInsert(update : SQLRawsult)(insert : SQLRawsult)(implicit dbc : Site.DB) : Future[Unit] = {
-    @scala.annotation.tailrec def loop() : Future[Unit] = update(dbc).rows.flatMap {
-      case 0 => insert(dbc).recoverWith {
-        case SQLDuplicateKeyException => loop
-      }
-      case _ => Future.successful(())
+  def updateOrInsert(update : SQLResult)(insert : SQLResult)(implicit dbc : Site.DB) : SQLResult = {
+    @scala.annotation.tailrec def loop() : SQLResult = update(dbc).flatMap { r =>
+      if (r.rowsAffected == 0)
+        insert(dbc).recoverWith {
+          case SQLDuplicateKeyException => loop
+        }
+      else
+        Future.successful(r)
     }
     loop()
   }
