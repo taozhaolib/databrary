@@ -5,12 +5,12 @@ import com.github.mauricio.async.db
 import macros._
 
 class SQLTypeMismatch(value : Any, sqltype : SQLType[_], where : String = "")
-  extends db.exceptions.DatabaseException("Type mismatch converting " + value.toString + ":" + value.getClass + " to " + sqltype.name + (if (where.isEmpty) "" else " for " + where)) {
-  def amend(msg : String) : SQLTypeMismatch = new SQLTypeMismatch(value, sqltype, (if (where.isEmpty) "" else " in ") + msg)
+  extends db.exceptions.DatabaseException("Type mismatch converting " + value.toString + ":" + value.getClass + " to " + sqltype.name + Maybe.bracket(" for ", where)) {
+  def amend(msg : String) : SQLTypeMismatch = new SQLTypeMismatch(value, sqltype, Maybe.bracket("", where, " in ") + msg)
 }
 
 class SQLUnexpectedNull(sqltype : SQLType[_], where : String = "") extends SQLTypeMismatch(null, sqltype, where) {
-  override def amend(msg : String) : SQLUnexpectedNull = new SQLUnexpectedNull(sqltype, (if (where.isEmpty) "" else " in ") + msg)
+  override def amend(msg : String) : SQLUnexpectedNull = new SQLUnexpectedNull(sqltype, Maybe.bracket("", where, " in ") + msg)
 }
 
 abstract class SQLType[A](val name : String, val aClass : Class[A]) {
@@ -45,7 +45,7 @@ object SQLType {
   }
 
   implicit object int extends SQLType[Int]("integer", classOf[Int]) {
-    def read(s : String) = maybe.toInt(s)
+    def read(s : String) = Maybe.toInt(s)
   }
 
   implicit object date extends SQLType[Date]("date", classOf[Date]) {

@@ -7,6 +7,7 @@ import          mvc._
 import          data._
 import               Forms._
 import          i18n.Messages
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import dbrary._
 import models._
 
@@ -74,13 +75,13 @@ object Slot extends SiteController {
   def addContainer(s : models.Volume.Id) = Volume.Action(s, Permission.CONTRIBUTE).async { implicit request =>
     val form = editForm(true).bindFromRequest
     form.fold(
-      form => BadRequest(views.html.slot.edit(Left(request.obj), form, None)),
+      form => ABad(views.html.slot.edit(Left(request.obj), form, None)),
     { case (Some((name, date)), consent) =>
       models.Container.create(request.obj, name = name, date = date).flatMap { cont =>
         cont.fullSlot.change(consent = consent)
-        Redirect(cont.fullSlot.pageURL)
-        case _ => BadRequest(views.html.slot.edit(Left(request.obj), form, None))
+        ARedirect(cont.fullSlot.pageURL)
       }
+      case _ => ABad(views.html.slot.edit(Left(request.obj), form, None))
     })
   }
 
@@ -125,10 +126,10 @@ object Slot extends SiteController {
 
   def tag(v : models.Volume.Id, s : models.Slot.Id) = (SiteAction.access(Permission.VIEW) ~> action(v, s)) { implicit request =>
     tagForm.bindFromRequest().fold(
-    form => if(Site.isAjax) Ok(views.html.ajax.tags(request.obj, form)) else BadRequest(views.html.slot.view(request.obj)),
+    form => if(isAjax) Ok(views.html.ajax.tags(request.obj, form)) else BadRequest(views.html.slot.view(request.obj)),
     { case (name, vote) =>
       request.obj.setTag(name, vote)(request.asInstanceOf[AuthSite])
-      if(Site.isAjax) Ok(views.html.ajax.tags(request.obj, tagForm)) else Redirect(request.obj.pageURL)
+      if(isAjax) Ok(views.html.ajax.tags(request.obj, tagForm)) else Redirect(request.obj.pageURL)
     }
     )
   }

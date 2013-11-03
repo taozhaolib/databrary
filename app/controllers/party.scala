@@ -45,7 +45,7 @@ object Party extends SiteController {
     val acct = adminAccount
     Form(tuple(
       "name" -> nonEmptyText,
-      "orcid" -> text(0,20).transform[Option[Orcid]](maybe(_).map(Orcid.apply _), _.fold("")(_.toString))
+      "orcid" -> text(0,20).transform[Option[Orcid]](Maybe.opt(_).map(Orcid.apply _), _.fold("")(_.toString))
         .verifying(Messages("orcid.invalid"), _.fold(true)(_.valid)),
       "" -> MaybeMapping(acct.map(_ => tuple(
         "email" -> email,
@@ -123,7 +123,7 @@ object Party extends SiteController {
           acct.changeAccount(
             email = email,
             password = password.getOrElse(acct.password),
-            openid = maybe(openid))
+            openid = Maybe.opt(openid))
         }
         Redirect(request.obj.pageURL)
       }

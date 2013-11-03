@@ -4,6 +4,7 @@ import java.io.File
 import java.sql.Date
 import java.util.regex.{Pattern=>Regex}
 import play.api.libs.Files
+import macros._
 import dbrary._
 import site._
 import models._
@@ -27,7 +28,7 @@ object Curated {
   }
   private type RaceEthnicity = (Option[Race.Value], Option[Ethnicity.Value])
   private def parseRaceEthnicity : Parser[RaceEthnicity] = Parser { s =>
-    maybe(s.indexOf('/'), -1).fold {
+    Maybe.opt(s.indexOf('/')).fold {
       (option(Race.parse).map(r => (r, None : Option[Ethnicity.Value])) |
         Ethnicity.parse.map(e => (None, Some(e))))(s)
     } { i =>

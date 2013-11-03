@@ -3,6 +3,7 @@ import scala.language.higherKinds
 
 import play.api._
 import          Play.current
+import          http._
 import          mvc._
 import          data._
 import          i18n.Messages
@@ -68,10 +69,10 @@ object RequestObject {
 
 object SiteAction extends ActionCreator[SiteRequest.Base] {
   private[this] def getUser(request : Request[_])(implicit db : site.Site.DB) : Option[Account] =
-    request.session.get("user").flatMap(maybe.toInt _).flatMap(models.Account.get_ _)
+    request.session.get("user").flatMap(Maybe.toInt _).flatMap(models.Account.get_ _)
 
   private[this] def getSuperuser(request : Request[_]) : Boolean =
-    request.session.get("superuser").flatMap(maybe.toLong _).exists(_ > System.currentTimeMillis)
+    request.session.get("superuser").flatMap(Maybe.toLong _).exists(_ > System.currentTimeMillis)
 
   def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) = {
     val dbc = Site.dbPool
@@ -97,12 +98,16 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
 }
 
 class SiteController extends Controller {
-  def isAjax[A](implicit request : Request[A]) =
+  protected def isAjax[A](implicit request : Request[A]) =
     request.headers.get("X-Requested-With").equals(Some("XMLHttpRequest"))
 
-  def isSecure : Boolean =
+  protected def isSecure : Boolean =
     current.configuration.getString("application.secret").exists(_ != "databrary").
       ensuring(s => s, "Application is insecure. You must set application.secret appropriately (see README).")
+
+  protected def AOk[C : Writeable](c : C) = Future.successful(Ok[C](c))
+  protected def ABad[C : Writeable](c : C) = Future.successful(BadRequest[C](c))
+  protected def ARedirect(c : Call) = Future.successful(Redirect(c))
 }
 
 object Site extends SiteController {

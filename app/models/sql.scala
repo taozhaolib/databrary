@@ -18,12 +18,16 @@ private[models] final class SQLTerms private (private val terms : Seq[SQLTerm[_]
   def +:(other : SQLTerm[_]) : SQLTerms = new SQLTerms(other +: terms)
   def args : Seq[Any] = terms.map(_.put)
   private lazy val names = terms.map(_.name)
+  def placeholders : String = args.length match {
+    case 0 => ""
+    case n => "?" + (", ?" * (n-1))
+  }
 
   /** Terms appropriate for INSERT INTO statements.
     * @returns `(arg, ...) VALUES ({arg}, ...)`
     */
   def insert =
-    names.mkString("(", ", ", ")") + " VALUES " + names.mkString("({", "}, {", "})")
+    names.mkString("(", ", ", ")") + " VALUES (" + placeholders + ")"
   /** Terms appropriate for UPDATE or WHERE statements.
     * @param sep separator string, ", " for UPDATE (default), " AND " for WHERE
     * @returns `arg = {arg} sep ...`
@@ -36,43 +40,30 @@ private[models] object SQLTerms {
   def apply(terms : SQLTerm[_]*) = new SQLTerms(terms)
 }
 
+object SQLDuplicateKeyException {
+  def unapply(e : db.postgresql.exceptions.GenericDatabaseException) : Boolean =
+    e.errorMessage.message.startsWith("duplicate key value violates unique constraint ")
+}
+
 object DBUtil {
-  def selectOrInsert[A](select : => Option[A])(insert : => A)(implicit db : Site.DB) : A = {
-    @scala.annotation.tailrec def loop : A = select orElse {
-      val sp = db.setSavepoint
-      try {
-        Some(insert)
-      } catch {
-        case e : java.sql.SQLException if e.getMessage.startsWith("ERROR: duplicate key value violates unique constraint ") =>
-          db.rollback(sp)
-          None
-      } finally {
-        db.releaseSavepoint(sp)
+  /* TODO: wrap these in transactions once available */
+  def selectOrInsert[A](select : Site.DB => Future[Option[A]])(insert : Site.DB => Future[A])(implicit dbc : Site.DB) : Future[A] = {
+    @scala.annotation.tailrec def loop() : Future[A] = select(dbc).flatMap {
+      case None => insert(dbc).recoverWith {
+        case SQLDuplicateKeyException => loop
       }
-    } match {
-      case Some(r) => r
-      case None => loop
+      case Some(r) => Future.successful(r)
     }
-    loop
+    loop()
   }
 
-  def updateOrInsert(update : Sql)(insert : Sql)(implicit db : Site.DB) : Unit = {
-    @scala.annotation.tailrec def loop() : Unit = {
-      if (update.executeUpdate() == 0 && !{
-        val sp = db.setSavepoint
-        try {
-          insert.execute()
-          true
-        } catch {
-          case e : java.sql.SQLException if e.getMessage.startsWith("ERROR: duplicate key value violates unique constraint ") =>
-            db.rollback(sp)
-            false
-        } finally {
-          db.releaseSavepoint(sp)
-        }
-      }) loop()
+  def updateOrInsert(update : SQLRawsult)(insert : SQLRawsult)(implicit dbc : Site.DB) : Future[Unit] = {
+    @scala.annotation.tailrec def loop() : Future[Unit] = update(dbc).rows.flatMap {
+      case 0 => insert(dbc).recoverWith {
+        case SQLDuplicateKeyException => loop
+      }
+      case _ => Future.successful(())
     }
     loop()
   }
 }
-

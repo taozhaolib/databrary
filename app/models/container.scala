@@ -103,7 +103,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   def change(consent : Consent.Value = _consent)(implicit site : Site) : Unit = {
     if (consent == _consent)
       return
-    Audit.change("slot", SQLTerms('consent -> maybe(consent, Consent.NONE)), SQLTerms('id -> id)).execute()
+    Audit.change("slot", SQLTerms('consent -> Maybe.opt(consent)), SQLTerms('id -> id)).execute()
     _consent = consent
   }
 

@@ -28,7 +28,7 @@ object HTTP {
   def parseRange(s : String, size : Long) : Option[(Long, Long)] =
     (s match {
       case rangeRegex(start, end) => catching(classOf[java.lang.NumberFormatException]).opt {
-        (maybe(start).map(_.toLong), maybe(end).map(_.toLong))
+        (Maybe.opt(start).map(_.toLong), Maybe.opt(end).map(_.toLong))
       } getOrElse ((None, None))
       case _ => (None, None)
     }) match {

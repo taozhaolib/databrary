@@ -4,7 +4,7 @@ import dbrary._
 import site._
 
 sealed class Token protected (val token : String, val expires : Timestamp) extends TableRow {
-  def valid = expires.after(new java.util.Date)
+  def valid = expires.isAfter(new Timestamp)
   def redeemURL = controllers.routes.Token.token(token)
 }
 

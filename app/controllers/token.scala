@@ -60,7 +60,7 @@ object Token extends SiteController {
       email => mailer.fold[Future[SimpleResult]](Future.successful(ServiceUnavailable)) { mailer =>
         val token = Account.getEmail(email).filter(_.access < Permission.ADMIN)
           .map(LoginToken.create(_, true))
-        request.future { implicit request =>
+        Future {
           val mail = mailer.email
           mail.setSubject(Messages("token.password.subject"))
           mail.setRecipient(email)

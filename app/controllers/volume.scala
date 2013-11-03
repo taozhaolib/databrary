@@ -7,6 +7,7 @@ import          mvc._
 import          data._
 import               Forms._
 import          i18n.Messages
+import macros._
 import models._
 
 object Volume extends SiteController {
@@ -60,7 +61,7 @@ object Volume extends SiteController {
     editFormFill(request.obj).bindFromRequest.fold(
       form => BadRequest(views.html.volume.edit(Right(request.obj), form)),
       { case (name, body, cites) =>
-        request.obj.change(name = name, body = body.flatMap(maybe(_)))
+        request.obj.change(name = name, body = body.flatMap(Maybe.opt(_)))
         citationSet(request.obj, cites)
         Redirect(request.obj.pageURL)
       }

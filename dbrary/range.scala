@@ -142,7 +142,7 @@ abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends
         case '(' => Some(false)
         case _ => None
       }
-      c <- maybe(s.indexOf(',', 1), -1)
+      c <- Maybe.opt(s.indexOf(',', 1))
       lb <- if (c == 1) Some(None) else base.read(s.substring(1,c)).map(Some(_))
       l = s.size
       ub <- if (c == l-2) Some(None) else base.read(s.substring(c+1,l-1)).map(Some(_))

@@ -1,24 +1,47 @@
 package macros
 
+import scala.collection.GenTraversableOnce
+
+/** Distinguish some ("defined"/"true") values from others ("empty"/"false"). */
+trait Maybe[A] {
+  def pass(a : A) : Boolean
+  final def partial[B](f : A => B) : PartialFunction[A,B] = new PartialFunction[A,B] {
+    def isDefinedAt(a : A) = pass(a)
+    def apply(a : A) = f(a)
+  }
+  final def opt(a : A) : Option[A] =
+    if (pass(a)) Some(a) else None
+  final def map[B >: A](f : A => B, a : A) : B =
+    if (pass(a)) f(a) else a
+}
+
 /** Utility that creates [[scala.Option]]s out of values. */
-object maybe {
-  def guard[A](g : Boolean, v : => A) : Option[A] =
-    if (g) Some(v) else None
+object Maybe {
+  def apply[A](p : A => Boolean) = new Maybe[A] {
+    def pass(a : A) = p(a)
+  }
+
+  implicit val trueBoolean : Maybe[Boolean] = Maybe[Boolean](a => a)
+  implicit val someOption : Maybe[Option[_]] = Maybe[Option[_]](_.isDefined)
+  implicit val nonEmptyTraversable : Maybe[GenTraversableOnce[_]] = Maybe[GenTraversableOnce[_]](_.nonEmpty)
+  implicit val nonEmptyString : Maybe[String] = Maybe[String](_.nonEmpty)
+  /* useful with String.index */
+  implicit val nonNegativeInt : Maybe[Int] = Maybe[Int](_ >= 0)
+
+  def pass[A](a : A)(implicit m : Maybe[A]) : Boolean = m.pass(a)
+
+  def partial[A,B](f : A => B)(implicit m : Maybe[A]) : PartialFunction[A,B] = m.partial(f)
 
   /** A more concise version of the common `Some(_).filter(_)` idiom.
     * @return Some(a) if f(a), None otherwise
     */
-  def apply[A](a : A, f : A => Boolean) : Option[A] =
-    Some(a).filter(f)
+  def opt[A](a : A)(implicit m : Maybe[A]) : Option[A] = m.opt(a)
 
-  /** Eliminate a specific value, like SQL's `NULLIF`.
-    * @return Some(a) unless a == n
-    */
-  def apply[A](a : A, n : A) : Option[A] =
-    maybe(a, (_ : A) != n)
-  /** Default empty value for Strings. */
-  def apply(s : String, f : String => Boolean = !_.isEmpty) =
-    Some(s).filter(f)
+  /** Conditionally map only true values. */
+  def map[A](f : A => A, a : A)(implicit m : Maybe[A]) : A = m.map(f, a)
+
+  def bracket(l : String = "", a : String, r : String = "")(implicit m : Maybe[String]) : String =
+    m.map(l + _ + r, a)
 
   /** Compute the value, usually a string parse, catching NumberFormatException.
     * @return Some(f) unless f throws NumberFormatException

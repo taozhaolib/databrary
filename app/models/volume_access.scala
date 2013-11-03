@@ -21,8 +21,8 @@ final case class VolumeAccess(volume : Volume, partyId : Party.Id, access : Perm
     * Otherwise, a new one is added.
     * This may invalidate volume.access. */
   def set(implicit site : Site) : Unit = {
-    val id = SQLArgs('volume -> volumeId, 'party -> partyId)
-    val args =  SQLArgs('access -> access, 'inherit -> inherit)
+    val id = SQLTerms('volume -> volumeId, 'party -> partyId)
+    val args =  SQLTerms('access -> access, 'inherit -> inherit)
     DBUtil.updateOrInsert(Audit.change("volume_access", args, id))(
       Audit.add("volume_access", args ++ id))
   }
@@ -69,7 +69,7 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
     * @return true if a matching volume access was found and deleted
     */
   def delete(volume : Volume.Id, party : Party.Id)(implicit site : Site) =
-    Audit.remove("volume_access", SQLArgs('volume -> volume, 'party -> party)).
+    Audit.remove("volume_access", SQLTerms('volume -> volume, 'party -> party)).
       execute()
 
   /** Determine what permission level the party has over the volume.

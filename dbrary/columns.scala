@@ -4,28 +4,39 @@ import scala.concurrent.{Future,ExecutionContext}
 import com.github.mauricio.async.db
 import macros._
 
+/** A wrapper for a table name useful for providing an implicit table context. */
 case class FromTable(table : String) {
   implicit override def toString : String = table
 }
 
-sealed class SelectExpr[A](val expr : String) {
+/** A single expression for a select statement, where toString is expected to produce valid SQL. */
+sealed class SelectExpr[A : SQLType](val expr : String) {
   final override def toString : String = expr
+  def get(a : Any) : A = SQLType.get[A](a)
+  /** Qualify this expression to select from a particular table, if applicable. */
   def inTable(table : String) : SelectExpr[A] = this
 }
 object SelectExpr {
   def apply[A : SQLType](expr : String) = new SelectExpr[A](expr)
 }
 
-final case class SelectColumn[A](table : String, col : String) extends SelectExpr[A](table + "." + col) {
+/** A simple "table.col" select expression. */
+final case class SelectColumn[A : SQLType](table : String, col : String) extends SelectExpr[A](table + "." + col) {
   override def inTable(table : String) = copy(table = table)
 }
 object SelectColumn {
   def apply[A : SQLType](col : String)(implicit from : FromTable) : SelectColumn[A] = SelectColumn[A](from.table, col)
 }
 
-final case class SelectAs[A](override val expr : String, name : String) extends SelectExpr[A](expr + " AS " + name)
+/** A "expression AS name" select expression. */
+final case class SelectAs[A : SQLType](override val expr : String, name : String) extends SelectExpr[A](expr + " AS " + name)
 
-case class Selector[A](selects : Seq[SelectExpr[_]], source : String, res : SQLResub[A]) {
+/** Information necessary to run a simple SELECT query.
+  * @param selects expressions to select in the query
+  * @param source table name or other FROM expression
+  * @param res parser for rows returned by the query
+  */
+case class Selector[A](selects : Seq[SelectExpr[_]], source : String, res : SQLLine[A]) {
   def select = selects.mkString(", ")
 
   def map[B](f : A => B) : Selector[B] =
@@ -53,8 +64,14 @@ case class Selector[A](selects : Seq[SelectExpr[_]], source : String, res : SQLR
     join(that, _ + " NATURAL JOIN " + _)
 
   private[this] def selectStmt(q : String*) : String = unwords(Seq("SELECT", select, "FROM", source) ++ q : _*)
-  def SELECT(q : String*)(args : SQLArgs)(implicit dbc : db.Connection, executionContext : ExecutionContext) : SQLResult[A] =
+  def SELECT(q : String*)(args : SQLArgs)(implicit dbc : db.Connection, executionContext : ExecutionContext) : SQLRows[A] =
     args.query(selectStmt(q : _*)).as(res)
+}
+
+object Selector {
+  def apply(selects : Seq[SelectExpr[_]])(implicit from : FromTable) : Selector[Seq[Any]] =
+    new Selector[Seq[Any]](selects, from.table,
+      new SQLLine[Seq[Any]](selects.length, _.zip(selects).map { case (v, s) => s.get(v) }))
 }
 
 abstract sealed class Columns[A,C <: SQLCols[A]] protected (selects : Seq[SelectExpr[_]], from : FromTable, override val res : C) extends Selector[A](selects, from.table, res) {

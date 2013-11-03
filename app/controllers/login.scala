@@ -62,7 +62,7 @@ object Login extends SiteController {
             .map(Redirect(_))
             .recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
         else
-          Future.successful(acct.filterNot(_ => Site.isSecure).fold(error)(login))
+          Future.successful(acct.filterNot(_ => isSecure).fold(error)(login))
       }
     )
   }
@@ -71,8 +71,8 @@ object Login extends SiteController {
     OpenID.verifiedId
       .map { info =>
         implicit val dbc = Site.dbPool
-        Account.getOpenid(info.id, maybe(email)).fold[SimpleResult](
-          BadRequest(views.html.account.login(loginForm.fill((maybe(email), "", info.id)).withError("openid", "login.openID.notFound")))
+        Account.getOpenid(info.id, Maybe.opt(email)).fold[SimpleResult](
+          BadRequest(views.html.account.login(loginForm.fill((Maybe.opt(email), "", info.id)).withError("openid", "login.openID.notFound")))
         )(login)
       }.recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
   }

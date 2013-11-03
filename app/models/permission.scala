@@ -1,6 +1,7 @@
 package models
 
 import play.api.i18n.Messages
+import macros._
 import dbrary._
 import site._
 
@@ -45,10 +46,11 @@ trait HasPermission {
 
 /** The possible levels of participant consent governing [Classification.IDENTIFIED] data.
   * Must match the corresponding postgres "consent" type, except for the NONE value which represents NULL (missing) as this is a common possibility.
-  * Should thus often be constructed as `consent.getOrElse(Consent.NONE)` and used as `util.maybe(consent, Consent.NONE)`. */
+  * Should thus often be constructed as `consent.getOrElse(Consent.NONE)` and used as `maybe.opt(consent)`. */
 object Consent extends PGEnum("consent") {
   val NONE, PRIVATE, SHARED, EXCERPTS, PUBLIC = Value
   def description(v : Value) = Messages("consent." + v.toString)
+  implicit val maybe : Maybe[Consent.Value] = Maybe[Consent.Value](_ != NONE)
 }
 
 /** The possible types of data sensitivity according to the presence of identifying user data.

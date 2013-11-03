@@ -60,7 +60,7 @@ object AssetFormat extends TableId[AssetFormat]("format") {
       row.SQL("ORDER BY format.id").list
 
   def getFilename(filename : String, ts : Boolean = false)(implicit db : site.Site.DB) =
-    maybe(filename.lastIndexOf('.'), -1).
+    Maybe.opt(filename.lastIndexOf('.')).
       flatMap(i => getExtension(filename.substring(i + 1).toLowerCase, ts))
   def getFilePart(file : play.api.mvc.MultipartFormData.FilePart[_], ts : Boolean = false)(implicit db : site.Site.DB) =
     file.contentType.flatMap(getMimetype(_, ts)) orElse
