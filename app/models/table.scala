@@ -19,14 +19,14 @@ private[models] trait TableRowId[+T] extends TableRow {
 private[models] abstract trait TableView {
   /** Name of the database table. */
   private[models] val table : String
-  private[this] val _tableOID = CachedVal[Long,Site.DB](SQL("SELECT oid FROM pg_class WHERE relname = {name}").on('name -> table).single(SqlParser.scalar[Long])(_))
   /** Database OID of the table.  This is useful when dealing with inheritance or other tableoid selections. */
-  private[models] def tableOID(implicit db : Site.DB) : Long = _tableOID
+  private[models] lazy val tableOID : Future[Long] =
+    SQL("SELECT oid FROM pg_class WHERE relname = ?", table).single(SQLCols[Long])
 
   /** Type of TableRow this object can generate. */
   private[models] type Row <: TableRow
   /** Description of the database selection to produce a [[Row]]. */
-  private[models] val row : Selector[Row]
+  // private[models] val row : Selector[Row]
 
   import scala.language.implicitConversions
   protected implicit val tableName : FromTable = FromTable(table)

@@ -20,10 +20,9 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
     _orcid = orcid
   }
 
-  protected val _access = CachedVal[Permission.Value, Site.DB](Authorize.access_check(id)(_))
   /** Level of access user has to the site.
     * Computed by [Authorize.access_check] and usually accessed through [[site.Site.access]]. */
-  def access(implicit db : Site.DB) : Permission.Value = _access
+  lazy val access : Future[Permission.Value] = Authorize.access_check(id)
 
   private[this] val _authorizeParents = CachedVal[Seq[Authorize], Site.DB](Authorize.getParents(this)(_))
   /** List of authorizations granted to this user. Cached for !all.
@@ -170,25 +169,20 @@ object Account extends TableId[Account]("account") {
   /** Look up a user by id, without an active session.
     * @return None if no party or no account for given party
     */
-  def get_(i : Int)(implicit db : Site.DB) : Option[Account] =
-    row.SQL("WHERE id = {id}").
-      on('id -> i).singleOpt()
+  def get_(i : Int) : Future[Option[Account]] =
+    row.SELECT("WHERE id = ?")(SQLArgs(i)).singleOpt
   /** Look up a user by id.
     * @return None if no party or no account for given party
     */
-  def get(i : Id)(implicit site : Site) : Option[Account] =
-    if (i == site.identity.id) site.user
-    else row.SQL("WHERE id = {id}").
-      on('id -> i).singleOpt()
+  def get(i : Id)(implicit site : Site) : Future[Option[Account]] =
+    if (i == site.identity.id) Future.successful(site.user)
+    else row.SELECT("WHERE id = ?")(SQLArgs(i)).singleOpt
   /** Look up a user by email. */
-  def getEmail(email : String)(implicit db : Site.DB) : Option[Account] = 
-    row.SQL("WHERE email = {email}").
-      on('email -> email).singleOpt()
+  def getEmail(email : String) : Future[Option[Account]] = 
+    row.SELECT("WHERE email = ?")(SQLArgs(email)).singleOpt
   /** Look up a user by openid.
     * @param email optionally limit results to the given email
     * @return an arbitrary account with the given openid, or the account for email if the openid matches */
-  def getOpenid(openid : String, email : Option[String] = None)(implicit db : Site.DB) : Option[Account] = {
-    row.SQL("WHERE openid = {openid} AND coalesce(email = {email}, 't') LIMIT 1").
-      on('openid -> openid, 'email -> email).singleOpt()
-  }
+  def getOpenid(openid : String, email : Option[String] = None) : Future[Option[Account]] =
+    row.SELECT("WHERE openid = ? AND coalesce(email = ?, 't') LIMIT 1")(SQLArgs(openid, email)).singleOpt
 }

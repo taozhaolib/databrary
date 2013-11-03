@@ -3,24 +3,15 @@ package dbrary
 import scala.concurrent.{Future,ExecutionContext}
 import scala.util.control.Exception.catching
 import com.github.mauricio.async.db
+import macros._
 
 /** Arguments that may be passed to a query. */
 trait SQLArgs {
   def args : Seq[Any]
-  /** Execute a query with these arguments. */
-  final def query(query : String)(implicit conn : db.Connection, context : ExecutionContext) : SQLResult = {
-    val a = args
-    new SQLResult(
-      if (a.isEmpty)
-        conn.sendQuery(query)
-      else
-        conn.sendPreparedStatement(query, a)
-    )
-  }
 }
 
 /** A special case of SQLArgs for running simple queries with no arguments. */
-object SQLQuery extends SQLArgs {
+object SQLNoArgs extends SQLArgs {
   val args = Nil
 }
 
@@ -33,20 +24,14 @@ final class SQLArgseq(val args : /*=>*/ Seq[Any]) extends SQLArgs {
   def +:[A : SQLType](other : A) : SQLArgseq = new SQLArgseq(put[A](other) +: args)
 }
 
-object SQLArgs {
-  import SQLType.put
-
-  def apply[A1 : SQLType](a1 : A1) = new SQLArgseq(Seq(put[A1](a1)))
-  def apply[A1 : SQLType, A2 : SQLType](a1 : A1, a2 : A2) = new SQLArgseq(Seq(put[A1](a1), put[A2](a2)))
+/** Generic trait for anything which may accept SQLType args to produce a result. */
+protected sealed abstract trait SQLArgsView[R] extends RepeatedView[SQLType, Any, R] {
+  protected def arg[A : SQLType](a : A) = SQLType.put[A](a)
+  final def apply(a : SQLArgs) : R = result(a.args : _*)
 }
 
-object SQL {
-  def apply(query : String)(implicit conn : db.Connection, context : ExecutionContext) : SQLResult =
-    SQLQuery.query(query)
-  def apply[A1 : SQLType](query : String, a1 : A1)(implicit conn : db.Connection, context : ExecutionContext) : SQLResult =
-    SQLArgs(a1).query(query)
-  def apply[A1 : SQLType, A2 : SQLType](query : String, a1 : A1, a2 : A2)(implicit conn : db.Connection, context : ExecutionContext) : SQLResult =
-    SQLArgs(a1, a2).query(query)
+object SQLArgs extends SQLArgsView[SQLArgseq] {
+  protected def result(args : Any*) : SQLArgseq = new SQLArgseq(args)
 }
 
 /** Exceptions that may occur during parsing query results, usually indicating type or arity mismatches. */
@@ -178,4 +163,27 @@ final class SQLCols2[C1 : SQLType, C2 : SQLType]
 final class SQLCols3[C1 : SQLType, C2 : SQLType, C3 : SQLType]
   extends SQLCols[(C1,C2,C3)](3, i => (get[C1](i), get[C2](i), get[C3](i))) {
   def map[A](f : (C1,C2,C3) => A) : SQLLine[A] = map[A](f.tupled)
+}
+
+/** A generic class representing a query which may (or may not) be applied to arguments, and produces a particular result type.
+  * @param query SQL statement */
+protected sealed abstract class SQLBuilder[A] protected (val query : String)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLArgsView[A] {
+  protected def send(args : Seq[Any]) : Future[db.QueryResult] = {
+    if (args.isEmpty)
+      dbconn.sendQuery(query)
+    else
+      dbconn.sendPreparedStatement(query, args)
+  }
+}
+
+/** A simple query which may be applied to arguments, producing a SQLResult. */
+final case class SQL(override val query : String)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLResult](query)(dbconn, context) {
+  final protected def result(args : Any*) : SQLResult = new SQLResult(send(args))
+  final protected def as[A](parse : SQLRow[A]) : SQLToRows[A] = new SQLToRows(query, parse)(dbconn, context)
+}
+
+/** A query which may be applied to arguments, producing rows to be parsed to a particular type.
+  * @param parse the parser to use on result rows */
+final case class SQLToRows[A](override val query : String, parse : SQLRow[A])(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLRows[A]](query)(dbconn, context) {
+  final protected def result(args : Any*) : SQLRows[A] = new SQLRows(send(args), parse)
 }

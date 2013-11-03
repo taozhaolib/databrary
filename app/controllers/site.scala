@@ -15,31 +15,26 @@ import models._
 
 sealed trait SiteRequest[A] extends Request[A] with Site {
   def clientIP = Inet(remoteAddress)
-  def withDB(db : site.Site.DB) : SiteRequest[A]
   def withObj[O](obj : O) : RequestObject[O]#Site[A]
 }
 
 object SiteRequest {
-  sealed abstract class Base[A](request : Request[A], val dbc : site.Site.DB) extends WrappedRequest[A](request) with SiteRequest[A]
-  sealed class Anon[A](request : Request[A], db : site.Site.DB) extends Base[A](request, db) with AnonSite {
-    def withDB(db : site.Site.DB) : Anon[A] =
-      new Anon(request, db)
+  sealed abstract class Base[A](request : Request[A]) extends WrappedRequest[A](request) with SiteRequest[A]
+  sealed class Anon[A](request : Request[A]) extends Base[A](request) with AnonSite {
     def withObj[O](obj : O) : RequestObject[O]#Anon[A] = {
       object ro extends RequestObject[O]
-      new ro.Anon(request, db, obj)
+      new ro.Anon(request, obj)
     }
   }
-  sealed class Auth[A](request : Request[A], val identity : Account, val superuser : Boolean, db : site.Site.DB) extends Base[A](request, db) with AuthSite {
-    def withDB(db : site.Site.DB) : Auth[A] =
-      new Auth(request, identity, superuser, db)
+  sealed class Auth[A](request : Request[A], val identity : Account, val superuser : Boolean) extends Base[A](request) with AuthSite {
     def withObj[O](obj : O) : RequestObject[O]#Auth[A] = {
       object ro extends RequestObject[O]
-      new ro.Auth(request, identity, superuser, db, obj)
+      new ro.Auth(request, identity, superuser, obj)
     }
   }
 
-  def apply[A](request : Request[A], identity : Option[Account], superuser : Boolean, db : site.Site.DB) : SiteRequest.Base[A] =
-    identity.fold[SiteRequest.Base[A]](new Anon[A](request, db))(a => new Auth[A](request, a, superuser && a.access(db) == Permission.ADMIN, db))
+  def apply[A](request : Request[A], identity : Option[Account], superuser : Boolean) : SiteRequest.Base[A] =
+    identity.fold[SiteRequest.Base[A]](new Anon[A](request))(a => new Auth[A](request, a, superuser && a.access == Permission.ADMIN))
 }
 
 trait RequestObject[+O] {
@@ -47,8 +42,8 @@ trait RequestObject[+O] {
     val obj : O
   }
   sealed trait Site[A] extends SiteRequest[A] with Base[A]
-  final class Anon[A](request : Request[A], db : site.Site.DB, val obj : O) extends SiteRequest.Anon[A](request, db) with Site[A]
-  final class Auth[A](request : Request[A], identity : Account, superuser : Boolean, db : site.Site.DB, val obj : O) extends SiteRequest.Auth[A](request, identity, superuser, db) with Site[A]
+  final class Anon[A](request : Request[A], val obj : O) extends SiteRequest.Anon[A](request) with Site[A]
+  final class Auth[A](request : Request[A], identity : Account, superuser : Boolean, val obj : O) extends SiteRequest.Auth[A](request, identity, superuser) with Site[A]
 }
 object RequestObject {
   def getter[O](get : SiteRequest[_] => Option[O]) = new ActionRefiner[SiteRequest.Base,RequestObject[O]#Site] {
@@ -68,16 +63,14 @@ object RequestObject {
 }
 
 object SiteAction extends ActionCreator[SiteRequest.Base] {
-  private[this] def getUser(request : Request[_])(implicit db : site.Site.DB) : Option[Account] =
+  private[this] def getUser(request : Request[_]) : Option[Account] =
     request.session.get("user").flatMap(Maybe.toInt _).flatMap(models.Account.get_ _)
 
   private[this] def getSuperuser(request : Request[_]) : Boolean =
     request.session.get("superuser").flatMap(Maybe.toLong _).exists(_ > System.currentTimeMillis)
 
-  def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) = {
-    val dbc = Site.dbPool
-    block(SiteRequest(request, getUser(request)(dbc), getSuperuser(request), dbc))
-  }
+  def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) =
+    block(SiteRequest(request, getUser(request), getSuperuser(request)))
 
   object Auth extends ActionRefiner[SiteRequest,SiteRequest.Auth] {
     protected def refine[A](request : SiteRequest[A]) = request match {
@@ -111,12 +104,9 @@ class SiteController extends Controller {
 }
 
 object Site extends SiteController {
-  private[controllers] val dbPool = site.Site.dbPool(current)
-
   def start = Login.view
 
   def test = Action { request =>
-    implicit val dbc = dbPool
     Ok("Ok")
   }
 

@@ -1,12 +1,17 @@
 package dbrary
 
+import scala.util.control.Exception.catching
 import macros._
 
 /** Enumerations which reflect types in the database.
   * Any PGEnum should exactly match the correspending database type. */
 abstract class PGEnum(name : String) extends Enumeration {
   val sqlType : SQLType[Value] =
-    SQLType[Value](name, classOf[Value])(s => Some(withName(s)))(_.toString)
+    SQLType[Value](name, classOf[Value]) { s =>
+      catching(classOf[NoSuchElementException]).opt(withName(s))
+    } {
+      _.toString
+    }
 }
 
 object PGEnum {

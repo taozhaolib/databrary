@@ -19,6 +19,13 @@ object Permission extends PGEnum("permission") {
   /** Alias for DOWNLOAD. DOWNLOAD permissions grant access to shared data, while non-data only requires VIEW. */
   def DATA = DOWNLOAD
 
+  override val sqlType : SQLType[Value] =
+    SQLType.transform[Option[String], Value](name, classOf[Value]) {
+      _.fold(Some(NONE))(s => catching(classOf[NoSuchElementException]).opt(withName(s)))
+    } {
+      Some(_.toString)
+    }
+
   def check(has : Value, need : Value)(implicit site : Site) : Boolean =
     has >= need || site.superuser
 
@@ -45,12 +52,17 @@ trait HasPermission {
 }
 
 /** The possible levels of participant consent governing [Classification.IDENTIFIED] data.
-  * Must match the corresponding postgres "consent" type, except for the NONE value which represents NULL (missing) as this is a common possibility.
-  * Should thus often be constructed as `consent.getOrElse(Consent.NONE)` and used as `maybe.opt(consent)`. */
+  * Must match the corresponding postgres "consent" type, except for the NONE value which represents NULL (missing) as this is a common possibility. */
 object Consent extends PGEnum("consent") {
   val NONE, PRIVATE, SHARED, EXCERPTS, PUBLIC = Value
   def description(v : Value) = Messages("consent." + v.toString)
-  implicit val maybe : Maybe[Consent.Value] = Maybe[Consent.Value](_ != NONE)
+  implicit val maybe : Maybe[Value] = Maybe[Value](_ != NONE)
+  override val sqlType : SQLType[Value] =
+    SQLType.transform[Option[String], Value](name, classOf[Value]) {
+      _.fold(Some(NONE))(s => catching(classOf[NoSuchElementException]).opt(withName(s)))
+    } {
+      maybe.opt(_).map(_.toString)
+    }
 }
 
 /** The possible types of data sensitivity according to the presence of identifying user data.

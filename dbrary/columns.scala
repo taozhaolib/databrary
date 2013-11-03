@@ -63,9 +63,9 @@ case class Selector[A](selects : Seq[SelectExpr[_]], source : String, res : SQLL
   def ~[B](that : Selector[B]) : Selector[(A,B)] =
     join(that, _ + " NATURAL JOIN " + _)
 
-  private[this] def selectStmt(q : String*) : String = unwords(Seq("SELECT", select, "FROM", source) ++ q : _*)
-  def SELECT(q : String*)(args : SQLArgs)(implicit dbc : db.Connection, executionContext : ExecutionContext) : SQLRows[A] =
-    args.query(selectStmt(q : _*)).as(res)
+  private[this] def selectStmt(q : Seq[String]) : String = unwords(Seq("SELECT", select, "FROM", source) ++ q : _*)
+  def SELECT(q : String*)(args : SQLArgs)(implicit dbc : db.Connection, executionContext : ExecutionContext) : SQLToRows[A] =
+    SQLToRows(selectStmt(q), res)(dbc, executionContext)
 }
 
 object Selector {

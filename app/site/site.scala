@@ -7,21 +7,20 @@ import scala._
 
 object Site {
   type DB = com.github.mauricio.async.db.Connection
-  def dbPool(implicit app : play.api.Application) : DB =
+  private def getDBPool(implicit app : play.api.Application) : DB =
     app.plugin[PostgresAsyncPlugin].fold(throw new Exception("PostgresAsyncPlugin not registered"))(_.pool)
+  lazy val dbPool : DB = getDBPool(play.api.Play.current)
 }
 /** Basic information about each request.  Primarily implemented by [[controllers.SiteRequest]]. */
 trait Site {
   /** [[models.Party]] of the logged-in user, possibly [[models.Party.Nobody]]. */
   val identity : models.Party
-  /** Database connection (with active transaction). */
-  val db : Site.DB
   /** Some(identity) only if actual logged-in user. */
   def user : Option[models.Account] = cast[models.Account](identity)
   /** Level of site access [[models.Permission]] current user has.
     * VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for admins.
     */
-  def access = identity.access(db)
+  def access = identity.access
   val superuser : Boolean
   /** IP of the client's host. */
   def clientIP : dbrary.Inet

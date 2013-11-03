@@ -14,7 +14,9 @@ import site._
   * @param authorized the time at which this authorization takes/took effect, or never (not yet) if None
   * @param expires the time at which this authorization stops, or never if None
   */
-final case class Authorize(childId : Party.Id, parentId : Party.Id, access : Permission.Value, delegate : Permission.Value, authorized : Option[Timestamp], expires : Option[Timestamp]) extends TableRow {
+final class Authorize protected (child : Party, parent : Party, access : Permission.Value, delegate : Permission.Value, authorized : Option[Timestamp], expires : Option[Timestamp]) extends TableRow {
+  def childId = child.id
+  def parentId = parent.id
   /** Update or add this authorization in the database.
     * If an authorization for the child and parent already exist, it is changed to match this.
     * Otherwise, a new one is added.
@@ -36,40 +38,26 @@ final case class Authorize(childId : Party.Id, parentId : Party.Id, access : Per
     val now = (new java.util.Date).getTime
     authorized.fold(false)(_.getTime < now) && expires.fold(true)(_.getTime > now)
   }
-
-  private[Authorize] val _child = CachedVal[Party, Site](Party.get(childId)(_).get)
-  /** The child party being authorized. Cached. */
-  def child(implicit site : Site) : Party = _child
-  private[Authorize] val _parent = CachedVal[Party, Site](Party.get(parentId)(_).get)
-  /** The parent party granting the authorization. Cached. */
-  def parent(implicit site : Site) : Party = _parent
 }
 
 object Authorize extends Table[Authorize]("authorize") {
-  private[models] val row = Columns[
-    Party.Id, Party.Id, Permission.Value, Permission.Value, Option[Timestamp], Option[Timestamp]](
-    'child,   'parent,  'access,          'delegate,        'authorized,       'expires).
-    map(Authorize.apply _)
+  private def make(child : Party, parent : Party)(access : Permission.Value, delegate : Permission.Value, authorized : Option[Timestamp], expires : Option[Timestamp]) : Authorize =
+    new Authorize(child, parent, access, delegate, authorized, expires)
+  private val columns = Columns[
+    Permission.Value, Permission.Value, Option[Timestamp], Option[Timestamp]](
+    'access,          'delegate,        'authorized,       'expires)
 
   private[this] val condition = "AND authorized < CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP)"
   private[this] def conditionIf(all : Boolean) =
     if (all) "" else condition
 
-  /** Retrieve a specific authorization identified by child and parent. */
-  private[models] def get(child : Party.Id, parent : Party.Id)(implicit db : Site.DB) : Option[Authorize] =
-    row.SQL("WHERE child = {child} AND parent = {parent}").
-      on('child -> child, 'parent -> parent).singleOpt()
-
   /** Get all authorizations granted to a particular child.
     * @param all include inactive authorizations
     */
-  private[models] def getParents(child : Party, all : Boolean = false)(implicit db : Site.DB) : Seq[Authorize] =
-    row.join(Party.row, "parent = party.id").map { case (a ~ p) =>
-        a._child() = child
-        a._parent() = p
-        a
-      }.SQL("WHERE child = {child}", conditionIf(all)).
-      on('child -> child.id).list
+  private[models] def getParents(child : Party, all : Boolean = false) : Future[Seq[Authorize]] =
+    columns.join(Party.row, "parent = party.id").map { case (a, p) =>
+        (make(child, p) _).tupled(a)
+      }.SELECT("WHERE child = ?", conditionIf(all))(SQLArgs(child.id)).list
   /** Get all authorizations granted ba a particular parent.
     * @param all include inactive authorizations
     */
@@ -90,10 +78,9 @@ object Authorize extends Table[Authorize]("authorize") {
 
   /** Determine the site access granted to a particular party.
     * This is defined by the minimum access level along a path of valid authorizations from [Party.Root], maximized over all possible paths, or Permission.NONE if there are no such paths. */
-  private[models] def access_check(c : Party.Id)(implicit db : Site.DB) : Permission.Value =
-    SQL("SELECT authorize_access_check({id})").
-      on('id -> c).single(scalar[Option[Permission.Value]]).
-      getOrElse(Permission.NONE)
+  private[models] def access_check(c : Party.Id) : Future[Permission.Value] =
+    SQL("SELECT authorize_access_check(?)", c).
+      single(SQLCols[Permission.Value])
 
   /** Determine the permission level granted to a child by a parent.
     * The child is granted all the same rights of the parent up to this level. */
