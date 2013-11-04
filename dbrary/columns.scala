@@ -14,7 +14,7 @@ sealed class SelectExpr[A : SQLType](val expr : String) {
   final override def toString : String = expr
   def get(a : Any) : A = SQLType.get[A](a)
   /** Qualify this expression to select from a particular table, if applicable. */
-  def inTable(table : String) : SelectExpr[A] = this
+  def fromTable(table : String) : SelectExpr[A] = this
 }
 object SelectExpr {
   def apply[A : SQLType](expr : String) = new SelectExpr[A](expr)
@@ -22,7 +22,7 @@ object SelectExpr {
 
 /** A simple "table.col" select expression. */
 final case class SelectColumn[A : SQLType](table : String, col : String) extends SelectExpr[A](table + "." + col) {
-  override def inTable(table : String) = copy(table = table)
+  override def fromTable(table : String) = copy(table = table)
   private[this] implicit lazy val fromTable : FromTable = FromTable(table)
   implicit def column : Columns1[A] = new Columns1[A](this)
 }
@@ -48,6 +48,8 @@ case class Selector[A](selects : Seq[SelectExpr[_]], source : String, parse : SQ
     copy[Option[A]](parse = parse.?)
   def from(from : String) : Selector[A] =
     copy[A](source = from)
+  def fromAlias(name : String) : Selector[A] =
+    copy[A](selects.map(_.fromTable(name)), source = source + " AS " + name)
 
   def join[B](that : Selector[B], joiner : (String, String) => String) : Selector[(A,B)] =
     Selector[(A,B)](selects ++ that.selects, joiner(source, that.source), parse.~[B](that.parse))
@@ -81,6 +83,20 @@ abstract sealed class Columns[A,C <: SQLCols[A]] protected (selects : Seq[Select
   def ~+[C : SQLType](a : SelectExpr[C]) : Columns[_,_]
 }
 
+object Columns {
+  def apply(implicit from : FromTable) = new Columns0
+  def apply[C1 : SQLType](a1 : SelectExpr[C1])(implicit from : FromTable) =
+    new Columns1[C1](a1)
+  def apply[C1 : SQLType, C2 : SQLType](a1 : SelectExpr[C1], a2 : SelectExpr[C2])(implicit from : FromTable) =
+    new Columns2[C1,C2](a1,a2)
+  def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType](a1 : SelectExpr[C1], a2 : SelectExpr[C2], a3 : SelectExpr[C3])(implicit from : FromTable) =
+    new Columns3[C1,C2,C3](a1,a2,a3)
+  def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType](a1 : SelectExpr[C1], a2 : SelectExpr[C2], a3 : SelectExpr[C3], a4 : SelectExpr[C4])(implicit from : FromTable) =
+    new Columns4[C1,C2,C3,C4](a1,a2,a3,a4)
+  def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType](a1 : SelectExpr[C1], a2 : SelectExpr[C2], a3 : SelectExpr[C3], a4 : SelectExpr[C4], a5 : SelectExpr[C5])(implicit from : FromTable) =
+    new Columns5[C1,C2,C3,C4,C5](a1,a2,a3,a4,a5)
+}
+
 /* talk about boilerplate, but this sort of arity overloading seems to be ubiquitous in scala */
 final class Columns0(implicit from : FromTable)
   extends Columns[Unit,SQLCols0](Nil, from, new SQLCols0) {
@@ -112,15 +128,28 @@ final class Columns3[C1 : SQLType, C2 : SQLType, C3 : SQLType](
   extends Columns[(C1,C2,C3),SQLCols3[C1,C2,C3]](Seq(a1, a2, a3), from, new SQLCols3[C1,C2,C3]) {
   override val length = 3
   def map[A](f : (C1,C2,C3) => A) : Selector[A] = copy[A](parse = parse.map(f))
-  def ~+[C : SQLType](a : SelectExpr[C]) = ???
+  def ~+[C : SQLType](a : SelectExpr[C]) = new Columns4[C1,C2,C3,C](a1,a2,a3,a)
 }
-
-object Columns {
-  def apply(implicit from : FromTable) = new Columns0
-  def apply[C1 : SQLType](a1 : SelectExpr[C1])(implicit from : FromTable) =
-    new Columns1[C1](a1)
-  def apply[C1 : SQLType, C2 : SQLType](a1 : SelectExpr[C1], a2 : SelectExpr[C2])(implicit from : FromTable) =
-    new Columns2[C1,C2](a1,a2)
-  def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType](a1 : SelectExpr[C1], a2 : SelectExpr[C2], a3 : SelectExpr[C3])(implicit from : FromTable) =
-    new Columns3[C1,C2,C3](a1,a2,a3)
+final class Columns4[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType](
+    a1 : SelectExpr[C1]
+  , a2 : SelectExpr[C2]
+  , a3 : SelectExpr[C3]
+  , a4 : SelectExpr[C4]
+  )(implicit from : FromTable)
+  extends Columns[(C1,C2,C3,C4),SQLCols4[C1,C2,C3,C4]](Seq(a1, a2, a3, a4), from, new SQLCols4[C1,C2,C3,C4]) {
+  override val length = 4
+  def map[A](f : (C1,C2,C3,C4) => A) : Selector[A] = copy[A](parse = parse.map(f))
+  def ~+[C : SQLType](a : SelectExpr[C]) = new Columns5[C1,C2,C3,C4,C](a1,a2,a3,a4,a)
+}
+final class Columns5[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType](
+    a1 : SelectExpr[C1]
+  , a2 : SelectExpr[C2]
+  , a3 : SelectExpr[C3]
+  , a4 : SelectExpr[C4]
+  , a5 : SelectExpr[C5]
+  )(implicit from : FromTable)
+  extends Columns[(C1,C2,C3,C4,C5),SQLCols5[C1,C2,C3,C4,C5]](Seq(a1, a2, a3, a4, a5), from, new SQLCols5[C1,C2,C3,C4,C5]) {
+  override val length = 5
+  def map[A](f : (C1,C2,C3,C4,C5) => A) : Selector[A] = copy[A](parse = parse.map(f))
+  def ~+[C : SQLType](a : SelectExpr[C]) = ???
 }

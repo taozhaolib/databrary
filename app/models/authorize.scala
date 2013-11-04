@@ -74,8 +74,11 @@ object Authorize extends Table[Authorize]("authorize") {
 
   /** Determine the site access granted to a particular party.
     * This is defined by the minimum access level along a path of valid authorizations from [Party.Root], maximized over all possible paths, or Permission.NONE if there are no such paths. */
-  private[models] def access_check(c : Party.Id) : Future[Permission.Value] =
-    SQL("SELECT authorize_access_check(?)").apply(c).single(SQLCols[Permission.Value])
+  private[models] def access_check(c : Party.Id) : Future[Permission.Value] = c match {
+    case Party.NOBODY => Async(Permission.NONE) // anonymous users get this level
+    case Party.ROOT => throw new IllegalArgumentException("trying to get root access") // the objective value is ADMIN but this should never be used
+    case _ => SQL("SELECT authorize_access_check(?)").apply(c).single(SQLCols[Permission.Value])
+  }
 
   /** Determine the permission level granted to a child by a parent.
     * The child is granted all the same rights of the parent up to this level. */

@@ -145,6 +145,9 @@ object SQLCols {
   def apply = new SQLCols0
   def apply[C1 : SQLType] = new SQLCols1[C1]
   def apply[C1 : SQLType, C2 : SQLType] = new SQLCols2[C1, C2]
+  def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType] = new SQLCols3[C1, C2, C3]
+  def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType] = new SQLCols4[C1, C2, C3, C4]
+  def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType] = new SQLCols5[C1, C2, C3, C4, C5]
 }
 
 import SQLCols.get
@@ -164,6 +167,14 @@ final class SQLCols2[C1 : SQLType, C2 : SQLType]
 final class SQLCols3[C1 : SQLType, C2 : SQLType, C3 : SQLType]
   extends SQLCols[(C1,C2,C3)](3, i => (get[C1](i), get[C2](i), get[C3](i))) {
   def map[A](f : (C1,C2,C3) => A) : SQLLine[A] = map[A](f.tupled)
+}
+final class SQLCols4[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType]
+  extends SQLCols[(C1,C2,C3,C4)](4, i => (get[C1](i), get[C2](i), get[C3](i), get[C4](i))) {
+  def map[A](f : (C1,C2,C3,C4) => A) : SQLLine[A] = map[A](f.tupled)
+}
+final class SQLCols5[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType]
+  extends SQLCols[(C1,C2,C3,C4,C5)](5, i => (get[C1](i), get[C2](i), get[C3](i), get[C4](i), get[C5](i))) {
+  def map[A](f : (C1,C2,C3,C4,C5) => A) : SQLLine[A] = map[A](f.tupled)
 }
 
 /** A generic class representing a query which may (or may not) be applied to arguments, and produces a particular result type.

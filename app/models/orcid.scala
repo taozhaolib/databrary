@@ -29,5 +29,5 @@ object Orcid {
     new Orcid(s.filterNot(c => c == '-' || c.isSpaceChar).stripPrefix("http://").stripPrefix("orcid.org/"))
 
   implicit val sqlType : SQLType[Orcid] =
-    SQLType[Orcid]("orcid", classOf[Orcid])(s => Some(new Orcid(s)))(_.orcid)
+    SQLType[Orcid]("orcid", classOf[Orcid])(s => Some(new Orcid(s)), _.orcid)
 }

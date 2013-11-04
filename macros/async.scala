@@ -16,4 +16,7 @@ object Async {
     flatMap[A,B](a, f(_).map(Some(_)))
   def orElse[A](a : Option[A], b : => Future[Option[A]]) : Future[Option[A]] =
     a.fold(b)(ss _)
+
+  /** Unsafely retrieve the value of an already evaluated Future. */
+  def get[A](a : Future[A]) : A = a.value.get.get
 }

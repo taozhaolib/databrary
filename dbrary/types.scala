@@ -72,6 +72,17 @@ object SQLType {
         org.joda.time.LocalDate.parse(s))
   }
 
+  implicit object timestamp extends SQLType[Timestamp]("timestamp", classOf[Timestamp]) {
+    def read(s : String) =
+      catching(classOf[java.lang.IllegalArgumentException]).opt(
+        org.joda.time.DateTime.parse(s))
+  }
+
+  implicit def array[A](implicit t : SQLType[A]) : SQLType[Array[A]] =
+    new SQLType[Array[A]](t.name + "[]", classOf[Array[A]]) {
+      def read(s : String) = None /* TODO */
+    }
+
   implicit def option[A](implicit t : SQLType[A]) : SQLType[Option[A]] =
     new SQLType[Option[A]](t.name + " NULL", classOf[Option[A]]) {
       def read(s : String) : Option[Option[A]] = Option(s).map(t.read(_))

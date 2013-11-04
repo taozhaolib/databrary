@@ -23,10 +23,3 @@ object CachedVal {
   /** Evaluate the cached value from an implicit state. */
   implicit def implicitGetCached[T, S](x : CachedVal[T, S])(implicit s : S) : T = x(s)
 }
-
-class CachedFuture[T, S](init : S => Future[T]) extends CachedVal[Future[T], S](init) {
-  def get : T = x.get.value.get.get
-}
-object CachedFuture {
-  def apply[T, S](init : S => Future[T]) = new CachedFuture[T,S](init)
-}

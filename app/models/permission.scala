@@ -1,5 +1,6 @@
 package models
 
+import scala.util.control.Exception.catching
 import play.api.i18n.Messages
 import macros._
 import dbrary._
@@ -20,11 +21,9 @@ object Permission extends PGEnum("permission") {
   def DATA = DOWNLOAD
 
   override implicit val sqlType : SQLType[Value] =
-    SQLType.transform[Option[String], Value](name, classOf[Value]) {
-      _.fold(Some(NONE))(s => catching(classOf[NoSuchElementException]).opt(withName(s)))
-    } {
-      Some(_.toString)
-    }
+    SQLType.transform[Option[String], Value]("permission", classOf[Value])(
+      _.fold[Option[Value]](Some(NONE))(s => catching(classOf[NoSuchElementException]).opt(withName(s))),
+      p => Some(p.toString))
 
   def check(has : Value, need : Value)(implicit site : Site) : Boolean =
     has >= need || site.superuser
@@ -56,13 +55,11 @@ trait HasPermission {
 object Consent extends PGEnum("consent") {
   val NONE, PRIVATE, SHARED, EXCERPTS, PUBLIC = Value
   def description(v : Value) = Messages("consent." + v.toString)
-  implicit val maybe : Maybe[Value] = Maybe[Value](_ != NONE)
+  implicit val truth : Truth[Value] = Truth[Value](_ != NONE)
   override implicit val sqlType : SQLType[Value] =
-    SQLType.transform[Option[String], Value](name, classOf[Value]) {
-      _.fold(Some(NONE))(s => catching(classOf[NoSuchElementException]).opt(withName(s)))
-    } {
-      maybe.opt(_).map(_.toString)
-    }
+    SQLType.transform[Option[String], Value]("consent", classOf[Value])(
+      _.fold[Option[Value]](Some(NONE))(s => catching(classOf[NoSuchElementException]).opt(withName(s))),
+      Maybe(_).opt.map(_.toString))
 }
 
 /** The possible types of data sensitivity according to the presence of identifying user data.

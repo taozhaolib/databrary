@@ -1,6 +1,8 @@
 package models
 
 import scala.concurrent.Future
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import macros._
 import dbrary._
 import site._
 
@@ -16,7 +18,7 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Unit = {
     if (name == _name && orcid == _orcid)
       return
-    Audit.change("party", SQLTerms('name -> name, 'orcid -> orcid), SQLArgs('id -> id)).run()
+    Audit.change("party", SQLTerms('name -> name, 'orcid -> orcid), SQLTerms('id -> id)).run()
     _name = name
     _orcid = orcid
   }
@@ -25,7 +27,7 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
     * Computed by [Authorize.access_check] and usually accessed through [[site.Site.access]]. */
   lazy val access : Future[Permission.Value] = Authorize.access_check(id)
 
-  private[this] val _authorizeParents = CachedVal[Seq[Authorize], Site.DB](Authorize.getParents(this)(_))
+  private[this] lazy val _authorizeParents : Future[Seq[Authorize]] = Authorize.getParents(this)
   /** List of authorizations granted to this user. Cached for !all.
     * @param all include inactive authorizations */
   final def authorizeParents(all : Boolean = false) : Future[Seq[Authorize]] =
@@ -36,7 +38,7 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   final def authorizeChildren(all : Boolean = false) : Future[Seq[Authorize]] =
     Authorize.getChildren(this, all)
 
-  private[this] val _delegated = CachedVal[Permission.Value, Site](site => Authorize.delegate_check(site.identity.id, id)(site.db))
+  private[this] val _delegated = CachedVal[Permission.Value, Site](site => Authorize.delegate_check(site.identity.id, id))
   /** Permission delegated by this party to the current user. */
   final def delegated(implicit site : Site) : Permission.Value = _delegated
   /** Permission delegated by the given party to this party. */
@@ -48,7 +50,7 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   final def volumeAccess(p : Permission.Value)(implicit site : Site) = VolumeAccess.getVolumes(this, p)
 
   /** List of volumes which this party is funding. */
-  final def funding(implicit site : Site) : Seq[VolumeFunding] = VolumeFunding.getFunder(this)
+  final def funding(implicit site : Site) : Future[Seq[VolumeFunding]] = VolumeFunding.getFunder(this)
 
   def getPermission(implicit site : Site) = delegated
 
@@ -59,7 +61,8 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
     Action("view", controllers.routes.Party.view(id), Permission.VIEW),
     Action("edit", controllers.routes.Party.edit(id), Permission.EDIT),
     Action("authorization", controllers.routes.Party.admin(id), Permission.ADMIN),
-    SiteAction("add volume", controllers.routes.Volume.create(Some(id)), checkPermission(Permission.CONTRIBUTE) && access >= Permission.CONTRIBUTE)
+    SiteAction("add volume", controllers.routes.Volume.create(Some(id)),
+      !id.equals(Party.ROOT) && checkPermission(Permission.CONTRIBUTE) && Async.get(access) >= Permission.CONTRIBUTE)
   )
 }
 
@@ -78,7 +81,7 @@ final class Account protected (party : Party, email_ : String, password_ : Strin
   def changeAccount(email : String = _email, password : String = _password, openid : Option[String] = _openid)(implicit site : Site) : Unit = {
     if (email == _email && password == _password && openid == _openid)
       return
-    Audit.change(Account.table, SQLTerms('email -> email, 'password -> password, 'openid -> openid), SQLTerms('id -> id)).execute()
+    Audit.change(Account.table, SQLTerms('email -> email, 'password -> password, 'openid -> openid), SQLTerms('id -> id)).run()
     if (password != _password)
       clearTokens
     _email = email
@@ -106,22 +109,22 @@ object Party extends TableId[Party]("party") {
     map(make _)
   private[models] val row : Selector[Party] =
     columns.leftJoin(Account.columns, using = 'id) map {
-      case (e ~ None) => e
-      case (e ~ Some(a)) => (Account.make(e) _).tupled(a)
+      case (e, None) => e
+      case (e, Some(a)) => (Account.make(e) _).tupled(a)
     }
 
   /** Look up a party by id. */
   def get(i : Id)(implicit site : Site) : Future[Option[Party]] = i match {
-    case NOBODY => Some(Nobody)
-    case ROOT => Some(Root)
-    case site.identity.id => Some(site.identity)
-    case _ =>
-      row.SQL("WHERE id = ?").apply(i).singleOpt
+    case NOBODY => Async(Some(Nobody))
+    case ROOT => Async(Some(Root))
+    case site.identity.id => Async(Some(site.identity))
+    case _ => row.SELECT("WHERE id = ?").apply(i).singleOpt
   }
 
   /** Create a new party. */
   def create(name : String)(implicit site : Site) : Future[Party] =
-    Audit.add(table, SQLTerms('name -> name), "id").single(SQLCols[Id]).map(new Party(_, name))
+    Audit.add(table, SQLTerms('name -> name), "id").single(SQLCols[Id])
+      .map(new Party(_, name))
 
   private def byName = "name ILIKE ? OR email ILIKE ?"
   private def byNameArgs(name : String) =
@@ -132,27 +135,25 @@ object Party extends TableId[Party]("party") {
     * @param who party doing the authorization, to exclude parties already authorized
     */
   def searchForAuthorize(name : String, who : Party.Id) : Future[Seq[Party]] =
-    row.SQL("WHERE " + byName + " AND id != ? AND id > 0 AND id NOT IN (SELECT child FROM authorize WHERE parent = ? UNION SELECT parent FROM authorize WHERE child = ?) LIMIT 8").
-      apply(byNameArgs(name) ++ SQLArgs(who) * 3).list
+    row.SELECT("WHERE " + byName + " AND id != ? AND id > 0 AND id NOT IN (SELECT child FROM authorize WHERE parent = ? UNION SELECT parent FROM authorize WHERE child = ?) LIMIT 8")
+      .apply(byNameArgs(name) ++ SQLArgs(who) * 3).list
 
   /** Search for parties by name for the purpose of volume access.
     * @param name string to match against name/email (case insensitive substring)
     * @param volume volume to which to grant access, to exclude parties with access already.
     */
   def searchForVolumeAccess(name : String, volume : Volume.Id) : Future[Seq[Party]] =
-    row.SQL("WHERE " + byName + " AND id NOT IN (SELECT party FROM volume_access WHERE volume = ?) LIMIT 8").
-      apply(byNameArgs(name) ++ SQLArgs(volume)).list
+    row.SELECT("WHERE " + byName + " AND id NOT IN (SELECT party FROM volume_access WHERE volume = ?) LIMIT 8").
+      apply(byNameArgs(name) :+ volume).list
 
   private[models] final val NOBODY : Id = asId(-1)
   private[models] final val ROOT   : Id = asId(0)
   /** The special party group representing everybody (including anonymous users) on the site.
     * This is also in the database, but is cached here for special handling. */
   final val Nobody = new Party(NOBODY, "Everybody")
-  Nobody._access() = Permission.NONE // anonymous users get this level
   /** The special party group representing authorized users on the site.
     * This is also in the database, but is cached here for special handling. */
   final val Root   = new Party(ROOT,   "Databrary")
-  Root._access() = null // the objective value is ADMIN but this should never be used
 }
 
 object Account extends TableId[Account]("account") {
@@ -163,7 +164,7 @@ object Account extends TableId[Account]("account") {
     'email, 'password,      'openid)
   private[models] val row : Selector[Account] =
     Party.columns.join(columns, using = 'id) map {
-      case (e ~ a) => (make(e) _).tupled(a)
+      case (e, a) => (make(e) _).tupled(a)
     }
   private val access = Columns(SelectAs[Permission.Value]("authorize_access_check(party.id)", "party_access"))
 

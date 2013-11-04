@@ -19,6 +19,7 @@ object RangeType {
     def decrement(a : Long) = a - 1
     def compare(a : Long, b : Long) = a compare b
   }
+  implicit val segment : RangeType[Offset] = PGRangeType.segment
 }
 
 abstract sealed class Range[A](implicit t : RangeType[A]) {
@@ -130,10 +131,12 @@ object Range {
     val lowerClosed = lc
     val upperClosed = uc
   }
+
+  implicit val segmentSqlType : SQLType[Range[Offset]] = PGRangeType.segment.sqlType
 }
 
 abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends RangeType[A] {
-  val sqlType = SQLType[Range[A]](name, classOf[Range[A]])({ s =>
+  implicit val sqlType = SQLType[Range[A]](name, classOf[Range[A]])({ s =>
     if (s.equals("empty") || s.isEmpty)
       Some(Range.empty[A](this))
     else for {
@@ -163,12 +166,14 @@ abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends
   })
 }
 
-object PGSegment extends PGRangeType[Offset]("segment") {
-  def compare(a : Offset, b : Offset) = a compare b
-}
+object PGRangeType {
+  implicit object segment extends PGRangeType[Offset]("segment") {
+    def compare(a : Offset, b : Offset) = a compare b
+  }
 
-object PGDateRange extends PGRangeType[Date]("daterange") with DiscreteRangeType[Date] {
-  def compare(a : Date, b : Date) = a compareTo b
-  def increment(a : Date) = a.plusDays(1)
-  def decrement(a : Date) = a.minusDays(1)
+  implicit object daterange extends PGRangeType[Date]("daterange") with DiscreteRangeType[Date] {
+    def compare(a : Date, b : Date) = a compareTo b
+    def increment(a : Date) = a.plusDays(1)
+    def decrement(a : Date) = a.minusDays(1)
+  }
 }

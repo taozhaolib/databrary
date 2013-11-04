@@ -1,7 +1,8 @@
 package models
 
+import scala.concurrent.Future
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import dbrary._
-import PGSegment.{column => segmentColumn,statement => segmentStatement}
 import site._
 
 /** A comment made by a particular user applied to exactly one object.
@@ -15,66 +16,56 @@ final class Comment private (val id : Comment.Id, val who : Account, val time : 
 object Comment extends TableId[Comment]("comment") {
   private def make(who : Account, slot : Slot)(id : Comment.Id, time : Timestamp, text : String) =
     new Comment(id, who, time, slot, text)
-  private val columns = Columns[
-    Id,  Timestamp, String](
-    'id, 'time,     'text)
-  private[models] val row = columns.
-    join(Account.row, "comment.who = party.id").
-    join(Slot.row, "comment.slot = slot.id") map {
-      case (comment ~ who ~ slot) => (make(who, slot) _).tupled(comment)
-    }
+  private val columns = Columns(
+      SelectColumn[Id]("id")
+    , SelectColumn[Timestamp]("time")
+    , SelectColumn[String]("text")
+    )
   private def whoRow(who : Account) = columns.
     join(Slot.row, "comment.slot = slot.id") map {
-      case (comment ~ slot) => (make(who, slot) _).tupled(comment)
+      case (comment, slot) => (make(who, slot) _).tupled(comment)
     }
   private def volumeRow(volume : Volume) = columns.
     join(Account.row, "comment.who = party.id").
     join(Slot.volumeRow(volume), "comment.slot = slot.id") map {
-      case (comment ~ who ~ slot) => (make(who, slot) _).tupled(comment)
+      case (comment, who, slot) => (make(who, slot) _).tupled(comment)
     }
   private def containerRow(container : Container) = columns.
     join(Account.row, "comment.who = party.id").
     join(Slot.containerRow(container), "comment.slot = slot.id") map {
-      case (comment ~ who ~ slot) => (make(who, slot) _).tupled(comment)
+      case (comment, who, slot) => (make(who, slot) _).tupled(comment)
     }
   private def slotRow(slot : Slot) = columns.
     join(Account.row, "comment.who = party.id") map {
-      case (comment ~ who) => (make(who, slot) _).tupled(comment)
+      case (comment, who) => (make(who, slot) _).tupled(comment)
     }
   private val order = "ORDER BY comment.time DESC"
 
-  /** Retrieve a specific comment by id.
-    * This checks permissions on the commented object (volume). */
-  def get(id : Id)(implicit site : Site) : Option[Comment] =
-    row.SQL("WHERE comment.id = {id} AND", Volume.condition).
-      on(Volume.conditionArgs('id -> id) : _*).singleOpt
-
   /** Retrieve the set of all comments within the given volume. */
-  private[models] def getVolume(volume : Volume)(implicit db : Site.DB) : Seq[Comment] =
-    volumeRow(volume).
-      SQL("WHERE container.volume = {volume}", order).
-      on('volume -> volume.id).list
+  private[models] def getVolume(volume : Volume) : Future[Seq[Comment]] =
+    volumeRow(volume).SELECT("WHERE container.volume = ?", order).apply(volume.id).list
+
   /** Retrieve the set of comments on the given target.
     * @param all include all indirect annotations on any containers, objects, or clips contained within the given target */
-  private[models] def getSlot(slot : Slot, all : Boolean = true)(implicit db : Site.DB) : Seq[Comment] =
+  private[models] def getSlot(slot : Slot, all : Boolean = true) : Future[Seq[Comment]] =
     if (all)
-      containerRow(slot.container).SQL("WHERE slot.source = {cont} AND slot.segment <@ {seg}", order).
-        on('cont -> slot.containerId, 'seg -> slot.segment).list
+      containerRow(slot.container).SELECT("WHERE slot.source = ? AND slot.segment <@ ?", order)
+        .apply(slot.containerId, slot.segment).list
     else
-      slotRow(slot).SQL("WHERE comment.slot = {slot}", order).
-        on('slot -> slot.id).list
+      slotRow(slot).SELECT("WHERE comment.slot = ?", order).apply(slot.id).list
+
   /** Retrieve the set of comments written by the specified user.
     * This checks permissions on the commented object (volume). */
-  private[models] def getParty(who : Account)(implicit site : Site) : Seq[Comment] =
-    whoRow(who).SQL("WHERE who = {who} AND", Volume.condition, order).
-      on(Volume.conditionArgs('who -> who.id) : _*).list
+  private[models] def getParty(who : Account)(implicit site : Site) : Future[Seq[Comment]] =
+    whoRow(who).SELECT("WHERE who = ? AND", Volume.condition, order).
+      on(who.id +: Volume.conditionArgs).list
 
   /** Post a new comment on a target by the current user.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
-  private[models] def post(slot : Slot, text : String)(implicit site : AuthSite) : Comment = {
+  private[models] def post(slot : Slot, text : String)(implicit site : AuthSite) : Future[Comment] = {
     val who = site.identity
-    val args = SQLArgs('who -> who.id, 'slot -> slot.id, 'text -> text)
-    SQL("INSERT INTO " + table + " " + args.insert + " RETURNING " + columns.select).
-      on(args : _*).single(columns.map(make(who, slot) _))
+    val args = SQLTerms('who -> who.id, 'slot -> slot.id, 'text -> text)
+    SQL("INSERT INTO " + table + " " + args.insert + " RETURNING " + columns.select)
+      .apply(args).single(columns.parse.map(make(who, slot) _))
   }
 }

@@ -20,9 +20,9 @@ private[models] final sealed class MeasureType[T] private (val dataType : DataTy
   private[models] val table = "measure_" + name
   protected implicit val tableName : FromTable = FromTable(table)
   /** Column access to values of this type in the specific measurement table. */
-  private[models] val select : SelectExpr[T] = SelectColumn[T]("datum")
+  private[models] val select : SelectColumn[T] = SelectColumn[T]("datum")
   /** Column access to values of this type in the joint measurement table. */
-  private[models] val selectAll : SelectExpr[T] = SelectColumn[T]("measure_all", "datum_" + name)
+  private[models] val selectAll : SelectColumn[T] = SelectColumn[T]("measure_all", "datum_" + name)
 }
 private[models] object MeasureType {
   /** Text measurements are represented as Strings. */
@@ -166,7 +166,7 @@ private[models] sealed abstract class MeasureBase(val recordId : Record.Id, val 
     Measure.delete(recordId, metric)
 }
 /** A measurement with a specific, tagged type. */
-final case class MeasureT[T](override val recordId : Record.Id, override val metric : MetricT[T], value : T) extends MeasureBase(recordId, metric) {
+final case class MeasureT[T : SQLType](override val recordId : Record.Id, override val metric : MetricT[T], value : T) extends MeasureBase(recordId, metric) {
   def datum = new MeasureDatumT[T](value)(metric.measureType)
   override def stringValue = value.toString
 
@@ -217,16 +217,16 @@ private[models] sealed abstract class MeasureView[R <: MeasureBase](table : Stri
 
 /** A typed interface to measures. */
 object MeasureT extends MeasureView[MeasureT[_]]("measure_all") {
-  private[this] def make[T](recordId : Record.Id, metric : MetricT[T], value : Any) =
+  private[this] def make[T : SQLType](recordId : Record.Id, metric : MetricT[T], value : Any) =
     new MeasureT[T](recordId, metric, value.asInstanceOf[T])
   private val row : Selector[MeasureT[_]] = Selector[MeasureT[_]](
     columns.selects ++ Metric.row.selects ++ MeasureType.all.map(_.selectAll),
     "measure_all JOIN metric ON measure_all.metric = metric.id",
     new SQLLine[MeasureT[_]](columns.length + Metric.row.length + MeasureType.all.length, { l =>
       val (c, md) = l.splitAt(columns.length)
-      val (m, dl) = dm.splitAt(Metric.row.length)
-      val record = columns.parse(c)
-      val metric = Metric.row.parse(m)
+      val (m, dl) = md.splitAt(Metric.row.length)
+      val record = columns.parse.get(c)
+      val metric = Metric.row.parse.get(m)
       val d = dl(metric.dataType.id)
       make(record, metric, metric.measureType.sqlType.get(d))
     })
@@ -235,19 +235,18 @@ object MeasureT extends MeasureView[MeasureT[_]]("measure_all") {
   /** Retrieve the specific measure of the specified metric in the given record.
     * This does not check permissions so is unsafe.
     * @tparam T the type of the data value */
-  private[models] def get[T](record : Record.Id, metric : MetricT[T]) : Future[Option[T]] = {
-    val tpe = metric.measureType
-    tpe.select.SQL("WHERE record = ? AND metric = ?")
+  private[models] def get[T](record : Record.Id, metric : MetricT[T]) : Future[Option[T]] =
+    metric.measureType.select.column
+      .SELECT("WHERE record = ? AND metric = ?")
       .apply(record, metric.id).singleOpt
-  }
 
   /** Retrieve the set of all categorized records and possibly measures of the given type on the given slot. */
   private[models] def getSlot[T](slot : Slot, category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident) : Future[Seq[(Record, Option[T])]] =
-    Record.measureRow[T](slot.volume, metric).
-      SQL("JOIN slot_record ON record.id = slot_record.record",
+    Record.measureRow[T](slot.volume, metric)
+      .SELECT("JOIN slot_record ON record.id = slot_record.record",
         "AND record.category", (if (category.isDefined) "= ?" else " IS NOT NULL"),
         "AND slot_record.slot = ? ORDER BY record.category").
-      apply(metric.id +: category.fold(SQLArgs())(SQLArgs(_.id)) :+ slot.id).list
+      apply(metric.id +: category.fold(SQLArgs())(c => SQLArgs(c.id)) :+ slot.id).list
 }
 
 /** A un-typed interface to measures. */
@@ -263,6 +262,6 @@ object Measure extends MeasureView[Measure]("measure_view") {
   /** Retrieve the specific measure of the specified metric in the given record.
     * This does not check permissions so is unsafe. */
   private[models] def get(record : Record.Id, metric : Metric) : Future[Option[Measure]] =
-    metricRow(metric).SQL("WHERE record = ? AND metric = ?")
+    metricRow(metric).SELECT("WHERE record = ? AND metric = ?")
       .apply(record, metric.id).singleOpt
 }

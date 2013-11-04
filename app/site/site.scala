@@ -1,6 +1,6 @@
 package site
 
-import dbrary.cast
+import macros._
 import models._
 import play.api.mvc._
 import scala._
@@ -30,7 +30,7 @@ trait AnonSite extends Site {
   val identity = models.Party.Nobody
   override def user = None
   val superuser = false
-  val access = models.Permission.NONE /* XXX should this be VIEW? */
+  val access = models.Permission.NONE
 }
 
 trait AuthSite extends Site {

@@ -1,5 +1,6 @@
 package models
 
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import org.joda.time.Period
 import dbrary._
 import site._
@@ -44,19 +45,18 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def categoryId = category.map(_.id)
 
   /** Update the given values in the database and this object in-place. */
-  def change(category : Option[RecordCategory] = _category)(implicit db : Site.DB) : Unit = {
+  def change(category : Option[RecordCategory] = _category) : Unit = {
     if (category == _category)
       return
-    SQL("UPDATE record SET category = ? WHERE id = ?", id, category.map(_.id)).run()
+    SQL("UPDATE record SET category = ? WHERE id = ?").apply(category.map(_.id), id).run()
     _category = category
   }
 
   /** A specific measure of the given type and metric. */
-  def measure[T](metric : MetricT[T])(implicit db : Site.DB) : Option[T] = MeasureT.get[T](this.id, metric)
-  def measure(metric : Metric)(implicit db : Site.DB) : Option[Measure] = Measure.get(this.id, metric)
-  private[this] val _measures = CachedVal[Seq[Measure], Site.DB](Measure.getRecord(this.id)(_))
-  /** All measures in this record. Cached. */
-  def measures(implicit db : Site.DB) : Seq[Measure] = _measures
+  def measure[T](metric : MetricT[T]) : Future[Option[T]] = MeasureT.get[T](this.id, metric)
+  def measure(metric : Metric) : Future[Option[Measure]] = Measure.get(this.id, metric)
+  /** All measures in this record. */
+  lazy val measures : Future[Seq[Measure]] = Measure.getRecord(this.id)
 
   /** Add or change a measure on this record.
     * This is not type safe so may generate SQL exceptions, and may invalidate measures on this object. */
@@ -126,8 +126,8 @@ object Record extends TableId[Record]("record") {
   private[models] def volumeRow(vol : Volume) = columns.map(make(vol) _)
   private[models] def measureRow[T](vol : Volume, metric : MetricT[T]) = {
     val mt = metric.measureType
-    volumeRow(vol).leftJoin(mt.column, "record.id = " + mt.table + ".record AND " + mt.table + ".metric = {metric}") map {
-      case (record ~ meas) =>
+    volumeRow(vol).leftJoin(mt.select.column, "record.id = " + mt.table + ".record AND " + mt.table + ".metric = {metric}") map {
+      case (record, meas) =>
         metric match {
           case Metric.Ident => record._ident() = meas
           case _ => ()

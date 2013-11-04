@@ -95,7 +95,7 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
 
   /** Retrieve the set of assets directly contained by a single container.
     * This assumes that permissions have already been checked as the caller must already have the container. */
-  private[models] def getContainer(container : Container)(implicit db : Site.DB) : Seq[ContainerAsset] =
+  private[models] def getContainer(container : Container)(implicit db : Site.DB) : Future[Seq[ContainerAsset]] =
     containerRow(container).
       SQL("WHERE container_asset.container = {container} ORDER BY container_asset.position NULLS LAST, format.id").
       on('container -> container.id).list
