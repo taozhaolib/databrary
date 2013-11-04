@@ -1,5 +1,6 @@
 package models
 
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import dbrary._
 import site._
 
@@ -10,36 +11,25 @@ object DataType extends PGEnum("data_type") {
 
 /** Class for measurement types.
   * This provides convenient mapping tools between DataType, measures in the database, and Scala values. */
-private[models] abstract sealed class MeasureType[T : Column] private (val dataType : DataType.Value) {
+private[models] final sealed class MeasureType[T] private (val dataType : DataType.Value)(implicit val sqlType : SQLType[T]) {
   /** The name of this type, as used in database identifiers. */
   val name = dataType.toString
   /** The table storing measurements of this type. */
   private[models] val table = "measure_" + name
   protected implicit val tableName : FromTable = FromTable(table)
   /** Column access to values of this type in the specific measurement table. */
-  private[models] val column = Columns[T](SelectColumn("datum"))
+  private[models] val select : SelectExpr[T] = SelectColumn[T]("datum")
   /** Column access to values of this type in the joint measurement table. */
-  private[models] val columnAll = Columns[T](SelectColumn("measure_all", "datum_" + name))
-  private[models] def fromString(s : String) : Option[T]
-  private[models] val pgType : String
+  private[models] val selectAll : SelectExpr[T] = SelectColumn[T]("measure_all", "datum_" + name)
 }
 private[models] object MeasureType {
   /** Text measurements are represented as Strings. */
-  implicit val measureText = new MeasureType[String](DataType.text) {
-    private[models] def fromString(s : String) = Some(s)
-    private[models] val pgType = "text"
-  }
+  implicit val measureText = new MeasureType[String](DataType.text)
   /** Numeric measurements are represented as Doubles, although this will lose precision.
     * BigNumeric or something might be better -- unfortunately jdbc seems to map numeric as Double anyway. */
-  implicit val measureNumber = new MeasureType[Double](DataType.number) {
-    private[models] def fromString(s : String) = scala.util.control.Exception.catching(classOf[java.lang.NumberFormatException]).opt(s.toDouble)
-    private[models] val pgType = "numeric"
-  }
+  implicit val measureNumber = new MeasureType[Double](DataType.number)
   /** Date measurements. */
-  implicit val measureDate = new MeasureType[Date](DataType.date) {
-    private[models] def fromString(s : String) = scala.util.control.Exception.catching(classOf[java.lang.IllegalArgumentException]).opt(Date.valueOf(s))
-    private[models] val pgType = "date"
-  }
+  implicit val measureDate = new MeasureType[Date](DataType.date)
 
   def apply(dataType : DataType.Value) : MeasureType[_] = dataType match {
     case DataType.text => measureText
@@ -75,9 +65,13 @@ object Metric extends TableId[MetricT[_]]("metric") {
     case LANGUAGE => Language
     case _ => new MetricT(id, name, classification, values.getOrElse(Array[String]()))(MeasureType(dataType))
   }
-  private[models] val row = Columns[
-    Id,  String, Classification.Value, DataType.Value, Option[Array[String]]](
-    'id, 'name,  'classification,      'type,          'values).map(make _)
+  private[models] val row = Columns(
+      SelectColumn[Id]("id")
+    , SelectColumn[String]("name")
+    , SelectColumn[Classification.Value]("classification")
+    , SelectColumn[DataType.Value]("type")
+    , SelectColumn[Option[Array[String]]]("values")
+    ).map(make _)
 
   /** Retrieve a single metric by id. */
   def get(id : Id)(implicit db : Site.DB) : Option[Metric] = id match {
@@ -140,12 +134,14 @@ final class MeasureDatum(val value : String) extends MeasureDatumBase {
 }
 object MeasureDatum {
   /** A column parser for dynamic measurement values. */
-  implicit val column : Column[MeasureDatumT[_]] = Column.nonNull[MeasureDatumT[_]] { (value, meta) =>
-    value match {
-      case s : String => Right(new MeasureDatumT(s))
-      case d : Double => Right(new MeasureDatumT(d))
-      case d : Date => Right(new MeasureDatumT(d))
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass + " to MeasureDatum for column " + meta.column))
+  implicit object sqlType extends SQLType[MeasureDatumT[_]] {
+    override def put(d : MeasureDatumT[_]) = d.value
+    override def get(x : Any, where : String = "") : MeasureDatumT[_] = x match {
+      case null => throw new SQLUnexpectedNull(this, where)
+      case s : String => new MeasureDatumT[String](s)
+      case d : Double => new MeasureDatumT[Double](d)
+      case d : Date => new MeasureDatumT[Date](d)
+      case _ => throw new SQLTypeMismatch(x, this, where)
     }
   }
 }
@@ -158,12 +154,12 @@ private[models] sealed abstract class MeasureBase(val recordId : Record.Id, val 
   def measureType = metric.measureType
   def datum : MeasureDatumBase
   def stringValue : String = datum.toString
-  protected def ids : SQLArgs = SQLArgs('record -> recordId, 'metric -> metricId)
+  protected def ids : SQLTerms = SQLTerms('record -> recordId, 'metric -> metricId)
 
   /** Add or update this measure in the database. */
-  def set(implicit db : Site.DB) : Boolean
+  def set : Boolean
   /** Remove this measure from its associated record and delete it. */
-  def remove(implicit db : Site.DB) : Unit =
+  def remove : Unit =
     Measure.delete(recordId, metric)
 }
 /** A measurement with a specific, tagged type. */
@@ -171,13 +167,13 @@ final case class MeasureT[T](override val recordId : Record.Id, override val met
   def datum = new MeasureDatumT[T](value)(metric.measureType)
   override def stringValue = value.toString
 
-  def set(implicit db : Site.DB) : Boolean = {
+  def set : Boolean = {
     val ids = this.ids
-    val args = ids ++ SQLArgs('datum -> value)
+    val args = ('datum -> value) +: ids
     val tpe = measureType
     DBUtil.updateOrInsert(
-      SQL("UPDATE " + tpe.table + " SET datum = {datum} WHERE " + ids.where).on(args : _*))(
-      SQL("INSERT INTO " + tpe.table + " " + args.insert).on(args : _*))
+      SQL("UPDATE " + tpe.table + " SET datum = ? WHERE " + ids.where).apply(args))(
+      SQL("INSERT INTO " + tpe.table + " " + args.insert).apply(args)).run()
     true
   }
 }
@@ -186,7 +182,7 @@ final case class Measure(override val recordId : Record.Id, override val metric 
   def datum = new MeasureDatum(value)
   override def stringValue = value
 
-  def set(implicit db : Site.DB) : Boolean = {
+  def set : Boolean = {
     val ids = this.ids
     val args = ids ++ SQLArgs('value -> value)
     val tpe = metric.measureType

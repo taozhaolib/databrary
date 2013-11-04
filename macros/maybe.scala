@@ -3,45 +3,47 @@ package macros
 import scala.collection.GenTraversableOnce
 
 /** Distinguish some ("defined"/"true") values from others ("empty"/"false"). */
-trait Maybe[A] {
+trait Truth[A] {
   def pass(a : A) : Boolean
   final def partial[B](f : A => B) : PartialFunction[A,B] = new PartialFunction[A,B] {
     def isDefinedAt(a : A) = pass(a)
     def apply(a : A) = f(a)
   }
-  final def opt(a : A) : Option[A] =
-    if (pass(a)) Some(a) else None
-  final def map[B >: A](f : A => B, a : A) : B =
-    if (pass(a)) f(a) else a
 }
 
-/** Utility that creates [[scala.Option]]s out of values. */
-object Maybe {
-  def apply[A](p : A => Boolean) = new Maybe[A] {
+object Truth {
+  def apply[A](p : A => Boolean) = new Truth[A] {
     def pass(a : A) = p(a)
   }
 
-  implicit val trueBoolean : Maybe[Boolean] = Maybe[Boolean](a => a)
-  implicit val someOption : Maybe[Option[_]] = Maybe[Option[_]](_.isDefined)
-  implicit val nonEmptyTraversable : Maybe[GenTraversableOnce[_]] = Maybe[GenTraversableOnce[_]](_.nonEmpty)
-  implicit val nonEmptyString : Maybe[String] = Maybe[String](_.nonEmpty)
+  def all[A] : Truth[A] = Truth[A](_ => true)
+  def none[A] : Truth[A] = Truth[A](_ => false)
+  implicit val trueBoolean : Truth[Boolean] = Truth[Boolean](a => a)
+  implicit val someOption : Truth[Option[_]] = Truth[Option[_]](_.isDefined)
+  implicit val nonEmptyTraversable : Truth[GenTraversableOnce[_]] = Truth[GenTraversableOnce[_]](_.nonEmpty)
+  implicit val nonEmptyString : Truth[String] = Truth[String](_.nonEmpty)
   /* useful with String.index */
-  implicit val nonNegativeInt : Maybe[Int] = Maybe[Int](_ >= 0)
+  implicit val nonNegativeInt : Truth[Int] = Truth[Int](_ >= 0)
+}
 
-  def pass[A](a : A)(implicit m : Maybe[A]) : Boolean = m.pass(a)
-
-  def partial[A,B](f : A => B)(implicit m : Maybe[A]) : PartialFunction[A,B] = m.partial(f)
-
+/** A passively conditional value based on a Truth instance. */
+final case class Maybe[A](a : A)(implicit t : Truth[A]) {
+  final implicit val pass : Boolean = t.pass(a)
   /** A more concise version of the common `Some(_).filter(_)` idiom.
-    * @return Some(a) if f(a), None otherwise
+    * @return Some(a) if pass(a), None otherwise
     */
-  def opt[A](a : A)(implicit m : Maybe[A]) : Option[A] = m.opt(a)
-
+  final def opt : Option[A] =
+    if (pass) Some(a) else None
   /** Conditionally map only true values. */
-  def map[A](f : A => A, a : A)(implicit m : Maybe[A]) : A = m.map(f, a)
+  final def map[B >: A](f : A => B) : B =
+    if (pass) f(a) else a
+  final def orElse(b : A) =
+    if (pass) a else b
+}
 
-  def bracket(l : String = "", a : String, r : String = "")(implicit m : Maybe[String]) : String =
-    m.map(l + _ + r, a)
+object Maybe {
+  def bracket(l : String = "", a : String, r : String = "")(implicit t : Truth[String]) : String =
+    Maybe(a)(t).map(l + _ + r)
 
   /** Compute the value, usually a string parse, catching NumberFormatException.
     * @return Some(f) unless f throws NumberFormatException

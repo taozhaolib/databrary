@@ -89,6 +89,6 @@ object Audit {
   private[models] def change(table : String, sets : SQLTerms, where : SQLTerms, returning : String = "")(implicit site : Site) : SQLResult =
     SQLon(Action.change, table, "SET " + sets.set() + " WHERE " + where.where, returning)(sets ++ where)(site)
 
-  private[models] def changeOrAdd(table : String, sets : SQLTerms, ids : SQLTerms)(implicit site : Site) : Unit =
+  private[models] def changeOrAdd(table : String, sets : SQLTerms, ids : SQLTerms)(implicit site : Site) : SQLResult =
     DBUtil.updateOrInsert(change(table, sets, ids))(add(table, sets ++ ids))
 }

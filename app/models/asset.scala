@@ -1,5 +1,6 @@
 package models
 
+import scala.concurrent.Future
 import play.api.libs.Files.TemporaryFile
 import macros._
 import dbrary._
@@ -38,33 +39,38 @@ object AssetFormat extends TableId[AssetFormat]("format") {
     }
   } from "ONLY format"
 
+  private def mts[A](b : Boolean, ts : => Option[A], a : => Future[Option[A]]) : Future[Option[A]] =
+    if (b) Async.orElse(ts, a) else a
+
   /** Lookup a format by its id.
     * @param ts include TimeseriesFormats. Unlike other lookups, this is enabled by default. */
-  def get(id : Id, ts : Boolean = true)(implicit db : Site.DB) : Option[AssetFormat] =
-    (if (ts) TimeseriesFormat.get(id.coerce[TimeseriesFormat]) else None) orElse
-      row.SQL("WHERE id = {id}").on('id -> id).singleOpt
+  def get(id : Id, ts : Boolean = true) : Future[Option[AssetFormat]] =
+    mts(ts, TimeseriesFormat.get(id.coerce[TimeseriesFormat]),
+      row.SQL("WHERE id = ?").apply(id).singleOpt)
   /** Lookup a format by its mimetime.
     * @param ts include TimeseriesFormats. */
-  def getMimetype(mimetype : String, ts : Boolean = false)(implicit db : Site.DB) : Option[AssetFormat] =
-    (if (ts) TimeseriesFormat.getMimetype(mimetype) else None) orElse
-      row.SQL("WHERE mimetype = {mimetype}").on('mimetype -> mimetype).singleOpt
+  def getMimetype(mimetype : String, ts : Boolean = false) : Future[Option[AssetFormat]] =
+    mts(ts, TimeseriesFormat.getMimetype(mimetype),
+      row.SQL("WHERE mimetype = ?").apply(mimetype).singleOpt)
   /** Lookup a format by its extension.
     * @param ts include TimeseriesFormats. */
-  private def getExtension(extension : String, ts : Boolean = false)(implicit db : Site.DB) : Option[AssetFormat] =
-    (if (ts) TimeseriesFormat.getExtension(extension) else None) orElse
-      row.SQL("WHERE extension = {extension}").on('extension -> extension).singleOpt
+  private def getExtension(extension : String, ts : Boolean = false) : Future[Option[AssetFormat]] =
+    mts(ts, TimeseriesFormat.getExtension(extension),
+      row.SQL("WHERE extension = ?").apply(extension).singleOpt)
   /** Get a list of all file formats in the database.
     * @param ts include TimeseriesFormats. */
-  def getAll(ts : Boolean = false)(implicit db : Site.DB) : Seq[AssetFormat] =
-    (if (ts) TimeseriesFormat.getAll else Nil) ++
-      row.SQL("ORDER BY format.id").list
+  def getAll(ts : Boolean = false) : Future[Seq[AssetFormat]] =
+    row.SQL("ORDER BY format.id").list.map {
+      (if (ts) TimeseriesFormat.getAll else Nil) ++ _
+    }
 
-  def getFilename(filename : String, ts : Boolean = false)(implicit db : site.Site.DB) =
-    Maybe.opt(filename.lastIndexOf('.')).
-      flatMap(i => getExtension(filename.substring(i + 1).toLowerCase, ts))
-  def getFilePart(file : play.api.mvc.MultipartFormData.FilePart[_], ts : Boolean = false)(implicit db : site.Site.DB) =
-    file.contentType.flatMap(getMimetype(_, ts)) orElse
-      getFilename(file.filename, ts)
+  def getFilename(filename : String, ts : Boolean = false) : Future[Option[AssetFormat]] =
+    Async.flatMap(Maybe(filename.lastIndexOf('.')).opt, i =>
+      getExtension(filename.substring(i + 1).toLowerCase, ts))
+  def getFilePart(file : play.api.mvc.MultipartFormData.FilePart[_], ts : Boolean = false) : Future[Option[AssetFormat]] =
+    Async.flatMap(file.contentType, getMimetype(_, ts)).flatMap {
+      Async.orElse(_, getFilename(file.filename, ts))
+    }
 
 
   private[models] final val IMAGE : Id = asId(-700)

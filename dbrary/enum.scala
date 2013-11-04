@@ -6,18 +6,17 @@ import macros._
 /** Enumerations which reflect types in the database.
   * Any PGEnum should exactly match the correspending database type. */
 abstract class PGEnum(name : String) extends Enumeration {
-  val sqlType : SQLType[Value] =
-    SQLType[Value](name, classOf[Value]) { s =>
-      catching(classOf[NoSuchElementException]).opt(withName(s))
-    } {
+  implicit val sqlType : SQLType[Value] =
+    SQLType[Value](name, classOf[Value])(
+      s => catching(classOf[NoSuchElementException]).opt(withName(s)),
       _.toString
-    }
+    )
 }
 
 object PGEnum {
   import scala.language.experimental.macros
   import scala.reflect.macros.Context
-  import macro._
+  import Macro._
 
   /* This is not very useful as it can only create structural values rather than top-level objects */
   def make(enumName : String) = macro makeImpl

@@ -28,7 +28,7 @@ object IntId {
   // The normal family of conversions for database and web i/o:
   implicit def pathBindable[T] : PathBindable[IntId[T]] = PathBindable.bindableInt.transform(apply[T] _, _.unId)
   implicit def queryStringBindable[T] : QueryStringBindable[IntId[T]] = QueryStringBindable.bindableInt.transform(apply[T] _, _.unId)
-  implicit def sqlType[T] : SQLType[IntId[T]] = dbrary.SQLType.transform[Int,IntId[T]](apply[T] _, _.unId)
+  implicit def sqlType[T] : SQLType[IntId[T]] = SQLType.transform[Int,IntId[T]]("integer", classOf[IntId[T]])(i => Some(apply[T](i)), _.unId)
   implicit def formatter[T] : Formatter[IntId[T]] = new Formatter[IntId[T]] {
     def bind(key : String, data : Map[String, String]) =
       Formats.intFormat.bind(key, data).right.map(apply _)

@@ -30,10 +30,10 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
 
   /** List of contained assets within this container.
     * In most cases calling `fullSlot.assets` makes more sense. */
-  def assets(implicit db : Site.DB) : Seq[ContainerAsset] = ContainerAsset.getContainer(this)
+  def assets : Seq[ContainerAsset] = ContainerAsset.getContainer(this)
 
   /** List of slots on this container. */
-  def slots(implicit db : Site.DB) : Seq[Slot] = Slot.getContainer(this)
+  def slots : Seq[Slot] = Slot.getContainer(this)
   private[models] val _fullSlot = CachedVal[Slot, Site.DB](Slot.get(this)(_).get)
   /** Slot that covers this entire container and which thus serves as a proxy for display and metadata. Cached. */
   def fullSlot(implicit db : Site.DB) : Slot = _fullSlot
@@ -67,17 +67,17 @@ object Container extends TableId[Container]("container") {
   }
 
   /** Retrieve all the (non-top) containers in a given volume. */
-  private[models] def getVolume(v : Volume)(implicit db : Site.DB) : Seq[Container] =
+  private[models] def getVolume(v : Volume) : Seq[Container] =
     volumeRow(v).SQL("WHERE container.volume = {vol} AND NOT top ORDER BY date, id").
       on('vol -> v.id).list
 
   /** Retrieve the top container in a given volume. */
-  private[models] def getTop(v : Volume)(implicit db : Site.DB) : Container =
+  private[models] def getTop(v : Volume) : Container =
     volumeRow(v).SQL("WHERE container.volume = {vol} AND top").
       on('vol -> v.id).single
 
   /** Find the containers in a given volume with the given name. */
-  def findName(v : Volume, name : String)(implicit db : Site.DB) : Seq[Container] =
+  def findName(v : Volume, name : String) : Seq[Container] =
     volumeRow(v).SQL("WHERE container.volume = {vol} AND container.name = {name}").
       on('vol -> v.id, 'name -> name).list
 
@@ -117,10 +117,10 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   }
   /** The relevant consented slot containing this one. Cached.
     * Defaults to fullSlot. */
-  def context(implicit db : Site.DB) : Slot =
+  def context : Slot =
     _context.getOrElse(container.fullSlot)
 
-  def getConsent(implicit db : Site.DB) : Consent.Value =
+  def getConsent : Consent.Value =
     _context.fold(consent)(_.consent)
 
   /** The level of access granted on data covered by this slot to the current user. */
@@ -131,12 +131,12 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   def position : Offset = segment.lowerBound.getOrElse(0)
 
   /** List of contained asset segments within this slot. */
-  def assets(implicit db : Site.DB) : Seq[SlotAsset] = SlotAsset.getSlot(this)
+  def assets : Seq[SlotAsset] = SlotAsset.getSlot(this)
 
   /** The list of comments on this object.
     * @param all include indirect comments on any contained objects
     */
-  def comments(all : Boolean = true)(implicit db : Site.DB) : Seq[Comment] = Comment.getSlot(this, all)
+  def comments(all : Boolean = true) : Seq[Comment] = Comment.getSlot(this, all)
   /** Post a new comment this object.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
   def postComment(text : String)(implicit site : AuthSite) : Comment = Comment.post(this, text)
@@ -154,13 +154,13 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   /** The list of records on this object.
     * @param all include indirect records on any contained objects
     */
-  def records(implicit db : Site.DB) : Seq[Record] = Record.getSlot(this)(db)
+  def records : Seq[Record] = Record.getSlot(this)(db)
   /** Remove the given record from this slot. */
-  def removeRecord(rec : Record.Id)(implicit db : Site.DB) : Unit = Record.removeSlot(rec, id)
+  def removeRecord(rec : Record.Id) : Unit = Record.removeSlot(rec, id)
   /** The list of records and possibly measures on this object.
     * This is essentially equivalent to `this.records(false).filter(_.category == category).map(r => (r, r.measure[T](metric)))` but more efficient.
     * @param category if Some limit to the given category */
-  private def recordMeasures[T](category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] =
+  private def recordMeasures[T](category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident) : Seq[(Record, Option[T])] =
     MeasureT.getSlot[T](this, category, metric)
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */
@@ -224,26 +224,26 @@ object Slot extends TableId[Slot]("slot") {
 
   /** Retrieve an individual Slot by Container and segment.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
-  private[models] def get(container : Container, segment : Range[Offset] = fullRange)(implicit db : Site.DB) : Option[Slot] =
+  private[models] def get(container : Container, segment : Range[Offset] = fullRange) : Option[Slot] =
     containerRow(container).
       SQL("WHERE slot.source = {cont} AND slot.segment = {seg}").
       on('cont -> container.id, 'seg -> segment).singleOpt
 
   /** Retrieve a list of slots within the given container. */
-  private[models] def getContainer(c : Container)(implicit db : Site.DB) : Seq[Slot] =
+  private[models] def getContainer(c : Container) : Seq[Slot] =
     containerRow(c).
       SQL("WHERE slot.source = {cont} ORDER BY slot.segment").
       on('cont -> c.id).list
 
   /** Retrieve the master slot for a volume. */
-  private[models] def getTop(v : Volume)(implicit db : Site.DB) : Slot = {
+  private[models] def getTop(v : Volume) : Slot = {
     volumeRow(v).
       SQL("WHERE slot.segment = '(,)' AND container.volume = {vol} AND container.top").
       on('vol -> v.id).single
   }
 
   /** Create a new slot in the specified container or return a matching one if it already exists. */
-  def getOrCreate(container : Container, segment : Range[Offset])(implicit db : Site.DB) : Slot =
+  def getOrCreate(container : Container, segment : Range[Offset]) : Slot =
     DBUtil.selectOrInsert(get(container, segment)) {
       val args = SQLTerms('source -> container.id, 'segment -> segment)
       val id = SQL("INSERT INTO slot " + args.insert + " RETURNING id").

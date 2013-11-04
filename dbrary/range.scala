@@ -133,7 +133,7 @@ object Range {
 }
 
 abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends RangeType[A] {
-  val sqlType = SQLType[Range[A]](name, classOf[Range[A]]) { s =>
+  val sqlType = SQLType[Range[A]](name, classOf[Range[A]])({ s =>
     if (s.equals("empty") || s.isEmpty)
       Some(Range.empty[A](this))
     else for {
@@ -142,7 +142,7 @@ abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends
         case '(' => Some(false)
         case _ => None
       }
-      c <- Maybe.opt(s.indexOf(',', 1))
+      c <- Maybe(s.indexOf(',', 1)).opt
       lb <- if (c == 1) Some(None) else base.read(s.substring(1,c)).map(Some(_))
       l = s.size
       ub <- if (c == l-2) Some(None) else base.read(s.substring(c+1,l-1)).map(Some(_))
@@ -152,7 +152,7 @@ abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends
         case _ => None
       }
     } yield (Range[A](lc, lb, ub, uc)(this))
-  } { r =>
+  }, { r =>
     if (r.isEmpty)
       "empty"
     else
@@ -160,7 +160,7 @@ abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends
       r.lowerBound.fold("")(base.show(_)) + ',' +
       r.upperBound.fold("")(base.show(_)) +
       (if (r.upperClosed) ']' else ')')
-  }
+  })
 }
 
 object PGSegment extends PGRangeType[Offset]("segment") {

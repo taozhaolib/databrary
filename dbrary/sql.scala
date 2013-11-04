@@ -22,6 +22,7 @@ final class SQLArgseq(val args : /*=>*/ Seq[Any]) extends SQLArgs {
   def ++(other : SQLArgseq) : SQLArgseq = new SQLArgseq(args ++ other.args)
   def :+[A : SQLType](other : A) : SQLArgseq = new SQLArgseq(args :+ put[A](other))
   def +:[A : SQLType](other : A) : SQLArgseq = new SQLArgseq(put[A](other) +: args)
+  def *(n : Int) : SQLArgseq = new SQLArgseq(0.until(n).flatMap(_ => args))
 }
 
 /** Generic trait for anything which may accept SQLType args to produce a result. */
@@ -51,9 +52,9 @@ class SQLResult(val result : Future[db.QueryResult])(implicit context : Executio
   def map[A](f : db.QueryResult => A) : Future[A] = result.map(f)
   def flatMap[A](f : db.QueryResult => Future[A]) : Future[A] = result.flatMap(f)
   def rowsAffected : Future[Long] = map(_.rowsAffected)
+  def execute : Future[Boolean] = map(_.rowsAffected > 0)
   /** A dummy marker to show where we execute independent queries. */
-  @deprecated("this usage will not catch errors") def run() : Unit = ()
-  def execute : Future[Unit] = map(_ => ())
+  @deprecated("this usage will not catch errors", "0") def run() : Unit = ()
 
   def as[A](parse : SQLRow[A]) : SQLRows[A] = new SQLRows[A](result, parse)
 

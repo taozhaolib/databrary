@@ -25,7 +25,7 @@ abstract class SQLType[A](val name : String, val aClass : Class[A]) {
     case _ => throw new SQLTypeMismatch(x, this, where)
   }
 
-  def transform[B](n : String, bc : Class[B])(f : A => Option[B])(g : B => A) : SQLType[B] =
+  def transform[B](n : String, bc : Class[B])(f : A => Option[B], g : B => A) : SQLType[B] =
     new SQLType[B](n, bc) {
       override def show(b : B) : String = parent.show(g(b))
       override def put(b : B) : Any = parent.put(g(b))
@@ -35,13 +35,31 @@ abstract class SQLType[A](val name : String, val aClass : Class[A]) {
 }
 
 object SQLType {
-  def transform[A,B](name : String, cls : Class[B])(get : A => Option[B])(put : B => A)(implicit base : SQLType[A]) : SQLType[B] =
-    base.transform(name, cls)(get)(put)
-  def apply[A](name : String, cls : Class[A])(get : String => Option[A])(put : A => String) : SQLType[A] =
-    string.transform(name, cls)(get)(put)
+  def transform[A,B](name : String, cls : Class[B])(get : A => Option[B], put : B => A)(implicit base : SQLType[A]) : SQLType[B] =
+    base.transform(name, cls)(get, put)
+  def apply[A](name : String, cls : Class[A])(get : String => Option[A], put : A => String) : SQLType[A] =
+    string.transform(name, cls)(get, put)
 
   implicit object string extends SQLType[String]("text", classOf[String]) {
     def read(s : String) = Some(s)
+  }
+
+  implicit object boolean extends SQLType[Boolean]("boolean", classOf[Boolean]) {
+    def read(s : String) = s.toLowerCase match {
+      case "t" => Some(true)
+      case "f" => Some(false)
+      case "true" => Some(true)
+      case "false" => Some(false)
+      case "y" => Some(true)
+      case "n" => Some(false)
+      case "yes" => Some(true)
+      case "no" => Some(false)
+      case "on" => Some(true)
+      case "off" => Some(false)
+      case "1" => Some(true)
+      case "0" => Some(false)
+      case _ => None
+    }
   }
 
   implicit object int extends SQLType[Int]("integer", classOf[Int]) {
@@ -73,5 +91,5 @@ object SQLType {
 case class Inet(ip : String)
 object Inet {
   implicit val sqlType : SQLType[Inet] =
-    SQLType.transform[String,Inet]("inet", classOf[Inet])(s => Some(Inet(s)))(_.ip)
+    SQLType[Inet]("inet", classOf[Inet])(s => Some(Inet(s)), _.ip)
 }

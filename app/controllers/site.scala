@@ -7,7 +7,7 @@ import          http._
 import          mvc._
 import          data._
 import          i18n.Messages
-import scala.concurrent.{Future,ExecutionContext}
+import scala.concurrent.Future
 import macros._
 import dbrary._
 import site._
@@ -26,15 +26,12 @@ object SiteRequest {
       new ro.Anon(request, obj)
     }
   }
-  sealed class Auth[A](request : Request[A], val identity : Account, val superuser : Boolean) extends Base[A](request) with AuthSite {
+  sealed class Auth[A](request : Request[A], val identity : Account, val access : Permission.Value, val superuser : Boolean = false) extends Base[A](request) with AuthSite {
     def withObj[O](obj : O) : RequestObject[O]#Auth[A] = {
       object ro extends RequestObject[O]
-      new ro.Auth(request, identity, superuser, obj)
+      new ro.Auth(request, identity, access, superuser, obj)
     }
   }
-
-  def apply[A](request : Request[A], identity : Option[Account], superuser : Boolean) : SiteRequest.Base[A] =
-    identity.fold[SiteRequest.Base[A]](new Anon[A](request))(a => new Auth[A](request, a, superuser && a.access == Permission.ADMIN))
 }
 
 trait RequestObject[+O] {
@@ -43,7 +40,8 @@ trait RequestObject[+O] {
   }
   sealed trait Site[A] extends SiteRequest[A] with Base[A]
   final class Anon[A](request : Request[A], val obj : O) extends SiteRequest.Anon[A](request) with Site[A]
-  final class Auth[A](request : Request[A], identity : Account, superuser : Boolean, val obj : O) extends SiteRequest.Auth[A](request, identity, superuser) with Site[A]
+  final class Auth[A](request : Request[A], identity : Account, access : Permission.Value, superuser : Boolean, val obj : O)
+    extends SiteRequest.Auth[A](request, identity, access, superuser) with Site[A]
 }
 object RequestObject {
   def getter[O](get : SiteRequest[_] => Option[O]) = new ActionRefiner[SiteRequest.Base,RequestObject[O]#Site] {
@@ -63,14 +61,21 @@ object RequestObject {
 }
 
 object SiteAction extends ActionCreator[SiteRequest.Base] {
-  private[this] def getUser(request : Request[_]) : Option[Account] =
-    request.session.get("user").flatMap(Maybe.toInt _).flatMap(models.Account.get_ _)
+  private[this] def getUser(request : Request[_]) : Future[Option[(Account,Permission.Value)]] =
+    Async.flatMap(request.session.get("user").flatMap(Maybe.toInt _), models.Account.get_ _)
 
   private[this] def getSuperuser(request : Request[_]) : Boolean =
     request.session.get("superuser").flatMap(Maybe.toLong _).exists(_ > System.currentTimeMillis)
 
   def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) =
-    block(SiteRequest(request, getUser(request), getSuperuser(request)))
+    getUser(request).flatMap {
+      case Some((user, access)) if access == Permission.ADMIN =>
+        block(new SiteRequest.Auth[A](request, user, access, getSuperuser(request)))
+      case Some((user, access)) =>
+        block(new SiteRequest.Auth[A](request, user, access))
+      case None =>
+        block(new SiteRequest.Anon[A](request))
+    }
 
   object Auth extends ActionRefiner[SiteRequest,SiteRequest.Auth] {
     protected def refine[A](request : SiteRequest[A]) = request match {
@@ -98,9 +103,9 @@ class SiteController extends Controller {
     current.configuration.getString("application.secret").exists(_ != "databrary").
       ensuring(s => s, "Application is insecure. You must set application.secret appropriately (see README).")
 
-  protected def AOk[C : Writeable](c : C) = Future.successful(Ok[C](c))
-  protected def ABad[C : Writeable](c : C) = Future.successful(BadRequest[C](c))
-  protected def ARedirect(c : Call) = Future.successful(Redirect(c))
+  protected def AOk[C : Writeable](c : C) = Async(Ok[C](c))
+  protected def ABad[C : Writeable](c : C) = Async(BadRequest[C](c))
+  protected def ARedirect(c : Call) = Async(Redirect(c))
 }
 
 object Site extends SiteController {

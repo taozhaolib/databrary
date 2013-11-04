@@ -20,7 +20,7 @@ trait Site {
   /** Level of site access [[models.Permission]] current user has.
     * VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for admins.
     */
-  def access = identity.access
+  val access : Permission.Value
   val superuser : Boolean
   /** IP of the client's host. */
   def clientIP : dbrary.Inet
@@ -30,7 +30,7 @@ trait AnonSite extends Site {
   val identity = models.Party.Nobody
   override def user = None
   val superuser = false
-  override val access = models.Permission.NONE
+  val access = models.Permission.NONE /* XXX should this be VIEW? */
 }
 
 trait AuthSite extends Site {

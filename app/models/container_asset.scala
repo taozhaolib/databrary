@@ -1,7 +1,6 @@
 package models
 
 import dbrary._
-import PGSegment.{column => segmentColumn,statement => segmentStatement}
 import site._
 
 /** An embedding or link (in the filesystem sense) of an asset within a container.
@@ -23,25 +22,23 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   /** Optional description of this asset. */
   def body : Option[String] = _body
 
-  private[this] def ids = SQLArgs('container -> containerId, 'asset -> assetId)
-
   /** Update the given values in the database and this object in-place. */
   def change(position : Option[Offset] = _position, name : String = _name, body : Option[String] = _body)(implicit site : Site) : Unit = {
     if (position == _position && name == _name && body == _body)
       return
-    Audit.change("container_asset", SQLArgs('position -> position, 'name -> name, 'body -> body), SQLArgs('container -> containerId, 'asset -> assetId)).execute()
+    Audit.change("container_asset", SQLTerms('position -> position, 'name -> name, 'body -> body), SQLTerms('container -> containerId, 'asset -> assetId)).run()
     _name = name
     _body = body
   }
 
   def remove(implicit site : Site) : Unit =
-    Audit.remove("container_asset", SQLArgs('container -> containerId, 'asset -> assetId)).execute
+    Audit.remove("container_asset", SQLTerms('container -> containerId, 'asset -> assetId)).execute
 
   def duration : Offset = 0
   /** Range of times that this asset covers, or None for "global/floating". */
   def extent : Option[Range[Offset]] = position.map(Range.singleton[Offset](_)(PGSegment))
 
-  def fullSlot(implicit db : Site.DB) : SlotAsset = SlotAsset.getFull(this)
+  def fullSlot : SlotAsset = SlotAsset.getFull(this)
 
   def pageName(implicit site : Site) = name
   def pageParent(implicit site : Site) = Some(volume)
@@ -111,9 +108,10 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
 
   /** Create a new link between an asset and a container.
     * This can change effective permissions on this asset, so care must be taken when using this function with existing assets. */
-  def create(container : Container, asset : Asset, position : Option[Offset] = None, name : String, body : Option[String] = None)(implicit site : Site) : ContainerAsset = {
-    Audit.add(table, SQLArgs('container -> container.id, 'asset -> asset.id, 'position -> position, 'name -> name, 'body -> body)).execute()
-    new ContainerAsset(asset, container, position, name, body)
+  def create(container : Container, asset : Asset, position : Option[Offset] = None, name : String, body : Option[String] = None)(implicit site : Site) : Future[ContainerAsset] = {
+    Audit.add(table, SQLTerms('container -> container.id, 'asset -> asset.id, 'position -> position, 'name -> name, 'body -> body)).map { _ =>
+      new ContainerAsset(asset, container, position, name, body)
+    }
   }
 }
 
@@ -143,11 +141,11 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
   def change(excerpt : Option[Boolean] = _excerpt)(implicit site : Site) : Unit = {
     if (excerpt != _excerpt)
     {
-      val ids = SQLArgs('slot -> slotId, 'asset -> link.assetId)
+      val ids = SQLTerms('slot -> slotId, 'asset -> link.assetId)
       excerpt.fold {
-        Audit.remove("toplevel_asset", ids).execute() : Unit
+        Audit.remove("toplevel_asset", ids).run()
       } { e =>
-        Audit.changeOrAdd("toplevel_asset", SQLArgs('excerpt -> e), ids)
+        Audit.changeOrAdd("toplevel_asset", SQLTerms('excerpt -> e), ids).run()
       }
       _excerpt = excerpt
     }

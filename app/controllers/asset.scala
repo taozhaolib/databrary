@@ -132,7 +132,7 @@ object Asset extends SiteController {
     formFill.bindFromRequest.fold(
       form => BadRequest(views.html.asset.edit(Right(request.obj), form)), {
       case (name, body, position, file) =>
-        request.obj.change(name = name, body = Maybe.opt(body), position = position)
+        request.obj.change(name = name, body = Maybe(body).opt, position = position)
         /* file foreach {
           () => request.obj.asset.asInstanceOf[models.FileAsset].change
         } */
@@ -181,7 +181,7 @@ object Asset extends SiteController {
               case _ =>
                 models.FileAsset.create(fmt, classification, file)
             }
-            val link = ContainerAsset.create(request.obj, asset, position, Maybe.opt(name).getOrElse(fname), Maybe.opt(body))
+            val link = ContainerAsset.create(request.obj, asset, position, Maybe(name).orElse(fname), Maybe(body).opt)
             Redirect(routes.Asset.view(link.volumeId, link.container.fullSlot.id, link.asset.id))
         })
       case _ => error(uploadForm) /* should not happen */

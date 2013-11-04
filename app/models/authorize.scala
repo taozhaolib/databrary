@@ -57,36 +57,29 @@ object Authorize extends Table[Authorize]("authorize") {
   private[models] def getParents(child : Party, all : Boolean = false) : Future[Seq[Authorize]] =
     columns.join(Party.row, "parent = party.id").map { case (a, p) =>
         (make(child, p) _).tupled(a)
-      }.SELECT("WHERE child = ?", conditionIf(all))(SQLArgs(child.id)).list
+      }.SELECT("WHERE child = ?", conditionIf(all)).apply(child.id).list
   /** Get all authorizations granted ba a particular parent.
     * @param all include inactive authorizations
     */
-  private[models] def getChildren(parent : Party, all : Boolean = false)(implicit db : Site.DB) : Seq[Authorize] =
+  private[models] def getChildren(parent : Party, all : Boolean = false)(implicit db : Site.DB) : Future[Seq[Authorize]] =
     row.join(Party.row, "child = party.id").map { case (a ~ c) =>
-        a._child() = c
-        a._parent() = parent
-        a
-      }.SQL("WHERE parent = {parent}", conditionIf(all)).
-      on('parent -> parent.id).list
+        (make(c, parent) _).tupled(a)
+      }.SQL("WHERE parent = {parent}", conditionIf(all)).apply(parent.id).list
 
   /** Remove a particular authorization from the database.
     * @return true if a matching authorization was found and deleted
     */
-  def delete(child : Party.Id, parent : Party.Id)(implicit site : Site) : Boolean =
-    Audit.remove("authorize", SQLArgs('child -> child, 'parent -> parent)).
-      execute()
+  def delete(child : Party.Id, parent : Party.Id)(implicit site : Site) : Future[Boolean] =
+    Audit.remove("authorize", SQLTerms('child -> child, 'parent -> parent)).execute
 
   /** Determine the site access granted to a particular party.
     * This is defined by the minimum access level along a path of valid authorizations from [Party.Root], maximized over all possible paths, or Permission.NONE if there are no such paths. */
   private[models] def access_check(c : Party.Id) : Future[Permission.Value] =
-    SQL("SELECT authorize_access_check(?)", c).
-      single(SQLCols[Permission.Value])
+    SQL("SELECT authorize_access_check(?)").apply(c).single(SQLCols[Permission.Value])
 
   /** Determine the permission level granted to a child by a parent.
     * The child is granted all the same rights of the parent up to this level. */
-  private[models] def delegate_check(child : Party.Id, parent : Party.Id)(implicit db : Site.DB) : Permission.Value =
+  private[models] def delegate_check(child : Party.Id, parent : Party.Id)(implicit db : Site.DB) : Future[Permission.Value] =
     if (child == parent) Permission.ADMIN else // optimization
-    SQL("SELECT authorize_delegate_check({child}, {parent})").
-      on('child -> child, 'parent -> parent).single(scalar[Option[Permission.Value]]).
-      getOrElse(Permission.NONE)
+    SQL("SELECT authorize_delegate_check(?, ?)").apply(child, parent).single(SQLCols[Permission.Value])
 }

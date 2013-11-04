@@ -1,5 +1,6 @@
 package models
 
+import scala.concurrent.Future
 import dbrary._
 import site._
 
@@ -52,19 +53,19 @@ object DBUtil {
       case None => insert(dbc).recoverWith {
         case SQLDuplicateKeyException => loop
       }
-      case Some(r) => Future.successful(r)
+      case Some(r) => Async(r)
     }
     loop()
   }
 
-  def updateOrInsert(update : SQLResult)(insert : SQLResult)(implicit dbc : Site.DB) : SQLResult = {
+  def updateOrInsert(update : Site.DB => SQLResult)(insert : Site.DB => SQLResult)(implicit dbc : Site.DB) : SQLResult = {
     @scala.annotation.tailrec def loop() : SQLResult = update(dbc).flatMap { r =>
       if (r.rowsAffected == 0)
         insert(dbc).recoverWith {
           case SQLDuplicateKeyException => loop
         }
       else
-        Future.successful(r)
+        Async(r)
     }
     loop()
   }

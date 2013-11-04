@@ -149,16 +149,16 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 }
 
 object Volume extends TableId[Volume]("volume") {
-  private val permission = "volume_access_check(volume.id, {identity})"
-  private[models] val condition = "(" + permission + " >= 'VIEW' OR {superuser})"
+  private val permission = "volume_access_check(volume.id, ?)"
+  private[models] val condition = "(" + permission + " >= 'VIEW' OR ?)"
   private[models] val row = Columns[
     Id,  String, Option[String], Option[Permission.Value],           Option[Timestamp]](
     'id, 'name,  'body,          SelectAs(permission, "permission"), SelectAs("volume_creation(volume.id)", "creation")) map {
     (id, name, body, permission, creation) => new Volume(id, name, body, permission.getOrElse(Permission.NONE), creation.getOrElse(new Timestamp(1357900000000L)))
   }
 
-  private[models] def conditionArgs(args : SQLArgs.Arg*)(implicit site : Site) =
-    args ++ SQLArgs('identity -> site.identity.id, 'superuser -> site.superuser)
+  private[models] def conditionArgs(implicit site : Site) =
+    SQLArgs(site.identity.id, site.superuser)
 
   /** Retrieve an individual Volume.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */

@@ -42,22 +42,21 @@ object Offset {
   def apply(i : PGInterval) : Offset =
     Offset(60*(60*(24*(30*(12.175*i.getYears + i.getMonths) + i.getDays) + i.getHours) + i.getMinutes) + i.getSeconds)
 
-  private val multipliers : Seq[Double] = Seq(60,60,24).scanLeft(1.)(_ * _)
+  private val multipliers : Seq[Double] = Seq(60,60,24).scanLeft(1.0)(_ * _)
   def fromString(s : String) : Offset = {
-    s.split(':').reverseIterator.zipAll(multipliers.iterator, "", 0.).map {
+    s.split(':').reverseIterator.zipAll(multipliers.iterator, "", 0.0).map {
       case (_, 0) => throw new java.lang.NumberFormatException("For offset string: " + s)
-      case ("", _) => 0.
+      case ("", _) => 0.0
       case (s, m) => m*s.toDouble
     }.sum
   }
 
   implicit val sqlType : SQLType[Offset] =
-    SQLType[Offset]("interval", classOf[Offset]) { s =>
+    SQLType[Offset]("interval", classOf[Offset])(
       /* FIXME: > 1 day. see https://github.com/mauricio/postgresql-async/pull/56 for a fix */
-      Maybe.toNumber(fromString(s))
-    } { i =>
-      i.seconds.toString
-    }
+      s => Maybe.toNumber(fromString(s)),
+      _.seconds.toString
+    )
 
   implicit val pathBindable : PathBindable[Offset] = PathBindable.bindableDouble.transform(apply _, _.seconds)
   implicit val queryStringBindable : QueryStringBindable[Offset] = QueryStringBindable.bindableDouble.transform(apply _, _.seconds)

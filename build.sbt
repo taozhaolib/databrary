@@ -1,4 +1,4 @@
-scalacOptions in ThisBuild ++= Seq("-feature","-Xlint")
+scalacOptions in ThisBuild ++= Seq("-feature","-deprecation","-Xlint")
 
 // scalacOptions += "-Ymacro-debug-lite"
 

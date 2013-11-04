@@ -27,8 +27,8 @@ object HTTP {
   private val rangeRegex = "bytes=([0-9]*)-([0-9]*)".r
   def parseRange(s : String, size : Long) : Option[(Long, Long)] =
     (s match {
-      case rangeRegex(start, end) => catching(classOf[java.lang.NumberFormatException]).opt {
-        (Maybe.opt(start).map(_.toLong), Maybe.opt(end).map(_.toLong))
+      case rangeRegex(start, end) => Maybe.toNumber {
+        (Maybe(start).opt.map(_.toLong), Maybe(end).opt.map(_.toLong))
       } getOrElse ((None, None))
       case _ => (None, None)
     }) match {
