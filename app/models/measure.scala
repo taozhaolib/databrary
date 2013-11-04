@@ -1,6 +1,8 @@
 package models
 
+import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import com.github.mauricio.async.db
 import dbrary._
 import site._
 
@@ -31,11 +33,12 @@ private[models] object MeasureType {
   /** Date measurements. */
   implicit val measureDate = new MeasureType[Date](DataType.date)
 
-  def apply(dataType : DataType.Value) : MeasureType[_] = dataType match {
-    case DataType.text => measureText
-    case DataType.number => measureNumber
-    case DataType.date => measureDate
-  }
+  val all : IndexedSeq[MeasureType[_]] = IndexedSeq(
+    measureText,
+    measureNumber,
+    measureDate)
+    
+  def apply(dataType : DataType.Value) : MeasureType[_] = all(dataType.id)
 }
 
 
@@ -157,7 +160,7 @@ private[models] sealed abstract class MeasureBase(val recordId : Record.Id, val 
   protected def ids : SQLTerms = SQLTerms('record -> recordId, 'metric -> metricId)
 
   /** Add or update this measure in the database. */
-  def set : Boolean
+  def set : Future[Boolean]
   /** Remove this measure from its associated record and delete it. */
   def remove : Unit =
     Measure.delete(recordId, metric)
@@ -167,14 +170,13 @@ final case class MeasureT[T](override val recordId : Record.Id, override val met
   def datum = new MeasureDatumT[T](value)(metric.measureType)
   override def stringValue = value.toString
 
-  def set : Boolean = {
+  def set : Future[Boolean] = {
     val ids = this.ids
     val args = ('datum -> value) +: ids
     val tpe = measureType
     DBUtil.updateOrInsert(
-      SQL("UPDATE " + tpe.table + " SET datum = ? WHERE " + ids.where).apply(args))(
-      SQL("INSERT INTO " + tpe.table + " " + args.insert).apply(args)).run()
-    true
+      SQL("UPDATE " + tpe.table + " SET datum = ? WHERE " + ids.where)(_, _).apply(args))(
+      SQL("INSERT INTO " + tpe.table + " " + args.insert)(_, _).apply(args)).execute
   }
 }
 /** A measurement with an arbitrary (unconverted) type. */
@@ -182,40 +184,34 @@ final case class Measure(override val recordId : Record.Id, override val metric 
   def datum = new MeasureDatum(value)
   override def stringValue = value
 
-  def set : Boolean = {
+  def set : Future[Boolean] = {
     val ids = this.ids
-    val args = ids ++ SQLArgs('value -> value)
+    val args = ('value -> value) +: ids
     val tpe = metric.measureType
-    val sp = db.setSavepoint
-    try {
-      DBUtil.updateOrInsert(
-        SQL("UPDATE " + tpe.table + " SET datum = {value}::" + tpe.pgType + " WHERE " + ids.where).on(args : _*))(
-        SQL("INSERT INTO " + tpe.table + " (record, metric, datum) VALUES ({record}, {metric}, {value}::" + tpe.pgType + ")").on(args : _*))
-      true
-    } catch {
-      case e : java.sql.SQLException if e.getMessage.startsWith("ERROR: invalid input syntax for type") =>
-        db.rollback(sp)
-        false
-    } finally {
-      db.releaseSavepoint(sp)
-    }
+    DBUtil.updateOrInsert(
+      SQL("UPDATE " + tpe.table + " SET datum = ?::" + tpe.sqlType.name + " WHERE " + ids.where)(_, _).apply(args))(
+      SQL("INSERT INTO " + tpe.table + " (datum, record, metric) VALUES (?::" + tpe.sqlType.name + ", ?, ?)")(_, _).apply(args))
+      .execute.recover {
+        case e : db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("invalid input syntax for type") => false
+      }
   }
 }
 
 private[models] sealed abstract class MeasureView[R <: MeasureBase](table : String) extends Table[R](table) {
-  protected val columns = Columns[
-    Record.Id](
-    'record)
+  protected val columns = Columns(
+    SelectColumn[Record.Id]("record")
+  )
+  protected val row : Selector[R]
   
   /** Retrieve the set of measures in the given record. */
-  private[models] def getRecord(record : Record.Id)(implicit db : Site.DB) : Seq[R] =
-    row.SQL("WHERE record = {record} ORDER BY metric.id").on('record -> record).list
+  private[models] def getRecord(record : Record.Id) : Future[Seq[R]] =
+    row.SELECT("WHERE record = ? ORDER BY metric.id").apply(record).list
 
-  private[models] def delete(record : Record.Id, metric : Metric)(implicit db : Site.DB) : Unit = {
+  private[models] def delete(record : Record.Id, metric : Metric) : Unit = {
     val tpe = metric.measureType
-    val args = SQLArgs('record -> record, 'metric -> metric.id)
+    val args = SQLTerms('record -> record, 'metric -> metric.id)
     SQL("DELETE FROM " + metric.measureType.table + " WHERE " + args.where).
-      on(args :_*).execute
+      apply(args).run()
   }
 }
 
@@ -223,48 +219,50 @@ private[models] sealed abstract class MeasureView[R <: MeasureBase](table : Stri
 object MeasureT extends MeasureView[MeasureT[_]]("measure_all") {
   private[this] def make[T](recordId : Record.Id, metric : MetricT[T], value : Any) =
     new MeasureT[T](recordId, metric, value.asInstanceOf[T])
-  private[models] val row : Selector[MeasureT[_]] = Selector[MeasureT[_]](
-    columns.selects ++ DataType.values.map(t => SelectColumn("datum_" + t.toString)) ++ Metric.row.selects,
+  private val row : Selector[MeasureT[_]] = Selector[MeasureT[_]](
+    columns.selects ++ Metric.row.selects ++ MeasureType.all.map(_.selectAll),
     "measure_all JOIN metric ON measure_all.metric = metric.id",
-    row => for {
-      record <- columns(row)
-      metric <- Metric.row(row)
-      value <- metric.measureType.columnAll(row)
-    } yield (make(record, metric, value))
+    new SQLLine[MeasureT[_]](columns.length + Metric.row.length + MeasureType.all.length, { l =>
+      val (c, md) = l.splitAt(columns.length)
+      val (m, dl) = dm.splitAt(Metric.row.length)
+      val record = columns.parse(c)
+      val metric = Metric.row.parse(m)
+      val d = dl(metric.dataType.id)
+      make(record, metric, metric.measureType.sqlType.get(d))
+    })
   )
   
   /** Retrieve the specific measure of the specified metric in the given record.
     * This does not check permissions so is unsafe.
     * @tparam T the type of the data value */
-  private[models] def get[T](record : Record.Id, metric : MetricT[T])(implicit db : Site.DB) : Option[T] = {
+  private[models] def get[T](record : Record.Id, metric : MetricT[T]) : Future[Option[T]] = {
     val tpe = metric.measureType
-    tpe.column.SQL("WHERE record = {record} AND metric = {metric}").
-      on('record -> record, 'metric -> metric.id).singleOpt
+    tpe.select.SQL("WHERE record = ? AND metric = ?")
+      .apply(record, metric.id).singleOpt
   }
 
   /** Retrieve the set of all categorized records and possibly measures of the given type on the given slot. */
-  private[models] def getSlot[T](slot : Slot, category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident)(implicit db : Site.DB) : Seq[(Record, Option[T])] =
+  private[models] def getSlot[T](slot : Slot, category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident) : Future[Seq[(Record, Option[T])]] =
     Record.measureRow[T](slot.volume, metric).
       SQL("JOIN slot_record ON record.id = slot_record.record",
-        "AND record.category", (if (category.isDefined) "= {category}" else " IS NOT NULL"),
-        "AND slot_record.slot = {slot} ORDER BY record.category").
-      on('slot -> slot.id, 'category -> category.map(_.id), 'metric -> metric.id).
-      list
+        "AND record.category", (if (category.isDefined) "= ?" else " IS NOT NULL"),
+        "AND slot_record.slot = ? ORDER BY record.category").
+      apply(metric.id +: category.fold(SQLArgs())(SQLArgs(_.id)) :+ slot.id).list
 }
 
 /** A un-typed interface to measures. */
 object Measure extends MeasureView[Measure]("measure_view") {
   private[this] def make(metric : Metric)(recordId : Record.Id, value : String) =
     new Measure(recordId, metric, value)
-  private val dataColumns = columns.~+[String]('datum)
+  private val dataColumns = columns ~+ SelectColumn[String]("datum")
   private[models] val row = dataColumns.join(Metric.row, "measure_view.metric = metric.id") map {
-    case (meas ~ metric) => (make(metric) _).tupled(meas)
+    case (meas, metric) => (make(metric) _).tupled(meas)
   }
   private[models] def metricRow(metric : Metric) = dataColumns.map(make(metric) _)
   
   /** Retrieve the specific measure of the specified metric in the given record.
     * This does not check permissions so is unsafe. */
-  private[models] def get(record : Record.Id, metric : Metric)(implicit db : Site.DB) : Option[Measure] =
-    metricRow(metric).SQL("WHERE record = {record} AND metric = {metric}").
-      on('record -> record, 'metric -> metric.id).singleOpt
+  private[models] def get(record : Record.Id, metric : Metric) : Future[Option[Measure]] =
+    metricRow(metric).SQL("WHERE record = ? AND metric = ?")
+      .apply(record, metric.id).singleOpt
 }

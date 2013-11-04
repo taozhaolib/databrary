@@ -1,6 +1,6 @@
 package models
 
-import scala.concurrent.Future
+import scala.concurrent.{Future,ExecutionContext}
 import dbrary._
 import site._
 
@@ -58,10 +58,10 @@ object DBUtil {
     loop()
   }
 
-  def updateOrInsert(update : Site.DB => SQLResult)(insert : Site.DB => SQLResult)(implicit dbc : Site.DB) : SQLResult = {
-    @scala.annotation.tailrec def loop() : SQLResult = update(dbc).flatMap { r =>
+  def updateOrInsert(update : (Site.DB, ExecutionContext) => SQLResult)(insert : (Site.DB, ExecutionContext) => SQLResult)(implicit dbc : Site.DB, ec : ExecutionContext) : SQLResult = {
+    @scala.annotation.tailrec def loop() : SQLResult = update(dbc, ec).flatMap { r =>
       if (r.rowsAffected == 0)
-        insert(dbc).recoverWith {
+        insert(dbc, ec).recoverWith {
           case SQLDuplicateKeyException => loop
         }
       else
