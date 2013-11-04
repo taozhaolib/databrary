@@ -28,9 +28,8 @@
 //
 
 .grid-wrap(@spread: @gridspread, @column: @gridcolumn, @gutter: @gridgutter) when (@spread > 0) {
-	margin-left: @gutter;
-	margin-right: @gutter;
-	.grid-width(min, @spread, @column, @gutter);
+	margin: 0 auto;
+	.grid-width(fix, @spread, @column, @gutter);
 	.grid-padding(@gutter);
 	.clearfix();
 }
@@ -55,8 +54,8 @@
 
 .grid-column(@spread: @gridspread, @offset: 0, @total: @gridspread, @gutter) when (@spread > 0) {
 	float: left;
-	.grid-width(fix, @spread, @total);
-	.grid-offset(@offset, @total);
+	.grid-width(fix, @spread, @column, @gutter);
+	.grid-offset(@offset, @column, @gutter);
 	.grid-padding(@gutter);
 }
 .grid-column(@spread: @gridspread, @offset: 0, @total: @gridspread) when (@spread = 0) {}
@@ -71,8 +70,8 @@
 	min-width: (@column + @gutter) * @spread - @gutter;
 }
 
-.grid-width(fix, @spread: @gridspread, @total: @gridspread) {
-	width: percentage(@spread / @total);
+.grid-width(fix, @spread: @gridspread, @column: @gridcolumn, @gutter: @gridgutter) {
+	width: (@column + @gutter) * @spread;
 }
 
 //
@@ -91,10 +90,10 @@
 
 //
 
-.grid-offset(@offset: 0, @total: @gridspread) when not (@offset = 0) {
-	margin-left: percentage(@offset / @total);
+.grid-offset(@offset: 0, @spread: @gridspread, @column: @gridcolumn, @gutter: @gridgutter) when not (@offset = 0) {
+	margin-left: (@column + @gutter) * @offset;
 }
-.grid-offset(@offset: 0, @total: @gridspread) when (@offset = 0) {
+.grid-offset(@offset: 0, @spread: @gridspread, @column: @gridcolumn, @gutter: @gridgutter) when (@offset = 0) {
 }
 
 //
