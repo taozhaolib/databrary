@@ -54,7 +54,7 @@ audio,
 video,
 canvas,
 pre {
-	.margin(all, 0, 0, 1);
+	.margin(0, 0, 1);
 }
 
 //
@@ -82,15 +82,15 @@ a, .a {
 
 	&:link, &.link,
 	&:visited, &.visited {
-		color: @c4;
+		color: @c8;
 	}
 
 	&:hover, &.hover {
-		color: @c4g4m25;
+		color: @c8g4m1;
 	}
 
 	&:active, &.active {
-		color: @c4g5m25;
+		color: @c8g5m1;
 	}
 
 	&:focus, &.focus {
@@ -111,31 +111,31 @@ h5, .h5 {
 h1, .h1 {
 	.font-size(3);
 	.line-height(2.5);
-	.margin(all, 3, 0, 0);
+	.margin(0);
 }
 
 h2, .h2 {
-	.font-size(2.75);
+	.font-size(2.5);
 	.line-height(2);
-	.margin(all, 3, 0, 0);
+	.margin(1, 0, 0);
 }
 
 h3, .h3 {
-	.font-size(2.5);
+	.font-size(2.25);
 	.line-height(2);
-	.margin(all, 2, 0, .5);
+	.margin(1, 0, 0);
 }
 
 h4, .h4 {
 	.font-size(2);
 	.line-height(1.5);
-	.margin(all, 2, 0, 0);
+	.margin(.5, 0, 0);
 }
 
 h5, .h5 {
-	.font-size(1.25);
+	.font-size(1.5);
 	.line-height(1);
-	.margin(all, 1, 0, 0);
+	.margin(.5, 0, 0);
 }
 
 h6, .h6 {
@@ -145,7 +145,7 @@ h6, .h6 {
 	letter-spacing: (1em/16);
 	.font-size(.75);
 	.line-height(1);
-	.margin(all, 2, 0);
+	.margin(2, 0);
 }
 
 //
@@ -159,8 +159,8 @@ hr {
 	border-bottom: 1px solid @color;
 	width: 50%;
 	padding: 0;
-	.margin(top, 2);
-	.border-margin(bottom, 1px, 2);
+	.margin-top(@f1);
+	.border-margin-bottom(1px, @f1);
 
 	&:before,
 	&:after {
@@ -211,16 +211,16 @@ samp, .samp {
 
 	.line-height(2/3);
 	border-width: @border 0;
-	.border-padding(vertical, @border, .125);
-	.padding(horizontal, .25);
+	.border-padding-height(@border, .125);
+	.padding-width(.25);
 }
 
 pre, .pre {
 	@border: 2px;
 
 	border-width: @border 0;
-	.border-padding(vertical, @border, .5);
-	.padding(horizontal, .5);
+	.border-padding-height(@border, .5);
+	.padding-width(.5);
 }
 
 //
@@ -228,11 +228,11 @@ pre, .pre {
 ol,
 ul {
 	position: relative;
-	.padding(left, 1.5);
+	.margin-bottom(1.5);
 
 	ul,
 	ol {
-		.margin(bottom, 0);
+		.margin-bottom(0);
 	}
 }
 
@@ -258,7 +258,7 @@ ol {
 			.font-size(.75);
 			font-style: italic;
 			text-align: right;
-			color: @c8;
+			color: @c4;
 			width: @b1;
 			top: @b12;
 			left: -@b4;
@@ -273,7 +273,7 @@ ul {
 			content: "";
 			border-color: transparent;
 			border-style: solid;
-			border-left-color: @c8;
+			border-left-color: @c4;
 			border-width: @b6;
 			width: 0;
 			height: 0;
@@ -293,7 +293,7 @@ dl, .dl {
 	}
 
 	dd, .dd {
-		.margin(left, 2.5);
+		.margin-bottom(0);
 	}
 }
 
@@ -330,7 +330,7 @@ cite, .cite, q[cite] {
 blockquote, .blockquote {
 	@color: @c6;
 
-	.margin(all, 2, 2.5, 1.5);
+	.margin(2, 2.5, 1.5);
 
 	&:before, &:after {
 		.font-size(5);
@@ -351,7 +351,7 @@ blockquote, .blockquote {
 	}
 
 	p {
-		.margin(bottom, .5);
+		.margin-bottom(.5);
 	}
 
 	cite, .cite {
@@ -446,8 +446,8 @@ s, .s {
 	border-width: @border 0;
 	border-style: solid;
 
-	.border-padding(vertical, @border, .125);
-	.padding(horizontal, .25);
+	.border-padding-height(@border, .125);
+	.padding-width(.25);
 
 	text-decoration: none;
 }
@@ -480,8 +480,8 @@ abbr[title] {
 	border-width: @border 0;
 	border-style: solid;
 
-	.border-padding(vertical, @border, .125);
-	.padding(horizontal, .25);
+	.border-padding-height(@border, .125);
+	.padding-width(.25);
 
 	text-decoration: none;
 	font-style: normal;

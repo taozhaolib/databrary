@@ -1,59 +1,59 @@
 @(implicit request: SiteRequest[_])
 
 @script = {
-    dbjs.carousel('#carousel .panels', '.panel');
+    dbjs.carousel('#carousel .carousel_panels', '.carousel_panel');
 }
 
 @template.wide("An Open Data Library for Developmental Science", js = script) {
 
     <section id="carousel" class="carousel">
-        <div class="panels">
-            <div class="panel" id="panel_8">
+        <div class="carousel_panels">
+            <div class="carousel_panel" id="panel_8">
                 <img style="position: relative; top: -100px;" src="@routes.Volume.thumb(models.Volume.asId(8))">
             </div>
-            <div class="panel" id="panel_2">
+            <div class="carousel_panel" id="panel_2">
                 <img src="@routes.Assets.at("private/carousel/carousel-2.jpg")">
             </div>
-            <div class="panel" id="panel_2a">
+            <div class="carousel_panel" id="panel_2a">
                 <img src="@routes.Assets.at("private/carousel/carousel-7.jpg")">
             </div>
-            <div class="panel" id="panel_3">
+            <div class="carousel_panel" id="panel_3">
                 <img src="@routes.Assets.at("private/carousel/carousel-3.jpg")">
             </div>
-            <div class="panel" id="panel_4">
+            <div class="carousel_panel" id="panel_4">
                 <img src="@routes.Volume.thumb(models.Volume.asId(2))">
             </div>
-            <div class="panel" id="panel_6">
+            <div class="carousel_panel" id="panel_6">
                 <img src="@routes.Assets.at("private/carousel/carousel-5.jpg")">
             </div>
-            <div class="panel" id="panel_6a">
+            <div class="carousel_panel" id="panel_6a">
                 <img src="@routes.Assets.at("private/carousel/carousel-8.jpg")">
             </div>
-            <div class="panel" id="panel_7">
+            <div class="carousel_panel" id="panel_7">
                 <img src="@routes.Assets.at("private/carousel/carousel-6.jpg")">
             </div>
         </div>
 
-        <div class="text">
-                <h1><strong>Data</strong>brary is an <span class="keyword">open data library</span> for developmental science. Share video, audio, and related metadata. Discover more, faster.</h1>
+        <div class="carousel_text">
+                <h1>Databrary is an <span class="keyword">open data library</span> for developmental science. Share video, audio, and related metadata. Discover more, faster.</h1>
                 <h2><a href="@routes.Static.about">Learn more &gt;&gt;</a></h2>
         </div>
     </section>
 
-    <section class="about_boxes">
+    <section>
         <div class="row">
-            <div class="sect col-laptop-4 col-tablet-3 pad-right">
-                <h3><a href="@routes.Volume.listAll">Explore</a></h3>
+            <div class="box_minor col-laptop-4 col-tablet-3 pad-right">
+                <h3 class="box_minor_header"><a href="@routes.Volume.listAll">Explore</a></h3>
                 <p>Databrary is a repository of discoveries waiting to happen. Dig into the diverse source materials of developmental researchers world-wide. Spark your ideas, engage your students, and learn about behavior and development.</p>
             </div>
 
-            <div class="sect col-laptop-4 col-tablet-3">
-                <h3><a href="@routes.Static.about">Discover</a></h3>
+            <div class="box_minor col-laptop-4 col-tablet-3">
+                <h3 class="box_minor_header"><a href="@routes.Static.about">Discover</a></h3>
                 <p>Databrary offers tools for coding your videos, identifying patterns, and visualizing your data. Take advantage of our free tools for managing your lab and organizing your resources. Get the most out of your research.</p>
             </div>
 
-            <div class="sect col-laptop-4 col-tablet-3 pad-left">
-                <h3><a href="@routes.Static.about">Share</a></h3>
+            <div class="box_minor col-laptop-4 col-tablet-3 pad-left">
+                <h3 class="box_minor_header"><a href="@routes.Static.about">Share</a></h3>
                 <p>Advance developmental science. Increase transparency. Allow researchers to reuse your data for new purposes. Upload your materials with our lightning-fast importer and store it indefinitely. Never fear data-loss again.</p>
             </div>
         </div>

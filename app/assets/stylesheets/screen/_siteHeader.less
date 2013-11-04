@@ -11,7 +11,7 @@
 .site_header_h1 {
 	.font-size();
 	.line-height(1.5);
-	.margin(vertical, 0);
+	.margin-height(0);
 	display: inline-block;
 
 	a {
@@ -42,8 +42,8 @@
 		}
 
 		&:hover {
-			color: @c11g5m25;
-			text-shadow: 0 0 2px fadeout(@c11g5m50, 75%);
+			color: @c11g5m1;
+			text-shadow: 0 0 2px fadeout(@c11g5m2, 75%);
 		}
 	}
 }
@@ -86,24 +86,24 @@
 
 	a.superuser {
 		&.on {
-			color: @c0g5m75;
+			color: @c0g5m3;
 
 			&:hover {
-				color: @c0g5m25;
-				text-shadow: 0 0 2px fadeout(@c0g5m50, 75%);
+				color: @c0g5m1;
+				text-shadow: 0 0 2px fadeout(@c0g5m2, 75%);
 			}
 		}
 		&.off {
-			color: @c8g5m75;
+			color: @c8g5m3;
 
 			&:hover {
-				color: @c8g5m25;
-				text-shadow: 0 0 2px fadeout(@c8g5m50, 75%);
+				color: @c8g5m1;
+				text-shadow: 0 0 2px fadeout(@c8g5m2, 75%);
 			}
 		}
 	}
 }
 
 .site_content {
-	.margin(top, 2);
+	.margin-top(2);
 }

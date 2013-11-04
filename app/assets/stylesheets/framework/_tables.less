@@ -4,15 +4,15 @@ table {
 	width: 100%;
 	overflow: hidden;
 	z-index: 1;
-	.margin(bottom, 1);
+	.margin-bottom(1);
 }
 
 caption,
 th,
 td {
 	.line-height(2/3);
-	.border-padding(vertical, 2px, .25);
-	.padding(horizontal, .25);
+	.border-padding-height(2px, .25);
+	.padding-width(.25);
 }
 
 caption {
@@ -20,7 +20,7 @@ caption {
 	font-style: italic;
 	.font-size(.75);
 	border-top: 1px solid @g5;
-	.border-padding(top, 3px, .25);
+	.border-padding-top(3px, .25);
 	color: @g5;
 }
 
@@ -34,7 +34,7 @@ th, td {
 
 thead {
 	th, td {
-		.border-padding(bottom, 4px, .25);
+		.border-padding-bottom(4px, .25);
 		border-bottom: 2px solid @g5;
 	}
 }
@@ -47,7 +47,7 @@ tfoot {
 	}
 
 	th, td {
-		.border-padding(top, 4px, .25);
+		.border-padding-top(4px, .25);
 		border-top: 2px solid @g5;
 	}
 }
