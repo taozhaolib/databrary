@@ -59,6 +59,32 @@ pre {
 
 //
 
+figure, .figure {
+	max-width: 100%;
+
+	img {
+		display: block;
+	}
+
+	* {
+		max-width: 100%;
+		height: auto;
+	}
+}
+
+figcaption, .figcaption {
+	.border-padding-height(2px, .25);
+	.border-padding-top(3px, .25);
+	.padding-width(.25);
+	.font-size(.75);
+	.line-height(2/3);
+	font-style: italic;
+	border-top: 1px solid @g3;
+	color: @g3;
+}
+
+//
+
 u, .u {
 	text-decoration: underline;
 }

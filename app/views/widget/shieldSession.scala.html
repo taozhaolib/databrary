@@ -1,9 +1,11 @@
 @(slot : Slot, records : Seq[Record], hide : Boolean = false)(implicit request : SiteRequest[_])
 
+@* THIS IS NOT A THUMB! THIS IS A... shield? rollover? article? *@
+
 <article class="session-panel thumb hover col-3 @if(hide) {shrink}">
     <a href="@slot.pageURL" class="block">
         <div class="media">
-	    @widget.slotThumb(slot)
+	    @widget.media.thumbSlot(slot)
         </div>
 
         <div class="text">

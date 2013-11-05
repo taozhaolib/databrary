@@ -44,7 +44,7 @@
                 <tbody>
                 @link.link.container.slots.map { slot  =>
 		    <tr class="message-trace">
-                    <td class="mini tc"><a href="@slot.pageURL">@widget.slotThumb(slot)</a></td>
+                    <td class="mini tc"><a href="@slot.pageURL">@widget.media.thumbSlot(slot)</a></td>
                     <td class="meta tc"><span class="consent">@slot.consent</span></td>
                     <td class="main"><a href="@slot.pageURL">@slot.container.name</a></td>
                     </tr>

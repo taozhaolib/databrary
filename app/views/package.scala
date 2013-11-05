@@ -6,13 +6,17 @@ import models._
 import controllers._
 import java.security.MessageDigest
 
-case class Tag(tag: String = "", attrs: List[List[String]])(content: String = "") {
+case class El(tag: String = "", attrs: List[List[String]])(content: String = "") {
   override def toString = content
 
   def toHtml = {
     val r = raw("<"+raw(tag)+" "+attrs.map(attr => raw(attr(0))+"=\""+escape(attr(1))+"\"").mkString(" ")+">"+escape(content)+"</"+raw(tag)+">")
     r
   }
+}
+
+object El {
+  def attrToHtml(attr: Seq[(Symbol,Any)]) = {attr.toMap.map(attr => attr._1+"=\""+attr._2+"\"").mkString(" ")}
 }
 
 case class md5(string: String) {

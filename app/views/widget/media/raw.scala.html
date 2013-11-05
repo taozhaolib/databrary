@@ -1,0 +1,15 @@
+@(id: String, classes: String, attr: (Symbol, Any)*)(caption: Html = Html(""), scalar: Boolean = false)(body: Html)
+
+<figure id="figure_@id" class="figure figure_@id @classes" @El.attrToHtml(attr)>
+    <div class="media">
+        @body
+    </div>
+
+    @if(caption.toString != "") {
+        <figcaption class="text">@caption</figcaption>
+    }
+
+    @if(scalar){
+        <img class="scalar" src="data:image/gif;base64,R0lGODlhAQABAIAAAP7//wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==">
+    }
+</figure>

@@ -9,7 +9,7 @@
 
             <div class="row">
                 @sessions.map { case (slot, records)  =>
-                    @widget.sessionThumb(slot, records, slot.consent == Consent.PRIVATE)
+                    @widget.shieldSession(slot, records, slot.consent == Consent.PRIVATE)
                 }
             </div>
 

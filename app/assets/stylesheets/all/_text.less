@@ -52,3 +52,52 @@ ol, ul, dl {
 		.border-margin-bottom(1px, @f2);
 	}
 }
+
+//
+
+figure, .figure {
+	position: relative;
+	overflow: hidden;
+	.transition();
+	.border-radius();
+	.box-shadow();
+
+	&.square,
+	&.wide {
+		.media,
+		.text {
+			position: absolute;
+			overflow: hidden;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+		}
+
+		.scalar {
+			position: relative;
+			visibility: hidden !important;
+			width: 100%;
+			min-width: 100%;
+			z-index: -1;
+		}
+	}
+
+	&.square {
+
+	}
+
+	&.wide {
+		.scalar {
+			margin-top: -43.75%;
+		}
+	}
+
+	.image {
+		width: 100%;
+		height: 100%;
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: center center;
+	}
+}

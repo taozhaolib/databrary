@@ -1,0 +1,5 @@
+@(volume: Volume, caption: Html = Html(""))(implicit request: SiteRequest[_])
+
+@widget.media.raw("volume_"+volume.id, "figure_volume")(caption){
+    <img src="@routes.Volume.thumb(volume.id)">
+}

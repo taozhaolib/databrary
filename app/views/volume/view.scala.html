@@ -16,17 +16,23 @@
 
 @template.crud("Volume: " + volume.name, js = script) {
 	<div class="row">
-		<div class="description col-desktop-6 push-desktop-2 col-laptop-6 col-tablet-6 col-mobile-6">
+		<div class="description col-desktop-6 push-desktop-2 col-laptop-8 col-tablet-6 col-mobile-6">
+            @widget.media.thumbVolume(volume)
+
+            <div class="tube wide">
+                <div class="scale">
+                    <div class="image" style="background-image: url('@routes.Volume.thumb(volume.id)')"></div>
+                </div>
+
+                <img class="scalar" src="data:image/gif;base64,R0lGODlhAQABAIAAAP7//wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==">
+            </div>
+
             @widget.volumeSummary(volume)
 		    @volume.body.map(display.plainText _)
 		</div>
 
-		<footer class="extended col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
+		<footer class="extended col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
 			<div>
-				<aside class="thumb">
-				@widget.volumeThumb(volume)
-				</aside>
-
 				<aside class="dates foot">
 					<span class="date created">
 						Created <time datetime="@volume.creation" pubdate>@display.dateFmtYM.format(volume.creation)</time></span>
