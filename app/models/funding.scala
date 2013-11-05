@@ -15,14 +15,11 @@ final case class VolumeFunding(val volume : Volume, val funder : Party, val gran
 object VolumeFunding extends Table[VolumeFunding]("volume_funding") {
   private def make(volume : Volume, funder : Party)(grant : Option[String]) =
     new VolumeFunding(volume, funder, grant)
-  private val columns = Columns(SelectColumn[Option[String]]("grant"))
-  private val row = columns.join(Volume.row, "volume_funding.volume = volume.id")
-    .map { case (fund ~ vol) => (make(vol) _).tupled(fund) }
-  private def volumeRow(vol : Volume) = columns.join(Party.row, "volume_funding.funder = party.id")
-    .map { case (fund ~ party) =>
-      val f = (make(vol) _).tupled(fund)
-      f._funder() = party
-      f
+  private val columns = Columns(
+      SelectColumn[Option[String]]("grant")
+    )
+  private def volumeRow(vol : Volume) = columns.join(Party.row, "volume_funding.funder = party.id") map {
+      case (fund, party) => make(vol, party)(fund)
     }
 
   private[models] def getVolume(vol : Volume) : Future[Seq[VolumeFunding]] =

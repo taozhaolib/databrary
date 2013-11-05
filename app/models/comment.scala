@@ -28,12 +28,12 @@ object Comment extends TableId[Comment]("comment") {
   private def volumeRow(volume : Volume) = columns.
     join(Account.row, "comment.who = party.id").
     join(Slot.volumeRow(volume), "comment.slot = slot.id") map {
-      case (comment, who, slot) => (make(who, slot) _).tupled(comment)
+      case ((comment, who), slot) => (make(who, slot) _).tupled(comment)
     }
   private def containerRow(container : Container) = columns.
     join(Account.row, "comment.who = party.id").
     join(Slot.containerRow(container), "comment.slot = slot.id") map {
-      case (comment, who, slot) => (make(who, slot) _).tupled(comment)
+      case ((comment, who), slot) => (make(who, slot) _).tupled(comment)
     }
   private def slotRow(slot : Slot) = columns.
     join(Account.row, "comment.who = party.id") map {
@@ -58,7 +58,7 @@ object Comment extends TableId[Comment]("comment") {
     * This checks permissions on the commented object (volume). */
   private[models] def getParty(who : Account)(implicit site : Site) : Future[Seq[Comment]] =
     whoRow(who).SELECT("WHERE who = ? AND", Volume.condition, order).
-      on(who.id +: Volume.conditionArgs).list
+      apply(who.id +: Volume.conditionArgs).list
 
   /** Post a new comment on a target by the current user.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */

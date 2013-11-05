@@ -29,15 +29,16 @@ sealed abstract class TimeseriesFormat private[models] (override val id : Timese
 
 /** Interface for non-timeseries file formats. */
 object AssetFormat extends TableId[AssetFormat]("format") {
-  private[models] val row = Columns[
-    Id,  String,    Option[String], String](
-    'id, 'mimetype, 'extension,     'name) map {
-    (id, mimetype, extension, name) => id match {
+  private[models] val row = Columns(
+      SelectColumn[Id]("id")
+    , SelectColumn[String]("mimetype")
+    , SelectColumn[Option[String]]("extension")
+    , SelectColumn[String]("name")
+    ) map { (id, mimetype, extension, name) => id match {
       case IMAGE => Image
       case TimeseriesFormat.VIDEO => TimeseriesFormat.Video
       case _ => new AssetFormat(id, mimetype, extension, name)
-    }
-  } from "ONLY format"
+    } } from "ONLY format"
 
   private def mts[A](b : Boolean, ts : => Option[A], a : => Future[Option[A]]) : Future[Option[A]] =
     if (b) Async.orElse(ts, a) else a
@@ -176,7 +177,7 @@ object Asset extends AssetView[Asset]("asset") {
       case (id, classification, None) ~ format ~ None => new FileAsset(id, format, classification)
       case (id, classification, Some(duration)) ~ (format : TimeseriesFormat) ~ clip => {
         val ts = new Timeseries(id.coerce[Timeseries], format, classification, duration)
-        clip.fold[Asset](ts)(Clip.make(ts))
+        clip.fold[Asset](ts)((Clip.make(ts) _).tupled)
       }
     } from """asset
     LEFT JOIN clip USING (id)
@@ -192,72 +193,75 @@ object Asset extends AssetView[Asset]("asset") {
 }
 
 object FileAsset extends AssetView[FileAsset]("file") {
-  private[models] val columns = Columns[
-    Id,  Classification.Value](
-    'id, 'classification)
+  private[models] val columns = Columns(
+      SelectColumn[Id]("id")
+    , SelectColumn[Classification.Value]("classification")
+    )
   private[models] val row = columns.join(AssetFormat.row, "ONLY " + _ + " JOIN " + _ + " ON file.format = format.id") map {
-    case ((id, classification) ~ format) => new FileAsset(id, format, classification)
+    case ((id, classification), format) => new FileAsset(id, format, classification)
   }
   
   /** Retrieve a single (non-timeseries) file asset.
     * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
-  private[models] def get(i : Id)(implicit db : Site.DB) : Option[FileAsset] =
-    row.SQL("WHERE file.id = {id}").
-      on('id -> i).singleOpt
+  private[models] def get(i : Id) : Future[Option[FileAsset]] =
+    row.SELECT("WHERE file.id = ?").apply(i).singleOpt
 
   /** Create a new file asset from an uploaded file.
     * @param format the format of the file, taken as given
     * @param file a complete, uploaded file which will be moved into the appropriate storage location
     */
-  def create(format : AssetFormat, classification : Classification.Value, file : TemporaryFile)(implicit site : Site) : FileAsset = {
-    val id = Audit.add(table, SQLArgs('format -> format.id, 'classification -> classification), "id").single(scalar[Id])
-    store.FileAsset.store(id, file)
-    site.db.commit
-    new FileAsset(id, format, classification)
-  }
+  def create(format : AssetFormat, classification : Classification.Value, file : TemporaryFile)(implicit site : Site) : Future[FileAsset] =
+    /* TODO transaction */
+    Audit.add(table, SQLArgs('format -> format.id, 'classification -> classification), "id")
+      .single(SQLCols[Id]).map { id =>
+        store.FileAsset.store(id, file)
+        new FileAsset(id, format, classification)
+      }
 }
 
 object Timeseries extends AssetView[Timeseries]("timeseries") {
-  private val columns = Columns[
-    Id,  TimeseriesFormat.Id, Classification.Value, Offset](
-    'id, 'format,             'classification,      'duration)
+  private val columns = Columns(
+      SelectColumn[Id]("id")
+    , SelectColumn[TimeseriesFormat.Id]("format")
+    , SelectColumn[Classification.Value]("classification")
+    , SelectColumn[Offset]("duration")
+    )
   private[models] val row = columns map {
-    (id, format, classification, duration) => new Timeseries(id, TimeseriesFormat.get(format).get, classification, duration)
+    (id, format, classification, duration) =>
+      new Timeseries(id, TimeseriesFormat.get(format).get, classification, duration)
   }
   
   /** Retrieve a single timeseries asset.
     * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
-  private[models] def get(i : Id)(implicit db : Site.DB) : Option[Timeseries] =
-    row.SQL("WHERE timeseries.id = {id}").
-      on('id -> i).singleOpt()
+  private[models] def get(i : Id) : Future[Option[Timeseries]] =
+    row.SELECT("WHERE timeseries.id = ?").apply(i).singleOpt
 
   /** Create a new timeseries asset from an uploaded file.
     * @param format the format of the file, taken as given
     * @param file a complete, uploaded file which will be moved into the appropriate storage location
     */
-  def create(format : TimeseriesFormat, classification : Classification.Value, duration : Offset, file : TemporaryFile)(implicit site : Site) : Timeseries = {
-    val id = Audit.add(table, SQLArgs('format -> format.id, 'classification -> classification, 'duration -> duration), "id").single(scalar[Id])
-    store.FileAsset.store(id, file)
-    site.db.commit // XXX if we do things per-transaction
-    new Timeseries(id, format, classification, duration)
-  }
+  def create(format : TimeseriesFormat, classification : Classification.Value, duration : Offset, file : TemporaryFile)(implicit site : Site) : Future[Timeseries] =
+    /* TODO transaction */
+    Audit.add(table, SQLArgs('format -> format.id, 'classification -> classification, 'duration -> duration), "id")
+      .single(SQLCols[Id]).map { id =>
+        store.FileAsset.store(id, file)
+        new Timeseries(id, format, classification, duration)
+      }
 }
 
 object Clip extends AssetView[Clip]("clip") {
-  import PGSegment.{column => segmentColumn}
-  private def makeSource(source : Timeseries)(id : Id, segment : Range[Offset]) = new Clip(id, source, segment)
-  private[models] def make(source : Timeseries) = (makeSource(source) _).tupled
-  private[models] val columns = Columns[
-    Id,  Range[Offset]](
-    'id, 'segment)
+  private[models] def make(source : Timeseries)(id : Id, segment : Range[Offset]) = new Clip(id, source, segment)
+  private[models] val columns = Columns(
+      SelectColumn[Id]("id")
+    , SelectColumn[Range[Offset]]("segment")
+    )
   private[models] val row = columns.join(Timeseries.row, "clip.source = timeseries.id") map {
-    case (clip ~ source) => make(source)(clip)
+    case (clip, source) => (make(source) _).tupled(clip)
   }
   
   /** Retrieve a single clip.
     * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
-  private[models] def get(i : Id)(implicit db : Site.DB) : Option[Clip] =
-    row.SQL("WHERE clip.id = {id}").
-      on('id -> i).singleOpt()
+  private[models] def get(i : Id)(implicit db : Site.DB) : Future[Option[Clip]] =
+    row.SELECT("WHERE clip.id = ?").apply(i).singleOpt
 }
 

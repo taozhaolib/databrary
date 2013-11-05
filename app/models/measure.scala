@@ -3,6 +3,7 @@ package models
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import com.github.mauricio.async.db
+import macros._
 import dbrary._
 import site._
 
@@ -27,9 +28,8 @@ private[models] final sealed class MeasureType[T] private (val dataType : DataTy
 private[models] object MeasureType {
   /** Text measurements are represented as Strings. */
   implicit val measureText = new MeasureType[String](DataType.text)
-  /** Numeric measurements are represented as Doubles, although this will lose precision.
-    * BigNumeric or something might be better -- unfortunately jdbc seems to map numeric as Double anyway. */
-  implicit val measureNumber = new MeasureType[Double](DataType.number)
+  /** Numeric measurements are represented as BigDecimal. */
+  implicit val measureNumber = new MeasureType[BigDecimal](DataType.number)
   /** Date measurements. */
   implicit val measureDate = new MeasureType[Date](DataType.date)
 
@@ -68,7 +68,7 @@ object Metric extends TableId[MetricT[_]]("metric") {
     case LANGUAGE => Language
     case _ => new MetricT(id, name, classification, values.getOrElse(Array[String]()))(MeasureType(dataType))
   }
-  private[models] val row = Columns(
+  private[models] val row : Selector[MetricT[_]] = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
     , SelectColumn[Classification.Value]("classification")
@@ -77,25 +77,25 @@ object Metric extends TableId[MetricT[_]]("metric") {
     ).map(make _)
 
   /** Retrieve a single metric by id. */
-  def get(id : Id)(implicit db : Site.DB) : Option[Metric] = id match {
-    case IDENT => Some(Ident)
-    case BIRTHDATE => Some(Birthdate)
-    case GENDER => Some(Gender)
-    case RACE => Some(Race)
-    case ETHNICITY => Some(Ethnicity)
-    case LANGUAGE => Some(Language)
-    case _ => row.SQL("WHERE id = {id}").on('id -> id).singleOpt
+  def get(id : Id) : Future[Option[Metric]] = id match {
+    case IDENT => Async(Some(Ident))
+    case BIRTHDATE => Async(Some(Birthdate))
+    case GENDER => Async(Some(Gender))
+    case RACE => Async(Some(Race))
+    case ETHNICITY => Async(Some(Ethnicity))
+    case LANGUAGE => Async(Some(Language))
+    case _ => row.SELECT("WHERE id = ?").apply(id).singleOpt
   }
 
-  def getAll(implicit db : Site.DB) : Seq[Metric] =
-    Seq(Ident, Birthdate, Gender, Race, Ethnicity, Language) ++
-    row.SQL("WHERE id > 0 ORDER BY id").list
+  def getAll : Future[Seq[Metric]] =
+    row.SELECT("WHERE id > 0 ORDER BY id").apply().list map
+      (Seq(Ident, Birthdate, Gender, Race, Ethnicity, Language) ++ _)
 
   private val rowTemplate = row.from("metric JOIN record_template ON metric.id = record_template.metric")
   /** This is not used as they are for now hard-coded in RecordCategory above. */
-  private def getTemplate(category : RecordCategory.Id)(implicit db : Site.DB) : Seq[Metric] =
-    rowTemplate.SQL("WHERE record_template.category = {category} ORDER BY metric.id").
-      on('category -> category).list
+  private def getTemplate(category : RecordCategory.Id) : Future[Seq[Metric]] =
+    rowTemplate.SELECT("WHERE record_template.category = ? ORDER BY metric.id")
+      .apply(category).list
 
   private final val IDENT     : Id = asId(-900)
   private final val BIRTHDATE : Id = asId(-590)
@@ -137,12 +137,12 @@ final class MeasureDatum(val value : String) extends MeasureDatumBase {
 }
 object MeasureDatum {
   /** A column parser for dynamic measurement values. */
-  implicit object sqlType extends SQLType[MeasureDatumT[_]] {
+  implicit object sqlType extends SQLType[MeasureDatumT[_]]("datum", classOf[MeasureDatumT[_]]) {
     override def put(d : MeasureDatumT[_]) = d.value
     override def get(x : Any, where : String = "") : MeasureDatumT[_] = x match {
       case null => throw new SQLUnexpectedNull(this, where)
       case s : String => new MeasureDatumT[String](s)
-      case d : Double => new MeasureDatumT[Double](d)
+      case d : BigDecimal => new MeasureDatumT[BigDecimal](d)
       case d : Date => new MeasureDatumT[Date](d)
       case _ => throw new SQLTypeMismatch(x, this, where)
     }
@@ -228,7 +228,8 @@ object MeasureT extends MeasureView[MeasureT[_]]("measure_all") {
       val record = columns.parse.get(c)
       val metric = Metric.row.parse.get(m)
       val d = dl(metric.dataType.id)
-      make(record, metric, metric.measureType.sqlType.get(d))
+      val sqlt = metric.measureType.sqlType
+      make(record, metric, sqlt.get(d))(sqlt)
     })
   )
   

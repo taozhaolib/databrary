@@ -1,5 +1,6 @@
 package models
 
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import dbrary._
 import site._
 
@@ -61,7 +62,7 @@ object Authorize extends Table[Authorize]("authorize") {
   /** Get all authorizations granted ba a particular parent.
     * @param all include inactive authorizations
     */
-  private[models] def getChildren(parent : Party, all : Boolean = false)(implicit db : Site.DB) : Future[Seq[Authorize]] =
+  private[models] def getChildren(parent : Party, all : Boolean = false) : Future[Seq[Authorize]] =
     row.join(Party.row, "child = party.id").map { case (a ~ c) =>
         (make(c, parent) _).tupled(a)
       }.SQL("WHERE parent = {parent}", conditionIf(all)).apply(parent.id).list
@@ -82,7 +83,7 @@ object Authorize extends Table[Authorize]("authorize") {
 
   /** Determine the permission level granted to a child by a parent.
     * The child is granted all the same rights of the parent up to this level. */
-  private[models] def delegate_check(child : Party.Id, parent : Party.Id)(implicit db : Site.DB) : Future[Permission.Value] =
+  private[models] def delegate_check(child : Party.Id, parent : Party.Id) : Future[Permission.Value] =
     if (child == parent) Permission.ADMIN else // optimization
     SQL("SELECT authorize_delegate_check(?, ?)").apply(child, parent).single(SQLCols[Permission.Value])
 }

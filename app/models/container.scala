@@ -1,6 +1,6 @@
 package models
 
-import scala.concurrent.Future
+import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import macros._
 import dbrary._
@@ -72,10 +72,9 @@ object Container extends TableId[Container]("container") {
 
   /** Retrieve an individual Container.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
-  def get(i : Id)(implicit site : Site) : Future[Option[Container]] = {
-    row.SELECT("WHERE container.id = ? AND", Volume.condition).
-      on(i +: Volume.conditionArgs).singleOpt
-  }
+  def get(i : Id)(implicit site : Site) : Future[Option[Container]] =
+    row.SELECT("WHERE container.id = ? AND", Volume.condition)
+      .apply(i +: Volume.conditionArgs).singleOpt
 
   /** Retrieve all the (non-top) containers in a given volume. */
   private[models] def getVolume(v : Volume) : Future[Seq[Container]] =
@@ -124,11 +123,11 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     * Defaults to fullSlot. */
   lazy val context : Future[Slot] = {
     if (isContext) Async(this)
-    else Async.orElse(
+    else Async.getOrElse(
       container._fullSlot.peek.filter(_.consent != Consent.NONE), // optimization
-      Slot.containerRow(container).SQL("WHERE slot.source = ? AND slot.segment @> ? AND slot.consent IS NOT NULL")
+      Slot.containerRow(container).SELECT("WHERE slot.source = ? AND slot.segment @> ? AND slot.consent IS NOT NULL")
         .apply(containerId, segment).singleOpt.flatMap(
-          Async.orElse(_, container.fullSlot)
+          Async.getOrElse(_, container.fullSlot)
         )
     )
   }
@@ -257,7 +256,7 @@ object Slot extends TableId[Slot]("slot") {
   /** Create a new slot in the specified container or return a matching one if it already exists. */
   def getOrCreate(container : Container, segment : Range[Offset]) : Future[Slot] =
     if (segment.isFull) container.fullSlot else // optimization
-    DBUtil.selectOrInsert(_get(container, segment) _) { (dbc, exc) =>
+    DBUtil.selectOrInsert(_get(container, segment)(_, _)) { (dbc, exc) =>
       val args = SQLTerms('source -> container.id, 'segment -> segment)
       val id = SQL("INSERT INTO slot " + args.insert + " RETURNING id")(dbc, exc)
         .apply(args : _*).single(scalar[Id])

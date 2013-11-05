@@ -78,6 +78,10 @@ object SQLType {
         org.joda.time.DateTime.parse(s))
   }
 
+  implicit object bigdecimal extends SQLType[BigDecimal]("numeric", classOf[BigDecimal]) {
+    def read(s : String) = Maybe.toNumber(BigDecimal(s))
+  }
+
   implicit def array[A](implicit t : SQLType[A]) : SQLType[Array[A]] =
     new SQLType[Array[A]](t.name + "[]", classOf[Array[A]]) {
       def read(s : String) = None /* TODO */

@@ -60,10 +60,10 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   /** Add or change a measure on this record.
     * This is not type safe so may generate SQL exceptions, and may invalidate measures on this object. */
-  def setMeasure(metric : Metric, value : String)(implicit db : Site.DB) : Boolean = Measure(id, metric, value).set
+  def setMeasure(metric : Metric, value : String) : Future[Boolean] = Measure(id, metric, value).set
   /** Remove a measure from this record.
     * This may invalidate measures on this object. */
-  def deleteMeasure(metric : Metric)(implicit db : Site.DB) = Measure.delete(id, metric)
+  def deleteMeasure(metric : Metric) = Measure.delete(id, metric)
 
   private val _ident = CachedVal[Option[String], Site.DB](measure(Metric.Ident)(_))
   /** Cached version of `measure(Metric.Ident)`.
