@@ -1,8 +1,9 @@
 package site
 
-import macros._
-import models._
 import play.api.mvc._
+import macros._
+import dbrary._
+import models._
 import scala._
 
 object Site {
@@ -38,6 +39,10 @@ trait AuthSite extends Site {
   override def user = Some(identity)
 }
 
+trait PerSite {
+  protected implicit def site : Site
+}
+
 /** A generic action that may be performed on the site.
   * It may make sense to add a target : SitePage value here, too.
   */
@@ -46,15 +51,15 @@ case class SiteAction(name : String, route : play.api.mvc.Call, available : Bool
 /** An object with a corresponding page on the site. */
 trait SitePage extends HasPermission {
   /** The title of the object/page in the hierarchy, which may only make sense within [[pageParent]]. */
-  def pageName(implicit site : Site) : String
+  def pageName : String
   /** Optional override of pageName for breadcrumbs and other abbreviated locations */
-  def pageCrumbName(implicit site : Site) : Option[String] = None
+  def pageCrumbName : Option[String] = None
   /** The object "above" this one (in terms of breadcrumbs and nesting). */
-  def pageParent(implicit site : Site) : Option[SitePage]
+  def pageParent : Option[SitePage]
   /** The URL of the page, usually determined by [[controllers.routes]]. */
-  def pageURL(implicit site : Site) : play.api.mvc.Call
-  protected def Action(name : String, route : play.api.mvc.Call, permission : Permission.Value)(implicit site : Site) =
+  def pageURL : play.api.mvc.Call
+  protected def Action(name : String, route : play.api.mvc.Call, permission : Permission.Value) =
     SiteAction(name, route, checkPermission(permission))
   /** The actions available for this page. */
-  def pageActions(implicit site : Site) : Seq[SiteAction]
+  def pageActions : Seq[SiteAction]
 }

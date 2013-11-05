@@ -63,12 +63,14 @@ object Container extends TableId[Container]("container") {
     , SelectColumn[Option[Date]]("date")
     )
   private val fullColumns = columns.join(Slot.columns.fromAlias("full_slot"), "full_slot.source = container.id AND full_slot.segment = '(,)'")
-  private[models] val row = Volume.row.join(fullColumns, "container.volume = volume.id") map {
-    case (vol, (cont, full)) => (make(vol, full) _).tupled(cont)
-  }
-  private[models] def volumeRow(volume : Volume) = fullColumns map {
-    case (cont, full) => (make(volume, full) _).tupled(cont)
-  }
+  private[models] def row(implicit site : Site) =
+    Volume.row.join(fullColumns, "container.volume = volume.id") map {
+      case (vol, (cont, full)) => (make(vol, full) _).tupled(cont)
+    }
+  private[models] def volumeRow(volume : Volume) =
+    fullColumns map {
+      case (cont, full) => (make(volume, full) _).tupled(cont)
+    }
 
   /** Retrieve an individual Container.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
@@ -142,7 +144,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   def position : Offset = segment.lowerBound.getOrElse(0)
 
   /** List of contained asset segments within this slot. */
-  def assets : Seq[SlotAsset] = SlotAsset.getSlot(this)
+  def assets : Future[Seq[SlotAsset]] = SlotAsset.getSlot(this)
 
   /** The list of comments on this object.
     * @param all include indirect comments on any contained objects
@@ -160,7 +162,10 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     * @return true if the tag name is valid
     */
   def setTag(tag : String, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Boolean =
-    Tag.valid(tag).fold(false)(Tag.getOrCreate(_).set(this, up).equals(()))
+    Tag.valid(tag).fold(false) { n =>
+      Tag.getOrCreate(n).map(_.set(this, up))
+      true
+    }
 
   /** The list of records on this object.
     * @param all include indirect records on any contained objects
@@ -215,9 +220,10 @@ object Slot extends TableId[Slot]("slot") {
     , SelectColumn[Range[Offset]]("segment")
     , SelectColumn[Consent.Value]("consent")
     )
-  private[models] val row = columns.join(Container.row, "slot.source = container.id") map {
-    case (slot, cont) => (make(cont) _).tupled(slot)
-  }
+  private[models] def row(implicit site : Site) =
+    columns.join(Container.row, "slot.source = container.id") map {
+      case (slot, cont) => (make(cont) _).tupled(slot)
+    }
   private[models] def containerRow(container : Container) =
     columns map (make(container) _).tupled
   private[models] def volumeRow(volume : Volume) =

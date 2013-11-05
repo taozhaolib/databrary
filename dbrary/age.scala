@@ -6,6 +6,8 @@ case class Age(days : Int) {
   def period : Period = Period.days(days)
   def duration : Duration = Duration.standardDays(days)
   def millis : Long = 86400000L*days // duration.getMillis
+  def min(that : Age) : Age = Age(days.min(that.days))
+  def max(that : Age) : Age = Age(days.max(that.days))
 }
 
 object Age {

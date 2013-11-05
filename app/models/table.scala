@@ -1,6 +1,6 @@
 package models
 
-import scala.concurrent.Future
+import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import dbrary._
 import site._
@@ -34,6 +34,15 @@ private[models] abstract trait TableView {
   protected implicit val tableName : FromTable = FromTable(table)
   /** Convenient creation of column names for this table from symbols. */
   protected implicit def tableColumn[A : SQLType](col : Symbol) = SelectColumn[A](col.name)
+
+  protected def INSERT(args : SQLTerms)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
+    SQL("INSERT INTO " + table + " " + args.insert)(dbc, exc).apply(args)
+  protected def INSERT(args : SQLTerm[_]*)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
+    INSERT(SQLTerms(args : _*))(dbc, exc)
+  protected def DELETE(args : SQLTerms)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
+    SQL("DELETE FROM " + table + " WHERE " + args.where)(dbc, exc).apply(args)
+  protected def DELETE(args : SQLTerm[_]*)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
+    DELETE(SQLTerms(args : _*))(dbc, exc)
 }
 
 private[models] abstract class Table[R <: TableRow](private[models] val table : String) extends TableView {

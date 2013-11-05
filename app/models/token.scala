@@ -1,6 +1,8 @@
 package models
 
 import scala.concurrent.Future
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import macros._
 import dbrary._
 import site._
 
@@ -22,10 +24,10 @@ private[models] sealed abstract class TokenTable[T <: Token](table : String) ext
   protected val row : Selector[T]
 
   def delete(token : String) : Unit =
-    SQL("DELETE FROM " + table + " WHERE token = ?").apply(token).run
+    DELETE('token -> token).run()
 
   def get(token : String) : Future[Option[T]] =
-    row.SQL("WHERE token = ?").apply(token).singleOpt
+    row.SELECT("WHERE token = ?").apply(token).singleOpt
 }
 
 object Token extends TokenTable[Token]("token") {
@@ -51,14 +53,14 @@ object LoginToken extends TokenTable[LoginToken]("login_token") {
   /** Issue a new token for the given party.
     * @param password if this token allows a password reset. There can be only one active password reset per user at a time, so this deletes any previous ones.
     */
-  def create(account : Account, password : Boolean = false)(implicit db : Site.DB) : LoginToken = {
-    if (password)
-      SQL("DELETE FROM login_token WHERE account = {account} AND password").on('account -> account.id).execute
-    val args = SQLArgs('account -> account.id, 'password -> password)
-    SQL("INSERT INTO login_token " + args.insert + " RETURNING " + columns.select)
-      .on(args : _*).single(columns.map(make(account) _))
-  }
+  def create(account : Account, password : Boolean = false) : Future[LoginToken] =
+    (if (password) DELETE('account -> account.id, 'password -> true).execute
+    else Async(false)).flatMap { _ =>
+      val args = SQLTerms('account -> account.id, 'password -> password)
+      SQL("INSERT INTO login_token " + args.insert + " RETURNING " + columns.select)
+        .apply(args).single(columns.parse.map(make(account) _))
+    }
 
-  private[models] def clearAccount(account : Account.Id)(implicit db : Site.DB) : Unit =
-    SQL("DELETE FROM login_token WHERE account = {account}").on('account -> account).execute
+  private[models] def clearAccount(account : Account.Id) : Unit =
+    DELETE('account -> account).run()
 }

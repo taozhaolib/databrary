@@ -9,7 +9,7 @@ scalacOptions in (Compile, doc) <++= baseDirectory.map { bd => Seq(
   "-doc-source-url", "https://github.com/databrary/databrary/tree/master€{FILE_PATH}.scala"
 ) }
 
-play.Project.templatesImport += "site._"
+play.Project.templatesImport ++= Seq("macros.Async", "site._")
 
 GitDescribe.gitDescribeOptions in ThisBuild := Seq("--tags", "--dirty")
 

@@ -16,4 +16,7 @@ trait RepeatedView[V[_],B,R] {
   def apply() : R = result()
   def apply[A1 : V](a1 : A1) : R = result(arg(a1))
   def apply[A1 : V, A2 : V](a1 : A1, a2 : A2) : R = result(arg(a1), arg(a2))
+  def apply[A1 : V, A2 : V, A3 : V](a1 : A1, a2 : A2, a3 : A3) : R = result(arg(a1), arg(a2), arg(a3))
+  def apply[A1 : V, A2 : V, A3 : V, A4 : V](a1 : A1, a2 : A2, a3 : A3, a4 : A4) : R = result(arg(a1), arg(a2), arg(a3), arg(a4))
+  def apply[A1 : V, A2 : V, A3 : V, A4 : V, A5 : V](a1 : A1, a2 : A2, a3 : A3, a4 : A4, a5 : A5) : R = result(arg(a1), arg(a2), arg(a3), arg(a4), arg(a5))
 }

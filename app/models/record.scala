@@ -125,9 +125,10 @@ object Record extends TableId[Record]("record") {
     , SelectColumn[Option[RecordCategory.Id]]("category")
     , SelectAs[Consent.Value]("record_consent(record.id)", "record_consent")
     )
-  private[models] val row = columns.join(Volume.row, "record.volume = volume.id") map {
-    case (rec, vol) => (make(vol) _).tupled(rec)
-  }
+  private def row(implicit site : Site) =
+    columns.join(Volume.row, "record.volume = volume.id") map {
+      case (rec, vol) => (make(vol) _).tupled(rec)
+    }
   private[models] def volumeRow(vol : Volume) = columns.map(make(vol) _)
   private[models] def measureRow[T](vol : Volume, metric : MetricT[T]) = {
     val mt = metric.measureType
@@ -191,10 +192,8 @@ object Record extends TableId[Record]("record") {
         case SQLDuplicateKeyException() => false
       }
   }
-  private[models] def removeSlot(r : Record.Id, s : Slot.Id) : Unit = {
-    val args = SQLTerms('record -> r, 'slot -> s)
-    SQL("DELETE FROM slot_record WHERE " + args.where).apply(args).run()
-  }
+  private[models] def removeSlot(r : Record.Id, s : Slot.Id) : Unit =
+    DELETE('record -> r, 'slot -> s).run()
 
   private[models] object View extends Table[Record]("record_view") {
     private def volumeRow(vol : Volume) = Columns(

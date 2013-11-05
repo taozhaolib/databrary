@@ -42,7 +42,8 @@
                 </thead>
 
                 <tbody>
-                @link.link.container.slots.map { slot  =>
+                @defining(link.slot) { slot =>
+		@* FIXME: There's no reason to show all the slots in this container. maybe only the context? *@
 		    <tr class="message-trace">
                     <td class="mini tc"><a href="@slot.pageURL">@widget.slotThumb(slot)</a></td>
                     <td class="meta tc"><span class="consent">@slot.consent</span></td>

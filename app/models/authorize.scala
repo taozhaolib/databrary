@@ -65,9 +65,9 @@ object Authorize extends Table[Authorize]("authorize") {
     * @param all include inactive authorizations
     */
   private[models] def getChildren(parent : Party, all : Boolean = false) : Future[Seq[Authorize]] =
-    row.join(Party.row, "child = party.id").map { case (a ~ c) =>
+    columns.join(Party.row, "child = party.id").map { case (a, c) =>
         (make(c, parent) _).tupled(a)
-      }.SQL("WHERE parent = {parent}", conditionIf(all)).apply(parent.id).list
+      }.SELECT("WHERE parent = ?", conditionIf(all)).apply(parent.id).list
 
   /** Remove a particular authorization from the database.
     * @return true if a matching authorization was found and deleted

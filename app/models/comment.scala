@@ -21,7 +21,7 @@ object Comment extends TableId[Comment]("comment") {
     , SelectColumn[Timestamp]("time")
     , SelectColumn[String]("text")
     )
-  private def whoRow(who : Account) = columns.
+  private def whoRow(who : Account)(implicit site : Site) = columns.
     join(Slot.row, "comment.slot = slot.id") map {
       case (comment, slot) => (make(who, slot) _).tupled(comment)
     }

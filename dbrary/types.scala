@@ -66,6 +66,10 @@ object SQLType {
     def read(s : String) = Maybe.toInt(s)
   }
 
+  implicit object long extends SQLType[Long]("bigint", classOf[Long]) {
+    def read(s : String) = Maybe.toLong(s)
+  }
+
   implicit object date extends SQLType[Date]("date", classOf[Date]) {
     def read(s : String) =
       catching(classOf[java.lang.IllegalArgumentException]).opt(

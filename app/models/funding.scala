@@ -36,9 +36,9 @@ object VolumeFunding extends Table[VolumeFunding]("volume_funding") {
   def setVolume(vol : Volume, list : Seq[VolumeFunding]) : Unit = {
     val l = list.map(_.ensuring(_.volume == vol).args)
     /* TODO: transaction */
-    SQL("DELETE FROM volume_funding WHERE volume = ?").apply(vol.id).flatMap { _ =>
+    DELETE('volume -> vol.id).flatMap { _ =>
       Future.sequence(l map { a =>
-        SQL("INSERT INTO volume_funding " + a.insert).apply(a).execute
+        INSERT(a).execute
       }).map(_.forall(identity))
     }
   }

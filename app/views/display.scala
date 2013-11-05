@@ -4,11 +4,11 @@ package views.html
  */
 
 import play.api.templates.HtmlFormat._
+import org.joda.time.format.DateTimeFormat
+import macros._
 import site._
 import models._
 import controllers._
-import java.text.SimpleDateFormat
-import java.util.Date
 import dbrary._
 
 object display {
@@ -36,8 +36,8 @@ object display {
     } + (if (d < 0) " ago" else "")
   }
 
-  def age(a : Long) : String = {
-    val (n, u) = timeUnits.take(3).map(a.toDouble/_._2.toDouble) match {
+  def age(a : Age) : String = {
+    val (n, u) = timeUnits.take(3).map(a.millis.toDouble/_._2.toDouble) match {
       case Seq(_, m, d) if m < 3 => (d, "dys")
       case Seq(_, m, _) if m < 37 => (m, "mos")
       case Seq(y, _, _) => (y, "yrs")
@@ -46,17 +46,17 @@ object display {
     "%.1f %s".format(n, u)
   }
   def age(record : models.Record, slot : models.Slot)(implicit db : site.Site.DB) : Option[String] =
-    slot.container.date.flatMap(record.age _).map(age _)
+    slot.container.date.flatMap(d => Async.get(record.age(d))).map(age _)
 
-  def agerange(a : dbrary.Range[Long]) : String = range(age)(a)
+  def agerange(a : dbrary.Range[Age]) : String = range(age)(a)
 
-  val dateFmtY = new SimpleDateFormat("yyyy")
-  val dateFmtYM = new SimpleDateFormat("MMMM yyyy")
-  val dateFmtYMD = new SimpleDateFormat("yyyy-MMM-dd")
-  val dateFmtCite = new SimpleDateFormat("MMMM d, YYYY")
+  val dateFmtY    = DateTimeFormat.forPattern("yyyy")
+  val dateFmtYM   = DateTimeFormat.forPattern("MMMM yyyy")
+  val dateFmtYMD  = DateTimeFormat.forPattern("yyyy-MMM-dd")
+  val dateFmtCite = DateTimeFormat.forPattern("MMMM d, YYYY")
 
   def fuzzyDate(date : Date, fuzzy : Boolean = true)(implicit site : Site) =
-    (if (fuzzy) dateFmtY else dateFmtYMD).format(date)
+    (if (fuzzy) dateFmtY else dateFmtYMD).print(date)
 
   def date(s : Slot)(implicit site : Site) =
     s.container.date.map(fuzzyDate(_, !s.dataPermission().checkPermission(Permission.DOWNLOAD)))
@@ -74,7 +74,7 @@ object display {
     gravatarUrlByEmailOpt(Some(email), size)
 
   private def gravatarUrlByParty(party: Party, size: Int = 64) =
-    gravatarUrlByEmailOpt(dbrary.cast[Account](party).map(_.email), size)
+    gravatarUrlByEmailOpt(cast[Account](party).map(_.email), size)
 
   def avatar(party : Party, size : Int = 64) = party.name match {
     /* Temporary hack */

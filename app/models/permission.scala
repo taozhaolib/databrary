@@ -44,10 +44,10 @@ object Permission extends PGEnum("permission") {
   }
 }
 
-trait HasPermission {
-  def getPermission(implicit site : Site) : Permission.Value
-  final def checkPermission(need : Permission.Value)(implicit site : Site) : Boolean =
-    Permission.check(getPermission, need)
+trait HasPermission extends PerSite {
+  def getPermission : Permission.Value
+  final def checkPermission(need : Permission.Value) : Boolean =
+    Permission.check(getPermission, need)(site)
 }
 
 /** The possible levels of participant consent governing [Classification.IDENTIFIED] data.

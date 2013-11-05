@@ -210,6 +210,6 @@ final case class SQL(override val query : String)(implicit dbconn : db.Connectio
 
 /** A query which may be applied to arguments, producing rows to be parsed to a particular type.
   * @param parse the parser to use on result rows */
-final case class SQLToRows[A](override val query : String, parse : SQLRow[A])(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLRows[A]](query)(dbconn, context) {
-  final protected def result(args : Any*) : SQLRows[A] = new SQLRows(send(args), parse)
+final case class SQLToRows[A](override val query : String, parse : SQLRow[A], preargs : Seq[Any] = Nil)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLRows[A]](query)(dbconn, context) {
+  final protected def result(args : Any*) : SQLRows[A] = new SQLRows(send(preargs ++ args), parse)
 }

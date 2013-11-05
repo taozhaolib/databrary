@@ -1,5 +1,6 @@
 package models
 
+import scala.concurrent.{Future,ExecutionContext}
 import dbrary._
 import site._
 
@@ -58,8 +59,9 @@ object Audit {
     args.query("INSERT INTO audit.audit " + args.insert)
   }
 
-  private[this] def SQLon(action : Action.Value, table : String, stmt : String, returning : String = "")(args : SQLArgs)(implicit site : Site) : SQLResult =
-    (args ++ aargs(action)).query("WITH audit_row AS (" + acmd(action) + " " + table + " " + stmt + " RETURNING *) INSERT INTO audit." + table + " SELECT CURRENT_TIMESTAMP, ?, ?, ?, * FROM audit_row" + Maybe.map(" RETURNING " + _, returning))
+  private[this] def SQLon(action : Action.Value, table : String, stmt : String, returning : String = "")(args : SQLArgs)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
+    SQL("WITH audit_row AS (" + acmd(action) + " " + table + " " + stmt + " RETURNING *) INSERT INTO audit." + table + " SELECT CURRENT_TIMESTAMP, ?, ?, ?, * FROM audit_row" + Maybe.map(" RETURNING " + _, returning))(dbc, exc)
+      .apply(args ++ aargs(action))
 
   /** Record and perform an [[Action.add]] event for a particular table.
     * This does the equivalent of `INSERT INTO table args VALUES args [RETURNING returning]`.
@@ -67,8 +69,8 @@ object Audit {
     * @param args parameters for attached row data
     * @param returning optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
     */
-  private[models] def add(table : String, args : SQLArgs, returning : String = "")(implicit site : Site) : SQLResult =
-    SQLon(Action.add, table, args.insert, returning)(args)(site)
+  private[models] def add(table : String, args : SQLArgs, returning : String = "")(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
+    SQLon(Action.add, table, args.insert, returning)(args)(site, dbc, exc)
 
   /** Record an [[Action.remove]] event to a particular audit table.
     * This does the equivalent of `DELETE FROM table WHERE args [RETURNING returning]`.
@@ -76,8 +78,8 @@ object Audit {
     * @param args parameters to select attached row data
     * @param returning optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
     */
-  private[models] def remove(table : String, args : SQLArgs, returning : String = "")(implicit site : Site) : SQLResult =
-    SQLon(Action.remove, table, "WHERE " + args.where, returning)(args)(site)
+  private[models] def remove(table : String, args : SQLArgs, returning : String = "")(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
+    SQLon(Action.remove, table, "WHERE " + args.where, returning)(args)(site, dbc, exc)
 
   /** Record an [[Action.change]] event to a particular audit table.
     * This does the equivalent of `UPDATE table SET sets WHERE where [RETURNING returning]`.
@@ -86,9 +88,9 @@ object Audit {
     * @param where parameters to select attached row data
     * @param returning optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
     */
-  private[models] def change(table : String, sets : SQLTerms, where : SQLTerms, returning : String = "")(implicit site : Site) : SQLResult =
-    SQLon(Action.change, table, "SET " + sets.set() + " WHERE " + where.where, returning)(sets ++ where)(site)
+  private[models] def change(table : String, sets : SQLTerms, where : SQLTerms, returning : String = "")(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
+    SQLon(Action.change, table, "SET " + sets.set() + " WHERE " + where.where, returning)(sets ++ where)(site, dbc, exc)
 
-  private[models] def changeOrAdd(table : String, sets : SQLTerms, ids : SQLTerms)(implicit site : Site) : SQLResult =
-    DBUtil.updateOrInsert(change(table, sets, ids))(add(table, sets ++ ids))
+  private[models] def changeOrAdd(table : String, sets : SQLTerms, ids : SQLTerms)(implicit site : Site, dbc : Siet.DB, exc : ExecutionContext) : SQLResult =
+    DBUtil.updateOrInsert(change(table, sets, ids)(site, _, _))(add(table, sets ++ ids)(site, _, _))(dbc, exc)
 }
