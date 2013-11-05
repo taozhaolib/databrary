@@ -42,7 +42,7 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   /** Permission delegated by this party to the current user. */
   final def delegated(implicit site : Site) : Permission.Value = _delegated
   /** Permission delegated by the given party to this party. */
-  final def delegatedBy(p : Party.Id)(implicit site : Site) : Permission.Value = Authorize.delegate_check(id, p)
+  final def delegatedBy(p : Party.Id)(implicit site : Site) : Future[Permission.Value] = Authorize.delegate_check(id, p)
 
   /** List of volumes to which this user has been granted access.
     * @param p permission level to restrict to

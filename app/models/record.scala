@@ -1,7 +1,8 @@
 package models
 
+import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import org.joda.time.Period
+import macros._
 import dbrary._
 import site._
 
@@ -65,32 +66,33 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
     * This may invalidate measures on this object. */
   def deleteMeasure(metric : Metric) = Measure.delete(id, metric)
 
-  private val _ident = CachedVal[Option[String], Site.DB](measure(Metric.Ident)(_))
+  private val _ident = FutureVar[Option[String]](measure(Metric.Ident))
   /** Cached version of `measure(Metric.Ident)`.
     * This may become invalid if the value is changed. */
-  def ident(implicit db : Site.DB) : Option[String] = _ident
+  def ident : Future[Option[String]] = _ident.apply
 
-  private val _birthdate = CachedVal[Option[Date], Site.DB](measure(Metric.Birthdate)(_))
+  private val _birthdate = FutureVar[Option[Date]](measure(Metric.Birthdate))
   /** Cached version of `measure(Metric.Birthdate)`.
     * This may become invalid if the value is changed. */
-  def birthdate(implicit db : Site.DB) : Option[Date] = _birthdate
+  def birthdate : Future[Option[Date]] = _birthdate.apply
 
-  private val _gender = CachedVal[Option[String], Site.DB](measure(Metric.Gender)(_))
+  private val _gender = FutureVar[Option[String]](measure(Metric.Gender))
   /** Cached version of `measure(Metric.Gender)`.
     * This may become invalid if the value is changed. */
-  def gender(implicit db : Site.DB) : Option[String] = _gender
+  def gender : Future[Option[String]] = _gender.apply
 
-  private val _daterange = CachedVal[Range[Date], Site.DB] { implicit db =>
-    SQL("SELECT record_daterange(?)", id).single(SQLCols[Range[Date]])
+  private val _daterange = FutureVar[Range[Date]] {
+    SQL("SELECT record_daterange(?)").apply(id).single(SQLCols[Range[Date]].map(_.normalize))
   }
   /** The range of acquisition dates covered by associated slots. Cached. */
-  def daterange(implicit db : Site.DB) : Range[Date] = _daterange.normalize
+  def daterange : Future[Range[Date]] = _daterange.apply
 
   /** The range of ages as defined by `daterange - birthdate`. */
-  def agerange(implicit db : Site.DB) : Option[Range[Age]] = birthdate.map(dob => daterange.map(d => Age(dob, d)))
+  def agerange : Future[Option[Range[Age]]] =
+    birthdate.flatMap(Async.map[Date,Range[Age]](_, dob => daterange.map(_.map(d => Age(dob, d)))))
 
   /** The age at test for a specific date, as defined by `date - birthdate`. */
-  def age(date : Date)(implicit db : Site.DB) : Option[Age] = birthdate.map(dob => Age(dob, date))
+  def age(date : Date) : Future[Option[Age]] = birthdate.map(_.map(dob => Age(dob, date)))
 
   /** Effective permission the site user has over a given metric in this record, specifically in regards to the measure datum itself.
     * Record permissions depend on volume permissions, but can be further restricted by consent levels.
@@ -99,13 +101,14 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
     Permission.data(volume.permission, _ => consent, metric.classification)
 
   /** The set of slots to which this record applies. */
-  def slots(implicit db : Site.DB) : Seq[Slot] =
-    Slot.volumeRow(volume).SQL("JOIN slot_record ON slot.id = slot_record.slot WHERE slot_record.record = {record} ORDER BY slot.source, slot.segment").
-    on('record -> id).list
+  lazy val slots : Future[Seq[Slot]] =
+    Slot.volumeRow(volume)
+      .SELECT("JOIN slot_record ON slot.id = slot_record.slot WHERE slot_record.record = ? ORDER BY slot.source, slot.segment")
+      .apply(id).list
   /** Attach this record to a slot. */
-  def addSlot(s : Slot)(implicit db : Site.DB) = Record.addSlot(id, s.id)
+  def addSlot(s : Slot) = Record.addSlot(id, s.id)
 
-  def pageName(implicit site : Site) = category.fold("")(_.name.capitalize + " ") + ident.getOrElse("Record ["+id+"]")
+  def pageName(implicit site : Site) = category.fold("")(_.name.capitalize + " ") + _ident.peek.getOrElse("Record ["+id+"]")
   def pageParent(implicit site : Site) = Some(volume)
   def pageURL(implicit site : Site) = controllers.routes.Record.view(volume.id, id)
   def pageActions(implicit site : Site) = Seq(
@@ -115,21 +118,23 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 }
 
 object Record extends TableId[Record]("record") {
-  private[models] def make(volume : Volume)(id : Id, category : Option[RecordCategory.Id], consent : Option[Consent.Value]) =
-    new Record(id, volume, category.flatMap(RecordCategory.get(_)), consent.getOrElse(Consent.NONE))
-  private val columns = Columns[
-    Id,  Option[RecordCategory.Id], Option[Consent.Value]](
-    'id, 'category,                 SelectAs("record_consent(record.id)", "record_consent"))
+  private[models] def make(volume : Volume)(id : Id, category : Option[RecordCategory.Id], consent : Consent.Value) =
+    new Record(id, volume, category.flatMap(RecordCategory.get(_)), consent)
+  private val columns = Columns(
+      SelectColumn[Id]("id")
+    , SelectColumn[Option[RecordCategory.Id]]("category")
+    , SelectAs[Consent.Value]("record_consent(record.id)", "record_consent")
+    )
   private[models] val row = columns.join(Volume.row, "record.volume = volume.id") map {
-    case (rec ~ vol) => (make(vol) _).tupled(rec)
+    case (rec, vol) => (make(vol) _).tupled(rec)
   }
   private[models] def volumeRow(vol : Volume) = columns.map(make(vol) _)
   private[models] def measureRow[T](vol : Volume, metric : MetricT[T]) = {
     val mt = metric.measureType
-    volumeRow(vol).leftJoin(mt.select.column, "record.id = " + mt.table + ".record AND " + mt.table + ".metric = {metric}") map {
+    volumeRow(vol).leftJoin(mt.select.column, "record.id = " + mt.table + ".record AND " + mt.table + ".metric = ?") map {
       case (record, meas) =>
         metric match {
-          case Metric.Ident => record._ident() = meas
+          case Metric.Ident => record._ident.set(meas)
           case _ => ()
         }
         (record, meas)
@@ -137,27 +142,27 @@ object Record extends TableId[Record]("record") {
   }
 
   /** Retrieve a specific record by id. */
-  def get(id : Id)(implicit site : Site) : Option[Record] =
-    row.SQL("WHERE record.id = {id} AND", Volume.condition).
-      on(Volume.conditionArgs('id -> id) : _*).singleOpt
+  def get(id : Id)(implicit site : Site) : Future[Option[Record]] =
+    row.SELECT("WHERE record.id = ? AND", Volume.condition)
+      .apply(id +: Volume.conditionArgs).singleOpt
 
   /** Retrieve the set of records on the given slot. */
-  private[models] def getSlot(slot : Slot)(implicit db : Site.DB) : Seq[Record] =
-    volumeRow(slot.volume).SQL("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.slot = {slot} ORDER BY record.category").
-      on('slot -> slot.id).list
+  private[models] def getSlot(slot : Slot) : Future[Seq[Record]] =
+    volumeRow(slot.volume)
+      .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.slot = ? ORDER BY record.category")
+      .apply(slot.id).list
 
   /** Retrieve all the categorized records associated with the given volume.
     * @param category restrict to the specified category, or include all categories
     * @return records sorted by category, ident */
-  private[models] def getVolume(volume : Volume, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Seq[Record] = {
+  private[models] def getVolume(volume : Volume, category : Option[RecordCategory] = None) : Future[Seq[Record]] = {
     val metric = Metric.Ident
     measureRow(volume, metric).map(_._1).
-      SQL("WHERE record.volume = {volume}",
-        (if (category.isDefined) "AND record.category = {category}" else ""),
-        "ORDER BY " + (if (category.isEmpty) "record.category, " else ""),
-        metric.measureType.column.select + ", record.id").
-      on('volume -> volume.id, 'metric -> metric.id, 'category -> category.map(_.id)).
-      list
+      SELECT("WHERE record.volume = ?",
+        (if (category.isDefined) "AND record.category = ?" else ""),
+        "ORDER BY", (if (category.isEmpty) "record.category, " else ""),
+        metric.measureType.select.toString, ", record.id")
+      .apply(SQLArgs(metric.id, volume.id) ++ category.fold(SQLArgs())(c => SQLArgs(c.id))).list
   }
 
   /** Retrieve the records in the given volume with a measure of the given value.
@@ -165,53 +170,52 @@ object Record extends TableId[Record]("record") {
     * @param metric search by metric
     * @param value measure value that must match
     */
-  def findMeasure[T](volume : Volume, category : Option[RecordCategory] = None, metric : MetricT[T], value : T)(implicit db : Site.DB) : Seq[Record] =
-    measureRow(volume, metric).map(_._1).
-      SQL("WHERE record.volume = {volume}",
-        (if (category.isDefined) "AND record.category = {category}" else ""),
-        "AND " + metric.measureType.column.select + " = {value}").
-      on('volume -> volume.id, 'metric -> metric.id, 'category -> category.map(_.id), 'value -> value).
-      list
+  def findMeasure[T](volume : Volume, category : Option[RecordCategory] = None, metric : MetricT[T], value : T) : Future[Seq[Record]] =
+    measureRow(volume, metric).map(_._1)
+      .SELECT("WHERE record.volume = ?",
+        (if (category.isDefined) "AND record.category = ?" else ""),
+        "AND", metric.measureType.select.toString, "= ?")
+      .apply(SQLArgs(metric.id, volume.id) ++ category.fold(SQLArgs())(c => SQLArgs(c.id)) ++ SQLArgs(value)(metric.measureType.sqlType)).list
 
   /** Create a new record, initially unattached. */
-  def create(volume : Volume, category : Option[RecordCategory] = None)(implicit db : Site.DB) : Record = {
-    val args = SQLArgs('volume -> volume.id, 'category -> category.map(_.id))
-    val id = SQL("INSERT INTO record " + args.insert + " RETURNING id").
-      on(args : _*).single(scalar[Id])
-    new Record(id, volume, category)
+  def create(volume : Volume, category : Option[RecordCategory] = None) : Future[Record] = {
+    val args = SQLTerms('volume -> volume.id, 'category -> category.map(_.id))
+    SQL("INSERT INTO record " + args.insert + " RETURNING id")
+      .apply(args).single(SQLCols[Id].map(new Record(_, volume, category)))
   }
 
-  private[models] def addSlot(r : Record.Id, s : Slot.Id)(implicit db : Site.DB) : Unit = {
+  private[models] def addSlot(r : Record.Id, s : Slot.Id) : Future[Boolean] = {
     val args = SQLTerms('record -> r, 'slot -> s)
-    args.query("INSERT INTO slot_record " + args.insert).recoverWith {
-      case SQLDuplicateKeyException => ()
-    }.run
+    SQL("INSERT INTO slot_record " + args.insert)
+      .apply(args).execute.recover {
+        case SQLDuplicateKeyException() => false
+      }
   }
-  private[models] def removeSlot(r : Record.Id, s : Slot.Id)(implicit db : Site.DB) : Unit = {
-    val args = SQLArgs('record -> r, 'slot -> s)
-    SQL("DELETE FROM slot_record WHERE " + args.where).on(args : _*).execute
+  private[models] def removeSlot(r : Record.Id, s : Slot.Id) : Unit = {
+    val args = SQLTerms('record -> r, 'slot -> s)
+    SQL("DELETE FROM slot_record WHERE " + args.where).apply(args).run()
   }
 
   private[models] object View extends Table[Record]("record_view") {
-    private[models] val row = Record.row
-
-    private def volumeRow(vol : Volume) = Columns[
-      Id,  Option[RecordCategory.Id], Option[String], Option[Date], Option[String], Option[Date],                            Option[Consent.Value]](
-      'id, 'category,                 'ident,         'birthdate,   'gender,        SelectAs("container.date", "record_date"), SelectAs("slot.consent", "record_consent")).
-      map { (id, category, ident, birthdate, gender, date, consent) =>
-        val r = new Record(id, vol, category.flatMap(RecordCategory.get _), consent.getOrElse(Consent.NONE))
-        r._ident() = ident
-        r._birthdate() = birthdate
-        r._gender() = gender
+    private def volumeRow(vol : Volume) = Columns(
+        SelectColumn[Id]("id")
+      , SelectColumn[Option[RecordCategory.Id]]("category")
+      , SelectColumn[Option[String]]("ident")
+      , SelectColumn[Option[Date]]("birthdate")
+      , SelectColumn[Option[String]]("gender")
+      , SelectAs[Option[Date]]("container.date", "record_date")
+      , SelectAs[Consent.Value]("slot.consent", "record_consent")
+      ).map { (id, category, ident, birthdate, gender, date, consent) =>
+        val r = new Record(id, vol, category.flatMap(RecordCategory.get _), consent)
+        r._ident.set(ident)
+        r._birthdate.set(birthdate)
+        r._gender.set(gender)
         date foreach { d =>
-          r._daterange() = Range.singleton(d)(PGDateRange)
+          r._daterange.set(Range.singleton(d))
         }
         r
-      }.
-      from("slot_record JOIN record_view ON slot_record.record = record_view.id")
-    def getSlots(vol : Volume) =
-      Slot.volumeRow(vol).?.join(volumeRow(vol).?, _ + " FULL JOIN " + _ + " ON slot.id = slot_record.slot AND container.volume = record_view.volume") map {
-        case (slot ~ rec) => (slot, rec)
-      }
+      } from "slot_record JOIN record_view ON slot_record.record = record_view.id"
+    def getSlots(vol : Volume) : Selector[(Option[Slot],Option[Record])] =
+      Slot.volumeRow(vol).?.join(volumeRow(vol).?, _ + " FULL JOIN " + _ + " ON slot.id = slot_record.slot AND container.volume = record_view.volume")
   }
 }

@@ -1,6 +1,8 @@
 package models
 
+import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import macros._
 import dbrary._
 import site._
 
@@ -84,6 +86,7 @@ object Authorize extends Table[Authorize]("authorize") {
   /** Determine the permission level granted to a child by a parent.
     * The child is granted all the same rights of the parent up to this level. */
   private[models] def delegate_check(child : Party.Id, parent : Party.Id) : Future[Permission.Value] =
-    if (child == parent) Permission.ADMIN else // optimization
-    SQL("SELECT authorize_delegate_check(?, ?)").apply(child, parent).single(SQLCols[Permission.Value])
+    if (child == parent) Async(Permission.ADMIN) else // optimization
+    SQL("SELECT authorize_delegate_check(?, ?)")
+      .apply(child, parent).single(SQLCols[Permission.Value])
 }

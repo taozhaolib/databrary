@@ -165,7 +165,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   /** The list of records on this object.
     * @param all include indirect records on any contained objects
     */
-  def records : Seq[Record] = Record.getSlot(this)
+  def records : Future[Seq[Record]] = Record.getSlot(this)
   /** Remove the given record from this slot. */
   def removeRecord(rec : Record.Id) : Unit = Record.removeSlot(rec, id)
   /** The list of records and possibly measures on this object.
@@ -183,7 +183,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     }
 
   /** An image-able "asset" that may be used as the slot's thumbnail. */
-  def thumb(implicit site : Site) : Option[SlotAsset] = SlotAsset.getThumb(this)
+  def thumb(implicit site : Site) : Future[Option[SlotAsset]] = SlotAsset.getThumb(this)
 
   def pageName(implicit site : Site) = container.name.getOrElse { 
     val i = Async.get(idents)
@@ -258,8 +258,7 @@ object Slot extends TableId[Slot]("slot") {
     if (segment.isFull) container.fullSlot else // optimization
     DBUtil.selectOrInsert(_get(container, segment)(_, _)) { (dbc, exc) =>
       val args = SQLTerms('source -> container.id, 'segment -> segment)
-      val id = SQL("INSERT INTO slot " + args.insert + " RETURNING id")(dbc, exc)
-        .apply(args : _*).single(scalar[Id])
-      new Slot(id, container, segment)
+      SQL("INSERT INTO slot " + args.insert + " RETURNING id")(dbc, exc)
+        .apply(args).single(SQLCols[Id].map(new Slot(_, container, segment)))
     }
 }

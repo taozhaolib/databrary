@@ -1,6 +1,8 @@
 package models
 
 import scala.concurrent.{Future,ExecutionContext}
+import com.github.mauricio.async.db
+import macros._
 import dbrary._
 import site._
 
@@ -48,25 +50,25 @@ object SQLDuplicateKeyException {
 
 object DBUtil {
   /* TODO: wrap these in transactions once available */
-  def selectOrInsert[A](select : Site.DB => Future[Option[A]])(insert : Site.DB => Future[A])(implicit dbc : Site.DB) : Future[A] = {
-    @scala.annotation.tailrec def loop() : Future[A] = select(dbc).flatMap {
-      case None => insert(dbc).recoverWith {
-        case SQLDuplicateKeyException => loop
+  def selectOrInsert[A](select : (Site.DB, ExecutionContext) => Future[Option[A]])(insert : (Site.DB, ExecutionContext) => Future[A])(implicit dbc : Site.DB, exc : ExecutionContext) : Future[A] = {
+    @scala.annotation.tailrec def loop : Future[A] = select(dbc, exc).flatMap {
+      case None => insert(dbc, exc).recoverWith {
+        case SQLDuplicateKeyException() => loop
       }
       case Some(r) => Async(r)
     }
-    loop()
+    loop
   }
 
-  def updateOrInsert(update : (Site.DB, ExecutionContext) => SQLResult)(insert : (Site.DB, ExecutionContext) => SQLResult)(implicit dbc : Site.DB, ec : ExecutionContext) : SQLResult = {
-    @scala.annotation.tailrec def loop() : SQLResult = update(dbc, ec).flatMap { r =>
+  def updateOrInsert(update : (Site.DB, ExecutionContext) => SQLResult)(insert : (Site.DB, ExecutionContext) => SQLResult)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult = {
+    @scala.annotation.tailrec def loop : Future[db.QueryResult] = update(dbc, exc).result.flatMap { r =>
       if (r.rowsAffected == 0)
-        insert(dbc, ec).recoverWith {
-          case SQLDuplicateKeyException => loop
+        insert(dbc, exc).result.recoverWith {
+          case SQLDuplicateKeyException() => loop
         }
       else
         Async(r)
     }
-    loop()
+    new SQLResult(loop)
   }
 }

@@ -1,5 +1,7 @@
 package models
 
+import scala.concurrent.Future
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import dbrary._
 import site._
 
@@ -21,7 +23,7 @@ private[models] abstract trait TableView {
   private[models] val table : String
   /** Database OID of the table.  This is useful when dealing with inheritance or other tableoid selections. */
   private[models] lazy val tableOID : Future[Long] =
-    SQL("SELECT oid FROM pg_class WHERE relname = ?", table).single(SQLCols[Long])
+    SQL("SELECT oid FROM pg_class WHERE relname = ?").apply(table).single(SQLCols[Long])
 
   /** Type of TableRow this object can generate. */
   private[models] type Row <: TableRow

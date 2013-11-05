@@ -9,17 +9,18 @@ trait DiscreteRangeType[A] extends RangeType[A] {
 }
 
 object RangeType {
-  implicit val intRange = new DiscreteRangeType[Int] {
+  implicit object int extends DiscreteRangeType[Int] {
     def increment(a : Int) = a + 1
     def decrement(a : Int) = a - 1
     def compare(a : Int, b : Int) = a compare b
   }
-  implicit val longRange = new DiscreteRangeType[Long] {
+  implicit object long extends DiscreteRangeType[Long] {
     def increment(a : Long) = a + 1
     def decrement(a : Long) = a - 1
     def compare(a : Long, b : Long) = a compare b
   }
   implicit val segment : RangeType[Offset] = PGRangeType.segment
+  implicit val date : RangeType[Date] = PGRangeType.date
 }
 
 abstract sealed class Range[A](implicit t : RangeType[A]) {
@@ -133,6 +134,7 @@ object Range {
   }
 
   implicit val segmentSqlType : SQLType[Range[Offset]] = PGRangeType.segment.sqlType
+  implicit val dateSqlType : SQLType[Range[Date]] = PGRangeType.date.sqlType
 }
 
 abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends RangeType[A] {
@@ -171,7 +173,7 @@ object PGRangeType {
     def compare(a : Offset, b : Offset) = a compare b
   }
 
-  implicit object daterange extends PGRangeType[Date]("daterange") with DiscreteRangeType[Date] {
+  implicit object date extends PGRangeType[Date]("daterange") with DiscreteRangeType[Date] {
     def compare(a : Date, b : Date) = a compareTo b
     def increment(a : Date) = a.plusDays(1)
     def decrement(a : Date) = a.minusDays(1)

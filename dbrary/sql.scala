@@ -49,6 +49,8 @@ class SQLResult(val result : Future[db.QueryResult])(implicit context : Executio
   }
   private[this] def single(res : db.QueryResult) = singleOpt(res).getOrElse(fail(res, "got no rows, expected 1"))
 
+  def future(f : Future[db.QueryResult] => Future[db.QueryResult]) : SQLResult =
+    new SQLResult(f(result))
   def map[A](f : db.QueryResult => A) : Future[A] = result.map(f)
   def flatMap[A](f : db.QueryResult => Future[A]) : Future[A] = result.flatMap(f)
   def rowsAffected : Future[Long] = map(_.rowsAffected)
@@ -65,6 +67,8 @@ class SQLResult(val result : Future[db.QueryResult])(implicit context : Executio
 
 /** SQLResult with an associated row parser. */
 final class SQLRows[A](result : Future[db.QueryResult], parse : SQLRow[A])(implicit context : ExecutionContext) extends SQLResult(result)(context) {
+  override def future(f : Future[db.QueryResult] => Future[db.QueryResult]) : SQLRows[A] =
+    new SQLRows[A](f(result), parse)
   def map[B](f : A => B) : SQLRows[B] = new SQLRows[B](result, parse.map[B](f))
   def list : Future[IndexedSeq[A]] = list(parse)
   def singleOpt : Future[Option[A]] = singleOpt(parse)
@@ -148,6 +152,8 @@ object SQLCols {
   def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType] = new SQLCols3[C1, C2, C3]
   def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType] = new SQLCols4[C1, C2, C3, C4]
   def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType] = new SQLCols5[C1, C2, C3, C4, C5]
+  def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType, C6 : SQLType] = new SQLCols6[C1, C2, C3, C4, C5, C6]
+  def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType, C6 : SQLType, C7 : SQLType] = new SQLCols7[C1, C2, C3, C4, C5, C6, C7]
 }
 
 import SQLCols.get
@@ -175,6 +181,14 @@ final class SQLCols4[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType]
 final class SQLCols5[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType]
   extends SQLCols[(C1,C2,C3,C4,C5)](5, i => (get[C1](i), get[C2](i), get[C3](i), get[C4](i), get[C5](i))) {
   def map[A](f : (C1,C2,C3,C4,C5) => A) : SQLLine[A] = map[A](f.tupled)
+}
+final class SQLCols6[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType, C6 : SQLType]
+  extends SQLCols[(C1,C2,C3,C4,C5,C6)](6, i => (get[C1](i), get[C2](i), get[C3](i), get[C4](i), get[C5](i), get[C6](i))) {
+  def map[A](f : (C1,C2,C3,C4,C5,C6) => A) : SQLLine[A] = map[A](f.tupled)
+}
+final class SQLCols7[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType, C6 : SQLType, C7 : SQLType]
+  extends SQLCols[(C1,C2,C3,C4,C5,C6,C7)](7, i => (get[C1](i), get[C2](i), get[C3](i), get[C4](i), get[C5](i), get[C6](i), get[C7](i))) {
+  def map[A](f : (C1,C2,C3,C4,C5,C6,C7) => A) : SQLLine[A] = map[A](f.tupled)
 }
 
 /** A generic class representing a query which may (or may not) be applied to arguments, and produces a particular result type.
