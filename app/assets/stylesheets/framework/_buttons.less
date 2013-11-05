@@ -7,7 +7,7 @@ button, .button {
 	.border-padding-height(1px, .25);
 	.padding-width(.5);
 	.border-radius(@b8);
-	color: @text !important;
+	color: @text;
 
 	border: 1px solid @c4g3m3;
 	#gradient > .vertical(@c4g5m3, @c4g5m2);
@@ -63,7 +63,6 @@ button, .button {
 	&:disabled, &.disabled {
 		border: 1px solid @g3;
 		#gradient > .vertical(mix(@g3, @g5, 75%), mix(@g3, @g5, 50%));
-		background: @g4;
 		cursor: not-allowed;
 
 		&:hover {
@@ -87,10 +86,10 @@ button.link {
 	.transition(@transition);
 	color: @second;
 	font: inherit;
-	margin: 0;
-	padding: 0;
 	outline: none;
 	outline-offset: 0;
+	text-shadow: 0;
+	.border-radius(0);
 
 	&:hover {
 		color: darken(@second, 25%);

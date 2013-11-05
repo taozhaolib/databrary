@@ -1,21 +1,32 @@
 // STYLES
 
-ul.inline-block {
-	display: inline-block;
-	margin-bottom: 0;
-	padding-left: 0;
-
-	li {
+ol, ul, dl {
+	&.inline-block {
 		display: inline-block;
-	}
-}
+		margin-bottom: 0;
+		padding-left: 0;
 
-ul.flat,
-ol.flat {
-	li {
-		&:before {
-			content: none;
-			display: none;
+		li {
+			display: inline-block;
+		}
+	}
+
+	&.inline {
+		display: inline;
+		margin-bottom: 0;
+		padding-left: 0;
+
+		li {
+			display: inline;
+		}
+	}
+
+	&.flat {
+		li {
+			&:before {
+				content: none;
+				display: none;
+			}
 		}
 	}
 }

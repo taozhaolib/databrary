@@ -8,14 +8,14 @@
         <main id="body_content" class="body_content col">
             <article class="article article_crud @request.obj.getClass.getSimpleName.toLowerCase @actions.find(_.route.url.equals(request.path)).fold("")(_.name.replaceAllLiterally(" ", "-").toLowerCase)">
                 <header class="article_header article_crud_header">
-                    <h1>@request.obj.pageName</h1>
+                    <h1 class="article_header_h1">@request.obj.pageName</h1>
 
                     <nav class="article_header_nav">
-                        <ul class="breadcrumbs">
+                        <ul class="article_breadcrumbs flat inline-block">
 						@Path(request.obj).toHtml
                         </ul>
 
-                        <ul class="actions">
+                        <ul class="article_actions flat inline-block">
 			            @actions.filter(_.available).map { act =>
                             <li class="@{if(request.path == act.route.url) {"current"}}">
                                 @if(act.route.method != "GET") {

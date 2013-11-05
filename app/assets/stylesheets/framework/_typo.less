@@ -262,6 +262,20 @@
 
 //
 
+.border-height(@offset, @x) {
+	height: (floor((1px * @x * @baseline) * 4) / 4) - @offset;
+}
+
+.border-min-height(@offset, @x) {
+	min-height: (floor((1px * @x * @baseline) * 4) / 4) - @offset;
+}
+
+.border-max-height(@offset, @x) {
+	max-height: (floor((1px * @x * @baseline) * 4) / 4) - @offset;
+}
+
+//
+
 .rules(hide, @baseline: @baseline, @offset: -(@baseline / 6), @odd: #dff, @even: #dff, @back: @back) {
 	background: @back;
 

@@ -18,7 +18,7 @@ case class PathCrumb(name: String, url: Option[play.api.mvc.Call] = None, li: Bo
     r += raw("<a")
     r += raw(" href='" + url.getOrElse("").toString + "'")
     r += raw(">")
-    r += escape(name)
+    r += escape(if(name.length >= 32) name.substring(0, 29).trim+"..." else name)
     r += raw("</a>")
     if(li) r += raw("</li>")
     r
