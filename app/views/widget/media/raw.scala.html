@@ -1,6 +1,6 @@
-@(id: String, classes: String, attr: (Symbol, Any)*)(caption: Html = Html(""), scalar: Boolean = false)(body: Html)
+@(id: String, classes: String, attr: (Symbol, Any)*)(caption: Html = Html(""), scalar: String = "")(body: Html)
 
-<figure id="figure_@id" class="figure figure_@id @classes" @El.attrToHtml(attr)>
+<figure id="figure_@id" class="figure figure_@id @scalar @classes" @El.attrToHtml(attr)>
     <div class="media">
         @body
     </div>
@@ -9,7 +9,7 @@
         <figcaption class="text">@caption</figcaption>
     }
 
-    @if(scalar){
+    @if(!scalar.isEmpty){
         <img class="scalar" src="data:image/gif;base64,R0lGODlhAQABAIAAAP7//wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==">
     }
 </figure>

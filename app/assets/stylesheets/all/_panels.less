@@ -1,0 +1,26 @@
+// VARS
+
+@panelpad: 1;
+
+// STYLES
+
+.panel {
+    .wrap {
+        .padding-height(@panelpad);
+    }
+
+    .row {
+        .padding-bottom(@panelpad);
+
+        &:last-child {
+            .padding-bottom(0);
+        }
+    }
+
+    &.nowrap {
+        .wrap {
+            width: auto;
+            .padding-width(@panelpad);
+        }
+    }
+}

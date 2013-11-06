@@ -1,94 +1,26 @@
 @()(implicit request: RequestObject[Volume]#Site[_])
 
-	@script = {
-		dbjs.tabs('.tabset', '.tab', '.view');
+    @script = {
+	dbjs.tabs('.tabset', '.tab', '.view');
+    }
+
+@defining((request.obj, request.obj.toplevelAssets groupBy { sa =>
+	if(!sa.checkPermission(Permission.DOWNLOAD)) 'o' else sa.format.mimeSubTypes._1 match {
+	    case "image" => 'i'
+	    case "video" => 'v'
+	    case "audio" => 'a'
+	    case _ => 'o'
 	}
+})) { case (volume, assets) =>
+    @template.crud("Volume: " + volume.name, js = script) {
+	@widget.panel.raw("volume_overview", ""){
+	    <div class="description col-desktop-6 push-desktop-2 col-laptop-8 col-tablet-6 col-mobile-6">
+		@widget.media.thumbVolume(volume)
 
-@defining(request.obj) { volume =>
-@defining(volume.toplevelAssets groupBy { sa =>
-	if (!sa.checkPermission(Permission.DOWNLOAD)) 'o' else sa.format.mimeSubTypes._1 match {
-		case "image" => 'i'
-		case "video" => 'v'
-		case "audio" => 'a'
-		case _ => 'o'
-	}
-}) { assets =>
+		@widget.volumeSummary(volume)
 
-@template.crud("Volume: " + volume.name, js = script) {
-	<div class="row">
-		<div class="description col-desktop-6 push-desktop-2 col-laptop-8 col-tablet-6 col-mobile-6">
-            @widget.media.thumbVolume(volume)
-
-            <div class="tube wide">
-                <div class="scale">
-                    <div class="image" style="background-image: url('@routes.Volume.thumb(volume.id)')"></div>
-                </div>
-
-                <img class="scalar" src="data:image/gif;base64,R0lGODlhAQABAIAAAP7//wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==">
-            </div>
-
-            @widget.volumeSummary(volume)
-		    @volume.body.map(display.plainText _)
-		</div>
-
-		<footer class="extended col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
-			<div>
-				<aside class="dates foot">
-					<span class="date created">
-						Created <time datetime="@volume.creation" pubdate>@display.dateFmtYM.format(volume.creation)</time></span>
-				</aside>
-
-				<aside class="citing foot">
-					<h2>Citation</h2>
-
-					@widget.volumeCitation(volume)
-				</aside>
-			</div>
-
-			<div>
-				<div class="row">
-					<aside class="investigators foot col-3">
-						<h2>Investigators</h2>
-
-						@volume.partyAccess.takeWhile(_.access >= Permission.ADMIN).map { a =>
-							@widget.userinfo(a.party)
-						}
-					</aside>
-
-					<div class="col-3">
-                        @if(volume.funding.nonEmpty) {
-						<aside class="funding foot">
-							<h2>Funding</h2>
-
-							@volume.funding.map { f =>
-								@widget.userinfo(f.funder, grant = f.grant)
-							}
-						</aside>
-                        }
-
-						<aside class="access cf foot">
-							<h2>Sharing</h2>
-							@widget.volumeAccess(volume)
-						</aside>
-					</div>
-				</div>
-			</div>
-		</footer>
-	</div>
-
-	<section id="metadata" class="tabset">
-        @widget.tabs.sessionTab(volume)
-        @widget.tabs.dataTab(volume, assets)
-        @widget.tabs.recordTabs(volume)
-        @widget.tabs.publicationsTab(volume)
-        @widget.tabs.accessTab(volume)
-	</section>
-
-	<div class="row">
-	@region.comments(Some(request.obj.topSlot), Some((routes.Slot.comment(volume.id, volume.topSlot.id), controllers.Slot.commentForm)), volume.comments)
-    @region.tags(volume.topSlot, Some(volume))
-	</div>
-}
-
-}
+		@volume.body.map(display.plainText _)
+	    </div>
+        }
+    }
 }

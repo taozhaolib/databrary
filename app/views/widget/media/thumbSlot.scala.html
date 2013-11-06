@@ -1,5 +1,5 @@
-@(slot : Slot, caption: Html = Html(""))(implicit request : SiteRequest[_])
+@(slot : Slot, caption: Html = Html(""), scalar: String = "wide")(implicit request : SiteRequest[_])
 
-@widget.media.raw("slot_"+slot.id, "figure_slot")(caption){
+@widget.media.raw("slot_"+slot.id, "figure_slot")(caption, scalar){
     <img src="@if(slot.consent == Consent.PRIVATE){@routes.Assets.at("images/draft-lock.png")}else{@routes.Slot.thumb(slot.volumeId, slot.id)}">
 }

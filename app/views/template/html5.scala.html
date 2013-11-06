@@ -58,18 +58,14 @@
 	</head>
 
 	<body class="@if(Play.isDev){dev}">
-		@region.siteHeader(request)
+            @region.siteHeader(request)
 
-        <div id="site_content" class="site_content">
-            <div class="wrap">
-                @body
-            </div>
-        </div>
+    <div id="site_content" class="site_content">
+            @body
+    </div>
 
-        @region.bodyFooterStatic()
-
-        <section id="messages"></section>
-        <section id="forms"></section>
+	    <section id="messages"></section>
+	    <section id="forms"></section>
 	</body>
 </html>
 

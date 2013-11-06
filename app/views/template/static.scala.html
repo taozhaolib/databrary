@@ -1,20 +1,24 @@
-@(title : String = "", css: Html = Html(""), js: Html = Html(""))(body : Html)(sidebar : Html = Html(""))(implicit request: SiteRequest[_])
+@(title: String = "", css: Html = Html(""), js: Html = Html(""))(body: Html)(sidebar: Html = Html(""))(implicit request: SiteRequest[_])
 
-@script = {
-    dbjs.sideMenu('.sidebar_menu', 'main > article > h1:first-child');
-}
+    @script = {
+        dbjs.sideMenu('.sidebar_menu', 'main > article > h1:first-child');
+    }
 
-@template.html5(title, css, script+=js, Some(request)) {
-    @region.bodyHeaderStatic()
+@template.html5(title, css, script += js, Some(request)) {
+        <div class="wrap">
+            @region.bodyHeaderStatic()
 
-    <div class="row">
-        <main id="static_main" class="body_main static_main col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-6">
-            @body
-        </main>
+            <div class="row">
+                <main id="static_main" class="body_main static_main col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-6">
+                @body
+                </main>
 
-        <aside id="static_sidebar" class="body_sidebar static_sidebar col-desktop-2 col-laptop-2 col-tablet-2">
-            @region.bodySidebarStatic()
-            @sidebar
-        </aside>
-    </div>
+                <aside id="static_sidebar" class="body_sidebar static_sidebar col-desktop-2 col-laptop-2 col-tablet-2">
+                    @region.bodySidebarStatic()
+                    @sidebar
+                </aside>
+            </div>
+        </div>
+
+            @region.bodyFooterStatic()
 }
