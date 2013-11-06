@@ -52,19 +52,14 @@
 	height: floor((1rem * @x * @baselull) * 4) / 4;
 }
 
-.height(min, @x: 1) {
+.min-height(@x: 1) {
 	min-height: floor(1px * @x * @baseline * 4) / 4;
 	min-height: floor((1rem * @x * @baselull) * 4) / 4;
 }
 
-.height(max, @x: 1) {
+.max-height(@x: 1) {
 	max-height: floor(1px * @x * @baseline * 4) / 4;
 	max-height: floor((1rem * @x * @baselull) * 4) / 4;
-}
-
-.height(fix, @x: 1) {
-	height: floor(1px * @x * @baseline * 4) / 4;
-	height: floor((1rem * @x * @baselull) * 4) / 4;
 }
 
 //

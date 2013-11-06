@@ -1,0 +1,15 @@
+@(volume: Volume)(implicit request: SiteRequest[_])
+
+@groupBy[VolumeAccess, Permission.Value](volume.partyAccess, _.access).map { case (permission, volumeAccesses) =>
+    <div class="col">
+        <h3>@permission.toString.toLowerCase.capitalize</h3>
+
+        <div class="row">
+            @volumeAccesses.map { a =>
+                <div class="col-laptop-3 col-tablet-3 col-mobile-3">
+                    @widget.portraits.portrait(a.party, "hoverable")()
+                </div>
+            }
+        </div>
+</div>
+}

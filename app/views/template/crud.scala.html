@@ -6,7 +6,7 @@
     @template.html5(title, css, script += js, Some(request)) {
         <main id="body_content" class="body_content">
             <article class="article article_crud @request.obj.getClass.getSimpleName.toLowerCase @actions.find(_.route.url.equals(request.path)).fold("")(_.name.replaceAllLiterally(" ", "-").toLowerCase)">
-                @widget.panel.raw("crud_header", ""){
+                @widget.panels.panel("crud_header", ""){
                     <div class="col">
                         <header class="article_header article_crud_header">
                             <h1 class="article_header_h1">@Html(request.obj.pageName.split(": ").mkString(": <br>"))</h1>

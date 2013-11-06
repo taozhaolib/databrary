@@ -1,6 +1,8 @@
-@(id: String, classes: String, attr: (Symbol, Any)*)(caption: Html = Html(""), scalar: String = "")(body: Html)
+@(id: String, classes: String, attr: (Symbol, Any)*)(caption: Html = Html(""), scalar: String = "", link: String = "", title: String = "")(body: Html)
 
 <figure id="figure_@id" class="figure figure_@id @scalar @classes" @El.attrToHtml(attr)>
+    @if(link.nonEmpty){<a href="@link" @if(title.nonEmpty){title="@title"}>}
+
     <div class="media">
         @body
     </div>
@@ -9,7 +11,9 @@
         <figcaption class="text">@caption</figcaption>
     }
 
-    @if(!scalar.isEmpty){
+    @if(scalar.nonEmpty){
         <img class="scalar" src="data:image/gif;base64,R0lGODlhAQABAIAAAP7//wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==">
     }
+
+    @if(link.nonEmpty){</a>}
 </figure>

@@ -1,0 +1,5 @@
+@(party: Party, size: Int = 160, caption: Html = Html(""), scalar: String = "tube")(implicit request : SiteRequest[_])
+
+@widget.figures.figure("portrait_" + party.id, "portrait_avatar avatar")(caption, scalar) {
+    <a class="image" href="@party.pageURL" title="@party.name" style="background-image: url(' @display.avatar(party, size)')"></a>
+}

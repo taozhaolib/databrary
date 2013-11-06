@@ -1,5 +1,5 @@
 @(volume: Volume, caption: Html = Html(""), scalar: String = "wide")(implicit request: SiteRequest[_])
 
-@widget.media.raw("volume_"+volume.id, "figure_volume")(caption, scalar){
+@widget.figures.figure("volume_"+volume.id, "figure_volume")(caption, scalar){
     <div class="image" style="background-image: url('@routes.Volume.thumb(volume.id)')"></div>
 }

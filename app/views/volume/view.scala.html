@@ -13,14 +13,21 @@
 	}
 })) { case (volume, assets) =>
     @template.crud("Volume: " + volume.name, js = script) {
-	@widget.panel.raw("volume_overview", ""){
+	@widget.panels.panel("volume_overview", ""){
 	    <div class="description col-desktop-6 push-desktop-2 col-laptop-8 col-tablet-6 col-mobile-6">
-		@widget.media.thumbVolume(volume)
+		@widget.figures.thumbVolume(volume)
 
 		@widget.volumeSummary(volume)
 
 		@volume.body.map(display.plainText _)
 	    </div>
         }
+
+	@widget.panels.panel("volume_people", "minimizable"){
+            <h2 class="panel_h2 col">People</h2>
+
+                @widget.portraits.volumeAccessPortraits(volume)
+        }
+
     }
 }

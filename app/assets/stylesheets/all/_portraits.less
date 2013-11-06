@@ -1,0 +1,76 @@
+// STYLES
+
+.portrait {
+	background-color: @g5;
+	.margin-bottom(1);
+
+	&.hoverable {
+		.transition(all .5s linear);
+		position: relative;
+
+		.portrait_info {
+			background-color: @g5;
+		}
+
+		.portrait_institution,
+		.portrait_links {
+			.max-height(0);
+			overflow: hidden;
+		}
+
+		&:hover {
+			.box-shadow();
+
+			.portrait_institution,
+			.portrait_links {
+				.max-height(5);
+			}
+		}
+	}
+}
+
+.portrait_avatar {
+	.margin-bottom(0);
+}
+
+.portrait_info {
+	.padding-height(.5);
+}
+
+.portrait_name,
+.portrait_institution {
+	text-align: center;
+}
+
+.portrait_name {
+	.font(1.25, 1);
+	font-weight: bold;
+
+	&:link, &:visited {
+		color: @c0;
+	}
+
+	&:hover {
+		color: @c0g4m1;
+	}
+
+	&:active {
+		color: @c0g5m1;
+	}
+}
+
+.portrait_institution {
+	.font(.85, 1);
+
+	&:link, &:visited {
+		color: @g3;
+	}
+
+	&:hover {
+		color: mix(@g3, @g4);
+	}
+
+	&:active {
+		color: mix(@g3, @g5);
+	}
+}
