@@ -23,11 +23,11 @@
                             <div class="body col-desktop-7 col-laptop-7 col-tablet-6 col-mobile-4">
                                 <footer class="meta cf">
                                     <div class="date">
-                                        <time datetime="@volume.creation" pubdate>@display.dateFmtY.format(volume.creation)</time>
+                                        <time datetime="@volume.creation" pubdate>@display.dateFmtY.print(volume.creation)</time>
                                     </div>
 
                                     <div class="people">
-                                    @volume.partyAccess.takeWhile(_.access >= Permission.ADMIN).map { a => <img src="@display.avatar(a.party, 16)" class="s16"> @display.citeName(a.party.name) <span class="sep">
+                                    @Async.get(volume.partyAccess).takeWhile(_.access >= Permission.ADMIN).map { a => <img src="@display.avatar(a.party, 16)" class="s16"> @display.citeName(a.party.name) <span class="sep">
                                         ,</span>
                                     }
                                     </div>
@@ -35,7 +35,7 @@
 
                                 <div class="description">
 
-                                    @defining(volume.summary) { s =>
+                                    @defining(Async.get(volume.summary)) { s =>
 				    	@if(s.sessions > 0) {
                                         <div class="siderim minor">
                                             <dl class="inline-measures">

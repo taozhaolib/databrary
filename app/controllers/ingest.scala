@@ -1,13 +1,14 @@
 package controllers
 
-import site._
+import scala.concurrent.Future
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api._
 import          Play.current
 import          mvc._
 import          data._
 import               Forms._
 import          i18n.Messages
-import scala.concurrent.Future
+import site._
 import models._
 import ingest._
 
@@ -29,30 +30,33 @@ object Ingest extends SiteController {
     val volume = request.obj
     val form = csvForm.bindFromRequest
     def bad(form : CSVForm, text : String = "") =
-      Future.successful(BadRequest(views.html.ingest.csv(volume, form, text)))
+      ABadRequest(views.html.ingest.csv(volume, form, text))
     form.fold(
       form => bad(form),
       { case ((), run) => request.body.asMultipartFormData.flatMap(_.file("file")).fold(
         bad(form.withError("file", "error.required"))
-      ) { file => AssetFormat.getFilePart(file).map(_.mimetype).orElse(file.contentType) match
-        { case Some("text/csv") if !run => try {
-            Future.successful(Ok(views.html.ingest.csv(volume, form, ingest.Curated.preview(file.ref.file))))
-          } catch { case e : IngestException =>
-            bad(form, e.getMessage)
-          }
-          case Some("text/csv") if run => Future { try {
-            Ok(views.html.ingest.curated(volume, ingest.Curated.populate(file.ref.file, volume)))
-          } catch {
-            case e : ingest.Curated.PopulateException =>
-              BadRequest(views.html.ingest.csv(volume, form, e.getMessage, e.target))
-            case e : IngestException =>
-              BadRequest(views.html.ingest.csv(volume, form, e.getMessage))
-          }
-          }(site.context.process)
+      ) { file => AssetFormat.getFilePart(file).flatMap {
+        _.map(_.mimetype).orElse(file.contentType) match
+        { case Some("text/csv") if !run =>
+            Future(ingest.Curated.preview(file.ref.file))(site.context.process).map { r =>
+              Ok(views.html.ingest.csv(volume, form, r))
+            }.recover {
+              case e : IngestException =>
+                BadRequest(views.html.ingest.csv(volume, form, e.getMessage))
+            }
+          case Some("text/csv") if run =>
+            ingest.Curated.populate(file.ref.file, volume).map { r =>
+              Ok(views.html.ingest.curated(volume, r))
+            }.recover {
+              case e : ingest.Curated.PopulateException =>
+                BadRequest(views.html.ingest.csv(volume, form, e.getMessage, e.target))
+              case e : IngestException =>
+                BadRequest(views.html.ingest.csv(volume, form, e.getMessage))
+            }
           case f =>
             bad(form.withError("file", "file.format.unknown", f.fold("unknown")(_.toString)))
         } }
-      }
+      } }
     )
   }
 

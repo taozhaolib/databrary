@@ -128,15 +128,16 @@ object Asset extends SiteController {
     Ok(views.html.asset.edit(Right(request.obj), formFill))
   }
 
-  def change(v : models.Volume.Id, s : models.Container.Id, o : models.Asset.Id) = ContainerAction(v, s, o, Permission.EDIT) { implicit request =>
+  def change(v : models.Volume.Id, s : models.Container.Id, o : models.Asset.Id) = ContainerAction(v, s, o, Permission.EDIT).async { implicit request =>
     formFill.bindFromRequest.fold(
-      form => BadRequest(views.html.asset.edit(Right(request.obj), form)), {
-      case (name, body, position, file) =>
-        request.obj.change(name = name, body = Maybe(body).opt, position = position)
-        /* file foreach {
-          () => request.obj.asset.asInstanceOf[models.FileAsset].change
-        } */
-        Redirect(request.obj.container.fullSlot.pageURL)
+      form => ABadRequest(views.html.asset.edit(Right(request.obj), form)), {
+      case (name, body, position, file) => for {
+          _ <- request.obj.change(name = name, body = Maybe(body).opt, position = position)
+          /* file foreach {
+            () => request.obj.asset.asInstanceOf[models.FileAsset].change
+          } */
+          slot <- request.obj.container.fullSlot
+        } yield (Redirect(slot.pageURL))
       }
     )
   }
@@ -147,49 +148,53 @@ object Asset extends SiteController {
     Ok(views.html.asset.edit(Left(request.obj), uploadForm.fill(("", "", offset, Some((None, Classification.IDENTIFIED, None, ()))))))
   }
 
-  def upload(v : models.Volume.Id, c : models.Container.Id) = Container.Action(v, c, Permission.CONTRIBUTE) { implicit request =>
-    def error(form : AssetForm) : SimpleResult =
-      BadRequest(views.html.asset.edit(Left(request.obj), form))
+  def upload(v : models.Volume.Id, c : models.Container.Id) = Container.Action(v, c, Permission.CONTRIBUTE).async { implicit request =>
+    def error(form : AssetForm) : Future[SimpleResult] =
+      ABadRequest(views.html.asset.edit(Left(request.obj), form))
     val form = uploadForm.bindFromRequest
     form.fold(error _, {
       case (name, body, position, Some((format, classification, localfile, ()))) =>
         val ts = request.access >= Permission.ADMIN
-        val fmt = format.filter(_ => ts).flatMap(AssetFormat.get(_, ts))
+        macros.Async.flatMap[AssetFormat.Id,AssetFormat](format.filter(_ => ts), AssetFormat.get(_, ts)).flatMap { fmt =>
         type ER = Either[AssetForm,(TemporaryFile,AssetFormat,String)]
         request.body.asMultipartFormData.flatMap(_.file("file")).fold {
-          localfile.filter(_ => ts).fold[ER](
-            Left(form.withError("file", "error.required"))) { localfile =>
+          localfile.filter(_ => ts).fold[Future[ER]](
+            macros.Async(Left(form.withError("file", "error.required")))) { localfile =>
             /* local file handling, for admin only: */
             val file = new java.io.File(localfile)
             val name = file.getName
             if (file.isFile)
-              (fmt orElse AssetFormat.getFilename(name, ts)).fold[ER](Left(form.withError("format", "Unknown format")))(
-                fmt => Right((store.TemporaryFileCopy(file), fmt, name)))
+              macros.Async.orElse(fmt, AssetFormat.getFilename(name, ts)).map(_.fold[ER](Left(form.withError("format", "Unknown format")))(
+                fmt => Right((store.TemporaryFileCopy(file), fmt, name))))
             else
-              Left(form.withError("localfile", "File not found"))
+              macros.Async(Left(form.withError("localfile", "File not found")))
           }
         } { file =>
-          (fmt orElse AssetFormat.getFilePart(file, ts)).fold[ER](
+          macros.Async.orElse(fmt, AssetFormat.getFilePart(file, ts)).map(_.fold[ER](
             Left(form.withError("file", "file.format.unknown", file.contentType.getOrElse("unknown"))))(
-            fmt => Right((file.ref, fmt, file.filename)))
-        }.fold(error _, {
-          case (file, fmt, fname) =>
-            val asset = fmt match {
+            fmt => Right((file.ref, fmt, file.filename))))
+        }.flatMap(_.fold(error _, { case (file, fmt, fname) =>
+          for {
+            asset <- fmt match {
               case fmt : TimeseriesFormat if ts => // "if ts" should be redundant
                 val probe = media.AV.probe(file.file)
                 models.Timeseries.create(fmt, classification, probe.duration, file)
               case _ =>
                 models.FileAsset.create(fmt, classification, file)
             }
-            val link = ContainerAsset.create(request.obj, asset, position, Maybe(name).orElse(fname), Maybe(body).opt)
-            Redirect(routes.Asset.view(link.volumeId, link.container.fullSlot.id, link.asset.id))
-        })
+            link <- ContainerAsset.create(request.obj, asset, position, Maybe(name).orElse(fname), Maybe(body).opt)
+            slot <- link.container.fullSlot
+          } yield (Redirect(routes.Asset.view(link.volumeId, slot.id, link.asset.id)))
+        }))
+        }
       case _ => error(uploadForm) /* should not happen */
     })
   }
 
-  def remove(v : models.Volume.Id, c : models.Container.Id, a : models.Asset.Id) = ContainerAction(v, c, a, Permission.EDIT) { implicit request =>
-    request.obj.remove
-    Redirect(request.obj.container.fullSlot.pageURL)
+  def remove(v : models.Volume.Id, c : models.Container.Id, a : models.Asset.Id) = ContainerAction(v, c, a, Permission.EDIT).async { implicit request =>
+    for {
+      _ <- request.obj.remove
+      slot <- request.obj.container.fullSlot
+    } yield (Redirect(slot.pageURL))
   }
 }

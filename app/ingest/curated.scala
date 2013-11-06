@@ -2,6 +2,7 @@ package ingest
 
 import java.io.File
 import java.util.regex.{Pattern=>Regex}
+import scala.concurrent.Future
 import play.api.libs.Files
 import macros._
 import dbrary._
@@ -10,6 +11,7 @@ import models._
 
 object Curated {
   import Parse._
+  implicit val executionContext = site.context.process
 
   /* These are all upper-case to allow case-folding insensitive matches.
    * They also must match (in order) the option in the various metrics. */
@@ -253,7 +255,7 @@ object Curated {
       data.sessions.size + " sessions: " + data.sessions.keys.mkString(",") + "\n" +
       data.assets.size + " files"
 
-  private def populate(data : Data, volume : Volume)(implicit site : Site) : (Iterable[Record], Iterable[ContainerAsset]) = {
+  private def populate(data : Data, volume : Volume)(implicit site : Site) : Future[(Iterable[Record], Iterable[ContainerAsset])] = {
     val subjs = data.subjects.mapValues(_.populate(volume))
     val sess = data.sessions.mapValues(_.populate(volume))
     data.subjectSessions.foreach { ss =>
@@ -268,6 +270,6 @@ object Curated {
   def preview(f : java.io.File) : String =
     preview(process(CSV.parseFile(f)))
 
-  def populate(f : java.io.File, volume : Volume)(implicit site : Site) : (Iterable[Record], Iterable[ContainerAsset]) =
-    populate(process(CSV.parseFile(f)), volume)
+  def populate(f : java.io.File, volume : Volume)(implicit site : Site) : Future[(Iterable[Record], Iterable[ContainerAsset])] =
+    Future(process(CSV.parseFile(f))).flatMap(populate(_, volume))
 }

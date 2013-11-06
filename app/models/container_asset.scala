@@ -25,15 +25,16 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   def body : Option[String] = _body
 
   /** Update the given values in the database and this object in-place. */
-  def change(position : Option[Offset] = _position, name : String = _name, body : Option[String] = _body)(implicit site : Site) : Unit = {
+  def change(position : Option[Offset] = _position, name : String = _name, body : Option[String] = _body)(implicit site : Site) : Future[Unit] = {
     if (position == _position && name == _name && body == _body)
       return
-    Audit.change("container_asset", SQLTerms('position -> position, 'name -> name, 'body -> body), SQLTerms('container -> containerId, 'asset -> assetId)).run()
-    _name = name
-    _body = body
+    Audit.change("container_asset", SQLTerms('position -> position, 'name -> name, 'body -> body), SQLTerms('container -> containerId, 'asset -> assetId)).map {
+      _name = name
+      _body = body
+    }
   }
 
-  def remove(implicit site : Site) : Unit =
+  def remove : Future[Boolean] =
     Audit.remove("container_asset", SQLTerms('container -> containerId, 'asset -> assetId)).execute
 
   def duration : Offset = 0

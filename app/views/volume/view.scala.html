@@ -5,7 +5,7 @@
 	}
 
 @defining(request.obj) { volume =>
-@defining(volume.toplevelAssets groupBy { sa =>
+@defining(Async.get(volume.toplevelAssets) groupBy { sa =>
 	if (!sa.checkPermission(Permission.DOWNLOAD)) 'o' else sa.format.mimeSubTypes._1 match {
 		case "image" => 'i'
 		case "video" => 'v'
@@ -29,7 +29,7 @@
 
 				<aside class="dates foot">
 					<span class="date created">
-						Created <time datetime="@volume.creation" pubdate>@display.dateFmtYM.format(volume.creation)</time></span>
+						Created <time datetime="@volume.creation" pubdate>@display.dateFmtYM.print(volume.creation)</time></span>
 				</aside>
 
 				<aside class="citing foot">
@@ -44,21 +44,23 @@
 					<aside class="investigators foot col-3">
 						<h2>Investigators</h2>
 
-						@volume.partyAccess.takeWhile(_.access >= Permission.ADMIN).map { a =>
+						@Async.get(volume.partyAccess).takeWhile(_.access >= Permission.ADMIN).map { a =>
 							@widget.userinfo(a.party)
 						}
 					</aside>
 
 					<div class="col-3">
-                        @if(volume.funding.nonEmpty) {
+					@defining(Async.get(volume.funding)) { funding =>
+					@if(funding.nonEmpty) {
 						<aside class="funding foot">
 							<h2>Funding</h2>
 
-							@volume.funding.map { f =>
+							@funding.map { f =>
 								@widget.userinfo(f.funder, grant = f.grant)
 							}
 						</aside>
-                        }
+					}
+					}
 
 						<aside class="access cf foot">
 							<h2>Sharing</h2>
@@ -79,8 +81,10 @@
 	</section>
 
 	<div class="row">
-	@region.comments(Some(request.obj.topSlot), Some((routes.Slot.comment(volume.id, volume.topSlot.id), controllers.Slot.commentForm)), volume.comments)
-    @region.tags(volume.topSlot, Some(volume))
+	@defining(Async.get(volume.topSlot)) { topSlot =>
+	@region.comments(Some(topSlot), Some((routes.Slot.comment(volume.id, topSlot.id), controllers.Slot.commentForm)), Async.get(volume.comments))
+	@region.tags(topSlot, Some(volume))
+	}
 	</div>
 }
 

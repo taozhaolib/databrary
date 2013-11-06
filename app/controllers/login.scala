@@ -39,7 +39,7 @@ object Login extends SiteController {
     Ok(request.user.fold(views.html.modal.login(loginForm))(p => views.html.modal.profile(p)(request.withObj(p))))
   }
 
-  private[controllers] def login(a : Account)(implicit request : Request[_], db : site.Site.DB) = {
+  private[controllers] def login(a : Account)(implicit request : Request[_]) = {
     Audit.actionFor(Audit.Action.open, a.id, dbrary.Inet(request.remoteAddress))
     Redirect(routes.Party.view(a.id)).withSession("user" -> a.id.toString)
   }
@@ -49,7 +49,6 @@ object Login extends SiteController {
     form.fold(
       form => Future.successful(BadRequest(views.html.account.login(form))),
       { case (email, password, openid) =>
-        implicit val dbc = Site.dbPool
         val acct = email.flatMap(Account.getEmail _)
         def error() : SimpleResult = {
           acct.foreach(a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)))

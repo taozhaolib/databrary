@@ -1,13 +1,14 @@
 package controllers
 import scala.language.higherKinds
 
+import scala.concurrent.Future
 import play.api._
 import          Play.current
 import          http._
 import          mvc._
 import          data._
 import          i18n.Messages
-import scala.concurrent.Future
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import macros._
 import dbrary._
 import site._
@@ -44,20 +45,20 @@ trait RequestObject[+O] {
     extends SiteRequest.Auth[A](request, identity, access, superuser) with Site[A]
 }
 object RequestObject {
-  def getter[O](get : SiteRequest[_] => Option[O]) = new ActionRefiner[SiteRequest.Base,RequestObject[O]#Site] {
+  def getter[O](get : SiteRequest[_] => Future[Option[O]]) = new ActionRefiner[SiteRequest.Base,RequestObject[O]#Site] {
     protected def refine[A](request : SiteRequest.Base[A]) =
-      get(request).fold[Either[Future[SimpleResult],RequestObject[O]#Site[A]]](
-        simple(Results.NotFound))(
-        o => Right(request.withObj(o)))
+      get(request).map(_.fold[Either[SimpleResult,RequestObject[O]#Site[A]]](
+        Left(Results.NotFound))(
+        o => Right(request.withObj(o))))
   }
   def permission[O <: InVolume](perm : Permission.Value = Permission.VIEW) = new ActionHandler[RequestObject[O]#Site] {
     protected def handle[A](request : RequestObject[O]#Site[A]) =
-      if (request.obj.checkPermission(perm)(request)) None else simple(Results.Forbidden)
+      Future.successful(if (request.obj.checkPermission(perm)) None else Some(Results.Forbidden))
   }
-  def check[O <: InVolume](get : SiteRequest[_] => Option[O], perm : Permission.Value = Permission.VIEW) =
+  def check[O <: InVolume](get : SiteRequest[_] => Future[Option[O]], perm : Permission.Value = Permission.VIEW) =
     getter(get) ~> permission(perm)
-  def check[O <: InVolume](v : models.Volume.Id, get : SiteRequest[_] => Option[O], perm : Permission.Value = Permission.VIEW) =
-    getter(get(_).filter(_.volumeId == v)) ~> permission(perm)
+  def check[O <: InVolume](v : models.Volume.Id, get : SiteRequest[_] => Future[Option[O]], perm : Permission.Value = Permission.VIEW) =
+    getter(get(_).map(_.filter(_.volumeId == v))) ~> permission(perm)
 }
 
 object SiteAction extends ActionCreator[SiteRequest.Base] {
@@ -103,9 +104,9 @@ class SiteController extends Controller {
     current.configuration.getString("application.secret").exists(_ != "databrary").
       ensuring(s => s, "Application is insecure. You must set application.secret appropriately (see README).")
 
-  protected def AOk[C : Writeable](c : C) = Async(Ok[C](c))
-  protected def ABad[C : Writeable](c : C) = Async(BadRequest[C](c))
-  protected def ARedirect(c : Call) = Async(Redirect(c))
+  protected def AOk[C : Writeable](c : C) : Future[SimpleResult] = Async(Ok[C](c))
+  protected def ABadRequest[C : Writeable](c : C) : Future[SimpleResult] = Async(BadRequest[C](c))
+  protected def ARedirect(c : Call) : Future[SimpleResult] = Async(Redirect(c))
 }
 
 object Site extends SiteController {

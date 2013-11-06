@@ -149,14 +149,14 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   /** The list of comments on this object.
     * @param all include indirect comments on any contained objects
     */
-  def comments(all : Boolean = true) : Future[Seq[Comment]] = Comment.getSlot(this, all)
+  def comments(all : Boolean = true) = Comment.getSlot(this, all)
   /** Post a new comment this object.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
   def postComment(text : String)(implicit site : AuthSite) : Future[Comment] = Comment.post(this, text)
 
   /** The list of tags on the current slot along with the current user's applications.
     * @param all add any tags applied to child slots to weight (but not use) as well */
-  def tags(all : Boolean = true)(implicit site : Site) : Seq[TagWeight] = TagWeight.getSlot(this, all)
+  def tags(all : Boolean = true)(implicit site : Site) = TagWeight.getSlot(this, all)
   /** Tag this slot.
     * @param up Some(true) for up, Some(false) for down, or None to remove
     * @return true if the tag name is valid
