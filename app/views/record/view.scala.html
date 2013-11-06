@@ -7,7 +7,7 @@
                 <h2>Measures</h2>
 
                 <dl class="measures">
-                @record.measures.filter(m => record.dataPermission(m.metric).checkPermission(Permission.DOWNLOAD)).map { m =>
+                @Async.get(record.measures).filter(m => record.dataPermission(m.metric).checkPermission(Permission.DOWNLOAD)).map { m =>
                     <dt>@m.metric.name</dt>
                     <dd>@m.datum</dd>
                 }
@@ -27,7 +27,7 @@
                 </thead>
 
                 <tbody>
-                @record.slots.map { slot  =>
+                @Async.get(record.slots).map { slot =>
 		<tr class="message-trace">
 	        <td class="mini tc"><a href="@slot.pageURL" class="ff_84max">@widget.slotThumb(slot)</a></td>
                 <td class="meta tc">@display.age(record, slot)</td>
@@ -40,7 +40,7 @@
         </div>
 
         <div class="extended col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
-            @widget.assetFrame(record.slots.flatMap(s => s.assets), true)
+            @widget.assetFrame(Async.get(record.slots).flatMap(s => Async.get(s.assets)), true)
         </div>
     </div>
 }

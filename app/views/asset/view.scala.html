@@ -60,6 +60,6 @@
     </div>
 
     <div class="row">
-    @region.comments(Some(link.slot), Some((routes.Slot.comment(link.volumeId, link.slotId), controllers.Slot.commentForm)), link.slot.comments())
+    @region.comments(Some(link.slot), Some((routes.Slot.comment(link.volumeId, link.slotId), controllers.Slot.commentForm)), Async.get(link.slot.comments()))
     </div>
 }

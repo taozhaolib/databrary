@@ -10,7 +10,7 @@
 	<h2>Assets:</h2>
 	<ul>
 	@res._2.map { ca =>
-		<li>@display(ca.fullSlot)</li>
+		<li>@display(Async.get(ca.fullSlot))</li>
 	}
 	</ul>
 }

@@ -1,4 +1,4 @@
-@(party : Party)(implicit request : SiteRequest[_])
+@(p : Party)(implicit request : SiteRequest[_])
 
 @script = {
     dbjs.fadeOff('.modal .volume_roll a', '.body', '.thumb');
@@ -7,77 +7,9 @@
 @template.modal("profile", "full")(js = script) {
     <article class="account view">
         <header>
-            <h1>@party.name</h1>
+            <h1>@p.name</h1>
         </header>
 
-        <div class="modal_content">
-	    <div class="row">
-		<section class="personal col-desktop-2 col-laptop-2 col-tablet-2">
-            <img src="@display.avatar(party, 144)" alt="@party.name" class="avatar s144">
-		@dbrary.cast[Account](party).map { a =>
-
-		    <div class="connect">
-			<h2>Connect</h2>
-
-			<ul class="flat">
-			    @if(request.access >= Permission.VIEW) {
-				@if(a.email != "") {
-				    <li><a href="mailto:@a.email" title="Email @party.name"><img src="@routes.Assets.at("images/social/16px/email.png")" alt="Email @party.name">email</a></li>
-				}
-			    }
-
-			    @party.orcid.map { o =>
-				<li><a href="@o.uri" title="@party.name on ORCID"><img src="@routes.Assets.at("images/social/16px/orcid.png")" alt="@party.name on ORCID">@o.toString</a></li>
-			    }
-			</ul>
-		    </div>
-		}
-
-		@defining(party.authorizeParents()) { parents =>
-		@if(parents.nonEmpty) {
-		    <div class="memberships">
-			<h2>Memberships</h2>
-
-			<ul class="flat">
-			@parents.map { t =>
-			    <li>@display(t.parent)</li>
-			}
-			</ul>
-		    </div>
-		}
-		}
-
-		@defining(party.authorizeChildren()) { children =>
-		@if(children.nonEmpty) {
-		    <div class="memberships">
-		    @if(party.isInstanceOf[Account]) { <h2>Affiliates</h2> } else { <h2>Members</h2> }
-
-			<ul class="flat">
-			@children.map { t =>
-			    <li>@display(t.child)</li>
-			}
-			</ul>
-		    </div>
-		}
-		}
-		</section>
-
-		<div class="content col-desktop-9 col-laptop-9 col-tablet-6">
-		    <section class="volume_list">
-			    @party.volumeAccess(Permission.CONTRIBUTE).map { a =>
-				    @widget.volumeList(a.volume)
-			    }
-		    </section>
-
-		    <div class="row">
-            @dbrary.cast[Account](party).map(a => a.comments).map { comments =>
-                @if(comments.nonEmpty) {
-                    @region.comments(None, None, comments)
-                }
-            }
-		    </div>
-		</div>
-	    </div>
-	</div>
+    @party.content(p, "col-laptop-2 col-tablet-2", "col-desktop-9 col-laptop-9 col-tablet-6")
     </article>
 }

@@ -44,10 +44,8 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   /** Permission delegated by the given party to this party. */
   final def delegatedBy(p : Party.Id)(implicit site : Site) : Future[Permission.Value] = Authorize.delegate_check(id, p)
 
-  /** List of volumes to which this user has been granted access.
-    * @param p permission level to restrict to
-    * @return VolumeAccess sorted by level (ADMIN first). */
-  final def volumeAccess(p : Permission.Value)(implicit site : Site) = VolumeAccess.getVolumes(this, p)
+  /** List of volumes to which this user has been granted at least CONTRIBUTE access, sorted by level (ADMIN first). */
+  final lazy val volumeAccess = VolumeAccess.getVolumes(this, Permission.CONTRIBUTE)
 
   /** List of volumes which this party is funding. */
   final def funding(implicit site : Site) : Future[Seq[VolumeFunding]] = VolumeFunding.getFunder(this)

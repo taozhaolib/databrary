@@ -17,7 +17,7 @@ import site._
   * @param authorized the time at which this authorization takes/took effect, or never (not yet) if None
   * @param expires the time at which this authorization stops, or never if None
   */
-final class Authorize protected (child : Party, parent : Party, access : Permission.Value, delegate : Permission.Value, authorized : Option[Timestamp], expires : Option[Timestamp]) extends TableRow {
+final class Authorize protected (val child : Party, val parent : Party, val access : Permission.Value, val delegate : Permission.Value, val authorized : Option[Timestamp], val expires : Option[Timestamp]) extends TableRow {
   def childId = child.id
   def parentId = parent.id
   /** Update or add this authorization in the database.

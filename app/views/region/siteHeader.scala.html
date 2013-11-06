@@ -25,7 +25,7 @@
                 } { request =>
                     <a href="@request.identity.pageURL(request)" id="modal_profile_link" class="modal_link" data-target="modal_profile"><img src="@display.avatar(request.identity, 16)" alt="@request.identity.name" class="s16"> @request.identity.name</a>
 
-                    @if(request.user.get.access(request.db) == Permission.ADMIN) {
+                    @if(request.access == Permission.ADMIN) {
                         @if(request.superuser) {
                             <span>|</span>
                             <a class="first message" data-message="<strong>Superuser!</strong> Click to re-enter normalcy." href="@routes.Login.superuserOff">SU</a>

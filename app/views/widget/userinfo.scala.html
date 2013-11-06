@@ -1,4 +1,4 @@
-@(party : Party, time : Option[java.sql.Timestamp] = None, float : Boolean = false, grant : Option[String] = None, slots : Tuple2[Option[Slot], Option[Slot]] = Tuple2(None, None))(implicit request : SiteRequest[_])
+@(party : Party, time : Option[dbrary.Timestamp] = None, float : Boolean = false, grant : Option[String] = None, slots : Tuple2[Option[Slot], Option[Slot]] = Tuple2(None, None))(implicit request : SiteRequest[_])
 
 <@if(time.isDefined){header}else{section} class="userinfo cf @if(float == true){col-3}">
     <div class="avatar">
