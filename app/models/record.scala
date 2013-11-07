@@ -46,11 +46,13 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def categoryId = category.map(_.id)
 
   /** Update the given values in the database and this object in-place. */
-  def change(category : Option[RecordCategory] = _category) : Unit = {
+  def change(category : Option[RecordCategory] = _category) : Future[Boolean] = {
     if (category == _category)
       return
-    SQL("UPDATE record SET category = ? WHERE id = ?").apply(category.map(_.id), id).run()
-    _category = category
+    SQL("UPDATE record SET category = ? WHERE id = ?").apply(category.map(_.id), id)
+      .andThen { case Success(true) =>
+        _category = category
+      }
   }
 
   /** A specific measure of the given type and metric. */

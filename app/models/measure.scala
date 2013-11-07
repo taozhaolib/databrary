@@ -207,11 +207,11 @@ private[models] sealed abstract class MeasureView[R <: MeasureBase](table : Stri
   private[models] def getRecord(record : Record.Id) : Future[Seq[R]] =
     row.SELECT("WHERE record = ? ORDER BY metric.id").apply(record).list
 
-  private[models] def delete(record : Record.Id, metric : Metric) : Unit = {
+  private[models] def delete(record : Record.Id, metric : Metric) : Future[Boolean] = {
     val tpe = metric.measureType
     val args = SQLTerms('record -> record, 'metric -> metric.id)
     SQL("DELETE FROM " + metric.measureType.table + " WHERE " + args.where).
-      apply(args).run()
+      apply(args)
   }
 }
 

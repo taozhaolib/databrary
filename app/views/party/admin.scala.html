@@ -1,4 +1,4 @@
-@(authorizeForms : Seq[(Party,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Party,Form[Authorize])])(implicit request : controllers.Party.Request[_])
+@(authorizeForms : Seq[(Party,controllers.Party.AuthorizeForm)], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Party,controllers.Party.AuthorizeForm)])(implicit request : controllers.Party.Request[_])
 
 
 @template.crud("Admin Party: " + request.obj.toString()) {

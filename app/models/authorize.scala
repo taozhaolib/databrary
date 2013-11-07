@@ -20,20 +20,6 @@ import site._
 final class Authorize protected (val child : Party, val parent : Party, val access : Permission.Value, val delegate : Permission.Value, val authorized : Option[Timestamp], val expires : Option[Timestamp]) extends TableRow {
   def childId = child.id
   def parentId = parent.id
-  /** Update or add this authorization in the database.
-    * If an authorization for the child and parent already exist, it is changed to match this.
-    * Otherwise, a new one is added.
-    * This may invalidate child.access. */
-  def set(implicit site : Site) : Unit = {
-    val id = SQLArgs('child -> childId, 'parent -> parentId)
-    val args = SQLArgs('access -> access, 'delegate -> delegate, 'authorized -> authorized, 'expires -> expires)
-    Audit.changeOrAdd(Authorize.table, args, id)
-  }
-  /** Remove this authorization from the database.
-    * Only child and parent are relevant for this operation.
-    * This may invalidate child.access. */
-  def remove(implicit site : Site) : Unit =
-    Authorize.delete(childId, parentId)
 
   /** Determine if this authorization is currently in effect.
     * @return true if authorized is set and in the past, and expires is unset or in the future */
@@ -69,6 +55,12 @@ object Authorize extends Table[Authorize]("authorize") {
         (make(c, parent) _).tupled(a)
       }.SELECT("WHERE parent = ?", conditionIf(all)).apply(parent.id).list
 
+  /** Update or add a specific authorization in the database.
+    * If an authorization for the child and parent already exist, it is changed to match this.
+    * Otherwise, a new one is added.
+    * This may invalidate child.access. */
+  def set(child : Party.Id, parent : Party.Id, access : Permission.Value, delegate : Permission.Value = Permission.NONE, authorized : Option[Timestamp] = Some(new Timestamp), expires : Option[Timestamp] = None)(implicit site : Site) : Future[Boolean] =
+    Audit.changeOrAdd(Authorize.table, SQLTerms('access -> access, 'delegate -> delegate, 'authorized -> authorized, 'expires -> expires), SQLTerms('child -> child, 'parent -> parent)).execute
   /** Remove a particular authorization from the database.
     * @return true if a matching authorization was found and deleted
     */

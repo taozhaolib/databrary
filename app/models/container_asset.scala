@@ -2,6 +2,7 @@ package models
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import macros._
 import dbrary._
 import site._
 
@@ -25,13 +26,14 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   def body : Option[String] = _body
 
   /** Update the given values in the database and this object in-place. */
-  def change(position : Option[Offset] = _position, name : String = _name, body : Option[String] = _body)(implicit site : Site) : Future[Unit] = {
+  def change(position : Option[Offset] = _position, name : String = _name, body : Option[String] = _body)(implicit site : Site) : Future[Boolean] = {
     if (position == _position && name == _name && body == _body)
-      return
-    Audit.change("container_asset", SQLTerms('position -> position, 'name -> name, 'body -> body), SQLTerms('container -> containerId, 'asset -> assetId)).map {
-      _name = name
-      _body = body
-    }
+      return Async(false)
+    Audit.change("container_asset", SQLTerms('position -> position, 'name -> name, 'body -> body), SQLTerms('container -> containerId, 'asset -> assetId))
+      .andThen { case Success(true) =>
+        _name = name
+        _body = body
+      }
   }
 
   def remove : Future[Boolean] =

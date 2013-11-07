@@ -36,8 +36,7 @@ GET         /party/$pID<[0-9]+>/admin                                           
 GET         /party/$pID<[0-9]+>/authorize/search/child                                                controllers.Party.authorizeSearch(pID : models.Party.Id, which : Boolean = false)
 GET         /party/$pID<[0-9]+>/authorize/search/parent                                               controllers.Party.authorizeSearch(pID : models.Party.Id, which : Boolean = true)
 POST        /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>                                            controllers.Party.authorizeChange(pID : models.Party.Id, child : models.Party.Id)
-POST        /party/$pID<[0-9]+>/authorize/$other<-?[0-9]+>/child                                      controllers.Party.authorizeAdd(pID : models.Party.Id, which : Boolean = false, other : models.Party.Id)
-POST        /party/$pID<[0-9]+>/authorize/$other<-?[0-9]+>/parent                                     controllers.Party.authorizeAdd(pID : models.Party.Id, which : Boolean = true, other : models.Party.Id)
+POST        /party/$pID<[0-9]+>/authorize/$parent<-?[0-9]+>/apply                                     controllers.Party.authorizeApply(pID : models.Party.Id, parent : models.Party.Id)
 # TODO: should be POST but currently used as link:
 GET         /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>/remove                                     controllers.Party.authorizeDelete(pID : models.Party.Id, child : models.Party.Id)
 

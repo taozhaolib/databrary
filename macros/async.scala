@@ -2,6 +2,9 @@ package macros
 
 import scala.concurrent.{Future,ExecutionContext}
 import Future.successful
+import scala.collection.{GenTraversableOnce,generic}
+import scala.util.Success
+import scala.language.higherKinds
 
 object Async {
   /** Shorter alias for Future.successful. */
@@ -18,6 +21,13 @@ object Async {
     a.fold(b)(ss _)
   def getOrElse[A](a : Option[A], b : => Future[A]) : Future[A] =
     a.fold(b)(successful _)
+
+  def sequence[A, L[X] <: GenTraversableOnce[X], R](l : L[Future[A]])(implicit bf : generic.CanBuildFrom[L[Future[A]], A, R], context : ExecutionContext) : Future[R] = {
+    val b = bf()
+    l.foldLeft[Future[Any]](successful(())) { (r, a) =>
+      r.flatMap(_ => a.andThen { case Success(a) => b += a })
+    }.map(_ => b.result)
+  }
 
   /** Unsafely retrieve the value of an already evaluated Future. */
   def get[A](a : Future[A]) : A = a.value.get.get

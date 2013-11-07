@@ -39,40 +39,41 @@ object Login extends SiteController {
     Ok(request.user.fold(views.html.modal.login(loginForm))(p => views.html.modal.profile(p)(request.withObj(p))))
   }
 
-  private[controllers] def login(a : Account)(implicit request : Request[_]) = {
-    Audit.actionFor(Audit.Action.open, a.id, dbrary.Inet(request.remoteAddress))
+  private[controllers] def login(a : Account)(implicit request : Request[_]) : SimpleResult = {
+    Audit.actionFor(Audit.Action.open, a.id, dbrary.Inet(request.remoteAddress)).run()
     Redirect(routes.Party.view(a.id)).withSession("user" -> a.id.toString)
   }
 
   def post = Action.async { implicit request =>
     val form = loginForm.bindFromRequest
     form.fold(
-      form => Future.successful(BadRequest(views.html.account.login(form))),
+      form => ABadRequest(views.html.account.login(form)),
       { case (email, password, openid) =>
-        val acct = email.flatMap(Account.getEmail _)
+        macros.Async.flatMap(email, Account.getEmail _).flatMap { acct =>
         def error() : SimpleResult = {
-          acct.foreach(a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)))
+          acct.foreach(a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)).run())
           BadRequest(views.html.account.login(form.copy(data = form.data.updated("password", "")).withGlobalError(Messages("login.bad"))))
         }
         if (!password.isEmpty) {
-          Future.successful(acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(password, a.password)).fold(error)(login))
+          macros.Async(acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(password, a.password)).fold(error)(login))
         } else if (!openid.isEmpty)
           OpenID.redirectURL(openid, routes.Login.openID(email.getOrElse("")).absoluteURL(), realm = Some("http://" + request.host))
             .map(Redirect(_))
             .recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
         else
-          Future.successful(acct.filterNot(_ => isSecure).fold(error)(login))
+          macros.Async(acct.filterNot(_ => isSecure).fold(error)(login))
+        }
       }
     )
   }
 
   def openID(email : String) = Action.async { implicit request =>
+    val em = Maybe(email).opt
     OpenID.verifiedId
-      .map { info =>
-        implicit val dbc = Site.dbPool
-        Account.getOpenid(info.id, Maybe.opt(email)).fold[SimpleResult](
-          BadRequest(views.html.account.login(loginForm.fill((Maybe.opt(email), "", info.id)).withError("openid", "login.openID.notFound")))
-        )(login)
+      .flatMap { info =>
+        Account.getOpenid(info.id, em).map(_.fold[SimpleResult](
+          BadRequest(views.html.account.login(loginForm.fill((em, "", info.id)).withError("openid", "login.openID.notFound")))
+        )(login))
       }.recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
   }
 

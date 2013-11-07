@@ -1,14 +1,15 @@
 package controllers
 
-import site._
+import scala.concurrent.Future
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api._
 import          templates.Html
 import          Play.current
 import          mvc._
 import          data._
 import               Forms._
-import          i18n.Messages
 import          libs.json._
+import site._
 import models._
 
 object Record extends SiteController {
@@ -56,9 +57,9 @@ object Record extends SiteController {
     )))
   }
 
-  private def editFormFill(implicit request : Request[_]) : (Seq[Metric],  EditForm) = {
+  private def editFormFill(implicit request : Request[_]) : (Seq[Metric], EditForm) = {
     val r = request.obj
-    val m = r.measures
+    val m = macros.Async.get(r.measures)
     val mm = m.map(_.metric)
     val t = r.category.fold[Seq[Metric]](Nil)(_.template).diff(mm)
     (mm ++ t, editForm.fill(
@@ -74,37 +75,40 @@ object Record extends SiteController {
     Ok(views.html.record.edit(request.obj, m, f, js))
   }
 
-  def update(v : models.Volume.Id, i : models.Record.Id) = Action(v, i, Permission.EDIT) { implicit request =>
+  def update(v : models.Volume.Id, i : models.Record.Id) = Action(v, i, Permission.EDIT).async { implicit request =>
     val (meas, formin) = editFormFill
     val form = formin.bindFromRequest
     form.fold(
-      form => BadRequest(views.html.record.edit(request.obj, meas, form, js)),
+      form => ABadRequest(views.html.record.edit(request.obj, meas, form, js)),
       { case (category, data) =>
-        request.obj.change(category = category.flatMap(RecordCategory.get(_)))
+        request.obj.change(category = category.flatMap(RecordCategory.get(_))).flatMap { _ =>
         val filled = scala.collection.mutable.Set.empty[Int] // temporary hack to prevent data corruption with duplicate metrics
-        def update(metric : Metric.Id, datum : Option[String]) : Option[String] =
-          Metric.get(metric).fold[Option[String]](Some("measure.unknown")) { m =>
-            datum.fold {
+        def update(metric : Metric.Id, datum : Option[String]) : Future[Option[String]] =
+          Metric.get(metric).flatMap(_.fold[Future[Option[String]]](
+            macros.Async(Some("measure.unknown"))
+          ) { m =>
+            datum.fold[Future[Option[String]]] {
               if (!filled.contains(metric.unId))
-                request.obj.deleteMeasure(m)
-              None : Option[String]
+                request.obj.deleteMeasure(m).map(_ => None)
+              else
+                macros.Async(None)
             } { value =>
               filled.add(metric.unId)
-              if (!request.obj.setMeasure(m, value))
-                Some("measure.bad")
-              else
-                None
+              request.obj.setMeasure(m, value).map {
+                case false => Some("measure.bad")
+                case true => None
+              }
             }
-          }
-        data.zipWithIndex.foldLeft {
-          form
-        } { (form, measure) =>
-          val ((metric, datum), i) = measure
-          update(metric, datum).fold(form)(form.withError("measure.datum[" + i + "]", _))
-        }.fold(
+          })
+        macros.Async.sequence(data.map((update _).tupled)).map {
+        _.zipWithIndex.foldLeft(form) { (form, error) => error match {
+          case (None, _) => form
+          case (Some(error), i) => form.withError("measure.datum[" + i + "]", error)
+        } }.fold(
           form => BadRequest(views.html.record.edit(request.obj, meas, form, js)),
           _ => Redirect(request.obj.pageURL)
         )
+        } }
       }
     )
   }
@@ -114,12 +118,11 @@ object Record extends SiteController {
     "record" -> optional(of[models.Record.Id])
   )
 
-  def selectList(target : Slot)(implicit request : SiteRequest[_]) : Seq[(String, String)] = {
+  def selectList(target : Slot)(implicit request : SiteRequest[_]) : Future[Seq[(String, String)]] =
     /* ideally we'd remove already used records here */
-    target.volume.allRecords() map { r : Record =>
-      (r.id.toString, r.category.fold("")(_.name + ':') + r.ident.getOrElse("[" + r.id.toString + "]"))
-    }
-  }
+    target.volume.allRecords().map(_ map { r : Record =>
+      (r.id.toString, r.category.fold("")(_.name + ':') + macros.Async.get(r.ident).getOrElse("[" + r.id.toString + "]"))
+    })
 
   def slotRemove(v : models.Volume.Id, s : models.Slot.Id, r : models.Record.Id, editRedirect : Boolean = false) = Slot.Action(v, s, Permission.EDIT) { implicit request =>
     request.obj.removeRecord(r)
@@ -129,38 +132,34 @@ object Record extends SiteController {
       Redirect(request.obj.pageURL)
   }
 
-  def slotAdd(v : models.Volume.Id, s : models.Slot.Id, catID : models.RecordCategory.Id, editRedirect : Boolean = false) = Slot.Action(v, s, Permission.EDIT) { implicit request =>
+  def slotAdd(v : models.Volume.Id, s : models.Slot.Id, catID : models.RecordCategory.Id, editRedirect : Boolean = false) = Slot.Action(v, s, Permission.EDIT).async { implicit request =>
     val form = selectForm.bindFromRequest
     form.fold(
-      form => BadRequest(Slot.viewEdit(request.obj)(recordForm = form)),
-      _.fold[SimpleResult] {
-        RecordCategory.get(catID).fold[SimpleResult](
-          BadRequest
-        ) { cat =>
-        val r = models.Record.create(request.obj.volume, Some(cat))
-        r.addSlot(request.obj)
-        Created(views.html.record.edit(r, cat.template, editForm.fill((Some(cat.id), Seq())), js))
-        }
-      } (models.Record.get(_).
-        filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId == v).
-        fold[SimpleResult](
-          BadRequest(Slot.viewEdit(request.obj)(recordForm = form.withError("record", "record.bad")))) { r =>
-          r.addSlot(request.obj)
+      form => ABadRequest(Slot.viewEdit(request.obj)(recordForm = form)),
+      _.fold {
+        val cat = RecordCategory.get(catID)
+        for {
+          r <- models.Record.create(request.obj.volume, cat)
+          _ <- r.addSlot(request.obj)
+        } yield (Created(views.html.record.edit(r, cat.fold[Seq[Metric]](Nil)(_.template), editForm.fill((cat.map(_.id), Seq())), js)))
+      } (models.Record.get(_).flatMap(_
+        .filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId == v)
+        .fold(
+          ABadRequest(Slot.viewEdit(request.obj)(recordForm = form.withError("record", "record.bad")))
+        ) { r => r.addSlot(request.obj).map { _ =>
           if (editRedirect)
             Redirect(routes.Slot.edit(v, s))
           else
             Redirect(request.obj.pageURL)
-        }
-      )
+        } }
+      ))
     )
   }
 
-  def add(v : models.Volume.Id, catID : models.RecordCategory.Id) = Volume.Action(v, Permission.EDIT) { implicit request =>
-    RecordCategory.get(catID).fold[SimpleResult](
-    BadRequest
-    ) { cat =>
-      val r = models.Record.create(request.obj.volume, Some(cat))
-      Created(views.html.record.edit(r, cat.template, editForm.fill((Some(cat.id), Seq())), js))
+  def add(v : models.Volume.Id, catID : models.RecordCategory.Id) = Volume.Action(v, Permission.EDIT).async { implicit request =>
+    val cat = RecordCategory.get(catID)
+    models.Record.create(request.obj.volume, cat).map { r =>
+      Created(views.html.record.edit(r, cat.fold[Seq[Metric]](Nil)(_.template), editForm.fill((cat.map(_.id), Seq())), js))
     }
   }
 

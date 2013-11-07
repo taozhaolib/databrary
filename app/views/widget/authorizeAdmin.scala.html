@@ -1,4 +1,4 @@
-@(party : Party, authorizeForms : Seq[(Party,Form[Authorize])], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Party,Form[Authorize])])(implicit request : SiteRequest[_])
+@(party : Party, authorizeForms : Seq[(Party,controllers.Party.AuthorizeForm)], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Party,controllers.Party.AuthorizeForm)])(implicit request : SiteRequest[_])
 
 @authorizeFields(party : Party, form : Form[Authorize])(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@display(party)</td>
@@ -23,7 +23,7 @@
 	}
 
 	@authorizeResults.map { case (other,form) =>
-	@tag.form(routes.Party.authorizeAdd(party.id, which, other.id)) {
+	@tag.form(if (which) routes.Party.authorizeApply(party.id, other.id) else routes.Party.authorizeChange(party.id, other.id)) {
 	<tr>
 		@authorizeFields(other, form)
 		<td>

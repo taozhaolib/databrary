@@ -51,11 +51,11 @@ object RequestObject {
         Left(Results.NotFound))(
         o => Right(request.withObj(o))))
   }
-  def permission[O <: InVolume](perm : Permission.Value = Permission.VIEW) = new ActionHandler[RequestObject[O]#Site] {
+  def permission[O <: HasPermission](perm : Permission.Value = Permission.VIEW) = new ActionHandler[RequestObject[O]#Site] {
     protected def handle[A](request : RequestObject[O]#Site[A]) =
       Future.successful(if (request.obj.checkPermission(perm)) None else Some(Results.Forbidden))
   }
-  def check[O <: InVolume](get : SiteRequest[_] => Future[Option[O]], perm : Permission.Value = Permission.VIEW) =
+  def check[O <: HasPermission](get : SiteRequest[_] => Future[Option[O]], perm : Permission.Value = Permission.VIEW) =
     getter(get) ~> permission(perm)
   def check[O <: InVolume](v : models.Volume.Id, get : SiteRequest[_] => Future[Option[O]], perm : Permission.Value = Permission.VIEW) =
     getter(get(_).map(_.filter(_.volumeId == v))) ~> permission(perm)
@@ -107,6 +107,7 @@ class SiteController extends Controller {
   protected def AOk[C : Writeable](c : C) : Future[SimpleResult] = Async(Ok[C](c))
   protected def ABadRequest[C : Writeable](c : C) : Future[SimpleResult] = Async(BadRequest[C](c))
   protected def ARedirect(c : Call) : Future[SimpleResult] = Async(Redirect(c))
+  protected def ANotFound : Future[SimpleResult] = Async(NotFound) // FIXME: blank page
 }
 
 object Site extends SiteController {
