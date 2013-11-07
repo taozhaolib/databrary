@@ -73,6 +73,49 @@ dbjs.baselineFigure = function (elements) {
 	resize();
 };
 
+dbjs.hoverable = function (elements) {
+	var $body = $('body'),
+		$els = $(elements),
+		$wrap = $('<div class="hoverable_wrap"></div>');
+
+	$els.wrap($wrap);
+
+	$body.on('mouseenter mouseleave', elements, function () {
+		var $el = $(this),
+			$wrap = $el.parent(),
+			timeout;
+
+		if($el.is(':hover')){
+			clearTimeout(timeout);
+
+			$el.css('z-index', 750);
+			$wrap.stop().height($el.outerHeight(true)).width($el.outerWidth(true));
+			$el.addClass('hoverable_float');
+		}else{
+			clearTimeout(timeout);
+
+			timeout = setTimeout(function () {
+				$wrap.stop().css({
+					'width': '',
+					'height': ''
+				});
+
+				$el.removeClass('hoverable_float');
+			}, 150);
+
+			$el.css('z-index', 0);
+		}
+	});
+};
+
+dbjs.minimizable = function (elements) {
+	var $els = $(elements);
+
+	$els.find('.minimizer').click(function() {
+		$(this).closest(elements).toggleClass('minimized').find('.minimize').slideToggle(500);
+	})
+};
+
 /**
  * Creates tabset with content panes
  * @param tabset    containing element
@@ -1152,4 +1195,6 @@ $(document).ready(function () {
 
 	// everywhere
 	dbjs.baselineFigure('figure, .figure');
+	dbjs.hoverable('.hoverable');
+	dbjs.minimizable('.minimizable');
 });

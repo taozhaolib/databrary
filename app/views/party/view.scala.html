@@ -68,13 +68,11 @@
                 }
 		    </section>
 
-		    <div class="row">
                 @dbrary.cast[Account](party).map(a => a.comments).map { comments =>
                     @if(comments.nonEmpty) {
-                        @region.comments(None, None, comments)
+                        @widget.panels.comments(None, None, comments)
                     }
                 }
-		    </div>
 		</div>
 	    </div>
 	</div>

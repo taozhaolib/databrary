@@ -58,7 +58,9 @@
 	.grid-offset(@offset, @column, @gutter);
 	.grid-padding(@gutter);
 }
-.grid-column(@spread: @gridspread, @offset: 0, @total: @gridspread) when (@spread = 0) {}
+.grid-column(@spread: @gridspread, @offset: 0, @total: @gridspread, @gutter) when (@spread = 0) {
+	.grid-padding(@gutter);
+}
 
 //
 

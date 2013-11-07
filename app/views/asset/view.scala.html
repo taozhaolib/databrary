@@ -58,7 +58,5 @@
         </div>
     </div>
 
-    <div class="row">
-    @region.comments(Some(link.slot), Some((routes.Slot.comment(link.volumeId, link.slotId), controllers.Slot.commentForm)), link.slot.comments())
-    </div>
+    @widget.panels.comments(Some(link.slot), Some((routes.Slot.comment(link.volumeId, link.slotId), controllers.Slot.commentForm)), link.slot.comments())
 }

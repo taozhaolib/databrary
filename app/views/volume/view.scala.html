@@ -23,11 +23,14 @@
 	    </div>
         }
 
-	@widget.panels.panel("volume_people", "minimizable"){
-            <h2 class="panel_h2 col">People</h2>
+        @widget.panels.panel("volume_people", "minimizable"){
+            <h2 class="panel_header minimizer col">People</h2>
 
-                @widget.portraits.volumeAccessPortraits(volume)
+            @widget.portraits.volumeAccessPortraits(volume)
         }
+
+        @widget.panels.tags(volume.topSlot, Some(volume))
+        @widget.panels.comments(Some(request.obj.topSlot), Some((routes.Slot.comment(volume.id, volume.topSlot.id), controllers.Slot.commentForm)), volume.comments)
 
     }
 }

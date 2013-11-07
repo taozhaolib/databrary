@@ -27,8 +27,6 @@
             </div>
         </div>
 
-        <div class="row">
-        @region.comments(Some(slot), Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), slot.comments(true))
+    @widget.panels.comments(Some(slot), Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), slot.comments(true))
         @region.tags(slot)
-        </div>
     }

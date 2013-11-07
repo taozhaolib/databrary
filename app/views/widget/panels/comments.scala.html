@@ -1,0 +1,89 @@
+@(slot : Option[Slot], post : Option[(Call, controllers.Slot.CommentForm)], comments : Seq[Comment])(implicit request : SiteRequest[_])
+
+@import helper.FieldConstructor
+    @implicitField = @{
+        FieldConstructor(tag.minimalFieldConstructor.f)
+    }
+
+@widget.panels.panel("comments", "minimizable"){
+    <h2 class="panel_header minimizer col">Comments</h2>
+
+    <div class="minimize col">
+        @post.map { case (post, form) =>
+            @if(request.access >= Permission.VIEW) {
+                <div class="comment">
+                    <div class="row">
+                        @widget.portraits.maximal(request.user.get, "comment_author")
+
+                        @tag.form(post) {
+                            <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
+                                <div class="comment_meta row">
+                                    <div class="comment_info col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
+                                        <div class="inner">
+                                            Post a comment...
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="comment_body comment_form">
+                                    @widget.formErrors(form)
+
+                                    @tag.textarea(form("text"), 'placeholder -> "Comment")
+
+                                    <button type="submit" class="button first">Post</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            }
+        }
+
+        @comments.map { c =>
+            <article class="comment">
+                <div class="row">
+                    @* col-3 *@
+                    @widget.portraits.maximal(c.who, "comment_author")
+
+                    <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
+                        <div class="comment_meta row">
+                        @if(slot.isEmpty || (slot.nonEmpty && slot.get.id.unId.toString != c.slot.id.unId.toString)) {
+                                @if(c.slot.container.top) {
+                                    <div class="comment_info comment_location col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-5 col-cell">
+                                        <div class="inner">
+                                            <a href="@routes.Volume.view(c.slot.volumeId)">@c.slot.volume.pageName</a> <span class="sep">|</span> @display(c.time)
+                                        </div>
+                                    </div>
+
+                                    <div class="comment_location_thumb col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+                                    @widget.figures.thumbVolume(c.slot.volume, scalar = "tube", link = routes.Volume.view(c.slot.volumeId).toString)
+                                    </div>
+                                } else {
+                                    <div class="comment_info comment_location col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-5 col-cell">
+                                        <div class="inner">
+                                            <a href="@routes.Slot.view(c.slot.volumeId, c.slot.id)">@c.slot.pageName</a> <span class="sep">|</span> @display(c.time)
+                                        </div>
+                                    </div>
+
+                                    <div class="comment_location_thumb col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+                                    @widget.figures.thumbSlot(c.slot, scalar = "tube", link = routes.Slot.view(c.slot.volumeId, c.slot.id).toString)
+                                    </div>
+                                }
+                        }else{
+                            <div class="comment_info col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
+                                <div class="inner">
+                                    @display(c.time)
+                                </div>
+                            </div>
+                        }
+                        </div>
+
+                        <div class="comment_body">
+                            @display.plainText(c.text)
+                        </div>
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
+}
