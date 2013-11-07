@@ -6,6 +6,9 @@ import scala.collection.{GenTraversableOnce,generic}
 import scala.util.Success
 import scala.language.higherKinds
 
+/** Various utilities for dealing with Futures.
+  * All operations are serial (as opposed to their counterparts on Future, which tend to be parallel.
+  */
 object Async {
   /** Shorter alias for Future.successful. */
   def apply[A](a : A) : Future[A] = successful(a)
@@ -21,7 +24,20 @@ object Async {
     a.fold(b)(ss _)
   def getOrElse[A](a : Option[A], b : => Future[A]) : Future[A] =
     a.fold(b)(successful _)
+  def filter[A](a : Option[A], f : A => Future[Boolean])(implicit context : ExecutionContext) : Future[Option[A]] =
+    flatMap[A,A](a, a => f(a).map { case false => None ; case true => Some(a) })
 
+  /** Fold results of the futures over the operation, serially, in arbitrary order. */
+  def fold[A](l : GenTraversableOnce[Future[A]], z : A)(op : (A, A) => A)(implicit context : ExecutionContext) : Future[A] =
+    l.fold(successful(z)) { (a, b) =>
+      a.flatMap(a => b.map(op(a, _)))
+    }
+  /** Fold results of the futures over the operation, serially left-to-right. */
+  def foldLeft[A,B](l : GenTraversableOnce[Future[A]], z : B)(op : (B, A) => B)(implicit context : ExecutionContext) : Future[B] =
+    l.foldLeft(successful(z)) { (b, a) =>
+      b.flatMap(b => a.map(op(b, _)))
+    }
+  /** Evaluate each of the futures, serially left-to-right, and produce a list of the results. */
   def sequence[A, L[X] <: GenTraversableOnce[X], R](l : L[Future[A]])(implicit bf : generic.CanBuildFrom[L[Future[A]], A, R], context : ExecutionContext) : Future[R] = {
     val b = bf()
     l.foldLeft[Future[Any]](successful(())) { (r, a) =>

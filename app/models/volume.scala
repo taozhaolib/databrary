@@ -19,12 +19,14 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   def volume = this
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : String = _name, body : Option[String] = _body) : Unit = {
+  def change(name : String = _name, body : Option[String] = _body) : Future[Boolean] = {
     if (name == _name && body == _body)
-      return
-    Audit.change("volume", SQLTerms('name -> name, 'body -> body), SQLTerms('id -> id)).run()
-    _name = name
-    _body = body
+      return Async(true)
+    Audit.change("volume", SQLTerms('name -> name, 'body -> body), SQLTerms('id -> id)).execute
+      .andThen { case Success(true) =>
+        _name = name
+        _body = body
+      }
   }
 
   /** List of parties access to this volume, sorted by level (ADMIN first). */
@@ -57,9 +59,11 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
   /** List of all citations on this volume. */
   def citations = VolumeCitation.getVolume(this)
+  def setCitations(list : Seq[VolumeCitation]) = VolumeCitation.setVolume(this, list)
 
   /** List of all funding on this volume. */
   def funding = VolumeFunding.getVolume(this)
+  def setFunding(list : Seq[VolumeFunding]) = VolumeFunding.setVolume(this, list)
 
   /** The list of comments in this volume. */
   def comments = Comment.getVolume(this)

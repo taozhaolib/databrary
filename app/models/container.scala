@@ -22,12 +22,14 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
   def date = _date
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : Option[String] = _name, date : Option[Date] = _date)(implicit site : Site) : Unit = {
+  def change(name : Option[String] = _name, date : Option[Date] = _date)(implicit site : Site) : Future[Boolean] = {
     if (name == _name && date == _date)
-      return
-    Audit.change("container", SQLTerms('name -> name, 'date -> date), SQLTerms('id -> id)).run()
-    _name = name
-    _date = date
+      return Async(true)
+    Audit.change("container", SQLTerms('name -> name, 'date -> date), SQLTerms('id -> id)).execute
+      .andThen { case Success(true) =>
+        _name = name
+        _date = date
+      }
   }
 
   /** List of contained assets within this container.
@@ -112,11 +114,13 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   def isFull = segment.isFull
 
   /** Update the given values in the database and this object in-place. */
-  def change(consent : Consent.Value = _consent)(implicit site : Site) : Unit = {
+  def change(consent : Consent.Value = _consent)(implicit site : Site) : Future[Boolean] = {
     if (consent == _consent)
-      return
-    Audit.change("slot", SQLTerms('consent -> Maybe(consent).opt), SQLTerms('id -> id)).run()
-    _consent = consent
+      return Async(true)
+    Audit.change("slot", SQLTerms('consent -> Maybe(consent).opt), SQLTerms('id -> id)).execute
+      .andThen { case Success(true) =>
+        _consent = consent
+      }
   }
 
   def isContext : Boolean = consent != Consent.NONE || isFull

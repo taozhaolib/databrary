@@ -17,14 +17,14 @@ sealed class Token protected (val token : String, val expires : Timestamp) exten
   */
 final class LoginToken protected (token : String, expires : Timestamp, val account : Account, val password : Boolean) extends Token(token, expires) {
   def accountId = account.id
-  def remove(implicit db : Site.DB) = LoginToken.delete(token)
+  def remove = LoginToken.delete(token)
 }
 
 private[models] sealed abstract class TokenTable[T <: Token](table : String) extends Table[T](table) {
   protected val row : Selector[T]
 
-  def delete(token : String) : Unit =
-    DELETE('token -> token).run()
+  def delete(token : String) : Future[Boolean] =
+    DELETE('token -> token).execute
 
   def get(token : String) : Future[Option[T]] =
     row.SELECT("WHERE token = ?").apply(token).singleOpt
@@ -61,6 +61,6 @@ object LoginToken extends TokenTable[LoginToken]("login_token") {
         .apply(args).single(columns.parse.map(make(account) _))
     }
 
-  private[models] def clearAccount(account : Account.Id) : Unit =
+  private[models] def clearAccount(account : Account.Id) : Future[Boolean] =
     DELETE('account -> account).run()
 }

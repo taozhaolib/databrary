@@ -33,13 +33,13 @@ object VolumeFunding extends Table[VolumeFunding]("volume_funding") {
       .SELECT("WHERE funder = ? AND", Volume.condition)
       .apply(party.id +: Volume.conditionArgs).list
 
-  def setVolume(vol : Volume, list : Seq[VolumeFunding]) : Unit = {
+  private[models] def setVolume(vol : Volume, list : Seq[VolumeFunding]) : Future[Boolean] = {
     val l = list.map(_.ensuring(_.volume == vol).args)
     /* TODO: transaction */
     DELETE('volume -> vol.id).flatMap { _ =>
-      Future.sequence(l map { a =>
-        INSERT(a).execute
-      }).map(_.forall(identity))
+      Async.fold(l.map(
+        INSERT(_).execute
+      ), true)(_ && _)
     }
   }
 }

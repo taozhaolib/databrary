@@ -28,8 +28,8 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   /** Update the given values in the database and this object in-place. */
   def change(position : Option[Offset] = _position, name : String = _name, body : Option[String] = _body)(implicit site : Site) : Future[Boolean] = {
     if (position == _position && name == _name && body == _body)
-      return Async(false)
-    Audit.change("container_asset", SQLTerms('position -> position, 'name -> name, 'body -> body), SQLTerms('container -> containerId, 'asset -> assetId))
+      return Async(true)
+    Audit.change("container_asset", SQLTerms('position -> position, 'name -> name, 'body -> body), SQLTerms('container -> containerId, 'asset -> assetId)).execute
       .andThen { case Success(true) =>
         _name = name
         _body = body

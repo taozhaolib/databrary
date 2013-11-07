@@ -2,11 +2,11 @@ package controllers
 
 import site._
 import play.api._
-import          Play.current
 import          mvc._
 import          data._
 import               Forms._
 import          i18n.Messages
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import macros._
 import models._
 
@@ -23,8 +23,10 @@ object Volume extends SiteController {
     Ok(views.html.volume.view())
   }
 
-  def listAll = SiteAction { implicit request =>
-    Ok(views.html.volume.list(models.Volume.getAll, request.queryString.getOrElse("query", Seq("")).head.toString))
+  def listAll = SiteAction.async { implicit request =>
+    models.Volume.getAll.map { all =>
+      Ok(views.html.volume.list(all, request.queryString.getOrElse("query", Seq("")).head.toString))
+    }
   }
 
   type CitationMapping = (Option[String], Option[String], Option[String])
@@ -40,10 +42,10 @@ object Volume extends SiteController {
   private def citationFill(cite : VolumeCitation) = (Some(cite.head), cite.url, cite.body)
   private def citationSet(volume : Volume, cites : Seq[CitationMapping])(implicit site : Site) =
     if (cites.nonEmpty) {
-      VolumeCitation.setVolume(volume, cites.flatMap(c =>
+      volume.setCitations(cites.flatMap(c =>
         c._1.map(h => VolumeCitation(volume, h, c._2, c._3))
       ))
-    }
+    } else macros.Async(false)
 
   type VolumeForm = Form[(String, Option[String], Seq[CitationMapping])]
   private[this] val editForm = Form(tuple(
@@ -51,21 +53,30 @@ object Volume extends SiteController {
     "body" -> optional(text),
     "citation" -> seq(citationMapping)
   ))
-  private[this] def editFormFill(v : Volume)(implicit site : Site) = editForm.fill((v.name, v.body, v.citations.map(citationFill(_)) :+ ((Some(""), None, None))))
+  private[this] def editFormFill(v : Volume)(implicit site : Site) =
+    v.citations.map { cites =>
+      editForm.fill((v.name, v.body, cites.map(citationFill(_)) :+ ((Some(""), None, None))))
+    }
 
-  def edit(i : models.Volume.Id) = Action(i, Permission.EDIT) { implicit request =>
-    Ok(views.html.volume.edit(Right(request.obj), editFormFill(request.obj)))
+  def edit(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
+    editFormFill(request.obj).map { form =>
+      Ok(views.html.volume.edit(Right(request.obj), form))
+    }
   }
 
-  def change(i : models.Volume.Id) = Action(i, Permission.EDIT) { implicit request =>
-    editFormFill(request.obj).bindFromRequest.fold(
-      form => BadRequest(views.html.volume.edit(Right(request.obj), form)),
-      { case (name, body, cites) =>
-        request.obj.change(name = name, body = body.flatMap(Maybe.opt(_)))
-        citationSet(request.obj, cites)
-        Redirect(request.obj.pageURL)
-      }
-    )
+  def change(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
+    editFormFill(request.obj).flatMap {
+      _.bindFromRequest.fold(
+        form => ABadRequest(views.html.volume.edit(Right(request.obj), form)),
+        { case (name, body, cites) =>
+          request.obj.change(name = name, body = body.flatMap(Maybe(_).opt)).flatMap { _ =>
+            citationSet(request.obj, cites).map { _ =>
+              Redirect(request.obj.pageURL)
+            }
+          }
+        }
+      )
+    }
   }
 
   def create(e : Option[models.Party.Id]) = SiteAction.auth { implicit request =>

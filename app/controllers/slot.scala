@@ -75,13 +75,14 @@ object Slot extends SiteController {
   def addContainer(s : models.Volume.Id) = Volume.Action(s, Permission.CONTRIBUTE).async { implicit request =>
     val form = editForm(true).bindFromRequest
     form.fold(
-      form => ABad(views.html.slot.edit(Left(request.obj), form, None)),
+      form => ABadRequest(views.html.slot.edit(Left(request.obj), form, None)),
     { case (Some((name, date)), consent) =>
-      models.Container.create(request.obj, name = name, date = date).flatMap { cont =>
-        cont.fullSlot.change(consent = consent)
-        ARedirect(cont.fullSlot.pageURL)
-      }
-      case _ => ABad(views.html.slot.edit(Left(request.obj), form, None))
+        for {
+          cont <- models.Container.create(request.obj, name = name, date = date)
+          full <- cont.fullSlot
+          _ <- full.change(consent = consent)
+        } yield (Redirect(full.pageURL))
+      case _ => ABadRequest(views.html.slot.edit(Left(request.obj), form, None))
     })
   }
 
@@ -95,12 +96,13 @@ object Slot extends SiteController {
     Ok(views.html.slot.create(request.obj, createForm))
   }
 
-  def add(v : models.Volume.Id, c : models.Container.Id) = Container.Action(v, c, Permission.CONTRIBUTE) { implicit request =>
+  def add(v : models.Volume.Id, c : models.Container.Id) = Container.Action(v, c, Permission.CONTRIBUTE).async { implicit request =>
     createForm.bindFromRequest.fold(
-      form => BadRequest(views.html.slot.create(request.obj, form)),
+      form => ABadRequest(views.html.slot.create(request.obj, form)),
       { case (start, end) =>
-        val slot = models.Slot.getOrCreate(request.obj, Range[Offset](start, end)(dbrary.PGSegment))
-        Redirect(slot.pageURL)
+        models.Slot.getOrCreate(request.obj, Range[Offset](start, end)).map { slot =>
+          Redirect(slot.pageURL)
+        }
       }
     )
   }
@@ -135,8 +137,8 @@ object Slot extends SiteController {
   }
 
   def thumb(v : models.Volume.Id, s : models.Slot.Id) = Action(v, s, Permission.VIEW).async { implicit request =>
-    request.obj.thumb.fold(
+    request.obj.thumb.flatMap(_.fold(
       Assets.at("/public", "images/draft.png")(request))(
-      Asset.getFrame(_, Left(0.25f)))
+      Asset.getFrame(_, Left(0.25f))))
   }
 }

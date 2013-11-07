@@ -24,13 +24,13 @@ object VolumeCitation extends Table[VolumeCitation]("volume_citation") {
   private[models] def getVolume(vol : Volume) : Future[Seq[VolumeCitation]] =
     volumeRow(vol).SELECT("WHERE volume = ? ORDER BY head").apply(vol.id).list
 
-  private[models] def setVolume(vol : Volume, list : Seq[VolumeCitation]) : Unit = {
+  private[models] def setVolume(vol : Volume, list : Seq[VolumeCitation]) : Future[Boolean] = {
     val l = list.map(_.ensuring(_.volume == vol).args)
     /* TODO: transaction */
     DELETE('volume -> vol.id).flatMap { _ =>
-      Future.sequence(l map { a =>
-        SQL("INSERT INTO volume_citation " + a.insert).apply(a).execute
-      }).map(_.forall(identity))
+      Async.fold(l.map(
+        INSERT(_).execute
+      ), true)(_ && _)
     }
   }
 }

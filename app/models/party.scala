@@ -15,12 +15,14 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   def orcid = _orcid
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Unit = {
+  def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Future[Boolean] = {
     if (name == _name && orcid == _orcid)
-      return
-    Audit.change("party", SQLTerms('name -> name, 'orcid -> orcid), SQLTerms('id -> id)).run()
-    _name = name
-    _orcid = orcid
+      return Async(true)
+    Audit.change("party", SQLTerms('name -> name, 'orcid -> orcid), SQLTerms('id -> id)).execute
+      .andThen { case Success(true) =>
+        _name = name
+        _orcid = orcid
+      }
   }
 
   /** Level of access user has to the site.
@@ -76,15 +78,17 @@ final class Account protected (party : Party, email_ : String, password_ : Strin
   def openid = _openid
 
   /** Update the given values in the database and this object in-place. */
-  def changeAccount(email : String = _email, password : String = _password, openid : Option[String] = _openid)(implicit site : Site) : Unit = {
+  def changeAccount(email : String = _email, password : String = _password, openid : Option[String] = _openid)(implicit site : Site) : Future[Boolean] = {
     if (email == _email && password == _password && openid == _openid)
-      return
-    Audit.change(Account.table, SQLTerms('email -> email, 'password -> password, 'openid -> openid), SQLTerms('id -> id)).run()
+      return Async(true)
     if (password != _password)
       clearTokens
-    _email = email
-    _password = password
-    _openid = openid
+    Audit.change(Account.table, SQLTerms('email -> email, 'password -> password, 'openid -> openid), SQLTerms('id -> id)).execute
+      .andThen { case Success(true) =>
+        _email = email
+        _password = password
+        _openid = openid
+      }
   }
 
   /** List of comments by this individual.

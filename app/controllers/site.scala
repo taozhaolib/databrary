@@ -63,7 +63,7 @@ object RequestObject {
 
 object SiteAction extends ActionCreator[SiteRequest.Base] {
   private[this] def getUser(request : Request[_]) : Future[Option[(Account,Permission.Value)]] =
-    Async.flatMap(request.session.get("user").flatMap(Maybe.toInt _), models.Account.get_ _)
+    macros.Async.flatMap(request.session.get("user").flatMap(Maybe.toInt _), models.Account.get_ _)
 
   private[this] def getSuperuser(request : Request[_]) : Boolean =
     request.session.get("superuser").flatMap(Maybe.toLong _).exists(_ > System.currentTimeMillis)
@@ -79,18 +79,19 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
     }
 
   object Auth extends ActionRefiner[SiteRequest,SiteRequest.Auth] {
-    protected def refine[A](request : SiteRequest[A]) = request match {
+    protected def refine[A](request : SiteRequest[A]) = macros.Async(request match {
       case request : SiteRequest.Auth[A] => Right(request)
-      case _ => simple(Login.needLogin)
-    }
+      case _ => Left(Login.needLogin)
+    })
   }
 
   val auth : ActionCreator[SiteRequest.Auth] = ~>(Auth)
 
   case class Access[R[_] <: SiteRequest[_]](access : Permission.Value) extends ActionHandler[R] {
-    def handle[A](request : R[A]) =
+    def handle[A](request : R[A]) = macros.Async {
       if (request.access >= access) None
-      else simple(Results.Forbidden)
+      else Some(Results.Forbidden)
+    }
   }
 
   def access(access : Permission.Value) = auth ~> Access[SiteRequest.Auth](access)
@@ -104,10 +105,11 @@ class SiteController extends Controller {
     current.configuration.getString("application.secret").exists(_ != "databrary").
       ensuring(s => s, "Application is insecure. You must set application.secret appropriately (see README).")
 
-  protected def AOk[C : Writeable](c : C) : Future[SimpleResult] = Async(Ok[C](c))
-  protected def ABadRequest[C : Writeable](c : C) : Future[SimpleResult] = Async(BadRequest[C](c))
-  protected def ARedirect(c : Call) : Future[SimpleResult] = Async(Redirect(c))
-  protected def ANotFound : Future[SimpleResult] = Async(NotFound) // FIXME: blank page
+  protected def AOk[C : Writeable](c : C) : Future[SimpleResult] = macros.Async(Ok[C](c))
+  protected def ABadRequest[C : Writeable](c : C) : Future[SimpleResult] = macros.Async(BadRequest[C](c))
+  protected def ARedirect(c : Call) : Future[SimpleResult] = macros.Async(Redirect(c))
+  protected def ANotFound : Future[SimpleResult] = macros.Async(NotFound) // FIXME: blank page
+  protected def AForbidden : Future[SimpleResult] = macros.Async(Forbidden) // FIXME: blank page
 }
 
 object Site extends SiteController {

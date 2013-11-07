@@ -5,6 +5,7 @@ import play.api.mvc._
 import play.api.data._
 import               Forms._
 import play.api.i18n.Messages
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
 import site._
 import models._
@@ -17,8 +18,10 @@ object Token extends SiteController {
     "password" -> Party.passwordMapping.verifying(Messages("error.required"), _.isDefined)
   ))
 
-  def token(token : String) = SiteAction { implicit request =>
-    models.LoginToken.get(token).fold[SimpleResult](NotFound) { token =>
+  def token(token : String) = SiteAction.async { implicit request =>
+    models.LoginToken.get(token).map(_.fold[SimpleResult](
+      NotFound
+    ) { token =>
       if (!token.valid) {
         token.remove
         Gone
@@ -28,23 +31,26 @@ object Token extends SiteController {
         token.remove
         Login.login(token.account) /* TODO: don't allow password resets through this path */
       }
-    }
+    })
   }
 
-  def password(a : models.Account.Id) = SiteAction { implicit request =>
+  def password(a : models.Account.Id) = SiteAction.async { implicit request =>
     passwordForm.bindFromRequest.fold(
-      form => BadRequest(views.html.token.password(a, form)),
+      form => ABadRequest(views.html.token.password(a, form)),
       { case (token, password) =>
-        models.LoginToken.get(token).filter(t => t.valid && t.password && t.accountId == a)
-          .fold[SimpleResult](Forbidden) { token =>
-          password.foreach(p => token.account.changeAccount(password = p))
-          Login.login(token.account)
-        }
+        models.LoginToken.get(token).flatMap(_
+          .filter(t => t.valid && t.password && t.accountId == a)
+          .fold[Future[SimpleResult]](AForbidden) { token =>
+            password.fold(macros.Async(false))(p => token.account.changeAccount(password = p)).map { _ =>
+              Login.login(token.account)
+            }
+          }
+        )
       }
     )
   }
 
-  private def mailer = Play.current.plugin[com.typesafe.plugin.MailerPlugin]
+  private lazy val mailer = Play.current.plugin[com.typesafe.plugin.MailerPlugin]
 
   val issuePasswordForm = Form("email" -> email)
 
@@ -56,11 +62,14 @@ object Token extends SiteController {
 
   def issuePassword = SiteAction.async { implicit request =>
     issuePasswordForm.bindFromRequest.fold(
-      form => Future.successful(BadRequest(views.html.token.getPassword(form))),
-      email => mailer.fold[Future[SimpleResult]](Future.successful(ServiceUnavailable)) { mailer =>
-        val token = Account.getEmail(email).filter(_.access < Permission.ADMIN)
-          .map(LoginToken.create(_, true))
-        Future {
+      form => ABadRequest(views.html.token.getPassword(form)),
+      email => mailer.fold[Future[SimpleResult]](macros.Async(ServiceUnavailable)) { mailer =>
+        implicit val defaultContext = context.process
+        for {
+          acct <- Account.getEmail(email)
+          acct <- macros.Async.filter[Account](acct, _.access.map(_ < Permission.ADMIN))
+          token <- macros.Async.map[Account,Token](acct, LoginToken.create(_, true))
+        } yield {
           val mail = mailer.email
           mail.setSubject(Messages("token.password.subject"))
           mail.setRecipient(email)
@@ -71,7 +80,7 @@ object Token extends SiteController {
             mail.send(Messages("token.password.body", token.redeemURL.absoluteURL()))
           }
           Ok("sent")
-        }(context.process)
+        }
       }
     )
   }
