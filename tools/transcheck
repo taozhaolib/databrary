@@ -80,7 +80,7 @@ done
 
 get_both s format.start_time
 get_both d format.duration
-dt=`bc <<< "dt=$ad-$bd;dt<-0.2||dt>0.05"`
+dt=`bc <<< "dt=$ad-$bd;dt<-0.5||dt>0.05"`
 if [[ $dt -ne 0 ]] ; then
 	bad "Lengths differ: $as-$ad $bs-$bd"
 fi
