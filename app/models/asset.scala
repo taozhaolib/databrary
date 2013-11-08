@@ -167,19 +167,18 @@ final class Clip private (override val id : Clip.Id, val source : Timeseries, va
 
 
 private[models] sealed abstract class AssetView[R <: Asset with TableRowId[R]](table : String) extends TableId[R](table) {
-  private[models] def get(i : Id) : Option[R]
+  private[models] def get(i : Id) : Future[Option[R]]
 }
 
 object Asset extends AssetView[Asset]("asset") {
   /* This is rather messy, but such is the nature of the dynamic query */
   private[models] val row = 
     (FileAsset.columns.~+[Option[Offset]](SelectColumn("timeseries", "duration")) ~
-     AssetFormat.row ~ Clip.columns.?) map {
+     AssetFormat.row ~ Clip.columns.?).map {
       case (((id, classification, None), format), None) => new FileAsset(id, format, classification)
-      case (((id, classification, Some(duration)), format : TimeseriesFormat), clip) => {
+      case (((id, classification, Some(duration)), format : TimeseriesFormat), clip) =>
         val ts = new Timeseries(id.coerce[Timeseries], format, classification, duration)
         clip.fold[Asset](ts)((Clip.make(ts) _).tupled)
-      }
     } from """asset
     LEFT JOIN clip USING (id)
          JOIN file ON file.id = asset.id OR file.id = clip.source

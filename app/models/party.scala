@@ -8,14 +8,14 @@ import site._
 
 /** Any real-world individual, group, institution, etc.
   * Instances are generally obtained from [[Party.get]] or [[Party.create]]. */
-sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid] = None) extends TableRowId[Party] with SitePage with HasPermission {
+sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid] = None)(implicit val site : Site) extends TableRowId[Party] with SitePage with HasPermission {
   private[this] var _name = name_
   def name = _name
   private[this] var _orcid = orcid_
   def orcid = _orcid
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Future[Boolean] = {
+  def change(name : String = _name, orcid : Option[Orcid] = _orcid) : Future[Boolean] = {
     if (name == _name && orcid == _orcid)
       return Async(true)
     Audit.change("party", SQLTerms('name -> name, 'orcid -> orcid), SQLTerms('id -> id))
@@ -43,20 +43,20 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   /** Permission delegated by this party to the current user. */
   final lazy val delegated : Future[Permission.Value] = Authorize.delegate_check(site.identity.id, id)
   /** Permission delegated by the given party to this party. */
-  final def delegatedBy(p : Party.Id)(implicit site : Site) : Future[Permission.Value] = Authorize.delegate_check(id, p)
+  final def delegatedBy(p : Party.Id) : Future[Permission.Value] = Authorize.delegate_check(id, p)
 
   /** List of volumes to which this user has been granted at least CONTRIBUTE access, sorted by level (ADMIN first). */
   final lazy val volumeAccess = VolumeAccess.getVolumes(this, Permission.CONTRIBUTE)
 
   /** List of volumes which this party is funding. */
-  final def funding(implicit site : Site) : Future[Seq[VolumeFunding]] = VolumeFunding.getFunder(this)
+  final lazy val funding : Future[Seq[VolumeFunding]] = VolumeFunding.getFunder(this)
 
-  def getPermission(implicit site : Site) = delegated
+  def getPermission = delegated
 
-  def pageName(implicit site : Site) = name
-  def pageParent(implicit site : Site) = None
-  def pageURL(implicit site : Site) = controllers.routes.Party.view(id)
-  def pageActions(implicit site : Site) = Seq(
+  def pageName = name
+  def pageParent = None
+  def pageURL = controllers.routes.Party.view(id)
+  def pageActions = Seq(
     Action("view", controllers.routes.Party.view(id), Permission.VIEW),
     Action("edit", controllers.routes.Party.edit(id), Permission.EDIT),
     Action("authorization", controllers.routes.Party.admin(id), Permission.ADMIN),
@@ -66,7 +66,7 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
-final class Account protected (party : Party, email_ : String, password_ : String, openid_ : Option[String]) extends Party(party.id, party.name, party.orcid) with TableRowId[Account] {
+final class Account protected (party : Party, email_ : String, password_ : String, openid_ : Option[String])(implicit site : Site) extends Party(party.id, party.name, party.orcid)(site) with TableRowId[Account] {
   override val id = Account.asId(party.id.unId)
   private[this] var _email = email_
   def email = _email
@@ -77,7 +77,7 @@ final class Account protected (party : Party, email_ : String, password_ : Strin
   def openid = _openid
 
   /** Update the given values in the database and this object in-place. */
-  def changeAccount(email : String = _email, password : String = _password, openid : Option[String] = _openid)(implicit site : Site) : Future[Boolean] = {
+  def changeAccount(email : String = _email, password : String = _password, openid : Option[String] = _openid) : Future[Boolean] = {
     if (email == _email && password == _password && openid == _openid)
       return Async(true)
     if (password != _password)
@@ -92,7 +92,7 @@ final class Account protected (party : Party, email_ : String, password_ : Strin
 
   /** List of comments by this individual.
     * This checks permissions on the target volumes. */
-  def comments(implicit site : Site) = Comment.getParty(this)
+  def comments = Comment.getParty(this)
 
   /** Remove any issued login tokens for this user. */
   def clearTokens = LoginToken.clearAccount(id)

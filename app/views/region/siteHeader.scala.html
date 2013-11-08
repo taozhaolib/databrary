@@ -23,7 +23,7 @@
                     <span>|</span>
                     <a href="@routes.Login.view">register</a>
                 } { request =>
-                    <a href="@request.identity.pageURL(request)" id="modal_profile_link" class="modal_link" data-target="modal_profile"><img src="@display.avatar(request.identity, 16)" alt="@request.identity.name" class="s16"> @request.identity.name</a>
+                    <a href="@request.identity.pageURL" id="modal_profile_link" class="modal_link" data-target="modal_profile"><img src="@display.avatar(request.identity, 16)" alt="@request.identity.name" class="s16"> @request.identity.name</a>
 
                     @if(request.access == Permission.ADMIN) {
                         @if(request.superuser) {

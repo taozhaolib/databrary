@@ -40,7 +40,7 @@ object Login extends SiteController {
   }
 
   private[controllers] def login(a : Account)(implicit request : Request[_]) : SimpleResult = {
-    Audit.actionFor(Audit.Action.open, a.id, dbrary.Inet(request.remoteAddress)).run()
+    Audit.actionFor(Audit.Action.open, a.id, dbrary.Inet(request.remoteAddress))
     Redirect(routes.Party.view(a.id)).withSession("user" -> a.id.toString)
   }
 
@@ -51,7 +51,7 @@ object Login extends SiteController {
       { case (email, password, openid) =>
         macros.Async.flatMap(email, Account.getEmail _).flatMap { acct =>
         def error() : SimpleResult = {
-          acct.foreach(a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)).run())
+          acct.foreach(a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)))
           BadRequest(views.html.account.login(form.copy(data = form.data.updated("password", "")).withGlobalError(Messages("login.bad"))))
         }
         if (!password.isEmpty) {

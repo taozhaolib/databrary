@@ -26,7 +26,7 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   def body : Option[String] = _body
 
   /** Update the given values in the database and this object in-place. */
-  def change(position : Option[Offset] = _position, name : String = _name, body : Option[String] = _body)(implicit site : Site) : Future[Boolean] = {
+  def change(position : Option[Offset] = _position, name : String = _name, body : Option[String] = _body) : Future[Boolean] = {
     if (position == _position && name == _name && body == _body)
       return Async(true)
     Audit.change("container_asset", SQLTerms('position -> position, 'name -> name, 'body -> body), SQLTerms('container -> containerId, 'asset -> assetId)).execute
@@ -45,10 +45,10 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
 
   def fullSlot : Future[SlotAsset] = SlotAsset.getFull(this)
 
-  def pageName(implicit site : Site) = name
-  def pageParent(implicit site : Site) = Some(volume)
-  def pageURL(implicit site : Site) = controllers.routes.Asset.view(volume.id, container._fullSlot.get.id, assetId)
-  def pageActions(implicit site : Site) = Seq(
+  def pageName = name
+  def pageParent = Some(volume)
+  def pageURL = controllers.routes.Asset.view(volume.id, container._fullSlot.get.id, assetId)
+  def pageActions = Seq(
     Action("view", controllers.routes.Asset.view(volumeId, container._fullSlot.get.id, assetId), Permission.VIEW),
     Action("edit", controllers.routes.Asset.edit(volumeId, containerId, assetId), Permission.EDIT),
     Action("remove", controllers.routes.Asset.remove(volumeId, containerId, assetId), Permission.CONTRIBUTE)
@@ -127,7 +127,7 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
 
 /** A segment of an asset as used in a slot.
   * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, excerpt_ : Option[Boolean] = None) extends SitePage with BackedAsset with InVolume {
+sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, excerpt_ : Option[Boolean] = None) extends TableRow with SitePage with BackedAsset with InVolume {
   def slotId = slot.id
   def volume = link.volume
   def source = link.asset.source
@@ -148,15 +148,15 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
   /** Update the given values in the database and this object in-place.
     * @param excerpt changes both toplevel (`None` or `Some(false)`) and excerpt (`Some(true)`)
     */
-  def change(excerpt : Option[Boolean] = _excerpt)(implicit site : Site) : Unit = {
-    if (excerpt != _excerpt)
-    {
-      val ids = SQLTerms('slot -> slotId, 'asset -> link.assetId)
-      excerpt.fold {
-        Audit.remove("toplevel_asset", ids).run()
-      } { e =>
-        Audit.changeOrAdd("toplevel_asset", SQLTerms('excerpt -> e), ids).run()
-      }
+  def change(excerpt : Option[Boolean] = _excerpt) : Future[Boolean] = {
+    if (excerpt == _excerpt)
+      return Async(true)
+    val ids = SQLTerms('slot -> slotId, 'asset -> link.assetId)
+    excerpt.fold {
+      Audit.remove("toplevel_asset", ids)
+    } { e =>
+      Audit.changeOrAdd("toplevel_asset", SQLTerms('excerpt -> e), ids)
+    }.execute.andThen { case scala.util.Success(true) =>
       _excerpt = excerpt
     }
   }
@@ -173,13 +173,13 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
 
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
     * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
-  override def getPermission(implicit site : Site) : Permission.Value =
+  override def getPermission : Permission.Value =
     slot.dataPermission(classification).getPermission
 
-  def pageName(implicit site : Site) = link.name
-  def pageParent(implicit site : Site) = if(slot.container.top) { Some(slot.volume) } else { Some(slot) }
-  def pageURL(implicit site : Site) = controllers.routes.Asset.view(volume.id, slotId, link.assetId)
-  def pageActions(implicit site : Site) =
+  def pageName = link.name
+  def pageParent = if(slot.container.top) { Some(slot.volume) } else { Some(slot) }
+  def pageURL = controllers.routes.Asset.view(volume.id, slotId, link.assetId)
+  def pageActions =
     if (slot.isFull) link.pageActions
     else Seq(
       Action("view", controllers.routes.Asset.view(volumeId, slotId, link.assetId), Permission.VIEW),

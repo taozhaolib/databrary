@@ -46,10 +46,10 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
   /** Slot that covers this entire container and which thus serves as a proxy for display and metadata. Cached. */
   def fullSlot : Future[Slot] = _fullSlot.apply
 
-  def pageName(implicit site : Site) = _fullSlot.get.pageName
-  def pageParent(implicit site : Site) = Some(volume)
-  def pageURL(implicit site : Site) = _fullSlot.get.pageURL
-  def pageActions(implicit site : Site) = _fullSlot.get.pageActions
+  def pageName = _fullSlot.get.pageName
+  def pageParent = Some(volume)
+  def pageURL = _fullSlot.get.pageURL
+  def pageActions = _fullSlot.get.pageActions
 }
 
 object Container extends TableId[Container]("container") {
@@ -160,7 +160,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
 
   /** The list of tags on the current slot along with the current user's applications.
     * @param all add any tags applied to child slots to weight (but not use) as well */
-  def tags(all : Boolean = true)(implicit site : Site) = TagWeight.getSlot(this, all)
+  def tags(all : Boolean = true) = TagWeight.getSlot(this, all)
   /** Tag this slot.
     * @param up Some(true) for up, Some(false) for down, or None to remove
     * @return true if the tag name is valid
@@ -192,9 +192,9 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     }
 
   /** An image-able "asset" that may be used as the slot's thumbnail. */
-  def thumb(implicit site : Site) : Future[Option[SlotAsset]] = SlotAsset.getThumb(this)
+  def thumb : Future[Option[SlotAsset]] = SlotAsset.getThumb(this)
 
-  def pageName(implicit site : Site) = container.name.getOrElse { 
+  def pageName = container.name.getOrElse { 
     val i = Async.get(idents)
     if (i.isEmpty)
       if (container.top)

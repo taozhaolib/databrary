@@ -146,6 +146,7 @@ object MeasureDatum {
       case d : Date => new MeasureDatumT[Date](d)
       case _ => throw new SQLTypeMismatch(x, this, where)
     }
+    override def read(s : String) = Some(new MeasureDatumT[String](s))
   }
 }
 
@@ -162,7 +163,7 @@ private[models] sealed abstract class MeasureBase(val recordId : Record.Id, val 
   /** Add or update this measure in the database. */
   def set : Future[Boolean]
   /** Remove this measure from its associated record and delete it. */
-  def remove : Unit =
+  def remove : Future[Boolean] =
     Measure.delete(recordId, metric)
 }
 /** A measurement with a specific, tagged type. */
@@ -217,9 +218,9 @@ private[models] sealed abstract class MeasureView[R <: MeasureBase](table : Stri
 
 /** A typed interface to measures. */
 object MeasureT extends MeasureView[MeasureT[_]]("measure_all") {
-  private[this] def make[T : SQLType](recordId : Record.Id, metric : MetricT[T], value : Any) =
-    new MeasureT[T](recordId, metric, value.asInstanceOf[T])
-  private val row : Selector[MeasureT[_]] = Selector[MeasureT[_]](
+  private[this] def make[T](recordId : Record.Id, metric : MetricT[T], value : Any) =
+    new MeasureT[T](recordId, metric, value.asInstanceOf[T])(metric.measureType.sqlType)
+  protected val row : Selector[MeasureT[_]] = Selector[MeasureT[_]](
     columns.selects ++ Metric.row.selects ++ MeasureType.all.map(_.selectAll),
     "measure_all JOIN metric ON measure_all.metric = metric.id",
     new SQLLine[MeasureT[_]](columns.length + Metric.row.length + MeasureType.all.length, { l =>
@@ -229,7 +230,7 @@ object MeasureT extends MeasureView[MeasureT[_]]("measure_all") {
       val metric = Metric.row.parse.get(m)
       val d = dl(metric.dataType.id)
       val sqlt = metric.measureType.sqlType
-      make(record, metric, sqlt.get(d))(sqlt)
+      make(record, metric, sqlt.get(d))
     }),
     Nil
   )
@@ -256,7 +257,7 @@ object Measure extends MeasureView[Measure]("measure_view") {
   private[this] def make(metric : Metric)(recordId : Record.Id, value : String) =
     new Measure(recordId, metric, value)
   private val dataColumns = columns ~+ SelectColumn[String]("datum")
-  private[models] val row = dataColumns.join(Metric.row, "measure_view.metric = metric.id") map {
+  protected val row = dataColumns.join(Metric.row, "measure_view.metric = metric.id") map {
     case (meas, metric) => (make(metric) _).tupled(meas)
   }
   private[models] def metricRow(metric : Metric) = dataColumns.map(make(metric) _)

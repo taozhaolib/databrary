@@ -49,14 +49,14 @@ object Audit {
     SQLTerms('audit_user -> site.identity.id, 'audit_ip -> site.clientIP, 'audit_action -> action)
 
   /** Record an audit event of the specified type to the generic audit table. */
-  def action(action : Action.Value)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult = {
+  def action(action : Action.Value)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : Unit = {
     val args = aargs(action)
-    SQL("INSERT INTO audit.audit " + args.insert)(dbc, exc).apply(args)
+    SQL("INSERT INTO audit.audit " + args.insert)(dbc, exc).apply(args).run()
   }
 
-  def actionFor(action : Action.Value, user : Party.Id, ip : Inet)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult = {
+  def actionFor(action : Action.Value, user : Party.Id, ip : Inet)(implicit dbc : Site.DB, exc : ExecutionContext) : Unit = {
     val args = SQLTerms('audit_user -> user, 'audit_ip -> ip, 'audit_action -> action)
-    SQL("INSERT INTO audit.audit " + args.insert)(dbc, exc).apply(args)
+    SQL("INSERT INTO audit.audit " + args.insert)(dbc, exc).apply(args).run()
   }
 
   private[this] def SQLon(action : Action.Value, table : String, stmt : String, returning : String = "")(args : SQLArgs)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
