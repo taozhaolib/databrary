@@ -1,0 +1,24 @@
+@(slot : Slot, records : Seq[Record])(implicit request : SiteRequest[_])
+
+@cap = {
+    <dl>
+        <dt>@slot.pageName</dt>
+
+        @records.map { record =>
+            @record.category match {
+                case Some(RecordCategory.Participant) => {
+                    <dd>
+                        <span class="gender">@record.gender</span><span class="sep">,</span>
+                        <span class="age">@display.age(record, slot)</span>
+                    </dd>
+                }
+                case Some(_) => {
+                    <dd>@record.pageName</dd>
+                }
+                case None => {}
+            }
+        }
+    </dl>
+}
+
+@widget.figures.thumbSlot(slot, caption = cap, link = slot.pageURL.toString, title = slot.pageName)

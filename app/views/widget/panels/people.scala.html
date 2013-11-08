@@ -1,0 +1,5 @@
+@(volume : Volume)(implicit request : SiteRequest[_])
+
+@widget.panels.panel("people", "")(title = "People", minimizable = true){
+    @widget.portraits.volumeAccessPortraits(volume)
+}

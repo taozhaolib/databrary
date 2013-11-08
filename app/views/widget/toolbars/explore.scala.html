@@ -1,0 +1,32 @@
+@(request: Option[SiteRequest[_]])
+
+@widget.toolbars.toolbar("explore"){
+    <div class="col">
+        @request.map { request =>
+            @request match {
+                case r : RequestObject[SitePage]#Site[_] => {
+                    @defining(r){ implicit site =>
+                        @*<ul class="toolbar_menu">*@
+                        @*@Path(r.obj).toHtml*@
+                        @*</ul>*@
+
+                    <ul class="toolbar_menu toolbar_menu_left">
+                    @r.obj.pageActions.filter(_.available).map { act =>
+                        <li class="@{if(r.path == act.route.url) {"current"}}">
+                        @if(act.route.method != "GET") {
+                            @tag.form(act.route) {
+                                <button type="submit" class="link">@act.name</button>
+                            }
+                        } else {
+                            <a href="@act.route" alt="@act.name">@act.name</a>
+                        }
+                        </li>
+                    }
+                    </ul>
+                    }
+                }
+                case _ => {}
+            }
+        }
+    </div>
+}

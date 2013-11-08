@@ -1,6 +1,6 @@
-@(title: String = "", css: Html = Html(""), js: Html = Html(""), query: String = "")(body: Html)(implicit request: SiteRequest[_])
+@(title: String = "", toolbar: Option[String] = None, css: Html = Html(""), js: Html = Html(""), query: String = "")(body: Html)(implicit request: SiteRequest[_])
 
-@template.html5(title, css, js, Some(request)) {
+@template.html5(title, Some(request), toolbar, css, js) {
         <div class="wrap">
             @region.bodyHeaderStatic(query)
 

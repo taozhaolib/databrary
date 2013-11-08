@@ -1,0 +1,193 @@
+// STYLES
+
+.toolbar {
+	position: fixed;
+	width: 100%;
+	.height(1.5);
+	.line-height(1.5);
+	.box-shadow();
+	top: @b1 + @b2;
+	z-index: 950;
+	background-color: @g4;
+
+	&.toolbar_databrary {
+		top: 0;
+		z-index: 1000;
+		background: @g1;
+	}
+}
+
+//
+
+.toolbar_h1 {
+	.font-size();
+	.line-height(1.5);
+	.margin-height(0);
+	display: inline-block;
+
+	a {
+		color: @g5;
+		display: block;
+		background: url('/public/images/logo/databrary-nav.png') no-repeat 0 center;
+		.height(1.5);
+		padding-left: 1.75rem;
+		padding-right: @b1;
+
+		&:hover {
+			color: @white;
+			text-shadow: 0 0 3px @g4;
+		}
+	}
+}
+
+//
+
+.toolbar_menu {
+	.clearfix();
+	.margin-bottom(0);
+	.padding-left(0);
+	.font-size(.85);
+	text-transform: uppercase;
+
+	li {
+		display: inline;
+
+		&:before {
+			display: none;
+		}
+	}
+
+	a {
+		display: inline-block;
+		color: @g1;
+
+		&:hover {
+			color: @g2;
+			text-shadow: 0 0 3px @g5;
+
+			img {
+				.box-shadow(0 0 5px @g5);
+			}
+		}
+	}
+
+	&.toolbar_menu_left {
+		.margin-left(1.25);
+
+		&:before {
+			content: "";
+			display: block;
+			position: absolute;
+			top: (@b12 * 5);
+			left: -(@b12 * 15);
+			width: (@b12 * 10);
+			height: (@b8 * 5);
+			border-bottom: (@b8 * 3) double @g1;
+			border-top: @b8 solid @g1;
+		}
+
+		li {
+			.margin-right(.25);
+		}
+	}
+
+	&.toolbar_menu_right {
+		text-align: right;
+	}
+}
+
+.toolbar_img16 {
+	position: relative;
+	top: @b12;
+}
+
+//
+
+.toolbar_nav {
+	display: inline-block;
+
+	a {
+		color: @c10;
+		text-transform: lowercase;
+
+		&:before {
+			content: "/";
+			color: @c11;
+		}
+
+		&:hover {
+			color: @c11g5m1;
+			text-shadow: 0 0 2px fadeout(@c11g5m2, 75%);
+		}
+	}
+}
+
+.toolbar_nav_ul {
+	li {
+		margin-right: @gutter;
+	}
+}
+
+.toolbar_user {
+	text-align: right;
+
+	a {
+		color: @g4;
+
+		&:hover {
+			color: @white;
+			text-shadow: 0 0 2px @g4;
+		}
+	}
+
+	a.img {
+		position: relative;
+		top: @b8;
+
+		img {
+			display: inline-block;
+			border: 1px solid @g4;
+			.size(18px);
+		}
+
+		&:hover {
+			img {
+				border-color: @g5;
+				.box-shadow(0 0 3px @g4);
+			}
+		}
+	}
+
+	a.superuser {
+		&.on {
+			color: @c0g5m3;
+
+			&:hover {
+				color: @c0g5m1;
+				text-shadow: 0 0 2px fadeout(@c0g5m2, 75%);
+			}
+		}
+		&.off {
+			color: @c8g5m3;
+
+			&:hover {
+				color: @c8g5m1;
+				text-shadow: 0 0 2px fadeout(@c8g5m2, 75%);
+			}
+		}
+	}
+}
+
+//
+
+body {
+	.site_content {
+		.margin-top(1.5);
+	}
+
+	&.has_toolbar {
+		.site_content {
+			.margin-top(3);
+		}
+	}
+}

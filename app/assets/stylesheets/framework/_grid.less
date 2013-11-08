@@ -4,6 +4,11 @@
 	.wrap { .grid-wrap(@spread, @column, @gutter); }
 	.row { .grid-row(@spread, @column, @gutter); }
 	.col { .grid-column(@spread, 0, @spread, @gutter); }
+	.col-full {
+		float: left;
+		width: 100%;
+		.grid-padding(@gutter);
+	}
 }
 
 .grid(@keyword, @spread: @gridspread, @column: @gridcolumn, @gutter: @gridgutter) when (@spread > 0) {

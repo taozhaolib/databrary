@@ -1,0 +1,21 @@
+@(id: String, classes: String, attr: (Symbol,Any)*)(title: String = "", minimizable: Boolean = false)(body: Html)
+
+<aside id="gizmo_@id" class="gizmo col gizmo_@id @classes @if(minimizable){minimizable}" @El.attrToHtml(attr)>
+    <div class="row">
+        @if(title.nonEmpty) {
+            <h2 class="col-full gizmo_header @if(minimizable){minimizer}">@title</h2>
+        }
+
+        @if(minimizable) {
+            <div class="col-full gizmo_body minimize">
+                <div class="row">
+                }
+
+                    @body
+
+        @if(minimizable) {
+                </div>
+            </div>
+        }
+    </div>
+</aside>

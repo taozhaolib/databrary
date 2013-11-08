@@ -13,24 +13,12 @@
 	}
 })) { case (volume, assets) =>
     @template.crud("Volume: " + volume.name, js = script) {
-	@widget.panels.panel("volume_overview", ""){
-	    <div class="description col-desktop-6 push-desktop-2 col-laptop-8 col-tablet-6 col-mobile-6">
-		@widget.figures.thumbVolume(volume)
-
-		@widget.volumeSummary(volume)
-
-		@volume.body.map(display.plainText _)
-	    </div>
-        }
-
-        @widget.panels.panel("volume_people", "minimizable"){
-            <h2 class="panel_header minimizer col">People</h2>
-
-            @widget.portraits.volumeAccessPortraits(volume)
-        }
-
+        @widget.panels.volume(volume)
+        @widget.panels.browser(volume)
+        @widget.panels.materials(volume.toplevelAssets)()
+        @widget.panels.publications(volume.citations)
+        @widget.panels.people(volume)
         @widget.panels.tags(volume.topSlot, Some(volume))
         @widget.panels.comments(Some(request.obj.topSlot), Some((routes.Slot.comment(volume.id, volume.topSlot.id), controllers.Slot.commentForm)), volume.comments)
-
     }
 }

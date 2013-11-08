@@ -1,0 +1,7 @@
+@(funding: Seq[VolumeFunding])(implicit request : SiteRequest[_])
+
+@if(funding.nonEmpty) {
+    @widget.gizmos.gizmo("funding", "")("Funding", minimizable = true) {
+
+    }
+}

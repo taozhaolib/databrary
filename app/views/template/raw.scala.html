@@ -1,6 +1,6 @@
-@(title: String = "", css: Html = Html(""), js: Html = Html(""))(body: Html)
+@(title: String = "", toolbar: Option[String] = None, css: Html = Html(""), js: Html = Html(""))(body: Html)
 
-@template.html5(title, css, js, None) {
+@template.html5(title, None, toolbar, css, js) {
         <div class="wrap">
             @region.bodyHeaderStatic()
 

@@ -1,6 +1,6 @@
-@(id: String, classes: String, attr: (Symbol, Any)*)(caption: Html = Html(""), scalar: String = "", link: String = "", title: String = "")(body: Html)
+@(id: String, classes: String, attr: (Symbol, Any)*)(caption: Html = Html(""), scalar: String = "", link: String = "", title: String = "", focus: Boolean = false)(body: Html)
 
-<figure id="figure_@id" class="figure figure_@id @scalar @classes" @El.attrToHtml(attr)>
+<figure id="figure_@id" class="figure figure_@id @if(scalar.nonEmpty){scalar @scalar} @classes" @El.attrToHtml(attr)>
     @if(link.nonEmpty){<a href="@link" @if(title.nonEmpty){title="@title"}>}
 
     <div class="media">

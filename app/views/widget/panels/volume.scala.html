@@ -1,0 +1,39 @@
+@(volume : Volume)(implicit request : SiteRequest[_])
+
+@import helper.FieldConstructor
+    @implicitField = @{
+        FieldConstructor(tag.minimalFieldConstructor.f)
+    }
+
+@widget.panels.panel("volume_"+volume.id, "panel_volume")(){
+    @widget.figures.thumbVolume(volume, scalar = "")
+
+    <h1 class="col panel_title">@Html(volume.pageName.split(": ").mkString(": <br>"))</h1>
+
+    @widget.gizmos.people(volume)
+    @widget.gizmos.funding(volume.funding)
+    @widget.gizmos.volume(volume)
+    @widget.gizmos.citation(volume)
+
+    <div class="main col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+
+        <div class="volume_body">
+            @volume.body.map(display.plainText _)
+        </div>
+    </div>
+
+    <div class="side col-desktop-7 col-laptop-4 col-tablet-3 col-mobile-6">
+        <aside class="dates foot">
+            <span class="date created">
+                Created <time datetime="@volume.creation" pubdate>@display.dateFmtYM.format(volume.creation)</time></span>
+        </aside>
+
+        <aside class="citing foot">
+            <h2>Citation</h2>
+
+            @widget.volumeCitation(volume)
+        </aside>
+
+        @widget.volumeSummary(volume)
+    </div>
+}

@@ -1,4 +1,4 @@
-@(title : String = "The Databrary Project", css: Html = Html(""), js: Html = Html(""), request : Option[SiteRequest[_]])(body : Html)
+@(title : String = "The Databrary Project", request : Option[SiteRequest[_]], toolbar: Option[String] = None, css: Html = Html(""), js: Html = Html(""))(body : Html)
 
 @import play.api._
 @import play.api.Play.current
@@ -27,19 +27,21 @@
             </style>
         }
 
-        <!-- js -->
+        <!-- js libraries -->
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="@routes.Assets.at("javascripts/libs/jquery-ui-1.10.3/jquery.ui.widget.min.js")"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
-
         <script>
             if (!window.jQuery) {
-                document.write('<script src="@routes.Assets.at("javascripts/libs/jquery-1.10.2/jquery-1.10.2.min.js")"><\/script>');
+                document.write('<script src="@routes.Assets.at("javascripts/libs/jquery-1.10.2/jquery.min.js")"><\/script>');
             }
             if (!window.angular) {
                 document.write('<script src="@routes.Assets.at("javascripts/libs/angular-1.0.8/angular.min.js")"><\/script>');
             }
         </script>
 
+        <!-- js -->
+		<script src="@routes.Assets.at("javascripts/controller.js")"></script>
 		<script src="@routes.Assets.at("javascripts/main.js")"></script>
 
         <script>
@@ -57,8 +59,23 @@
         <!--[if lt IE 9]><script src="@routes.Assets.at("javascripts/libs/html5shiv/html5shiv.min.js")"></script><![endif]-->
 	</head>
 
-	<body class="@if(Play.isDev){dev}">
-            @region.siteHeader(request)
+	<body class="@if(Play.isDev){dev} @if(toolbar.nonEmpty){has_toolbar}">
+        @widget.toolbars.databrary(request)
+
+        @if(toolbar.nonEmpty) {
+            @if(toolbar.get == "about") {
+                @widget.toolbars.about(request)
+            }
+            @if(toolbar.get == "explore") {
+                @widget.toolbars.explore(request)
+            }
+            @if(toolbar.get == "share") {
+                @widget.toolbars.share(request)
+            }
+            @if(toolbar.get == "discover") {
+                @widget.toolbars.discover(request)
+            }
+        }
 
     <div id="site_content" class="site_content">
             @body

@@ -1,26 +1,3 @@
-// jQuery extensions
-$.fn.exists = function () {
-	return this.length !== 0;
-};
-
-$.fn.escape = function () {
-	return this
-		.replace(/&/g, "&amp;")
-		.replace(/</g, "&lt;")
-		.replace(/>/g, "&gt;")
-		.replace(/"/g, "&quot;")
-		.replace(/'/g, "&#039;");
-};
-
-$.fn.unescape = function () {
-	return this
-		.replace(/&amp;/g, "&")
-		.replace(/&lt;/g, "<")
-		.replace(/&gt;/g, ">")
-		.replace(/&quot;/g, "\"")
-		.replace(/&#039;/g, "'");
-};
-
 // clean dbjs namespace
 var dbjs = {};
 
@@ -1194,7 +1171,7 @@ $(document).ready(function () {
 	$formHandler = $('#forms').formHandler({});
 
 	// everywhere
-	dbjs.baselineFigure('figure, .figure');
+	dbjs.baselineFigure('.figure.scalar');
 	dbjs.hoverable('.hoverable');
 	dbjs.minimizable('.minimizable');
 });

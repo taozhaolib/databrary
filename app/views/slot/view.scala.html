@@ -1,6 +1,6 @@
 @(slot : models.Slot, commentForm : controllers.Slot.CommentForm = controllers.Slot.commentForm)(implicit request : RequestObject[Slot]#Site[_])
 
-    @template.crud("Session: " + slot.pageName) {
+@template.crud("Session: " + slot.pageName) {
         <div class="row">
             <div class="description col-desktop-6 push-desktop-2 col-laptop-6 col-tablet-6 col-mobile-6">
                 <div class="siderim">
@@ -28,5 +28,5 @@
         </div>
 
     @widget.panels.comments(Some(slot), Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), slot.comments(true))
-        @region.tags(slot)
-    }
+    @widget.panels.tags(slot)
+}

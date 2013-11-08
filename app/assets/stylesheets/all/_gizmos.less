@@ -1,0 +1,120 @@
+// VARS
+
+@gizmopad: .5;
+
+// MIXINS
+
+.gizmo-color(@c) {
+	.gizmo_header {
+		&.minimizer {
+			&:hover {
+				color: mix(@c, @g1, 75%);
+			}
+		}
+	}
+
+	&.minimized {
+		border-bottom-color: mix(@c, @g4, 75%);
+		background-color: mix(@c, @g5, 10%);
+
+		.gizmo_header {
+			&.minimizer {
+				color: mix(@c, @g1, 50%);
+			}
+		}
+	}
+
+	&:hover {
+		border-bottom-color: mix(@c, @g4, 25%);
+		background-color: mix(@c, @g5, 1%);
+	}
+}
+
+// STYLES
+
+.gizmo {
+	.margin-bottom(1);
+	.transition();
+
+	&.nowrap {
+		.wrap {
+			width: auto;
+			.padding-width(@gizmopad);
+		}
+	}
+
+	&.minimizable {
+		&.minimized {
+			.gizmo_header {
+				&:before {
+					.transform-rotate(-90deg);
+				}
+			}
+		}
+	}
+}
+
+.gizmo_body {
+	border-top: 1px solid @g3;
+	border-bottom: 1px solid @g3;
+	background-color: transparent;
+	.border-padding-bottom(1px, @gizmopad);
+	.border-padding-top(1px, @gizmopad);
+}
+
+.gizmo_header {
+	font-weight: normal;
+	.font(1.5, 1);
+	.margin(0);
+
+	&.minimizer {
+		cursor: pointer;
+
+		&:before {
+			content: "";
+			.size(0);
+			display: block;
+			float: left;
+			position: relative;
+			top: @b1 + @b1 + @b2 + @b3;
+			border: @b2 solid transparent;
+			border-top-color: @text;
+			.margin-right(@f2);
+			.transition();
+		}
+
+		&:hover {
+			color: @g3;
+
+			&:before {
+				.transform-rotate(-45deg);
+			}
+		}
+	}
+}
+
+//
+
+//.gizmo_browser {
+//	.gizmo-color(@c8);
+//}
+//
+//.gizmo_materials {
+//	.gizmo-color(@c6);
+//}
+//
+//.gizmo_publications {
+//	.gizmo-color(@c4);
+//}
+//
+//.gizmo_people {
+//	.gizmo-color(@c2);
+//}
+//
+//.gizmo_tags {
+//	.gizmo-color(@c0);
+//}
+//
+//.gizmo_comments {
+//	.gizmo-color(@c10);
+//}

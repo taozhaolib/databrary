@@ -9,9 +9,7 @@
     }
 
 
-@widget.panels.panel("tags", "minimizable"){
-    <h2 class="panel_header minimizer col">Tags</h2>
-
+@widget.panels.panel("tags", "")(title = "Tags", minimizable = true){
     <ol class="sort-list tag-list">
     @defining(volume.fold(slot.tags())(_.tags)) { tags =>
         @if(tags.nonEmpty) {
