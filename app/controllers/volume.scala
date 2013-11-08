@@ -170,7 +170,7 @@ object Volume extends SiteController {
     form.fold(
       form => viewAdmin(BadRequest, accessSearchForm = form),
       name =>
-        models.Party.searchForVolumeAccess(name, id).flatMap { res =>
+        models.Party.searchForVolumeAccess(name, request.obj).flatMap { res =>
           viewAdmin(Ok, accessSearchForm = form, 
             accessResults = res.map(e => (e, accessForm)))
         }

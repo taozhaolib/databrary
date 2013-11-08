@@ -11,6 +11,7 @@ object Site {
   private def getDBPool(implicit app : play.api.Application) : DB =
     app.plugin[PostgresAsyncPlugin].fold(throw new Exception("PostgresAsyncPlugin not registered"))(_.pool)
   lazy val dbPool : DB = getDBPool(play.api.Play.current)
+  object Anon extends AnonSite
 }
 /** Basic information about each request.  Primarily implemented by [[controllers.SiteRequest]]. */
 trait Site {
@@ -40,7 +41,7 @@ trait AuthSite extends Site {
 }
 
 trait PerSite {
-  protected implicit def site : Site
+  implicit def site : Site
 }
 
 /** A generic action that may be performed on the site.

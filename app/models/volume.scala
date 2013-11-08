@@ -159,8 +159,8 @@ object Volume extends TableId[Volume]("volume") {
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
     , SelectColumn[Option[String]]("body")
-    , SelectAs[Permission.Value](permission, "permission")
-    , SelectAs[Option[Timestamp]]("volume_creation(volume.id)", "creation")
+    , SelectAs[Permission.Value](permission, "volume_permission")
+    , SelectAs[Option[Timestamp]]("volume_creation(volume.id)", "volume_creation")
     ).map {
       (id, name, body, permission, creation) => new Volume(id, name, body, permission, creation.getOrElse(new Timestamp(1357900000000L)))
     }.pushArgs(SQLArgs(site.identity.id))
@@ -192,7 +192,7 @@ object Volume extends TableId[Volume]("volume") {
 trait InVolume extends HasPermission {
   def volumeId : Volume.Id = volume.id
   def volume : Volume
-  implicit protected def site : Site = volume.site
+  implicit def site : Site = volume.site
   /** Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time. */
   def getPermission : Permission.Value = volume.permission
 }

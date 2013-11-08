@@ -19,7 +19,7 @@
                     @grant.get
                 </div>
             } else {
-                @if(!party.equals(models.Party.Root)) {
+                @if(!party.id.equals(models.Party.ROOT)) {
                 <div class="overflow more institution">
                     <ul class="inline">
                     @Async.get(party.authorizeParents()).map { t =>

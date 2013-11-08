@@ -21,7 +21,7 @@ final class LoginToken protected (token : String, expires : Timestamp, val accou
 }
 
 private[models] sealed abstract class TokenTable[T <: Token](table : String) extends Table[T](table) {
-  protected val row : Selector[T]
+  protected def row : Selector[T]
 
   def delete(token : String) : Future[Boolean] =
     DELETE('token -> token).execute
@@ -47,7 +47,7 @@ object LoginToken extends TokenTable[LoginToken]("login_token") {
     , SelectColumn[Timestamp]("expires")
     , SelectColumn[Boolean]("password")
     )
-  protected val row = columns.join(Account.row, "login_token.account = account.id").
+  protected val row = columns.join(Account.row(Site.Anon), "login_token.account = account.id").
     map { case (t, p) => (make(p) _).tupled(t) }
 
   /** Issue a new token for the given party.

@@ -33,7 +33,7 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
       case (a, vol) => (make(vol, party) _).tupled(a)
     }
   private def volumeRow(volume : Volume) =
-    columns.join(Party.row, "volume_access.party = party.id") map {
+    columns.join(Party.row(volume.site), "volume_access.party = party.id") map {
       case (a, who) => (make(volume, who) _).tupled(a)
     }
 

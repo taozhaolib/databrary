@@ -44,7 +44,7 @@ object Login extends SiteController {
     Redirect(routes.Party.view(a.id)).withSession("user" -> a.id.toString)
   }
 
-  def post = Action.async { implicit request =>
+  def post = SiteAction.async { implicit request =>
     val form = loginForm.bindFromRequest
     form.fold(
       form => ABadRequest(views.html.account.login(form)),
@@ -67,7 +67,7 @@ object Login extends SiteController {
     )
   }
 
-  def openID(email : String) = Action.async { implicit request =>
+  def openID(email : String) = SiteAction.async { implicit request =>
     val em = Maybe(email).opt
     OpenID.verifiedId
       .flatMap { info =>

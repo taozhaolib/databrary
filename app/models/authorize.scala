@@ -31,9 +31,12 @@ final class Authorize protected (val child : Party, val parent : Party, val acce
 object Authorize extends Table[Authorize]("authorize") {
   private def make(child : Party, parent : Party)(access : Permission.Value, delegate : Permission.Value, authorized : Option[Timestamp], expires : Option[Timestamp]) : Authorize =
     new Authorize(child, parent, access, delegate, authorized, expires)
-  private val columns = Columns[
-    Permission.Value, Permission.Value, Option[Timestamp], Option[Timestamp]](
-    'access,          'delegate,        'authorized,       'expires)
+  private val columns = Columns(
+      SelectColumn[Permission.Value]("access")
+    , SelectColumn[Permission.Value]("delegate")
+    , SelectColumn[Option[Timestamp]]("authorized")
+    , SelectColumn[Option[Timestamp]]("expires")
+    )
 
   private[this] val condition = "AND authorized < CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP)"
   private[this] def conditionIf(all : Boolean) =
@@ -43,14 +46,14 @@ object Authorize extends Table[Authorize]("authorize") {
     * @param all include inactive authorizations
     */
   private[models] def getParents(child : Party, all : Boolean = false) : Future[Seq[Authorize]] =
-    columns.join(Party.row, "parent = party.id").map { case (a, p) =>
+    columns.join(Party.row(child.site), "parent = party.id").map { case (a, p) =>
         (make(child, p) _).tupled(a)
       }.SELECT("WHERE child = ?", conditionIf(all)).apply(child.id).list
   /** Get all authorizations granted ba a particular parent.
     * @param all include inactive authorizations
     */
   private[models] def getChildren(parent : Party, all : Boolean = false) : Future[Seq[Authorize]] =
-    columns.join(Party.row, "child = party.id").map { case (a, c) =>
+    columns.join(Party.row(parent.site), "child = party.id").map { case (a, c) =>
         (make(c, parent) _).tupled(a)
       }.SELECT("WHERE parent = ?", conditionIf(all)).apply(parent.id).list
 

@@ -182,7 +182,7 @@ object Party extends SiteController {
     form.fold(
       form => viewAdmin(BadRequest, authorizeWhich = Some(apply), authorizeSearchForm = form),
       name =>
-        models.Party.searchForAuthorize(name, id).flatMap { res =>
+        models.Party.searchForAuthorize(name, request.obj).flatMap { res =>
         viewAdmin(Ok, authorizeWhich = Some(apply), authorizeSearchForm = form, 
           authorizeResults = res.map(e => (e, authorizeForm.fill(
             if (apply) (Permission.NONE, Permission.NONE, true, None)
