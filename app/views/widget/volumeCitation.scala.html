@@ -1,9 +1,9 @@
 @(volume: Volume)(implicit request: SiteRequest[_])
 
 <div class="citation">
-    @volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map(a => display.citeName(a.party.name) + ", ")
-    @display.dateFmtY.format(volume.creation).
+    @Async.get(volume.partyAccess).takeWhile(_.access >= Permission.CONTRIBUTE).map(a => display.citeName(a.party.name) + ", ")
+    @display.dateFmtY.print(volume.creation).
     @volume.name.
     <em>Databrary</em>.
-    Retrieved @display.dateFmtCite.format(new java.util.Date()) from <a href="@routes.Volume.view(volume.id).absoluteURL()" title="@volume.name on Databrary.org">http://databrary.org/volume/@volume.id</a>.
+    Retrieved @display.dateFmtCite.print(new dbrary.Timestamp) from <a href="@routes.Volume.view(volume.id).absoluteURL()" title="@volume.name on Databrary.org">http://databrary.org/volume/@volume.id</a>.
 </div>

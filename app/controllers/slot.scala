@@ -44,30 +44,33 @@ object Slot extends SiteController {
   def formForContainer(form : EditForm, slot : Slot) =
     form.value.fold(slot.isFull)(_._1.isDefined)
 
-  private[controllers] def viewEdit(slot : Slot)(
+  private[controllers] def viewEdit(status : Status, slot : Slot)(
     editForm : EditForm = editFormFill(slot),
     recordForm : Record.SelectForm = Record.selectForm)(
     implicit request : Request[_]) = {
-    views.html.slot.edit(Right(slot), editForm, Some(recordForm))
+    Record.selectList(slot).map { selectList =>
+      status(views.html.slot.edit(Right(slot), editForm, Some(recordForm), selectList))
+    }
   }
 
-  def edit(v : models.Volume.Id, i : models.Slot.Id) = Action(v, i, Permission.EDIT) { implicit request =>
-    Ok(viewEdit(request.obj)())
+  def edit(v : models.Volume.Id, i : models.Slot.Id) = Action(v, i, Permission.EDIT).async { implicit request =>
+    viewEdit(Ok, request.obj)()
   }
 
   def createContainer(v : models.Volume.Id) = Volume.Action(v, Permission.EDIT) { implicit request =>
     Ok(views.html.slot.edit(Left(request.obj), editForm(true), None))
   }
 
-  def change(v : models.Volume.Id, i : models.Slot.Id) = Action(v, i, Permission.EDIT) { implicit request =>
+  def change(v : models.Volume.Id, i : models.Slot.Id) = Action(v, i, Permission.EDIT).async { implicit request =>
     editFormFill(request.obj).bindFromRequest.fold(
-      form => BadRequest(viewEdit(request.obj)(editForm = form)),
+      form => viewEdit(BadRequest, request.obj)(editForm = form),
       { case (container, consent) =>
-        container foreach {
-          case (name, date) => request.obj.container.change(name = name, date = date)
-        }
-        request.obj.change(consent = consent)
-        Redirect(request.obj.pageURL)
+        for {
+          _ <- macros.Async.map[(Option[String], Option[Date]), Boolean](container, {
+            case (name, date) => request.obj.container.change(name = name, date = date)
+          })
+          _ <- request.obj.change(consent = consent)
+        } yield (Redirect(request.obj.pageURL))
       }
     )
   }

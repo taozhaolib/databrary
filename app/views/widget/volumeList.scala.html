@@ -10,11 +10,11 @@
     <div class="body">
         <footer class="meta cf">
             <div class="date">
-                <time datetime="@volume.creation" pubdate>@display.dateFmtY.format(volume.creation)</time>
+                <time datetime="@volume.creation" pubdate>@display.dateFmtY.print(volume.creation)</time>
             </div>
 
             <div class="people">
-            @volume.partyAccess.takeWhile(_.access >= Permission.ADMIN).map { a => <img src="@display.avatar(a.party, 16)" class="s16"> @display.citeName(a.party.name) <span class="sep">
+            @Async.get(volume.partyAccess).takeWhile(_.access >= Permission.ADMIN).map { a => <img src="@display.avatar(a.party, 16)" class="s16"> @display.citeName(a.party.name) <span class="sep">
                 ,</span>
             }
             </div>

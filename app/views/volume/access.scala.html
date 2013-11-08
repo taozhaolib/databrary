@@ -1,6 +1,6 @@
 @(volume : Volume, accessForms : Seq[(Party,controllers.Volume.AccessForm)], accessSearch : Form[String], accessResults : Seq[(Party,controllers.Volume.AccessForm)])(implicit request : RequestObject[Volume]#Site[_])
 
-@accessFields(party : Party, form : Form[VolumeAccess])(implicit fieldConstructor : helper.FieldConstructor) = {
+@accessFields(party : Party, form : controllers.Volume.AccessForm)(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@display(party)</td>
 	@widget.enumSelect(form("access"), Permission)
 	@tag.select(form("inherit"), Permission.values.to(if (party.id.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
@@ -48,7 +48,7 @@
 		}
 
 		@accessResults.map { case (party,form) =>
-		@tag.form(routes.Volume.accessAdd(volume.id, party.id)) {
+		@tag.form(routes.Volume.accessChange(volume.id, party.id)) {
 		<tr>
 			@accessFields(party, form)
 			<td>

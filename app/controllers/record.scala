@@ -118,7 +118,7 @@ object Record extends SiteController {
     "record" -> optional(of[models.Record.Id])
   )
 
-  def selectList(target : Slot)(implicit request : SiteRequest[_]) : Future[Seq[(String, String)]] =
+  private[controllers] def selectList(target : Slot)(implicit request : SiteRequest[_]) : Future[Seq[(String, String)]] =
     /* ideally we'd remove already used records here */
     target.volume.allRecords().map(_ map { r : Record =>
       (r.id.toString, r.category.fold("")(_.name + ':') + macros.Async.get(r.ident).getOrElse("[" + r.id.toString + "]"))
@@ -135,7 +135,7 @@ object Record extends SiteController {
   def slotAdd(v : models.Volume.Id, s : models.Slot.Id, catID : models.RecordCategory.Id, editRedirect : Boolean = false) = Slot.Action(v, s, Permission.EDIT).async { implicit request =>
     val form = selectForm.bindFromRequest
     form.fold(
-      form => ABadRequest(Slot.viewEdit(request.obj)(recordForm = form)),
+      form => Slot.viewEdit(Slot.BadRequest, request.obj)(recordForm = form),
       _.fold {
         val cat = RecordCategory.get(catID)
         for {
@@ -145,7 +145,7 @@ object Record extends SiteController {
       } (models.Record.get(_).flatMap(_
         .filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId == v)
         .fold(
-          ABadRequest(Slot.viewEdit(request.obj)(recordForm = form.withError("record", "record.bad")))
+          Slot.viewEdit(Slot.BadRequest, request.obj)(recordForm = form.withError("record", "record.bad"))
         ) { r => r.addSlot(request.obj).map { _ =>
           if (editRedirect)
             Redirect(routes.Slot.edit(v, s))

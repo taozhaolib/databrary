@@ -1,6 +1,6 @@
-@(authorizeForms : Seq[(Party,controllers.Party.AuthorizeForm)], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Party,controllers.Party.AuthorizeForm)])(implicit request : controllers.Party.Request[_])
+@(authorizeParents : Seq[Authorize], authorizeForms : Seq[(Party,controllers.Party.AuthorizeForm)], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Party,controllers.Party.AuthorizeForm)])(implicit request : controllers.Party.Request[_])
 
 
 @template.crud("Admin Party: " + request.obj.toString()) {
-	@widget.authorizeAdmin(request.obj, authorizeForms, authorizeWhich, authorizeSearch, authorizeResults)
+	@widget.authorizeAdmin(request.obj, authorizeParents, authorizeForms, authorizeWhich, authorizeSearch, authorizeResults)
 }

@@ -108,13 +108,14 @@ object Party extends SiteController {
     authorizeResults : Seq[(models.Party,AuthorizeForm)] = Seq())(
     implicit request : Request[_]) = {
     val authorizeChange = authorizeChangeForm.map(_._1.id)
-    request.obj.authorizeChildren(true).map { children =>
+    request.obj.authorizeChildren(true).flatMap { children =>
+    request.obj.authorizeParents(true).map { parents =>
       val authorizeForms = children
         .filter(t => authorizeChange.fold(true)(_.equals(t.childId)))
         .map(t => (t.child, authorizeFormFill(t))) ++
         authorizeChangeForm
-      status(views.html.party.admin(authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults))
-    }
+      status(views.html.party.admin(parents, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults))
+    }}
   }
   
   private def AdminAction(i : models.Party.Id, delegate : Boolean = true) =

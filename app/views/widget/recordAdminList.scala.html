@@ -1,4 +1,4 @@
-@(slot : Slot, recordForm : Option[controllers.Record.SelectForm] = None)(implicit request : SiteRequest[_])
+@(slot : Slot, recordForm : Option[controllers.Record.SelectForm] = None, selectList : Seq[(String,String)] = Nil)(implicit request : SiteRequest[_])
 
     @defining(helper.FieldConstructor(tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
         <table class="records">
@@ -11,7 +11,7 @@
             </thead>
 
             <tbody>
-	    @defining(slot.records) { records =>
+	    @defining(Async.get(slot.records)) { records =>
             @if(records.nonEmpty) {
                 @records.map { record =>
                     @tag.form(routes.Record.slotRemove(slot.volumeId, slot.id, record.id, true)) {
@@ -19,7 +19,7 @@
                             <td class="main">
                                 @display(record)
                                 <dl class="inline-measures">
-                                @record.measures.filter(m => record.dataPermission(m.metric).checkPermission(Permission.DOWNLOAD)).map { measure =>
+                                @Async.get(record.measures).filter(m => record.dataPermission(m.metric).checkPermission(Permission.DOWNLOAD)).map { measure =>
                                     @if(measure.metric.name != "ident") {
                                         <dt>@measure.metric.name</dt>
                                         <dd>@measure.value</dd>
@@ -50,7 +50,7 @@
                 <tfoot>
                     @tag.form(routes.Record.slotAdd(slot.volumeId, slot.id, IntId[models.RecordCategory](-500), true)) {
                         <tr>
-                            @tag.select(f("record"), controllers.Record.selectList(slot), '_default -> "Create new record...", '_colspan -> 2)
+                            @tag.select(f("record"), selectList, '_default -> "Create new record...", '_colspan -> 2)
                             <td><button type='submit' class="button first">add participant</button></td>
                         </tr>
                     }

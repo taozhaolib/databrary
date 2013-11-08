@@ -27,8 +27,8 @@ object display {
       "minute" -> 60000,
       "second" -> 1000
     )
-  def time(t : java.util.Date) : String = {
-    val d = t.getTime - System.currentTimeMillis
+  def time(t : org.joda.time.ReadableInstant) : String = {
+    val d = t.getMillis - System.currentTimeMillis
     val a = d.abs
     timeUnits.find(a >= _._2).fold("0 seconds") { case (u, t) =>
       val n = a / t
@@ -102,6 +102,6 @@ object display {
   }
 
   def apply(x : SitePage, full : Boolean = false)(implicit site : Site) = if (full) path(x) else page(x)
-  def apply(x : java.util.Date) = time(x)
+  def apply(x : Timestamp) = time(x)
   def apply(x : Range[Offset]) = x.singleton.fold(x.lowerBound.fold("")(_.toString) + "-" + x.upperBound.fold("")(_.toString))(_.toString)
 }

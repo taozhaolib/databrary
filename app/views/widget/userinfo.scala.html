@@ -1,6 +1,7 @@
 @(party : Party, time : Option[dbrary.Timestamp] = None, float : Boolean = false, grant : Option[String] = None, slots : Tuple2[Option[Slot], Option[Slot]] = Tuple2(None, None))(implicit request : SiteRequest[_])
 
-<@if(time.isDefined){header}else{section} class="userinfo cf @if(float == true){col-3}">
+@defining(if(time.isDefined) "header" else "section") { wrap =>
+<@wrap class="userinfo cf @if(float == true){col-3}">
     <div class="avatar">
         <a href="@party.pageURL" title="@party.name">
             <img src="@display.avatar(party, 36)" alt="@party.name" class="s36">
@@ -12,9 +13,26 @@
             <a href="@party.pageURL" title="@party.name">@party.name</a>
         </div>
 
-        @if(time.isDefined) {
+	@time.fold {
+            @if(grant.nonEmpty) {
+                <div class="overflow more grant">
+                    @grant.get
+                </div>
+            } else {
+                @if(!party.equals(models.Party.Root)) {
+                <div class="overflow more institution">
+                    <ul class="inline">
+                    @Async.get(party.authorizeParents()).map { t =>
+                        <li>@display(t.parent)</li>
+                    }
+                    </ul>
+
+                </div>
+                }
+            }
+	} { time =>
             <div class="overflow more date">
-                @display(time.get)
+                @display.time(time)
 
                 @defining(slots) { case (thisSlot, commentSlot) =>
                     @if(thisSlot.isEmpty || (thisSlot.nonEmpty && thisSlot.get.id.unId.toString != commentSlot.get.id.unId.toString)) {
@@ -26,23 +44,7 @@
                     }
                 }
             </div>
-        } else {
-            @if(grant.nonEmpty) {
-                <div class="overflow more grant">
-                    @grant.get
-                </div>
-            } else {
-                @if(!party.equals(models.Party.Root)) {
-                <div class="overflow more institution">
-                    <ul class="inline">
-                    @party.authorizeParents().map { t =>
-                        <li>@display(t.parent)</li>
-                    }
-                    </ul>
-
-                </div>
-                }
-            }
         }
     </div>
-</@if(time.isDefined){header}else{section}>
+</@wrap>
+}

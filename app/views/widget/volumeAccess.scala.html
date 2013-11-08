@@ -1,5 +1,5 @@
 @(volume: Volume)(implicit request: SiteRequest[_])
 
 <div class="access">
-	@volume.partyAccess.filter(_.access == Permission.DOWNLOAD).map { volumeAccess => @widget.userinfo(volumeAccess.party) }
+	@Async.get(volume.partyAccess).filter(_.access == Permission.DOWNLOAD).map { volumeAccess => @widget.userinfo(volumeAccess.party) }
 </div>

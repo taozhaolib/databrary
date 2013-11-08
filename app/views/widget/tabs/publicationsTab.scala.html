@@ -1,6 +1,6 @@
 @(volume : Volume)(implicit request : SiteRequest[_])
 
-@defining(volume.citations) { citations =>
+@defining(Async.get(volume.citations)) { citations =>
     @if(citations.nonEmpty) {
         <div id="publications" class="view">
             <h2 class='tab' data-message="The <strong>Publications tab</strong> lists works derrived from this dataset.">Publications</h2>

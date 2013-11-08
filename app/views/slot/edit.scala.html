@@ -1,4 +1,4 @@
-@(c : Either[Volume, Slot], form : controllers.Slot.EditForm, recordForm : Option[controllers.Record.SelectForm])(implicit request : RequestObject[SitePage]#Site[_])
+@(c : Either[Volume, Slot], form : controllers.Slot.EditForm, recordForm : Option[controllers.Record.SelectForm], selectList : Seq[(String,String)] = Nil)(implicit request : RequestObject[SitePage]#Site[_])
 
 @import helper.FieldConstructor
 
@@ -22,7 +22,7 @@
             <fieldset>
                 <legend>Records</legend>
 
-                @widget.recordAdminList(slot, recordForm)
+                @widget.recordAdminList(slot, recordForm, selectList)
             </fieldset>
         }
         case _ => {

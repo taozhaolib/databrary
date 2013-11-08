@@ -1,6 +1,6 @@
-@(party : Party, authorizeForms : Seq[(Party,controllers.Party.AuthorizeForm)], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Party,controllers.Party.AuthorizeForm)])(implicit request : SiteRequest[_])
+@(party : Party, authorizeParents : Seq[Authorize], authorizeForms : Seq[(Party,controllers.Party.AuthorizeForm)], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Party,controllers.Party.AuthorizeForm)])(implicit request : SiteRequest[_])
 
-@authorizeFields(party : Party, form : Form[Authorize])(implicit fieldConstructor : helper.FieldConstructor) = {
+@authorizeFields(party : Party, form : controllers.Party.AuthorizeForm)(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@display(party)</td>
 	@widget.enumSelect(form("access"), Permission)
 	@widget.enumSelect(form("delegate"), Permission)
@@ -51,12 +51,12 @@
 		</tr>
 	</thead>
 
-	@party.authorizeParents(true).map { t =>
+	@authorizeParents.map { t =>
 	<tr>
 		<td>@display(t.parent)</td>
 		<td>@t.access</td>
 		<td>@t.delegate</td>
-		<td>@t.expires.fold("never")( e => display.dateFmtYMD.format(e) )</td>
+		<td>@t.expires.fold("never")( e => display.dateFmtYMD.print(e) )</td>
 		<td>@{if(t.authorized.isEmpty) "pending"}</td>
 	</tr>
 	}
