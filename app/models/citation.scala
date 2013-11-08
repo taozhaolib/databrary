@@ -2,6 +2,7 @@ package models
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import macros._
 import dbrary._
 import site._
 

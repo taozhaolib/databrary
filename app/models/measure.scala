@@ -14,7 +14,7 @@ object DataType extends PGEnum("data_type") {
 
 /** Class for measurement types.
   * This provides convenient mapping tools between DataType, measures in the database, and Scala values. */
-private[models] final sealed class MeasureType[T] private (val dataType : DataType.Value)(implicit val sqlType : SQLType[T]) {
+private[models] final class MeasureType[T] private (val dataType : DataType.Value)(implicit val sqlType : SQLType[T]) {
   /** The name of this type, as used in database identifiers. */
   val name = dataType.toString
   /** The table storing measurements of this type. */
@@ -210,8 +210,8 @@ private[models] sealed abstract class MeasureView[R <: MeasureBase](table : Stri
   private[models] def delete(record : Record.Id, metric : Metric) : Future[Boolean] = {
     val tpe = metric.measureType
     val args = SQLTerms('record -> record, 'metric -> metric.id)
-    SQL("DELETE FROM " + metric.measureType.table + " WHERE " + args.where).
-      apply(args)
+    SQL("DELETE FROM " + metric.measureType.table + " WHERE " + args.where)
+      .apply(args).execute
   }
 }
 
@@ -230,7 +230,8 @@ object MeasureT extends MeasureView[MeasureT[_]]("measure_all") {
       val d = dl(metric.dataType.id)
       val sqlt = metric.measureType.sqlType
       make(record, metric, sqlt.get(d))(sqlt)
-    })
+    }),
+    Nil
   )
   
   /** Retrieve the specific measure of the specified metric in the given record.

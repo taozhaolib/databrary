@@ -48,9 +48,9 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   /** Update the given values in the database and this object in-place. */
   def change(category : Option[RecordCategory] = _category) : Future[Boolean] = {
     if (category == _category)
-      return
+      return Async(true)
     SQL("UPDATE record SET category = ? WHERE id = ?").apply(category.map(_.id), id)
-      .andThen { case Success(true) =>
+      .execute.andThen { case scala.util.Success(true) =>
         _category = category
       }
   }

@@ -2,6 +2,7 @@ package ingest
 
 import scala.util.control.Exception.catching
 import java.util.regex.{Pattern=>Regex}
+import org.joda.time
 import dbrary._
 import models._
 
@@ -71,11 +72,11 @@ object Parse {
     if (b) p.map[Option[T]](Some(_))
     else empty.map[Option[T]](_ => None)
 
-  private val dateFormat1 = new java.text.SimpleDateFormat("yyyy-MM-dd")
-  private val dateFormat2 = new java.text.SimpleDateFormat("MM/dd/yy")
-  private def dateFormat(fmt : java.text.DateFormat) : Parser[Date] = Parser(s =>
-      new java.sql.Date(fmt.parse(s).getTime)
-    ).failingOn(classOf[java.text.ParseException])
+  private val dateFormat1 = time.format.DateTimeFormat.forPattern("yyyy-MM-dd")
+  private val dateFormat2 = time.format.DateTimeFormat.forPattern("MM/dd/yy").withPivotYear((new time.LocalDate).getYear - 49)
+  private def dateFormat(fmt : time.format.DateTimeFormatter) : Parser[Date] = Parser(s =>
+      fmt.parseLocalDate(s)
+    ).failingOn(classOf[IllegalArgumentException])
   val date : Parser[Date] = dateFormat(dateFormat2) | dateFormat(dateFormat1)
 
   def enum(enum : Enumeration, name : String) : Parser[enum.Value] =

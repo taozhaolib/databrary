@@ -17,23 +17,8 @@ import site._
   * @param access the level of permission granted directly to the party. Levels at or above [[Permission.EDIT]] are considered volume "membership."
   * @param inherit the level of permission granted to all descendents/members of the party, which cannot be [[Permission.ADMIN]]
   */
-final case class VolumeAccess(volume : Volume, party : Party, access : Permission.Value, inherit : Permission.Value) extends TableRow with InVolume {
+final class VolumeAccess(val volume : Volume, val party : Party, val access : Permission.Value, val inherit : Permission.Value) extends TableRow with InVolume {
   def partyId = party.id
-
-  /** Update or add this access in the database.
-    * If an access for the volume and party already exist, it is changed to match this.
-    * Otherwise, a new one is added.
-    * This may invalidate volume.access. */
-  def set(implicit site : Site) : Unit = {
-    val id = SQLTerms('volume -> volumeId, 'party -> partyId)
-    val args = SQLTerms('access -> access, 'inherit -> inherit)
-    Audit.changeOrAdd("volume_access", args, id).run()
-  }
-  /** Remove this access from the database.
-    * Only volume and party are relevant for this operation.
-    * This may invalidate volume.access. */
-  def remove(implicit site : Site) : Unit =
-    VolumeAccess.delete(volumeId, partyId)
 }
 
 object VolumeAccess extends Table[VolumeAccess]("volume_access") {
@@ -63,11 +48,17 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
       .SELECT("WHERE party = ? AND access >= ? AND", Volume.condition, "ORDER BY access DESC, volume.body")
       .apply(SQLArgs(party.id, permission) ++ Volume.conditionArgs).list
 
+  /** Update or add volume access in the database.
+    * If an access for the volume and party already exist, it is changed to match this.
+    * Otherwise, a new one is added.
+    * This may invalidate volume.access. */
+  def set(volume : Volume, party : Party.Id, access : Permission.Value, inherit : Permission.Value)(implicit site : Site) : Future[Boolean] =
+    Audit.changeOrAdd("volume_access", SQLTerms('access -> access, 'inherit -> inherit), SQLTerms('volume -> volume.id, 'party -> party)).execute
   /** Remove a particular volume access from the database.
     * @return true if a matching volume access was found and deleted
     */
-  def delete(volume : Volume.Id, party : Party.Id)(implicit site : Site) : Unit =
-    Audit.remove("volume_access", SQLTerms('volume -> volume, 'party -> party)).run()
+  def delete(volume : Volume, party : Party.Id)(implicit site : Site) : Future[Boolean] =
+    Audit.remove("volume_access", SQLTerms('volume -> volume.id, 'party -> party)).execute
 
   /** Determine what permission level the party has over the volume.
     * This takes into account full permission semantics including inheritance.

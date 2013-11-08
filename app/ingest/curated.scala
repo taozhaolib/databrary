@@ -29,7 +29,7 @@ object Curated {
   }
   private type RaceEthnicity = (Option[Race.Value], Option[Ethnicity.Value])
   private def parseRaceEthnicity : Parser[RaceEthnicity] = Parser { s =>
-    Maybe.opt(s.indexOf('/')).fold {
+    Maybe(s.indexOf('/')).opt.fold {
       (option(Race.parse).map(r => (r, None : Option[Ethnicity.Value])) |
         Ethnicity.parse.map(e => (None, Some(e))))(s)
     } { i =>
@@ -55,6 +55,9 @@ object Curated {
     def apply(message : String, target : SitePage) : PopulateException = PopulateException(message, Some(target))
   }
 
+  private[this] def check(b : Boolean, t : => PopulateException) : Future[Unit] =
+    if (b) Async(()) else Future.failed(t)
+
   private final case class Subject(id : String, gender : Gender.Value, birthdate : Date, race : Option[Race.Value], ethnicity : Option[Ethnicity.Value], language : Option[String]) extends KeyedData {
     def fields = Seq(id, gender.toString, birthdate.toString, optString(race) + "/" + optString(ethnicity), optString(language))
     def key = id
@@ -66,28 +69,28 @@ object Curated {
       race.map(Metric.Race -> Race.valueOf(_)) ++
       ethnicity.map(Metric.Ethnicity -> Ethnicity.valueOf(_)) ++
       language.map(Metric.Language -> _)
-    def populate(volume : Volume)(implicit site : Site) : models.Record =
-      models.Record.findMeasure(volume, Some(RecordCategory.Participant), Metric.Ident, id) match {
+    def populate(volume : Volume) : Future[models.Record] =
+      models.Record.findMeasure(volume, Some(RecordCategory.Participant), Metric.Ident, id).flatMap {
         case Nil =>
-          val rec = Record.create(volume, Some(RecordCategory.Participant))
-          measures.foreach { case (m,v) =>
-            if (!rec.setMeasure(m,v))
-              throw PopulateException("failed to set measure for subject " + id + " " + m.name + ": " + v, rec)
-          }
-          rec
+          for {
+            rec <- Record.create(volume, Some(RecordCategory.Participant))
+            _ <- Async.fold(measures.map { case (m,v) =>
+              rec.setMeasure(m,v).flatMap(check(_, 
+                PopulateException("failed to set measure for subject " + id + " " + m.name + ": " + v, rec)))
+            })()
+          } yield (rec)
         case Seq(rec) =>
-          measures.foreach { case (m,v) =>
-            rec.measure(m).fold {
-              if (!rec.setMeasure(m,v))
-                throw PopulateException("failed to set measure for subject " + id + " " + m.name + ": " + v, rec)
+          Async.fold[Unit](measures.map { case (m,v) =>
+            rec.measure(m).flatMap(_.fold {
+              rec.setMeasure(m,v).flatMap(check(_,
+                PopulateException("failed to set measure for subject " + id + " " + m.name + ": " + v, rec)))
             } { c =>
-              if (!c.value.equals(v))
-                throw PopulateException("inconsistent mesaure for subject " + id + " " + m.name + ": " + v + " <> " + c.value, rec)
-            }
-          }
-          rec
+              check(c.value.equals(v),
+                PopulateException("inconsistent mesaure for subject " + id + " " + m.name + ": " + v + " <> " + c.value, rec))
+            })
+          })().map(_ => rec)
         case _ =>
-          throw PopulateException("multiple records for subject " + id)
+          Future.failed(PopulateException("multiple records for subject " + id))
       }
   }
   private object Subject extends ListDataParser[Subject] {
@@ -105,20 +108,24 @@ object Curated {
     def fields = Seq(name, date.toString, consent.toString)
     def key = name
 
-    def populate(volume : Volume)(implicit site : Site) : models.Container =
-      Container.findName(volume, name) match {
+    def populate(volume : Volume)(implicit site : Site) : Future[models.Container] =
+      Container.findName(volume, name).flatMap {
         case Nil =>
-          val con = Container.create(volume, Some(name), Some(date))
-          con.fullSlot.change(consent = consent)
-          con
+          for {
+            con <- Container.create(volume, Some(name), Some(date))
+            full <- con.fullSlot
+            _ <- full.change(consent = consent)
+          } yield (con)
         case Seq(con) =>
-          if (!con.date.equals(Some(date)))
-            throw PopulateException("inconsistent date for session " + name + ": " + date + " <> " + con.date, con)
-          if (!con.fullSlot.consent.equals(consent))
-            throw PopulateException("inconsistent consent for session " + name + ": " + consent + " <> " + con.fullSlot.consent, con)
-          con
+          for {
+            _ <- check(con.date.equals(Some(date)),
+              PopulateException("inconsistent date for session " + name + ": " + date + " <> " + con.date, con))
+            full <- con.fullSlot
+            _ <- check(full.consent.equals(consent),
+              PopulateException("inconsistent consent for session " + name + ": " + consent + " <> " + full.consent, con))
+          } yield (con)
         case _ =>
-          throw PopulateException("multiple containers for session " + name)
+          Future.failed(PopulateException("multiple containers for session " + name))
       }
   }
   private object Session extends ListDataParser[Session] {
@@ -132,15 +139,17 @@ object Curated {
 
   private final case class SubjectSession(subjectKey : String, sessionKey : String) {
     def populate(record : Record, container : Container)(implicit site : Site) =
-      record.addSlot(container.fullSlot)
+      container.fullSlot.flatMap { full =>
+        record.addSlot(full).map(_ => ())
+      }
   }
 
   private final case class Asset(name : String, position : Option[Offset], classification : Classification.Value, file : File) extends KeyedData {
     def fields = Seq(name, optString(position), classification.toString, file.getPath)
     def key = file.getPath
 
-    def info(implicit db : Site.DB) : Asset.Info =
-      AssetFormat.getFilename(file.getPath, true).fold {
+    def info : Future[Asset.Info] =
+      AssetFormat.getFilename(file.getPath, true).map(_.fold {
         throw PopulateException("no file format found for " + file.getPath)
       } {
         case fmt : TimeseriesFormat =>
@@ -150,9 +159,9 @@ object Curated {
           Asset.TimeseriesInfo(fmt, probe.duration)
         case fmt =>
           Asset.FileInfo(fmt)
-      }
+      })
 
-    def populate(info : Asset.Info)(implicit site : Site) : models.Asset = {
+    def populate(info : Asset.Info)(implicit site : Site) : Future[models.Asset] = {
       /* for now copy and don't delete */
       val infile = store.TemporaryFileCopy(file)
       info match {
@@ -195,26 +204,28 @@ object Curated {
     def key = asset.key
     def name = sessionKey + "/" + asset.name
 
-    def populate(container : Container)(implicit site : Site) : models.ContainerAsset = {
-      val info = asset.info
-      ContainerAsset.findName(container, asset.name) match {
+    def populate(container : Container)(implicit site : Site) : Future[models.ContainerAsset] =
+      asset.info.flatMap { info =>
+      ContainerAsset.findName(container, asset.name).flatMap {
         case Nil =>
-          ContainerAsset.create(container, asset.populate(info), asset.position, asset.name, None)
-        case Seq(ca) =>
-          if (ca.asset.format != info.format)
-            throw PopulateException("inconsistent format for asset " + name + ": " + info.format.name + " <> " + ca.asset.format.name)
-          if (ca.asset.classification != asset.classification)
-            throw PopulateException("inconsistent classification for asset " + name + ": " + asset.classification + " <> " + ca.asset.classification)
-          info match {
-            case Asset.TimeseriesInfo(_, duration) if !ca.asset.asInstanceOf[Timeseries].duration.approx(duration) =>
-              throw PopulateException("inconsistent duration for asset " + name + ": " + duration + " <> " + ca.asset.asInstanceOf[Timeseries].duration)
-            case _ => ()
+          asset.populate(info).flatMap(
+            ContainerAsset.create(container, _, asset.position, asset.name, None))
+        case Seq(ca) => for {
+          _ <- check(ca.asset.format == info.format,
+            PopulateException("inconsistent format for asset " + name + ": " + info.format.name + " <> " + ca.asset.format.name))
+          _ <- check(ca.asset.classification == asset.classification,
+            PopulateException("inconsistent classification for asset " + name + ": " + asset.classification + " <> " + ca.asset.classification))
+          _ <- info match {
+            case Asset.TimeseriesInfo(_, duration) =>
+              check(!ca.asset.asInstanceOf[Timeseries].duration.approx(duration),
+                PopulateException("inconsistent duration for asset " + name + ": " + duration + " <> " + ca.asset.asInstanceOf[Timeseries].duration))
+            case _ => Async(())
           }
-          if (!ca.position.equals(asset.position))
-            throw PopulateException("inconsistent position for asset " + name + ": " + asset.position + " <> " + ca.position)
-          ca
+          _ <- check(ca.position.equals(asset.position),
+            PopulateException("inconsistent position for asset " + name + ": " + asset.position + " <> " + ca.position))
+        } yield (ca)
         case _ =>
-          throw PopulateException("multiple assets for " + name)
+          Future.failed(PopulateException("multiple assets for " + name))
       }
     }
   }
@@ -255,17 +266,16 @@ object Curated {
       data.sessions.size + " sessions: " + data.sessions.keys.mkString(",") + "\n" +
       data.assets.size + " files"
 
-  private def populate(data : Data, volume : Volume)(implicit site : Site) : Future[(Iterable[Record], Iterable[ContainerAsset])] = {
-    val subjs = data.subjects.mapValues(_.populate(volume))
-    val sess = data.sessions.mapValues(_.populate(volume))
-    data.subjectSessions.foreach { ss =>
+  private def populate(data : Data, volume : Volume)(implicit site : Site) : Future[(Iterable[Record], Iterable[ContainerAsset])] = for {
+    subjs <- Async.sequenceValues(data.subjects.mapValues(_.populate(volume)))
+    sess <- Async.sequenceValues(data.sessions.mapValues(_.populate(volume)))
+    _ <- Async.fold(data.subjectSessions.map { ss =>
       ss.populate(subjs(ss.subjectKey), sess(ss.sessionKey))
-    }
-    val assets = data.assets.map { sa =>
+    })()
+    assets <- Async.sequence(data.assets.map { sa =>
       sa.populate(sess(sa.sessionKey))
-    }
-    (subjs.values, assets)
-  }
+    })
+  } yield ((subjs.values, assets))
 
   def preview(f : java.io.File) : String =
     preview(process(CSV.parseFile(f)))

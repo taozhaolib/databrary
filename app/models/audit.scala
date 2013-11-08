@@ -1,6 +1,7 @@
 package models
 
 import scala.concurrent.{Future,ExecutionContext}
+import macros._
 import dbrary._
 import site._
 
@@ -14,9 +15,8 @@ import site._
   * @param row the remaining data columns
   */
 final case class Audit[T](when : Timestamp, who : Party.Id, ip : Inet, action : Audit.Action.Value, row : T) extends TableRow {
-  private val _party = CachedVal[Option[Party], Site](Party.get(who)(_))
   /** Look up the party who generated this event, if still valid. */
-  def party(implicit site : Site) : Option[Party] = _party
+  def party(implicit site : Site) = Party.get(who)(site)
 
   def withRow[A](row : A) = copy[A](row = row)
 }
@@ -49,18 +49,18 @@ object Audit {
     SQLTerms('audit_user -> site.identity.id, 'audit_ip -> site.clientIP, 'audit_action -> action)
 
   /** Record an audit event of the specified type to the generic audit table. */
-  def action(action : Action.Value)(implicit site : Site) : SQLResult = {
+  def action(action : Action.Value)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult = {
     val args = aargs(action)
-    args.query("INSERT INTO audit.audit " + args.insert)
+    SQL("INSERT INTO audit.audit " + args.insert)(dbc, exc).apply(args)
   }
 
-  def actionFor(action : Action.Value, user : Party.Id, ip : Inet)(implicit db : Site.DB) : SQLResult = {
+  def actionFor(action : Action.Value, user : Party.Id, ip : Inet)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult = {
     val args = SQLTerms('audit_user -> user, 'audit_ip -> ip, 'audit_action -> action)
-    args.query("INSERT INTO audit.audit " + args.insert)
+    SQL("INSERT INTO audit.audit " + args.insert)(dbc, exc).apply(args)
   }
 
   private[this] def SQLon(action : Action.Value, table : String, stmt : String, returning : String = "")(args : SQLArgs)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
-    SQL("WITH audit_row AS (" + acmd(action) + " " + table + " " + stmt + " RETURNING *) INSERT INTO audit." + table + " SELECT CURRENT_TIMESTAMP, ?, ?, ?, * FROM audit_row" + Maybe.map(" RETURNING " + _, returning))(dbc, exc)
+    SQL("WITH audit_row AS (" + acmd(action) + " " + table + " " + stmt + " RETURNING *) INSERT INTO audit." + table + " SELECT CURRENT_TIMESTAMP, ?, ?, ?, * FROM audit_row" + Maybe.bracket(" RETURNING ", returning))(dbc, exc)
       .apply(args ++ aargs(action))
 
   /** Record and perform an [[Action.add]] event for a particular table.
@@ -69,7 +69,7 @@ object Audit {
     * @param args parameters for attached row data
     * @param returning optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
     */
-  private[models] def add(table : String, args : SQLArgs, returning : String = "")(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
+  private[models] def add(table : String, args : SQLTerms, returning : String = "")(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     SQLon(Action.add, table, args.insert, returning)(args)(site, dbc, exc)
 
   /** Record an [[Action.remove]] event to a particular audit table.
@@ -78,7 +78,7 @@ object Audit {
     * @param args parameters to select attached row data
     * @param returning optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
     */
-  private[models] def remove(table : String, args : SQLArgs, returning : String = "")(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
+  private[models] def remove(table : String, args : SQLTerms, returning : String = "")(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     SQLon(Action.remove, table, "WHERE " + args.where, returning)(args)(site, dbc, exc)
 
   /** Record an [[Action.change]] event to a particular audit table.
@@ -91,6 +91,6 @@ object Audit {
   private[models] def change(table : String, sets : SQLTerms, where : SQLTerms, returning : String = "")(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     SQLon(Action.change, table, "SET " + sets.set() + " WHERE " + where.where, returning)(sets ++ where)(site, dbc, exc)
 
-  private[models] def changeOrAdd(table : String, sets : SQLTerms, ids : SQLTerms)(implicit site : Site, dbc : Siet.DB, exc : ExecutionContext) : SQLResult =
+  private[models] def changeOrAdd(table : String, sets : SQLTerms, ids : SQLTerms)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     DBUtil.updateOrInsert(change(table, sets, ids)(site, _, _))(add(table, sets ++ ids)(site, _, _))(dbc, exc)
 }

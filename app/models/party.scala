@@ -18,8 +18,8 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Future[Boolean] = {
     if (name == _name && orcid == _orcid)
       return Async(true)
-    Audit.change("party", SQLTerms('name -> name, 'orcid -> orcid), SQLTerms('id -> id)).execute
-      .andThen { case Success(true) =>
+    Audit.change("party", SQLTerms('name -> name, 'orcid -> orcid), SQLTerms('id -> id))
+      .execute.andThen { case scala.util.Success(true) =>
         _name = name
         _orcid = orcid
       }
@@ -40,9 +40,8 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   final def authorizeChildren(all : Boolean = false) : Future[Seq[Authorize]] =
     Authorize.getChildren(this, all)
 
-  private[this] val _delegated = CachedVal[Permission.Value, Site](site => Authorize.delegate_check(site.identity.id, id))
   /** Permission delegated by this party to the current user. */
-  final def delegated(implicit site : Site) : Permission.Value = _delegated
+  final lazy val delegated : Future[Permission.Value] = Authorize.delegate_check(site.identity.id, id)
   /** Permission delegated by the given party to this party. */
   final def delegatedBy(p : Party.Id)(implicit site : Site) : Future[Permission.Value] = Authorize.delegate_check(id, p)
 
@@ -83,8 +82,8 @@ final class Account protected (party : Party, email_ : String, password_ : Strin
       return Async(true)
     if (password != _password)
       clearTokens
-    Audit.change(Account.table, SQLTerms('email -> email, 'password -> password, 'openid -> openid), SQLTerms('id -> id)).execute
-      .andThen { case Success(true) =>
+    Audit.change(Account.table, SQLTerms('email -> email, 'password -> password, 'openid -> openid), SQLTerms('id -> id))
+      .execute.andThen { case scala.util.Success(true) =>
         _email = email
         _password = password
         _openid = openid

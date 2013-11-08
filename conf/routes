@@ -50,7 +50,6 @@ GET         /volume/$vID<[0-9]+>/edit                                           
 POST        /volume/$vID<[0-9]+>/edit                                                                 controllers.Volume.change(vID : models.Volume.Id)
 GET         /volume/$vID<[0-9]+>/access                                                               controllers.Volume.admin(vID : models.Volume.Id)
 GET         /volume/$vID<[0-9]+>/access/search                                                        controllers.Volume.accessSearch(vID : models.Volume.Id)
-POST        /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>/add                                            controllers.Volume.accessAdd(vID : models.Volume.Id, pID : models.Party.Id)
 # TODO: should be POST:
 GET         /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>/remove                                         controllers.Volume.accessDelete(vID : models.Volume.Id, pID : models.Party.Id)
 POST        /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                                                controllers.Volume.accessChange(vID : models.Volume.Id, pID : models.Party.Id)

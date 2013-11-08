@@ -1,6 +1,7 @@
 package models
 
 import scala.concurrent.Future
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.Files.TemporaryFile
 import macros._
 import dbrary._
@@ -47,29 +48,29 @@ object AssetFormat extends TableId[AssetFormat]("format") {
     * @param ts include TimeseriesFormats. Unlike other lookups, this is enabled by default. */
   def get(id : Id, ts : Boolean = true) : Future[Option[AssetFormat]] =
     mts(ts, TimeseriesFormat.get(id.coerce[TimeseriesFormat]),
-      row.SQL("WHERE id = ?").apply(id).singleOpt)
+      row.SELECT("WHERE id = ?").apply(id).singleOpt)
   /** Lookup a format by its mimetime.
     * @param ts include TimeseriesFormats. */
   def getMimetype(mimetype : String, ts : Boolean = false) : Future[Option[AssetFormat]] =
     mts(ts, TimeseriesFormat.getMimetype(mimetype),
-      row.SQL("WHERE mimetype = ?").apply(mimetype).singleOpt)
+      row.SELECT("WHERE mimetype = ?").apply(mimetype).singleOpt)
   /** Lookup a format by its extension.
     * @param ts include TimeseriesFormats. */
   private def getExtension(extension : String, ts : Boolean = false) : Future[Option[AssetFormat]] =
     mts(ts, TimeseriesFormat.getExtension(extension),
-      row.SQL("WHERE extension = ?").apply(extension).singleOpt)
+      row.SELECT("WHERE extension = ?").apply(extension).singleOpt)
   /** Get a list of all file formats in the database.
     * @param ts include TimeseriesFormats. */
   def getAll(ts : Boolean = false) : Future[Seq[AssetFormat]] =
-    row.SQL("ORDER BY format.id").list.map {
+    row.SELECT("ORDER BY format.id").apply().list.map {
       (if (ts) TimeseriesFormat.getAll else Nil) ++ _
     }
 
   def getFilename(filename : String, ts : Boolean = false) : Future[Option[AssetFormat]] =
-    Async.flatMap(Maybe(filename.lastIndexOf('.')).opt, i =>
+    Async.flatMap[Int,AssetFormat](Maybe(filename.lastIndexOf('.')).opt, i =>
       getExtension(filename.substring(i + 1).toLowerCase, ts))
   def getFilePart(file : play.api.mvc.MultipartFormData.FilePart[_], ts : Boolean = false) : Future[Option[AssetFormat]] =
-    Async.flatMap(file.contentType, getMimetype(_, ts)).flatMap {
+    Async.flatMap[String,AssetFormat](file.contentType, getMimetype(_, ts)).flatMap {
       Async.orElse(_, getFilename(file.filename, ts))
     }
 
@@ -116,7 +117,7 @@ sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Ass
   def classification : Classification.Value
 
   /** ContainerAsset via which this asset is linked into a container. */
-  def link(implicit site : Site) : Option[ContainerAsset] = ContainerAsset.get(this)
+  def link(implicit site : Site) = ContainerAsset.get(this)
 }
 
 /** Assets which are backed by files on disk.
@@ -152,7 +153,7 @@ sealed class FileAsset protected[models] (override val id : FileAsset.Id, val fo
 final class Timeseries private[models] (override val id : Timeseries.Id, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset) extends FileAsset(id, format, classification) with TableRowId[Timeseries] with TimeseriesData {
   override def source = this
   def entire = true
-  def segment : Range[Offset] = Range[Offset](0, duration)(PGSegment)
+  def segment : Range[Offset] = Range[Offset](0, duration)
 }
 
 /** Base for clips of Timeseries.
@@ -166,7 +167,7 @@ final class Clip private (override val id : Clip.Id, val source : Timeseries, va
 
 
 private[models] sealed abstract class AssetView[R <: Asset with TableRowId[R]](table : String) extends TableId[R](table) {
-  private[models] def get(i : Id)(implicit db : Site.DB) : Option[R]
+  private[models] def get(i : Id) : Option[R]
 }
 
 object Asset extends AssetView[Asset]("asset") {
@@ -174,8 +175,8 @@ object Asset extends AssetView[Asset]("asset") {
   private[models] val row = 
     (FileAsset.columns.~+[Option[Offset]](SelectColumn("timeseries", "duration")) ~
      AssetFormat.row ~ Clip.columns.?) map {
-      case (id, classification, None) ~ format ~ None => new FileAsset(id, format, classification)
-      case (id, classification, Some(duration)) ~ (format : TimeseriesFormat) ~ clip => {
+      case (((id, classification, None), format), None) => new FileAsset(id, format, classification)
+      case (((id, classification, Some(duration)), format : TimeseriesFormat), clip) => {
         val ts = new Timeseries(id.coerce[Timeseries], format, classification, duration)
         clip.fold[Asset](ts)((Clip.make(ts) _).tupled)
       }
@@ -188,8 +189,8 @@ object Asset extends AssetView[Asset]("asset") {
 
   /** Retrieve a single asset according to its type.
     * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
-  def get(i : Id)(implicit db : Site.DB) : Option[Asset] =
-    row.SQL("WHERE asset.id = {id}").on('id -> i).singleOpt()
+  def get(i : Id) : Future[Option[Asset]] =
+    row.SELECT("WHERE asset.id = ?").apply(i).singleOpt
 }
 
 object FileAsset extends AssetView[FileAsset]("file") {
@@ -212,7 +213,7 @@ object FileAsset extends AssetView[FileAsset]("file") {
     */
   def create(format : AssetFormat, classification : Classification.Value, file : TemporaryFile)(implicit site : Site) : Future[FileAsset] =
     /* TODO transaction */
-    Audit.add(table, SQLArgs('format -> format.id, 'classification -> classification), "id")
+    Audit.add(table, SQLTerms('format -> format.id, 'classification -> classification), "id")
       .single(SQLCols[Id]).map { id =>
         store.FileAsset.store(id, file)
         new FileAsset(id, format, classification)
@@ -242,7 +243,7 @@ object Timeseries extends AssetView[Timeseries]("timeseries") {
     */
   def create(format : TimeseriesFormat, classification : Classification.Value, duration : Offset, file : TemporaryFile)(implicit site : Site) : Future[Timeseries] =
     /* TODO transaction */
-    Audit.add(table, SQLArgs('format -> format.id, 'classification -> classification, 'duration -> duration), "id")
+    Audit.add(table, SQLTerms('format -> format.id, 'classification -> classification, 'duration -> duration), "id")
       .single(SQLCols[Id]).map { id =>
         store.FileAsset.store(id, file)
         new Timeseries(id, format, classification, duration)
@@ -261,7 +262,7 @@ object Clip extends AssetView[Clip]("clip") {
   
   /** Retrieve a single clip.
     * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
-  private[models] def get(i : Id)(implicit db : Site.DB) : Future[Option[Clip]] =
+  private[models] def get(i : Id) : Future[Option[Clip]] =
     row.SELECT("WHERE clip.id = ?").apply(i).singleOpt
 }
 

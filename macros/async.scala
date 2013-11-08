@@ -28,7 +28,7 @@ object Async {
     flatMap[A,A](a, a => f(a).map { case false => None ; case true => Some(a) })
 
   /** Fold results of the futures over the operation, serially, in arbitrary order. */
-  def fold[A](l : GenTraversableOnce[Future[A]], z : A)(op : (A, A) => A)(implicit context : ExecutionContext) : Future[A] =
+  def fold[A](l : GenTraversableOnce[Future[A]], z : A = ())(op : (A, A) => A = ((_ : Unit, _ : Unit) => ()))(implicit context : ExecutionContext) : Future[A] =
     l.fold(successful(z)) { (a, b) =>
       a.flatMap(a => b.map(op(a, _)))
     }
@@ -44,6 +44,20 @@ object Async {
       r.flatMap(_ => a.andThen { case Success(a) => b += a })
     }.map(_ => b.result)
   }
+  /** Evaluate each of the futures in the Map in an arbitrary order and produce a collection of the results.
+    * This is not as efficient as it could be due to a lack of foldMap/mapAccum-type functions. */
+  def sequenceValues[K, A, R](m : Map[K, Future[A]])(implicit bf : generic.CanBuildFrom[Map[K, Future[A]], (K, A), R], context : ExecutionContext) : Future[R] = {
+    val b = bf()
+    def madd(x : AnyRef) : Future[Any] = x match {
+      case f : Future[Any] => f
+      case (k : K, a : Future[A]) => a.map(v => b.+=((k, v)))
+    }
+    madd(m.fold[AnyRef](successful(())) { (l, r) =>
+      madd(l).flatMap(_ => madd(r))
+    }).map(_ => b.result)
+  }
+
+  /** Evaluate each of the futures, serially left-to-right, and produce a list of the results. */
 
   /** Unsafely retrieve the value of an already evaluated Future. */
   def get[A](a : Future[A]) : A = a.value.get.get

@@ -79,108 +79,107 @@ object Volume extends SiteController {
     }
   }
 
-  def create(e : Option[models.Party.Id]) = SiteAction.auth { implicit request =>
-    e.fold[Option[Party]](Some(request.identity))(models.Party.get(_)).fold[SimpleResult](NotFound) { owner =>
-      if (owner.access < Permission.CONTRIBUTE || !owner.checkPermission(Permission.CONTRIBUTE))
-        Forbidden
-      else
-        Ok(views.html.volume.edit(Left(owner), editForm)(request.withObj(owner)))
-    }
-  }
-
-  def add(e : models.Party.Id) = SiteAction.auth { implicit request =>
-    models.Party.get(e).fold[SimpleResult](NotFound) { owner =>
-      if (owner.access < Permission.CONTRIBUTE || !owner.checkPermission(Permission.CONTRIBUTE))
-        Forbidden
-      else
-        editForm.bindFromRequest.fold(
-          form => BadRequest(views.html.volume.edit(Left(owner), form)(request.withObj(owner))),
-          { case (name, body, cites) =>
-            val volume = models.Volume.create(name, body)
-            citationSet(volume, cites)
-            VolumeAccess(volume, owner.id, Permission.ADMIN, Permission.CONTRIBUTE).set
-            Redirect(volume.pageURL)
+  private def ContributeAction(e : Option[models.Party.Id]) =
+    Party.Action(e, Some(Permission.CONTRIBUTE)) ~>
+      new ActionHandler[Party.Request] {
+        protected def handle[A](request : Party.Request[A]) =
+          request.obj.access.map { access =>
+            if (access < Permission.CONTRIBUTE) Some(Forbidden) else None
           }
-        )
-    }
+      }
+
+  def create(e : Option[models.Party.Id]) = ContributeAction(e) { implicit request =>
+    Ok(views.html.volume.edit(Left(request.obj), editForm))
   }
 
-  type AccessForm = Form[VolumeAccess]
-  private[this] def accessForm(volume : Volume, party : models.Party.Id) : AccessForm = Form(
-    mapping(
-      "access" -> number(min=0, max=Permission.maxId-1),
-      "inherit" -> number(min=0, max=(if (party.unId > 0) Permission.EDIT else Permission.DOWNLOAD).id)
-    )((access, inherit) => VolumeAccess(
-      volume, party, 
-      Permission(access.max(inherit)),
-      Permission(inherit)
-    ))(a =>
-      if (a.volumeId == volume.id && a.partyId == party)
-        Some((a.access.id, a.inherit.id))
-      else
-        None
+  def add(e : models.Party.Id) = ContributeAction(Some(e)).async { implicit request =>
+    editForm.bindFromRequest.fold(
+      form => ABadRequest(views.html.volume.edit(Left(request.obj), form)),
+      { case (name, body, cites) =>
+        for {
+          volume <- models.Volume.create(name, body)
+          _ <- citationSet(volume, cites)
+          _ <- VolumeAccess.set(volume, e, Permission.ADMIN, Permission.CONTRIBUTE)
+        } yield (Redirect(volume.pageURL))
+      }
+    )
+  }
+
+  type AccessForm = Form[(Permission.Value, Permission.Value)]
+  private val accessForm : AccessForm = Form(
+    tuple(
+      "access" -> Field.enum(Permission),
+      "inherit" -> Field.enum(Permission, maxId = Some(Permission.EDIT.id))
     )
   )
+
+  private def accessFormFill(access : VolumeAccess) : AccessForm =
+    accessForm.fill((access.access, access.inherit))
 
   private[this] val accessSearchForm = Form(
     "name" -> nonEmptyText
   )
 
   private[this] def viewAdmin(
+    status : Status,
     accessChangeForm : Option[(models.Party,AccessForm)] = None,
     accessSearchForm : Form[String] = accessSearchForm,
     accessResults : Seq[(models.Party,AccessForm)] = Seq())(
     implicit request : Request[_]) = {
     val accessChange = accessChangeForm.map(_._1.id)
-    val accessForms = request.obj.partyAccess.filter(a => Some(a.partyId) != accessChange).map(a => (a.party, accessForm(request.obj, a.partyId).fill(a))) ++ accessChangeForm
-    views.html.volume.access(request.obj, accessForms, accessSearchForm, accessResults)
+    request.obj.partyAccess.map { access =>
+      val accessForms = access
+        .filter(a => accessChange.fold(true)(_.equals(a.partyId)))
+        .map(a => (a.party, accessFormFill(a))) ++
+        accessChangeForm
+      status(views.html.volume.access(request.obj, accessForms, accessSearchForm, accessResults))
+    }
   }
 
-  def admin(id : models.Volume.Id) = Action(id, Permission.ADMIN) { implicit request =>
-    Ok(viewAdmin())
+  def admin(id : models.Volume.Id) = Action(id, Permission.ADMIN).async { implicit request =>
+    viewAdmin(Ok)
   }
 
-  def accessChange(id : models.Volume.Id, e : models.Party.Id) = Action(id, Permission.ADMIN) { implicit request =>
-    accessForm(request.obj, e).bindFromRequest.fold(
-      form => BadRequest(viewAdmin(accessChangeForm = Some((models.Party.get(e).get, form)))),
-      access => {
-        access.set
-        Redirect(routes.Volume.admin(id))
+  def accessChange(id : models.Volume.Id, e : models.Party.Id) = Action(id, Permission.ADMIN).async { implicit request =>
+    models.Party.get(e).flatMap(_.fold(ANotFound) { who =>
+    val form = accessForm.bindFromRequest
+    form.fold(
+      form => viewAdmin(BadRequest, accessChangeForm = Some((who, form))),
+      { case (access, inherit) =>
+        if (e.unId <= 0 && inherit >= Permission.EDIT)
+          viewAdmin(BadRequest, accessChangeForm = Some((who, form.withError("inherit", "access.group.inherit"))))
+        else
+          VolumeAccess.set(request.obj, e, if (access < inherit) inherit else access, inherit).map { _ =>
+            Redirect(routes.Volume.admin(id))
+          }
       }
     )
+    })
   }
 
-  def accessDelete(id : models.Volume.Id, e : models.Party.Id) = Action(id, Permission.ADMIN) { implicit request =>
-    if (e != request.identity.id)
-      VolumeAccess.delete(id, e)
-    Redirect(routes.Volume.admin(id))
+  def accessDelete(id : models.Volume.Id, e : models.Party.Id) = Action(id, Permission.ADMIN).async { implicit request =>
+    (if (e != request.identity.id)
+      VolumeAccess.delete(request.obj, e)
+    else macros.Async(false)).map { _ =>
+      Redirect(routes.Volume.admin(id))
+    }
   }
 
-  def accessSearch(id : models.Volume.Id) = Action(id, Permission.ADMIN) { implicit request =>
+  def accessSearch(id : models.Volume.Id) = Action(id, Permission.ADMIN).async { implicit request =>
     val form = accessSearchForm.bindFromRequest
     form.fold(
-      form => BadRequest(viewAdmin(accessSearchForm = form)),
-      name => {
-        val res = models.Party.searchForVolumeAccess(name, id)
-        Ok(viewAdmin(accessSearchForm = form, 
-          accessResults = res.map(e => (e,accessForm(request.obj, e.id)))))
-      }
-    )
-  }
-
-  def accessAdd(id : models.Volume.Id, e : models.Party.Id) = Action(id, Permission.ADMIN) { implicit request =>
-    accessForm(request.obj, e).bindFromRequest.fold(
-      form => BadRequest(viewAdmin(accessResults = Seq((models.Party.get(e).get, form)))),
-      access => {
-        access.set
-        Redirect(routes.Volume.admin(id))
-      }
+      form => viewAdmin(BadRequest, accessSearchForm = form),
+      name =>
+        models.Party.searchForVolumeAccess(name, id).flatMap { res =>
+          viewAdmin(Ok, accessSearchForm = form, 
+            accessResults = res.map(e => (e, accessForm)))
+        }
     )
   }
 
   def thumb(v : models.Volume.Id) = Action(v, Permission.VIEW).async { implicit request =>
-    request.obj.thumb.fold(
+    request.obj.thumb.flatMap(_.fold(
       Assets.at("/public", "images/draft.png")(request))(
-      Asset.getFrame(_, Left(0.25f)))
+      Asset.getFrame(_, Left(0.25f))))
   }
 }

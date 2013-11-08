@@ -16,6 +16,27 @@ import models._
 object Party extends SiteController {
   type Request[A] = RequestObject[Party]#Site[A]
 
+  /** ActionBuilder for party-targeted actions.
+    * @param i target party id, defaulting to current user (site.identity)
+    * @param p permission needed, or None if no delegation is allowed (must be self)
+    */
+  private[controllers] def action(i : Option[models.Party.Id], p : Option[Permission.Value] = Some(Permission.ADMIN)) =
+    optionZip(i, p).fold[ActionFunction[SiteRequest.Auth,Request]] {
+      new ActionRefiner[SiteRequest.Auth,Request] {
+        protected def refine[A](request : SiteRequest.Auth[A]) = macros.Async {
+          if (i.fold(true)(_.equals(request.identity.id)))
+            Right(request.withObj(request.identity))
+          else
+            Left(Forbidden)
+        }
+      }
+    } { case (i, p) =>
+      RequestObject.check[Party](models.Party.get(i)(_), p)
+    }
+
+  private[controllers] def Action(i : Option[models.Party.Id], p : Option[Permission.Value] = Some(Permission.ADMIN)) =
+    SiteAction.auth ~> action(i, p)
+
   def view(i : models.Party.Id) = SiteAction.async { implicit request =>
     models.Party.get(i).map(_.fold[SimpleResult](NotFound)(
       e => Ok(views.html.party.view(e)(request.withObj(e)))))
@@ -96,17 +117,8 @@ object Party extends SiteController {
     }
   }
   
-  private[this] def AdminAction(i : models.Party.Id, delegate : Boolean = true) =
-    SiteAction.auth ~> (
-      if (delegate) RequestObject.check(models.Party.get(i)(_), Permission.ADMIN)
-      else new ActionRefiner[SiteRequest.Auth,Request] {
-        protected def refine[A](request : SiteRequest.Auth[A]) =
-          macros.Async(if (request.identity.id == i)
-            Right(request.withObj(request.identity))
-          else
-            Left(Forbidden))
-      }
-    )
+  private def AdminAction(i : models.Party.Id, delegate : Boolean = true) =
+    Action(Some(i), if (delegate) Some(Permission.ADMIN) else None)
 
   def edit(i : models.Party.Id) = AdminAction(i) { implicit request =>
     Ok(viewEdit())
@@ -148,7 +160,7 @@ object Party extends SiteController {
             (Some(exp), exp.isAfter(maxexp))
           }
         if (!expok)
-          viewAdmin(BadRequest, authorizeChangeForm = Some((child, form.withError("expires", "constraint.max", maxExpiration))))
+          viewAdmin(BadRequest, authorizeChangeForm = Some((child, form.withError("expires", "error.max", maxExpiration))))
         else
           Authorize.set(childId, id, access, delegate, if (pending) None else Some(new Timestamp), exp.map(_.toDateTimeAtStartOfDay)).map { _ =>
             Redirect(routes.Party.admin(id))
@@ -173,8 +185,7 @@ object Party extends SiteController {
         viewAdmin(Ok, authorizeWhich = Some(apply), authorizeSearchForm = form, 
           authorizeResults = res.map(e => (e, authorizeForm.fill(
             if (apply) (Permission.NONE, Permission.NONE, true, None)
-            else (Permission.NONE, Permission.NONE, false, Some((new Date).plus(maxExpiration)))
-          ))))
+            else (Permission.NONE, Permission.NONE, false, Some((new Date).plus(maxExpiration)))))))
         }
     )
   }

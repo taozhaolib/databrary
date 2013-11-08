@@ -8,6 +8,7 @@ import macros._
 /** Arguments that may be passed to a query. */
 trait SQLArgs {
   def args : Seq[Any]
+  def ++(other : SQLArgs) : SQLArgseq = new SQLArgseq(args ++ other.args)
 }
 
 /** A special case of SQLArgs for running simple queries with no arguments. */
@@ -19,7 +20,6 @@ object SQLNoArgs extends SQLArgs {
 final class SQLArgseq(val args : /*=>*/ Seq[Any]) extends SQLArgs {
   import SQLType.put
 
-  def ++(other : SQLArgseq) : SQLArgseq = new SQLArgseq(args ++ other.args)
   def :+[A : SQLType](other : A) : SQLArgseq = new SQLArgseq(args :+ put[A](other))
   def +:[A : SQLType](other : A) : SQLArgseq = new SQLArgseq(put[A](other) +: args)
   def *(n : Int) : SQLArgseq = new SQLArgseq(0.until(n).flatMap(_ => args))

@@ -7,7 +7,7 @@ import dbrary._
 import site._
 
 sealed class Token protected (val token : String, val expires : Timestamp) extends TableRow {
-  def valid = expires.isAfter(new Timestamp)
+  def valid = expires.isAfterNow
   def redeemURL = controllers.routes.Token.token(token)
 }
 
@@ -62,5 +62,5 @@ object LoginToken extends TokenTable[LoginToken]("login_token") {
     }
 
   private[models] def clearAccount(account : Account.Id) : Future[Boolean] =
-    DELETE('account -> account).run()
+    DELETE('account -> account).execute
 }

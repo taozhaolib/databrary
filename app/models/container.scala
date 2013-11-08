@@ -22,11 +22,11 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
   def date = _date
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : Option[String] = _name, date : Option[Date] = _date)(implicit site : Site) : Future[Boolean] = {
+  def change(name : Option[String] = _name, date : Option[Date] = _date) : Future[Boolean] = {
     if (name == _name && date == _date)
       return Async(true)
     Audit.change("container", SQLTerms('name -> name, 'date -> date), SQLTerms('id -> id)).execute
-      .andThen { case Success(true) =>
+      .andThen { case scala.util.Success(true) =>
         _name = name
         _date = date
       }
@@ -114,11 +114,11 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   def isFull = segment.isFull
 
   /** Update the given values in the database and this object in-place. */
-  def change(consent : Consent.Value = _consent)(implicit site : Site) : Future[Boolean] = {
+  def change(consent : Consent.Value = _consent) : Future[Boolean] = {
     if (consent == _consent)
       return Async(true)
     Audit.change("slot", SQLTerms('consent -> Maybe(consent).opt), SQLTerms('id -> id)).execute
-      .andThen { case Success(true) =>
+      .andThen { case scala.util.Success(true) =>
         _consent = consent
       }
   }
@@ -204,10 +204,10 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     else
       "Session: " + i.mkString(", ")
   }
-  override def pageCrumbName(implicit site : Site) = if (segment.isFull) None else Some(segment.lowerBound.fold("")(_.toString) + " - " + segment.upperBound.fold("")(_.toString))
-  def pageParent(implicit site : Site) = Some(if (isContext) volume else Async.get(context))
-  def pageURL(implicit site : Site) = controllers.routes.Slot.view(container.volumeId, id)
-  def pageActions(implicit site : Site) = Seq(
+  override def pageCrumbName = if (segment.isFull) None else Some(segment.lowerBound.fold("")(_.toString) + " - " + segment.upperBound.fold("")(_.toString))
+  def pageParent = Some(if (isContext) volume else Async.get(context))
+  def pageURL = controllers.routes.Slot.view(container.volumeId, id)
+  def pageActions = Seq(
     Action("view", controllers.routes.Slot.view(volumeId, id), Permission.VIEW),
     Action("edit", controllers.routes.Slot.edit(volumeId, id), Permission.EDIT),
     Action("add file", controllers.routes.Asset.create(volumeId, containerId, segment.lowerBound), Permission.CONTRIBUTE),

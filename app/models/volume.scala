@@ -22,8 +22,8 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   def change(name : String = _name, body : Option[String] = _body) : Future[Boolean] = {
     if (name == _name && body == _body)
       return Async(true)
-    Audit.change("volume", SQLTerms('name -> name, 'body -> body), SQLTerms('id -> id)).execute
-      .andThen { case Success(true) =>
+    Audit.change("volume", SQLTerms('name -> name, 'body -> body), SQLTerms('id -> id))
+      .execute.andThen { case scala.util.Success(true) =>
         _name = name
         _body = body
       }

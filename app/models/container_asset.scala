@@ -30,7 +30,7 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
     if (position == _position && name == _name && body == _body)
       return Async(true)
     Audit.change("container_asset", SQLTerms('position -> position, 'name -> name, 'body -> body), SQLTerms('container -> containerId, 'asset -> assetId)).execute
-      .andThen { case Success(true) =>
+      .andThen { case scala.util.Success(true) =>
         _name = name
         _body = body
       }
@@ -72,12 +72,14 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
     , SelectColumn[Option[String]]("body")
     )
   private[models] val containerColumns = columns.join(Asset.row, "container_asset.asset = asset.id")
-  private[models] def containerRow(cont : Container) = containerColumns map {
-    case (link, asset) => (make(asset, cont) _).tupled(link)
-  }
-  private[models] val row = containerColumns.join(Container.row, "container_asset.container = container.id") map {
-    case ((link, asset), cont) => (make(asset, cont) _).tupled(link)
-  }
+  private[models] def containerRow(cont : Container) =
+    containerColumns map {
+      case (link, asset) => (make(asset, cont) _).tupled(link)
+    }
+  private[models] def row(implicit site : Site) =
+    containerColumns.join(Container.row, "container_asset.container = container.id") map {
+      case ((link, asset), cont) => (make(asset, cont) _).tupled(link)
+    }
 
   /** Retrieve a specific asset link by asset id and container id.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access on the container. */
@@ -229,11 +231,11 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
     join(Container.volumeRow(vol), "container_asset.container = container.id").
     join(Slot.columns, "container.id = slot.source").
     leftJoin(columns, "slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset") map {
-      case (link ~ asset ~ cont ~ slot ~ excerpt) => make((ContainerAsset.make(asset, cont) _).tupled(link), (Slot.make(cont) _).tupled(slot), excerpt)
+      case ((((link, asset), cont), slot), excerpt) => make((ContainerAsset.make(asset, cont) _).tupled(link), (Slot.make(cont) _).tupled(slot), excerpt)
     }
   private def slotRow(slot : Slot) = ContainerAsset.containerRow(slot.container).
     leftJoin(columns, "asset.id = toplevel_asset.asset AND toplevel_asset.slot = ?") map {
-      case (link ~ excerpt) => make(link, slot, excerpt)
+      case (link, excerpt) => make(link, slot, excerpt)
     }
 
   /** Retrieve a single SlotAsset by asset id and slot id.
@@ -241,7 +243,8 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
   def get(asset : Asset.Id, slot : Slot.Id)(implicit site : Site) : Future[Option[SlotAsset]] =
     ContainerAsset.row
       .join(Slot.columns, "container.id = slot.source")
-      .leftJoin(columns, "slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset") map {
+      .leftJoin(columns, "slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset")
+      .map {
         case ((link, slot), excerpt) => make(link, (Slot.make(link.container) _).tupled(slot), excerpt)
       }
       .SELECT("WHERE slot.id = ? AND asset.id = ? AND", condition(), "AND", Volume.condition)
@@ -270,14 +273,14 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
 
   /** Retrieve the list of all top-level assets. */
   private[models] def getToplevel(volume : Volume) : Future[Seq[SlotAsset]] =
-    volumeRow(volume).SELECT("WHERE toplevel_asset.excerpt IS NOT NULL AND container.volume = ? AND",
-        condition(),
-        "ORDER BY toplevel_asset.excerpt DESC")
-      .apply(volume.id).list
-      .flatMap { l =>
-        getSlot(volume.topSlot)
-          .map(l ++ _)
-      }
+    for {
+      l <- volumeRow(volume).SELECT("WHERE toplevel_asset.excerpt IS NOT NULL AND container.volume = ? AND",
+          condition(),
+          "ORDER BY toplevel_asset.excerpt DESC")
+        .apply(volume.id).list
+      s <- volume.topSlot
+      t <- getSlot(s)
+    } yield(l ++ t)
 
   /** Find an asset suitable for use as a volume thumbnail. */
   private[models] def getThumb(volume : Volume)(implicit site : Site) : Future[Option[SlotAsset]] =
@@ -291,7 +294,7 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
 
   /** Find an asset suitable for use as a slot thumbnail. */
   private[models] def getThumb(slot : Slot)(implicit site : Site) : Future[Option[SlotAsset]] =
-    slotRow(slot).SQL("""
+    slotRow(slot).SELECT("""
       WHERE container_asset.container = ?
         AND (format.id = ? OR format.mimetype LIKE 'image/%') 
         AND data_permission(?, ?, file.classification, ?, toplevel_asset.excerpt) >= 'DOWNLOAD'
