@@ -11,14 +11,13 @@ object Site {
   private def getDBPool(implicit app : play.api.Application) : DB =
     app.plugin[PostgresAsyncPlugin].fold(throw new Exception("PostgresAsyncPlugin not registered"))(_.pool)
   lazy val dbPool : DB = getDBPool(play.api.Play.current)
-  object Anon extends AnonSite
 }
 /** Basic information about each request.  Primarily implemented by [[controllers.SiteRequest]]. */
 trait Site {
   /** [[models.Party]] of the logged-in user, possibly [[models.Party.Nobody]]. */
   val identity : models.Party
   /** Some(identity) only if actual logged-in user. */
-  def user : Option[models.Account] = cast[models.Account](identity)
+  def user : Option[models.Account] = identity.account
   /** Level of site access [[models.Permission]] current user has.
     * VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for admins.
     */
@@ -30,14 +29,12 @@ trait Site {
 
 trait AnonSite extends Site {
   val identity = models.Party.Nobody
-  override def user = None
   val superuser = false
   val access = models.Permission.NONE
 }
 
 trait AuthSite extends Site {
   val identity : models.Account
-  override def user = Some(identity)
 }
 
 trait PerSite {
@@ -50,7 +47,7 @@ trait PerSite {
 case class SiteAction(name : String, route : play.api.mvc.Call, available : Boolean = true)
 
 /** An object with a corresponding page on the site. */
-trait SitePage extends HasPermission {
+trait SitePage {
   /** The title of the object/page in the hierarchy, which may only make sense within [[pageParent]]. */
   def pageName : String
   /** Optional override of pageName for breadcrumbs and other abbreviated locations */
@@ -59,6 +56,9 @@ trait SitePage extends HasPermission {
   def pageParent : Option[SitePage]
   /** The URL of the page, usually determined by [[controllers.routes]]. */
   def pageURL : play.api.mvc.Call
+}
+
+trait SiteObject extends SitePage with HasPermission {
   protected def Action(name : String, route : play.api.mvc.Call, permission : Permission.Value) =
     SiteAction(name, route, checkPermission(permission))
   /** The actions available for this page. */

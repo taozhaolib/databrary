@@ -47,7 +47,7 @@ object LoginToken extends TokenTable[LoginToken]("login_token") {
     , SelectColumn[Timestamp]("expires")
     , SelectColumn[Boolean]("password")
     )
-  protected val row = columns.join(Account.row(Site.Anon), "login_token.account = account.id").
+  protected val row = columns.join(Account.row, "login_token.account = account.id").
     map { case (t, p) => (make(p) _).tupled(t) }
 
   /** Issue a new token for the given party.

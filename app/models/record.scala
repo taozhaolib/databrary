@@ -40,7 +40,7 @@ object RecordCategory extends HasId[RecordCategory] {
 }
 
 /** A set of Measures. */
-final class Record private (val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE) extends TableRowId[Record] with SitePage with InVolume {
+final class Record private (val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE) extends TableRowId[Record] with SiteObject with InVolume {
   private[this] var _category = category_
   def category : Option[RecordCategory] = _category
   def categoryId = category.map(_.id)
@@ -110,10 +110,10 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   /** Attach this record to a slot. */
   def addSlot(s : Slot) = Record.addSlot(id, s.id)
 
-  def pageName(implicit site : Site) = category.fold("")(_.name.capitalize + " ") + _ident.peek.getOrElse("Record ["+id+"]")
-  def pageParent(implicit site : Site) = Some(volume)
-  def pageURL(implicit site : Site) = controllers.routes.Record.view(volume.id, id)
-  def pageActions(implicit site : Site) = Seq(
+  def pageName = category.fold("")(_.name.capitalize + " ") + _ident.peek.getOrElse("Record ["+id+"]")
+  def pageParent = Some(volume)
+  def pageURL = controllers.routes.Record.view(volume.id, id)
+  def pageActions = Seq(
     Action("view", controllers.routes.Record.view(volumeId, id), Permission.VIEW),
     Action("edit", controllers.routes.Record.edit(volumeId, id), Permission.EDIT)
   )

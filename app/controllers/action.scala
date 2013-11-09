@@ -24,16 +24,12 @@ trait ActionRefiner[-R[_],P[_]] extends ActionFunction[R,P] {
   protected def refine[A](request : R[A]) : Future[Either[SimpleResult,P[A]]]
   final def invokeBlock[A](request : R[A], block : P[A] => Future[SimpleResult]) =
     refine(request).flatMap(_.fold(Future.successful _, block))
-  protected def simple[A](r : SimpleResult) : Future[Either[SimpleResult,P[A]]] =
-    Future.successful(Left(r))
 }
 
 trait ActionHandler[R[_]] extends ActionRefiner[R,R] {
   protected def handle[A](request : R[A]) : Future[Option[SimpleResult]]
   final protected def refine[A](request : R[A]) =
     handle(request).map(_.toLeft(request))
-  protected def simple(r : SimpleResult) : Future[Option[SimpleResult]] =
-    Future.successful(Some(r))
 }
 
 trait ActionCreator[P[_]] extends ActionBuilder[P] with ActionFunction[Request,P] {

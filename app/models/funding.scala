@@ -20,12 +20,12 @@ object VolumeFunding extends Table[VolumeFunding]("volume_funding") {
       SelectColumn[Option[String]]("grant")
     )
   private def volumeRow(vol : Volume) =
-    columns.join(Party.row(vol.site), "volume_funding.funder = party.id") map {
+    columns.join(Party.row, "volume_funding.funder = party.id") map {
       case (fund, party) => make(vol, party)(fund)
     }
 
   private[models] def getVolume(vol : Volume) : Future[Seq[VolumeFunding]] =
-    columns.join(Party.row(vol.site), "volume_funding.funder = party.id")
+    columns.join(Party.row, "volume_funding.funder = party.id")
       .map { case (ing, er) => make(vol, er)(ing) }
       .SELECT("WHERE volume = ?").apply(vol.id).list
 

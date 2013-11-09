@@ -14,32 +14,32 @@ import site._
 import models._
 
 object Party extends SiteController {
-  type Request[A] = RequestObject[Party]#Site[A]
+  type Request[A] = RequestObject[SiteParty]#Site[A]
 
   /** ActionBuilder for party-targeted actions.
     * @param i target party id, defaulting to current user (site.identity)
-    * @param p permission needed, or None if no delegation is allowed (must be self)
+    * @param p permission needed, or None if delegation is not allowed (must be self)
     */
   private[controllers] def action(i : Option[models.Party.Id], p : Option[Permission.Value] = Some(Permission.ADMIN)) =
     optionZip(i, p).fold[ActionFunction[SiteRequest.Auth,Request]] {
       new ActionRefiner[SiteRequest.Auth,Request] {
-        protected def refine[A](request : SiteRequest.Auth[A]) = macros.Async {
+        protected def refine[A](request : SiteRequest.Auth[A]) =
           if (i.fold(true)(_.equals(request.identity.id)))
-            Right(request.withObj(request.identity))
+            request.identity.perSite(request).map { p =>
+              Right(request.withObj(p))
+            }
           else
-            Left(Forbidden)
-        }
+            macros.Async(Left(Forbidden))
       }
     } { case (i, p) =>
-      RequestObject.check[Party](models.Party.get(i)(_), p)
+      RequestObject.check[SiteParty](models.SiteParty.get(i)(_), p)
     }
 
   private[controllers] def Action(i : Option[models.Party.Id], p : Option[Permission.Value] = Some(Permission.ADMIN)) =
     SiteAction.auth ~> action(i, p)
 
-  def view(i : models.Party.Id) = SiteAction.async { implicit request =>
-    models.Party.get(i).map(_.fold[SimpleResult](NotFound)(
-      e => Ok(views.html.party.view(e)(request.withObj(e)))))
+  def view(i : models.Party.Id) = Action(Some(i), Some(Permission.NONE)) { implicit request =>
+    Ok(views.html.party.view(request.obj))
   }
 
   def ajaxView = SiteAction { implicit request =>
@@ -48,7 +48,7 @@ object Party extends SiteController {
   }
 
   private def adminAccount(implicit request : Request[_]) =
-    cast[models.Account](request.obj).filter(_.equals(request.identity) || request.superuser)
+    request.obj.account.filter(_.id.equals(request.identity.id) || request.superuser)
 
   type PasswordMapping = Mapping[Option[String]]
   val passwordMapping : PasswordMapping = 

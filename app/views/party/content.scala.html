@@ -5,7 +5,7 @@
 		<section class="personal col-desktop-2 @style1">
 		<img src="@display.avatar(party, 144)" alt="@party.name" class="avatar s144">
 
-		@cast[Account](party).map { a =>
+		@party.account.map { a =>
 
 		    <div class="connect">
 			<h2>Connect</h2>
@@ -41,7 +41,7 @@
 		@defining(Async.get(party.authorizeChildren())) { children =>
 		@if(children.nonEmpty) {
 		    <div class="memberships">
-		    @if(party.isInstanceOf[Account]) { <h2>Affiliates</h2> } else { <h2>Members</h2> }
+		    @if(party.account.isDefined) { <h2>Affiliates</h2> } else { <h2>Members</h2> }
 
 			<ul class="flat">
 			@children.map { t =>
@@ -53,19 +53,24 @@
 		}
 		</section>
 
+		@party match {
+		case sp : SiteParty => {
 		<div class="content @style2">
 		    <section class="volume_list">
-			    @Async.get(party.volumeAccess).map { a =>
+			    @Async.get(sp.volumeAccess).map { a =>
                     @widget.volumeList(a.volume)
                 }
 
-                @Async.get(party.funding).map { v =>
+                @Async.get(sp.funding).map { v =>
                     @widget.volumeList(v.volume)
                 }
 		    </section>
+		}
+		case _ => {}
+		}
 
 		    <div class="row">
-            @cast[Account](party).map(a => Async.get(a.comments)).map { comments =>
+            @party.account.map(a => Async.get(a.comments)).map { comments =>
                     @if(comments.nonEmpty) {
                         @region.comments(None, None, comments)
                     }

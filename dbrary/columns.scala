@@ -42,6 +42,8 @@ case class Selector[A](selects : Seq[SelectExpr[_]], source : String, parse : SQ
   def select = selects.mkString(", ")
   val length : Int = parse.arity.ensuring(_ == selects.length)
 
+  def ~[C : SQLType](a : SelectExpr[C]) : Selector[(A,C)] =
+    copy[(A,C)](selects = selects :+ a, parse = parse.~[C](SQLCols[C]))
   def map[B](f : A => B) : Selector[B] =
     copy[B](parse = parse.map[B](f))
   def ? : Selector[Option[A]] =

@@ -9,14 +9,16 @@ import site._
 /** Any real-world individual, group, institution, etc.
   * Instances are generally obtained from [[Party.get]] or [[Party.create]].
   * @param delegated permission delegated by this party to the current user */
-sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid], val delegated : Permission.Value)(implicit val site : Site) extends TableRowId[Party] with SitePage with HasPermission {
+sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid]) extends TableRowId[Party] with SitePage {
   private[this] var _name = name_
   def name = _name
   private[this] var _orcid = orcid_
   def orcid = _orcid
 
+  def account : Option[Account] = None
+
   /** Update the given values in the database and this object in-place. */
-  def change(name : String = _name, orcid : Option[Orcid] = _orcid) : Future[Boolean] = {
+  def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Future[Boolean] = {
     if (name == _name && orcid == _orcid)
       return Async(true)
     Audit.change("party", SQLTerms('name -> name, 'orcid -> orcid), SQLTerms('id -> id))
@@ -26,9 +28,10 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
       }
   }
 
+  protected val _access : FutureVar[Permission.Value] = FutureVar[Permission.Value](Authorize.access_check(id))
   /** Level of access user has to the site.
     * Computed by [Authorize.access_check] and usually accessed through [[site.Site.access]]. */
-  lazy val access : Future[Permission.Value] = Authorize.access_check(id)
+  def access : Future[Permission.Value] = _access.apply
 
   private[this] lazy val _authorizeParents : Future[Seq[Authorize]] = Authorize.getParents(this)
   /** List of authorizations granted to this user. Cached for !all.
@@ -44,6 +47,16 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   /** Permission delegated by the given party to this party. */
   final def delegatedBy(p : Party.Id) : Future[Permission.Value] = Authorize.delegate_check(id, p)
 
+  def perSite(implicit site : Site) : Future[SiteParty] = SiteParty.make(this)
+
+  def pageName = name
+  def pageParent = None
+  def pageURL = controllers.routes.Party.view(id)
+}
+
+final class SiteParty(val party : Party, val delegated : Permission.Value)(implicit val site : Site) extends Party(party.id, party.name, party.orcid) with SiteObject {
+  override def account = party.account
+
   /** List of volumes to which this user has been granted at least CONTRIBUTE access, sorted by level (ADMIN first). */
   final lazy val volumeAccess = VolumeAccess.getVolumes(this, Permission.CONTRIBUTE)
 
@@ -51,10 +64,6 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
   final lazy val funding : Future[Seq[VolumeFunding]] = VolumeFunding.getFunder(this)
 
   def getPermission = delegated
-
-  def pageName = name
-  def pageParent = None
-  def pageURL = controllers.routes.Party.view(id)
   def pageActions = Seq(
     Action("view", controllers.routes.Party.view(id), Permission.VIEW),
     Action("edit", controllers.routes.Party.edit(id), Permission.EDIT),
@@ -65,8 +74,8 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
-final class Account protected (party : Party, email_ : String, password_ : String, openid_ : Option[String])(implicit site : Site) extends Party(party.id, party.name, party.orcid, party.delegated)(site) with TableRowId[Account] {
-  override val id = Account.asId(party.id.unId)
+final class Account protected (party : Party, email_ : String, password_ : String, openid_ : Option[String]) extends Party(party.id, party.name, party.orcid) with TableRowId[Account] {
+  override val id = party.id.coerce[Account]
   private[this] var _email = email_
   def email = _email
   private[this] var _password = password_
@@ -75,8 +84,10 @@ final class Account protected (party : Party, email_ : String, password_ : Strin
   private[this] var _openid = openid_
   def openid = _openid
 
+  override def account = Some(this)
+
   /** Update the given values in the database and this object in-place. */
-  def changeAccount(email : String = _email, password : String = _password, openid : Option[String] = _openid) : Future[Boolean] = {
+  def changeAccount(email : String = _email, password : String = _password, openid : Option[String] = _openid)(implicit site : Site) : Future[Boolean] = {
     if (email == _email && password == _password && openid == _openid)
       return Async(true)
     if (password != _password)
@@ -91,24 +102,21 @@ final class Account protected (party : Party, email_ : String, password_ : Strin
 
   /** List of comments by this individual.
     * This checks permissions on the target volumes. */
-  def comments = Comment.getParty(this)
+  def comments(implicit site : Site) = Comment.getParty(this)
 
   /** Remove any issued login tokens for this user. */
   def clearTokens = LoginToken.clearAccount(id)
 }
 
 object Party extends TableId[Party]("party") {
-  private[this] def make(id : Id, name : String, orcid : Option[Orcid], delegated : Permission.Value)(implicit site : Site) =
-    new Party(id, name, orcid, delegated)
-  private[models] val baseColumns = Columns(
+  private[this] def make(id : Id, name : String, orcid : Option[Orcid]) =
+    new Party(id, name, orcid)
+  private[models] val columns = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
     , SelectColumn[Option[Orcid]]("orcid")
-    )
-  private[models] def columns(implicit site : Site) =
-    (baseColumns ~+ SelectAs[Permission.Value]("authorize_delegate_check(?, party.id)", "party_delegated"))
-    .map(make _).pushArgs(SQLArgs(site.identity.id))
-  private[models] def row(implicit site : Site) : Selector[Party] =
+    ).map(make _)
+  private[models] val row : Selector[Party] =
     columns.leftJoin(Account.columns, using = 'id) map {
       case (e, None) => e
       case (e, Some(a)) => (Account.make(e) _).tupled(a)
@@ -116,8 +124,8 @@ object Party extends TableId[Party]("party") {
 
   /** Look up a party by id. */
   def get(i : Id)(implicit site : Site) : Future[Option[Party]] = i match {
-    //case NOBODY => Async(Some(Nobody))
-    //case ROOT => Async(Some(Root))
+    case NOBODY => Async(Some(Nobody))
+    case ROOT => Async(Some(Root))
     case site.identity.id => Async(Some(site.identity))
     case _ => row.SELECT("WHERE id = ?").apply(i).singleOpt
   }
@@ -125,7 +133,7 @@ object Party extends TableId[Party]("party") {
   /** Create a new party. */
   def create(name : String)(implicit site : Site) : Future[Party] =
     Audit.add(table, SQLTerms('name -> name), "id").single(SQLCols[Id])
-      .map(new Party(_, name, None, Permission.NONE))
+      .map(new Party(_, name, None))
 
   private def byName = "name ILIKE ? OR email ILIKE ?"
   private def byNameArgs(name : String) =
@@ -136,7 +144,7 @@ object Party extends TableId[Party]("party") {
     * @param who party doing the authorization, to exclude parties already authorized
     */
   def searchForAuthorize(name : String, who : Party) : Future[Seq[Party]] =
-    row(who.site).SELECT("WHERE " + byName + " AND id != ? AND id > 0 AND id NOT IN (SELECT child FROM authorize WHERE parent = ? UNION SELECT parent FROM authorize WHERE child = ?) LIMIT 8")
+    row.SELECT("WHERE " + byName + " AND id != ? AND id > 0 AND id NOT IN (SELECT child FROM authorize WHERE parent = ? UNION SELECT parent FROM authorize WHERE child = ?) LIMIT 8")
       .apply(byNameArgs(name) ++ SQLArgs(who.id) * 3).list
 
   /** Search for parties by name for the purpose of volume access.
@@ -144,43 +152,57 @@ object Party extends TableId[Party]("party") {
     * @param volume volume to which to grant access, to exclude parties with access already.
     */
   def searchForVolumeAccess(name : String, volume : Volume) : Future[Seq[Party]] =
-    row(volume.site).SELECT("WHERE " + byName + " AND id NOT IN (SELECT party FROM volume_access WHERE volume = ?) LIMIT 8").
+    row.SELECT("WHERE " + byName + " AND id NOT IN (SELECT party FROM volume_access WHERE volume = ?) LIMIT 8").
       apply(byNameArgs(name) :+ volume.id).list
 
   final val NOBODY : Id = asId(-1)
   final val ROOT   : Id = asId(0)
   /** The special party group representing everybody (including anonymous users) on the site.
     * This is also in the database, but is cached here for special handling. */
-  final val Nobody = new Party(NOBODY, "Everybody", None, Permission.NONE)(Site.Anon)
+  final val Nobody = new Party(NOBODY, "Everybody", None)
   /** The special party group representing authorized users on the site.
     * This is also in the database, but is cached here for special handling. */
-  // final val Root   = new Party(ROOT,   "Databrary")
+  final val Root   = new Party(ROOT,   "Databrary", None)
+}
+
+object SiteParty {
+  private[models] def make(p : Party)(implicit site : Site) : Future[SiteParty] =
+    if (p.equals(site.identity))
+      Async(new SiteParty(p, if (p.id.equals(Party.NOBODY)) Permission.NONE else Permission.ADMIN))
+    else
+      Authorize.delegate_check(site.identity.id, p.id).map(new SiteParty(p, _))
+
+  private val delegated = SelectAs[Permission.Value]("authorize_delegate_check(?, party.id)", "party_delegated")
+  def get(i : Party.Id)(implicit site : Site) : Future[Option[SiteParty]] =
+    (Party.row ~ delegated)
+      .map { case (party, delegated) =>
+        new SiteParty(party, delegated)
+      }.SELECT("WHERE id = ?").apply(site.identity.id, i).singleOpt
 }
 
 object Account extends TableId[Account]("account") {
-  private[models] def make(e : Party)(email : String, password : Option[String], openid : Option[String])(implicit site : Site) =
-    new Account(e, email, password.getOrElse(""), openid)(site)
+  private[models] def make(e : Party)(email : String, password : Option[String], openid : Option[String]) =
+    new Account(e, email, password.getOrElse(""), openid)
   private[models] val columns = Columns(
       SelectColumn[String]("email")
     , SelectColumn[Option[String]]("password")
     , SelectColumn[Option[String]]("openid")
     )
-  private[models] def row(implicit site : Site) : Selector[Account] =
+  private[models] val row : Selector[Account] =
     Party.columns.join(columns, using = 'id) map {
       case (e, a) => (make(e) _).tupled(a)
     }
-  private val access = Columns(SelectAs[Permission.Value]("authorize_access_check(party.id)", "party_access"))
+  private val access = SelectAs[Permission.Value]("authorize_access_check(party.id)", "party_access")
 
   /** Look up a user by id, without an active session.
     * @return None if no party or no account for given party
     */
-  def login(i : Int) : Future[Option[(Account, Permission.Value)]] =
-    (Party.baseColumns.join(columns, using = 'id) ~ access)
-      .map {
-        case (((id, name, orcid), (email, password, openid)), access) =>
-          new Account(new Party)
-      .SELECT("WHERE id = ?").apply(i).singleOpt
-      case Some((p, a)) => 
+  def _get(i : Int) : Future[Option[(Account,Permission.Value)]] =
+    (row ~ access)
+      .map { a =>
+        a._1._access.set(a._2)
+        a
+      }.SELECT("WHERE id = ?").apply(i).singleOpt
   /** Look up a user by id.
     * @return None if no party or no account for given party
     */
@@ -188,11 +210,11 @@ object Account extends TableId[Account]("account") {
     if (i == site.identity.id) Future.successful(site.user) else // optimization
     row.SELECT("WHERE id = ?").apply(i).singleOpt
   /** Look up a user by email. */
-  def getEmail(email : String)(implicit site : Site) : Future[Option[Account]] = 
+  def getEmail(email : String) : Future[Option[Account]] = 
     row.SELECT("WHERE email = ?").apply(email).singleOpt
   /** Look up a user by openid.
     * @param email optionally limit results to the given email
     * @return an arbitrary account with the given openid, or the account for email if the openid matches */
-  def getOpenid(openid : String, email : Option[String] = None)(implicit site : Site) : Future[Option[Account]] =
+  def getOpenid(openid : String, email : Option[String] = None) : Future[Option[Account]] =
     row.SELECT("WHERE openid = ? AND coalesce(email = ?, 't') LIMIT 1").apply(openid, email).singleOpt
 }

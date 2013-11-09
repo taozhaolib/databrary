@@ -31,8 +31,10 @@ object Login extends SiteController {
   def needLogin =
     Forbidden(viewLogin(Some(Messages("login.noCookie"))))
 
-  def view = SiteAction { implicit request =>
-    Ok(request.user.fold(viewLogin())(p => views.html.party.view(p)(request.withObj(p))))
+  def view = SiteAction.async { implicit request =>
+    request.user.fold(
+      AOk(viewLogin()))(_.perSite.map(
+      p => Ok(views.html.party.view(p)(request.withObj(p)))))
   }
 
   def ajaxView = SiteAction { implicit request =>

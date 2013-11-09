@@ -65,7 +65,7 @@ final class TagUse private (val tag : Tag, val who : Account, val slot : Slot, v
   def whoId = who.id
   def weight = if (up) 1 else -1
 
-  def remove = TagUse.remove(tag, slot, who)
+  def remove() = TagUse.remove(tag, slot, who)
 }
 
 object TagUse extends Table[TagUse]("tag_use") {

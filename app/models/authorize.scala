@@ -46,14 +46,14 @@ object Authorize extends Table[Authorize]("authorize") {
     * @param all include inactive authorizations
     */
   private[models] def getParents(child : Party, all : Boolean = false) : Future[Seq[Authorize]] =
-    columns.join(Party.row(child.site), "parent = party.id").map { case (a, p) =>
+    columns.join(Party.row, "parent = party.id").map { case (a, p) =>
         (make(child, p) _).tupled(a)
       }.SELECT("WHERE child = ?", conditionIf(all)).apply(child.id).list
   /** Get all authorizations granted ba a particular parent.
     * @param all include inactive authorizations
     */
   private[models] def getChildren(parent : Party, all : Boolean = false) : Future[Seq[Authorize]] =
-    columns.join(Party.row(parent.site), "child = party.id").map { case (a, c) =>
+    columns.join(Party.row, "child = party.id").map { case (a, c) =>
         (make(c, parent) _).tupled(a)
       }.SELECT("WHERE parent = ?", conditionIf(all)).apply(parent.id).list
 

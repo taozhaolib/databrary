@@ -63,7 +63,7 @@ object RequestObject {
 
 object SiteAction extends ActionCreator[SiteRequest.Base] {
   private[this] def getUser(request : Request[_]) : Future[Option[(Account,Permission.Value)]] =
-    macros.Async.flatMap(request.session.get("user").flatMap(Maybe.toInt _), models.Account.get_ _)
+    macros.Async.flatMap(request.session.get("user").flatMap(Maybe.toInt _), models.Account._get _)
 
   private[this] def getSuperuser(request : Request[_]) : Boolean =
     request.session.get("superuser").flatMap(Maybe.toLong _).exists(_ > System.currentTimeMillis)

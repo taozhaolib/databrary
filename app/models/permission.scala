@@ -29,8 +29,9 @@ object Permission extends PGEnum("permission") {
     has >= need || site.superuser
 
   /** The effective permission for data objects with the given attributes. */
-  def data(p : Value, consent : Site => Consent.Value, classification : Classification.Value) : HasPermission = new HasPermission {
-    def getPermission(implicit site : Site) =
+  def data(p : Value, consent : Site => Consent.Value, classification : Classification.Value)(implicit site_ : Site) : HasPermission = new HasPermission {
+    val site = site_
+    def getPermission =
       if (p >= FULL)
         p
       else if (p >= DOWNLOAD && classification >= Classification.access(consent(site)))

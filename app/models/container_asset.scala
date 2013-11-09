@@ -10,7 +10,7 @@ import site._
   * An asset link includes the asset and container, along with a name and description for that particular link.
   * Permissions are checked in msot cases, as indicated.
   */
-sealed class ContainerAsset protected (val asset : Asset, val container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with SitePage with InVolume {
+sealed class ContainerAsset protected (val asset : Asset, val container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with SiteObject with InVolume {
   def assetId = asset.id
   def containerId = container.id
   def id = (assetId, containerId)
@@ -127,7 +127,7 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
 
 /** A segment of an asset as used in a slot.
   * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, excerpt_ : Option[Boolean] = None) extends TableRow with SitePage with BackedAsset with InVolume {
+sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, excerpt_ : Option[Boolean] = None) extends TableRow with SiteObject with BackedAsset with InVolume {
   def slotId = slot.id
   def volume = link.volume
   def source = link.asset.source

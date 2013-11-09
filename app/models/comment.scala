@@ -26,17 +26,17 @@ object Comment extends TableId[Comment]("comment") {
       case (comment, slot) => (make(who, slot) _).tupled(comment)
     }
   private def volumeRow(volume : Volume) = columns.
-    join(Account.row(volume.site), "comment.who = party.id").
+    join(Account.row, "comment.who = party.id").
     join(Slot.volumeRow(volume), "comment.slot = slot.id") map {
       case ((comment, who), slot) => (make(who, slot) _).tupled(comment)
     }
   private def containerRow(container : Container) = columns.
-    join(Account.row(container.site), "comment.who = party.id").
+    join(Account.row, "comment.who = party.id").
     join(Slot.containerRow(container), "comment.slot = slot.id") map {
       case ((comment, who), slot) => (make(who, slot) _).tupled(comment)
     }
   private def slotRow(slot : Slot) = columns.
-    join(Account.row(slot.site), "comment.who = party.id") map {
+    join(Account.row, "comment.who = party.id") map {
       case (comment, who) => (make(who, slot) _).tupled(comment)
     }
   private val order = "ORDER BY comment.time DESC"
