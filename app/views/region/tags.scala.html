@@ -12,7 +12,7 @@
     <h1>Tags</h1>
 
     <ol class="sort-list tag-list">
-        @defining(volume.fold(Async.get(slot.tags()))(v => Async.get(v.tags))) { tags =>
+        @defining(volume.fold(Async.wait(slot.tags()))(v => Async.get(v.tags))) { tags =>
             @if(tags.nonEmpty) {
                 @tags.map { case TagWeight(tag, weight, user) =>
                 <li id="tag-@tag.id" class="tag cf">

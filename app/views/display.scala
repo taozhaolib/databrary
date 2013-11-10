@@ -46,7 +46,7 @@ object display {
     "%.1f %s".format(n, u)
   }
   def age(record : models.Record, slot : models.Slot) : Option[String] =
-    slot.container.date.flatMap(d => Async.get(record.age(d))).map(age _)
+    slot.container.date.flatMap(d => Async.wait(record.age(d))).map(age _)
 
   def agerange(a : dbrary.Range[Age]) : String = range(age)(a)
 

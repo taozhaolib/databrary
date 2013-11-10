@@ -1,6 +1,6 @@
 @(volume : Volume)(implicit request : SiteRequest[_])
 
-@defining(Async.get(volume.slotRecords)) { sessions =>
+@defining(Async.wait(volume.slotRecords)) { sessions =>
     @if(sessions.nonEmpty) {
         <div id="sessions" class="sessions view">
             <h2 class='tab' data-message="The <strong>Sessions tab</strong> organizes study data by session.">Sessions</h2>

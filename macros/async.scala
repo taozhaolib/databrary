@@ -61,4 +61,5 @@ object Async {
 
   /** Unsafely retrieve the value of an already evaluated Future. */
   def get[A](a : Future[A]) : A = a.value.get.get
+  @deprecated("blocking call", "") def wait[A](a : Future[A]) : A = scala.concurrent.Await.result(a, scala.concurrent.duration.Duration(1, scala.concurrent.duration.SECONDS))
 }

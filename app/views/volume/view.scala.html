@@ -50,7 +50,7 @@
 					</aside>
 
 					<div class="col-3">
-					@defining(Async.get(volume.funding)) { funding =>
+					@defining(Async.wait(volume.funding)) { funding =>
 					@if(funding.nonEmpty) {
 						<aside class="funding foot">
 							<h2>Funding</h2>

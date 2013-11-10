@@ -10,7 +10,7 @@ case class FromTable(table : String) {
 }
 
 /** A single expression for a select statement, where toString is expected to produce valid SQL. */
-sealed class SelectExpr[A : SQLType](val expr : String) {
+sealed class SelectExpr[A : SQLType](expr : String) {
   final override def toString : String = expr
   def get(a : Any) : A = SQLType.get[A](a)
   /** Qualify this expression to select from a particular table, if applicable. */
@@ -31,7 +31,7 @@ object SelectColumn {
 }
 
 /** A "expression AS name" select expression. */
-final case class SelectAs[A : SQLType](override val expr : String, name : String) extends SelectExpr[A](expr + " AS " + name)
+final case class SelectAs[A : SQLType](expr : String, name : String) extends SelectExpr[A](expr + " AS " + name)
 
 /** Information necessary to run a simple SELECT query.
   * @param selects expressions to select in the query

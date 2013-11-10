@@ -58,7 +58,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   def allRecords(category : Option[RecordCategory] = None) = Record.getVolume(this, category)
 
   /** List of all citations on this volume. */
-  def citations = VolumeCitation.getVolume(this)
+  lazy val citations = VolumeCitation.getVolume(this)
   def setCitations(list : Seq[VolumeCitation]) = VolumeCitation.setVolume(this, list)
 
   /** List of all funding on this volume. */
@@ -66,9 +66,9 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   def setFunding(list : Seq[VolumeFunding]) = VolumeFunding.setVolume(this, list)
 
   /** The list of comments in this volume. */
-  def comments = Comment.getVolume(this)
+  lazy val comments = Comment.getVolume(this)
   /** The list of tags on this volume and their use on the topSlot by the current user. */
-  def tags = TagWeight.getVolume(this)
+  lazy val tags = TagWeight.getVolume(this)
 
   /** An image-able "asset" that may be used as the volume's thumbnail. */
   def thumb = SlotAsset.getThumb(this)
@@ -83,10 +83,10 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   def slotRecords : Future[Seq[(Slot,Seq[Record])]] = _sessions.map { sess =>
     val l = sess.sortBy(_._1.map(s => (s.consent == Consent.PRIVATE) -> s.id.unId))
     val r = l.genericBuilder[(Slot,Seq[Record])]
-    @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Slot,Seq[Record])] = l match {
-      case Nil => r.result
-      case (None, _) :: r => group(r)
-      case (Some(k), _) :: _ =>
+    @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Slot,Seq[Record])] = l.headOption match {
+      case None => r.result
+      case Some((None, _)) => group(l.tail)
+      case Some((Some(k), _)) =>
         val (p, s) = l.span(_._1.get.equals(k)) // safe because sorted
         r += k -> p.flatMap(_._2)
         group(s)
@@ -98,13 +98,13 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   def recordSlots : Future[Seq[(RecordCategory,Seq[(Record,Seq[Slot])])]] = _sessions.map { sess =>
     val l = sess.sortBy(_._2.map(r => r.category.map(_.id.unId) -> r.id.unId))
     val r = l.genericBuilder[(Record,Seq[Slot])]
-    @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Record,Seq[Slot])] = l match {
-      case Nil => r.result
-      case (_, Some(k)) :: _ if k.category.isDefined =>
+    @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Record,Seq[Slot])] = l.headOption match {
+      case None => r.result
+      case Some((_, Some(k))) if k.category.isDefined =>
         val (p, s) = l.span(_._2.get.equals(k)) // safe because sorted
         r += k -> p.flatMap(_._1)
         group(s)
-      case _ :: r => group(r)
+      case _ => group(l.tail)
     }
     groupBy(group(l), (r : (Record, Seq[Slot])) => r._1.category.get)
   }
@@ -119,7 +119,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       case (Some(s), Some(r)) if r.category.equals(Some(RecordCategory.Participant)) =>
         sessions = sessions + 1
         if (s.consent >= Consent.SHARED) shared = shared + 1
-        s.container.date.flatMap(d => Async.get(r.age(d))).foreach { a =>
+        s.container.date.flatMap(d => Async.wait(r.age(d))).foreach { a =>
           if (ages == 0) {
             agemin = a
             agemax = a
@@ -143,7 +143,10 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     for {
       _ <- partyAccess
       _ <- toplevelAssets
+      _ <- citations
       _ <- _sessions
+      _ <- comments
+      _ <- tags
     } yield (())
 
   def pageName = name

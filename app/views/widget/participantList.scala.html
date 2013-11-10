@@ -16,7 +16,7 @@
             <tbody>
                 @records.map { record =>
                     <tr>
-			    <td class="main"><a href='@record.pageURL'>@Async.get(record.ident).getOrElse("["+record.id+"]")</a></td>
+			    <td class="main"><a href='@record.pageURL'>@Async.wait(record.ident).getOrElse("["+record.id+"]")</a></td>
                         <td class="meta">@record.gender</td>
                         <td class="meta">@display.age(record, slot)</td>
                     </tr>

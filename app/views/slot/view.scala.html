@@ -19,16 +19,16 @@
                     </dl>
                 </div>
 
-                @widget.participantList(slot, Async.get(slot.records))
+                @widget.participantList(slot, Async.wait(slot.records))
             </div>
 
             <div class="extended col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
-                @widget.assetFrame(Async.get(slot.assets))
+                @widget.assetFrame(Async.wait(slot.assets))
             </div>
         </div>
 
         <div class="row">
-        @region.comments(Some(slot), Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), Async.get(slot.comments(true)))
+        @region.comments(Some(slot), Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), Async.wait(slot.comments(true)))
         @region.tags(slot)
         </div>
     }

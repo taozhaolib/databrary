@@ -1,6 +1,6 @@
 @(volume : Volume)(implicit request: RequestObject[Volume]#Site[_])
 
-@defining(Async.get(volume.summary)) { s =>
+@defining(Async.wait(volume.summary)) { s =>
         <div class="siderim volume">
             <h2>Metadata</h2>
 
