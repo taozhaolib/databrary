@@ -12,7 +12,7 @@ import site._
   */
 sealed abstract class RecordCategory private (val id : RecordCategory.Id, val name : String) extends TableRowId[RecordCategory] {
   /** The default set of metrics which define records in this category. */
-  def template : Seq[Metric]
+  def template : Seq[Metric[_]]
 }
 
 /** Interface to record categories.
@@ -56,29 +56,33 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   }
 
   /** A specific measure of the given type and metric. */
-  def measure[T](metric : MetricT[T]) : Future[Option[T]] = MeasureT.get[T](this.id, metric)
-  def measure(metric : Metric) : Future[Option[Measure]] = Measure.get(this.id, metric)
+  def measure[T](metric : Metric[T]) : Future[Option[Measure[T]]] = Measure.get[T](this.id, metric)
+  def measureV[T](metric : Metric[T]) : Future[Option[T]] = MeasureV.get[T](this.id, metric)
   /** All measures in this record. */
-  lazy val measures : Future[Seq[Measure]] = Measure.getRecord(this.id)
+  lazy val measures : Future[Seq[Measure[_]]] = Measure.getRecord(this.id)
 
   /** Add or change a measure on this record.
     * This is not type safe so may generate SQL exceptions, and may invalidate measures on this object. */
-  def setMeasure(metric : Metric, value : String) : Future[Boolean] = Measure(id, metric, value).set
+  def setMeasure[T](metric : Metric[T], value : String) : Future[Boolean] =
+    Measure[T](metric, value).set(this)
+  /** Add or change a measure on this record. */
+  def setMeasureV[T](metric : Metric[T], value : T) : Future[Boolean] =
+    MeasureV[T](metric, value).set(this)
   /** Remove a measure from this record.
     * This may invalidate measures on this object. */
-  def deleteMeasure(metric : Metric) = Measure.delete(id, metric)
+  def removeMeasure(metric : Metric[_]) = Measure.remove(this, metric)
 
-  private val _ident = FutureVar[Option[String]](measure(Metric.Ident))
+  private val _ident = FutureVar[Option[String]](measureV(Metric.Ident))
   /** Cached version of `measure(Metric.Ident)`.
     * This may become invalid if the value is changed. */
   def ident : Future[Option[String]] = _ident.apply
 
-  private val _birthdate = FutureVar[Option[Date]](measure(Metric.Birthdate))
+  private val _birthdate = FutureVar[Option[Date]](measureV(Metric.Birthdate))
   /** Cached version of `measure(Metric.Birthdate)`.
     * This may become invalid if the value is changed. */
   def birthdate : Future[Option[Date]] = _birthdate.apply
 
-  private val _gender = FutureVar[Option[String]](measure(Metric.Gender))
+  private val _gender = FutureVar[Option[String]](measureV(Metric.Gender))
   /** Cached version of `measure(Metric.Gender)`.
     * This may become invalid if the value is changed. */
   def gender : Future[Option[String]] = _gender.apply
@@ -99,7 +103,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   /** Effective permission the site user has over a given metric in this record, specifically in regards to the measure datum itself.
     * Record permissions depend on volume permissions, but can be further restricted by consent levels.
     */
-  def dataPermission(metric : Metric)(implicit site : Site) : HasPermission =
+  def dataPermission(metric : Metric[_])(implicit site : Site) : HasPermission =
     Permission.data(volume.permission, _ => consent, metric.classification)
 
   /** The set of slots to which this record applies. */
@@ -132,16 +136,14 @@ object Record extends TableId[Record]("record") {
       case (rec, vol) => (make(vol) _).tupled(rec)
     }
   private[models] def volumeRow(vol : Volume) = columns.map(make(vol) _)
-  private[models] def measureRow[T](vol : Volume, metric : MetricT[T]) = {
+  private[models] def measureRow[T](vol : Volume, metric : Metric[T]) = {
     val mt = metric.measureType
-    volumeRow(vol).leftJoin(mt.select.column, "record.id = " + mt.table + ".record AND " + mt.table + ".metric = ?") map {
-      case (record, meas) =>
-        metric match {
-          case Metric.Ident => record._ident.set(meas)
-          case _ => ()
-        }
-        (record, meas)
-    }
+    volumeRow(vol).leftJoin(mt.select.column, "record.id = " + mt.table + ".record AND " + mt.table + ".metric = ?")
+      .map { rm =>
+        if (metric.equals(Metric.Ident))
+          rm._1._ident.set(rm._2.asInstanceOf[Option[String]])
+        rm
+      }
   }
 
   /** Retrieve a specific record by id. */
@@ -173,7 +175,7 @@ object Record extends TableId[Record]("record") {
     * @param metric search by metric
     * @param value measure value that must match
     */
-  def findMeasure[T](volume : Volume, category : Option[RecordCategory] = None, metric : MetricT[T], value : T) : Future[Seq[Record]] =
+  def findMeasure[T](volume : Volume, category : Option[RecordCategory] = None, metric : Metric[T], value : T) : Future[Seq[Record]] =
     measureRow(volume, metric).map(_._1)
       .SELECT("WHERE record.volume = ?",
         (if (category.isDefined) "AND record.category = ?" else ""),

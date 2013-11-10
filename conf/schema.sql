@@ -603,20 +603,15 @@ CREATE VIEW "measure_view" AS
 	SELECT record, metric, text(datum) FROM measure_date;
 COMMENT ON VIEW "measure_view" IS 'Data from all measure tables, coerced to text.';
 
+CREATE VIEW "measures" ("record", "measures") AS
+	SELECT record, array_agg(metric || ':' || datum ORDER BY metric) FROM measure_view GROUP BY record;
+COMMENT ON VIEW "measures" IS 'All measures for each record aggregated into a single array.';
+
 CREATE VIEW "measure_all" ("record", "metric", "datum_text", "datum_number", "datum_date") AS
 	SELECT record, metric, datum, NULL::numeric, NULL::date FROM measure_text UNION ALL
 	SELECT record, metric, NULL, datum, NULL FROM measure_number UNION ALL
 	SELECT record, metric, NULL, NULL, datum FROM measure_date;
 COMMENT ON VIEW "measure_all" IS 'Data from all measure tables, coerced to text.';
-
-
-CREATE VIEW "record_view" ("id", "volume", "category", "ident", "birthdate", "gender") AS
-	SELECT record.*, ident.datum, birthdate.datum, gender.datum
-	  FROM record
-	       LEFT JOIN measure_text     ident ON id =     ident.record AND     ident.metric = -900
-	       LEFT JOIN measure_date birthdate ON id = birthdate.record AND birthdate.metric = -590
-	       LEFT JOIN measure_text    gender ON id =    gender.record AND    gender.metric = -580;
-COMMENT ON VIEW "record_view" IS 'Records joined with their basic information.  This is temporary until better measure extraction is in place.';
 
 
 CREATE TABLE "slot_record" (

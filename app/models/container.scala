@@ -180,8 +180,8 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   /** The list of records and possibly measures on this object.
     * This is essentially equivalent to `this.records(false).filter(_.category == category).map(r => (r, r.measure[T](metric)))` but more efficient.
     * @param category if Some limit to the given category */
-  private def recordMeasures[T](category : Option[RecordCategory] = None, metric : MetricT[T] = Metric.Ident) : Future[Seq[(Record, Option[T])]] =
-    MeasureT.getSlot[T](this, category, metric)
+  private def recordMeasures[T](category : Option[RecordCategory] = None, metric : Metric[T] = Metric.Ident) : Future[Seq[(Record, Option[T])]] =
+    MeasureV.getSlot[T](this, category, metric)
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */
   private val idents : Future[Seq[String]] =

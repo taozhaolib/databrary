@@ -15,7 +15,7 @@ object Curated {
 
   /* These are all upper-case to allow case-folding insensitive matches.
    * They also must match (in order) the option in the various metrics. */
-  private class MetricENUM(metric : MetricT[String]) extends ENUM(metric.name) {
+  private class MetricENUM(metric : Metric[String]) extends ENUM(metric.name) {
     def valueOf(e : Value) = metric.values(e.id)
   }
   private object Gender extends MetricENUM(Metric.Gender) {
@@ -62,7 +62,7 @@ object Curated {
     def fields = Seq(id, gender.toString, birthdate.toString, optString(race) + "/" + optString(ethnicity), optString(language))
     def key = id
 
-    private def measures : Seq[(Metric,String)] = Seq(
+    private def measures : Seq[(Metric[_],String)] = Seq(
         Metric.Ident -> id
       , Metric.Gender -> Gender.valueOf(gender)
       , Metric.Birthdate -> birthdate.toString) ++

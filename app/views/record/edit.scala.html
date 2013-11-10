@@ -1,4 +1,4 @@
-@(record : models.Record, meas : Seq[Metric], form : controllers.Record.EditForm, json : Html)(implicit request : RequestObject[SiteObject]#Site[_])
+@(record : models.Record, meas : Seq[Metric[_]], form : controllers.Record.EditForm, json : Html)(implicit request : RequestObject[SiteObject]#Site[_])
 
 @import helper.FieldConstructor
 
@@ -42,7 +42,7 @@
 
                     <div class="repeat">
                         <div class="repeated">
-                            @tag.select(form("measure["+meas.length+"].metric"), Async.get(Metric.getAll).map(m => (m.id.toString, m.name + " (" + m.classification + ")")), 'placeholder -> "Metric", 'class -> "metric", '_class -> "metric-div")
+                            @tag.select(form("measure["+meas.length+"].metric"), Metric.getAll.map(m => (m.id.toString, m.name + " (" + m.classification + ")")), 'placeholder -> "Metric", 'class -> "metric", '_class -> "metric-div")
                             @tag.inputText(form("measure["+meas.length+"].datum"), 'placeholder -> "Value", 'class -> "datum", '_class -> "datum-div")
                         </div>
                     </div>

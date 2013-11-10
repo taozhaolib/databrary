@@ -57,15 +57,15 @@ object Record extends SiteController {
     )))
   }
 
-  private def editFormFill(implicit request : Request[_]) : (Seq[Metric], EditForm) = {
+  private def editFormFill(implicit request : Request[_]) : (Seq[Metric[_]], EditForm) = {
     val r = request.obj
     val m = macros.Async.get(r.measures)
     val mm = m.map(_.metric)
-    val t = r.category.fold[Seq[Metric]](Nil)(_.template).diff(mm)
+    val t = r.category.fold[Seq[Metric[_]]](Nil)(_.template).diff(mm)
     (mm ++ t, editForm.fill(
       (
         r.categoryId,
-        m.map(m => (m.metricId, Some(m.datum.toString))) ++ t.map(_.id -> None)
+        m.map(m => (m.metricId, Some(m.datum))) ++ t.map(_.id -> None)
       )
     ))
   }
@@ -89,7 +89,7 @@ object Record extends SiteController {
           ) { m =>
             datum.fold[Future[Option[String]]] {
               if (!filled.contains(metric.unId))
-                request.obj.deleteMeasure(m).map(_ => None)
+                request.obj.removeMeasure(m).map(_ => None)
               else
                 macros.Async(None)
             } { value =>
@@ -141,7 +141,7 @@ object Record extends SiteController {
         for {
           r <- models.Record.create(request.obj.volume, cat)
           _ <- r.addSlot(request.obj)
-        } yield (Created(views.html.record.edit(r, cat.fold[Seq[Metric]](Nil)(_.template), editForm.fill((cat.map(_.id), Seq())), js)))
+        } yield (Created(views.html.record.edit(r, cat.fold[Seq[Metric[_]]](Nil)(_.template), editForm.fill((cat.map(_.id), Seq())), js)))
       } (models.Record.get(_).flatMap(_
         .filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId == v)
         .fold(
@@ -159,7 +159,7 @@ object Record extends SiteController {
   def add(v : models.Volume.Id, catID : models.RecordCategory.Id) = Volume.Action(v, Permission.EDIT).async { implicit request =>
     val cat = RecordCategory.get(catID)
     models.Record.create(request.obj.volume, cat).map { r =>
-      Created(views.html.record.edit(r, cat.fold[Seq[Metric]](Nil)(_.template), editForm.fill((cat.map(_.id), Seq())), js))
+      Created(views.html.record.edit(r, cat.fold[Seq[Metric[_]]](Nil)(_.template), editForm.fill((cat.map(_.id), Seq())), js))
     }
   }
 
