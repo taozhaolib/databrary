@@ -30,7 +30,8 @@ abstract class SQLType[A](val name : String, val aClass : Class[A]) {
       override def show(b : B) : String = parent.show(g(b))
       override def put(b : B) : Any = parent.put(g(b))
       def read(s : String) : Option[B] = parent.read(s).flatMap(f)
-      override def get(x : Any, where : String) : B = f(parent.get(x, where)).getOrElse(throw new SQLTypeMismatch(x, this, parent.name).amend(where))
+      override def get(x : Any, where : String) : B = f(parent.get(x, where))
+        .getOrElse(throw new SQLTypeMismatch(x, this, parent.name).amend(where))
     }
 }
 
@@ -64,10 +65,24 @@ object SQLType {
 
   implicit object int extends SQLType[Int]("integer", classOf[Int]) {
     def read(s : String) = Maybe.toInt(s)
+    override def get(x : Any, where : String = "") : Int = x match {
+      case null => throw new SQLUnexpectedNull(this, where)
+      case i : Int => i
+      case i : java.lang.Integer => i
+      case s : String => read(s).getOrElse(throw new SQLTypeMismatch(x, this, where))
+      case _ => throw new SQLTypeMismatch(x, this, where)
+    }
   }
 
   implicit object long extends SQLType[Long]("bigint", classOf[Long]) {
     def read(s : String) = Maybe.toLong(s)
+    override def get(x : Any, where : String = "") : Long = x match {
+      case null => throw new SQLUnexpectedNull(this, where)
+      case i : Long => i
+      case i : java.lang.Long => i
+      case s : String => read(s).getOrElse(throw new SQLTypeMismatch(x, this, where))
+      case _ => throw new SQLTypeMismatch(x, this, where)
+    }
   }
 
   implicit object date extends SQLType[Date]("date", classOf[Date]) {
