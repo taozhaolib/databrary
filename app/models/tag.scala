@@ -115,7 +115,7 @@ object TagWeight extends Table[TagWeight]("tag_weight") {
     if (all)
       aggregate.SELECT("""
          JOIN slot ON tag_weight.slot = slot.id 
-        WHERE slot.source = ? AND slot.segment <@ ?
+        WHERE slot.source = ? AND slot.segment <@ ?::segment
         GROUP BY tag.id, tag.name
         HAVING sum(tag_weight.weight) > 0 OR count(tag_use.up) > 0
         ORDER BY agg_weight DESC""")

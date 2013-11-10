@@ -19,8 +19,10 @@ object Volume extends SiteController {
   private[controllers] def Action(i : models.Volume.Id, p : Permission.Value = Permission.VIEW) =
     SiteAction ~> action(i, p)
 
-  def view(i : models.Volume.Id) = Action(i) { implicit request =>
-    Ok(views.html.volume.view())
+  def view(i : models.Volume.Id) = Action(i).async { implicit request =>
+    request.obj.fill.map { _ =>
+     Ok(views.html.volume.view())
+    }
   }
 
   def listAll = SiteAction.async { implicit request =>

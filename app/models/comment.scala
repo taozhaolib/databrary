@@ -49,7 +49,7 @@ object Comment extends TableId[Comment]("comment") {
     * @param all include all indirect annotations on any containers, objects, or clips contained within the given target */
   private[models] def getSlot(slot : Slot, all : Boolean = true) : Future[Seq[Comment]] =
     if (all)
-      containerRow(slot.container).SELECT("WHERE slot.source = ? AND slot.segment <@ ?", order)
+      containerRow(slot.container).SELECT("WHERE slot.source = ? AND slot.segment <@ ?::segment", order)
         .apply(slot.containerId, slot.segment).list
     else
       slotRow(slot).SELECT("WHERE comment.slot = ?", order).apply(slot.id).list

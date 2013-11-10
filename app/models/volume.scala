@@ -50,7 +50,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   }
 
   /** List of toplevel assets within this volume. */
-  def toplevelAssets = SlotAsset.getToplevel(this)
+  lazy val toplevelAssets = SlotAsset.getToplevel(this)
 
   /** List of records defined in this volume.
     * @param category restrict to the specified category
@@ -138,6 +138,13 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       agerange = Range(agemin, agemax),
       agemean = Age(if (ages == 0) 0 else agesum / ages))
   }
+
+  def fill : Future[Unit] = 
+    for {
+      _ <- partyAccess
+      _ <- toplevelAssets
+      _ <- _sessions
+    } yield (())
 
   def pageName = name
   def pageParent = None

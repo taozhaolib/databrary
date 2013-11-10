@@ -5,7 +5,7 @@ import com.github.mauricio.async.db
 import macros._
 
 class SQLTypeMismatch(value : Any, sqltype : SQLType[_], where : String = "")
-  extends db.exceptions.DatabaseException("Type mismatch converting " + value.toString + ":" + value.getClass + " to " + sqltype.name + Maybe.bracket(" for ", where)) {
+  extends db.exceptions.DatabaseException("Type mismatch converting " + (if (value == null) "null" else value.toString + ":" + value.getClass) + " to " + sqltype.name + Maybe.bracket(" for ", where)) {
   def amend(msg : String) : SQLTypeMismatch = new SQLTypeMismatch(value, sqltype, Maybe.bracket("", where, " in ") + msg)
 }
 
@@ -61,6 +61,13 @@ object SQLType {
       case "0" => Some(false)
       case _ => None
     }
+    override def get(x : Any, where : String = "") : Boolean = x match {
+      case null => throw new SQLUnexpectedNull(this, where)
+      case b : Boolean => b
+      case b : java.lang.Boolean => b
+      case s : String => read(s).getOrElse(throw new SQLTypeMismatch(x, this, where))
+      case _ => throw new SQLTypeMismatch(x, this, where)
+    }
   }
 
   implicit object int extends SQLType[Int]("integer", classOf[Int]) {
@@ -69,6 +76,8 @@ object SQLType {
       case null => throw new SQLUnexpectedNull(this, where)
       case i : Int => i
       case i : java.lang.Integer => i
+      case i : Short => i.toInt
+      case i : java.lang.Short => i.toInt
       case s : String => read(s).getOrElse(throw new SQLTypeMismatch(x, this, where))
       case _ => throw new SQLTypeMismatch(x, this, where)
     }

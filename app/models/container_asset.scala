@@ -252,7 +252,7 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
 
   /** Retrieve the list of all assets within the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[SlotAsset]] =
-    slotRow(slot).SELECT("WHERE container_asset.container = ? AND", condition("?"), "ORDER BY container_asset.position NULLS LAST, format.id")
+    slotRow(slot).SELECT("WHERE container_asset.container = ? AND", condition("?::segment"), "ORDER BY container_asset.position NULLS LAST, format.id")
       .apply(slot.id, slot.containerId, slot.segment, slot.segment).list
 
   /** Build the SlotAsset for the given ContainerAsset#container.fullSlot. */
@@ -298,6 +298,6 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
       WHERE container_asset.container = ?
         AND (format.id = ? OR format.mimetype LIKE 'image/%') 
         AND data_permission(?, ?, file.classification, ?, toplevel_asset.excerpt) >= 'DOWNLOAD'
-        AND""", condition("?"), "LIMIT 1")
+        AND""", condition("?::segment"), "LIMIT 1")
       .apply(slot.id, slot.containerId, TimeseriesFormat.VIDEO, slot.getPermission, slot.consent, site.access, slot.segment, slot.segment).singleOpt
 }
