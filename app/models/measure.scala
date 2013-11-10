@@ -47,7 +47,7 @@ private[models] object MeasureType {
   * @param classification privacy-determining identification level of measurements of this type.
   * @param values possible values of categorical text data types (nominal/factors), or empty if unrestricted.
   */
-sealed class Metric[T] private[models] (val id : Metric.Id, val name : String, val classification : Classification.Value, val values : Array[String] = Array[String]())(implicit val measureType : MeasureType[T]) extends TableRowId[Metric[_]] {
+sealed class Metric[T] private[models] (val id : Metric.Id, val name : String, val classification : Classification.Value, val values : IndexedSeq[String] = IndexedSeq.empty[String])(implicit val measureType : MeasureType[T]) extends TableRowId[Metric[_]] {
   // val id = id_.coerce[MetricT[T]]
   def dataType = measureType.dataType
   def sqlType : SQLType[T] = measureType.sqlType
@@ -57,14 +57,14 @@ object Metric extends TableId[Metric[_]]("metric") {
   private val cache = mutable.Map.empty[Int, Metric[_]]
   private[models] def add(m : Metric[_]) = cache.update(m.id.unId, m)
 
-  private[this] def make(id : Id, name : String, classification : Classification.Value, dataType : DataType.Value, values : Option[Array[String]]) =
-    new Metric(id, name, classification, values.getOrElse(Array[String]()))(MeasureType(dataType))
+  private[this] def make(id : Id, name : String, classification : Classification.Value, dataType : DataType.Value, values : Option[IndexedSeq[String]]) =
+    new Metric(id, name, classification, values.getOrElse(IndexedSeq.empty[String]))(MeasureType(dataType))
   private[models] val row : Selector[Metric[_]] = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
     , SelectColumn[Classification.Value]("classification")
     , SelectColumn[DataType.Value]("type")
-    , SelectColumn[Option[Array[String]]]("values")
+    , SelectColumn[Option[IndexedSeq[String]]]("values")
     ).map(make _)
 
   /** Retrieve a single metric by id. */
@@ -91,19 +91,15 @@ object Metric extends TableId[Metric[_]]("metric") {
   /** Identifiers providing generic labels for records or data, such as participant id, condition name, etc.
     * [[Classification.DEIDENTIFIED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
   final val Ident     = new Metric[String](IDENT, "ident", Classification.DEIDENTIFIED)
-  add(Ident)
-
   /** Date of birth for any records representing organisms or other entities with dates of origination.
     * These are treated specially in combination with [[Container.date]] to compute ages.
     * [[Classification.IDENTIFIED]] implies all authorized researchers get full access to these. */
   final val Birthdate = new Metric[Date](BIRTHDATE, "birthdate", Classification.IDENTIFIED)
-  add(Birthdate)
-
   /** Gender is treated as a text enumeration. */
-  object Gender    extends Metric[String](GENDER, "gender", Classification.DEIDENTIFIED, Array[String]("Female", "Male"))
-  object Race      extends Metric[String](RACE, "race", Classification.DEIDENTIFIED, Array[String]("American Indian or Alaska Native","Asian","Native Hawaiian or Other Pacific Islander","Black or African American","White","Multiple"))
-  object Ethnicity extends Metric[String](ETHNICITY, "ethnicity", Classification.DEIDENTIFIED, Array[String]("Not Hispanic or Latino","Hispanic or Latino"))
-  object Language  extends Metric[String](LANGUAGE, "language", Classification.DEIDENTIFIED)
+  final val Gender    = new Metric[String](GENDER, "gender", Classification.DEIDENTIFIED, IndexedSeq[String]("Female", "Male"))
+  final val Race      = new Metric[String](RACE, "race", Classification.DEIDENTIFIED, IndexedSeq[String]("American Indian or Alaska Native","Asian","Native Hawaiian or Other Pacific Islander","Black or African American","White","Multiple"))
+  final val Ethnicity = new Metric[String](ETHNICITY, "ethnicity", Classification.DEIDENTIFIED, IndexedSeq[String]("Not Hispanic or Latino","Hispanic or Latino"))
+  final val Language  = new Metric[String](LANGUAGE, "language", Classification.DEIDENTIFIED)
 }
 
 /** A measurement value with a specific (unconverted) type.
@@ -176,12 +172,12 @@ object Measure extends Table[Measure[_]]("measures") {
     },
     _.toString)
 
-  private val columns = Columns(SelectColumn[Array[Raw]]("measures"))
+  private val columns = Columns(SelectColumn[IndexedSeq[Raw]]("measures"))
 
   private[models] def getRecord(record : Record.Id) : Future[Seq[Measure[_]]] =
     columns.SELECT("WHERE record = ?").apply(record).singleOpt.flatMap {
       case None => Async(Nil)
-      case Some(r) => Async.sequence(r.toSeq.map(_.get))
+      case Some(r) => Async.sequence(r.map(_.get))
     }
 }
 

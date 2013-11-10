@@ -20,7 +20,7 @@ abstract class SQLType[A](val name : String, val aClass : Class[A]) {
   def read(s : String) : Option[A]
   def get(x : Any, where : String = "") : A = x match {
     case null => throw new SQLUnexpectedNull(this, where)
-    case a /* : A */ if aClass.isAssignableFrom(x.getClass) => x.asInstanceOf[A]
+    case a /* : A */ if aClass.isAssignableFrom(a.getClass) => a.asInstanceOf[A]
     case s : String => read(s).getOrElse(throw new SQLTypeMismatch(x, this, where))
     case _ => throw new SQLTypeMismatch(x, this, where)
   }
@@ -110,9 +110,18 @@ object SQLType {
     def read(s : String) = Maybe.toNumber(BigDecimal(s))
   }
 
-  implicit def array[A](implicit t : SQLType[A]) : SQLType[Array[A]] =
-    new SQLType[Array[A]](t.name + "[]", classOf[Array[A]]) {
-      def read(s : String) = None /* TODO */
+  implicit def array[A](implicit t : SQLType[A]) : SQLType[IndexedSeq[A]] =
+    new SQLType[IndexedSeq[A]](t.name + "[]", classOf[IndexedSeq[A]]) {
+      /* TODO: */
+      def show(a : A) : String = ???
+      def put(a : A) : Any = ???
+      def read(s : String) = None
+      override def get(x : Any, where : String = "") : IndexedSeq[A] = x match {
+        case null => throw new SQLUnexpectedNull(this, where)
+        case a : IndexedSeq[Any] => a.map(t.get(_, where))
+        case s : String => read(s).getOrElse(throw new SQLTypeMismatch(x, this, where))
+        case _ => throw new SQLTypeMismatch(x, this, where)
+      }
     }
 
   implicit def option[A](implicit t : SQLType[A]) : SQLType[Option[A]] =
