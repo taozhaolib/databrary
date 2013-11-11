@@ -7,6 +7,7 @@ object ApplicationBuild extends Build {
   val appName         = "databrary"
 
   val dbDependencies = Seq(
+    jdbc,
     "com.github.mauricio" %% "postgresql-async" % "0.2.8"
   )
 
