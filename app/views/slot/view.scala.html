@@ -1,32 +1,9 @@
 @(slot : models.Slot, commentForm : controllers.Slot.CommentForm = controllers.Slot.commentForm)(implicit request : RequestObject[Slot]#Site[_])
 
 @template.crud("Session: " + slot.pageName) {
-        <div class="row">
-            <div class="description col-desktop-6 push-desktop-2 col-laptop-6 col-tablet-6 col-mobile-6">
-                <div class="siderim">
-                    <h2>Metadata</h2>
-
-                    <dl class="measures">
-                        @slot.container.date.map { _ =>
-                            <dt>Data collected</dt>
-                            <dd><time>@display.date(slot)</time></dd>
-                        }
-
-			@if(slot.consent != Consent.NONE) {
-                        <dt>Release level</dt>
-                        <dd>@Consent.description(slot.consent)</dd>
-			}
-                    </dl>
-                </div>
-
-                @widget.participantList(slot, slot.records)
-            </div>
-
-            <div class="extended col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
-                @widget.assetFrame(slot.assets)
-            </div>
-        </div>
-
-    @widget.panels.comments(Some(slot), Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), slot.comments(true))
+    @widget.panels.slot(slot)
+    @widget.panels.browser(slot.volume) @*participant view, restricted to slot.records.filter(participants)*@
+    @widget.panels.materials(slot.assets)()
     @widget.panels.tags(slot)
+    @widget.panels.comments(Some(slot), Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), slot.comments(true))
 }

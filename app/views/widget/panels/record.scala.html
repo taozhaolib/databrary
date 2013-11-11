@@ -1,0 +1,7 @@
+@(record : Record)(implicit request : SiteRequest[_])
+
+@widget.panels.panel("overview", "panel_record")(){
+    <h1 class="col panel_title">@display.formatTitle(record.pageName)</h1>
+
+    @widget.gizmos.record(record)
+}

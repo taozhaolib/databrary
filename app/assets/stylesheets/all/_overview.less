@@ -1,0 +1,24 @@
+// STYLES
+
+.panel_overview {
+	.wrap {
+		position: relative;
+	}
+
+	.panel_overview_thumbnail {
+		position: absolute;
+		top: -(@b1 * 3);
+		right: -(@b1 * 4);
+		.size(400px);
+		.border-radius(400px);
+		opacity: .25;
+		z-index: 0;
+		.transition();
+
+		&:hover {
+			opacity: 1;
+			z-index: 100;
+			.size(450px);
+		}
+	}
+}

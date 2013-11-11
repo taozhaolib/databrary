@@ -1,62 +1,11 @@
-@(link : SlotAsset)(implicit request : RequestObject[SlotAsset]#Site[_])
+@(asset : SlotAsset)(implicit request : RequestObject[SlotAsset]#Site[_])
 
 @fileData(asset : FileAsset) = {
 }
 
-@template.crud("Asset: " + link.link.name) {
-    <div class="row">
-        <div class="description col-desktop-6 push-desktop-2 col-laptop-6 col-tablet-6 col-mobile-6">
-            <div class="siderim">
-                <h2>Metadata</h2>
-
-                <dl class="measures">
-                    <dt>Format</dt>
-                    <dd>@link.format.name</dd>
-
-                @if(link.position.nonEmpty) {
-                    <dt>Position</dt>
-                    <dd>@link.position</dd>
-                    }
-
-                    @if(link.duration > 0) {
-                    <dt>Duration</dt>
-                    <dd>@link.duration</dd>
-                    }
-
-                    @if(link.link.body.nonEmpty) {
-                    <dt>Description</dt>
-                    <dd>@link.link.body</dd>
-                    }
-                </dl>
-            </div>
-
-            <h2>Sessions</h2>
-
-            <table class="expander">
-                <thead>
-                    <tr>
-                        <th class="mini tc">Media</th>
-                        <th class="meta tc">Release</th>
-                        <th class="main"></th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                @link.link.container.slots.map { slot  =>
-		    <tr class="message-trace">
-                    <td class="mini tc"><a href="@slot.pageURL">@widget.figures.thumbSlot(slot)</a></td>
-                    <td class="meta tc"><span class="consent">@slot.consent</span></td>
-                    <td class="main"><a href="@slot.pageURL">@slot.container.name</a></td>
-                    </tr>
-                }
-                </tbody>
-            </table>
-        </div>
-
-        <div class="extended col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
-        @widget.assetFrame(Seq(link), false)
-        </div>
-    </div>
-
-    @widget.panels.comments(Some(link.slot), Some((routes.Slot.comment(link.volumeId, link.slotId), controllers.Slot.commentForm)), link.slot.comments())
+@template.crud("Asset: " + asset.link.name) {
+    @widget.panels.asset(asset)
+    @widget.panels.browser(asset.volume) @*restricted to asset.link.container.slots *@
+    @widget.panels.materials(Seq(asset))()
+    @widget.panels.comments(Some(asset.slot), Some((routes.Slot.comment(asset.volumeId, asset.slotId), controllers.Slot.commentForm)), asset.slot.comments())
 }

@@ -1,46 +1,7 @@
 @(record : models.Record)(implicit request : RequestObject[Record]#Site[_])
 
 @template.crud("Record: " + record.pageName) {
-    <div class="row">
-        <div class="description col-desktop-6 push-desktop-2 col-laptop-6 col-tablet-6 col-mobile-6">
-            <div class="siderim">
-                <h2>Measures</h2>
-
-                <dl class="measures">
-                @record.measures.filter(m => record.dataPermission(m.metric).checkPermission(Permission.DOWNLOAD)).map { m =>
-                    <dt>@m.metric.name</dt>
-                    <dd>@m.datum</dd>
-                }
-                </dl>
-            </div>
-
-            <h2>Sessions</h2>
-
-            <table class="expander">
-                <thead>
-                    <tr>
-                        <th class="mini tc">Media</th>
-                        <th class="meta tc">Age</th>
-                        <th class="meta tc">Release</th>
-                        <th class="main"></th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                @record.slots.map { slot  =>
-		<tr class="message-trace">
-	        <td class="mini tc"><a href="@slot.pageURL" class="ff_84max">@widget.figures.thumbSlot(slot)</a></td>
-                <td class="meta tc">@display.age(record, slot)</td>
-                <td class="meta tc"><span class="consent">@slot.consent</span></td>
-                <td class="main"><a href="@slot.pageURL">@slot.container.name</a></td>
-                </tr>
-                }
-                </tbody>
-            </table>
-        </div>
-
-        <div class="extended col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
-            @widget.assetFrame(record.slots.flatMap(s => s.assets), true)
-        </div>
-    </div>
+    @widget.panels.record(record)
+    @widget.panels.browser(record.volume) @*restricted to record.slots*@
+    @widget.panels.materials(record.slots.flatMap(s => s.assets))()
 }

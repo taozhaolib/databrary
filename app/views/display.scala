@@ -61,6 +61,9 @@ object display {
   def date(s : Slot)(implicit site : Site) =
     s.container.date.map(fuzzyDate(_, !s.dataPermission().checkPermission(Permission.DOWNLOAD)))
 
+  def formatTitle(text: String = "") =
+    raw(text.replaceAll(": ", ": <br>"))
+
   def plainText(text: String = "") =
     raw("<p>"+text.replaceAll("\\r?\\n\\r?\\n", "</p><p>")+"</p>")
 

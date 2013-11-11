@@ -1,14 +1,9 @@
 @(volume : Volume)(implicit request : SiteRequest[_])
 
-@import helper.FieldConstructor
-    @implicitField = @{
-        FieldConstructor(tag.minimalFieldConstructor.f)
-    }
-
 @widget.panels.panel("overview", "panel_volume")(){
-    @widget.figures.thumbVolume(volume, scalar = "")
+    @widget.figures.thumbVolume(volume, scalar = "", classes = "panel_overview_thumbnail")
 
-    <h1 class="col panel_title">@Html(volume.pageName.split(": ").mkString(": <br>"))</h1>
+    <h1 class="col panel_title">@display.formatTitle(volume.pageName)</h1>
 
     @widget.gizmos.people(volume)
     @widget.gizmos.funding(volume.funding)
