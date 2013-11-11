@@ -40,7 +40,7 @@ object RecordCategory extends HasId[RecordCategory] {
 }
 
 /** A set of Measures. */
-final class Record private (val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE) extends TableRowId[Record] with SiteObject with InVolume {
+final class Record private (val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE, val measures : Measures = Measures.empty) extends TableRowId[Record] with SiteObject with InVolume {
   private[this] var _category = category_
   def category : Option[RecordCategory] = _category
   def categoryId = category.map(_.id)
@@ -55,12 +55,6 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
       }
   }
 
-  /** A specific measure of the given type and metric. */
-  def measure[T](metric : Metric[T]) : Future[Option[Measure[T]]] = Measure.get[T](this.id, metric)
-  def measureV[T](metric : Metric[T]) : Future[Option[T]] = MeasureV.get[T](this.id, metric)
-  /** All measures in this record. */
-  lazy val measures : Future[Seq[Measure[_]]] = Measure.getRecord(this.id)
-
   /** Add or change a measure on this record.
     * This is not type safe so may generate SQL exceptions, and may invalidate measures on this object. */
   def setMeasure[T](metric : Metric[T], value : String) : Future[Boolean] =
@@ -72,20 +66,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
     * This may invalidate measures on this object. */
   def removeMeasure(metric : Metric[_]) = Measure.remove(this, metric)
 
-  private val _ident = FutureVar[Option[String]](measureV(Metric.Ident))
-  /** Cached version of `measure(Metric.Ident)`.
-    * This may become invalid if the value is changed. */
-  def ident : Future[Option[String]] = _ident.apply
-
-  private val _birthdate = FutureVar[Option[Date]](measureV(Metric.Birthdate))
-  /** Cached version of `measure(Metric.Birthdate)`.
-    * This may become invalid if the value is changed. */
-  def birthdate : Future[Option[Date]] = _birthdate.apply
-
-  private val _gender = FutureVar[Option[String]](measureV(Metric.Gender))
-  /** Cached version of `measure(Metric.Gender)`.
-    * This may become invalid if the value is changed. */
-  def gender : Future[Option[String]] = _gender.apply
+  def ident : String = measures.value(Metric.Ident).getOrElse("[" + id + "]")
 
   private val _daterange = FutureVar[Range[Date]] {
     SQL("SELECT record_daterange(?)").apply(id).single(SQLCols[Range[Date]].map(_.normalize))
@@ -95,10 +76,11 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   /** The range of ages as defined by `daterange - birthdate`. */
   def agerange : Future[Option[Range[Age]]] =
-    birthdate.flatMap(Async.map[Date,Range[Age]](_, dob => daterange.map(_.map(d => Age(dob, d)))))
+    Async.map[Date, Range[Age]](measures.value(Metric.Birthdate), dob => daterange.map(_.map(d => Age(dob, d))))
 
   /** The age at test for a specific date, as defined by `date - birthdate`. */
-  def age(date : Date) : Future[Option[Age]] = birthdate.map(_.map(dob => Age(dob, date)))
+  def age(date : Date) : Option[Age] =
+    measures.value(Metric.Birthdate).map(dob => Age(dob, date))
 
   /** Effective permission the site user has over a given metric in this record, specifically in regards to the measure datum itself.
     * Record permissions depend on volume permissions, but can be further restricted by consent levels.
@@ -114,7 +96,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   /** Attach this record to a slot. */
   def addSlot(s : Slot) = Record.addSlot(id, s.id)
 
-  def pageName = category.fold("")(_.name.capitalize + " ") + _ident.peek.getOrElse("Record ["+id+"]")
+  def pageName = category.fold("")(_.name.capitalize + " ") + ident
   def pageParent = Some(volume)
   def pageURL = controllers.routes.Record.view(volume.id, id)
   def pageActions = Seq(
@@ -124,26 +106,25 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 }
 
 object Record extends TableId[Record]("record") {
-  private[models] def make(volume : Volume)(id : Id, category : Option[RecordCategory.Id], consent : Consent.Value) =
-    new Record(id, volume, category.flatMap(RecordCategory.get(_)), consent)
-  private val columns = Columns(
+  private val columns : Selector[Volume => Record] = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[Option[RecordCategory.Id]]("category")
     , SelectAs[Consent.Value]("record_consent(record.id)", "record_consent")
-    )
+    ).leftJoin(Measures.row, "record.id = measures.record")
+    .map { case ((id, cat, cons), meas) =>
+      vol => new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cons, Measures(meas))
+    }
   private def row(implicit site : Site) =
     columns.join(Volume.row, "record.volume = volume.id") map {
-      case (rec, vol) => (make(vol) _).tupled(rec)
+      case (rec, vol) => rec(vol)
     }
-  private[models] def volumeRow(vol : Volume) = columns.map(make(vol) _)
+  private[models] def volumeRow(vol : Volume) =
+    columns map {
+      rec => rec(vol)
+    }
   private[models] def measureRow[T](vol : Volume, metric : Metric[T]) = {
     val mt = metric.measureType
     volumeRow(vol).leftJoin(mt.select.column, "record.id = " + mt.table + ".record AND " + mt.table + ".metric = ?")
-      .map { rm =>
-        if (metric.equals(Metric.Ident))
-          rm._1._ident.set(rm._2.asInstanceOf[Option[String]])
-        rm
-      }
   }
 
   /** Retrieve a specific record by id. */
@@ -210,9 +191,6 @@ object Record extends TableId[Record]("record") {
       , SelectAs[Consent.Value]("slot.consent", "record_consent")
       ).map { (id, category, ident, birthdate, gender, date, consent) =>
         val r = new Record(id, vol, category.flatMap(RecordCategory.get _), consent)
-        r._ident.set(ident)
-        r._birthdate.set(birthdate)
-        r._gender.set(gender)
         date foreach { d =>
           r._daterange.set(Range.singleton(d))
         }

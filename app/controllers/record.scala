@@ -59,7 +59,7 @@ object Record extends SiteController {
 
   private def editFormFill(implicit request : Request[_]) : (Seq[Metric[_]], EditForm) = {
     val r = request.obj
-    val m = macros.Async.get(r.measures)
+    val m = r.measures.list
     val mm = m.map(_.metric)
     val t = r.category.fold[Seq[Metric[_]]](Nil)(_.template).diff(mm)
     (mm ++ t, editForm.fill(
@@ -84,7 +84,7 @@ object Record extends SiteController {
         request.obj.change(category = category.flatMap(RecordCategory.get(_))).flatMap { _ =>
         val filled = scala.collection.mutable.Set.empty[Int] // temporary hack to prevent data corruption with duplicate metrics
         def update(metric : Metric.Id, datum : Option[String]) : Future[Option[String]] =
-          Metric.get(metric).flatMap(_.fold[Future[Option[String]]](
+          Metric.get(metric).fold[Future[Option[String]]](
             macros.Async(Some("measure.unknown"))
           ) { m =>
             datum.fold[Future[Option[String]]] {
@@ -99,7 +99,7 @@ object Record extends SiteController {
                 case true => None
               }
             }
-          })
+          }
         macros.Async.sequence(data.map((update _).tupled)).map {
         _.zipWithIndex.foldLeft(form) { (form, error) => error match {
           case (None, _) => form
@@ -121,7 +121,7 @@ object Record extends SiteController {
   private[controllers] def selectList(target : Slot)(implicit request : SiteRequest[_]) : Future[Seq[(String, String)]] =
     /* ideally we'd remove already used records here */
     target.volume.allRecords().map(_ map { r : Record =>
-      (r.id.toString, r.category.fold("")(_.name + ':') + macros.Async.get(r.ident).getOrElse("[" + r.id.toString + "]"))
+      (r.id.toString, r.category.fold("")(_.name + ':') + r.ident)
     })
 
   def slotRemove(v : models.Volume.Id, s : models.Slot.Id, r : models.Record.Id, editRedirect : Boolean = false) = Slot.Action(v, s, Permission.EDIT) { implicit request =>

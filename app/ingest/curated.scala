@@ -81,13 +81,13 @@ object Curated {
           } yield (rec)
         case Seq(rec) =>
           Async.fold[Unit](measures.map { case (m,v) =>
-            rec.measure(m).flatMap(_.fold {
+            rec.measures(m).fold {
               rec.setMeasure(m,v).flatMap(check(_,
                 PopulateException("failed to set measure for subject " + id + " " + m.name + ": " + v, rec)))
             } { c =>
               check(c.value.equals(v),
                 PopulateException("inconsistent mesaure for subject " + id + " " + m.name + ": " + v + " <> " + c.value, rec))
-            })
+            }
           })().map(_ => rec)
         case _ =>
           Future.failed(PopulateException("multiple records for subject " + id))

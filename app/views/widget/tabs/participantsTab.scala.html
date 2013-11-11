@@ -25,8 +25,8 @@
 
                                 @if(slot.equals(slots.head)) {
                                     <td class="meta record-holder bgwhite" rowspan="@slots.length">
-				        <div class="record"><a href='@record.pageURL'>@Async.get(record.ident).getOrElse("["+record.id+"]")</a></div>
-                                        <div class="gender">@record.gender</div>
+				        <div class="record"><a href='@record.pageURL'>@record.ident</a></div>
+                                        <div class="gender">@record.measures.value(Metric.Gender)</div>
                                     </td>
                                 }
 

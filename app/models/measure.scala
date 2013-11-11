@@ -1,7 +1,7 @@
 package models
 
 import scala.concurrent.Future
-import scala.collection.mutable
+import scala.collection.concurrent
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import com.github.mauricio.async.db
 import macros._
@@ -54,26 +54,27 @@ sealed class Metric[T] private[models] (val id : Metric.Id, val name : String, v
   Metric.add(this)
 }
 object Metric extends TableId[Metric[_]]("metric") {
-  private val cache = mutable.Map.empty[Int, Metric[_]]
-  private[models] def add(m : Metric[_]) = cache.update(m.id.unId, m)
+  private val cache : concurrent.Map[Int, Metric[_]] = concurrent.TrieMap.empty[Int, Metric[_]]
+  protected def add(m : Metric[_]) = cache.update(m.id.unId, m)
 
-  private[this] def make(id : Id, name : String, classification : Classification.Value, dataType : DataType.Value, values : Option[IndexedSeq[String]]) =
-    new Metric(id, name, classification, values.getOrElse(IndexedSeq.empty[String]))(MeasureType(dataType))
   private[models] val row : Selector[Metric[_]] = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
     , SelectColumn[Classification.Value]("classification")
     , SelectColumn[DataType.Value]("type")
     , SelectColumn[Option[IndexedSeq[String]]]("values")
-    ).map(make _)
+    ).map { (id, name, classification, dataType, values) =>
+      new Metric(id, name, classification, values.getOrElse(IndexedSeq.empty[String]))(MeasureType(dataType))
+    }
 
-  /** Retrieve a single metric by id. */
-  def get(id : Id) : Future[Option[Metric[_]]] =
-    Async.orElse(cache.get(id.unId),
-      row.SELECT("WHERE id = ?").apply(id).singleOpt)
+  /** Retrieve a single metric by id.
+    * Metrics are strongly cached, so this provides a synchronous interface which may block on occasion. */
+  def get(id : Id) : Option[Metric[_]] =
+    cache.get(id.unId) orElse
+      Async.wait(row.SELECT("WHERE id = ?").apply(id).singleOpt)
 
-  def getAll : Seq[Metric[_]] =
-    cache.values.toSeq // XXX incomplete but not entirely broken, temporary?
+  def getAll : Iterable[Metric[_]] =
+    cache.values // XXX incomplete but not entirely broken, temporary?
 
   private val rowTemplate = row.from("metric JOIN record_template ON metric.id = record_template.metric")
   /** This is not used as they are for now hard-coded in RecordCategory above. */
@@ -136,7 +137,7 @@ final class MeasureV[T](metric : Metric[T], override val value : T) extends Meas
   }
 }
 
-object Measure extends Table[Measure[_]]("measures") {
+object Measure {
   def apply[T](metric : Metric[T], value : String) =
     new Measure[T](metric, value)
 
@@ -155,30 +156,6 @@ object Measure extends Table[Measure[_]]("measures") {
     SQL("DELETE FROM " + metric.measureType.table + " WHERE " + args.where)
       .apply(args).execute
   }
-
-  private case class Error(msg : String) extends IllegalArgumentException(msg)
-
-  private case class Raw(id : Metric.Id, datum : String) {
-    override def toString = id.toString + ":" + datum
-    def get : Future[Measure[_]] =
-      Metric.get(id).map(_.fold(
-        throw Error("unknown metric id: " + id))(
-        new Measure(_, datum)))
-  }
-
-  private implicit val sqlType : SQLType[Raw] = SQLType("measure", classOf[Raw])(s =>
-    Maybe(s.indexOf(':')).opt.map { i =>
-      Raw(Metric.asId(s.substring(0,i).toInt), s.substring(i+1))
-    },
-    _.toString)
-
-  private val columns = Columns(SelectColumn[IndexedSeq[Raw]]("measures"))
-
-  private[models] def getRecord(record : Record.Id) : Future[Seq[Measure[_]]] =
-    columns.SELECT("WHERE record = ?").apply(record).singleOpt.flatMap {
-      case None => Async(Nil)
-      case Some(r) => Async.sequence(r.map(_.get))
-    }
 }
 
 /** A typed interface to measures. */
@@ -219,4 +196,34 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
         "AND record.category", (if (category.isDefined) "= ?" else " IS NOT NULL"),
         "AND slot_record.slot = ? ORDER BY record.category").
       apply(metric.id +: category.fold(SQLArgs())(c => SQLArgs(c.id)) :+ slot.id).list
+}
+
+case class Measures(list : Seq[Measure[_]]) extends TableRow {
+  private def find(id : Metric.Id) : Option[Measure[_]] =
+    list.find(_.metricId.unId >= id.unId).filter(_.metricId.equals(id))
+
+  def apply[T](metric : Metric[T]) : Option[Measure[T]] =
+    find(metric.id).asInstanceOf[Option[Measure[T]]]
+
+  def value[T](metric : Metric[T]) : Option[T] =
+    apply[T](metric).map(_.value)
+}
+
+object Measures extends Table[Measures]("measures") {
+  object empty extends Measures(Nil)
+  def apply(m : Option[Measures]) : Measures =
+    m.getOrElse(empty)
+
+  private implicit val sqlType : SQLType[Measure[_]] = SQLType("measure", classOf[Measure[_]])(s =>
+    Maybe(s.indexOf(':')).opt.flatMap { i =>
+      Metric.get(Metric.asId(s.substring(0,i).toInt)).map(new Measure(_, s.substring(i+1)))
+    },
+    m => m.metricId.toString + ":" + m.datum)
+
+  private[models] val row : Selector[Measures] =
+    Columns(SelectColumn[IndexedSeq[Measure[_]]]("measures"))
+    .map(new Measures(_))
+
+  private[models] def getRecord(record : Record.Id) : Future[Measures] =
+    row.SELECT("WHERE record = ?").apply(record).singleOpt.map(apply _)
 }

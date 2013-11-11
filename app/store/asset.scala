@@ -4,7 +4,6 @@ import java.io.{File,InputStream,FileInputStream,FileNotFoundException}
 import java.nio.{ByteBuffer,channels}
 import java.nio.file.{StandardOpenOption,FileSystemException}
 import scala.concurrent._
-import scala.collection.mutable.{Map,Queue}
 import play.api.Play.current
 import play.api.libs.Files
 import play.api.libs.iteratee._

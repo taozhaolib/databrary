@@ -119,7 +119,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       case (Some(s), Some(r)) if r.category.equals(Some(RecordCategory.Participant)) =>
         sessions = sessions + 1
         if (s.consent >= Consent.SHARED) shared = shared + 1
-        s.container.date.flatMap(d => Async.wait(r.age(d))).foreach { a =>
+        s.container.date.flatMap(r.age(_)).foreach { a =>
           if (ages == 0) {
             agemin = a
             agemax = a

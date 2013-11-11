@@ -7,7 +7,7 @@
                 <h2>Measures</h2>
 
                 <dl class="measures">
-                @Async.wait(record.measures).filter(m => record.dataPermission(m.metric).checkPermission(Permission.DOWNLOAD)).map { m =>
+                @record.measures.list.filter(m => record.dataPermission(m.metric).checkPermission(Permission.DOWNLOAD)).map { m =>
                     <dt>@m.metric.name</dt>
                     <dd>@m.datum</dd>
                 }

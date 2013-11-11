@@ -14,7 +14,7 @@
 	    	@record.category match {
 		case Some(RecordCategory.Participant) => {
                     <li>
-                        <span class="gender">@Async.wait(record.gender)</span><span class="sep">,</span>
+                        <span class="gender">@record.measures.value(Metric.Gender)</span><span class="sep">,</span>
                         <span class="age">@display.age(record, slot)</span>
                     </li>
 		}
