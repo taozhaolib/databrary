@@ -188,14 +188,6 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
   /** Retrieve the set of measures in the given record. */
   private[models] def getRecord(record : Record.Id) : Future[Seq[MeasureV[_]]] =
     row.SELECT("WHERE record = ? ORDER BY metric.id").apply(record).list
-
-  /** Retrieve the set of all categorized records and possibly measures of the given type on the given slot. */
-  private[models] def getSlot[T](slot : Slot, category : Option[RecordCategory] = None, metric : Metric[T] = Metric.Ident) : Future[Seq[(Record, Option[T])]] =
-    Record.measureRow[T](slot.volume, metric)
-      .SELECT("JOIN slot_record ON record.id = slot_record.record",
-        "AND record.category", (if (category.isDefined) "= ?" else " IS NOT NULL"),
-        "AND slot_record.slot = ? ORDER BY record.category").
-      apply(metric.id +: category.fold(SQLArgs())(c => SQLArgs(c.id)) :+ slot.id).list
 }
 
 case class Measures(list : Seq[Measure[_]]) extends TableRow {

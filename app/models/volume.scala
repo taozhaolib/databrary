@@ -75,9 +75,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
   private type Session = (Option[Slot],Option[Record])
   private lazy val _sessions : Future[Seq[Session]] =
-    Record.View.getSlots(this)
-      .SELECT("WHERE (container.volume = ? AND (slot.consent IS NOT NULL OR slot.segment = '(,)') AND NOT container.top) OR (record_view.volume = ?)")
-      .apply(id, id).list
+    Record.getSessions(this)
 
   /** The list of all sessions and their associated record on this volume. */
   def slotRecords : Future[Seq[(Slot,Seq[Record])]] = _sessions.map { sess =>

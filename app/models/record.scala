@@ -124,6 +124,19 @@ object Record extends TableId[Record]("record") {
     val mt = metric.measureType
     volumeRow(vol).leftJoin(mt.select.column, "record.id = " + mt.table + ".record AND " + mt.table + ".metric = ?")
   }
+  private def sessionRow(vol : Volume) = Columns(
+      SelectColumn[Id]("id")
+    , SelectColumn[Option[RecordCategory.Id]]("category")
+    ).leftJoin(Measures.row, "record.id = measures.record")
+    .?.join(Slot.volumeRow(vol).?, _ + " JOIN slot_record ON record.id = slot_record.record FULL JOIN " + _ + " ON slot_record.slot = slot.id AND container.volume = record.volume")
+    .map {
+      case (Some(((id, cat), meas)), slot) =>
+        val r = new Record(id, vol, cat.flatMap(RecordCategory.get(_)), slot.fold(Consent.NONE)(_.consent), Measures(meas))
+        r._daterange.set(slot.flatMap(_.container.date).fold[Range[Date]](Range.empty)(Range.singleton _))
+        (slot, Some(r))
+      case (None, slot) =>
+        (slot, None)
+    }
 
   /** Retrieve a specific record by id. */
   def get(id : Id)(implicit site : Site) : Future[Option[Record]] =
@@ -139,15 +152,18 @@ object Record extends TableId[Record]("record") {
   /** Retrieve all the categorized records associated with the given volume.
     * @param category restrict to the specified category, or include all categories
     * @return records sorted by category, ident */
-  private[models] def getVolume(volume : Volume, category : Option[RecordCategory] = None) : Future[Seq[Record]] = {
-    val metric = Metric.Ident
-    measureRow(volume, metric).map(_._1).
-      SELECT("WHERE record.volume = ?",
+  private[models] def getVolume(volume : Volume, category : Option[RecordCategory] = None) : Future[Seq[Record]] =
+    volumeRow(volume)
+      .SELECT("WHERE record.volume = ?",
         (if (category.isDefined) "AND record.category = ?" else ""),
-        "ORDER BY", (if (category.isEmpty) "record.category, " else ""),
-        metric.measureType.select.toString, ", record.id")
-      .apply(SQLArgs(metric.id, volume.id) ++ category.fold(SQLArgs())(c => SQLArgs(c.id))).list
-  }
+        "ORDER BY", (if (category.isEmpty) "record.category, " else ""))
+      .apply(volume.id +: category.fold(SQLArgs())(c => SQLArgs(c.id))).list
+
+  /** Return the full outer product of all slot, record pairs on the given volume for "session" slots and categorized records. */
+  private[models] def getSessions(vol : Volume) : Future[Seq[(Option[Slot],Option[Record])]] =
+    sessionRow(vol)
+      .SELECT("WHERE container.volume = ? AND (slot.consent IS NOT NULL OR slot.segment = '(,)') AND NOT container.top OR record.volume = ? AND record.category IS NOT NULL")
+      .apply(vol.id, vol.id).list
 
   /** Retrieve the records in the given volume with a measure of the given value.
     * @param category restrict to the specified category, or include all categories
@@ -155,7 +171,7 @@ object Record extends TableId[Record]("record") {
     * @param value measure value that must match
     */
   def findMeasure[T](volume : Volume, category : Option[RecordCategory] = None, metric : Metric[T], value : T) : Future[Seq[Record]] =
-    measureRow(volume, metric).map(_._1)
+    measureRow[T](volume, metric).map(_._1)
       .SELECT("WHERE record.volume = ?",
         (if (category.isDefined) "AND record.category = ?" else ""),
         "AND", metric.measureType.select.toString, "= ?")
@@ -177,24 +193,4 @@ object Record extends TableId[Record]("record") {
   }
   private[models] def removeSlot(r : Record.Id, s : Slot.Id) : Unit =
     DELETE('record -> r, 'slot -> s).run()
-
-  private[models] object View extends Table[Record]("record_view") {
-    private def volumeRow(vol : Volume) = Columns(
-        SelectColumn[Id]("id")
-      , SelectColumn[Option[RecordCategory.Id]]("category")
-      , SelectColumn[Option[String]]("ident")
-      , SelectColumn[Option[Date]]("birthdate")
-      , SelectColumn[Option[String]]("gender")
-      , SelectAs[Option[Date]]("container.date", "record_date")
-      , SelectAs[Consent.Value]("slot.consent", "record_consent")
-      ).map { (id, category, ident, birthdate, gender, date, consent) =>
-        val r = new Record(id, vol, category.flatMap(RecordCategory.get _), consent)
-        date foreach { d =>
-          r._daterange.set(Range.singleton(d))
-        }
-        r
-      } from "slot_record JOIN record_view ON slot_record.record = record_view.id"
-    def getSlots(vol : Volume) : Selector[(Option[Slot],Option[Record])] =
-      Slot.volumeRow(vol).?.join(volumeRow(vol).?, _ + " FULL JOIN " + _ + " ON slot.id = slot_record.slot AND container.volume = record_view.volume")
-  }
 }
