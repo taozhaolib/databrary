@@ -1,0 +1,88 @@
+// STYLES
+
+.panel_materials {
+
+}
+
+//
+
+.panel_materials_list {
+
+}
+
+.panel_materials_items {
+	.padding-left(0);
+}
+
+.panel_materials_item {
+	cursor: pointer;
+	position: relative;
+	.font(1, 1.5);
+	.transition();
+	.border-radius();
+	.padding-left(@f3);
+	.border-padding-right(1px, @f3);
+	border-right: 1px solid transparent;
+
+	&:after {
+		.transition();
+		content: "";
+		display: block;
+		position: absolute;
+		right: -@b1;
+		top: @b4;
+		border: @b2 solid transparent;
+	}
+
+	.classification {
+		float: right;
+		display: block;
+		.font(.5, 2/3);
+		text-align: center;
+		.border-radius(@b8);
+		.border-padding-height(1px, @f12);
+		.border-padding-width(1px, @f4);
+		background-color: @back;
+		border: 1px solid @g4;
+		.margin-height(@f3);
+	}
+
+	.filetype {
+		position: relative;
+		top: @b12;
+	}
+
+	.duration {
+		color: @g3;
+		float: right;
+		.font(.75, 1.5);
+		.margin-right(@f3);
+	}
+
+	.session {
+		color: @g3;
+	}
+
+	&:hover, &.hover {
+		background-color: mix(@c6, @g5, 15%);
+	}
+
+	&:active, &.active {
+		border-right-color: @c6;
+		background-color: mix(@c6, @g5, 25%);
+
+		&:after {
+			border-left-color: @c6;
+		}
+	}
+}
+
+//
+
+.panel_materials_display {
+
+}
+
+.panel_materials_frame {
+
+}

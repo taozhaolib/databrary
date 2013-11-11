@@ -2,6 +2,8 @@
 
 @if(funding.nonEmpty) {
     @widget.gizmos.gizmo("funding", "")("Funding", minimizable = true) {
-
+        @funding.map { f =>
+            @widget.portraits.verticalSmallExtra(f.funder, Html(f.grant.getOrElse("")))
+        }
     }
 }

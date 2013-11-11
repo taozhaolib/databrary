@@ -55,16 +55,16 @@
 }
 
 .gizmo_body {
-	border-top: 1px solid @g3;
-	border-bottom: 1px solid @g3;
 	background-color: transparent;
-	.border-padding-bottom(1px, @gizmopad);
-	.border-padding-top(1px, @gizmopad);
+	.border-padding-bottom(0, @gizmopad);
+	.border-padding-top(0, @gizmopad);
 }
 
 .gizmo_header {
 	font-weight: normal;
-	.font(1.5, 1);
+	.font(1, 1.5);
+	text-transform: uppercase;
+	letter-spacing: 1px;
 	.margin(0);
 
 	&.minimizer {
@@ -76,10 +76,10 @@
 			display: block;
 			float: left;
 			position: relative;
-			top: @b1 + @b1 + @b2 + @b3;
-			border: @b2 solid transparent;
+			top: @b2;
+			border: @b4 solid transparent;
 			border-top-color: @text;
-			.margin-right(@f2);
+			.margin-right(@f4);
 			.transition();
 		}
 

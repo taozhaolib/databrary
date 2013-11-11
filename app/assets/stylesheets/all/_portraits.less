@@ -1,7 +1,7 @@
 // STYLES
 
 .portrait {
-	background-color: @g5;
+//	background-color: @g5;
 	.margin-bottom(1);
 
 	&.hoverable {
@@ -9,7 +9,7 @@
 		position: relative;
 
 		.portrait_info {
-			background-color: @g5;
+//			background-color: @g5;
 		}
 
 		.portrait_institution,
@@ -20,6 +20,7 @@
 
 		&:hover {
 			.box-shadow();
+			background-color: @g5;
 
 			.portrait_institution,
 			.portrait_links {
@@ -75,4 +76,68 @@
 	}
 }
 
+.portrait_extra {
+	color: @g3;
+}
+
 //
+
+.portrait_horizontal {
+
+}
+
+.portrait_vertical {
+	.portrait_avatar {
+		float: left;
+	}
+}
+
+//
+
+.portrait_large {
+
+}
+
+.portrait_small {
+	.portrait_avatar {
+		width: @b1 * 2;
+		.margin-right(@f4);
+	}
+
+	.portrait_info {
+		.padding-height(0);
+	}
+
+	.portrait_name,
+	.portrait_institution {
+		text-align: left;
+	}
+
+	.portrait_name {
+		.font(1, 2);
+		display: block;
+		.text-overflow();
+		overflow: hidden;
+		white-space: nowrap;
+		.height(2);
+
+		&:link, &:visited {
+			color: @c0;
+		}
+
+		&:hover {
+			color: @c0;
+		}
+
+		&:active {
+			color: @c0;
+		}
+	}
+
+	&.portrait_extra {
+		.portrait_name {
+			.line-height(1);
+			.height(1);
+		}
+	}
+}

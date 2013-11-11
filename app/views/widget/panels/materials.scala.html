@@ -1,69 +1,81 @@
-@(assets : Seq[SlotAsset])(path: Boolean = false)(implicit request : SiteRequest[_])
+@(assets : Seq[SlotAsset])(path : Boolean = false)(implicit request : SiteRequest[_])
 
 @if(assets.nonEmpty) {
-    @widget.panels.panel("materials", "")(title = "Materials", minimizable = true){
-        <section class="asset_frame row">
-            <div class="col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
-                <div class="frame hide">
-                @if(assets.nonEmpty) {
-                    @assets.map { link =>
-                        @if(link.checkPermission(Permission.DOWNLOAD)) {
-                            <div id="asset-@link.sourceId.toString" class="vw">
-                                <h2>@link.pageName.@link.format.extension <a href='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, false)' class="link">download</a></h2>
+    @widget.panels.panel("materials", "")(title = "Materials", minimizable = true) {
+        <div class="panel_materials_list col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
+            <ul class="flat panel_materials_items">
+            @if(assets.nonEmpty) {
+                @assets.map { link =>
+                    @defining(link.classification match {
+                        case Classification.IDENTIFIED => "<strong>Notice!</strong> This file contains <em>identifying data</em> and should be treated with care."
+                        case Classification.DEIDENTIFIED => "<strong>Notice!</strong> This file contains <em>no identifying data</em>."
+                        case Classification.EXCERPT => "<strong>Notice!</strong> This file is <em>an excerpt</em>, and may be shared with the public at your discretion."
+                        case Classification.MATERIAL => "<strong>Notice!</strong> This file is <em>a material</em>, contains no identifying data, and may be shared with the public at your discretion."
+                        case _ => ""
+                    }) { message =>
+                        <li class="panel_materials_item @link.classification" data-target="#asset_@link.sourceId" data-message="@message">
+                            <span class="filetype @link.format.extension"><img src="@routes.Assets.at("images/filetypes/16px/" + link.format.extension.getOrElse("_blank") + ".png")"></span>
 
-                                @link.format.mimeSubTypes match {
-                                    case ("image", _) => {
-                                        <img src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
-                                    }
-                                    case ("video", _) => {
-                                        <video controls>
-                                            <source src="@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)" type="@link.link.asset.format.mimetype">
-                                        </video>
-                                        @if(!link.link.asset.format.equals(TimeseriesFormat.Video)) {
-                                            Warning: This video has not (yet) been converted to Databrary's standand format, so some features may not work.
-                                        }
-                                    }
-                                    case ("text", "html") => {
-                                        <iframe src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
-                                    }
-                                    case ("text", "plain") => {
-                                        <iframe src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
-                                    }
-                                    case _ => {
-                                    }
-                                }
+                            @if(path) {
+                                <span class="session">@display(link.slot) /</span>
+                            }
 
-                                @display.plainText(link.link.body.getOrElse(""))
-                            </div>
-                        }
+                            <a href="@link.pageURL" class="filename">@link.pageName.@link.format.extension</a>
+
+                        <span class="classification">@link.classification.toString.charAt(0)</span>
+
+                            <span class="duration">@if(link.duration.seconds != 0) {@link.duration}</span>
+                        </li>
                     }
                 }
-                </div>
-            </div>
-
-            <div class="col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
-                <ul class="assets flat">
-                @if(assets.nonEmpty) {
-                    @assets.map { link =>
-                        <li>
-                            <div href="@link.pageURL" class="block viewer @link.classification message-trace" data-target="#asset-@link.sourceId" data-message="@if(link.classification == Classification.IDENTIFIED){<strong>Notice!</strong> This file contains <em>identifying data</em> and should be treated with care.}@if(link.classification == Classification.DEIDENTIFIED){<strong>Notice!</strong> This file contains <em>no identifying data</em>.}@if(link.classification == Classification.EXCERPT){<strong>Notice!</strong> This file is <em>an excerpt</em>, and may be shared with the public at your discretion.}">
-                            <img src="@routes.Assets.at("images/filetypes/16px/"+link.format.extension.getOrElse("_blank")+".png")" class="filetype @link.format.extension">
-                            @if(path) {<span class="session">@display(link.slot) /</span> }
-                            @link.pageName.@link.format.extension <span class="duration">@if(link.duration.seconds != 0) {@link.duration}</span>
-                        <span class="classification">@link.classification.toString.charAt(0)</span>
-            </div>
-            </li>
-            }
             } else {
-            <li class="empty">There are no assets here.</li>
-        }
+                <li class="empty">There are no assets here.</li>
+            }
             </ul>
-            </div>
-        </section>
+        </div>
+
+        <div class="panel_materials_display col-desktop-9 col-laptop-6 col-tablet-3 col-mobile-6 hide">
+            @if(assets.nonEmpty) {
+                @assets.map { link =>
+                    @if(link.checkPermission(Permission.DOWNLOAD)) {
+                        <div id="asset_@link.sourceId.toString" class="panel_materials_frame">
+                            <h2>
+                                @link.pageName.@link.format.extension <a href='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, false)' class="link">download</a>
+                            </h2>
+
+                            @link.format.mimeSubTypes match {
+                                case ("image", _) => {
+                                    <img src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
+                                }
+                                case ("video", _) => {
+                                    <video controls>
+                                        <source src="@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)" type="@link.link.asset.format.mimetype">
+                                    </video>
+
+                                    @if(!link.link.asset.format.equals(TimeseriesFormat.Video)) {
+                                        Warning: This video has not (yet) been converted to Databrary's standand format, so some features may not work.
+                                    }
+                                }
+                                case ("text", "html") => {
+                                    <iframe src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
+                                }
+                                case ("text", "plain") => {
+                                    <iframe src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
+                                }
+                                case _ => {
+                                }
+                            }
+
+                            @display.plainText(link.link.body.getOrElse(""))
+                        </div>
+                    }
+                }
+            }
+        </div>
 
         <script>
-        $(document ).ready(function () {
-        $('.asset_frame' ).easyFrame({});
+        $(document).ready(function () {
+            $('.panel_materials').easyFrame({});
         });
         </script>
 

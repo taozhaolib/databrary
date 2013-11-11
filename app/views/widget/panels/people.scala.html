@@ -1,5 +1,15 @@
 @(volume : Volume)(implicit request : SiteRequest[_])
 
 @widget.panels.panel("people", "")(title = "People", minimizable = true){
-    @widget.portraits.volumeAccessPortraits(volume)
+    @groupBy[VolumeAccess, Permission.Value](volume.partyAccess, _.access).map { case (permission, volumeAccesses) =>
+        <div class="col">
+            <h3>@permission.toString.toLowerCase.capitalize</h3>
+
+            <div class="row">
+                @volumeAccesses.map { a =>
+                    @widget.portraits.maximal(a.party)
+                }
+            </div>
+        </div>
+    }
 }

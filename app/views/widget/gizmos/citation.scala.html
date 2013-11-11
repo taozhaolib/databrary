@@ -1,7 +1,7 @@
 @(volume: Volume)(implicit request : SiteRequest[_])
 
 @widget.gizmos.gizmo("citation", "")("Citation", minimizable = true) {
-    <div class="col-full">
+    <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
         @volume.partyAccess.takeWhile(_.access >= Permission.CONTRIBUTE).map(a => display.citeName(a.party.name) + ", ")
         @display.dateFmtY.format(volume.creation).
         @volume.name.

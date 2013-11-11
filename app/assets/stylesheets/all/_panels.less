@@ -70,6 +70,10 @@
 	}
 
 	&.minimizable {
+		.minimize {
+			.padding-top(1);
+		}
+
 		&.minimized {
 			.panel_header {
 				&:before {
@@ -81,6 +85,11 @@
 
 	&:hover {
 		border-bottom: 2px solid @g4;
+	}
+
+	h3, .h3 {
+		.font(2, 1.5);
+		.margin(0);
 	}
 }
 

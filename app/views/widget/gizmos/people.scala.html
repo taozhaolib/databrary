@@ -1,5 +1,7 @@
 @(volume: Volume)(implicit request : SiteRequest[_])
 
-@widget.gizmos.gizmo("people", "")("People", minimizable = true) {
-
+@widget.gizmos.gizmo("people", "")("Investigators", minimizable = true) {
+    @volume.partyAccess.takeWhile(_.access >= Permission.ADMIN).map { a =>
+        @widget.portraits.verticalSmall(a.party)
+    }
 }

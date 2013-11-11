@@ -1,14 +1,14 @@
-@(slot : Slot, records : Seq[Record])(implicit request : SiteRequest[_])
+@(slot : Slot, records : Seq[Record], classes: String = "")(implicit request : SiteRequest[_])
 
 @cap = {
-    <dl>
+    <dl class="panel_browser_defs">
         <dt>@slot.pageName</dt>
 
         @records.map { record =>
             @record.category match {
                 case Some(RecordCategory.Participant) => {
                     <dd>
-                        <span class="gender">@record.gender</span><span class="sep">,</span>
+                        <span class="gender">@record.gender</span>,
                         <span class="age">@display.age(record, slot)</span>
                     </dd>
                 }
@@ -21,4 +21,4 @@
     </dl>
 }
 
-@widget.figures.thumbSlot(slot, caption = cap, link = slot.pageURL.toString, title = slot.pageName)
+@widget.figures.thumbSlot(slot, caption = cap, link = slot.pageURL.toString, title = slot.pageName, classes = classes)

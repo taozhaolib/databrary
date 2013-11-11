@@ -1,5 +1,5 @@
-@(slot : Slot, caption: Html = Html(""), scalar: String = "wide", link: String = "", title: String = "")(implicit request : SiteRequest[_])
+@(slot : Slot, caption: Html = Html(""), scalar: String = "wide", link: String = "", title: String = "", classes: String = "")(implicit request : SiteRequest[_])
 
-@widget.figures.figure("slot_"+slot.id, "figure_slot")(caption, scalar, link, title){
+@widget.figures.figure("slot_"+slot.id, ("figure_slot "+classes).trim)(caption, scalar, link, title){
     <div class="image" style="background-image: url('@if(slot.consent == Consent.PRIVATE){@routes.Assets.at("images/draft-lock.png")}else{@routes.Slot.thumb(slot.volumeId, slot.id)}')"></div>
 }

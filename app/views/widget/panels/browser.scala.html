@@ -4,9 +4,11 @@
     @if(sessions.nonEmpty) {
         @widget.panels.panel("browser", "")(title = "Session Browser", minimizable = true){
             @sessions.map { case (slot, records)  =>
-                <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
-                    @widget.figures.thumbSession(slot, records)
-                </div>
+                @defining(if(slot.consent == Consent.PRIVATE){"hide"}else{""}) { classes =>
+                    <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
+                        @widget.figures.thumbSession(slot, records, classes = classes)
+                    </div>
+                }
             }
 
             <div class="col">
@@ -15,12 +17,12 @@
 
             <script>
             $(document).ready(function () {
-            var $hidden = $('#sessions .row article.shrink');
+                var $hidden = $('.panel_browser .hide');
 
-            $('.show_hidden' ).click(function() {
-            $hidden.removeClass('shrink');
-            $(this).parent().slideUp();
-            });
+                $('.show_hidden' ).click(function() {
+                    $hidden.removeClass('hide');
+                    $(this).parent().slideUp();
+                });
             });
             </script>
         }

@@ -5,7 +5,7 @@
         <div class="publication col">
             @for(citation <- citations) {
                 <div class="publication">
-                    <h4>@citation.head @if(citation.url){<a href="@citation.url" title="@citation.head" class="cit_link">link</a>}</h4>
+                    <h3>@citation.head @if(citation.url){<a href="@citation.url" title="@citation.head" class="cit_link">link</a>}</h3>
 
                     @citation.body.map(display.plainText _)
                 </div>
