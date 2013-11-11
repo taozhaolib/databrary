@@ -207,6 +207,9 @@ case class Measures(list : Seq[Measure[_]]) extends TableRow {
 
   def value[T](metric : Metric[T]) : Option[T] =
     apply[T](metric).map(_.value)
+
+  def filter(c : Classification.Value) =
+    Measures(list.filter(_.metric.classification >= c))
 }
 
 object Measures extends Table[Measures]("measures") {

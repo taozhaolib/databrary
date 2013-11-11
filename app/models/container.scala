@@ -142,7 +142,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
 
   /** The level of access granted on data covered by this slot to the current user. */
   def dataPermission(classification : Classification.Value = Classification.RESTRICTED) : HasPermission =
-    Permission.data(volume.permission, implicit site => getConsent, classification)
+    Permission.data(volume.permission, getConsent, classification)
 
   /** Effective start point of this slot within the container. */
   def position : Offset = segment.lowerBound.getOrElse(0)

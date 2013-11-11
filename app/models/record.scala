@@ -40,7 +40,7 @@ object RecordCategory extends HasId[RecordCategory] {
 }
 
 /** A set of Measures. */
-final class Record private (val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE, val measures : Measures = Measures.empty) extends TableRowId[Record] with SiteObject with InVolume {
+final class Record private (val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE, measures_ : Measures = Measures.empty) extends TableRowId[Record] with SiteObject with InVolume {
   private[this] var _category = category_
   def category : Option[RecordCategory] = _category
   def categoryId = category.map(_.id)
@@ -54,6 +54,10 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
         _category = category
       }
   }
+
+  /** The set of measures on the current volume readable by the current user. */
+  lazy val measures : Measures =
+    Classification.download(volume.permission, consent).fold[Measures](Measures.empty)(measures_.filter _)
 
   /** Add or change a measure on this record.
     * This is not type safe so may generate SQL exceptions, and may invalidate measures on this object. */
@@ -76,17 +80,11 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   /** The range of ages as defined by `daterange - birthdate`. */
   def agerange : Future[Option[Range[Age]]] =
-    Async.map[Date, Range[Age]](measures.value(Metric.Birthdate), dob => daterange.map(_.map(d => Age(dob, d))))
+    Async.map[Date, Range[Age]](measures_.value(Metric.Birthdate), dob => daterange.map(_.map(d => Age(dob, d))))
 
   /** The age at test for a specific date, as defined by `date - birthdate`. */
   def age(date : Date) : Option[Age] =
-    measures.value(Metric.Birthdate).map(dob => Age(dob, date))
-
-  /** Effective permission the site user has over a given metric in this record, specifically in regards to the measure datum itself.
-    * Record permissions depend on volume permissions, but can be further restricted by consent levels.
-    */
-  def dataPermission(metric : Metric[_])(implicit site : Site) : HasPermission =
-    Permission.data(volume.permission, _ => consent, metric.classification)
+    measures_.value(Metric.Birthdate).map(dob => Age(dob, date))
 
   /** The set of slots to which this record applies. */
   lazy val slots : Future[Seq[Slot]] =

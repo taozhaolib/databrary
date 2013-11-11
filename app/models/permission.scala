@@ -29,17 +29,16 @@ object Permission extends PGEnum("permission") {
     has >= need || site.superuser
 
   /** The effective permission for data objects with the given attributes. */
-  def data(p : Value, consent : Site => Consent.Value, classification : Classification.Value)(implicit site_ : Site) : HasPermission = new HasPermission {
+  def data(p : Value, consent : Consent.Value, classification : Classification.Value)(implicit site_ : Site) : HasPermission = new HasPermission {
     val site = site_
-    def getPermission =
+    val getPermission =
       if (p >= FULL)
         p
-      else if (p >= DOWNLOAD && classification >= Classification.access(consent(site)))
-        DOWNLOAD
-      else if (p >= VIEW && classification >= Classification.UNRESTRICTED)
-        DOWNLOAD
       else if (p >= VIEW)
-        VIEW
+        if (Classification.download(p, consent).fold(false)(classification >= _))
+          DOWNLOAD
+        else
+          VIEW
       else
         NONE
   }
@@ -71,7 +70,7 @@ object Classification extends PGEnum("classification") {
   /** ANALYSIS and above are non-data and so unrestricted. */
   def UNRESTRICTED = ANALYSIS
 
-  /** The most restricetd data classification level that the current user may access under the given consent level.
+  /** The most restricted data classification level that the current user may access under the given consent level.
     * Actual access to data will additionally depend on volume permissions not checked here. */
   def access(consent : Consent.Value)(implicit site : Site) : Value = {
     val c = consent
@@ -84,5 +83,17 @@ object Classification extends PGEnum("classification") {
       EXCERPT
     else
       DEIDENTIFIED
+  }
+
+  /** The most restricted data classification level that the current user may access under the given permission and consent level. */
+  def download(p : Permission.Value, consent : Consent.Value)(implicit site : Site) : Option[Value] = {
+    if (p >= Permission.FULL)
+      Some(Classification.values.min)
+    else if (p >= Permission.DOWNLOAD)
+      Some(Classification.access(consent))
+    else if (p >= Permission.VIEW)
+      Some(Classification.UNRESTRICTED)
+    else
+      None
   }
 }
