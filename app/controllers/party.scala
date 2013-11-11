@@ -39,7 +39,7 @@ object Party extends SiteController {
     SiteAction.auth ~> action(i, p)
 
   def view(i : models.Party.Id) = Action(Some(i), Some(Permission.NONE)) { implicit request =>
-    Ok(views.html.party.view(request.obj))
+    Ok(views.html.party.view())
   }
 
   def ajaxView = SiteAction { implicit request =>

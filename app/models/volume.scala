@@ -109,7 +109,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
   /** Basic summary information on this volume.
     * For now this only includes session (cross participant) information. */
-  def summary : Future[Volume.Summary] = _sessions.map { sess =>
+  lazy val summary : Future[Volume.Summary] = _sessions.map { sess =>
     var sessions, shared, ages = 0
     var agemin, agemax = Age(0)
     var agesum = 0
@@ -136,16 +136,6 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       agerange = Range(agemin, agemax),
       agemean = Age(if (ages == 0) 0 else agesum / ages))
   }
-
-  def fill : Future[Unit] = 
-    for {
-      _ <- partyAccess
-      _ <- toplevelAssets
-      _ <- citations
-      _ <- _sessions
-      _ <- comments
-      _ <- tags
-    } yield (())
 
   def pageName = name
   def pageParent = None

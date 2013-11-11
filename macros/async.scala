@@ -60,6 +60,10 @@ object Async {
   /** Evaluate each of the futures, serially left-to-right, and produce a list of the results. */
 
   /** Unsafely retrieve the value of an already evaluated Future. */
-  def get[A](a : Future[A]) : A = a.value.get.get
+  private final class UnevaluatedFutureException extends RuntimeException("Future has not yet completed")
+  def get[A](a : Future[A]) : A = a.value match {
+    case Some(v) => v.get
+    case None => throw new UnevaluatedFutureException /* checked explicitly to shorten stack trace */
+  }
   @deprecated("blocking call", "") def wait[A](a : Future[A]) : A = scala.concurrent.Await.result(a, scala.concurrent.duration.Duration(1, scala.concurrent.duration.SECONDS))
 }

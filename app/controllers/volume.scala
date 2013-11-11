@@ -20,14 +20,27 @@ object Volume extends SiteController {
     SiteAction ~> action(i, p)
 
   def view(i : models.Volume.Id) = Action(i).async { implicit request =>
-    request.obj.fill.map { _ =>
-     Ok(views.html.volume.view())
-    }
+    val vol = request.obj
+    for {
+      _ <- vol.partyAccess
+      _ <- vol.toplevelAssets
+      _ <- vol.citations
+      _ <- vol.summary
+      _ <- vol.comments
+      _ <- vol.tags
+    } yield (Ok(views.html.volume.view()))
   }
 
   def listAll = SiteAction.async { implicit request =>
-    models.Volume.getAll.map { all =>
-      Ok(views.html.volume.list(all, request.queryString.getOrElse("query", Seq("")).head.toString))
+    models.Volume.getAll.flatMap { all =>
+      macros.Async.fold(all.map { vol =>
+        for {
+          _ <- vol.partyAccess
+          _ <- vol.summary
+        } yield (())
+      })().map { _ =>
+        Ok(views.html.volume.list(all, request.queryString.getOrElse("query", Seq("")).head.toString))
+      }
     }
   }
 

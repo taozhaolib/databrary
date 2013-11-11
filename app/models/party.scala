@@ -28,17 +28,15 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
       }
   }
 
-  protected val _access : FutureVar[Permission.Value] = FutureVar[Permission.Value](Authorize.access_check(id))
+  protected lazy val _access : FutureVar[Permission.Value] = FutureVar[Permission.Value](Authorize.access_check(id))
   /** Level of access user has to the site.
     * Computed by [Authorize.access_check] and usually accessed through [[site.Site.access]]. */
   def access : Future[Permission.Value] = _access.apply
 
-  private[this] lazy val _authorizeParents : Future[Seq[Authorize]] = Authorize.getParents(this)
   /** List of authorizations granted to this user. Cached for !all.
     * @param all include inactive authorizations */
   final def authorizeParents(all : Boolean = false) : Future[Seq[Authorize]] =
-    if (all) Authorize.getParents(this, all)
-    else _authorizeParents
+    Authorize.getParents(this, all)
   /** List of authorizations granted by this user.
     * @param all include inactive authorizations */
   final def authorizeChildren(all : Boolean = false) : Future[Seq[Authorize]] =
@@ -56,6 +54,7 @@ sealed class Party protected (val id : Party.Id, name_ : String, orcid_ : Option
 
 final class SiteParty(val party : Party, val delegated : Permission.Value)(implicit val site : Site) extends Party(party.id, party.name, party.orcid) with SiteObject {
   override def account = party.account
+  override def access = party.access
 
   /** List of volumes to which this user has been granted at least CONTRIBUTE access, sorted by level (ADMIN first). */
   final lazy val volumeAccess = VolumeAccess.getVolumes(this, Permission.CONTRIBUTE)
