@@ -116,10 +116,7 @@ object Record extends TableId[Record]("record") {
     columns.join(Volume.row, "record.volume = volume.id") map {
       case (rec, vol) => rec(vol)
     }
-  private[models] def volumeRow(vol : Volume) =
-    columns map {
-      rec => rec(vol)
-    }
+  private[models] def volumeRow(vol : Volume) = columns.map(_(vol))
   private[models] def measureRow[T](vol : Volume, metric : Metric[T]) = {
     val mt = metric.measureType
     volumeRow(vol).leftJoin(mt.select.column, "record.id = " + mt.table + ".record AND " + mt.table + ".metric = ?")
@@ -191,6 +188,6 @@ object Record extends TableId[Record]("record") {
         case SQLDuplicateKeyException() => false
       }
   }
-  private[models] def removeSlot(r : Record.Id, s : Slot.Id) : Unit =
-    DELETE('record -> r, 'slot -> s).run()
+  private[models] def removeSlot(r : Record.Id, s : Slot.Id) : Future[Boolean] =
+    DELETE('record -> r, 'slot -> s).execute
 }

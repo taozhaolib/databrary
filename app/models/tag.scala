@@ -11,7 +11,7 @@ import site._
   */
 final class Tag private (val id : Tag.Id, val name : String) extends TableRowId[Tag] {
   /** Set the current user's tag value (up, down, or none) for the slot. */
-  def set(slot : Slot, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Unit =
+  def set(slot : Slot, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Future[Boolean] =
     up.fold(TagUse.remove(this, slot))(TagUse.set(this, slot, _))
 }
 
@@ -76,20 +76,19 @@ object TagUse extends Table[TagUse]("tag_use") {
   private[models] val aggregate =
     Columns(SelectAs[Boolean]("bool_or(tag_use.up)", "agg_up"))
 
-  private[models] def remove(tag : Tag, slot : Slot, who : Party) : Unit =
-    DELETE('tag -> tag.id, 'slot -> slot.id, 'who -> who.id).run()
+  private[models] def remove(tag : Tag, slot : Slot, who : Party) : Future[Boolean] =
+    DELETE('tag -> tag.id, 'slot -> slot.id, 'who -> who.id).execute
 
-  private[models] def remove(tag : Tag, slot : Slot)(implicit site : Site) : Unit =
+  private[models] def remove(tag : Tag, slot : Slot)(implicit site : Site) : Future[Boolean] =
     remove(tag, slot, site.identity)
 
-  private[models] def set(tag : Tag, slot : Slot, up : Boolean = true)(implicit site : AuthSite) : TagUse = {
+  private[models] def set(tag : Tag, slot : Slot, up : Boolean = true)(implicit site : AuthSite) : Future[Boolean] = {
     val who = site.identity
     val ids = SQLTerms('tag -> tag.id, 'slot -> slot.id, 'who -> who.id)
     val args = ('up -> up) +: ids
     DBUtil.updateOrInsert(
       SQL("UPDATE tag_use SET up = ? WHERE " + ids.where)(_, _).apply(args))(
-      INSERT(args)(_, _)).run()
-    new TagUse(tag, who, slot, up)
+      INSERT(args)(_, _)).execute
   }
 }
 

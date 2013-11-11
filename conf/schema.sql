@@ -494,10 +494,22 @@ CREATE TABLE "comment" (
 	"who" integer NOT NULL References "account",
 	"slot" integer NOT NULL References "slot",
 	"time" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	"text" text NOT NULL
+	"text" text NOT NULL,
+	"parent" integer References "comment"
 );
 CREATE INDEX ON "comment" ("slot");
+CREATE INDEX ON "comment" ("parent");
 COMMENT ON TABLE "comment" IS 'Free-text comments on objects (unaudited, immutable).';
+
+CREATE VIEW "comment_thread" AS
+	WITH RECURSIVE t AS (
+		SELECT *, ARRAY[id]::integer[] AS thread
+		  FROM comment WHERE parent IS NULL
+		UNION ALL
+		SELECT c.*, t.thread || c.id
+		  FROM comment c JOIN t ON c.parent = t.id
+	) SELECT * FROM t;
+COMMENT ON VIEW "comment_thread" IS 'Comments along with their parent-defined path (top-down).  Parents must never form a cycle or this will not terminate.';
 
 ----------------------------------------------------------- tags
 
@@ -518,7 +530,7 @@ CREATE INDEX ON "tag_use" ("slot");
 COMMENT ON TABLE "tag_use" IS 'Applications of tags to objects along with their weight (+-1).';
 
 CREATE VIEW "tag_weight" ("tag", "slot", "weight") AS
-	SELECT tag, slot, SUM(CASE WHEN up THEN 1::int ELSE -1::int END)::int FROM tag_use GROUP BY tag, slot;
+	SELECT tag, slot, SUM(CASE WHEN up THEN 1::integer ELSE -1::integer END)::integer FROM tag_use GROUP BY tag, slot;
 
 ----------------------------------------------------------- records
 

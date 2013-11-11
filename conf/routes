@@ -82,7 +82,7 @@ GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb     
 GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>        controllers.Asset.frame(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, offset : dbrary.Offset)
 
 # annotations
-POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/comment/create                                     controllers.Slot.comment(vID : models.Volume.Id, sID : models.Slot.Id)
+POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/comment/create                                     controllers.Slot.comment(vID : models.Volume.Id, sID : models.Slot.Id, parent : Option[models.Comment.Id] ?= None)
 
 POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/tag                                                controllers.Slot.tag(vID : models.Volume.Id, sID : models.Slot.Id)
 

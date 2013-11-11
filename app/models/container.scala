@@ -156,7 +156,8 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   def comments(all : Boolean = true) = Comment.getSlot(this, all)
   /** Post a new comment this object.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
-  def postComment(text : String)(implicit site : AuthSite) : Future[Comment] = Comment.post(this, text)
+  def postComment(text : String, parent : Option[Comment.Id] = None)(implicit site : AuthSite) : Future[Boolean] =
+    Comment.post(this, text, parent)
 
   /** The list of tags on the current slot along with the current user's applications.
     * @param all add any tags applied to child slots to weight (but not use) as well */
@@ -165,18 +166,16 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     * @param up Some(true) for up, Some(false) for down, or None to remove
     * @return true if the tag name is valid
     */
-  def setTag(tag : String, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Boolean =
-    Tag.valid(tag).fold(false) { n =>
-      Tag.getOrCreate(n).map(_.set(this, up))
-      true
-    }
+  def setTag(tag : String, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Future[Boolean] =
+    Tag.valid(tag).fold(Async(false))(
+      Tag.getOrCreate(_).flatMap(_.set(this, up)))
 
   /** The list of records on this object.
     * @param all include indirect records on any contained objects
     */
   lazy val records : Future[Seq[Record]] = Record.getSlot(this)
   /** Remove the given record from this slot. */
-  def removeRecord(rec : Record.Id) : Unit = Record.removeSlot(rec, id)
+  def removeRecord(rec : Record.Id) : Future[Boolean] = Record.removeSlot(rec, id)
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */
   private lazy val idents : Future[Seq[String]] =

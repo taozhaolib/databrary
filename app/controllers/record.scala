@@ -124,12 +124,13 @@ object Record extends SiteController {
       (r.id.toString, r.category.fold("")(_.name + ':') + r.ident)
     })
 
-  def slotRemove(v : models.Volume.Id, s : models.Slot.Id, r : models.Record.Id, editRedirect : Boolean = false) = Slot.Action(v, s, Permission.EDIT) { implicit request =>
-    request.obj.removeRecord(r)
-    if (editRedirect)
-      Redirect(routes.Slot.edit(v, s))
-    else
-      Redirect(request.obj.pageURL)
+  def slotRemove(v : models.Volume.Id, s : models.Slot.Id, r : models.Record.Id, editRedirect : Boolean = false) = Slot.Action(v, s, Permission.EDIT).async { implicit request =>
+    request.obj.removeRecord(r).map { _ =>
+      if (editRedirect)
+        Redirect(routes.Slot.edit(v, s))
+      else
+        Redirect(request.obj.pageURL)
+    }
   }
 
   def slotAdd(v : models.Volume.Id, s : models.Slot.Id, catID : models.RecordCategory.Id, editRedirect : Boolean = false) = Slot.Action(v, s, Permission.EDIT).async { implicit request =>
