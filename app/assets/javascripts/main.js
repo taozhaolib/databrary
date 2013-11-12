@@ -1167,8 +1167,8 @@ var $messageHandler, $formHandler;
 
 $(document).ready(function () {
 	// global interfaces
-	$messageHandler = $('#messages').messageHandler({});
-	$formHandler = $('#forms').formHandler({});
+//	$messageHandler = $('#messages').messageHandler({});
+//	$formHandler = $('#forms').formHandler({});
 
 	// everywhere
 	dbjs.baselineFigure('.figure.scalar');

@@ -24,11 +24,11 @@ object Login extends SiteController {
     "openid" -> text(0, 256)
   ))
 
-  def viewLogin(err : Option[String] = None) : templates.Html =
+  def viewLogin(err : Option[String] = None)(implicit request: SiteRequest[_]) : templates.Html =
     views.html.account.login(err.fold(loginForm)(loginForm.withGlobalError(_)))
-  def viewLogin(err : String) : templates.Html =
+  def viewLogin(err : String)(implicit request: SiteRequest[_]) : templates.Html =
     viewLogin(Some(err))
-  def needLogin =
+  def needLogin(implicit request: SiteRequest[_]) =
     Forbidden(viewLogin(Some(Messages("login.noCookie"))))
 
   def view = SiteAction.async { implicit request =>

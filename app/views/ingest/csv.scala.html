@@ -1,15 +1,18 @@
-@(vol : models.Volume, form : controllers.Ingest.CSVForm, text : String = "", target : Option[SitePage] = None)(implicit site : Site)
+@(vol : models.Volume, form : controllers.Ingest.CSVForm, text : String = "", target : Option[SitePage] = None)(implicit request : SiteRequest[_])
 
-@widget.template.raw("CSV Ingest") {
+@widget.template.html5("CSV Ingestion") {
+    <div class="col-full">
+        @widget.tag.form(routes.Ingest.curated(vol.id), 'enctype -> "multipart/form-data") {
+            @widget.tag.inputFile(form("file"))
 
-    @widget.tag.form(routes.Ingest.curated(vol.id), 'enctype -> "multipart/form-data") {
-        @widget.tag.inputFile(form("file"))
-        <button type='submit' name='run' value='false'>Preview</button>
-        <button type='submit' name='run' value='true'>Ingest</button>
-    }
-    @widget.formErrors(form)
+            <button type='submit' name='run' value='false'>Preview</button>
+            <button type='submit' name='run' value='true'>Ingest</button>
+        }
 
-    @display.plainText(text)
-    @target.map(display(_))
+        @widget.formErrors(form)
 
+        @display.plainText(text)
+
+        @target.map(display(_))
+    </div>
 }

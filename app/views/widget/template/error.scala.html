@@ -1,0 +1,9 @@
+@(title : String = "There's been an error!", toolbar: String = "", css: Html = Html(""), js: Html = Html(""))(body : Html)
+
+@widget.template.raw(title, toolbar, css, js)(None) {
+    <article class="article article_error">
+    @widget.panel.error(title) {
+        @body
+    }
+    </article>
+}

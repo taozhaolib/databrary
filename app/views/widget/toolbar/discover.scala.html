@@ -1,5 +1,5 @@
-@(request: Option[SiteRequest[_]])
+@(requestOption: Option[SiteRequest[_]] = None)
 
-@widget.toolbar.raw("discover"){
+@widget.toolbar.raw("discover")(requestOption) {
 
 }

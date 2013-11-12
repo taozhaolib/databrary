@@ -81,7 +81,7 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
   object Auth extends ActionRefiner[SiteRequest,SiteRequest.Auth] {
     protected def refine[A](request : SiteRequest[A]) = macros.Async(request match {
       case request : SiteRequest.Auth[A] => Right(request)
-      case _ => Left(Login.needLogin)
+      case _ => Left(Login.needLogin(request))
     })
   }
 

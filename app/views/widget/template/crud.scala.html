@@ -2,12 +2,8 @@
 
 @script = {}
 
-@defining(request.obj.pageActions) { actions =>
-    @widget.template.html5(title, Some(request), toolbar, css, script += js) {
-        <main id="body_content" class="body_content">
-            <article class="article article_crud @request.obj.getClass.getSimpleName.toLowerCase @actions.find(_.route.url.equals(request.path)).fold("")(_.name.replaceAllLiterally(" ", "-").toLowerCase)">
-                @body
-            </article>
-        </main>
-    }
+@widget.template.html5(title, toolbar, css, script += js) {
+    <article class="article article_crud article_@request.obj.getClass.getSimpleName.toLowerCase article_@request.obj.pageActions.find(_.route.url.equals(request.path)).fold("")(_.name.replaceAllLiterally(" ", "-").toLowerCase)">
+        @body
+    </article>
 }

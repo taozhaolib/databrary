@@ -1,7 +1,7 @@
-@(request: Option[SiteRequest[_]])
+@(requestOption: Option[SiteRequest[_]] = None)
 
-@widget.toolbar.raw("databrary"){
-    <div class="title cf col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-4 hide-cell">
+@widget.toolbar.raw("databrary")(requestOption) {
+    <div class="title cf col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-4">
         <h1 class="toolbar_h1">
             <a href="@routes.Static.index" title="Databrary: An Open Data Library"><span>Databrary</span></a>
         </h1>
@@ -16,18 +16,18 @@
     </div>
 
     <div class="toolbar_user col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
-    @request.filter(_.user.nonEmpty).fold {
-        <a href="@routes.Login.view" id="modal_login_link" class="modal_link" data-target="modal_login">login</a>
-    } { request =>
-        @if(request.access == Permission.ADMIN) {
-            @if(request.superuser) {
+    @if(requestOption.nonEmpty && requestOption.get.user.isDefined) {
+        @if(requestOption.get.access == Permission.ADMIN) {
+            @if(requestOption.get.superuser) {
                 <a class="superuser on" href="@routes.Login.superuserOff">SU</a>
             }else{
                 <a class="superuser off" href="@routes.Login.superuserOn">SU</a>
             }
         }
 
-        <a href="@request.identity.pageURL" id="modal_profile_link" class="img modal_link" data-target="modal_profile"><img src="@display.avatar(request.identity, 16)" alt="@request.identity.name" class="s16"></a>
+        <a href="@requestOption.get.identity.pageURL" id="modal_profile_link" class="img modal_link" data-target="modal_profile"><img src="@display.avatar(requestOption.get.identity, 16)" alt="@requestOption.get.identity.name" class="s16"></a>
+    } else {
+        <a href="@routes.Login.view" id="modal_login_link" class="modal_link" data-target="modal_login">login</a>
     }
     </div>
 }
