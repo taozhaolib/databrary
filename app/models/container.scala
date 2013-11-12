@@ -140,7 +140,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     )
   }
 
-  def getConsent : Consent.Value = Async.get(context).consent
+  def getConsent : Consent.Value = Async.wait(context).consent
 
   /** The level of access granted on data covered by this slot to the current user. */
   def dataPermission(classification : Classification.Value = Classification.RESTRICTED) : HasPermission =
@@ -192,7 +192,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   def thumb : Future[Option[SlotAsset]] = SlotAsset.getThumb(this)
 
   def pageName = container.name.getOrElse { 
-    val i = Async.get(idents)
+    val i = Async.wait(idents)
     if (i.isEmpty)
       if (container.top)
         volume.name
@@ -202,7 +202,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
       "Session: " + i.mkString(", ")
   }
   override def pageCrumbName = if (segment.isFull) None else Some(segment.lowerBound.fold("")(_.toString) + " - " + segment.upperBound.fold("")(_.toString))
-  def pageParent = Some(if (isContext) volume else Async.get(context))
+  def pageParent = Some(if (isContext) volume else Async.wait(context))
   def pageURL = controllers.routes.Slot.view(container.volumeId, id)
   def pageActions = Seq(
     Action("view", controllers.routes.Slot.view(volumeId, id), Permission.VIEW),
