@@ -155,25 +155,26 @@ object Asset extends SiteController {
     form.fold(error _, {
       case (name, body, position, Some((format, classification, localfile, ()))) =>
         val ts = request.access >= Permission.ADMIN
-        macros.Async.flatMap[AssetFormat.Id,AssetFormat](format.filter(_ => ts), AssetFormat.get(_, ts)).flatMap { fmt =>
+        val fmt = format.filter(_ => ts).flatMap(AssetFormat.get(_, ts))
         type ER = Either[AssetForm,(TemporaryFile,AssetFormat,String)]
         request.body.asMultipartFormData.flatMap(_.file("file")).fold {
-          localfile.filter(_ => ts).fold[Future[ER]](
-            macros.Async(Left(form.withError("file", "error.required")))) { localfile =>
+          localfile.filter(_ => ts).fold[ER](
+            Left(form.withError("file", "error.required"))) { localfile =>
             /* local file handling, for admin only: */
             val file = new java.io.File(localfile)
             val name = file.getName
             if (file.isFile)
-              macros.Async.orElse(fmt, AssetFormat.getFilename(name, ts)).map(_.fold[ER](Left(form.withError("format", "Unknown format")))(
-                fmt => Right((store.TemporaryFileCopy(file), fmt, name))))
+              (fmt orElse AssetFormat.getFilename(name, ts)).fold[ER](
+                Left(form.withError("format", "Unknown format")))(
+                fmt => Right((store.TemporaryFileCopy(file), fmt, name)))
             else
-              macros.Async(Left(form.withError("localfile", "File not found")))
+              Left(form.withError("localfile", "File not found"))
           }
         } { file =>
-          macros.Async.orElse(fmt, AssetFormat.getFilePart(file, ts)).map(_.fold[ER](
+          (fmt orElse AssetFormat.getFilePart(file, ts)).fold[ER](
             Left(form.withError("file", "file.format.unknown", file.contentType.getOrElse("unknown"))))(
-            fmt => Right((file.ref, fmt, file.filename))))
-        }.flatMap(_.fold(error _, { case (file, fmt, fname) =>
+            fmt => Right((file.ref, fmt, file.filename)))
+        }.fold(error _, { case (file, fmt, fname) =>
           for {
             asset <- fmt match {
               case fmt : TimeseriesFormat if ts => // "if ts" should be redundant
@@ -185,8 +186,7 @@ object Asset extends SiteController {
             link <- ContainerAsset.create(request.obj, asset, position, Maybe(name).orElse(fname), Maybe(body).opt)
             slot <- link.container.fullSlot
           } yield (Redirect(routes.Asset.view(link.volumeId, slot.id, link.asset.id)))
-        }))
-        }
+        })
       case _ => error(uploadForm) /* should not happen */
     })
   }
