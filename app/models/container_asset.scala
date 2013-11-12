@@ -288,7 +288,7 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
     volumeRow(volume).SELECT("""
       WHERE (toplevel_asset.excerpt IS NOT NULL OR container.top AND slot.segment = '(,)' OR slot.consent >= 'PRIVATE')
         AND (format.id = ? OR format.mimetype LIKE 'image/%')
-        AND data_permission(?, slot_consent(slot.id), file.classification, ?, toplevel_asset.excerpt) >= 'DOWNLOAD'
+        AND data_permission(?::permission, slot_consent(slot.id), file.classification, ?::permission, toplevel_asset.excerpt) >= 'DOWNLOAD'
         AND container.volume = ?
         AND""", condition(), " ORDER BY toplevel_asset.excerpt DESC NULLS LAST, container.top DESC, slot.consent DESC NULLS LAST LIMIT 1")
       .apply(TimeseriesFormat.VIDEO, volume.getPermission, site.access, volume.id).singleOpt
@@ -298,7 +298,7 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
     slotRow(slot).SELECT("""
       WHERE container_asset.container = ?
         AND (format.id = ? OR format.mimetype LIKE 'image/%') 
-        AND data_permission(?, ?, file.classification, ?, toplevel_asset.excerpt) >= 'DOWNLOAD'
+        AND data_permission(?::permission, ?::consent, file.classification, ?::permission, toplevel_asset.excerpt) >= 'DOWNLOAD'
         AND""", condition("?::segment"), "LIMIT 1")
       .apply(slot.id, slot.containerId, TimeseriesFormat.VIDEO, slot.getPermission, slot.consent, site.access, slot.segment, slot.segment).singleOpt
 }
