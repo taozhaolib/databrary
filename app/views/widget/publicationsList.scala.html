@@ -1,9 +1,0 @@
-@(citations : Seq[VolumeCitation])(implicit request: SiteRequest[_])
-
-
-    @for(citation <- citations) {
-        <div class="publication">
-            <h4>@citation.head @if(citation.url){<a href="@citation.url" title="" class="cit_link">link</a>}</h4>
-            <p>@citation.body</p>
-        </div>
-    }
