@@ -1,6 +1,7 @@
 package models
 
 import scala.concurrent.Future
+import scala.collection.concurrent
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.Files.TemporaryFile
 import macros._
@@ -18,6 +19,7 @@ sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype 
     else
       (mimetype.substring(0, slash), mimetype.substring(slash+1))
   }
+  AssetFormat.add(this)
 }
 
 /** Specialization of [[AssetFormat]] for timeseries files stored in special internal formats.
@@ -30,6 +32,9 @@ sealed abstract class TimeseriesFormat private[models] (override val id : Timese
 
 /** Interface for non-timeseries file formats. */
 object AssetFormat extends TableId[AssetFormat]("format") {
+  private val cache : concurrent.Map[Int, AssetFormat] = concurrent.TrieMap.empty[Int, AssetFormat]
+  protected def add(f : AssetFormat) = cache.update(f.id.unId, f)
+
   private[models] val row = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("mimetype")
@@ -41,68 +46,66 @@ object AssetFormat extends TableId[AssetFormat]("format") {
       case _ => new AssetFormat(id, mimetype, extension, name)
     } } from "ONLY format"
 
-  private def mts[A](b : Boolean, ts : => Option[A], a : => Future[Option[A]]) : Future[Option[A]] =
-    if (b) Async.orElse(ts, a) else a
+  private def gets(b : Boolean, a : Option[AssetFormat], f : => SQLRows[AssetFormat]) : Option[AssetFormat] =
+    a.fold(Async.wait(f.singleOpt)) {
+      case _ : TimeseriesFormat if !b => None
+      case a => Some(a)
+    }
 
   /** Lookup a format by its id.
     * @param ts include TimeseriesFormats. Unlike other lookups, this is enabled by default. */
-  def get(id : Id, ts : Boolean = true) : Future[Option[AssetFormat]] =
-    mts(ts, TimeseriesFormat.get(id.coerce[TimeseriesFormat]),
-      row.SELECT("WHERE id = ?").apply(id).singleOpt)
+  def get(id : Id, ts : Boolean = true) : Option[AssetFormat] =
+    gets(ts, cache.get(id.unId),
+      row.SELECT("WHERE id = ?").apply(id))
+  private[models] def getTimeseries(id : TimeseriesFormat.Id) : Option[TimeseriesFormat] =
+    cache.get(id.unId).flatMap(cast[TimeseriesFormat](_))
   /** Lookup a format by its mimetime.
     * @param ts include TimeseriesFormats. */
-  def getMimetype(mimetype : String, ts : Boolean = false) : Future[Option[AssetFormat]] =
-    mts(ts, TimeseriesFormat.getMimetype(mimetype),
-      row.SELECT("WHERE mimetype = ?").apply(mimetype).singleOpt)
+  def getMimetype(mimetype : String, ts : Boolean = false) : Option[AssetFormat] =
+    gets(ts, cache collectFirst 
+      { case (_, a) if a.mimetype.equals(mimetype) => a },
+      row.SELECT("WHERE mimetype = ?").apply(mimetype))
   /** Lookup a format by its extension.
     * @param ts include TimeseriesFormats. */
-  private def getExtension(extension : String, ts : Boolean = false) : Future[Option[AssetFormat]] =
-    mts(ts, TimeseriesFormat.getExtension(extension),
-      row.SELECT("WHERE extension = ?").apply(extension).singleOpt)
+  private def getExtension(extension : String, ts : Boolean = false) : Option[AssetFormat] =
+    gets(ts, cache collectFirst 
+      { case (_, a) if a.extension.fold(false)(_.equals(extension)) => a },
+      row.SELECT("WHERE extension = ?").apply(extension))
   /** Get a list of all file formats in the database.
     * @param ts include TimeseriesFormats. */
-  def getAll(ts : Boolean = false) : Future[Seq[AssetFormat]] =
-    row.SELECT("ORDER BY format.id").apply().list.map {
-      (if (ts) TimeseriesFormat.getAll else Nil) ++ _
-    }
+  def getAll(ts : Boolean = false) : Iterable[AssetFormat] =
+    // XX incomplete but possibly sufficient
+    if (ts)
+      cache.values
+    else
+      cache.values.filter(!_.isInstanceOf[TimeseriesFormat])
 
-  def getFilename(filename : String, ts : Boolean = false) : Future[Option[AssetFormat]] =
-    Async.flatMap[Int,AssetFormat](Maybe(filename.lastIndexOf('.')).opt, i =>
-      getExtension(filename.substring(i + 1).toLowerCase, ts))
-  def getFilePart(file : play.api.mvc.MultipartFormData.FilePart[_], ts : Boolean = false) : Future[Option[AssetFormat]] =
-    Async.flatMap[String,AssetFormat](file.contentType, getMimetype(_, ts)).flatMap {
-      Async.orElse(_, getFilename(file.filename, ts))
+  def getFilename(filename : String, ts : Boolean = false) : Option[AssetFormat] =
+    Maybe(filename.lastIndexOf('.')).opt.flatMap { i =>
+      getExtension(filename.substring(i + 1).toLowerCase, ts)
     }
+  def getFilePart(file : play.api.mvc.MultipartFormData.FilePart[_], ts : Boolean = false) : Option[AssetFormat] =
+    file.contentType.flatMap(getMimetype(_, ts)) orElse
+      getFilename(file.filename, ts)
 
 
   private[models] final val IMAGE : Id = asId(-700)
   /** File type for internal image data (jpeg).
     * Images of this type may be produced and handled specially internally.
     */
-  object Image extends AssetFormat(IMAGE, "image/jpeg", Some("jpg"), "JPEG")
+  final val Image = new AssetFormat(IMAGE, "image/jpeg", Some("jpg"), "JPEG")
 }
 
 /** Interface to special timeseries formats.
   * These formats are all hard-coded so do not rely on the database, although they do have a corresponding timeseries_format table.
   * Currently this only includes Video, but may be extended to audio or other timeseries data. */
 object TimeseriesFormat extends HasId[TimeseriesFormat] {
-  def get(id : Id) = id match {
-    case VIDEO => Some(Video)
-    case _ => None
-  }
-  def getMimetype(mimetype : String) : Option[TimeseriesFormat] = mimetype match {
-    case Video.mimetype => Some(Video)
-    case _ => None
-  }
-  private[models] def getExtension(extension : String) : Option[TimeseriesFormat] = Some(extension) match {
-    case Video.extension => Some(Video)
-    case _ => None
-  }
-  def getAll : Seq[TimeseriesFormat] = Seq(Video)
+  def get(id : Id) : Option[TimeseriesFormat] =
+    AssetFormat.getTimeseries(id)
 
   private[models] final val VIDEO : Id = asId(-800)
   /** The designated internal video format. */
-  object Video extends TimeseriesFormat(VIDEO, "video/mp4", Some("mp4"), "Video") {
+  final val Video = new TimeseriesFormat(VIDEO, "video/mp4", Some("mp4"), "Video") {
     val sampleFormat = AssetFormat.Image
   }
 }
@@ -174,10 +177,11 @@ object Asset extends AssetView[Asset]("asset") {
   /* This is rather messy, but such is the nature of the dynamic query */
   private[models] val row = 
     (FileAsset.columns.~+(SelectColumn[Option[Offset]]("timeseries", "duration")) ~
-     AssetFormat.row ~ Clip.columns.?).map {
-      case (((id, classification, None), format), None) => new FileAsset(id, format, classification)
-      case (((id, classification, Some(duration)), format : TimeseriesFormat), clip) =>
-        val ts = new Timeseries(id.coerce[Timeseries], format, classification, duration)
+     Clip.columns.?).map {
+      case ((id, format, classification, None), None) =>
+        new FileAsset(id, AssetFormat.get(format, false).get, classification)
+      case ((id, format, classification, Some(duration)), clip) =>
+        val ts = new Timeseries(id.coerce[Timeseries], TimeseriesFormat.get(format.coerce[TimeseriesFormat]).get, classification, duration)
         clip.fold[Asset](ts)(_(ts))
     } from """asset
     LEFT JOIN clip USING (id)
@@ -195,11 +199,13 @@ object Asset extends AssetView[Asset]("asset") {
 object FileAsset extends AssetView[FileAsset]("file") {
   private[models] val columns = Columns(
       SelectColumn[Id]("id")
+    , SelectColumn[AssetFormat.Id]("format")
     , SelectColumn[Classification.Value]("classification")
     )
-  private[models] val row = columns.join(AssetFormat.row, "ONLY " + _ + " JOIN " + _ + " ON file.format = format.id") map {
-    case ((id, classification), format) => new FileAsset(id, format, classification)
-  }
+  private[models] val row = columns
+    .map { (id, format, classification) =>
+      new FileAsset(id, AssetFormat.get(format, false).get, classification)
+    }
   
   /** Retrieve a single (non-timeseries) file asset.
     * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
@@ -226,10 +232,10 @@ object Timeseries extends AssetView[Timeseries]("timeseries") {
     , SelectColumn[Classification.Value]("classification")
     , SelectColumn[Offset]("duration")
     )
-  private[models] val row = columns map {
-    (id, format, classification, duration) =>
+  private[models] val row = columns
+    .map { (id, format, classification, duration) =>
       new Timeseries(id, TimeseriesFormat.get(format).get, classification, duration)
-  }
+    }
   
   /** Retrieve a single timeseries asset.
     * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */

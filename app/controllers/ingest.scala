@@ -35,8 +35,7 @@ object Ingest extends SiteController {
       form => bad(form),
       { case ((), run) => request.body.asMultipartFormData.flatMap(_.file("file")).fold(
         bad(form.withError("file", "error.required"))
-      ) { file => AssetFormat.getFilePart(file).flatMap {
-        _.map(_.mimetype).orElse(file.contentType) match
+      ) { file => AssetFormat.getFilePart(file).map(_.mimetype).orElse(file.contentType) match
         { case Some("text/csv") if !run =>
             Future(ingest.Curated.preview(file.ref.file))(site.context.process).map { r =>
               Ok(views.html.ingest.csv(volume, form, r))
@@ -55,7 +54,7 @@ object Ingest extends SiteController {
             }
           case f =>
             bad(form.withError("file", "file.format.unknown", f.fold("unknown")(_.toString)))
-        } }
+        }
       } }
     )
   }

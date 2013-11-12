@@ -148,8 +148,8 @@ object Curated {
     def fields = Seq(name, optString(position), classification.toString, file.getPath)
     def key = file.getPath
 
-    def info : Future[Asset.Info] =
-      AssetFormat.getFilename(file.getPath, true).map(_.fold {
+    def info : Asset.Info =
+      AssetFormat.getFilename(file.getPath, true).fold {
         throw PopulateException("no file format found for " + file.getPath)
       } {
         case fmt : TimeseriesFormat =>
@@ -159,7 +159,7 @@ object Curated {
           Asset.TimeseriesInfo(fmt, probe.duration)
         case fmt =>
           Asset.FileInfo(fmt)
-      })
+      }
 
     def populate(info : Asset.Info)(implicit site : Site) : Future[models.Asset] = {
       /* for now copy and don't delete */
@@ -204,8 +204,8 @@ object Curated {
     def key = asset.key
     def name = sessionKey + "/" + asset.name
 
-    def populate(container : Container)(implicit site : Site) : Future[models.ContainerAsset] =
-      asset.info.flatMap { info =>
+    def populate(container : Container)(implicit site : Site) : Future[models.ContainerAsset] = {
+      val info = asset.info
       ContainerAsset.findName(container, asset.name).flatMap {
         case Nil =>
           asset.populate(info).flatMap(
