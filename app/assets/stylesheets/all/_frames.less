@@ -1,11 +1,11 @@
 // VARS
 
-@gizmopad: .5;
+@framepad: .5;
 
 // MIXINS
 
-.gizmo-color(@c) {
-	.gizmo_header {
+.frame-color(@c) {
+	.frame_header {
 		&.minimizer {
 			&:hover {
 				color: mix(@c, @g1, 75%);
@@ -17,7 +17,7 @@
 		border-bottom-color: mix(@c, @g4, 75%);
 		background-color: mix(@c, @g5, 10%);
 
-		.gizmo_header {
+		.frame_header {
 			&.minimizer {
 				color: mix(@c, @g1, 50%);
 			}
@@ -32,20 +32,20 @@
 
 // STYLES
 
-.gizmo {
+.frame {
 	.margin-bottom(1);
 	.transition();
 
 	&.nowrap {
 		.wrap {
 			width: auto;
-			.padding-width(@gizmopad);
+			.padding-width(@framepad);
 		}
 	}
 
 	&.minimizable {
 		&.minimized {
-			.gizmo_header {
+			.frame_header {
 				&:before {
 					.transform-rotate(-90deg);
 				}
@@ -54,13 +54,13 @@
 	}
 }
 
-.gizmo_body {
+.frame_body {
 	background-color: transparent;
-	.border-padding-bottom(0, @gizmopad);
-	.border-padding-top(0, @gizmopad);
+	.border-padding-bottom(0, @framepad);
+	.border-padding-top(0, @framepad);
 }
 
-.gizmo_header {
+.frame_header {
 	font-weight: normal;
 	.font(1, 1.5);
 	text-transform: uppercase;
@@ -92,29 +92,3 @@
 		}
 	}
 }
-
-//
-
-//.gizmo_browser {
-//	.gizmo-color(@c8);
-//}
-//
-//.gizmo_materials {
-//	.gizmo-color(@c6);
-//}
-//
-//.gizmo_publications {
-//	.gizmo-color(@c4);
-//}
-//
-//.gizmo_people {
-//	.gizmo-color(@c2);
-//}
-//
-//.gizmo_tags {
-//	.gizmo-color(@c0);
-//}
-//
-//.gizmo_comments {
-//	.gizmo-color(@c10);
-//}
