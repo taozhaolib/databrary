@@ -1,6 +1,6 @@
-@(form : Login.LoginForm)
+@(form : Login.LoginForm)(implicit request: SiteRequest[_])
 
-@widget.template.raw("Login") {
+@widget.template.html5("Login") {
     <article class="focus form row">
         <div class="column_center">
             @account.loginFill(form)

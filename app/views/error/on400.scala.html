@@ -1,16 +1,8 @@
 @(request: RequestHeader, error: String)
 
-@widget.template.raw("There's been an error! (400)") {
-	<article class="focus row">
-		<div class="column_center">
-			<h1>400! What a naughty request.</h1>
-
-			<div class="error inline">
-				<ul>
-					<li>@error</li>
-					<li>@request.path</li>
-				</ul>
-			</div>
-		</div>
-	</article>
+@widget.template.error("400! What a naughty request.") {
+    <ul>
+        <li>@error</li>
+        <li>@request.path</li>
+    </ul>
 }

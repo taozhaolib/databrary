@@ -1,16 +1,8 @@
 @(throwable: Throwable)
 
-@widget.template.raw("There's been an error! (500)") {
-	<article class="focus row">
-		<div class="column_center">
-			<h1>500! Inner turmoil alert.</h1>
-
-			<div class="error inline">
-				<ul>
-					<li>Error code: @throwable.toString</li>
-					<li>@throwable.getMessage</li>
-				</ul>
-			</div>
-		</div>
-	</article>
+@widget.template.error("500! Inner turmoil alert.") {
+    <ul>
+        <li>Error code: @throwable.toString</li>
+        <li>@throwable.getMessage</li>
+    </ul>
 }
