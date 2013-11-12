@@ -4,8 +4,7 @@
     dbjs.carousel('#carousel .carousel_panels', '.carousel_panel');
 }
 
-@widget.template.wide("An Open Data Library for Developmental Science", js = script, toolbar = "about") {
-
+@widget.template.static("An Open Data Library for Developmental Science", js = script, has_sidebar = false) {
     <section id="carousel" class="carousel">
         <div class="carousel_panels">
             <div class="carousel_panel" id="panel_8">
@@ -57,4 +56,6 @@
             </div>
         </div>
     </section>
+} {
+
 }

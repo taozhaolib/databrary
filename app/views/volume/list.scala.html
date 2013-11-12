@@ -4,7 +4,7 @@
         dbjs.fadeOff('.volume_roll a', '.body', '.thumb');
     }
 
-@widget.template.wide("Volume List", js = script, query = query) {
+@widget.template.static("Search", js = script, has_sidebar = false) {
     <div class="roll row">
         <div class="cf col-desktop-10 push-desktop-6 col-laptop-10 push-laptop-2">
         @list.map { volume =>
@@ -136,4 +136,6 @@
             </div>
         </section>
     </div>
+} {
+
 }
