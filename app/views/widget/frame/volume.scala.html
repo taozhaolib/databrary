@@ -1,0 +1,22 @@
+@(volume: Volume)(implicit request : SiteRequest[_])
+
+@widget.frame.raw("volume", "")("Metadata", minimizable = true) {
+    <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+        <div class="description">
+            @volume.body.map(display.plainText _)
+        </div>
+
+        <div class="metadata">
+            <dl class="flat">
+                <dt>Data collected</dt>
+                <dd><time datetime="@volume.creation" pubdate>@display.dateFmtYM.format(volume.creation)</time></dd>
+
+                <dt>Sessions</dt>
+                <dd>@volume.summary.shared shared</dd>
+
+                <dt>Ages</dt>
+                <dd>@display.agerange(volume.summary.agerange) (<em>M</em> = @display.age(volume.summary.agemean))</dd>
+            </dl>
+        </div>
+    </div>
+}

@@ -3,22 +3,22 @@
 @import helper.FieldConstructor
 
     @implicitField = @{
-        FieldConstructor(tag.minimalFieldConstructor.f)
+        FieldConstructor(widget.tag.minimalFieldConstructor.f)
     }
 
 <h1>Enter Databrary</h1>
 
 <div class="modal_content">
-	@tag.form(routes.Login.post) {
+	@widget.tag.form(routes.Login.post) {
 		@widget.formErrors(form)
 
 		<div id="login_databrary" class="login_method">
-			@tag.inputText(form("email"), 'placeholder -> "Email", '_class -> "big")
-			@tag.inputPassword(form("password"), 'placeholder -> "Password", '_class -> "big")
+			@widget.tag.inputText(form("email"), 'placeholder -> "Email", '_class -> "big")
+			@widget.tag.inputPassword(form("password"), 'placeholder -> "Password", '_class -> "big")
 		</div>
 
 		<div id="login_openid" class="login_method"\>
-			@tag.inputText(form("openid"), 'placeholder -> "OpenID", '_class -> "big")
+			@widget.tag.inputText(form("openid"), 'placeholder -> "OpenID", '_class -> "big")
 		</div>
 
 		<button type="submit" class="big button first">Login</button>

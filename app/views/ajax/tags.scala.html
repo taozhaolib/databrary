@@ -1,17 +1,17 @@
 @(slot : models.Slot, form : controllers.Slot.TagForm)(implicit request : RequestObject[models.Slot]#Site[_])
 
-@template.modal("login")() {
+@widget.template.modal("login")() {
 	<section id="tags-region">
-        @widget.panels.tags(slot)
+        @widget.panel.tags(slot)
 	</section>
 
     <section id="form-region">
         <div class="name">
-            @tag.inputText(form("name"))
+            @widget.tag.inputText(form("name"))
         </div>
 
         <div class="vote">
-            @tag.inputText(form("vote"))
+            @widget.tag.inputText(form("vote"))
         </div>
     </section>
 }

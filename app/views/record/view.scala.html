@@ -1,7 +1,7 @@
 @(record : models.Record)(implicit request : RequestObject[Record]#Site[_])
 
-@template.crud("Record: " + record.pageName) {
-    @widget.panels.record(record)
-    @widget.panels.browser(record.volume) @*restricted to record.slots*@
-    @widget.panels.materials(record.slots.flatMap(s => s.assets))()
+@widget.template.crud("Record: " + record.pageName) {
+    @widget.panel.record(record)
+    @widget.panel.browser(record.volume) @*restricted to record.slots*@
+    @widget.panel.materials(record.slots.flatMap(s => s.assets))()
 }

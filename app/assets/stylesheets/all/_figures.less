@@ -57,11 +57,13 @@ figure, .figure {
 		background-position: center center;
 	}
 
-	&:hover, &.hover {
-		.box-shadow();
+	&.hoverable {
+		&:hover, &.hover {
+			.box-shadow();
 
-		.text {
-			opacity: .95;
+			.text {
+				opacity: 1;
+			}
 		}
 	}
 }

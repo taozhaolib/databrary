@@ -1,0 +1,5 @@
+@(party: Party, extra: Html = Html(""), classes: String = "")(implicit request: SiteRequest[_])
+
+<div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
+@widget.portrait.raw(party, ("hoverable portrait_vertical portrait_small portrait_extra "+classes).trim)(institutions = false, links = false, scalar = "square", extra = Some(extra))
+</div>

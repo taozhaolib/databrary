@@ -4,7 +4,7 @@
     dbjs.fadeOff('.modal .volume_roll a', '.body', '.thumb');
 }
 
-@template.modal("profile", "full")(js = script) {
+@widget.template.modal("profile", "full")(js = script) {
     <article class="account view">
         <header>
             <h1>@party.name</h1>
@@ -71,7 +71,7 @@
 
             @dbrary.cast[Account](party).map(a => a.comments).map { comments =>
                 @if(comments.nonEmpty) {
-                    @widget.panels.comments(None, None, comments)
+                    @widget.panel.comments(None, None, comments)
                 }
             }
 		</div>

@@ -12,13 +12,13 @@
 	    case _ => 'o'
 	}
 })) { case (volume, assets) =>
-    @template.crud("Volume: " + volume.name, js = script) {
-        @widget.panels.volume(volume)
-        @widget.panels.browser(volume)
-        @widget.panels.materials(volume.toplevelAssets)()
-        @widget.panels.publications(volume.citations)
-        @widget.panels.people(volume)
-        @widget.panels.tags(volume.topSlot, Some(volume))
-        @widget.panels.comments(Some(request.obj.topSlot), Some((routes.Slot.comment(volume.id, volume.topSlot.id), controllers.Slot.commentForm)), volume.comments)
+    @widget.template.crud("Volume: " + volume.name, js = script) {
+        @widget.panel.volume(volume)
+        @widget.panel.browser(volume)
+        @widget.panel.materials(volume.toplevelAssets)()
+        @widget.panel.publications(volume.citations)
+        @widget.panel.people(volume)
+        @widget.panel.tags(volume.topSlot, Some(volume))
+        @widget.panel.comments(Some(request.obj.topSlot), Some((routes.Slot.comment(volume.id, volume.topSlot.id), controllers.Slot.commentForm)), volume.comments)
     }
 }

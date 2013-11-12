@@ -1,0 +1,9 @@
+@(funding: Seq[VolumeFunding])(implicit request : SiteRequest[_])
+
+@if(funding.nonEmpty) {
+    @widget.frame.raw("funding", "")("Funding", minimizable = true) {
+        @funding.map { f =>
+            @widget.portrait.verticalSmallExtra(f.funder, Html(f.grant.getOrElse("")))
+        }
+    }
+}

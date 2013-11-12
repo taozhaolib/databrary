@@ -1,6 +1,6 @@
 @(vol : models.Volume, res : (Iterable[Record], Iterable[ContainerAsset]))(implicit site : Site)
 
-@template.raw("CSV Ingest Result") {
+@widget.template.raw("CSV Ingest Result") {
 	<h2>Participant records:</h2>
 	<ul>
 	@res._1.map { rec =>

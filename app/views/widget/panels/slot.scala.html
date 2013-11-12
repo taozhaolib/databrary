@@ -1,7 +1,0 @@
-@(slot : Slot)(implicit request : SiteRequest[_])
-
-@widget.panels.panel("overview", "panel_slot")(){
-    <h1 class="col panel_title">@display.formatTitle(slot.pageName)</h1>
-
-    @widget.gizmos.slot(slot)
-}

@@ -1,0 +1,46 @@
+@(slot : Slot, volume : Option[Volume] = None, form : controllers.Slot.TagForm = controllers.Slot.tagForm)(implicit request : SiteRequest[_])
+
+@import play.api.data.Form
+@import play.api.data.Forms._
+
+@import helper.FieldConstructor
+    @implicitField = @{
+        FieldConstructor(widget.tag.minimalFieldConstructor.f)
+    }
+
+
+@widget.panel.raw("tags", "")(title = "Tags", minimizable = true){
+    <div class="panel_tags_list col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-3">
+        <ol class="panel_tags_items row">
+        @defining(volume.fold(slot.tags())(_.tags)) { tags =>
+            @if(tags.nonEmpty) {
+                @tags.map { case TagWeight(tag, weight, user) =>
+                <li id="tag_@tag.id" class="panel_tags_item col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-6">
+                @widget.tag.form(routes.Slot.tag(slot.volumeId, slot.id), 'class -> "ajax") {
+                    @widget.tag.inputHidden(form("name").copy(value = Some(tag.name)), 'id -> Html("name-"+tag.id.toString))(widget.tag.rawFieldConstructor.f, Lang("en"))
+
+
+                    <div class="controls">
+                        <button class="vote down" name="vote" value="false" @if(!user.getOrElse(true)){disabled}>-</button>
+                        <button class="vote null" name="vote" value="" @if(user.isEmpty){disabled}>0</button>
+                        <button class="vote up" name="vote" value="true" @if(user.getOrElse(false)){disabled}>+</button>
+                    </div>
+
+                    <span class="name">@tag.name</span>
+
+                    <span class="weight">@weight</span>
+                }
+                </li>
+                }
+            }
+        }
+        </ol>
+    </div>
+
+    <div id="tag_add" class="panel_tags_form col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
+    @widget.tag.form(routes.Slot.tag(slot.volumeId, slot.id)) {
+        @widget.tag.inputText(form("name"), 'placeholder -> "Add new tag")
+        <button name="vote" value="@true" class="hide">add</button>
+    }
+    </div>
+}

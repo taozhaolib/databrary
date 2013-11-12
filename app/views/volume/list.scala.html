@@ -4,7 +4,7 @@
         dbjs.fadeOff('.volume_roll a', '.body', '.thumb');
     }
 
-@template.wide("Volume List", js = script, query = query) {
+@widget.template.wide("Volume List", js = script, query = query) {
     <div class="roll row">
         <div class="cf col-desktop-10 push-desktop-6 col-laptop-10 push-laptop-2">
         @list.map { volume =>
@@ -17,7 +17,7 @@
 
                         <div class="spiff">
                             <aside class="thumb cf col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-2">
-                            @widget.figures.thumbVolume(volume)
+                            @widget.figure.thumbVolume(volume)
                             </aside>
 
                             <div class="body col-desktop-7 col-laptop-7 col-tablet-6 col-mobile-4">

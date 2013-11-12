@@ -1,6 +1,6 @@
 @(slot : Slot, recordForm : Option[controllers.Record.SelectForm] = None)(implicit request : SiteRequest[_])
 
-    @defining(helper.FieldConstructor(tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
+    @defining(helper.FieldConstructor(widget.tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
         <table class="records">
             <thead>
                 <tr>
@@ -14,7 +14,7 @@
 	    @defining(slot.records) { records =>
             @if(records.nonEmpty) {
                 @records.map { record =>
-                    @tag.form(routes.Record.slotRemove(slot.volumeId, slot.id, record.id, true)) {
+                    @widget.tag.form(routes.Record.slotRemove(slot.volumeId, slot.id, record.id, true)) {
                         <tr>
                             <td class="main">
                                 @display(record)
@@ -48,9 +48,9 @@
 
             @recordForm.map { f =>
                 <tfoot>
-                    @tag.form(routes.Record.slotAdd(slot.volumeId, slot.id, IntId[models.RecordCategory](-500), true)) {
+                    @widget.tag.form(routes.Record.slotAdd(slot.volumeId, slot.id, IntId[models.RecordCategory](-500), true)) {
                         <tr>
-                            @tag.select(f("record"), controllers.Record.selectList(slot), '_default -> "Create new record...", '_colspan -> 2)
+                            @widget.tag.select(f("record"), controllers.Record.selectList(slot), '_default -> "Create new record...", '_colspan -> 2)
                             <td><button type='submit' class="button first">add participant</button></td>
                         </tr>
                     }

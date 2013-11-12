@@ -1,9 +1,9 @@
 @(slot : models.Slot, commentForm : controllers.Slot.CommentForm = controllers.Slot.commentForm)(implicit request : RequestObject[Slot]#Site[_])
 
-@template.crud("Session: " + slot.pageName) {
-    @widget.panels.slot(slot)
-    @widget.panels.browser(slot.volume) @*participant view, restricted to slot.records.filter(participants)*@
-    @widget.panels.materials(slot.assets)()
-    @widget.panels.tags(slot)
-    @widget.panels.comments(Some(slot), Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), slot.comments(true))
+@widget.template.crud("Session: " + slot.pageName) {
+    @widget.panel.slot(slot)
+    @widget.panel.browser(slot.volume) @*participant view, restricted to slot.records.filter(participants)*@
+    @widget.panel.materials(slot.assets)()
+    @widget.panel.tags(slot)
+    @widget.panel.comments(Some(slot), Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), slot.comments(true))
 }

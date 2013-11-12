@@ -3,23 +3,23 @@
 @import helper.FieldConstructor
 
     @implicitField = @{
-        FieldConstructor(tag.minimalFieldConstructor.f)
+        FieldConstructor(widget.tag.minimalFieldConstructor.f)
     }
 
-@template.crud(a.fold(_.toString + ": Create Volume", "Edit Volume: " + _.name)) {
-        @tag.form(a.fold(p => routes.Volume.add(p.id), s => routes.Volume.change(s.id))) {
+@widget.template.crud(a.fold(_.toString + ": Create Volume", "Edit Volume: " + _.name)) {
+        @widget.tag.form(a.fold(p => routes.Volume.add(p.id), s => routes.Volume.change(s.id))) {
             @widget.formErrors(editForm)
 
-            @tag.inputText(editForm("name"), 'placeholder -> "Title", '_class -> "big")
-            @tag.textarea(editForm("body"), 'placeholder -> "Description", '_class -> "")
+            @widget.tag.inputText(editForm("name"), 'placeholder -> "Title", '_class -> "big")
+            @widget.tag.textarea(editForm("body"), 'placeholder -> "Description", '_class -> "")
 
             <fieldset class="publications">
                 <legend>Publications</legend>
 
-                @tag.repeat(editForm("citation")) { f =>
-                    @tag.inputText(f("head"), 'placeholder -> "Citation")
-                    @tag.inputText(f("url"), 'placeholder -> "DOI or URL")
-                    @tag.textarea(f("body"), 'placeholder -> "Abstract")
+                @widget.tag.repeat(editForm("citation")) { f =>
+                    @widget.tag.inputText(f("head"), 'placeholder -> "Citation")
+                    @widget.tag.inputText(f("url"), 'placeholder -> "DOI or URL")
+                    @widget.tag.textarea(f("body"), 'placeholder -> "Abstract")
                 }
             </fieldset>
 

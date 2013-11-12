@@ -1,0 +1,7 @@
+@(asset : SlotAsset)(implicit request : SiteRequest[_])
+
+@widget.panel.raw("overview", "panel_asset")(){
+    <h1 class="col panel_title">@display.formatTitle(asset.pageName)</h1>
+
+    @widget.frame.asset(asset)
+}

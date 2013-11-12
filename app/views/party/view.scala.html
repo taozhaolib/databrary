@@ -3,7 +3,7 @@
 @script = {
 }
 
-@template.crud("Profile: " + party.name, js = script) {
+@widget.template.crud("Profile: " + party.name, js = script) {
     <article id="profile_@party.id" class="party view">
         <div class="modal_content">
 	    <div class="row">
@@ -70,7 +70,7 @@
 
                 @dbrary.cast[Account](party).map(a => a.comments).map { comments =>
                     @if(comments.nonEmpty) {
-                        @widget.panels.comments(None, None, comments)
+                        @widget.panel.comments(None, None, comments)
                     }
                 }
 		</div>

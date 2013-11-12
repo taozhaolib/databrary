@@ -3,9 +3,9 @@
 @fileData(asset : FileAsset) = {
 }
 
-@template.crud("Asset: " + asset.link.name) {
-    @widget.panels.asset(asset)
-    @widget.panels.browser(asset.volume) @*restricted to asset.link.container.slots *@
-    @widget.panels.materials(Seq(asset))()
-    @widget.panels.comments(Some(asset.slot), Some((routes.Slot.comment(asset.volumeId, asset.slotId), controllers.Slot.commentForm)), asset.slot.comments())
+@widget.template.crud("Asset: " + asset.link.name) {
+    @widget.panel.asset(asset)
+    @widget.panel.browser(asset.volume) @*restricted to asset.link.container.slots *@
+    @widget.panel.materials(Seq(asset))()
+    @widget.panel.comments(Some(asset.slot), Some((routes.Slot.comment(asset.volumeId, asset.slotId), controllers.Slot.commentForm)), asset.slot.comments())
 }

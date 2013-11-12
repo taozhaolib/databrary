@@ -3,27 +3,27 @@
 @import helper.FieldConstructor
 
     @implicitField = @{
-        FieldConstructor(tag.minimalFieldConstructor.f)
+        FieldConstructor(widget.tag.minimalFieldConstructor.f)
     }
 
-@template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.name)) {
-        @tag.form(target.fold(
+@widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.name)) {
+        @widget.tag.form(target.fold(
             container => routes.Asset.upload(container.volumeId, container.id),
             link => routes.Asset.change(link.volumeId, link.containerId, link.assetId)),
             'enctype -> "multipart/form-data") {
-            @tag.inputText(form("name"), 'placeholder -> "Title", '_class -> "big")
-            @tag.textarea(form("body"), 'placeholder -> "Description")
-            @tag.inputText(form("offset"), 'placeholder -> "Offset in seconds", 'class -> "half")
+            @widget.tag.inputText(form("name"), 'placeholder -> "Title", '_class -> "big")
+            @widget.tag.textarea(form("body"), 'placeholder -> "Description")
+            @widget.tag.inputText(form("offset"), 'placeholder -> "Offset in seconds", 'class -> "half")
 
             @if(controllers.Asset.formForFile(form, target)) {
                 @widget.enumSelect(form("classification"), Classification)
-                @tag.inputFile(form("file"))
+                @widget.tag.inputFile(form("file"))
 
 		@if(request.access >= Permission.ADMIN) {
                     <fieldset>
                         <legend>Admin Options</legend>
-                        @tag.select(form("format"), ("", "") +: AssetFormat.getAll(true).map(f => (f.id.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)))
-                        @tag.inputText(form("localfile"), 'placeholder -> "Local location (overridden by file upload)")
+                        @widget.tag.select(form("format"), ("", "") +: AssetFormat.getAll(true).map(f => (f.id.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)))
+                        @widget.tag.inputText(form("localfile"), 'placeholder -> "Local location (overridden by file upload)")
                     </fieldset>
                 }
             }
