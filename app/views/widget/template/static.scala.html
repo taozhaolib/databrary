@@ -1,0 +1,29 @@
+@(title: String = "", css: Html = Html(""), js: Html = Html(""), has_sidebar: Boolean = true)(body: Html)(sidebar: Html = Html(""))(implicit request: SiteRequest[_])
+
+@script = {
+    dbjs.sideMenu('.sidebar_menu', 'main > article > h1:first-child');
+}
+
+@widget.template.html5(title, "about", css, script += js) {
+    <div class="wrap">
+        @region.bodyHeaderStatic()
+
+        <div class="row">
+        @if(has_sidebar) {
+            <article class="article article_static col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-6 col-cell">
+                @body
+            </article>
+
+            <aside class="sidebar sidebar_static col-desktop-2 col-laptop-2 col-tablet-2 col-cell">
+                @region.bodySidebarStatic()
+
+                @sidebar
+            </aside>
+        } else {
+            <article class="article article_static col-full">
+            @body
+            </article>
+        }
+        </div>
+    </div>
+}
