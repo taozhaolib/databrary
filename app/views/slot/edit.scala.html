@@ -3,16 +3,16 @@
 @import helper.FieldConstructor
 
 @implicitField = @{
-    FieldConstructor(tag.minimalFieldConstructor.f)
+    FieldConstructor(widget.tag.minimalFieldConstructor.f)
 }
 
-@template.crud(c.fold(v => "Create Session in Volume: " + v.name, s => "Edit Session: " + s.container.name + " (#" + s.id.toString + ")")) {
+@widget.template.crud(c.fold(v => "Create Session in Volume: " + v.name, s => "Edit Session: " + s.container.name + " (#" + s.id.toString + ")")) {
     @widget.formErrors(form)
 
-    @tag.form(c.fold(volume => routes.Slot.addContainer(volume.id), slot => routes.Slot.change(slot.volumeId, slot.id)), 'id -> "slot_edit") {
+    @widget.tag.form(c.fold(volume => routes.Slot.addContainer(volume.id), slot => routes.Slot.change(slot.volumeId, slot.id)), 'id -> "slot_edit") {
         @if(form("name").name) {
-            @tag.inputText(form("name"), 'placeholder -> "Name")
-            @tag.inputDate(form("date"), 'placeholder -> "Date", 'class -> "half")
+            @widget.tag.inputText(form("name"), 'placeholder -> "Name")
+            @widget.tag.inputDate(form("date"), 'placeholder -> "Date", 'class -> "half")
         }
         @widget.enumSelect(form("consent"), Consent)
     }

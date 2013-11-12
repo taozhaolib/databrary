@@ -4,14 +4,14 @@
 	<td>@display(party)</td>
 	@widget.enumSelect(form("access"), Permission)
 	@widget.enumSelect(form("delegate"), Permission)
-	@tag.inputDate(form("expires"), 'placeholder -> "Expiration date", 'class -> "half")
+	@widget.tag.inputDate(form("expires"), 'placeholder -> "Expiration date", 'class -> "half")
 }
 
 @authorizeSearchWhich(which : Boolean)(implicit fieldConstructor : helper.FieldConstructor) = {
 @if(authorizeWhich.fold(true)(_ == which)) {
-	@tag.form(routes.Party.authorizeSearch(party.id, which)) {
+	@widget.tag.form(routes.Party.authorizeSearch(party.id, which)) {
 	<tr class="null">
-		@tag.inputText(authorizeSearch("name"))
+		@widget.tag.inputText(authorizeSearch("name"))
 		<td/>
 		<td/>
 		<td/>
@@ -23,7 +23,7 @@
 	}
 
 	@authorizeResults.map { case (other,form) =>
-	@tag.form(if (which) routes.Party.authorizeApply(party.id, other.id) else routes.Party.authorizeChange(party.id, other.id)) {
+	@widget.tag.form(if (which) routes.Party.authorizeApply(party.id, other.id) else routes.Party.authorizeChange(party.id, other.id)) {
 	<tr>
 		@authorizeFields(other, form)
 		<td>
@@ -37,7 +37,7 @@
 }
 }
 
-@defining(helper.FieldConstructor(tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
+@defining(helper.FieldConstructor(widget.tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
 <h3>Memberships</h3>
 
 	<table class="permission">
@@ -80,7 +80,7 @@
 	</thead>
 
 	@authorizeForms.map { case (child,form) =>
-	@tag.form(routes.Party.authorizeChange(party.id, child.id)) {
+	@widget.tag.form(routes.Party.authorizeChange(party.id, child.id)) {
 	<tr>
 		@authorizeFields(child, form)
 		<td>

@@ -3,12 +3,12 @@
 @accessFields(party : Party, form : controllers.Volume.AccessForm)(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@display(party)</td>
 	@widget.enumSelect(form("access"), Permission)
-	@tag.select(form("inherit"), Permission.values.to(if (party.id.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
+	@widget.tag.select(form("inherit"), Permission.values.to(if (party.id.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
 }
 
-@template.crud("Edit Volume Permissions: " + volume.name) {
+@widget.template.crud("Edit Volume Permissions: " + volume.name) {
 	<table class="permission">
-	@defining(helper.FieldConstructor(tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
+	@defining(helper.FieldConstructor(widget.tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
 			<thead>
 				<tr>
 			<th>Name</th>
@@ -20,7 +20,7 @@
 
 <tbody>
 		@accessForms.map { case (party,form) =>
-		@tag.form(routes.Volume.accessChange(volume.id, party.id)) {
+		@widget.tag.form(routes.Volume.accessChange(volume.id, party.id)) {
 		<tr>
 			@accessFields(party, form)
 			<td>
@@ -35,9 +35,9 @@
 		}
 </tbody>
 			<tfoot>
-		@tag.form(routes.Volume.accessSearch(volume.id)) {
+		@widget.tag.form(routes.Volume.accessSearch(volume.id)) {
 		<tr class="null">
-			@tag.inputText(accessSearch("name"), 'placeholder -> "Search users and institutions...")
+			@widget.tag.inputText(accessSearch("name"), 'placeholder -> "Search users and institutions...")
 			<td/>
 			<td/>
 			<td>
@@ -48,7 +48,7 @@
 		}
 
 		@accessResults.map { case (party,form) =>
-		@tag.form(routes.Volume.accessChange(volume.id, party.id)) {
+		@widget.tag.form(routes.Volume.accessChange(volume.id, party.id)) {
 		<tr>
 			@accessFields(party, form)
 			<td>

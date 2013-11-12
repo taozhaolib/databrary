@@ -67,7 +67,7 @@
 		    <div class="row">
             @party.account.map(a => Async.get(a.comments)).map { comments =>
                     @if(comments.nonEmpty) {
-                        @region.comments(None, None, comments)
+                        @widget.panel.comments(None, None, comments)
                     }
                 }
 		    </div>

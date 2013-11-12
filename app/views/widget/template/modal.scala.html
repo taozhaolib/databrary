@@ -1,0 +1,7 @@
+@(id : String, size : String = "small")(title : String = "", css: Html = Html(""), js: Html = Html(""))(body : Html)
+
+@widget.template.ajax(title, css, js) {
+    <section id="modal_@id" class="modal modal_@size cf">
+		@body
+    </section>
+}

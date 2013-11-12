@@ -1,8 +1,0 @@
-@(volume : Volume, assets : Map[Char,Seq[models.SlotAsset]])(implicit request : SiteRequest[_])
-
-<div id="data" class="view">
-    <h2 class='tab' data-message="The <strong>Materials tab</strong> lists top-level media and documents asscoiated with this study.">Materials</h2>
-
-    <h3>Materials</h3>
-    @widget.assetFrame(assets.values.toSeq.flatten)
-</div>

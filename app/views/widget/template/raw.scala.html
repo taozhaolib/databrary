@@ -1,0 +1,15 @@
+@(title: String = "", toolbar: String = "", css: Html = Html(""), js: Html = Html(""))(body: Html)
+
+@widget.template.html5(title, None, toolbar, css, js) {
+        <div class="wrap">
+            @region.bodyHeaderStatic()
+
+            <div class="row">
+                <main id="body_content" class="body_content col">
+                @body
+                </main>
+            </div>
+        </div>
+
+            @region.bodyFooterStatic()
+}

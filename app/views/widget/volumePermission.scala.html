@@ -1,9 +1,0 @@
-@(volume: Volume)(implicit request: SiteRequest[_])
-
-@groupBy[VolumeAccess,Permission.Value](Async.get(volume.partyAccess), _.access).map { case (permission, volumeAccesses) =>
-			<h3>@permission</h3>
-
-			<div class="row foot">
-				@volumeAccesses.map { volumeAccess => @widget.userinfo(volumeAccess.party, None, true)}
-			</div>
-}

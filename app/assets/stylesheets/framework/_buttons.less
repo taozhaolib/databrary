@@ -1,0 +1,97 @@
+// STYLES
+
+button, .button {
+	display: inline-block;
+	text-shadow: 0 0 2px fadeout(@g5, 25%);
+	.line-height(1);
+	.border-padding-height(1px, .25);
+	.padding-width(.5);
+	.border-radius(@b8);
+	color: @text;
+
+	border: 1px solid @c4g3m3;
+	#gradient > .vertical(@c4g5m3, @c4g5m2);
+
+	&:hover {
+		#gradient > .vertical(@c4g5m2, @c4g5m3);
+		text-decoration: none;
+	}
+
+	&:active {
+		#gradient > .vertical(@c4g5m1, @c4g5m2);
+	}
+
+	&.first, &.c8 {
+		border: 1px solid @c8g3m3;
+		#gradient > .vertical(@c8g5m3, @c8g5m2);
+
+		&:hover {
+			#gradient > .vertical(@c8g5m2, @c8g5m3);
+		}
+
+		&:active {
+			#gradient > .vertical(@c8g5m1, @c8g5m2);
+		}
+	}
+
+	&.second, &.c0 {
+		border: 1px solid @c0g3m3;
+		#gradient > .vertical(@c0g5m3, @c0g5m2);
+
+		&:hover {
+			#gradient > .vertical(@c0g5m2, @c0g5m3);
+		}
+
+		&:active {
+			#gradient > .vertical(@c0g5m1, @c0g5m2);
+		}
+	}
+
+	&.third, &.c10 {
+		border: 1px solid @c10g3m3;
+		#gradient > .vertical(@c10g5m3, @c10g5m2);
+
+		&:hover {
+			#gradient > .vertical(@c10g5m2, @c10g5m3);
+		}
+
+		&:active {
+			#gradient > .vertical(@c10g5m1, @c10g5m2);
+		}
+	}
+
+	&:disabled, &.disabled {
+		border: 1px solid @g3;
+		#gradient > .vertical(mix(@g3, @g5, 75%), mix(@g3, @g5, 50%));
+		cursor: not-allowed;
+
+		&:hover {
+			#gradient > .vertical(mix(@g3, @g5, 50%), mix(@g3, @g5, 75%));
+		}
+
+		&:active {
+			#gradient > .vertical(mix(@g3, @g5, 25%), mix(@g3, @g5, 50%));
+		}
+	}
+}
+
+//
+
+button.link {
+	border: inherit;
+	background: inherit;
+	display: inline;
+	padding: 0;
+	margin: 0;
+	.transition(@transition);
+	color: @second;
+	font: inherit;
+	outline: none;
+	outline-offset: 0;
+	text-shadow: 0;
+	.border-radius(0);
+
+	&:hover {
+		color: darken(@second, 25%);
+	}
+}

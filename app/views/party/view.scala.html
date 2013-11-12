@@ -3,7 +3,7 @@
 @script = {
 }
 
-@template.crud("Profile: " + request.obj.party.name, js = script) {
+@widget.template.crud("Profile: " + request.obj.party.name, js = script) {
     <article id="profile_@request.obj.party.id" class="party view">
     @party.content(request.obj.party, "push-desktop-2 col-laptop-2 col-tablet-2 col-mobile-6", "col-desktop-10 col-laptop-10 col-tablet-7 col-mobile-6")
     </article>

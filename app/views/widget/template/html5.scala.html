@@ -1,0 +1,88 @@
+@(title : String = "The Databrary Project", request : Option[SiteRequest[_]], toolbar: String = "", css: Html = Html(""), js: Html = Html(""))(body : Html)
+
+@import play.api._
+@import play.api.Play.current
+
+<!DOCTYPE html>
+<html ng-app>
+	<head>
+    	<meta charset="utf-8">
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>@title || Databrary</title>
+
+        <!-- icons -->
+        <link rel="shortcut icon" href="@routes.Assets.at("icons/favicon.png")">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="@routes.Assets.at("icons/apple-touch-icon-114x114.png")">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="@routes.Assets.at("icons/apple-touch-icon-72x72.png")">
+        <link rel="apple-touch-icon-precomposed" href="@routes.Assets.at("icons/apple-touch-icon.png")">
+
+        <!-- css -->
+		<link rel="stylesheet" href="@routes.Assets.at("stylesheets/theme.min.css")">
+
+        @if(css.body != ""){
+            <style>
+                @css
+            </style>
+        }
+
+        <!-- js libraries -->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="@routes.Assets.at("javascripts/libs/jquery-ui-1.10.3/jquery.ui.widget.min.js")"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+        <script>
+            if (!window.jQuery) {
+                document.write('<script src="@routes.Assets.at("javascripts/libs/jquery-1.10.2/jquery.min.js")"><\/script>');
+            }
+            if (!window.angular) {
+                document.write('<script src="@routes.Assets.at("javascripts/libs/angular-1.0.8/angular.min.js")"><\/script>');
+            }
+        </script>
+
+        <!-- js -->
+		<script src="@routes.Assets.at("javascripts/controller.js")"></script>
+		<script src="@routes.Assets.at("javascripts/main.js")"></script>
+
+        <script>
+        $(document).ready(function () {
+            @request.flatMap(_.user).fold {
+                dbjs.ajaxModal('#modal_login_link', '/ajax/modal/login', true);
+            } { u =>
+                dbjs.ajaxModal('#modal_profile_link', '/ajax/modal/profile', true);
+            }
+
+            @js
+        });
+        </script>
+
+        <!--[if lt IE 9]><script src="@routes.Assets.at("javascripts/libs/html5shiv/html5shiv.min.js")"></script><![endif]-->
+	</head>
+
+	<body class="@if(Play.isDev){dev} @if(toolbar.nonEmpty){has_toolbar}">
+        @widget.toolbar.databrary(request)
+
+        @if(toolbar.nonEmpty) {
+            @if(toolbar == "about") {
+                @widget.toolbar.about(request)
+            }
+            @if(toolbar == "explore") {
+                @widget.toolbar.explore(request)
+            }
+            @if(toolbar == "share") {
+                @widget.toolbar.share(request)
+            }
+            @if(toolbar == "discover") {
+                @widget.toolbar.discover(request)
+            }
+        }
+
+    <div id="site_content" class="site_content">
+            @body
+    </div>
+
+	    <section id="messages"></section>
+	    <section id="forms"></section>
+	</body>
+</html>
+

@@ -1,0 +1,143 @@
+// STYLES
+
+.portrait {
+//	background-color: @g5;
+	.margin-bottom(1);
+
+	&.hoverable {
+		.transition(all .5s linear);
+		position: relative;
+
+		.portrait_info {
+//			background-color: @g5;
+		}
+
+		.portrait_institution,
+		.portrait_links {
+			.max-height(0);
+			overflow: hidden;
+		}
+
+		&:hover {
+			.box-shadow();
+			background-color: @g5;
+
+			.portrait_institution,
+			.portrait_links {
+				.max-height(5);
+			}
+		}
+	}
+}
+
+.portrait_avatar {
+	.margin-bottom(0);
+}
+
+.portrait_info {
+	.padding-height(.5);
+}
+
+.portrait_name,
+.portrait_institution {
+	text-align: center;
+}
+
+.portrait_name {
+	.font(1.25, 1);
+	font-weight: bold;
+
+	&:link, &:visited {
+		color: @c0;
+	}
+
+	&:hover {
+		color: @c0g4m1;
+	}
+
+	&:active {
+		color: @c0g5m1;
+	}
+}
+
+.portrait_institution {
+	.font(.85, 1);
+
+	&:link, &:visited {
+		color: @g3;
+	}
+
+	&:hover {
+		color: mix(@g3, @g4);
+	}
+
+	&:active {
+		color: mix(@g3, @g5);
+	}
+}
+
+.portrait_extra {
+	color: @g3;
+}
+
+//
+
+.portrait_horizontal {
+
+}
+
+.portrait_vertical {
+	.portrait_avatar {
+		float: left;
+	}
+}
+
+//
+
+.portrait_large {
+
+}
+
+.portrait_small {
+	.portrait_avatar {
+		width: @b1 * 2;
+		.margin-right(@f4);
+	}
+
+	.portrait_info {
+		.padding-height(0);
+	}
+
+	.portrait_name,
+	.portrait_institution {
+		text-align: left;
+	}
+
+	.portrait_name {
+		.font(1, 2);
+		display: block;
+		.text-overflow();
+		overflow: hidden;
+		white-space: nowrap;
+		.height(2);
+
+		&:link, &:visited {
+			color: @c0;
+		}
+
+		&:hover {
+			color: @c0;
+		}
+
+		&:active {
+			color: @c0;
+		}
+	}
+
+	&.portrait_extra {
+		.portrait_name {
+			.line-height(1);
+			.height(1);
+		}
+	}
+}

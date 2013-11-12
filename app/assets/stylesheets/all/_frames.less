@@ -1,0 +1,94 @@
+// VARS
+
+@framepad: .5;
+
+// MIXINS
+
+.frame-color(@c) {
+	.frame_header {
+		&.minimizer {
+			&:hover {
+				color: mix(@c, @g1, 75%);
+			}
+		}
+	}
+
+	&.minimized {
+		border-bottom-color: mix(@c, @g4, 75%);
+		background-color: mix(@c, @g5, 10%);
+
+		.frame_header {
+			&.minimizer {
+				color: mix(@c, @g1, 50%);
+			}
+		}
+	}
+
+	&:hover {
+		border-bottom-color: mix(@c, @g4, 25%);
+		background-color: mix(@c, @g5, 1%);
+	}
+}
+
+// STYLES
+
+.frame {
+	.margin-bottom(1);
+	.transition();
+
+	&.nowrap {
+		.wrap {
+			width: auto;
+			.padding-width(@framepad);
+		}
+	}
+
+	&.minimizable {
+		&.minimized {
+			.frame_header {
+				&:before {
+					.transform-rotate(-90deg);
+				}
+			}
+		}
+	}
+}
+
+.frame_body {
+	background-color: transparent;
+	.border-padding-bottom(0, @framepad);
+	.border-padding-top(0, @framepad);
+}
+
+.frame_header {
+	font-weight: normal;
+	.font(1, 1.5);
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	.margin(0);
+
+	&.minimizer {
+		cursor: pointer;
+
+		&:before {
+			content: "";
+			.size(0);
+			display: block;
+			float: left;
+			position: relative;
+			top: @b2;
+			border: @b4 solid transparent;
+			border-top-color: @text;
+			.margin-right(@f4);
+			.transition();
+		}
+
+		&:hover {
+			color: @g3;
+
+			&:before {
+				.transform-rotate(-45deg);
+			}
+		}
+	}
+}

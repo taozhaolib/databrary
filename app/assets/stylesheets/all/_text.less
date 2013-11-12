@@ -1,0 +1,117 @@
+// MIXINS
+
+.sofia-light() {
+	font-family: 'SofiaProLight', 'SofiaProLight Fallback', sans-serif;
+	font-weight: 300;
+
+	b, .b,
+	strong, .strong {
+		font-weight: bold;
+	}
+
+	i, .i,
+	em, .em {
+		font-style: italic;
+	}
+}
+
+.sofia-medium() {
+	font-family: 'SofiaProMedium', 'SofiaProMedium Fallback', sans-serif;
+	font-weight: 400;
+
+	b, .b,
+	strong, .strong {
+		font-weight: bold;
+	}
+
+	i, .i,
+	em, .em {
+		font-style: italic;
+	}
+}
+
+// STYLES
+
+.font-face('SofiaProLight', '/public/private/fonts/SofiaProLight', normal, normal, true);
+.font-face('SofiaProLight Fallback', 'http://databrary.org/fonts/SofiaProLight', normal, normal, true);
+.font-face('SofiaProMedium', '/public/private/fonts/SofiaProMedium', normal, normal, true);
+.font-face('SofiaProMedium Fallback', 'http://databrary.org/fonts/SofiaProMedium', normal, normal, true);
+
+//
+
+body {
+	.sofia-light();
+}
+
+//
+
+ol, ul, dl {
+	&.inline-block {
+		display: inline-block;
+		margin-bottom: 0;
+		padding-left: 0;
+
+		li {
+			display: inline-block;
+		}
+	}
+
+	&.inline {
+		display: inline;
+		margin-bottom: 0;
+		padding-left: 0;
+
+		li {
+			display: inline;
+		}
+	}
+
+	&.flat {
+		li {
+			&:before {
+				content: none;
+				display: none;
+			}
+		}
+	}
+}
+
+dl.flat {
+	.clearfix();
+
+	dt {
+		width: 33%;
+		text-align: right;
+		float: left;
+		.padding-right(1);
+		clear: both;
+	}
+
+	dd {
+		width: 67%;
+		float: right;
+		.margin-left(0);
+	}
+}
+
+//
+
+.sep {
+	color: @gray;
+}
+
+//
+
+.box_minor {
+	.margin-height(@f1);
+
+	.box_minor_header {
+		.font(1.25, 1);
+		text-align: center;
+		border-bottom: 1px solid @g3;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		.margin-top(0);
+		.border-margin-bottom(1px, @f2);
+	}
+}

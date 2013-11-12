@@ -1,0 +1,30 @@
+@(volume: Volume)(implicit request : SiteRequest[_])
+
+@defining(volume.slotRecords) { sessions =>
+    @if(sessions.nonEmpty) {
+        @widget.panel.raw("browser", "")(title = "Browser", minimizable = true){
+            @sessions.map { case (slot, records)  =>
+                @defining(if(slot.consent == Consent.PRIVATE){"hide"}else{""}) { classes =>
+                    <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
+                        @widget.figure.thumbSession(slot, records, classes = classes)
+                    </div>
+                }
+            }
+
+            <div class="col">
+                <p class="note">...and <a class="show_hidden">@sessions.filter(s => s._1.consent == Consent.PRIVATE).length other participants</a> who have elected not to share their data.</p>
+            </div>
+
+            <script>
+            $(document).ready(function () {
+                var $hidden = $('.panel_browser .hide');
+
+                $('.show_hidden' ).click(function() {
+                    $hidden.removeClass('hide');
+                    $(this).parent().slideUp();
+                });
+            });
+            </script>
+        }
+    }
+}

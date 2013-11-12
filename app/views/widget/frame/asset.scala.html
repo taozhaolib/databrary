@@ -1,0 +1,28 @@
+@(asset: SlotAsset)(implicit request : SiteRequest[_])
+
+@widget.frame.raw("asset", "")("Metadata", minimizable = true) {
+    <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+        @if(asset.link.body.nonEmpty) {
+        <div class="description">
+            @asset.link.body.map(display.plainText _)
+        </div>
+        }
+
+        <div class="metadata">
+            <dl class="flat">
+                <dt>Format</dt>
+                <dd>@asset.format.name</dd>
+
+                @if(asset.position.nonEmpty) {
+                    <dt>Position</dt>
+                    <dd>@asset.position</dd>
+                }
+
+                @if(asset.duration > 0) {
+                    <dt>Duration</dt>
+                    <dd>@asset.duration</dd>
+                }
+            </dl>
+        </div>
+    </div>
+}

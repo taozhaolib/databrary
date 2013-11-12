@@ -1,0 +1,69 @@
+// STYLES
+
+figure, .figure {
+	position: relative;
+	overflow: hidden;
+
+	> a,
+	.media,
+	.text,
+	.image {
+		position: absolute;
+		overflow: hidden;
+		display: block;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	}
+
+	.text {
+		opacity: 0;
+		background: @c8;
+	}
+
+	&.square,
+	&.wide {
+		.scalar {
+			position: relative;
+			visibility: hidden !important;
+			width: 100%;
+			min-width: 100%;
+			z-index: -1;
+		}
+	}
+
+	&.square {
+		.scalar {
+			margin-top: 0;
+		}
+	}
+
+	&.wide {
+		.scalar {
+			margin-top: -43.75%;
+		}
+	}
+
+	&.tube {
+		.scalar {
+			margin-top: -25%;
+		}
+	}
+
+	.image {
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: center center;
+	}
+
+	&.hoverable {
+		&:hover, &.hover {
+			.box-shadow();
+
+			.text {
+				opacity: 1;
+			}
+		}
+	}
+}

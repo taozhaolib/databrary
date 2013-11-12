@@ -1,0 +1,7 @@
+@(volume: Volume)(implicit request : SiteRequest[_])
+
+@widget.frame.raw("people", "")("Investigators", minimizable = true) {
+    @volume.partyAccess.takeWhile(_.access >= Permission.ADMIN).map { a =>
+        @widget.portrait.verticalSmall(a.party)
+    }
+}

@@ -1,0 +1,162 @@
+// VARS
+
+@panelpad: 1;
+
+// MIXINS
+
+.panel-color(@c) {
+	.panel_header {
+		&.minimizer {
+			&:hover {
+				color: mix(@c, @g1, 75%);
+			}
+		}
+	}
+
+	&.minimized {
+		border-bottom-color: mix(@c, @g4, 75%);
+		background-color: mix(@c, @g5, 10%);
+
+		.panel_header {
+			&.minimizer {
+				color: mix(@c, @g1, 50%);
+			}
+		}
+	}
+
+	&:hover {
+		border-bottom-color: mix(@c, @g4, 25%);
+		background-color: mix(@c, @g5, 1%);
+	}
+}
+
+// STYLES
+
+.panel {
+	border-bottom: 2px solid @g3;
+	background-color: transparent;
+	.transition();
+
+	.wrap {
+		.border-padding-bottom(1px, @panelpad);
+		.border-padding-top(1px, @panelpad);
+	}
+
+	&:first-of-type {
+		.wrap {
+			.padding-top(@panelpad);
+		}
+	}
+
+	&:last-of-type {
+		.wrap {
+			.border-padding-bottom(2px, @panelpad);
+		}
+	}
+
+	> .row {
+		.padding-bottom(@panelpad);
+
+		&:last-child {
+			.padding-bottom(0);
+		}
+	}
+
+	&.nowrap {
+		.wrap {
+			width: auto;
+			.padding-width(@panelpad);
+		}
+	}
+
+	&.minimizable {
+		.minimize {
+			.padding-top(1);
+		}
+
+		&.minimized {
+			.panel_header {
+				&:before {
+					.transform-rotate(-90deg);
+				}
+			}
+		}
+	}
+
+	&:hover {
+		border-bottom: 2px solid @g4;
+	}
+
+	h3, .h3 {
+		.font(2, 1.5);
+		.margin(0);
+	}
+}
+
+.panel_header {
+	font-weight: bold;
+	letter-spacing: 3px;
+	text-transform: uppercase;
+	.font(3, 6.5);
+	.margin(0);
+
+	&.minimizer {
+		cursor: pointer;
+
+		&:before {
+			content: "";
+			.size(0);
+			display: block;
+			float: left;
+			position: relative;
+			top: @b1 + @b1 + @b2 + @b3;
+			border: @b2 solid transparent;
+			border-top-color: @text;
+			.margin-right(@f2);
+			.transition();
+		}
+
+		&:hover {
+			color: @g3;
+
+			&:before {
+				.transform-rotate(-45deg);
+			}
+		}
+	}
+}
+
+.panel_title {
+	.font(3.5, 2.5);
+	.margin-top(1);
+	.margin-bottom(2);
+}
+
+//
+
+.panel_browser {
+	.panel-color(@c8);
+}
+
+.panel_materials {
+	.panel-color(@c6);
+}
+
+.panel_publications {
+	.panel-color(@c4);
+}
+
+.panel_people {
+	.panel-color(@c2);
+}
+
+.panel_tags {
+	.panel-color(@c0);
+}
+
+.panel_comments {
+	.panel-color(@c10);
+}
+
+//
+

@@ -1,0 +1,9 @@
+@(id: String, classes: String = "", request: Option[SiteRequest[_]] = None)(body: Html)
+
+<nav id="toolbar_@id" class="toolbar toolbar_@id hide-print @classes">
+    <div class="wrap">
+        <div class="row">
+            @body
+        </div>
+    </div>
+</nav>

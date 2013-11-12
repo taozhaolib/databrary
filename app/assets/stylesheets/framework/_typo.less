@@ -1,0 +1,299 @@
+// VARIABLES
+
+@basefont: 16px;
+@baselull: 1.5;
+
+// CONSTANTS
+
+@basediff: @basefont / 16;
+@baseline: @basefont * @baselull;
+
+@b: @baseline;
+@b1: @baseline;
+@b2: @baseline/2;
+@b3: @baseline/3;
+@b4: @baseline/4;
+@b6: @baseline/6;
+@b8: @baseline/8;
+@b12: @baseline/12;
+@b24: @baseline/24;
+
+@f: 1;
+@f1: 1;
+@f2: 1/2;
+@f3: 1/3;
+@f4: 1/4;
+@f6: 1/6;
+@f8: 1/8;
+@f12: 1/12;
+@f24: 1/24;
+
+// MIXINS
+
+.font(@s, @h) {
+	.font-size(@s);
+	.line-height(@h);
+}
+
+.font-size(@x: 1) {
+	font-size: 1px * @x * @basefont;
+	font-size: 1rem * @x;
+}
+
+.line-height(@x: 1) {
+	line-height: floor(1px * @x * @baseline * 4) / 4;
+	line-height: floor((1rem * @x * @baselull) * 4) / 4;
+}
+
+//
+
+.height(@x: 1) {
+	height: floor(1px * @x * @baseline * 4) / 4;
+	height: floor((1rem * @x * @baselull) * 4) / 4;
+}
+
+.min-height(@x: 1) {
+	min-height: floor(1px * @x * @baseline * 4) / 4;
+	min-height: floor((1rem * @x * @baselull) * 4) / 4;
+}
+
+.max-height(@x: 1) {
+	max-height: floor(1px * @x * @baseline * 4) / 4;
+	max-height: floor((1rem * @x * @baselull) * 4) / 4;
+}
+
+//
+
+.font-line(@x: 1) when (@x >= 1) {
+	.font-size(@x);
+	.line-height(@x);
+}
+
+.font-line(@x: 1) when (@x < 1) and (@x >= (2/3)) {
+	.font-size(@x);
+	.line-height(1);
+}
+
+.font-line(@x: 1) when (@x < (2/3)) {
+	.font-size(@x);
+	.line-height(.5);
+}
+
+//
+
+.margin-top(@t) {
+	margin-top: (@baseline * @t);
+}
+
+.margin-right(@r) {
+	margin-right: (@baseline * @r);
+}
+
+.margin-bottom(@b) {
+	margin-bottom: (@baseline * @b);
+}
+
+.margin-left(@l) {
+	margin-left: (@baseline * @l);
+}
+
+.margin-width(@v) {
+	margin-left: (@baseline * @v);
+	margin-right: (@baseline * @v);
+}
+
+.margin-height(@h) {
+	margin-top: (@baseline * @h);
+	margin-bottom: (@baseline * @h);
+}
+
+.margin(@x) {
+	margin: (@baseline * @x);
+}
+
+.margin(@v, @h) {
+	margin: (@baseline * @v) (@baseline * @h);
+}
+
+.margin(@t, @h, @b) {
+	margin: (@baseline * @t) (@baseline * @h) (@baseline * @b);
+}
+
+.margin(@t, @r, @b, @l) {
+	margin: (@baseline * @t) (@baseline * @r) (@baseline * @b) (@baseline * @l);
+}
+
+//
+
+.padding-top(@t) {
+	padding-top: (@baseline * @t);
+}
+
+.padding-right(@r) {
+	padding-right: (@baseline * @r);
+}
+
+.padding-bottom(@b) {
+	padding-bottom: (@baseline * @b);
+}
+
+.padding-left(@l) {
+	padding-left: (@baseline * @l);
+}
+
+.padding-width(@v) {
+	padding-left: (@baseline * @v);
+	padding-right: (@baseline * @v);
+}
+
+.padding-height(@h) {
+	padding-top: (@baseline * @h);
+	padding-bottom: (@baseline * @h);
+}
+
+.padding(@x) {
+	padding: (@baseline * @x);
+}
+
+.padding(@v, @h) {
+	padding: (@baseline * @v) (@baseline * @h);
+}
+
+.padding(@t, @h, @b) {
+	padding: (@baseline * @t) (@baseline * @h) (@baseline * @b);
+}
+
+.padding(@t, @r, @b, @l) {
+	padding: (@baseline * @t) (@baseline * @r) (@baseline * @b) (@baseline * @l);
+}
+
+//
+
+.border-margin-top(@offset, @t) {
+	margin-top: ((@baseline * @t) - @offset);
+}
+
+.border-margin-right(@offset, @r) {
+	margin-right: ((@baseline * @r) - @offset);
+}
+
+.border-margin-bottom(@offset, @b) {
+	margin-bottom: ((@baseline * @b) - @offset);
+}
+
+.border-margin-left(@offset, @l) {
+	margin-left: ((@baseline * @l) - @offset);
+}
+
+.border-margin-width(@offset, @v: 1) {
+	margin-left: ((@baseline * @v) - @offset);
+	margin-right: ((@baseline * @v) - @offset);
+}
+
+.border-margin-height(@offset, @h: 1) {
+	margin-top: ((@baseline * @h) - @offset);
+	margin-bottom: ((@baseline * @h) - @offset);
+}
+
+.border-margin(@offset, @x) {
+	margin: ((@baseline * @x) - @offset);
+}
+
+.border-margin(@offset, @v, @h) {
+	margin: ((@baseline * @v) - @offset) ((@baseline * @h) - @offset);
+}
+
+.border-margin(@offset, @t, @h, @b) {
+	margin: ((@baseline * @t) - @offset) ((@baseline * @h) - @offset) ((@baseline * @b) - @offset);
+}
+
+.border-margin(@offset, @t, @r, @b, @l) {
+	margin: ((@baseline * @t) - @offset) ((@baseline * @r) - @offset) ((@baseline * @b) - @offset) ((@baseline * @l) - @offset);
+}
+
+//
+
+.border-padding-top(@offset, @t) {
+	padding-top: ((@baseline * @t) - @offset);
+}
+
+.border-padding-right(@offset, @r) {
+	padding-right: ((@baseline * @r) - @offset);
+}
+
+.border-padding-bottom(@offset, @b) {
+	padding-bottom: ((@baseline * @b) - @offset);
+}
+
+.border-padding-left(@offset, @l) {
+	padding-left: ((@baseline * @l) - @offset);
+}
+
+.border-padding-width(@offset, @v: 1) {
+	padding-left: ((@baseline * @v) - @offset);
+	padding-right: ((@baseline * @v) - @offset);
+}
+
+.border-padding-height(@offset, @h: 1) {
+	padding-top: ((@baseline * @h) - @offset);
+	padding-bottom: ((@baseline * @h) - @offset);
+}
+
+.border-padding(@offset, @x) {
+	padding: ((@baseline * @x) - @offset);
+}
+
+.border-padding(@offset, @v, @h) {
+	padding: ((@baseline * @v) - @offset) ((@baseline * @h) - @offset);
+}
+
+.border-padding(@offset, @t, @h, @b) {
+	padding: ((@baseline * @t) - @offset) ((@baseline * @h) - @offset) ((@baseline * @b) - @offset);
+}
+
+.border-padding(@offset, @t, @r, @b, @l) {
+	padding: ((@baseline * @t) - @offset) ((@baseline * @r) - @offset) ((@baseline * @b) - @offset) ((@baseline * @l) - @offset);
+}
+
+//
+
+.border-height(@offset, @x) {
+	height: (floor((1px * @x * @baseline) * 4) / 4) - @offset;
+}
+
+.border-min-height(@offset, @x) {
+	min-height: (floor((1px * @x * @baseline) * 4) / 4) - @offset;
+}
+
+.border-max-height(@offset, @x) {
+	max-height: (floor((1px * @x * @baseline) * 4) / 4) - @offset;
+}
+
+//
+
+.rules(hide, @baseline: @baseline, @offset: -(@baseline / 6), @odd: #dff, @even: #dff, @back: @back) {
+	background: @back;
+
+	&:hover {
+		._rules(@baseline, @offset, @odd, @even, @back);
+	}
+}
+
+.rules(show, @baseline: @baseline, @offset: -(@baseline / 6), @odd: #dff, @even: #dff, @back: @back) {
+	._rules(@baseline, @offset, @odd, @even, @back);
+
+	&:hover {
+		background: @back;
+	}
+}
+
+._rules(@baseline: @baseline, @offset: -(@baseline / 6), @odd: #dff, @even: #dff, @back: @back) {
+	@half: @baseline / 2;
+	background: -webkit-linear-gradient(top,
+	@back, @back (@half - 1),
+	@odd (@half - 1), @odd @half,
+	@back @half, @back (@baseline - 1),
+	@even (@baseline - 1), @even);
+	background-size: auto @baseline;
+	background-position: 0 @offset;
+}
