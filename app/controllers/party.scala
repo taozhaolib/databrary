@@ -44,11 +44,11 @@ object Party extends SiteController {
 
   def ajaxView = SiteAction { implicit request =>
     request.user.fold[SimpleResult](NotFound)(
-      e => Ok(views.html.modal.profile(request.identity)(request.withObj(e))))
+      a => Ok(views.html.modal.profile(a)))
   }
 
-  private def adminAccount(implicit request : Request[_]) =
-    request.obj.account.filter(_.id.equals(request.identity.id) || request.superuser)
+  private def adminAccount(implicit request : Request[_]) : Option[Account] =
+    request.obj.party.account.filter(_.id.equals(request.identity.id) || request.superuser)
 
   type PasswordMapping = Mapping[Option[String]]
   val passwordMapping : PasswordMapping = 
@@ -63,7 +63,7 @@ object Party extends SiteController {
 
   type EditForm = Form[(String, Option[Orcid], Option[(String, Option[String], String)])]
   private[this] def formFill(implicit request : Request[_]) : EditForm = {
-    val e = request.obj
+    val e = request.obj.party
     val acct = adminAccount
     Form(tuple(
       "name" -> nonEmptyText,
@@ -108,8 +108,8 @@ object Party extends SiteController {
     authorizeResults : Seq[(models.Party,AuthorizeForm)] = Seq())(
     implicit request : Request[_]) = {
     val authorizeChange = authorizeChangeForm.map(_._1.id)
-    request.obj.authorizeChildren(true).flatMap { children =>
-    request.obj.authorizeParents(true).map { parents =>
+    request.obj.party.authorizeChildren(true).flatMap { children =>
+    request.obj.party.authorizeParents(true).map { parents =>
       val authorizeForms = children
         .filter(t => authorizeChange.fold(true)(_.equals(t.childId)))
         .map(t => (t.child, authorizeFormFill(t))) ++
@@ -129,7 +129,7 @@ object Party extends SiteController {
     formFill.bindFromRequest.fold(
       form => BadRequest(viewEdit(editForm = Some(form))),
       { case (name, orcid, acct) =>
-        request.obj.change(name = name, orcid = orcid)
+        request.obj.party.change(name = name, orcid = orcid)
         acct foreach { case (email, password, openid) =>
           val acct = request.obj.asInstanceOf[models.Account]
           acct.changeAccount(
@@ -182,7 +182,7 @@ object Party extends SiteController {
     form.fold(
       form => viewAdmin(BadRequest, authorizeWhich = Some(apply), authorizeSearchForm = form),
       name =>
-        models.Party.searchForAuthorize(name, request.obj).flatMap { res =>
+        models.Party.searchForAuthorize(name, request.obj.party).flatMap { res =>
         viewAdmin(Ok, authorizeWhich = Some(apply), authorizeSearchForm = form, 
           authorizeResults = res.map(e => (e, authorizeForm.fill(
             if (apply) (Permission.NONE, Permission.NONE, true, None)

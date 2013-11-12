@@ -15,7 +15,7 @@ object Site {
 /** Basic information about each request.  Primarily implemented by [[controllers.SiteRequest]]. */
 trait Site {
   /** [[models.Party]] of the logged-in user, possibly [[models.Party.Nobody]]. */
-  val identity : models.Party
+  def identity : models.Party
   /** Some(identity) only if actual logged-in user. */
   def user : Option[models.Account] = identity.account
   /** Level of site access [[models.Permission]] current user has.
@@ -34,7 +34,9 @@ trait AnonSite extends Site {
 }
 
 trait AuthSite extends Site {
-  val identity : models.Account
+  val account : Account
+  def identity = account.party
+  override def user = Some(account)
 }
 
 trait PerSite {

@@ -11,7 +11,7 @@
         @post.map { case (post, form) =>
             @if(request.access >= Permission.VIEW) {
                 <div class="comment form">
-                    @widget.userinfo(request.user.get)
+                    @widget.userinfo(request.identity)
 
                     @tag.form(post) {
                         <div class="body">
@@ -29,7 +29,7 @@
 
         @comments.map { c =>
             <article class="comment">
-                @widget.userinfo(c.who, Some(c.time), slots = Tuple2(slot, Some(c.slot)))
+                @widget.userinfo(c.who.party, Some(c.time), slots = Tuple2(slot, Some(c.slot)))
 
                 <div class="body">
                 @display.plainText(c.text)

@@ -27,10 +27,10 @@ object SiteRequest {
       new ro.Anon(request, obj)
     }
   }
-  sealed class Auth[A](request : Request[A], val identity : Account, val access : Permission.Value, val superuser : Boolean = false) extends Base[A](request) with AuthSite {
+  sealed class Auth[A](request : Request[A], val account : Account, val access : Permission.Value, val superuser : Boolean = false) extends Base[A](request) with AuthSite {
     def withObj[O](obj : O) : RequestObject[O]#Auth[A] = {
       object ro extends RequestObject[O]
-      new ro.Auth(request, identity, access, superuser, obj)
+      new ro.Auth(request, account, access, superuser, obj)
     }
   }
 }
@@ -41,8 +41,8 @@ trait RequestObject[+O] {
   }
   sealed trait Site[A] extends SiteRequest[A] with Base[A]
   final class Anon[A](request : Request[A], val obj : O) extends SiteRequest.Anon[A](request) with Site[A]
-  final class Auth[A](request : Request[A], identity : Account, access : Permission.Value, superuser : Boolean, val obj : O)
-    extends SiteRequest.Auth[A](request, identity, access, superuser) with Site[A]
+  final class Auth[A](request : Request[A], account : Account, access : Permission.Value, superuser : Boolean, val obj : O)
+    extends SiteRequest.Auth[A](request, account, access, superuser) with Site[A]
 }
 object RequestObject {
   def getter[O](get : SiteRequest[_] => Future[Option[O]]) = new ActionRefiner[SiteRequest.Base,RequestObject[O]#Site] {

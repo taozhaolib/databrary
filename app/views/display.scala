@@ -74,7 +74,7 @@ object display {
     gravatarUrlByEmailOpt(Some(email), size)
 
   private def gravatarUrlByParty(party: Party, size: Int = 64) =
-    gravatarUrlByEmailOpt(cast[Account](party).map(_.email), size)
+    gravatarUrlByEmailOpt(party.account.map(_.email), size)
 
   def avatar(party : Party, size : Int = 64) = party.name match {
     /* Temporary hack */

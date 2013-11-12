@@ -74,11 +74,11 @@ object TagUse extends Table[TagUse]("tag_use") {
   private[models] val aggregate =
     Columns(SelectAs[Boolean]("bool_or(tag_use.up)", "agg_up"))
 
-  private[models] def remove(tag : Tag, slot : Slot, who : Party) : Future[Boolean] =
+  private[models] def remove(tag : Tag, slot : Slot, who : Account) : Future[Boolean] =
     DELETE('tag -> tag.id, 'slot -> slot.id, 'who -> who.id).execute
 
-  private[models] def remove(tag : Tag, slot : Slot)(implicit site : Site) : Future[Boolean] =
-    remove(tag, slot, site.identity)
+  private[models] def remove(tag : Tag, slot : Slot)(implicit site : AuthSite) : Future[Boolean] =
+    remove(tag, slot, site.account)
 
   private[models] def set(tag : Tag, slot : Slot, up : Boolean = true)(implicit site : AuthSite) : Future[Boolean] = {
     val who = site.identity

@@ -67,7 +67,7 @@ object Token extends SiteController {
         implicit val defaultContext = context.process
         for {
           acct <- Account.getEmail(email)
-          acct <- macros.Async.filter[Account](acct, _.access.map(_ < Permission.ADMIN))
+          acct <- macros.Async.filter[Account](acct, _.party.access.map(_ < Permission.ADMIN))
           token <- macros.Async.map[Account,Token](acct, LoginToken.create(_, true))
         } yield {
           val mail = mailer.email

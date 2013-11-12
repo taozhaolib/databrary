@@ -33,12 +33,14 @@ object Login extends SiteController {
 
   def view = SiteAction.async { implicit request =>
     request.user.fold(
-      AOk(viewLogin()))(_.perSite.map(
+      AOk(viewLogin()))(_.party.perSite.map(
       p => Ok(views.html.party.view()(request.withObj(p)))))
   }
 
   def ajaxView = SiteAction { implicit request =>
-    Ok(request.user.fold(views.html.modal.login(loginForm))(p => views.html.modal.profile(p)(request.withObj(p))))
+    Ok(request.user.fold(
+      views.html.modal.login(loginForm))(
+      a => views.html.modal.profile(a)))
   }
 
   private[controllers] def login(a : Account)(implicit request : Request[_]) : SimpleResult = {

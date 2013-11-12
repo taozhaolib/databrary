@@ -7,7 +7,7 @@
     }
 
 @template.crud(a.fold(_.toString + ": Create Volume", "Edit Volume: " + _.name)) {
-        @tag.form(a.fold(p => routes.Volume.add(p.id), s => routes.Volume.change(s.id))) {
+        @tag.form(a.fold(p => routes.Volume.add(p.party.id), s => routes.Volume.change(s.id))) {
             @widget.formErrors(editForm)
 
             @tag.inputText(editForm("name"), 'placeholder -> "Title", '_class -> "big")

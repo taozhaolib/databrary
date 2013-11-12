@@ -98,9 +98,7 @@ object Volume extends SiteController {
     Party.Action(e, Some(Permission.CONTRIBUTE)) ~>
       new ActionHandler[Party.Request] {
         protected def handle[A](request : Party.Request[A]) =
-          request.obj.access.map { access =>
-            if (access < Permission.CONTRIBUTE) Some(Forbidden) else None
-          }
+          macros.Async(if (request.obj.access < Permission.CONTRIBUTE) Some(Forbidden) else None)
       }
 
   def create(e : Option[models.Party.Id]) = ContributeAction(e) { implicit request =>

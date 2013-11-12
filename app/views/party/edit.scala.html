@@ -7,7 +7,7 @@
     }
 
 @template.crud("Admin Party: " + request.obj.toString()) {
-	@tag.form(routes.Party.change(request.obj.id)) {
+	@tag.form(routes.Party.change(request.obj.party.id)) {
 		@tag.inputText(form("name"), 'placeholder -> "Full name", '_class -> "big")
 		@tag.inputText(form("orcid"), 'placeholder -> "ORCiD", '_class -> "big")
 		@if(controllers.Party.formForAccount(form)) {

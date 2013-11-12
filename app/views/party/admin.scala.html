@@ -2,5 +2,5 @@
 
 
 @template.crud("Admin Party: " + request.obj.toString()) {
-	@widget.authorizeAdmin(request.obj, authorizeParents, authorizeForms, authorizeWhich, authorizeSearch, authorizeResults)
+	@widget.authorizeAdmin(request.obj.party, authorizeParents, authorizeForms, authorizeWhich, authorizeSearch, authorizeResults)
 }
