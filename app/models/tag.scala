@@ -16,12 +16,12 @@ final class Tag private (val id : Tag.Id, val name : String) extends TableRowId[
 }
 
 object Tag extends TableId[Tag]("tag") {
-  private def make(id : Id, name : String) =
-    new Tag(id, name)
   private[models] val row = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
-    ).map(make _)
+    ).map { (id, name) =>
+      new Tag(id, name)
+    }
 
   /** Retrieve an individual tag by id. */
   private[models] def get(id : Id) : Future[Option[Tag]] =
@@ -69,8 +69,6 @@ final class TagUse private (val tag : Tag, val who : Account, val slot : Slot, v
 }
 
 object TagUse extends Table[TagUse]("tag_use") {
-  private def make(tag : Tag, who : Account, slot : Slot)(up : Boolean) =
-    new TagUse(tag, who, slot, up)
   private[models] val columns =
     Columns(SelectColumn[Boolean]("up"))
   private[models] val aggregate =

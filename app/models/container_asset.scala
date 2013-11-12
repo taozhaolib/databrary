@@ -62,23 +62,24 @@ final class ContainerTimeseries private[models] (override val asset : Asset with
 }
 
 object ContainerAsset extends Table[ContainerAsset]("container_asset") {
-  private[models] def make(asset : Asset, container : Container)(position : Option[Offset], name : String, body : Option[String]) = asset match {
-    case ts : TimeseriesData => new ContainerTimeseries(ts, container, position, name, body)
-    case _ => new ContainerAsset(asset, container, position, name, body)
-  }
-  private[models] val columns = Columns(
+  private val columns = Columns(
       SelectColumn[Option[Offset]]("position")
     , SelectColumn[String]("name")
     , SelectColumn[Option[String]]("body")
-    )
-  private[models] val containerColumns = columns.join(Asset.row, "container_asset.asset = asset.id")
-  private[models] def containerRow(cont : Container) =
-    containerColumns map {
-      case (link, asset) => (make(asset, cont) _).tupled(link)
+    ).map { (position, name, body) =>
+      (asset : Asset, container : Container) => asset match {
+        case ts : TimeseriesData => new ContainerTimeseries(ts, container, position, name, body)
+        case a : Asset => new ContainerAsset(asset, container, position, name, body)
+      }
     }
+  private[models] val containerColumns =
+    columns.join(Asset.row, "container_asset.asset = asset.id")
+    .map { case (link, asset) => (cont : Container) => link(asset, cont) }
+  private[models] def containerRow(cont : Container) =
+    containerColumns.map(_(cont))
   private[models] def row(implicit site : Site) =
     containerColumns.join(Container.row, "container_asset.container = container.id") map {
-      case ((link, asset), cont) => (make(asset, cont) _).tupled(link)
+      case (link, cont) => link(cont)
     }
 
   /** Retrieve a specific asset link by asset id and container id.
@@ -91,7 +92,7 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access on the container. */
   private[models] def get(asset : Asset)(implicit site : Site) : Future[Option[ContainerAsset]] =
     columns.join(Container.row, "container_asset.container = container.id").map {
-        case (link, cont) => (make(asset, cont) _).tupled(link)
+        case (link, cont) => link(asset, cont)
       }
       .SELECT("WHERE container_asset.asset = ? AND", Volume.condition)
       .apply(asset.id +: Volume.conditionArgs).singleOpt
@@ -231,7 +232,7 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
     join(Container.volumeRow(vol), "container_asset.container = container.id").
     join(Slot.columns, "container.id = slot.source").
     leftJoin(columns, "slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset") map {
-      case ((((link, asset), cont), slot), excerpt) => make((ContainerAsset.make(asset, cont) _).tupled(link), (Slot.make(cont) _).tupled(slot), excerpt)
+      case (((link, cont), slot), excerpt) => make(link(cont), slot(cont), excerpt)
     }
   private def slotRow(slot : Slot) = ContainerAsset.containerRow(slot.container).
     leftJoin(columns, "asset.id = toplevel_asset.asset AND toplevel_asset.slot = ?") map {
@@ -245,7 +246,7 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
       .join(Slot.columns, "container.id = slot.source")
       .leftJoin(columns, "slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset")
       .map {
-        case ((link, slot), excerpt) => make(link, (Slot.make(link.container) _).tupled(slot), excerpt)
+        case ((link, slot), excerpt) => make(link, slot(link.container), excerpt)
       }
       .SELECT("WHERE slot.id = ? AND asset.id = ? AND", condition(), "AND", Volume.condition)
       .apply(SQLArgs(slot, asset) ++ Volume.conditionArgs).singleOpt

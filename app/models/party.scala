@@ -108,17 +108,17 @@ final class Account protected (party : Party, email_ : String, password_ : Strin
 }
 
 object Party extends TableId[Party]("party") {
-  private[this] def make(id : Id, name : String, orcid : Option[Orcid]) =
-    new Party(id, name, orcid)
   private[models] val columns = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
     , SelectColumn[Option[Orcid]]("orcid")
-    ).map(make _)
+    ).map { (id, name, orcid) =>
+      new Party(id, name, orcid)
+    }
   private[models] val row : Selector[Party] =
     columns.leftJoin(Account.columns, using = 'id) map {
-      case (e, None) => e
-      case (e, Some(a)) => (Account.make(e) _).tupled(a)
+      case (party, None) => party
+      case (party, Some(acct)) => acct(party)
     }
 
   /** Look up a party by id. */
@@ -180,16 +180,16 @@ object SiteParty {
 }
 
 object Account extends TableId[Account]("account") {
-  private[models] def make(e : Party)(email : String, password : Option[String], openid : Option[String]) =
-    new Account(e, email, password.getOrElse(""), openid)
   private[models] val columns = Columns(
       SelectColumn[String]("email")
     , SelectColumn[Option[String]]("password")
     , SelectColumn[Option[String]]("openid")
-    )
+    ).map { (email, password, openid) =>
+      (party : Party) => new Account(party, email, password.getOrElse(""), openid)
+    }
   private[models] val row : Selector[Account] =
     Party.columns.join(columns, using = 'id) map {
-      case (e, a) => (make(e) _).tupled(a)
+      case (party, acct) => acct(party)
     }
   private val access = SelectAs[Permission.Value]("authorize_access_check(party.id)", "party_access")
 

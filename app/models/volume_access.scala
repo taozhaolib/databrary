@@ -22,19 +22,19 @@ final class VolumeAccess(val volume : Volume, val party : Party, val access : Pe
 }
 
 object VolumeAccess extends Table[VolumeAccess]("volume_access") {
-  private def make(volume : Volume, party : Party)(access : Permission.Value, inherit : Permission.Value) =
-    new VolumeAccess(volume, party, access, inherit)
   private val columns = Columns(
       SelectColumn[Permission.Value]("access")
     , SelectColumn[Permission.Value]("inherit")
-    )
+    ).map { (access, inherit) =>
+      (volume : Volume, party : Party) => new VolumeAccess(volume, party, access, inherit)
+    }
   private def partyRow(party : Party)(implicit site : Site) =
     columns.join(Volume.row, "volume_access.volume = volume.id") map {
-      case (a, vol) => (make(vol, party) _).tupled(a)
+      case (a, vol) => a(vol, party)
     }
   private def volumeRow(volume : Volume) =
     columns.join(Party.row, "volume_access.party = party.id") map {
-      case (a, who) => (make(volume, who) _).tupled(a)
+      case (a, who) => a(volume, who)
     }
 
   /** Retrieve the access entries for a volume. */

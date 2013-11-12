@@ -28,16 +28,18 @@ object Audit {
     val attempt, open, close, add, change, remove, superuser = Value
   }
 
-  private[this] def make[T](row : T)(when : Timestamp, who : Party.Id, ip : Inet, action : Action.Value) =
-    Audit[T](when, who, ip, action, row)
-  private[models] def row[T](row : T, tableName : String = "audit") = {
+  private[models] def row[T](tableName : String = "audit", row : T = ()) = {
     implicit val table : FromTable = FromTable(tableName)
-    Columns[
-      Timestamp,            Party.Id,            Inet,               Action.Value](
-      SelectColumn("when"), SelectColumn("who"), SelectColumn("ip"), SelectColumn("action")).
-      map(make[T](row) _)
+    Columns(
+      SelectColumn[Timestamp]("when"),
+      SelectColumn[Party.Id]("who"),
+      SelectColumn[Inet]("ip"),
+      SelectColumn[Action.Value]("action"))
+      .map { (when, who, ip, action) =>
+        new Audit[T](when, who, ip, action, row)
+      }
   }
-  private[models] val columns = row[Unit](())
+  private[models] val columns = row[Unit]()
 
   private[this] def acmd(action : Action.Value) = action match {
     case Action.add => "INSERT INTO"

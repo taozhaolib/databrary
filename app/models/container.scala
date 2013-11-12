@@ -53,26 +53,28 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
 }
 
 object Container extends TableId[Container]("container") {
-  private[models] def make(volume : Volume, fullSlot : (Slot.Id, Range[Offset], Consent.Value))(id : Id, top : Boolean, name : Option[String], date : Option[Date]) : Container = {
-    val c = new Container(id, volume, top, name, date)
-    c._fullSlot.set((Slot.make(c) _).tupled(fullSlot))
-    c
-  }
-  private[models] val columns = Columns(
+  private val columns = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[Boolean]("top")
     , SelectColumn[Option[String]]("name")
     , SelectColumn[Option[Date]]("date")
-    )
-  private val fullColumns = columns.join(Slot.columns.fromAlias("full_slot"), "full_slot.source = container.id AND full_slot.segment = '(,)'")
+    ).map { (id, top, name, date) =>
+      (vol : Volume) => new Container(id, vol, top, name, date)
+    }
+  private val fullColumns = columns
+    .join(Slot.columns.fromAlias("full_slot"), "full_slot.source = container.id AND full_slot.segment = '(,)'")
+    .map { case (cont, full) =>
+      (vol : Volume) =>
+        val c = cont(vol)
+        c._fullSlot.set(full(c))
+        c
+    }
   private[models] def row(implicit site : Site) =
     Volume.row.join(fullColumns, "container.volume = volume.id") map {
-      case (vol, (cont, full)) => (make(vol, full) _).tupled(cont)
+      case (vol, cont) => cont(vol)
     }
   private[models] def volumeRow(volume : Volume) =
-    fullColumns map {
-      case (cont, full) => (make(volume, full) _).tupled(cont)
-    }
+    fullColumns.map(_(volume))
 
   /** Retrieve an individual Container.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
@@ -212,22 +214,22 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
 }
 
 object Slot extends TableId[Slot]("slot") {
-  private[models] def make(container : Container)(id : Id, segment : Range[Offset], consent : Consent.Value) =
-    new Slot(id, container, segment, consent)
   private[models] val columns = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[Range[Offset]]("segment")
     , SelectColumn[Consent.Value]("consent")
-    )
+    ).map { (id, segment, consent) =>
+      (container : Container) => new Slot(id, container, segment, consent)
+    }
   private[models] def row(implicit site : Site) =
     columns.join(Container.row, "slot.source = container.id") map {
-      case (slot, cont) => (make(cont) _).tupled(slot)
+      case (slot, cont) => slot(cont)
     }
   private[models] def containerRow(container : Container) =
-    columns map (make(container) _).tupled
+    columns.map(_(container))
   private[models] def volumeRow(volume : Volume) =
     columns.join(Container.volumeRow(volume), "slot.source = container.id") map {
-      case (slot, cont) => (make(cont) _).tupled(slot)
+      case (slot, cont) => slot(cont)
     }
 
   final val fullRange = Range.full[Offset]

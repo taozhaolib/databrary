@@ -173,12 +173,12 @@ private[models] sealed abstract class AssetView[R <: Asset with TableRowId[R]](t
 object Asset extends AssetView[Asset]("asset") {
   /* This is rather messy, but such is the nature of the dynamic query */
   private[models] val row = 
-    (FileAsset.columns.~+[Option[Offset]](SelectColumn("timeseries", "duration")) ~
+    (FileAsset.columns.~+(SelectColumn[Option[Offset]]("timeseries", "duration")) ~
      AssetFormat.row ~ Clip.columns.?).map {
       case (((id, classification, None), format), None) => new FileAsset(id, format, classification)
       case (((id, classification, Some(duration)), format : TimeseriesFormat), clip) =>
         val ts = new Timeseries(id.coerce[Timeseries], format, classification, duration)
-        clip.fold[Asset](ts)((Clip.make(ts) _).tupled)
+        clip.fold[Asset](ts)(_(ts))
     } from """asset
     LEFT JOIN clip USING (id)
          JOIN file ON file.id = asset.id OR file.id = clip.source
@@ -250,13 +250,14 @@ object Timeseries extends AssetView[Timeseries]("timeseries") {
 }
 
 object Clip extends AssetView[Clip]("clip") {
-  private[models] def make(source : Timeseries)(id : Id, segment : Range[Offset]) = new Clip(id, source, segment)
   private[models] val columns = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[Range[Offset]]("segment")
-    )
+    ).map { (id, segment) =>
+      (source : Timeseries) => new Clip(id, source, segment)
+    }
   private[models] val row = columns.join(Timeseries.row, "clip.source = timeseries.id") map {
-    case (clip, source) => (make(source) _).tupled(clip)
+    case (clip, source) => clip(source)
   }
   
   /** Retrieve a single clip.

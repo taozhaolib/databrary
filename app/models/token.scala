@@ -31,24 +31,24 @@ private[models] sealed abstract class TokenTable[T <: Token](table : String) ext
 }
 
 object Token extends TokenTable[Token]("token") {
-  private def make(token : String, expires : Timestamp) =
-    new Token(token, expires)
   protected val row = Columns(
       SelectColumn[String]("token")
     , SelectColumn[Timestamp]("expires")
-    ).map(make _)
+    ).map { (token, expires) =>
+      new Token(token, expires)
+    }
 }
 
 object LoginToken extends TokenTable[LoginToken]("login_token") {
-  private def make(account : Account)(token : String, expires : Timestamp, password : Boolean) =
-    new LoginToken(token, expires, account, password)
   private val columns = Columns(
       SelectColumn[String]("token")
     , SelectColumn[Timestamp]("expires")
     , SelectColumn[Boolean]("password")
-    )
+    ).map { (token, expires, password) =>
+      (account : Account) => new LoginToken(token, expires, account, password)
+    }
   protected val row = columns.join(Account.row, "login_token.account = account.id").
-    map { case (t, p) => (make(p) _).tupled(t) }
+    map { case (t, p) => t(p) }
 
   /** Issue a new token for the given party.
     * @param password if this token allows a password reset. There can be only one active password reset per user at a time, so this deletes any previous ones.
@@ -58,7 +58,7 @@ object LoginToken extends TokenTable[LoginToken]("login_token") {
     else Async(false)).flatMap { _ =>
       val args = SQLTerms('account -> account.id, 'password -> password)
       SQL("INSERT INTO login_token " + args.insert + " RETURNING " + columns.select)
-        .apply(args).single(columns.parse.map(make(account) _))
+        .apply(args).single(columns.parse.map(_(account)))
     }
 
   private[models] def clearAccount(account : Account.Id) : Future[Boolean] =

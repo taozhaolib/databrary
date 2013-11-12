@@ -13,14 +13,14 @@ final case class VolumeCitation(val volume : Volume, val head : String, val url 
 }
 
 object VolumeCitation extends Table[VolumeCitation]("volume_citation") {
-  private def make(volume : Volume)(head : String, url : Option[String], body : Option[String]) =
-    new VolumeCitation(volume, head, url, body)
   private val columns = Columns(
       SelectColumn[String]("head")
     , SelectColumn[Option[String]]("url")
     , SelectColumn[Option[String]]("body")
-    )
-  private def volumeRow(vol : Volume) = columns map (make(vol) _)
+    ).map { (head, url, body) =>
+      (vol : Volume) => new VolumeCitation(vol, head, url, body)
+    }
+  private def volumeRow(vol : Volume) = columns.map(_(vol))
 
   private[models] def getVolume(vol : Volume) : Future[Seq[VolumeCitation]] =
     volumeRow(vol).SELECT("WHERE volume = ? ORDER BY head").apply(vol.id).list
