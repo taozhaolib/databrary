@@ -6,17 +6,19 @@
             @volume.body.map(display.plainText _)
         </div>
 
+	@defining(Async.wait(volume.summary)) { summary =>
         <div class="metadata">
             <dl class="flat">
                 <dt>Data collected</dt>
-                <dd><time datetime="@volume.creation" pubdate>@display.dateFmtYM.format(volume.creation)</time></dd>
+                <dd><time datetime="@volume.creation" pubdate>@display.dateFmtYM.print(volume.creation)</time></dd>
 
                 <dt>Sessions</dt>
-                <dd>@volume.summary.shared shared</dd>
+                <dd>@summary.shared shared</dd>
 
                 <dt>Ages</dt>
-                <dd>@display.agerange(volume.summary.agerange) (<em>M</em> = @display.age(volume.summary.agemean))</dd>
+                <dd>@display.agerange(summary.agerange) (<em>M</em> = @display.age(summary.agemean))</dd>
             </dl>
         </div>
+	}
     </div>
 }

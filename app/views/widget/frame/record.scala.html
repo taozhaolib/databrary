@@ -4,7 +4,7 @@
     <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
         <div class="metadata">
             <dl class="flat">
-                @record.measures.filter(m => record.dataPermission(m.metric).checkPermission(Permission.DOWNLOAD)).map { m =>
+                @record.measures.list.map { m =>
                     <dt>@m.metric.name.capitalize</dt>
                     <dd>@m.datum</dd>
                 }

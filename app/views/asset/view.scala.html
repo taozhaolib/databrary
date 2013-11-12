@@ -7,5 +7,5 @@
     @widget.panel.asset(asset)
     @widget.panel.browser(asset.volume) @*restricted to asset.link.container.slots *@
     @widget.panel.materials(Seq(asset))()
-    @widget.panel.comments(Some(asset.slot), Some((routes.Slot.comment(asset.volumeId, asset.slotId), controllers.Slot.commentForm)), asset.slot.comments())
+    @widget.panel.comments(Some(asset.slot), Some((routes.Slot.comment(asset.volumeId, asset.slotId), controllers.Slot.commentForm)), Async.wait(asset.slot.comments()))
 }

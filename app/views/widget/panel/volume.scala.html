@@ -6,7 +6,7 @@
     <h1 class="col panel_title">@display.formatTitle(volume.pageName)</h1>
 
     @widget.frame.people(volume)
-    @widget.frame.funding(volume.funding)
+    @widget.frame.funding(Async.wait(volume.funding))
     @widget.frame.volume(volume)
     @widget.frame.citation(volume)
 }

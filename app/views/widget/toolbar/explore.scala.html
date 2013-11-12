@@ -7,7 +7,7 @@
                 case r : RequestObject[_]#Site[_] => {
                     @defining(r){ implicit site =>
                         @r.obj match {
-                            case obj:SitePage => {
+                            case obj:SiteObject => {
                                 <ul class="toolbar_menu dn">
                                     @Path(obj).toHtml
                                 </ul>

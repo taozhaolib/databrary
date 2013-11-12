@@ -22,7 +22,7 @@
 		@if(request.access >= Permission.ADMIN) {
                     <fieldset>
                         <legend>Admin Options</legend>
-                        @widget.tag.select(form("format"), ("", "") +: AssetFormat.getAll(true).map(f => (f.id.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)))
+                        @widget.tag.select(form("format"), ("", "") +: Async.wait(AssetFormat.getAll(true)).map(f => (f.id.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)))
                         @widget.tag.inputText(form("localfile"), 'placeholder -> "Local location (overridden by file upload)")
                     </fieldset>
                 }

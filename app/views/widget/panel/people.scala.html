@@ -1,8 +1,8 @@
 @(volume : Volume)(implicit request : SiteRequest[_])
 
 @widget.panel.raw("people", "")(title = "People", minimizable = true){
-    @groupBy[VolumeAccess, Permission.Value](volume.partyAccess, _.access).map { case (permission, volumeAccesses) =>
-        <div class="col">
+    @groupBy[VolumeAccess, Permission.Value](Async.wait(volume.partyAccess), _.access).map { case (permission, volumeAccesses) =>
+        <div class="col-full">
             <h3>@permission.toString.toLowerCase.capitalize</h3>
 
             <div class="row">

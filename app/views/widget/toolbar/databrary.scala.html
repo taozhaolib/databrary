@@ -19,7 +19,7 @@
     @request.filter(_.user.nonEmpty).fold {
         <a href="@routes.Login.view" id="modal_login_link" class="modal_link" data-target="modal_login">login</a>
     } { request =>
-        @if(request.user.get.access(request.db) == Permission.ADMIN) {
+        @if(request.access == Permission.ADMIN) {
             @if(request.superuser) {
                 <a class="superuser on" href="@routes.Login.superuserOff">SU</a>
             }else{
@@ -27,7 +27,7 @@
             }
         }
 
-        <a href="@request.identity.pageURL(request)" id="modal_profile_link" class="img modal_link" data-target="modal_profile"><img src="@display.avatar(request.identity, 16)" alt="@request.identity.name" class="s16"></a>
+        <a href="@request.identity.pageURL" id="modal_profile_link" class="img modal_link" data-target="modal_profile"><img src="@display.avatar(request.identity, 16)" alt="@request.identity.name" class="s16"></a>
     }
     </div>
 }

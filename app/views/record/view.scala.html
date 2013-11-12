@@ -3,5 +3,5 @@
 @widget.template.crud("Record: " + record.pageName) {
     @widget.panel.record(record)
     @widget.panel.browser(record.volume) @*restricted to record.slots*@
-    @widget.panel.materials(record.slots.flatMap(s => s.assets))()
+    @widget.panel.materials(Async.wait(record.slots).flatMap(s => Async.wait(s.assets)))()
 }

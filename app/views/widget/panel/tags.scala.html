@@ -12,7 +12,7 @@
 @widget.panel.raw("tags", "")(title = "Tags", minimizable = true){
     <div class="panel_tags_list col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-3">
         <ol class="panel_tags_items row">
-        @defining(volume.fold(slot.tags())(_.tags)) { tags =>
+        @defining(Async.wait(volume.fold(slot.tags())(_.tags))) { tags =>
             @if(tags.nonEmpty) {
                 @tags.map { case TagWeight(tag, weight, user) =>
                 <li id="tag_@tag.id" class="panel_tags_item col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-6">

@@ -3,11 +3,11 @@
 @widget.frame.raw("citation", "")("Citation", minimizable = true) {
     <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
         <p>
-        @volume.partyAccess.takeWhile(_.access >= Permission.ADMIN).map(a => display.citeName(a.party.name) + ", ")
-        @display.dateFmtY.format(volume.creation).
+        @Async.wait(volume.partyAccess).takeWhile(_.access >= Permission.ADMIN).map(a => display.citeName(a.party.name) + ", ")
+        @display.dateFmtY.print(volume.creation).
         @volume.name.
         <em>Databrary</em>.
-        Retrieved @display.dateFmtCite.format(new java.util.Date()) from <a href="@routes.Volume.view(volume.id).absoluteURL()" title="@volume.name on Databrary.org">http://databrary.org/volume/@volume.id</a>.
+        Retrieved @display.dateFmtCite.print(new dbrary.Date) from <a href="@routes.Volume.view(volume.id).absoluteURL()" title="@volume.name on Databrary.org">http://databrary.org/volume/@volume.id</a>.
         </p>
     </div>
 }

@@ -1,24 +1,32 @@
 @()(implicit request: RequestObject[Volume]#Site[_])
 
-    @script = {
-	dbjs.tabs('.tabset', '.tab', '.view');
-    }
+@script = {
+    dbjs.tabs('.tabset', '.tab', '.view');
+}
 
-@defining((request.obj, request.obj.toplevelAssets groupBy { sa =>
+@defining(request.obj) { volume =>
+@defining(Async.wait(volume.topSlot)) { topslot =>
+@defining(Async.wait(volume.toplevelAssets)) { toplevel =>
+@defining(toplevel groupBy { sa =>
 	if(!sa.checkPermission(Permission.DOWNLOAD)) 'o' else sa.format.mimeSubTypes._1 match {
 	    case "image" => 'i'
 	    case "video" => 'v'
 	    case "audio" => 'a'
 	    case _ => 'o'
-	}
-})) { case (volume, assets) =>
+        }
+    }) { assets =>
+
     @widget.template.crud("Volume: " + volume.name, js = script) {
         @widget.panel.volume(volume)
         @widget.panel.browser(volume)
-        @widget.panel.materials(volume.toplevelAssets)()
-        @widget.panel.publications(volume.citations)
+        @widget.panel.materials(toplevel)()
+        @widget.panel.publications(Async.wait(volume.citations))
         @widget.panel.people(volume)
-        @widget.panel.tags(volume.topSlot, Some(volume))
-        @widget.panel.comments(Some(request.obj.topSlot), Some((routes.Slot.comment(volume.id, volume.topSlot.id), controllers.Slot.commentForm)), volume.comments)
+        @widget.panel.tags(topslot, Some(volume))
+        @widget.panel.comments(Some(topslot), Some((routes.Slot.comment(volume.id, topslot.id), controllers.Slot.commentForm)), Async.wait(volume.comments))
     }
+
+}
+}
+}
 }

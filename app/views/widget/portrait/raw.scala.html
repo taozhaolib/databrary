@@ -13,7 +13,7 @@
             }
 
             @if(name && institutions) {
-                @party.authorizeParents().map { t =>
+                @Async.wait(party.authorizeParents()).map { t =>
                     <a class="portrait_institution db" href="@t.parent.pageURL">@t.parent.name</a>
                 }
             }

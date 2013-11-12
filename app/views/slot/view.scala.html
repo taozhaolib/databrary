@@ -3,7 +3,7 @@
 @widget.template.crud("Session: " + slot.pageName) {
     @widget.panel.slot(slot)
     @widget.panel.browser(slot.volume) @*participant view, restricted to slot.records.filter(participants)*@
-    @widget.panel.materials(slot.assets)()
+    @widget.panel.materials(Async.wait(slot.assets))()
     @widget.panel.tags(slot)
-    @widget.panel.comments(Some(slot), Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), slot.comments(true))
+    @widget.panel.comments(Some(slot), Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), Async.wait(slot.comments(true)))
 }

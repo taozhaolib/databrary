@@ -1,6 +1,6 @@
 @(volume: Volume)(implicit request : SiteRequest[_])
 
-@defining(volume.slotRecords) { sessions =>
+@defining(Async.wait(volume.slotRecords)) { sessions =>
     @if(sessions.nonEmpty) {
         @widget.panel.raw("browser", "")(title = "Browser", minimizable = true){
             @sessions.map { case (slot, records)  =>
