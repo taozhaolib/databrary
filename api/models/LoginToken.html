@@ -39,7 +39,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A token, usually sent via email, granting automatic login or registration to the given party.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/token.scala" target="_blank">token.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A token, usually sent via email, granting automatic login or registration to the given party.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/token.scala" target="_blank">token.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="Token.html" class="extype" name="models.Token">Token</a>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -80,7 +80,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.LoginToken#&lt;init&gt;" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(token:String,expires:java.sql.Timestamp,account:models.Account,password:Boolean):models.LoginToken"></a>
+      <a id="&lt;init&gt;(token:String,expires:dbrary.Timestamp,account:models.Account,password:Boolean):models.LoginToken"></a>
       <a id="&lt;init&gt;:LoginToken"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -88,7 +88,7 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">LoginToken</span><span class="params">(<span name="token">token: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="expires">expires: <span class="extype" name="java.sql.Timestamp">Timestamp</span></span>, <span name="account">account: <a href="Account.html" class="extype" name="models.Account">Account</a></span>, <span name="password">password: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span>
+        <span class="name">LoginToken</span><span class="params">(<span name="token">token: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="expires">expires: <span class="extype" name="dbrary.Timestamp">Timestamp</span></span>, <span name="account">account: <a href="Account.html" class="extype" name="models.Account">Account</a></span>, <span name="password">password: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span>
       </span>
       </h4>
       <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">password</dt><dd class="cmt"><p>allow a password reset if true; just login (and require a password for changes) otherwise
@@ -181,15 +181,15 @@
       </h4>
       
     </li><li name="models.LoginToken#accountId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="accountId:models.Account.Id"></a>
-      <a id="accountId:Account.Id"></a>
+      <a id="accountId:models.Party.Id"></a>
+      <a id="accountId:Party.Id"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">accountId</span><span class="result">: <a href="Account$.html#Id=models.IntId[T]" class="extmbr" name="models.Account.Id">Account.Id</a></span>
+        <span class="name">accountId</span><span class="result">: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>
       </span>
       </h4>
       
@@ -376,15 +376,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Token.html" class="extype" name="models.Token">Token</a></dd></dl></div>
     </li><li name="models.LoginToken#remove" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="remove(implicitdb:site.Site.DB):Unit"></a>
-      <a id="remove(DB):Unit"></a>
+      <a id="remove:scala.concurrent.Future[Boolean]"></a>
+      <a id="remove:Future[Boolean]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">remove</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">remove</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
       </span>
       </h4>
       

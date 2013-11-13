@@ -39,7 +39,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>The possible events or actions on the site that can be put into audit tables.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/audit.scala" target="_blank">audit.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>The possible events or actions on the site that can be put into audit tables.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/audit.scala" target="_blank">audit.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="dbrary.PGEnum">PGEnum</span>, <span class="extype" name="scala.Enumeration">Enumeration</span>, <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -256,19 +256,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Enumeration</dd></dl></div>
-    </li><li name="scala.Enumeration.ValueSet" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ValueSet"></a>
-      <a id="ValueSet:ValueSet"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <span class="name">ValueSet</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Enumeration</dd></dl></div>
     </li><li name="models.Audit.Action#add" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="add:models.Audit.Action.Value"></a>
       <a id="add:Value"></a>
@@ -363,32 +350,6 @@
       </span>
       <span class="symbol">
         <span class="name">close</span><span class="result">: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Value</a></span>
-      </span>
-      </h4>
-      
-    </li><li name="dbrary.PGEnum#column" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="column:anorm.Column[PGEnum.this.Value]"></a>
-      <a id="column:Column[Value]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">column</span><span class="result">: <span class="extype" name="anorm.Column">Column</span>[<a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Value</a>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>PGEnum</dd></dl></div>
-    </li><li name="models.Audit.Action#download" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="download:models.Audit.Action.Value"></a>
-      <a id="download:Value"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">download</span><span class="result">: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Value</a></span>
       </span>
       </h4>
       
@@ -593,19 +554,32 @@
       </span>
       </h4>
       
-    </li><li name="dbrary.PGEnum#statement" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="statement:anorm.ToStatement[PGEnum.this.Value]"></a>
-      <a id="statement:ToStatement[Value]"></a>
+    </li><li name="dbrary.PGEnum#sqlType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="sqlType:dbrary.SQLType[PGEnum.this.Value]"></a>
+      <a id="sqlType:SQLType[Value]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">implicit </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">statement</span><span class="result">: <span class="extype" name="anorm.ToStatement">ToStatement</span>[<a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Value</a>]</span>
+        <span class="name">sqlType</span><span class="result">: <span class="extype" name="dbrary.SQLType">SQLType</span>[<a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Value</a>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>PGEnum</dd></dl></div>
+    </li><li name="models.Audit.Action#superuser" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="superuser:models.Audit.Action.Value"></a>
+      <a id="superuser:Value"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">superuser</span><span class="result">: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Value</a></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

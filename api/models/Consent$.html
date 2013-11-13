@@ -40,8 +40,7 @@
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>The possible levels of participant consent governing [Classification.IDENTIFIED] data.
-Must match the corresponding postgres &quot;consent&quot; type, except for the NONE value which represents NULL (missing) as this is a common possibility.
-Should thus often be constructed as <code>consent.getOrElse(Consent.NONE)</code> and used as <code>util.maybe(consent, Consent.NONE)</code>.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/permission.scala" target="_blank">permission.scala</a></dd></dl><div class="toggleContainer block">
+Must match the corresponding postgres &quot;consent&quot; type, except for the NONE value which represents NULL (missing) as this is a common possibility.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/permission.scala" target="_blank">permission.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="dbrary.PGEnum">PGEnum</span>, <span class="extype" name="scala.Enumeration">Enumeration</span>, <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -323,19 +322,6 @@ Should thus often be constructed as <code>consent.getOrElse(Consent.NONE)</code>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Enumeration</dd></dl></div>
-    </li><li name="scala.Enumeration.ValueSet" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ValueSet"></a>
-      <a id="ValueSet:ValueSet"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <span class="name">ValueSet</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Enumeration</dd></dl></div>
     </li><li name="scala.Enumeration#apply" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="apply(x:Int):Enumeration.this.Value"></a>
       <a id="apply(Int):Value"></a>
@@ -381,19 +367,19 @@ Should thus often be constructed as <code>consent.getOrElse(Consent.NONE)</code>
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="dbrary.PGEnum#column" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="column:anorm.Column[PGEnum.this.Value]"></a>
-      <a id="column:Column[Value]"></a>
+    </li><li name="models.Consent#description" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="description(v:models.Consent.Value):String"></a>
+      <a id="description(Value):String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">val</span>
+        <span class="modifier"></span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">column</span><span class="result">: <span class="extype" name="anorm.Column">Column</span>[<a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Value</a>]</span>
+        <span class="name">description</span><span class="params">(<span name="v">v: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Value</a></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>PGEnum</dd></dl></div>
+      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -569,19 +555,19 @@ Should thus often be constructed as <code>consent.getOrElse(Consent.NONE)</code>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Enumeration</dd></dl></div>
-    </li><li name="dbrary.PGEnum#statement" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="statement:anorm.ToStatement[PGEnum.this.Value]"></a>
-      <a id="statement:ToStatement[Value]"></a>
+    </li><li name="models.Consent#sqlType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="sqlType:dbrary.SQLType[models.Consent.Value]"></a>
+      <a id="sqlType:SQLType[Value]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">implicit </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">statement</span><span class="result">: <span class="extype" name="anorm.ToStatement">ToStatement</span>[<a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Value</a>]</span>
+        <span class="name">sqlType</span><span class="result">: <span class="extype" name="dbrary.SQLType">SQLType</span>[<a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Value</a>]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>PGEnum</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Consent">Consent</a> → PGEnum</dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -608,6 +594,19 @@ Should thus often be constructed as <code>consent.getOrElse(Consent.NONE)</code>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Enumeration → AnyRef → Any</dd></dl></div>
+    </li><li name="models.Consent#truth" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="truth:macros.Truth[models.Consent.Value]"></a>
+      <a id="truth:Truth[Value]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">truth</span><span class="result">: <span class="extype" name="macros.Truth">Truth</span>[<a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Value</a>]</span>
+      </span>
+      </h4>
+      
     </li><li name="scala.Enumeration#values" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="values:Enumeration.this.ValueSet"></a>
       <a id="values:ValueSet"></a>

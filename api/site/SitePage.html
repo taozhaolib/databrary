@@ -39,12 +39,12 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>An object with a corresponding page on the site.</p></div><dl class="attributes block"> <dt>Self Type</dt><dd><a href="" class="extype" name="site.SitePage">SitePage</a></dd><dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/site/site.scala" target="_blank">site.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>An object with a corresponding page on the site.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/site/site.scala" target="_blank">site.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
           <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a href="../models/Account.html" class="extype" name="models.Account">Account</a>, <a href="../models/Container.html" class="extype" name="models.Container">Container</a>, <a href="../models/ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a>, <a href="../models/ContainerTimeseries.html" class="extype" name="models.ContainerTimeseries">ContainerTimeseries</a>, <a href="../models/Party.html" class="extype" name="models.Party">Party</a>, <a href="../models/Record.html" class="extype" name="models.Record">Record</a>, <a href="../models/Slot.html" class="extype" name="models.Slot">Slot</a>, <a href="../models/SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>, <a href="../models/SlotTimeseries.html" class="extype" name="models.SlotTimeseries">SlotTimeseries</a>, <a href="../models/Volume.html" class="extype" name="models.Volume">Volume</a></div>
+          <div class="subClasses hiddenContent"><a href="../models/Container.html" class="extype" name="models.Container">Container</a>, <a href="../models/ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a>, <a href="../models/ContainerTimeseries.html" class="extype" name="models.ContainerTimeseries">ContainerTimeseries</a>, <a href="../models/Party.html" class="extype" name="models.Party">Party</a>, <a href="../models/Record.html" class="extype" name="models.Record">Record</a>, <a href="SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a>, <a href="../models/SiteParty.html" class="extype" name="models.SiteParty">SiteParty</a>, <a href="../models/Slot.html" class="extype" name="models.Slot">Slot</a>, <a href="../models/SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>, <a href="../models/SlotTimeseries.html" class="extype" name="models.SlotTimeseries">SlotTimeseries</a>, <a href="../models/Volume.html" class="extype" name="models.Volume">Volume</a></div>
         </div></div>
         
 
@@ -86,55 +86,42 @@
 
         <div id="values" class="values members">
               <h3>Abstract Value Members</h3>
-              <ol><li name="site.SitePage#pageActions" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="pageActions(implicitsite:site.Site):Seq[(String,play.api.mvc.Call,models.Permission.Value)]"></a>
-      <a id="pageActions(Site):Seq[(String,Call,models.Permission.Value)]"></a>
+              <ol><li name="site.SitePage#pageName" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="pageName:String"></a>
+      <a id="pageName:String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">pageActions</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="play.api.mvc.Call">Call</span>, <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a>)]</span>
+        <span class="name">pageName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The actions available for this page, as (action, route, permission)</p>
-    </li><li name="site.SitePage#pageName" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="pageName(implicitsite:site.Site):String"></a>
-      <a id="pageName(Site):String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">pageName</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent(implicitsite:site.Site):Option[site.SitePage]" class="extmbr" name="site.SitePage#pageParent">pageParent</a>.</p>
+      <p class="shortcomment cmt">The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent:Option[site.SitePage]" class="extmbr" name="site.SitePage#pageParent">pageParent</a>.</p>
     </li><li name="site.SitePage#pageParent" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="pageParent(implicitsite:site.Site):Option[site.SitePage]"></a>
-      <a id="pageParent(Site):Option[SitePage]"></a>
+      <a id="pageParent:Option[site.SitePage]"></a>
+      <a id="pageParent:Option[SitePage]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">pageParent</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="" class="extype" name="site.SitePage">SitePage</a>]</span>
+        <span class="name">pageParent</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="" class="extype" name="site.SitePage">SitePage</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p>
     </li><li name="site.SitePage#pageURL" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="pageURL(implicitsite:site.Site):play.api.mvc.Call"></a>
-      <a id="pageURL(Site):Call"></a>
+      <a id="pageURL:play.api.mvc.Call"></a>
+      <a id="pageURL:Call"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">pageURL</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
+        <span class="name">pageURL</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p>
@@ -363,6 +350,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="site.SitePage#pageCrumbName" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="pageCrumbName:Option[String]"></a>
+      <a id="pageCrumbName:Option[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pageCrumbName</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Optional override of pageName for breadcrumbs and other abbreviated locations</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

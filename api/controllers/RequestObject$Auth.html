@@ -39,7 +39,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/controllers/site.scala" target="_blank">site.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/controllers/site.scala" target="_blank">site.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">Site</a>[<span class="extype" name="controllers.RequestObject.Auth.A">A</span>], <a href="RequestObject$Base.html" class="extype" name="controllers.RequestObject.Base">Base</a>[<span class="extype" name="controllers.RequestObject.Auth.A">A</span>], <a href="SiteRequest$$Auth.html" class="extype" name="controllers.SiteRequest.Auth">SiteRequest.Auth</a>[<span class="extype" name="controllers.RequestObject.Auth.A">A</span>], <a href="../site/AuthSite.html" class="extype" name="site.AuthSite">AuthSite</a>, <a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">SiteRequest.Base</a>[<span class="extype" name="controllers.RequestObject.Auth.A">A</span>], <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[<span class="extype" name="controllers.RequestObject.Auth.A">A</span>], <a href="../site/Site.html" class="extype" name="site.Site">site.Site</a>, <span class="extype" name="play.api.mvc.WrappedRequest">WrappedRequest</span>[<span class="extype" name="controllers.RequestObject.Auth.A">A</span>], <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.RequestObject.Auth.A">A</span>], <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -80,7 +80,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="controllers.RequestObject.Auth#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(request:play.api.mvc.Request[A],identity:models.Account,superuser:Boolean,db:site.Site.DB,obj:O):RequestObject.this.Auth[A]"></a>
+      <a id="&lt;init&gt;(request:play.api.mvc.Request[A],account:models.Account,access:models.Permission.Value,superuser:Boolean,obj:O):RequestObject.this.Auth[A]"></a>
       <a id="&lt;init&gt;:Auth[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -88,7 +88,7 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Auth</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.RequestObject.Auth.A">A</span>]</span>, <span name="identity">identity: <a href="../models/Account.html" class="extype" name="models.Account">Account</a></span>, <span name="superuser">superuser: <span class="extype" name="scala.Boolean">Boolean</span></span>, <span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="obj">obj: <span class="extype" name="controllers.RequestObject.O">O</span></span>)</span>
+        <span class="name">Auth</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.RequestObject.Auth.A">A</span>]</span>, <span name="account">account: <a href="../models/Account.html" class="extype" name="models.Account">Account</a></span>, <span name="access">access: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>, <span name="superuser">superuser: <span class="extype" name="scala.Boolean">Boolean</span></span>, <span name="obj">obj: <span class="extype" name="controllers.RequestObject.O">O</span></span>)</span>
       </span>
       </h4>
       
@@ -205,21 +205,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
-    </li><li name="site.Site#access" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="access:models.Permission.Value"></a>
-      <a id="access:models.Permission.Value"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">access</span><span class="result">: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Level of site access <a href="../models/Permission$.html" class="extype" name="models.Permission">models.Permission</a> current user has.</p><div class="fullcomment"><div class="comment cmt"><p>Level of site access <a href="../models/Permission$.html" class="extype" name="models.Permission">models.Permission</a> current user has.
-VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for admins.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -401,32 +386,6 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
-    </li><li name="controllers.SiteRequest#future" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="future[B](f:play.api.mvc.Request[A]=&gt;B)(implicitexecctx:scala.concurrent.ExecutionContext):scala.concurrent.Future[B]"></a>
-      <a id="future[B]((Request[A])⇒B)(ExecutionContext):Future[B]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">future</span><span class="tparams">[<span name="B">B</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.RequestObject.Auth.A">A</span>]) ⇒ <span class="extype" name="controllers.SiteRequest.future.B">B</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="execctx">execctx: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="controllers.SiteRequest.future.B">B</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a></dd></dl></div>
-    </li><li name="controllers.SiteRequest#futureDB" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="futureDB[B](f:controllers.SiteRequest[A]=&gt;B)(implicitexecctx:scala.concurrent.ExecutionContext):scala.concurrent.Future[B]"></a>
-      <a id="futureDB[B]((SiteRequest[A])⇒B)(ExecutionContext):Future[B]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">futureDB</span><span class="tparams">[<span name="B">B</span>]</span><span class="params">(<span name="f">f: (<a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[<span class="extype" name="controllers.RequestObject.Auth.A">A</span>]) ⇒ <span class="extype" name="controllers.SiteRequest.futureDB.B">B</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="execctx">execctx: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="controllers.SiteRequest.futureDB.B">B</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a></dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -505,6 +464,19 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
+    </li><li name="site.AuthSite#identity" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="identity:models.Party"></a>
+      <a id="identity:Party"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">identity</span><span class="result">: <a href="../models/Party.html" class="extype" name="models.Party">Party</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt"><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p><div class="fullcomment"><div class="comment cmt"><p><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/AuthSite.html" class="extype" name="site.AuthSite">AuthSite</a> → <a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -738,7 +710,7 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
         <span class="name">user</span><span class="result">: <span class="extype" name="scala.Some">Some</span>[<a href="../models/Account.html" class="extype" name="models.Account">Account</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Some(<span class="extype" name="identity">identity</span>) only if actual logged-in user.</p><div class="fullcomment"><div class="comment cmt"><p>Some(<span class="extype" name="identity">identity</span>) only if actual logged-in user.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/AuthSite.html" class="extype" name="site.AuthSite">AuthSite</a> → <a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
+      <p class="shortcomment cmt">Some(identity) only if actual logged-in user.</p><div class="fullcomment"><div class="comment cmt"><p>Some(identity) only if actual logged-in user.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/AuthSite.html" class="extype" name="site.AuthSite">AuthSite</a> → <a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
     </li><li name="play.api.mvc.WrappedRequest#version" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="version:String"></a>
       <a id="version:String"></a>
@@ -809,19 +781,6 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="controllers.SiteRequest.Auth#withDB" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="withDB(db:site.Site.DB):controllers.SiteRequest.Auth[A]"></a>
-      <a id="withDB(DB):SiteRequest.Auth[A]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">withDB</span><span class="params">(<span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <a href="SiteRequest$$Auth.html" class="extype" name="controllers.SiteRequest.Auth">SiteRequest.Auth</a>[<span class="extype" name="controllers.RequestObject.Auth.A">A</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SiteRequest$$Auth.html" class="extype" name="controllers.SiteRequest.Auth">Auth</a> → <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a></dd></dl></div>
     </li><li name="controllers.SiteRequest.Auth#withObj" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="withObj[O](obj:O):controllers.RequestObject[O]#Auth[A]"></a>
       <a id="withObj[O](O):Auth[A]"></a>

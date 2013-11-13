@@ -39,7 +39,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Basic information about each request.  Primarily implemented by <a href="../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">controllers.SiteRequest</a>.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/site/site.scala" target="_blank">site.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Basic information about each request.  Primarily implemented by <a href="../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">controllers.SiteRequest</a>.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/site/site.scala" target="_blank">site.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
@@ -86,7 +86,22 @@
 
         <div id="values" class="values members">
               <h3>Abstract Value Members</h3>
-              <ol><li name="site.Site#clientIP" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+              <ol><li name="site.Site#access" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="access:models.Permission.Value"></a>
+      <a id="access:models.Permission.Value"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">access</span><span class="result">: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Level of site access <a href="../models/Permission$.html" class="extype" name="models.Permission">models.Permission</a> current user has.</p><div class="fullcomment"><div class="comment cmt"><p>Level of site access <a href="../models/Permission$.html" class="extype" name="models.Permission">models.Permission</a> current user has.
+VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for admins.
+</p></div></div>
+    </li><li name="site.Site#clientIP" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="clientIP:dbrary.Inet"></a>
       <a id="clientIP:Inet"></a>
       <h4 class="signature">
@@ -99,26 +114,13 @@
       </span>
       </h4>
       <p class="shortcomment cmt">IP of the client's host.</p>
-    </li><li name="site.Site#db" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="db:site.Site.DB"></a>
-      <a id="db:DB"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">db</span><span class="result">: <a href="Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Database connection (with active transaction).</p>
     </li><li name="site.Site#identity" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="identity:models.Party"></a>
       <a id="identity:Party"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
-        <span class="kind">val</span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">identity</span><span class="result">: <a href="../models/Party.html" class="extype" name="models.Party">Party</a></span>
@@ -208,21 +210,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="site.Site#access" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="access:models.Permission.Value"></a>
-      <a id="access:models.Permission.Value"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">access</span><span class="result">: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Level of site access <a href="../models/Permission$.html" class="extype" name="models.Permission">models.Permission</a> current user has.</p><div class="fullcomment"><div class="comment cmt"><p>Level of site access <a href="../models/Permission$.html" class="extype" name="models.Permission">models.Permission</a> current user has.
-VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for admins.
-</p></div></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -416,7 +403,7 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
         <span class="name">user</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="../models/Account.html" class="extype" name="models.Account">Account</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Some(<a href="#identity:models.Party" class="extmbr" name="site.Site#identity">identity</a>) only if actual logged-in user.</p>
+      <p class="shortcomment cmt">Some(identity) only if actual logged-in user.</p>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>

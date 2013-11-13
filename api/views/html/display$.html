@@ -39,7 +39,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/views/display.scala" target="_blank">display.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/views/display.scala" target="_blank">display.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -151,28 +151,41 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="views.html.display#age" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="age(a:Long):String"></a>
-      <a id="age(Long):String"></a>
+      <a id="age(record:models.Record,slot:models.Slot):Option[String]"></a>
+      <a id="age(Record,Slot):Option[String]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">age</span><span class="params">(<span name="a">a: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">age</span><span class="params">(<span name="record">record: <a href="../../models/Record.html" class="extype" name="models.Record">Record</a></span>, <span name="slot">slot: <a href="../../models/Slot.html" class="extype" name="models.Slot">Slot</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      
+    </li><li name="views.html.display#age" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="age(a:dbrary.Age):String"></a>
+      <a id="age(Age):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">age</span><span class="params">(<span name="a">a: <span class="extype" name="dbrary.Age">Age</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
       
     </li><li name="views.html.display#agerange" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="agerange(a:dbrary.Range[Long]):String"></a>
-      <a id="agerange(Range[Long]):String"></a>
+      <a id="agerange(a:dbrary.Range[dbrary.Age]):String"></a>
+      <a id="agerange(Range[Age]):String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">agerange</span><span class="params">(<span name="a">a: <span class="extype" name="dbrary.Range">Range</span>[<span class="extype" name="scala.Long">Long</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">agerange</span><span class="params">(<span name="a">a: <span class="extype" name="dbrary.Range">Range</span>[<span class="extype" name="dbrary.Age">Age</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
       
@@ -190,15 +203,15 @@
       </h4>
       
     </li><li name="views.html.display#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="apply(x:java.util.Date):String"></a>
-      <a id="apply(Date):String"></a>
+      <a id="apply(x:dbrary.Timestamp):String"></a>
+      <a id="apply(Timestamp):String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="x">x: <span class="extype" name="java.util.Date">Date</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">apply</span><span class="params">(<span name="x">x: <span class="extype" name="dbrary.Timestamp">Timestamp</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
       
@@ -228,6 +241,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="views.html.display#avatar" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="avatar(party:models.Party,size:Int):java.io.Serializable"></a>
+      <a id="avatar(Party,Int):Serializable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">avatar</span><span class="params">(<span name="party">party: <a href="../../models/Party.html" class="extype" name="models.Party">Party</a></span>, <span name="size">size: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">64</span></span>)</span><span class="result">: <span class="extype" name="java.io.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
     </li><li name="views.html.display#citeName" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="citeName(name:String):String"></a>
       <a id="citeName(String):String"></a>
@@ -274,54 +300,54 @@
       </h4>
       
     </li><li name="views.html.display#dateFmtCite" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="dateFmtCite:java.text.SimpleDateFormat"></a>
-      <a id="dateFmtCite:SimpleDateFormat"></a>
+      <a id="dateFmtCite:org.joda.time.format.DateTimeFormatter"></a>
+      <a id="dateFmtCite:DateTimeFormatter"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">dateFmtCite</span><span class="result">: <span class="extype" name="java.text.SimpleDateFormat">SimpleDateFormat</span></span>
+        <span class="name">dateFmtCite</span><span class="result">: <span class="extype" name="org.joda.time.format.DateTimeFormatter">DateTimeFormatter</span></span>
       </span>
       </h4>
       
     </li><li name="views.html.display#dateFmtY" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="dateFmtY:java.text.SimpleDateFormat"></a>
-      <a id="dateFmtY:SimpleDateFormat"></a>
+      <a id="dateFmtY:org.joda.time.format.DateTimeFormatter"></a>
+      <a id="dateFmtY:DateTimeFormatter"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">dateFmtY</span><span class="result">: <span class="extype" name="java.text.SimpleDateFormat">SimpleDateFormat</span></span>
+        <span class="name">dateFmtY</span><span class="result">: <span class="extype" name="org.joda.time.format.DateTimeFormatter">DateTimeFormatter</span></span>
       </span>
       </h4>
       
     </li><li name="views.html.display#dateFmtYM" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="dateFmtYM:java.text.SimpleDateFormat"></a>
-      <a id="dateFmtYM:SimpleDateFormat"></a>
+      <a id="dateFmtYM:org.joda.time.format.DateTimeFormatter"></a>
+      <a id="dateFmtYM:DateTimeFormatter"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">dateFmtYM</span><span class="result">: <span class="extype" name="java.text.SimpleDateFormat">SimpleDateFormat</span></span>
+        <span class="name">dateFmtYM</span><span class="result">: <span class="extype" name="org.joda.time.format.DateTimeFormatter">DateTimeFormatter</span></span>
       </span>
       </h4>
       
     </li><li name="views.html.display#dateFmtYMD" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="dateFmtYMD:java.text.SimpleDateFormat"></a>
-      <a id="dateFmtYMD:SimpleDateFormat"></a>
+      <a id="dateFmtYMD:org.joda.time.format.DateTimeFormatter"></a>
+      <a id="dateFmtYMD:DateTimeFormatter"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">dateFmtYMD</span><span class="result">: <span class="extype" name="java.text.SimpleDateFormat">SimpleDateFormat</span></span>
+        <span class="name">dateFmtYMD</span><span class="result">: <span class="extype" name="org.joda.time.format.DateTimeFormatter">DateTimeFormatter</span></span>
       </span>
       </h4>
       
@@ -370,8 +396,21 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="views.html.display#formatTitle" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="formatTitle(text:String):play.api.templates.Html"></a>
+      <a id="formatTitle(String):Html"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">formatTitle</span><span class="params">(<span name="text">text: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result">: <span class="extype" name="play.api.templates.Html">Html</span></span>
+      </span>
+      </h4>
+      
     </li><li name="views.html.display#fuzzyDate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="fuzzyDate(date:java.util.Date,fuzzy:Boolean)(implicitsite:site.Site):String"></a>
+      <a id="fuzzyDate(date:dbrary.Date,fuzzy:Boolean)(implicitsite:site.Site):String"></a>
       <a id="fuzzyDate(Date,Boolean)(Site):String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -379,7 +418,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">fuzzyDate</span><span class="params">(<span name="date">date: <span class="extype" name="java.util.Date">Date</span></span>, <span name="fuzzy">fuzzy: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+        <span class="name">fuzzyDate</span><span class="params">(<span name="date">date: <span class="extype" name="dbrary.Date">Date</span></span>, <span name="fuzzy">fuzzy: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4>
       
@@ -396,45 +435,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="views.html.display#gravatarUrlByEmail" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="gravatarUrlByEmail(email:String,size:Int):String"></a>
-      <a id="gravatarUrlByEmail(String,Int):String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">gravatarUrlByEmail</span><span class="params">(<span name="email">email: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="size">size: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">64</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
-      </span>
-      </h4>
-      
-    </li><li name="views.html.display#gravatarUrlByEmailOpt" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="gravatarUrlByEmailOpt(email:Option[String],size:Int):String"></a>
-      <a id="gravatarUrlByEmailOpt(Option[String],Int):String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">gravatarUrlByEmailOpt</span><span class="params">(<span name="email">email: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="size">size: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">64</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
-      </span>
-      </h4>
-      
-    </li><li name="views.html.display#gravatarUrlByParty" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="gravatarUrlByParty(party:models.Party,size:Int):String"></a>
-      <a id="gravatarUrlByParty(Party,Int):String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">gravatarUrlByParty</span><span class="params">(<span name="party">party: <a href="../../models/Party.html" class="extype" name="models.Party">Party</a></span>, <span name="size">size: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">64</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <a id="hashCode():Int"></a>
@@ -566,15 +566,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="views.html.display#time" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="time(t:java.util.Date):String"></a>
-      <a id="time(Date):String"></a>
+      <a id="time(t:org.joda.time.ReadableInstant):String"></a>
+      <a id="time(ReadableInstant):String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">time</span><span class="params">(<span name="t">t: <span class="extype" name="java.util.Date">Date</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">time</span><span class="params">(<span name="t">t: <span class="extype" name="org.joda.time.ReadableInstant">ReadableInstant</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
       

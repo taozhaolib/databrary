@@ -40,7 +40,7 @@
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Interface to record categories.
-These are all hard-coded so bypass the database, though they are stored in record_category.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/measure.scala" target="_blank">measure.scala</a></dd></dl><div class="toggleContainer block">
+These are all hard-coded so bypass the database, though they are stored in record_category.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/record.scala" target="_blank">record.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="models.HasId">HasId</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -168,19 +168,32 @@ These are all hard-coded so bypass the database, though they are stored in recor
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.RecordCategory#Participant" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Participant:models.RecordCategory{valtemplate:Seq[models.MetricT[_&gt;:Stringwithjava.sql.Date&lt;:Comparable[_&gt;:Stringwithjava.util.Date&lt;:Comparable[_&gt;:Stringwithjava.util.Date&lt;:java.io.Serializable]withjava.io.Serializable]withjava.io.Serializable]]}"></a>
-      <a id="Participant:RecordCategory{valtemplate:Seq[models.MetricT[_&gt;:Stringwithjava.sql.Date&lt;:Comparable[_&gt;:Stringwithjava.util.Date&lt;:Comparable[_&gt;:Stringwithjava.util.Date&lt;:java.io.Serializable]withjava.io.Serializable]withjava.io.Serializable]]}"></a>
+      <a id="Participant:models.RecordCategory{valtemplate:Seq[models.Metric[_&gt;:org.joda.time.LocalDatewithString&lt;:Comparable[_&gt;:org.joda.time.ReadablePartialwithString&lt;:Comparable[_&gt;:org.joda.time.ReadablePartialwithString&lt;:Object]]withjava.io.Serializable]]}"></a>
+      <a id="Participant:RecordCategory{valtemplate:Seq[models.Metric[_&gt;:org.joda.time.LocalDatewithString&lt;:Comparable[_&gt;:org.joda.time.ReadablePartialwithString&lt;:Comparable[_&gt;:org.joda.time.ReadablePartialwithString&lt;:Object]]withjava.io.Serializable]]}"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Participant</span><span class="result">: <a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a> { val template: Seq[models.MetricT[_ &gt;: String with java.sql.Date &lt;: Comparable[_ &gt;: String with java.util.Date &lt;: Comparable[_ &gt;: String with java.util.Date &lt;: java.io.Serializable] with java.io.Serializable] with java.io.Serializable]] }</span>
+        <span class="name">Participant</span><span class="result">: <a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a> { val template: Seq[models.Metric[_ &gt;: org.joda.time.LocalDate with String &lt;: Comparable[_ &gt;: org.joda.time.ReadablePartial with String &lt;: Comparable[_ &gt;: org.joda.time.ReadablePartial with String &lt;: Object]] with java.io.Serializable]] }</span>
       </span>
       </h4>
       <p class="shortcomment cmt">RecordCategory representing participants, individuals whose data is contained in a particular sesion.</p><div class="fullcomment"><div class="comment cmt"><p>RecordCategory representing participants, individuals whose data is contained in a particular sesion.
 Participants usually are associated with birthdate, gender, and other demographics.</p></div></div>
+    </li><li name="models.RecordCategory#Visit" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Visit:models.RecordCategory{valtemplate:Seq[models.Metric[String]]}"></a>
+      <a id="Visit:RecordCategory{valtemplate:Seq[models.Metric[String]]}"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Visit</span><span class="result">: <a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a> { val template: Seq[models.Metric[String]] }</span>
+      </span>
+      </h4>
+      
     </li><li name="models.HasId#asId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asId(i:Int):HasId.this.Id"></a>
       <a id="asId(Int):Id"></a>

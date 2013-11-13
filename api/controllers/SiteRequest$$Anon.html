@@ -39,7 +39,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/controllers/site.scala" target="_blank">site.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/controllers/site.scala" target="_blank">site.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="../site/AnonSite.html" class="extype" name="site.AnonSite">AnonSite</a>, <a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>[<span class="extype" name="controllers.SiteRequest.Anon.A">A</span>], <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[<span class="extype" name="controllers.SiteRequest.Anon.A">A</span>], <a href="../site/Site.html" class="extype" name="site.Site">Site</a>, <span class="extype" name="play.api.mvc.WrappedRequest">WrappedRequest</span>[<span class="extype" name="controllers.SiteRequest.Anon.A">A</span>], <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.Anon.A">A</span>], <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
@@ -83,7 +83,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="controllers.SiteRequest.Anon#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(request:play.api.mvc.Request[A],db:site.Site.DB):controllers.SiteRequest.Anon[A]"></a>
+      <a id="&lt;init&gt;(request:play.api.mvc.Request[A]):controllers.SiteRequest.Anon[A]"></a>
       <a id="&lt;init&gt;:Anon[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -91,7 +91,7 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Anon</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.Anon.A">A</span>]</span>, <span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span>
+        <span class="name">Anon</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.Anon.A">A</span>]</span>)</span>
       </span>
       </h4>
       
@@ -404,32 +404,6 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
-    </li><li name="controllers.SiteRequest#future" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="future[B](f:play.api.mvc.Request[A]=&gt;B)(implicitexecctx:scala.concurrent.ExecutionContext):scala.concurrent.Future[B]"></a>
-      <a id="future[B]((Request[A])⇒B)(ExecutionContext):Future[B]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">future</span><span class="tparams">[<span name="B">B</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.Anon.A">A</span>]) ⇒ <span class="extype" name="controllers.SiteRequest.future.B">B</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="execctx">execctx: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="controllers.SiteRequest.future.B">B</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a></dd></dl></div>
-    </li><li name="controllers.SiteRequest#futureDB" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="futureDB[B](f:controllers.SiteRequest[A]=&gt;B)(implicitexecctx:scala.concurrent.ExecutionContext):scala.concurrent.Future[B]"></a>
-      <a id="futureDB[B]((SiteRequest[A])⇒B)(ExecutionContext):Future[B]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">futureDB</span><span class="tparams">[<span name="B">B</span>]</span><span class="params">(<span name="f">f: (<a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[<span class="extype" name="controllers.SiteRequest.Anon.A">A</span>]) ⇒ <span class="extype" name="controllers.SiteRequest.futureDB.B">B</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="execctx">execctx: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="controllers.SiteRequest.futureDB.B">B</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a></dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -742,19 +716,19 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
-    </li><li name="site.AnonSite#user" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="user:None.type"></a>
-      <a id="user:None.type"></a>
+    </li><li name="site.Site#user" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="user:Option[models.Account]"></a>
+      <a id="user:Option[Account]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">user</span><span class="result">: <span class="extype" name="scala.None">None</span>.type</span>
+        <span class="name">user</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="../models/Account.html" class="extype" name="models.Account">Account</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Some(<a href="#identity:models.Party" class="extmbr" name="controllers.SiteRequest.Anon#identity">identity</a>) only if actual logged-in user.</p><div class="fullcomment"><div class="comment cmt"><p>Some(<a href="#identity:models.Party" class="extmbr" name="controllers.SiteRequest.Anon#identity">identity</a>) only if actual logged-in user.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/AnonSite.html" class="extype" name="site.AnonSite">AnonSite</a> → <a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
+      <p class="shortcomment cmt">Some(identity) only if actual logged-in user.</p><div class="fullcomment"><div class="comment cmt"><p>Some(identity) only if actual logged-in user.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
     </li><li name="play.api.mvc.WrappedRequest#version" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="version:String"></a>
       <a id="version:String"></a>
@@ -825,19 +799,6 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="controllers.SiteRequest.Anon#withDB" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="withDB(db:site.Site.DB):controllers.SiteRequest.Anon[A]"></a>
-      <a id="withDB(DB):Anon[A]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">withDB</span><span class="params">(<span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <a href="" class="extype" name="controllers.SiteRequest.Anon">Anon</a>[<span class="extype" name="controllers.SiteRequest.Anon.A">A</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.SiteRequest.Anon">Anon</a> → <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a></dd></dl></div>
     </li><li name="controllers.SiteRequest.Anon#withObj" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="withObj[O](obj:O):controllers.RequestObject[O]#Anon[A]"></a>
       <a id="withObj[O](O):RequestObject.Anon[A]"></a>

@@ -32,19 +32,18 @@
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
-        <span class="kind">case class</span>
+        <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">Authorize</span><span class="params">(<span name="childId">childId: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="parentId">parentId: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="delegate">delegate: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="authorized">authorized: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Timestamp">Timestamp</span>]</span>, <span name="expires">expires: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Timestamp">Timestamp</span>]</span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">Authorize</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A specific authorization by one party of another.
 An authorization represents granting of certain permissions to a party by/under another, which can also be viewed as group membership.
-Unlike most [TableRow] classes, these may be constructed directly, and thus are not expected to reflect the current state of the database in the same way and have different update semantics.</p></div><dl class="paramcmts block"><dt class="param">childId</dt><dd class="cmt"><p>the party being authorized, the &quot;member&quot;</p></dd><dt class="param">parentId</dt><dd class="cmt"><p>the party whose permissions are being authorized, the &quot;group&quot;</p></dd><dt class="param">access</dt><dd class="cmt"><p>the level of site access granted via the parent to the child, thus the maximum site permission level inherited by the child from the parent</p></dd><dt class="param">delegate</dt><dd class="cmt"><p>the specific permissions granted on behalf of the parent to the child, such tha the child has rights to perform actions up to this permission as the parent (not inherited)</p></dd><dt class="param">authorized</dt><dd class="cmt"><p>the time at which this authorization takes/took effect, or never (not yet) if None</p></dd><dt class="param">expires</dt><dd class="cmt"><p>the time at which this authorization stops, or never if None
-</p></dd></dl><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/authorize.scala" target="_blank">authorize.scala</a></dd></dl><div class="toggleContainer block">
+Unlike most [TableRow] classes, these may be constructed directly, and thus are not expected to reflect the current state of the database in the same way and have different update semantics.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/authorize.scala" target="_blank">authorize.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -62,7 +61,7 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Authorize"><span>Authorize</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Authorize"><span>Authorize</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -82,8 +81,8 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="models.Authorize#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(childId:models.Party.Id,parentId:models.Party.Id,access:models.Permission.Value,delegate:models.Permission.Value,authorized:Option[java.sql.Timestamp],expires:Option[java.sql.Timestamp]):models.Authorize"></a>
+              <ol><li name="models.Authorize#&lt;init&gt;" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="&lt;init&gt;(child:models.Party,parent:models.Party,access:models.Permission.Value,delegate:models.Permission.Value,authorized:Option[dbrary.Timestamp],expires:Option[dbrary.Timestamp]):models.Authorize"></a>
       <a id="&lt;init&gt;:Authorize"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -91,11 +90,11 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Authorize</span><span class="params">(<span name="childId">childId: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="parentId">parentId: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="delegate">delegate: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="authorized">authorized: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Timestamp">Timestamp</span>]</span>, <span name="expires">expires: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Timestamp">Timestamp</span>]</span>)</span>
+        <span class="name">Authorize</span><span class="params">(<span name="child">child: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="parent">parent: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="delegate">delegate: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="authorized">authorized: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Timestamp">Timestamp</span>]</span>, <span name="expires">expires: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Timestamp">Timestamp</span>]</span>)</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">create an authorization object, not (yet) persisted to the database</p><div class="fullcomment"><div class="comment cmt"><p>create an authorization object, not (yet) persisted to the database</p></div><dl class="paramcmts block"><dt class="param">childId</dt><dd class="cmt"><p>the party being authorized, the &quot;member&quot;</p></dd><dt class="param">parentId</dt><dd class="cmt"><p>the party whose permissions are being authorized, the &quot;group&quot;</p></dd><dt class="param">access</dt><dd class="cmt"><p>the level of site access granted via the parent to the child, thus the maximum site permission level inherited by the child from the parent</p></dd><dt class="param">delegate</dt><dd class="cmt"><p>the specific permissions granted on behalf of the parent to the child, such tha the child has rights to perform actions up to this permission as the parent (not inherited)</p></dd><dt class="param">authorized</dt><dd class="cmt"><p>the time at which this authorization takes/took effect, or never (not yet) if None</p></dd><dt class="param">expires</dt><dd class="cmt"><p>the time at which this authorization stops, or never if None
-</p></dd></dl></div>
+      <p class="shortcomment cmt">create an authorization object, not (yet) persisted to the database</p><div class="fullcomment"><div class="comment cmt"><p>create an authorization object, not (yet) persisted to the database</p></div><dl class="paramcmts block"><dt class="param">access</dt><dd class="cmt"><p>the level of site access granted via the parent to the child, thus the maximum site permission level inherited by the child from the parent</p></dd><dt class="param">delegate</dt><dd class="cmt"><p>the specific permissions granted on behalf of the parent to the child, such tha the child has rights to perform actions up to this permission as the parent (not inherited)</p></dd><dt class="param">authorized</dt><dd class="cmt"><p>the time at which this authorization takes/took effect, or never (not yet) if None</p></dd><dt class="param">expires</dt><dd class="cmt"><p>the time at which this authorization stops, or never if None
+</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
     </li></ol>
             </div>
 
@@ -197,7 +196,7 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.Authorize#authorized" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="authorized:Option[java.sql.Timestamp]"></a>
+      <a id="authorized:Option[dbrary.Timestamp]"></a>
       <a id="authorized:Option[Timestamp]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -205,36 +204,36 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">authorized</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Timestamp">Timestamp</span>]</span>
+        <span class="name">authorized</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Timestamp">Timestamp</span>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">the time at which this authorization takes/took effect, or never (not yet) if None</p>
-    </li><li name="models.Authorize#child" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="child(implicitsite:site.Site):models.Party"></a>
-      <a id="child(Site):Party"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">child</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The child party being authorized.</p><div class="fullcomment"><div class="comment cmt"><p>The child party being authorized. Cached.</p></div></div>
-    </li><li name="models.Authorize#childId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="childId:models.Party.Id"></a>
-      <a id="childId:Party.Id"></a>
+    </li><li name="models.Authorize#child" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="child:models.Party"></a>
+      <a id="child:Party"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
+        <span class="name">child</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="models.Authorize#childId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="childId:models.Party.Id"></a>
+      <a id="childId:Party.Id"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
         <span class="name">childId</span><span class="result">: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">the party being authorized, the &quot;member&quot;</p>
+      
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -280,8 +279,21 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="equals(x$1:Any):Boolean"></a>
+      <a id="equals(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.Authorize#expires" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="expires:Option[java.sql.Timestamp]"></a>
+      <a id="expires:Option[dbrary.Timestamp]"></a>
       <a id="expires:Option[Timestamp]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -289,7 +301,7 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">expires</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.sql.Timestamp">Timestamp</span>]</span>
+        <span class="name">expires</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Timestamp">Timestamp</span>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">the time at which this authorization stops, or never if None
@@ -323,6 +335,19 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
       </span>
       <span class="symbol">
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="hashCode():Int"></a>
+      <a id="hashCode():Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -378,63 +403,32 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.Authorize#parent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="parent(implicitsite:site.Site):models.Party"></a>
-      <a id="parent(Site):Party"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">parent</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The parent party granting the authorization.</p><div class="fullcomment"><div class="comment cmt"><p>The parent party granting the authorization. Cached.</p></div></div>
-    </li><li name="models.Authorize#parentId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="parentId:models.Party.Id"></a>
-      <a id="parentId:Party.Id"></a>
+    </li><li name="models.Authorize#parent" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="parent:models.Party"></a>
+      <a id="parent:Party"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
+        <span class="name">parent</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="models.Authorize#parentId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="parentId:models.Party.Id"></a>
+      <a id="parentId:Party.Id"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
         <span class="name">parentId</span><span class="result">: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">the party whose permissions are being authorized, the &quot;group&quot;</p>
-    </li><li name="models.Authorize#remove" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="remove(implicitsite:site.Site):Unit"></a>
-      <a id="remove(Site):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">remove</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Remove this authorization from the database.</p><div class="fullcomment"><div class="comment cmt"><p>Remove this authorization from the database.
-Only child and parent are relevant for this operation.
-This may invalidate child.access.</p></div></div>
-    </li><li name="models.Authorize#set" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="set(implicitsite:site.Site):Unit"></a>
-      <a id="set(Site):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">set</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Update or add this authorization in the database.</p><div class="fullcomment"><div class="comment cmt"><p>Update or add this authorization in the database.
-If an authorization for the child and parent already exist, it is changed to match this.
-Otherwise, a new one is added.
-This may invalidate child.access.</p></div></div>
+      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -448,6 +442,19 @@ This may invalidate child.access.</p></div></div>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="toString():String"></a>
+      <a id="toString():String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.Authorize#valid" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="valid:Boolean"></a>
       <a id="valid:Boolean"></a>
@@ -527,15 +534,7 @@ This may invalidate child.access.</p></div></div>
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.Serializable">
-              <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
-            </div><div class="parent" name="java.io.Serializable">
-              <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
-            </div><div class="parent" name="scala.Product">
-              <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
-            </div><div class="parent" name="scala.Equals">
-              <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
-            </div><div class="parent" name="models.TableRow">
+        <div class="parent" name="models.TableRow">
               <h3>Inherited from <span class="extype" name="models.TableRow">TableRow</span></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>

@@ -39,7 +39,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/sql.scala" target="_blank">sql.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/sql.scala" target="_blank">sql.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -306,15 +306,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.DBUtil#selectOrInsert" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="selectOrInsert[A](select:=&gt;Option[A])(insert:=&gt;A)(implicitdb:site.Site.DB):A"></a>
-      <a id="selectOrInsert[A](⇒Option[A])(⇒A)(DB):A"></a>
+      <a id="selectOrInsert[A](select:(site.Site.DB,scala.concurrent.ExecutionContext)=&gt;scala.concurrent.Future[Option[A]])(insert:(site.Site.DB,scala.concurrent.ExecutionContext)=&gt;scala.concurrent.Future[A])(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[A]"></a>
+      <a id="selectOrInsert[A]((DB,ExecutionContext)⇒Future[Option[A]])((DB,ExecutionContext)⇒Future[A])(DB,ExecutionContext):Future[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">selectOrInsert</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="select">select: ⇒ <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="models.DBUtil.selectOrInsert.A">A</span>]</span>)</span><span class="params">(<span name="insert">insert: ⇒ <span class="extype" name="models.DBUtil.selectOrInsert.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="models.DBUtil.selectOrInsert.A">A</span></span>
+        <span class="name">selectOrInsert</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="select">select: (<a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a>, <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span>) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="models.DBUtil.selectOrInsert.A">A</span>]]</span>)</span><span class="params">(<span name="insert">insert: (<a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a>, <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span>) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="models.DBUtil.selectOrInsert.A">A</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="models.DBUtil.selectOrInsert.A">A</span>]</span>
       </span>
       </h4>
       
@@ -345,15 +345,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.DBUtil#updateOrInsert" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="updateOrInsert(update:anorm.Sql)(insert:anorm.Sql)(implicitdb:site.Site.DB):Unit"></a>
-      <a id="updateOrInsert(Sql)(Sql)(DB):Unit"></a>
+      <a id="updateOrInsert(update:(site.Site.DB,scala.concurrent.ExecutionContext)=&gt;dbrary.SQLResult)(insert:(site.Site.DB,scala.concurrent.ExecutionContext)=&gt;dbrary.SQLResult)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
+      <a id="updateOrInsert((DB,ExecutionContext)⇒SQLResult)((DB,ExecutionContext)⇒SQLResult)(DB,ExecutionContext):SQLResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">updateOrInsert</span><span class="params">(<span name="update">update: <span class="extype" name="anorm.Sql">Sql</span></span>)</span><span class="params">(<span name="insert">insert: <span class="extype" name="anorm.Sql">Sql</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">updateOrInsert</span><span class="params">(<span name="update">update: (<a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a>, <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span>) ⇒ <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>)</span><span class="params">(<span name="insert">insert: (<a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a>, <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span>) ⇒ <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
       </span>
       </h4>
       

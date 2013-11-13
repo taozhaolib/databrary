@@ -42,7 +42,7 @@
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Types of Records that are relevant for data organization.
 Records that represent data buckets or other kinds of slot groupings (e.g., participants, days, conditions, etc.) can be assigned a particular RecordCategory for the purpose of display and templating.
 For now, all instances are hard-coded.
-</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/measure.scala" target="_blank">measure.scala</a></dd></dl><div class="toggleContainer block">
+</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/record.scala" target="_blank">record.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.RecordCategory">RecordCategory</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -87,15 +87,15 @@ For now, all instances are hard-coded.
         <div id="values" class="values members">
               <h3>Abstract Value Members</h3>
               <ol><li name="models.RecordCategory#template" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="template:Seq[models.Metric]"></a>
-      <a id="template:Seq[Metric]"></a>
+      <a id="template:Seq[models.Metric[_]]"></a>
+      <a id="template:Seq[Metric[_]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">template</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>]</span>
+        <span class="name">template</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">The default set of metrics which define records in this category.</p>

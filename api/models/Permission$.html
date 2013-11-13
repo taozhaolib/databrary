@@ -40,7 +40,7 @@
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>The possible levels of permission used for site access, user delegation, and volume permissions.
-Must match the corresponding postgres &quot;permission&quot; type.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/permission.scala" target="_blank">permission.scala</a></dd></dl><div class="toggleContainer block">
+Must match the corresponding postgres &quot;permission&quot; type.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/permission.scala" target="_blank">permission.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="dbrary.PGEnum">PGEnum</span>, <span class="extype" name="scala.Enumeration">Enumeration</span>, <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -374,19 +374,6 @@ Must match the corresponding postgres &quot;permission&quot; type.</p></div><dl 
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Enumeration</dd></dl></div>
-    </li><li name="scala.Enumeration.ValueSet" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ValueSet"></a>
-      <a id="ValueSet:ValueSet"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <span class="name">ValueSet</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Enumeration</dd></dl></div>
     </li><li name="scala.Enumeration#apply" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="apply(x:Int):Enumeration.this.Value"></a>
       <a id="apply(Int):Value"></a>
@@ -413,6 +400,19 @@ Must match the corresponding postgres &quot;permission&quot; type.</p></div><dl 
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.Permission#check" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="check(has:models.Permission.Value,need:models.Permission.Value)(implicitsite:site.Site):Boolean"></a>
+      <a id="check(Value,Value)(Site):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">check</span><span class="params">(<span name="has">has: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Value</a></span>, <span name="need">need: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Value</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -432,29 +432,16 @@ Must match the corresponding postgres &quot;permission&quot; type.</p></div><dl 
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="dbrary.PGEnum#column" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="column:anorm.Column[PGEnum.this.Value]"></a>
-      <a id="column:Column[Value]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">column</span><span class="result">: <span class="extype" name="anorm.Column">Column</span>[<a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Value</a>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>PGEnum</dd></dl></div>
     </li><li name="models.Permission#data" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="data(p:models.Permission.Value,consent:models.Consent.Value,classification:models.Classification.Value)(implicitsite:site.Site):models.Permission.Value"></a>
-      <a id="data(Value,Consent.Value,Classification.Value)(Site):Value"></a>
+      <a id="data(p:models.Permission.Value,consent:models.Consent.Value,classification:models.Classification.Value)(implicitsite_:site.Site):models.HasPermission"></a>
+      <a id="data(Value,Consent.Value,Classification.Value)(Site):HasPermission"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
+        <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">data</span><span class="params">(<span name="p">p: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Value</a></span>, <span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>, <span name="classification">classification: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Value</a></span>
+        <span class="name">data</span><span class="params">(<span name="p">p: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Value</a></span>, <span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>, <span name="classification">classification: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site_">site_: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">The effective permission for data objects with the given attributes.</p>
@@ -633,19 +620,19 @@ Must match the corresponding postgres &quot;permission&quot; type.</p></div><dl 
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Enumeration</dd></dl></div>
-    </li><li name="dbrary.PGEnum#statement" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="statement:anorm.ToStatement[PGEnum.this.Value]"></a>
-      <a id="statement:ToStatement[Value]"></a>
+    </li><li name="models.Permission#sqlType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="sqlType:dbrary.SQLType[models.Permission.Value]"></a>
+      <a id="sqlType:SQLType[Value]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">implicit </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">statement</span><span class="result">: <span class="extype" name="anorm.ToStatement">ToStatement</span>[<a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Value</a>]</span>
+        <span class="name">sqlType</span><span class="result">: <span class="extype" name="dbrary.SQLType">SQLType</span>[<a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Value</a>]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>PGEnum</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Permission">Permission</a> → PGEnum</dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

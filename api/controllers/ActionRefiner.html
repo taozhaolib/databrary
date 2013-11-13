@@ -39,7 +39,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/controllers/action.scala" target="_blank">action.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/controllers/action.scala" target="_blank">action.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<span class="extype" name="controllers.ActionRefiner.R">R</span>, <span class="extype" name="controllers.ActionRefiner.P">P</span>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
@@ -87,15 +87,15 @@
         <div id="values" class="values members">
               <h3>Abstract Value Members</h3>
               <ol><li name="controllers.ActionRefiner#refine" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="refine[A](request:R[A]):Either[scala.concurrent.Future[play.api.mvc.SimpleResult],P[A]]"></a>
-      <a id="refine[A](R[A]):Either[Future[SimpleResult],P[A]]"></a>
+      <a id="refine[A](request:R[A]):scala.concurrent.Future[Either[play.api.mvc.SimpleResult,P[A]]]"></a>
+      <a id="refine[A](R[A]):Future[Either[SimpleResult,P[A]]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">refine</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="request">request: <span class="extype" name="controllers.ActionRefiner.R">R</span>[<span class="extype" name="controllers.ActionRefiner.refine.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Either">Either</span>[<span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>], <span class="extype" name="controllers.ActionRefiner.P">P</span>[<span class="extype" name="controllers.ActionRefiner.refine.A">A</span>]]</span>
+        <span class="name">refine</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="request">request: <span class="extype" name="controllers.ActionRefiner.R">R</span>[<span class="extype" name="controllers.ActionRefiner.refine.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Either">Either</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>, <span class="extype" name="controllers.ActionRefiner.P">P</span>[<span class="extype" name="controllers.ActionRefiner.refine.A">A</span>]]]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
@@ -337,19 +337,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="controllers.ActionRefiner#simple" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="simple[A](r:play.api.mvc.SimpleResult):Either[scala.concurrent.Future[play.api.mvc.SimpleResult],P[A]]"></a>
-      <a id="simple[A](SimpleResult):Either[Future[SimpleResult],P[A]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">simple</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="r">r: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>)</span><span class="result">: <span class="extype" name="scala.Either">Either</span>[<span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>], <span class="extype" name="controllers.ActionRefiner.P">P</span>[<span class="extype" name="controllers.ActionRefiner.simple.A">A</span>]]</span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -445,7 +432,7 @@
         <span title="gt4s: $tilde$greater" class="name">~&gt;</span><span class="tparams">[<span name="Q">Q<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="child">child: <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<span class="extype" name="controllers.ActionRefiner.P">P</span>, <span class="extype" name="controllers.ActionFunction.~&gt;.Q">Q</span>]</span>)</span><span class="result">: <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<span class="extype" name="controllers.ActionRefiner.R">R</span>, <span class="extype" name="controllers.ActionFunction.~&gt;.Q">Q</span>]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a></dd></dl></div>
+      <p class="shortcomment cmt">Compose this ActionFunction with another.</p><div class="fullcomment"><div class="comment cmt"><p>Compose this ActionFunction with another.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a></dd></dl></div>
     </li></ol>
             </div>
 

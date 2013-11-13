@@ -39,7 +39,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Helper for audit tables.  Not a TableView because it corresponds to multiple underlying tables.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/models/audit.scala" target="_blank">audit.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Helper for audit tables.  Not a TableView because it corresponds to multiple underlying tables.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/audit.scala" target="_blank">audit.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -164,28 +164,28 @@
       </h4>
       <p class="comment cmt">The possible events or actions on the site that can be put into audit tables.</p>
     </li><li name="models.Audit#action" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="action(action:models.Audit.Action.Value)(implicitsite:site.Site):Unit"></a>
-      <a id="action(Audit.Action.Value)(Site):Unit"></a>
+      <a id="action(action:models.Audit.Action.Value)(implicitsite:site.Site,implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):Unit"></a>
+      <a id="action(Audit.Action.Value)(Site,DB,ExecutionContext):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">action</span><span class="params">(<span name="action">action: <a href="Audit$$Action$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Audit.Action.Value</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">action</span><span class="params">(<span name="action">action: <a href="Audit$$Action$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Audit.Action.Value</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>, <span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Record an audit event of the specified type to the generic audit table.</p>
     </li><li name="models.Audit#actionFor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="actionFor(action:models.Audit.Action.Value,user:models.Party.Id,ip:dbrary.Inet)(implicitdb:site.Site.DB):Unit"></a>
-      <a id="actionFor(Audit.Action.Value,Party.Id,Inet)(DB):Unit"></a>
+      <a id="actionFor(action:models.Audit.Action.Value,user:models.Party.Id,ip:dbrary.Inet)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):Unit"></a>
+      <a id="actionFor(Audit.Action.Value,Party.Id,Inet)(DB,ExecutionContext):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">actionFor</span><span class="params">(<span name="action">action: <a href="Audit$$Action$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Audit.Action.Value</a></span>, <span name="user">user: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="ip">ip: <span class="extype" name="dbrary.Inet">Inet</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="db">db: <a href="../site/Site$.html#DB=java.sql.Connection" class="extmbr" name="site.Site.DB">DB</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">actionFor</span><span class="params">(<span name="action">action: <a href="Audit$$Action$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Audit.Action.Value</a></span>, <span name="user">user: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="ip">ip: <span class="extype" name="dbrary.Inet">Inet</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       

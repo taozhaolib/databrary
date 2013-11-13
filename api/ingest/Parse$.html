@@ -39,7 +39,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/play/tree/master/app/ingest/parse.scala" target="_blank">parse.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/ingest/parse.scala" target="_blank">parse.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -290,7 +290,7 @@
       </h4>
       
     </li><li name="ingest.Parse#date" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="date:ingest.Parse.Parser[java.sql.Date]"></a>
+      <a id="date:ingest.Parse.Parser[dbrary.Date]"></a>
       <a id="date:Parser[Date]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -298,7 +298,20 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">date</span><span class="result">: <a href="Parse$$Parser.html" class="extype" name="ingest.Parse.Parser">Parser</a>[<span class="extype" name="java.sql.Date">Date</span>]</span>
+        <span class="name">date</span><span class="result">: <a href="Parse$$Parser.html" class="extype" name="ingest.Parse.Parser">Parser</a>[<span class="extype" name="dbrary.Date">Date</span>]</span>
+      </span>
+      </h4>
+      
+    </li><li name="ingest.Parse#empty" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="empty:ingest.Parse.Parser[Unit]"></a>
+      <a id="empty:Parser[Unit]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">empty</span><span class="result">: <a href="Parse$$Parser.html" class="extype" name="ingest.Parse.Parser">Parser</a>[<span class="extype" name="scala.Unit">Unit</span>]</span>
       </span>
       </h4>
       
@@ -386,6 +399,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="ingest.Parse#guard" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="guard[T](b:Boolean,p:ingest.Parse.Parser[T]):ingest.Parse.Parser[Option[T]]"></a>
+      <a id="guard[T](Boolean,Parser[T]):Parser[Option[T]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">guard</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="b">b: <span class="extype" name="scala.Boolean">Boolean</span></span>, <span name="p">p: <a href="Parse$$Parser.html" class="extype" name="ingest.Parse.Parser">Parser</a>[<span class="extype" name="ingest.Parse.guard.T">T</span>]</span>)</span><span class="result">: <a href="Parse$$Parser.html" class="extype" name="ingest.Parse.Parser">Parser</a>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="ingest.Parse.guard.T">T</span>]]</span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <a id="hashCode():Int"></a>
