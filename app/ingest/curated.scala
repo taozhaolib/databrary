@@ -104,18 +104,22 @@ object Curated {
     } yield (Subject(id, gender, birthday, re._1, re._2, lang))
   }
 
+  case class ModelSession(container : models.Container) {
+    var last : Option[Offset] = Some(Offset(0))
+  }
+
   private final case class Session(name : String, date : Date, consent : Consent.Value) extends KeyedData {
     def fields = Seq(name, date.toString, consent.toString)
     def key = name
 
-    def populate(volume : Volume)(implicit site : Site) : Future[models.Container] =
+    def populate(volume : Volume)(implicit site : Site) : Future[ModelSession] =
       Container.findName(volume, name).flatMap {
         case Nil =>
           for {
             con <- Container.create(volume, Some(name), Some(date))
             full <- con.fullSlot
             _ <- full.change(consent = consent)
-          } yield (con)
+          } yield (ModelSession(con))
         case Seq(con) =>
           for {
             _ <- check(con.date.equals(Some(date)),
@@ -123,7 +127,7 @@ object Curated {
             full <- con.fullSlot
             _ <- check(full.consent.equals(consent),
               PopulateException("inconsistent consent for session " + name + ": " + consent + " <> " + full.consent, con))
-          } yield (con)
+          } yield (ModelSession(con))
         case _ =>
           Future.failed(PopulateException("multiple containers for session " + name))
       }
@@ -138,8 +142,8 @@ object Curated {
   }
 
   private final case class SubjectSession(subjectKey : String, sessionKey : String) {
-    def populate(record : Record, container : Container)(implicit site : Site) =
-      container.fullSlot.flatMap { full =>
+    def populate(record : Record, session : ModelSession)(implicit site : Site) =
+      session.container.fullSlot.flatMap { full =>
         record.addSlot(full).map(_ => ())
       }
   }
@@ -204,12 +208,27 @@ object Curated {
     def key = asset.key
     def name = sessionKey + "/" + asset.name
 
-    def populate(container : Container)(implicit site : Site) : Future[models.ContainerAsset] = {
+    def populate(session : ModelSession)(implicit site : Site) : Future[models.ContainerAsset] = {
       val info = asset.info
+      val container = session.container
+      val pos = (asset.position, session.last, info) match {
+        case (Some(p), _, _) if p.seconds > 0 =>
+          session.last = None
+          asset.position
+        case (Some(Offset(0)), Some(Offset(0)), info : Asset.TimeseriesInfo) =>
+          session.last = Some(info.duration)
+          asset.position
+        case (Some(Offset(p)), Some(e), info : Asset.TimeseriesInfo) if p < 0 =>
+          session.last = Some(e + info.duration)
+          Some(e)
+        case (Some(Offset(p)), _, _) if p < 0 =>
+          throw PopulateException("unexpected negative position at asset " + name)
+        case (p, _, _) => p
+      }
       ContainerAsset.findName(container, asset.name).flatMap {
         case Nil =>
           asset.populate(info).flatMap(
-            ContainerAsset.create(container, _, asset.position, asset.name, None))
+            ContainerAsset.create(container, _, pos, asset.name, None))
         case Seq(ca) => for {
           _ <- check(ca.asset.format == info.format,
             PopulateException("inconsistent format for asset " + name + ": " + info.format.name + " <> " + ca.asset.format.name))
@@ -221,7 +240,7 @@ object Curated {
                 PopulateException("inconsistent duration for asset " + name + ": " + duration + " <> " + ca.asset.asInstanceOf[Timeseries].duration))
             case _ => Async(())
           }
-          _ <- check(ca.position.equals(asset.position),
+          _ <- check(ca.position.equals(pos),
             PopulateException("inconsistent position for asset " + name + ": " + asset.position + " <> " + ca.position))
         } yield (ca)
         case _ =>
@@ -245,8 +264,8 @@ object Curated {
   private final case class Data
     ( subjects : Map[String,Subject]
     , sessions : Map[String,Session]
-    , subjectSessions : Iterable[SubjectSession]
-    , assets : Iterable[SessionAsset]
+    , subjectSessions : Seq[SubjectSession]
+    , assets : Seq[SessionAsset]
     )
 
   private def process(l : List[List[String]]) : Data = l.zipWithIndex match {
@@ -256,7 +275,7 @@ object Curated {
       val subjs = collect(rows.map(_.subject))
       val sess = collect(rows.map(_.session))
       val assets = collect(rows.flatMap(r => r.asset.map(SessionAsset(r.session.key, _))))
-      Data(subjs, sess, rows.map(r => SubjectSession(r.subject.key, r.session.key)), assets.values)
+      Data(subjs, sess, rows.map(r => SubjectSession(r.subject.key, r.session.key)), assets.values.toSeq)
     case Nil => fail("no data")
   }
 
@@ -272,7 +291,8 @@ object Curated {
     _ <- Async.fold(data.subjectSessions.map { ss =>
       ss.populate(subjs(ss.subjectKey), sess(ss.sessionKey))
     })()
-    assets <- Async.sequence(data.assets.map { sa =>
+    assets <- Async.sequence(data.assets
+      .sortBy(_.asset.position.map(-_.seconds)).map { sa =>
       sa.populate(sess(sa.sessionKey))
     })
   } yield ((subjs.values, assets))

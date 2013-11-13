@@ -26,14 +26,16 @@ case class Offset(seconds : Double)
   def max(other : Offset) = Offset(seconds.max(other.seconds))
   def approx(other : Offset) = (other.seconds - seconds).abs < 0.001
 
-  /* This is unfortuante but I can't find any other reasonable formatting options outside the postgres server itself: */
+  /* This is unfortunate but I can't find any other reasonable formatting options outside the postgres server itself: */
   override def toString = {
-    val s = "%06.3f".format(seconds % 60)
-    val m = seconds.toInt / 60
-    if (m >= 60)
+    val secs = seconds.abs
+    val s = "%06.3f".format(secs % 60)
+    val m = secs.toInt / 60
+    (if (seconds.signum < 0) "-" else "") +
+    (if (m >= 60)
       "%02d:%02d:%s".format(m / 60, m % 60, s)
     else
-      "%02d:%s".format(m, s)
+      "%02d:%s".format(m, s))
   }
 }
 
@@ -43,13 +45,12 @@ object Offset {
     Offset(60*(60*(24*(30*(12.175*i.getYears + i.getMonths) + i.getDays) + i.getHours) + i.getMinutes) + i.getSeconds)
 
   private val multipliers : Seq[Double] = Seq(60,60,24).scanLeft(1.0)(_ * _)
-  def fromString(s : String) : Offset = {
-    s.split(':').reverseIterator.zipAll(multipliers.iterator, "", 0.0).map {
+  def fromString(s : String) : Offset =
+    s.stripPrefix("-").split(':').reverseIterator.zipAll(multipliers.iterator, "", 0.0).map {
       case (_, 0) => throw new java.lang.NumberFormatException("For offset string: " + s)
       case ("", _) => 0.0
       case (s, m) => m*s.toDouble
-    }.sum
-  }
+    }.sum * (if (s.startsWith("-")) -1.0 else 1.0)
 
   implicit val sqlType : SQLType[Offset] =
     SQLType[Offset]("interval", classOf[Offset])(
