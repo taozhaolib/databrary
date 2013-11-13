@@ -122,11 +122,11 @@ object Curated {
           } yield (ModelSession(con))
         case Seq(con) =>
           for {
-            _ <- check(con.date.equals(Some(date)),
-              PopulateException("inconsistent date for session " + name + ": " + date + " <> " + con.date, con))
             full <- con.fullSlot
+            _ <- check(con.date.equals(Some(date)),
+              PopulateException("inconsistent date for session " + name + ": " + date + " <> " + con.date, full))
             _ <- check(full.consent.equals(consent),
-              PopulateException("inconsistent consent for session " + name + ": " + consent + " <> " + full.consent, con))
+              PopulateException("inconsistent consent for session " + name + ": " + consent + " <> " + full.consent, full))
           } yield (ModelSession(con))
         case _ =>
           Future.failed(PopulateException("multiple containers for session " + name))

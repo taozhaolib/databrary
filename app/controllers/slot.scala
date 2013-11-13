@@ -14,11 +14,11 @@ import models._
 object Slot extends SiteController {
   type Request[A] = RequestObject[Slot]#Site[A]
 
-  private[controllers] def action(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW) =
-    RequestObject.check(v, models.Slot.get(i)(_), p)
+  private[controllers] def action(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW, full : Boolean = false) =
+    RequestObject.check(v, models.Slot.get(i, full)(_), p)
 
-  private[controllers] def Action(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW) =
-    SiteAction ~> action(v, i, p)
+  private[controllers] def Action(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW, full : Boolean = false) =
+    SiteAction ~> action(v, i, p, full)
 
   def view(v : models.Volume.Id, i : models.Slot.Id) = Action(v, i) { implicit request =>
     if (request.obj.isFull && request.obj.container.top)
@@ -95,15 +95,15 @@ object Slot extends SiteController {
     "end" -> optional(of[Offset])
   ).verifying(Messages("range.invalid"), !_.zipped.exists(_ > _)))
 
-  def create(v : models.Volume.Id, c : models.Container.Id) = Container.Action(v, c, Permission.CONTRIBUTE) { implicit request =>
-    Ok(views.html.slot.create(request.obj, createForm))
+  def create(v : models.Volume.Id, c : models.Slot.Id) = Action(v, c, Permission.CONTRIBUTE) { implicit request =>
+    Ok(views.html.slot.create(createForm))
   }
 
-  def add(v : models.Volume.Id, c : models.Container.Id) = Container.Action(v, c, Permission.CONTRIBUTE).async { implicit request =>
+  def add(v : models.Volume.Id, c : models.Slot.Id) = Action(v, c, Permission.CONTRIBUTE).async { implicit request =>
     createForm.bindFromRequest.fold(
-      form => ABadRequest(views.html.slot.create(request.obj, form)),
+      form => ABadRequest(views.html.slot.create(form)),
       { case (start, end) =>
-        models.Slot.getOrCreate(request.obj, Range[Offset](start, end)).map { slot =>
+        models.Slot.getOrCreate(request.obj.container, Range[Offset](start, end).map(request.obj.position + _)).map { slot =>
           Redirect(slot.pageURL)
         }
       }

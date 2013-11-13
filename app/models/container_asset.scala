@@ -10,7 +10,7 @@ import site._
   * An asset link includes the asset and container, along with a name and description for that particular link.
   * Permissions are checked in msot cases, as indicated.
   */
-sealed class ContainerAsset protected (val asset : Asset, val container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with SiteObject with InVolume {
+sealed class ContainerAsset protected (val asset : Asset, val container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends TableRow with InVolume {
   def assetId = asset.id
   def containerId = container.id
   def id = (assetId, containerId)
@@ -44,15 +44,6 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
   def extent : Option[Range[Offset]] = position.map(Range.singleton[Offset](_))
 
   def fullSlot : Future[SlotAsset] = SlotAsset.getFull(this)
-
-  def pageName = name
-  def pageParent = Some(volume)
-  def pageURL = controllers.routes.Asset.view(volume.id, container._fullSlot.get.id, assetId)
-  def pageActions = Seq(
-    Action("view", controllers.routes.Asset.view(volumeId, container._fullSlot.get.id, assetId), Permission.VIEW),
-    Action("edit", controllers.routes.Asset.edit(volumeId, containerId, assetId), Permission.EDIT),
-    Action("remove", controllers.routes.Asset.remove(volumeId, containerId, assetId), Permission.CONTRIBUTE)
-  )
 }
 
 final class ContainerTimeseries private[models] (override val asset : Asset with TimeseriesData, container : Container, position_ : Option[Offset], name_ : String, body_ : Option[String]) extends ContainerAsset(asset, container, position_, name_, body_) {
@@ -131,7 +122,10 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
 sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, excerpt_ : Option[Boolean] = None) extends TableRow with SiteObject with BackedAsset with InVolume {
   def slotId = slot.id
   def volume = link.volume
+  def asset = link.asset
+  def assetId = link.assetId
   def source = link.asset.source
+  def format = asset.format
   private var _excerpt = excerpt_ /* TODO: make this a cached future to simplify queries (and verify selective use) */
   /** Whether this clip has been vetted for public release, permissions permitting. */
   def excerpt : Boolean = _excerpt.getOrElse(false)
@@ -152,7 +146,7 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
   def change(excerpt : Option[Boolean] = _excerpt) : Future[Boolean] = {
     if (excerpt == _excerpt)
       return Async(true)
-    val ids = SQLTerms('slot -> slotId, 'asset -> link.assetId)
+    val ids = SQLTerms('slot -> slotId, 'asset -> assetId)
     excerpt.fold {
       Audit.remove("toplevel_asset", ids)
     } { e =>
@@ -162,10 +156,8 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
     }
   }
 
-  def format = link.asset.format
-
   def classification = {
-    val c = link.asset.classification
+    val c = asset.classification
     if (c == Classification.IDENTIFIED && excerpt)
       Classification.EXCERPT
     else
@@ -179,13 +171,13 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
 
   def pageName = link.name
   def pageParent = if(slot.container.top) { Some(slot.volume) } else { Some(slot) }
-  def pageURL = controllers.routes.Asset.view(volume.id, slotId, link.assetId)
-  def pageActions =
-    if (slot.isFull) link.pageActions
-    else Seq(
-      Action("view", controllers.routes.Asset.view(volumeId, slotId, link.assetId), Permission.VIEW),
-      Action("edit", controllers.routes.Asset.edit(volumeId, link.containerId, link.assetId), Permission.EDIT)
-    )
+  def pageURL = controllers.routes.Asset.view(volume.id, slotId, assetId)
+  def pageActions = Seq(
+      Action("view", controllers.routes.Asset.view(volumeId, slotId, assetId), Permission.VIEW),
+      Action("edit", controllers.routes.Asset.edit(volumeId, slotId, assetId), Permission.EDIT)
+    ) ++ (if (slot.isFull) Some(
+      Action("remove", controllers.routes.Asset.remove(volumeId, slotId, assetId), Permission.CONTRIBUTE)
+    ) else None)
 }
 
 final class SlotTimeseries private[models] (override val link : ContainerTimeseries, slot : Slot, excerpt_ : Option[Boolean] = None) extends SlotAsset(link, slot, excerpt_) with TimeseriesData {
@@ -240,15 +232,18 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
     }
 
   /** Retrieve a single SlotAsset by asset id and slot id.
-    * This checks permissions on the slot('s container's volume). */
-  def get(asset : Asset.Id, slot : Slot.Id)(implicit site : Site) : Future[Option[SlotAsset]] =
+    * This checks permissions on the slot('s container's volume).
+    * @param full only return full slots */
+  def get(asset : Asset.Id, slot : Slot.Id, full : Boolean = false)(implicit site : Site) : Future[Option[SlotAsset]] =
     ContainerAsset.row
       .join(Slot.columns, "container.id = slot.source")
       .leftJoin(columns, "slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset")
       .map {
         case ((link, slot), excerpt) => make(link, slot(link.container), excerpt)
       }
-      .SELECT("WHERE slot.id = ? AND asset.id = ? AND", condition(), "AND", Volume.condition)
+      .SELECT("WHERE slot.id = ? AND asset.id = ?",
+        if (full) "AND slot.segment = '(,)'" else "",
+        "AND", condition(), "AND", Volume.condition)
       .apply(SQLArgs(slot, asset) ++ Volume.conditionArgs).singleOpt
 
   /** Retrieve the list of all assets within the given slot. */

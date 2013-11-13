@@ -10,7 +10,7 @@ import site._
   * To be used, all assets must be placed into containers.
   * These containers can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.
   */
-final class Container protected (val id : Container.Id, val volume : Volume, val top : Boolean = false, val name_ : Option[String], val date_ : Option[Date]) extends TableRowId[Container] with SiteObject with InVolume {
+final class Container protected (val id : Container.Id, val volume : Volume, val top : Boolean = false, val name_ : Option[String], val date_ : Option[Date]) extends TableRowId[Container] with InVolume {
   def container = this
   private[this] var _name = name_
   /** Descriptive name to help with organization by contributors.
@@ -45,11 +45,6 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
   }
   /** Slot that covers this entire container and which thus serves as a proxy for display and metadata. Cached. */
   def fullSlot : Future[Slot] = _fullSlot.apply
-
-  def pageName = _fullSlot.get.pageName
-  def pageParent = Some(volume)
-  def pageURL = _fullSlot.get.pageURL
-  def pageActions = _fullSlot.get.pageActions
 }
 
 object Container extends TableId[Container]("container") {
@@ -207,7 +202,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   def pageActions = Seq(
     Action("view", controllers.routes.Slot.view(volumeId, id), Permission.VIEW),
     Action("edit", controllers.routes.Slot.edit(volumeId, id), Permission.EDIT),
-    Action("add file", controllers.routes.Asset.create(volumeId, containerId, segment.lowerBound), Permission.CONTRIBUTE),
+    Action("add file", controllers.routes.Asset.create(volumeId, id, segment.lowerBound), Permission.CONTRIBUTE),
     // Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
     Action("add participant", controllers.routes.Record.slotAdd(volumeId, id, IntId[models.RecordCategory](-500), false), Permission.CONTRIBUTE)
   )
@@ -235,9 +230,12 @@ object Slot extends TableId[Slot]("slot") {
   final val fullRange = Range.full[Offset]
 
   /** Retrieve an individual Slot.
-    * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
-  def get(i : Id)(implicit site : Site) : Future[Option[Slot]] =
-    row.SELECT("WHERE slot.id = ? AND", Volume.condition)
+    * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access.
+    * @param full only return full slots */
+  def get(i : Id, full : Boolean = false)(implicit site : Site) : Future[Option[Slot]] =
+    row.SELECT("WHERE slot.id = ?",
+      if (full) "AND slot.segment = '(,)'" else "",
+      "AND", Volume.condition)
       .apply(i +: Volume.conditionArgs).singleOpt
 
   private def _get(container : Container, segment : Range[Offset])(implicit dbc : Site.DB, exc : ExecutionContext) : Future[Option[Slot]] =

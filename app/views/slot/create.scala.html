@@ -1,4 +1,4 @@
-@(container : Container, form : controllers.Slot.CreateForm)(implicit request : RequestObject[Container]#Site[_])
+@(form : controllers.Slot.CreateForm)(implicit request : RequestObject[Slot]#Site[_])
 
 @import helper.FieldConstructor
 
@@ -6,11 +6,13 @@
         FieldConstructor(widget.tag.minimalFieldConstructor.f)
     }
 
+@defining(request.obj.container) { container =>
 @widget.template.crud("Create Slot in Container: " + container.toString) {
-	@widget.tag.form(routes.Slot.add(container.volumeId, container.id)) {
+	@widget.tag.form(routes.Slot.add(container.volumeId, request.obj.id)) {
 		@widget.tag.inputText(form("start"), 'placeholder -> "Start offset")
 		@widget.tag.inputText(form("end"), 'placeholder -> "End offset")
 		<button type='submit' class="big button first">Add</button>
 	}
 	@widget.formErrors(form)
+}
 }

@@ -16,26 +16,19 @@ import models._
 import dbrary.Offset
 
 object Asset extends SiteController {
-  type ContainerRequest[A] = RequestObject[ContainerAsset]#Site[A]
-  type SlotRequest[A] = RequestObject[SlotAsset]#Site[A]
+  type Request[A] = RequestObject[SlotAsset]#Site[A]
 
-  private[controllers] def containerAction(v : models.Volume.Id, i : models.Container.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW) =
-    RequestObject.check(v, models.ContainerAsset.get(a, i)(_), p)
+  private[controllers] def action(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW, full : Boolean = false) =
+    RequestObject.check(v, models.SlotAsset.get(a, i, full)(_), p)
 
-  private[controllers] def ContainerAction(v : models.Volume.Id, i : models.Container.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW) =
-    SiteAction ~> containerAction(v, i, a, p)
+  private[controllers] def Action(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW, full : Boolean = false) =
+    SiteAction ~> action(v, i, a, p, full)
 
-  private[controllers] def slotAction(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW) =
-    RequestObject.check(v, models.SlotAsset.get(a, i)(_), p)
-
-  private[controllers] def SlotAction(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW) =
-    SiteAction ~> slotAction(v, i, a, p)
-
-  def view(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id) = SlotAction(v, i, a) { implicit request =>
+  def view(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id) = Action(v, i, a) { implicit request =>
     Ok(views.html.asset.view(request.obj))
   }
 
-  private def assetResult(tag : String, data_ : => Future[store.StreamEnumerator], fmt : AssetFormat, saveAs : Option[String])(request : Request[_]) : Future[SimpleResult] = {
+  private def assetResult(tag : String, data_ : => Future[store.StreamEnumerator], fmt : AssetFormat, saveAs : Option[String])(request : SiteRequest[_]) : Future[SimpleResult] = {
     /* The split works because we never use commas within etags. */
     val ifNoneMatch = request.headers.getAll(IF_NONE_MATCH).flatMap(_.split(',').map(_.trim))
     /* Assuming assets are immutable, any if-modified-since header is good enough */
@@ -64,7 +57,7 @@ object Asset extends SiteController {
       }
   }
 
-  def download(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, inline : Boolean) = SlotAction(v, i, o, Permission.DOWNLOAD).async { implicit request =>
+  def download(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, inline : Boolean) = Action(v, i, o, Permission.DOWNLOAD).async { implicit request =>
     assetResult(
       "sobj:%d:%d".format(request.obj.slotId.unId, request.obj.link.assetId.unId),
       store.Asset.read(request.obj),
@@ -73,7 +66,7 @@ object Asset extends SiteController {
     )(request)
   }
 
-  private[controllers] def getFrame(sa : SlotAsset, offset : Either[Float,Offset])(implicit request : Request[_]) =
+  private[controllers] def getFrame(sa : SlotAsset, offset : Either[Float,Offset])(implicit request : SiteRequest[_]) =
     sa match {
       case ts : SlotTimeseries =>
         val off = offset.fold(f => Offset(10*(f*ts.duration.seconds/10).floor), identity)
@@ -95,12 +88,12 @@ object Asset extends SiteController {
           None
         )(request)
     }
-  def frame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, eo : Offset) = SlotAction(v, i, o, Permission.DOWNLOAD).async { implicit request =>
+  def frame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, eo : Offset) = Action(v, i, o, Permission.DOWNLOAD).async { implicit request =>
     getFrame(request.obj, Right(eo))
   }
   def head(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) =
     frame(v, i, o, 0)
-  def thumb(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) = SlotAction(v, i, o, Permission.DOWNLOAD).async { implicit request =>
+  def thumb(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) = Action(v, i, o, Permission.DOWNLOAD).async { implicit request =>
     getFrame(request.obj, Left(0.25f))
   }
 
@@ -116,39 +109,44 @@ object Asset extends SiteController {
       "file" -> ignored(()))) else None)
   ))
 
-  private[this] def formFill(implicit request : ContainerRequest[_]) : AssetForm = {
+  private[this] def formFill(implicit request : Request[_]) : AssetForm = {
     /* TODO Under what conditions should FileAsset data be allowed to be changed? */
-    assetForm(false).fill((request.obj.name, request.obj.body.getOrElse(""), request.obj.position, None))
+    assetForm(false).fill((request.obj.link.name, request.obj.link.body.getOrElse(""), request.obj.link.position, None))
   }
 
-  def formForFile(form : AssetForm, target : Either[Container,ContainerAsset]) =
+  def formForFile(form : AssetForm, target : Either[Slot,SlotAsset]) =
     form.value.fold(target.isLeft)(_._4.isDefined)
 
-  def edit(v : models.Volume.Id, s : models.Container.Id, o : models.Asset.Id) = ContainerAction(v, s, o, Permission.EDIT) { implicit request =>
+  def edit(v : models.Volume.Id, s : models.Slot.Id, o : models.Asset.Id) = Action(v, s, o, Permission.EDIT, true) { implicit request =>
     Ok(views.html.asset.edit(Right(request.obj), formFill))
   }
 
-  def change(v : models.Volume.Id, s : models.Container.Id, o : models.Asset.Id) = ContainerAction(v, s, o, Permission.EDIT).async { implicit request =>
+  def change(v : models.Volume.Id, s : models.Slot.Id, o : models.Asset.Id) = Action(v, s, o, Permission.EDIT, true).async { implicit request =>
     formFill.bindFromRequest.fold(
       form => ABadRequest(views.html.asset.edit(Right(request.obj), form)), {
       case (name, body, position, file) => for {
-          _ <- request.obj.change(name = name, body = Maybe(body).opt, position = position)
+          _ <- request.obj.link.change(name = name, body = Maybe(body).opt, position = position)
           /* file foreach {
             () => request.obj.asset.asInstanceOf[models.FileAsset].change
           } */
-          slot <- request.obj.container.fullSlot
-        } yield (Redirect(slot.pageURL))
+        } yield (Redirect(request.obj.slot.pageURL))
       }
     )
   }
 
   private[this] val uploadForm = assetForm(true)
 
-  def create(v : models.Volume.Id, c : models.Container.Id, offset : Option[Offset]) = Container.Action(v, c, Permission.CONTRIBUTE) { implicit request =>
+  def create(v : models.Volume.Id, c : models.Slot.Id, offset : Option[Offset]) = Slot.Action(v, c, Permission.CONTRIBUTE, true) { implicit request =>
     Ok(views.html.asset.edit(Left(request.obj), uploadForm.fill(("", "", offset, Some((None, Classification.IDENTIFIED, None, ()))))))
   }
 
-  def upload(v : models.Volume.Id, c : models.Container.Id) = Container.Action(v, c, Permission.CONTRIBUTE).async { implicit request =>
+  def createTop(v : models.Volume.Id) = Volume.Action(v, Permission.CONTRIBUTE).async { implicit request =>
+    request.obj.topSlot.map { slot =>
+      Ok(views.html.asset.edit(Left(slot), uploadForm.fill(("", "", None, Some((None, Classification.MATERIAL, None, ()))))))
+    }
+  }
+
+  def upload(v : models.Volume.Id, c : models.Slot.Id) = Slot.Action(v, c, Permission.CONTRIBUTE, true).async { implicit request =>
     def error(form : AssetForm) : Future[SimpleResult] =
       ABadRequest(views.html.asset.edit(Left(request.obj), form))
     val form = uploadForm.bindFromRequest
@@ -183,7 +181,7 @@ object Asset extends SiteController {
               case _ =>
                 models.FileAsset.create(fmt, classification, file)
             }
-            link <- ContainerAsset.create(request.obj, asset, position, Maybe(name).orElse(fname), Maybe(body).opt)
+            link <- ContainerAsset.create(request.obj.container, asset, position, Maybe(name).orElse(fname), Maybe(body).opt)
             slot <- link.container.fullSlot
           } yield (Redirect(routes.Asset.view(link.volumeId, slot.id, link.asset.id)))
         })
@@ -191,10 +189,9 @@ object Asset extends SiteController {
     })
   }
 
-  def remove(v : models.Volume.Id, c : models.Container.Id, a : models.Asset.Id) = ContainerAction(v, c, a, Permission.EDIT).async { implicit request =>
+  def remove(v : models.Volume.Id, c : models.Slot.Id, a : models.Asset.Id) = Action(v, c, a, Permission.EDIT, true).async { implicit request =>
     for {
-      _ <- request.obj.remove
-      slot <- request.obj.container.fullSlot
-    } yield (Redirect(slot.pageURL))
+      _ <- request.obj.link.remove
+    } yield (Redirect(request.obj.slot.pageURL))
   }
 }
