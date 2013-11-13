@@ -1,4 +1,4 @@
-@(target : Either[Container, ContainerAsset], form : controllers.Asset.AssetForm)(implicit request : RequestObject[SiteObject]#Site[_])
+@(target : Either[Slot, SlotAsset], form : controllers.Asset.AssetForm)(implicit request : RequestObject[SiteObject]#Site[_])
 
 @import helper.FieldConstructor
 
@@ -6,10 +6,10 @@
         FieldConstructor(widget.tag.minimalFieldConstructor.f)
     }
 
-@widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.name)) {
+@widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.link.name)) {
         @widget.tag.form(target.fold(
             container => routes.Asset.upload(container.volumeId, container.id),
-            link => routes.Asset.change(link.volumeId, link.containerId, link.assetId)),
+            link => routes.Asset.change(link.volumeId, link.slotId, link.assetId)),
             'enctype -> "multipart/form-data") {
             @widget.tag.inputText(form("name"), 'placeholder -> "Title", '_class -> "big")
             @widget.tag.textarea(form("body"), 'placeholder -> "Description")

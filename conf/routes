@@ -58,8 +58,8 @@ GET         /volume/$vID<[0-9]+>/thumb                                          
 POST        /volume/$vID<[0-9]+>/slot/container                                                       controllers.Slot.addContainer(vID : models.Volume.Id)
 GET         /volume/$vID<[0-9]+>/slot/container                                                       controllers.Slot.createContainer(vID : models.Volume.Id)
 
-GET         /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.Slot.create(vID : models.Volume.Id, cID : models.Container.Id)
-POST        /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.Slot.add(vID : models.Volume.Id, cID : models.Container.Id)
+GET         /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.Slot.create(vID : models.Volume.Id, cID : models.Slot.Id)
+POST        /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.Slot.add(vID : models.Volume.Id, cID : models.Slot.Id)
 
 GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>                                                    controllers.Slot.view(vID : models.Volume.Id, sID : models.Slot.Id)
 GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/edit                                               controllers.Slot.edit(vID : models.Volume.Id, sID : models.Slot.Id)
@@ -67,11 +67,12 @@ POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/edit                         
 GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/thumb                                              controllers.Slot.thumb(vID : models.Volume.Id, sID : models.Slot.Id)
 
 # assets
-GET         /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.Asset.create(vID : models.Volume.Id, cID : models.Container.Id, offset : Option[dbrary.Offset] ?= None)
-POST        /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.Asset.upload(vID : models.Volume.Id, cID : models.Container.Id)
-GET         /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/$aID<[0-9]+>/edit                            controllers.Asset.edit(vID : models.Volume.Id, cID : models.Container.Id, aID : models.Asset.Id)
-POST        /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/$aID<[0-9]+>/edit                            controllers.Asset.change(vID : models.Volume.Id, cID : models.Container.Id, aID : models.Asset.Id)
-POST        /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/$aID<[0-9]+>/remove                          controllers.Asset.remove(vID : models.Volume.Id, cID : models.Container.Id, aID : models.Asset.Id)
+GET         /volume/$vID<[0-9]+>/asset/create                                                         controllers.Asset.createTop(vID : models.Volume.Id)
+GET         /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.Asset.create(vID : models.Volume.Id, cID : models.Slot.Id, offset : Option[dbrary.Offset] ?= None)
+POST        /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.Asset.upload(vID : models.Volume.Id, cID : models.Slot.Id)
+GET         /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/$aID<[0-9]+>/edit                            controllers.Asset.edit(vID : models.Volume.Id, cID : models.Slot.Id, aID : models.Asset.Id)
+POST        /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/$aID<[0-9]+>/edit                            controllers.Asset.change(vID : models.Volume.Id, cID : models.Slot.Id, aID : models.Asset.Id)
+POST        /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/$aID<[0-9]+>/remove                          controllers.Asset.remove(vID : models.Volume.Id, cID : models.Slot.Id, aID : models.Asset.Id)
 
 GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                 controllers.Asset.view(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id)
 GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                        controllers.Asset.download(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, inline : Boolean = false)
