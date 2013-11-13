@@ -1,4 +1,4 @@
-@(title: String = "", css: Html = Html(""), js: Html = Html(""), has_sidebar: Boolean = true)(body: Html)(sidebar: Html = Html(""))(implicit request: SiteRequest[_])
+@(title: String = "", css: Html = Html(""), js: Html = Html(""), sidebar: Boolean = true)(body: Html)(implicit request: SiteRequest[_])
 
 @script = {
     dbjs.sideMenu('.sidebar_menu', 'main > article > h1:first-child');
@@ -6,22 +6,51 @@
 
 @widget.template.html5(title, "about", css, script += js) {
     <div class="wrap">
-        @region.bodyHeaderStatic()
+        <section id="static_header" class="body_header static_header">
+            <div class="row">
+                <div class="col">
+                    <h1 class="body_header_h1">
+                        <a href="@routes.Static.index" title="Databrary: An Open Data Library"><strong>Data</strong>brary</a>
+                    </h1>
+
+                    <form class="body_header_search" method="get" action="@routes.Volume.listAll">
+                        <div class="w">
+                            <input type="search" class="searchbox" name="query" placeholder="Start your search..." value="">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
 
         <div class="row">
-        @if(has_sidebar) {
-            <article class="article article_static col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-6 col-cell">
+        @if(sidebar) {
+            <article class="article article_static col-desktop-12 push-desktop-3 col-laptop-9 push-laptop-3 col-tablet-6 push-tablet-3 col-mobile-6 col-cell">
                 @body
             </article>
 
-            <aside class="sidebar sidebar_static col-desktop-2 col-laptop-2 col-tablet-2 col-cell">
-                @region.bodySidebarStatic()
+            <aside class="sidebar sidebar_static col-desktop-3 pull-desktop-15 col-laptop-3 pull-laptop-12 col-tablet-3 pull-tablet-9 col-mobile-6 col-cell">
+                <section id="static_links" class="sidebar_menu sidebar_widget">
+                    <h1>Mission</h1>
 
-                @sidebar
+                    <nav class="tap_menu">
+                        <ul>
+                            <li><a href="@routes.Static.about" title="About the Project">About</a></li>
+                            <li><a href="@routes.Static.policies" title="Policies">Policies</a></li>
+                            <li class="foot"><a href="@routes.Static.faq" title="FAQ">F.A.Q.</a></li>
+
+                            <li><a href="@routes.Static.team" title="Our Team">Team</a></li>
+                            <li><a href="@routes.Static.board" title="The Board">Board</a></li>
+                            <li class="foot"><a href="@routes.Static.contributors" title="Contributors">Contributors</a></li>
+
+                            <li><a href="@routes.Static.jobs" title="Join Our Team">Jobs</a></li>
+                            <li><a href="@routes.Static.contact" title="Contact Us">Contact</a></li>
+                        </ul>
+                    </nav>
+                </section>
             </aside>
         } else {
             <article class="article article_static col-full">
-            @body
+                @body
             </article>
         }
         </div>
