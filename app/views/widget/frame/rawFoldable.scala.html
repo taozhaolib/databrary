@@ -1,0 +1,7 @@
+@(id: String, classes: String = "")(title: Html)(body: Html)(implicit request : SiteRequest[_])
+
+@widget.frame.raw(id, classes)(title.toString, foldable = true) {
+    <div class="col-full">
+        @body
+    </div>
+}

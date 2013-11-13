@@ -85,14 +85,6 @@ dbjs.hoverable = function (elements) {
 	});
 };
 
-dbjs.minimizable = function (elements) {
-	var $els = $(elements);
-
-	$els.find('.minimizer').click(function() {
-		$(this).closest(elements).toggleClass('minimized').find('.minimize').slideToggle(500);
-	})
-};
-
 /**
  * Creates tabset with content panes
  * @param tabset    containing element
@@ -259,39 +251,6 @@ dbjs.ajaxModal = function (clicker, url, now) {
 			setup(url);
 		});
 	}
-};
-
-/**
- * Creates folding content.
- * @param region    container element
- * @param clicker    click toggle, child of fold
- * @param toggle    toggled area, child of fold
- */
-dbjs.fold = function (region, clicker, toggle) {
-	var $region = $(region),
-		$clicker = $region.find(clicker),
-		$toggles = $region.find(toggle);
-
-	$clicker.click(function () {
-		var $this = $(this);
-
-		$this.closest(region).find(toggle).slideToggle();
-		$this.toggleClass('unfolded');
-	});
-
-	$clicker.prepend('<span class="arrow"></span>');
-	$toggles.toggle();
-};
-
-dbjs.carousel = function (region, panel) {
-	var $region = $(region),
-		$panels = $region.find(panel);
-
-	var interval = setInterval(function (e) {
-		$region.find(">" + panel + ":last-child").fadeOut(1000, function () {
-			$(this).prependTo($region).fadeIn(1000);
-		});
-	}, 5000);
 };
 
 /**
@@ -1173,5 +1132,4 @@ $(document).ready(function () {
 	// everywhere
 	dbjs.baselineFigure('.figure.scalar');
 	dbjs.hoverable('.hoverable');
-	dbjs.minimizable('.minimizable');
 });

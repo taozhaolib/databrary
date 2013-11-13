@@ -9,7 +9,7 @@
     }
 
 
-@widget.panel.raw("tags", "")(title = "Tags", minimizable = true){
+@widget.panel.raw("tags", "")(title = "Tags", foldable = true){
     <div class="panel_tags_list col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-3">
         <ol class="panel_tags_items row">
         @defining(Async.wait(volume.fold(slot.tags())(_.tags))) { tags =>

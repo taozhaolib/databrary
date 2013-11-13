@@ -1,8 +1,8 @@
 @(citations : Seq[VolumeCitation])(implicit request : SiteRequest[_])
 
 @if(citations.nonEmpty) {
-    @widget.panel.raw("publications", "")(title = "Publications", minimizable = true){
-        <div class="publication col">
+    @widget.panel.raw("publications", "")(title = "Publications", foldable = true){
+        <div class="publication col-full">
             @for(citation <- citations) {
                 <div class="publication">
                     <h3>@citation.head @if(citation.url){<a href="@citation.url" title="@citation.head" class="cit_link">link</a>}</h3>

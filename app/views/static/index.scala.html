@@ -1,12 +1,8 @@
 @(implicit request: SiteRequest[_])
 
-@script = {
-    dbjs.carousel('#carousel .carousel_panels', '.carousel_panel');
-}
-
-@widget.template.static("An Open Data Library for Developmental Science", js = script, sidebar = false) {
+@widget.template.static("An Open Data Library for Developmental Science", sidebar = false) {
     <section id="carousel" class="carousel">
-        <div class="carousel_panels">
+        <div class="carousel_panels" db-carousel>
             <div class="carousel_panel" id="panel_8">
                 <img style="position: relative; top: -100px;" src="@routes.Volume.thumb(models.Volume.asId(8))">
             </div>

@@ -1,6 +1,6 @@
 @(volume: Volume)(implicit request : SiteRequest[_])
 
-@widget.frame.raw("citation", "")("Citation", minimizable = true) {
+@widget.frame.raw("citation", "")("Citation", foldable = true) {
     <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
         <p>
         @Async.wait(volume.partyAccess).takeWhile(_.access >= Permission.ADMIN).map(a => display.citeName(a.party.name) + ", ")

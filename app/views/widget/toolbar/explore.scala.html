@@ -1,7 +1,7 @@
 @(requestOption: Option[SiteRequest[_]] = None)
 
 @widget.toolbar.raw("explore")(requestOption){
-    <div class="col">
+    <div class="col-full">
     @requestOption.map { request =>
         @request match {
             case r : RequestObject[_]#Site[_] => {

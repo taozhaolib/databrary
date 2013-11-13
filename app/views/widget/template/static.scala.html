@@ -1,14 +1,10 @@
 @(title: String = "", css: Html = Html(""), js: Html = Html(""), sidebar: Boolean = true)(body: Html)(implicit request: SiteRequest[_])
 
-@script = {
-    dbjs.sideMenu('.sidebar_menu', 'main > article > h1:first-child');
-}
-
-@widget.template.html5(title, "about", css, script += js) {
+@widget.template.html5(title, "about", css, js) {
     <div class="wrap">
         <section id="static_header" class="body_header static_header">
             <div class="row">
-                <div class="col">
+                <div class="col-full">
                     <h1 class="body_header_h1">
                         <a href="@routes.Static.index" title="Databrary: An Open Data Library"><strong>Data</strong>brary</a>
                     </h1>

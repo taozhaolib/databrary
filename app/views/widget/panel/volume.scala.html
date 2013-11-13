@@ -3,7 +3,7 @@
 @widget.panel.raw("overview", "panel_volume")(){
     @widget.figure.thumbVolume(volume, scalar = "", classes = "panel_overview_thumbnail")
 
-    <h1 class="col panel_title">@display.formatTitle(volume.pageName)</h1>
+    <h1 class="col-full panel_title">@display.formatTitle(volume.pageName)</h1>
 
     @widget.frame.people(volume)
     @widget.frame.funding(Async.wait(volume.funding))

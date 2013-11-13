@@ -1,22 +1,22 @@
-@(id: String, classes: String, attr: (Symbol,Any)*)(title: String = "", minimizable: Boolean = false)(body: Html)
+@(id: String, classes: String, attr: (Symbol,Any)*)(title: String = "", foldable: Boolean = false, foldCurrently: Boolean = false)(body: Html)
 
-<section id="panel_@id" class="panel panel_@id @classes @if(minimizable){minimizable}" @El.attrToHtml(attr)>
+<section id="panel_@id" class="panel panel_@id @classes" @if(foldable){db-fold @if(foldCurrently){db-fold-currently="true"}} @El.attrToHtml(attr)>
     <div class="wrap">
         <div class="row">
-            @if(title.nonEmpty) {
-                <h2 class="col panel_header @if(minimizable){minimizer}">@title</h2>
-            }
-            @if(minimizable){
-                <div class="col minimize">
-                    <div class="row">
-            }
+        @if(title.nonEmpty) {
+            <h2 class="col-full panel_header" @if(foldable){db-fold-folder}>@title</h2>
+        }
+        @if(foldable){
+            <div class="col-full" db-fold-folded>
+                <div class="row">
+        }
 
-                        @body
+                    @body
 
-            @if(minimizable){
-                    </div>
+        @if(foldable){
                 </div>
-            }
+            </div>
+        }
         </div>
     </div>
 </section>
