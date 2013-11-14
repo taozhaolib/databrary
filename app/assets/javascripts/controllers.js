@@ -5,36 +5,35 @@ var dbModule = angular.module('DatabraryModule', []);
 //
 
 dbModule.directive('dbCarousel', function ($timeout) {
-	var link = function (scope, element, attrs) {
-		var children = element.children(),
-			pauseTime = 5000,
+	var link = function ($scope, $element) {
+		var pauseTime = 5000,
 			fadeTime = 1000,
 			timeout;
 
-		var update = function (reverse) {
+		$scope.update = function (reverse) {
 			if (reverse !== true) {
-				element.children().last().fadeOut(fadeTime, function () {
-					$(this).prependTo(element).fadeIn(fadeTime);
+				$element.children().last().fadeOut(fadeTime, function () {
+					$(this).prependTo($element).fadeIn(fadeTime);
 				});
 			} else {
-				element.children().first().fadeOut(0, function () {
-					$(this).appendTo(element).fadeIn(fadeTime);
+				$element.children().first().fadeOut(0, function () {
+					$(this).appendTo($element).fadeIn(fadeTime);
 				});
 			}
 		};
 
-		var schedule = function (pause) {
+		$scope.schedule = function (pause) {
 			timeout = $timeout(function () {
-				update(true);
-				schedule(pause);
+				$scope.update(true);
+				$scope.schedule(pause);
 			}, pause);
 		};
 
-		element.on('$destroy', function () {
+		$element.on('$destroy', function () {
 			$timeout.cancel(timeout);
 		});
 
-		schedule(pauseTime);
+		$scope.schedule(pauseTime);
 	};
 
 	return {
@@ -179,7 +178,7 @@ dbModule.directive('dbHover', function ($timeout) {
 		pauseTime = 0,
 		fadeTime = 150;
 
-	var link = function ($scope, $element, $attrs) {
+	var link = function ($scope, $element) {
 		var timeout, clone;
 
 		$element.wrap(hoverWrap.clone());
@@ -247,3 +246,17 @@ dbModule.directive('dbHover', function ($timeout) {
 });
 
 //
+
+//dbModule.controller('dbMessageCtrl', function ($scope) {
+//	$scope.messages = [];
+//});
+//
+//dbModule.directive('dbMessage', function () {
+//	return {
+//		restrict: 'A',
+//		link: link,
+//		require: {
+//
+//		}
+//	}
+//});
