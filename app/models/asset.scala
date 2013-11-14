@@ -145,15 +145,18 @@ trait TimeseriesData extends BackedAsset {
 }
 
 /** Base for simple "opaque" file assets, uploaded, stored, and downloaded as individual files with no special processing. */
-sealed class FileAsset protected[models] (override val id : FileAsset.Id, val format : AssetFormat, val classification : Classification.Value) extends Asset(id) with TableRowId[FileAsset] with BackedAsset {
+sealed class FileAsset protected[models] (override val id : FileAsset.Id, val format : AssetFormat, val classification : Classification.Value, val supersededId : Option[Asset.Id] = None) extends Asset(id) with TableRowId[FileAsset] with BackedAsset {
   def source = this
   override def sourceId = id
+  def superseded : Option[Future[Asset]] = supersededId.map(Asset._get(_).single)
+  protected[models] def supersede(f : FileAsset)(implicit site : Site) : Future[Boolean] =
+    Audit.change("file", SQLTerms('superseded -> f.id), SQLTerms('id -> id)).execute
 }
 
 /** Base for special timeseries assets in a designated format.
   * These assets may be handled in their entirety as FileAssets, extracted from to produce Clips.
   * They are never created directly by users but through a conversion process on existing FileAssets. */
-final class Timeseries private[models] (override val id : Timeseries.Id, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset) extends FileAsset(id, format, classification) with TableRowId[Timeseries] with TimeseriesData {
+final class Timeseries private[models] (override val id : Timeseries.Id, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, supersededId : Option[Asset.Id] = None) extends FileAsset(id, format, classification, supersededId) with TableRowId[Timeseries] with TimeseriesData {
   override def source = this
   def entire = true
   def segment : Range[Offset] = Range[Offset](0, duration)
@@ -178,10 +181,10 @@ object Asset extends AssetView[Asset]("asset") {
   private[models] val row = 
     (FileAsset.columns.~+(SelectColumn[Option[Offset]]("timeseries", "duration")) ~
      Clip.columns.?).map {
-      case ((id, format, classification, None), None) =>
-        new FileAsset(id, AssetFormat.get(format, false).get, classification)
-      case ((id, format, classification, Some(duration)), clip) =>
-        val ts = new Timeseries(id.coerce[Timeseries], TimeseriesFormat.get(format.coerce[TimeseriesFormat]).get, classification, duration)
+      case ((id, format, classification, superseded, None), None) =>
+        new FileAsset(id, AssetFormat.get(format, false).get, classification, superseded)
+      case ((id, format, classification, superseded, Some(duration)), clip) =>
+        val ts = new Timeseries(id.coerce[Timeseries], TimeseriesFormat.get(format.coerce[TimeseriesFormat]).get, classification, duration, superseded)
         clip.fold[Asset](ts)(_(ts))
     } from """asset
     LEFT JOIN clip USING (id)
@@ -190,10 +193,12 @@ object Asset extends AssetView[Asset]("asset") {
          JOIN format ON file.format = format.id"""
   private[models] val duration = "COALESCE(timeseries.duration, duration(clip.segment))"
 
+  private[models] def _get(i : Id) : SQLRows[Asset] =
+    row.SELECT("WHERE asset.id = ?").apply(i)
   /** Retrieve a single asset according to its type.
     * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
   def get(i : Id) : Future[Option[Asset]] =
-    row.SELECT("WHERE asset.id = ?").apply(i).singleOpt
+    _get(i).singleOpt
 }
 
 object FileAsset extends AssetView[FileAsset]("file") {
@@ -201,11 +206,12 @@ object FileAsset extends AssetView[FileAsset]("file") {
       SelectColumn[Id]("id")
     , SelectColumn[AssetFormat.Id]("format")
     , SelectColumn[Classification.Value]("classification")
+    , SelectColumn[Option[Asset.Id]]("superseded")
     )
   private[models] val row = columns
-    .map { (id, format, classification) =>
-      new FileAsset(id, AssetFormat.get(format, false).get, classification)
-    }
+    .map { (id, format, classification, superseded) =>
+      new FileAsset(id, AssetFormat.get(format, false).get, classification, superseded)
+    } from "ONLY file"
   
   /** Retrieve a single (non-timeseries) file asset.
     * This does not do any permissions checking, so an additional call to containers (or equivalent) will be necessary. */
@@ -216,13 +222,18 @@ object FileAsset extends AssetView[FileAsset]("file") {
     * @param format the format of the file, taken as given
     * @param file a complete, uploaded file which will be moved into the appropriate storage location
     */
-  def create(format : AssetFormat, classification : Classification.Value, file : TemporaryFile)(implicit site : Site) : Future[FileAsset] =
+  def create(format : AssetFormat, classification : Classification.Value, file : TemporaryFile, superseding : Option[FileAsset] = None)(implicit site : Site) : Future[FileAsset] = {
     /* TODO transaction */
     Audit.add(table, SQLTerms('format -> format.id, 'classification -> classification), "id")
       .single(SQLCols[Id]).map { id =>
         store.FileAsset.store(id, file)
         new FileAsset(id, format, classification)
+      }.flatMap { asset =>
+        Async.map[FileAsset,Boolean](superseding, _.supersede(asset)).map { _ =>
+          asset
+        }
       }
+  }
 }
 
 object Timeseries extends AssetView[Timeseries]("timeseries") {
@@ -231,10 +242,11 @@ object Timeseries extends AssetView[Timeseries]("timeseries") {
     , SelectColumn[TimeseriesFormat.Id]("format")
     , SelectColumn[Classification.Value]("classification")
     , SelectColumn[Offset]("duration")
+    , SelectColumn[Option[Asset.Id]]("superseded")
     )
   private[models] val row = columns
-    .map { (id, format, classification, duration) =>
-      new Timeseries(id, TimeseriesFormat.get(format).get, classification, duration)
+    .map { (id, format, classification, duration, superseded) =>
+      new Timeseries(id, TimeseriesFormat.get(format).get, classification, duration, superseded)
     }
   
   /** Retrieve a single timeseries asset.
@@ -246,12 +258,16 @@ object Timeseries extends AssetView[Timeseries]("timeseries") {
     * @param format the format of the file, taken as given
     * @param file a complete, uploaded file which will be moved into the appropriate storage location
     */
-  def create(format : TimeseriesFormat, classification : Classification.Value, duration : Offset, file : TemporaryFile)(implicit site : Site) : Future[Timeseries] =
+  def create(format : TimeseriesFormat, classification : Classification.Value, duration : Offset, file : TemporaryFile, superseding : Option[FileAsset] = None)(implicit site : Site) : Future[Timeseries] =
     /* TODO transaction */
     Audit.add(table, SQLTerms('format -> format.id, 'classification -> classification, 'duration -> duration), "id")
       .single(SQLCols[Id]).map { id =>
         store.FileAsset.store(id, file)
         new Timeseries(id, format, classification, duration)
+      }.flatMap { asset =>
+        Async.map[FileAsset,Boolean](superseding, _.supersede(asset)).map { _ =>
+          asset
+        }
       }
 }
 

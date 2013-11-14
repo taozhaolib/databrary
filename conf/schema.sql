@@ -409,8 +409,10 @@ INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.ms-powerpoint', 'ppt', 'Microsoft PowerPoint presentation');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.oasis.opendocument.presentation', 'odp', 'OpenDocument presentation');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.openxmlformats-officedocument.presentationml.presentation', 'pptx', 'Microsoft PowerPoint (Office Open XML) presentation');
--- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14');
--- INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/webm', 'webm', 'WebM');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14 video');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/webm', 'webm', 'WebM video');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mpeg', 'mpg', 'MPEG program stream (MPEG-1/MPEG-2 video)');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/quicktime', 'mov', 'QuickTime video');
 
 SELECT CREATE_ABSTRACT_PARENT ('asset', ARRAY['file', 'timeseries', 'clip']);
 COMMENT ON TABLE "asset" IS 'Parent table for all uploaded data in storage.';
@@ -418,10 +420,12 @@ COMMENT ON TABLE "asset" IS 'Parent table for all uploaded data in storage.';
 CREATE TABLE "file" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
 	"format" smallint NOT NULL References "format",
-	"classification" classification NOT NULL
+	"classification" classification NOT NULL,
+	"superseded" integer References "asset"
 );
 CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "file" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
 COMMENT ON TABLE "file" IS 'Assets in storage along with their "constant" metadata.';
+COMMENT ON COLUMN "file"."superseded" IS 'Newer version of this asset, either generated automatically from reformatting or a replacement provided by the user.';
 
 SELECT audit.CREATE_TABLE ('file');
 
