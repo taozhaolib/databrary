@@ -34,20 +34,10 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
   /** List of containers within this volume, except the top. */
   def containers : Future[Seq[Container]] = Container.getVolume(this)
-  private val _topContainer : FutureVar[Container] = FutureVar[Container](Container.getTop(this))
-  /** The master container corresponding to this volume. Cached. */
-  def topContainer : Future[Container] = _topContainer.apply
+  /** The master container corresponding to this volume. */
+  lazy val topContainer : Future[Container] = Container.getTop(this)
   /** The master slot corresponding to this volume, which serves as a proxy target for many annotations. */
-  def topSlot : Future[Slot] = {
-    _topContainer.peek.fold {
-      val f : Future[Slot] = Slot.getTop(this)
-      f.onSuccess { case (s : Slot) =>
-        _topContainer.set(s.container)
-        s.container._fullSlot.set(s)
-      }
-      f
-    } (_.fullSlot)
-  }
+  def topSlot : Future[Slot] = topContainer.map(_.fullSlot)
 
   /** List of toplevel assets within this volume. */
   lazy val toplevelAssets = SlotAsset.getToplevel(this)

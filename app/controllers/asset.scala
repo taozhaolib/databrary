@@ -182,7 +182,7 @@ object Asset extends SiteController {
                 models.FileAsset.create(fmt, classification, file)
             }
             link <- ContainerAsset.create(request.obj.container, asset, position, Maybe(name).orElse(fname), Maybe(body).opt)
-            slot <- link.container.fullSlot
+            slot = link.container.fullSlot
           } yield (Redirect(routes.Asset.view(link.volumeId, slot.id, link.asset.id)))
         })
       case _ => error(uploadForm) /* should not happen */

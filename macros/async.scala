@@ -57,8 +57,7 @@ object Async {
     }).map(_ => b.result)
   }
 
-  /** Evaluate each of the futures, serially left-to-right, and produce a list of the results. */
-
+  def peek[A](a : Future[A]) : Option[A] = a.value.map(_.get)
   /** Unsafely retrieve the value of an already evaluated Future. */
   private final class UnevaluatedFutureException extends RuntimeException("Future has not yet completed")
   def get[A](a : Future[A]) : A = a.value match {

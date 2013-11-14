@@ -117,12 +117,12 @@ object Curated {
         case Nil =>
           for {
             con <- Container.create(volume, Some(name), Some(date))
-            full <- con.fullSlot
+            full = con.fullSlot
             _ <- full.change(consent = consent)
           } yield (ModelSession(con))
         case Seq(con) =>
+          val full = con.fullSlot
           for {
-            full <- con.fullSlot
             _ <- check(con.date.equals(Some(date)),
               PopulateException("inconsistent date for session " + name + ": " + date + " <> " + con.date, full))
             _ <- check(full.consent.equals(consent),
@@ -143,9 +143,7 @@ object Curated {
 
   private final case class SubjectSession(subjectKey : String, sessionKey : String) {
     def populate(record : Record, session : ModelSession)(implicit site : Site) =
-      session.container.fullSlot.flatMap { full =>
-        record.addSlot(full).map(_ => ())
-      }
+      record.addSlot(session.container.fullSlot).map(_ => ())
   }
 
   private final case class Asset(name : String, position : Option[Offset], classification : Classification.Value, file : File) extends KeyedData {

@@ -82,7 +82,7 @@ object Slot extends SiteController {
     { case (Some((name, date)), consent) =>
         for {
           cont <- models.Container.create(request.obj, name = name, date = date)
-          full <- cont.fullSlot
+          full = cont.fullSlot
           _ <- full.change(consent = consent)
         } yield (Redirect(full.pageURL))
       case _ => ABadRequest(views.html.slot.edit(Left(request.obj), form, None))

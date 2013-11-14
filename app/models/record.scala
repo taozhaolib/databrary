@@ -88,7 +88,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   /** The set of slots to which this record applies. */
   lazy val slots : Future[Seq[Slot]] =
-    Slot.volumeRow(volume)
+    Slot.volumeRow(volume, false)
       .SELECT("JOIN slot_record ON slot.id = slot_record.slot WHERE slot_record.record = ? ORDER BY slot.source, slot.segment")
       .apply(id).list
   /** Attach this record to a slot. */
@@ -125,7 +125,7 @@ object Record extends TableId[Record]("record") {
       SelectColumn[Id]("id")
     , SelectColumn[Option[RecordCategory.Id]]("category")
     ).leftJoin(Measures.row, "record.id = measures.record")
-    .?.join(Slot.volumeRow(vol).?, _ + " JOIN slot_record ON record.id = slot_record.record FULL JOIN " + _ + " ON slot_record.slot = slot.id AND container.volume = record.volume")
+    .?.join(Slot.volumeRow(vol, true).?, _ + " JOIN slot_record ON record.id = slot_record.record FULL JOIN " + _ + " ON slot_record.slot = slot.id AND container.volume = record.volume")
     .map {
       case (Some(((id, cat), meas)), slot) =>
         val r = new Record(id, vol, cat.flatMap(RecordCategory.get(_)), slot.fold(Consent.NONE)(_.consent), Measures(meas))

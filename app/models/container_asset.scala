@@ -31,6 +31,7 @@ sealed class ContainerAsset protected (val asset : Asset, val container : Contai
       return Async(true)
     Audit.change("container_asset", SQLTerms('position -> position, 'name -> name, 'body -> body), SQLTerms('container -> containerId, 'asset -> assetId)).execute
       .andThen { case scala.util.Success(true) =>
+        _position = position
         _name = name
         _body = body
       }
@@ -69,7 +70,7 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
   private[models] def containerRow(cont : Container) =
     containerColumns.map(_(cont))
   private[models] def row(implicit site : Site) =
-    containerColumns.join(Container.row, "container_asset.container = container.id") map {
+    containerColumns.join(Container.row(false), "container_asset.container = container.id") map {
       case (link, cont) => link(cont)
     }
 
@@ -82,7 +83,7 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
   /** Retrieve a specific asset link by asset.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access on the container. */
   private[models] def get(asset : Asset)(implicit site : Site) : Future[Option[ContainerAsset]] =
-    columns.join(Container.row, "container_asset.container = container.id").map {
+    columns.join(Container.row(false), "container_asset.container = container.id").map {
         case (link, cont) => link(asset, cont)
       }
       .SELECT("WHERE container_asset.asset = ? AND", Volume.condition)

@@ -108,10 +108,11 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
     "(container_asset.position IS NULL OR container_asset.position <@ " + segment +
     " OR segment_shift(segment(" + Asset.duration + "), container_asset.position) && " + segment +
     ")"
-  private val classification = "CASE WHEN toplevel_asset.excerpt AND file.classification = 'IDENTIFIED' THEN 'EXCERPT' else file.classification"
+  private def permission(perm : String, consent : String = "context.consent") =
+    "data_permission(" + perm + ", " + consent + ", file.classification, ?::permission, toplevel_asset.excerpt)"
   private def volumeRow(vol : Volume) = ContainerAsset.containerColumns.
-    join(Container.volumeRow(vol), "container_asset.container = container.id").
-    join(Slot.columns, "container.id = slot.source").
+    join(Container.volumeRow(vol, false), "container_asset.container = container.id").
+    join(Slot.columns(false), "container.id = slot.source").
     leftJoin(columns, "slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset") map {
       case (((link, cont), slot), excerpt) => make(link(cont), slot(cont), excerpt)
     }
@@ -125,7 +126,7 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
     * @param full only return full slots */
   def get(asset : Asset.Id, slot : Slot.Id, full : Boolean = false)(implicit site : Site) : Future[Option[SlotAsset]] =
     ContainerAsset.row
-      .join(Slot.columns, "container.id = slot.source")
+      .join(Slot.columns(full), "container.id = slot.source")
       .leftJoin(columns, "slot.id = toplevel_asset.slot AND asset.id = toplevel_asset.asset")
       .map {
         case ((link, slot), excerpt) => make(link, slot(link.container), excerpt)
@@ -142,19 +143,9 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
 
   /** Build the SlotAsset for the given ContainerAsset#container.fullSlot. */
   private[models] def getFull(ca : ContainerAsset) : Future[SlotAsset] =
-    ca.container._fullSlot.peek.fold {
-      Slot.containerRow(ca.container)
-        .leftJoin(columns, "slot.id = toplevel_asset.slot AND toplevel_asset.asset = ?")
-        .map { case (slot, excerpt) =>
-          ca.container._fullSlot.set(slot)
-          make(ca, slot, excerpt)
-        }.SELECT("WHERE slot.source = ? AND slot.segment = '(,)'")
-        .apply(ca.assetId, ca.containerId).single
-    } { slot => 
-      columns.SELECT("WHERE toplevel_asset.slot = ? AND toplevel_asset.asset = ?")
-        .apply(slot.id, ca.assetId).singleOpt
-        .map(make(ca, slot, _))
-    }
+    columns.SELECT("WHERE toplevel_asset.slot = ? AND toplevel_asset.asset = ?")
+      .apply(ca.container.fullSlot.id, ca.assetId).singleOpt
+      .map(make(ca, ca.container.fullSlot, _))
 
   /** Retrieve the list of all top-level assets. */
   private[models] def getToplevel(volume : Volume) : Future[Seq[SlotAsset]] =
@@ -172,7 +163,7 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
     volumeRow(volume).SELECT("""
       WHERE (toplevel_asset.excerpt IS NOT NULL OR container.top AND slot.segment = '(,)' OR slot.consent >= 'PRIVATE')
         AND (format.id = ? OR format.mimetype LIKE 'image/%')
-        AND data_permission(?::permission, slot_consent(slot.id), file.classification, ?::permission, toplevel_asset.excerpt) >= 'DOWNLOAD'
+        AND""", permission("?::permission"), """>= 'DOWNLOAD'
         AND container.volume = ?
         AND""", condition(), " ORDER BY toplevel_asset.excerpt DESC NULLS LAST, container.top DESC, slot.consent DESC NULLS LAST LIMIT 1")
       .apply(TimeseriesFormat.VIDEO, volume.getPermission, site.access, volume.id).singleOpt
@@ -182,7 +173,7 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
     slotRow(slot).SELECT("""
       WHERE container_asset.container = ?
         AND (format.id = ? OR format.mimetype LIKE 'image/%') 
-        AND data_permission(?::permission, ?::consent, file.classification, ?::permission, toplevel_asset.excerpt) >= 'DOWNLOAD'
+        AND""", permission("?::permission", "?::consent"), """>= 'DOWNLOAD'
         AND""", condition("?::segment"), "LIMIT 1")
       .apply(slot.id, slot.containerId, TimeseriesFormat.VIDEO, slot.getPermission, slot.consent, site.access, slot.segment, slot.segment).singleOpt
 }

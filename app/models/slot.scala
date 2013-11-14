@@ -30,20 +30,13 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
 
   def isContext : Boolean = consent != Consent.NONE || isFull
 
+  /* must be set on construction */
+  private var _context : Slot = this
   /** The relevant consented slot containing this one.
     * Defaults to fullSlot. */
-  lazy val context : Future[Slot] = {
-    if (isContext) Async(this)
-    else Async.getOrElse(
-      container._fullSlot.peek.filter(_.consent != Consent.NONE), // optimization
-      Slot.containerRow(container).SELECT("WHERE slot.source = ? AND slot.segment @> ? AND slot.consent IS NOT NULL")
-        .apply(containerId, segment).singleOpt.flatMap(
-          Async.getOrElse(_, container.fullSlot)
-        )
-    )
-  }
+  def context = _context
 
-  def getConsent : Consent.Value = Async.wait(context).consent
+  def getConsent : Consent.Value = _context.consent
 
   /** The level of access granted on data covered by this slot to the current user. */
   def dataPermission(classification : Classification.Value = Classification.RESTRICTED) : HasPermission =
@@ -105,7 +98,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
       "Session: " + i.mkString(", ")
   }
   override def pageCrumbName = if (segment.isFull) None else Some(segment.lowerBound.fold("")(_.toString) + " - " + segment.upperBound.fold("")(_.toString))
-  def pageParent = Some(if (isContext) volume else Async.wait(context))
+  def pageParent = Some(if (isContext) volume else context)
   def pageURL = controllers.routes.Slot.view(container.volumeId, id)
   def pageActions = Seq(
     Action("view", controllers.routes.Slot.view(volumeId, id), Permission.VIEW),
@@ -117,21 +110,38 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
 }
 
 object Slot extends TableId[Slot]("slot") {
-  private[models] val columns = Columns(
+  private val base = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[Range[Offset]]("segment")
     , SelectColumn[Consent.Value]("consent")
     ).map { (id, segment, consent) =>
-      (container : Container) => new Slot(id, container, segment, consent)
+      (container : Container) =>
+        val s = new Slot(id, container, segment, consent)
+        if (segment.isFull)
+          container._fullSlot = s
+        s
     }
-  private[models] def row(implicit site : Site) =
-    columns.join(Container.row, "slot.source = container.id") map {
+  private val context = base
+    .leftJoin(base.fromAlias("context"), "slot.source = context.source AND slot.segment <@ context.segment AND context.consent IS NOT NULL")
+    .map { case (slot, context) =>
+      (container : Container) =>
+        val s = slot(container)
+        s._context = 
+          if (s.consent != Consent.NONE) s
+          else if (container.fullSlot.consent != Consent.NONE) container.fullSlot
+          else context.map(_(container)).getOrElse(container.fullSlot)
+        s
+    }
+  private[models] def columns(isContext : Boolean) =
+    if (isContext) base else context
+  private[models] def row(full : Boolean)(implicit site : Site) =
+    columns(full).join(Container.row(full), "slot.source = container.id") map {
       case (slot, cont) => slot(cont)
     }
-  private[models] def containerRow(container : Container) =
-    columns.map(_(container))
-  private[models] def volumeRow(volume : Volume) =
-    columns.join(Container.volumeRow(volume), "slot.source = container.id") map {
+  private[models] def containerRow(container : Container, full : Boolean = false) =
+    columns(full).map(_(container))
+  private[models] def volumeRow(volume : Volume, full : Boolean = false) =
+    columns(full).join(Container.volumeRow(volume, full), "slot.source = container.id") map {
       case (slot, cont) => slot(cont)
     }
 
@@ -141,19 +151,19 @@ object Slot extends TableId[Slot]("slot") {
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access.
     * @param full only return full slots */
   def get(i : Id, full : Boolean = false)(implicit site : Site) : Future[Option[Slot]] =
-    row.SELECT("WHERE slot.id = ?",
+    row(full).SELECT("WHERE slot.id = ?",
       if (full) "AND slot.segment = '(,)'" else "",
       "AND", Volume.condition)
       .apply(i +: Volume.conditionArgs).singleOpt
 
-  private def _get(container : Container, segment : Range[Offset])(implicit dbc : Site.DB, exc : ExecutionContext) : Future[Option[Slot]] =
-    containerRow(container).SELECT("WHERE slot.source = ? AND slot.segment = ?")(dbc, exc)
+  private[models] def _get(container : Container, segment : Range[Offset])(implicit dbc : Site.DB, exc : ExecutionContext) : Future[Option[Slot]] =
+    containerRow(container, segment.isFull).SELECT("WHERE slot.source = ? AND slot.segment = ?")(dbc, exc)
       .apply(container.id, segment).singleOpt
 
   /** Retrieve an individual Slot by Container and segment.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   private[models] def get(container : Container, segment : Range[Offset]) : Future[Option[Slot]] =
-    if (segment.isFull) container.fullSlot.map(Some(_)) else // optimization
+    if (segment.isFull) Async(Some(container.fullSlot)) else // optimization
     _get(container, segment)
 
   /** Retrieve a list of slots within the given container. */
@@ -161,14 +171,9 @@ object Slot extends TableId[Slot]("slot") {
     containerRow(c).SELECT("WHERE slot.source = ? ORDER BY slot.segment")
       .apply(c.id).list
 
-  /** Retrieve the master slot for a volume. */
-  private[models] def getTop(v : Volume) : Future[Slot] =
-    volumeRow(v).SELECT("WHERE slot.segment = '(,)' AND container.volume = ? AND container.top")
-      .apply(v.id).single
-
   /** Create a new slot in the specified container or return a matching one if it already exists. */
   def getOrCreate(container : Container, segment : Range[Offset]) : Future[Slot] =
-    if (segment.isFull) container.fullSlot else // optimization
+    if (segment.isFull) Async(container.fullSlot) else // optimization
     DBUtil.selectOrInsert(_get(container, segment)(_, _)) { (dbc, exc) =>
       val args = SQLTerms('source -> container.id, 'segment -> segment)
       SQL("INSERT INTO slot " + args.insert + " RETURNING id")(dbc, exc)
