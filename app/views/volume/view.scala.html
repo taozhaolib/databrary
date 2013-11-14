@@ -1,9 +1,5 @@
 @()(implicit request: RequestObject[Volume]#Site[_])
 
-@script = {
-    dbjs.tabs('.tabset', '.tab', '.view');
-}
-
 @defining(request.obj) { volume =>
 @defining(Async.wait(volume.topSlot)) { topslot =>
 @defining(Async.wait(volume.toplevelAssets)) { toplevel =>
@@ -16,7 +12,7 @@
         }
     }) { assets =>
 
-    @widget.template.crud("Volume: " + volume.name, js = script) {
+    @widget.template.crud("Volume: " + volume.name) {
         @widget.panel.volume(volume)
         @widget.panel.browser(volume)
         @widget.panel.materials(toplevel)()
