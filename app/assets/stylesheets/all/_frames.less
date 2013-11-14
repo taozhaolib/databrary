@@ -6,19 +6,19 @@
 
 .frame-color(@c) {
 	.frame_header {
-		&.minimizer {
+		&.folder {
 			&:hover {
 				color: mix(@c, @g1, 75%);
 			}
 		}
 	}
 
-	&.minimized {
+	&.folded {
 		border-bottom-color: mix(@c, @g4, 75%);
 		background-color: mix(@c, @g5, 10%);
 
 		.frame_header {
-			&.minimizer {
+			&.folder {
 				color: mix(@c, @g1, 50%);
 			}
 		}
@@ -43,8 +43,8 @@
 		}
 	}
 
-	&.minimizable {
-		&.minimized {
+	&.foldable {
+		&.folded {
 			.frame_header {
 				&:before {
 					.transform-rotate(-90deg);
@@ -67,7 +67,7 @@
 	letter-spacing: 1px;
 	.margin(0);
 
-	&.minimizer {
+	&.folder {
 		cursor: pointer;
 
 		&:before {

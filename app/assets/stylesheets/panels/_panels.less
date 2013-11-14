@@ -6,19 +6,19 @@
 
 .panel-color(@c) {
 	.panel_header {
-		&.minimizer {
+		&.folder {
 			&:hover {
 				color: mix(@c, @g1, 75%);
 			}
 		}
 	}
 
-	&.minimized {
+	&.folded {
 		border-bottom-color: mix(@c, @g4, 75%);
 		background-color: mix(@c, @g5, 10%);
 
 		.panel_header {
-			&.minimizer {
+			&.folder {
 				color: mix(@c, @g1, 50%);
 			}
 		}
@@ -69,12 +69,12 @@
 		}
 	}
 
-	&.minimizable {
-		.minimize {
+	&.foldable {
+		.fold {
 			.padding-top(1);
 		}
 
-		&.minimized {
+		&.folded {
 			.panel_header {
 				&:before {
 					.transform-rotate(-90deg);
@@ -100,7 +100,7 @@
 	.font(3, 6.5);
 	.margin(0);
 
-	&.minimizer {
+	&.folder {
 		cursor: pointer;
 
 		&:before {

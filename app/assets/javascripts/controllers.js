@@ -50,55 +50,54 @@ dbModule.directive('dbCarousel', function ($timeout) {
 dbModule.directive('dbFold', function () {
 	var foldableClass = 'foldable',
 		folderClass = 'folder',
-		foldedClass = 'folded',
-		currentlyClass = 'currently',
+		foldClass = 'fold',
+		currentlyClass = 'folded',
 		slideTime = 500;
 
-	var link = function ($scope, $element, $attrs) {
+	var controller = function ($scope, $element, $attrs) {
 		var folder = $element.find('[db-fold-folder]'),
-			folded = $element.find('[db-fold-folded]');
+			fold = $element.find('[db-fold-folded]');
 
 		$element.addClass(foldableClass);
 		folder.addClass(folderClass);
-		folded.addClass(foldedClass);
+		fold.addClass(foldClass);
 
 		$element.on('$destroy', function () {
 			$element.removeClass(foldableClass+' '+currentlyClass);
 			folder.removeClass(folderClass);
-			folded.removeClass(foldedClass);
+			fold.removeClass(foldClass);
 		});
 
-		var hide = function () {
+		$scope.hide = function () {
 			$element.addClass(currentlyClass);
-			folded.slideUp(slideTime);
+			fold.slideUp(slideTime);
 		};
 
-		var show = function () {
+		$scope.show = function () {
 			$element.removeClass(currentlyClass);
-			folded.slideDown(slideTime);
+			fold.slideDown(slideTime);
 		};
 
-		var toggle = function () {
+		$scope.toggle = function () {
 			console.log('r');
 			$scope.currently = !$scope.currently;
 		};
 
 		$scope.$watch('currently', function (currently) {
 			if (currently) {
-				hide();
+				$scope.hide();
 			} else {
-				show();
+				$scope.show();
 			}
 		});
 
-		$scope.currently = !($attrs.dbFoldCurrently == "true");
+		$scope.currently = $attrs.dbFoldCurrently == "true";
 		$element.removeAttr('db-fold-currently');
-
-		$scope.toggle = toggle();
 	};
 
 	return {
 		restrict: 'A',
-		link: link
+		scope: true,
+		controller: controller
 	}
 });
