@@ -28,7 +28,8 @@ object Permission extends PGEnum("permission") {
   def check(has : Value, need : Value)(implicit site : Site) : Boolean =
     has >= need || site.superuser
 
-  /** The effective permission for data objects with the given attributes. */
+  /** The effective permission for data objects with the given attributes.
+    * Note that this is also implemented (and used) in the SQL function data_permission, which must be kept consistent. */
   def data(p : Value, consent : Consent.Value, classification : Classification.Value)(implicit site_ : Site) : HasPermission = new HasPermission {
     val site = site_
     val getPermission =

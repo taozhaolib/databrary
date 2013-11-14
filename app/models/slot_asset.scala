@@ -109,7 +109,7 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
     " OR segment_shift(segment(" + Asset.duration + "), container_asset.position) && " + segment +
     ")"
   private def permission(perm : String, consent : String = "context.consent") =
-    "data_permission(" + perm + ", " + consent + ", file.classification, ?::permission, toplevel_asset.excerpt)"
+    SelectAs[Permission.Value]("data_permission(" + perm + ", " + consent + ", file.classification, ?::permission, toplevel_asset.excerpt)", "data_permission")
   private def volumeRow(vol : Volume) = ContainerAsset.containerColumns.
     join(Container.volumeRow(vol, false), "container_asset.container = container.id").
     join(Slot.columns(false), "container.id = slot.source").
@@ -163,7 +163,7 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
     volumeRow(volume).SELECT("""
       WHERE (toplevel_asset.excerpt IS NOT NULL OR container.top AND slot.segment = '(,)' OR slot.consent >= 'PRIVATE')
         AND (format.id = ? OR format.mimetype LIKE 'image/%')
-        AND""", permission("?::permission"), """>= 'DOWNLOAD'
+        AND""", permission("?::permission").expr, """>= 'DOWNLOAD'
         AND container.volume = ?
         AND""", condition(), " ORDER BY toplevel_asset.excerpt DESC NULLS LAST, container.top DESC, slot.consent DESC NULLS LAST LIMIT 1")
       .apply(TimeseriesFormat.VIDEO, volume.getPermission, site.access, volume.id).singleOpt
@@ -173,7 +173,7 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
     slotRow(slot).SELECT("""
       WHERE container_asset.container = ?
         AND (format.id = ? OR format.mimetype LIKE 'image/%') 
-        AND""", permission("?::permission", "?::consent"), """>= 'DOWNLOAD'
+        AND""", permission("?::permission", "?::consent").expr, """>= 'DOWNLOAD'
         AND""", condition("?::segment"), "LIMIT 1")
       .apply(slot.id, slot.containerId, TimeseriesFormat.VIDEO, slot.getPermission, slot.consent, site.access, slot.segment, slot.segment).singleOpt
 }

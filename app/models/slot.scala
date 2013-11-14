@@ -68,16 +68,17 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     Tag.valid(tag).fold(Async(false))(
       Tag.getOrCreate(_).flatMap(_.set(this, up)))
 
+  private val _records : FutureVar[Seq[Record]] = FutureVar[Seq[Record]](Record.getSlot(this))
   /** The list of records on this object.
     * @param all include indirect records on any contained objects
     */
-  lazy val records : Future[Seq[Record]] = Record.getSlot(this)
+  def records : Future[Seq[Record]] = _records.apply
   /** Remove the given record from this slot. */
   def removeRecord(rec : Record.Id) : Future[Boolean] = Record.removeSlot(rec, id)
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */
-  private lazy val idents : Future[Seq[String]] =
-    records.map {
+  private def idents : Seq[String] =
+    _records.peek.fold[Seq[String]](Nil) {
       groupBy[Record,Option[RecordCategory]](_, ri => ri.category)
       .map { case (c,l) =>
         c.fold("")(_.name.capitalize + " ") + l.map(_.ident).mkString(", ")
@@ -88,7 +89,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   def thumb : Future[Option[SlotAsset]] = SlotAsset.getThumb(this)
 
   def pageName = container.name.getOrElse { 
-    val i = Async.wait(idents)
+    val i = idents
     if (i.isEmpty)
       if (container.top)
         volume.name

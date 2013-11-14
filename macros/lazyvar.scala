@@ -14,7 +14,7 @@ trait OptionVar[T] {
 class LazyVar[T](init : => T) {
   final protected var value : Option[T] = None
   /** (Compute and) return the current value. */
-  final def apply : T = synchronized(value.getOrElse(update(init)))
+  final def apply() : T = synchronized(value.getOrElse(update(init)))
   final def update(v : T) : T = {
     value = Some(v)
     v
