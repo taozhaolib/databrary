@@ -1,6 +1,15 @@
 // Module houses everything databrary
 
-var dbModule = angular.module('DatabraryModule', []);
+var dbModule = angular.module('DatabraryModule', ['ngSanitize']);
+
+dbModule.run(function ($rootScope, $location, $compile) {
+	var contentArea = $('#main'),
+		messageCtrl = $('<div id="messages" class="messages" ng-controller="MessageCtrl" ng-class="{messages_enabled: isEnabled()}"><div ng-repeat="message in messages" id="{{message.id}}" class="message message_{{message.type}}"><div class="wrap"><div class="row"><div class="col-full" db-message-closable="{{message.closeable}}"><div class="message_content" ng-bind-html="message.message"></div></div></div></div></div></div>');
+
+	contentArea.after(messageCtrl);
+
+//	$('body').append($('<div db-message>This is a test!</div>'));
+});
 
 //
 
@@ -201,7 +210,6 @@ dbModule.directive('dbHover', function ($timeout) {
 		};
 
 		$scope.hide = function () {
-			console.log('hide');
 			clone.fadeOut(fadeTime, function () {
 				clone.off('mouseleave');
 
@@ -226,7 +234,7 @@ dbModule.directive('dbHover', function ($timeout) {
 		});
 
 		$(window).on('resize scroll', function () {
-			if(typeof(clone) != 'undefined')
+			if (typeof(clone) != 'undefined')
 				$scope.hide();
 		});
 
@@ -247,16 +255,243 @@ dbModule.directive('dbHover', function ($timeout) {
 
 //
 
-//dbModule.controller('dbMessageCtrl', function ($scope) {
-//	$scope.messages = [];
-//});
-//
-//dbModule.directive('dbMessage', function () {
-//	return {
-//		restrict: 'A',
-//		link: link,
-//		require: {
-//
-//		}
-//	}
-//});
+dbModule.factory('MessageService', function ($rootScope) {
+	var messageService = {},
+		messageCtrl, queue = [];
+
+	var validTypes = ['alert', 'error', 'info', 'trace'];
+
+	var messageTemplate = {
+		id: undefined,
+		type: undefined,
+		target: false,
+		closeable: false,
+		enabled: true,
+		message: undefined
+	};
+
+	var parseBoolean = function (val) {
+		if ($.isNumeric(val))
+			return !!(parseFloat(val) > 0);
+
+		return typeof(val) == 'string' && val != 'false';
+	};
+
+	var attrToBoolean = function (attr, def) {
+		if (typeof(attr) == 'undefined')
+			return def;
+
+		return parseBoolean(attr);
+	};
+
+	messageService.getValidType = function (type) {
+		if ($.inArray(type, validTypes) >= 0)
+			return type;
+
+		return 'alert';
+	};
+
+	messageService.getValidTypes = function () {
+		return validTypes;
+	};
+
+	messageService.registerController = function (controller) {
+		messageCtrl = controller;
+		messageService.processQueue();
+	};
+
+	messageService.processQueue = function () {
+		var q;
+
+		while (queue.length) {
+			q = queue.shift();
+
+			switch(q.length) {
+				case 2:
+					messageService[q[0]](q[1]);
+					break;
+
+				case 3:
+					messageService[q[0]](q[1], q[2]);
+					break;
+			}
+		}
+	};
+
+	messageService.postRawMessage = function (messageScope, messageElement, messageAttrs) {
+		var message = messageService.formatRawMessage(messageScope, messageElement, messageAttrs);
+
+		if (!message)
+			return false;
+
+		return messageService.createMessage(message);
+	};
+
+	messageService.formatRawMessage = function (messageScope, messageElement, messageAttrs) {
+		var message = messageTemplate;
+
+		message.id = messageElement.attr('id') || 'message_' + Math.random().toString(36).substring(2);
+		message.type = messageService.getValidType(messageAttrs.dbMessageType);
+		message.target = attrToBoolean(messageAttrs.dbMessageTarget, message.target);
+		message.closeable = attrToBoolean(messageAttrs.dbMessageCloseable, message.closeable);
+		message.enabled = attrToBoolean(messageAttrs.dbMessageEnabled, message.enabled);
+		message.message = messageAttrs.dbMessageMessage || messageElement.html();
+
+		if (!message.message)
+			return false;
+
+		return message;
+	};
+
+	messageService.formatMessage = function (message) {
+		return $.extend(true, {}, messageTemplate, message);
+	};
+
+	messageService.createMessage = function (message) {
+		message = messageService.formatMessage(message);
+
+		if (typeof(messageCtrl) == 'undefined') {
+			queue.push(['createMessage', message]);
+			return undefined;
+		}
+
+		return messageCtrl.createMessage(message);
+	};
+
+	messageService.updateMessage = function (old, message) {
+		if (typeof(messageCtrl) == 'undefined') {
+			queue.push(['updateMessage', old, message]);
+			return undefined;
+		}
+
+		return messageCtrl.updateMessage(old, message);
+	};
+
+	messageService.deleteMessage = function (old) {
+		if (typeof(messageCtrl) == 'undefined') {
+			queue.push(['deleteMessage', old]);
+			return undefined;
+		}
+
+		return messageCtrl.deleteMessage(old);
+	};
+
+	messageService.getMessage = function (old) {
+		if (typeof(messageCtrl) == 'undefined') {
+			queue.push(['getMessage', old]);
+			return undefined;
+		}
+
+		return messageCtrl.getMessage(old);
+	};
+
+	return messageService;
+});
+
+dbModule.controller('MessageCtrl', ['$scope', 'MessageService', function ($scope, messageService) {
+	var enabled = false;
+
+	$scope.messages = [];
+
+	$scope.isEnabled = function () {
+		return enabled;
+	};
+
+	$scope.enable = function () {
+		enabled = true;
+	};
+
+	$scope.disable = function () {
+		enabled = false;
+	};
+
+	$scope.findById = function (id) {
+		return $.grep($scope.messages, function (i) {
+			return i.id == id;
+		})[0];
+	};
+
+	$scope.getIndex = function (old) {
+		if (old && !old.hasOwnProperty('message'))
+			old = $scope.findById(old);
+
+		return $scope.messages.indexOf(old);
+	};
+
+	$scope.getMessage = function (old) {
+		return $scope.messages[$scope.getIndex(old)];
+	};
+
+	$scope.sortMessages = function () {
+		var types = messageService.getValidTypes();
+
+		$scope.messages = $scope.messages.sort(function (a, b) {
+			return (types.indexOf(a.type) < types.indexOf(b.type)) ? -1 : (types.indexOf(a.type) > types.indexOf(b.type)) ? 1 : 0;
+		});
+	};
+
+	$scope.addMessage = function (message) {
+		// enabled
+
+		// target
+
+		// closeable
+
+		if (typeof(message) != 'undefined')
+			$scope.messages.push(message);
+
+		$scope.sortMessages();
+
+		return message;
+	};
+
+	$scope.createMessage = function (message) {
+		var index = $scope.getIndex(message);
+
+		if (~index)
+			return $scope.updateMessage($scope.messages[index], message);
+
+		return $scope.addMessage(message);
+	};
+
+	$scope.updateMessage = function (old, message) {
+		var index = $scope.getIndex(old);
+
+		if (!index)
+			return false;
+
+		$scope.messages[index] = $.extend(true, $scope.messages[index], message);
+
+		return $scope.messages[index];
+	};
+
+	$scope.deleteMessage = function (old) {
+		var index = $scope.getIndex(old);
+
+		if (!index)
+			return false;
+
+		return $scope.messages.splice(index, 1);
+	};
+
+	var initialize = function () {
+		messageService.registerController($scope);
+
+		$scope.enable();
+	};
+
+	initialize();
+}]);
+
+dbModule.directive('dbMessage', ['MessageService', function (messageService) {
+	var link = function ($scope, $element, $attrs) {
+		messageService.postRawMessage($scope, $element, $attrs);
+
+		$element.remove();
+	};
+
+	return {
+		restrict: 'A',
+		link: link
+	}
+}]);
