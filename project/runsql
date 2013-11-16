@@ -65,7 +65,7 @@ dbreset () {
 	if [[ -z $1 ]] ; then
 		pg_dump -Fc -f unreset.dump "${args[@]}" "${database}"
 	fi
-	evolve down 1
+	runsql $conf/reset.sql
 }
 
 declare -A evoexpr=([up]='0,/^# --- !Ups$/d;/^# --- !Downs$/,$d' [down]='1,/^# --- !Downs$/d')
