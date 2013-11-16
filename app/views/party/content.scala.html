@@ -24,7 +24,7 @@
 		    </div>
 		}
 
-		@defining(Async.get(party.authorizeParents())) { parents =>
+		@defining(Async.wait(party.authorizeParents())) { parents =>
 		@if(parents.nonEmpty) {
 		    <div class="memberships">
 			<h2>Memberships</h2>
@@ -38,7 +38,7 @@
 		}
 		}
 
-		@defining(Async.get(party.authorizeChildren())) { children =>
+		@defining(Async.wait(party.authorizeChildren())) { children =>
 		@if(children.nonEmpty) {
 		    <div class="memberships">
 		    @if(party.account.isDefined) { <h2>Affiliates</h2> } else { <h2>Members</h2> }
@@ -65,7 +65,7 @@
 		    </section>
 
 		    <div class="row">
-            @party.account.map(a => Async.get(a.comments)).map { comments =>
+            @party.account.map(a => Async.wait(a.comments)).map { comments =>
                     @if(comments.nonEmpty) {
                         @widget.panel.comments(None, None, comments)
                     }

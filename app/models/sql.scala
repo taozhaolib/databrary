@@ -6,7 +6,7 @@ import macros._
 import dbrary._
 import site._
 
-case class SQLTerm[A : SQLType](name : String, value : A) {
+case class SQLTerm[A](name : String, value : A)(implicit val sqlType : SQLType[A]) {
   def put : Any = SQLType.put[A](value)
 }
 object SQLTerm {
@@ -21,10 +21,7 @@ private[models] final class SQLTerms private (private val terms : Seq[SQLTerm[_]
   def +:(other : SQLTerm[_]) : SQLTerms = new SQLTerms(other +: terms)
   def args : Seq[Any] = terms.map(_.put)
   private lazy val names = terms.map(_.name)
-  def placeholders : String = args.length match {
-    case 0 => ""
-    case n => "?" + (", ?" * (n-1))
-  }
+  def placeholders : String = terms.map("?::" + _.sqlType.name).mkString(", ")
 
   /** Terms appropriate for INSERT INTO statements.
     * @returns `(arg, ...) VALUES ({arg}, ...)`

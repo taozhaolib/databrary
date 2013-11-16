@@ -61,9 +61,11 @@ object Audit {
     SQL("INSERT INTO audit.audit " + args.insert)(dbc, exc).apply(args).run()
   }
 
-  private[this] def SQLon(action : Action.Value, table : String, stmt : String, returning : String = "")(args : SQLArgs)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
-    SQL("WITH audit_row AS (" + acmd(action) + " " + table + " " + stmt + " RETURNING *) INSERT INTO audit." + table + " SELECT CURRENT_TIMESTAMP, ?, ?, ?, * FROM audit_row" + Maybe.bracket(" RETURNING ", returning))(dbc, exc)
-      .apply(args ++ aargs(action))
+  private[this] def SQLon(action : Action.Value, table : String, stmt : String, returning : String = "")(args : SQLArgs)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult = {
+    val a = aargs(action)
+    SQL("WITH audit_row AS (" + acmd(action) + " " + table + " " + stmt + " RETURNING *) INSERT INTO audit." + table + " SELECT CURRENT_TIMESTAMP, " + a.placeholders + ", * FROM audit_row" + Maybe.bracket(" RETURNING ", returning))(dbc, exc)
+      .apply(args ++ a)
+  }
 
   /** Record and perform an [[Action.add]] event for a particular table.
     * This does the equivalent of `INSERT INTO table args VALUES args [RETURNING returning]`.

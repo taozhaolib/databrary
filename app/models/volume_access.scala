@@ -45,7 +45,7 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
   /** Retrieve the volume access entries granted to a party at or above the specified permission level. */ 
   private[models] def getVolumes(party : Party, permission : Permission.Value = Permission.NONE)(implicit site : Site) : Future[Seq[VolumeAccess]] =
     partyRow(party)
-      .SELECT("WHERE party = ? AND access >= ? AND", Volume.condition, "ORDER BY access DESC, volume.body")
+      .SELECT("WHERE party = ? AND access >= ?::permission AND", Volume.condition, "ORDER BY access DESC, volume.body")
       .apply(SQLArgs(party.id, permission) ++ Volume.conditionArgs).list
 
   /** Update or add volume access in the database.

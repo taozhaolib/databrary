@@ -14,7 +14,7 @@
             </div>
 
             <div class="people">
-            @Async.get(volume.partyAccess).takeWhile(_.access >= Permission.ADMIN).map { a => <img src="@display.avatar(a.party, 16)" class="s16"> @display.citeName(a.party.name) <span class="sep">
+            @Async.wait(volume.partyAccess).takeWhile(_.access >= Permission.ADMIN).map { a => <img src="@display.avatar(a.party, 16)" class="s16"> @display.citeName(a.party.name) <span class="sep">
                 ,</span>
             }
             </div>

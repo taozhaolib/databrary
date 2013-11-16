@@ -141,8 +141,8 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 }
 
 object Volume extends TableId[Volume]("volume") {
-  private val permission = "volume_access_check(volume.id, ?)"
-  private[models] val condition = "(" + permission + " >= 'VIEW' OR ?)"
+  private val permission = "volume_access_check(volume.id, ?::integer)"
+  private[models] val condition = "(" + permission + " >= 'VIEW'::permission OR ?::boolean)"
   private[models] def row(implicit site : Site) = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
