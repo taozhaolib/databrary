@@ -23,8 +23,10 @@ object SelectExpr {
 /** A simple "table.col" select expression. */
 final case class SelectColumn[A : SQLType](table : String, col : String) extends SelectExpr[A](table + "." + col) {
   override def fromTable(table : String) = copy(table = table)
-  private[this] implicit lazy val fromTable : FromTable = FromTable(table)
-  implicit def column : Columns1[A] = new Columns1[A](this)
+  implicit def column : Columns1[A] = {
+    implicit val fromTable : FromTable = FromTable(table)
+    new Columns1[A](this)
+  }
 }
 object SelectColumn {
   def apply[A : SQLType](col : String)(implicit from : FromTable) : SelectColumn[A] = SelectColumn[A](from.table, col)
@@ -50,6 +52,8 @@ case class Selector[A](selects : Seq[SelectExpr[_]], source : String, parse : SQ
     copy[Option[A]](parse = parse.?)
   def from(from : String) : Selector[A] =
     copy[A](source = from)
+  def fromTable(table : String) : Selector[A] =
+    copy[A](selects.map(_.fromTable(table)), source = table)
   def fromAlias(name : String) : Selector[A] =
     copy[A](selects.map(_.fromTable(name)), source = source + " AS " + name)
   /** Add arguments needed for the select expressions that will be passed (first) to any queries executed. */
