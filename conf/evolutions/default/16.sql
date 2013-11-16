@@ -31,10 +31,16 @@ END;; $$;
 COMMENT ON FUNCTION audit."timeseries_file" () IS 'Trigger function for INSTEAD OF INSERT ON audit.timeseries to propagate to audit.file.';
 CREATE TRIGGER "file" INSTEAD OF INSERT ON audit."timeseries" FOR EACH ROW EXECUTE PROCEDURE audit."timeseries_file" ();
 
+CREATE SCHEMA ingest;
+CREATE TABLE ingest."asset" (
+	"id" integer Primary Key References "asset",
+	"file" text NOT NULL
+);
+
 # --- !Downs
 
-DELETE FROM ONLY "format" WHERE "mimetype" IN ('video/mp4', 'video/webm', 'video/mpeg', 'video/quicktime');
-SELECT setval('format_id_seq', max(id), true) FROM format;
+DROP TABLE ingest."asset";
+DROP SCHEMA ingest;
 
 DROP VIEW audit."timeseries";
 CREATE VIEW audit."timeseries" AS
@@ -55,3 +61,7 @@ CREATE VIEW "asset_duration" ("id", "duration") AS
 	SELECT id, duration FROM timeseries UNION ALL
 	SELECT id, duration(segment) FROM clip;
 COMMENT ON VIEW "asset_duration" IS 'All assets along with their temporal durations, NULL for non-timeseries.';
+
+DELETE FROM ONLY "format" WHERE "mimetype" IN ('video/mp4', 'video/webm', 'video/mpeg', 'video/quicktime');
+SELECT setval('format_id_seq', max(id), true) FROM format;
+

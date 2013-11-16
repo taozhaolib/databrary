@@ -702,3 +702,11 @@ SELECT setval('asset_id_seq', 1);
 
 INSERT INTO container_asset (container, asset, position, name) VALUES (1, 1, '0', 'counting');
 
+----------------------------------------------------------- ingest logs
+
+CREATE SCHEMA ingest;
+
+CREATE TABLE ingest."asset" (
+	"id" integer Primary Key References "asset",
+	"file" text NOT NULL
+);

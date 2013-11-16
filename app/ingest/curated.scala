@@ -166,12 +166,15 @@ object Curated {
     def populate(info : Asset.Info)(implicit site : Site) : Future[models.Asset] = {
       /* for now copy and don't delete */
       val infile = store.TemporaryFileCopy(file)
-      info match {
-        case Asset.TimeseriesInfo(fmt, duration) =>
-          models.Timeseries.create(fmt, classification, duration, infile)
-        case Asset.FileInfo(fmt) =>
-          models.FileAsset.create(fmt, classification, infile)
-      }
+      for {
+        asset <- info match {
+          case Asset.TimeseriesInfo(fmt, duration) =>
+            models.Timeseries.create(fmt, classification, duration, infile)
+          case Asset.FileInfo(fmt) =>
+            models.FileAsset.create(fmt, classification, infile)
+        }
+        _ <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, file.getPath).execute
+      } yield (asset)
     }
   }
   private object Asset extends ListDataParser[Asset] {
