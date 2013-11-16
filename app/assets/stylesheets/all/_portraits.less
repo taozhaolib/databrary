@@ -4,8 +4,15 @@
 //	background-color: @g5;
 	.margin-bottom(1);
 
-	&.hoverable {
-		.transition(all .5s linear);
+	.portrait_institution,
+	.portrait_links {
+		.max-height(0);
+		overflow: hidden;
+	}
+
+	&.hovered {
+		.box-shadow();
+		background-color: @g5;
 		position: relative;
 
 		.portrait_info {
@@ -14,18 +21,7 @@
 
 		.portrait_institution,
 		.portrait_links {
-			.max-height(0);
-			overflow: hidden;
-		}
-
-		&:hover {
-			.box-shadow();
-			background-color: @g5;
-
-			.portrait_institution,
-			.portrait_links {
-				.max-height(5);
-			}
+			.max-height(5);
 		}
 	}
 }

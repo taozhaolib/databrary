@@ -1,42 +1,48 @@
 // Module houses everything databrary
 
-var dbModule = angular.module('DatabraryModule', []);
+var dbModule = angular.module('DatabraryModule', ['ngSanitize']);
+
+dbModule.run(function ($rootScope, $location, $compile) {
+	var contentArea = $('#main'),
+		messageCtrl = $('<div id="messages" class="messages" ng-controller="MessageCtrl" ng-class="{messages_enabled: isEnabled()}"><div ng-repeat="message in messages" id="{{message.id}}" class="message message_{{message.type}}"><div class="wrap"><div class="row"><div class="col-full" db-message-closable="{{message.closeable}}"><div class="message_content" ng-bind-html="message.message"></div></div></div></div></div></div>');
+
+	contentArea.after(messageCtrl);
+
+//	$('body').append($('<div db-message>This is a test!</div>'));
+});
 
 //
 
 dbModule.directive('dbCarousel', function ($timeout) {
-	var link = function (scope, element, attrs) {
-		var children = element.children(),
-			pauseTime = 5000,
+	var link = function ($scope, $element) {
+		var pauseTime = 5000,
 			fadeTime = 1000,
 			timeout;
 
-		console.log(children);
-
-		var update = function (reverse) {
+		$scope.update = function (reverse) {
 			if (reverse !== true) {
-				element.children().last().fadeOut(fadeTime, function () {
-					$(this).prependTo(element).fadeIn(fadeTime);
+				$element.children().last().fadeOut(fadeTime, function () {
+					$(this).prependTo($element).fadeIn(fadeTime);
 				});
 			} else {
-				element.children().first().fadeOut(0, function () {
-					$(this).appendTo(element).fadeIn(fadeTime);
+				$element.children().first().fadeOut(0, function () {
+					$(this).appendTo($element).fadeIn(fadeTime);
 				});
 			}
 		};
 
-		var schedule = function (pause) {
+		$scope.schedule = function (pause) {
 			timeout = $timeout(function () {
-				update(true);
-				schedule(pause);
+				$scope.update(true);
+				$scope.schedule(pause);
 			}, pause);
 		};
 
-		element.on('$destroy', function () {
+		$element.on('$destroy', function () {
 			$timeout.cancel(timeout);
 		});
 
-		schedule(pauseTime);
+		$scope.schedule(pauseTime);
 	};
 
 	return {
@@ -54,7 +60,7 @@ dbModule.directive('dbFold', function () {
 		currentlyClass = 'folded',
 		slideTime = 500;
 
-	var controller = function ($scope, $element, $attrs) {
+	var link = function ($scope, $element, $attrs) {
 		var folder = $element.find('[db-fold-folder]'),
 			fold = $element.find('[db-fold-folded]');
 
@@ -63,7 +69,7 @@ dbModule.directive('dbFold', function () {
 		fold.addClass(foldClass);
 
 		$element.on('$destroy', function () {
-			$element.removeClass(foldableClass+' '+currentlyClass);
+			$element.removeClass(foldableClass + ' ' + currentlyClass);
 			folder.removeClass(folderClass);
 			fold.removeClass(foldClass);
 		});
@@ -79,7 +85,6 @@ dbModule.directive('dbFold', function () {
 		};
 
 		$scope.toggle = function () {
-			console.log('r');
 			$scope.currently = !$scope.currently;
 		};
 
@@ -98,6 +103,395 @@ dbModule.directive('dbFold', function () {
 	return {
 		restrict: 'A',
 		scope: true,
-		controller: controller
+		link: link
 	}
 });
+
+//
+
+dbModule.directive('dbBaseline', function ($timeout) {
+	var base = 6,
+		pauseTime = 500;
+
+	var link = function ($scope, $element, $attrs) {
+		var ratio,
+			timeout;
+
+		$scope.updateRatio = function (val) {
+			if ($.isNumeric(val))
+				ratio = parseFloat(val);
+			else
+				switch (val) {
+					case 'wide':
+					case '16x9':
+						ratio = .5625;
+						break;
+
+					case 'tube':
+					case '4x3':
+						ratio = .75;
+						break;
+
+					case 'square':
+					case '1x1':
+					default:
+						ratio = 1;
+						break;
+				}
+		};
+
+		$scope.trigger = function () {
+			var width = $element.outerWidth(false),
+				height;
+
+			height = width * ratio;
+			height = height - (height % base);
+
+			if (height > 0)
+				$element.height(height);
+			else
+				$element.css('height', '');
+		};
+
+		$(window).on('resize', function () {
+			clearTimeout(timeout);
+
+			timeout = setTimeout(function () {
+				$scope.trigger();
+			}, pauseTime);
+		});
+
+		$element.on('$destroy', function () {
+			$timeout.cancel(timeout);
+		});
+
+		$scope.updateRatio($attrs.dbBaselineRatio);
+		$element.removeAttr('db-baseline-ratio');
+
+		$scope.trigger();
+	};
+
+	return {
+		restrict: 'A',
+		scope: true,
+		link: link
+	};
+});
+
+//
+
+dbModule.directive('dbHover', function ($timeout) {
+	var hoverableClass = 'hoverable',
+		currentlyClass = 'hovered',
+		hoverWrap = $('<div class="hover_wrap" style="position: relative;"></div>'),
+		pauseTime = 0,
+		fadeTime = 150;
+
+	var link = function ($scope, $element) {
+		var timeout, clone;
+
+		$element.wrap(hoverWrap.clone());
+
+		$scope.show = function () {
+			var position = $element.position();
+
+			clone = $element.clone();
+
+			clone.hide().addClass(currentlyClass).css({
+				'z-index': 750,
+				'position': 'absolute',
+				'left': position.left,
+				'top': position.top,
+				'width': '100%'
+			});
+
+			$element.after(clone);
+			clone.fadeIn(fadeTime);
+		};
+
+		$scope.hide = function () {
+			clone.fadeOut(fadeTime, function () {
+				clone.off('mouseleave');
+
+				clone.remove();
+
+				clone = undefined;
+			});
+		};
+
+		$element.on('mouseenter', function () {
+			clearTimeout(timeout);
+
+			$scope.show();
+
+			clone.on('mouseleave', function () {
+				clearTimeout(timeout);
+
+				timeout = setTimeout(function () {
+					$scope.hide();
+				}, pauseTime);
+			});
+		});
+
+		$(window).on('resize scroll', function () {
+			if (typeof(clone) != 'undefined')
+				$scope.hide();
+		});
+
+		$element.on('$destroy', function () {
+			$timeout.cancel(timeout);
+			$element.removeClass(hoverableClass);
+		});
+
+		$element.addClass(hoverableClass);
+	};
+
+	return {
+		restrict: 'A',
+		scope: true,
+		link: link
+	};
+});
+
+//
+
+dbModule.factory('MessageService', function ($rootScope) {
+	var messageService = {},
+		messageCtrl, queue = [];
+
+	var validTypes = ['alert', 'error', 'info', 'trace'];
+
+	var messageTemplate = {
+		id: undefined,
+		type: undefined,
+		target: false,
+		closeable: false,
+		enabled: true,
+		message: undefined
+	};
+
+	var parseBoolean = function (val) {
+		if ($.isNumeric(val))
+			return !!(parseFloat(val) > 0);
+
+		return typeof(val) == 'string' && val != 'false';
+	};
+
+	var attrToBoolean = function (attr, def) {
+		if (typeof(attr) == 'undefined')
+			return def;
+
+		return parseBoolean(attr);
+	};
+
+	messageService.getValidType = function (type) {
+		if ($.inArray(type, validTypes) >= 0)
+			return type;
+
+		return 'alert';
+	};
+
+	messageService.getValidTypes = function () {
+		return validTypes;
+	};
+
+	messageService.registerController = function (controller) {
+		messageCtrl = controller;
+		messageService.processQueue();
+	};
+
+	messageService.processQueue = function () {
+		var q;
+
+		while (queue.length) {
+			q = queue.shift();
+
+			switch(q.length) {
+				case 2:
+					messageService[q[0]](q[1]);
+					break;
+
+				case 3:
+					messageService[q[0]](q[1], q[2]);
+					break;
+			}
+		}
+	};
+
+	messageService.postRawMessage = function (messageScope, messageElement, messageAttrs) {
+		var message = messageService.formatRawMessage(messageScope, messageElement, messageAttrs);
+
+		if (!message)
+			return false;
+
+		return messageService.createMessage(message);
+	};
+
+	messageService.formatRawMessage = function (messageScope, messageElement, messageAttrs) {
+		var message = messageTemplate;
+
+		message.id = messageElement.attr('id') || 'message_' + Math.random().toString(36).substring(2);
+		message.type = messageService.getValidType(messageAttrs.dbMessageType);
+		message.target = attrToBoolean(messageAttrs.dbMessageTarget, message.target);
+		message.closeable = attrToBoolean(messageAttrs.dbMessageCloseable, message.closeable);
+		message.enabled = attrToBoolean(messageAttrs.dbMessageEnabled, message.enabled);
+		message.message = messageAttrs.dbMessageMessage || messageElement.html();
+
+		if (!message.message)
+			return false;
+
+		return message;
+	};
+
+	messageService.formatMessage = function (message) {
+		return $.extend(true, {}, messageTemplate, message);
+	};
+
+	messageService.createMessage = function (message) {
+		message = messageService.formatMessage(message);
+
+		if (typeof(messageCtrl) == 'undefined') {
+			queue.push(['createMessage', message]);
+			return undefined;
+		}
+
+		return messageCtrl.createMessage(message);
+	};
+
+	messageService.updateMessage = function (old, message) {
+		if (typeof(messageCtrl) == 'undefined') {
+			queue.push(['updateMessage', old, message]);
+			return undefined;
+		}
+
+		return messageCtrl.updateMessage(old, message);
+	};
+
+	messageService.deleteMessage = function (old) {
+		if (typeof(messageCtrl) == 'undefined') {
+			queue.push(['deleteMessage', old]);
+			return undefined;
+		}
+
+		return messageCtrl.deleteMessage(old);
+	};
+
+	messageService.getMessage = function (old) {
+		if (typeof(messageCtrl) == 'undefined') {
+			queue.push(['getMessage', old]);
+			return undefined;
+		}
+
+		return messageCtrl.getMessage(old);
+	};
+
+	return messageService;
+});
+
+dbModule.controller('MessageCtrl', ['$scope', 'MessageService', function ($scope, messageService) {
+	var enabled = false;
+
+	$scope.messages = [];
+
+	$scope.isEnabled = function () {
+		return enabled;
+	};
+
+	$scope.enable = function () {
+		enabled = true;
+	};
+
+	$scope.disable = function () {
+		enabled = false;
+	};
+
+	$scope.findById = function (id) {
+		return $.grep($scope.messages, function (i) {
+			return i.id == id;
+		})[0];
+	};
+
+	$scope.getIndex = function (old) {
+		if (old && !old.hasOwnProperty('message'))
+			old = $scope.findById(old);
+
+		return $scope.messages.indexOf(old);
+	};
+
+	$scope.getMessage = function (old) {
+		return $scope.messages[$scope.getIndex(old)];
+	};
+
+	$scope.sortMessages = function () {
+		var types = messageService.getValidTypes();
+
+		$scope.messages = $scope.messages.sort(function (a, b) {
+			return (types.indexOf(a.type) < types.indexOf(b.type)) ? -1 : (types.indexOf(a.type) > types.indexOf(b.type)) ? 1 : 0;
+		});
+	};
+
+	$scope.addMessage = function (message) {
+		// enabled
+
+		// target
+
+		// closeable
+
+		if (typeof(message) != 'undefined')
+			$scope.messages.push(message);
+
+		$scope.sortMessages();
+
+		return message;
+	};
+
+	$scope.createMessage = function (message) {
+		var index = $scope.getIndex(message);
+
+		if (~index)
+			return $scope.updateMessage($scope.messages[index], message);
+
+		return $scope.addMessage(message);
+	};
+
+	$scope.updateMessage = function (old, message) {
+		var index = $scope.getIndex(old);
+
+		if (!index)
+			return false;
+
+		$scope.messages[index] = $.extend(true, $scope.messages[index], message);
+
+		return $scope.messages[index];
+	};
+
+	$scope.deleteMessage = function (old) {
+		var index = $scope.getIndex(old);
+
+		if (!index)
+			return false;
+
+		return $scope.messages.splice(index, 1);
+	};
+
+	var initialize = function () {
+		messageService.registerController($scope);
+
+		$scope.enable();
+	};
+
+	initialize();
+}]);
+
+dbModule.directive('dbMessage', ['MessageService', function (messageService) {
+	var link = function ($scope, $element, $attrs) {
+		messageService.postRawMessage($scope, $element, $attrs);
+
+		$element.remove();
+	};
+
+	return {
+		restrict: 'A',
+		link: link
+	}
+}]);
