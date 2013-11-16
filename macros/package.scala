@@ -5,7 +5,7 @@ package object macros {
 
   /** What a.zip(b) should do but doesn't? */
   def optionZip[A,B](a : Option[A], b : Option[B]) : Option[(A,B)] = (a, b) match {
-    case (Some(a), Some(b)) => Some(a, b)
+    case (Some(a), Some(b)) => Some((a, b))
     case _ => None
   }
 
