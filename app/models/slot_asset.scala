@@ -138,7 +138,7 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
 
   /** Retrieve the list of all assets within the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[SlotAsset]] =
-    slotRow(slot).SELECT("WHERE container_asset.container = ? AND", condition("?::segment"), "ORDER BY container_asset.position NULLS LAST, format.id")
+    slotRow(slot).SELECT("WHERE container_asset.container = ? AND", condition("?::segment"), "ORDER BY container_asset.position NULLS LAST, file.format")
       .apply(slot.id, slot.containerId, slot.segment, slot.segment).list
 
   /** Build the SlotAsset for the given ContainerAsset#container.fullSlot. */
@@ -161,6 +161,7 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
   /** Find an asset suitable for use as a volume thumbnail. */
   private[models] def getThumb(volume : Volume)(implicit site : Site) : Future[Option[SlotAsset]] =
     volumeRow(volume).SELECT("""
+       JOIN format ON file.format = format.id
       WHERE (toplevel_asset.excerpt IS NOT NULL OR container.top AND slot.segment = '(,)' OR slot.consent >= 'PRIVATE')
         AND (format.id = ? OR format.mimetype LIKE 'image/%')
         AND""", permission("?::permission").expr, """>= 'DOWNLOAD'
@@ -171,6 +172,7 @@ object SlotAsset extends Table[SlotAsset]("toplevel_asset") {
   /** Find an asset suitable for use as a slot thumbnail. */
   private[models] def getThumb(slot : Slot)(implicit site : Site) : Future[Option[SlotAsset]] =
     slotRow(slot).SELECT("""
+       JOIN format ON file.format = format.id
       WHERE container_asset.container = ?
         AND (format.id = ? OR format.mimetype LIKE 'image/%') 
         AND""", permission("?::permission", "?::consent").expr, """>= 'DOWNLOAD'
