@@ -11,7 +11,7 @@ ALTER TABLE "file" ADD "superseded" integer References "asset";
 COMMENT ON COLUMN "file"."superseded" IS 'Newer version of this asset, either generated automatically from reformatting or a replacement provided by the user.';
 
 ALTER TABLE audit."file" ADD "superseded" integer;
-
+CREATE INDEX ON "file" ("superseded") WHERE "superseded" IS NOT NULL;
 ALTER TABLE "timeseries" RENAME "duration" TO "duration_old";
 ALTER TABLE "timeseries" ADD Foreign Key ("superseded") References "asset",
 			 DROP CONSTRAINT "timeseries_duration_check",

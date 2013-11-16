@@ -424,6 +424,7 @@ CREATE TABLE "file" (
 	"superseded" integer References "asset"
 );
 CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "file" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
+CREATE INDEX ON "file" ("superseded") WHERE "superseded" IS NOT NULL;
 COMMENT ON TABLE "file" IS 'Assets in storage along with their "constant" metadata.';
 COMMENT ON COLUMN "file"."superseded" IS 'Newer version of this asset, either generated automatically from reformatting or a replacement provided by the user.';
 
