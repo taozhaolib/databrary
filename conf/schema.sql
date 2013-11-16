@@ -432,6 +432,7 @@ SELECT audit.CREATE_TABLE ('file');
 CREATE TABLE "timeseries" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
 	"format" smallint NOT NULL References "timeseries_format",
+	"superseded" integer References "asset",
 	"duration" interval HOUR TO SECOND NOT NULL Check ("duration" > interval '0')
 ) INHERITS ("file");
 CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "timeseries" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
@@ -441,7 +442,7 @@ CREATE VIEW audit."timeseries" AS
 	SELECT *, NULL::interval AS "duration" FROM audit."file";
 COMMENT ON VIEW audit."timeseries" IS 'Timeseries are audited together with files.  This view provides glue to make that transparent.';
 CREATE FUNCTION audit."timeseries_file" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
-	INSERT INTO audit."file" (audit_time, audit_user, audit_ip, audit_action, id, format, classification) VALUES (NEW.audit_time, NEW.audit_user, NEW.audit_ip, NEW.audit_action, NEW.id, NEW.format, NEW.classification);
+	INSERT INTO audit."file" (audit_time, audit_user, audit_ip, audit_action, id, format, classification, superseded) VALUES (NEW.audit_time, NEW.audit_user, NEW.audit_ip, NEW.audit_action, NEW.id, NEW.format, NEW.classification, NEW.superseded);
 	RETURN NEW;
 END; $$;
 COMMENT ON FUNCTION audit."timeseries_file" () IS 'Trigger function for INSTEAD OF INSERT ON audit.timeseries to propagate to audit.file.';
@@ -471,13 +472,6 @@ COMMENT ON TABLE "container_asset" IS 'Asset linkages into containers along with
 COMMENT ON COLUMN "container_asset"."position" IS 'Start point or position of this asset within the container, such that this asset occurs or starts position time after the beginning of the container session.  NULL positions are treated as universal (existing at all times).';
 
 SELECT audit.CREATE_TABLE ('container_asset');
-
-
-CREATE VIEW "asset_duration" ("id", "duration") AS
-	SELECT id, NULL FROM ONLY file UNION ALL
-	SELECT id, duration FROM timeseries UNION ALL
-	SELECT id, duration(segment) FROM clip;
-COMMENT ON VIEW "asset_duration" IS 'All assets along with their temporal durations, NULL for non-timeseries.';
 
 
 CREATE TABLE "toplevel_asset" (
