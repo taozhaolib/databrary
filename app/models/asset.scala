@@ -150,6 +150,8 @@ trait TimeseriesData extends BackedAsset {
 sealed class FileAsset protected[models] (override val id : FileAsset.Id, val format : AssetFormat, val classification : Classification.Value, val supersededId : Option[Asset.Id] = None) extends Asset(id) with TableRowId[FileAsset] with BackedAsset {
   def source = this
   override def sourceId = id
+  def modification : Future[Option[Timestamp]] =
+    SQL("SELECT file_modification(?)").apply(id).singleOpt(SQLCols[Timestamp])
   def superseded : Option[Future[Asset]] = supersededId.map(Asset._get(_).single)
   protected[models] def supersede(f : FileAsset)(implicit site : Site) : Future[Boolean] =
     Audit.change("file", SQLTerms('superseded -> f.id), SQLTerms('id -> id)).execute

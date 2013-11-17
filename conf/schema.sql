@@ -429,6 +429,11 @@ COMMENT ON TABLE "file" IS 'Assets in storage along with their "constant" metada
 COMMENT ON COLUMN "file"."superseded" IS 'Newer version of this asset, either generated automatically from reformatting or a replacement provided by the user.';
 
 SELECT audit.CREATE_TABLE ('file');
+CREATE INDEX "file_modification_idx" ON audit."file" ("id") WHERE "audit_action" IN ('add', 'change');
+COMMENT ON INDEX audit."file_modification_idx" IS 'Allow efficient retrieval of file modification information, specifically date.';
+
+CREATE FUNCTION "file_modification" ("file" integer) RETURNS timestamp LANGUAGE sql STABLE STRICT AS
+	$$ SELECT max("audit_time") FROM audit."file" WHERE "id" = $1 AND "audit_action" IN ('add', 'change') $$;
 
 CREATE TABLE "timeseries" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,

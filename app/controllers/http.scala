@@ -2,6 +2,7 @@ package controllers
 
 import scala.util.control.Exception.catching
 import macros._
+import dbrary._
 import site._
 
 object HTTP {
@@ -12,17 +13,15 @@ object HTTP {
     else
       s
 
-  private val tzGMT = java.util.TimeZone.getTimeZone("GMT")
-  private val rfc1123Date = new java.text.SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
-  rfc1123Date.setTimeZone(tzGMT)
-  private val rfc850Date = new java.text.SimpleDateFormat("EEEE, dd-MMM-yy HH:mm:ss 'GMT'")
-  rfc850Date.setTimeZone(tzGMT)
-  private val asctimeDate = new java.text.SimpleDateFormat("EEE MMM d HH:mm:ss yyyy")
-  asctimeDate.setTimeZone(tzGMT)
-  def parseDate(s : String) : Option[java.util.Date] = 
-    catching(classOf[java.text.ParseException]).opt(rfc1123Date.parse(s)) orElse
-    catching(classOf[java.text.ParseException]).opt(rfc850Date.parse(s)) orElse
-    catching(classOf[java.text.ParseException]).opt(asctimeDate.parse(s))
+  private val rfc1123Date = org.joda.time.format.DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'").withZone(org.joda.time.DateTimeZone.UTC)
+  private val rfc850Date  = org.joda.time.format.DateTimeFormat.forPattern("EEEE, dd-MMM-yy HH:mm:ss 'GMT'").withZone(org.joda.time.DateTimeZone.UTC)
+  private val asctimeDate = org.joda.time.format.DateTimeFormat.forPattern("EEE MMM d HH:mm:ss yyyy").withZone(org.joda.time.DateTimeZone.UTC)
+  def parseDate(s : String) : Option[Timestamp] =
+    catching(classOf[IllegalArgumentException]).opt(rfc1123Date.parseDateTime(s)) orElse
+    catching(classOf[IllegalArgumentException]).opt(rfc850Date.parseDateTime(s)) orElse
+    catching(classOf[IllegalArgumentException]).opt(asctimeDate.parseDateTime(s))
+  def date(d : Timestamp) : String =
+    rfc1123Date.print(d)
   
   private val rangeRegex = "bytes=([0-9]*)-([0-9]*)".r
   def parseRange(s : String, size : Long) : Option[(Long, Long)] =

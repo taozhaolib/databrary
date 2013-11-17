@@ -11,9 +11,9 @@ import          libs.Files.TemporaryFile
 import          libs.iteratee.Enumerator
 import          libs.concurrent.Execution.Implicits.defaultContext
 import macros._
+import dbrary._
 import site._
 import models._
-import dbrary.Offset
 
 object Asset extends SiteController {
   type Request[A] = RequestObject[SlotAsset]#Site[A]
@@ -28,14 +28,18 @@ object Asset extends SiteController {
     Ok(views.html.asset.view(request.obj))
   }
 
-  private def assetResult(tag : String, data_ : => Future[store.StreamEnumerator], fmt : AssetFormat, saveAs : Option[String])(request : SiteRequest[_]) : Future[SimpleResult] = {
+  private def assetResult(tag : String, data_ : => Future[store.StreamEnumerator], fmt : AssetFormat, saveAs : Option[String] = None)(implicit request : Request[_]) : Future[SimpleResult] = {
+    val now = new Timestamp
     /* The split works because we never use commas within etags. */
     val ifNoneMatch = request.headers.getAll(IF_NONE_MATCH).flatMap(_.split(',').map(_.trim))
     /* Assuming assets are immutable, any if-modified-since header is good enough */
     if (ifNoneMatch.exists(t => t.equals("*") || HTTP.unquote(t).equals(tag)) ||
       ifNoneMatch.isEmpty && request.headers.get(IF_MODIFIED_SINCE).isDefined)
-      Future.successful(NotModified)
-    else data_.map { data =>
+      macros.Async(NotModified)
+    else for {
+      data <- data_
+      date <- request.obj.source.modification
+    } yield {
       val size = data.size
       val range = if (request.headers.get(IF_RANGE).forall(HTTP.unquote(_).equals(tag)))
           request.headers.get(RANGE).flatMap(HTTP.parseRange(_, size))
@@ -43,10 +47,12 @@ object Asset extends SiteController {
           None
       val subdata = range.fold(data)((data.range _).tupled)
       val headers = Seq[Option[(String, String)]](
+        Some(DATE -> HTTP.date(now)),
         Some(CONTENT_LENGTH -> subdata.size.toString),
         range.map(r => CONTENT_RANGE -> ("bytes " + (if (r._1 >= size) "*" else r._1.toString + "-" + r._2.toString) + "/" + data.size.toString)),
         Some(CONTENT_TYPE -> fmt.mimetype),
         saveAs.map(name => CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + fmt.extension.fold("")("." + _)))),
+        date.map(d => (LAST_MODIFIED -> HTTP.date(d))),
         Some(ETAG -> HTTP.quote(tag)),
         Some(CACHE_CONTROL -> "max-age=31556926, private") /* this needn't be private for public data */
       ).flatten
@@ -57,17 +63,20 @@ object Asset extends SiteController {
       }
   }
 
-  def download(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, inline : Boolean) = Action(v, i, o, Permission.DOWNLOAD).async { implicit request =>
+  private def slotAssetResult(inline : Boolean = true)(implicit request : Request[_]) =
     assetResult(
-      "sobj:%d:%d".format(request.obj.slotId.unId, request.obj.link.assetId.unId),
+      "sobj:%d:%d".format(request.obj.slotId.unId, request.obj.assetId.unId),
       store.Asset.read(request.obj),
       request.obj.format,
       if (inline) None else Some(request.obj.link.name)
-    )(request)
+    )
+
+  def download(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, inline : Boolean) = Action(v, i, o, Permission.DOWNLOAD).async { implicit request =>
+    slotAssetResult(inline)
   }
 
-  private[controllers] def getFrame(sa : SlotAsset, offset : Either[Float,Offset])(implicit request : SiteRequest[_]) =
-    sa match {
+  private[controllers] def getFrame(offset : Either[Float,Offset])(implicit request : Request[_]) =
+    request.obj match {
       case ts : SlotTimeseries =>
         val off = offset.fold(f => Offset(10*(f*ts.duration.seconds/10).floor), identity)
         if (off < 0 || off > ts.duration)
@@ -75,26 +84,20 @@ object Asset extends SiteController {
         else assetResult(
           "sframe:%d:%d:%d".format(ts.slotId.unId, ts.link.assetId.unId, off.millis.toLong),
           store.Asset.readFrame(ts, off),
-          ts.source.format.sampleFormat,
-          None
-        )(request)
+          ts.source.format.sampleFormat
+        )
       case _ =>
         if (!offset.fold(_ => true, _ == 0))
           Future.successful(NotFound)
-        else assetResult(
-          "sobj:%d:%d".format(sa.slotId.unId, sa.link.assetId.unId),
-          store.Asset.read(sa),
-          sa.format,
-          None
-        )(request)
+        else slotAssetResult()
     }
   def frame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, eo : Offset) = Action(v, i, o, Permission.DOWNLOAD).async { implicit request =>
-    getFrame(request.obj, Right(eo))
+    getFrame(Right(eo))
   }
   def head(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) =
     frame(v, i, o, 0)
   def thumb(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) = Action(v, i, o, Permission.DOWNLOAD).async { implicit request =>
-    getFrame(request.obj, Left(0.25f))
+    getFrame(Left(0.25f))
   }
 
   type AssetForm = Form[(String, String, Option[Offset], Option[(Option[AssetFormat.Id], Classification.Value, Option[String], Unit)])]

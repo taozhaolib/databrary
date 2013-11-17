@@ -35,14 +35,7 @@ getdb () {
 eval $(getdbconfig url | getdb)
 user=`getdbconfig user`
 password=`getdbconfig password`
-secret=`getconfig 'application\.secret'`
 : ${host:=localhost} ${port:=5432} ${database:=$user}
-
-if [[ $secret != databrary ]] ; then
-	echo -n "This looks like a production environment. Continue? "
-	read y
-	[[ $y = y* ]] || exit 8
-fi
 
 if [[ ! -f ~/.pgpass ]] ; then
 	um=`umask -p`
