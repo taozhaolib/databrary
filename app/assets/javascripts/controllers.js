@@ -2,7 +2,9 @@
 
 var dbModule = angular.module('DatabraryModule', ['ngSanitize', 'ngAnimate']);
 
-dbModule.run(function ($rootScope, $location, $compile) {});
+dbModule.run(function ($rootScope, $location, $compile) {
+	// init
+});
 
 //
 
@@ -540,8 +542,11 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 	};
 
 	$scope.updateHeight = function () {
-		var contentArea = $('#main'),
-			padding = 0;
+		var $window = $(window),
+			scroll = $window.scrollTop(),
+			contentArea = $('#main'),
+			padding = 0,
+			currentPadding = parseInt(contentArea.css('padding-top'));
 
 		var len = $scope.messages.length;
 
@@ -551,6 +556,7 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 		}
 
 		contentArea.css('padding-top', padding);
+		$window.scrollTop(scroll + padding - currentPadding);
 	};
 
 	$timeout(function () {
