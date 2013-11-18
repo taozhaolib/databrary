@@ -16,6 +16,9 @@
             <fieldset class="publications">
                 <legend>Publications</legend>
 
+                <div db-form-repeater>
+
+                </div>
                 @widget.tag.repeat(editForm("citation")) { f =>
                     @widget.tag.inputText(f("head"), 'placeholder -> "Citation")
                     @widget.tag.inputText(f("url"), 'placeholder -> "DOI or URL")

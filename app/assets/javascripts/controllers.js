@@ -494,7 +494,7 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 			eventNamespace = '.messageTarget';
 
 		if ($.type(id) !== 'string') id = '';
-console.log(target.prop('tagName'));
+		console.log(target.prop('tagName'));
 		if (focusElements.indexOf(target.prop('tagName')) >= 0)
 			return ['focusin' + eventNamespace + '_' + id, 'focusout' + eventNamespace + '_' + id];
 		else
@@ -589,7 +589,17 @@ dbModule.directive('dbMessage', ['MessageService', function (messageService) {
 
 //
 
-
+//dbModule.directive('dbFormRepeater', function () {
+//	var link = function ($scope, $element, $attrs) {
+//
+//	};
+//
+//	return {
+//		restrict: 'A',
+//		scope: true,
+//		link: link
+//	}
+//});
 
 //
 
