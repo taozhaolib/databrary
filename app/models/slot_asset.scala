@@ -28,6 +28,11 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
     (for { s0 <- slot.segment.lowerBound ; s1 <- slot.segment.upperBound; l <- link.position }
       yield ((s1 - l.max(s0)).min(link.duration))).
       getOrElse(link.duration)
+  def entire = link.position.fold(true) { l =>
+    slot.segment.lowerBound.fold(true)(_ <= l) &&
+    slot.segment.upperBound.fold(true)(_ >= l + link.duration)
+  }
+  def etag = (if (entire) asset.etag else "slot:" + slot.id + ":" + asset.etag)
 
   /** Update the given values in the database and this object in-place.
     * @param excerpt changes both toplevel (`None` or `Some(false)`) and excerpt (`Some(true)`)
@@ -71,10 +76,7 @@ sealed class SlotAsset protected (val link : ContainerAsset, val slot : Slot, ex
 
 final class SlotTimeseries private[models] (override val link : ContainerTimeseries, slot : Slot, excerpt_ : Option[Boolean] = None) extends SlotAsset(link, slot, excerpt_) with TimeseriesData {
   override def source = link.asset.source
-  def entire = link.asset.entire && link.position.fold(true) { l =>
-    slot.segment.lowerBound.fold(true)(_ <= l) &&
-    slot.segment.upperBound.fold(true)(_ >= l + link.asset.duration)
-  }
+  override def entire = link.asset.entire && super.entire
   def segment = {
     /* We need to determine the portion of this asset and the slot which overlap, in asset-source space: */
     val b = link.asset.segment /* it must be within (and default to) this asset's own space */
@@ -94,6 +96,7 @@ final class SlotTimeseries private[models] (override val link : ContainerTimeser
       case t : TimeseriesFormat => t.sampleFormat
       case f => f
     } else link.asset.format
+  def sample(offset : Offset) = new TimeseriesSample(this, offset)
 }
 
 object SlotAsset extends Table[SlotAsset]("toplevel_asset") {

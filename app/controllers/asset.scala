@@ -28,8 +28,9 @@ object Asset extends SiteController {
     Ok(views.html.asset.view(request.obj))
   }
 
-  private def assetResult(tag : String, data_ : => Future[store.StreamEnumerator], fmt : AssetFormat, saveAs : Option[String] = None)(implicit request : Request[_]) : Future[SimpleResult] = {
+  private def assetResult(asset : BackedAsset, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[SimpleResult] = {
     val now = new Timestamp
+    val tag = asset.etag
     /* The split works because we never use commas within etags. */
     val ifNoneMatch = request.headers.getAll(IF_NONE_MATCH).flatMap(_.split(',').map(_.trim))
     /* Assuming assets are immutable, any if-modified-since header is good enough */
@@ -37,8 +38,8 @@ object Asset extends SiteController {
       ifNoneMatch.isEmpty && request.headers.get(IF_MODIFIED_SINCE).isDefined)
       macros.Async(NotModified)
     else for {
-      data <- data_
-      date <- request.obj.source.modification
+      data <- store.Asset.read(asset)
+      date <- asset.source.modification
     } yield {
       val size = data.size
       val range = if (request.headers.get(IF_RANGE).forall(HTTP.unquote(_).equals(tag)))
@@ -50,8 +51,8 @@ object Asset extends SiteController {
         Some(DATE -> HTTP.date(now)),
         Some(CONTENT_LENGTH -> subdata.size.toString),
         range.map(r => CONTENT_RANGE -> ("bytes " + (if (r._1 >= size) "*" else r._1.toString + "-" + r._2.toString) + "/" + data.size.toString)),
-        Some(CONTENT_TYPE -> fmt.mimetype),
-        saveAs.map(name => CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + fmt.extension.fold("")("." + _)))),
+        Some(CONTENT_TYPE -> asset.format.mimetype),
+        saveAs.map(name => CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + asset.format.extension.fold("")("." + _)))),
         date.map(d => (LAST_MODIFIED -> HTTP.date(d))),
         Some(ETAG -> HTTP.quote(tag)),
         Some(CACHE_CONTROL -> "max-age=31556926, private") /* this needn't be private for public data */
@@ -63,16 +64,14 @@ object Asset extends SiteController {
       }
   }
 
-  private def slotAssetResult(inline : Boolean = true)(implicit request : Request[_]) =
-    assetResult(
-      "sobj:%d:%d".format(request.obj.slotId.unId, request.obj.assetId.unId),
-      store.Asset.read(request.obj),
-      request.obj.format,
-      if (inline) None else Some(request.obj.link.name)
-    )
-
   def download(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, inline : Boolean) = Action(v, i, o, Permission.DOWNLOAD).async { implicit request =>
-    slotAssetResult(inline)
+    assetResult(request.obj, if (inline) None else Some(request.obj.link.name))
+  }
+
+  def downloadSuperseded(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id, o : models.Asset.Id, inline : Boolean) = Action(v, i, a, Permission.DOWNLOAD, true).async { implicit request =>
+    FileAsset.getSuperseded(o, request.obj.asset).flatMap(_.fold(ANotFound) { a =>
+      assetResult(a, if (inline) None else Some(request.obj.link.name))
+    })
   }
 
   private[controllers] def getFrame(offset : Either[Float,Offset])(implicit request : Request[_]) =
@@ -81,15 +80,13 @@ object Asset extends SiteController {
         val off = offset.fold(f => Offset(10*(f*ts.duration.seconds/10).floor), identity)
         if (off < 0 || off > ts.duration)
           Future.successful(NotFound)
-        else assetResult(
-          "sframe:%d:%d:%d".format(ts.slotId.unId, ts.link.assetId.unId, off.millis.toLong),
-          store.Asset.readFrame(ts, off),
-          ts.source.format.sampleFormat
-        )
+        else
+          assetResult(ts.sample(off))
       case _ =>
         if (!offset.fold(_ => true, _ == 0))
           Future.successful(NotFound)
-        else slotAssetResult()
+        else
+          assetResult(request.obj)
     }
   def frame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, eo : Offset) = Action(v, i, o, Permission.DOWNLOAD).async { implicit request =>
     getFrame(Right(eo))

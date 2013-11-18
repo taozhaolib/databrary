@@ -118,6 +118,7 @@ sealed abstract class Asset protected (val id : Asset.Id) extends TableRowId[Ass
   def format : AssetFormat
   /** Data classification for the data in this asset. */
   def classification : Classification.Value
+  def etag = "obj:" + id
 
   /** ContainerAsset via which this asset is linked into a container. */
   def link(implicit site : Site) = ContainerAsset.get(this)
@@ -132,6 +133,8 @@ trait BackedAsset {
   def source : FileAsset
   /** The backing asset from which this data is taken, which may be itself or a containing asset. */
   def sourceId : FileAsset.Id = source.id
+  def format : AssetFormat
+  def etag : String
 }
 
 /** Refinement (implicitly of Asset) for objects representing timeseries data. */
@@ -144,6 +147,7 @@ trait TimeseriesData extends BackedAsset {
   def duration : Offset = segment.upperBound.flatMap(u => segment.lowerBound.map(u - _)).get
   def source : Timeseries
   override def sourceId : Timeseries.Id = source.id
+  def format : AssetFormat = if (segment.isSingleton) source.format.sampleFormat else source.format
 }
 
 /** Base for simple "opaque" file assets, uploaded, stored, and downloaded as individual files with no special processing. */
@@ -171,8 +175,20 @@ final class Timeseries private[models] (override val id : Timeseries.Id, overrid
   */
 final class Clip private (override val id : Clip.Id, val source : Timeseries, val segment : Range[Offset]) extends Asset(id) with TableRowId[Clip] with TimeseriesData {
   def entire = false
-  def format = if (segment.isSingleton) source.format.sampleFormat else source.format
   def classification = source.classification
+}
+
+final class TimeseriesSample private[models] (val parent : TimeseriesData, val offset : Offset) extends TimeseriesData {
+  def source = parent.source
+  override def sourceId = parent.sourceId
+  val segment = {
+    val seg = parent.segment
+    Range.singleton((seg.lowerBound.get + offset).ensuring(seg @> _))
+  }
+  def entire = false
+  override def duration = 0
+  override def format = parent.source.format.sampleFormat
+  def etag = parent.etag + ":sample:" + offset.millis
 }
 
 
@@ -219,8 +235,10 @@ object FileAsset extends TableId[FileAsset]("file") {
   private[models] def get(i : Id, ts : Boolean = false) : Future[Option[FileAsset]] =
     (if (ts) row else onlyRow).SELECT("WHERE file.id = ?").apply(i).singleOpt
 
-  def getSuperseding(i : Asset.Id) : Future[Seq[FileAsset]] =
+  private[models] def getSuperseding(i : Asset.Id) : Future[Seq[FileAsset]] =
     row.SELECT("WHERE file.superseded = ?").apply(i).list
+  def getSuperseded(old : Asset.Id, a : Asset) : Future[Option[FileAsset]] =
+    row.SELECT("WHERE file.id = ? AND file.superseded = ?").apply(old, a.id).singleOpt
 
   /** Create a new file asset from an uploaded file.
     * @param format the format of the file, taken as given

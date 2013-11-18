@@ -152,6 +152,4 @@ object Asset {
     case t : TimeseriesData if !t.entire => Segment.read(t)
     case _ => Future.successful(FileAsset.read(o))
   }
-  def readFrame(o : TimeseriesData, offset : Offset = 0) : Future[StreamEnumerator] =
-    Segment.readFrame(o, offset)
 }

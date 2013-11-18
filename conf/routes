@@ -80,6 +80,8 @@ GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/inline    
 GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/head                            controllers.Asset.head(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id)
 GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb                           controllers.Asset.thumb(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id)
 GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>        controllers.Asset.frame(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, offset : dbrary.Offset)
+GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/old/$oID<[0-9]+>/download       controllers.Asset.downloadSuperseded(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, oID : models.Asset.Id, inline : Boolean = false)
+GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/old/$oID<[0-9]+>/inline         controllers.Asset.downloadSuperseded(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, oID : models.Asset.Id, inline : Boolean = true)
 
 # annotations
 POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/comment/create                                     controllers.Slot.comment(vID : models.Volume.Id, sID : models.Slot.Id, parent : Option[models.Comment.Id] ?= None)
