@@ -1,14 +1,9 @@
 // Module houses everything databrary
 
-var dbModule = angular.module('DatabraryModule', ['ngSanitize']);
+var dbModule = angular.module('DatabraryModule', ['ngSanitize', 'ngAnimate']);
 
 dbModule.run(function ($rootScope, $location, $compile) {
-	var contentArea = $('#main'),
-		messageCtrl = $('<div id="messages" class="messages" ng-controller="MessageCtrl" ng-class="{messages_enabled: isEnabled()}"><div ng-repeat="message in messages" id="{{message.id}}" class="message message_{{message.type}}"><div class="wrap"><div class="row"><div class="col-full" db-message-closable="{{message.closeable}}"><div class="message_content" ng-bind-html="message.message"></div></div></div></div></div></div>');
-
-	contentArea.after(messageCtrl);
-
-//	$('body').append($('<div db-message>This is a test!</div>'));
+	// init
 });
 
 //
@@ -306,7 +301,7 @@ dbModule.factory('MessageService', function ($rootScope) {
 		while (queue.length) {
 			q = queue.shift();
 
-			switch(q.length) {
+			switch (q.length) {
 				case 2:
 					messageService[q[0]](q[1]);
 					break;
@@ -328,11 +323,11 @@ dbModule.factory('MessageService', function ($rootScope) {
 	};
 
 	messageService.formatRawMessage = function (messageScope, messageElement, messageAttrs) {
-		var message = messageTemplate;
+		var message = $.extend(true, {}, messageTemplate);
 
 		message.id = messageElement.attr('id') || 'message_' + Math.random().toString(36).substring(2);
 		message.type = messageService.getValidType(messageAttrs.dbMessageType);
-		message.target = attrToBoolean(messageAttrs.dbMessageTarget, message.target);
+		message.target = messageAttrs.dbMessageTarget || message.target;
 		message.closeable = attrToBoolean(messageAttrs.dbMessageCloseable, message.closeable);
 		message.enabled = attrToBoolean(messageAttrs.dbMessageEnabled, message.enabled);
 		message.message = messageAttrs.dbMessageMessage || messageElement.html();
@@ -388,10 +383,11 @@ dbModule.factory('MessageService', function ($rootScope) {
 	return messageService;
 });
 
-dbModule.controller('MessageCtrl', ['$scope', 'MessageService', function ($scope, messageService) {
+dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', function ($scope, $timeout, messageService) {
 	var enabled = false;
 
 	$scope.messages = [];
+	$scope.enabledMessages = [];
 
 	$scope.isEnabled = function () {
 		return enabled;
@@ -431,16 +427,13 @@ dbModule.controller('MessageCtrl', ['$scope', 'MessageService', function ($scope
 	};
 
 	$scope.addMessage = function (message) {
-		// enabled
-
-		// target
-
-		// closeable
-
 		if (typeof(message) != 'undefined')
 			$scope.messages.push(message);
 
 		$scope.sortMessages();
+
+		if (message.target)
+			$scope.targetMessage(message, message.target);
 
 		return message;
 	};
@@ -457,10 +450,10 @@ dbModule.controller('MessageCtrl', ['$scope', 'MessageService', function ($scope
 	$scope.updateMessage = function (old, message) {
 		var index = $scope.getIndex(old);
 
-		if (!index)
+		if (!~index)
 			return false;
 
-		$scope.messages[index] = $.extend(true, $scope.messages[index], message);
+		$scope.messages[index] = $.extend(true, {}, $scope.messages[index], message);
 
 		return $scope.messages[index];
 	};
@@ -468,11 +461,109 @@ dbModule.controller('MessageCtrl', ['$scope', 'MessageService', function ($scope
 	$scope.deleteMessage = function (old) {
 		var index = $scope.getIndex(old);
 
-		if (!index)
+		if (!~index)
 			return false;
 
 		return $scope.messages.splice(index, 1);
 	};
+
+	$scope.enableMessage = function (message) {
+		var index = $scope.getIndex(message);
+
+		if (!~index)
+			return false;
+
+		$scope.messages[index].enabled = true;
+
+		return $scope.messages[index];
+	};
+
+	$scope.disableMessage = function (message) {
+		var index = $scope.getIndex(message);
+
+		if (!~index)
+			return false;
+
+		$scope.messages[index].enabled = false;
+
+		return $scope.messages[index];
+	};
+
+	var getTargetEventNames = function (target, id) {
+		var focusElements = ['input', 'select', 'textarea'],
+			eventNamespace = '.messageTarget';
+
+		if ($.type(id) !== 'string') id = '';
+
+		if (focusElements.indexOf(target.prop('tagName')) >= 0)
+			return ['focusin' + eventNamespace + '_' + id, 'focusout' + eventNamespace + '_' + id];
+		else
+			return ['mouseenter' + eventNamespace + '_' + id, 'mouseleave' + eventNamespace + '_' + id];
+	};
+
+	$scope.targetMessage = function (message, target) {
+		var index = $scope.getIndex(message),
+			targetEl, targetEvents;
+
+		if (!~index)
+			return false;
+
+		if ($scope.messages[index].target) {
+			targetEl = $($scope.messages[index].target);
+			targetEvents = getTargetEventNames(targetEl, message.id);
+
+			$($scope.messages[index].target).unbind(targetEvents.join(' '));
+		}
+
+		targetEl = $(target);
+
+		if (!targetEl.exists) {
+			$scope.enableMessage(message);
+			return false;
+		}
+
+		targetEvents = getTargetEventNames(targetEl, message.id);
+
+		targetEl.bind(targetEvents[0], function () {
+			$scope.$apply(function () {
+				$scope.enableMessage(message);
+			});
+		});
+
+		targetEl.bind(targetEvents[1], function () {
+			$scope.$apply(function () {
+				$scope.disableMessage(message);
+			});
+		});
+
+		$scope.disableMessage(message);
+
+		return message;
+	};
+
+	$scope.updateHeight = function () {
+		var $window = $(window),
+			scroll = $window.scrollTop(),
+			contentArea = $('#main'),
+			padding = 0,
+			currentPadding = parseInt(contentArea.css('padding-top'));
+
+		var len = $scope.messages.length;
+
+		for (var i = 0; i < len; i++) {
+			if ($scope.messages[i].enabled && !$scope.messages[i].trace)
+				padding += $('#' + $scope.messages[i].id).outerHeight();
+		}
+
+		contentArea.css('padding-top', padding);
+		$window.scrollTop(scroll + padding - currentPadding);
+	};
+
+	$timeout(function () {
+		$scope.$watch('messages', function (messages) {
+			$scope.updateHeight();
+		}, true);
+	}, 250);
 
 	var initialize = function () {
 		messageService.registerController($scope);

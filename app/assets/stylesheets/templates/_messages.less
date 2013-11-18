@@ -2,36 +2,79 @@
 
 .messages {
 	position: fixed;
-	z-index: 950;
+	z-index: 850;
 	top: @b1 * 3;
 	width: 100%;
+	display: none;
+}
+
+.messages_enabled {
+	display: block;
 }
 
 //
 
 .message {
-	.height(1.5);
 	.line-height(1.5);
-
 	background-color: @g4;
 	color: @g3;
 	.box-shadow();
+	position: relative;
+	opacity: .95;
 }
 
 //
 
 .message_alert {
-
+	background-color: @c4g5m1;
+	color: @c4g2m1;
 }
 
 .message_info {
-
+	background-color: @c0g5m1;
+	color: @c0g2m1;
 }
 
 .message_error {
-
+	background-color: @c8g5m1;
+	color: @c8g2m1;
 }
 
 .message_trace {
+	background-color: @c10g5m1;
+	color: @c10g2m1;
+}
 
+//
+
+.message_close {
+	.size(@b1);
+	.margin-height(@f4);
+	float: right;
+	cursor: pointer;
+	background: url('/public/images/x.png') no-repeat @b6 @b6;
+	opacity: .5;
+
+	&:hover {
+		opacity: 1;
+	}
+}
+
+//
+
+.message_animate {
+	.transition();
+	overflow: hidden;
+}
+
+.message_animate.ng-leave.ng-leave-active,
+.message_animate.ng-move,
+.message_animate.ng-enter {
+	.max-height(0);
+}
+
+.message_animate.ng-leave,
+.message_animate.ng-move.ng-move-active,
+.message_animate.ng-enter.ng-enter-active {
+	.max-height(4);
 }
