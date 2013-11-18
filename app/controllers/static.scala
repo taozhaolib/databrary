@@ -1,5 +1,7 @@
 package controllers
 
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
 object Static extends SiteController {
   def index() = SiteAction {
     implicit request =>
@@ -21,9 +23,11 @@ object Static extends SiteController {
       Ok(views.html.static.board(request))
   }
 
-  def team() = SiteAction {
-    implicit request =>
-      Ok(views.html.static.team(request))
+  def team() = SiteAction.async { implicit request =>
+    for {
+      v <- models.Volume.Databrary
+      a <- v.partyAccess
+    } yield (Ok(views.html.static.team(a)))
   }
 
   def contributors() = SiteAction {

@@ -1,7 +1,6 @@
-@(implicit request: SiteRequest[_])
+@(partyAccess : Seq[VolumeAccess])(implicit request: SiteRequest[_])
 
 @widget.template.static("Our Team") {
-    @defining(Async.wait(Async.wait(models.Volume.get(IntId(1))).get.partyAccess)) { partyAccess =>
         <h1>The Databrary Team</h1>
 
         @defining(partyAccess.filter(_.access == Permission.ADMIN)) { access =>
@@ -39,5 +38,4 @@
                 </div>
             }
         }
-    }
 }
