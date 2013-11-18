@@ -46,32 +46,31 @@ object AssetFormat extends TableId[AssetFormat]("format") {
       case _ => new AssetFormat(id, mimetype, extension, name)
     } } from "ONLY format"
 
-  private def gets(b : Boolean, a : Option[AssetFormat], f : => SQLRows[AssetFormat]) : Option[AssetFormat] =
-    a.fold(scala.concurrent.Await.result(f.singleOpt, scala.concurrent.duration.Duration(1, scala.concurrent.duration.MINUTES))) {
-      case _ : TimeseriesFormat if !b => None
-      case a => Some(a)
-    }
+  private def wait(f : => SQLRows[AssetFormat]) : Option[AssetFormat] =
+    scala.concurrent.Await.result(f.singleOpt,
+      scala.concurrent.duration.Duration(1, scala.concurrent.duration.MINUTES))
+  private def fts(ts : Boolean)(a : AssetFormat) : Boolean =
+    ts || !a.isInstanceOf[TimeseriesFormat]
 
   /** Lookup a format by its id.
     * @param ts include TimeseriesFormats. Unlike other lookups, this is enabled by default. */
   def get(id : Id, ts : Boolean = true) : Option[AssetFormat] =
-    gets(ts, cache.get(id.unId),
-      row.SELECT("WHERE id = ?").apply(id))
+    cache.get(id.unId)
+      .orElse(wait(row.SELECT("WHERE id = ?").apply(id)))
+      .filter(fts(ts) _)
   private[models] def getTimeseries(id : TimeseriesFormat.Id) : Option[TimeseriesFormat] =
     cache.get(id.unId).flatMap(cast[TimeseriesFormat](_))
   /** Lookup a format by its mimetime.
     * @param ts include TimeseriesFormats. */
   def getMimetype(mimetype : String, ts : Boolean = false) : Option[AssetFormat] =
-    gets(ts, cache collectFirst 
-      { case (_, a) if a.mimetype.equals(mimetype) => a },
-      row.SELECT("WHERE mimetype = ?").apply(mimetype))
+    cache.collectFirst { case (_, a) if a.mimetype.equals(mimetype) && fts(ts)(a) => a }
+      .orElse(wait(row.SELECT("WHERE mimetype = ?").apply(mimetype)))
   /** Lookup a format by its extension.
     * @param ts include TimeseriesFormats. */
   private def getExtension(ext : String, ts : Boolean = false) : Option[AssetFormat] = {
     val extension = if (ext.equals("mpeg")) "mpg" else ext
-    gets(ts, cache collectFirst 
-      { case (_, a) if a.extension.fold(false)(_.equals(extension)) => a },
-      row.SELECT("WHERE extension = ?").apply(extension))
+    cache.collectFirst { case (_, a) if a.extension.fold(false)(_.equals(extension)) && fts(ts)(a) => a }
+      .orElse(wait(row.SELECT("WHERE extension = ?").apply(extension)))
   }
   /** Get a list of all file formats in the database.
     * @param ts include TimeseriesFormats. */
