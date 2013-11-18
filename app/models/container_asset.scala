@@ -91,7 +91,7 @@ object ContainerAsset extends Table[ContainerAsset]("container_asset") {
 
   /** Retrieve a specific asset link by container and asset id.
     * This assumes that permissions have already been checked as the caller must already have the container. */
-  private[models] def get(container : Container, asset : Asset.Id) : Future[Option[ContainerAsset]] =
+  def get(container : Container, asset : Asset.Id) : Future[Option[ContainerAsset]] =
     containerRow(container)
       .SELECT("WHERE container_asset.container = ? AND container_asset.asset = ?")
       .apply(container.id, asset).singleOpt

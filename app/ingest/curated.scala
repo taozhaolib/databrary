@@ -150,30 +150,45 @@ object Curated {
     def fields = Seq(name, optString(position), classification.toString, file.getPath)
     def key = file.getPath
 
-    def info : Asset.Info =
-      AssetFormat.getFilename(file.getPath, true).fold {
-        throw PopulateException("no file format found for " + file.getPath)
-      } {
-        case fmt : TimeseriesFormat =>
+    private def fileInfo(file : File) : Asset.FileInfo =
+      Asset.FileInfo(file, AssetFormat.getFilename(file.getPath, false)
+        .getOrElse(throw PopulateException("no file format found for " + file.getPath)))
+
+    private val transcodedRegex = "^(.*)/transcoded/(.*)-01.mp4$".r
+    def info : Asset.Info = {
+      val path = file.getPath
+      path match {
+        case transcodedRegex(dir, base) =>
           val probe = media.AV.probe(file)
           if (!probe.isVideo)
-            throw PopulateException("invalid format for timeseries " + file.getPath + ": " + probe.format + " " + probe.streams.mkString(","))
-          Asset.TimeseriesInfo(fmt, probe.duration)
-        case fmt =>
-          Asset.FileInfo(fmt)
+            throw PopulateException("invalid format for timeseries " + path + ": " + probe.format + " " + probe.streams.mkString(","))
+          val t = new File(dir, base + ".")
+          val l = t.getParentFile.listFiles(new java.io.FilenameFilter {
+            def accept(d : File, name : String) = name.startsWith(t.getName)
+          })
+          if (l.length != 1)
+            throw PopulateException("missing or ambiguous original " + t.getPath)
+          Asset.TimeseriesInfo(file, TimeseriesFormat.Video, probe.duration, fileInfo(l.head))
+        case _ =>
+          if (path.endsWith(".mp4"))
+            throw PopulateException("untranscoded video: " + path)
+          fileInfo(file)
       }
+    }
 
-    def populate(info : Asset.Info)(implicit site : Site) : Future[models.Asset] = {
+    def populate(info : Asset.Info)(implicit site : Site) : Future[models.FileAsset] = {
       /* for now copy and don't delete */
-      val infile = store.TemporaryFileCopy(file)
+      val infile = store.TemporaryFileCopy(info.file)
       for {
         asset <- info match {
-          case Asset.TimeseriesInfo(fmt, duration) =>
-            models.Timeseries.create(fmt, classification, duration, infile)
-          case Asset.FileInfo(fmt) =>
+          case Asset.TimeseriesInfo(_, fmt, duration, orig) =>
+            populate(orig).flatMap { o =>
+              models.Timeseries.create(fmt, classification, duration, infile, Some(o))
+            }
+          case Asset.FileInfo(_, fmt) =>
             models.FileAsset.create(fmt, classification, infile)
         }
-        _ <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, file.getPath).execute
+        _ <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, info.path).execute
       } yield (asset)
     }
   }
@@ -199,9 +214,11 @@ object Curated {
         f
       }), "file path")
     } yield (name.map(Asset(_, pos.get, classification.get, path.get)))
-    sealed abstract class Info(val format : AssetFormat)
-    final case class FileInfo(override val format : AssetFormat) extends Info(format)
-    final case class TimeseriesInfo(override val format : TimeseriesFormat, duration : Offset) extends Info(format)
+    sealed abstract class Info(val file : File, val format : AssetFormat) {
+      def path = file.getPath
+    }
+    final case class FileInfo(override val file : File, override val format : AssetFormat) extends Info(file, format)
+    final case class TimeseriesInfo(override val file : File, override val format : TimeseriesFormat, duration : Offset, original : FileInfo) extends Info(file, format)
   }
 
   private final case class SessionAsset(sessionKey : String, asset : Asset) extends KeyedData {
@@ -226,19 +243,25 @@ object Curated {
           throw PopulateException("unexpected negative position at asset " + name)
         case (p, _, _) => p
       }
-      ContainerAsset.findName(container, asset.name).flatMap {
+      SQL("SELECT id FROM ingest.asset WHERE file = ?").apply(asset.file.getPath).singleOpt(SQLCols[models.Asset.Id]).flatMap { iid =>
+      Async.flatMap[models.Asset.Id,ContainerAsset](iid, ContainerAsset.get(container, _)).flatMap(
+      _.fold(ContainerAsset.findName(container, asset.name))(a => Async(Seq(a))).flatMap {
         case Nil =>
-          asset.populate(info).flatMap(
-            ContainerAsset.create(container, _, pos, asset.name, None))
+          for {
+            _ <- check(iid.isEmpty,
+              PopulateException("inconsistant container for previously ingested asset " + name))
+            a <- asset.populate(info)
+            ca <- ContainerAsset.create(container, a, pos, asset.name, None)
+          } yield (ca)
         case Seq(ca) => for {
           _ <- check(ca.asset.format == info.format,
             PopulateException("inconsistent format for asset " + name + ": " + info.format.name + " <> " + ca.asset.format.name))
           _ <- check(ca.asset.classification == asset.classification,
             PopulateException("inconsistent classification for asset " + name + ": " + asset.classification + " <> " + ca.asset.classification))
           _ <- info match {
-            case Asset.TimeseriesInfo(_, duration) =>
-              check(!ca.asset.asInstanceOf[Timeseries].duration.approx(duration),
-                PopulateException("inconsistent duration for asset " + name + ": " + duration + " <> " + ca.asset.asInstanceOf[Timeseries].duration))
+            case ts : Asset.TimeseriesInfo =>
+              check(!ca.asset.asInstanceOf[Timeseries].duration.approx(ts.duration),
+                PopulateException("inconsistent duration for asset " + name + ": " + ts.duration + " <> " + ca.asset.asInstanceOf[Timeseries].duration))
             case _ => Async(())
           }
           _ <- check(ca.position.equals(pos),
@@ -246,6 +269,8 @@ object Curated {
         } yield (ca)
         case _ =>
           Future.failed(PopulateException("multiple assets for " + name))
+      }
+      )
       }
     }
   }
