@@ -64,5 +64,6 @@ object Async {
     case Some(v) => v.get
     case None => throw new UnevaluatedFutureException /* checked explicitly to shorten stack trace */
   }
-  @deprecated("blocking call", "") def wait[A](a : Future[A]) : A = scala.concurrent.Await.result(a, scala.concurrent.duration.Duration(1, scala.concurrent.duration.SECONDS))
+  @deprecated("blocking call", "") def wait[A](a : Future[A]) : A =
+    scala.concurrent.Await.result(a, scala.concurrent.duration.Duration(1, scala.concurrent.duration.SECONDS))
 }

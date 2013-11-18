@@ -71,10 +71,12 @@ object Metric extends TableId[Metric[_]]("metric") {
     * Metrics are strongly cached, so this provides a synchronous interface which may block on occasion. */
   def get(id : Id) : Option[Metric[_]] =
     cache.get(id.unId) orElse
-      Async.wait(row.SELECT("WHERE id = ?").apply(id).singleOpt)
+      scala.concurrent.Await.result(
+        row.SELECT("WHERE id = ?").apply(id).singleOpt,
+        scala.concurrent.duration.Duration(1, scala.concurrent.duration.MINUTES))
 
   def getAll : Iterable[Metric[_]] =
-    cache.values // XXX incomplete but not entirely broken, temporary?
+    cache.values // XXX incomplete but assymptotically correct
 
   private val rowTemplate = row.from("metric JOIN record_template ON metric.id = record_template.metric")
   /** This is not used as they are for now hard-coded in RecordCategory above. */

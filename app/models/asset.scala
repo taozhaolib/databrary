@@ -47,7 +47,7 @@ object AssetFormat extends TableId[AssetFormat]("format") {
     } } from "ONLY format"
 
   private def gets(b : Boolean, a : Option[AssetFormat], f : => SQLRows[AssetFormat]) : Option[AssetFormat] =
-    a.fold(Async.wait(f.singleOpt)) {
+    a.fold(scala.concurrent.Await.result(f.singleOpt, scala.concurrent.duration.Duration(1, scala.concurrent.duration.MINUTES))) {
       case _ : TimeseriesFormat if !b => None
       case a => Some(a)
     }
@@ -67,14 +67,16 @@ object AssetFormat extends TableId[AssetFormat]("format") {
       row.SELECT("WHERE mimetype = ?").apply(mimetype))
   /** Lookup a format by its extension.
     * @param ts include TimeseriesFormats. */
-  private def getExtension(extension : String, ts : Boolean = false) : Option[AssetFormat] =
+  private def getExtension(ext : String, ts : Boolean = false) : Option[AssetFormat] = {
+    val extension = if (ext.equals("mpeg")) "mpg" else ext
     gets(ts, cache collectFirst 
       { case (_, a) if a.extension.fold(false)(_.equals(extension)) => a },
       row.SELECT("WHERE extension = ?").apply(extension))
+  }
   /** Get a list of all file formats in the database.
     * @param ts include TimeseriesFormats. */
   def getAll(ts : Boolean = false) : Iterable[AssetFormat] =
-    // XX incomplete but possibly sufficient
+    // XXX incomplete but assymptotically correct
     if (ts)
       cache.values
     else
