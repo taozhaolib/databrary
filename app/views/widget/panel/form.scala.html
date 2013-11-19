@@ -1,0 +1,21 @@
+@(title: String = "", context: String = "")(body: Html)(implicit request : SiteRequest[_])
+
+@widget.panel.raw("form", "panel_form")(){
+    @if(title.nonEmpty) {
+        @if(context.nonEmpty) {
+            <hgroup class="col-full">
+            @if(title.nonEmpty) {
+                <h1 class="panel_context">@context</h1>
+
+                <h2 class="panel_title with_context">@display.formatTitle(title)</h2>
+            }
+            </hgroup>
+        } else {
+            <h1 class="col-full panel_title">@display.formatTitle(title)</h1>
+        }
+
+
+    }
+
+    @body
+}

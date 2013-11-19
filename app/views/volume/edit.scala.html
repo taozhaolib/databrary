@@ -3,29 +3,54 @@
 @import helper.FieldConstructor
 
     @implicitField = @{
-        FieldConstructor(widget.tag.minimalFieldConstructor.f)
+        FieldConstructor(widget.tag.labeledFieldConstructor.f)
     }
 
 @widget.template.crud(a.fold(_.toString + ": Create Volume", "Edit Volume: " + _.name)) {
+    @widget.panel.form(a.fold(_ => "", _.pageName), a.fold(_ => "Create Volume", _ => "Edit Volume")) {
+
+        <div class="col-full">
         @widget.tag.form(a.fold(p => routes.Volume.add(p.party.id), s => routes.Volume.change(s.id))) {
             @widget.formErrors(editForm)
 
-            @widget.tag.inputText(editForm("name"), 'placeholder -> "Title", '_class -> "big")
+            @widget.tag.inputText(editForm("name"), 'placeholder -> "Title", '_class -> "")
             @widget.tag.textarea(editForm("body"), 'placeholder -> "Description", '_class -> "")
 
             <fieldset class="publications">
                 <legend>Publications</legend>
 
-                <div db-form-repeater>
+                <div db-form-repeater class="repeater" ng-init="repeats = @editForm.data.filter(i => i._1.contains("citation")).groupBy(i => i._1.split("\\.").head).flatMap(m => m._2.flatMap(kv => kv._1.split("\\.").last+": \""+kv._2+"\""))">
+                    <div ng-repeat="repeat in repeats" class="repeat">
+                       <div class="repeated">
+                           <div class="field cf" id="citation_{{$index}}__head_field">
+                               <label for="citation_{{$index}}__head">Citation</label>
+                               <input type="text" id="citation_{{$index}}__head" name="citation[{{$index}}].head" ng-model="repeat.head">
+                           </div>
 
+                           <div class="field cf" id="citation_{{$index}}__url_field">
+                               <label for="citation_{{$index}}__url">DOI or URL</label>
+                               <input type="text" id="citation_{{$index}}__url" name="citation[{{$index}}].url" ng-model="repeat.url">
+                           </div>
+
+                           <div class="field cf" id="citation_{{$index}}__body_field">
+                               <label for="citation_{{$index}}__body">Abstract</label>
+                               <textarea type="text" id="citation_{{$index}}__body" name="citation[{{$index}}].body" ng-model="repeat.body"></textarea>
+                           </div>
+                       </div>
+                    </div>
+
+                    <div db-form-repeater-noscript>
+                    @widget.tag.repeat(editForm("citation")) { f =>
+                        @widget.tag.inputText(f("head"), 'placeholder -> "Citation")
+                        @widget.tag.inputText(f("url"), 'placeholder -> "DOI or URL")
+                        @widget.tag.textarea(f("body"), 'placeholder -> "Abstract")
+                    }
+                    </div>
                 </div>
-                @widget.tag.repeat(editForm("citation")) { f =>
-                    @widget.tag.inputText(f("head"), 'placeholder -> "Citation")
-                    @widget.tag.inputText(f("url"), 'placeholder -> "DOI or URL")
-                    @widget.tag.textarea(f("body"), 'placeholder -> "Abstract")
-                }
             </fieldset>
 
-            <button type="submit" class="big button first">@a.fold(_ => "Create", _ => "Change")</button>
+            <button type="submit" class="button">@a.fold(_ => "Create", _ => "Change")</button>
         }
+        </div>
+    }
 }
