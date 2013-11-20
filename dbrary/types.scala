@@ -125,7 +125,7 @@ object SQLType {
     }
 
   implicit def option[A](implicit t : SQLType[A]) : SQLType[Option[A]] =
-    new SQLType[Option[A]](t.name + " NULL", classOf[Option[A]]) {
+    new SQLType[Option[A]](t.name, classOf[Option[A]]) {
       def read(s : String) : Option[Option[A]] = Option(s).map(t.read(_))
       override def get(x : Any, where : String = "") : Option[A] = Option(x).map(t.get(_, where))
       override def put(a : Option[A]) = a.map(t.put(_))//.orNull
