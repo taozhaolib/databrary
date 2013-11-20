@@ -1,4 +1,4 @@
-@(id: String, classes: String, attr: (Symbol, Any)*)(caption: Html = Html(""), scalar: String = "", link: String = "", title: String = "", hoverable: Boolean = false)(body: Html)
+@(id: String, classes: String, attr: (Symbol,String)*)(caption: Html = Html(""), scalar: String = "", link: String = "", title: String = "", hoverable: Boolean = false)(body: Html)
 
 <figure id="figure_@id" class="figure figure_@id @if(scalar.nonEmpty){scalar @scalar} @if(hoverable){hoverable} @classes" @if(scalar.nonEmpty){db-baseline db-baseline-ratio="@scalar"} @El.attrToHtml(attr)>
     @if(link.nonEmpty){<a href="@link" @if(title.nonEmpty){title="@title"}>}

@@ -19,24 +19,32 @@
             <fieldset class="publications">
                 <legend>Publications</legend>
 
-                <div db-form-repeater class="repeater" ng-init="repeats = @editForm.data.filter(i => i._1.contains("citation")).groupBy(i => i._1.split("\\.").head).flatMap(m => m._2.flatMap(kv => kv._1.split("\\.").last+": \""+kv._2+"\""))">
-                    <div ng-repeat="repeat in repeats" class="repeat">
-                       <div class="repeated">
-                           <div class="field cf" id="citation_{{$index}}__head_field">
-                               <label for="citation_{{$index}}__head">Citation</label>
-                               <input type="text" id="citation_{{$index}}__head" name="citation[{{$index}}].head" ng-model="repeat.head">
-                           </div>
+                <div db-form-repeater class="repeater" ng-init="repeats = @editForm.data.filter(i => i._1.contains("citation")).map(i => (i._1.split("\\.").head, i._1.split("\\.").last, i._2)).groupBy(i => i._1).map(i => i._2.map(i => i._2+": '"+i._3+"'").mkString("{",",","}")).mkString("[",",","]")">
+                    <div db-form-repeater-script style="display: none;">
+                        <div ng-repeat="repeat in repeats" class="repeat">
+                            <div class="repeat_repeated">
+                               <div class="field cf" id="citation_{{$index}}__head_field">
+                                   <label for="citation_{{$index}}__head">Citation</label>
+                                   <input type="text" id="citation_{{$index}}__head" name="citation[{{$index}}].head" ng-model="repeat.head">
+                               </div>
 
-                           <div class="field cf" id="citation_{{$index}}__url_field">
-                               <label for="citation_{{$index}}__url">DOI or URL</label>
-                               <input type="text" id="citation_{{$index}}__url" name="citation[{{$index}}].url" ng-model="repeat.url">
-                           </div>
+                               <div class="field cf" id="citation_{{$index}}__url_field">
+                                   <label for="citation_{{$index}}__url">DOI or URL</label>
+                                   <input type="text" id="citation_{{$index}}__url" name="citation[{{$index}}].url" ng-model="repeat.url">
+                               </div>
 
-                           <div class="field cf" id="citation_{{$index}}__body_field">
-                               <label for="citation_{{$index}}__body">Abstract</label>
-                               <textarea type="text" id="citation_{{$index}}__body" name="citation[{{$index}}].body" ng-model="repeat.body"></textarea>
-                           </div>
-                       </div>
+                               <div class="field cf" id="citation_{{$index}}__body_field">
+                                   <label for="citation_{{$index}}__body">Abstract</label>
+                                   <textarea type="text" id="citation_{{$index}}__body" name="citation[{{$index}}].body" ng-model="repeat.body"></textarea>
+                               </div>
+                            </div>
+
+                            <div class="repeat_controls">
+                                <div class="repeat_control repeat_crud repeat_delete" ng-click="deleteRepeat(repeat)">-</div>
+                                <div class="repeat_control repeat_move" ng-show="isMovable()"></div>
+                                <div class="repeat_control repeat_crud repeat_add" ng-click="createRepeat()" ng-show="$last">+</div>
+                            </div>
+                        </div>
                     </div>
 
                     <div db-form-repeater-noscript>

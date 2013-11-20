@@ -1,0 +1,77 @@
+// STYLES
+
+.repeater {
+
+}
+
+//
+
+.repeat {
+	position: relative;
+	.margin-bottom(@f2);
+}
+
+//
+
+.repeat_repeated {
+	.margin-left(2);
+	.padding-height(@f3);
+
+	.field:last-child {
+		.margin-bottom(0);
+	}
+}
+
+//
+
+.repeat_controls {
+	position: absolute;
+	z-index: 100;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: @b1 * 1.5;
+	border: 1px solid @g3;
+	.border-radius(@b1);
+}
+
+//
+
+.repeat_control {
+	position: absolute;
+	left: 0;
+	right: 0;
+	.transition();
+}
+
+//
+
+.repeat_crud {
+	.size(@b1 + @b12);
+	.border-radius(@b1);
+	border: 1px solid @c10;
+	.margin(@f6);
+    cursor: pointer;
+	text-align: center;
+	.font-size(2);
+
+	&:hover {
+		background-color: @c10g5m1;
+	}
+}
+
+.repeat_add {
+	bottom: 0;
+	line-height: .5;
+}
+
+.repeat_delete {
+	top: 0;
+	line-height: .45;
+}
+
+//
+
+.repeat_move {
+	cursor: hand;
+}

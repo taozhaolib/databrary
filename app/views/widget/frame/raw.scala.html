@@ -1,4 +1,4 @@
-@(id: String, classes: String, attr: (Symbol,Any)*)(title: String = "", foldable: Boolean = false, foldCurrently: Boolean = false)(body: Html)
+@(id: String, classes: String, attr: (Symbol,String)*)(title: String = "", foldable: Boolean = false, foldCurrently: Boolean = false)(body: Html)
 
 <aside id="frame_@id" class="frame col-full frame_@id @classes" @if(foldable){db-fold @if(foldCurrently){db-fold-currently="true"}} @El.attrToHtml(attr)>
     <div class="row">

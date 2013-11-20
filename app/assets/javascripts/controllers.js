@@ -555,7 +555,7 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 				padding += $('#' + $scope.messages[i].id).outerHeight();
 		}
 
-		console.log('MessageCtrl.updateHeight() still thinks '+padding+'px makes any sense whatsoever.');
+		console.log('MessageCtrl.updateHeight() still thinks ' + padding + 'px makes any sense whatsoever.');
 
 		contentArea.css('padding-top', padding);
 		$window.scrollTop(scroll + padding - currentPadding);
@@ -593,7 +593,53 @@ dbModule.directive('dbMessage', ['MessageService', function (messageService) {
 
 dbModule.directive('dbFormRepeater', function () {
 	var link = function ($scope, $element, $attrs) {
+		$('[db-form-repeater-noscript]').remove();
+		$('[db-form-repeater-script]').removeAttr('style');
 
+		$scope.repeats = $scope.repeats || [{}];
+
+		$scope.getIndex = function (repeat) {
+			return $scope.repeats.indexOf(repeat);
+		};
+
+		$scope.getRepeat = function (repeat) {
+			return $scope.repeats[$scope.getIndex(repeat)];
+		};
+
+		$scope.createRepeat = function () {
+			$scope.repeats.push({});
+
+			return $scope.repeats.slice(-1)[0];
+		};
+
+		$scope.updateRepeat = function (old, repeat) {
+			var index = $scope.getIndex(old);
+
+			if (!~index)
+				return false;
+
+			$scope.repeats[index] = $.extend(true, {}, $scope.repeats[index], repeat);
+
+			return $scope.repeats[index];
+		};
+
+		$scope.deleteRepeat = function (repeat) {
+			var index = $scope.getIndex(repeat);
+
+			if (!~index)
+				return false;
+
+			var deleted = $scope.repeats.splice(index, 1);
+
+			if($scope.repeats.length == 0)
+				$scope.repeats.push({});
+
+			return deleted;
+		};
+
+		$scope.isMoveable = function () {
+			return false;
+		}
 	};
 
 	return {
@@ -603,65 +649,13 @@ dbModule.directive('dbFormRepeater', function () {
 	}
 });
 
+//
+
+
+
 //////////////////////////
 
 (function ($, window, document) {
-	var $handler;
-
-	$.extend($.fn, {
-		formHelper: function (args) {
-			//options
-			var options,
-				defaults = {
-					speed: 150
-				};
-
-			var $this = this,
-				$messages = {},
-				$repeaters = {};
-
-			// methods
-			var update = function (args) {
-				options = $.extend(defaults, args);
-
-				$messages = getMessages();
-				$repeaters = getRepeaters();
-
-				setClickers();
-				setAjax();
-
-				return $this;
-			};
-
-			var getMessages = function () {
-				var $messages = $this.find('.message'),
-					messages = {};
-
-				$messages.each(function () {
-					var $message = $(this),
-						$input = $($message.parent().attr('data-for'));
-
-					if ($messageHandler && ($message = $messageHandler.data('messageHandler').create($input, $message)))
-						messages[$message.attr('id')] = $message;
-				});
-
-				return messages;
-			};
-
-			var getRepeaters = function () {
-				var $repeaters = $this.find('.repeater'),
-					repeaters = {};
-
-				$repeaters.each(function () {
-					var $repeater = $(this);
-
-					if ($repeater = $repeater.formRepeater({}))
-						repeaters[$repeater.attr('id')] = $repeater;
-				});
-
-				return repeaters;
-			};
-
 			var setClickers = function () {
 				var check = function ($clicker) {
 					var $input = $clicker.find('input');
@@ -716,106 +710,5 @@ dbModule.directive('dbFormRepeater', function () {
 					e.preventDefault();
 				});
 			};
-
-			// setup
-			if (!update(args))
-				return false;
-
-			// api
-			$this.data('formHelper', {
-				update: update,
-				messages: $messages
-			});
-
-			return $this;
-		},
-
-		formRepeater: function (args) {
-			var $repeater = this,
-				$repeats, repeatCount, $copy, newIndex = 0;
-
-			var $tempControls = $('<div class="controls"></div>'),
-				$tempControlsCreate = $('<div class="mod create">+</div>'),
-				$tempControlsRemove = $('<div class="mod remove">-</div>'),
-				$tempControlsMove = $('<div class="move"></div>');
-
-			// methods
-			var initialize = function () {
-				updateRepeater($repeater);
-
-				$repeats.each(function (index) {
-					var $repeat = $(this),
-						key = $repeat.find('label[for]').attr('for').split('__').shift().split('_').pop();
-
-					if (key == repeatCount - 1)
-						$copy = $repeat.clone();
-
-					updateControls($repeat, index);
-
-					newIndex++;
-				});
-			};
-
-			var updateRepeater = function ($repeater) {
-				$repeats = $repeater.find('.repeat');
-				repeatCount = $repeats.length;
-			};
-
-			var updateControls = function ($repeat, index) {
-				$repeat.find('.controls').remove();
-
-				var $controls = $tempControls.clone();
-
-				$controls.append($tempControlsRemove.clone());
-
-				if (repeatCount >= 2)
-					$controls.append($tempControlsMove.clone());
-
-				if (index == repeatCount - 1)
-					$controls.append($tempControlsCreate.clone());
-
-				$repeat.append($controls);
-			};
-
-			var create = function ($repeater) {
-				var cID = $copy.find('label[for]').attr('for').split('__').shift().split('_').pop();
-
-				$repeater.append($($('<div>').append($copy).html().replace(new RegExp('_' + cID + '_', 'g'), '_' + newIndex + '_').replace(new RegExp('\\[' + cID + '\\]', 'g'), '[' + newIndex + ']')));
-
-				updateRepeater($repeater);
-
-				$repeats.each(function (index) {
-					updateControls($(this), index);
-				});
-
-				newIndex++;
-			};
-
-			var remove = function ($repeater, $repeat) {
-				if (repeatCount > 1)
-					$repeat.remove();
-				else
-					$repeat.find('input, textarea').val('');
-
-				updateRepeater($repeater);
-
-				$repeats.each(function (index) {
-					updateControls($(this), index);
-				})
-			};
-
-			// setup
-			initialize();
-
-			$repeater.on('click', '.controls .remove', function () {
-				remove($repeater, $(this).closest('.repeat'));
-			});
-
-			$repeater.on('click', '.controls .create', function () {
-				create($repeater);
-			});
-
-			return $repeater;
-		}
-	});
 })(jQuery, window, document);
+
