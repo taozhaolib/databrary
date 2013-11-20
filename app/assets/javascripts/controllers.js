@@ -8,6 +8,30 @@ dbModule.run(function ($rootScope, $location, $compile) {
 
 //
 
+dbModule.directive('dbModeClient', function () {
+	var compile = function ($element) {
+		$element.replaceWith($element.html());
+	};
+
+	return {
+		restrict: 'A',
+		compile: compile
+	};
+});
+
+dbModule.directive('dbModeServer', function () {
+	var compile = function ($element) {
+		$element.remove();
+	};
+
+	return {
+		restrict: 'A',
+		compile: compile
+	};
+});
+
+//
+
 dbModule.directive('dbCarousel', function ($timeout) {
 	var link = function ($scope, $element) {
 		var pauseTime = 5000,
@@ -593,10 +617,9 @@ dbModule.directive('dbMessage', ['MessageService', function (messageService) {
 
 dbModule.directive('dbFormRepeater', function () {
 	var link = function ($scope, $element, $attrs) {
-		$('[db-form-repeater-noscript]').remove();
-		$('[db-form-repeater-script]').removeAttr('style');
-
-		$scope.repeats = $scope.repeats || [{}];
+		$scope.repeats = $scope.repeats || [
+			{}
+		];
 
 		$scope.getIndex = function (repeat) {
 			return $scope.repeats.indexOf(repeat);
@@ -631,7 +654,7 @@ dbModule.directive('dbFormRepeater', function () {
 
 			var deleted = $scope.repeats.splice(index, 1);
 
-			if($scope.repeats.length == 0)
+			if ($scope.repeats.length == 0)
 				$scope.repeats.push({});
 
 			return deleted;
@@ -651,64 +674,140 @@ dbModule.directive('dbFormRepeater', function () {
 
 //
 
+dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', function ($scope, $http, messageService) {
+	$scope.tags = $scope.tags || [
+		{}
+	];
 
+	$scope.formAction = $scope.formAction || '/';
 
-//////////////////////////
+	$scope.newName = "";
 
-(function ($, window, document) {
-			var setClickers = function () {
-				var check = function ($clicker) {
-					var $input = $clicker.find('input');
+	console.log($scope);
 
-					if ($input.prop('checked'))
-						$clicker.addClass('check');
-					else
-						$clicker.removeClass('check');
-				};
+	$scope.getIndex = function (tag) {
+		return $scope.tags.indexOf(tag);
+	};
 
-				$this.on('click', '.clicker', function (e) {
-					var $clicker = $(this),
-						$input = $clicker.find('input');
+	$scope.getTag = function (tag) {
+		return $scope.tags[$scope.getIndex(tag)];
+	};
 
-					$input.trigger('click');
-					check($clicker);
+	$scope.createTag = function (tag) {
+		$scope.tags.push(tag);
 
-					e.stopPropagation();
-				});
+		return $scope.tags.slice(-1)[0];
+	};
 
-				$this.find('.clicker').each(function () {
-					check($(this));
-				});
-			};
+	$scope.sortTags = function () {
+		$scope.tags = $scope.tags.sort(function (a, b) {
+			return (a.weight < b.weight) ? -1 : (a.weight > b.weight) ? 1 : 0;
+		});
+	};
 
-			var $last = null;
+	$scope.updateTags = function (tags) {
+		if(typeof(tags) != 'undefined')
+			$scope.tags = tags;
 
-			var setAjax = function () {
-				if (!$this.hasClass('ajax'))
-					return;
+		$scope.sortTags();
+	};
 
-				$this.on('focus', ':input', function () {
-					$last = $(this);
-				});
+	$scope.updateTag = function (old, tag) {
+		var index = $scope.getIndex(old);
 
-				$this.submit(function (e) {
-					var $this = $(this),
-						$li = $this.closest('li'),
-						liID = '#' + $li.attr('id');
+		if (!~index)
+			return false;
 
-					$.post($this.attr('action'), {
-						name: $this.find('[name="name"]').val(),
-						vote: $last.val()
-					}, function (data) {
-						var $data = $(data);
+		$scope.tags[index] = $.extend(true, {}, $scope.tags[index], tag);
 
-						$li.replaceWith($data.find(liID));
+		return $scope.tags[index];
+	};
 
-						$formHandler.data('formHandler').generate(liID + ' form');
-					});
+	$scope.deleteTag = function (tag) {
+		var index = $scope.getIndex(tag);
 
-					e.preventDefault();
-				});
-			};
-})(jQuery, window, document);
+		if (!~index)
+			return false;
+
+		return $scope.tags.splice(index, 1);
+	};
+
+	$scope.voteDown = function (tag) {
+		var data = {
+			vote: "false",
+			name: tag.name
+		};
+
+		$http.post($scope.formAction, data).success(function (tags) {
+			$scope.updateTags(tags);
+
+			messageService.createMessage({
+				type: 'alert',
+				closeable: true,
+				message: 'Tag '+tag.name+' voted down successfully!'
+			});
+		});
+
+	};
+
+	$scope.voteNone = function (tag) {
+		var data = {
+			vote: "",
+			name: tag.name
+		};
+
+		$http.post($scope.formAction, data).success(function (tags) {
+			$scope.updateTags(tags);
+
+			messageService.createMessage({
+				type: 'alert',
+				closeable: true,
+				message: 'Tag '+tag.name+' vote cancelled successfully!'
+			});
+		});
+	};
+
+	$scope.voteUp = function (tag) {
+		var data = {
+			vote: "true",
+			name: tag.name
+		};
+
+		$http.post($scope.formAction, data).success(function (tags) {
+			$scope.updateTags(tags);
+
+			messageService.createMessage({
+				type: 'alert',
+				closeable: true,
+				message: 'Tag '+tag.name+' voted up successfully!'
+			});
+		});
+	};
+
+	$scope.voteNew = function () {
+		var data = {
+			vote: "true",
+			name: $scope.newName
+		};
+
+		console.log($scope);
+
+		if($scope.tagNewForm.$invalid)
+			return;
+
+		$http.post($scope.formAction, data).success(function (tags) {
+			$scope.updateTags(tags);
+
+			messageService.createMessage({
+				type: 'alert',
+				closeable: true,
+				message: 'Tag '+$scope.newName+' added successfully!'
+			});
+
+			$scope.newName = "";
+		});
+	};
+}]);
+
+//
 
