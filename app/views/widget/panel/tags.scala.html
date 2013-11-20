@@ -8,7 +8,7 @@
         FieldConstructor(widget.tag.minimalFieldConstructor.f)
     }
 
-@defining(Async.wait(volume.fold(slot.tags())(_.tags))) { tags =>
+@defining(Async.wait(volume.fold(slot.tags(true))(_.tags))) { tags =>
     @widget.panel.raw("tags", "", "ng-controller" -> "TagsPanelCtrl", "ng-init" -> {tags.map(t => "{id: "+t.tag.id+", name: '"+t.tag.name+"', weight: "+t.weight+", vote: "+(if(t.user.isEmpty){0}else{if(t.user.get){1}else{-1}})+"}").mkString("tags = [",",","];")+" formAction = '/volume/"+slot.volume.id+"/slot/"+slot.id+"/tag'"})(title = "Tags", foldable = true){
         <div class="panel_tags_list col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-3">
             @widget.angular.dbMode {

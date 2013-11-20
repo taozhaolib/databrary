@@ -138,7 +138,7 @@ object Slot extends SiteController {
             "id" -> Json.toJson(t.tag.id.unId.toString),
             "name" -> Json.toJson(t.tag.name),
             "weight" -> Json.toJson(t.weight),
-            "vote" -> Json.toJson(t.user)
+            "vote" -> Json.toJson(if(t.user.isEmpty){0}else{if(t.user.get){1}else{-1}})
           ))
       }.toList)
     )
