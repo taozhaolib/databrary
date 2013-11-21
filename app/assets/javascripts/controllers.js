@@ -285,6 +285,7 @@ dbModule.factory('MessageService', function ($rootScope) {
 		type: undefined,
 		target: false,
 		closeable: false,
+		countdown: undefined,
 		enabled: true,
 		message: undefined
 	};
@@ -301,6 +302,15 @@ dbModule.factory('MessageService', function ($rootScope) {
 			return def;
 
 		return parseBoolean(attr);
+	};
+
+	var attrToInt = function (attr, def) {
+		attr = parseInt(attr);
+
+		if (typeof(attr) != 'number')
+			return def;
+
+		return attr;
 	};
 
 	messageService.getValidType = function (type) {
@@ -353,6 +363,7 @@ dbModule.factory('MessageService', function ($rootScope) {
 		message.type = messageService.getValidType(messageAttrs.dbMessageType);
 		message.target = messageAttrs.dbMessageTarget || message.target;
 		message.closeable = attrToBoolean(messageAttrs.dbMessageCloseable, message.closeable);
+		message.countdown = attrToInt(messageAttrs.dbMessageCountdown, message.closeable);
 		message.enabled = attrToBoolean(messageAttrs.dbMessageEnabled, message.enabled);
 		message.message = messageAttrs.dbMessageMessage || messageElement.html();
 
@@ -459,6 +470,8 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 		if (message.target)
 			$scope.targetMessage(message, message.target);
 
+		$scope.countdownMessage(message, message.countdown);
+
 		return message;
 	};
 
@@ -482,11 +495,13 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 		return $scope.messages[index];
 	};
 
-	$scope.deleteMessage = function (old) {
-		var index = $scope.getIndex(old);
+	$scope.deleteMessage = function (message) {
+		var index = $scope.getIndex(message);
 
 		if (!~index)
 			return false;
+
+		$scope.countdownMessage(message, undefined);
 
 		return $scope.messages.splice(index, 1);
 	};
@@ -499,6 +514,8 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 
 		$scope.messages[index].enabled = true;
 
+		$scope.countdownMessage(message, message.countdown);
+
 		return $scope.messages[index];
 	};
 
@@ -509,6 +526,8 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 			return false;
 
 		$scope.messages[index].enabled = false;
+
+		$scope.countdownMessage(message, undefined);
 
 		return $scope.messages[index];
 	};
@@ -563,6 +582,34 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 		$scope.disableMessage(message);
 
 		return message;
+	};
+
+	$scope.countdownMessage = function (message, countdown) {
+		var index = $scope.getIndex(message);
+
+		if (!~index)
+			return false;
+
+		if ($scope.messages[index].countdownTimer) {
+			$scope.messages[index].countdownTimer.cancel();
+		}
+
+		if (typeof(countdown) == 'undefined')
+			return false;
+
+		if (typeof(countdown) == 'number') {
+			$scope.messages[index].countdown = countdown;
+			countdown = true;
+		}
+
+		if (countdown !== true || typeof($scope.messages[index].countdown) != 'number')
+			return false;
+
+		$scope.messages[index].countdownTimer = $timeout(function () {
+			$scope.disableMessage($scope.messages[index]);
+		}, $scope.messages[index].countdown);
+
+		return $scope.messages[index];
 	};
 
 	$scope.updateHeight = function () {
@@ -675,6 +722,17 @@ dbModule.directive('dbFormRepeater', function () {
 //
 
 dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', function ($scope, $http, messageService) {
+	var messageTemplate = {
+		type: 'alert',
+		countdown: 3000
+	};
+
+	var createMessage = function (message) {
+		messageService.createMessage($.extend(true, {}, messageTemplate, {
+			message: message
+		}));
+	};
+
 	$scope.tags = $scope.tags || [
 		{}
 	];
@@ -682,8 +740,6 @@ dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', funct
 	$scope.formAction = $scope.formAction || '/';
 
 	$scope.newName = "";
-
-	console.log($scope);
 
 	$scope.getIndex = function (tag) {
 		return $scope.tags.indexOf(tag);
@@ -706,7 +762,7 @@ dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', funct
 	};
 
 	$scope.updateTags = function (tags) {
-		if(typeof(tags) != 'undefined')
+		if (typeof(tags) != 'undefined')
 			$scope.tags = tags;
 
 		$scope.sortTags();
@@ -741,11 +797,7 @@ dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', funct
 		$http.post($scope.formAction, data).success(function (tags) {
 			$scope.updateTags(tags);
 
-			messageService.createMessage({
-				type: 'alert',
-				closeable: true,
-				message: 'Tag '+tag.name+' voted down successfully!'
-			});
+			createMessage('Tag <strong>' + tag.name + '</strong> voted down successfully!');
 		});
 
 	};
@@ -759,11 +811,7 @@ dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', funct
 		$http.post($scope.formAction, data).success(function (tags) {
 			$scope.updateTags(tags);
 
-			messageService.createMessage({
-				type: 'alert',
-				closeable: true,
-				message: 'Tag '+tag.name+' vote cancelled successfully!'
-			});
+			createMessage('Tag <strong>' + tag.name + '</strong> vote cancelled successfully!');
 		});
 	};
 
@@ -776,11 +824,7 @@ dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', funct
 		$http.post($scope.formAction, data).success(function (tags) {
 			$scope.updateTags(tags);
 
-			messageService.createMessage({
-				type: 'alert',
-				closeable: true,
-				message: 'Tag '+tag.name+' voted up successfully!'
-			});
+			createMessage('Tag <strong>' + tag.name + '</strong> voted up successfully!');
 		});
 	};
 
@@ -790,19 +834,13 @@ dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', funct
 			name: $scope.newName
 		};
 
-		console.log($scope);
-
-		if($scope.tagNewForm.$invalid)
+		if ($scope.tagNewForm.$invalid)
 			return;
 
 		$http.post($scope.formAction, data).success(function (tags) {
 			$scope.updateTags(tags);
 
-			messageService.createMessage({
-				type: 'alert',
-				closeable: true,
-				message: 'Tag '+$scope.newName+' added successfully!'
-			});
+			createMessage('Tag <strong>' + tag.name + '</strong> added successfully!');
 
 			$scope.newName = "";
 		});
