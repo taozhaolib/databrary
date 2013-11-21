@@ -17,6 +17,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
   def consent = _consent
   /** True if this is its container's full slot. */
   def isFull = segment.isFull
+  def isTop = container.top && isFull
 
   /** Update the given values in the database and this object in-place. */
   def change(consent : Consent.Value = _consent) : Future[Boolean] = {
@@ -58,8 +59,12 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     Comment.post(this, text, parent)
 
   /** The list of tags on the current slot along with the current user's applications.
-    * @param all add any tags applied to child slots to weight (but not use) as well */
-  def tags(all : Boolean = true) = TagWeight.getSlot(this, all)
+    * @param all add any tags applied to child slots to weight (but not use) as well, and if this is the top slot, return all volume tags instead */
+  def tags(all : Boolean = true) =
+    if (all && isTop)
+      TagWeight.getVolume(volume)
+    else
+      TagWeight.getSlot(this, all)
   /** Tag this slot.
     * @param up Some(true) for up, Some(false) for down, or None to remove
     * @return true if the tag name is valid
