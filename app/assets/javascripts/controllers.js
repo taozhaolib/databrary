@@ -374,6 +374,9 @@ dbModule.factory('MessageService', function ($rootScope) {
 	};
 
 	messageService.formatMessage = function (message) {
+
+		message.id = message.id || 'message_' + Math.random().toString(36).substring(2);
+
 		return $.extend(true, {}, messageTemplate, message);
 	};
 
@@ -492,6 +495,9 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 
 		$scope.messages[index] = $.extend(true, {}, $scope.messages[index], message);
 
+		if (message.target)
+			$scope.targetMessage($scope.messages[index], message.target);
+
 		return $scope.messages[index];
 	};
 
@@ -551,6 +557,8 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 		if (!~index)
 			return false;
 
+		console.log(message.id);
+
 		if ($scope.messages[index].target) {
 			targetEl = $($scope.messages[index].target);
 			targetEvents = getTargetEventNames(targetEl, message.id);
@@ -566,6 +574,8 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 		}
 
 		targetEvents = getTargetEventNames(targetEl, message.id);
+
+		console.log(targetEvents);
 
 		targetEl.bind(targetEvents[0], function () {
 			$scope.$apply(function () {
@@ -728,9 +738,12 @@ dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', funct
 	};
 
 	var createMessage = function (message) {
-		messageService.createMessage($.extend(true, {}, messageTemplate, {
-			message: message
-		}));
+		if (typeof(message) == 'string')
+			messageService.createMessage($.extend(true, {}, messageTemplate, {
+				message: message
+			}));
+		else
+			messageService.createMessage($.extend(true, {}, messageTemplate, message));
 	};
 
 	$scope.tags = $scope.tags || [
@@ -739,7 +752,7 @@ dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', funct
 
 	$scope.formAction = $scope.formAction || '/';
 
-	$scope.newName = "";
+	$scope.newName = '';
 
 	$scope.getIndex = function (tag) {
 		return $scope.tags.indexOf(tag);
@@ -842,9 +855,43 @@ dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', funct
 
 			createMessage('Tag <strong>' + $scope.newName + '</strong> added successfully!');
 
-			$scope.newName = "";
+			$scope.newName = '';
 		});
 	};
+
+	var enableNewNameError = function () {
+		if ($scope.tagNewForm.newName.message) {
+			$scope.tagNewForm.newName.message = messageService.updateMessage($scope.tagNewForm.newName.message, {enabled: true});
+		} else {
+			var message = {
+				enabled: true,
+				type: 'error',
+				message: '<dl>' +
+					'<dt>Tag Name</dt>' +
+					'<dd>Must be between 3 and 32 characters.</dd>' +
+					'<dd>Only letters, spaces, and dashes (-) allowed.</dd>' +
+					'</dl>'
+			};
+
+			$scope.tagNewForm.newName.message = messageService.createMessage(message);
+		}
+	};
+
+	var disableNewNameError = function () {
+		if ($scope.tagNewForm.newName.message)
+			$scope.tagNewForm.newName.message = messageService.updateMessage($scope.tagNewForm.newName.message, {enabled: false});
+	};
+
+	$scope.newNameChange = function () {
+		if ($scope.tagNewForm.newName.$pristine || $scope.tagNewForm.newName.$valid)
+			return disableNewNameError();
+
+		return enableNewNameError();
+	};
+
+	$scope.newNameBlur = function () {
+		return disableNewNameError();
+	}
 }]);
 
 //
