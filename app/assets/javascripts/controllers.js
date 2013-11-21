@@ -590,7 +590,7 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 		if (!~index)
 			return false;
 
-		if ($scope.messages[index].countdownTimer) {
+		if ($scope.messages[index].countdownTimer && $scope.messages[index].countdownTimer.hasOwnProperty('cancel')) {
 			$scope.messages[index].countdownTimer.cancel();
 		}
 
@@ -840,7 +840,7 @@ dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', funct
 		$http.post($scope.formAction, data).success(function (tags) {
 			$scope.updateTags(tags);
 
-			createMessage('Tag <strong>' + tag.name + '</strong> added successfully!');
+			createMessage('Tag <strong>' + $scope.newName + '</strong> added successfully!');
 
 			$scope.newName = "";
 		});
