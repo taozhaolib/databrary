@@ -8,6 +8,30 @@ dbModule.run(function ($rootScope, $location, $compile) {
 
 //
 
+dbModule.directive('dbModeClient', function () {
+	var compile = function ($element) {
+		$element.replaceWith($element.html());
+	};
+
+	return {
+		restrict: 'A',
+		compile: compile
+	};
+});
+
+dbModule.directive('dbModeServer', function () {
+	var compile = function ($element) {
+		$element.remove();
+	};
+
+	return {
+		restrict: 'A',
+		compile: compile
+	};
+});
+
+//
+
 dbModule.directive('dbCarousel', function ($timeout) {
 	var link = function ($scope, $element) {
 		var pauseTime = 5000,
@@ -261,6 +285,7 @@ dbModule.factory('MessageService', function ($rootScope) {
 		type: undefined,
 		target: false,
 		closeable: false,
+		countdown: undefined,
 		enabled: true,
 		message: undefined
 	};
@@ -277,6 +302,15 @@ dbModule.factory('MessageService', function ($rootScope) {
 			return def;
 
 		return parseBoolean(attr);
+	};
+
+	var attrToInt = function (attr, def) {
+		attr = parseInt(attr);
+
+		if (typeof(attr) != 'number')
+			return def;
+
+		return attr;
 	};
 
 	messageService.getValidType = function (type) {
@@ -329,6 +363,7 @@ dbModule.factory('MessageService', function ($rootScope) {
 		message.type = messageService.getValidType(messageAttrs.dbMessageType);
 		message.target = messageAttrs.dbMessageTarget || message.target;
 		message.closeable = attrToBoolean(messageAttrs.dbMessageCloseable, message.closeable);
+		message.countdown = attrToInt(messageAttrs.dbMessageCountdown, message.closeable);
 		message.enabled = attrToBoolean(messageAttrs.dbMessageEnabled, message.enabled);
 		message.message = messageAttrs.dbMessageMessage || messageElement.html();
 
@@ -435,6 +470,8 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 		if (message.target)
 			$scope.targetMessage(message, message.target);
 
+		$scope.countdownMessage(message, message.countdown);
+
 		return message;
 	};
 
@@ -458,11 +495,13 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 		return $scope.messages[index];
 	};
 
-	$scope.deleteMessage = function (old) {
-		var index = $scope.getIndex(old);
+	$scope.deleteMessage = function (message) {
+		var index = $scope.getIndex(message);
 
 		if (!~index)
 			return false;
+
+		$scope.countdownMessage(message, undefined);
 
 		return $scope.messages.splice(index, 1);
 	};
@@ -475,6 +514,8 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 
 		$scope.messages[index].enabled = true;
 
+		$scope.countdownMessage(message, message.countdown);
+
 		return $scope.messages[index];
 	};
 
@@ -485,6 +526,8 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 			return false;
 
 		$scope.messages[index].enabled = false;
+
+		$scope.countdownMessage(message, undefined);
 
 		return $scope.messages[index];
 	};
@@ -541,6 +584,34 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 		return message;
 	};
 
+	$scope.countdownMessage = function (message, countdown) {
+		var index = $scope.getIndex(message);
+
+		if (!~index)
+			return false;
+
+		if ($scope.messages[index].countdownTimer) {
+			$scope.messages[index].countdownTimer.cancel();
+		}
+
+		if (typeof(countdown) == 'undefined')
+			return false;
+
+		if (typeof(countdown) == 'number') {
+			$scope.messages[index].countdown = countdown;
+			countdown = true;
+		}
+
+		if (countdown !== true || typeof($scope.messages[index].countdown) != 'number')
+			return false;
+
+		$scope.messages[index].countdownTimer = $timeout(function () {
+			$scope.disableMessage($scope.messages[index]);
+		}, $scope.messages[index].countdown);
+
+		return $scope.messages[index];
+	};
+
 	$scope.updateHeight = function () {
 		var $window = $(window),
 			scroll = $window.scrollTop(),
@@ -593,10 +664,9 @@ dbModule.directive('dbMessage', ['MessageService', function (messageService) {
 
 dbModule.directive('dbFormRepeater', function () {
 	var link = function ($scope, $element, $attrs) {
-		$('[db-form-repeater-noscript]').remove();
-		$('[db-form-repeater-script]').removeAttr('style');
-
-		$scope.repeats = $scope.repeats || [{}];
+		$scope.repeats = $scope.repeats || [
+			{}
+		];
 
 		$scope.getIndex = function (repeat) {
 			return $scope.repeats.indexOf(repeat);
@@ -631,7 +701,7 @@ dbModule.directive('dbFormRepeater', function () {
 
 			var deleted = $scope.repeats.splice(index, 1);
 
-			if($scope.repeats.length == 0)
+			if ($scope.repeats.length == 0)
 				$scope.repeats.push({});
 
 			return deleted;
@@ -651,64 +721,131 @@ dbModule.directive('dbFormRepeater', function () {
 
 //
 
+dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', function ($scope, $http, messageService) {
+	var messageTemplate = {
+		type: 'alert',
+		countdown: 3000
+	};
 
+	var createMessage = function (message) {
+		messageService.createMessage($.extend(true, {}, messageTemplate, {
+			message: message
+		}));
+	};
 
-//////////////////////////
+	$scope.tags = $scope.tags || [
+		{}
+	];
 
-(function ($, window, document) {
-			var setClickers = function () {
-				var check = function ($clicker) {
-					var $input = $clicker.find('input');
+	$scope.formAction = $scope.formAction || '/';
 
-					if ($input.prop('checked'))
-						$clicker.addClass('check');
-					else
-						$clicker.removeClass('check');
-				};
+	$scope.newName = "";
 
-				$this.on('click', '.clicker', function (e) {
-					var $clicker = $(this),
-						$input = $clicker.find('input');
+	$scope.getIndex = function (tag) {
+		return $scope.tags.indexOf(tag);
+	};
 
-					$input.trigger('click');
-					check($clicker);
+	$scope.getTag = function (tag) {
+		return $scope.tags[$scope.getIndex(tag)];
+	};
 
-					e.stopPropagation();
-				});
+	$scope.createTag = function (tag) {
+		$scope.tags.push(tag);
 
-				$this.find('.clicker').each(function () {
-					check($(this));
-				});
-			};
+		return $scope.tags.slice(-1)[0];
+	};
 
-			var $last = null;
+	$scope.sortTags = function () {
+		$scope.tags = $scope.tags.sort(function (a, b) {
+			return (a.weight < b.weight) ? -1 : (a.weight > b.weight) ? 1 : 0;
+		});
+	};
 
-			var setAjax = function () {
-				if (!$this.hasClass('ajax'))
-					return;
+	$scope.updateTags = function (tags) {
+		if (typeof(tags) != 'undefined')
+			$scope.tags = tags;
 
-				$this.on('focus', ':input', function () {
-					$last = $(this);
-				});
+		$scope.sortTags();
+	};
 
-				$this.submit(function (e) {
-					var $this = $(this),
-						$li = $this.closest('li'),
-						liID = '#' + $li.attr('id');
+	$scope.updateTag = function (old, tag) {
+		var index = $scope.getIndex(old);
 
-					$.post($this.attr('action'), {
-						name: $this.find('[name="name"]').val(),
-						vote: $last.val()
-					}, function (data) {
-						var $data = $(data);
+		if (!~index)
+			return false;
 
-						$li.replaceWith($data.find(liID));
+		$scope.tags[index] = $.extend(true, {}, $scope.tags[index], tag);
 
-						$formHandler.data('formHandler').generate(liID + ' form');
-					});
+		return $scope.tags[index];
+	};
 
-					e.preventDefault();
-				});
-			};
-})(jQuery, window, document);
+	$scope.deleteTag = function (tag) {
+		var index = $scope.getIndex(tag);
+
+		if (!~index)
+			return false;
+
+		return $scope.tags.splice(index, 1);
+	};
+
+	$scope.voteDown = function (tag) {
+		var data = {
+			vote: "false",
+			name: tag.name
+		};
+
+		$http.post($scope.formAction, data).success(function (tags) {
+			$scope.updateTags(tags);
+
+			createMessage('Tag <strong>' + tag.name + '</strong> voted down successfully!');
+		});
+
+	};
+
+	$scope.voteNone = function (tag) {
+		var data = {
+			vote: "",
+			name: tag.name
+		};
+
+		$http.post($scope.formAction, data).success(function (tags) {
+			$scope.updateTags(tags);
+
+			createMessage('Tag <strong>' + tag.name + '</strong> vote cancelled successfully!');
+		});
+	};
+
+	$scope.voteUp = function (tag) {
+		var data = {
+			vote: "true",
+			name: tag.name
+		};
+
+		$http.post($scope.formAction, data).success(function (tags) {
+			$scope.updateTags(tags);
+
+			createMessage('Tag <strong>' + tag.name + '</strong> voted up successfully!');
+		});
+	};
+
+	$scope.voteNew = function () {
+		var data = {
+			vote: "true",
+			name: $scope.newName
+		};
+
+		if ($scope.tagNewForm.$invalid)
+			return;
+
+		$http.post($scope.formAction, data).success(function (tags) {
+			$scope.updateTags(tags);
+
+			createMessage('Tag <strong>' + tag.name + '</strong> added successfully!');
+
+			$scope.newName = "";
+		});
+	};
+}]);
+
+//
 
