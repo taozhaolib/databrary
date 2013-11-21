@@ -1,6 +1,6 @@
 // Module houses everything databrary
 
-var dbModule = angular.module('DatabraryModule', ['ngSanitize', 'ngAnimate']);
+var dbModule = angular.module('DatabraryModule', ['ngSanitize', 'ngAnimate', 'ngStorage']);
 
 dbModule.run(function ($rootScope, $location, $compile) {
 	// init
@@ -896,3 +896,30 @@ dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', funct
 
 //
 
+//dbModule.controller('PanelsCtrl', ['$scope', '$sessionStorage', function ($scope, $sessionStorage) {
+//	$scope.$storage = $sessionStorage;
+//}]);
+//
+//dbModule.directive('dbPanels', ['$scope', function ($scope) {
+//	var link = function ($scope, $element, $attrs) {
+//
+//	};
+//
+//	return {
+//		restrict: 'A',
+//		link: link
+//	};
+//}]);
+//
+//dbModule.directive('dbPanel', ['$scope', function ($scope) {
+//	var link = function ($scope, $element, $attrs, ctrls) {
+//		var foldCtrl = ctrls[0];
+//		console.log('foldCtrl', foldCtrl);
+//	};
+//
+//	return {
+//		restrict: 'A',
+//		require: ['?dbFold'],
+//		link: link
+//	};
+//}]);
