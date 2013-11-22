@@ -1,8 +1,8 @@
 @(implicit request: SiteRequest[_])
 
 @display(title: Html)(body: Html) = {
-    <section class="fold_out" db-fold db-fold-currently="true">
-        <h2 class="fold_out_clicker" db-fold-folder ng-click="toggle()">@title</h2>
+    <section class="fold_out" db-fold ng-class="{folded: isFolded}" db-fold-currently="true">
+        <h2 class="fold_out_clicker" db-fold-folder ng-click="foldToggle()">@title</h2>
 
         <div class="fold_out_region" db-fold-folded>
             @body
