@@ -9,14 +9,14 @@ import site._
 /** Smallest organizatonal unit of related data.
   * Primarily used for an individual session of data with a single date and place.
   * Critically, contained data are should be covered by a single consent level and share the same annotations. */
-final class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE) extends TableRowId[Slot] with InVolume with SiteObject {
+sealed class Slot private (val id : Slot.Id, val container : Container, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE) extends TableRowId[Slot] with InVolume with SiteObject {
   def containerId : Container.Id = container.id
   def volume = container.volume
   private[this] var _consent = consent_
   /** Effective consent for covered assets, or [[Consent.NONE]] if no matching consent. */
   def consent = _consent
   /** True if this is its container's full slot. */
-  def isFull = segment.isFull
+  def isFull : Boolean = false
 
   /** Update the given values in the database and this object in-place. */
   def change(consent : Consent.Value = _consent) : Future[Boolean] = {
@@ -98,31 +98,48 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     else
       "Session: " + i.mkString(", ")
   }
-  override def pageCrumbName = if (segment.isFull) None else Some(segment.lowerBound.fold("")(_.toString) + " - " + segment.upperBound.fold("")(_.toString))
+  override def pageCrumbName = Some(segment.lowerBound.fold("")(_.toString) + " - " + segment.upperBound.fold("")(_.toString))
   def pageParent = Some(if (isContext) volume else context)
   def pageURL = controllers.routes.Slot.view(container.volumeId, id)
   def pageActions = Seq(
     Action("view", controllers.routes.Slot.view(volumeId, id), Permission.VIEW),
     Action("edit", controllers.routes.Slot.edit(volumeId, id), Permission.EDIT),
-    Action("add file", controllers.routes.Asset.create(volumeId, id, segment.lowerBound), Permission.CONTRIBUTE),
+    Action("add file", controllers.routes.SlotAsset.create(volumeId, id), Permission.CONTRIBUTE),
     // Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
     Action("add participant", controllers.routes.Record.slotAdd(volumeId, id, IntId[models.RecordCategory](-500), false), Permission.CONTRIBUTE)
   )
 }
 
-object Slot extends TableId[Slot]("slot") {
+final class FullSlot private[models] (id : Slot.Id, container : Container, consent : Consent.Value = Consent.NONE) extends Slot(id, container, Slot.fullRange, consent) {
+  override def isFull = false
+  override def pageCrumbName = None
+  container._fullSlot = this
+}
+
+private[models] sealed trait TableSlot[S] extends TableView {
+  private[models] def row(implicit site : Site) : Selector[S]
+
+  /** Retrieve an individual Slot.
+    * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access.
+    * @param full only return full slots */
+  def get(i : Slot.Id)(implicit site : Site) : Future[Option[S]] =
+    row.SELECT("WHERE slot.id = ? AND", Volume.condition)
+      .apply(i +: Volume.conditionArgs).singleOpt
+}
+
+object Slot extends TableId[Slot]("slot") with TableSlot[Slot] {
   private val base = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[Range[Offset]]("segment")
     , SelectColumn[Consent.Value]("consent")
     ).map { (id, segment, consent) =>
       (container : Container) =>
-        val s = new Slot(id, container, segment, consent)
         if (segment.isFull)
-          container._fullSlot = s
-        s
+          new FullSlot(id, container, consent)
+        else
+          new Slot(id, container, segment, consent)
     }
-  private val context = base
+  private[models] val columns = base
     .leftJoin(base.fromAlias("context"), "slot.source = context.source AND slot.segment <@ context.segment AND context.consent IS NOT NULL")
     .map { case (slot, context) =>
       (container : Container) =>
@@ -133,29 +150,16 @@ object Slot extends TableId[Slot]("slot") {
           else context.map(_(container)).getOrElse(container.fullSlot)
         s
     }
-  private[models] def columns(isContext : Boolean) =
-    if (isContext) base else context
-  private[models] def row(full : Boolean)(implicit site : Site) =
-    columns(full).join(Container.row(full), "slot.source = container.id") map {
+  private[models] def row(implicit site : Site) =
+    columns.join(Container.row(false), "slot.source = container.id") map {
       case (slot, cont) => slot(cont)
     }
-  private[models] def containerRow(container : Container, full : Boolean = false) =
-    columns(full).map(_(container))
-  private[models] def volumeRow(volume : Volume, full : Boolean = false) =
-    columns(full).join(Container.volumeRow(volume, full), "slot.source = container.id") map {
+  private[models] def containerRow(container : Container) =
+    columns.map(_(container))
+  private[models] def volumeRow(volume : Volume, full : Boolean) =
+    columns.join(Container.volumeRow(volume, full), "slot.source = container.id") map {
       case (slot, cont) => slot(cont)
     }
-
-  final val fullRange = Range.full[Offset]
-
-  /** Retrieve an individual Slot.
-    * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access.
-    * @param full only return full slots */
-  def get(i : Id, full : Boolean = false)(implicit site : Site) : Future[Option[Slot]] =
-    row(full).SELECT("WHERE slot.id = ?",
-      if (full) "AND slot.segment = '(,)'" else "",
-      "AND", Volume.condition)
-      .apply(i +: Volume.conditionArgs).singleOpt
 
   private[models] def _get(container : Container, segment : Range[Offset])(implicit dbc : Site.DB, exc : ExecutionContext) : Future[Option[Slot]] =
     containerRow(container, segment.isFull).SELECT("WHERE slot.source = ? AND slot.segment = ?")(dbc, exc)
@@ -180,4 +184,22 @@ object Slot extends TableId[Slot]("slot") {
       SQL("INSERT INTO slot " + args.insert + " RETURNING id")(dbc, exc)
         .apply(args).single(SQLCols[Id].map(new Slot(_, container, segment)))
     }
+}
+
+object FullSlot extends Table[FullSlot]("slot") with TableSlot[FullSlot] {
+  private[models] val columns = Columns(
+      SelectColumn[Slot.Id]("id")
+    , SelectColumn[Consent.Value]("consent")
+    ).map { (id, consent) =>
+      (container : Container) =>
+        new FullSlot(id, container, consent)
+    }
+  private[models] def row(implicit site : Site) =
+    columns.join(Container.row(true), "slot.source = container.id AND slot.segment = '(,)')") map {
+      case (slot, cont) => slot(cont)
+    }
+  private[models] def containerRow(container : Container) =
+    columns.map(_(container))
+
+  final val range = Range.full[Offset]
 }

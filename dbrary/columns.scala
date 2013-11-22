@@ -52,6 +52,8 @@ case class Selector[A](selects : Seq[SelectExpr[_]], source : String, parse : SQ
     copy[Option[A]](parse = parse.?)
   def from(from : String) : Selector[A] =
     copy[A](source = from)
+  def from(from : String => String) : Selector[A] =
+    copy[A](source = from(source))
   def fromTable(table : String) : Selector[A] =
     copy[A](selects.map(_.fromTable(table)), source = table)
   def fromAlias(name : String) : Selector[A] =

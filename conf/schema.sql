@@ -342,6 +342,23 @@ END; $$;
 CREATE TRIGGER "slot_full_create" AFTER INSERT ON "container" FOR EACH ROW EXECUTE PROCEDURE "slot_full_create" ();
 COMMENT ON TRIGGER "slot_full_create" ON "container" IS 'Always create a "full"-range slot for each container.  Unfortunately nothing currently prevents them from being removed/changed.';
 
+CREATE FUNCTION "get_slot" ("container" integer, "seg" segment) RETURNS integer STABLE STRICT LANGUAGE plpgsql AS $$
+DECLARE
+	slot_id integer;
+BEGIN
+	LOOP
+		SELECT id INTO slot_id FROM slot WHERE source = container AND segment = seg;
+		IF FOUND THEN
+			RETURN slot_id;
+		END IF;
+		BEGIN
+			INSERT INTO slot (source, segment) VALUES (container, seg) RETURNING id INTO slot_id;
+			RETURN slot_id;
+		EXCEPTION WHEN unique_violation THEN
+		END;
+	END LOOP;
+END; $$;
+
 
 CREATE VIEW "slot_nesting" ("child", "parent", "consent") AS 
 	SELECT c.id, p.id, p.consent FROM slot c JOIN slot p ON c <@ p;
@@ -384,8 +401,8 @@ CREATE TABLE "format" (
 COMMENT ON TABLE "format" IS 'Possible types for assets, sufficient for producing download headers.';
 
 -- The privledged formats with special handling (image and video for now) have hard-coded IDs:
-INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-800, 'video/mp4', 'mp4', 'MPEG-4 video');
 INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-700, 'image/jpeg', 'jpg', 'JPEG');
+INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-800, 'video/mp4', 'mp4', 'MPEG-4 video');
 
 -- The above video format will change to reflect internal storage, these are used for uploaded files:
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/plain', 'txt', 'Plain text');
@@ -410,25 +427,28 @@ INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/quicktime'
 CREATE TABLE "asset" (
 	"id" serial Primary Key,
 	"volume" integer NOT NULL References "volume",
-	"slot" integer NOT NULL References "slot",
 	"format" smallint NOT NULL References "format",
 	"classification" classification NOT NULL,
-	"name" text NOT NULL
+	"duration" interval HOUR TO SECOND Check ("duration" > interval '0'),
+	"name" text NOT NULL,
+	"body" text
 );
 COMMENT ON TABLE "asset" IS 'Assets reflecting files in primary storage.';
-COMMENT ON COLUMN "asset"."slot" IS 'Attachment point of this asset, which, in the case of timeseries data, should match this asset''s duration.';
 
 SELECT audit.CREATE_TABLE ('asset');
+
 CREATE INDEX "asset_creation_idx" ON audit."asset" ("id") WHERE "audit_action" = 'add';
 COMMENT ON INDEX audit."asset_creation_idx" IS 'Allow efficient retrieval of asset creation information, specifically date.';
 CREATE FUNCTION "asset_creation" ("asset" integer) RETURNS timestamp LANGUAGE sql STABLE STRICT AS
 	$$ SELECT max("audit_time") FROM audit."asset" WHERE "id" = $1 AND "audit_action" = 'add' $$;
 
-CREATE TABLE "timeseries" (
-	"id" integer Primary Key References "asset",
-	"duration" interval HOUR TO SECOND NOT NULL Check ("duration" > interval '0')
+CREATE TABLE "asset_slot" (
+	"asset" integer NOT NULL Primary Key References "asset",
+	"slot" integer NOT NULL References "slot"
 );
-COMMENT ON TABLE "timeseries" IS 'Assets representing interpretable and sub-selectable timeseries data (e.g., videos).';
+COMMENT ON TABLE "asset_slot" IS 'Attachment point of assets, which, in the case of timeseries data, should match asset.duration.';
+
+SELECT audit.CREATE_TABLE ('asset_slot');
 
 CREATE TABLE "asset_revision" (
 	"prev" integer NOT NULL References "asset",
@@ -438,16 +458,25 @@ CREATE TABLE "asset_revision" (
 COMMENT ON TABLE "asset_revision" IS 'Assets that reflect different versions of the same content, either generated automatically from reformatting or a replacement provided by the user.';
 
 
-CREATE TABLE "toplevel_asset" (
-	"slot" integer NOT NULL References "slot",
+CREATE TABLE "excerpt" (
 	"asset" integer NOT NULL References "asset",
-	"excerpt" boolean NOT NULL DEFAULT false,
-	Primary Key ("slot", "asset")
+	"slot" integer NOT NULL References "slot",
+	Primary Key ("asset", "slot")
 );
-COMMENT ON TABLE "toplevel_asset" IS 'Slot assets which are promoted to the top volume level for display.';
-COMMENT ON COLUMN "toplevel_asset"."excerpt" IS 'Asset segments that may be released publically if so permitted.';
+COMMENT ON TABLE "excerpt" IS 'Slot asset (segments) that have been selected for possible public release and top-level display.';
 
-SELECT audit.CREATE_TABLE ('toplevel_asset');
+SELECT audit.CREATE_TABLE ('excerpt');
+
+
+CREATE VIEW "slot_asset" ("asset", "segment", "slot", "excerpt") AS
+	SELECT asset_slot.asset, slot_asset.segment, slot.id, excerpt.asset IS NOT NULL
+	  FROM asset_slot 
+	  JOIN slot AS slot_asset ON asset_slot.slot = slot_asset.id
+	  JOIN slot ON slot_asset.source = slot.source AND slot_asset.segment && slot.segment
+	  LEFT JOIN excerpt
+	       JOIN slot AS slot_excerpt ON excerpt.slot = slot_excerpt.id
+	       ON asset_slot.asset = excerpt.asset AND slot.source = slot_excerpt.source AND slot.segment <@ slot_excerpt.segment;
+COMMENT ON VIEW "slot_asset" IS 'Expanded set of all slots and the assets they include.';
 
 ----------------------------------------------------------- comments
 

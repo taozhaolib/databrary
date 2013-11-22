@@ -36,13 +36,12 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
   def lowerPoint : Option[A] = if (lowerClosed) lowerBound else lowerBound.flatMap(lb => dt.map(_.increment(lb)))
   def upperPoint : Option[A] = if (upperClosed) upperBound else upperBound.flatMap(ub => dt.map(_.decrement(ub)))
   def isEmpty : Boolean =
-    (for { l <- lowerBound ; u <- upperBound }
-     yield {
+    zip { (l, u) =>
       if (lowerClosed && upperClosed) 
         t.gt(l, u)
       else
         t.gteq(l, u)
-    }).getOrElse(false)
+    }.getOrElse(false)
   def isFull : Boolean = lowerBound.isEmpty && upperBound.isEmpty
   def singleton : Option[A] = 
     if (isEmpty)
@@ -79,6 +78,11 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
     val lowerClosed = self.lowerClosed
     val upperClosed = self.upperClosed
   }
+  def zip[B](f : (A, A) => B) : Option[B] =
+    for {
+      l <- lowerBound
+      u <- upperBound
+    } yield (f(l,u))
 }
 
 object Range {

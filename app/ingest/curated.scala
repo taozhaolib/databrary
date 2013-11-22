@@ -151,7 +151,7 @@ object Curated {
     def key = file.getPath
 
     private def fileInfo(file : File) : Asset.FileInfo =
-      Asset.FileInfo(file, AssetFormat.getFilename(file.getPath, false)
+      Asset.FileInfo(file, AssetFormat.getFilename(file.getPath)
         .getOrElse(throw PopulateException("no file format found for " + file.getPath)))
 
     private val transcodedRegex = "^(.*)/transcoded/(.*)-01.mp4$".r
@@ -168,7 +168,7 @@ object Curated {
           })
           if (l.length != 1)
             throw PopulateException("missing or ambiguous original " + t.getPath)
-          Asset.TimeseriesInfo(file, TimeseriesFormat.Video, probe.duration, fileInfo(l.head))
+          Asset.TimeseriesInfo(file, AssetFormat.Video, probe.duration, fileInfo(l.head))
         case _ =>
           if (path.endsWith(".mp4"))
             throw PopulateException("untranscoded video: " + path)
@@ -176,17 +176,19 @@ object Curated {
       }
     }
 
-    def populate(info : Asset.Info)(implicit site : Site) : Future[models.FileAsset] = {
+    def populate(volume : Volume, info : Asset.Info)(implicit site : Site) : Future[models.Asset] = {
       /* for now copy and don't delete */
       val infile = store.TemporaryFileCopy(info.file)
       for {
         asset <- info match {
           case Asset.TimeseriesInfo(_, fmt, duration, orig) =>
-            populate(orig).flatMap { o =>
-              models.Timeseries.create(fmt, classification, duration, infile, Some(o))
-            }
+            for {
+              o <- populate(volume, orig)
+              a <- models.Asset.create(volume, fmt, classification, duration, name, None, infile)
+              _ <- SQL("INSERT INTO asset_revision VALUES (?, ?)").apply(o.id, a.id).execute
+            } yield (a)
           case Asset.FileInfo(_, fmt) =>
-            models.FileAsset.create(fmt, classification, infile)
+            models.Asset.create(volume, fmt, classification, name, None, infile)
         }
         _ <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, info.path).execute
       } yield (asset)
