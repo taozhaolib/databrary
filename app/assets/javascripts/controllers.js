@@ -84,7 +84,7 @@ dbModule.directive('dbFold', ['$sessionStorage', function ($sessionStorage) {
 	var link = function ($scope, $element, $attrs) {
 		$scope.$storage = $sessionStorage;
 
-		$scope.id = $element.attr('id');
+		$scope.id = $element.attr('id') || 'unknown';
 
 		$element.addClass(foldableClass);
 		$element.find(folderAttr).addClass(folderClass);
@@ -122,20 +122,24 @@ dbModule.directive('dbFold', ['$sessionStorage', function ($sessionStorage) {
 		//
 
 		$scope.setFolding = function () {
-			$scope.$storage['folding_'+$scope.id] = $scope.isFolded;
+			if($attrs.dbFoldForget)
+				return undefined;
+
+			$scope.$storage['folding_' + $scope.id] = $scope.isFolded;
 		};
 
 		$scope.getFolding = function () {
-			if (typeof($scope.$storage['folding_'+$scope.id]) == 'undefined')
+			if ($attrs.dbFoldForget || typeof($scope.$storage['folding_' + $scope.id]) == 'undefined')
 				return undefined;
 
-			return $scope.$storage['folding_'+$scope.id];
+			return $scope.$storage['folding_' + $scope.id];
 		};
 
 		$scope.restoreFolding = function () {
+
 			var isFolded = $scope.getFolding();
 
-			if(typeof(isFolded) == 'undefined')
+			if (typeof(isFolded) == 'undefined')
 				$scope.isFolded = $attrs.dbFoldCurrently == "true";
 			else
 				$scope.isFolded = isFolded;
@@ -1022,7 +1026,7 @@ dbModule.controller('PanelsCtrl', ['$scope', '$sessionStorage', 'PanelsService',
 	$scope.$watch(function () {
 		var list = '';
 
-		for(var id in $scope.panels)
+		for (var id in $scope.panels)
 			list += $scope.panels[id].isFolded;
 
 		return list;
