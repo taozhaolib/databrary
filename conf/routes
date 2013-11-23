@@ -70,6 +70,7 @@ GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/thumb                        
 GET         /volume/$vID<[0-9]+>/asset/create                                                         controllers.Asset.createTop(vID : models.Volume.Id)
 GET         /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.Asset.create(vID : models.Volume.Id, cID : models.Slot.Id)
 POST        /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.Asset.upload(vID : models.Volume.Id, cID : models.Slot.Id)
+GET         /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>                                                   controllers.Asset.view(vID : models.Volume.Id, aID : models.Asset.Id)
 GET         /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>/edit                                              controllers.Asset.edit(vID : models.Volume.Id, aID : models.Asset.Id)
 POST        /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>/edit                                              controllers.Asset.change(vID : models.Volume.Id, aID : models.Asset.Id)
 POST        /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>/remove                                            controllers.Asset.remove(vID : models.Volume.Id, aID : models.Asset.Id)

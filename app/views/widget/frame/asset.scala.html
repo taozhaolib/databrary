@@ -2,9 +2,9 @@
 
 @widget.frame.raw("asset", "")("Metadata", foldable = true) {
     <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
-        @if(asset.link.body.nonEmpty) {
+	@asset.asset.body.map { body =>
         <div class="description">
-            @asset.link.body.map(display.plainText _)
+            @display.plainText(body)
         </div>
         }
 
@@ -18,9 +18,9 @@
                     <dd>@asset.position</dd>
                 }
 
-                @if(asset.duration > 0) {
+		@cast[SlotTimeseries](asset).map { ts =>
                     <dt>Duration</dt>
-                    <dd>@asset.duration</dd>
+                    <dd>@ts.duration</dd>
                 }
             </dl>
         </div>

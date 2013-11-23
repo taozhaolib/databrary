@@ -118,7 +118,7 @@ trait TimeseriesData extends BackedAsset {
 }
 
 /** File assets: objects within the system backed by primary file storage. */
-sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format : AssetFormat, classification_ : Classification.Value, name_ : String, body_ : Option[String]) extends TableRowId[Asset] with BackedAsset with InVolume with SiteObject {
+sealed class Asset protected (val id : Asset.Id, val volume : Volume, override val format : AssetFormat, classification_ : Classification.Value, name_ : String, body_ : Option[String]) extends TableRowId[Asset] with BackedAsset with InVolume with SiteObject {
   private[this] var _name = name_
   /** Title or name of the asset as used in the container. */
   def name : String = _name
@@ -130,7 +130,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format
 
   def duration : Offset = 0
   def source = this
-  def sourceId = id
+  override def sourceId = id
   def etag = "obj:" + id
 
   def creation : Future[Option[Timestamp]] =
@@ -154,6 +154,15 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format
     Audit.changeOrAdd("asset_slot", SQLTerms('slot -> s.id), SQLTerms('asset -> id)).execute
   def unlink : Future[Boolean] =
     Audit.remove("asset_slot", SQLTerms('asset -> id)).execute
+
+  def pageName = name
+  def pageParent = Some(volume)
+  def pageURL = controllers.routes.Asset.view(volume.id, id)
+  def pageActions = Seq(
+    Action("view", controllers.routes.Asset.view(volumeId, id), Permission.VIEW),
+    Action("edit", controllers.routes.Asset.edit(volumeId, id), Permission.EDIT),
+    Action("remove", controllers.routes.Asset.remove(volumeId, id), Permission.CONTRIBUTE)
+  )
 }
 
 /** Special timeseries assets in a designated format.

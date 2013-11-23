@@ -10,10 +10,10 @@ import site._
   * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
 sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offset], val slot : Slot, val excerpt : Boolean) extends TableRow with SiteObject with BackedAsset with InVolume {
   def slotId = slot.id
-  // def volume = slot?asset.volume
+  def volume = asset.volume
   def assetId = asset.id
   def source = asset.source
-  def format = asset.format
+  override def format = asset.format
   def etag = asset.etag
   def position = asset_segment.lowerBound.map(_ - slot.segment.lowerBound.getOrElse(0))
 
@@ -29,13 +29,13 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offse
 
   def pageName = asset.name
   def pageParent = if (slot.container.top) slot.pageParent else Some(slot)
-  def pageURL = controllers.routes.Asset.view(volume.id, slotId, assetId)
+  def pageURL = controllers.routes.SlotAsset.view(volume.id, slotId, assetId)
   def pageActions = Seq(
-      Action("view", controllers.routes.Asset.view(volumeId, slotId, assetId), Permission.VIEW),
-      Action("edit", controllers.routes.Asset.edit(volumeId, slotId, assetId), Permission.EDIT)
-    ) ++ (if (slot.isFull) Some(
-      Action("remove", controllers.routes.Asset.remove(volumeId, slotId, assetId), Permission.CONTRIBUTE)
-    ) else None)
+      Action("view", controllers.routes.SlotAsset.view(volumeId, slotId, assetId), Permission.VIEW)
+    ) ++ (if (slot.isFull) Seq(
+      Action("edit", controllers.routes.Asset.edit(volumeId, assetId), Permission.EDIT),
+      Action("remove", controllers.routes.Asset.remove(volumeId, assetId), Permission.CONTRIBUTE)
+    ) else Nil)
 }
 
 final class SlotTimeseries private[models] (override val asset : Timeseries, asset_segment : Range[Offset], slot : Slot, excerpt : Boolean) extends SlotAsset(asset, asset_segment, slot, excerpt) with TimeseriesData {
@@ -53,7 +53,7 @@ final class SlotTimeseries private[models] (override val asset : Timeseries, ass
     Range[Offset](t0, t1)
   }
   def entire = slot.segment @> asset_segment
-  def etag = (if (entire) super.etag else "slot:" + slot.id + ":" + super.etag)
+  override def etag = if (entire) super.etag else "slot:" + slot.id + ":" + super.etag
   def sample(offset : Offset) = new TimeseriesSample(this, offset)
 }
 
@@ -73,10 +73,10 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   private def slotRow(slot : Slot) = columns
     .map(_(slot))
   private def volumeRow(volume : Volume) = columns
-    .join(Slot.volumeRow(volume), "slot_asset.slot = slot.id AND asset.volume = container.volume")
+    .join(Slot.volumeRow(volume, false), "slot_asset.slot = slot.id AND asset.volume = container.volume")
     .map { case (asset, slot) => asset(slot) }
   private def row(full : Boolean)(implicit site : Site) = columns
-    .join(Slot.row(full), "slot_asset.slot = slot.id AND asset.volume = container.volume")
+    .join(if (full) Slot.Full.row else Slot.row, "slot_asset.slot = slot.id AND asset.volume = container.volume")
     .map { case (asset, slot) => asset(slot) }
 
   /** Retrieve a single SlotAsset by asset id and slot id.
@@ -95,7 +95,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */
   private[models] def getAsset(asset : Asset) : Future[Option[SlotAsset]] =
-    Slot.volumeRow(asset.volume)
+    Slot.volumeRow(asset.volume, false)
       .map { slot => make(asset, slot.segment, slot, false /* XXX */) }
       .SELECT("JOIN asset_slot ON slot.id = asset_slot.slot WHERE asset.id = ? AND container.volume = ?")
       .apply(asset.id, asset.volumeId).singleOpt

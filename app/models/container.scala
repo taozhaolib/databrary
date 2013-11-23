@@ -34,9 +34,9 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
 
   /** List of slots on this container. */
   def slots : Future[Seq[Slot]] = Slot.getContainer(this)
-  private[models] var _fullSlot : FullSlot = null /* Should always be set on construction. */
+  private[models] var _fullSlot : Slot = null /* Should always be set on construction. */
   /** Slot that covers this entire container and which thus serves as a proxy for display and metadata. */
-  def fullSlot : FullSlot = _fullSlot
+  def fullSlot : Slot = _fullSlot
 }
 
 object Container extends TableId[Container]("container") {
@@ -49,7 +49,7 @@ object Container extends TableId[Container]("container") {
       (vol : Volume) => new Container(id, vol, top, name, date)
     }
   private val full = base
-    .join(FullSlot.columns.fromAlias("full_slot"), "full_slot.source = container.id AND full_slot.segment = '(,)'")
+    .join(Slot.Full.columns.fromAlias("full_slot"), "full_slot.source = container.id AND full_slot.segment = '(,)'")
     .map { case (cont, full) =>
       (vol : Volume) =>
         val c = cont(vol)
@@ -91,7 +91,7 @@ object Container extends TableId[Container]("container") {
     for {
       cont <- Audit.add(table, SQLTerms('volume -> volume.id, 'name -> name, 'date -> date), "id")
         .single(SQLCols[Id].map(new Container(_, volume, false, name, date)))
-      full <- FullSlot.containerRow(cont)
+      full <- Slot.Full.containerRow(cont)
         .SELECT("WHERE slot.source = ? AND slot.segment = '(,)'")
         .apply(cont.id).single
     } yield (cont)

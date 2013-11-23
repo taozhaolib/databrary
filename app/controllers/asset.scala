@@ -18,11 +18,17 @@ import models._
 object Asset extends SiteController {
   type Request[A] = RequestObject[Asset]#Site[A]
 
-  private[controllers] def action(v : models.Volume.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW) =
+  private[controllers] def action(v : models.Volume.Id, a : models.Asset.Id, p : Permission.Value = Permission.EDIT) =
     RequestObject.check(v, models.Asset.get(a)(_), p)
 
-  private[controllers] def Action(v : models.Volume.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW) =
+  private[controllers] def Action(v : models.Volume.Id, a : models.Asset.Id, p : Permission.Value = Permission.EDIT) =
     SiteAction ~> action(v, a, p)
+
+  def view(v : models.Volume.Id, o : models.Asset.Id) = Action(v, o, Permission.VIEW).async { implicit request =>
+    request.obj.slot.map(_.fold[SimpleResult](
+      NotFound /* TODO */)(
+      sa => Redirect(sa.pageURL)))
+  }
 
   private[controllers] def assetResult(asset : BackedAsset, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[SimpleResult] = {
     val now = new Timestamp
@@ -77,7 +83,7 @@ object Asset extends SiteController {
     assetForm(false).fill((request.obj.name, request.obj.body.getOrElse(""), request.obj.classification, None))
   }
 
-  def formForFile(form : AssetForm, target : Either[Slot,SlotAsset]) =
+  def formForFile(form : AssetForm, target : Either[Slot,Asset]) =
     form.value.fold(target.isLeft)(_._4.isDefined)
 
   def edit(v : models.Volume.Id, o : models.Asset.Id) = Action(v, o, Permission.EDIT) { implicit request =>
@@ -96,7 +102,7 @@ object Asset extends SiteController {
 
   private[this] val uploadForm = assetForm(true)
 
-  def create(v : models.Volume.Id, c : models.Slot.Id, offset : Option[Offset]) = Slot.Action(v, c, Permission.CONTRIBUTE) { implicit request =>
+  def create(v : models.Volume.Id, c : models.Slot.Id) = Slot.Action(v, c, Permission.CONTRIBUTE) { implicit request =>
     Ok(views.html.asset.edit(Left(request.obj), uploadForm.fill(("", "", Classification.IDENTIFIED, Some((None, false, None, ()))))))
   }
 

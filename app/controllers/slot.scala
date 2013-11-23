@@ -145,13 +145,3 @@ object Slot extends SiteController {
       a => SlotAsset.getFrame(Left(0.25f))(request.withObj(a))))
   }
 }
-
-object FullSlot extends SiteController {
-  type Request[A] = RequestObject[FullSlot]#Site[A]
-
-  private[controllers] def action(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW) =
-    RequestObject.check(v, models.FullSlot.get(i)(_), p)
-
-  private[controllers] def Action(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW) =
-    SiteAction ~> action(v, i, p)
-}

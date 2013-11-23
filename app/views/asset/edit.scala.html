@@ -6,10 +6,10 @@
         FieldConstructor(widget.tag.minimalFieldConstructor.f)
     }
 
-@widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.link.name)) {
+@widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.name)) {
         @widget.tag.form(target.fold(
             container => routes.Asset.upload(container.volumeId, container.id),
-            link => routes.Asset.change(link.volumeId, link.slotId, link.assetId)),
+            asset => routes.Asset.change(asset.volumeId, asset.id)),
             'enctype -> "multipart/form-data") {
             @widget.tag.inputText(form("name"), 'placeholder -> "Title", '_class -> "big")
             @widget.tag.textarea(form("body"), 'placeholder -> "Description")
@@ -22,7 +22,7 @@
 		@if(request.access >= Permission.ADMIN) {
                     <fieldset>
                         <legend>Admin Options</legend>
-                        @widget.tag.select(form("format"), Seq(("", "")) ++: AssetFormat.getAll(true).map(f => (f.id.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)))
+                        @widget.tag.select(form("format"), Seq(("", "")) ++: AssetFormat.getAll.map(f => (f.id.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)))
                         @widget.tag.inputText(form("localfile"), 'placeholder -> "Local location (overridden by file upload)")
                     </fieldset>
                 }

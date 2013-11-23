@@ -88,7 +88,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   /** The set of slots to which this record applies. */
   lazy val slots : Future[Seq[Slot]] =
-    Slot.volumeRow(volume)
+    Slot.volumeRow(volume, false)
       .SELECT("JOIN slot_record ON slot.id = slot_record.slot WHERE slot_record.record = ? ORDER BY slot.source, slot.segment")
       .apply(id).list
   /** Attach this record to a slot. */
