@@ -90,7 +90,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   /** Retrieve the list of all assets within the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[SlotAsset]] =
     slotRow(slot)
-      .SELECT("WHERE asset.volume = ? AND slot.id = ?")
+      .SELECT("WHERE asset.volume = ? AND slot_asset.slot = ?")
       .apply(slot.volumeId, slot.id).list
 
   /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */

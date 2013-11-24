@@ -689,8 +689,8 @@ INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, -1, 'DOWNL
 INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 1, 'ADMIN', 'NONE');
 INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 2, 'ADMIN', 'NONE');
 
-INSERT INTO asset (id, volume, slot, format, classification, name) VALUES (1, 1, 1, -800, 'MATERIAL', 'counting');
-INSERT INTO timeseries (id, duration) VALUES (1, interval '40');
+INSERT INTO asset (id, volume, format, classification, duration, name) VALUES (1, 1, -800, 'MATERIAL', interval '48', 'counting');
+INSERT INTO asset_slot VALUES (1, 1);
 SELECT setval('asset_id_seq', 1);
 
 ----------------------------------------------------------- ingest logs
