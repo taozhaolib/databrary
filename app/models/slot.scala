@@ -41,9 +41,14 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
 
   def getConsent : Consent.Value = _context.consent
 
-  /** The level of access granted on data covered by this slot to the current user. */
-  def dataPermission(classification : Classification.Value = Classification.RESTRICTED) : HasPermission =
-    Permission.data(volume.permission, getConsent, classification)
+  private val publicFields = Array(org.joda.time.DateTimeFieldType.year)
+  def getDate : Option[org.joda.time.ReadablePartial] =
+    container.date.map { date =>
+      if (Permission.data(getPermission, getConsent, Classification.IDENTIFIED).checkPermission(Permission.DOWNLOAD))
+        date
+      else
+        new org.joda.time.Partial(publicFields, publicFields.map(date.get _))
+    }
 
   /** Effective start point of this slot within the container. */
   def position : Offset = segment.lowerBound.getOrElse(0)

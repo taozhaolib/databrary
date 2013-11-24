@@ -25,7 +25,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offse
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
     * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
   override def getPermission : Permission.Value =
-    slot.dataPermission(classification).getPermission
+    Permission.data(asset.getPermission, slot.getConsent, classification).getPermission
 
   def pageName = asset.name
   def pageParent = if (slot.container.top) slot.pageParent else Some(slot)
