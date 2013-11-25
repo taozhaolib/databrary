@@ -68,20 +68,21 @@ GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/thumb                        
 
 # assets
 GET         /volume/$vID<[0-9]+>/asset/create                                                         controllers.Asset.createTop(vID : models.Volume.Id)
-GET         /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.Asset.create(vID : models.Volume.Id, cID : models.Slot.Id, offset : Option[dbrary.Offset] ?= None)
+GET         /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.Asset.create(vID : models.Volume.Id, cID : models.Slot.Id)
 POST        /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.Asset.upload(vID : models.Volume.Id, cID : models.Slot.Id)
-GET         /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/$aID<[0-9]+>/edit                            controllers.Asset.edit(vID : models.Volume.Id, cID : models.Slot.Id, aID : models.Asset.Id)
-POST        /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/$aID<[0-9]+>/edit                            controllers.Asset.change(vID : models.Volume.Id, cID : models.Slot.Id, aID : models.Asset.Id)
-POST        /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/$aID<[0-9]+>/remove                          controllers.Asset.remove(vID : models.Volume.Id, cID : models.Slot.Id, aID : models.Asset.Id)
+GET         /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>                                                   controllers.Asset.view(vID : models.Volume.Id, aID : models.Asset.Id)
+GET         /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>/edit                                              controllers.Asset.edit(vID : models.Volume.Id, aID : models.Asset.Id)
+POST        /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>/edit                                              controllers.Asset.change(vID : models.Volume.Id, aID : models.Asset.Id)
+POST        /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>/remove                                            controllers.Asset.remove(vID : models.Volume.Id, aID : models.Asset.Id)
 
-GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                 controllers.Asset.view(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id)
-GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                        controllers.Asset.download(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, inline : Boolean = false)
-GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/inline                          controllers.Asset.download(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, inline : Boolean = true)
-GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/head                            controllers.Asset.head(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id)
-GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb                           controllers.Asset.thumb(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id)
-GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>        controllers.Asset.frame(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, offset : dbrary.Offset)
-GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/old/$oID<[0-9]+>/download       controllers.Asset.downloadSuperseded(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, oID : models.Asset.Id, inline : Boolean = false)
-GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/old/$oID<[0-9]+>/inline         controllers.Asset.downloadSuperseded(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, oID : models.Asset.Id, inline : Boolean = true)
+GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                 controllers.SlotAsset.view(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id)
+GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                        controllers.SlotAsset.download(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, inline : Boolean = false)
+GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/inline                          controllers.SlotAsset.download(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, inline : Boolean = true)
+GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/head                            controllers.SlotAsset.head(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id)
+GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb                           controllers.SlotAsset.thumb(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id)
+GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>        controllers.SlotAsset.frame(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, offset : dbrary.Offset)
+GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/old/$oID<[0-9]+>/download       controllers.SlotAsset.downloadOlder(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, oID : models.Asset.Id, inline : Boolean = false)
+GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/old/$oID<[0-9]+>/inline         controllers.SlotAsset.downloadOlder(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, oID : models.Asset.Id, inline : Boolean = true)
 
 # annotations
 POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/comment/create                                     controllers.Slot.comment(vID : models.Volume.Id, sID : models.Slot.Id, parent : Option[models.Comment.Id] ?= None)

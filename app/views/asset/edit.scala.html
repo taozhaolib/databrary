@@ -1,4 +1,4 @@
-@(target : Either[Slot, SlotAsset], form : controllers.Asset.AssetForm)(implicit request : RequestObject[SiteObject]#Site[_])
+@(target : Either[Slot, Asset], form : controllers.Asset.AssetForm)(implicit request : RequestObject[SiteObject]#Site[_])
 
 @import helper.FieldConstructor
 
@@ -6,14 +6,14 @@
         FieldConstructor(widget.tag.labeledFieldConstructor.f)
     }
 
-@widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.link.name)) {
-    @widget.panel.form(target.fold(_ => "", _.link.name), target.fold(_ => "Upload Asset", _ => "Edit Asset")) {
+@widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.name)) {
+    @widget.panel.form(target.fold(_ => "", _.name), target.fold(_ => "Upload Asset", _ => "Edit Asset")) {
         <div class="col-full">
             @widget.formErrors(form)
 
             @widget.tag.form(target.fold(
             container => routes.Asset.upload(container.volumeId, container.id),
-            link => routes.Asset.change(link.volumeId, link.slotId, link.assetId)), 'enctype -> "multipart/form-data") {
+            asset => routes.Asset.change(asset.volumeId, asset.id)), 'enctype -> "multipart/form-data") {
 
                 @widget.tag.inputText(form("name"), 'placeholder -> "Title", '_class -> "big")
                 @widget.tag.textarea(form("body"), 'placeholder -> "Description")
@@ -26,7 +26,7 @@
                     @if(request.access >= Permission.ADMIN) {
                         <fieldset>
                             <legend>Admin Options</legend>
-                            @widget.tag.select(form("format"), Seq(("", "")) ++: AssetFormat.getAll(true).map(f => (f.id.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)))
+                            @widget.tag.select(form("format"), Seq(("", "")) ++: AssetFormat.getAll.map(f => (f.id.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)))
                             @widget.tag.inputText(form("localfile"), 'placeholder -> "Local location (overridden by file upload)")
                         </fieldset>
                     }

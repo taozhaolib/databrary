@@ -1,4 +1,4 @@
-@(vol : models.Volume, res : (Iterable[Record], Iterable[ContainerAsset]))(implicit request : SiteRequest[_])
+@(vol : models.Volume, res : (Iterable[Record], Iterable[SlotAsset]))(implicit request : SiteRequest[_])
 
 @widget.template.html5("CSV Ingestion Result") {
     @widget.panel.ingest("CSV Ingestion Results"){
@@ -14,8 +14,8 @@
             <h2>Assets:</h2>
 
             <ul>
-            @res._2.map { ca =>
-                <li>@display(Async.get(ca.fullSlot))</li>
+            @res._2.map { a =>
+                <li>@display(a)</li>
             }
             </ul>
         </div>

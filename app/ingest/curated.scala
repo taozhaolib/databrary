@@ -151,7 +151,7 @@ object Curated {
     def key = file.getPath
 
     private def fileInfo(file : File) : Asset.FileInfo =
-      Asset.FileInfo(file, AssetFormat.getFilename(file.getPath, false)
+      Asset.FileInfo(file, AssetFormat.getFilename(file.getPath)
         .getOrElse(throw PopulateException("no file format found for " + file.getPath)))
 
     private val transcodedRegex = "^(.*)/transcoded/(.*)-01.mp4$".r
@@ -168,7 +168,7 @@ object Curated {
           })
           if (l.length != 1)
             throw PopulateException("missing or ambiguous original " + t.getPath)
-          Asset.TimeseriesInfo(file, TimeseriesFormat.Video, probe.duration, fileInfo(l.head))
+          Asset.TimeseriesInfo(file, AssetFormat.Video, probe.duration, fileInfo(l.head))
         case _ =>
           if (path.endsWith(".mp4"))
             throw PopulateException("untranscoded video: " + path)
@@ -176,21 +176,41 @@ object Curated {
       }
     }
 
-    def populate(info : Asset.Info)(implicit site : Site) : Future[models.FileAsset] = {
-      /* for now copy and don't delete */
-      val infile = store.TemporaryFileCopy(info.file)
-      for {
-        asset <- info match {
-          case Asset.TimeseriesInfo(_, fmt, duration, orig) =>
-            populate(orig).flatMap { o =>
-              models.Timeseries.create(fmt, classification, duration, infile, Some(o))
+    def populate(volume : Volume, info : Asset.Info)(implicit site : Site) : Future[models.Asset] =
+      SQL("SELECT id FROM ingest.asset WHERE file = ?").apply(file.getPath).list(SQLCols[models.Asset.Id]).flatMap(_.toSeq match {
+        case Nil =>
+          /* for now copy and don't delete */
+          val infile = store.TemporaryFileCopy(info.file)
+          for {
+            asset <- info match {
+              case Asset.TimeseriesInfo(_, fmt, duration, orig) =>
+                for {
+                  o <- populate(volume, orig)
+                  a <- models.Asset.create(volume, fmt, classification, duration, name, None, infile)
+                  _ <- SQL("INSERT INTO asset_revision VALUES (?, ?)").apply(o.id, a.id).execute
+                } yield (a)
+              case Asset.FileInfo(_, fmt) =>
+                models.Asset.create(volume, fmt, classification, name, None, infile)
             }
-          case Asset.FileInfo(_, fmt) =>
-            models.FileAsset.create(fmt, classification, infile)
-        }
-        _ <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, info.path).execute
-      } yield (asset)
-    }
+            _ <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, info.path).execute
+          } yield (asset)
+        case Seq(iid) =>
+          for {
+            asset <- models.Asset.get(iid).map(_.get)
+            _ <- check(asset.format == info.format,
+              PopulateException("inconsistent format for asset " + name + ": " + info.format.name + " <> " + asset.format.name))
+            _ <- check(asset.classification == classification,
+              PopulateException("inconsistent classification for asset " + name + ": " + classification + " <> " + asset.classification))
+            _ <- info match {
+              case ts : Asset.TimeseriesInfo =>
+                check(asset.asInstanceOf[Timeseries].duration.approx(ts.duration),
+                  PopulateException("inconsistent duration for asset " + name + ": " + ts.duration + " <> " + asset.asInstanceOf[Timeseries].duration))
+              case _ => Async(())
+            }
+          } yield (asset)
+        case _ =>
+          Future.failed(PopulateException("multiple imported assets for " + name + ": " + file.getPath))
+      })
   }
   private object Asset extends ListDataParser[Asset] {
     val headers = makeHeaders("file ?name", "(file ?)?(offset|onset|pos(ition)?)", "(file ?)?class(ification)?", "(file ?)?path")
@@ -216,9 +236,12 @@ object Curated {
     } yield (name.map(Asset(_, pos.get, classification.get, path.get)))
     sealed abstract class Info(val file : File, val format : AssetFormat) {
       def path = file.getPath
+      def duration : Offset
     }
-    final case class FileInfo(override val file : File, override val format : AssetFormat) extends Info(file, format)
-    final case class TimeseriesInfo(override val file : File, override val format : TimeseriesFormat, duration : Offset, original : FileInfo) extends Info(file, format)
+    final case class FileInfo(override val file : File, override val format : AssetFormat) extends Info(file, format) {
+      def duration : Offset = 0
+    }
+    final case class TimeseriesInfo(override val file : File, override val format : TimeseriesFormat, val duration : Offset, original : FileInfo) extends Info(file, format)
   }
 
   private final case class SessionAsset(sessionKey : String, asset : Asset) extends KeyedData {
@@ -226,51 +249,39 @@ object Curated {
     def key = asset.key
     def name = sessionKey + "/" + asset.name
 
-    def populate(session : ModelSession)(implicit site : Site) : Future[models.ContainerAsset] = {
+    def populate(session : ModelSession)(implicit site : Site) : Future[models.SlotAsset] = {
       val info = asset.info
       val container = session.container
-      val pos = (asset.position, session.last, info) match {
-        case (Some(p), _, _) if p.seconds > 0 =>
+      val rng = (asset.position, session.last) match {
+        case (Some(p), _) if p.seconds > 0 =>
           session.last = None
-          asset.position
-        case (Some(Offset(0)), Some(Offset(0)), info : Asset.TimeseriesInfo) =>
+          Range[Offset](p, p + info.duration)
+        case (Some(Offset(0)), Some(Offset(0))) =>
           session.last = Some(info.duration)
-          asset.position
-        case (Some(Offset(p)), Some(e), info : Asset.TimeseriesInfo) if p < 0 =>
+          Range[Offset](0, info.duration)
+        case (Some(Offset(p)), Some(e)) if p < 0 =>
           session.last = Some(e + info.duration)
-          Some(e)
-        case (Some(Offset(p)), _, _) if p < 0 =>
+          Range[Offset](e, e + info.duration)
+        case (Some(Offset(p)), _) if p < 0 =>
           throw PopulateException("unexpected negative position at asset " + name)
-        case (p, _, _) => p
+        case (Some(p), _) =>
+          Range[Offset](p, p + info.duration)
+        case (None, _) =>
+          Range.full[Offset]
       }
-      SQL("SELECT id FROM ingest.asset WHERE file = ?").apply(asset.file.getPath).singleOpt(SQLCols[models.Asset.Id]).flatMap { iid =>
-      Async.flatMap[models.Asset.Id,ContainerAsset](iid, ContainerAsset.get(container, _)).flatMap(
-      _.fold(ContainerAsset.findName(container, asset.name))(a => Async(Seq(a))).flatMap {
-        case Nil =>
-          for {
-            _ <- check(iid.isEmpty,
-              PopulateException("inconsistant container for previously ingested asset " + name))
-            a <- asset.populate(info)
-            ca <- ContainerAsset.create(container, a, pos, asset.name, None)
-          } yield (ca)
-        case Seq(ca) => for {
-          _ <- check(ca.asset.format == info.format,
-            PopulateException("inconsistent format for asset " + name + ": " + info.format.name + " <> " + ca.asset.format.name))
-          _ <- check(ca.asset.classification == asset.classification,
-            PopulateException("inconsistent classification for asset " + name + ": " + asset.classification + " <> " + ca.asset.classification))
-          _ <- info match {
-            case ts : Asset.TimeseriesInfo =>
-              check(!ca.asset.asInstanceOf[Timeseries].duration.approx(ts.duration),
-                PopulateException("inconsistent duration for asset " + name + ": " + ts.duration + " <> " + ca.asset.asInstanceOf[Timeseries].duration))
-            case _ => Async(())
-          }
-          _ <- check(ca.position.equals(pos),
-            PopulateException("inconsistent position for asset " + name + ": " + asset.position + " <> " + ca.position))
-        } yield (ca)
-        case _ =>
-          Future.failed(PopulateException("multiple assets for " + name))
-      }
-      )
+      asset.populate(container.volume, info).flatMap { a =>
+        a.slot.flatMap(_.fold {
+          Slot.getOrCreate(container, rng)
+            .flatMap(a.link(_)).flatMap { _ =>
+              a.slot.map(_.get)
+            }
+        } { sa => for {
+          _ <- check(sa.slot.container.equals(container),
+            PopulateException("inconsistant container for previously ingested asset " + name))
+          _ <- check(sa.position.equals(rng.lowerBound),
+            PopulateException("inconsistent position for asset " + name + ": " + asset.position + " <> " + sa.position))
+        } yield (sa)
+        })
       }
     }
   }
@@ -311,7 +322,7 @@ object Curated {
       data.sessions.size + " sessions: " + data.sessions.keys.mkString(",") + "\n" +
       data.assets.size + " files"
 
-  private def populate(data : Data, volume : Volume)(implicit site : Site) : Future[(Iterable[Record], Iterable[ContainerAsset])] = for {
+  private def populate(data : Data, volume : Volume)(implicit site : Site) : Future[(Iterable[Record], Iterable[SlotAsset])] = for {
     subjs <- Async.sequenceValues(data.subjects.mapValues(_.populate(volume)))
     sess <- Async.sequenceValues(data.sessions.mapValues(_.populate(volume)))
     _ <- Async.fold(data.subjectSessions.map { ss =>
@@ -326,6 +337,6 @@ object Curated {
   def preview(f : java.io.File) : String =
     preview(process(CSV.parseFile(f)))
 
-  def populate(f : java.io.File, volume : Volume)(implicit site : Site) : Future[(Iterable[Record], Iterable[ContainerAsset])] =
+  def populate(f : java.io.File, volume : Volume)(implicit site : Site) : Future[(Iterable[Record], Iterable[SlotAsset])] =
     Future(process(CSV.parseFile(f))).flatMap(populate(_, volume))
 }

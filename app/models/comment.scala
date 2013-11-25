@@ -25,12 +25,12 @@ object Comment extends TableId[Comment]("comment") {
   /* XXX use here of comment_thread is inefficient, as it always threads the whole comment table, even if we only need a subset. */
   private val threads = columns from "comment_thread AS comment";
   private def whoRow(who : Account)(implicit site : Site) = columns
-    .join(Slot.row(false), "comment.slot = slot.id") map {
+    .join(Slot.row, "comment.slot = slot.id") map {
       case (comment, slot) => comment(who, slot)
     }
   private def volumeRow(volume : Volume) = threads
     .join(Account.row, "comment.who = party.id")
-    .join(Slot.volumeRow(volume), "comment.slot = slot.id") map {
+    .join(Slot.volumeRow(volume, false), "comment.slot = slot.id") map {
       case ((comment, who), slot) => comment(who, slot)
     }
   private def containerRow(container : Container) = threads

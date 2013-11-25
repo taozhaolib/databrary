@@ -32,10 +32,6 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
       }
   }
 
-  /** List of contained assets within this container.
-    * In most cases calling `fullSlot.assets` makes more sense. */
-  def assets : Future[Seq[ContainerAsset]] = ContainerAsset.getContainer(this)
-
   /** List of slots on this container. */
   def slots : Future[Seq[Slot]] = Slot.getContainer(this)
   private[models] var _fullSlot : Slot = null /* Should always be set on construction. */
@@ -53,11 +49,11 @@ object Container extends TableId[Container]("container") {
       (vol : Volume) => new Container(id, vol, top, name, date)
     }
   private val full = base
-    .join(Slot.columns(true).fromAlias("full_slot"), "full_slot.source = container.id AND full_slot.segment = '(,)'")
+    .join(Slot.Full.columns.fromAlias("full_slot"), "full_slot.source = container.id AND full_slot.segment = '(,)'")
     .map { case (cont, full) =>
       (vol : Volume) =>
         val c = cont(vol)
-        c._fullSlot = full(c)
+        full(c)
         c
     }
   private def columns(haveFull : Boolean) =
@@ -95,11 +91,8 @@ object Container extends TableId[Container]("container") {
     for {
       cont <- Audit.add(table, SQLTerms('volume -> volume.id, 'name -> name, 'date -> date), "id")
         .single(SQLCols[Id].map(new Container(_, volume, false, name, date)))
-      full <- Slot.containerRow(cont, true)
+      full <- Slot.Full.containerRow(cont)
         .SELECT("WHERE slot.source = ? AND slot.segment = '(,)'")
         .apply(cont.id).single
-    } yield {
-      cont._fullSlot = full
-      cont
-    }
+    } yield (cont)
 }

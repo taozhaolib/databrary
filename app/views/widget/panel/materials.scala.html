@@ -24,7 +24,7 @@
 
                         <span class="classification">@link.classification.toString.charAt(0)</span>
 
-                            <span class="duration">@if(link.duration.seconds != 0) {@link.duration}</span>
+                            <span class="duration">@cast[SlotTimeseries](link).map(_.duration)</span>
                         </li>
                     }
                 }
@@ -40,33 +40,33 @@
                     @if(link.checkPermission(Permission.DOWNLOAD)) {
                         <div id="asset_@link.sourceId.toString" class="panel_materials_frame">
                             <h2>
-                                @link.pageName.@link.format.extension <a href='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, false)' class="link">download</a>
+                                @link.pageName.@link.format.extension <a href='@routes.SlotAsset.download(link.volumeId, link.slotId, link.assetId, false)' class="link">download</a>
                             </h2>
 
                             @link.format.mimeSubTypes match {
                                 case ("image", _) => {
-                                    <img src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
+                                    <img src='@routes.SlotAsset.download(link.volumeId, link.slotId, link.assetId, true)'/>
                                 }
                                 case ("video", _) => {
                                     <video controls>
-                                        <source src="@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)" type="@link.link.asset.format.mimetype">
+                                        <source src="@routes.SlotAsset.download(link.volumeId, link.slotId, link.assetId, true)" type="@link.asset.format.mimetype">
                                     </video>
 
-                                    @if(!link.link.asset.format.equals(TimeseriesFormat.Video)) {
+                                    @if(!link.isInstanceOf[SlotTimeseries]) {
                                         Warning: This video has not (yet) been converted to Databrary's standand format, so some features may not work.
                                     }
                                 }
                                 case ("text", "html") => {
-                                    <iframe src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
+                                    <iframe src='@routes.SlotAsset.download(link.volumeId, link.slotId, link.assetId, true)'/>
                                 }
                                 case ("text", "plain") => {
-                                    <iframe src='@routes.Asset.download(link.volumeId, link.slotId, link.link.assetId, true)'/>
+                                    <iframe src='@routes.SlotAsset.download(link.volumeId, link.slotId, link.assetId, true)'/>
                                 }
                                 case _ => {
                                 }
                             }
 
-                            @display.plainText(link.link.body.getOrElse(""))
+                            @link.asset.body.map(display.plainText _)
                         </div>
                     }
                 }

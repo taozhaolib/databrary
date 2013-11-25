@@ -15,11 +15,11 @@ import models._
 object Slot extends SiteController {
   type Request[A] = RequestObject[Slot]#Site[A]
 
-  private[controllers] def action(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW, full : Boolean = false) =
-    RequestObject.check(v, models.Slot.get(i, full)(_), p)
+  private[controllers] def action(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW) =
+    RequestObject.check(v, models.Slot.get(i)(_), p)
 
-  private[controllers] def Action(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW, full : Boolean = false) =
-    SiteAction ~> action(v, i, p, full)
+  private[controllers] def Action(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW) =
+    SiteAction ~> action(v, i, p)
 
   def view(v : models.Volume.Id, i : models.Slot.Id) = Action(v, i) { implicit request =>
     if (request.obj.isFull && request.obj.container.top)
@@ -158,6 +158,6 @@ object Slot extends SiteController {
   def thumb(v : models.Volume.Id, s : models.Slot.Id) = Action(v, s, Permission.VIEW).async { implicit request =>
     request.obj.thumb.flatMap(_.fold(
       Assets.at("/public", "images/draft.png")(request))(
-      a => Asset.getFrame(Left(0.25f))(request.withObj(a))))
+      a => SlotAsset.getFrame(Left(0.25f))(request.withObj(a))))
   }
 }

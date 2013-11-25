@@ -116,8 +116,8 @@ object Record extends TableId[Record]("record") {
     columns.join(Volume.row, "record.volume = volume.id") map {
       case (rec, vol) => rec(vol)
     }
-  private[models] def volumeRow(vol : Volume) = columns.map(_(vol))
-  private[models] def measureRow[T](vol : Volume, metric : Metric[T]) = {
+  private def volumeRow(vol : Volume) = columns.map(_(vol))
+  private def measureRow[T](vol : Volume, metric : Metric[T]) = {
     val mt = metric.measureType
     volumeRow(vol).leftJoin(mt.select.column, "record.id = " + mt.table + ".record AND " + mt.table + ".metric = ?")
   }
@@ -143,8 +143,8 @@ object Record extends TableId[Record]("record") {
   /** Retrieve the set of records on the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[Record]] =
     volumeRow(slot.volume)
-      .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.slot = ? ORDER BY record.category")
-      .apply(slot.id).list
+      .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.slot = ? AND record.volume = ? ORDER BY record.category")
+      .apply(slot.id, slot.volumeId).list
 
   /** Retrieve all the categorized records associated with the given volume.
     * @param category restrict to the specified category, or include all categories

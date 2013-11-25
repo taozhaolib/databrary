@@ -342,6 +342,23 @@ END; $$;
 CREATE TRIGGER "slot_full_create" AFTER INSERT ON "container" FOR EACH ROW EXECUTE PROCEDURE "slot_full_create" ();
 COMMENT ON TRIGGER "slot_full_create" ON "container" IS 'Always create a "full"-range slot for each container.  Unfortunately nothing currently prevents them from being removed/changed.';
 
+CREATE FUNCTION "get_slot" ("container" integer, "seg" segment) RETURNS integer STRICT LANGUAGE plpgsql AS $$
+DECLARE
+	slot_id integer;
+BEGIN
+	LOOP
+		SELECT id INTO slot_id FROM slot WHERE source = container AND segment = seg;
+		IF FOUND THEN
+			RETURN slot_id;
+		END IF;
+		BEGIN
+			INSERT INTO slot (source, segment) VALUES (container, seg) RETURNING id INTO slot_id;
+			RETURN slot_id;
+		EXCEPTION WHEN unique_violation THEN
+		END;
+	END LOOP;
+END; $$;
+
 
 CREATE VIEW "slot_nesting" ("child", "parent", "consent") AS 
 	SELECT c.id, p.id, p.consent FROM slot c JOIN slot p ON c <@ p;
@@ -383,15 +400,9 @@ CREATE TABLE "format" (
 );
 COMMENT ON TABLE "format" IS 'Possible types for assets, sufficient for producing download headers.';
 
-CREATE TABLE "timeseries_format" (
-	Primary Key ("id"),
-	Unique ("mimetype")
-) INHERITS ("format");
-COMMENT ON TABLE "timeseries_format" IS 'Special asset types that correspond to internal formats representing timeseries data.';
-
 -- The privledged formats with special handling (image and video for now) have hard-coded IDs:
 INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-700, 'image/jpeg', 'jpg', 'JPEG');
-INSERT INTO "timeseries_format" ("id", "mimetype", "extension", "name") VALUES (-800, 'video/mp4', 'mp4', 'Databrary video');
+INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-800, 'video/mp4', 'mp4', 'MPEG-4 video');
 
 -- The above video format will change to reflect internal storage, these are used for uploaded files:
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/plain', 'txt', 'Plain text');
@@ -409,87 +420,64 @@ INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.ms-powerpoint', 'ppt', 'Microsoft PowerPoint presentation');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.oasis.opendocument.presentation', 'odp', 'OpenDocument presentation');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.openxmlformats-officedocument.presentationml.presentation', 'pptx', 'Microsoft PowerPoint (Office Open XML) presentation');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14 video');
+SELECT nextval('format_id_seq'); -- placeholder for old video/mp4
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/webm', 'webm', 'WebM video');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mpeg', 'mpg', 'MPEG program stream (MPEG-1/MPEG-2 video)');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/quicktime', 'mov', 'QuickTime video');
 
-SELECT CREATE_ABSTRACT_PARENT ('asset', ARRAY['file', 'timeseries', 'clip']);
-COMMENT ON TABLE "asset" IS 'Parent table for all uploaded data in storage.';
-
-CREATE TABLE "file" (
-	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
+CREATE TABLE "asset" (
+	"id" serial Primary Key,
+	"volume" integer NOT NULL References "volume",
 	"format" smallint NOT NULL References "format",
 	"classification" classification NOT NULL,
-	"superseded" integer References "asset"
-);
-CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "file" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
-CREATE INDEX ON "file" ("superseded") WHERE "superseded" IS NOT NULL;
-COMMENT ON TABLE "file" IS 'Assets in storage along with their "constant" metadata.';
-COMMENT ON COLUMN "file"."superseded" IS 'Newer version of this asset, either generated automatically from reformatting or a replacement provided by the user.';
-
-SELECT audit.CREATE_TABLE ('file');
-CREATE INDEX "file_modification_idx" ON audit."file" ("id") WHERE "audit_action" IN ('add', 'change');
-COMMENT ON INDEX audit."file_modification_idx" IS 'Allow efficient retrieval of file modification information, specifically date.';
-
-CREATE FUNCTION "file_modification" ("file" integer) RETURNS timestamp LANGUAGE sql STABLE STRICT AS
-	$$ SELECT max("audit_time") FROM audit."file" WHERE "id" = $1 AND "audit_action" IN ('add', 'change') $$;
-
-CREATE TABLE "timeseries" (
-	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
-	"format" smallint NOT NULL References "timeseries_format",
-	"superseded" integer References "asset",
-	"duration" interval HOUR TO SECOND NOT NULL Check ("duration" > interval '0')
-) INHERITS ("file");
-CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "timeseries" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
-COMMENT ON TABLE "timeseries" IS 'File assets representing interpretable and sub-selectable timeseries data (e.g., videos).';
-
-CREATE VIEW audit."timeseries" AS
-	SELECT *, NULL::interval AS "duration" FROM audit."file";
-COMMENT ON VIEW audit."timeseries" IS 'Timeseries are audited together with files.  This view provides glue to make that transparent.';
-CREATE FUNCTION audit."timeseries_file" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
-	INSERT INTO audit."file" (audit_time, audit_user, audit_ip, audit_action, id, format, classification, superseded) VALUES (NEW.audit_time, NEW.audit_user, NEW.audit_ip, NEW.audit_action, NEW.id, NEW.format, NEW.classification, NEW.superseded);
-	RETURN NEW;
-END; $$;
-COMMENT ON FUNCTION audit."timeseries_file" () IS 'Trigger function for INSTEAD OF INSERT ON audit.timeseries to propagate to audit.file.';
-CREATE TRIGGER "file" INSTEAD OF INSERT ON audit."timeseries" FOR EACH ROW EXECUTE PROCEDURE audit."timeseries_file" ();
-
-
-CREATE TABLE "clip" (
-	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
-	"source" integer NOT NULL References "timeseries",
-	"segment" segment NOT NULL Check (lower("segment") >= '0'::interval AND NOT upper_inf("segment")), -- segment <@ [0,source.duration]
-	Unique ("source", "segment")
-) INHERITS ("object_segment");
-CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "clip" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
-CREATE INDEX ON "clip" ("source");
-COMMENT ON TABLE "clip" IS 'Sections of timeseries assets selected for use.  When placed into containers, they are treated independently of their source timeseries.';
-
-
-CREATE TABLE "container_asset" (
-	"asset" integer NOT NULL References "asset" Primary Key,
-	"container" integer NOT NULL References "container",
-	"position" interval HOUR TO SECOND,
+	"duration" interval HOUR TO SECOND Check ("duration" > interval '0'),
 	"name" text NOT NULL,
 	"body" text
 );
-CREATE INDEX ON "container_asset" ("container");
-COMMENT ON TABLE "container_asset" IS 'Asset linkages into containers along with "dynamic" metadata.';
-COMMENT ON COLUMN "container_asset"."position" IS 'Start point or position of this asset within the container, such that this asset occurs or starts position time after the beginning of the container session.  NULL positions are treated as universal (existing at all times).';
+COMMENT ON TABLE "asset" IS 'Assets reflecting files in primary storage.';
 
-SELECT audit.CREATE_TABLE ('container_asset');
+SELECT audit.CREATE_TABLE ('asset');
 
+CREATE INDEX "asset_creation_idx" ON audit."asset" ("id") WHERE "audit_action" = 'add';
+COMMENT ON INDEX audit."asset_creation_idx" IS 'Allow efficient retrieval of asset creation information, specifically date.';
+CREATE FUNCTION "asset_creation" ("asset" integer) RETURNS timestamp LANGUAGE sql STABLE STRICT AS
+	$$ SELECT max("audit_time") FROM audit."asset" WHERE "id" = $1 AND "audit_action" = 'add' $$;
 
-CREATE TABLE "toplevel_asset" (
-	"slot" integer NOT NULL References "slot",
-	"asset" integer NOT NULL References "asset",
-	"excerpt" boolean NOT NULL DEFAULT false,
-	Primary Key ("slot", "asset")
+CREATE TABLE "asset_slot" (
+	"asset" integer NOT NULL Primary Key References "asset",
+	"slot" integer NOT NULL References "slot"
 );
-COMMENT ON TABLE "toplevel_asset" IS 'Slot assets which are promoted to the top volume level for display.';
-COMMENT ON COLUMN "toplevel_asset"."excerpt" IS 'Asset segments that may be released publically if so permitted.';
+COMMENT ON TABLE "asset_slot" IS 'Attachment point of assets, which, in the case of timeseries data, should match asset.duration.';
 
-SELECT audit.CREATE_TABLE ('toplevel_asset');
+SELECT audit.CREATE_TABLE ('asset_slot');
+
+CREATE TABLE "asset_revision" (
+	"prev" integer NOT NULL References "asset",
+	"next" integer NOT NULL References "asset",
+	Primary Key ("next", "prev")
+);
+COMMENT ON TABLE "asset_revision" IS 'Assets that reflect different versions of the same content, either generated automatically from reformatting or a replacement provided by the user.';
+
+
+CREATE TABLE "excerpt" (
+	"asset" integer NOT NULL References "asset",
+	"slot" integer NOT NULL References "slot",
+	Primary Key ("asset", "slot")
+);
+COMMENT ON TABLE "excerpt" IS 'Slot asset (segments) that have been selected for possible public release and top-level display.';
+
+SELECT audit.CREATE_TABLE ('excerpt');
+
+
+CREATE VIEW "slot_asset" ("asset", "segment", "slot", "excerpt") AS
+	SELECT asset_slot.asset, slot_asset.segment, slot.id, excerpt.asset IS NOT NULL
+	  FROM asset_slot 
+	  JOIN slot AS slot_asset ON asset_slot.slot = slot_asset.id
+	  JOIN slot ON slot_asset.source = slot.source AND slot_asset.segment && slot.segment
+	  LEFT JOIN excerpt
+	       JOIN slot AS slot_excerpt ON excerpt.slot = slot_excerpt.id
+	       ON asset_slot.asset = excerpt.asset AND slot.source = slot_excerpt.source AND slot.segment <@ slot_excerpt.segment;
+COMMENT ON VIEW "slot_asset" IS 'Expanded set of all slots and the assets they include.';
 
 ----------------------------------------------------------- comments
 
@@ -702,10 +690,9 @@ INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, -1, 'DOWNL
 INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 1, 'ADMIN', 'NONE');
 INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 2, 'ADMIN', 'NONE');
 
-INSERT INTO timeseries (id, format, classification, duration) VALUES (1, -800, 'MATERIAL', interval '40');
+INSERT INTO asset (id, volume, format, classification, duration, name) VALUES (1, 1, -800, 'MATERIAL', interval '40', 'counting');
+INSERT INTO asset_slot VALUES (1, get_slot(1, '[0,40)'::segment));
 SELECT setval('asset_id_seq', 1);
-
-INSERT INTO container_asset (container, asset, position, name) VALUES (1, 1, '0', 'counting');
 
 ----------------------------------------------------------- ingest logs
 

@@ -55,11 +55,11 @@ object display {
   val dateFmtYMD  = DateTimeFormat.forPattern("yyyy-MMM-dd")
   val dateFmtCite = DateTimeFormat.forPattern("MMMM d, YYYY")
 
-  def fuzzyDate(date : Date, fuzzy : Boolean = true)(implicit site : Site) =
-    (if (fuzzy) dateFmtY else dateFmtYMD).print(date)
+  private def fuzzyDate(date : org.joda.time.ReadablePartial) =
+    if (date.isInstanceOf[Date]) dateFmtYMD.print(date) else date.toString
 
-  def date(s : Slot)(implicit site : Site) =
-    s.container.date.map(fuzzyDate(_, !s.dataPermission().checkPermission(Permission.DOWNLOAD)))
+  def date(s : Slot) =
+    s.getDate.map(fuzzyDate _)
 
   def formatTitle(text: String = "") =
     raw(text.replaceAll(": ", ": <br>"))

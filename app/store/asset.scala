@@ -95,8 +95,8 @@ object TemporaryFileCopy {
   def apply(file : File) = new TemporaryFileCopy(file)
 }
 
-object FileAsset extends StoreDir[models.FileAsset.Id]("store.master") {
-  def store(id : models.FileAsset.Id, f : Files.TemporaryFile) =
+object FileAsset extends StoreDir[models.Asset.Id]("store.master") {
+  def store(id : models.Asset.Id, f : Files.TemporaryFile) =
     f.moveTo(file(id))
   def read(f : models.BackedAsset) : StreamEnumerator =
     StreamEnumerator.fromFile(file(f.sourceId))
@@ -126,7 +126,7 @@ private[store] object Segment extends StoreDir[models.Asset.Id]("store.cache") {
       }
     } }
 
-  private def genFrame(id : models.Timeseries.Id, offset : Offset, cache : Boolean = true) : Future[StreamEnumerator] = {
+  private def genFrame(id : models.Asset.Id, offset : Offset, cache : Boolean = true) : Future[StreamEnumerator] = {
     val f = file(id, offset.millis.toLong.formatted(":%d"))
     if (cache && cacheEnabled)
       generate(f, (f : File) => media.AV.frame(FileAsset.file(id), offset, f), cache)
@@ -135,7 +135,7 @@ private[store] object Segment extends StoreDir[models.Asset.Id]("store.cache") {
     }
   }
 
-  private def genSegment(id : models.Timeseries.Id, segment : Range[Offset], cache : Boolean = true) : Future[StreamEnumerator] = {
+  private def genSegment(id : models.Asset.Id, segment : Range[Offset], cache : Boolean = true) : Future[StreamEnumerator] = {
     val f = file(id, ":%d-%d".format(segment.lowerBound.get.millis.toLong, segment.upperBound.get.millis.toLong))
     generate(f, (f : File) => media.AV.segment(FileAsset.file(id), segment, f), cache)
   }
