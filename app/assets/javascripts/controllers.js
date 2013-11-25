@@ -346,7 +346,7 @@ dbModule.factory('MessageService', function ($rootScope) {
 	var attrToInt = function (attr, def) {
 		attr = parseInt(attr);
 
-		if (typeof(attr) != 'number')
+		if (isNaN || typeof(attr) != 'number')
 			return def;
 
 		return attr;
@@ -408,12 +408,12 @@ dbModule.factory('MessageService', function ($rootScope) {
 		message.type = messageService.getValidType(messageAttrs.dbMessageType);
 		message.target = messageAttrs.dbMessageTarget || message.target;
 		message.closeable = attrToBoolean(messageAttrs.dbMessageCloseable, message.closeable);
-		message.countdown = attrToInt(messageAttrs.dbMessageCountdown, message.closeable);
+		message.countdown = attrToInt(messageAttrs.dbMessageCountdown, message.countdown);
 		message.enabled = attrToBoolean(messageAttrs.dbMessageEnabled, message.enabled);
 		message.message = messageAttrs.dbMessageMessage || messageElement.html();
 
 		if (!message.message)
-			return false;
+			return false; 
 
 		return message;
 	};

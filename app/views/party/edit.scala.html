@@ -3,23 +3,30 @@
 @import helper.FieldConstructor
 
     @implicitField = @{
-        FieldConstructor(widget.tag.minimalFieldConstructor.f)
+        FieldConstructor(widget.tag.labeledFieldConstructor.f)
     }
 
-@widget.template.crud("Edit Profile: " + request.obj.name) {
-    @widget.panel.form(request.obj.name, "Edit Profile") {
+@widget.template.crud("Edit Profile: " + request.obj.pageName) {
+    @widget.panel.form(request.obj.pageName, "Edit Profile") {
         <div class="col-full">
             @widget.formErrors(form)
 
             @widget.tag.form(routes.Party.change(request.obj.party.id)) {
                 @widget.tag.inputText(form("name"), 'placeholder -> "Full name")
-                @widget.tag.inputText(form("orcid"), 'placeholder -> "ORCiD")
+
                 @if(controllers.Party.formForAccount(form)) {
                     @widget.tag.inputText(form("email"), 'placeholder -> "Email")
+
                     @widget.tag.inputPassword(form("password.once"), 'placeholder -> "Password")
                     @widget.tag.inputPassword(form("password.again"), 'placeholder -> "Password (repeat)")
+                }
+
+                @widget.tag.inputText(form("orcid"), 'placeholder -> "ORCiD")
+
+                @if(controllers.Party.formForAccount(form)) {
                     @widget.tag.inputText(form("openid"), 'placeholder -> "OpenID")
                 }
+
                 <button type='submit' class="button">Update</button>
             }
         </div>

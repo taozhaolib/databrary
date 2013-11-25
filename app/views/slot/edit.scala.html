@@ -3,7 +3,7 @@
 @import helper.FieldConstructor
 
 @implicitField = @{
-    FieldConstructor(widget.tag.minimalFieldConstructor.f)
+    FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
 @widget.template.crud(c.fold(v => "Create Session in Volume: " + v.name, s => "Edit Session: " + s.container.name + " (#" + s.id.toString + ")")) {
