@@ -73,19 +73,22 @@
 		.fold {
 			.padding-top(1);
 			max-height: 100000px;
-			overflow: hidden;
 			.transition();
 		}
 
 		&.folded {
 			.panel_header {
+				.line-height(4);
+
 				&:before {
 					.transform-rotate(-90deg);
+					top: @b1 + @b2 + @b8;
 				}
 			}
 
 			.fold {
 				.padding-height(0);
+				overflow: hidden;
 				max-height: 0;
 			}
 		}

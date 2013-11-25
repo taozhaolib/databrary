@@ -1,5 +1,5 @@
-@(party: Party, classes: String = "")(implicit request: SiteRequest[_])
+@(party: Party, classes: String = "", caption: Html = Html(""))(implicit request: SiteRequest[_])
 
 <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
-@widget.portrait.raw(party, classes)(hoverable = true)
+@widget.portrait.raw(party, classes)(hoverable = true, caption = caption)
 </div>
