@@ -342,7 +342,7 @@ END; $$;
 CREATE TRIGGER "slot_full_create" AFTER INSERT ON "container" FOR EACH ROW EXECUTE PROCEDURE "slot_full_create" ();
 COMMENT ON TRIGGER "slot_full_create" ON "container" IS 'Always create a "full"-range slot for each container.  Unfortunately nothing currently prevents them from being removed/changed.';
 
-CREATE FUNCTION "get_slot" ("container" integer, "seg" segment) RETURNS integer STABLE STRICT LANGUAGE plpgsql AS $$
+CREATE FUNCTION "get_slot" ("container" integer, "seg" segment) RETURNS integer STRICT LANGUAGE plpgsql AS $$
 DECLARE
 	slot_id integer;
 BEGIN
@@ -420,6 +420,7 @@ INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.ms-powerpoint', 'ppt', 'Microsoft PowerPoint presentation');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.oasis.opendocument.presentation', 'odp', 'OpenDocument presentation');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.openxmlformats-officedocument.presentationml.presentation', 'pptx', 'Microsoft PowerPoint (Office Open XML) presentation');
+SELECT nextval('format_id_seq'); -- placeholder for old video/mp4
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/webm', 'webm', 'WebM video');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mpeg', 'mpg', 'MPEG program stream (MPEG-1/MPEG-2 video)');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/quicktime', 'mov', 'QuickTime video');
@@ -689,8 +690,8 @@ INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, -1, 'DOWNL
 INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 1, 'ADMIN', 'NONE');
 INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 2, 'ADMIN', 'NONE');
 
-INSERT INTO asset (id, volume, format, classification, duration, name) VALUES (1, 1, -800, 'MATERIAL', interval '48', 'counting');
-INSERT INTO asset_slot VALUES (1, 1);
+INSERT INTO asset (id, volume, format, classification, duration, name) VALUES (1, 1, -800, 'MATERIAL', interval '40', 'counting');
+INSERT INTO asset_slot VALUES (1, get_slot(1, '[0,40)'::segment));
 SELECT setval('asset_id_seq', 1);
 
 ----------------------------------------------------------- ingest logs
