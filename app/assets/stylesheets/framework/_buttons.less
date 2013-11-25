@@ -77,6 +77,18 @@ button, .button {
 
 //
 
+a.button {
+	&:link, &.link,
+	&:visited, &.visited,
+	&:hover, &.hover,
+	&:active, &.active,
+	&:focus, &.focus {
+		color: @text
+	}
+}
+
+//
+
 button.link {
 	border: inherit;
 	background: inherit;

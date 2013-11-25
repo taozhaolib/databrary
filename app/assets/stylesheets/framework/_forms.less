@@ -115,6 +115,10 @@ fieldset, .fieldset {
 	.border-padding-bottom(1px, .5);
 	.padding-width(0);
 	.margin(0, 0, 1);
+
+	> *:last-child {
+		.margin-bottom(0);
+	}
 }
 
 legend, .legend {
@@ -157,5 +161,13 @@ label, .label {
 		>input, >select, >textarea, >.fieldgroup {
 			width: 66.666666666%;
 		}
+	}
+}
+
+//
+
+th, td {
+	input, select {
+		.margin-bottom(0);
 	}
 }

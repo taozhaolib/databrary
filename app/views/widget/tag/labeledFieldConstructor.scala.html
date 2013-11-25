@@ -10,7 +10,7 @@
             @if(elements.infos(elements.lang).nonEmpty || elements.hasErrors) {
                 <div class="field_message" db-message db-message-type="@if(elements.hasErrors){error}else{info}" db-message-target="#@elements.id">
                     <dl>
-                        @if(elements.args.get('placeholder)) {<dt>@elements.args.get('placeholder):</dt>}
+                        @if(elements.args.get('placeholder)) {<dt>@elements.args.get('placeholder)</dt>}
                         @elements.infos(elements.lang).map { info => <dd>@info</dd>}
                         @elements.errors(elements.lang).map { error => <dd>@error</dd>}
                     </dl>
