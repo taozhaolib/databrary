@@ -815,7 +815,7 @@ dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', funct
 
 	$scope.sortTags = function () {
 		$scope.tags = $scope.tags.sort(function (a, b) {
-			return (a.weight < b.weight) ? -1 : (a.weight > b.weight) ? 1 : 0;
+			return (a.weight > b.weight) ? -1 : (a.weight < b.weight) ? 1 : 0;
 		});
 	};
 
