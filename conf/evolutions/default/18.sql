@@ -40,7 +40,8 @@ INSERT INTO "asset"
 	SELECT asset.id, container.volume, file.format, file.classification, timeseries.duration, COALESCE(container_asset.name, audit_container_asset.name), COALESCE(container_asset.body, audit_container_asset.body)
 	  FROM asset_old asset
 	  LEFT JOIN file LEFT JOIN timeseries ON file.id = timeseries.id ON asset.id = file.id 
-	  LEFT JOIN container_asset ON asset.id = container_asset.asset
+	  LEFT JOIN file superseded_file ON file.superseded = superseded_file.id
+	  LEFT JOIN container_asset ON asset.id = container_asset.asset OR superseded_file.id = container_asset.asset
           LEFT JOIN audit.container_asset audit_container_asset ON asset.id = audit_container_asset.asset AND audit_container_asset.audit_action = 'remove'
 	  LEFT JOIN container ON container_asset.container = container.id OR audit_container_asset.container = container.id;
 
@@ -148,19 +149,10 @@ COMMENT ON VIEW "slot_asset" IS 'Expanded set of all slots and the assets they i
 
 # --- !Downs
 
--- These are destructive: no attempt is made to preserve asset data
-
 DROP VIEW "slot_asset";
 
-DROP TABLE audit."excerpt";
-DROP TABLE audit."asset_slot";
-DROP FUNCTION "asset_creation" (integer);
-DROP TABLE audit."asset";
-
-DROP TABLE "excerpt";
-DROP TABLE "asset_revision";
-DROP TABLE "asset_slot";
-DROP TABLE "asset";
+ALTER TABLE "asset" RENAME TO "asset_new";
+ALTER TABLE "asset_new" RENAME CONSTRAINT "asset_pkey" TO "asset_new_pkey";
 
 DROP FUNCTION "get_slot" (integer, segment);
 
@@ -171,12 +163,15 @@ CREATE TABLE "timeseries_format" (
 ) INHERITS ("format");
 COMMENT ON TABLE "timeseries_format" IS 'Special asset types that correspond to internal formats representing timeseries data.';
 
-DELETE FROM ONLY "format" WHERE id = -800;
+ALTER TABLE "asset_new" DROP CONSTRAINT "asset_format_fkey";
+UPDATE ONLY "format" SET "id" = (SELECT id - 1 FROM format WHERE mimetype = 'video/webm'), "name" = 'MPEG-4 Part 14 video' WHERE id = -800;
+UPDATE "asset_new" SET format = (SELECT id FROM ONLY format WHERE mimetype = 'video/mp4') WHERE format = -800 AND duration IS NULL;
 INSERT INTO "timeseries_format" ("id", "mimetype", "extension", "name") VALUES (-800, 'video/mp4', 'mp4', 'Databrary video');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mp4', 'mp4', 'MPEG-4 Part 14 video');
 
+ALTER SEQUENCE "asset_id_seq" RENAME TO "asset_new_id_seq";
 SELECT CREATE_ABSTRACT_PARENT ('asset', ARRAY['file', 'timeseries', 'clip']);
 COMMENT ON TABLE "asset" IS 'Parent table for all uploaded data in storage.';
+SELECT setval('asset_id_seq', nextval('asset_new_id_seq')-1, 't');
 
 CREATE TABLE "file" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
@@ -200,9 +195,9 @@ CREATE FUNCTION "file_modification" ("file" integer) RETURNS timestamp LANGUAGE 
 CREATE TABLE "timeseries" (
 	"id" integer NOT NULL DEFAULT nextval('asset_id_seq') Primary Key References "asset" Deferrable Initially Deferred,
 	"format" smallint NOT NULL References "timeseries_format",
-	"superseded" integer References "asset",
 	"duration" interval HOUR TO SECOND NOT NULL Check ("duration" > interval '0')
 ) INHERITS ("file");
+ALTER TABLE "timeseries" ADD Foreign Key ("superseded") References "asset";
 CREATE TRIGGER "asset" BEFORE INSERT OR UPDATE OR DELETE ON "timeseries" FOR EACH ROW EXECUTE PROCEDURE "asset_trigger" ();
 COMMENT ON TABLE "timeseries" IS 'File assets representing interpretable and sub-selectable timeseries data (e.g., videos).';
 
@@ -249,3 +244,48 @@ COMMENT ON TABLE "toplevel_asset" IS 'Slot assets which are promoted to the top 
 COMMENT ON COLUMN "toplevel_asset"."excerpt" IS 'Asset segments that may be released publically if so permitted.';
 
 SELECT audit.CREATE_TABLE ('toplevel_asset');
+
+INSERT INTO "file" (id, format, classification, superseded)
+	SELECT id, format, classification, next
+	  FROM asset_new asset LEFT JOIN asset_revision ON asset.id = asset_revision.prev
+	 WHERE duration IS NULL;
+INSERT INTO "timeseries" (id, format, classification, superseded, duration)
+	SELECT id, format, classification, next, duration
+	  FROM asset_new asset LEFT JOIN asset_revision ON asset.id = asset_revision.prev
+	 WHERE duration IS NOT NULL;
+
+INSERT INTO "container_asset" (asset, container, position, name, body)
+	SELECT asset.id, slot.source, lower(slot.segment), asset.name, asset.body
+	  FROM asset_new asset
+	  JOIN asset_slot ON asset.id = asset_slot.asset
+	  JOIN slot ON asset_slot.slot = slot.id;
+
+INSERT INTO "toplevel_asset"
+	SELECT slot, asset, true FROM excerpt;
+
+INSERT INTO audit."file"
+	SELECT audit_time, audit_user, audit_ip, audit_action, id, format, classification
+	  FROM audit.asset;
+
+-- XXX: audit.container_asset
+
+INSERT INTO audit."toplevel_asset"
+	SELECT audit_time, audit_user, audit_ip, audit_action, slot, asset, true
+	  FROM audit.excerpt;
+
+ALTER TABLE "asset_slot" DROP CONSTRAINT "asset_slot_slot_fkey";
+DELETE FROM slot USING asset_slot WHERE slot.id = asset_slot.slot AND segment <> '(,)' AND consent IS NULL;
+SELECT setval('slot_id_seq', max(id), 't') FROM slot;
+
+ALTER TABLE ingest."asset" DROP CONSTRAINT "asset_id_fkey";
+ALTER TABLE ingest."asset" ADD Foreign Key ("id") References "asset";
+
+DROP TABLE audit."excerpt";
+DROP TABLE audit."asset_slot";
+DROP FUNCTION "asset_creation" (integer);
+DROP TABLE audit."asset";
+
+DROP TABLE "excerpt";
+DROP TABLE "asset_slot";
+DROP TABLE "asset_revision";
+DROP TABLE "asset_new";
