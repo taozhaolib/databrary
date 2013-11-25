@@ -7,9 +7,6 @@
     }
 
 @widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.link.name)) {
-}
-
-@widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.link.name)) {
     @widget.panel.form(target.fold(_ => "", _.link.name), target.fold(_ => "Upload Asset", _ => "Edit Asset")) {
         <div class="col-full">
             @widget.formErrors(form)

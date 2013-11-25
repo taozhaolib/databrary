@@ -413,7 +413,7 @@ dbModule.factory('MessageService', function ($rootScope) {
 		message.message = messageAttrs.dbMessageMessage || messageElement.html();
 
 		if (!message.message)
-			return false; 
+			return false;
 
 		return message;
 	};
