@@ -35,7 +35,7 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">SQLTerm</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="value">value: <span class="extype" name="models.SQLTerm.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="evidence$1">evidence$1: <span class="extype" name="dbrary.SQLType">SQLType</span>[<span class="extype" name="models.SQLTerm.A">A</span>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">SQLTerm</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="value">value: <span class="extype" name="models.SQLTerm.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="sqlType">sqlType: <span class="extype" name="dbrary.SQLType">SQLType</span>[<span class="extype" name="models.SQLTerm.A">A</span>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
@@ -80,7 +80,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.SQLTerm#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(name:String,value:A)(implicitevidence$1:dbrary.SQLType[A]):models.SQLTerm[A]"></a>
+      <a id="&lt;init&gt;(name:String,value:A)(implicitsqlType:dbrary.SQLType[A]):models.SQLTerm[A]"></a>
       <a id="&lt;init&gt;:SQLTerm[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -88,7 +88,7 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">SQLTerm</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="value">value: <span class="extype" name="models.SQLTerm.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="dbrary.SQLType">SQLType</span>[<span class="extype" name="models.SQLTerm.A">A</span>]</span>)</span>
+        <span class="name">SQLTerm</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="value">value: <span class="extype" name="models.SQLTerm.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="sqlType">sqlType: <span class="extype" name="dbrary.SQLType">SQLType</span>[<span class="extype" name="models.SQLTerm.A">A</span>]</span>)</span>
       </span>
       </h4>
       
@@ -318,6 +318,19 @@
       </span>
       <span class="symbol">
         <span class="name">put</span><span class="result">: <span class="extype" name="scala.Any">Any</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="models.SQLTerm#sqlType" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="sqlType:dbrary.SQLType[A]"></a>
+      <a id="sqlType:SQLType[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">sqlType</span><span class="result">: <span class="extype" name="dbrary.SQLType">SQLType</span>[<span class="extype" name="models.SQLTerm.A">A</span>]</span>
       </span>
       </h4>
       

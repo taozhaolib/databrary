@@ -2,9 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>Timeseries - models.Timeseries</title>
-          <meta name="description" content="Timeseries - models.Timeseries" />
-          <meta name="keywords" content="Timeseries models.Timeseries" />
+          <title>StructMapping - controllers.StructData.StructMapping</title>
+          <meta name="description" content="StructMapping - controllers.StructData.StructMapping" />
+          <meta name="keywords" content="StructMapping controllers.StructData.StructMapping" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -12,7 +12,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
-            var hash = 'models.Timeseries$';
+            var hash = 'controllers.StructData$StructMapping';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -22,26 +22,26 @@
    	  </script>
     
         </head>
-        <body class="value">
+        <body class="type">
       <div id="definition">
-        <a href="Timeseries.html" title="Go to companion"><img src="../lib/object_to_class_big.png" /></a>
-        <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
-        <h1><a href="Timeseries.html" title="Go to companion">Timeseries</a></h1>
+        <img src="../lib/class_big.png" />
+        <p id="owner"><a href="package.html" class="extype" name="controllers">controllers</a>.<a href="StructData.html" class="extype" name="controllers.StructData">StructData</a></p>
+        <h1>StructMapping</h1>
       </div>
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">object</span>
+        <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">Timeseries</span><span class="result"> extends <span class="extype" name="models.AssetView">AssetView</span>[<a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>]</span>
+        <span class="name">StructMapping</span><span class="result"> extends <span class="extype" name="play.api.data.Mapping">Mapping</span>[<a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/asset.scala" target="_blank">asset.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/controllers/structform.scala" target="_blank">structform.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="models.AssetView">AssetView</span>[<a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>], <span class="extype" name="models.TableId">TableId</span>[<a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>], <span class="extype" name="models.HasId">HasId</span>[<a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>], <span class="extype" name="models.Table">Table</span>[<a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="play.api.data.Mapping">Mapping</span>[<a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Timeseries"><span>Timeseries</span></li><li class="in" name="models.AssetView"><span>AssetView</span></li><li class="in" name="models.TableId"><span>TableId</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="controllers.StructData.StructMapping"><span>StructMapping</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="play.api.data.Mapping"><span>Mapping</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -79,36 +79,7 @@
         <div id="allMembers">
         
 
-        <div id="types" class="types members">
-              <h3>Type Members</h3>
-              <ol><li name="models.HasId.Id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Id=models.IntId[T]"></a>
-      <a id="Id:Id"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Id</span><span class="result"> = <a href="IntId.html" class="extype" name="models.IntId">IntId</a>[<a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId</dd></dl></div>
-    </li><li name="models.Table.Row" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Row=R"></a>
-      <a id="Row:Row"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Row</span><span class="result"> = <a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Type of TableRow this object can generate.</p><div class="fullcomment"><div class="comment cmt"><p>Type of TableRow this object can generate.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>Table → TableView</dd></dl></div>
-    </li></ol>
-            </div>
+        
 
         
 
@@ -179,71 +150,32 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.TableView#DELETE" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="DELETE(args:models.SQLTerm[_]*)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
-      <a id="DELETE(SQLTerm[_]*)(DB,ExecutionContext):SQLResult"></a>
+    </li><li name="play.api.data.Mapping#addPrefix" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="addPrefix(prefix:String):Option[String]"></a>
+      <a id="addPrefix(String):Option[String]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">DELETE</span><span class="params">(<span name="args">args: <a href="SQLTerm.html" class="extype" name="models.SQLTerm">SQLTerm</a>[_]*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
+        <span class="name">addPrefix</span><span class="params">(<span name="prefix">prefix: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.lang.String">String</span>]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.TableView#DELETE" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="DELETE(args:models.SQLTerms)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
-      <a id="DELETE(SQLTerms)(DB,ExecutionContext):SQLResult"></a>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Mapping</dd></dl></div>
+    </li><li name="play.api.data.Mapping#applyConstraints" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="applyConstraints(t:&lt;?&gt;):Either[Seq[play.api.data.FormError],T]"></a>
+      <a id="applyConstraints(StructData.this.type):Either[Seq[FormError],StructData.this.type]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">DELETE</span><span class="params">(<span name="args">args: <span class="extype" name="models.SQLTerms">SQLTerms</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
+        <span class="name">applyConstraints</span><span class="params">(<span name="t">t: <a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type</span>)</span><span class="result">: <span class="extype" name="scala.Either">Either</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.data.FormError">FormError</span>], <a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.TableView#INSERT" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="INSERT(args:models.SQLTerm[_]*)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
-      <a id="INSERT(SQLTerm[_]*)(DB,ExecutionContext):SQLResult"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">INSERT</span><span class="params">(<span name="args">args: <a href="SQLTerm.html" class="extype" name="models.SQLTerm">SQLTerm</a>[_]*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.TableView#INSERT" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="INSERT(args:models.SQLTerms)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
-      <a id="INSERT(SQLTerms)(DB,ExecutionContext):SQLResult"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">INSERT</span><span class="params">(<span name="args">args: <span class="extype" name="models.SQLTerms">SQLTerms</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.HasId#asId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="asId(i:Int):HasId.this.Id"></a>
-      <a id="asId(Int):Id"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">asId</span><span class="params">(<span name="i">i: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Timeseries.Id">Id</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Create an <a href="#Id=models.IntId[T]" class="extmbr" name="models.Timeseries.Id">Id</a> value.</p><div class="fullcomment"><div class="comment cmt"><p>Create an <a href="#Id=models.IntId[T]" class="extmbr" name="models.Timeseries.Id">Id</a> value.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Mapping</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -257,6 +189,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="controllers.StructData.StructMapping#bind" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="bind(data:Map[String,String]):Either[Seq[play.api.data.FormError],StructData.this.type]"></a>
+      <a id="bind(Map[String,String]):Either[Seq[FormError],StructData.this.type]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">bind</span><span class="params">(<span name="data">data: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Either">Either</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.data.FormError">FormError</span>], <a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.StructData.StructMapping">StructMapping</a> → Mapping</dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -276,20 +221,32 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.Timeseries#create" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="create(format:models.TimeseriesFormat,classification:models.Classification.Value,duration:dbrary.Offset,file:play.api.libs.Files.TemporaryFile)(implicitsite:site.Site):scala.concurrent.Future[models.Timeseries]"></a>
-      <a id="create(TimeseriesFormat,Classification.Value,Offset,TemporaryFile)(Site):Future[Timeseries]"></a>
+    </li><li name="play.api.data.Mapping#collectErrors" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="collectErrors(t:&lt;?&gt;):Seq[play.api.data.FormError]"></a>
+      <a id="collectErrors(StructData.this.type):Seq[FormError]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">create</span><span class="params">(<span name="format">format: <a href="TimeseriesFormat.html" class="extype" name="models.TimeseriesFormat">TimeseriesFormat</a></span>, <span name="classification">classification: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a></span>, <span name="duration">duration: <span class="extype" name="dbrary.Offset">Offset</span></span>, <span name="file">file: <span class="extype" name="play.api.libs.Files.TemporaryFile">TemporaryFile</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>]</span>
+        <span class="name">collectErrors</span><span class="params">(<span name="t">t: <a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type</span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.data.FormError">FormError</span>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Create a new timeseries asset from an uploaded file.</p><div class="fullcomment"><div class="comment cmt"><p>Create a new timeseries asset from an uploaded file.</p></div><dl class="paramcmts block"><dt class="param">format</dt><dd class="cmt"><p>the format of the file, taken as given</p></dd><dt class="param">file</dt><dd class="cmt"><p>a complete, uploaded file which will be moved into the appropriate storage location
-</p></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Mapping</dd></dl></div>
+    </li><li name="controllers.StructData.StructMapping#constraints" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="constraints:Seq[play.api.data.validation.Constraint[StructData.this.type]]"></a>
+      <a id="constraints:Seq[Constraint[StructData.this.type]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">constraints</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.data.validation.Constraint">Constraint</span>[<a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type]]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.StructData.StructMapping">StructMapping</a> → Mapping</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -303,19 +260,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="equals(x$1:Any):Boolean"></a>
-      <a id="equals(Any):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -335,6 +279,19 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="play.api.data.Mapping#format" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="format:Option[(String,Seq[Any])]"></a>
+      <a id="format:Option[(String,Seq[Any])]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">format</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Any">Any</span>])]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Mapping</dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -345,19 +302,6 @@
       </span>
       <span class="symbol">
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="hashCode():Int"></a>
-      <a id="hashCode():Int"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -374,6 +318,32 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="controllers.StructData.StructMapping#key" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="key:String"></a>
+      <a id="key:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">key</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.StructData.StructMapping">StructMapping</a> → Mapping</dd></dl></div>
+    </li><li name="controllers.StructData.StructMapping#mappings" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="mappings:Seq[play.api.data.Mapping[_]]"></a>
+      <a id="mappings:Seq[Mapping[_]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">mappings</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.data.Mapping">Mapping</span>[_]]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.StructData.StructMapping">StructMapping</a> → Mapping</dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -426,45 +396,71 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.TableView#tableColumn" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="tableColumn[A](col:Symbol)(implicitevidence$1:dbrary.SQLType[A]):dbrary.SelectColumn[A]"></a>
-      <a id="tableColumn[A](Symbol)(SQLType[A]):SelectColumn[A]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">tableColumn</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="col">col: <span class="extype" name="scala.Symbol">Symbol</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="dbrary.SQLType">SQLType</span>[<span class="extype" name="models.TableView.tableColumn.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="dbrary.SelectColumn">SelectColumn</span>[<span class="extype" name="models.TableView.tableColumn.A">A</span>]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Convenient creation of column names for this table from symbols.</p><div class="fullcomment"><div class="comment cmt"><p>Convenient creation of column names for this table from symbols.</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.TableView#tableName" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="tableName:dbrary.FromTable"></a>
-      <a id="tableName:FromTable"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">tableName</span><span class="result">: <span class="extype" name="dbrary.FromTable">FromTable</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="toString():String"></a>
-      <a id="toString():String"></a>
+    </li><li name="play.api.data.Mapping#transform" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="transform[B](f1:T=&gt;B,f2:B=&gt;T):play.api.data.Mapping[B]"></a>
+      <a id="transform[B]((StructData.this.type)⇒B,(B)⇒StructData.this.type):Mapping[B]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+        <span class="name">transform</span><span class="tparams">[<span name="B">B</span>]</span><span class="params">(<span name="f1">f1: (<a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type) ⇒ <span class="extype" name="play.api.data.Mapping.transform.B">B</span></span>, <span name="f2">f2: (<span class="extype" name="play.api.data.Mapping.transform.B">B</span>) ⇒ <a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type</span>)</span><span class="result">: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="play.api.data.Mapping.transform.B">B</span>]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Mapping</dd></dl></div>
+    </li><li name="controllers.StructData.StructMapping#unbind" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="unbind(value:StructData.this.type):(Map[String,String],Seq[play.api.data.FormError])"></a>
+      <a id="unbind(StructData.this.type):(Map[String,String],Seq[FormError])"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">unbind</span><span class="params">(<span name="value">value: <a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type</span>)</span><span class="result">: (<span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.data.FormError">FormError</span>])</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.StructData.StructMapping">StructMapping</a> → Mapping</dd></dl></div>
+    </li><li name="controllers.StructData.StructMapping#verifying" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="verifying(c:play.api.data.validation.Constraint[StructData.this.type]*):StructData.this.StructMapping"></a>
+      <a id="verifying(Constraint[StructData.this.type]*):StructMapping"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">verifying</span><span class="params">(<span name="c">c: <span class="extype" name="play.api.data.validation.Constraint">Constraint</span>[<a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type]*</span>)</span><span class="result">: <a href="" class="extype" name="controllers.StructData.StructMapping">StructMapping</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.StructData.StructMapping">StructMapping</a> → Mapping</dd></dl></div>
+    </li><li name="play.api.data.Mapping#verifying" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="verifying(error:=&gt;String,constraint:T=&gt;Boolean):play.api.data.Mapping[T]"></a>
+      <a id="verifying(⇒String,(StructData.this.type)⇒Boolean):Mapping[StructData.this.type]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">verifying</span><span class="params">(<span name="error">error: ⇒ <span class="extype" name="scala.Predef.String">String</span></span>, <span name="constraint">constraint: (<a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Mapping</dd></dl></div>
+    </li><li name="play.api.data.Mapping#verifying" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="verifying(constraint:T=&gt;Boolean):play.api.data.Mapping[T]"></a>
+      <a id="verifying((StructData.this.type)⇒Boolean):Mapping[StructData.this.type]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">verifying</span><span class="params">(<span name="constraint">constraint: (<a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Mapping</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -522,6 +518,19 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="controllers.StructData.StructMapping#withPrefix" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="withPrefix(prefix:String):StructData.this.StructMapping"></a>
+      <a id="withPrefix(String):StructMapping"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">withPrefix</span><span class="params">(<span name="prefix">prefix: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="" class="extype" name="controllers.StructData.StructMapping">StructMapping</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.StructData.StructMapping">StructMapping</a> → Mapping</dd></dl></div>
     </li></ol>
             </div>
 
@@ -531,16 +540,16 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.AssetView">
-              <h3>Inherited from <span class="extype" name="models.AssetView">AssetView</span>[<a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>]</h3>
-            </div><div class="parent" name="models.TableId">
-              <h3>Inherited from <span class="extype" name="models.TableId">TableId</span>[<a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>]</h3>
-            </div><div class="parent" name="models.HasId">
-              <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>]</h3>
-            </div><div class="parent" name="models.Table">
-              <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>]</h3>
-            </div><div class="parent" name="models.TableView">
-              <h3>Inherited from <span class="extype" name="models.TableView">TableView</span></h3>
+        <div class="parent" name="scala.Serializable">
+              <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="java.io.Serializable">
+              <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="scala.Product">
+              <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
+            </div><div class="parent" name="scala.Equals">
+              <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
+            </div><div class="parent" name="play.api.data.Mapping">
+              <h3>Inherited from <span class="extype" name="play.api.data.Mapping">Mapping</span>[<a href="StructData.html" class="extype" name="controllers.StructData">StructData</a>.this.type]</h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">

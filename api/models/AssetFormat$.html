@@ -246,6 +246,19 @@
       <p class="shortcomment cmt">File type for internal image data (jpeg).</p><div class="fullcomment"><div class="comment cmt"><p>File type for internal image data (jpeg).
 Images of this type may be produced and handled specially internally.
 </p></div></div>
+    </li><li name="models.AssetFormat#Video" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Video:models.TimeseriesFormat"></a>
+      <a id="Video:TimeseriesFormat"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Video</span><span class="result">: <a href="TimeseriesFormat.html" class="extype" name="models.TimeseriesFormat">TimeseriesFormat</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The designated internal video format.</p>
     </li><li name="models.AssetFormat#add" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="add(f:models.AssetFormat):Unit"></a>
       <a id="add(AssetFormat):Unit"></a>
@@ -349,32 +362,32 @@ Images of this type may be produced and handled specially internally.
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.AssetFormat#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="get(id:models.AssetFormat.Id,ts:Boolean):Option[models.AssetFormat]"></a>
-      <a id="get(Id,Boolean):Option[AssetFormat]"></a>
+    </li><li name="models.AssetFormat#get" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="get(id:models.AssetFormat.Id):Option[models.AssetFormat]"></a>
+      <a id="get(Id):Option[AssetFormat]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">get</span><span class="params">(<span name="id">id: <a href="#Id=models.IntId[T]" class="extmbr" name="models.AssetFormat.Id">Id</a></span>, <span name="ts">ts: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
+        <span class="name">get</span><span class="params">(<span name="id">id: <a href="#Id=models.IntId[T]" class="extmbr" name="models.AssetFormat.Id">Id</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Lookup a format by its id.</p><div class="fullcomment"><div class="comment cmt"><p>Lookup a format by its id.</p></div><dl class="paramcmts block"><dt class="param">ts</dt><dd class="cmt"><p>include TimeseriesFormats. Unlike other lookups, this is enabled by default.</p></dd></dl></div>
-    </li><li name="models.AssetFormat#getAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getAll(ts:Boolean):Iterable[models.AssetFormat]"></a>
-      <a id="getAll(Boolean):Iterable[AssetFormat]"></a>
+      <p class="shortcomment cmt">Lookup a format by its id.</p>
+    </li><li name="models.AssetFormat#getAll" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getAll:Iterable[models.AssetFormat]"></a>
+      <a id="getAll:Iterable[AssetFormat]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getAll</span><span class="params">(<span name="ts">ts: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.Iterable">Iterable</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
+        <span class="name">getAll</span><span class="result">: <span class="extype" name="scala.Iterable">Iterable</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Get a list of all file formats in the database.</p><div class="fullcomment"><div class="comment cmt"><p>Get a list of all file formats in the database.</p></div><dl class="paramcmts block"><dt class="param">ts</dt><dd class="cmt"><p>include TimeseriesFormats.</p></dd></dl></div>
+      <p class="shortcomment cmt">Get a list of all file formats in the database.</p>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -389,44 +402,44 @@ Images of this type may be produced and handled specially internally.
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.AssetFormat#getFilePart" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getFilePart(file:play.api.mvc.MultipartFormData.FilePart[_],ts:Boolean):Option[models.AssetFormat]"></a>
-      <a id="getFilePart(FilePart[_],Boolean):Option[AssetFormat]"></a>
+      <a id="getFilePart(file:play.api.mvc.MultipartFormData.FilePart[_]):Option[models.AssetFormat]"></a>
+      <a id="getFilePart(FilePart[_]):Option[AssetFormat]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getFilePart</span><span class="params">(<span name="file">file: <span class="extype" name="play.api.mvc.MultipartFormData.FilePart">FilePart</span>[_]</span>, <span name="ts">ts: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
+        <span class="name">getFilePart</span><span class="params">(<span name="file">file: <span class="extype" name="play.api.mvc.MultipartFormData.FilePart">FilePart</span>[_]</span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
       </span>
       </h4>
       
     </li><li name="models.AssetFormat#getFilename" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getFilename(filename:String,ts:Boolean):Option[models.AssetFormat]"></a>
-      <a id="getFilename(String,Boolean):Option[AssetFormat]"></a>
+      <a id="getFilename(filename:String):Option[models.AssetFormat]"></a>
+      <a id="getFilename(String):Option[AssetFormat]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getFilename</span><span class="params">(<span name="filename">filename: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="ts">ts: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
+        <span class="name">getFilename</span><span class="params">(<span name="filename">filename: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
       </span>
       </h4>
       
-    </li><li name="models.AssetFormat#getMimetype" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getMimetype(mimetype:String,ts:Boolean):Option[models.AssetFormat]"></a>
-      <a id="getMimetype(String,Boolean):Option[AssetFormat]"></a>
+    </li><li name="models.AssetFormat#getMimetype" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getMimetype(mimetype:String):Option[models.AssetFormat]"></a>
+      <a id="getMimetype(String):Option[AssetFormat]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getMimetype</span><span class="params">(<span name="mimetype">mimetype: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="ts">ts: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
+        <span class="name">getMimetype</span><span class="params">(<span name="mimetype">mimetype: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Lookup a format by its mimetime.</p><div class="fullcomment"><div class="comment cmt"><p>Lookup a format by its mimetime.</p></div><dl class="paramcmts block"><dt class="param">ts</dt><dd class="cmt"><p>include TimeseriesFormats.</p></dd></dl></div>
+      <p class="shortcomment cmt">Lookup a format by its mimetime.</p>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <a id="hashCode():Int"></a>

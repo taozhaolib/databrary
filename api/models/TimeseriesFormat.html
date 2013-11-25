@@ -24,9 +24,9 @@
         </head>
         <body class="type">
       <div id="definition">
-        <a href="TimeseriesFormat$.html" title="Go to companion"><img src="../lib/class_to_object_big.png" /></a>
+        <img src="../lib/class_big.png" />
         <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
-        <h1><a href="TimeseriesFormat$.html" title="Go to companion">TimeseriesFormat</a></h1>
+        <h1>TimeseriesFormat</h1>
       </div>
 
       <h4 id="signature" class="signature">
@@ -40,6 +40,8 @@
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Specialization of <a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a> for timeseries files stored in special internal formats.
+These formats are all hard-coded so do not rely on the database.
+Currently this only includes Video, but may be extended to audio or other timeseries data.
 Note that some non-TimeseriesFormat AssetFormats may represent timeseries data, but they are not interpreted as such.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/asset.scala" target="_blank">asset.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -284,19 +286,6 @@ For some data this may be a single number, in which case this may need to be ext
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
-    </li><li name="models.TimeseriesFormat#id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="id:models.TimeseriesFormat.Id"></a>
-      <a id="id:TimeseriesFormat.Id"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">id</span><span class="result">: <a href="TimeseriesFormat$.html#Id=models.IntId[T]" class="extmbr" name="models.TimeseriesFormat.Id">TimeseriesFormat.Id</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.TimeseriesFormat">TimeseriesFormat</a> → <a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a> → TableRowId</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>

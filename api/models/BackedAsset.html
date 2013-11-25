@@ -45,7 +45,7 @@ Currently this includes all of them.</p></div><dl class="attributes block"> <dt>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
           <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a href="Asset.html" class="extype" name="models.Asset">Asset</a>, <a href="Clip.html" class="extype" name="models.Clip">Clip</a>, <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a>, <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>, <a href="SlotTimeseries.html" class="extype" name="models.SlotTimeseries">SlotTimeseries</a>, <a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>, <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></div>
+          <div class="subClasses hiddenContent"><a href="Asset.html" class="extype" name="models.Asset">Asset</a>, <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>, <a href="SlotTimeseries.html" class="extype" name="models.SlotTimeseries">SlotTimeseries</a>, <a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>, <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a>, <a href="TimeseriesSample.html" class="extype" name="models.TimeseriesSample">TimeseriesSample</a></div>
         </div></div>
         
 
@@ -87,16 +87,29 @@ Currently this includes all of them.</p></div><dl class="attributes block"> <dt>
 
         <div id="values" class="values members">
               <h3>Abstract Value Members</h3>
-              <ol><li name="models.BackedAsset#source" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="source:models.FileAsset"></a>
-      <a id="source:FileAsset"></a>
+              <ol><li name="models.BackedAsset#etag" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="etag:String"></a>
+      <a id="etag:String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">source</span><span class="result">: <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a></span>
+        <span class="name">etag</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="models.BackedAsset#source" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="source:models.Asset"></a>
+      <a id="source:Asset"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">source</span><span class="result">: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">The backing asset from which this data is taken, which may be itself or a containing asset.</p>
@@ -247,6 +260,19 @@ Currently this includes all of them.</p></div><dl class="attributes block"> <dt>
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="models.BackedAsset#format" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="format:models.AssetFormat"></a>
+      <a id="format:AssetFormat"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">format</span><span class="result">: <a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -326,15 +352,15 @@ Currently this includes all of them.</p></div><dl class="attributes block"> <dt>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.BackedAsset#sourceId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="sourceId:models.FileAsset.Id"></a>
-      <a id="sourceId:FileAsset.Id"></a>
+      <a id="sourceId:models.Asset.Id"></a>
+      <a id="sourceId:Asset.Id"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">sourceId</span><span class="result">: <a href="FileAsset$.html#Id=models.IntId[T]" class="extmbr" name="models.FileAsset.Id">FileAsset.Id</a></span>
+        <span class="name">sourceId</span><span class="result">: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">The backing asset from which this data is taken, which may be itself or a containing asset.</p>

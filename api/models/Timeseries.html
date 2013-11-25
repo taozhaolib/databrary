@@ -24,9 +24,9 @@
         </head>
         <body class="type">
       <div id="definition">
-        <a href="Timeseries$.html" title="Go to companion"><img src="../lib/class_to_object_big.png" /></a>
+        <img src="../lib/class_big.png" />
         <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
-        <h1><a href="Timeseries$.html" title="Go to companion">Timeseries</a></h1>
+        <h1>Timeseries</h1>
       </div>
 
       <h4 id="signature" class="signature">
@@ -35,15 +35,15 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">Timeseries</span><span class="result"> extends <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Timeseries">Timeseries</a>] with <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></span>
+        <span class="name">Timeseries</span><span class="result"> extends <a href="Asset.html" class="extype" name="models.Asset">Asset</a> with <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Base for special timeseries assets in a designated format.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Special timeseries assets in a designated format.
 These assets may be handled in their entirety as FileAssets, extracted from to produce Clips.
 They are never created directly by users but through a conversion process on existing FileAssets.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/asset.scala" target="_blank">asset.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a>, <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a>, <a href="Asset.html" class="extype" name="models.Asset">Asset</a>, <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Timeseries">Timeseries</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a>, <a href="Asset.html" class="extype" name="models.Asset">Asset</a>, <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a>, <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a>, <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -61,7 +61,7 @@ They are never created directly by users but through a conversion process on exi
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Timeseries"><span>Timeseries</span></li><li class="in" name="models.TimeseriesData"><span>TimeseriesData</span></li><li class="in" name="models.FileAsset"><span>FileAsset</span></li><li class="in" name="models.Asset"><span>Asset</span></li><li class="in" name="models.BackedAsset"><span>BackedAsset</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Timeseries"><span>Timeseries</span></li><li class="in" name="models.TimeseriesData"><span>TimeseriesData</span></li><li class="in" name="models.Asset"><span>Asset</span></li><li class="in" name="site.SiteObject"><span>SiteObject</span></li><li class="in" name="site.SitePage"><span>SitePage</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.HasPermission"><span>HasPermission</span></li><li class="in" name="site.PerSite"><span>PerSite</span></li><li class="in" name="models.BackedAsset"><span>BackedAsset</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -152,6 +152,19 @@ They are never created directly by users but through a conversion process on exi
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="site.SiteObject#Action" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Action(name:String,route:play.api.mvc.Call,permission:models.Permission.Value):site.SiteAction"></a>
+      <a id="Action(String,Call,Permission.Value):SiteAction"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Action</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="route">route: <span class="extype" name="play.api.mvc.Call">Call</span></span>, <span name="permission">permission: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="result">: <a href="../site/SiteAction.html" class="extype" name="site.SiteAction">SiteAction</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -165,6 +178,32 @@ They are never created directly by users but through a conversion process on exi
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.Asset#change" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="change(classification:models.Classification.Value,name:String,body:Option[String]):scala.concurrent.Future[Boolean]"></a>
+      <a id="change(Classification.Value,String,Option[String]):Future[Boolean]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">change</span><span class="params">(<span name="classification">classification: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a> = <span class="symbol">_classification</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">_name</span></span>, <span name="body">body: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">_body</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p><div class="fullcomment"><div class="comment cmt"><p>Update the given values in the database and this object in-place.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a></dd></dl></div>
+    </li><li name="models.HasPermission#checkPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="checkPermission(need:models.Permission.Value):Boolean"></a>
+      <a id="checkPermission(Permission.Value):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">checkPermission</span><span class="params">(<span name="need">need: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -184,6 +223,19 @@ They are never created directly by users but through a conversion process on exi
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="models.Asset#creation" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="creation:scala.concurrent.Future[Option[dbrary.Timestamp]]"></a>
+      <a id="creation:Future[Option[Timestamp]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">creation</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Timestamp">Timestamp</span>]]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a></dd></dl></div>
     </li><li name="models.Timeseries#duration" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="duration:dbrary.Offset"></a>
       <a id="duration:Offset"></a>
@@ -196,7 +248,7 @@ They are never created directly by users but through a conversion process on exi
         <span class="name">duration</span><span class="result">: <span class="extype" name="dbrary.Offset">Offset</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Length of time represented by this object, which may be zero if it is a single sample.</p><div class="fullcomment"><div class="comment cmt"><p>Length of time represented by this object, which may be zero if it is a single sample.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Timeseries">Timeseries</a> → <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></dd></dl></div>
+      <p class="shortcomment cmt">Length of time represented by this object, which may be zero if it is a single sample.</p><div class="fullcomment"><div class="comment cmt"><p>Length of time represented by this object, which may be zero if it is a single sample.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Timeseries">Timeseries</a> → <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a> → <a href="Asset.html" class="extype" name="models.Asset">Asset</a></dd></dl></div>
     </li><li name="models.Timeseries#entire" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="entire:Boolean"></a>
       <a id="entire:Boolean"></a>
@@ -249,6 +301,19 @@ They are never created directly by users but through a conversion process on exi
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.Asset#etag" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="etag:String"></a>
+      <a id="etag:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">etag</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -280,7 +345,7 @@ They are never created directly by users but through a conversion process on exi
         <span class="name">format</span><span class="result">: <a href="TimeseriesFormat.html" class="extype" name="models.TimeseriesFormat">TimeseriesFormat</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Format of this asset.</p><div class="fullcomment"><div class="comment cmt"><p>Format of this asset.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Timeseries">Timeseries</a> → <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a> → <a href="Asset.html" class="extype" name="models.Asset">Asset</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Timeseries">Timeseries</a> → <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a> → <a href="Asset.html" class="extype" name="models.Asset">Asset</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -294,6 +359,19 @@ They are never created directly by users but through a conversion process on exi
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.InVolume#getPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getPermission:models.Permission.Value"></a>
+      <a id="getPermission:Permission.Value"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getPermission</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p><div class="fullcomment"><div class="comment cmt"><p>Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="models.TableRowId#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <a id="hashCode():Int"></a>
@@ -307,19 +385,6 @@ They are never created directly by users but through a conversion process on exi
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
-    </li><li name="models.Timeseries#id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="id:models.Timeseries.Id"></a>
-      <a id="id:Timeseries.Id"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">id</span><span class="result">: <a href="Timeseries$.html#Id=models.IntId[T]" class="extmbr" name="models.Timeseries.Id">Timeseries.Id</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Timeseries">Timeseries</a> → <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a> → <a href="Asset.html" class="extype" name="models.Asset">Asset</a> → TableRowId</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -334,18 +399,18 @@ They are never created directly by users but through a conversion process on exi
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.Asset#link" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="link(implicitsite:site.Site):scala.concurrent.Future[Option[models.ContainerAsset]]"></a>
-      <a id="link(Site):Future[Option[ContainerAsset]]"></a>
+      <a id="link(s:models.Slot):scala.concurrent.Future[Boolean]"></a>
+      <a id="link(Slot):Future[Boolean]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">link</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a>]]</span>
+        <span class="name">link</span><span class="params">(<span name="s">s: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">ContainerAsset via which this asset is linked into a container.</p><div class="fullcomment"><div class="comment cmt"><p>ContainerAsset via which this asset is linked into a container.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -385,6 +450,71 @@ They are never created directly by users but through a conversion process on exi
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="models.Asset#pageActions" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="pageActions:Seq[site.SiteAction]"></a>
+      <a id="pageActions:Seq[SiteAction]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pageActions</span><span class="result">: <span class="extype" name="scala.collection.Seq">Seq</span>[<a href="../site/SiteAction.html" class="extype" name="site.SiteAction">SiteAction</a>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The actions available for this page.</p><div class="fullcomment"><div class="comment cmt"><p>The actions available for this page.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a> → <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></dd></dl></div>
+    </li><li name="site.SitePage#pageCrumbName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="pageCrumbName:Option[String]"></a>
+      <a id="pageCrumbName:Option[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pageCrumbName</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Optional override of pageName for breadcrumbs and other abbreviated locations</p><div class="fullcomment"><div class="comment cmt"><p>Optional override of pageName for breadcrumbs and other abbreviated locations</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
+    </li><li name="models.Asset#pageName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="pageName:String"></a>
+      <a id="pageName:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pageName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent:Some[models.Volume]" class="extmbr" name="models.Timeseries#pageParent">pageParent</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent:Some[models.Volume]" class="extmbr" name="models.Timeseries#pageParent">pageParent</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
+    </li><li name="models.Asset#pageParent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="pageParent:Some[models.Volume]"></a>
+      <a id="pageParent:Some[Volume]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pageParent</span><span class="result">: <span class="extype" name="scala.Some">Some</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p><div class="fullcomment"><div class="comment cmt"><p>The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
+    </li><li name="models.Asset#pageURL" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="pageURL:play.api.mvc.Call"></a>
+      <a id="pageURL:Call"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pageURL</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.Timeseries#segment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="segment:dbrary.Range[dbrary.Offset]"></a>
       <a id="segment:Range[Offset]"></a>
@@ -399,6 +529,32 @@ They are never created directly by users but through a conversion process on exi
       </h4>
       <p class="shortcomment cmt">The range of times represented by this object.</p><div class="fullcomment"><div class="comment cmt"><p>The range of times represented by this object.
 Should be a valid, finite, bounded range.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Timeseries">Timeseries</a> → <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></dd></dl></div>
+    </li><li name="models.InVolume#site" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="site:site.Site"></a>
+      <a id="site:Site"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">site</span><span class="result">: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a></dd></dl></div>
+    </li><li name="models.Asset#slot" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="slot:scala.concurrent.Future[Option[models.SlotAsset]]"></a>
+      <a id="slot:Future[Option[SlotAsset]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">slot</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>]]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a></dd></dl></div>
     </li><li name="models.Timeseries#source" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="source:models.Timeseries"></a>
       <a id="source:Timeseries"></a>
@@ -411,20 +567,20 @@ Should be a valid, finite, bounded range.</p></div><dl class="attributes block">
         <span class="name">source</span><span class="result">: <a href="" class="extype" name="models.Timeseries">Timeseries</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The backing asset from which this data is taken, which may be itself or a containing asset.</p><div class="fullcomment"><div class="comment cmt"><p>The backing asset from which this data is taken, which may be itself or a containing asset.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Timeseries">Timeseries</a> → <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a> → <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
-    </li><li name="models.TimeseriesData#sourceId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="sourceId:models.Timeseries.Id"></a>
-      <a id="sourceId:Timeseries.Id"></a>
+      <p class="shortcomment cmt">The backing asset from which this data is taken, which may be itself or a containing asset.</p><div class="fullcomment"><div class="comment cmt"><p>The backing asset from which this data is taken, which may be itself or a containing asset.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Timeseries">Timeseries</a> → <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a> → <a href="Asset.html" class="extype" name="models.Asset">Asset</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
+    </li><li name="models.Asset#sourceId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="sourceId:models.Asset.Id"></a>
+      <a id="sourceId:Asset.Id"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">sourceId</span><span class="result">: <a href="Timeseries$.html#Id=models.IntId[T]" class="extmbr" name="models.Timeseries.Id">Timeseries.Id</a></span>
+        <span class="name">sourceId</span><span class="result">: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The backing asset from which this data is taken, which may be itself or a containing asset.</p><div class="fullcomment"><div class="comment cmt"><p>The backing asset from which this data is taken, which may be itself or a containing asset.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
+      <p class="shortcomment cmt">The backing asset from which this data is taken, which may be itself or a containing asset.</p><div class="fullcomment"><div class="comment cmt"><p>The backing asset from which this data is taken, which may be itself or a containing asset.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -451,6 +607,32 @@ Should be a valid, finite, bounded range.</p></div><dl class="attributes block">
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.Asset#unlink" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="unlink:scala.concurrent.Future[Boolean]"></a>
+      <a id="unlink:Future[Boolean]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">unlink</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a></dd></dl></div>
+    </li><li name="models.InVolume#volumeId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="volumeId:models.Volume.Id"></a>
+      <a id="volumeId:Volume.Id"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">volumeId</span><span class="result">: <a href="Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">Volume.Id</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -519,14 +701,22 @@ Should be a valid, finite, bounded range.</p></div><dl class="attributes block">
         <div id="inheritedMembers">
         <div class="parent" name="models.TimeseriesData">
               <h3>Inherited from <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></h3>
-            </div><div class="parent" name="models.FileAsset">
-              <h3>Inherited from <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a></h3>
             </div><div class="parent" name="models.Asset">
               <h3>Inherited from <a href="Asset.html" class="extype" name="models.Asset">Asset</a></h3>
+            </div><div class="parent" name="site.SiteObject">
+              <h3>Inherited from <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></h3>
+            </div><div class="parent" name="site.SitePage">
+              <h3>Inherited from <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></h3>
+            </div><div class="parent" name="models.InVolume">
+              <h3>Inherited from <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></h3>
+            </div><div class="parent" name="models.HasPermission">
+              <h3>Inherited from <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></h3>
+            </div><div class="parent" name="site.PerSite">
+              <h3>Inherited from <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a></h3>
             </div><div class="parent" name="models.BackedAsset">
               <h3>Inherited from <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></h3>
             </div><div class="parent" name="models.TableRowId">
-              <h3>Inherited from <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Timeseries">Timeseries</a>]</h3>
+              <h3>Inherited from <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>]</h3>
             </div><div class="parent" name="models.TableRow">
               <h3>Inherited from <span class="extype" name="models.TableRow">TableRow</span></h3>
             </div><div class="parent" name="scala.AnyRef">

@@ -432,7 +432,7 @@ Must match the corresponding postgres &quot;permission&quot; type.</p></div><dl 
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.Permission#data" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.Permission#data" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="data(p:models.Permission.Value,consent:models.Consent.Value,classification:models.Classification.Value)(implicitsite_:site.Site):models.HasPermission"></a>
       <a id="data(Value,Consent.Value,Classification.Value)(Site):HasPermission"></a>
       <h4 class="signature">
@@ -444,7 +444,8 @@ Must match the corresponding postgres &quot;permission&quot; type.</p></div><dl 
         <span class="name">data</span><span class="params">(<span name="p">p: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Value</a></span>, <span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>, <span name="classification">classification: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site_">site_: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The effective permission for data objects with the given attributes.</p>
+      <p class="shortcomment cmt">The effective permission for data objects with the given attributes.</p><div class="fullcomment"><div class="comment cmt"><p>The effective permission for data objects with the given attributes.
+Note that this is also implemented (and used) in the SQL function data_permission, which must be kept consistent.</p></div></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>

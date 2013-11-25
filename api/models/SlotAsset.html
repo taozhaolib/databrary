@@ -40,7 +40,7 @@
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A segment of an asset as used in a slot.
-This is a &quot;virtual&quot; model representing an ContainerAsset within the context of a Slot.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/container_asset.scala" target="_blank">container_asset.scala</a></dd></dl><div class="toggleContainer block">
+This is a &quot;virtual&quot; model representing an ContainerAsset within the context of a Slot.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/slot_asset.scala" target="_blank">slot_asset.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a>, <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a>, <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a>, <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
@@ -84,7 +84,7 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.SlotAsset#&lt;init&gt;" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(link:models.ContainerAsset,slot:models.Slot,excerpt_:Option[Boolean]):models.SlotAsset"></a>
+      <a id="&lt;init&gt;(asset:models.Asset,asset_segment:dbrary.Range[dbrary.Offset],slot:models.Slot,excerpt:Boolean):models.SlotAsset"></a>
       <a id="&lt;init&gt;:SlotAsset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -92,7 +92,7 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">SlotAsset</span><span class="params">(<span name="link">link: <a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a></span>, <span name="slot">slot: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>, <span name="excerpt_">excerpt_: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">scala.None</span></span>)</span>
+        <span class="name">SlotAsset</span><span class="params">(<span name="asset">asset: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>, <span name="asset_segment">asset_segment: <span class="extype" name="dbrary.Range">Range</span>[<span class="extype" name="dbrary.Offset">Offset</span>]</span>, <span name="slot">slot: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>, <span name="excerpt">excerpt: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
@@ -196,20 +196,32 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.SlotAsset#change" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="change(excerpt:Option[Boolean]):scala.concurrent.Future[Boolean]"></a>
-      <a id="change(Option[Boolean]):Future[Boolean]"></a>
+    </li><li name="models.SlotAsset#asset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="asset:models.Asset"></a>
+      <a id="asset:Asset"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">asset</span><span class="result">: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="models.SlotAsset#assetId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="assetId:models.Asset.Id"></a>
+      <a id="assetId:Asset.Id"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">change</span><span class="params">(<span name="excerpt">excerpt: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">_excerpt</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+        <span class="name">assetId</span><span class="result">: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p><div class="fullcomment"><div class="comment cmt"><p>Update the given values in the database and this object in-place.</p></div><dl class="paramcmts block"><dt class="param">excerpt</dt><dd class="cmt"><p>changes both toplevel (<code>None</code> or <code>Some(false)</code>) and excerpt (<code>Some(true)</code>)
-</p></dd></dl></div>
+      
     </li><li name="models.HasPermission#checkPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="checkPermission(need:models.Permission.Value):Boolean"></a>
       <a id="checkPermission(Permission.Value):Boolean"></a>
@@ -255,19 +267,6 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.SlotAsset#duration" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="duration:dbrary.Offset"></a>
-      <a id="duration:Offset"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">duration</span><span class="result">: <span class="extype" name="dbrary.Offset">Offset</span></span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -294,19 +293,32 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.SlotAsset#excerpt" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="excerpt:Boolean"></a>
-      <a id="excerpt:Boolean"></a>
+    </li><li name="models.SlotAsset#etag" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="etag:String"></a>
+      <a id="etag:String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
+        <span class="name">etag</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
+    </li><li name="models.SlotAsset#excerpt" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="excerpt:Boolean"></a>
+      <a id="excerpt:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
         <span class="name">excerpt</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Whether this clip has been vetted for public release, permissions permitting.</p>
+      
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -326,7 +338,7 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.SlotAsset#format" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.SlotAsset#format" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="format:models.AssetFormat"></a>
       <a id="format:AssetFormat"></a>
       <h4 class="signature">
@@ -338,7 +350,7 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
         <span class="name">format</span><span class="result">: <a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a></span>
       </span>
       </h4>
-      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -392,19 +404,6 @@ Asset permissions depend on volume permissions, but can be further restricted by
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.SlotAsset#link" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="link:models.ContainerAsset"></a>
-      <a id="link:ContainerAsset"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">link</span><span class="result">: <a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a></span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -453,7 +452,7 @@ Asset permissions depend on volume permissions, but can be further restricted by
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">pageActions</span><span class="result">: <span class="extype" name="scala.collection.Seq">Seq</span>[<a href="../site/SiteAction.html" class="extype" name="site.SiteAction">SiteAction</a>]</span>
+        <span class="name">pageActions</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="../site/SiteAction.html" class="extype" name="site.SiteAction">SiteAction</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">The actions available for this page.</p><div class="fullcomment"><div class="comment cmt"><p>The actions available for this page.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></dd></dl></div>
@@ -562,28 +561,28 @@ Asset permissions depend on volume permissions, but can be further restricted by
       </h4>
       
     </li><li name="models.SlotAsset#source" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="source:models.FileAsset"></a>
-      <a id="source:FileAsset"></a>
+      <a id="source:models.Asset"></a>
+      <a id="source:Asset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">source</span><span class="result">: <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a></span>
+        <span class="name">source</span><span class="result">: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">The backing asset from which this data is taken, which may be itself or a containing asset.</p><div class="fullcomment"><div class="comment cmt"><p>The backing asset from which this data is taken, which may be itself or a containing asset.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
     </li><li name="models.BackedAsset#sourceId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="sourceId:models.FileAsset.Id"></a>
-      <a id="sourceId:FileAsset.Id"></a>
+      <a id="sourceId:models.Asset.Id"></a>
+      <a id="sourceId:Asset.Id"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">sourceId</span><span class="result">: <a href="FileAsset$.html#Id=models.IntId[T]" class="extmbr" name="models.FileAsset.Id">FileAsset.Id</a></span>
+        <span class="name">sourceId</span><span class="result">: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">The backing asset from which this data is taken, which may be itself or a containing asset.</p><div class="fullcomment"><div class="comment cmt"><p>The backing asset from which this data is taken, which may be itself or a containing asset.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
@@ -613,19 +612,6 @@ Asset permissions depend on volume permissions, but can be further restricted by
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.SlotAsset#toplevel" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="toplevel:Boolean"></a>
-      <a id="toplevel:Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">toplevel</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Whether if this clip has been promoted for toplevel display.</p>
     </li><li name="models.SlotAsset#volume" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volume:models.Volume"></a>
       <a id="volume:Volume"></a>

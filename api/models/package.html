@@ -97,19 +97,19 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       <p class="comment cmt">Refines Party for individuals with registered (but not necessarily authorized) accounts on the site.</p>
-    </li><li name="models.Asset" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="AssetextendsTableRowId[models.Asset]withBackedAsset"></a>
+    </li><li name="models.Asset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AssetextendsTableRowId[models.Asset]withBackedAssetwithInVolumewithSiteObject"></a>
       <a id="Asset:Asset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">sealed abstract </span>
+        <span class="modifier">sealed </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Asset.html"><span class="name">Asset</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>] with <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></span>
+        <a href="Asset.html"><span class="name">Asset</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>] with <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></span>
       </span>
       </h4>
-      <p class="comment cmt">Abstract base for all assets: objects within the system backed by primary file storage.</p>
+      <p class="comment cmt">File assets: objects within the system backed by primary file storage.</p>
     </li><li name="models.AssetFormat" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="AssetFormatextendsTableRowId[models.AssetFormat]"></a>
       <a id="AssetFormat:AssetFormat"></a>
@@ -162,19 +162,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       <p class="comment cmt">Assets which are backed by files on disk.</p>
-    </li><li name="models.Clip" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ClipextendsAssetwithTableRowId[models.Clip]withTimeseriesData"></a>
-      <a id="Clip:Clip"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="Clip.html"><span class="name">Clip</span></a><span class="result"> extends <a href="Asset.html" class="extype" name="models.Asset">Asset</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Clip.html" class="extype" name="models.Clip">Clip</a>] with <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></span>
-      </span>
-      </h4>
-      <p class="comment cmt">Base for clips of Timeseries.</p>
     </li><li name="models.Comment" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="CommentextendsTableRowId[models.Comment]withInVolume"></a>
       <a id="Comment:Comment"></a>
@@ -189,7 +176,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">A comment made by a particular user applied to exactly one object.</p>
     </li><li name="models.Container" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ContainerextendsTableRowId[models.Container]withSiteObjectwithInVolume"></a>
+      <a id="ContainerextendsTableRowId[models.Container]withInVolume"></a>
       <a id="Container:Container"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -197,49 +184,10 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Container.html"><span class="name">Container</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Container.html" class="extype" name="models.Container">Container</a>] with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
+        <a href="Container.html"><span class="name">Container</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Container.html" class="extype" name="models.Container">Container</a>] with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
       </span>
       </h4>
       <p class="comment cmt">Collection of related assets.</p>
-    </li><li name="models.ContainerAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ContainerAssetextendsTableRowwithSiteObjectwithInVolume"></a>
-      <a id="ContainerAsset:ContainerAsset"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">sealed </span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="ContainerAsset.html"><span class="name">ContainerAsset</span></a><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
-      </span>
-      </h4>
-      <p class="comment cmt">An embedding or link (in the filesystem sense) of an asset within a container.</p>
-    </li><li name="models.ContainerTimeseries" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ContainerTimeseriesextendsContainerAsset"></a>
-      <a id="ContainerTimeseries:ContainerTimeseries"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="ContainerTimeseries.html"><span class="name">ContainerTimeseries</span></a><span class="result"> extends <a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a></span>
-      </span>
-      </h4>
-      
-    </li><li name="models.FileAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="FileAssetextendsAssetwithTableRowId[models.FileAsset]withBackedAsset"></a>
-      <a id="FileAsset:FileAsset"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">sealed </span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="FileAsset.html"><span class="name">FileAsset</span></a><span class="result"> extends <a href="Asset.html" class="extype" name="models.Asset">Asset</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a>] with <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></span>
-      </span>
-      </h4>
-      <p class="comment cmt">Base for simple &quot;opaque&quot; file assets, uploaded, stored, and downloaded as individual files with no special processing.</p>
     </li><li name="models.GenericId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="GenericId[I,+T]extendsAnyRef"></a>
       <a id="GenericId[I,+T]:GenericId[I,T]"></a>
@@ -418,7 +366,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="SQLTerm.html"><span class="name">SQLTerm</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="value">value: <span class="extype" name="models.SQLTerm.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="evidence$1">evidence$1: <span class="extype" name="dbrary.SQLType">SQLType</span>[<span class="extype" name="models.SQLTerm.A">A</span>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="SQLTerm.html"><span class="name">SQLTerm</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="value">value: <span class="extype" name="models.SQLTerm.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="sqlType">sqlType: <span class="extype" name="dbrary.SQLType">SQLType</span>[<span class="extype" name="models.SQLTerm.A">A</span>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
@@ -474,19 +422,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       
-    </li><li name="models.StructMapping" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="StructMappingextendsAnyRef"></a>
-      <a id="StructMapping:StructMapping"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">trait</span>
-      </span>
-      <span class="symbol">
-        <a href="StructMapping.html"><span class="name">StructMapping</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
-      </span>
-      </h4>
-      
     </li><li name="models.Tag" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="TagextendsTableRowId[models.Tag]"></a>
       <a id="Tag:Tag"></a>
@@ -527,7 +462,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">Summary representation of tag information for a single slot and current user.</p>
     </li><li name="models.Timeseries" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="TimeseriesextendsFileAssetwithTableRowId[models.Timeseries]withTimeseriesData"></a>
+      <a id="TimeseriesextendsAssetwithTimeseriesData"></a>
       <a id="Timeseries:Timeseries"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -535,10 +470,10 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Timeseries.html"><span class="name">Timeseries</span></a><span class="result"> extends <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>] with <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></span>
+        <a href="Timeseries.html"><span class="name">Timeseries</span></a><span class="result"> extends <a href="Asset.html" class="extype" name="models.Asset">Asset</a> with <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></span>
       </span>
       </h4>
-      <p class="comment cmt">Base for special timeseries assets in a designated format.</p>
+      <p class="comment cmt">Special timeseries assets in a designated format.</p>
     </li><li name="models.TimeseriesData" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="TimeseriesDataextendsBackedAsset"></a>
       <a id="TimeseriesData:TimeseriesData"></a>
@@ -565,6 +500,19 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       <p class="comment cmt">Specialization of <a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a> for timeseries files stored in special internal formats.</p>
+    </li><li name="models.TimeseriesSample" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TimeseriesSampleextendsTimeseriesDatawithProductwithSerializable"></a>
+      <a id="TimeseriesSample:TimeseriesSample"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="TimeseriesSample.html"><span class="name">TimeseriesSample</span></a><span class="result"> extends <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
     </li><li name="models.Token" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="TokenextendsTableRow"></a>
       <a id="Token:Token"></a>
@@ -659,7 +607,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Asset$.html"><span class="name">Asset</span></a><span class="result"> extends <span class="extype" name="models.AssetView">AssetView</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>]</span>
+        <a href="Asset$.html"><span class="name">Asset</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>]</span>
       </span>
       </h4>
       
@@ -715,19 +663,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       <p class="comment cmt">The possible types of data sensitivity according to the presence of identifying user data.</p>
-    </li><li name="models.Clip" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Clip"></a>
-      <a id="Clip:Clip"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="Clip$.html"><span class="name">Clip</span></a><span class="result"> extends <span class="extype" name="models.AssetView">AssetView</span>[<a href="Clip.html" class="extype" name="models.Clip">Clip</a>]</span>
-      </span>
-      </h4>
-      
     </li><li name="models.Comment" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Comment"></a>
       <a id="Comment:Comment"></a>
@@ -767,19 +702,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       
-    </li><li name="models.ContainerAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ContainerAsset"></a>
-      <a id="ContainerAsset:ContainerAsset"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="ContainerAsset$.html"><span class="name">ContainerAsset</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="ContainerAsset.html" class="extype" name="models.ContainerAsset">ContainerAsset</a>]</span>
-      </span>
-      </h4>
-      
     </li><li name="models.DBUtil" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="DBUtil"></a>
       <a id="DBUtil:DBUtil"></a>
@@ -806,19 +728,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       <p class="comment cmt">Types of measurement data values.</p>
-    </li><li name="models.FileAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="FileAsset"></a>
-      <a id="FileAsset:FileAsset"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="FileAsset$.html"><span class="name">FileAsset</span></a><span class="result"> extends <span class="extype" name="models.AssetView">AssetView</span>[<a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a>]</span>
-      </span>
-      </h4>
-      
     </li><li name="models.IntId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="IntId"></a>
       <a id="IntId:IntId"></a>
@@ -1066,32 +975,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       
-    </li><li name="models.Timeseries" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Timeseries"></a>
-      <a id="Timeseries:Timeseries"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="Timeseries$.html"><span class="name">Timeseries</span></a><span class="result"> extends <span class="extype" name="models.AssetView">AssetView</span>[<a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="models.TimeseriesFormat" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="TimeseriesFormat"></a>
-      <a id="TimeseriesFormat:TimeseriesFormat"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="TimeseriesFormat$.html"><span class="name">TimeseriesFormat</span></a><span class="result"> extends <span class="extype" name="models.HasId">HasId</span>[<a href="TimeseriesFormat.html" class="extype" name="models.TimeseriesFormat">TimeseriesFormat</a>]</span>
-      </span>
-      </h4>
-      <p class="comment cmt">Interface to special timeseries formats.</p>
     </li><li name="models.Token" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Token"></a>
       <a id="Token:Token"></a>

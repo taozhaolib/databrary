@@ -39,7 +39,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/container_asset.scala" target="_blank">container_asset.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/slot_asset.scala" target="_blank">slot_asset.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="models.Table">Table</span>[<a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -296,19 +296,19 @@
               
         </dd></dl></div>
     </li><li name="models.SlotAsset#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="get(asset:models.Asset.Id,slot:models.Slot.Id)(implicitsite:site.Site):scala.concurrent.Future[Option[models.SlotAsset]]"></a>
-      <a id="get(Asset.Id,Slot.Id)(Site):Future[Option[SlotAsset]]"></a>
+      <a id="get(asset:models.Asset.Id,slot:models.Slot.Id,full:Boolean)(implicitsite:site.Site):scala.concurrent.Future[Option[models.SlotAsset]]"></a>
+      <a id="get(Asset.Id,Slot.Id,Boolean)(Site):Future[Option[SlotAsset]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">get</span><span class="params">(<span name="asset">asset: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>, <span name="slot">slot: <a href="Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">Slot.Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>]]</span>
+        <span class="name">get</span><span class="params">(<span name="asset">asset: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>, <span name="slot">slot: <a href="Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">Slot.Id</a></span>, <span name="full">full: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>]]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Retrieve a single SlotAsset by asset id and slot id.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve a single SlotAsset by asset id and slot id.
-This checks permissions on the slot('s container's volume).</p></div></div>
+This checks permissions on the slot('s container's volume) which must also be the asset's volume.</p></div><dl class="paramcmts block"><dt class="param">full</dt><dd class="cmt"><p>only return full slots</p></dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>

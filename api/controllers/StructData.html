@@ -2,9 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>CachedVal - site.CachedVal</title>
-          <meta name="description" content="CachedVal - site.CachedVal" />
-          <meta name="keywords" content="CachedVal site.CachedVal" />
+          <title>StructData - controllers.StructData</title>
+          <meta name="description" content="StructData - controllers.StructData" />
+          <meta name="keywords" content="StructData controllers.StructData" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -12,7 +12,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
-            var hash = 'site.CachedVal';
+            var hash = 'controllers.StructData';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -24,22 +24,22 @@
         </head>
         <body class="type">
       <div id="definition">
-        <a href="CachedVal$.html" title="Go to companion"><img src="../lib/class_to_object_big.png" /></a>
-        <p id="owner"><a href="package.html" class="extype" name="site">site</a></p>
-        <h1><a href="CachedVal$.html" title="Go to companion">CachedVal</a></h1>
+        <img src="../lib/class_big.png" />
+        <p id="owner"><a href="package.html" class="extype" name="controllers">controllers</a></p>
+        <h1>StructData</h1>
       </div>
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">abstract </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">CachedVal</span><span class="tparams">[<span name="T">T</span>, <span name="S">S</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <span class="name">StructData</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A variable with a default value depending on some state.</p></div><dl class="paramcmts block"><dt class="tparam">T</dt><dd class="cmt"><p>the type of the variable/value</p></dd><dt class="tparam">S</dt><dd class="cmt"><p>the type of state required to access/compute the value.</p></dd></dl><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/site/cachedval.scala" target="_blank">cachedval.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Self Type</dt><dd><a href="" class="extype" name="controllers.StructData">StructData</a></dd><dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/controllers/structform.scala" target="_blank">structform.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="site.CachedVal"><span>CachedVal</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="controllers.StructData"><span>StructData</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -79,24 +79,78 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="site.CachedVal#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(init:S=&gt;T):site.CachedVal[T,S]"></a>
-      <a id="&lt;init&gt;:CachedVal[T,S]"></a>
+              <ol><li name="controllers.StructData#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;():controllers.StructData"></a>
+      <a id="&lt;init&gt;:StructData"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">CachedVal</span><span class="params">(<span name="init">init: (<span class="extype" name="site.CachedVal.S">S</span>) ⇒ <span class="extype" name="site.CachedVal.T">T</span></span>)</span>
+        <span class="name">StructData</span><span class="params">()</span>
       </span>
       </h4>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">init</dt><dd class="cmt"><p>function to compute the initial default value from state
-</p></dd></dl></div>
+      
     </li></ol>
             </div>
 
-        
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="controllers.StructData.StructField" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="StructField[T]extendsStructData.this.StructMember[T]"></a>
+      <a id="StructField[T]:StructField[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="StructData$StructField.html"><span class="name">StructField</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <a href="StructData$StructMember.html" class="extype" name="controllers.StructData.StructMember">StructMember</a>[<span class="extype" name="controllers.StructData.StructField.T">T</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="controllers.StructData.StructForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="StructFormextendsForm[StructData.this.type]"></a>
+      <a id="StructForm:StructForm"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="StructData$StructForm.html"><span class="name">StructForm</span></a><span class="result"> extends <span class="extype" name="play.api.data.Form">Form</span>[<a href="" class="extype" name="controllers.StructData">StructData</a>.this.type]</span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.StructData.StructMapping" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="StructMappingextendsMapping[StructData.this.type]withProductwithSerializable"></a>
+      <a id="StructMapping:StructMapping"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="StructData$StructMapping.html"><span class="name">StructMapping</span></a><span class="result"> extends <span class="extype" name="play.api.data.Mapping">Mapping</span>[<a href="" class="extype" name="controllers.StructData">StructData</a>.this.type] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="controllers.StructData.StructMember" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="StructMember[T]extendsAnyRef"></a>
+      <a id="StructMember[T]:StructMember[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="StructData$StructMember.html"><span class="name">StructMember</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li></ol>
+            </div>
 
         
 
@@ -167,19 +221,32 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="site.CachedVal#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="apply(state:S):T"></a>
-      <a id="apply(S):T"></a>
+    </li><li name="controllers.StructData#Field" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Field[T](mapping:play.api.data.Mapping[T]):StructData.this.StructField[T]"></a>
+      <a id="Field[T](Mapping[T]):StructField[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
+        <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="state">state: <span class="extype" name="site.CachedVal.S">S</span></span>)</span><span class="result">: <span class="extype" name="site.CachedVal.T">T</span></span>
+        <span class="name">Field</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="mapping">mapping: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="controllers.StructData.Field.T">T</span>]</span>)</span><span class="result">: <a href="StructData$StructField.html" class="extype" name="controllers.StructData.StructField">StructField</a>[<span class="extype" name="controllers.StructData.Field.T">T</span>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">(Compute and) return the current value from a state.</p>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="controllers.StructData#Field" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Field[T](name:String,mapping:play.api.data.Mapping[T]):StructData.this.StructField[T]"></a>
+      <a id="Field[T](String,Mapping[T]):StructField[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Field</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="mapping">mapping: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="controllers.StructData.Field.T">T</span>]</span>)</span><span class="result">: <a href="StructData$StructField.html" class="extype" name="controllers.StructData.StructField">StructField</a>[<span class="extype" name="controllers.StructData.Field.T">T</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -257,6 +324,32 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="controllers.StructData#form" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="form(mapping:StructData.this.StructMapping):StructData.this.StructForm"></a>
+      <a id="form(StructMapping):StructForm"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">form</span><span class="params">(<span name="mapping">mapping: <a href="StructData$StructMapping.html" class="extype" name="controllers.StructData.StructMapping">StructMapping</a></span>)</span><span class="result">: <a href="StructData$StructForm.html" class="extype" name="controllers.StructData.StructForm">StructForm</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.StructData#form" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="form:StructData.this.StructForm"></a>
+      <a id="form:StructForm"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">form</span><span class="result">: <a href="StructData$StructForm.html" class="extype" name="controllers.StructData.StructForm">StructForm</a></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -283,19 +376,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="site.CachedVal#isEmpty" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="isEmpty:Boolean"></a>
-      <a id="isEmpty:Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">isEmpty</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -309,6 +389,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="controllers.StructData#mapping" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="mapping:StructData.this.StructMapping"></a>
+      <a id="mapping:StructMapping"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">mapping</span><span class="result">: <a href="StructData$StructMapping.html" class="extype" name="controllers.StructData.StructMapping">StructMapping</a></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -374,19 +467,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="site.CachedVal#update" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="update(v:T):T"></a>
-      <a id="update(T):T"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">update</span><span class="params">(<span name="v">v: <span class="extype" name="site.CachedVal.T">T</span></span>)</span><span class="result">: <span class="extype" name="site.CachedVal.T">T</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Change the value, discarding any current computation or future state.</p>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -444,19 +524,6 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="site.CachedVal#x" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="x:Option[T]"></a>
-      <a id="x:Option[T]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">var</span>
-      </span>
-      <span class="symbol">
-        <span class="name">x</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="site.CachedVal.T">T</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
     </li></ol>
             </div>
 
