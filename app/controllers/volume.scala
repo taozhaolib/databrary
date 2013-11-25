@@ -193,6 +193,6 @@ object Volume extends SiteController {
   def thumb(v : models.Volume.Id) = Action(v, Permission.VIEW).async { implicit request =>
     request.obj.thumb.flatMap(_.fold(
       Assets.at("/public", "images/draft.png")(request))(
-      a => SlotAsset.getFrame(Left(1.25f))(request.withObj(a))))
+      a => SlotAsset.getFrame(Left(0.25f))(request.withObj(a))))
   }
 }
