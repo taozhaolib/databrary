@@ -7,28 +7,36 @@
     }
 
 @widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.link.name)) {
-        @widget.tag.form(target.fold(
+}
+
+@widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.link.name)) {
+    @widget.panel.form(target.fold(_ => "", _.link.name), target.fold(_ => "Upload Asset", _ => "Edit Asset")) {
+        <div class="col-full">
+            @widget.formErrors(form)
+
+            @widget.tag.form(target.fold(
             container => routes.Asset.upload(container.volumeId, container.id),
-            link => routes.Asset.change(link.volumeId, link.slotId, link.assetId)),
-            'enctype -> "multipart/form-data") {
-            @widget.tag.inputText(form("name"), 'placeholder -> "Title", '_class -> "big")
-            @widget.tag.textarea(form("body"), 'placeholder -> "Description")
-            @widget.tag.inputText(form("offset"), 'placeholder -> "Offset in seconds", 'class -> "half")
+            link => routes.Asset.change(link.volumeId, link.slotId, link.assetId)), 'enctype -> "multipart/form-data") {
 
-            @if(controllers.Asset.formForFile(form, target)) {
-                @widget.enumSelect(form("classification"), Classification)
-                @widget.tag.inputFile(form("file"))
+                @widget.tag.inputText(form("name"), 'placeholder -> "Title", '_class -> "big")
+                @widget.tag.textarea(form("body"), 'placeholder -> "Description")
+                @widget.tag.inputText(form("offset"), 'placeholder -> "Offset in seconds", 'class -> "half")
 
-		@if(request.access >= Permission.ADMIN) {
-                    <fieldset>
-                        <legend>Admin Options</legend>
-                        @widget.tag.select(form("format"), Seq(("", "")) ++: AssetFormat.getAll(true).map(f => (f.id.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)))
-                        @widget.tag.inputText(form("localfile"), 'placeholder -> "Local location (overridden by file upload)")
-                    </fieldset>
+                @if(controllers.Asset.formForFile(form, target)) {
+                    @widget.enumSelect(form("classification"), Classification)
+                    @widget.tag.inputFile(form("file"))
+
+                    @if(request.access >= Permission.ADMIN) {
+                        <fieldset>
+                            <legend>Admin Options</legend>
+                            @widget.tag.select(form("format"), Seq(("", "")) ++: AssetFormat.getAll(true).map(f => (f.id.toString, f.extension.fold("")("." + _ + "  ||  ") + f.name)))
+                            @widget.tag.inputText(form("localfile"), 'placeholder -> "Local location (overridden by file upload)")
+                        </fieldset>
+                    }
                 }
-            }
 
-            <button type='submit' class="big button first">@target.fold(_ => "Upload", _ => "Change")</button>
-        }
-        @widget.formErrors(form)
+                <button type='submit' class="button">@target.fold(_ => "Upload", _ => "Change")</button>
+            }
+        </div>
+    }
 }

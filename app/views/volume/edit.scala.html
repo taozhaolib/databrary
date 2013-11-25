@@ -8,7 +8,6 @@
 
 @widget.template.crud(a.fold(_.toString + ": Create Volume", "Edit Volume: " + _.name)) {
     @widget.panel.form(a.fold(_ => "", _.pageName), a.fold(_ => "Create Volume", _ => "Edit Volume")) {
-
         <div class="col-full">
         @widget.tag.form(a.fold(p => routes.Volume.add(p.party.id), s => routes.Volume.change(s.id))) {
             @widget.formErrors(editForm)
