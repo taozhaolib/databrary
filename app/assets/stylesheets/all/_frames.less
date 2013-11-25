@@ -44,11 +44,23 @@
 	}
 
 	&.foldable {
+		.fold {
+			.padding-top(1);
+			max-height: 10000px;
+			overflow: hidden;
+			.transition();
+		}
+
 		&.folded {
 			.frame_header {
 				&:before {
 					.transform-rotate(-90deg);
 				}
+			}
+
+			.fold {
+				.padding-height(0);
+				max-height: 0;
 			}
 		}
 	}

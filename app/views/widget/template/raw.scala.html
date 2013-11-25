@@ -32,6 +32,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular-sanitize.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular-animate.min.js"></script>
+    <script src="@routes.Assets.at("javascripts/libs/ngStorage/ngStorage.min.js")"></script>
 
     <script>
         if (!window.jQuery) {
@@ -77,7 +78,7 @@
         }
     }
 
-    <main id="main" class="main">
+    <main id="main" class="main" ng-controller="PanelsCtrl" db-panels>
         @body
     </main>
 

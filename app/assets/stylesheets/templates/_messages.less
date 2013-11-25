@@ -15,7 +15,7 @@
 //
 
 .message {
-	.line-height(1.5);
+	min-height: @b1 * 1.5;
 	background-color: @g4;
 	color: @g3;
 	.box-shadow();
@@ -43,6 +43,34 @@
 .message_trace {
 	background-color: @c10g5m1;
 	color: @c10g2m1;
+}
+
+//
+
+.message_content {
+	.padding-height(@f4);
+
+	dl {
+		.margin-bottom(0);
+		.clearfix();
+	}
+
+	dt {
+		float: left;
+		.padding-right(@f2);
+		width: 15%;
+
+		&:after {
+			content: ":";
+		}
+	}
+
+	dd {
+		float: right;
+		.padding-left(@f2);
+		.margin-left(0);
+		width: 85%;
+	}
 }
 
 //

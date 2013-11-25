@@ -35,7 +35,6 @@
                             @widget.tag.form(routes.Slot.tag(slot.volumeId, slot.id)) {
                                 @widget.tag.inputHidden(form("name").copy(value = Some(tag.name)), 'id -> Html("name-"+tag.id.toString))(widget.tag.rawFieldConstructor.f, Lang("en"))
 
-
                                 <div class="controls">
                                     <button class="vote down" name="vote" value="false" @if(!user.getOrElse(true)){disabled}>-</button>
                                     <button class="vote null" name="vote" value="" @if(user.isEmpty){disabled}>0</button>
@@ -56,7 +55,7 @@
         <div id="tag_add" class="panel_tags_form col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
             @widget.angular.dbMode {
                 <form name="tagNewForm" novalidate ng-submit="voteNew()">
-                    <input type="text" name="name" ng-model="newName" placeholder="Add new tag..." required ng-maxlength="32" ng-minlength="3" ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/">
+                    <input type="text" id="newName" name="newName" ng-model="newName" placeholder="Add new tag..." ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/" required ng-change="newNameChange()"  ng-focus="newNameChange()" ng-blur="newNameBlur()">
                     <button name="vote" ng-click="voteUp(tag)" class="hide">add</button>
                 </form>
             }{
@@ -65,7 +64,6 @@
                     <button name="vote" value="@true" class="hide">add</button>
                 }
             }
-
         </div>
     }
 }

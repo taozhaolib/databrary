@@ -1,5 +1,5 @@
-@(party: Party, size: Int = 160, caption: Html = Html(""), scalar: String = "tube")(implicit request : SiteRequest[_])
+@(party: Party, size: Int = 160, classes: String = "avatar_role", caption: Html = Html(""), scalar: String = "tube")(implicit request : SiteRequest[_])
 
-@widget.figure.raw("portrait_" + party.id, "portrait_avatar avatar")(caption, scalar) {
+@widget.figure.raw("portrait_" + party.id, ("portrait_avatar avatar "+classes).trim)(caption, scalar) {
     <a class="image" href="@party.pageURL" title="@party.name" style="background-image: url(' @display.avatar(party, size)')"></a>
 }

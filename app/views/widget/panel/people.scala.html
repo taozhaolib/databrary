@@ -1,15 +1,15 @@
 @(volume : Volume)(implicit request : SiteRequest[_])
 
-@widget.panel.raw("people", "")(title = "People", foldable = true){
-    @groupBy[VolumeAccess, Permission.Value](Async.wait(volume.partyAccess), _.access).map { case (permission, volumeAccesses) =>
-        <div class="col-full">
-            <h3>@permission.toString.toLowerCase.capitalize</h3>
+@import play.api.templates.HtmlFormat._
 
-            <div class="row">
-                @volumeAccesses.map { a =>
-                    @widget.portrait.maximal(a.party)
-                }
-            </div>
+@widget.panel.raw("people", "")(title = "People", foldable = true){
+    <div class="col-full">
+        <div class="row">
+        @groupBy[VolumeAccess, Permission.Value](Async.wait(volume.partyAccess), _.access).map { case (permission, volumeAccesses) =>
+            @volumeAccesses.map { a =>
+                @widget.portrait.maximal(a.party, caption = raw(display.permissionToRole(permission)))
+            }
+        }
         </div>
-    }
+    </div>
 }
