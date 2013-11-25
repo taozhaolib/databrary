@@ -134,7 +134,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   def etag = "obj:" + id
 
   def creation : Future[Option[Timestamp]] =
-    SQL("SELECT asset_creation(?)").apply(id).singleOpt(SQLCols[Timestamp])
+    SQL("SELECT asset_creation(?)").apply(id).single(SQLCols[Option[Timestamp]])
 
   /** Update the given values in the database and this object in-place. */
   def change(classification : Classification.Value = _classification, name : String = _name, body : Option[String] = _body) : Future[Boolean] = {

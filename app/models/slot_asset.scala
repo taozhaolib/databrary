@@ -40,18 +40,20 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offse
 
 final class SlotTimeseries private[models] (override val asset : Timeseries, asset_segment : Range[Offset], slot : Slot, excerpt : Boolean) extends SlotAsset(asset, asset_segment, slot, excerpt) with TimeseriesData {
   override def source = asset.source
-  def segment = {
-    /* We need to determine the portion of this asset and the slot which overlap, in asset-source space: */
-    /* it must be within (and default to) this asset's own space */
-    val l = asset.duration
-    /* shifted forward if the slot starts later than the asset */
-    val t0 = (for { s <- slot.segment.lowerBound ; p <- asset_segment.lowerBound ; if s > p }
-      yield (s - p)).getOrElse(0 : Offset)
-    /* the lesser of the slot end and the asset end */
-    val t1 = l + (for { s <- slot.segment.upperBound ; p <- asset_segment.upperBound ; if s < p }
-      yield (s - p)).getOrElse(0 : Offset)
-    Range[Offset](t0, t1)
-  }
+  def segment = slot.segment.singleton.fold {
+      /* We need to determine the portion of this asset and the slot which overlap, in asset-source space: */
+      /* it must be within (and default to) this asset's own space */
+      val l = asset.duration
+      /* shifted forward if the slot starts later than the asset */
+      val t0 = (for { s <- slot.segment.lowerBound ; p <- asset_segment.lowerBound ; if s > p }
+        yield (s - p)).getOrElse(0 : Offset)
+      /* the lesser of the slot end and the asset end */
+      val t1 = l + (for { s <- slot.segment.upperBound ; p <- asset_segment.upperBound ; if s < p }
+        yield (s - p)).getOrElse(0 : Offset)
+      Range[Offset](t0, t1)
+    } { s =>
+      Range.singleton[Offset](s - asset_segment.lowerBound.getOrElse(0 : Offset))
+    }
   def entire = slot.segment @> asset_segment
   override def etag = if (entire) super.etag else "slot:" + slot.id + ":" + super.etag
   def sample(offset : Offset) = new TimeseriesSample(this, offset)
@@ -119,15 +121,15 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
         AND data_permission(?::permission, context.consent, asset.classification, ?::permission, excerpt) >= 'DOWNLOAD'
         AND asset.volume = ?
         ORDER BY excerpt DESC, container.top DESC, slot.consent DESC NULLS LAST LIMIT 1""")
-      .apply(volume.getPermission, site.access, volume.id, volume.getPermission, site.access).singleOpt
+      .apply(volume.getPermission, site.access, volume.id).singleOpt
 
   /** Find an asset suitable for use as a slot thumbnail. */
   private[models] def getThumb(slot : Slot)(implicit site : Site) : Future[Option[SlotAsset]] =
     slotRow(slot).SELECT("""
-       JOIN format ON file.format = format.id
-      WHERE asset.volume = ? AND slot.id = ?
+       JOIN format ON asset.format = format.id
+      WHERE asset.volume = ? AND slot_asset.slot = ?
         AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%') 
-        AND data_permission(?::permisison, ?::consent, asset.classification, ?::permission, excerpt) >= 'DOWNLOAD'
+        AND data_permission(?::permission, ?::consent, asset.classification, ?::permission, excerpt) >= 'DOWNLOAD'
         ORDER BY excerpt DESC LIMIT 1""")
       .apply(slot.volumeId, slot.id, slot.getPermission, slot.getConsent, site.access).singleOpt
 }
