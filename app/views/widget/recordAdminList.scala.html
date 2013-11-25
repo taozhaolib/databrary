@@ -11,7 +11,7 @@
             </thead>
 
             <tbody>
-	    @defining(Async.get(slot.records)) { records =>
+	    @defining(Async.wait(slot.records)) { records =>
             @if(records.nonEmpty) {
                 @records.map { record =>
                     @widget.tag.form(routes.Record.slotRemove(slot.volumeId, slot.id, record.id, true)) {

@@ -152,8 +152,7 @@ object Record extends TableId[Record]("record") {
   private[models] def getVolume(volume : Volume, category : Option[RecordCategory] = None) : Future[Seq[Record]] =
     volumeRow(volume)
       .SELECT("WHERE record.volume = ?",
-        (if (category.isDefined) "AND record.category = ?" else ""),
-        "ORDER BY", (if (category.isEmpty) "record.category, " else ""))
+        (if (category.isDefined) "AND record.category = ?" else "ORDER BY record.category"))
       .apply(volume.id +: category.fold(SQLArgs())(c => SQLArgs(c.id))).list
 
   /** Return the full outer product of all slot, record pairs on the given volume for "session" slots and categorized records. */

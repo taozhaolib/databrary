@@ -34,7 +34,7 @@ object Tag extends TableId[Tag]("tag") {
   private[models] def get(name : String) : Future[Option[Tag]] =
     _get(name)
 
-  private val validRegex = """ *\p{Alpha}[-\p{Alpha} ]{0,31} *""".r
+  private val validRegex = """ *\p{Alpha}[-\p{Alpha} ]{1,30}\p{Alpha} *""".r
 
   /** Determine if the given tag name is valid.
     * @return the normalized name if valid */

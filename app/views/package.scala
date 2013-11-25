@@ -16,7 +16,7 @@ case class El(tag: String = "", attrs: List[List[String]])(content: String = "")
 }
 
 object El {
-  def attrToHtml(attr: Seq[(Symbol,Any)]) = {attr.toMap.map(attr => attr._1+"=\""+attr._2+"\"").mkString(" ")}
+  def attrToHtml(attr: Seq[(String,String)]) = {raw(attr.toMap.map(attr => if(attr._2.nonEmpty){attr._1+"=\""+attr._2+"\""}else{attr._1}).mkString(" "))}
 }
 
 case class md5(string: String) {

@@ -3,27 +3,32 @@
 @import helper.FieldConstructor
 
     @implicitField = @{
-        FieldConstructor(widget.tag.minimalFieldConstructor.f)
+        FieldConstructor(widget.tag.labeledFieldConstructor.f)
     }
 
 @widget.template.crud("Edit Record: " + record.toString()) {
-        @widget.tag.form(routes.Record.update(record.volumeId, record.id)) {
+}
+
+@widget.template.crud("Edit Record: " + record.toString) {
+    @widget.panel.form(record.toString, "Edit Record") {
+        <div class="col-full">
             @widget.formErrors(form)
 
-            <h2>@record.category.map(_.name.capitalize) Record</h2>
-            @widget.tag.inputHidden(form("category"), 'placeholder -> record.category.get.name)
+            @widget.tag.form(routes.Record.update(record.volumeId, record.id)) {
+                <h2>@record.category.map(_.name.capitalize) Record</h2>
+                @widget.tag.inputHidden(form("category"), 'placeholder -> record.category.get.name)
 
-            <fieldset class="metrics">
-                <legend>Metrics</legend>
+                <fieldset class="metrics">
+                    <legend>Metrics</legend>
 
-                <div class="repeater repeater-metrics" data-rows="@json.toString">
-                    @meas.zipWithIndex.map { case (m, i) =>
+                    <div class="repeater repeater-metrics" data-rows="@json.toString">
+                        @meas.zipWithIndex.map { case (m, i) =>
                         <div class="repeat">
                             <div class="repeated">
                                 @defining(form("measure[" + i + "]")) { form =>
                                     @widget.tag.inputHidden(form("metric"), 'class -> "metric")
 
-                                    <label>@m.name (@m.classification)</label>
+                                <label>@m.name (@m.classification)</label>
                                     @m.dataType match {
                                         case DataType.date => {
                                             @widget.tag.inputDate(form("datum"), 'placeholder -> "Date", 'class -> "half datum")
@@ -38,17 +43,19 @@
                                 }
                             </div>
                         </div>
-                    }
+                        }
 
-                    <div class="repeat">
-                        <div class="repeated">
-                            @widget.tag.select(form("measure["+meas.length+"].metric"), Metric.getAll.map(m => (m.id.toString, m.name + " (" + m.classification + ")")), 'placeholder -> "Metric", 'class -> "metric", '_class -> "metric-div")
+                        <div class="repeat">
+                            <div class="repeated">
+                                @widget.tag.select(form("measure["+meas.length+"].metric"), Metric.getAll.map(m => (m.id.toString, m.name + " (" + m.classification + ")")), 'placeholder -> "Metric", 'class -> "metric", '_class -> "metric-div")
                             @widget.tag.inputText(form("measure["+meas.length+"].datum"), 'placeholder -> "Value", 'class -> "datum", '_class -> "datum-div")
+                            </div>
                         </div>
                     </div>
-                </div>
-            </fieldset>
+                </fieldset>
 
-            <button type='submit' class="big button first">Update</button>
-        }
+                <button type='submit' class="button">Update</button>
+            }
+        </div>
+    }
 }

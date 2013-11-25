@@ -1,9 +1,33 @@
 // Module houses everything databrary
 
-var dbModule = angular.module('DatabraryModule', ['ngSanitize', 'ngAnimate']);
+var dbModule = angular.module('DatabraryModule', ['ngSanitize', 'ngAnimate', 'ngStorage']);
 
 dbModule.run(function ($rootScope, $location, $compile) {
 	// init
+});
+
+//
+
+dbModule.directive('dbModeClient', function () {
+	var compile = function ($element) {
+		$element.replaceWith($element.html());
+	};
+
+	return {
+		restrict: 'A',
+		compile: compile
+	};
+});
+
+dbModule.directive('dbModeServer', function () {
+	var compile = function ($element) {
+		$element.remove();
+	};
+
+	return {
+		restrict: 'A',
+		compile: compile
+	};
 });
 
 //
@@ -48,51 +72,90 @@ dbModule.directive('dbCarousel', function ($timeout) {
 
 //
 
-dbModule.directive('dbFold', function () {
+dbModule.directive('dbFold', ['$sessionStorage', function ($sessionStorage) {
 	var foldableClass = 'foldable',
 		folderClass = 'folder',
 		foldClass = 'fold',
-		currentlyClass = 'folded',
+		foldedClass = 'folded',
+		folderAttr = '[db-fold-folder]',
+		foldAttr = '[db-fold-folded]',
 		slideTime = 500;
 
 	var link = function ($scope, $element, $attrs) {
-		var folder = $element.find('[db-fold-folder]'),
-			fold = $element.find('[db-fold-folded]');
+		$scope.$storage = $sessionStorage;
+
+		$scope.id = $element.attr('id') || 'unknown';
 
 		$element.addClass(foldableClass);
-		folder.addClass(folderClass);
-		fold.addClass(foldClass);
+		$element.find(folderAttr).addClass(folderClass);
+		$element.find(foldAttr).addClass(foldClass);
 
 		$element.on('$destroy', function () {
-			$element.removeClass(foldableClass + ' ' + currentlyClass);
-			folder.removeClass(folderClass);
-			fold.removeClass(foldClass);
+			$element.removeClass(foldableClass + ' ' + foldedClass);
+			$element.find(folderAttr).removeClass(folderClass);
+			$element.find(folderAttr).removeClass(foldClass);
 		});
 
-		$scope.hide = function () {
-			$element.addClass(currentlyClass);
-			fold.slideUp(slideTime);
+		//
+
+		$scope.isFoldable = function () {
+			return true;
 		};
 
-		$scope.show = function () {
-			$element.removeClass(currentlyClass);
-			fold.slideDown(slideTime);
+		//
+
+		$scope.foldUp = function () {
+			$scope.isFolded = true;
 		};
 
-		$scope.toggle = function () {
-			$scope.currently = !$scope.currently;
+		$scope.foldDown = function () {
+			$scope.isFolded = false;
 		};
 
-		$scope.$watch('currently', function (currently) {
-			if (currently) {
-				$scope.hide();
-			} else {
-				$scope.show();
-			}
+		$scope.foldToggle = function () {
+			if ($scope.isFolded)
+				$scope.foldDown();
+			else
+				$scope.foldUp();
+		};
+
+		//
+
+		$scope.setFolding = function () {
+			if($attrs.dbFoldForget)
+				return undefined;
+
+			$scope.$storage['folding_' + $scope.id] = $scope.isFolded;
+		};
+
+		$scope.getFolding = function () {
+			if ($attrs.dbFoldForget || typeof($scope.$storage['folding_' + $scope.id]) == 'undefined')
+				return undefined;
+
+			return $scope.$storage['folding_' + $scope.id];
+		};
+
+		$scope.restoreFolding = function () {
+
+			var isFolded = $scope.getFolding();
+
+			if (typeof(isFolded) == 'undefined')
+				$scope.isFolded = $attrs.dbFoldCurrently == "true";
+			else
+				$scope.isFolded = isFolded;
+
+			$element.removeAttr('db-fold-currently');
+		};
+
+		//
+
+		$scope.$watch('isFolded', function () {
+			$scope.setFolding();
 		});
 
-		$scope.currently = $attrs.dbFoldCurrently == "true";
-		$element.removeAttr('db-fold-currently');
+		//
+
+		$scope.restoreFolding();
 	};
 
 	return {
@@ -100,7 +163,7 @@ dbModule.directive('dbFold', function () {
 		scope: true,
 		link: link
 	}
-});
+}]);
 
 //
 
@@ -261,6 +324,7 @@ dbModule.factory('MessageService', function ($rootScope) {
 		type: undefined,
 		target: false,
 		closeable: false,
+		countdown: undefined,
 		enabled: true,
 		message: undefined
 	};
@@ -279,6 +343,17 @@ dbModule.factory('MessageService', function ($rootScope) {
 		return parseBoolean(attr);
 	};
 
+	var attrToInt = function (attr, def) {
+		attr = parseInt(attr);
+
+		if (isNaN || typeof(attr) != 'number')
+			return def;
+
+		return attr;
+	};
+
+	//
+
 	messageService.getValidType = function (type) {
 		if ($.inArray(type, validTypes) >= 0)
 			return type;
@@ -289,6 +364,8 @@ dbModule.factory('MessageService', function ($rootScope) {
 	messageService.getValidTypes = function () {
 		return validTypes;
 	};
+
+	//
 
 	messageService.registerController = function (controller) {
 		messageCtrl = controller;
@@ -313,6 +390,8 @@ dbModule.factory('MessageService', function ($rootScope) {
 		}
 	};
 
+	//
+
 	messageService.postRawMessage = function (messageScope, messageElement, messageAttrs) {
 		var message = messageService.formatRawMessage(messageScope, messageElement, messageAttrs);
 
@@ -329,18 +408,24 @@ dbModule.factory('MessageService', function ($rootScope) {
 		message.type = messageService.getValidType(messageAttrs.dbMessageType);
 		message.target = messageAttrs.dbMessageTarget || message.target;
 		message.closeable = attrToBoolean(messageAttrs.dbMessageCloseable, message.closeable);
+		message.countdown = attrToInt(messageAttrs.dbMessageCountdown, message.countdown);
 		message.enabled = attrToBoolean(messageAttrs.dbMessageEnabled, message.enabled);
 		message.message = messageAttrs.dbMessageMessage || messageElement.html();
 
 		if (!message.message)
-			return false;
+			return false; 
 
 		return message;
 	};
 
 	messageService.formatMessage = function (message) {
+
+		message.id = message.id || 'message_' + Math.random().toString(36).substring(2);
+
 		return $.extend(true, {}, messageTemplate, message);
 	};
+
+	//
 
 	messageService.createMessage = function (message) {
 		message = messageService.formatMessage(message);
@@ -379,6 +464,8 @@ dbModule.factory('MessageService', function ($rootScope) {
 
 		return messageCtrl.getMessage(old);
 	};
+
+	//
 
 	return messageService;
 });
@@ -435,6 +522,8 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 		if (message.target)
 			$scope.targetMessage(message, message.target);
 
+		$scope.countdownMessage(message, message.countdown);
+
 		return message;
 	};
 
@@ -455,14 +544,19 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 
 		$scope.messages[index] = $.extend(true, {}, $scope.messages[index], message);
 
+		if (message.target)
+			$scope.targetMessage($scope.messages[index], message.target);
+
 		return $scope.messages[index];
 	};
 
-	$scope.deleteMessage = function (old) {
-		var index = $scope.getIndex(old);
+	$scope.deleteMessage = function (message) {
+		var index = $scope.getIndex(message);
 
 		if (!~index)
 			return false;
+
+		$scope.countdownMessage(message, undefined);
 
 		return $scope.messages.splice(index, 1);
 	};
@@ -475,6 +569,8 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 
 		$scope.messages[index].enabled = true;
 
+		$scope.countdownMessage(message, message.countdown);
+
 		return $scope.messages[index];
 	};
 
@@ -485,6 +581,8 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 			return false;
 
 		$scope.messages[index].enabled = false;
+
+		$scope.countdownMessage(message, undefined);
 
 		return $scope.messages[index];
 	};
@@ -541,6 +639,34 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 		return message;
 	};
 
+	$scope.countdownMessage = function (message, countdown) {
+		var index = $scope.getIndex(message);
+
+		if (!~index)
+			return false;
+
+		if ($scope.messages[index].countdownTimer && $scope.messages[index].countdownTimer.hasOwnProperty('cancel')) {
+			$scope.messages[index].countdownTimer.cancel();
+		}
+
+		if (typeof(countdown) == 'undefined')
+			return false;
+
+		if (typeof(countdown) == 'number') {
+			$scope.messages[index].countdown = countdown;
+			countdown = true;
+		}
+
+		if (countdown !== true || typeof($scope.messages[index].countdown) != 'number')
+			return false;
+
+		$scope.messages[index].countdownTimer = $timeout(function () {
+			$scope.disableMessage($scope.messages[index]);
+		}, $scope.messages[index].countdown);
+
+		return $scope.messages[index];
+	};
+
 	$scope.updateHeight = function () {
 		var $window = $(window),
 			scroll = $window.scrollTop(),
@@ -555,7 +681,7 @@ dbModule.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', func
 				padding += $('#' + $scope.messages[i].id).outerHeight();
 		}
 
-		console.log('MessageCtrl.updateHeight() still thinks '+padding+'px makes any sense whatsoever.');
+		console.log('MessageCtrl.updateHeight() still thinks ' + padding + 'px makes any sense whatsoever.');
 
 		contentArea.css('padding-top', padding);
 		$window.scrollTop(scroll + padding - currentPadding);
@@ -593,7 +719,52 @@ dbModule.directive('dbMessage', ['MessageService', function (messageService) {
 
 dbModule.directive('dbFormRepeater', function () {
 	var link = function ($scope, $element, $attrs) {
+		$scope.repeats = $scope.repeats || [
+			{}
+		];
 
+		$scope.getIndex = function (repeat) {
+			return $scope.repeats.indexOf(repeat);
+		};
+
+		$scope.getRepeat = function (repeat) {
+			return $scope.repeats[$scope.getIndex(repeat)];
+		};
+
+		$scope.createRepeat = function () {
+			$scope.repeats.push({});
+
+			return $scope.repeats.slice(-1)[0];
+		};
+
+		$scope.updateRepeat = function (old, repeat) {
+			var index = $scope.getIndex(old);
+
+			if (!~index)
+				return false;
+
+			$scope.repeats[index] = $.extend(true, {}, $scope.repeats[index], repeat);
+
+			return $scope.repeats[index];
+		};
+
+		$scope.deleteRepeat = function (repeat) {
+			var index = $scope.getIndex(repeat);
+
+			if (!~index)
+				return false;
+
+			var deleted = $scope.repeats.splice(index, 1);
+
+			if ($scope.repeats.length == 0)
+				$scope.repeats.push({});
+
+			return deleted;
+		};
+
+		$scope.isMoveable = function () {
+			return false;
+		}
 	};
 
 	return {
@@ -603,219 +774,304 @@ dbModule.directive('dbFormRepeater', function () {
 	}
 });
 
-//////////////////////////
+//
 
-(function ($, window, document) {
-	var $handler;
+dbModule.controller('TagsPanelCtrl', ['$scope', '$http', 'MessageService', function ($scope, $http, messageService) {
+	var messageTemplate = {
+		type: 'alert',
+		countdown: 3000
+	};
 
-	$.extend($.fn, {
-		formHelper: function (args) {
-			//options
-			var options,
-				defaults = {
-					speed: 150
-				};
+	var createMessage = function (message) {
+		if (typeof(message) == 'string')
+			messageService.createMessage($.extend(true, {}, messageTemplate, {
+				message: message
+			}));
+		else
+			messageService.createMessage($.extend(true, {}, messageTemplate, message));
+	};
 
-			var $this = this,
-				$messages = {},
-				$repeaters = {};
+	$scope.tags = $scope.tags || [
+		{}
+	];
 
-			// methods
-			var update = function (args) {
-				options = $.extend(defaults, args);
+	$scope.formAction = $scope.formAction || '/';
 
-				$messages = getMessages();
-				$repeaters = getRepeaters();
+	$scope.newName = '';
 
-				setClickers();
-				setAjax();
+	$scope.getIndex = function (tag) {
+		return $scope.tags.indexOf(tag);
+	};
 
-				return $this;
+	$scope.getTag = function (tag) {
+		return $scope.tags[$scope.getIndex(tag)];
+	};
+
+	$scope.createTag = function (tag) {
+		$scope.tags.push(tag);
+
+		return $scope.tags.slice(-1)[0];
+	};
+
+	$scope.sortTags = function () {
+		$scope.tags = $scope.tags.sort(function (a, b) {
+			return (a.weight < b.weight) ? -1 : (a.weight > b.weight) ? 1 : 0;
+		});
+	};
+
+	$scope.updateTags = function (tags) {
+		if (typeof(tags) != 'undefined')
+			$scope.tags = tags;
+
+		$scope.sortTags();
+	};
+
+	$scope.updateTag = function (old, tag) {
+		var index = $scope.getIndex(old);
+
+		if (!~index)
+			return false;
+
+		$scope.tags[index] = $.extend(true, {}, $scope.tags[index], tag);
+
+		return $scope.tags[index];
+	};
+
+	$scope.deleteTag = function (tag) {
+		var index = $scope.getIndex(tag);
+
+		if (!~index)
+			return false;
+
+		return $scope.tags.splice(index, 1);
+	};
+
+	$scope.voteDown = function (tag) {
+		var data = {
+			vote: "false",
+			name: tag.name
+		};
+
+		$http.post($scope.formAction, data).success(function (tags) {
+			$scope.updateTags(tags);
+
+			createMessage('Tag <strong>' + tag.name + '</strong> voted down successfully!');
+		});
+
+	};
+
+	$scope.voteNone = function (tag) {
+		var data = {
+			vote: "",
+			name: tag.name
+		};
+
+		$http.post($scope.formAction, data).success(function (tags) {
+			$scope.updateTags(tags);
+
+			createMessage('Tag <strong>' + tag.name + '</strong> vote cancelled successfully!');
+		});
+	};
+
+	$scope.voteUp = function (tag) {
+		var data = {
+			vote: "true",
+			name: tag.name
+		};
+
+		$http.post($scope.formAction, data).success(function (tags) {
+			$scope.updateTags(tags);
+
+			createMessage('Tag <strong>' + tag.name + '</strong> voted up successfully!');
+		});
+	};
+
+	$scope.voteNew = function () {
+		var data = {
+			vote: "true",
+			name: $scope.newName
+		};
+
+		if ($scope.tagNewForm.$invalid)
+			return;
+
+		$http.post($scope.formAction, data).success(function (tags) {
+			$scope.updateTags(tags);
+
+			createMessage('Tag <strong>' + $scope.newName + '</strong> added successfully!');
+
+			$scope.newName = '';
+		});
+	};
+
+	var enableNewNameError = function () {
+		if ($scope.tagNewForm.newName.message) {
+			$scope.tagNewForm.newName.message = messageService.updateMessage($scope.tagNewForm.newName.message, {enabled: true});
+		} else {
+			var message = {
+				enabled: true,
+				type: 'error',
+				message: '<dl>' +
+					'<dt>Tag Name</dt>' +
+					'<dd>Must be between 3 and 32 characters.</dd>' +
+					'<dd>Only letters, spaces, and dashes (-) allowed.</dd>' +
+					'</dl>'
 			};
 
-			var getMessages = function () {
-				var $messages = $this.find('.message'),
-					messages = {};
-
-				$messages.each(function () {
-					var $message = $(this),
-						$input = $($message.parent().attr('data-for'));
-
-					if ($messageHandler && ($message = $messageHandler.data('messageHandler').create($input, $message)))
-						messages[$message.attr('id')] = $message;
-				});
-
-				return messages;
-			};
-
-			var getRepeaters = function () {
-				var $repeaters = $this.find('.repeater'),
-					repeaters = {};
-
-				$repeaters.each(function () {
-					var $repeater = $(this);
-
-					if ($repeater = $repeater.formRepeater({}))
-						repeaters[$repeater.attr('id')] = $repeater;
-				});
-
-				return repeaters;
-			};
-
-			var setClickers = function () {
-				var check = function ($clicker) {
-					var $input = $clicker.find('input');
-
-					if ($input.prop('checked'))
-						$clicker.addClass('check');
-					else
-						$clicker.removeClass('check');
-				};
-
-				$this.on('click', '.clicker', function (e) {
-					var $clicker = $(this),
-						$input = $clicker.find('input');
-
-					$input.trigger('click');
-					check($clicker);
-
-					e.stopPropagation();
-				});
-
-				$this.find('.clicker').each(function () {
-					check($(this));
-				});
-			};
-
-			var $last = null;
-
-			var setAjax = function () {
-				if (!$this.hasClass('ajax'))
-					return;
-
-				$this.on('focus', ':input', function () {
-					$last = $(this);
-				});
-
-				$this.submit(function (e) {
-					var $this = $(this),
-						$li = $this.closest('li'),
-						liID = '#' + $li.attr('id');
-
-					$.post($this.attr('action'), {
-						name: $this.find('[name="name"]').val(),
-						vote: $last.val()
-					}, function (data) {
-						var $data = $(data);
-
-						$li.replaceWith($data.find(liID));
-
-						$formHandler.data('formHandler').generate(liID + ' form');
-					});
-
-					e.preventDefault();
-				});
-			};
-
-			// setup
-			if (!update(args))
-				return false;
-
-			// api
-			$this.data('formHelper', {
-				update: update,
-				messages: $messages
-			});
-
-			return $this;
-		},
-
-		formRepeater: function (args) {
-			var $repeater = this,
-				$repeats, repeatCount, $copy, newIndex = 0;
-
-			var $tempControls = $('<div class="controls"></div>'),
-				$tempControlsCreate = $('<div class="mod create">+</div>'),
-				$tempControlsRemove = $('<div class="mod remove">-</div>'),
-				$tempControlsMove = $('<div class="move"></div>');
-
-			// methods
-			var initialize = function () {
-				updateRepeater($repeater);
-
-				$repeats.each(function (index) {
-					var $repeat = $(this),
-						key = $repeat.find('label[for]').attr('for').split('__').shift().split('_').pop();
-
-					if (key == repeatCount - 1)
-						$copy = $repeat.clone();
-
-					updateControls($repeat, index);
-
-					newIndex++;
-				});
-			};
-
-			var updateRepeater = function ($repeater) {
-				$repeats = $repeater.find('.repeat');
-				repeatCount = $repeats.length;
-			};
-
-			var updateControls = function ($repeat, index) {
-				$repeat.find('.controls').remove();
-
-				var $controls = $tempControls.clone();
-
-				$controls.append($tempControlsRemove.clone());
-
-				if (repeatCount >= 2)
-					$controls.append($tempControlsMove.clone());
-
-				if (index == repeatCount - 1)
-					$controls.append($tempControlsCreate.clone());
-
-				$repeat.append($controls);
-			};
-
-			var create = function ($repeater) {
-				var cID = $copy.find('label[for]').attr('for').split('__').shift().split('_').pop();
-
-				$repeater.append($($('<div>').append($copy).html().replace(new RegExp('_' + cID + '_', 'g'), '_' + newIndex + '_').replace(new RegExp('\\[' + cID + '\\]', 'g'), '[' + newIndex + ']')));
-
-				updateRepeater($repeater);
-
-				$repeats.each(function (index) {
-					updateControls($(this), index);
-				});
-
-				newIndex++;
-			};
-
-			var remove = function ($repeater, $repeat) {
-				if (repeatCount > 1)
-					$repeat.remove();
-				else
-					$repeat.find('input, textarea').val('');
-
-				updateRepeater($repeater);
-
-				$repeats.each(function (index) {
-					updateControls($(this), index);
-				})
-			};
-
-			// setup
-			initialize();
-
-			$repeater.on('click', '.controls .remove', function () {
-				remove($repeater, $(this).closest('.repeat'));
-			});
-
-			$repeater.on('click', '.controls .create', function () {
-				create($repeater);
-			});
-
-			return $repeater;
+			$scope.tagNewForm.newName.message = messageService.createMessage(message);
 		}
-	});
-})(jQuery, window, document);
+	};
+
+	var disableNewNameError = function () {
+		if ($scope.tagNewForm.newName.message)
+			$scope.tagNewForm.newName.message = messageService.updateMessage($scope.tagNewForm.newName.message, {enabled: false});
+	};
+
+	$scope.newNameChange = function () {
+		if ($scope.tagNewForm.newName.$pristine || $scope.tagNewForm.newName.$valid)
+			return disableNewNameError();
+
+		return enableNewNameError();
+	};
+
+	$scope.newNameBlur = function () {
+		return disableNewNameError();
+	}
+}]);
+
+//
+
+dbModule.factory('PanelsService', function ($rootScope) {
+	var panelsService = {},
+		panelsCtrl;
+
+	//
+
+	panelsService.setController = function (controller) {
+		panelsCtrl = controller;
+	};
+
+	panelsService.getController = function () {
+		return panelsCtrl;
+	};
+
+	//
+
+	return panelsService;
+});
+
+dbModule.controller('PanelsCtrl', ['$scope', '$sessionStorage', 'PanelsService', function ($scope, $sessionStorage, panelsService) {
+	$scope.$storage = $sessionStorage;
+
+	panelsService.setController($scope);
+
+	//
+
+	$scope.panels = {};
+
+	$scope.getPanelId = function (panel) {
+		var id = (typeof(panel) == 'object') ? panel.$id : panel;
+
+		if ($scope.panels[id])
+			return id;
+
+		return false;
+	};
+
+	$scope.getPanel = function (panel) {
+		var id = (typeof(panel) == 'object') ? panel.$id : panel;
+
+		if ($scope.panels[id])
+			return $scope.panels[id];
+
+		return false;
+	};
+
+	//
+
+	$scope.addPanel = function (panel) {
+		$scope.panels[panel.$id] = panel;
+	};
+
+	$scope.createPanel = function (panel) {
+		var id = $scope.getPanelId(panel);
+
+		if (id)
+			return $scope.updatePanel(panel);
+
+		return $scope.addPanel(panel);
+	};
+
+	$scope.updatePanel = function (panel) {
+		var id = $scope.getPanelId(panel);
+
+		if (id)
+			return $scope.panels[id] = $.extend(true, {}, $scope.panels[id], panel);
+
+		return false;
+	};
+
+	$scope.deletePanel = function (panel) {
+		var id = $scope.getPanelId(panel),
+			old = $scope.panels[id];
+
+		if (old && delete $scope.panels[id])
+			return old;
+
+		return false;
+	};
+
+	//
+
+	$scope.$watch(function () {
+		var list = '';
+
+		for (var id in $scope.panels)
+			list += $scope.panels[id].isFolded;
+
+		return list;
+	}, function (newValue, oldValue, scope) {
+
+	}, true);
+}]);
+
+dbModule.directive('dbPanel', ['PanelsService', function (panelsService) {
+	var ps = panelsService;
+
+	var link = function ($scope, $element, $attrs) {
+		var panelsCtrl = panelsService.getController();
+
+		$scope.isEnabled = $attrs.dbPanelEnabled != "false";
+		$element.removeAttr('db-panel-enabled');
+
+		$scope.id = $element.attr('id');
+
+		//
+
+		$scope.panelEnable = function () {
+			$scope.isEnabled = true;
+		};
+
+		$scope.panelDisable = function () {
+			$scope.isEnabled = false;
+		};
+
+		$scope.panelToggle = function () {
+			if ($scope.isEnabled)
+				$scope.panelEnable();
+			else
+				$scope.panelDisable();
+		};
+
+		//
+
+		panelsCtrl.createPanel($scope);
+	};
+
+	return {
+		restrict: 'A',
+		scope: true,
+		priority: 100,
+		link: link
+	};
+}]);

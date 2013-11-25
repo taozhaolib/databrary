@@ -7,6 +7,7 @@ import          mvc._
 import          data._
 import               Forms._
 import          i18n.Messages
+import          libs.json._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import dbrary._
 import models._
@@ -129,12 +130,27 @@ object Slot extends SiteController {
     "vote" -> optional(boolean)
   ))
 
-  def tag(v : models.Volume.Id, s : models.Slot.Id) = (SiteAction.access(Permission.VIEW) ~> action(v, s)) { implicit request =>
+  private def jsonTags(tags: Seq[TagWeight]) = {
+    Json.stringify(
+      Json.toJson(tags.map{
+        case t =>
+          Json.toJson(Map(
+            "id" -> Json.toJson(t.tag.id.unId.toString),
+            "name" -> Json.toJson(t.tag.name),
+            "weight" -> Json.toJson(t.weight),
+            "vote" -> Json.toJson(if(t.user.isEmpty){0}else{if(t.user.get){1}else{-1}})
+          ))
+      }.toList)
+    )
+  }
+
+  def tag(v : models.Volume.Id, s : models.Slot.Id) = (SiteAction.access(Permission.VIEW) ~> action(v, s)).async { implicit request =>
     tagForm.bindFromRequest().fold(
-    form => if(isAjax) Ok(views.html.ajax.tags(request.obj, form)) else BadRequest(views.html.slot.view(request.obj)),
+    form => if(isJson) AOk(views.html.ajax.tags(request.obj, form)) else ABadRequest(views.html.slot.view(request.obj)),
     { case (name, vote) =>
-      request.obj.setTag(name, vote)(request.asInstanceOf[AuthSite])
-      if(isAjax) Ok(views.html.ajax.tags(request.obj, tagForm)) else Redirect(request.obj.pageURL)
+      request.obj.setTag(name, vote)(request.asInstanceOf[AuthSite]).flatMap { _ =>
+      if (isJson) request.obj.tags(true).map(tags => Ok(jsonTags(tags))) else ARedirect(request.obj.pageURL)
+      }
     }
     )
   }

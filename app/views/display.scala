@@ -97,6 +97,14 @@ object display {
     case _ => gravatarUrlByParty(party, size)
   }
 
+  def permissionToRole(permission : models.Permission.Value) = permission match {
+    case Permission.ADMIN => "Investigator"
+    case Permission.CONTRIBUTE => "Editor"
+    case Permission.DOWNLOAD => "Downloader"
+    case Permission.VIEW => "Viewer"
+    case Permission.NONE => "Excluded"
+  }
+
   def citeName(name: String) = {
     val names = name.split(" +")
     names.last + (if (names.length > 1) {

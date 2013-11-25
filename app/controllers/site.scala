@@ -100,6 +100,8 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
 class SiteController extends Controller {
   protected def isAjax[A](implicit request : Request[A]) =
     request.headers.get("X-Requested-With").equals(Some("XMLHttpRequest"))
+  protected def isJson[A](implicit request : Request[A]) =
+    request.headers.get("Content-Type").getOrElse("").contains("json")
 
   protected def isSecure : Boolean =
     current.configuration.getString("application.secret").exists(_ != "databrary").
