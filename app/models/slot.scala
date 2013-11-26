@@ -187,7 +187,7 @@ object Slot extends TableId[Slot]("slot") {
       .apply(i +: Volume.conditionArgs).singleOpt
 
   private def _get(container : Container, segment : Range[Offset])(implicit dbc : Site.DB, exc : ExecutionContext) : Future[Option[Slot]] =
-    containerRow(container).SELECT("WHERE slot.source = ? AND slot.segment = ?")(dbc, exc)
+    containerRow(container).SELECT("WHERE slot.source = ? AND slot.segment = ?::segment")(dbc, exc)
       .apply(container.id, segment).singleOpt
 
   /** Retrieve an individual Slot by Container and segment.
