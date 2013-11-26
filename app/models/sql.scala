@@ -33,7 +33,7 @@ private[models] final class SQLTerms private (private val terms : Seq[SQLTerm[_]
     * @returns `arg = {arg} sep ...`
     */
   def set(sep : String = ", ") =
-    names.map(_ + " = ?").mkString(sep)
+    terms.map(t => t.name + " = ?::" + t.sqlType.name).mkString(sep)
   def where = set(" AND ")
 }
 private[models] object SQLTerms {
