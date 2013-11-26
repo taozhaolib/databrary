@@ -85,8 +85,8 @@ object Curated {
               rec.setMeasure(m,v).flatMap(check(_,
                 PopulateException("failed to set measure for subject " + id + " " + m.name + ": " + v, rec)))
             } { c =>
-              check(c.value.equals(v),
-                PopulateException("inconsistent mesaure for subject " + id + " " + m.name + ": " + v + " <> " + c.value, rec))
+              check(c.datum.equals(v),
+                PopulateException("inconsistent mesaure for subject " + id + " " + m.name + ": " + v + " <> " + c.datum, rec))
             }
           }, rec)
         case _ =>
