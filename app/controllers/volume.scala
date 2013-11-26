@@ -33,14 +33,13 @@ object Volume extends SiteController {
 
   def listAll = SiteAction.async { implicit request =>
     models.Volume.getAll.flatMap { all =>
-      macros.Async.fold(all.map { vol =>
+      macros.Async.foreach[Volume, SimpleResult](all, vol =>
         for {
           _ <- vol.partyAccess
           _ <- vol.summary
-        } yield (())
-      })().map { _ =>
+        } yield (()),
         Ok(views.html.volume.list(all, request.queryString.getOrElse("query", Seq("")).head.toString))
-      }
+      )
     }
   }
 

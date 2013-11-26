@@ -29,9 +29,9 @@ object VolumeCitation extends Table[VolumeCitation]("volume_citation") {
     val l = list.map(_.ensuring(_.volume == vol).args)
     /* TODO: transaction */
     DELETE('volume -> vol.id).flatMap { _ =>
-      Async.fold(l.map(
+      Async.map[SQLTerms, Boolean, Seq[Boolean]](l,
         INSERT(_).execute
-      ), true)(_ && _)
+      ).map(_.forall(identity))
     }
   }
 }

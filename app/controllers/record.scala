@@ -100,7 +100,7 @@ object Record extends SiteController {
               }
             }
           }
-        macros.Async.sequence(data.map((update _).tupled)).map {
+        macros.Async.map(data, (update _).tupled).map {
         _.zipWithIndex.foldLeft(form) { (form, error) => error match {
           case (None, _) => form
           case (Some(error), i) => form.withError("measure.datum[" + i + "]", error)

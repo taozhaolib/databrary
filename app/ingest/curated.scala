@@ -74,13 +74,13 @@ object Curated {
         case Nil =>
           for {
             rec <- Record.create(volume, Some(RecordCategory.Participant))
-            _ <- Async.fold(measures.map { case (m,v) =>
+            _ <- Async.foreach[(Metric[_],String), Unit](measures, { case (m,v) =>
               rec.setMeasure(m,v).flatMap(check(_, 
                 PopulateException("failed to set measure for subject " + id + " " + m.name + ": " + v, rec)))
-            })()
+            })
           } yield (rec)
         case Seq(rec) =>
-          Async.fold[Unit](measures.map { case (m,v) =>
+          Async.foreach[(Metric[_],String),models.Record](measures, { case (m,v) =>
             rec.measures(m).fold {
               rec.setMeasure(m,v).flatMap(check(_,
                 PopulateException("failed to set measure for subject " + id + " " + m.name + ": " + v, rec)))
@@ -88,7 +88,7 @@ object Curated {
               check(c.value.equals(v),
                 PopulateException("inconsistent mesaure for subject " + id + " " + m.name + ": " + v + " <> " + c.value, rec))
             }
-          })().map(_ => rec)
+          }, rec)
         case _ =>
           Future.failed(PopulateException("multiple records for subject " + id))
       }
@@ -323,15 +323,13 @@ object Curated {
       data.assets.size + " files"
 
   private def populate(data : Data, volume : Volume)(implicit site : Site) : Future[(Iterable[Record], Iterable[SlotAsset])] = for {
-    subjs <- Async.sequenceValues(data.subjects.mapValues(_.populate(volume)))
-    sess <- Async.sequenceValues(data.sessions.mapValues(_.populate(volume)))
-    _ <- Async.fold(data.subjectSessions.map { ss =>
-      ss.populate(subjs(ss.subjectKey), sess(ss.sessionKey))
-    })()
-    assets <- Async.sequence(data.assets
-      .sortBy(_.asset.position.map(-_.seconds)).map { sa =>
-      sa.populate(sess(sa.sessionKey))
-    })
+    subjs <- Async.mapValues[String, Subject, Record, Map[String, Record]](data.subjects, _.populate(volume))
+    sess <- Async.mapValues[String, Session, ModelSession, Map[String, ModelSession]](data.sessions, _.populate(volume))
+    _ <- Async.foreach[SubjectSession, Unit](data.subjectSessions, ss =>
+      ss.populate(subjs(ss.subjectKey), sess(ss.sessionKey)))
+    assets <- Async.map[SessionAsset, SlotAsset, Seq[SlotAsset]](data.assets
+      .sortBy(_.asset.position.map(-_.seconds)), sa =>
+      sa.populate(sess(sa.sessionKey)))
   } yield ((subjs.values, assets))
 
   def preview(f : java.io.File) : String =
