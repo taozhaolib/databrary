@@ -99,7 +99,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   private[models] def getAsset(asset : Asset) : Future[Option[SlotAsset]] =
     Slot.volumeRow(asset.volume, false)
       .map { slot => make(asset, slot.segment, slot, false /* XXX */) }
-      .SELECT("JOIN asset_slot ON slot.id = asset_slot.slot WHERE asset.id = ? AND container.volume = ?")
+      .SELECT("JOIN asset_slot ON slot.id = asset_slot.slot WHERE asset_slot.asset = ? AND container.volume = ?")
       .apply(asset.id, asset.volumeId).singleOpt
 
   /** Retrieve the list of all top-level assets. */
