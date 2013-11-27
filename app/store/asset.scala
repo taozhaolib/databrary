@@ -85,14 +85,24 @@ private[store] class StoreDir[Id <: IntId[_]](conf : String) {
   protected def file(id : Id, ext : String) : File = new File(file(id).getPath + ext)
 }
 
-class TemporaryFileCopy(file : File) extends Files.TemporaryFile(file) {
+final class TemporaryFileLinkOrCopy(file : File) extends Files.TemporaryFile(file) {
   override def clean() : Boolean = false
-  override def moveTo(to : File, replace : Boolean = false) {
+  private[this] def linkTo(to : File) {
+    java.nio.file.Files.createLink(to.toPath, file.toPath)
+  }
+  private[this] def copyTo(to : File, replace : Boolean = false) {
     Files.copyFile(file, to, copyAttributes = false, replaceExisting = replace)
   }
+  override def moveTo(to : File, replace : Boolean = false) {
+    try {
+      linkTo(to)
+    } catch {
+      case _ : UnsupportedOperationException => copyTo(to, replace)
+    }
+  }
 }
-object TemporaryFileCopy {
-  def apply(file : File) = new TemporaryFileCopy(file)
+object TemporaryFileLinkOrCopy {
+  def apply(file : File) = new TemporaryFileLinkOrCopy(file)
 }
 
 object FileAsset extends StoreDir[models.Asset.Id]("store.master") {

@@ -180,7 +180,7 @@ object Curated {
       SQL("SELECT id FROM ingest.asset WHERE file = ?").apply(file.getPath).list(SQLCols[models.Asset.Id]).flatMap(_.toSeq match {
         case Nil =>
           /* for now copy and don't delete */
-          val infile = store.TemporaryFileCopy(info.file)
+          val infile = store.TemporaryFileLinkOrCopy(info.file)
           for {
             asset <- info match {
               case Asset.TimeseriesInfo(_, fmt, duration, orig) =>

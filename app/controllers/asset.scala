@@ -130,7 +130,7 @@ object Asset extends SiteController {
             if (file.isFile)
               (fmt orElse AssetFormat.getFilename(name)).fold[ER](
                 Left(form.withError("format", "Unknown format")))(
-                fmt => Right((store.TemporaryFileCopy(file), fmt, name)))
+                fmt => Right((store.TemporaryFileLinkOrCopy(file), fmt, name)))
             else
               Left(form.withError("localfile", "File not found"))
           }
