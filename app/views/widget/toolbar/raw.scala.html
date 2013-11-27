@@ -1,6 +1,6 @@
 @(id: String, classes: String = "")(requestOption: Option[SiteRequest[_]] = None)(body: Html)
 
-<nav id="toolbar_@id" class="toolbar toolbar_@id hide-print @classes">
+<nav id="toolbar_@id" class="toolbar toolbar_@id hide-print @classes" toolbar-@id>
     <div class="wrap">
         <div class="row">
             @body

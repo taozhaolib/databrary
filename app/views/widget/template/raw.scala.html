@@ -61,22 +61,24 @@
 </head>
 
 <body class="@if(Play.isDev){dev} @if(toolbar.nonEmpty){has_toolbar}">
-    @widget.toolbar.databrary(requestOption)
+    <section id="toolbars" ng-controller="ToolbarsCtrl">
+        @widget.toolbar.databrary(requestOption)
 
-    @if(toolbar.nonEmpty) {
-        @if(toolbar == "about") {
-            @widget.toolbar.about(requestOption)
+        @if(toolbar.nonEmpty) {
+            @if(toolbar == "about") {
+                @widget.toolbar.about(requestOption)
+            }
+            @if(toolbar == "explore") {
+                @widget.toolbar.explore(requestOption)
+            }
+            @if(toolbar == "share") {
+                @widget.toolbar.share(requestOption)
+            }
+            @if(toolbar == "discover") {
+                @widget.toolbar.discover(requestOption)
+            }
         }
-        @if(toolbar == "explore") {
-            @widget.toolbar.explore(requestOption)
-        }
-        @if(toolbar == "share") {
-            @widget.toolbar.share(requestOption)
-        }
-        @if(toolbar == "discover") {
-            @widget.toolbar.discover(requestOption)
-        }
-    }
+    </section>
 
     <main id="main" class="main" ng-controller="PanelsCtrl" db-panels>
         @body

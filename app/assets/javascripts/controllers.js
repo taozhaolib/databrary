@@ -960,7 +960,7 @@ dbModule.factory('PanelsService', function ($rootScope) {
 	return panelsService;
 });
 
-dbModule.controller('PanelsCtrl', ['$scope', '$sessionStorage', 'PanelsService', function ($scope, $sessionStorage, panelsService) {
+dbModule.controller('PanelsCtrl', ['$scope', '$sessionStorage', 'PanelsService', 'EventService', function ($scope, $sessionStorage, panelsService, eventService) {
 	$scope.$storage = $sessionStorage;
 
 	panelsService.setController($scope);
@@ -986,6 +986,8 @@ dbModule.controller('PanelsCtrl', ['$scope', '$sessionStorage', 'PanelsService',
 
 		return false;
 	};
+
+	eventService.broadcast('toolbarsPanels', $scope.panels);
 
 	//
 
@@ -1044,6 +1046,9 @@ dbModule.directive('dbPanel', ['PanelsService', function (panelsService) {
 		$scope.isEnabled = $attrs.dbPanelEnabled != "false";
 		$element.removeAttr('db-panel-enabled');
 
+		$scope.title = ($attrs.dbPanelTitle != "") ? $attrs.dbPanelTitle : $element.attr('id').split('_').pop();
+		$element.removeAttr('db-panel-title');
+
 		$scope.id = $element.attr('id');
 
 		//
@@ -1074,4 +1079,64 @@ dbModule.directive('dbPanel', ['PanelsService', function (panelsService) {
 		priority: 100,
 		link: link
 	};
+}]);
+
+//
+
+dbModule.factory('EventService', ['$rootScope', function ($rootScope) {
+	var eventService = {};
+
+	eventService.broadcast = function (name) {
+		$rootScope.$broadcast.apply($rootScope, arguments);
+	};
+
+	return eventService;
+}]);
+
+//
+
+dbModule.controller('ToolbarsCtrl', ['$scope', '$location', 'EventService', function ($scope, $location, $anchorScroll, eventService) {
+
+	$scope.updateToolbars = function () {
+
+	};
+
+	//
+
+	$scope.scrollTo = function (panel) {
+		$location.hash(panel.id);
+		$anchorScroll();
+	};
+
+	//
+
+	$scope.$on('toolbarsUpdate', function () {
+		console.log(arguments);
+	});
+
+	$scope.$on('toolbarsPanels', function ($event, panels) {
+		$scope.panels = panels;
+	})
+}]);
+
+dbModule.directive('toolbarDatabrary', [function () {
+	var link = function ($scope, $element, $attrs) {
+
+	};
+
+	return {
+		restrict: 'A',
+		link: link
+	}
+}]);
+
+dbModule.directive('toolbarExplore', [function () {
+	var link = function ($scope, $element, $attrs) {
+
+	};
+
+	return {
+		restrict: 'A',
+		link: link
+	}
 }]);
