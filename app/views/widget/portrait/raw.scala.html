@@ -1,6 +1,6 @@
 @(party: Party, classes: String, attr: (String,String)*)(avatar: Boolean = true, info: Boolean = true, name: Boolean = true, institutions: Boolean = true, links: Boolean = true, scalar: String = "square", extra: Option[Html] = None, hoverable: Boolean = false, caption: Html = Html(""))(implicit request : SiteRequest[_])
 
-<aside id="portrait_@party.id" class="portrait portrait_@party.id @classes @if(avatar){avatar}else{noavatar} @if(info){info}else{noinfo} @if(name){name}else{noname} @if(institutions){institutions}else{noinstitutions} @if(links){links}else{nolinks}" @if(hoverable){db-hover} @El.attrToHtml(attr)>
+<aside id="portrait_@party.id" class="portrait portrait_@party.id @classes @if(avatar){avatar}else{noavatar} @if(info){info}else{noinfo} @if(name){name}else{noname} @if(institutions){institutions}else{noinstitutions} @if(links){links}else{nolinks}" @if(hoverable){hover} @El.attrToHtml(attr)>
 
     @if(avatar) {
         @widget.figure.avatar(party, scalar = scalar, caption = caption)

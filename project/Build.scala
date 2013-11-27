@@ -38,9 +38,6 @@ object ApplicationBuild extends Build {
 
   val main = play.Project(appName, "unknown", appDependencies).
     dependsOn(macros, dbrary, media).settings(
-      version <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown")),
-      javascriptEntryPoints <<= baseDirectory(base =>
-        base / "app" / "assets" / "javascripts" / "app" ** "*.js"
-      )
+      version <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown"))
     )
 }

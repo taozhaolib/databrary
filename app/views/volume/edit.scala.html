@@ -18,7 +18,7 @@
             <fieldset class="publications">
                 <legend>Publications</legend>
 
-                <div db-form-repeater class="repeater" ng-init="repeats = @editForm.data.filter(i => i._1.contains("citation")).map(i => (i._1.split("\\.").head, i._1.split("\\.").last, i._2)).groupBy(i => i._1).map(i => i._2.map(i => i._2+": '"+i._3+"'").mkString("{",",","}")).mkString("[",",","]")">
+                <div repeater class="repeater" ng-init="repeats = @editForm.data.filter(i => i._1.contains("citation")).map(i => (i._1.split("\\.").head, i._1.split("\\.").last, i._2)).groupBy(i => i._1).map(i => i._2.map(i => i._2+": '"+i._3+"'").mkString("{",",","}")).mkString("[",",","]")">
                     @widget.angular.dbMode {
                         <div ng-repeat="repeat in repeats" class="repeat">
                             <div class="repeat_repeated">

@@ -4,7 +4,7 @@
 @import play.api.Play.current
 
 <!DOCTYPE html>
-<html ng-app="DatabraryModule">
+<html>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -40,7 +40,7 @@
 </head>
 
 <body class="@if(Play.isDev){dev} @if(toolbar.nonEmpty){has_toolbar}">
-    <section id="toolbars" ng-controller="ToolbarsCtrl">
+    <section id="toolbars" ng-controller="ToolbarCtrl">
         @widget.toolbar.databrary(requestOption)
 
         @if(toolbar.nonEmpty) {
@@ -59,11 +59,11 @@
         }
     </section>
 
-    <main id="main" class="main" ng-controller="PanelsCtrl" db-panels>
+    <main id="main" class="main" ng-controller="PanelCtrl" db-panels>
         @body
     </main>
 
-    <div id="messages" class="messages" ng-controller="MessageCtrl" db-messages-manager ng-class="{messages_enabled: isEnabled()}">
+    <div id="messages" class="messages" ng-controller="MessageCtrl" ng-class="{messages_enabled: isEnabled()}">
         <div ng-repeat="message in messages | filter:{enabled: true}" id="{{message.id}}" class="message message_{{message.type}} message_animate" ng-class="{message_enabled: message.enabled, message_target: message.target, message_closable: message.closable}" style="z-index: {{500 - $index}};">
             <div class="wrap">
                 <div class="row">

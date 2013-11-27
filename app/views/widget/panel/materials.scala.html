@@ -13,7 +13,7 @@
                         case Classification.MATERIAL => "<strong>Notice!</strong> This file is <em>a material</em>, contains no identifying data, and may be shared with the public at your discretion."
                         case _ => ""
                     }) { message =>
-                        <li class="panel_materials_item @link.classification" data-target="#asset_@link.sourceId" data-message="@message">
+                        <li class="panel_materials_item @link.classification" data-target="#asset_@link.sourceId">
                             <span class="filetype @link.format.extension"><img src="@routes.Assets.at("images/filetypes/16px/" + link.format.extension.getOrElse("_blank") + ".png")"></span>
 
                             @if(path) {
