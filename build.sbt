@@ -14,3 +14,7 @@ play.Project.templatesImport ++= Seq("macros._", "site._")
 GitDescribe.gitDescribeOptions in ThisBuild := Seq("--tags", "--dirty")
 
 version in ThisBuild <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown"))
+
+requireJs += "app/app.js"
+
+requireJsShim += "app/app.js"
