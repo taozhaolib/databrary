@@ -40,6 +40,7 @@ object display {
     val (n, u) = timeUnits.take(3).map(a.millis.toDouble/_._2.toDouble) match {
       case Seq(_, m, d) if m < 3 => (d, "dys")
       case Seq(_, m, _) if m < 37 => (m, "mos")
+      case Seq(y, _, _) if y >= 90 => (90, "yrs or older")
       case Seq(y, _, _) => (y, "yrs")
       case _ => (0, "???")
     }
@@ -56,7 +57,8 @@ object display {
   val dateFmtCite = DateTimeFormat.forPattern("MMMM d, YYYY")
 
   private def fuzzyDate(date : org.joda.time.ReadablePartial) =
-    if (date.isInstanceOf[Date]) dateFmtYMD.print(date) else date.toString
+    if (date.isInstanceOf[Date]) dateFmtYMD.print(date)
+    else date.toString
 
   def date(s : Slot) =
     s.getDate.map(fuzzyDate _)
