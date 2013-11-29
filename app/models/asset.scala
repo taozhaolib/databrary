@@ -118,7 +118,7 @@ trait TimeseriesData extends BackedAsset {
 }
 
 /** File assets: objects within the system backed by primary file storage. */
-sealed class Asset protected (val id : Asset.Id, val volume : Volume, override val format : AssetFormat, classification_ : Classification.Value, name_ : String, body_ : Option[String]) extends TableRowId[Asset] with BackedAsset with InVolume with SiteObject {
+sealed class Asset protected (val id : Asset.Id, val volume : Volume, override val format : AssetFormat, classification_ : Classification.Value, name_ : String, body_ : Option[String], val sha1 : Array[Byte]) extends TableRowId[Asset] with BackedAsset with InVolume with SiteObject {
   private[this] var _name = name_
   /** Title or name of the asset as used in the container. */
   def name : String = _name
@@ -168,7 +168,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
 /** Special timeseries assets in a designated format.
   * These assets may be handled in their entirety as FileAssets, extracted from to produce Clips.
   * They are never created directly by users but through a conversion process on existing FileAssets. */
-final class Timeseries private[models] (id : Asset.Id, volume : Volume, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, name : String, body : Option[String]) extends Asset(id, volume, format, classification, name, body) with TimeseriesData {
+final class Timeseries private[models] (id : Asset.Id, volume : Volume, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, name : String, body : Option[String], sha1 : Array[Byte]) extends Asset(id, volume, format, classification, name, body, sha1) with TimeseriesData {
   override def source = this
   def entire = true
   def segment : Range[Offset] = Range[Offset](0, duration)
@@ -196,10 +196,11 @@ object Asset extends TableId[Asset]("asset") {
     , SelectColumn[Option[Offset]]("duration")
     , SelectColumn[String]("name")
     , SelectColumn[Option[String]]("body")
-    ).map { (id, format, classification, duration, name, body) =>
+    , SelectColumn[Array[Byte]]("sha1")
+    ).map { (id, format, classification, duration, name, body, sha1) =>
       duration.fold(
-        (volume : Volume) => new Asset(id, volume, AssetFormat.get(format).get, classification, name, body))(
-        dur => (volume : Volume) => new Timeseries(id, volume, AssetFormat.getTimeseries(format).get, classification, dur, name, body))
+        (volume : Volume) => new Asset(id, volume, AssetFormat.get(format).get, classification, name, body, sha1))(
+        dur => (volume : Volume) => new Timeseries(id, volume, AssetFormat.getTimeseries(format).get, classification, dur, name, body, sha1))
     }
 
   private def volumeRow(vol : Volume) =
@@ -222,20 +223,24 @@ object Asset extends TableId[Asset]("asset") {
     * @param file a complete, uploaded file which will be moved into the appropriate storage location
     */
   def create(volume : Volume, format : AssetFormat, classification : Classification.Value, name : String, body : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
+    val sha1 = store.SHA1(file.file)
     /* TODO transaction */
-    Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name, 'body -> body), "id")
+    Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name, 'body -> body, 'sha1 -> sha1), "id")
       .single(SQLCols[Id]).map { id =>
-        store.FileAsset.store(id, file)
-        new Asset(id, volume, format, classification, name, body)
+        val a = new Asset(id, volume, format, classification, name, body, sha1)
+        store.FileAsset.store(a, file)
+        a
       }
   }
 
   def create(volume : Volume, format : TimeseriesFormat, classification : Classification.Value, duration : Offset, name : String, body : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
+    val sha1 = store.SHA1(file.file)
     /* TODO transaction */
-    Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> duration, 'name -> name, 'body -> body), "id")
+    Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> duration, 'name -> name, 'body -> body, 'sha1 -> sha1), "id")
       .single(SQLCols[Id]).map { id =>
-        store.FileAsset.store(id, file)
-        new Timeseries(id, volume, format, classification, duration, name, body)
+        val a = new Timeseries(id, volume, format, classification, duration, name, body, sha1)
+        store.FileAsset.store(a, file)
+        a
       }
   }
 }

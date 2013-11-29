@@ -18,16 +18,3 @@ case class El(tag: String = "", attrs: List[List[String]])(content: String = "")
 object El {
   def attrToHtml(attr: Seq[(String,String)]) = {raw(attr.toMap.map(attr => if(attr._2.nonEmpty){attr._1+"=\""+attr._2+"\""}else{attr._1}).mkString(" "))}
 }
-
-case class md5(string: String) {
-  def hash = {
-    val md5 = MessageDigest.getInstance("MD5").digest(string.getBytes)
-    asString(md5)
-  }
-
-  val hexDigits = "0123456789abcdef".toCharArray
-
-  @Override def asString(bytes:Array[Byte]) = {
-    bytes.foldLeft(""){case (agg, b) => agg + hexDigits((b >> 4) & 0xf) + hexDigits(b & 0xf)}
-  }
-}

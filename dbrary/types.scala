@@ -110,6 +110,10 @@ object SQLType {
     def read(s : String) = Maybe.toNumber(BigDecimal(s))
   }
 
+  implicit object bytea extends SQLType[Array[Byte]]("bytea", classOf[Array[Byte]]) {
+    def read(s : String) = Some(s.getBytes)
+  }
+
   implicit def array[A](implicit t : SQLType[A]) : SQLType[IndexedSeq[A]] =
     new SQLType[IndexedSeq[A]](t.name + "[]", classOf[IndexedSeq[A]]) {
       /* TODO: */

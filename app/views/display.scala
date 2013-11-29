@@ -73,7 +73,7 @@ object display {
     raw("<p>"+text.split("\\r?\\n\\r?\\n").take(length).mkString("</p><p>")+"</p>")
 
   private def gravatarUrlByEmailOpt(email: Option[String] = None, size: Int = 64) =
-    "http://gravatar.com/avatar/"+email.fold("none")(e => md5(e.toLowerCase.replaceAll("\\s+", "")).hash)+"?s="+size+"&d=mm"
+    "http://gravatar.com/avatar/"+email.fold("none")(e => store.MD5.hex(e.toLowerCase.replaceAll("\\s+", "")))+"?s="+size+"&d=mm"
 
   private def gravatarUrlByEmail(email: String, size: Int = 64) =
     gravatarUrlByEmailOpt(Some(email), size)

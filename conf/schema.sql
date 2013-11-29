@@ -433,11 +433,12 @@ CREATE TABLE "asset" (
 	"duration" interval HOUR TO SECOND Check ("duration" > interval '0'),
 	"name" text NOT NULL,
 	"body" text,
-	"sha1" bytea Check (octet_length("sha1") = 20)
+	"sha1" bytea NOT NULL Check (octet_length("sha1") = 20)
 );
 COMMENT ON TABLE "asset" IS 'Assets reflecting files in primary storage.';
 
 SELECT audit.CREATE_TABLE ('asset');
+ALTER TABLE audit."asset" ALTER "sha1" DROP NOT NULL;
 
 CREATE INDEX "asset_creation_idx" ON audit."asset" ("id") WHERE "audit_action" = 'add';
 COMMENT ON INDEX audit."asset_creation_idx" IS 'Allow efficient retrieval of asset creation information, specifically date.';
@@ -691,7 +692,7 @@ INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, -1, 'DOWNL
 INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 1, 'ADMIN', 'NONE');
 INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 2, 'ADMIN', 'NONE');
 
-INSERT INTO asset (id, volume, format, classification, duration, name) VALUES (1, 1, -800, 'MATERIAL', interval '40', 'counting');
+INSERT INTO asset (id, volume, format, classification, duration, name, sha1) VALUES (1, 1, -800, 'MATERIAL', interval '40', 'counting', '\x3dda3931202cbe06a9e4bbb5f0873c879121ef0a');
 INSERT INTO asset_slot VALUES (1, get_slot(1, '[0,40)'::segment));
 SELECT setval('asset_id_seq', 1);
 
