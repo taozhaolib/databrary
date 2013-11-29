@@ -432,7 +432,8 @@ CREATE TABLE "asset" (
 	"classification" classification NOT NULL,
 	"duration" interval HOUR TO SECOND Check ("duration" > interval '0'),
 	"name" text NOT NULL,
-	"body" text
+	"body" text,
+	"sha1" bytea Check (octet_length("sha1") = 20)
 );
 COMMENT ON TABLE "asset" IS 'Assets reflecting files in primary storage.';
 
