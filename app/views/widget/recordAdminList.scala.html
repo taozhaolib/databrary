@@ -48,7 +48,7 @@
 
             @recordForm.map { f =>
                 <tfoot>
-                    @widget.tag.form(routes.Record.slotAdd(slot.volumeId, slot.id, IntId[models.RecordCategory](-500), true)) {
+                    @widget.tag.form(routes.Record.slotAdd(slot.volumeId, slot.id, RecordCategory.PARTICIPANT, true)) {
                         <tr>
                             @widget.tag.select(f("record"), selectList, '_default -> "Create new record...", '_colspan -> 2)
                             <td><button type='submit' class="button first">add participant</button></td>

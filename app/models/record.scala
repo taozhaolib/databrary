@@ -27,8 +27,8 @@ object RecordCategory extends HasId[RecordCategory] {
   def getAll : Seq[RecordCategory] =
     Seq(Participant, Visit)
 
-  private final val PARTICIPANT : Id = asId(-500)
-  private final val VISIT : Id = asId(-200)
+  final val PARTICIPANT : Id = asId(-500)
+  final val VISIT : Id = asId(-200)
   /** RecordCategory representing participants, individuals whose data is contained in a particular sesion.
     * Participants usually are associated with birthdate, gender, and other demographics. */
   final val Participant = new RecordCategory(PARTICIPANT, "participant") {

@@ -8,7 +8,7 @@ import dbrary._
   * @tparam I the type of the identifier
   * @tparam T the tag
   */
-class GenericId[I,+T](val unId : I) {
+private[models] class GenericId[I,+T](val unId : I) {
   // I don't understand why this is necessary (and it's also not quite right with inheritance):
   def equals(i : GenericId[I,_]) = i.unId equals unId
   def ==(i : GenericId[I,_]) = i.unId == unId
@@ -17,14 +17,14 @@ class GenericId[I,+T](val unId : I) {
   override def toString = unId.toString
 }
 /** [[GenericId]] specific to integers.  The most common (only?) type of identifier we have. */
-final class IntId[+T](unId : Int) extends GenericId[Int,T](unId) {
+private[models] final class IntId[+T] private (unId : Int) extends GenericId[Int,T](unId) {
   override def hashCode = unId
   /** Forcibly coerce to a different type. */
   private[models] def coerce[A] = new IntId[A](unId)
   def formatted(s : String) = unId.formatted(s)
 }
-object IntId {
-  def apply[T](i : Int) = new IntId[T](i)
+private[models] object IntId {
+  private[models] def apply[T](i : Int) = new IntId[T](i)
   // The normal family of conversions for database and web i/o:
   implicit def pathBindable[T] : PathBindable[IntId[T]] = PathBindable.bindableInt.transform(apply[T] _, _.unId)
   implicit def queryStringBindable[T] : QueryStringBindable[IntId[T]] = QueryStringBindable.bindableInt.transform(apply[T] _, _.unId)
@@ -40,6 +40,6 @@ object IntId {
 private[models] trait HasId[+T] {
   type Id = IntId[T]
   /** Create an [[Id]] value. */
-  def asId(i : Int) : Id = new IntId[T](i)
+  def asId(i : Int) : Id = IntId[T](i)
 }
 

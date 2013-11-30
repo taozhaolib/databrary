@@ -119,7 +119,7 @@ final class Slot private (val id : Slot.Id, val container : Container, val segme
     Action("edit", controllers.routes.Slot.edit(volumeId, id), Permission.EDIT),
     Action("add file", controllers.routes.Asset.create(volumeId, id), Permission.CONTRIBUTE),
     // Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
-    Action("add participant", controllers.routes.Record.slotAdd(volumeId, id, IntId[models.RecordCategory](-500), false), Permission.CONTRIBUTE)
+    Action("add participant", controllers.routes.Record.slotAdd(volumeId, id, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
   )
 }
 
