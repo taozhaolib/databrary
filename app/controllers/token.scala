@@ -29,7 +29,7 @@ object Token extends SiteController {
         AOk(views.html.token.password(token.accountId, passwordForm.fill((token.token, None))))
       else {
         token.remove
-        Login.login(token.account) /* TODO: don't allow password resets through this path */
+        Login.login(token.account)
       }
     })
   }
