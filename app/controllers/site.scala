@@ -27,10 +27,13 @@ object SiteRequest {
       new ro.Anon(request, obj)
     }
   }
-  sealed class Auth[A](request : Request[A], val account : Account, val access : Permission.Value, val superuser : Boolean = false) extends Base[A](request) with AuthSite {
+  sealed class Auth[A](request : Request[A], val token : SessionToken) extends Base[A](request) with AuthSite {
+    val account = token.account
+    val access = token.access
+    lazy val superuser = token.superuser(request)
     def withObj[O](obj : O) : RequestObject[O]#Auth[A] = {
       object ro extends RequestObject[O]
-      new ro.Auth(request, account, access, superuser, obj)
+      new ro.Auth(request, token, obj)
     }
   }
 }
@@ -41,8 +44,8 @@ trait RequestObject[+O] {
   }
   sealed trait Site[A] extends SiteRequest[A] with Base[A]
   final class Anon[A](request : Request[A], val obj : O) extends SiteRequest.Anon[A](request) with Site[A]
-  final class Auth[A](request : Request[A], account : Account, access : Permission.Value, superuser : Boolean, val obj : O)
-    extends SiteRequest.Auth[A](request, account, access, superuser) with Site[A]
+  final class Auth[A](request : Request[A], token : SessionToken, val obj : O)
+    extends SiteRequest.Auth[A](request, token) with Site[A]
 }
 object RequestObject {
   def getter[O](get : SiteRequest[_] => Future[Option[O]]) = new ActionRefiner[SiteRequest.Base,RequestObject[O]#Site] {
@@ -62,20 +65,16 @@ object RequestObject {
 }
 
 object SiteAction extends ActionCreator[SiteRequest.Base] {
-  private[this] def getUser(request : Request[_]) : Future[Option[(Account,Permission.Value)]] =
-    macros.Async.flatMap(request.session.get("user").flatMap(Maybe.toInt _), models.Account._get _)
-
-  private[this] def getSuperuser(request : Request[_]) : Boolean =
-    request.session.get("superuser").flatMap(Maybe.toLong _).exists(_ > System.currentTimeMillis)
-
   def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) =
-    getUser(request).flatMap {
-      case Some((user, access)) if access == Permission.ADMIN =>
-        block(new SiteRequest.Auth[A](request, user, access, getSuperuser(request)))
-      case Some((user, access)) =>
-        block(new SiteRequest.Auth[A](request, user, access))
+    macros.Async.flatMap(request.session.get("session"), models.SessionToken.get _).flatMap {
       case None =>
         block(new SiteRequest.Anon[A](request))
+      case Some(session) if !session.valid =>
+        implicit val site = new SiteRequest.Anon[A](request)
+        /* XXX should this be some kind of global notification? */
+        Async(Results.Forbidden(Login.viewLogin(Messages("login.expired"))).withNewSession)
+      case Some(session) =>
+        block(new SiteRequest.Auth[A](request, session))
     }
 
   object Auth extends ActionRefiner[SiteRequest,SiteRequest.Auth] {
@@ -99,9 +98,9 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
 
 class SiteController extends Controller {
   protected def isAjax[A](implicit request : Request[A]) =
-    request.headers.get("X-Requested-With").equals(Some("XMLHttpRequest"))
+    request.headers.get("X-Requested-With").fold(false)(_.equals("XMLHttpRequest"))
   protected def isJson[A](implicit request : Request[A]) =
-    request.headers.get("Content-Type").getOrElse("").contains("json")
+    request.headers.get("Content-Type").fold(false)(_.contains("json"))
 
   protected def isSecure : Boolean =
     current.configuration.getString("application.secret").exists(_ != "databrary").

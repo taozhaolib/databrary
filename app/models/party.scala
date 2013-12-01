@@ -106,7 +106,7 @@ final class Account protected (val party : Party, email_ : String, password_ : S
   def comments(implicit site : Site) = Comment.getParty(this)
 
   /** Remove any issued login tokens for this user. */
-  def clearTokens = LoginToken.clearAccount(id)
+  def clearTokens = AccountToken.clearAccount(id)
 }
 
 object Party extends TableId[Party]("party") {
@@ -200,16 +200,12 @@ object Account extends Table[Account]("account") {
     Party.columns.join(columns, using = 'id) map {
       case (party, acct) => acct(party)
     }
+  private[models] val rowAccess : Selector[(Account, Permission.Value)] =
+    (row ~ Party.access) map { a =>
+      a._1.party._access.set(a._2)
+      a
+    }
 
-  /** Look up a user by id, without an active session.
-    * @return None if no party or no account for given party
-    */
-  def _get(i : Int) : Future[Option[(Account,Permission.Value)]] =
-    (row ~ Party.access)
-      .map { a =>
-        a._1.party._access.set(a._2)
-        a
-      }.SELECT("WHERE id = ?").apply(i).singleOpt
   /** Look up a user by id.
     * @return None if no party or no account for given party
     */

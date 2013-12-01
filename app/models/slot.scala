@@ -206,7 +206,7 @@ object Slot extends TableId[Slot]("slot") {
     if (segment.isFull) Async(container.fullSlot) else
     DBUtil.selectOrInsert(_get(container, segment)(_, _)) { (dbc, exc) =>
       val args = SQLTerms('source -> container.id, 'segment -> segment)
-      SQL("INSERT INTO slot " + args.insert + " RETURNING id")(dbc, exc)
+      SQL("INSERT INTO slot", args.insert, "RETURNING id")(dbc, exc)
         .apply(args).single(SQLCols[Id].map(new Slot(_, container, segment)))
     }
 }

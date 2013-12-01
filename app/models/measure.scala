@@ -119,8 +119,8 @@ sealed class Measure[T](val metric : Metric[T], val datum : String) extends Tabl
     val args = ('datum -> datum) +: ids
     val tpe = metric.measureType
     DBUtil.updateOrInsert(
-      SQL("UPDATE " + tpe.table + " SET datum = ?::" + tpe.sqlType.name + " WHERE " + ids.where)(_, _).apply(args))(
-      SQL("INSERT INTO " + tpe.table + " (datum, record, metric) VALUES (?::" + tpe.sqlType.name + ", ?, ?)")(_, _).apply(args))
+      SQL("UPDATE", tpe.table, "SET datum = ?::" + tpe.sqlType.name, "WHERE", ids.where)(_, _).apply(args))(
+      SQL("INSERT INTO", tpe.table, "(datum, record, metric) VALUES (?::" + tpe.sqlType.name + ", ?, ?)")(_, _).apply(args))
       .execute.recover {
         case e : db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("invalid input syntax for type") => false
       }
@@ -133,8 +133,8 @@ final class MeasureV[T](metric : Metric[T], override val value : T) extends Meas
     val args = SQLTerm('datum -> value)(metric.sqlType) +: ids
     val tpe = metric.measureType
     DBUtil.updateOrInsert(
-      SQL("UPDATE " + tpe.table + " SET datum = ? WHERE " + ids.where)(_, _).apply(args))(
-      SQL("INSERT INTO " + tpe.table + " " + args.insert)(_, _).apply(args))
+      SQL("UPDATE", tpe.table, "SET datum = ? WHERE", ids.where)(_, _).apply(args))(
+      SQL("INSERT INTO", tpe.table, args.insert)(_, _).apply(args))
       .execute
   }
 }
@@ -155,7 +155,7 @@ object Measure {
   /** Remove this measure from its associated record and delete it. */
   private[models] def remove(record : Record, metric : Metric[_]) : Future[Boolean] = {
     val args = SQLTerms('record -> record.id, 'metric -> metric.id)
-    SQL("DELETE FROM " + metric.measureType.table + " WHERE " + args.where)
+    SQL("DELETE FROM", metric.measureType.table, "WHERE", args.where)
       .apply(args).execute
   }
 }

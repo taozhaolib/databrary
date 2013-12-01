@@ -4,6 +4,7 @@
 login.bad=Incorrect login.
 login.openID.notFound=No account is associated with that OpenID.
 login.noCookie=You must be logged in to perform that action. Please make sure you have cookies enabled.
+login.expired=Your session has expired. Please login again.
 login.logout=You have been logged out.
 password.again=Passwords do not match.
 token.password.subject=Databrary password reset

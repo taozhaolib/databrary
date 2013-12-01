@@ -19,14 +19,14 @@ object Token extends SiteController {
   ))
 
   def token(token : String) = SiteAction.async { implicit request =>
-    models.LoginToken.get(token).map(_.fold[SimpleResult](
-      NotFound
+    models.LoginToken.get(token).flatMap(_.fold(
+      ANotFound
     ) { token =>
       if (!token.valid) {
         token.remove
-        Gone
+        macros.Async(Gone)
       } else if (token.password)
-        Ok(views.html.token.password(token.accountId, passwordForm.fill((token.token, None))))
+        AOk(views.html.token.password(token.accountId, passwordForm.fill((token.token, None))))
       else {
         token.remove
         Login.login(token.account) /* TODO: don't allow password resets through this path */
@@ -41,7 +41,7 @@ object Token extends SiteController {
         models.LoginToken.get(token).flatMap(_
           .filter(t => t.valid && t.password && t.accountId == a)
           .fold[Future[SimpleResult]](AForbidden) { token =>
-            password.fold(macros.Async(false))(p => token.account.changeAccount(password = p)).map { _ =>
+            password.fold(macros.Async(false))(p => token.account.changeAccount(password = p)).flatMap { _ =>
               Login.login(token.account)
             }
           }

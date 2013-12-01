@@ -36,11 +36,11 @@ private[models] abstract trait TableView {
   protected implicit def tableColumn[A : SQLType](col : Symbol) = SelectColumn[A](col.name)
 
   protected def INSERT(args : SQLTerms)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
-    SQL("INSERT INTO " + table + " " + args.insert)(dbc, exc).apply(args)
+    SQL("INSERT INTO", table, args.insert)(dbc, exc).apply(args)
   protected def INSERT(args : SQLTerm[_]*)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     INSERT(SQLTerms(args : _*))(dbc, exc)
   protected def DELETE(args : SQLTerms)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
-    SQL("DELETE FROM " + table + " WHERE " + args.where)(dbc, exc).apply(args)
+    SQL("DELETE FROM", table, "WHERE", args.where)(dbc, exc).apply(args)
   protected def DELETE(args : SQLTerm[_]*)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     DELETE(SQLTerms(args : _*))(dbc, exc)
 }

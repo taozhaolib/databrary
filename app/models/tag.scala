@@ -53,7 +53,7 @@ object Tag extends TableId[Tag]("tag") {
   private[models] def getOrCreate(name : String) : Future[Tag] =
     DBUtil.selectOrInsert(_get(name)(_, _)) { (dbc, exc) =>
       val args = SQLTerms('name -> name)
-      SQL("INSERT INTO tag " + args.insert + " RETURNING " + row.select)(dbc, exc)
+      SQL("INSERT INTO tag", args.insert, "RETURNING", row.select)(dbc, exc)
         .apply(args).single(row.parse)
     }
 }
@@ -85,7 +85,7 @@ object TagUse extends Table[TagUse]("tag_use") {
     val ids = SQLTerms('tag -> tag.id, 'slot -> slot.id, 'who -> who.id)
     val args = ('up -> up) +: ids
     DBUtil.updateOrInsert(
-      SQL("UPDATE tag_use SET up = ? WHERE " + ids.where)(_, _).apply(args))(
+      SQL("UPDATE tag_use SET up = ? WHERE", ids.where)(_, _).apply(args))(
       INSERT(args)(_, _)).execute
   }
 }

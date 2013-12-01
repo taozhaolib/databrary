@@ -176,13 +176,13 @@ object Record extends TableId[Record]("record") {
   /** Create a new record, initially unattached. */
   def create(volume : Volume, category : Option[RecordCategory] = None) : Future[Record] = {
     val args = SQLTerms('volume -> volume.id, 'category -> category.map(_.id))
-    SQL("INSERT INTO record " + args.insert + " RETURNING id")
+    SQL("INSERT INTO record", args.insert, "RETURNING id")
       .apply(args).single(SQLCols[Id].map(new Record(_, volume, category)))
   }
 
   private[models] def addSlot(r : Record.Id, s : Slot.Id) : Future[Boolean] = {
     val args = SQLTerms('record -> r, 'slot -> s)
-    SQL("INSERT INTO slot_record " + args.insert)
+    SQL("INSERT INTO slot_record", args.insert)
       .apply(args).execute.recover {
         case SQLDuplicateKeyException() => false
       }

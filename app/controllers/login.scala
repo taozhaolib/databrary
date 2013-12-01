@@ -24,12 +24,12 @@ object Login extends SiteController {
     "openid" -> text(0, 256)
   ))
 
-  def viewLogin(err : Option[String] = None)(implicit request: SiteRequest[_]) : templates.Html =
-    views.html.account.login(err.fold(loginForm)(loginForm.withGlobalError(_)))
+  def viewLogin()(implicit request: SiteRequest[_]) : templates.Html =
+    views.html.account.login(loginForm)
   def viewLogin(err : String)(implicit request: SiteRequest[_]) : templates.Html =
-    viewLogin(Some(err))
+    views.html.account.login(loginForm.withGlobalError(err))
   def needLogin(implicit request: SiteRequest[_]) =
-    Forbidden(viewLogin(Some(Messages("login.noCookie"))))
+    Forbidden(viewLogin(Messages("login.noCookie")))
 
   def view = SiteAction.async { implicit request =>
     request.user.fold(
@@ -43,9 +43,11 @@ object Login extends SiteController {
       a => views.html.modal.profile(a)))
   }
 
-  private[controllers] def login(a : Account)(implicit request : Request[_]) : SimpleResult = {
+  private[controllers] def login(a : Account)(implicit request : Request[_]) : Future[SimpleResult] = {
     Audit.actionFor(Audit.Action.open, a.id, dbrary.Inet(request.remoteAddress))
-    Redirect(routes.Party.view(a.id)).withSession("user" -> a.id.toString)
+    SessionToken.create(a).map { token =>
+      Redirect(routes.Party.view(a.id)).withSession("session" -> token)
+    }
   }
 
   def post = SiteAction.async { implicit request =>
@@ -54,18 +56,18 @@ object Login extends SiteController {
       form => ABadRequest(views.html.account.login(form)),
       { case (email, password, openid) =>
         macros.Async.flatMap(email, Account.getEmail _).flatMap { acct =>
-        def error() : SimpleResult = {
+        def error : Future[SimpleResult] = macros.Async {
           acct.foreach(a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)))
           BadRequest(views.html.account.login(form.copy(data = form.data.updated("password", "")).withGlobalError(Messages("login.bad"))))
         }
         if (!password.isEmpty) {
-          macros.Async(acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(password, a.password)).fold(error)(login))
+          acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(password, a.password)).fold(error)(login)
         } else if (!openid.isEmpty)
           OpenID.redirectURL(openid, routes.Login.openID(email.getOrElse("")).absoluteURL(), realm = Some("http://" + request.host))
             .map(Redirect(_))
             .recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
         else
-          macros.Async(acct.filterNot(_ => isSecure).fold(error)(login))
+          acct.filterNot(_ => isSecure).fold(error)(login)
         }
       }
     )
@@ -75,24 +77,30 @@ object Login extends SiteController {
     val em = Maybe(email).opt
     OpenID.verifiedId
       .flatMap { info =>
-        Account.getOpenid(info.id, em).map(_.fold[SimpleResult](
-          BadRequest(views.html.account.login(loginForm.fill((em, "", info.id)).withError("openid", "login.openID.notFound")))
+        Account.getOpenid(info.id, em).flatMap(_.fold(
+          ABadRequest(views.html.account.login(loginForm.fill((em, "", info.id)).withError("openid", "login.openID.notFound")))
         )(login))
       }.recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
   }
 
   def logout = SiteAction { implicit request =>
-    if (request.user.isDefined)
-      Audit.action(Audit.Action.close)
+    request match {
+      case auth : SiteRequest.Auth[_] =>
+        for {
+          _ <- auth.token.remove
+          _ <- Audit.action(Audit.Action.close)
+        } yield {}
+      case _ =>
+    }
     Redirect(routes.Static.index).withNewSession
   }
 
   def superuserOn = SiteAction.access(Permission.ADMIN) { implicit request =>
     Audit.action(Audit.Action.superuser)
-    Redirect(request.headers.get(REFERER).getOrElse(routes.Static.index.url)).withSession("user" -> request.identity.id.toString, "superuser" -> (System.currentTimeMillis + 60*60*1000).toString)
+    Redirect(request.headers.get(REFERER).getOrElse(routes.Static.index.url)).withSession(session + "superuser" -> (System.currentTimeMillis + 60*60*1000).toString)
   }
 
   def superuserOff = SiteAction.access(Permission.ADMIN) { implicit request =>
-    Redirect(request.headers.get(REFERER).getOrElse(routes.Static.index.url)).withSession("user" -> request.identity.id.toString)
+    Redirect(request.headers.get(REFERER).getOrElse(routes.Static.index.url)).withSession(session - "superuser")
   }
 }
