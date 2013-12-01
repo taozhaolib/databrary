@@ -61,7 +61,7 @@ object Party extends SiteController {
         _.map(_ => "") -> ""
       )
 
-  type EditForm = Form[(String, Option[Orcid], Option[(String, Option[String], String)])]
+  type EditForm = Form[(String, Option[Orcid], Option[(String, String, Option[String], String)])]
   private[this] def formFill(implicit request : Request[_]) : EditForm = {
     val e = request.obj.party
     val acct = adminAccount
@@ -70,11 +70,12 @@ object Party extends SiteController {
       "orcid" -> text(0,20).transform[Option[Orcid]](Maybe(_).opt.map(Orcid.apply _), _.fold("")(_.toString))
         .verifying(Messages("orcid.invalid"), _.fold(true)(_.valid)),
       "" -> MaybeMapping(acct.map(_ => tuple(
+        "auth" -> text,
         "email" -> email,
         "password" -> passwordMapping,
         "openid" -> text(0,256)
       )))
-    )).fill((e.name, e.orcid, acct.map(a => (a.email, None, a.openid.getOrElse("")))))
+    )).fill((e.name, e.orcid, acct.map(a => ("", a.email, None, a.openid.getOrElse("")))))
   }
 
   def formForAccount(form : EditForm)(implicit request : Request[_]) =
@@ -125,19 +126,22 @@ object Party extends SiteController {
     Ok(viewEdit())
   }
 
-  def change(i : models.Party.Id) = AdminAction(i) { implicit request =>
-    formFill.bindFromRequest.fold(
-      form => BadRequest(viewEdit(editForm = Some(form))),
-      { case (name, orcid, acct) =>
-        request.obj.party.change(name = name, orcid = orcid)
-        acct foreach { case (email, password, openid) =>
-          val acct = request.obj.asInstanceOf[models.Account]
-          acct.changeAccount(
-            email = email,
-            password = password.getOrElse(acct.password),
-            openid = Maybe(openid).opt)
-        }
-        Redirect(request.obj.pageURL)
+  def change(i : models.Party.Id) = AdminAction(i).async { implicit request =>
+    val form = formFill.bindFromRequest
+    val acct = adminAccount
+    form.fold(
+      form => ABadRequest(viewEdit(editForm = Some(form))),
+      { case (_, _, Some((cur, _, _, _))) if !acct.fold(false)(a => BCrypt.checkpw(cur, a.password)) =>
+          ABadRequest(viewEdit(editForm = Some(form.withError("cur_password", "password.incorrect"))))
+        case (name, orcid, accts) => for {
+          _ <- request.obj.party.change(name = name, orcid = orcid)
+          _ <- macros.Async.map[(String, String, Option[String], String), Boolean](accts, { case (_, email, password, openid) =>
+            acct.get.changeAccount(
+              email = email,
+              password = password.getOrElse(acct.get.password),
+              openid = Maybe(openid).opt)
+          })
+        } yield (Redirect(request.obj.pageURL))
       }
     )
   }

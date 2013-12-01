@@ -49,8 +49,12 @@ object Token extends Table[Token]("token") {
 }
 
 object AccountToken extends Table[AccountToken]("account_token") {
-  private[models] def clearAccount(account : Account.Id) : Future[Boolean] =
-    DELETE('account -> account).execute
+  private[models] def clearAccount(account : Account.Id, except : Option[Token] = None) : Future[Boolean] =
+    except.fold {
+      DELETE('account -> account)
+    } { token =>
+      SQL("DELETE FROM", table, "WHERE account = ? AND token <> ?").apply(account, token.token)
+    }.execute
 }
 
 object LoginToken extends TokenTable[LoginToken]("login_token") {

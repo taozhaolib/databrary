@@ -15,10 +15,10 @@
                 @widget.tag.inputText(form("name"), 'placeholder -> "Full name")
 
                 @if(controllers.Party.formForAccount(form)) {
+                    @widget.tag.inputPassword(form("auth"), 'placeholder -> "Current Password")
                     @widget.tag.inputText(form("email"), 'placeholder -> "Email")
-
-                    @widget.tag.inputPassword(form("password.once"), 'placeholder -> "Password")
-                    @widget.tag.inputPassword(form("password.again"), 'placeholder -> "Password (repeat)")
+                    @widget.tag.inputPassword(form("password.once"), 'placeholder -> "New Password")
+                    @widget.tag.inputPassword(form("password.again"), 'placeholder -> "New Password (repeat)")
                 }
 
                 @widget.tag.inputText(form("orcid"), 'placeholder -> "ORCiD")
