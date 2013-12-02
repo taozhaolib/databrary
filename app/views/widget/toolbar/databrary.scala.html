@@ -16,9 +16,11 @@
     </div>
 
     <div class="toolbar_user col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
-    @if(requestOption.nonEmpty && requestOption.get.user.isDefined) {
-        @if(requestOption.get.access == Permission.ADMIN) {
-            @if(requestOption.get.superuser) {
+    @requestOption.filter(_.user.isDefined).fold {
+        <a href="@routes.Login.view" id="modal_login_link" class="modal_link" data-target="modal_login">login</a>
+    } { request =>
+        @if(request.access == Permission.ADMIN) {
+            @if(request.superuser) {
                 <a class="superuser on" href="@routes.Login.superuserOff">SU</a>
             }else{
                 <a class="superuser off" href="@routes.Login.superuserOn">SU</a>
@@ -26,8 +28,6 @@
         }
 
         <a href="@requestOption.get.identity.pageURL" id="modal_profile_link" class="img modal_link" data-target="modal_profile"><img src="@display.avatar(requestOption.get.identity, 16)" alt="@requestOption.get.identity.name" class="s16"></a>
-    } else {
-        <a href="@routes.Login.view" id="modal_login_link" class="modal_link" data-target="modal_login">login</a>
     }
     </div>
 }
