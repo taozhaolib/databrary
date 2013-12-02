@@ -26,10 +26,10 @@ object Token extends SiteController {
         token.remove
         macros.Async(Gone)
       } else if (token.password)
-        AOk(views.html.token.password(token.accountId, passwordForm.fill((token.token, None))))
+        AOk(views.html.token.password(token.accountId, passwordForm.fill((token.id, None))))
       else {
         token.remove
-        Login.login(token.account) /* TODO: don't allow password resets through this path */
+        Login.login(token.account)
       }
     })
   }

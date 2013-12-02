@@ -72,7 +72,9 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
       case Some(session) if !session.valid =>
         implicit val site = new SiteRequest.Anon[A](request)
         /* XXX should this be some kind of global notification? */
-        Async(Results.Forbidden(Login.viewLogin(Messages("login.expired"))).withNewSession)
+        session.remove.map { _ =>
+          Results.Forbidden(Login.viewLogin(Messages("login.expired")))
+        }
       case Some(session) =>
         block(new SiteRequest.Auth[A](request, session))
     }

@@ -34,6 +34,7 @@ trait AnonSite extends Site {
 }
 
 trait AuthSite extends Site {
+  val token : Token
   val account : Account
   def identity = account.party
   override def user = Some(account)

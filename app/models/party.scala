@@ -92,7 +92,7 @@ final class Account protected (val party : Party, email_ : String, password_ : S
     if (email == _email && password == _password && openid == _openid)
       return Async(true)
     if (password != _password)
-      clearTokens
+      clearTokens(cast[AuthSite](site).map(_.token))
     Audit.change(Account.table, SQLTerms('email -> email, 'password -> password, 'openid -> openid), SQLTerms('id -> id))
       .execute.andThen { case scala.util.Success(true) =>
         _email = email
@@ -106,7 +106,7 @@ final class Account protected (val party : Party, email_ : String, password_ : S
   def comments(implicit site : Site) = Comment.getParty(this)
 
   /** Remove any issued login tokens for this user. */
-  def clearTokens = AccountToken.clearAccount(id)
+  def clearTokens(except : Option[Token] = None) = AccountToken.clearAccount(id, except)
 }
 
 object Party extends TableId[Party]("party") {
