@@ -2,7 +2,7 @@ package store
 
 import java.io.{File,FileNotFoundException}
 import java.nio.{ByteBuffer,channels}
-import java.nio.file.{StandardOpenOption,FileSystemException}
+import java.nio.file.{StandardOpenOption,FileSystemException,FileAlreadyExistsException}
 import scala.concurrent.Future
 import play.api.Play.current
 import play.api.libs.Files.TemporaryFile
@@ -26,8 +26,15 @@ object FileAsset extends StoreDir("store.master") {
   }
   def store(asset : models.Asset, f : TemporaryFile) = {
     val d = file(asset)
-    d.getParentFile.mkdir
-    f.moveTo(d)
+    if (d.exists) {
+      if (org.apache.commons.io.FileUtils.contentEquals(f.file, d))
+        f.clean
+      else
+        throw new FileAlreadyExistsException("hash collision")
+    } else {
+      d.getParentFile.mkdir
+      f.moveTo(d)
+    }
   }
   def read(f : models.BackedAsset) : StreamEnumerator =
     StreamEnumerator.fromFile(file(f.source))
