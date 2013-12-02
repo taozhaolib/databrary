@@ -39,7 +39,6 @@ define([
 			};
 
 			$scope.updateContextLinks = function (links) {
-					console.log(links, links.hasOwnProperty('left'));
 				if (angular.isDefined(links)) {
 					$scope.contextbar.linksLeft = (links.hasOwnProperty('left')) ? links.left : links;
 					$scope.contextbar.linksRight = (links.hasOwnProperty('right')) ? links.right : [];

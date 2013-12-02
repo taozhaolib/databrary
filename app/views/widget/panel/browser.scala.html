@@ -14,17 +14,6 @@
             <div class="col-full">
                 <p class="note">...and <a class="show_hidden">@sessions.filter(s => s._1.consent == Consent.PRIVATE).length other participants</a> who have elected not to share their data.</p>
             </div>
-
-            <script>
-            $(document).ready(function () {
-                var $hidden = $('.panel_browser .hide');
-
-                $('.show_hidden' ).click(function() {
-                    $hidden.removeClass('hide');
-                    $(this).parent().slideUp();
-                });
-            });
-            </script>
         }
     }
 }

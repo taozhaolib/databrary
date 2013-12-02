@@ -1,7 +1,13 @@
-define(['require', 'angular', 'app/modules/dbModule', './routes'], function (require, angular) {
+define([
+	'require',
+	'angular',
+	'domReady',
+	'app/modules/dbModule',
+	'./routes'
+], function (require, angular, domReady) {
 	'use strict';
 
-	require(['domReady!'], function (document) {
+	domReady(function (document) {
 		angular.bootstrap(document, ['dbModule']);
 	});
 });

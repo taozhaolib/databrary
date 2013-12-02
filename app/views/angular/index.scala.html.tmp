@@ -26,17 +26,17 @@
 </head>
 
 <body class="@if(Play.isDev){dev} @if(toolbar.nonEmpty){has_toolbar}">
-    @angular.controllers.toolbarCtrl
+    @angular.controllers.toolbarCtrl()
 
     <main ng-view id="main" class="main"></main>
 
-    @angular.controllers.messageCtrl
+    @angular.controllers.messageCtrl()
 
-    @angular.helper.partial("figure"){@angular.widget.figure}
-    @angular.helper.partial("frame"){@angular.widget.frame}
-    @angular.helper.partial("panel"){@angular.widget.panel}
-    @angular.helper.partial("portrait"){@angular.widget.portrait}
-    @angular.helper.partial("toolbar"){@angular.widget.toolbar}
+    @angular.helper.partial("figure"){@angular.directive.figure}
+    @angular.helper.partial("frame"){@angular.directive.frame}
+    @angular.helper.partial("panel"){@angular.directive.panel}
+    @angular.helper.partial("portrait"){@angular.directive.portrait}
+    @angular.helper.partial("toolbar"){@angular.directive.toolbar}
 </body>
 </html>
 
