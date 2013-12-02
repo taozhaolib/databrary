@@ -30,7 +30,7 @@ object SiteRequest {
   sealed class Auth[A](request : Request[A], val token : SessionToken) extends Base[A](request) with AuthSite {
     val account = token.account
     val access = token.access
-    lazy val superuser = token.superuser(request)
+    val superuser = token.superuser(request)
     def withObj[O](obj : O) : RequestObject[O]#Auth[A] = {
       object ro extends RequestObject[O]
       new ro.Auth(request, token, obj)
