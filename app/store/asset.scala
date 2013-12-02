@@ -22,7 +22,7 @@ private[store] class StoreDir(conf : String) {
 object FileAsset extends StoreDir("store.master") {
   protected[store] def file(asset : models.Asset) : File = {
     val i = asset.sha1
-    new File(new File(base, i.head.formatted("%02x")), Hex(i.tail))
+    new File(new File(base, i.head.formatted("%02x")), new String(Hex(i.tail)))
   }
   def store(asset : models.Asset, f : TemporaryFile) = {
     val d = file(asset)

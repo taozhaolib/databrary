@@ -649,7 +649,7 @@ CREATE FUNCTION "random_string" ("length" smallint, "charset" text = '-012345678
 COMMENT ON FUNCTION "random_string" (smallint, text) IS 'Generate a random string of the given length drawn from the given list of characters.  This uses the postgres random function, which is not cryptographically secure.';
 
 CREATE TABLE "token" (
-	"token" char(64) Primary Key NOT NULL DEFAULT "random_string"(64::smallint), -- could generate pk violations
+	"token" char(64) Primary Key DEFAULT "random_string"(64::smallint), -- could generate pk violations
 	"expires" timestamp NOT NULL,
 	Check (false) NO INHERIT
 );
@@ -673,7 +673,7 @@ CREATE UNIQUE INDEX "login_token_account_idx" ON "login_token" ("account") WHERE
 COMMENT ON TABLE "login_token" IS 'Tokens issued to automatically login/register users or reset passwords.';
 
 CREATE TABLE "session" (
-	"token" char(64) Primary Key NOT NULL,
+	"token" char(64) Primary Key,
 	"expires" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '4 weeks',
 	"account" integer NOT NULL References "account"
 ) INHERITS ("account_token");
