@@ -19,6 +19,15 @@ define([
 
 		//
 
+		panelService.getPanels = function () {
+			if (!panelCtrl)
+				return false;
+
+			return panelCtrl.getPanels();
+		};
+
+		//
+
 		return panelService;
 	}]);
 });

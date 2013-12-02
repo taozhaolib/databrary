@@ -6,5 +6,6 @@ define([
 	'app/directives/message',
 	'app/directives/repeater',
 	'app/directives/panel',
+	'app/directives/contextbar',
 	'app/directives/carousel'
 ], function () {});

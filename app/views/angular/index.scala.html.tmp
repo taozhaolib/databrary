@@ -1,4 +1,4 @@
-@(title : String = "The Databrary Project", toolbar: String = "", css: Html = Html(""), js: Html = Html(""))(requestOption: Option[SiteRequest[_]] = None)(body : Html)
+@(requestOption: Option[SiteRequest[_]] = None)(body : Html)
 
 @import play.api._
 @import play.api.Play.current
@@ -10,7 +10,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>@title || Databrary: The Open Data Library for Developmental Science</title>
+    <title>Databrary: An Open Data Library for Developmental Science</title>
 
     <!-- icons -->
     <link rel="shortcut icon" href="@routes.Assets.at("icons/favicon.png")">
@@ -26,13 +26,17 @@
 </head>
 
 <body class="@if(Play.isDev){dev} @if(toolbar.nonEmpty){has_toolbar}">
-    @angular.controllers.toolbarCtrl()
+    @angular.controllers.toolbarCtrl
 
-    <main id="main" class="main" ng-controller="PanelCtrl" db-panels>
-        @body
-    </main>
+    <main ng-view id="main" class="main"></main>
 
-    @angular.controllers.messageCtrl()
+    @angular.controllers.messageCtrl
+
+    @angular.helper.partial("figure"){@angular.widget.figure}
+    @angular.helper.partial("frame"){@angular.widget.frame}
+    @angular.helper.partial("panel"){@angular.widget.panel}
+    @angular.helper.partial("portrait"){@angular.widget.portrait}
+    @angular.helper.partial("toolbar"){@angular.widget.toolbar}
 </body>
 </html>
 

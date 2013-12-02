@@ -4,27 +4,11 @@ define([
 ], function (db) {
 	'use strict';
 
-	db.controller('ToolbarCtrl', ['$scope', '$location', 'EventService', function ($scope, $location, $anchorScroll, eventService) {
-
-		$scope.updateToolbars = function () {
-
-		};
-
-		//
+	db.controller('ToolbarCtrl', ['$scope', '$location', '$anchorScroll', '$timeout', 'EventService', function ($scope, $location, $anchorScroll, $timeout, eventService) {
 
 		$scope.scrollTo = function (panel) {
 			$location.hash(panel.id);
 			$anchorScroll();
-		};
-
-		//
-
-		$scope.$on('toolbarsUpdate', function () {
-			console.log(arguments);
-		});
-
-		$scope.$on('toolbarsPanels', function ($event, panels) {
-			$scope.panels = panels;
-		})
+		}
 	}]);
 });
