@@ -4,4 +4,28 @@
     <h1 class="col-full panel_title">@display.formatTitle(slot.pageName)</h1>
 
     @widget.frame.slot(slot)
+
+    <div class="col-full panel_overview_actions">
+        <ul class="breadcrumbs">
+        @Path(slot).toHtml
+        </ul>
+
+        <ul class="actions">
+        @slot.pageActions.filter(_.available).map { act =>
+            <li class="@{
+                if(request.path == act.route.url) {
+                    "current"
+                }
+            }">
+            @if(act.route.method != "GET") {
+                @widget.tag.form(act.route) {
+                    <button type="submit" class="link">@act.name</button>
+                }
+            } else {
+                <a href="@act.route" alt="@act.name">@act.name</a>
+            }
+            </li>
+        }
+        </ul>
+    </div>
 }
