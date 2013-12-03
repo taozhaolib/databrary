@@ -26,7 +26,7 @@
 </head>
 
 <body class="@if(Play.isDev){dev} @if(toolbar.nonEmpty){has_toolbar}">
-    @angular.controllers.toolbarCtrl()
+    @angular.controllers.toolbarCtrl(requestOption)
 
     <main id="main" class="main" ng-controller="PanelCtrl" db-panels>
         @body
