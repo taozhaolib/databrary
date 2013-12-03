@@ -1,16 +1,22 @@
 @(vol : models.Volume, form : controllers.Ingest.CSVForm, text : String = "", target : Option[SitePage] = None)(implicit request : SiteRequest[_])
 
-@widget.template.html5("CSV Ingestion") {
+@import helper.FieldConstructor
+
+    @implicitField = @{
+        FieldConstructor(widget.tag.labeledFieldConstructor.f)
+    }
+
+@widget.template.action("CSV Ingestion") {
     @widget.panel.ingest("CSV Ingestion"){
         <div class="col-full">
+            @widget.formErrors(form)
+
             @widget.tag.form(routes.Ingest.curated(vol.id), 'enctype -> "multipart/form-data") {
                 @widget.tag.inputFile(form("file"))
 
-                <button type='submit' name='run' value='false'>Preview</button>
-                <button type='submit' name='run' value='true'>Ingest</button>
+                <button type='submit' name='run' value='false' class="button third">Preview</button>
+                <button type='submit' name='run' value='true' class="button">Ingest</button>
             }
-
-            @widget.formErrors(form)
 
             @display.plainText(text)
 

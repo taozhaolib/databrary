@@ -146,7 +146,7 @@ object Slot extends SiteController {
 
   def tag(v : models.Volume.Id, s : models.Slot.Id) = (SiteAction.access(Permission.VIEW) ~> action(v, s)).async { implicit request =>
     tagForm.bindFromRequest().fold(
-    form => if(isJson) AOk(views.html.ajax.tags(request.obj, form)) else ABadRequest(views.html.slot.view(request.obj)),
+    form => if(isJson) request.obj.tags(true).map(tags => Ok(jsonTags(tags))) else ABadRequest(""),
     { case (name, vote) =>
       request.obj.setTag(name, vote)(request.asInstanceOf[AuthSite]).flatMap { _ =>
       if (isJson) request.obj.tags(true).map(tags => Ok(jsonTags(tags))) else ARedirect(request.obj.pageURL)

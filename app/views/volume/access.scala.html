@@ -6,58 +6,69 @@
 	@widget.tag.select(form("inherit"), Permission.values.to(if (party.id.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
 }
 
-@widget.template.crud("Edit Volume Permissions: " + volume.name) {
-	<table class="permission">
-	@defining(helper.FieldConstructor(widget.tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
-			<thead>
-				<tr>
-			<th>Name</th>
-			<th>Individual</th>
-			<th>Group</th>
-			<th>Action</th>
-		</tr>
-			</thead>
+@widget.template.crud() {
 
-<tbody>
-		@accessForms.map { case (party,form) =>
-		@widget.tag.form(routes.Volume.accessChange(volume.id, party.id)) {
-		<tr>
-			@accessFields(party, form)
-			<td>
-				<button type='submit' class="button first">Update</button>
-				@if(party.id != request.identity.id) {
-				<a href='@routes.Volume.accessDelete(volume.id, party.id)' class="button second">Revoke</a>
-				}
-				@widget.formErrors(form)
-			</td>
-		</tr>
-		}
-		}
-</tbody>
-			<tfoot>
-		@widget.tag.form(routes.Volume.accessSearch(volume.id)) {
-		<tr class="null">
-			@widget.tag.inputText(accessSearch("name"), 'placeholder -> "Search users and institutions...")
-			<td/>
-			<td/>
-			<td>
-				<button type='submit' class="button third">Search</button>
-				@widget.formErrors(accessSearch)
-			</td>
-		</tr>
-		}
+}
 
-		@accessResults.map { case (party,form) =>
-		@widget.tag.form(routes.Volume.accessChange(volume.id, party.id)) {
-		<tr>
-			@accessFields(party, form)
-			<td>
-				<button type='submit' class="button first">Add</button>
-				@widget.formErrors(form)
-			</td>
-		</tr>
-		}
-		}
-	}</tfoot>
-	</table>
+
+@widget.template.crud("Manage Access: " + volume.pageName) {
+    @widget.panel.form(volume.pageName, "Manage Access") {
+        <div class="col-full">
+            <table class="permission">
+                @defining(helper.FieldConstructor(widget.tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Individual</th>
+                            <th>Group</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @accessForms.map { case (party,form) =>
+                            <tr>
+                                @widget.tag.form(routes.Volume.accessChange(volume.id, party.id), 'id -> ("party_"+party.id.toString)) {
+                                    @accessFields(party, form)
+                                }
+
+                                <td>
+                                    <button type='submit' class="button second" form="party_@party.id">Update</button>
+                                    @if(party.id != request.identity.id) {
+                                        <a href='@routes.Volume.accessDelete(volume.id, party.id)' class="button first">Revoke</a>
+                                    }
+                                    @widget.formErrors(form)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                    <tfoot>
+                        @widget.tag.form(routes.Volume.accessSearch(volume.id)) {
+                            <tr class="null">
+                                @widget.tag.inputText(accessSearch("name"), 'placeholder -> "Search users and institutions...")
+                                <td/>
+                                <td/>
+                                <td>
+                                    <button type='submit' class="button third">Search</button>
+                                    @widget.formErrors(accessSearch)
+                                </td>
+                            </tr>
+                        }
+
+                        @accessResults.map { case (party,form) =>
+                            @widget.tag.form(routes.Volume.accessChange(volume.id, party.id)) {
+                                <tr>
+                                    @accessFields(party, form)
+                                    <td>
+                                        <button type='submit' class="button">Add</button>
+                                        @widget.formErrors(form)
+                                    </td>
+                                </tr>
+                            }
+                        }
+                }</tfoot>
+            </table>
+        </div>
+    }
 }

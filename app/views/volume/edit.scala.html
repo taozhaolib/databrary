@@ -19,7 +19,7 @@
                 <legend>Publications</legend>
 
                 <div repeater class="repeater" ng-init="repeats = @editForm.data.filter(i => i._1.contains("citation")).map(i => (i._1.split("\\.").head, i._1.split("\\.").last, i._2)).groupBy(i => i._1).map(i => i._2.map(i => i._2+": '"+i._3+"'").mkString("{",",","}")).mkString("[",",","]")">
-                    @widget.angular.dbMode {
+                    @angular.directives.mode {
                         <div ng-repeat="repeat in repeats" class="repeat">
                             <div class="repeat_repeated">
                                <div class="field cf" id="citation_{{$index}}__head_field">

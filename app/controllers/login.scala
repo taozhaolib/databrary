@@ -25,9 +25,9 @@ object Login extends SiteController {
   ))
 
   def viewLogin()(implicit request: SiteRequest[_]) : templates.Html =
-    views.html.account.login(loginForm)
+    views.html.party.login(loginForm)
   def viewLogin(err : String)(implicit request: SiteRequest[_]) : templates.Html =
-    views.html.account.login(loginForm.withGlobalError(err))
+    views.html.party.login(loginForm.withGlobalError(err))
   def needLogin(implicit request: SiteRequest[_]) =
     Forbidden(viewLogin(Messages("login.noCookie")))
 
@@ -35,12 +35,6 @@ object Login extends SiteController {
     request.user.fold(
       AOk(viewLogin()))(_.party.perSite.map(
       p => Ok(views.html.party.view()(request.withObj(p)))))
-  }
-
-  def ajaxView = SiteAction { implicit request =>
-    Ok(request.user.fold(
-      views.html.modal.login(loginForm))(
-      a => views.html.modal.profile(a)))
   }
 
   private[controllers] def login(a : Account)(implicit request : Request[_]) : Future[SimpleResult] = {
@@ -53,12 +47,12 @@ object Login extends SiteController {
   def post = SiteAction.async { implicit request =>
     val form = loginForm.bindFromRequest
     form.fold(
-      form => ABadRequest(views.html.account.login(form)),
+      form => ABadRequest(views.html.party.login(form)),
       { case (email, password, openid) =>
         macros.Async.flatMap(email, Account.getEmail _).flatMap { acct =>
         def error : Future[SimpleResult] = macros.Async {
           acct.foreach(a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)))
-          BadRequest(views.html.account.login(form.copy(data = form.data.updated("password", "")).withGlobalError(Messages("login.bad"))))
+          BadRequest(views.html.party.login(form.copy(data = form.data.updated("password", "")).withGlobalError(Messages("login.bad"))))
         }
         if (!password.isEmpty) {
           acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(password, a.password)).fold(error)(login)
@@ -78,7 +72,7 @@ object Login extends SiteController {
     OpenID.verifiedId
       .flatMap { info =>
         Account.getOpenid(info.id, em).flatMap(_.fold(
-          ABadRequest(views.html.account.login(loginForm.fill((em, "", info.id)).withError("openid", "login.openID.notFound")))
+          ABadRequest(views.html.party.login(loginForm.fill((em, "", info.id)).withError("openid", "login.openID.notFound")))
         )(login))
       }.recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
   }

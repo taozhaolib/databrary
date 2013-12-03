@@ -1,0 +1,134 @@
+@(authorizeParents : Seq[Authorize], authorizeForms : Seq[(Party,controllers.Party.AuthorizeForm)], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Party,controllers.Party.AuthorizeForm)])(implicit request : controllers.Party.Request[_])
+
+@import helper.FieldConstructor
+
+    @implicitField = @{
+        FieldConstructor(widget.tag.minimalFieldConstructor.f)
+    }
+
+@authorizeFields(party : Party, form : controllers.Party.AuthorizeForm)(implicit fieldConstructor : helper.FieldConstructor) = {
+    <td>
+        @display(party)
+    </td>
+
+    <td>
+        @widget.enumSelect(form("access"), Permission)
+    </td>
+
+    <td>
+        @widget.enumSelect(form("delegate"), Permission)
+    </td>
+
+    <td>
+        @widget.tag.inputDate(form("expires"), 'placeholder -> "Expiration date", 'class -> "half")
+    </td>
+}
+
+@authorizeSearchWhich(party : Party, which : Boolean)(implicit fieldConstructor : helper.FieldConstructor) = {
+    @if(authorizeWhich.fold(true)(_ == which)) {
+            <tr class="null">
+                <td>
+                @widget.tag.form(routes.Party.authorizeSearch(party.id, which), 'id -> ("search_"+which.toString)) {
+                    @widget.tag.inputText(authorizeSearch("name"), 'id -> ("name_"+which.toString))
+                    @widget.formErrors(authorizeSearch)
+                }
+                </td>
+
+                <td/>
+                <td/>
+                <td/>
+
+                <td>
+                    <button type='submit' class="button third" form="search_@which.toString">Search</button>
+                </td>
+            </tr>
+
+        @authorizeResults.map { case (other,form) =>
+            <tr>
+                @widget.tag.form(if (which) routes.Party.authorizeApply(party.id, other.id) else routes.Party.authorizeChange(party.id, other.id), 'id -> ("which_"+which.toString)) {
+                    @authorizeFields(other, form)
+                    @widget.formErrors(form)
+                }
+
+                <td>
+                    <input type='hidden' name='pending' value='@which'/>
+                    <button type='submit' class="button" form="which_@which.toString">@{if (which) "Request" else "Authorize"}</button>
+                </td>
+            </tr>
+        }
+    }
+}
+
+@defining(request.obj.party) { party =>
+@widget.template.crud("Admin Party: " + request.obj.toString()) {
+    @widget.panel.form(request.obj.pageName, "Authorize Party") {
+        <div class="col-full">
+            <h3>Memberships</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Site Access</th>
+                        <th>Delegated Permissions</th>
+                        <th>Expiration</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                @authorizeParents.map { t =>
+                    <tr>
+                        <td>@display(t.parent)</td>
+                        <td>@t.access</td>
+                        <td>@t.delegate</td>
+                        <td>@t.expires.fold("never")( e => display.dateFmtYMD.print(e) )</td>
+                        <td>@{if(t.authorized.isEmpty) "pending"}</td>
+                    </tr>
+                }
+                </tbody>
+
+
+                <tfoot>
+                    @authorizeSearchWhich(party, true)
+                </tfoot>
+            </table>
+
+            <h3>Authorizations</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Site Access</th>
+                        <th>Delegated Permissions</th>
+                        <th>Expiration</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                @authorizeForms.map { case (child,form) =>
+                    @widget.tag.form(routes.Party.authorizeChange(party.id, child.id)) {
+                        <tr>
+                            @authorizeFields(child, form)
+                            <td>
+                            @defining(form("pending").value == Some("true")) { pending =>
+                                <button type='submit' class="button second">@{if(pending) "Authorize" else "Change"}</button>
+                                <a href='@routes.Party.authorizeDelete(party.id, child.id)' class="button first">@{if(pending) "Deny" else "Revoke"}</a>
+                            @widget.formErrors(form)
+                            }
+                            </td>
+                        </tr>
+                    }
+                }
+                </tbody>
+
+                <tfoot>
+                    @authorizeSearchWhich(party, false)
+                </tfoot>
+            </table>
+        </div>
+    }
+}
+}

@@ -3,16 +3,22 @@
 @import helper.FieldConstructor
 
     @implicitField = @{
-        FieldConstructor(widget.tag.minimalFieldConstructor.f)
+        FieldConstructor(widget.tag.labeledFieldConstructor.f)
     }
 
 @defining(request.obj.container) { container =>
-@widget.template.crud("Create Slot in Container: " + container.toString) {
-	@widget.tag.form(routes.Slot.add(container.volumeId, request.obj.id)) {
-		@widget.tag.inputText(form("start"), 'placeholder -> "Start offset")
-		@widget.tag.inputText(form("end"), 'placeholder -> "End offset")
-		<button type='submit' class="big button first">Add</button>
-	}
-	@widget.formErrors(form)
+@widget.template.crud("Create Session in Container: " + container.name.getOrElse(container.toString)) {
+    @widget.panel.form(container.name.getOrElse(container.toString), "Create Session in Container") {
+        <div class="col-full">
+            @widget.formErrors(form)
+
+            @widget.tag.form(routes.Slot.add(container.volumeId, request.obj.id)) {
+                @widget.tag.inputText(form("start"), 'placeholder -> "Start offset")
+                @widget.tag.inputText(form("end"), 'placeholder -> "End offset")
+
+                <button type='submit' class="button">Create</button>
+            }
+        </div>
+    }
 }
 }

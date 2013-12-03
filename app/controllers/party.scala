@@ -42,11 +42,6 @@ object Party extends SiteController {
     Ok(views.html.party.view())
   }
 
-  def ajaxView = SiteAction { implicit request =>
-    request.user.fold[SimpleResult](NotFound)(
-      a => Ok(views.html.modal.profile(a)))
-  }
-
   private def adminAccount(implicit request : Request[_]) : Option[Account] =
     request.obj.party.account.filter(_.id.equals(request.identity.id) || request.superuser)
 
@@ -115,7 +110,7 @@ object Party extends SiteController {
         .filter(t => authorizeChange.fold(true)(_.equals(t.childId)))
         .map(t => (t.child, authorizeFormFill(t))) ++
         authorizeChangeForm
-      status(views.html.party.admin(parents, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults))
+      status(views.html.party.authorize(parents, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults))
     }}
   }
   

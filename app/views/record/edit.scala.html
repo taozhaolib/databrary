@@ -6,11 +6,8 @@
         FieldConstructor(widget.tag.labeledFieldConstructor.f)
     }
 
-@widget.template.crud("Edit Record: " + record.toString()) {
-}
-
-@widget.template.crud("Edit Record: " + record.toString) {
-    @widget.panel.form(record.toString, "Edit Record") {
+@widget.template.crud("Edit Record: " + record.pageName) {
+    @widget.panel.form(record.pageName, "Edit Record") {
         <div class="col-full">
             @widget.formErrors(form)
 
@@ -48,7 +45,7 @@
                         <div class="repeat">
                             <div class="repeated">
                                 @widget.tag.select(form("measure["+meas.length+"].metric"), Metric.getAll.map(m => (m.id.toString, m.name + " (" + m.classification + ")")), 'placeholder -> "Metric", 'class -> "metric", '_class -> "metric-div")
-                            @widget.tag.inputText(form("measure["+meas.length+"].datum"), 'placeholder -> "Value", 'class -> "datum", '_class -> "datum-div")
+                                @widget.tag.inputText(form("measure["+meas.length+"].datum"), 'placeholder -> "Value", 'class -> "datum", '_class -> "datum-div")
                             </div>
                         </div>
                     </div>

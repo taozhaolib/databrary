@@ -7,7 +7,7 @@
     }
 
 @widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.name)) {
-    @widget.panel.form(target.fold(_ => "", _.name), target.fold(_ => "Upload Asset", _ => "Edit Asset")) {
+    @widget.panel.form(target.fold(_ => "New Asset", _.name), target.fold(_ => "Upload Asset", _ => "Edit Asset")) {
         <div class="col-full">
             @widget.formErrors(form)
 
@@ -15,9 +15,9 @@
             container => routes.Asset.upload(container.volumeId, container.id),
             asset => routes.Asset.change(asset.volumeId, asset.id)), 'enctype -> "multipart/form-data") {
 
-                @widget.tag.inputText(form("name"), 'placeholder -> "Title", '_class -> "big")
+                @widget.tag.inputText(form("name"), 'placeholder -> "Title")
                 @widget.tag.textarea(form("body"), 'placeholder -> "Description")
-                @widget.tag.inputText(form("offset"), 'placeholder -> "Offset in seconds", 'class -> "half")
+                @widget.tag.inputText(form("offset"), 'placeholder -> "Offset in seconds")
 
                 @if(controllers.Asset.formForFile(form, target)) {
                     @widget.enumSelect(form("classification"), Classification)

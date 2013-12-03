@@ -1,5 +1,7 @@
 @(request: RequestHeader)
 
 @widget.template.error("404! There's nothing here.") {
-    <div class="col-full panel_error">@request.path</div>
+    @widget.panel.error("404! There's nothing here.") {
+        <div class="col-full panel_error_error">@request.path</div>
+    }
 }

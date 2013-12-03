@@ -32,7 +32,7 @@ GET         /party/$pID<-?[0-9]+>                                               
 GET         /party/$pID<[0-9]+>/edit                                                                  controllers.Party.edit(pID : models.Party.Id)
 POST        /party/$pID<[0-9]+>/edit                                                                  controllers.Party.change(pID : models.Party.Id)
 POST        /party/$pID<[0-9]+>/token                                                                 controllers.Token.password(pID : models.Account.Id)
-GET         /party/$pID<[0-9]+>/admin                                                                 controllers.Party.admin(pID : models.Party.Id)
+GET         /party/$pID<[0-9]+>/authorize                                                                 controllers.Party.admin(pID : models.Party.Id)
 GET         /party/$pID<[0-9]+>/authorize/search/child                                                controllers.Party.authorizeSearch(pID : models.Party.Id, which : Boolean = false)
 GET         /party/$pID<[0-9]+>/authorize/search/parent                                               controllers.Party.authorizeSearch(pID : models.Party.Id, which : Boolean = true)
 POST        /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>                                            controllers.Party.authorizeChange(pID : models.Party.Id, child : models.Party.Id)
@@ -105,10 +105,6 @@ POST        /volume/$vID<[0-9]+>/ingest/curated                                 
 
 # static resources
 GET         /public/*file                                                                             controllers.Assets.at(path="/public", file)
-
-# ajax
-GET         /ajax/modal/login                                                                         controllers.Login.ajaxView
-GET         /ajax/modal/profile                                                                       controllers.Party.ajaxView
 
 # test
 GET         /test                                                                                     controllers.Site.test

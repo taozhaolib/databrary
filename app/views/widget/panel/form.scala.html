@@ -1,6 +1,6 @@
-@(title: String = "", context: String = "")(body: Html)(implicit request : SiteRequest[_])
+@(title: String = "", context: String = "", controller: String = "")(body: Html)(implicit request : SiteRequest[_])
 
-@widget.panel.raw("form", "panel_form")(){
+@widget.panel.raw("form", "panel_form")(controller){
     @if(title.nonEmpty) {
         @if(context.nonEmpty) {
             <hgroup class="col-full">
