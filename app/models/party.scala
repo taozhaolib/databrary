@@ -140,7 +140,7 @@ object Party extends TableId[Party]("party") {
     Audit.add(table, SQLTerms('name -> name), "id").single(SQLCols[Id])
       .map(new Party(_, name, None))
 
-  private def byName = "name ILIKE ? OR email ILIKE ?"
+  private def byName = "(name ILIKE ? OR email ILIKE ?)"
   private def byNameArgs(name : String) =
     SQLArgs(name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%")) * 2
 
