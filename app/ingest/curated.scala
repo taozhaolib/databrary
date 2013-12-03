@@ -166,7 +166,7 @@ object Curated {
           val l = t.getParentFile.listFiles(new java.io.FilenameFilter {
             def accept(d : File, name : String) = name.startsWith(t.getName)
           })
-          if (l.length != 1)
+          if (l == null || l.length != 1)
             throw PopulateException("missing or ambiguous original " + t.getPath)
           Asset.TimeseriesInfo(file, AssetFormat.Video, probe.duration, fileInfo(l.head))
         case _ =>
