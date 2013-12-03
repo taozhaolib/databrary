@@ -1,4 +1,4 @@
-@(slot : Slot, records : Seq[Record], classes: String = "", hoverable: Boolean = true)(implicit request : SiteRequest[_])
+@(slot : Slot, records : Seq[Record], classes: String = "", hoverable: Boolean = true, arbitrary : Html = Html(""))(implicit request : SiteRequest[_])
 
 @cap = {
     <dl class="panel_browser_defs">
@@ -21,4 +21,4 @@
     </dl>
 }
 
-@widget.figure.thumbSlot(slot, caption = cap, link = slot.pageURL.toString, title = slot.pageName, classes = classes, hoverable = hoverable)
+@widget.figure.thumbSlot(slot, caption = cap, link = slot.pageURL.toString, title = slot.pageName, classes = classes, hoverable = hoverable, arbitrary = arbitrary)
