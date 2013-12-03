@@ -1,0 +1,31 @@
+@(form : Login.LoginForm)(implicit request: SiteRequest[_])
+
+@import helper.FieldConstructor
+
+    @implicitField = @{
+        FieldConstructor(widget.tag.minimalFieldConstructor.f)
+    }
+
+@widget.template.action("Enter Databrary") {
+    @widget.panel.form("Enter Databrary", "Login", controller = "LoginPanelCtrl") {
+        <div class="col-full">
+            @widget.tag.form(routes.Login.post) {
+                @widget.formErrors(form)
+
+                <div ng-show="method == 1">
+                    @widget.tag.inputText(form("email"), 'placeholder -> "Email")
+                    @widget.tag.inputPassword(form("password"), 'placeholder -> "Password")
+                </div>
+
+                <div ng-show="method == 2">
+                    @widget.tag.inputText(form("openid"), 'placeholder -> "OpenID")
+                </div>
+
+                <button type="submit" class="button">Login</button>
+
+                <a ng-click="switchMethod(2)" ng-show="method != 2">or login with OpenID.</a>
+                <a ng-click="switchMethod(1)" ng-show="method != 1">or login with Databrary.</a>
+            }
+        </div>
+    }
+}

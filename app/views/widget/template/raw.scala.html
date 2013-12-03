@@ -10,7 +10,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>@title || Databrary</title>
+    <title>@title || Databrary: The Open Data Library for Developmental Science</title>
 
     <!-- icons -->
     <link rel="shortcut icon" href="@routes.Assets.at("icons/favicon.png")">
@@ -21,60 +21,18 @@
     <!-- css -->
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/theme.min.css")">
 
-    @if(css.body != ""){
-    <style>
-        @css
-    </style>
-    }
-
     <!-- js -->
     @helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/app/app").url)
-
-    @if(js.body != "") {
-    <script>
-        $(document).ready(function () {
-            @js
-        });
-    </script>
-    }
 </head>
 
 <body class="@if(Play.isDev){dev} @if(toolbar.nonEmpty){has_toolbar}">
-    <section id="toolbars" ng-controller="ToolbarCtrl">
-        @widget.toolbar.databrary(requestOption)
-
-        @if(toolbar.nonEmpty) {
-            @if(toolbar == "about") {
-                @widget.toolbar.about(requestOption)
-            }
-            @if(toolbar == "explore") {
-                @widget.toolbar.explore(requestOption)
-            }
-            @if(toolbar == "share") {
-                @widget.toolbar.share(requestOption)
-            }
-            @if(toolbar == "discover") {
-                @widget.toolbar.discover(requestOption)
-            }
-        }
-    </section>
+    @angular.controllers.toolbarCtrl(requestOption)
 
     <main id="main" class="main" ng-controller="PanelCtrl" db-panels>
         @body
     </main>
 
-    <div id="messages" class="messages" ng-controller="MessageCtrl" ng-class="{messages_enabled: isEnabled()}">
-        <div ng-repeat="message in messages | filter:{enabled: true}" id="{{message.id}}" class="message message_{{message.type}} message_animate" ng-class="{message_enabled: message.enabled, message_target: message.target, message_closable: message.closable}" style="z-index: {{500 - $index}};">
-            <div class="wrap">
-                <div class="row">
-                    <div class="col-full">
-                        <div class="message_close" ng-if="message.closeable" ng-click="disableMessage(message)"></div>
-                        <div class="message_content" ng-bind-html="message.message"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    @angular.controllers.messageCtrl()
 </body>
 </html>
 

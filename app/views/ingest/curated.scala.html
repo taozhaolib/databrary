@@ -1,6 +1,12 @@
 @(vol : models.Volume, res : (Iterable[Record], Iterable[SlotAsset]))(implicit request : SiteRequest[_])
 
-@widget.template.html5("CSV Ingestion Result") {
+@import helper.FieldConstructor
+
+    @implicitField = @{
+        FieldConstructor(widget.tag.labeledFieldConstructor.f)
+    }
+
+@widget.template.action("CSV Ingestion Result") {
     @widget.panel.ingest("CSV Ingestion Results"){
         <div class="col-full">
             <h2>Participant records:</h2>

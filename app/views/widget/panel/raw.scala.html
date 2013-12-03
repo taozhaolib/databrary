@@ -1,6 +1,6 @@
-@(id: String, classes: String, attr: (String,String)*)(title: String = "", foldable: Boolean = false, foldCurrently: Boolean = false)(body: Html)
+@(id: String, classes: String, attr: (String,String)*)(controller: String = "", title: String = "", foldable: Boolean = false, foldCurrently: Boolean = false)(body: Html)
 
-<section panel db-panel-title="@title" id="panel_@id" class="panel panel_@id @classes" ng-class="{enabled: isEnabled, folded: isFolded}" @if(foldable){fold @if(foldCurrently){db-fold-currently="true"}} @El.attrToHtml(attr)>
+<section panel db-panel-title="@title" id="panel_@id" class="panel panel_@id @classes" @if(controller){ng-controller="@controller"} ng-class="{enabled: isEnabled, folded: isFolded}" @if(foldable){fold @if(foldCurrently){db-fold-currently="true"}} @El.attrToHtml(attr)>
     <div class="wrap">
         <div class="row">
         @if(title.nonEmpty) {

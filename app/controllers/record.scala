@@ -36,7 +36,7 @@ object Record extends SiteController {
     "measure" -> seq(measureMapping)
   ))
 
-  private val js = {
+  private val jsonCategories = {
     Html(Json.stringify(Json.toJson(RecordCategory.getAll.map {
       case c =>
         Json.toJson(Map(
@@ -44,16 +44,24 @@ object Record extends SiteController {
           "name" -> Json.toJson(c.name),
           "template" -> Json.toJson(c.template.map {
             case m =>
-              Json.toJson(Map(
-                "id" -> Json.toJson(m.id.toString),
-                "name" -> Json.toJson(m.name),
-                "dataType" -> Json.toJson(m.dataType.toString),
-                "classification" -> Json.toJson(m.classification.toString),
-                "values" -> Json.toJson(m.values)
-              ))
+              Json.toJson(m.id.toString)
           })
         ))
     }
+    )))
+  }
+
+  private val jsonMetrics = {
+    Html(Json.stringify(Json.toJson(Metric.getAll.map {
+      case m =>
+        Json.toJson(Map(
+          "id" -> Json.toJson(m.id.toString),
+          "name" -> Json.toJson(m.name),
+          "dataType" -> Json.toJson(m.dataType.toString),
+          "classification" -> Json.toJson(m.classification.toString),
+          "values" -> Json.toJson(m.values)
+        ))
+      }
     )))
   }
 
@@ -72,14 +80,14 @@ object Record extends SiteController {
 
   def edit(v : models.Volume.Id, i : models.Record.Id) = Action(v, i, Permission.EDIT) { implicit request =>
     val (m, f) = editFormFill
-    Ok(views.html.record.edit(request.obj, m, f, js))
+    Ok(views.html.record.edit(request.obj, m, f, jsonCategories, jsonMetrics))
   }
 
   def update(v : models.Volume.Id, i : models.Record.Id) = Action(v, i, Permission.EDIT).async { implicit request =>
     val (meas, formin) = editFormFill
     val form = formin.bindFromRequest
     form.fold(
-      form => ABadRequest(views.html.record.edit(request.obj, meas, form, js)),
+      form => ABadRequest(views.html.record.edit(request.obj, meas, form, jsonCategories, jsonMetrics)),
       { case (category, data) =>
         request.obj.change(category = category.flatMap(RecordCategory.get(_))).flatMap { _ =>
         val filled = scala.collection.mutable.Set.empty[Int] // temporary hack to prevent data corruption with duplicate metrics
@@ -105,7 +113,7 @@ object Record extends SiteController {
           case (None, _) => form
           case (Some(error), i) => form.withError("measure.datum[" + i + "]", error)
         } }.fold(
-          form => BadRequest(views.html.record.edit(request.obj, meas, form, js)),
+          form => BadRequest(views.html.record.edit(request.obj, meas, form, jsonCategories, jsonMetrics)),
           _ => Redirect(request.obj.pageURL)
         )
         } }
@@ -142,7 +150,7 @@ object Record extends SiteController {
         for {
           r <- models.Record.create(request.obj.volume, cat)
           _ <- r.addSlot(request.obj)
-        } yield (Created(views.html.record.edit(r, cat.fold[Seq[Metric[_]]](Nil)(_.template), editForm.fill((cat.map(_.id), Seq())), js)))
+        } yield (Created(views.html.record.edit(r, cat.fold[Seq[Metric[_]]](Nil)(_.template), editForm.fill((cat.map(_.id), Seq())), jsonCategories, jsonMetrics)))
       } (models.Record.get(_).flatMap(_
         .filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId == v)
         .fold(
@@ -160,7 +168,7 @@ object Record extends SiteController {
   def add(v : models.Volume.Id, catID : models.RecordCategory.Id) = Volume.Action(v, Permission.EDIT).async { implicit request =>
     val cat = RecordCategory.get(catID)
     models.Record.create(request.obj.volume, cat).map { r =>
-      Created(views.html.record.edit(r, cat.fold[Seq[Metric[_]]](Nil)(_.template), editForm.fill((cat.map(_.id), Seq())), js))
+      Created(views.html.record.edit(r, cat.fold[Seq[Metric[_]]](Nil)(_.template), editForm.fill((cat.map(_.id), Seq())), jsonCategories, jsonMetrics))
     }
   }
 

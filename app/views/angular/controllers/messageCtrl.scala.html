@@ -1,0 +1,12 @@
+<div id="messages" class="messages" ng-controller="MessageCtrl" ng-class="{messages_enabled: isEnabled()}">
+    <div ng-repeat="message in messages | filter:{enabled: true}" id="{{message.id}}" class="message message_{{message.type}} message_animate" ng-class="{message_enabled: message.enabled, message_target: message.target, message_closable: message.closable}" style="z-index : { { 500 - $ index } } ;">
+        <div class="wrap">
+            <div class="row">
+                <div class="col-full">
+                    <div class="message_close" ng-if="message.closeable" ng-click="disableMessage(message)"></div>
+                    <div class="message_content" ng-bind-html="message.message"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

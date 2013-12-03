@@ -1,0 +1,7 @@
+@(title : String = "", toolbar: String = "explore", css : Html = Html(""), js : Html = Html(""))(body : Html)(implicit request: SiteRequest[_])
+
+@widget.template.html5(title, toolbar, css, js) {
+    <article class="article article_crud article_action">
+        @body
+    </article>
+}

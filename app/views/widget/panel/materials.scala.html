@@ -1,8 +1,8 @@
 @(assets : Seq[SlotAsset])(path : Boolean = false)(implicit request : SiteRequest[_])
 
 @if(assets.nonEmpty) {
-    @widget.panel.raw("materials", "")(title = "Materials", foldable = true) {
-        <div class="panel_materials_list col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
+    @widget.panel.raw("materials", "", "ng-controller" -> "MaterialsPanelCtrl")(title = "Materials", foldable = true) {
+        <div class="panel_materials_list col-full">
             <ul class="flat panel_materials_items">
             @if(assets.nonEmpty) {
                 @assets.map { link =>
@@ -13,7 +13,7 @@
                         case Classification.MATERIAL => "<strong>Notice!</strong> This file is <em>a material</em>, contains no identifying data, and may be shared with the public at your discretion."
                         case _ => ""
                     }) { message =>
-                        <li class="panel_materials_item @link.classification" data-target="#asset_@link.sourceId">
+                        <li class="panel_materials_item @link.classification" ng-click="selectAsset(@link.sourceId)" ng-class="{active: currentAsset == @link.sourceId}">
                             <span class="filetype @link.format.extension"><img src="@routes.Assets.at("images/filetypes/16px/" + link.format.extension.getOrElse("_blank") + ".png")"></span>
 
                             @if(path) {
@@ -34,11 +34,13 @@
             </ul>
         </div>
 
-        <div class="panel_materials_display col-desktop-9 col-laptop-6 col-tablet-3 col-mobile-6 hide">
+        <div class="panel_materials_display col-full">
             @if(assets.nonEmpty) {
+                <span ng-init="currentAsset = @assets.head.sourceId.toString"></span>
+
                 @assets.map { link =>
                     @if(link.checkPermission(Permission.DOWNLOAD)) {
-                        <div id="asset_@link.sourceId.toString" class="panel_materials_frame">
+                        <div id="asset_@link.sourceId.toString" ng-show="currentAsset == @link.sourceId" class="panel_materials_frame">
                             <h2>
                                 @link.pageName.@link.format.extension <a href='@routes.SlotAsset.download(link.volumeId, link.slotId, link.assetId, false)' class="link">download</a>
                             </h2>

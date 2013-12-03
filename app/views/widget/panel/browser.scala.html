@@ -1,30 +1,22 @@
-@(volume: Volume)(implicit request : SiteRequest[_])
+@(volume: Volume, record: Option[Record] = None)(implicit request : SiteRequest[_])
 
-@defining(Async.wait(volume.slotRecords)) { sessions =>
+@import play.api.templates.HtmlFormat._
+@import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
+@defining(Async.wait(record.fold(volume.slotRecords)(_.slots.flatMap(Async.map[Slot,(Slot,Seq[Record]),Seq[(Slot,Seq[Record])]](_, s => (s.records.map((s, _)))))))) { sessions =>
     @if(sessions.nonEmpty) {
-        @widget.panel.raw("browser", "")(title = "Browser", foldable = true){
+        @widget.panel.raw("browser", "", "ng-controller" -> "BrowserPanelCtrl")(title = "Browser", foldable = true){
             @sessions.map { case (slot, records)  =>
-                @defining(if(slot.consent == Consent.PRIVATE){"hide"}else{""}) { classes =>
+                @defining(if(slot.consent == Consent.PRIVATE){"ng-hide='hidePrivate'"}else{""}) { arbitrary =>
                     <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
-                        @widget.figure.thumbSession(slot, records, classes = classes)
+                        @widget.figure.thumbSession(slot, records, arbitrary = raw(arbitrary))
                     </div>
                 }
             }
 
-            <div class="col-full">
-                <p class="note">...and <a class="show_hidden">@sessions.filter(s => s._1.consent == Consent.PRIVATE).length other participants</a> who have elected not to share their data.</p>
+            <div class="col-full" ng-show="hidePrivate">
+                <p class="note">...and <a href="#" ng-click="showPrivate()">@sessions.filter(s => s._1.consent == Consent.PRIVATE).length other participants</a> who have elected not to share their data.</p>
             </div>
-
-            <script>
-            $(document).ready(function () {
-                var $hidden = $('.panel_browser .hide');
-
-                $('.show_hidden' ).click(function() {
-                    $hidden.removeClass('hide');
-                    $(this).parent().slideUp();
-                });
-            });
-            </script>
         }
     }
 }

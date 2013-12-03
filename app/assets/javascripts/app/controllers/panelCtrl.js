@@ -32,7 +32,7 @@ define([
 			return false;
 		};
 
-		eventService.broadcast('toolbarsPanels', $scope.panels);
+		eventService.talk('contextbarUpdate', $scope.panels);
 
 		//
 

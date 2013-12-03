@@ -69,7 +69,7 @@ object Volume extends SiteController {
   ))
   private[this] def editFormFill(v : Volume)(implicit site : Site) =
     v.citations.map { cites =>
-      editForm.fill((v.name, v.body, cites.map(citationFill(_)) :+ ((Some(""), None, None))))
+      editForm.fill((v.name, v.body, cites.map(citationFill(_))))
     }
 
   def edit(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
