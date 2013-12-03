@@ -278,8 +278,8 @@ object Curated {
         } { sa => for {
           _ <- check(sa.slot.container.equals(container),
             PopulateException("inconsistant container for previously ingested asset " + name))
-          _ <- check(sa.position.equals(rng.lowerBound),
-            PopulateException("inconsistent position for asset " + name + ": " + asset.position + " <> " + sa.position))
+          _ <- check(sa.slot.segment.equals(rng),
+            PopulateException("inconsistent position for asset " + name + ": " + asset.position + "(=> " + rng + ") <> " + sa.slot.segment))
         } yield (sa)
         })
       }
