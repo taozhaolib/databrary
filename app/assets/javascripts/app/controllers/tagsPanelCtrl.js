@@ -85,7 +85,6 @@ define([
 
 				createMessage('Tag <strong>' + tag.name + '</strong> voted down successfully!');
 			});
-
 		};
 
 		$scope.voteNone = function (tag) {

@@ -5,6 +5,7 @@ define([
 	'app/directives/hover',
 	'app/directives/message',
 	'app/directives/repeater',
+	'app/directives/metricsRepeater',
 	'app/directives/panel',
 	'app/directives/contextbar',
 	'app/directives/hasAuth',
