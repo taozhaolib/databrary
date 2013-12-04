@@ -1,0 +1,9 @@
+@(parties: Seq[Party] = Seq(), id: String = "parties", title : String = "Parties")(implicit request : SiteRequest[_])
+
+@if(parties.nonEmpty) {
+    @widget.frame.raw(id, "")(title, foldable = true) {
+        @parties.map { party =>
+            @widget.portrait.verticalSmall(party)
+        }
+    }
+}

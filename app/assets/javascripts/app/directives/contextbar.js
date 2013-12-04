@@ -34,7 +34,7 @@ define([
 					$scope.contextbar.panels = panels;
 				}
 
-				if ($location.absUrl().indexOf('/volume/') > -1)
+				if ($location.absUrl().indexOf('/volume/') > -1 || $location.absUrl().indexOf('/party/') > -1)
 					$scope.contextbar.mode = 'panels';
 			};
 

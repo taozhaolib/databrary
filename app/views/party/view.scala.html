@@ -1,80 +1,25 @@
 @()(implicit request : controllers.Party.Request[_])
 
 @defining(request.obj.party) { party =>
+@defining(Async.wait(party.volumeAccess)) { accesses =>
+@defining((accesses.takeWhile(a => a.access >= Permission.ADMIN).map(a => a.volume), accesses.dropWhile(a => a.access >= Permission.ADMIN).map(a => a.volume))) { case (owned, edited) =>
+@defining(Async.wait(party.funding).map(f => f.volume)) { funded =>
+@defining(owned.flatMap(v => Async.wait(v.citations))) { citations =>
 @widget.template.crud("Profile: " + request.obj.party.name) {
-    <article id="profile_@request.obj.party.id" class="party view">
-        <div class="row">
-            <section class="personal col-desktop-2">
-                <img src="@display.avatar(party, 144)" alt="@party.name" class="avatar s144">
+    @widget.panel.party(party)
 
-                @party.account.map { a =>
+    @widget.panel.volumes(owned, edited, funded)
 
-                    <div class="connect">
-                        <h2>Connect</h2>
+    @widget.panel.publications(citations)
 
-                        <ul class="flat">
-                            @if(request.access >= Permission.VIEW) {
-                                @if(a.email != "") {
-                                    <li><a href="mailto:@a.email" title="Email @party.name"><img src="@routes.Assets.at("images/social/16px/email.png")" alt="Email @party.name">email</a></li>
-                                }
-                            }
+    @widget.panel.network(party, owned)
 
-                            @party.orcid.map { o =>
-                                <li><a href="@o.uri" title="@party.name on ORCID"><img src="@routes.Assets.at("images/social/16px/orcid.png")" alt="@party.name on ORCID">@o.toString</a></li>
-                            }
-                        </ul>
-                    </div>
-                }
-
-                @defining(Async.wait(party.authorizeParents())) { parents =>
-                    @if(parents.nonEmpty) {
-                        <div class="memberships">
-                            <h2>Memberships</h2>
-
-                            <ul class="flat">
-                            @parents.map { t =>
-                                <li>@display(t.parent)</li>
-                            }
-                            </ul>
-                        </div>
-                    }
-                }
-
-                @defining(Async.wait(party.authorizeChildren())) { children =>
-                    @if(children.nonEmpty) {
-                        <div class="memberships">
-                            @if(party.account.isDefined) { <h2>Affiliates</h2> } else { <h2>Members</h2> }
-
-                            <ul class="flat">
-                            @children.map { t =>
-                                <li>@display(t.child)</li>
-                            }
-                            </ul>
-                        </div>
-                    }
-                }
-            </section>
-
-            <div class="content">
-                <section class="volume_list">
-                    @Async.wait(party.volumeAccess).map { a =>
-                        @widget.volumeList(a.volume)
-                    }
-
-                    @Async.wait(party.funding).map { v =>
-                        @widget.volumeList(v.volume)
-                    }
-                </section>
-
-                <div class="row">
-                @party.account.map(a => Async.wait(a.comments)).map { comments =>
-                    @if(comments.nonEmpty) {
-                        @widget.panel.comments(None, None, comments)
-                    }
-                }
-                </div>
-            </div>
-        </div>
-    </article>
+    @party.account.map(a => Async.wait(a.comments)).map { comments =>
+        @widget.panel.comments(None, None, comments)
+    }
+}
+}
+}
+}
 }
 }

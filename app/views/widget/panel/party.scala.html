@@ -1,0 +1,19 @@
+@(party : Party)(implicit request : SiteRequest[_])
+
+@widget.panel.raw("overview", "panel_party")(){
+    @widget.figure.thumbParty(party, scalar = "", classes = "panel_overview_thumbnail")
+
+    <h1 class="col-full panel_title">@display.formatTitle(party.pageName)</h1>
+
+    @widget.frame.contact(party)
+
+    @defining(Async.wait(party.authorizeChildren()).map(c => c.child)) { parties =>
+        @widget.frame.parties(parties, "memberships", "Memberships")
+    }
+
+    @defining(Async.wait(party.authorizeParents()).map(p => p.parent)) { parties =>
+        @widget.frame.parties(parties, "members", "Members")
+    }
+
+    @widget.frame.funding(Async.wait(party.volumeAccess).flatMap(a => Async.wait(a.volume.funding)).distinct)
+}
