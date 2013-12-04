@@ -5,7 +5,7 @@
         FieldConstructor(widget.tag.minimalFieldConstructor.f)
     }
 
-@if(comments.nonEmpty) {
+@if(post.nonEmpty || comments.nonEmpty) {
 @widget.panel.raw("comments", "")(title = "Comments", foldable = true){
     @post.map { case (post, form) =>
         @if(request.access >= Permission.VIEW) {

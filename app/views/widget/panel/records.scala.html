@@ -1,0 +1,82 @@
+@(slot: Slot)(implicit request : SiteRequest[_])
+
+@import play.api.templates.HtmlFormat._
+@import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
+@defining(Async.wait(slot.records).groupBy(r => r.category.fold("uncategorized")(c => c.name))) { recordCategories =>
+@if(recordCategories.nonEmpty) {
+    @widget.panel.raw("records", "")(title = "Records", foldable = true){
+        <div class="col-full">
+        @if(recordCategories.contains("participant")) {
+            <h2>Participants</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Record</th>
+                        <th>Gender</th>
+                        <th>Age</th>
+                        <th>Release</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @recordCategories("participant").map { record =>
+                    <tr>
+                        <td><a href='@record.pageURL'>@record.pageName</a></td>
+                        <td>@record.measures.value(Metric.Gender)</td>
+                        <td>@display.age(record, slot)</td>
+                        <td>@record.consent</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        @if(recordCategories.contains("visit")) {
+            <h2>Visits</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Record</th>
+                        <th>Release</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @recordCategories("visit").map { record =>
+                    <tr>
+                        <td><a href='@record.pageURL'>@record.pageName</a></td>
+                        <td>@record.consent</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        @if(recordCategories.contains("uncategorized")) {
+            <h2>Uncategorized</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Record</th>
+                        <th>Release</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @recordCategories("uncategorized").map { record =>
+                    <tr>
+                        <td><a href='@record.pageURL'>@record.pageName</a></td>
+                        <td>@record.consent</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        </div>
+    }
+}
+}
