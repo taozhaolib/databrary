@@ -1,0 +1,45 @@
+@(list: Seq[Volume], query: String = "")(implicit request: SiteRequest[_])
+
+@import helper.FieldConstructor
+
+    @implicitField = @{
+        FieldConstructor(widget.tag.labeledFieldConstructor.f)
+    }
+
+@widget.template.action("Search the Databrary") {
+    @widget.panel.form("", "", "SearchViewCtrl") {
+        <section ng-controller="SearchFilterCtrl" id="panel_search_filter" class="panel_search_filter col-full">
+            <input type="search">
+        </section>
+
+        <div ng-controller="SearchListCtrl" class="col-full">
+        @list.map { volume =>
+            <article id="volume_@volume.id" class="search_volume">
+                <div class="row">
+                    <div class="col-desktop-13 col-laptop-10 col-tablet-8 col-mobile-4 col-cell">
+                        <header class="search_volume_header">
+                            <h1 class="h3"><a href="@routes.Volume.view(volume.id)">@volume.name</a></h1>
+                        </header>
+
+                        <footer class="search_volume_footer cf">
+                            <div class="people">
+                            @Async.get(volume.partyAccess).takeWhile(_.access >= Permission.ADMIN).map { a =>
+                                @widget.portrait.verticalMicro(a.party)
+                            }
+                            </div>
+                        </footer>
+
+                        <div class="search_volume_body cf">
+                        @volume.body.map(display.plainTextSummary(_, 2))
+                        </div>
+                    </div>
+
+                    <aside class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 col-cell">
+                    @widget.figure.thumbVolume(volume, scalar = "square")
+                    </aside>
+                </div>
+            </article>
+        }
+        </div>
+    }
+}

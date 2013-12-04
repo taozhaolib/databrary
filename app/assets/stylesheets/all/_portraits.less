@@ -1,7 +1,7 @@
 // STYLES
 
 .portrait {
-//	background-color: @g5;
+	//	background-color: @g5;
 	.margin-bottom(1);
 
 	.portrait_institution,
@@ -16,7 +16,7 @@
 		position: relative;
 
 		.portrait_info {
-//			background-color: @g5;
+			//			background-color: @g5;
 		}
 
 		.portrait_institution,
@@ -79,7 +79,6 @@
 //
 
 .portrait_horizontal {
-
 }
 
 .portrait_vertical {
@@ -91,7 +90,6 @@
 //
 
 .portrait_large {
-
 }
 
 .portrait_small {
@@ -136,4 +134,29 @@
 			.height(1);
 		}
 	}
+}
+
+.portrait_micro {
+	.margin-bottom(0);
+
+	.portrait_avatar {
+		.size(@b1);
+		.border-radius(@b1);
+	}
+
+	.portrait_info {
+		.padding(0);
+	}
+
+	.portrait_name {
+		.font(1, 1);
+		text-align: left;
+		font-weight: normal;
+		.padding(0, @f4, 0, @f1 + @f4);
+	}
+}
+
+.portrait_micro_wrap {
+	float: left;
+	.margin-right(@f4);
 }

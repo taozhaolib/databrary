@@ -31,14 +31,14 @@ object Volume extends SiteController {
     } yield (Ok(views.html.volume.view()))
   }
 
-  def listAll = SiteAction.async { implicit request =>
+  def search = SiteAction.async { implicit request =>
     models.Volume.getAll.flatMap { all =>
       macros.Async.foreach[Volume, SimpleResult](all, vol =>
         for {
           _ <- vol.partyAccess
           _ <- vol.summary
         } yield (()),
-        Ok(views.html.volume.list(all, request.queryString.getOrElse("query", Seq("")).head.toString))
+        Ok(views.html.volume.search(all, request.queryString.getOrElse("query", Seq("")).head.toString))
       )
     }
   }
@@ -183,7 +183,7 @@ object Volume extends SiteController {
       form => viewAdmin(BadRequest, accessSearchForm = form),
       name =>
         models.Party.searchForVolumeAccess(name, request.obj).flatMap { res =>
-          viewAdmin(Ok, accessSearchForm = form, 
+          viewAdmin(Ok, accessSearchForm = form,
             accessResults = res.map(e => (e, accessForm)))
         }
     )

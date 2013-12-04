@@ -41,7 +41,7 @@ POST        /party/$pID<[0-9]+>/authorize/$parent<-?[0-9]+>/apply               
 GET         /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>/remove                                     controllers.Party.authorizeDelete(pID : models.Party.Id, child : models.Party.Id)
 
 # volumes
-GET         /search                                                                                   controllers.Volume.listAll
+GET         /search                                                                                   controllers.Volume.search
 GET         /volume/create                                                                            controllers.Volume.create(owner : Option[models.Party.Id] ?= None)
 POST        /volume/create/$pID<[0-9]+>                                                               controllers.Volume.add(pID : models.Party.Id)
 GET         /volume/$vID<[0-9]+>                                                                      controllers.Volume.view(vID : models.Volume.Id)
