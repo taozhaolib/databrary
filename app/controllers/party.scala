@@ -39,7 +39,7 @@ object Party extends SiteController {
     SiteAction.auth ~> action(i, p)
 
   def view(i : models.Party.Id) = Action(Some(i), Some(Permission.NONE)) { implicit request =>
-    Ok(views.html.party.view())
+    if (isAjax) Ok(request.obj.json.obj) else Ok(views.html.party.view())
   }
 
   private def adminAccount(implicit request : Request[_]) : Option[Account] =

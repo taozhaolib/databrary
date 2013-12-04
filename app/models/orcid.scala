@@ -1,5 +1,6 @@
 package models
 
+import play.api.libs.json
 import dbrary._
 
 /** An [[http://orcid.org/ ORCID]] identifier.
@@ -30,4 +31,8 @@ object Orcid {
 
   implicit val sqlType : SQLType[Orcid] =
     SQLType[Orcid]("orcid", classOf[Orcid])(s => Some(new Orcid(s)), _.orcid)
+
+  implicit val jsWrites : json.Writes[Orcid] = new json.Writes[Orcid] {
+    def writes(o : Orcid) = json.JsString(o.toString)
+  }
 }

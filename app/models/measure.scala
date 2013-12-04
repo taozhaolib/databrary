@@ -130,7 +130,7 @@ sealed class Measure[T](val metric : Metric[T], val datum : String) extends Tabl
 final class MeasureV[T](metric : Metric[T], override val value : T) extends Measure[T](metric, metric.sqlType.show(value)) {
   override def set(record : Record) : Future[Boolean] = {
     val ids = SQLTerms('record -> record.id, 'metric -> metric.id)
-    val args = SQLTerm('datum -> value)(metric.sqlType) +: ids
+    val args = SQLTerm.ofTuple('datum -> value)(metric.sqlType) +: ids
     val tpe = metric.measureType
     DBUtil.updateOrInsert(
       SQL("UPDATE", tpe.table, "SET datum = ? WHERE", ids.where)(_, _).apply(args))(

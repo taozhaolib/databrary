@@ -11,7 +11,7 @@ case class SQLTerm[A](name : String, value : A)(implicit val sqlType : SQLType[A
 }
 object SQLTerm {
   import scala.language.implicitConversions
-  implicit def apply[A : SQLType](x : (Symbol, A)) : SQLTerm[A] = SQLTerm[A](x._1.name, x._2)
+  implicit def ofTuple[A : SQLType](x : (Symbol, A)) : SQLTerm[A] = SQLTerm[A](x._1.name, x._2)
 }
 
 /** Parameters (names and values) that may be passed to SQL queries. */

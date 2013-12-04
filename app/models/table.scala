@@ -2,6 +2,7 @@ package models
 
 import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.Json
 import dbrary._
 import site._
 

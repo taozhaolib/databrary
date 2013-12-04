@@ -2,6 +2,7 @@ package models
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.Json
 import macros._
 import dbrary._
 import site._
@@ -9,7 +10,7 @@ import site._
 /** Any real-world individual, group, institution, etc.
   * Instances are generally obtained from [[Party.get]] or [[Party.create]].
   * @param delegated permission delegated by this party to the current user */
-final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid]) extends TableRowId[Party] with SitePage {
+final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid]) extends TableRowId[Party] with SitePage with JsonableObjectId {
   private[this] var _name = name_
   def name = _name
   private[this] var _orcid = orcid_
@@ -57,9 +58,16 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
   def pageURL = controllers.routes.Party.view(id)
 
   def perSite(implicit site : Site) : Future[SiteParty] = SiteParty.make(this)
+
+  def json(implicit site : Site) =
+    JsonObjectId.flatten(id,
+      Some('name -> name), 
+      orcid.map('orcid -> _), 
+      account.filter(_ => site.access >= Permission.VIEW).map('email -> _.email)
+    )
 }
 
-final class SiteParty(val party : Party, val access : Permission.Value, val delegated : Permission.Value)(implicit val site : Site) extends SiteObject {
+final class SiteParty(val party : Party, val access : Permission.Value, val delegated : Permission.Value)(implicit val site : Site) extends SiteObject with JsonableObjectId {
   def getPermission = delegated
 
   def pageName = party.pageName
@@ -72,6 +80,9 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
     SiteAction("add volume", controllers.routes.Volume.create(Some(party.id)),
       !party.id.equals(Party.ROOT) && checkPermission(Permission.CONTRIBUTE) && access >= Permission.CONTRIBUTE)
   )
+
+  def json(implicit site : Site) =
+    party.json
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */

@@ -2,6 +2,7 @@ package models
 
 import play.api.data.format.{Formats,Formatter}
 import play.api.mvc.{PathBindable,QueryStringBindable}
+import play.api.libs.json
 import dbrary._
 
 /** Wrap identifiers and tag them with a particular type. This is primarily useful to tag primary keys with a specific type corresponding to the source table.
@@ -34,6 +35,9 @@ private[models] object IntId {
       Formats.intFormat.bind(key, data).right.map(apply _)
     def unbind(key : String, value : IntId[T]) =
       Formats.intFormat.unbind(key, value.unId)
+  }
+  implicit def jsonWrites[T] : json.Writes[IntId[T]] = new json.Writes[IntId[T]] {
+    def writes(i : IntId[T]) = json.JsNumber(i.unId)
   }
 }
 /** Any class (usually a singleton object) which provides an Id type. */

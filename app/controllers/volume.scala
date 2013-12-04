@@ -21,7 +21,9 @@ object Volume extends SiteController {
 
   def view(i : models.Volume.Id) = Action(i).async { implicit request =>
     val vol = request.obj
-    for {
+    if (isAjax)
+      AOk(vol.json.obj)
+    else for {
       _ <- vol.partyAccess
       _ <- vol.toplevelAssets
       _ <- vol.citations
