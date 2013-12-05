@@ -21,11 +21,15 @@ object Slot extends SiteController {
   private[controllers] def Action(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW) =
     SiteAction ~> action(v, i, p)
 
-  def view(v : models.Volume.Id, i : models.Slot.Id) = Action(v, i) { implicit request =>
-    if (request.obj.isFull && request.obj.container.top)
-      Redirect(routes.Volume.view(request.obj.volumeId))
-    else
-      Ok(views.html.slot.view(request.obj))
+  def view(v : models.Volume.Id, i : models.Slot.Id) = Action(v, i).async { implicit request =>
+    val slot = request.obj
+    if (slot.isFull && slot.container.top)
+      ARedirect(routes.Volume.view(slot.volumeId))
+    else for {
+      records <- slot.records
+      assets <- slot.assets
+      comments <- slot.comments(true)
+    } yield (Ok(views.html.slot.view(records, assets, comments)))
   }
 
   type EditForm = Form[(Option[(Option[String], Option[Date])], Consent.Value)]
@@ -116,7 +120,7 @@ object Slot extends SiteController {
 
   def comment(v : models.Volume.Id, s : models.Slot.Id, parent : Option[models.Comment.Id]) = (SiteAction.access(Permission.VIEW) ~> action(v, s)) { implicit request =>
     commentForm.bindFromRequest().fold(
-      form => BadRequest(views.html.slot.view(request.obj, form)),
+      form => Redirect(request.obj.pageURL), // not really critical enough to: BadRequest(views.html.slot.view(request.obj, form)),
       { text =>
         request.obj.postComment(text, parent)(request.asInstanceOf[AuthSite])
         Redirect(request.obj.pageURL)
