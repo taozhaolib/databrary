@@ -3,44 +3,40 @@
 @import play.api.templates.HtmlFormat._
 @import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
-@defining(Async.wait(record.fold(volume.slotRecords)(_.slots.flatMap(Async.map[Slot,(Slot,Seq[Record]),Seq[(Slot,Seq[Record])]](_, s => (s.records.map((s, _)))))))) { sessions =>
-    @if(sessions.nonEmpty) {
+@defining(Async.wait(record.fold(volume.recordSlots.map(_.find(r => r._1 == RecordCategory.Participant).getOrElse((Seq(),Seq()))._2))(r => r.slots.map(s => Seq((r, s)))))) { recordSlots =>
+    @if(recordSlots.nonEmpty){
         @widget.panel.raw("browser", "", "ng-controller" -> "BrowserPanelCtrl")(title = "Browser", foldable = true){
-            @defining(Async.wait(volume.recordSlots).filter(r => r._1.name == "participant").headOption.getOrElse((Seq(),Seq()))._2) { recordSlots =>
-                @if(recordSlots.nonEmpty){
-                    <div class="col-full">
-                        <table class="temp_browser_participants">
-                            <thead>
-                                <tr>
-                                    <th class="meta"></th>
-                                    <th class="meta tc">Age</th>
-                                    <th class="meta tc">Release</th>
-                                    <th class="main"></th>
-                                </tr>
-                            </thead>
+            <div class="col-full">
+                <table class="temp_browser_participants">
+                    <thead>
+                        <tr>
+                            <th class="meta"></th>
+                            <th class="meta tc">Age</th>
+                            <th class="meta tc">Release</th>
+                            <th class="main"></th>
+                        </tr>
+                    </thead>
 
-                            <tbody>
-                            @recordSlots.map { case (record, slots)  =>
-                                @slots.map { slot =>
-                                    <tr>
-                                        @if(slot.equals(slots.head)) {
-                                            <td class="meta record-holder bgwhite" rowspan="@slots.length">
-                                                <div class="record"><a href='@record.pageURL'>@record.ident</a></div>
-                                                <div class="gender">@record.measures.value(Metric.Gender)</div>
-                                            </td>
-                                        }
-
-                                        <td class="meta tc pointer">@display.age(record, slot)</td>
-                                        <td class="meta tc pointer message-trace"><span class="consent">@slot.consent</span></td>
-                                        <td class="main pointer"><a href="@slot.pageURL">@slot.container.name</a></td>
-                                    </tr>
+                    <tbody>
+                    @recordSlots.map { case (record, slots)  =>
+                        @slots.map { slot =>
+                            <tr>
+                                @if(slot.equals(slots.head)) {
+                                    <td class="meta record-holder bgwhite" rowspan="@slots.length">
+                                        <div class="record"><a href='@record.pageURL'>@record.ident</a></div>
+                                        <div class="gender">@record.measures.value(Metric.Gender)</div>
+                                    </td>
                                 }
-                            }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            }
+
+                                <td class="meta tc pointer">@display.age(record, slot)</td>
+                                <td class="meta tc pointer message-trace"><span class="consent">@slot.consent</span></td>
+                                <td class="main pointer"><a href="@slot.pageURL">@slot.pageName</a></td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            </div>
         }
     }
 }
