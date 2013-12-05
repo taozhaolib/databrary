@@ -18,41 +18,32 @@ object JsonField {
 }
 
 object JsField {
-  implicit val hashWrites : OWrites[Seq[JsField]] = new OWrites[Seq[JsField]] {
-    def writes(s : Seq[JsField]) = JsObject(s.map(JsonField.ofField(_)))
-  }
-}
-
-sealed class JsonObject(val fields : Seq[JsonField]) {
-  def obj = JsObject(fields)
+  implicit val hashWrites : OWrites[Seq[JsField]] =
+    OWrites[Seq[JsField]](s => JsObject(s.map(JsonField.ofField(_))))
 }
 
 object JsonObject {
   def apply(fields : JsonField*) =
-    new JsonObject(fields)
+    new JsObject(fields)
   def flatten(fields : Option[JsonField]*) =
-    new JsonObject(fields.flatten)
-  implicit val writes : OWrites[JsonObject] = new OWrites[JsonObject] {
-    def writes(d : JsonObject) = d.obj
-  }
+    new JsObject(fields.flatten)
 }
 
-final class JsonObjectId(val id : JsValue, fields : Seq[JsonField]) extends JsonObject(fields) with JsField {
+final class JsonRecord(val id : JsValue, fields : Seq[(String, JsValue)]) extends JsField {
   def field = id.toString
   def value = JsObject(fields)
-  // override def obj = JsObject(("id" -> id) +: fields)
+  def obj = JsObject(("id" -> id) +: fields)
 }
 
-object JsonObjectId {
+object JsonRecord {
   def apply[I : Writes](id : I, fields : JsonField*) =
-    new JsonObjectId(Json.toJson(id), fields)
+    new JsonRecord(Json.toJson(id), fields)
   def flatten[I : Writes](id : I, fields : Option[JsonField]*) =
-    new JsonObjectId(Json.toJson(id), fields.flatten)
+    new JsonRecord(Json.toJson(id), fields.flatten)
+  implicit val writes : OWrites[JsonRecord] =
+    OWrites[JsonRecord](_.obj)
 }
 
-trait JsonableObject {
-  def json(implicit site : Site) : JsonObject
-}
-trait JsonableObjectId extends JsonableObject {
-  def json(implicit site : Site) : JsonObjectId
+trait JsonableRecord {
+  def json(implicit site : Site) : JsonRecord
 }

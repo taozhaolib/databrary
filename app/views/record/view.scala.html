@@ -1,7 +1,7 @@
-@(record : models.Record)(implicit request : RequestObject[Record]#Site[_])
+@(assets : Seq[SlotAsset])(implicit request : controllers.Record.Request[_])
 
-@widget.template.crud("Record: " + record.pageName) {
-    @widget.panel.record(record)
-    @widget.panel.browser(record.volume, record = Some(record))
-    @widget.panel.materials(Async.wait(record.slots).flatMap(s => Async.wait(s.assets)))()
+@widget.template.crud("Record: " + request.obj.pageName) {
+    @widget.panel.record(request.obj)
+    @widget.panel.browser(request.obj.volume, record = Some(request.obj))
+    @widget.panel.materials(assets)()
 }

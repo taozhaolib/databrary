@@ -31,10 +31,8 @@ object Login extends SiteController {
   def needLogin(implicit request: SiteRequest[_]) =
     Forbidden(viewLogin(Messages("login.noCookie")))
 
-  def view = SiteAction.async { implicit request =>
-    request.user.fold(
-      AOk(viewLogin()))(_.party.perSite.map(
-      p => Ok(views.html.party.view()(request.withObj(p)))))
+  def view = SiteAction { implicit request =>
+    request.user.fold(Ok(viewLogin()))(u => Redirect(u.party.pageURL))
   }
 
   private[controllers] def login(a : Account)(implicit request : Request[_]) : Future[SimpleResult] = {

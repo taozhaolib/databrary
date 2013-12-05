@@ -3,6 +3,7 @@ package models
 import scala.concurrent.Future
 import scala.collection.concurrent
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json
 import com.github.mauricio.async.db
 import macros._
 import dbrary._
@@ -223,4 +224,7 @@ object Measures extends Table[Measures]("measures") {
 
   private[models] def getRecord(record : Record.Id) : Future[Measures] =
     row.SELECT("WHERE record = ?").apply(record).singleOpt.map(apply _)
+
+  implicit val jsonWrites : json.OWrites[Measures] =
+    json.OWrites[Measures](m => json.JsObject(m.list.map(m => (m.metric.name, json.JsString(m.datum)))))
 }

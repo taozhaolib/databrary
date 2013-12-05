@@ -9,5 +9,9 @@ package object macros {
     case _ => None
   }
 
+  /** Apply a function to both components of a homogenous tuple. */
+  def both[A,B](a : (A, A), f : A => B) : (B, B) =
+    (f(a._1), f(a._2))
+
   def unwords(s : String*) = s.mkString(" ")
 }

@@ -1,24 +1,18 @@
-@()(implicit request : controllers.Party.Request[_])
+@(parents : Seq[Authorize], children : Seq[Authorize], accesses : Seq[VolumeAccess], funded : Seq[VolumeFunding], comments : Seq[Comment])(implicit request : controllers.Party.Request[_])
 
 @defining(request.obj.party) { party =>
-@defining(Async.wait(party.volumeAccess)) { accesses =>
-@defining((accesses.takeWhile(a => a.access >= Permission.ADMIN).map(a => a.volume), accesses.dropWhile(a => a.access >= Permission.ADMIN).map(a => a.volume))) { case (owned, edited) =>
-@defining(Async.wait(party.funding).map(f => f.volume)) { funded =>
+@defining(both[Seq[VolumeAccess], Seq[Volume]](accesses.span(a => a.access >= Permission.ADMIN), _.map(_.volume))) { case (owned, edited) =>
 @defining(owned.flatMap(v => Async.wait(v.citations))) { citations =>
 @widget.template.crud("Profile: " + request.obj.party.name) {
-    @widget.panel.party(party)
+    @widget.panel.party(party, parents, children)
 
-    @widget.panel.volumes(owned, edited, funded)
+    @widget.panel.volumes(owned, edited, funded.map(_.volume))
 
     @widget.panel.publications(citations)
 
     @widget.panel.network(party, owned)
 
-    @party.account.map(a => Async.wait(a.comments)).map { comments =>
-        @widget.panel.comments(None, None, comments)
-    }
-}
-}
+    @widget.panel.comments(None, None, comments)
 }
 }
 }

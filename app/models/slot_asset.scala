@@ -102,6 +102,12 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
       .SELECT("JOIN asset_slot ON slot.id = asset_slot.slot WHERE asset_slot.asset = ? AND container.volume = ?")
       .apply(asset.id, asset.volumeId).singleOpt
 
+  /** Retrieve the list of all assets assigned the given record. */
+  private[models] def getRecord(record : Record) : Future[Seq[SlotAsset]] =
+    volumeRow(record.volume)
+      .SELECT("JOIN slot_record ON slot.id = slot_record.slot WHERE asset.volume = ? AND container.volume = ? AND slot_record.record = ?")
+      .apply(record.volumeId, record.volumeId, record.id).list
+
   /** Retrieve the list of all top-level assets. */
   private[models] def getToplevel(volume : Volume) : Future[Seq[SlotAsset]] =
     for {

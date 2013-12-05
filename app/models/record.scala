@@ -40,7 +40,7 @@ object RecordCategory extends HasId[RecordCategory] {
 }
 
 /** A set of Measures. */
-final class Record private (val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE, measures_ : Measures = Measures.empty) extends TableRowId[Record] with SiteObject with InVolume {
+final class Record private (val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE, measures_ : Measures = Measures.empty) extends TableRowId[Record] with SiteObject with InVolume with JsonableRecord {
   private[this] var _category = category_
   def category : Option[RecordCategory] = _category
   def categoryId = category.map(_.id)
@@ -94,6 +94,10 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   /** Attach this record to a slot. */
   def addSlot(s : Slot) = Record.addSlot(id, s.id)
 
+  /** The set of assets to which this record applies. */
+  def assets : Future[Seq[SlotAsset]] =
+    SlotAsset.getRecord(this)
+
   def pageName = category.fold("")(_.name.capitalize + " ") + ident
   def pageParent = Some(volume)
   def pageURL = controllers.routes.Record.view(volume.id, id)
@@ -101,6 +105,12 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
     Action("view", controllers.routes.Record.view(volumeId, id), Permission.VIEW),
     Action("edit", controllers.routes.Record.edit(volumeId, id), Permission.EDIT)
   )
+
+  def json(implicit site : Site) =
+    JsonRecord.flatten(id,
+      category.map('category -> _.name),
+      Some('measures -> measures)
+    )
 }
 
 object Record extends TableId[Record]("record") {

@@ -21,8 +21,11 @@ object Record extends SiteController {
   private[controllers] def Action(v : models.Volume.Id, i : models.Record.Id, p : Permission.Value = Permission.VIEW) =
     SiteAction ~> action(v, i, p)
 
-  def view(v : models.Volume.Id, i : models.Record.Id) = Action(v, i) { implicit request =>
-    Ok(views.html.record.view(request.obj))
+  def view(v : models.Volume.Id, i : models.Record.Id) = Action(v, i).async { implicit request =>
+    if (isAjax) AOk(request.obj.json.obj)
+    else for {
+      assets <- request.obj.assets
+    } yield (Ok(views.html.record.view(assets)))
   }
 
   private type MeasureMapping = (Metric.Id, Option[String])

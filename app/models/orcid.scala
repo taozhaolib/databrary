@@ -32,7 +32,6 @@ object Orcid {
   implicit val sqlType : SQLType[Orcid] =
     SQLType[Orcid]("orcid", classOf[Orcid])(s => Some(new Orcid(s)), _.orcid)
 
-  implicit val jsWrites : json.Writes[Orcid] = new json.Writes[Orcid] {
-    def writes(o : Orcid) = json.JsString(o.toString)
-  }
+  implicit val jsWrites : json.Writes[Orcid] =
+    json.Writes[Orcid](o => json.JsString(o.toString))
 }

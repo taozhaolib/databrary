@@ -1,5 +1,6 @@
 package controllers
 
+import scala.concurrent.Future
 import play.api._
 import          Play.current
 import          mvc._
@@ -38,8 +39,16 @@ object Party extends SiteController {
   private[controllers] def Action(i : Option[models.Party.Id], p : Option[Permission.Value] = Some(Permission.ADMIN)) =
     SiteAction.auth ~> action(i, p)
 
-  def view(i : models.Party.Id) = Action(Some(i), Some(Permission.NONE)) { implicit request =>
-    if (isAjax) Ok(request.obj.json.obj) else Ok(views.html.party.view())
+  def view(i : models.Party.Id) = Action(Some(i), Some(Permission.NONE)).async { implicit request =>
+    val party = request.obj.party
+    if (isAjax) AOk(party.json.obj)
+    else for {
+      parents <- party.authorizeParents()
+      children <- party.authorizeChildren()
+      vols <- party.volumeAccess
+      fund <- party.funding
+      comments <- party.account.fold[Future[Seq[Comment]]](macros.Async(Nil))(_.comments)
+    } yield (Ok(views.html.party.view(parents, children, vols, fund, comments)))
   }
 
   private def adminAccount(implicit request : Request[_]) : Option[Account] =
