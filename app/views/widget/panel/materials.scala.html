@@ -1,5 +1,7 @@
 @(assets : Seq[SlotAsset], path : Boolean = false)(implicit request : SiteRequest[_])
 
+@import play.api.templates.HtmlFormat._
+
 @if(assets.nonEmpty) {
     @widget.panel.raw("materials", "", "ng-controller" -> "MaterialsPanelCtrl")(title = "Materials", foldable = true) {
         <div class="panel_materials_list col-full">
@@ -17,7 +19,14 @@
                             <span class="filetype @link.format.extension"><img src="@routes.Assets.at("images/filetypes/16px/" + link.format.extension.getOrElse("_blank") + ".png")"></span>
 
                             @if(path) {
-                                <span class="session">@display(link.slot) /</span>
+                                <span class="session">@display(link.slot)</span>
+
+                                @defining(Async.wait(link.slot.records).filter(r => r.category.fold(false)(c => c == RecordCategory.Participant))) { parts =>
+                                    @if(parts.nonEmpty) {
+                                        with <span class="participant">@parts.map(r => raw("<a href='"+r.pageURL+"'>"+r.pageName+"</a>"))</span>
+                                    }
+                                }
+                                /
                             }
 
                             <a href="@link.pageURL" class="filename">@link.pageName.@link.format.extension</a>
