@@ -1,9 +1,9 @@
-@(slot: Slot)(implicit request : SiteRequest[_])
+@(slot: Slot, records : Seq[Record])(implicit request : SiteRequest[_])
 
 @import play.api.templates.HtmlFormat._
 @import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
-@defining(Async.wait(slot.records).groupBy(r => r.category.fold("uncategorized")(c => c.name))) { recordCategories =>
+@defining(records.groupBy(r => r.category.fold("uncategorized")(c => c.name))) { recordCategories =>
 @if(recordCategories.nonEmpty) {
     @widget.panel.raw("records", "")(title = "Records", foldable = true){
         <div class="col-full">
