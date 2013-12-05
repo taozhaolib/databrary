@@ -15,7 +15,7 @@
     @widget.template.crud("Volume: " + volume.name) {
         @widget.panel.volume(volume)
         @widget.panel.browser(volume)
-        @widget.panel.materials(toplevel)()
+        @widget.panel.materials(toplevel)
         @widget.panel.publications(Async.wait(volume.citations))
         @widget.panel.people(volume)
         @widget.panel.tags(topslot, Some(volume))

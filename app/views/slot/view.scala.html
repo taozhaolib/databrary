@@ -4,7 +4,7 @@
 @widget.template.crud("Session: " + slot.pageName) {
     @widget.panel.slot(slot)
     @widget.panel.records(slot, records)
-    @widget.panel.materials(assets)()
+    @widget.panel.materials(assets)
     @widget.panel.tags(slot)
     @widget.panel.comments(Some(slot), Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), comments)
 }

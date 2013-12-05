@@ -1,4 +1,4 @@
-@(assets : Seq[SlotAsset])(path : Boolean = false)(implicit request : SiteRequest[_])
+@(assets : Seq[SlotAsset], path : Boolean = false)(implicit request : SiteRequest[_])
 
 @if(assets.nonEmpty) {
     @widget.panel.raw("materials", "", "ng-controller" -> "MaterialsPanelCtrl")(title = "Materials", foldable = true) {
