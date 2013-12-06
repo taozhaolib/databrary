@@ -3,7 +3,7 @@ package controllers
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc._
 
-object Static extends SiteController {
+package object Static extends SiteController {
   def index() = SiteAction {
     implicit request =>
       Ok(views.html.static.index(request))
@@ -18,7 +18,13 @@ object Static extends SiteController {
 
   def page(page : String) = SiteAction { implicit request =>
     views.html.static.pages.get(page).fold[SimpleResult](NotFound)(page =>
-      if (isAjax) Ok(page.template.render)
-      else Ok(views.html.widget.template.static(page.name)(page.template.render)))
+      Ok(views.html.widget.template.static(page.name)(page.template.render)))
+  }
+
+  object api {
+    def page(page : String) = Action { implicit request =>
+      views.html.static.pages.get(page).fold[SimpleResult](NotFound)(page =>
+        Ok(page.template.render))
+    }
   }
 }

@@ -2,6 +2,7 @@ package models
 
 import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json
 import macros._
 import dbrary._
 import site._
@@ -91,7 +92,14 @@ object TagUse extends Table[TagUse]("tag_use") {
 }
 
 /** Summary representation of tag information for a single slot and current user. */
-final case class TagWeight private (tag : Tag, weight : Int, user : Option[Boolean] = None) extends TableRow
+final case class TagWeight private (tag : Tag, weight : Int, user : Option[Boolean] = None) extends TableRow with JsonableRecord {
+  def json(implicit site : Site) =
+    JsonRecord.flatten(tag.id,
+      Some('name -> tag.name),
+      Some('weight -> weight),
+      user.map(u => 'vote -> (if (u) 1 else -1))
+    )
+}
 
 object TagWeight extends Table[TagWeight]("tag_weight") {
   private val useJoinOn = "tag_weight.tag = tag_use.tag AND tag_use.slot = ? AND tag_use.who = ?"

@@ -14,9 +14,7 @@ import dbrary._
 import site._
 import models._
 
-object Party extends SiteController {
-  type Request[A] = RequestObject[SiteParty]#Site[A]
-
+object Party extends ObjectController[SiteParty] {
   /** ActionBuilder for party-targeted actions.
     * @param i target party id, defaulting to current user (site.identity)
     * @param p permission needed, or None if delegation is not allowed (must be self)
@@ -41,8 +39,7 @@ object Party extends SiteController {
 
   def view(i : models.Party.Id) = Action(Some(i), Some(Permission.NONE)).async { implicit request =>
     val party = request.obj.party
-    if (isAjax) AOk(party.json.obj)
-    else for {
+    for {
       parents <- party.authorizeParents()
       children <- party.authorizeChildren()
       vols <- party.volumeAccess
@@ -209,5 +206,11 @@ object Party extends SiteController {
         }
       }
     )})
+  }
+
+  object api extends Controller {
+    def view(i : models.Party.Id) = Action(Some(i), Some(Permission.NONE)) { implicit request =>
+      Ok(request.obj.party.json.obj)
+    }
   }
 }

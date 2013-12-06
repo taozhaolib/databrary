@@ -4,9 +4,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import dbrary._
 import models._
 
-object SlotAsset extends SiteController {
-  type Request[A] = RequestObject[SlotAsset]#Site[A]
-
+object SlotAsset extends ObjectController[SlotAsset] {
   private[controllers] def action(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW, full : Boolean = false) =
     RequestObject.check(v, models.SlotAsset.get(a, i, full)(_), p)
 

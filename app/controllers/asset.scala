@@ -15,9 +15,7 @@ import dbrary._
 import site._
 import models._
 
-object Asset extends SiteController {
-  type Request[A] = RequestObject[Asset]#Site[A]
-
+object Asset extends ObjectController[Asset] {
   private[controllers] def action(v : models.Volume.Id, a : models.Asset.Id, p : Permission.Value = Permission.EDIT) =
     RequestObject.check(v, models.Asset.get(a)(_), p)
 

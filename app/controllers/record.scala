@@ -12,9 +12,7 @@ import          libs.json._
 import site._
 import models._
 
-object Record extends SiteController {
-  type Request[A] = RequestObject[Record]#Site[A]
-
+object Record extends ObjectController[Record] {
   private[controllers] def action(v : models.Volume.Id, i : models.Record.Id, p : Permission.Value = Permission.VIEW) =
     RequestObject.check(v, models.Record.get(i)(_), p)
 
@@ -22,8 +20,7 @@ object Record extends SiteController {
     SiteAction ~> action(v, i, p)
 
   def view(v : models.Volume.Id, i : models.Record.Id) = Action(v, i).async { implicit request =>
-    if (isAjax) AOk(request.obj.json.obj)
-    else for {
+    for {
       assets <- request.obj.assets
     } yield (Ok(views.html.record.view(assets)))
   }
@@ -175,4 +172,9 @@ object Record extends SiteController {
     }
   }
 
+  object api extends Controller {
+    def view(v : models.Volume.Id, i : models.Record.Id) = Action(v, i) { implicit request =>
+      Ok(request.obj.json.obj)
+    }
+  }
 }

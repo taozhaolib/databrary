@@ -99,11 +99,6 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
 }
 
 class SiteController extends Controller {
-  protected def isAjax(implicit request : Request[_]) =
-    request.headers.get("X-Requested-With").fold(false)(_.equals("XMLHttpRequest"))
-  protected def isJson(implicit request : Request[_]) =
-    request.headers.get("Content-Type").fold(false)(_.contains("json"))
-
   protected def isSecure : Boolean =
     current.configuration.getString("application.secret").exists(_ != "databrary").
       ensuring(s => s, "Application is insecure. You must set application.secret appropriately (see README).")
@@ -113,6 +108,10 @@ class SiteController extends Controller {
   protected def ARedirect(c : Call) : Future[SimpleResult] = macros.Async(Redirect(c))
   protected def ANotFound : Future[SimpleResult] = macros.Async(NotFound) // FIXME: blank page
   protected def AForbidden : Future[SimpleResult] = macros.Async(Forbidden) // FIXME: blank page
+}
+
+class ObjectController[O] extends SiteController {
+  type Request[A] = RequestObject[O]#Site[A]
 }
 
 object Site extends SiteController {
