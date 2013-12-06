@@ -12,8 +12,8 @@
                     <nav class="toolbar_nav cf hide-mobile hide-cell">
                         <ul class="toolbar_nav_ul inline-block flat cf">
                             <li><a href="@routes.Volume.search">Explore</a></li>
-                            <li><a href="@routes.Static.about">Share</a></li>
-                            <li><a href="@routes.Static.about">Discover</a></li>
+                            <li><a href="@routes.Static.page("about")">Share</a></li>
+                            <li><a href="@routes.Static.page("about")">Discover</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -59,7 +59,7 @@
     <nav contextbar id="toolbar_context" class="toolbar toolbar_context hide-print ng-cloak" ng-init="tempContextLinks = {
             left: [
                 {
-                    href: '@routes.Static.about',
+                    href: '@routes.Static.page("about")',
                     text: 'About'
                 },
                 {
@@ -67,19 +67,19 @@
                     text: 'People'
                 },
                 {
-                    href: '@routes.Static.policies',
+                    href: '@routes.Static.page("policies")',
                     text: 'Policies'
                 },
                 {
-                    href: '@routes.Static.faq',
+                    href: '@routes.Static.page("faq")',
                     text: 'FAQ'
                 },
                 {
-                    href: '@routes.Static.jobs',
+                    href: '@routes.Static.page("jobs")',
                     text: 'Jobs'
                 },
                 {
-                    href: '@routes.Static.contact',
+                    href: '@routes.Static.page("contact")',
                     text: 'Contact'
                 }
             ],

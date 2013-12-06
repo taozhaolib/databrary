@@ -1,4 +1,4 @@
-@(implicit request: SiteRequest[_])
+@()
 
 @display(title: Html)(body: Html) = {
     <section db-fold-forget="true" class="fold_out" fold ng-class="{folded: isFolded}" db-fold-currently="true">
@@ -10,7 +10,6 @@
     </section>
 }
 
-@widget.template.static("Frequently Asked Questions") {
     <h1>Frequently Asked Questions</h1>
 
     @display{
@@ -170,4 +169,3 @@
     }{
         <p>Become a user and/or a contributor of data, tools, and open source code. Share your suggestions and needs with the community by adding comments to the wikis or helping others on the Datavyu support forum.</p>
     }
-}

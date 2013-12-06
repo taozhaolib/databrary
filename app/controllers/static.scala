@@ -1,26 +1,12 @@
 package controllers
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.mvc._
 
 object Static extends SiteController {
   def index() = SiteAction {
     implicit request =>
       Ok(views.html.static.index(request))
-  }
-
-  def about() = SiteAction {
-    implicit request =>
-      Ok(views.html.static.about(request))
-  }
-
-  def policies() = SiteAction {
-    implicit request =>
-      Ok(views.html.static.policies(request))
-  }
-
-  def board() = SiteAction {
-    implicit request =>
-      Ok(views.html.static.board(request))
   }
 
   def team() = SiteAction.async { implicit request =>
@@ -30,23 +16,9 @@ object Static extends SiteController {
     } yield (Ok(views.html.static.team(a)))
   }
 
-  def contributors() = SiteAction {
-    implicit request =>
-      Ok(views.html.static.contributors(request))
-  }
-
-  def faq() = SiteAction {
-    implicit request =>
-      Ok(views.html.static.faq(request))
-  }
-
-  def jobs() = SiteAction {
-    implicit request =>
-      Ok(views.html.static.jobs(request))
-  }
-
-  def contact() = SiteAction {
-    implicit request =>
-      Ok(views.html.static.contact(request))
+  def page(page : String) = SiteAction { implicit request =>
+    views.html.static.pages.get(page).fold[SimpleResult](NotFound)(page =>
+      if (isAjax) Ok(page.template.render)
+      else Ok(views.html.widget.template.static(page.name)(page.template.render)))
   }
 }
