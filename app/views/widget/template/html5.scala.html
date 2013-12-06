@@ -1,5 +1,5 @@
-@(title : String = "The Databrary Project", toolbar: String = "", css: Html = Html(""), js: Html = Html(""))(body : Html)(implicit request: SiteRequest[_])
+@(title : String = "The Databrary Project")(body : Html)(implicit request: SiteRequest[_])
 
-@widget.template.raw(title, toolbar, css, js)(Some(request)) {
+@widget.template.raw(title)(Some(request)) {
     @body
 }

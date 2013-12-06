@@ -1,10 +1,11 @@
 define([
 	'require',
+	'jquery',
 	'angular',
 	'domReady',
 	'app/modules/dbModule',
 	'./routes'
-], function (require, angular, domReady) {
+], function (require, $, angular, domReady) {
 	'use strict';
 
 	domReady(function (document) {

@@ -1,6 +1,6 @@
-@(title : String = "There's been an error!", toolbar: String = "", css: Html = Html(""), js: Html = Html(""))(body : Html)
+@(title : String = "There's been an error!")(body : Html)
 
-@widget.template.raw(title, toolbar, css, js)(None) {
+@widget.template.raw(title)(None) {
     <article class="article article_error">
         @body
     </article>

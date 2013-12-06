@@ -6,7 +6,6 @@
 # Static content
 GET         /                                                                                         controllers.Static.index
 GET         /about/team                                                                               controllers.Static.team
-GET         /about                                                                                    controllers.Static.page(page = "about")
 GET         /about/$page<[a-z]+>                                                                      controllers.Static.page(page : String)
 
 # users

@@ -1,6 +1,6 @@
-@(title: String = "", css: Html = Html(""), js: Html = Html(""), sidebar: Boolean = true)(body: Html)(implicit request: SiteRequest[_])
+@(title: String = "", sidebar: Boolean = true)(body: Html)(implicit request: SiteRequest[_])
 
-@widget.template.html5(title, "about", css, js) {
+@widget.template.html5(title) {
     <div class="wrap">
         <section id="static_header" class="body_header static_header">
             <div class="row">

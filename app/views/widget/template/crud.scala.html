@@ -1,8 +1,6 @@
-@(title : String = "", toolbar: String = "explore", css : Html = Html(""), js : Html = Html(""))(body : Html)(implicit request : RequestObject[SiteObject]#Site[_])
+@(title : String = "")(body : Html)(implicit request : RequestObject[SiteObject]#Site[_])
 
-@script = {}
-
-@widget.template.html5(title, toolbar, css, script += js) {
+@widget.template.html5(title) {
     <article class="article article_crud article_@request.obj.getClass.getSimpleName.toLowerCase article_@request.obj.pageActions.find(_.route.url.equals(request.path)).fold("")(_.name.replaceAllLiterally(" ", "-").toLowerCase)">
         @body
     </article>
