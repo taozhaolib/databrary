@@ -27,6 +27,9 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offse
   override def getPermission : Permission.Value =
     Permission.data(asset.getPermission, slot.getConsent, classification).getPermission
 
+  def in(s : Slot) =
+    SlotAsset.make(asset, asset_segment, s, excerpt && slot.segment @> s.segment /* not quite right but should be fine for this use */)
+
   def pageName = asset.name
   def pageParent = if (slot.container.top) slot.pageParent else Some(slot)
   def pageURL = controllers.routes.SlotAsset.view(volume.id, slotId, assetId)

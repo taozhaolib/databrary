@@ -25,7 +25,7 @@ object Asset extends ObjectController[Asset] {
   def view(v : models.Volume.Id, o : models.Asset.Id) = Action(v, o, Permission.VIEW).async { implicit request =>
     request.obj.slot.map(_.fold[SimpleResult](
       NotFound /* TODO */)(
-      sa => Redirect(sa.pageURL)))
+      sa => Redirect(sa.in(sa.slot.container.fullSlot).pageURL)))
   }
 
   private[controllers] def assetResult(asset : BackedAsset, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[SimpleResult] = {
