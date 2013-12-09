@@ -2,6 +2,7 @@
 
 .tap_menu {
 	position: relative;
+	text-align: right;
 
 	ul {
 		padding-left: 0;
@@ -14,8 +15,19 @@
 			display: none;
 		}
 
-		&.foot {
-			.margin-bottom(.5);
+		&.parent {
+			.margin-bottom(@f2);
+		}
+
+		&.current {
+			> a {
+				&:before {
+					content: "";
+					display: inline-block;
+					border: @b4 solid transparent;
+					border-left-color: @c8g3m1;
+				}
+			}
 		}
 	}
 

@@ -120,8 +120,6 @@ define(['app/modules/dbDirectives'], function (db) {
 				};
 
 				$http.post($scope.formAction, data).success(function (data, status, headers, config) {
-					console.log(config);
-
 					$scope.category = config.data.category;
 					$scope.repeats = config.data.measure;
 				});
