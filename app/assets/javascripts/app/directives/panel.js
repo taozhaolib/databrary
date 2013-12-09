@@ -34,10 +34,12 @@ define([
 			//
 
 			$scope.foldPanel = function () {
-				$scope.foldUp();
+				if (typeof($scope.foldUp) != 'undefined')
+					$scope.foldUp();
 			};
 
 			$scope.unfoldPanel = function () {
+				if (typeof($scope.foldDown) != 'undefined')
 				$scope.foldDown();
 			};
 

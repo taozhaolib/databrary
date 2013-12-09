@@ -65,7 +65,6 @@ define(['app/modules/dbDirectives'], function (db) {
 			};
 
 			$scope.restoreFolding = function () {
-
 				var isFolded = $scope.getFolding();
 
 				if (typeof(isFolded) == 'undefined')

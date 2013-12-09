@@ -3,7 +3,7 @@ define([
 ], function (db) {
 	'use strict';
 
-	db.factory('PanelService', ['$rootScope', '$location', '$anchorScroll', 'EventService', function ($rootScope, $location, $anchorScroll, eventService) {
+	db.factory('PanelService', ['$rootScope', '$location', '$anchorScroll', 'EventService', '$timeout', function ($rootScope, $location, $anchorScroll, eventService, $timeout) {
 		var panelService = {};
 
 		var panels = undefined;
@@ -171,8 +171,27 @@ define([
 
 			panel.unfoldPanel();
 
-			$location.hash(panel.id);
-			$anchorScroll();
+			var $document = $(document),
+				oldHeight = 0,
+				newHeight = 0,
+				rate = 100,
+				timeout;
+
+			var checkHeight = function () {
+				newHeight = $document.innerHeight();
+
+				if(oldHeight == newHeight) {
+					$location.hash(panel.id);
+					$anchorScroll();
+				}else{
+					timeout = $timeout(function () {
+						checkHeight();
+					}, rate++);
+					oldHeight = newHeight;
+				}
+			};
+
+			checkHeight();
 
 			return panel;
 		};
