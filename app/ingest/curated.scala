@@ -117,16 +117,14 @@ object Curated {
         case Nil =>
           for {
             con <- Container.create(volume, Some(name), Some(date))
-            full = con.fullSlot
-            _ <- full.change(consent = consent)
+            _ <- con.setConsent(consent)
           } yield (ModelSession(con))
         case Seq(con) =>
-          val full = con.fullSlot
           for {
             _ <- check(con.date.equals(Some(date)),
-              PopulateException("inconsistent date for session " + name + ": " + date + " <> " + con.date, full))
-            _ <- check(full.consent.equals(consent),
-              PopulateException("inconsistent consent for session " + name + ": " + consent + " <> " + full.consent, full))
+              PopulateException("inconsistent date for session " + name + ": " + date + " <> " + con.date, con))
+            _ <- check(con.consent.equals(consent),
+              PopulateException("inconsistent consent for session " + name + ": " + consent + " <> " + con.consent, con))
           } yield (ModelSession(con))
         case _ =>
           Future.failed(PopulateException("multiple containers for session " + name))
@@ -143,7 +141,7 @@ object Curated {
 
   private final case class SubjectSession(subjectKey : String, sessionKey : String) {
     def populate(record : Record, session : ModelSession)(implicit site : Site) =
-      record.addSlot(session.container.fullSlot).map(_ => ())
+      record.addSlot(session.container).map(_ => ())
   }
 
   private final case class Asset(name : String, position : Option[Offset], classification : Classification.Value, file : File) extends KeyedData {

@@ -88,7 +88,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   /** The set of slots to which this record applies. */
   lazy val slots : Future[Seq[Slot]] =
-    Slot.volumeRow(volume, false)
+    Slot.volumeRow(volume)
       .SELECT("JOIN slot_record ON slot.id = slot_record.slot WHERE slot_record.record = ? ORDER BY slot.source, slot.segment")
       .apply(id).list
   /** Attach this record to a slot. */
@@ -135,7 +135,7 @@ object Record extends TableId[Record]("record") {
       SelectColumn[Id]("id")
     , SelectColumn[Option[RecordCategory.Id]]("category")
     ).leftJoin(Measures.row, "record.id = measures.record")
-    .?.join(Slot.volumeRow(vol, true).?, _ + " JOIN slot_record ON record.id = slot_record.record FULL JOIN " + _ + " ON slot_record.slot = slot.id AND container.volume = record.volume")
+    .?.join(Container.volumeRow(vol).?, _ + " JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id FULL JOIN " + _ + " ON slot.source = container.id AND record.volume = container.volume")
     .map {
       case (Some(((id, cat), meas)), slot) =>
         val r = new Record(id, vol, cat.flatMap(RecordCategory.get(_)), slot.fold(Consent.NONE)(_.consent), Measures(meas))
@@ -168,7 +168,7 @@ object Record extends TableId[Record]("record") {
   /** Return the full outer product of all slot, record pairs on the given volume for "session" slots and categorized records. */
   private[models] def getSessions(vol : Volume) : Future[Seq[(Option[Slot],Option[Record])]] =
     sessionRow(vol)
-      .SELECT("WHERE container.volume = ? AND (slot.consent IS NOT NULL OR slot.segment = '(,)') AND NOT container.top OR record.volume = ? AND record.category IS NOT NULL")
+      .SELECT("WHERE container.volume = ? AND NOT container.top OR record.volume = ? AND record.category IS NOT NULL")
       .apply(vol.id, vol.id).list
 
   /** Retrieve the records in the given volume with a measure of the given value.

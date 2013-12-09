@@ -78,10 +78,10 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   private def slotRow(slot : Slot) = columns
     .map(_(slot))
   private def volumeRow(volume : Volume) = columns
-    .join(Slot.volumeRow(volume, false), "slot_asset.slot = slot.id AND asset.volume = container.volume")
+    .join(Slot.volumeRow(volume), "slot_asset.slot = slot.id AND asset.volume = container.volume")
     .map { case (asset, slot) => asset(slot) }
   private def row(full : Boolean)(implicit site : Site) = columns
-    .join(if (full) Slot.Full.row else Slot.row, "slot_asset.slot = slot.id AND asset.volume = container.volume")
+    .join(if (full) Container.row else Slot.row, "slot_asset.slot = slot.id AND asset.volume = container.volume")
     .map { case (asset, slot) => asset(slot) }
 
   /** Retrieve a single SlotAsset by asset id and slot id.
@@ -100,7 +100,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */
   private[models] def getAsset(asset : Asset) : Future[Option[SlotAsset]] =
-    Slot.volumeRow(asset.volume, false)
+    Slot.volumeRow(asset.volume)
       .map { slot => make(asset, slot.segment, slot, false /* XXX */) }
       .SELECT("JOIN asset_slot ON slot.id = asset_slot.slot WHERE asset_slot.asset = ? AND container.volume = ?")
       .apply(asset.id, asset.volumeId).singleOpt
@@ -117,7 +117,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
       l <- volumeRow(volume)
         .SELECT("WHERE excerpt AND asset.volume = ?")
         .apply(volume.id).list
-      s <- volume.topSlot
+      s <- volume.top
       t <- getSlot(s)
     } yield (l ++ t)
 
