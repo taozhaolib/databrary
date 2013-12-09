@@ -10,9 +10,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import macros._
 import models._
 
-object Volume extends SiteController {
-  type Request[A] = RequestObject[Volume]#Site[A]
-
+package object Volume extends ObjectController[Volume] {
   private[controllers] def action(i : models.Volume.Id, p : Permission.Value = Permission.VIEW) =
     RequestObject.check(models.Volume.get(i)(_), p)
 
@@ -21,9 +19,7 @@ object Volume extends SiteController {
 
   def view(i : models.Volume.Id) = Action(i).async { implicit request =>
     val vol = request.obj
-    if (isAjax)
-      AOk(vol.json.obj)
-    else for {
+    for {
       _ <- vol.partyAccess
       _ <- vol.toplevelAssets
       _ <- vol.citations
@@ -195,5 +191,11 @@ object Volume extends SiteController {
     request.obj.thumb.flatMap(_.fold(
       Assets.at("/public", "images/draft.png")(request))(
       a => SlotAsset.getFrame(Left(0.25f))(request.withObj(a))))
+  }
+
+  object api {
+    def view(i : models.Volume.Id) = Action(i).async { implicit request =>
+      AOk(request.obj.json.obj)
+    }
   }
 }

@@ -48,7 +48,17 @@ define(['app/modules/dbDirectives'], function (db) {
 
 			$scope.isMoveable = function () {
 				return false;
-			}
+			};
+
+			//
+
+			var initialize = function () {
+				if($scope.repeats.length == 0) {
+					$scope.createRepeat();
+				}
+			};
+
+			initialize();
 		};
 
 		return {

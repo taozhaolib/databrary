@@ -15,9 +15,7 @@ import dbrary._
 import site._
 import models._
 
-object Asset extends SiteController {
-  type Request[A] = RequestObject[Asset]#Site[A]
-
+object Asset extends ObjectController[Asset] {
   private[controllers] def action(v : models.Volume.Id, a : models.Asset.Id, p : Permission.Value = Permission.EDIT) =
     RequestObject.check(v, models.Asset.get(a)(_), p)
 
@@ -27,7 +25,7 @@ object Asset extends SiteController {
   def view(v : models.Volume.Id, o : models.Asset.Id) = Action(v, o, Permission.VIEW).async { implicit request =>
     request.obj.slot.map(_.fold[SimpleResult](
       NotFound /* TODO */)(
-      sa => Redirect(sa.pageURL)))
+      sa => Redirect(sa.in(sa.slot.container.fullSlot).pageURL)))
   }
 
   private[controllers] def assetResult(asset : BackedAsset, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[SimpleResult] = {

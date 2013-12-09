@@ -7,6 +7,7 @@
 GET         /                                                                                         controllers.Static.index
 GET         /about/team                                                                               controllers.Static.team
 GET         /about/$page<[a-z]+>                                                                      controllers.Static.page(page : String)
+GET         /api/about/$page<[a-z]+>                                                                  controllers.Static.api.page(page : String)
 
 # users
 GET         /login                                                                                    controllers.Login.view
@@ -82,6 +83,7 @@ GET         /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/old/$oID<[
 POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/comment/create                                     controllers.Slot.comment(vID : models.Volume.Id, sID : models.Slot.Id, parent : Option[models.Comment.Id] ?= None)
 
 POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/tag                                                controllers.Slot.tag(vID : models.Volume.Id, sID : models.Slot.Id)
+POST        /api/volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/tag                                            controllers.Slot.api.tag(vID : models.Volume.Id, sID : models.Slot.Id)
 
 # records
 POST        /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                         controllers.Record.slotRemove(vID : models.Volume.Id, sID : models.Slot.Id, rID : models.Record.Id, editRedirect : Boolean = false)

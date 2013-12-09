@@ -318,14 +318,14 @@ COMMENT ON TRIGGER "container_top_create" ON "volume" IS 'Always create a top co
 
 
 CREATE TABLE "slot" (
-	"id" serial NOT NULL Primary Key,
-	"source" integer NOT NULL References "container",
-	"segment" segment NOT NULL DEFAULT '(,)',
+	"id" integer NOT NULL DEFAULT nextval('container_id_seq') Primary Key,
+	"source" integer NOT NULL References "container" ON UPDATE CASCADE ON DELETE CASCADE,
+	"segment" segment NOT NULL,
 	"consent" consent,
+	Check ((id = source) = (segment = '(,)')),
 	Unique ("source", "segment"),
 	Exclude USING gist (singleton("source") WITH =, "segment" WITH &&) WHERE ("consent" IS NOT NULL)
 ) INHERITS ("object_segment");
-CREATE UNIQUE INDEX "slot_full_container_idx" ON "slot" ("source") WHERE "segment" = '(,)';
 COMMENT ON TABLE "slot" IS 'Sections of containers selected for referencing, annotating, consenting, etc.';
 COMMENT ON COLUMN "slot"."consent" IS 'Sharing/release permissions granted by participants on (portions of) contained data.  This could equally well be an annotation, but hopefully won''t add too much space here.';
 
@@ -333,14 +333,15 @@ SELECT audit.CREATE_TABLE ('slot');
 COMMENT ON TABLE audit."slot" IS 'Partial auditing for slot table covering only consent changes.';
 
 CREATE FUNCTION "slot_full_create" () RETURNS trigger LANGUAGE plpgsql AS $$
-DECLARE
-	slot_id integer;
 BEGIN
-	INSERT INTO slot (source, segment) VALUES (NEW.id, '(,)') RETURNING id INTO STRICT slot_id;
+	INSERT INTO slot (id, source, segment) VALUES (NEW.id, NEW.id, '(,)');
 	RETURN null;
 END; $$;
 CREATE TRIGGER "slot_full_create" AFTER INSERT ON "container" FOR EACH ROW EXECUTE PROCEDURE "slot_full_create" ();
 COMMENT ON TRIGGER "slot_full_create" ON "container" IS 'Always create a "full"-range slot for each container.  Unfortunately nothing currently prevents them from being removed/changed.';
+
+ALTER TABLE "container"
+	ADD Foreign Key ("id") References "slot" Deferrable Initially Deferred;
 
 CREATE FUNCTION "get_slot" ("container" integer, "seg" segment) RETURNS integer STRICT LANGUAGE plpgsql AS $$
 DECLARE

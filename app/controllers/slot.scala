@@ -12,9 +12,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import dbrary._
 import models._
 
-object Slot extends SiteController {
-  type Request[A] = RequestObject[Slot]#Site[A]
-
+package object Slot extends ObjectController[Slot] {
   private[controllers] def action(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW) =
     RequestObject.check(v, models.Slot.get(i)(_), p)
 
@@ -24,7 +22,7 @@ object Slot extends SiteController {
   def view(v : models.Volume.Id, i : models.Slot.Id) = Action(v, i).async { implicit request =>
     val slot = request.obj
     if (slot.isFull && slot.container.top)
-      ARedirect(routes.Volume.view(slot.volumeId))
+      ARedirect(controllers.routes.Volume.view(slot.volumeId))
     else for {
       records <- slot.records
       assets <- slot.assets
@@ -134,28 +132,14 @@ object Slot extends SiteController {
     "vote" -> optional(boolean)
   ))
 
-  private def jsonTags(tags: Seq[TagWeight]) = {
-    Json.stringify(
-      Json.toJson(tags.map{
-        case t =>
-          Json.toJson(Map(
-            "id" -> Json.toJson(t.tag.id.unId.toString),
-            "name" -> Json.toJson(t.tag.name),
-            "weight" -> Json.toJson(t.weight),
-            "vote" -> Json.toJson(if(t.user.isEmpty){0}else{if(t.user.get){1}else{-1}})
-          ))
-      }.toList)
-    )
-  }
-
   def tag(v : models.Volume.Id, s : models.Slot.Id) = (SiteAction.access(Permission.VIEW) ~> action(v, s)).async { implicit request =>
     tagForm.bindFromRequest().fold(
-    form => if(isJson) request.obj.tags(true).map(tags => Ok(jsonTags(tags))) else ABadRequest(""),
-    { case (name, vote) =>
-      request.obj.setTag(name, vote)(request.asInstanceOf[AuthSite]).flatMap { _ =>
-      if (isJson) request.obj.tags(true).map(tags => Ok(jsonTags(tags))) else ARedirect(request.obj.pageURL)
+      form => ABadRequest(""/* FIXME */),
+      { case (name, vote) =>
+        request.obj.setTag(name, vote)(request.asInstanceOf[AuthSite]).map { _ =>
+          Redirect(request.obj.pageURL)
+        }
       }
-    }
     )
   }
 
@@ -163,5 +147,19 @@ object Slot extends SiteController {
     request.obj.thumb.flatMap(_.fold(
       Assets.at("/public", "images/draft.png")(request))(
       a => SlotAsset.getFrame(Left(0.25f))(request.withObj(a))))
+  }
+
+  object api {
+    def tag(v : models.Volume.Id, s : models.Slot.Id) = (SiteAction.access(Permission.VIEW) ~> Slot.action(v, s)).async { implicit request =>
+      Slot.tagForm.bindFromRequest().fold(
+        form => ABadRequest(""),
+        { case (name, vote) =>
+          for {
+            _ <- request.obj.setTag(name, vote)(request.asInstanceOf[AuthSite])
+            tags <- request.obj.tags(true)
+          } yield (Ok(Json.toJson(tags.map(_.json))(JsField.hashWrites)))
+        }
+      )
+    }
   }
 }
