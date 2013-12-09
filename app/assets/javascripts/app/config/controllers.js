@@ -1,7 +1,7 @@
 define([
 	'app/controllers/viewStaticCtrl',
+	'app/controllers/viewPhonyCtrl',
 
-	'app/controllers/panelCtrl',
 	'app/controllers/materialsPanelCtrl',
 	'app/controllers/browserPanelCtrl',
 	'app/controllers/loginPanelCtrl',

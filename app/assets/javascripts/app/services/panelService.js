@@ -3,28 +3,200 @@ define([
 ], function (db) {
 	'use strict';
 
-	db.factory('PanelService', ['$rootScope', function ($rootScope) {
-		var panelService = {},
-			panelCtrl;
+	db.factory('PanelService', ['$rootScope', '$location', '$anchorScroll', 'EventService', function ($rootScope, $location, $anchorScroll, eventService) {
+		var panelService = {};
+
+		var panels = undefined;
 
 		//
 
-		panelService.setController = function (controller) {
-			panelCtrl = controller;
+		var getPanelById = function (panel) {
+			var index;
+
+			panels.some(function (el, i) {
+				if (el.$id == panel) {
+					index = i;
+					return true;
+				}
+
+				return false;
+			});
+
+			if (!angular.isNumber(index))
+				return undefined;
+
+			return panels[index];
 		};
 
-		panelService.getController = function () {
-			return panelCtrl;
+		var getPanelByObj = function (panel) {
+			var index = panels.indexOf(panel);
+
+			if (!~index)
+				return undefined;
+
+			return panels[index];
+		};
+
+		//
+
+		panelService.getPanel = function (panel) {
+			if (angular.isObject(panel))
+				return getPanelByObj(panel);
+			else
+				return getPanelById(panel);
+		};
+
+		panelService.getPanelIndex = function (panel) {
+			panel = panelService.getPanel(panel);
+
+			var index = panels.indexOf(panel);
+
+			if (!~index)
+				return undefined;
+
+			return index;
+		};
+
+		//
+
+		panelService.createPanel = function (panel) {
+			var index = panelService.getPanelIndex(panel);
+
+			if (angular.isNumber(index))
+				return panelService.updatePanel(panels[index], panel);
+
+			panels.push(panel);
+
+			return panels[panels.length - 1];
+		};
+
+		panelService.updatePanel = function (old, panel) {
+			var index = panelService.getPanelIndex(old);
+
+			if (!angular.isNumber(index))
+				return panelService.createPanel(panel);
+
+			angular.extend(panels[index], panel);
+
+			return panels[index];
+		};
+
+		panelService.deletePanel = function (panel) {
+			var index = panelService.getPanelIndex(panel);
+
+			if (!angular.isNumber(index))
+				return undefined;
+
+			return panels.splice(index, 1).pop();
 		};
 
 		//
 
 		panelService.getPanels = function () {
-			if (!panelCtrl)
-				return false;
-
-			return panelCtrl.getPanels();
+			return panels;
 		};
+
+		panelService.resetPanels = function () {
+			panels = [];
+
+			return panels;
+		};
+
+		//
+
+		panelService.enablePanel = function (panel) {
+			panel = panelService.getPanel(panel);
+
+			if (!angular.isObject(panel))
+				return undefined;
+
+			panel.enablePanel();
+
+			return panel;
+		};
+
+		panelService.disablePanel = function (panel) {
+			panel = panelService.getPanel(panel);
+
+			if (!angular.isObject(panel))
+				return undefined;
+
+			panel.disablePanel();
+
+			return panel;
+		};
+
+		panelService.togglePanel = function (panel) {
+			panel = panelService.getPanel(panel);
+
+			if (!angular.isObject(panel))
+				return undefined;
+
+			panel.togglePanel();
+
+			return panel;
+		};
+
+		//
+
+		panelService.foldPanel = function (panel) {
+			panel = panelService.getPanel(panel);
+
+			if (!angular.isObject(panel))
+				return undefined;
+
+			panel.foldPanel();
+
+			return panel;
+		};
+
+		panelService.unfoldPanel = function (panel) {
+			panel = panelService.getPanel(panel);
+
+			if (!angular.isObject(panel))
+				return undefined;
+
+			panel.unfoldPanel();
+
+			return panel;
+		};
+
+		//
+
+		panelService.focusPanel = function (panel) {
+			panel = panelService.getPanel(panel);
+
+			if (!angular.isObject(panel))
+				return undefined;
+
+			panel.unfoldPanel();
+
+			$location.hash(panel.id);
+			$anchorScroll();
+
+			return panel;
+		};
+
+		//
+
+		$rootScope.$on('$routeChangeSuccess', function () {
+			panelService.resetPanels();
+		});
+
+		$rootScope.$watch(function () {
+			return panels.join('-');
+		}, function () {
+			if (panels.length > 0)
+				eventService.talk('toolbarCtrl-updatePanels', true);
+		});
+
+		//
+
+		var start = function () {
+			panelService.resetPanels();
+		};
+
+		start();
 
 		//
 

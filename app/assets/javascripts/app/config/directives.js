@@ -7,7 +7,6 @@ define([
 	'app/directives/repeater',
 	'app/directives/metricsRepeater',
 	'app/directives/panel',
-	'app/directives/contextbar',
 	'app/directives/hasAuth',
 	'app/directives/hasAccess',
 	'app/directives/carousel'

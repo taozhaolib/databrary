@@ -17,6 +17,16 @@ define(['app/modules/dbModule'], function (dbModule) {
 
 		//
 
+		// TODO replace viewPhonyCtrl with actual controllers
+
+		$routeProvider.when('/:page*', {
+				controller: 'ViewPhonyCtrl',
+				templateUrl: 'viewPhonyCtrl.html',
+				reloadOnSearch: false
+		});
+
+		//
+
 		$routeProvider.otherwise({
 			redirectTo: '/'
 		});

@@ -56,68 +56,12 @@
         </div>
     </nav>
 
-    <nav contextbar id="toolbar_context" class="toolbar toolbar_context hide-print ng-cloak" ng-init="tempContextLinks = {
-            left: [
-                {
-                    href: '@routes.Static.page("about")',
-                    text: 'About'
-                },
-                {
-                    href: '@routes.Static.team',
-                    text: 'People'
-                },
-                {
-                    href: '@routes.Static.page("policies")',
-                    text: 'Policies'
-                },
-                {
-                    href: '@routes.Static.page("faq")',
-                    text: 'FAQ'
-                },
-                {
-                    href: '@routes.Static.page("jobs")',
-                    text: 'Jobs'
-                },
-                {
-                    href: '@routes.Static.page("contact")',
-                    text: 'Contact'
-                }
-            ],
-            right: [
-                {
-                    href: 'https://www.facebook.com/pages/Databrary/185349568273416',
-                    target: '_blank',
-                    classes: 'toolbar_img16',
-                    text: 'Facebook',
-                    image: '@routes.Assets.at("images/social/16px/facebook.png")'
-                },
-                {
-                    href: 'https://plus.google.com/u/1/111083162045777800330/posts',
-                    target: '_blank',
-                    classes: 'toolbar_img16',
-                    text: 'Google+',
-                    image: '@routes.Assets.at("images/social/16px/google-plus.png")'
-                },
-                {
-                    href: 'https://twitter.com/databrary',
-                    target: '_blank',
-                    classes: 'toolbar_img16',
-                    text: 'Twitter',
-                    image: '@routes.Assets.at("images/social/16px/twitter.png")'
-                },
-                {
-                    href: 'https://github.com/databrary/',
-                    target: '_blank',
-                    classes: 'toolbar_img16',
-                    text: 'GitHub',
-                    image: '@routes.Assets.at("images/social/16px/github.png")'
-                }
-            ]}">
-        <div ng-show="contextbar.mode == 'panels'" class="wrap">
+    <nav id="toolbar_context" class="toolbar toolbar_context hide-print ng-cloak">
+        <div ng-if="checkContext('panels')" class="wrap">
             <div class="row">
                 <div class="col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-4 col-cell">
                     <ul class="toolbar_menu toolbar_menu_left">
-                        <li ng-repeat="(key, panel) in contextbar.panels"><a ng-click="scrollTo(panel)">{{panel.title}}</a></li>
+                        <li ng-repeat="panel in panels"><a ng-click="scrollTo(panel)">{{panel.title}}</a></li>
                     </ul>
                 </div>
 
@@ -127,17 +71,17 @@
             </div>
         </div>
 
-        <div ng-show="contextbar.mode == 'links'" class="wrap">
+        <div ng-if="checkContext('links')" class="wrap">
             <div class="row">
                 <div class="col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-4 col-cell">
                     <ul class="toolbar_menu toolbar_menu_left">
-                        <li ng-repeat="item in contextbar.linksLeft" class="toolbar_menu_item"><a ng-href="{{item.href}}" target="{{item.target}}" class="{{item.classes}}" title="{{item.title}}"><img ng-show="item.image" ng-src="{{item.image}}" alt="{{item.text}}"><span ng-hide="item.image">{{item.text}}</span></a></li>
+                        <li ng-repeat="item in links.left" class="toolbar_menu_item"><a ng-href="{{item.url}}" target="{{item.target}}" class="{{item.classes}}" title="{{item.title}}"><img ng-show="item.image" ng-src="{{item.image}}" alt="{{item.text}}"><span ng-hide="item.image">{{item.path | uppercase}}</span></a></li>
                     </ul>
                 </div>
 
                 <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 col-cell">
                     <ul class="toolbar_menu toolbar_menu_right">
-                        <li ng-repeat="item in contextbar.linksRight" class="toolbar_menu_item"><a ng-href="{{item.href}}" target="{{item.target}}" class="{{item.classes}}" title="{{item.title}}"><img ng-show="item.image" ng-src="{{item.image}}" alt="{{item.text}}"><span ng-hide="item.image">{{item.text}}</span></a></li>
+                        <li ng-repeat="item in links.right" class="toolbar_menu_item"><a ng-href="{{item.url}}" target="{{item.target}}" class="{{item.classes}}" title="{{item.title}}"><img ng-show="item.image" ng-src="{{item.image}}" alt="{{item.text}}"><span ng-hide="item.image">{{item.path | uppercase}}</span></a></li>
                     </ul>
                 </div>
             </div>

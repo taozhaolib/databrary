@@ -3,7 +3,7 @@ define([
 ], function (db) {
 	'use strict';
 
-	db.controller('ViewStaticCtrl', ['$scope', '$routeParams', function ($scope, $routeParams) {
+	db.controller('ViewStaticCtrl', ['$scope', '$routeParams', 'EventService', function ($scope, $routeParams, eventService) {
 		$scope.apiPrefix = '/api/about/';
 		$scope.apiSuffix = '';
 
@@ -96,10 +96,46 @@ define([
 
 		//
 
-		var initialize = function () {
+		var start = function () {
 			$scope.loadPage();
+
+			var tempLinks = {
+				left: $scope.sidebar.links,
+				right: [
+					{
+						url: 'https://www.facebook.com/pages/Databrary/185349568273416',
+						target: '_blank',
+						classes: 'toolbar_img16',
+						title: 'Facebook',
+						image: '/public/images/social/16px/facebook.png'
+					},
+					{
+						url: 'https://plus.google.com/u/1/111083162045777800330/posts',
+						target: '_blank',
+						classes: 'toolbar_img16',
+						title: 'Google+',
+						image: '/public/images/social/16px/google-plus.png'
+					},
+					{
+						url: 'https://twitter.com/databrary',
+						target: '_blank',
+						classes: 'toolbar_img16',
+						title: 'Twitter',
+						image: '/public/images/social/16px/twitter.png'
+					},
+					{
+						url: 'https://github.com/databrary/',
+						target: '_blank',
+						classes: 'toolbar_img16',
+						title: 'GitHub',
+						image: '/public/images/social/16px/github.png'
+					}
+				]};
+
+			// TODO: send real links
+			eventService.talk('toolbarCtrl-updateLinks', tempLinks, true);
 		};
 
-		initialize();
+		start();
 	}]);
 });

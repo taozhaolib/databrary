@@ -6,8 +6,6 @@ define([
 
 	db.directive('panel', ['PanelService', function (panelService) {
 		var link = function ($scope, $element, $attrs) {
-			var panelCtrl = panelService.getController();
-
 			$scope.isEnabled = $attrs.dbPanelEnabled != "false";
 			$element.removeAttr('db-panel-enabled');
 
@@ -18,24 +16,34 @@ define([
 
 			//
 
-			$scope.panelEnable = function () {
+			$scope.enablePanel = function () {
 				$scope.isEnabled = true;
 			};
 
-			$scope.panelDisable = function () {
+			$scope.disablePanel = function () {
 				$scope.isEnabled = false;
 			};
 
-			$scope.panelToggle = function () {
+			$scope.togglePanel = function () {
 				if ($scope.isEnabled)
-					$scope.panelEnable();
+					$scope.enablePanel();
 				else
-					$scope.panelDisable();
+					$scope.disablePanel();
 			};
 
 			//
 
-			panelCtrl.createPanel($scope);
+			$scope.foldPanel = function () {
+				$scope.foldUp();
+			};
+
+			$scope.unfoldPanel = function () {
+				$scope.foldDown();
+			};
+
+			//
+
+			panelService.createPanel($scope);
 		};
 
 		return {
