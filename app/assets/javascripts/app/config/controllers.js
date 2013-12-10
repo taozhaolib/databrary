@@ -1,5 +1,12 @@
 define([
 	'app/controllers/viewStaticCtrl',
+	'app/controllers/viewPartyCtrl',
+	'app/controllers/viewVolumeCtrl',
+	'app/controllers/viewSlotCtrl',
+	'app/controllers/viewRecordCtrl',
+	'app/controllers/viewAssetCtrl',
+	'app/controllers/viewPlayerCtrl',
+
 	'app/controllers/viewPhonyCtrl',
 
 	'app/controllers/materialsPanelCtrl',

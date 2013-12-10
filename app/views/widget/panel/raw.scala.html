@@ -4,10 +4,10 @@
     <div class="wrap">
         <div class="row">
         @if(title.nonEmpty) {
-            <h2 class="col-full panel_header" @if(foldable){db-fold-folder ng-click="foldToggle()"}>@title</h2>
+            <h2 class="col-full panel_header" @if(foldable){folder ng-click="foldToggle()"}>@title</h2>
         }
         @if(foldable){
-            <div class="col-full" db-fold-folded>
+            <div class="col-full" folded>
                 <div class="row">
         }
 

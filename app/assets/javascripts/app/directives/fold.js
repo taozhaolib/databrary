@@ -6,8 +6,8 @@ define(['app/modules/dbDirectives'], function (db) {
 			folderClass = 'folder',
 			foldClass = 'fold',
 			foldedClass = 'folded',
-			folderAttr = '[db-fold-folder]',
-			foldAttr = '[db-fold-folded]',
+			folderAttr = '[folder]',
+			foldAttr = '[folded]',
 			slideTime = 500;
 
 		var link = function ($scope, $element, $attrs) {
@@ -15,20 +15,40 @@ define(['app/modules/dbDirectives'], function (db) {
 
 			$scope.id = $element.attr('id') || 'unknown';
 
-			$element.addClass(foldableClass);
-			$element.find(folderAttr).addClass(folderClass);
-			$element.find(foldAttr).addClass(foldClass);
-
 			$element.on('$destroy', function () {
-				$element.removeClass(foldableClass + ' ' + foldedClass);
-				$element.find(folderAttr).removeClass(folderClass);
-				$element.find(folderAttr).removeClass(foldClass);
+				$scope.disableFold();
 			});
 
 			//
 
 			$scope.isFoldable = function () {
 				return true;
+			};
+
+			//
+
+			var enabled;
+
+			$scope.enableFold = function () {
+				enabled = true;
+
+				$element.addClass(foldableClass);
+				$element.find(folderAttr).addClass(folderClass);
+				$element.find(foldAttr).addClass(foldClass);
+
+				$scope.restoreFolding();
+			};
+
+			$scope.disableFold = function () {
+				enabled = false;
+
+				$element.removeClass(foldableClass + ' ' + foldedClass);
+				$element.find(folderAttr).removeClass(folderClass);
+				$element.find(folderAttr).removeClass(foldClass);
+			};
+
+			$scope.isEnabled = function () {
+				return enabled;
 			};
 
 			//
@@ -83,7 +103,12 @@ define(['app/modules/dbDirectives'], function (db) {
 
 			//
 
-			$scope.restoreFolding();
+			var start = function () {
+				if($attrs.fold !== false)
+					$scope.enableFold();
+			};
+
+			start();
 		};
 
 		return {

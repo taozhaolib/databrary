@@ -57,6 +57,13 @@ define([
 				return eTop - pTop <= 0 && eBottom - pTop >= 0;
 			};
 
+			$scope.getClasses = function () {
+				return {
+					enabled: $scope.isEnabled(),
+					folded: $scope.isFolded()
+				};
+			};
+
 			//
 
 			panelService.createPanel($scope);

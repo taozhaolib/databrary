@@ -1,0 +1,15 @@
+<section panel ng-controller="{{panel.controller}}" id="panel_{{panel.id}}" class="panel panel_{{panel.id}}" ng-class="getClasses()" fold="{{!panel.top}}">
+    <div class="wrap">
+        <div class="row">
+            <div class="col-full">
+                <h2 ng-if="{{!panel.top}}" class="panel_header" folder ng-click="foldToggle()">{{panel.title}}</h2>
+
+                <div folded>
+                    <div class="row">
+                        <ng-include ng-repeat="mode for panel.modes" src="{{mode.template}}"></ng-include>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -2,9 +2,9 @@
 
 @display(title: Html)(body: Html) = {
     <section db-fold-forget="true" class="fold_out" fold ng-class="{folded: isFolded}" db-fold-currently="true">
-        <h2 class="fold_out_clicker" db-fold-folder ng-click="foldToggle()">@title</h2>
+        <h2 class="fold_out_clicker" folder ng-click="foldToggle()">@title</h2>
 
-        <div class="fold_out_region" db-fold-folded>
+        <div class="fold_out_region" folded>
             @body
         </div>
     </section>

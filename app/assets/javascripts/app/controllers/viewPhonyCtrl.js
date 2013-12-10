@@ -5,14 +5,14 @@ define([
 	'use strict';
 
 	db.controller('ViewPhonyCtrl', ['$scope', '$routeParams', '$http', '$templateCache', function ($scope, $routeParams, $http, $templateCache) {
-		$scope.phonyTemplateUrl = undefined;
+		var start = function () {
+			$scope.phonyTemplateUrl = undefined;
 
-		//
+			console.log('ViewPhonyCtrl still catches this page!');
 
-		var initialize = function () {
 			$http
 				.get('/'+$routeParams.page)
-				.success(function (data, status, headers, config) {
+				.success(function (data) {
 					$templateCache.put($routeParams.page, $(data).filter('#main').text());
 					$scope.phonyTemplateUrl = $routeParams.page;
 				})
@@ -21,6 +21,6 @@ define([
 				});
 		};
 
-		initialize();
+		start();
 	}]);
 });
