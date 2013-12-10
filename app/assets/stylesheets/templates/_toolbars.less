@@ -1,3 +1,21 @@
+// VARS
+
+@toolbarTextShadow: 0 0 3px;
+
+// MIXINS
+
+.toolbar-panel-color(@c) {
+	a {
+		color: mix(@c, @g2, 50%);
+	}
+
+	&.current {
+		a {
+			text-shadow: @toolbarTextShadow mix(@c, @g4, 33%);
+		}
+	}
+}
+
 // STYLES
 
 .toolbar {
@@ -35,7 +53,7 @@
 
 		&:hover {
 			color: @white;
-			text-shadow: 0 0 3px @g4;
+			text-shadow: @toolbarTextShadow @g4;
 		}
 	}
 }
@@ -55,6 +73,39 @@
 		&:before {
 			display: none;
 		}
+
+		&.current {
+			a {
+				text-shadow: @toolbarTextShadow mix(@g3, @g4, 33%);
+			}
+		}
+	}
+
+	.link_panel_browser,
+	.link_panel_records,
+	.link_panel_volumes {
+		.toolbar-panel-color(@c8);
+	}
+
+	.link_panel_materials {
+		.toolbar-panel-color(@c6);
+	}
+
+	.link_panel_publications {
+		.toolbar-panel-color(@c4);
+	}
+
+	.link_panel_people,
+	.link_panel_network {
+		.toolbar-panel-color(@c2);
+	}
+
+	.link_panel_tags {
+		.toolbar-panel-color(@c0);
+	}
+
+	.link_panel_comments {
+		.toolbar-panel-color(@c10);
 	}
 
 	a {
@@ -63,7 +114,7 @@
 
 		&:hover {
 			color: @g2;
-			text-shadow: 0 0 3px @g5;
+			text-shadow: @toolbarTextShadow @g5;
 
 			img {
 				.box-shadow(0 0 5px @g5);
@@ -87,7 +138,7 @@
 		}
 
 		li {
-			.margin-right(.25);
+			.margin-right(@f2);
 		}
 	}
 

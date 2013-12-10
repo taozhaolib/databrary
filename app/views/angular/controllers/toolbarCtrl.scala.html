@@ -1,6 +1,6 @@
 @(requestOption: Option[SiteRequest[_]] = None)
 
-<section id="toolbars" ng-controller="ToolbarCtrl">
+<section id="toolbars" ng-controller="ToolbarCtrl" class="cf">
     <nav id="toolbar_databrary" class="toolbar toolbar_databrary">
         <div class="wrap">
             <div class="row">
@@ -61,7 +61,7 @@
             <div class="row">
                 <div class="col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-4 col-cell">
                     <ul class="toolbar_menu toolbar_menu_left">
-                        <li ng-repeat="panel in panels"><a ng-click="focusPanel(panel)">{{panel.title}}</a></li>
+                        <li ng-repeat="panel in panels" class="link_{{panel.id}}" ng-class="getPanelClasses(panel)"><a ng-click="focusPanel(panel)">{{panel.title}}</a></li>
                     </ul>
                 </div>
 
@@ -75,13 +75,13 @@
             <div class="row">
                 <div class="col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-4 col-cell">
                     <ul class="toolbar_menu toolbar_menu_left">
-                        <li ng-repeat="item in links.left" class="toolbar_menu_item"><a ng-href="{{item.url}}" target="{{item.target}}" class="{{item.classes}}" title="{{item.title}}"><img ng-show="item.image" ng-src="{{item.image}}" alt="{{item.text}}"><span ng-hide="item.image">{{item.path | uppercase}}</span></a></li>
+                        <li ng-repeat="item in links.left" class="toolbar_menu_item" ng-class="getLinkClasses(item)"><a ng-href="{{item.url}}" target="{{item.target}}" class="{{item.classes}}" title="{{item.title}}"><img ng-if="item.image" ng-src="{{item.image}}" alt="{{item.text}}"><span ng-hide="item.image">{{item.path | uppercase}}</span></a></li>
                     </ul>
                 </div>
 
                 <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 col-cell">
                     <ul class="toolbar_menu toolbar_menu_right">
-                        <li ng-repeat="item in links.right" class="toolbar_menu_item"><a ng-href="{{item.url}}" target="{{item.target}}" class="{{item.classes}}" title="{{item.title}}"><img ng-show="item.image" ng-src="{{item.image}}" alt="{{item.text}}"><span ng-hide="item.image">{{item.path | uppercase}}</span></a></li>
+                        <li ng-repeat="item in links.right" class="toolbar_menu_item"><a ng-href="{{item.url}}" target="{{item.target}}" class="{{item.classes}}" title="{{item.title}}"><img ng-if="item.image" ng-src="{{item.image}}" alt="{{item.text}}"><span ng-hide="item.image">{{item.path | uppercase}}</span></a></li>
                     </ul>
                 </div>
             </div>

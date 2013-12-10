@@ -28,5 +28,10 @@ define([
 		'ngSanitize'
 	]);
 
+	dbModule.run(function ($rootScope, $location) {
+		// TODO: anchor scroll on page load. I think the problem is animated items on load.
+		$location.hash('');
+	});
+
 	return dbModule;
 });

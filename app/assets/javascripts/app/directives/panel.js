@@ -13,6 +13,7 @@ define([
 			$element.removeAttr('db-panel-title');
 
 			$scope.id = $element.attr('id');
+			$scope.element = $element;
 
 			//
 
@@ -41,6 +42,19 @@ define([
 			$scope.unfoldPanel = function () {
 				if (typeof($scope.foldDown) != 'undefined')
 				$scope.foldDown();
+			};
+
+			//
+
+			$scope.isCurrent = function () {
+				var $w = $(window),
+					$m = $('#main');
+
+				var eTop = $element.offset().top,
+					eBottom = eTop + $element.outerHeight(),
+					pTop = $w.scrollTop() + parseFloat($m.css('margin-top'));
+
+				return eTop - pTop <= 0 && eBottom - pTop >= 0;
 			};
 
 			//
