@@ -17,11 +17,21 @@ define(['app/modules/dbModule'], function (dbModule) {
 
 		//
 
+		var viewSearchCtrl = {
+			controller: 'ViewSearchCtrl',
+			templateUrl: 'viewSearchCtrl.html',
+			reloadOnSearch: false
+		};
+
+		$routeProvider.when('/search', viewSearchCtrl);
+
+		//
+
 		// TODO: route redirects need to be replaced with panel modes
 
 		var viewPartyCtrl = {
 			controller: 'ViewPartyCtrl',
-			templateUrl: 'ViewPartyCtrl.html',
+			templateUrl: 'viewPartyCtrl.html',
 			reloadOnSearch: false
 		};
 
@@ -36,7 +46,7 @@ define(['app/modules/dbModule'], function (dbModule) {
 
 		var viewAssetCtrl = {
 			controller: 'ViewAssetCtrl',
-			templateUrl: 'ViewAssetCtrl.html',
+			templateUrl: 'viewAssetCtrl.html',
 			reloadOnSearch: false
 		};
 
@@ -58,7 +68,7 @@ define(['app/modules/dbModule'], function (dbModule) {
 
 		var viewSlotCtrl = {
 			controller: 'ViewSlotCtrl',
-			templateUrl: 'ViewSlotCtrl.html',
+			templateUrl: 'viewSlotCtrl.html',
 			reloadOnSearch: false
 		};
 
@@ -73,7 +83,7 @@ define(['app/modules/dbModule'], function (dbModule) {
 
 		var viewRecordCtrl = {
 			controller: 'ViewRecordCtrl',
-			templateUrl: 'ViewRecordCtrl.html',
+			templateUrl: 'viewRecordCtrl.html',
 			reloadOnSearch: false
 		};
 
@@ -88,7 +98,7 @@ define(['app/modules/dbModule'], function (dbModule) {
 
 		var viewVolumeCtrl = {
 			controller: 'ViewVolumeCtrl',
-			templateUrl: 'ViewVolumeCtrl.html',
+			templateUrl: 'viewVolumeCtrl.html',
 			reloadOnSearch: false
 		};
 
