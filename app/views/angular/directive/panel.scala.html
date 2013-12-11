@@ -1,8 +1,8 @@
-<section panel id="panel_{{panel.id}}" class="panel panel_{{panel.id}}" ng-class="getPanelClasses()" fold="{{!panel.top}}">
+<section ng-class="getPanelClasses()">
     <div class="wrap">
         <div class="row">
             <div class="col-full">
-                <h2 ng-if="!panel.top" class="panel_header" folder ng-click="foldToggle()">{{panel.title}}</h2>
+                <h2 ng-show="!panel.top" class="panel_header" folder ng-click="toggleFold()">{{panel.title}}</h2>
 
                 <div folded>
                     <div class="row">

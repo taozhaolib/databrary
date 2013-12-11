@@ -21,13 +21,13 @@ define(['app/config/module'], function (module) {
 			//
 
 			$scope.foldPanel = function () {
-				if (typeof($scope.foldUp) != 'undefined')
-					$scope.foldUp();
+				if (typeof($scope.fold) != 'undefined')
+					$scope.fold();
 			};
 
 			$scope.unfoldPanel = function () {
-				if (typeof($scope.foldDown) != 'undefined')
-				$scope.foldDown();
+				if (typeof($scope.unfold) != 'undefined')
+				$scope.unfold();
 			};
 
 			//
@@ -43,11 +43,13 @@ define(['app/config/module'], function (module) {
 				return eTop - pTop <= 0 && eBottom - pTop >= 0;
 			};
 
-			$scope.getClasses = function () {
-				return {
-					enabled: $scope.isEnabled(),
-					folded: $scope.isFolded()
-				};
+			$scope.getPanelClasses = function () {
+				var classes = {};
+
+				classes['panel'] = true;
+				classes[$scope.panel.id] = true;
+
+				return classes;
 			};
 
 			//
@@ -59,13 +61,10 @@ define(['app/config/module'], function (module) {
 					top: (angular.isDefined($attrs.top) && $attrs.top != 'false') ? true : false
 				};
 
-				console.log($scope.panel);
-
 				panelService.createPanel($scope);
 			};
 
-
-			console.log('here');
+			start();
 		};
 
 		return {

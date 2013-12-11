@@ -7,27 +7,18 @@ define(['app/config/module'], function (module) {
 			foldClass = 'fold',
 			foldedClass = 'folded',
 			folderAttr = '[folder]',
-			foldAttr = '[folded]',
-			slideTime = 500;
+			foldAttr = '[folded]';
 
 		var link = function ($scope, $element, $attrs) {
 			$scope.$storage = $sessionStorage;
 
-			$scope.id = $element.attr('id') || 'unknown';
-
-			$element.on('$destroy', function () {
-				$scope.disableFold();
-			});
-
-			//
-
-			$scope.isFoldable = function () {
-				return true;
-			};
-
 			//
 
 			var enabled;
+
+			$scope.isFoldable = function () {
+				return enabled;
+			};
 
 			$scope.enableFold = function () {
 				enabled = true;
@@ -53,58 +44,65 @@ define(['app/config/module'], function (module) {
 
 			//
 
-			$scope.foldUp = function () {
-				$scope.isFolded = true;
+			$scope.fold = function () {
+				$scope.folded = true;
+				$element.addClass(foldedClass);
 			};
 
-			$scope.foldDown = function () {
-				$scope.isFolded = false;
+			$scope.unfold = function () {
+				$scope.folded = false;
+				$element.removeClass(foldedClass);
 			};
 
-			$scope.foldToggle = function () {
-				if ($scope.isFolded)
-					$scope.foldDown();
+			$scope.toggleFold = function () {
+				if ($scope.folded)
+					$scope.unfold();
 				else
-					$scope.foldUp();
+					$scope.fold();
 			};
 
 			//
 
-			$scope.setFolding = function () {
-				if ($attrs.dbFoldForget)
-					return undefined;
+			var isForgetful = function () {
+				return angular.isDefined($attrs.forget) && (!$attrs.forget || $scope.$eval($attrs.forget));
+			};
 
-				$scope.$storage['folding_' + $scope.id] = $scope.isFolded;
+			$scope.setFolding = function () {
+				if (!isForgetful())
+					$scope.$storage['folding_' + $scope.id] = $scope.folded;
 			};
 
 			$scope.getFolding = function () {
-				if ($attrs.dbFoldForget || typeof($scope.$storage['folding_' + $scope.id]) == 'undefined')
+				if (isForgetful() || angular.isUndefined($scope.$storage['folding_' + $scope.id]))
 					return undefined;
 
 				return $scope.$storage['folding_' + $scope.id];
 			};
 
 			$scope.restoreFolding = function () {
-				var isFolded = $scope.getFolding();
+				var folded = $scope.getFolding();
 
-				if (typeof(isFolded) == 'undefined')
-					$scope.isFolded = $attrs.dbFoldCurrently == "true";
+				if(angular.isUndefined(folded))
+					folded = (angular.isString($attrs.foldDefault)) ? $attrs.foldDefault != 'false' : false;
+
+				if (folded)
+					$scope.fold();
 				else
-					$scope.isFolded = isFolded;
-
-				$element.removeAttr('db-fold-currently');
+					$scope.unfold();
 			};
 
 			//
 
-			$scope.$watch('isFolded', function () {
+			$scope.$watch('folded', function () {
 				$scope.setFolding();
 			});
 
 			//
 
 			var start = function () {
-				if($attrs.fold !== false)
+				$scope.id = $attrs.id;
+
+				if(angular.isDefined($attrs.fold) && (!$attrs.fold || $scope.$eval($attrs.fold)))
 					$scope.enableFold();
 			};
 
@@ -113,7 +111,7 @@ define(['app/config/module'], function (module) {
 
 		return {
 			restrict: 'A',
-			priority: 50,
+			priority: 0,
 			scope: true,
 			link: link
 		}
