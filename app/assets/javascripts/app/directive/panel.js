@@ -3,17 +3,6 @@ define(['app/config/module'], function (module) {
 
 	module.directive('panel', ['PanelService', function (panelService) {
 		var link = function ($scope, $element, $attrs) {
-			$scope.isEnabled = $attrs.dbPanelEnabled != "false";
-			$element.removeAttr('db-panel-enabled');
-
-			$scope.title = ($attrs.dbPanelTitle != "") ? $attrs.dbPanelTitle : $element.attr('id').split('_').pop();
-			$element.removeAttr('db-panel-title');
-
-			$scope.id = $element.attr('id');
-			$scope.element = $element;
-
-			//
-
 			$scope.enablePanel = function () {
 				$scope.isEnabled = true;
 			};
@@ -63,12 +52,28 @@ define(['app/config/module'], function (module) {
 
 			//
 
-			panelService.createPanel($scope);
+			var start = function () {
+				$scope.panel = {
+					id: (angular.isDefined($attrs.id)) ? $attrs.id : '',
+					title: (angular.isDefined($attrs.title)) ? $attrs.title : '',
+					top: (angular.isDefined($attrs.top) && $attrs.top != 'false') ? true : false
+				};
+
+				console.log($scope.panel);
+
+				panelService.createPanel($scope);
+			};
+
+
+			console.log('here');
 		};
 
 		return {
-			restrict: 'A',
+			restrict: 'E',
 			scope: true,
+			templateUrl: 'panel.html',
+			transclude: true,
+			replace: true,
 			priority: 100,
 			link: link
 		};

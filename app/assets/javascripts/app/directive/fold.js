@@ -113,6 +113,7 @@ define(['app/config/module'], function (module) {
 
 		return {
 			restrict: 'A',
+			priority: 50,
 			scope: true,
 			link: link
 		}

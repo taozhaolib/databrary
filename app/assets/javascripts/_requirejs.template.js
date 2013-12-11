@@ -1,6 +1,6 @@
 // general
 
-define(['angular'], function (angular) {
+define(['app/config/module'], function (angular) {
 	'use strict';
 
 	return angular;
@@ -8,20 +8,20 @@ define(['angular'], function (angular) {
 
 // controller
 
-define(['app/modules/dbControllers'], function (db) {
+define(['app/config/module'], function (module) {
 	'use strict';
 
-	db.controller('Ctrl', ['$scope', function ($scope) {
+	module.controller('Ctrl', ['$scope', function ($scope) {
 
 	}]);
 });
 
 // directive
 
-define(['app/modules/dbDirectives'], function (db) {
+define(['app/config/module'], function (module) {
 	'use strict';
 
-	db.directive('', [function () {
+	module.directive('', [function () {
 		var link = function ($scope, $element, $attrs) {
 
 		};
@@ -35,10 +35,10 @@ define(['app/modules/dbDirectives'], function (db) {
 
 // service, provider
 
-define(['app/modules/dbServices'], function (db) {
+define(['app/config/module'], function (module) {
 	'use strict';
 
-	db.provider('Service', ['$rootScope', function ($rootScope) {
+	module.provider('Service', ['$rootScope', function ($rootScope) {
 		return {
 			$get: {
 
@@ -49,10 +49,10 @@ define(['app/modules/dbServices'], function (db) {
 
 // service, factory
 
-define(['app/modules/dbServices'], function (db) {
+define(['app/config/module'], function (module) {
 	'use strict';
 
-	db.factory('Service', ['$rootScope', function ($rootScope) {
+	module.factory('Service', ['$rootScope', function ($rootScope) {
 		var Service;
 
 		return Service;
@@ -61,7 +61,7 @@ define(['app/modules/dbServices'], function (db) {
 
 // service, factory
 
-define(['app/modules/dbServices'], function (db) {
+define(['app/config/module'], function (module) {
 	'use strict';
 
 	var Service = function () {
@@ -70,5 +70,5 @@ define(['app/modules/dbServices'], function (db) {
 
 //	Service.prototype.method = function () {};
 
-	db.service('Service', ['$rootScope', Service]);
+	module.service('Service', ['$rootScope', Service]);
 });
