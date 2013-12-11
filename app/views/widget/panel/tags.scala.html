@@ -11,7 +11,7 @@
 @defining(Async.wait(volume.fold(slot.tags(true))(_.tags))) { tags =>
     @widget.panel.raw("tags", "", "ng-controller" -> "TagsPanelCtrl", "ng-init" -> {tags.map(t => "{id: "+t.tag.id+", name: '"+t.tag.name+"', weight: "+t.weight+", vote: "+(if(t.user.isEmpty){0}else{if(t.user.get){1}else{-1}})+"}").mkString("tags = [",",","];")+" formAction = '/volume/"+slot.volume.id+"/slot/"+slot.id+"/tag'"})(title = "Tags", foldable = true){
         <div class="panel_tags_list col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-3">
-        @angular.directives.mode {
+        @angular.directive.mode {
             <form name="tagForm" novalidate>
                 <ol class="panel_tags_items row">
                     <li ng-repeat="tag in tags" id="tag_{{tag.id}}" class="panel_tags_item col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-6">
@@ -53,7 +53,7 @@
         </div>
 
         <div id="tag_add" class="panel_tags_form col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
-        @angular.directives.mode {
+        @angular.directive.mode {
             <form name="tagNewForm" novalidate ng-submit="voteNew()">
                 <input type="text" id="newName" name="newName" ng-model="newName" placeholder="Add new tag..." ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/" required ng-change="newNameChange()"  ng-focus="newNameChange()" ng-blur="newNameBlur()">
                 <button name="vote" ng-click="voteUp(tag)" class="hide">add</button>

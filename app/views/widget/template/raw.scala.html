@@ -23,47 +23,47 @@
 
     <!-- js -->
     @helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/app/app").url)
+
+    <!-- templates -->
+    @angular.partial("staticView"){@angular.view.staticView()}
+    @angular.partial("searchView"){@angular.view.searchView()}
+    @angular.partial("partyView"){@angular.view.partyView()}
+    @angular.partial("volumeView"){@angular.view.volumeView()}
+    @angular.partial("slotView"){@angular.view.slotView()}
+    @angular.partial("recordView"){@angular.view.recordView()}
+    @angular.partial("assetView"){@angular.view.assetView()}
+    @angular.partial("playerView"){@angular.view.playerView()}
+    @angular.partial("phonyView"){@angular.view.phonyView()}
+    @*
+    @angular.partial("overviewPartyPanel"){@angular.panel.overviewPartyPanel()}
+    @angular.partial("overviewVolumePanel"){@angular.panel.overviewVolumePanel()}
+    @angular.partial("overviewSlotPanel"){@angular.panel.overviewSlotPanel()}
+    @angular.partial("overviewRecordPanel"){@angular.panel.overviewRecordPanel()}
+    @angular.partial("overviewAssetPanel"){@angular.panel.overviewAssetPanel()}
+    @angular.partial("browserPanel"){@angular.panel.browserPanel()}
+    @angular.partial("materialsPanel"){@angular.panel.materialsPanel()}
+    @angular.partial("publicationsPanel"){@angular.panel.publicationsPanel()}
+    @angular.partial("peoplePanel"){@angular.panel.peoplePanel()}
+    @angular.partial("tagsPanel"){@angular.panel.tagsPanel()}
+    @angular.partial("commentsPanel"){@angular.panel.commentsPanel()}
+    @angular.partial("playerPanel"){@angular.panel.playerPanel()}
+    @angular.partial("searchPanel"){@angular.panel.searchPanel()}
+    *@
+    @angular.partial("panel"){@angular.directive.panel()}
+
+    <!-- more -->
 </head>
 
 <body class="@if(Play.isDev){dev}">
-    @angular.controllers.toolbarCtrl(requestOption)
+    @angular.controller.toolbarCtrl(requestOption)
 
-    <main id="main" class="main">
-        <div ng-view>
-            <noscript>
-                @body
-            </noscript>
-        </div>
+    <main ng-view id="main" class="main">
+        <noscript>
+            @body
+        </noscript>
     </main>
 
-    @angular.controllers.messageCtrl()
-
-    @angular.helper.partial("viewStaticCtrl"){@angular.controllers.viewStaticCtrl()}
-    @angular.helper.partial("viewSearchCtrl"){@angular.controllers.viewSearchCtrl()}
-    @angular.helper.partial("viewPartyCtrl"){@angular.controllers.viewPartyCtrl()}
-    @angular.helper.partial("viewVolumeCtrl"){@angular.controllers.viewVolumeCtrl()}
-    @angular.helper.partial("viewSlotCtrl"){@angular.controllers.viewSlotCtrl()}
-    @angular.helper.partial("viewRecordCtrl"){@angular.controllers.viewRecordCtrl()}
-    @angular.helper.partial("viewAssetCtrl"){@angular.controllers.viewAssetCtrl()}
-    @angular.helper.partial("viewPlayerCtrl"){@angular.controllers.viewPlayerCtrl()}
-
-    @angular.helper.partial("viewPhonyCtrl"){@angular.controllers.viewPhonyCtrl()}
-    @*
-    @angular.helper.partial("panelOverviewPartyCtrl"){@angular.controllers.panelOverviewPartyCtrl()}
-    @angular.helper.partial("panelOverviewVolumeCtrl"){@angular.controllers.panelOverviewVolumeCtrl()}
-    @angular.helper.partial("panelOverviewSlotCtrl"){@angular.controllers.panelOverviewSlotCtrl()}
-    @angular.helper.partial("panelOverviewRecordCtrl"){@angular.controllers.panelOverviewRecordCtrl()}
-    @angular.helper.partial("panelOverviewAssetCtrl"){@angular.controllers.panelOverviewAssetCtrl()}
-    @angular.helper.partial("panelBrowserCtrl"){@angular.controllers.panelBrowserCtrl()}
-    @angular.helper.partial("panelMaterialsCtrl"){@angular.controllers.panelMaterialsCtrl()}
-    @angular.helper.partial("panelPublicationsCtrl"){@angular.controllers.panelPublicationsCtrl()}
-    @angular.helper.partial("panelPeopleCtrl"){@angular.controllers.panelPeopleCtrl()}
-    @angular.helper.partial("panelTagsCtrl"){@angular.controllers.panelTagsCtrl()}
-    @angular.helper.partial("panelCommentsCtrl"){@angular.controllers.panelCommentsCtrl()}
-    @angular.helper.partial("panelPlayerCtrl"){@angular.controllers.panelPlayerCtrl()}
-    @angular.helper.partial("panelSearchCtrl"){@angular.controllers.panelSearchCtrl()}
-    *@
-    @angular.helper.partial("panel"){@angular.directives.panel()}
+    @angular.controller.messageCtrl()
 </body>
 </html>
 

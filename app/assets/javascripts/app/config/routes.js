@@ -1,41 +1,41 @@
-define(['app/modules/dbModule'], function (dbModule) {
+define(['app/config/module'], function (module) {
 	'use strict';
 
-	return dbModule.config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
+	return module.config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
 		$locationProvider.html5Mode(true);
 
 		//
 
-		var viewStaticCtrl = {
-			controller: 'ViewStaticCtrl',
-			templateUrl: 'viewStaticCtrl.html',
+		var staticView = {
+			controller: 'StaticView',
+			templateUrl: 'staticView.html',
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/', viewStaticCtrl);
-		$routeProvider.when('/about/:page*', viewStaticCtrl);
+		$routeProvider.when('/', staticView);
+		$routeProvider.when('/about/:page*', staticView);
 
 		//
 
-		var viewSearchCtrl = {
-			controller: 'ViewSearchCtrl',
-			templateUrl: 'viewSearchCtrl.html',
+		var SearchView = {
+			controller: 'SearchView',
+			templateUrl: 'SearchView.html',
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/search', viewSearchCtrl);
+		$routeProvider.when('/search', SearchView);
 
 		//
 
 		// TODO: route redirects need to be replaced with panel modes
 
-		var viewPartyCtrl = {
-			controller: 'ViewPartyCtrl',
-			templateUrl: 'viewPartyCtrl.html',
+		var partyView = {
+			controller: 'PartyView',
+			templateUrl: 'partyView.html',
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/party/:pid', viewPartyCtrl);
+		$routeProvider.when('/party/:pid', partyView);
 		$routeProvider.when('/party/:pid/:path*', {
 			redirectTo: function (params) {
 				return '/party/' + params.pid;
@@ -44,20 +44,20 @@ define(['app/modules/dbModule'], function (dbModule) {
 
 		//
 
-		var viewAssetCtrl = {
-			controller: 'ViewAssetCtrl',
-			templateUrl: 'viewAssetCtrl.html',
+		var assetView = {
+			controller: 'AssetView',
+			templateUrl: 'assetView.html',
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/volume/:vid/slot/:sid/asset/:aid', viewAssetCtrl);
+		$routeProvider.when('/volume/:vid/slot/:sid/asset/:aid', assetView);
 		$routeProvider.when('/volume/:vid/slot/:sid/asset/:aid/:path*', {
 			redirectTo: function (params) {
 				return '/volume/' + params.vid + '/slot/' + params.sid + '/asset/' + params.aid;
 			}
 		});
 
-		$routeProvider.when('/volume/:vid/asset/:aid', viewAssetCtrl);
+		$routeProvider.when('/volume/:vid/asset/:aid', assetView);
 		$routeProvider.when('/volume/:vid/asset/:aid/:path*', {
 			redirectTo: function (params) {
 				return '/volume/' + params.vid + '/asset/' + params.aid;
@@ -66,13 +66,13 @@ define(['app/modules/dbModule'], function (dbModule) {
 
 		//
 
-		var viewSlotCtrl = {
-			controller: 'ViewSlotCtrl',
-			templateUrl: 'viewSlotCtrl.html',
+		var slotView = {
+			controller: 'SlotView',
+			templateUrl: 'slotView.html',
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/volume/:vid/slot/:sid', viewSlotCtrl);
+		$routeProvider.when('/volume/:vid/slot/:sid', slotView);
 		$routeProvider.when('/volume/:vid/slot/:sid/:path*', {
 			redirectTo: function (params) {
 				return '/volume/' + params.vid + '/slot/' + params.sid;
@@ -81,13 +81,13 @@ define(['app/modules/dbModule'], function (dbModule) {
 
 		//
 
-		var viewRecordCtrl = {
-			controller: 'ViewRecordCtrl',
-			templateUrl: 'viewRecordCtrl.html',
+		var recordView = {
+			controller: 'RecordView',
+			templateUrl: 'recordView.html',
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/volume/:vid/record/:rid', viewRecordCtrl);
+		$routeProvider.when('/volume/:vid/record/:rid', recordView);
 		$routeProvider.when('/volume/:vid/record/:rid/:path*', {
 			redirectTo: function (params) {
 				return '/volume/' + params.vid + '/record/' + params.rid;
@@ -96,13 +96,13 @@ define(['app/modules/dbModule'], function (dbModule) {
 
 		//
 
-		var viewVolumeCtrl = {
-			controller: 'ViewVolumeCtrl',
-			templateUrl: 'viewVolumeCtrl.html',
+		var volumeView = {
+			controller: 'VolumeView',
+			templateUrl: 'volumeView.html',
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/volume/:vid', viewVolumeCtrl);
+		$routeProvider.when('/volume/:vid', volumeView);
 		$routeProvider.when('/volume/:vid/:path*', {
 			redirectTo: function (params) {
 				return '/volume/' + params.vid;
@@ -111,11 +111,11 @@ define(['app/modules/dbModule'], function (dbModule) {
 
 		//
 
-		// TODO: replace viewPhonyCtrl with actual controllers
+		// TODO: replace PhonyView with actual controllers
 
 		$routeProvider.when('/:page*', {
-			controller: 'ViewPhonyCtrl',
-			templateUrl: 'viewPhonyCtrl.html',
+			controller: 'PhonyView',
+			templateUrl: 'phonyView.html',
 			reloadOnSearch: false
 		});
 

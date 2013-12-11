@@ -1,6 +1,6 @@
 define([
-	'app/services/eventService',
-	'app/services/messageService',
-	'app/services/authService',
-	'app/services/panelService'
+	'app/service/eventService',
+	'app/service/messageService',
+	'app/service/authService',
+	'app/service/panelService'
 ], function () {});

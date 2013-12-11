@@ -1,13 +1,13 @@
 define([
-	'app/directives/mode',
-	'app/directives/fold',
-	'app/directives/baseline',
-	'app/directives/hover',
-	'app/directives/message',
-	'app/directives/repeater',
-	'app/directives/metricsRepeater',
-	'app/directives/panel',
-	'app/directives/hasAuth',
-	'app/directives/hasAccess',
-	'app/directives/carousel'
+	'app/directive/mode',
+	'app/directive/fold',
+	'app/directive/baseline',
+	'app/directive/hover',
+	'app/directive/message',
+	'app/directive/repeater',
+	'app/directive/metricsRepeater',
+	'app/directive/panel',
+	'app/directive/hasAuth',
+	'app/directive/hasAccess',
+	'app/directive/carousel'
 ], function () {});

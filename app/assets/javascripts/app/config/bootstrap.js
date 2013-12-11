@@ -3,12 +3,22 @@ define([
 	'jquery',
 	'angular',
 	'domReady',
-	'app/modules/dbModule',
+
+	'./module',
+
+	'app/config/controllers',
+	'app/config/directives',
+	'app/config/filters',
+	'app/config/models',
+	'app/config/panels',
+	'app/config/services',
+	'app/config/views',
+
 	'./routes'
 ], function (require, $, angular, domReady) {
 	'use strict';
 
 	domReady(function (document) {
-		angular.bootstrap(document, ['dbModule']);
+		angular.bootstrap(document, ['databraryModule']);
 	});
 });
