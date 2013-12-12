@@ -6,8 +6,8 @@ define(['app/config/module'], function (module) {
 			return function ($scope, $element, $attrs) {
 
 				var start = function () {
-					$scope.mode = angular.isString($attrs.mode) ? $attrs.mode : 'view';
-					$scope.level = angular.isString($attrs.level) ? $attrs.level : $attrs.mode;
+					$scope.name = angular.isString($attrs.name) ? $attrs.name : 'view';
+					$scope.level = angular.isString($attrs.level) ? $attrs.level : $scope.name;
 					$scope.enabled = angular.isDefined($attrs.disabled) ? false : true;
 					$scope.active = angular.isDefined($attrs.active) ? true : false;
 

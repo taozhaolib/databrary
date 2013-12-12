@@ -74,17 +74,31 @@ define(['app/config/module'], function (module) {
 
 				$scope.activateMode = function (mode) {
 					for (var i = 0; i < $scope.panel.modes.length; i++) {
-						if ($scope.panel.modes[i] == mode) {
-							$scope.panel.modes[i].active = true;
-							$scope.panel.modes[i].enabled = true;
-						} else {
-							$scope.panel.modes[i].active = false;
-						}
+						$scope.panel.modes[i].active = $scope.panel.modes[i] == mode;
 					}
+				};
+
+				$scope.updateModes = function () {
+					if($scope.panel.modes.length == 1 && !$scope.panel.modes[0].active)
+						$scope.panel.modes[0].active = true;
 				};
 
 				$scope.getModes = function () {
 					return $scope.panel.modes;
+				};
+
+				$scope.showModeLinks = function () {
+					return $scope.panel.modes.length > 1;
+				};
+
+				$scope.getModeLinkClasses = function (mode) {
+					var classes = {};
+
+					classes['panel_mode_link'] = true;
+					classes['panel_mode_'+mode.name] = true;
+					classes['active'] = mode.active;
+
+					return classes;
 				};
 
 				//

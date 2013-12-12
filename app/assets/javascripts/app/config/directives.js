@@ -1,5 +1,8 @@
 define([
 	'app/directive/mode',
+	'app/directive/frame',
+	'app/directive/figure',
+	'app/directive/portrait',
 	'app/directive/fold',
 	'app/directive/baseline',
 	'app/directive/hover',

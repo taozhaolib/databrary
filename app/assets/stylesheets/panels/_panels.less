@@ -155,6 +155,28 @@
 
 //
 
+.panel_mode_links {
+	.margin(0);
+	.padding(0);
+	float: right;
+	position: absolute;
+	right: 0;
+	z-index: 600;
+}
+
+.panel_mode_link {
+	display: inline;
+	float: left;
+	.margin-left(@f2);
+
+	&:before {
+		display: none;
+	}
+}
+
+//
+
+.panel_data,
 .panel_browser,
 .panel_records,
 .panel_volumes {
