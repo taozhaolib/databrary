@@ -1,6 +1,7 @@
 package dbrary
 
 import scala.util.control.Exception.catching
+import play.api.libs.json
 import macros._
 
 /** Enumerations which reflect types in the database.
@@ -11,6 +12,10 @@ abstract class PGEnum(name : String) extends Enumeration {
       s => catching(classOf[NoSuchElementException]).opt(withName(s)),
       _.toString
     )
+  implicit val jsonFormat : json.Format[Value] = new json.Format[Value] {
+    def writes(v : Value) = json.JsNumber(v.id)
+    def reads(j : json.JsValue) = json.Json.fromJson[Int](j).map(apply(_))
+  }
 }
 
 object PGEnum {
