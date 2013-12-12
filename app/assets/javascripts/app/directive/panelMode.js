@@ -3,15 +3,7 @@ define(['app/config/module'], function (module) {
 
 	module.directive('panelMode', ['PanelService', function (panelService) {
 		var link = function ($scope, $element, $attrs) {
-
-			//
-
-			var start = function () {
-				$scope.mode = {
-				};
-
-				panelService.createPanel($scope);
-			};
+			var start = function () {};
 
 			start();
 		};
