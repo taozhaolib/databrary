@@ -55,14 +55,49 @@ define(['app/config/module'], function (module) {
 
 				//
 
+				$scope.setMode = function (mode) {
+					if ($scope.getModeIndex(mode) == -1)
+						$scope.panel.modes.push(mode);
+
+					return mode;
+				};
+
+				$scope.getModeIndex = function (mode) {
+					return $scope.panel.modes.indexOf(mode);
+				};
+
+				$scope.getMode = function (mode) {
+					var index = $scope.getModeIndex(mode);
+
+					return (index > -1) ? $scope.panel.modes[index] : undefined;
+				};
+
+				$scope.activateMode = function (mode) {
+					for (var i = 0; i < $scope.panel.modes.length; i++) {
+						if ($scope.panel.modes[i] == mode) {
+							$scope.panel.modes[i].active = true;
+							$scope.panel.modes[i].enabled = true;
+						} else {
+							$scope.panel.modes[i].active = false;
+						}
+					}
+				};
+
+				$scope.getModes = function () {
+					return $scope.panel.modes;
+				};
+
+				//
+
 				var start = function () {
 					$scope.panel = {
+						modes: [],
 						id: (angular.isDefined($attrs.id)) ? $attrs.id : '',
 						title: (angular.isDefined($attrs.title)) ? $attrs.title : '',
 						top: (angular.isDefined($attrs.top) && $attrs.top != 'false') ? true : false
 					};
 
-					transclude($scope, function($clone) {
+					transclude($scope, function ($clone) {
 						$element.find('[panel-body]').append($clone);
 					});
 
