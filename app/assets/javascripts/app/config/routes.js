@@ -19,7 +19,7 @@ define(['app/config/module'], function (module) {
 
 		var SearchView = {
 			controller: 'SearchView',
-			templateUrl: 'SearchView.html',
+			templateUrl: 'searchView.html',
 			reloadOnSearch: false
 		};
 

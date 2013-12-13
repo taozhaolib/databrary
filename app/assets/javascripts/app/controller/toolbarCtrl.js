@@ -34,11 +34,11 @@ define(['app/config/module'], function (module) {
 		$scope.panels = [];
 
 		$scope.updatePanels = function () {
-			$scope.panels = panelService.getPanels();
+			$scope.panels = panelService.all();
 		};
 
 		$scope.focusPanel = function (panel) {
-			panelService.focusPanel(panel);
+			panelService.focus(panel);
 		};
 
 		$scope.getPanelClasses = function (panel) {

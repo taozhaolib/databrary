@@ -54,8 +54,8 @@ define(['app/config/module'], function (module) {
 				$element.removeClass(foldedClass);
 			};
 
-			$scope.toggleFold = function () {
-				if ($scope.folded)
+			$scope.toggleFold = function (state) {
+				if ((angular.isDefined(state) && !state) || $scope.folded)
 					$scope.unfold();
 				else
 					$scope.fold();

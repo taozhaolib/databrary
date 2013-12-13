@@ -11,7 +11,7 @@ define(['app/config/module'], function (module) {
 					$scope.enabled = angular.isDefined($attrs.disabled) ? false : true;
 					$scope.active = angular.isDefined($attrs.active) ? true : false;
 
-					$scope.setMode($scope);
+					$scope.modes.create($scope);
 
 					if ($scope.active)
 						$scope.activateMode($scope);

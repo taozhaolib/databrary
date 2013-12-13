@@ -1,9 +1,11 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.directive('panel', ['PanelService', function (panelService) {
+	module.directive('panel', ['PanelService', 'ArrayHelper', function (panelService, arrayHelper) {
 		var compile = function ($element, $attrs, transclude) {
 			return function ($scope, $element, $attrs) {
+				$scope.modes = arrayHelper([]);
+
 				$scope.enablePanel = function () {
 					$scope.isEnabled = true;
 				};
@@ -55,40 +57,19 @@ define(['app/config/module'], function (module) {
 
 				//
 
-				$scope.setMode = function (mode) {
-					if ($scope.getModeIndex(mode) == -1)
-						$scope.panel.modes.push(mode);
-
-					return mode;
-				};
-
-				$scope.getModeIndex = function (mode) {
-					return $scope.panel.modes.indexOf(mode);
-				};
-
-				$scope.getMode = function (mode) {
-					var index = $scope.getModeIndex(mode);
-
-					return (index > -1) ? $scope.panel.modes[index] : undefined;
-				};
-
 				$scope.activateMode = function (mode) {
-					for (var i = 0; i < $scope.panel.modes.length; i++) {
-						$scope.panel.modes[i].active = $scope.panel.modes[i] == mode;
+					for (var i = 0; i < $scope.modes.length; i++) {
+						$scope.modes[i].active = $scope.modes[i] == mode;
 					}
 				};
 
 				$scope.updateModes = function () {
-					if($scope.panel.modes.length == 1 && !$scope.panel.modes[0].active)
-						$scope.panel.modes[0].active = true;
-				};
-
-				$scope.getModes = function () {
-					return $scope.panel.modes;
+					if($scope.modes.length == 1 && !$scope.modes[0].active)
+						$scope.modes[0].active = true;
 				};
 
 				$scope.showModeLinks = function () {
-					return $scope.panel.modes.length > 1;
+					return $scope.modes.length > 1;
 				};
 
 				$scope.getModeLinkClasses = function (mode) {
@@ -105,7 +86,6 @@ define(['app/config/module'], function (module) {
 
 				var start = function () {
 					$scope.panel = {
-						modes: [],
 						id: (angular.isDefined($attrs.id)) ? $attrs.id : '',
 						title: (angular.isDefined($attrs.title)) ? $attrs.title : '',
 						top: (angular.isDefined($attrs.top) && $attrs.top != 'false') ? true : false
@@ -115,7 +95,7 @@ define(['app/config/module'], function (module) {
 						$element.find('[panel-body]').append($clone);
 					});
 
-					panelService.createPanel($scope);
+					panelService.create($scope);
 				};
 
 				start();
