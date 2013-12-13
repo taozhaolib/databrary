@@ -5,6 +5,8 @@ define(['app/config/module'], function (module) {
 		var compile = function ($element, $attrs, transclude) {
 			return function ($scope, $element, $attrs) {
 
+
+
 				//
 
 				var start = function () {};

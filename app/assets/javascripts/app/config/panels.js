@@ -13,5 +13,6 @@ define([
 	'app/panel/tagsPanel',
 	'app/panel/commentsPanel',
 	'app/panel/playerPanel',
-	'app/panel/searchPanel'
+	'app/panel/searchPanel',
+	'app/panel/loginPanel'
 ], function () {});

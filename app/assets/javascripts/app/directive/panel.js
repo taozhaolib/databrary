@@ -85,17 +85,18 @@ define(['app/config/module'], function (module) {
 				//
 
 				var start = function () {
-					$scope.panel = {
-						id: (angular.isDefined($attrs.id)) ? $attrs.id : '',
-						title: (angular.isDefined($attrs.title)) ? $attrs.title : '',
-						top: (angular.isDefined($attrs.top) && $attrs.top != 'false') ? true : false
-					};
+					$scope.panel = $scope;
+					$scope.id = (angular.isDefined($attrs.id)) ? $attrs.id : '';
+					$scope.title = (angular.isDefined($attrs.title)) ? $attrs.title : '';
+					$scope.top = (angular.isDefined($attrs.top) && $attrs.top != 'false') ? true : false;
+
+					$scope.container = $scope;
 
 					transclude($scope, function ($clone) {
 						$element.find('[panel-body]').append($clone);
 					});
 
-					panelService.create($scope);
+					panelService.add($scope);
 				};
 
 				start();

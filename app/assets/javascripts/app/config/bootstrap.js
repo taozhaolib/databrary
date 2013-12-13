@@ -10,6 +10,7 @@ define([
 	'app/config/directives',
 	'app/config/filters',
 	'app/config/helpers',
+	'app/config/interceptors',
 	'app/config/models',
 	'app/config/panels',
 	'app/config/services',

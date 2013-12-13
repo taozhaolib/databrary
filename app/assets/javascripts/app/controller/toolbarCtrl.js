@@ -2,16 +2,7 @@ define(['app/config/module'], function (module) {
 	'use strict';
 
 	module.controller('ToolbarCtrl', ['$scope', '$location', '$anchorScroll', '$timeout', 'EventService', 'AuthService', 'PanelService', function ($scope, $location, $anchorScroll, $timeout, eventService, authService, panelService) {
-		$scope.authUser = authService.getAuthUser();
-
-		$scope.logIn = authService.logIn;
-		$scope.logOut = authService.logOut;
-		$scope.isUser = authService.isUser;
-
-		$scope.enableSU = authService.enableSU;
-		$scope.disableSU = authService.disableSU;
-		$scope.toggleSU = authService.toggleSU;
-		$scope.isSU = authService.isSU;
+		$scope.authService = authService;
 
 		//
 
@@ -68,8 +59,9 @@ define(['app/config/module'], function (module) {
 			}
 		};
 
-		$scope.$watch(function () {
+		//
 
+		$scope.$watch(function () {
 			return $w.scrollTop() + ' ' + $w.scrollLeft() + ' ' + $w.height() + ' ' + $w.width();
 		}, function () {
 			$scope.updateCurrentPanel();

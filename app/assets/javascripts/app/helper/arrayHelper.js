@@ -36,7 +36,7 @@ define(['app/config/module'], function (module) {
 				return array[index(item)];
 			};
 
-			var create = function (item) {
+			var add = function (item) {
 				if (!(item = validate(item)))
 					return false;
 
@@ -126,7 +126,7 @@ define(['app/config/module'], function (module) {
 				validate: validate,
 				get: get,
 				echo: echo,
-				create: create,
+				add: add,
 				update: update,
 				replace: replace,
 				remove: remove,

@@ -8,5 +8,7 @@ define([
 	'app/view/assetView',
 	'app/view/playerView',
 
+	'app/view/loginView',
+
 	'app/view/phonyView'
 ], function () {});

@@ -1,0 +1,30 @@
+<panel ng-controller="LoginPanel" top id="panel_login" title="Login">
+    <panel-mode name="view" active>
+        <div class="row">
+            <hgroup class="col-full">
+                <h1 class="panel_context">Login</h1>
+                <h2 class="panel_title with_context">Enter Databrary</h2>
+            </hgroup>
+
+            <div class="col-full">
+                <form name="loginForm">
+                    <div ng-switch="panel.getMethod()">
+                        <div ng-switch-default>
+                            <input type="email" ng-model="loginData.email" placeholder="Email">
+                            <input type="password" ng-model="loginData.password" placeholder="Password" ng-required>
+                        </div>
+
+                        <div ng-switch-when="openid">
+                            <input type="text" ng-model="loginData.openid" placeholder="OpenID" ng-required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="button" ng-click="submitForm()" ng-disabled="!loginForm.$dirty || loginForm.$invalid">Login</button>
+
+                    <a ng-click="panel.switchMethod('openid')" ng-show="panel.showMethodLink('openid')">or login with OpenID.</a>
+                    <a ng-click="panel.switchMethod('databrary')" ng-show="panel.showMethodLink('databrary')">or login with Databrary.</a>
+                </form>
+            </div>
+        </div>
+    </panel-mode>
+</panel>

@@ -1,5 +1,3 @@
-@(requestOption: Option[SiteRequest[_]] = None)
-
 <section id="toolbars" ng-controller="ToolbarCtrl" class="cf">
     <nav id="toolbar_databrary" class="toolbar toolbar_databrary">
         <div class="wrap">
@@ -19,38 +17,21 @@
                 </div>
 
                 <div class="toolbar_user col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 ng-cloak">
-                    <div has-auth="!view" ng-if="false">
-                        <a href="#" ng-click="logIn()">login</a>
-                    </div>
+                    <span has-auth="!view">
+                        <a href="#" ng-click="authService.showLogin()">login</a>
+                    </span>
 
-                    <div has-auth="!view" ng-if="false">
-                        <a href="#" ng-click="logOut()">logout</a>
+                    <span has-auth="view">
+                        <a href="#" ng-click="authService.logout()">logout</a>
 
-                        <span has-auth="!admin">
+                        <span has-auth="admin">
                             <span class="sep">|</span>
-                            <a class="superuser on" href="#" ng-click="disableSU()">SU</a>
-                            <a class="superuser off" href="#" ng-click="enableSU()">SU</a>
+                            <a has-auth="!super" class="superuser off" href="#" ng-click="authService.enableSU()">SU</a>
+                            <a has-auth="super" class="superuser on" href="#" ng-click="authService.disableSU()">SU</a>
                         </span>
 
-                        <a href="#" ng-click="showProfile()" class="img"><img ng-src="{{authUser.avatar}}" alt="{{authUser.username}}"></a>
-                    </div>
-
-                    @requestOption.filter(_.user.isDefined).fold {
-                        <a href="@controllers.Login.routes.html.view">login</a>
-                    } { request =>
-                        <a href="@routes.Login.logout">logout</a>
-
-                        @if(request.access == Permission.ADMIN) {
-                            <span class="sep">|</span>
-                            @if(request.superuser) {
-                                <a class="superuser on" href="@routes.Login.superuserOff">SU</a>
-                            }else{
-                                <a class="superuser off" href="@routes.Login.superuserOn">SU</a>
-                            }
-                        }
-
-                        <a href="@requestOption.get.identity.pageURL" id="modal_profile_link" class="img modal_link" data-target="modal_profile"><img src="@display.avatar(requestOption.get.identity, 16)" alt="@requestOption.get.identity.name" class="s16"></a>
-                    }
+                        <a href="#" ng-click="authService.showProfile()" class="img"><img ng-src="{{authService.user.avatar}}" alt="{{authService.user.username}}"></a>
+                    </span>
                 </div>
             </div>
         </div>

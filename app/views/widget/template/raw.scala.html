@@ -33,6 +33,7 @@
     @angular.partial("recordView"){@angular.view.recordView()}
     @angular.partial("assetView"){@angular.view.assetView()}
     @angular.partial("playerView"){@angular.view.playerView()}
+    @angular.partial("loginView"){@angular.view.loginView()}
     @angular.partial("phonyView"){@angular.view.phonyView()}
 
     @angular.partial("overviewPartyPanel"){@angular.panel.overviewPartyPanel()}
@@ -50,6 +51,7 @@
     @angular.partial("commentsPanel"){@angular.panel.commentsPanel()}
     @angular.partial("playerPanel"){@angular.panel.playerPanel()}
     @angular.partial("searchPanel"){@angular.panel.searchPanel()}
+    @angular.partial("loginPanel"){@angular.panel.loginPanel()}
 
     @angular.partial("frame"){@angular.directive.frame()}
     @angular.partial("portrait"){@angular.directive.portrait()}
@@ -61,7 +63,7 @@
 </head>
 
 <body class="@if(Play.isDev){dev}">
-    @angular.controller.toolbarCtrl(requestOption)
+    @angular.controller.toolbarCtrl()
 
     <main ng-view id="main" class="main">
         <noscript>

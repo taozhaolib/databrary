@@ -91,6 +91,10 @@ package object Login extends SiteController {
       .withSession(session - "superuser")
   }
 
+  def getUser = SiteAction.access(Permission.VIEW) { implicit request =>
+    Ok(api.json)
+  }
+
   object html {
     def viewLogin()(implicit request: SiteRequest[_]) : templates.Html =
       views.html.party.login(loginForm)
@@ -118,7 +122,8 @@ package object Login extends SiteController {
       site.identity.json.obj ++
       JsonObject.flatten(
         Some('access -> site.access),
-        if (site.access == Permission.ADMIN) Some('superuser -> new Timestamp(site.session.get("superuser").flatMap(Maybe.toLong _).getOrElse(0))) else None
+        Some('avatar -> views.html.display.avatar(site.identity, 64).toString),
+        if (site.access == Permission.ADMIN) Some('superuser -> new Timestamp(site.session.get("superuser").flatMap(Maybe.toLong _).getOrElse(0L))) else None
       )
   }
 }

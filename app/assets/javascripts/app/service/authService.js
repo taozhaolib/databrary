@@ -1,115 +1,160 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('AuthService', ['$rootScope', '$cookieStore', '$http', function ($rootScope, $cookieStore, $http) {
+	module.factory('AuthService', ['$rootScope', '$location', '$cookieStore', '$http', '$route', function ($rootScope, $location, $cookieStore, $http, $route) {
 		var authService = {};
 
-		var nullUser = {
-			access: 0
+		//
+
+		authService.user = undefined;
+
+		var updateUser = function (user) {
+			if(angular.isUndefined(user))
+				return authService.user = user;
+
+			if(angular.isDefined(user.superuser) && user.superuser > 0)
+				user.superuser = new Date(user.superuser);
+			else
+				user.superuser = false;
+
+			authService.user = user;
 		};
 
-		$rootScope.authUser = nullUser;
+		$http
+			.get('/api/user')
+			.success(function (data) {
+				updateUser(data);
+			})
+			.error(function () {
+				updateUser(undefined);
+			});
+
+		//
 
 		var levels = {
-			none: 0,
-			view: 10,
-			download: 20,
-			edit: 30,
-			admin: 40
+			NONE: 0,
+			VIEW: 1,
+			DOWNLOAD: 2,
+			EDIT: 3,
+			ADMIN: 4,
+			SUPER: 5
 		};
 
-		//
-
-		authService.logIn = function () { // TODO
-			$http
-				.post('/login')
-				.success(function (data, status, headers, config) {
-					$rootScope.authUser = data;
-					broadcastAuthChange();
-				})
-				.error(function (data, status, headers, config) {
-					$rootScope.authUser = nullUser;
-					console.log('login failed');
-				});
+		var parseAuthLevel = function (level) {
+			return angular.isString(level) ? levels[level] : level;
 		};
 
-		authService.logOut = function () { // TODO
-			$http
-				.get('/logout')
-				.success(function (data, status, headers, config) {
-					$rootScope.authUser = nullUser;
-					broadcastAuthChange();
-				})
-				.error(function (data, status, headers, config) {
-					console.log('logout failed');
-				});
+		var parseUserAuth = function () {
+			if(angular.isUndefined(authService.user))
+				return parseAuthLevel('NONE');
+
+			if(angular.isDate(authService.user.superuser) && authService.user.superuser > new Date())
+				return parseAuthLevel('SUPER');
+
+			return authService.user.access;
 		};
 
-		authService.isUser = function () {
-			return $rootScope.authUser.access > levels['none'];
-		};
-
-		//
-
-		authService.enableSU = function () { // TODO
-			$http
-				.get('/superuser/on')
-				.success(function (data, status, headers, config) {
-					console.log('good!');
-					broadcastAuthChange();
-				})
-				.error(function (data, status, headers, config) {
-					console.log('bad!');
-				});
-		};
-
-		authService.disableSU = function () { // TODO
-			$http
-				.get('/superuser/off')
-				.success(function (data, status, headers, config) {
-					console.log('good!');
-					broadcastAuthChange();
-				})
-				.error(function (data, status, headers, config) {
-					console.log('bad!');
-				});
-		};
-
-		authService.toggleSU = function () {
-			if(authService.isSU())
-				authService.disableSU();
-			else
-				authService.enableSU();
-		};
-
-		authService.isSU = function () { // TODO
-
+		var parseUserAccess = function () {
+// TODO...........................................
 		};
 
 		//
 
 		authService.hasAuth = function (level) {
-			if (level.substr(0, 1) == '!')
-				return $rootScope.authUser.access < levels[level.substr(1)];
+			level = level.toUpperCase().split('!');
 
-			return $rootScope.authUser.access >= levels[level];
+			console.log(level.join('!'), parseUserAuth(), parseAuthLevel(level[level.length - 1]));
+
+			return level.length == 1 ?
+				parseUserAuth() >= parseAuthLevel(level.pop()) :
+				parseUserAuth() < parseAuthLevel(level.pop());
 		};
 
-		authService.hasAccess = function (level, obj) {
-			// TODO: this is not correct. come back when you've got actual objects
-			return obj.permission >= levels[level];
-		};
-
-		//
-
-		authService.getAuthUser = function () {
-			return $rootScope.authUser;
+		authService.isAuth = function (level) {
+			return parseUserAuth() == parseAuthLevel(level.toUpperCase().split('!').pop());
 		};
 
 		//
 
-		var broadcastAuthChange = function () {
-			$rootScope.$broadcast('authChange');
+		authService.hasAccess = function (level) {
+			level = level.toUpperCase().split('!');
+
+			return level.length == 1 ?
+				parseUserAccess() >= parseAuthLevel(level.pop()) :
+				parseUserAccess() < parseAuthLevel(level.pop());
+		};
+
+		authService.isAccess = function (level) {
+			return parseUserAccess() == parseAuthLevel(level.toUpperCase().split('!').pop());
+		};
+
+		//
+
+		authService.showLogin = function () {
+			$location.path('/login');
+		};
+
+		authService.login = function (data) {
+			data = angular.extend({
+				email: '',
+				password: '',
+				openid: ''
+			}, data);
+
+			console.log(data);
+
+			$http
+				.post('/api/user/login', data)
+				.success(function (data) {
+					updateUser(data);
+					$location.path('/');
+				})
+				.error(function () {
+					updateUser(undefined);
+				});
+		};
+
+		authService.logout = function () {
+			$http
+				.post('/api/user/logout')
+				.success(function (data) {
+					updateUser(data);
+					authService.showLogin();
+				})
+				.error(function () {
+					$location.path('/');
+				});
+		};
+
+		//
+
+		authService.enableSU = function () {
+			$http
+				.post('/api/user/superuser/on')
+				.success(function (data) {
+					updateUser(data);
+				})
+				.error(function () {
+					console.log('bad!');
+				});
+		};
+
+		authService.disableSU = function () {
+			$http
+				.post('/api/user/superuser/off')
+				.success(function (data) {
+					updateUser(data);
+				})
+				.error(function () {
+					console.log('bad!');
+				});
+		};
+
+		authService.toggleSU = function () {
+			if(authService.isAuth('SUPER'))
+				authService.disableSU();
+			else
+				authService.enableSU();
 		};
 
 		//

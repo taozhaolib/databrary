@@ -1,8 +1,12 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	return module.config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
+	return module.config(['$locationProvider', '$routeProvider', '$httpProvider', function ($locationProvider, $routeProvider, $httpProvider) {
 		$locationProvider.html5Mode(true);
+
+		//
+
+		$httpProvider.responseInterceptors.push('authInterceptor');
 
 		//
 
@@ -14,6 +18,16 @@ define(['app/config/module'], function (module) {
 
 		$routeProvider.when('/', staticView);
 		$routeProvider.when('/about/:page*', staticView);
+
+		//
+
+		var LoginView = {
+			controller: 'LoginView',
+			templateUrl: 'loginView.html',
+			reloadOnSearch: false
+		};
+
+		$routeProvider.when('/login', LoginView);
 
 		//
 

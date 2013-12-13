@@ -1,20 +1,17 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.directive('hasAuth', ['AuthService', function (authService) {
+	module.directive('hasAuth', ['$animate', 'AuthService', function ($animate, authService) {
 		var link = function ($scope, $element, $attrs) {
-			var update = function () {
-				if(authService.hasAuth($attrs.hasAuth))
-					return $element.removeClass('ng-cloak');
+			$scope.authService = authService;
 
-				return $element.addClass('ng-cloak');
+			var update = function () {
+				$animate[!!$scope.authService.hasAuth($attrs.hasAuth) ? 'removeClass' : 'addClass']($element, 'ng-hide');
 			};
 
-			//
-
-			$scope.$on('authChange', function ($event) {
+			$scope.$watch('authService.user', function () {
 				update();
-			});
+			}, true);
 
 			$attrs.$observe('hasAuth', function () {
 				update();

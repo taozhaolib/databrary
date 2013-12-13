@@ -8,15 +8,11 @@ GET         /                                                                   
 GET         /about/team                                                                                controllers.Static.team
 GET         /about/$page<[a-z]+>                                                                       controllers.Static.page(page : String)
 
-GET         /api/about                                                                                 controllers.Static.api.index
-GET         /api/about/team                                                                            controllers.Static.api.team
-GET         /api/about/$page<[a-z]+>                                                                   controllers.Static.api.page(page : String)
-
 # users
-GET         /login                                                                                    controllers.Login.html.view
+GET         /login                                                                                     controllers.Login.html.view
 POST        /login                                                                                     controllers.Login.post
-GET         /OpenID                                                                                   controllers.Login.html.openID(email = "")
-GET         /OpenID/$email<.+\@.+\..+>                                                                controllers.Login.html.openID(email : String)
+GET         /OpenID                                                                                    controllers.Login.html.openID(email = "")
+GET         /OpenID/$email<.+\@.+\..+>                                                                 controllers.Login.html.openID(email : String)
 # TODO: should be POST:
 GET         /logout                                                                                    controllers.Login.logout
 GET         /superuser/on                                                                              controllers.Login.superuserOn
@@ -102,12 +98,17 @@ GET         /volume/$vID<[0-9]+>/ingest/csv                                     
 POST        /volume/$vID<[0-9]+>/ingest/curated                                                        controllers.Ingest.curated(vID : models.Volume.Id)
 
 # API
-GET         /api/about/$page<[a-z]+>                                                                  controllers.Static.api.page(page : String)
-POST        /api/login                                                                                controllers.Login.post
-POST        /api/logout                                                                               controllers.Login.logout
-POST        /api/superuser/on                                                                         controllers.Login.superuserOn
-POST        /api/superuser/off                                                                        controllers.Login.superuserOff
-POST        /api/volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/tag                                            controllers.Slot.api.tag(vID : models.Volume.Id, sID : models.Slot.Id)
+GET         /api/about                                                                                 controllers.Static.api.index
+GET         /api/about/team                                                                            controllers.Static.api.team
+GET         /api/about/$page<[a-z]+>                                                                   controllers.Static.api.page(page : String)
+
+GET         /api/user                                                                                  controllers.Login.getUser
+POST        /api/user/login                                                                            controllers.Login.post
+POST        /api/user/logout                                                                           controllers.Login.logout
+POST        /api/user/superuser/on                                                                     controllers.Login.superuserOn
+POST        /api/user/superuser/off                                                                    controllers.Login.superuserOff
+
+POST        /api/volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/tag                                             controllers.Slot.api.tag(vID : models.Volume.Id, sID : models.Slot.Id)
 
 # static resources
 GET         /public/*file                                                                              controllers.Assets.at(path="/public", file)
