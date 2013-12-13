@@ -35,13 +35,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Token</span><span class="result"> extends <span class="extype" name="models.TokenTable">TokenTable</span>[<a href="Token.html" class="extype" name="models.Token">Token</a>]</span>
+        <span class="name">Token</span><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="Token.html" class="extype" name="models.Token">Token</a>]</span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/token.scala" target="_blank">token.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="models.TokenTable">TokenTable</span>[<a href="Token.html" class="extype" name="models.Token">Token</a>], <span class="extype" name="models.Table">Table</span>[<a href="Token.html" class="extype" name="models.Token">Token</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="models.Table">Table</span>[<a href="Token.html" class="extype" name="models.Token">Token</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Token"><span>Token</span></li><li class="in" name="models.TokenTable"><span>TokenTable</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Token"><span>Token</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -81,7 +81,20 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="models.Table.Row" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+              <ol><li name="models.Token.Id" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Id=String"></a>
+      <a id="Id:Id"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Id</span><span class="result"> = <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="models.Table.Row" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Row=R"></a>
       <a id="Row:Row"></a>
       <h4 class="signature">
@@ -250,19 +263,6 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.TokenTable#delete" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="delete(token:String):scala.concurrent.Future[Boolean]"></a>
-      <a id="delete(String):Future[Boolean]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">delete</span><span class="params">(<span name="token">token: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TokenTable</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -308,19 +308,6 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.TokenTable#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="get(token:String):scala.concurrent.Future[Option[T]]"></a>
-      <a id="get(String):Future[Option[Token]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">get</span><span class="params">(<span name="token">token: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="Token.html" class="extype" name="models.Token">Token</a>]]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TokenTable</dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -399,19 +386,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.Token#row" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="row:dbrary.Selector[models.Token]"></a>
-      <a id="row:Selector[Token]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">row</span><span class="result">: <span class="extype" name="dbrary.Selector">Selector</span>[<a href="Token.html" class="extype" name="models.Token">Token</a>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Token">Token</a> → TokenTable</dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -530,9 +504,7 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.TokenTable">
-              <h3>Inherited from <span class="extype" name="models.TokenTable">TokenTable</span>[<a href="Token.html" class="extype" name="models.Token">Token</a>]</h3>
-            </div><div class="parent" name="models.Table">
+        <div class="parent" name="models.Table">
               <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="Token.html" class="extype" name="models.Token">Token</a>]</h3>
             </div><div class="parent" name="models.TableView">
               <h3>Inherited from <span class="extype" name="models.TableView">TableView</span></h3>

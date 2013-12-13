@@ -35,14 +35,14 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">Party</span><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Party">Party</a>] with <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></span>
+        <span class="name">Party</span><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Party">Party</a>] with <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a> with <a href="../site/JsonableRecord.html" class="extype" name="site.JsonableRecord">JsonableRecord</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Any real-world individual, group, institution, etc.
 Instances are generally obtained from <a href="Party$.html#get(i:models.Party.Id)(implicitsite:site.Site):scala.concurrent.Future[Option[models.Party]]" class="extmbr" name="models.Party#get">Party.get</a> or <a href="Party$.html#create(name:String)(implicitsite:site.Site):scala.concurrent.Future[models.Party]" class="extmbr" name="models.Party#create">Party.create</a>.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/party.scala" target="_blank">party.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Party">Party</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="../site/JsonableRecord.html" class="extype" name="site.JsonableRecord">JsonableRecord</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Party">Party</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -60,7 +60,7 @@ Instances are generally obtained from <a href="Party$.html#get(i:models.Party.Id
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Party"><span>Party</span></li><li class="in" name="site.SitePage"><span>SitePage</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Party"><span>Party</span></li><li class="in" name="site.JsonableRecord"><span>JsonableRecord</span></li><li class="in" name="site.SitePage"><span>SitePage</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -401,6 +401,19 @@ Computed by [Authorize.access_check] and usually accessed through <a href="../si
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.Party#json" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="json(implicitsite:site.Site):site.JsonRecord"></a>
+      <a id="json(Site):JsonRecord"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">json</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="../site/JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Party">Party</a> → <a href="../site/JsonableRecord.html" class="extype" name="site.JsonableRecord">JsonableRecord</a></dd></dl></div>
     </li><li name="models.Party#name" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="name:String"></a>
       <a id="name:String"></a>
@@ -636,7 +649,9 @@ Computed by [Authorize.access_check] and usually accessed through <a href="../si
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="site.SitePage">
+        <div class="parent" name="site.JsonableRecord">
+              <h3>Inherited from <a href="../site/JsonableRecord.html" class="extype" name="site.JsonableRecord">JsonableRecord</a></h3>
+            </div><div class="parent" name="site.SitePage">
               <h3>Inherited from <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></h3>
             </div><div class="parent" name="models.TableRowId">
               <h3>Inherited from <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Party">Party</a>]</h3>

@@ -44,7 +44,7 @@
           <div class="superTypes hiddenContent"><span class="extype" name="play.api.mvc.Controller">Controller</span>, <span class="extype" name="play.api.mvc.Rendering">Rendering</span>, <span class="extype" name="play.api.mvc.RequestExtractors">RequestExtractors</span>, <span class="extype" name="play.api.mvc.AcceptExtractors">AcceptExtractors</span>, <span class="extype" name="play.api.http.ContentTypes">ContentTypes</span>, <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span>, <span class="extype" name="play.api.http.Status">play.api.http.Status</span>, <span class="extype" name="play.api.http.HttpProtocol">HttpProtocol</span>, <span class="extype" name="play.api.mvc.BodyParsers">BodyParsers</span>, <span class="extype" name="play.api.mvc.Results">Results</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
           <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a href="Asset$.html" class="extype" name="controllers.Asset">Asset</a>, <a href="Ingest$.html" class="extype" name="controllers.Ingest">Ingest</a>, <a href="Login$.html" class="extype" name="controllers.Login">Login</a>, <a href="Party$.html" class="extype" name="controllers.Party">Party</a>, <a href="Record$.html" class="extype" name="controllers.Record">Record</a>, <a href="Site$.html" class="extype" name="controllers.Site">Site</a>, <a href="Slot$.html" class="extype" name="controllers.Slot">Slot</a>, <a href="SlotAsset$.html" class="extype" name="controllers.SlotAsset">SlotAsset</a>, <a href="Static$.html" class="extype" name="controllers.Static">Static</a>, <a href="Token$.html" class="extype" name="controllers.Token">Token</a>, <a href="Volume$.html" class="extype" name="controllers.Volume">Volume</a></div>
+          <div class="subClasses hiddenContent"><a href="Asset$.html" class="extype" name="controllers.Asset">Asset</a>, <a href="Ingest$.html" class="extype" name="controllers.Ingest">Ingest</a>, <a href="Login/package.html" class="extype" name="controllers.Login">Login</a>, <a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a>, <a href="Party/package.html" class="extype" name="controllers.Party">Party</a>, <a href="Record$.html" class="extype" name="controllers.Record">Record</a>, <a href="Site$.html" class="extype" name="controllers.Site">Site</a>, <a href="Slot/package.html" class="extype" name="controllers.Slot">Slot</a>, <a href="SlotAsset$.html" class="extype" name="controllers.SlotAsset">SlotAsset</a>, <a href="Static/package.html" class="extype" name="controllers.Static">Static</a>, <a href="Token$.html" class="extype" name="controllers.Token">Token</a>, <a href="Volume/package.html" class="extype" name="controllers.Volume">Volume</a></div>
         </div></div>
         
 
@@ -185,6 +185,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="controllers.SiteController#ABadForm" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ABadForm[A](view:play.api.data.Form[A]=&gt;play.api.templates.HtmlFormat.Appendable,form:play.api.data.Form[A])(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
+      <a id="ABadForm[A]((Form[A])⇒play.api.templates.HtmlFormat.Appendable,Form[A])(SiteRequest[_]):Future[SimpleResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ABadForm</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="view">view: (<span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="controllers.SiteController.ABadForm.A">A</span>]) ⇒ <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span></span>, <span name="form">form: <span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="controllers.SiteController.ABadForm.A">A</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
     </li><li name="controllers.SiteController#ABadRequest" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ABadRequest[C](c:C)(implicitevidence$2:play.api.http.Writeable[C]):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
       <a id="ABadRequest[C](C)(Writeable[C]):Future[SimpleResult]"></a>
@@ -381,15 +394,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="controllers.SiteController#AForbidden" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="AForbidden:scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="AForbidden:Future[SimpleResult]"></a>
+      <a id="AForbidden(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
+      <a id="AForbidden(SiteRequest[_]):Future[SimpleResult]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">AForbidden</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+        <span class="name">AForbidden</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
@@ -420,15 +433,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="controllers.SiteController#ANotFound" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ANotFound:scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="ANotFound:Future[SimpleResult]"></a>
+      <a id="ANotFound(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
+      <a id="ANotFound(SiteRequest[_]):Future[SimpleResult]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">ANotFound</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+        <span class="name">ANotFound</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
@@ -2421,6 +2434,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="controllers.SiteController#badForm" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="badForm[A](view:play.api.data.Form[A]=&gt;play.api.templates.HtmlFormat.Appendable,form:play.api.data.Form[A])(implicitrequest:controllers.SiteRequest[_]):play.api.mvc.SimpleResult"></a>
+      <a id="badForm[A]((Form[A])⇒play.api.templates.HtmlFormat.Appendable,Form[A])(SiteRequest[_]):SimpleResult"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">badForm</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="view">view: (<span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="controllers.SiteController.badForm.A">A</span>]) ⇒ <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span></span>, <span name="form">form: <span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="controllers.SiteController.badForm.A">A</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
     </li><li name="play.api.mvc.Results#chunk" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="chunk(trailers:Option[play.api.libs.iteratee.Iteratee[Array[Byte],Seq[(String,String)]]]):play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]"></a>
       <a id="chunk(Option[Iteratee[Array[Byte],Seq[(String,String)]]]):Enumeratee[Array[Byte],Array[Byte]]"></a>
@@ -2537,6 +2563,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
+    </li><li name="controllers.SiteController#forbidden" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="forbidden(implicitrequest:controllers.SiteRequest[_]):play.api.mvc.SimpleResult"></a>
+      <a id="forbidden(SiteRequest[_]):SimpleResult"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">forbidden</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -2563,19 +2602,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="controllers.SiteController#isAjax" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="isAjax[A](implicitrequest:play.api.mvc.Request[A]):Boolean"></a>
-      <a id="isAjax[A](Request[A]):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">isAjax</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteController.isAjax.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -2589,19 +2615,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="controllers.SiteController#isJson" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="isJson[A](implicitrequest:play.api.mvc.Request[A]):Boolean"></a>
-      <a id="isJson[A](Request[A]):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">isJson</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteController.isJson.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
     </li><li name="controllers.SiteController#isSecure" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isSecure:Boolean"></a>
       <a id="isSecure:Boolean"></a>
@@ -2612,6 +2625,19 @@
       </span>
       <span class="symbol">
         <span class="name">isSecure</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="controllers.SiteController#jsonFormErrors" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jsonFormErrors:play.api.libs.json.OWrites[Seq[play.api.data.FormError]]"></a>
+      <a id="jsonFormErrors:OWrites[Seq[FormError]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jsonFormErrors</span><span class="result">: <span class="extype" name="play.api.libs.json.OWrites">OWrites</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.data.FormError">FormError</span>]]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
@@ -2641,6 +2667,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="controllers.SiteController#notFound" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="notFound(implicitrequest:controllers.SiteRequest[_]):play.api.mvc.SimpleResult"></a>
+      <a id="notFound(SiteRequest[_]):SimpleResult"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notFound</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
       <a id="notify():Unit"></a>

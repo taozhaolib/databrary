@@ -58,7 +58,33 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="store.StreamEnumerator" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+              <ol><li name="store.Encoding" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="EncodingextendsAnyRef"></a>
+      <a id="Encoding:Encoding"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="Encoding.html"><span class="name">Encoding</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="store.Hash" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="HashextendsAnyRef"></a>
+      <a id="Hash:Hash"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="Hash.html"><span class="name">Hash</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="store.StreamEnumerator" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="StreamEnumeratorextendsEnumerator[Array[Byte]]"></a>
       <a id="StreamEnumerator:StreamEnumerator"></a>
       <h4 class="signature">
@@ -71,16 +97,16 @@
       </span>
       </h4>
       
-    </li><li name="store.TemporaryFileCopy" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="TemporaryFileCopyextendsFiles.TemporaryFile"></a>
-      <a id="TemporaryFileCopy:TemporaryFileCopy"></a>
+    </li><li name="store.TemporaryFileLinkOrCopy" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TemporaryFileLinkOrCopyextendsFiles.TemporaryFile"></a>
+      <a id="TemporaryFileLinkOrCopy:TemporaryFileLinkOrCopy"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="TemporaryFileCopy.html"><span class="name">TemporaryFileCopy</span></a><span class="result"> extends <span class="extype" name="play.api.libs.Files.TemporaryFile">TemporaryFile</span></span>
+        <a href="TemporaryFileLinkOrCopy.html"><span class="name">TemporaryFileLinkOrCopy</span></a><span class="result"> extends <span class="extype" name="play.api.libs.Files.TemporaryFile">TemporaryFile</span></span>
       </span>
       </h4>
       
@@ -104,6 +130,19 @@
       </span>
       </h4>
       
+    </li><li name="store.Base64" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Base64"></a>
+      <a id="Base64:Base64"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Base64$.html"><span class="name">Base64</span></a><span class="result"> extends <a href="Encoding.html" class="extype" name="store.Encoding">Encoding</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">base64url encoding as per RFC 4648.</p>
     </li><li name="store.FileAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="FileAsset"></a>
       <a id="FileAsset:FileAsset"></a>
@@ -113,7 +152,46 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="FileAsset$.html"><span class="name">FileAsset</span></a><span class="result"> extends <span class="extype" name="store.StoreDir">StoreDir</span>[<a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a>]</span>
+        <a href="FileAsset$.html"><span class="name">FileAsset</span></a><span class="result"> extends <span class="extype" name="store.StoreDir">StoreDir</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="store.Hex" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Hex"></a>
+      <a id="Hex:Hex"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Hex$.html"><span class="name">Hex</span></a><span class="result"> extends <a href="Encoding.html" class="extype" name="store.Encoding">Encoding</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="store.MD5" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MD5"></a>
+      <a id="MD5:MD5"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="MD5$.html"><span class="name">MD5</span></a><span class="result"> extends <a href="Hash.html" class="extype" name="store.Hash">Hash</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="store.SHA1" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SHA1"></a>
+      <a id="SHA1:SHA1"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="SHA1$.html"><span class="name">SHA1</span></a><span class="result"> extends <a href="Hash.html" class="extype" name="store.Hash">Hash</a></span>
       </span>
       </h4>
       
@@ -130,16 +208,16 @@
       </span>
       </h4>
       
-    </li><li name="store.TemporaryFileCopy" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="TemporaryFileCopy"></a>
-      <a id="TemporaryFileCopy:TemporaryFileCopy"></a>
+    </li><li name="store.TemporaryFileLinkOrCopy" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TemporaryFileLinkOrCopy"></a>
+      <a id="TemporaryFileLinkOrCopy:TemporaryFileLinkOrCopy"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="TemporaryFileCopy$.html"><span class="name">TemporaryFileCopy</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="TemporaryFileLinkOrCopy$.html"><span class="name">TemporaryFileLinkOrCopy</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       

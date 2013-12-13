@@ -35,13 +35,13 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">LoginToken</span><span class="result"> extends <a href="Token.html" class="extype" name="models.Token">Token</a></span>
+        <span class="name">LoginToken</span><span class="result"> extends <a href="AccountToken.html" class="extype" name="models.AccountToken">AccountToken</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A token, usually sent via email, granting automatic login or registration to the given party.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/token.scala" target="_blank">token.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="Token.html" class="extype" name="models.Token">Token</a>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="AccountToken.html" class="extype" name="models.AccountToken">AccountToken</a>, <a href="Token.html" class="extype" name="models.Token">Token</a>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.LoginToken"><span>LoginToken</span></li><li class="in" name="models.Token"><span>Token</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.LoginToken"><span>LoginToken</span></li><li class="in" name="models.AccountToken"><span>AccountToken</span></li><li class="in" name="models.Token"><span>Token</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -80,7 +80,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.LoginToken#&lt;init&gt;" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(token:String,expires:dbrary.Timestamp,account:models.Account,password:Boolean):models.LoginToken"></a>
+      <a id="&lt;init&gt;(id:models.Token.Id,expires:dbrary.Timestamp,account:models.Account,password:Boolean):models.LoginToken"></a>
       <a id="&lt;init&gt;:LoginToken"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -88,7 +88,7 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">LoginToken</span><span class="params">(<span name="token">token: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="expires">expires: <span class="extype" name="dbrary.Timestamp">Timestamp</span></span>, <span name="account">account: <a href="Account.html" class="extype" name="models.Account">Account</a></span>, <span name="password">password: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span>
+        <span class="name">LoginToken</span><span class="params">(<span name="id">id: <a href="Token$.html#Id=String" class="extmbr" name="models.Token.Id">Id</a></span>, <span name="expires">expires: <span class="extype" name="dbrary.Timestamp">Timestamp</span></span>, <span name="account">account: <a href="Account.html" class="extype" name="models.Account">Account</a></span>, <span name="password">password: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span>
       </span>
       </h4>
       <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">password</dt><dd class="cmt"><p>allow a password reset if true; just login (and require a password for changes) otherwise
@@ -167,20 +167,7 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.LoginToken#account" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="account:models.Account"></a>
-      <a id="account:Account"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">account</span><span class="result">: <a href="Account.html" class="extype" name="models.Account">Account</a></span>
-      </span>
-      </h4>
-      
-    </li><li name="models.LoginToken#accountId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.AccountToken#accountId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="accountId:models.Party.Id"></a>
       <a id="accountId:Party.Id"></a>
       <h4 class="signature">
@@ -192,7 +179,7 @@
         <span class="name">accountId</span><span class="result">: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>
       </span>
       </h4>
-      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AccountToken.html" class="extype" name="models.AccountToken">AccountToken</a></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -375,7 +362,7 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Token.html" class="extype" name="models.Token">Token</a></dd></dl></div>
-    </li><li name="models.LoginToken#remove" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.LoginToken#remove" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="remove:scala.concurrent.Future[Boolean]"></a>
       <a id="remove:Future[Boolean]"></a>
       <h4 class="signature">
@@ -387,7 +374,7 @@
         <span class="name">remove</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
       </span>
       </h4>
-      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.LoginToken">LoginToken</a> → <a href="Token.html" class="extype" name="models.Token">Token</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -493,7 +480,9 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.Token">
+        <div class="parent" name="models.AccountToken">
+              <h3>Inherited from <a href="AccountToken.html" class="extype" name="models.AccountToken">AccountToken</a></h3>
+            </div><div class="parent" name="models.Token">
               <h3>Inherited from <a href="Token.html" class="extype" name="models.Token">Token</a></h3>
             </div><div class="parent" name="models.TableRow">
               <h3>Inherited from <span class="extype" name="models.TableRow">TableRow</span></h3>

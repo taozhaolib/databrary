@@ -35,13 +35,13 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">Record</span><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Record">Record</a>] with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
+        <span class="name">Record</span><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Record">Record</a>] with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <a href="../site/JsonableRecord.html" class="extype" name="site.JsonableRecord">JsonableRecord</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A set of Measures.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/record.scala" target="_blank">record.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a>, <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a>, <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Record">Record</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="../site/JsonableRecord.html" class="extype" name="site.JsonableRecord">JsonableRecord</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a>, <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a>, <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Record">Record</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Record"><span>Record</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="site.SiteObject"><span>SiteObject</span></li><li class="in" name="models.HasPermission"><span>HasPermission</span></li><li class="in" name="site.PerSite"><span>PerSite</span></li><li class="in" name="site.SitePage"><span>SitePage</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Record"><span>Record</span></li><li class="in" name="site.JsonableRecord"><span>JsonableRecord</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="site.SiteObject"><span>SiteObject</span></li><li class="in" name="models.HasPermission"><span>HasPermission</span></li><li class="in" name="site.PerSite"><span>PerSite</span></li><li class="in" name="site.SitePage"><span>SitePage</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -215,6 +215,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.Record#assets" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="assets:scala.concurrent.Future[Seq[models.SlotAsset]]"></a>
+      <a id="assets:Future[Seq[SlotAsset]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">assets</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>]]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The set of assets to which this record applies.</p>
     </li><li name="models.Record#category" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="category:Option[models.RecordCategory]"></a>
       <a id="category:Option[RecordCategory]"></a>
@@ -461,6 +474,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.Record#json" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="json(implicitsite:site.Site):site.JsonRecord"></a>
+      <a id="json(Site):JsonRecord"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">json</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="../site/JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Record">Record</a> → <a href="../site/JsonableRecord.html" class="extype" name="site.JsonableRecord">JsonableRecord</a></dd></dl></div>
     </li><li name="models.Record#measures" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="measures:models.Measures"></a>
       <a id="measures:Measures"></a>
@@ -763,7 +789,9 @@ This is not type safe so may generate SQL exceptions, and may invalidate measure
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.InVolume">
+        <div class="parent" name="site.JsonableRecord">
+              <h3>Inherited from <a href="../site/JsonableRecord.html" class="extype" name="site.JsonableRecord">JsonableRecord</a></h3>
+            </div><div class="parent" name="models.InVolume">
               <h3>Inherited from <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></h3>
             </div><div class="parent" name="site.SiteObject">
               <h3>Inherited from <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></h3>

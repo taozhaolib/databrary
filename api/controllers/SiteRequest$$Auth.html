@@ -83,7 +83,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="controllers.SiteRequest.Auth#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(request:play.api.mvc.Request[A],account:models.Account,access:models.Permission.Value,superuser:Boolean):controllers.SiteRequest.Auth[A]"></a>
+      <a id="&lt;init&gt;(request:play.api.mvc.Request[A],token:models.SessionToken):controllers.SiteRequest.Auth[A]"></a>
       <a id="&lt;init&gt;:Auth[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -91,7 +91,7 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Auth</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.Auth.A">A</span>]</span>, <span name="account">account: <a href="../models/Account.html" class="extype" name="models.Account">Account</a></span>, <span name="access">access: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>, <span name="superuser">superuser: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span>
+        <span class="name">Auth</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.Auth.A">A</span>]</span>, <span name="token">token: <a href="../models/SessionToken.html" class="extype" name="models.SessionToken">SessionToken</a></span>)</span>
       </span>
       </h4>
       
@@ -508,6 +508,19 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <p class="shortcomment cmt"><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p><div class="fullcomment"><div class="comment cmt"><p><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/AuthSite.html" class="extype" name="site.AuthSite">AuthSite</a> → <a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
+    </li><li name="controllers.SiteRequest#isApi" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isApi:Boolean"></a>
+      <a id="isApi:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isApi</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a></dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -716,6 +729,19 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader → AnyRef → Any</dd></dl></div>
+    </li><li name="controllers.SiteRequest.Auth#token" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="token:models.SessionToken"></a>
+      <a id="token:SessionToken"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">token</span><span class="result">: <a href="../models/SessionToken.html" class="extype" name="models.SessionToken">SessionToken</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.SiteRequest.Auth">Auth</a> → <a href="../site/AuthSite.html" class="extype" name="site.AuthSite">AuthSite</a></dd></dl></div>
     </li><li name="play.api.mvc.WrappedRequest#uri" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="uri:String"></a>
       <a id="uri:String"></a>

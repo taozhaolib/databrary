@@ -31,7 +31,7 @@
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
+        <span class="modifier">abstract </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
@@ -44,6 +44,9 @@ Primarily used for an individual session of data with a single date and place.
 Critically, contained data are should be covered by a single consent level and share the same annotations.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/slot.scala" target="_blank">slot.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a>, <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Slot">Slot</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div><div class="toggleContainer block">
+          <span class="toggle">Known Subclasses</span>
+          <div class="subClasses hiddenContent"><a href="Container.html" class="extype" name="models.Container">Container</a></div>
         </div></div>
         
 
@@ -79,14 +82,99 @@ Critically, contained data are should be covered by a single consent level and s
 
       <div id="template">
         <div id="allMembers">
-        
-
-        
+        <div id="constructors" class="members">
+              <h3>Instance Constructors</h3>
+              <ol><li name="models.Slot#&lt;init&gt;" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="&lt;init&gt;(id:models.Slot.Id,segment:dbrary.Range[dbrary.Offset],consent_:models.Consent.Value):models.Slot"></a>
+      <a id="&lt;init&gt;:Slot"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">new</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Slot</span><span class="params">(<span name="id">id: <a href="Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">Slot.Id</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Range">Range</span>[<span class="extype" name="dbrary.Offset">Offset</span>]</span>, <span name="consent_">consent_: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a> = <span class="symbol">Consent.NONE</span></span>)</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li></ol>
+            </div>
 
         
 
         <div id="values" class="values members">
-              <h3>Value Members</h3>
+              <h3>Abstract Value Members</h3>
+              <ol><li name="models.Slot#container" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="container:models.Container"></a>
+      <a id="container:Container"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">container</span><span class="result">: <a href="Container.html" class="extype" name="models.Container">Container</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="models.Slot#context" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="context:models.Slot"></a>
+      <a id="context:Slot"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">context</span><span class="result">: <a href="" class="extype" name="models.Slot">Slot</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The relevant consented slot containing this one.</p><div class="fullcomment"><div class="comment cmt"><p>The relevant consented slot containing this one.
+Defaults to fullSlot.</p></div></div>
+    </li><li name="models.Slot#isFull" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="isFull:Boolean"></a>
+      <a id="isFull:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isFull</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">True if this is its container's full slot.</p>
+    </li><li name="models.Slot#isTop" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="isTop:Boolean"></a>
+      <a id="isTop:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isTop</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="models.InVolume#volume" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="volume:models.Volume"></a>
+      <a id="volume:Volume"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">volume</span><span class="result">: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
+    </li></ol>
+            </div>
+
+        <div id="values" class="values members">
+              <h3>Concrete Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:AnyRef):Boolean"></a>
       <a id="!=(AnyRef):Boolean"></a>
@@ -183,7 +271,7 @@ Critically, contained data are should be covered by a single consent level and s
       <a id="assets:Future[Seq[SlotAsset]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
@@ -191,19 +279,6 @@ Critically, contained data are should be covered by a single consent level and s
       </span>
       </h4>
       <p class="shortcomment cmt">List of contained asset segments within this slot.</p>
-    </li><li name="models.Slot#change" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="change(consent:models.Consent.Value):scala.concurrent.Future[Boolean]"></a>
-      <a id="change(Consent.Value):Future[Boolean]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">change</span><span class="params">(<span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a> = <span class="symbol">_consent</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p>
     </li><li name="models.HasPermission#checkPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="checkPermission(need:models.Permission.Value):Boolean"></a>
       <a id="checkPermission(Permission.Value):Boolean"></a>
@@ -241,7 +316,7 @@ Critically, contained data are should be covered by a single consent level and s
       <a id="comments(Boolean):Future[Seq[Comment]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
@@ -255,7 +330,7 @@ Critically, contained data are should be covered by a single consent level and s
       <a id="consent:Consent.Value"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
@@ -263,19 +338,6 @@ Critically, contained data are should be covered by a single consent level and s
       </span>
       </h4>
       <p class="shortcomment cmt">Effective consent for covered assets, or <a href="Consent$.html#NONE:models.Consent.Value" class="extmbr" name="models.Consent#NONE">Consent.NONE</a> if no matching consent.</p>
-    </li><li name="models.Slot#container" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="container:models.Container"></a>
-      <a id="container:Container"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">container</span><span class="result">: <a href="Container.html" class="extype" name="models.Container">Container</a></span>
-      </span>
-      </h4>
-      
     </li><li name="models.Slot#containerId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="containerId:models.Container.Id"></a>
       <a id="containerId:Container.Id"></a>
@@ -289,20 +351,6 @@ Critically, contained data are should be covered by a single consent level and s
       </span>
       </h4>
       
-    </li><li name="models.Slot#context" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="context:models.Slot"></a>
-      <a id="context:Slot"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">context</span><span class="result">: <a href="" class="extype" name="models.Slot">Slot</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The relevant consented slot containing this one.</p><div class="fullcomment"><div class="comment cmt"><p>The relevant consented slot containing this one.
-Defaults to fullSlot.</p></div></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -379,7 +427,7 @@ Defaults to fullSlot.</p></div></div>
       <a id="getConsent:Consent.Value"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
@@ -392,7 +440,7 @@ Defaults to fullSlot.</p></div></div>
       <a id="getDate:Option[ReadablePartial]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
@@ -444,7 +492,7 @@ Defaults to fullSlot.</p></div></div>
       <a id="isContext:Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
@@ -452,19 +500,6 @@ Defaults to fullSlot.</p></div></div>
       </span>
       </h4>
       
-    </li><li name="models.Slot#isFull" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="isFull:Boolean"></a>
-      <a id="isFull:Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">isFull</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">True if this is its container's full slot.</p>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -478,19 +513,6 @@ Defaults to fullSlot.</p></div></div>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.Slot#isTop" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="isTop:Boolean"></a>
-      <a id="isTop:Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">isTop</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -600,7 +622,7 @@ Defaults to fullSlot.</p></div></div>
       <a id="position:Offset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
@@ -613,7 +635,7 @@ Defaults to fullSlot.</p></div></div>
       <a id="postComment(String,Option[Comment.Id])(AuthSite):Future[Boolean]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
@@ -627,7 +649,7 @@ This will throw an exception if there is no current user, but does not check per
       <a id="records:Future[Seq[Record]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
@@ -640,7 +662,7 @@ This will throw an exception if there is no current user, but does not check per
       <a id="removeRecord(Record.Id):Future[Boolean]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
@@ -661,12 +683,25 @@ This will throw an exception if there is no current user, but does not check per
       </span>
       </h4>
       
+    </li><li name="models.Slot#setConsent" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="setConsent(consent:models.Consent.Value):scala.concurrent.Future[Boolean]"></a>
+      <a id="setConsent(Consent.Value):Future[Boolean]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setConsent</span><span class="params">(<span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a> = <span class="symbol">_consent</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p>
     </li><li name="models.Slot#setTag" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="setTag(tag:String,up:Option[Boolean])(implicitsite:site.AuthSite):scala.concurrent.Future[Boolean]"></a>
       <a id="setTag(String,Option[Boolean])(AuthSite):Future[Boolean]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
@@ -706,7 +741,7 @@ This will throw an exception if there is no current user, but does not check per
       <a id="tags(Boolean):Future[Seq[TagWeight]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
@@ -719,7 +754,7 @@ This will throw an exception if there is no current user, but does not check per
       <a id="thumb:Future[Option[SlotAsset]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
@@ -740,19 +775,6 @@ This will throw an exception if there is no current user, but does not check per
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.Slot#volume" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="volume:models.Volume"></a>
-      <a id="volume:Volume"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">volume</span><span class="result">: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Slot">Slot</a> → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="models.InVolume#volumeId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volumeId:models.Volume.Id"></a>
       <a id="volumeId:Volume.Id"></a>

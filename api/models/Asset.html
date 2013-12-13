@@ -83,7 +83,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.Asset#&lt;init&gt;" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(id:models.Asset.Id,volume:models.Volume,format:models.AssetFormat,classification_:models.Classification.Value,name_:String,body_:Option[String]):models.Asset"></a>
+      <a id="&lt;init&gt;(id:models.Asset.Id,volume:models.Volume,format:models.AssetFormat,classification_:models.Classification.Value,name_:String,body_:Option[String],sha1:Array[Byte]):models.Asset"></a>
       <a id="&lt;init&gt;:Asset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -91,7 +91,7 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Asset</span><span class="params">(<span name="id">id: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>, <span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="format">format: <a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a></span>, <span name="classification_">classification_: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a></span>, <span name="name_">name_: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="body_">body_: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span>
+        <span class="name">Asset</span><span class="params">(<span name="id">id: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>, <span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="format">format: <a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a></span>, <span name="classification_">classification_: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a></span>, <span name="name_">name_: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="body_">body_: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="sha1">sha1: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>)</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
@@ -571,6 +571,19 @@
       </span>
       </h4>
       <p class="shortcomment cmt">The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Asset">Asset</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
+    </li><li name="models.Asset#sha1" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="sha1:Array[Byte]"></a>
+      <a id="sha1:Array[Byte]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">sha1</span><span class="result">: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>
+      </span>
+      </h4>
+      
     </li><li name="models.InVolume#site" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="site:site.Site"></a>
       <a id="site:Site"></a>

@@ -31,7 +31,7 @@
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier">sealed </span>
+        <span class="modifier">sealed abstract </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
@@ -44,7 +44,7 @@
           <div class="superTypes hiddenContent"><span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
           <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a href="LoginToken.html" class="extype" name="models.LoginToken">LoginToken</a></div>
+          <div class="subClasses hiddenContent"><a href="AccountToken.html" class="extype" name="models.AccountToken">AccountToken</a>, <a href="LoginToken.html" class="extype" name="models.LoginToken">LoginToken</a>, <a href="SessionToken.html" class="extype" name="models.SessionToken">SessionToken</a></div>
         </div></div>
         
 
@@ -83,7 +83,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.Token#&lt;init&gt;" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(token:String,expires:dbrary.Timestamp):models.Token"></a>
+      <a id="&lt;init&gt;(id:models.Token.Id,expires:dbrary.Timestamp):models.Token"></a>
       <a id="&lt;init&gt;:Token"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -91,7 +91,7 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Token</span><span class="params">(<span name="token">token: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="expires">expires: <span class="extype" name="dbrary.Timestamp">Timestamp</span></span>)</span>
+        <span class="name">Token</span><span class="params">(<span name="id">id: <a href="Token$.html#Id=String" class="extmbr" name="models.Token.Id">Id</a></span>, <span name="expires">expires: <span class="extype" name="dbrary.Timestamp">Timestamp</span></span>)</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
@@ -100,10 +100,26 @@
 
         
 
-        
+        <div id="values" class="values members">
+              <h3>Abstract Value Members</h3>
+              <ol><li name="models.Token#remove" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="remove:scala.concurrent.Future[Boolean]"></a>
+      <a id="remove:Future[Boolean]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">remove</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
 
         <div id="values" class="values members">
-              <h3>Value Members</h3>
+              <h3>Concrete Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:AnyRef):Boolean"></a>
       <a id="!=(AnyRef):Boolean"></a>
@@ -285,6 +301,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.Token#id" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="id:models.Token.Id"></a>
+      <a id="id:Id"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">id</span><span class="result">: <a href="Token$.html#Id=String" class="extmbr" name="models.Token.Id">Id</a></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -376,19 +405,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.Token#token" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="token:String"></a>
-      <a id="token:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">token</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4>
-      
     </li><li name="models.Token#valid" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="valid:Boolean"></a>
       <a id="valid:Boolean"></a>
