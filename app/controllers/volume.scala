@@ -195,7 +195,7 @@ package object Volume extends ObjectController[Volume] {
 
   object api {
     def view(i : models.Volume.Id) = Action(i).async { implicit request =>
-      AOk(request.obj.json.obj)
+      AOk(request.obj.json)
     }
   }
 }

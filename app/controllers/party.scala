@@ -212,7 +212,7 @@ package object Party extends ObjectController[SiteParty] {
 
   object api extends Controller {
     def get(partyId : models.Party.Id) = Action(Some(partyId), Some(Permission.NONE)) { implicit request =>
-      Ok(request.obj.party.json.obj)
+      Ok(request.obj.party.json)
     }
   }
 }

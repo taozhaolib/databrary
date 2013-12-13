@@ -174,7 +174,7 @@ object Record extends ObjectController[Record] {
 
   object api extends Controller {
     def view(v : models.Volume.Id, i : models.Record.Id) = Action(v, i) { implicit request =>
-      Ok(request.obj.json.obj)
+      Ok(request.obj.json)
     }
   }
 }

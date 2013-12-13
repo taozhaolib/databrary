@@ -80,7 +80,7 @@ package object Login extends SiteController {
   def superuserOn = SiteAction.access(Permission.ADMIN) { implicit request =>
     val expires = System.currentTimeMillis + 60*60*1000
     Audit.action(Audit.Action.superuser)
-    (if (request.isApi) Ok(api.json ++ json.Json.obj("expires" -> new Timestamp(expires)))
+    (if (request.isApi) Ok(api.json ++ JsonObject('expires -> new Timestamp(expires)))
     else Redirect(request.headers.get(REFERER).getOrElse(controllers.routes.Static.index.url)))
       .withSession(session + ("superuser" -> expires.toString))
   }
@@ -115,10 +115,10 @@ package object Login extends SiteController {
 
   object api {
     private[Login] def json(implicit site : SiteRequest.Auth[_]) =
-      site.identity.json.obj ++
+      site.identity.json ++
       JsonObject.flatten(
         Some('access -> site.access),
-        if (site.access == Permission.ADMIN) Some('superuser -> new Timestamp(site.session.get("superuser").flatMap(Maybe.toLong _).getOrElse(0))) else None
+        if (site.access == Permission.ADMIN) Some('superuser -> new Timestamp(site.session.get("superuser").flatMap(Maybe.toLong _).getOrElse(0L))) else None
       )
   }
 }

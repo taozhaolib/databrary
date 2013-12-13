@@ -1,6 +1,7 @@
 package site
 
 import play.api.libs.json._
+import play.api.http.Writeable
 
 sealed trait JsField {
   def field : String
@@ -33,6 +34,14 @@ final class JsonRecord(val id : JsValue, fields : Seq[(String, JsValue)]) extend
   def field = id.toString
   def value = JsObject(fields)
   def obj = JsObject(("id" -> id) +: fields)
+  def +(field : JsonField) =
+    new JsonRecord(id, fields :+ field)
+  def ++(list : Traversable[JsonField]) =
+    new JsonRecord(id, fields ++ list)
+  def ++(obj : JsObject) =
+    new JsonRecord(id, fields ++ obj.fields)
+  def -(field : String) =
+    new JsonRecord(id, fields.filterNot(_._1.equals(field)))
 }
 
 object JsonRecord {
@@ -42,6 +51,8 @@ object JsonRecord {
     new JsonRecord(Json.toJson(id), fields.flatten)
   implicit val writes : OWrites[JsonRecord] =
     OWrites[JsonRecord](_.obj)
+  implicit def writable(implicit codec : play.api.mvc.Codec) : Writeable[JsonRecord] =
+    Writeable.writeableOf_JsValue(codec).map(_.obj)
 }
 
 trait JsonableRecord {
