@@ -130,7 +130,7 @@ object TagWeight extends Table[TagWeight]("tag_weight") {
         .apply(slot.id, site.identity.id, slot.id).list
 
   private[models] def getVolume(volume : Volume)(implicit site : Site) : Future[Seq[TagWeight]] =
-    volume.topSlot.flatMap { topSlot =>
+    volume.top.flatMap { topSlot =>
       aggregate.SELECT("""
          JOIN slot ON tag_weight.slot = slot.id 
          JOIN container ON slot.source = container.id 

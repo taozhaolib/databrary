@@ -72,7 +72,7 @@ package object Slot extends ObjectController[Slot] {
           _ <- macros.Async.map[(Option[String], Option[Date]), Boolean](container, {
             case (name, date) => request.obj.container.change(name = name, date = date)
           })
-          _ <- request.obj.change(consent = consent)
+          _ <- request.obj.setConsent(consent)
         } yield (Redirect(request.obj.pageURL))
       }
     )
@@ -85,9 +85,8 @@ package object Slot extends ObjectController[Slot] {
     { case (Some((name, date)), consent) =>
         for {
           cont <- models.Container.create(request.obj, name = name, date = date)
-          full = cont.fullSlot
-          _ <- full.change(consent = consent)
-        } yield (Redirect(full.pageURL))
+          _ <- cont.setConsent(consent)
+        } yield (Redirect(cont.pageURL))
       case _ => ABadRequest(views.html.slot.edit(Left(request.obj), form, None))
     })
   }

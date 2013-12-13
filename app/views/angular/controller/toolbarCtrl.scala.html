@@ -36,7 +36,7 @@
                     </div>
 
                     @requestOption.filter(_.user.isDefined).fold {
-                        <a href="@routes.Login.view">login</a>
+                        <a href="@controllers.Login.routes.html.view">login</a>
                     } { request =>
                         <a href="@routes.Login.logout">logout</a>
 

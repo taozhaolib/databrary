@@ -1,7 +1,7 @@
 @()(implicit request: RequestObject[Volume]#Site[_])
 
 @defining(request.obj) { volume =>
-@defining(Async.wait(volume.topSlot)) { topslot =>
+@defining(Async.wait(volume.top)) { topslot =>
 @defining(Async.wait(volume.toplevelAssets)) { toplevel =>
 @defining(toplevel groupBy { sa =>
 	if(!sa.checkPermission(Permission.DOWNLOAD)) 'o' else sa.format.mimeSubTypes._1 match {

@@ -25,7 +25,7 @@ object Asset extends ObjectController[Asset] {
   def view(v : models.Volume.Id, o : models.Asset.Id) = Action(v, o, Permission.VIEW).async { implicit request =>
     request.obj.slot.map(_.fold[SimpleResult](
       NotFound /* TODO */)(
-      sa => Redirect(sa.in(sa.slot.container.fullSlot).pageURL)))
+      sa => Redirect(sa.in(sa.slot.container).pageURL)))
   }
 
   private[controllers] def assetResult(asset : BackedAsset, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[SimpleResult] = {
@@ -105,7 +105,7 @@ object Asset extends ObjectController[Asset] {
   }
 
   def createTop(v : models.Volume.Id) = Volume.Action(v, Permission.CONTRIBUTE).async { implicit request =>
-    request.obj.topSlot.map { slot =>
+    request.obj.top.map { slot =>
       Ok(views.html.asset.edit(Left(slot), uploadForm.fill(("", "", Classification.MATERIAL, Some((None, false, None, ()))))))
     }
   }
