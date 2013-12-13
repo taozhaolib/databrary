@@ -11,7 +11,7 @@
         <div class="col-full">
             @widget.formErrors(form)
 
-            @widget.tag.form(routes.Party.change(request.obj.party.id)) {
+            @widget.tag.form(controllers.Party.routes.html.change(request.obj.party.id)) {
                 @widget.tag.inputText(form("name"), 'placeholder -> "Full name")
 
                 @if(controllers.Party.formForAccount(form)) {

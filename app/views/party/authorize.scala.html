@@ -28,7 +28,7 @@
     @if(authorizeWhich.fold(true)(_ == which)) {
             <tr class="null">
                 <td>
-                @widget.tag.form(routes.Party.authorizeSearch(party.id, which), 'id -> ("search_"+which.toString)) {
+                @widget.tag.form(controllers.Party.routes.html.authorizeSearch(party.id, which), 'id -> ("search_"+which.toString)) {
                     @widget.tag.inputText(authorizeSearch("name"), 'id -> ("name_"+which.toString))
                     @widget.formErrors(authorizeSearch)
                 }
@@ -45,7 +45,7 @@
 
         @authorizeResults.map { case (other,form) =>
             <tr>
-                @widget.tag.form(if (which) routes.Party.authorizeApply(party.id, other.id) else routes.Party.authorizeChange(party.id, other.id), 'id -> ("which_"+which.toString)) {
+                @widget.tag.form(if (which) controllers.Party.routes.html.authorizeApply(party.id, other.id) else controllers.Party.routes.html.authorizeChange(party.id, other.id), 'id -> ("which_"+which.toString)) {
                     @authorizeFields(other, form)
                     @widget.formErrors(form)
                 }
@@ -109,13 +109,13 @@
 
                 <tbody>
                 @authorizeForms.map { case (child,form) =>
-                    @widget.tag.form(routes.Party.authorizeChange(party.id, child.id)) {
+                    @widget.tag.form(controllers.Party.routes.html.authorizeChange(party.id, child.id)) {
                         <tr>
                             @authorizeFields(child, form)
                             <td>
                             @defining(form("pending").value == Some("true")) { pending =>
                                 <button type='submit' class="button second">@{if(pending) "Authorize" else "Change"}</button>
-                                <a href='@routes.Party.authorizeDelete(party.id, child.id)' class="button first">@{if(pending) "Deny" else "Revoke"}</a>
+                                <a href='@controllers.Party.routes.html.authorizeDelete(party.id, child.id)' class="button first">@{if(pending) "Deny" else "Revoke"}</a>
                             @widget.formErrors(form)
                             }
                             </td>
