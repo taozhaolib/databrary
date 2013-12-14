@@ -26,8 +26,8 @@
 
                         <span has-auth="admin">
                             <span class="sep">|</span>
-                            <a has-auth="!super" class="superuser off" href="#" ng-click="authService.enableSU()">SU</a>
-                            <a has-auth="super" class="superuser on" href="#" ng-click="authService.disableSU()">SU</a>
+                            <a has-auth="!super" class="superuser off" href="#" ng-click="authService.toggleSU(true)">SU</a>
+                            <a has-auth="super" class="superuser on" href="#" ng-click="authService.toggleSU(false)">SU</a>
                         </span>
 
                         <a href="#" ng-click="authService.showProfile()" class="img"><img ng-src="{{authService.user.avatar}}" alt="{{authService.user.username}}"></a>

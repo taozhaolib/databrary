@@ -7,17 +7,27 @@ define(['app/config/module'], function (module) {
 		//
 
 		authService.user = undefined;
+		authService.userUpdated = undefined;
 
 		var updateUser = function (user) {
-			if(angular.isUndefined(user))
+			var reload = false;
+
+			if (angular.isUndefined(user))
 				return authService.user = user;
 
-			if(angular.isDefined(user.superuser) && user.superuser > 0)
+			if (angular.isDefined(user.superuser) && user.superuser > 0)
 				user.superuser = new Date(user.superuser);
 			else
 				user.superuser = false;
 
+			if (!!user.superuser != !!authService.user)
+				reload = true;
+
 			authService.user = user;
+			authService.userUpdated = new Date();
+
+			if (reload)
+				$route.reload();
 		};
 
 		$http
@@ -45,10 +55,10 @@ define(['app/config/module'], function (module) {
 		};
 
 		var parseUserAuth = function () {
-			if(angular.isUndefined(authService.user))
+			if (angular.isUndefined(authService.user))
 				return parseAuthLevel('NONE');
 
-			if(angular.isDate(authService.user.superuser) && authService.user.superuser > new Date())
+			if (angular.isDate(authService.user.superuser) && authService.user.superuser > new Date())
 				return parseAuthLevel('SUPER');
 
 			return authService.user.access;
@@ -62,8 +72,6 @@ define(['app/config/module'], function (module) {
 
 		authService.hasAuth = function (level) {
 			level = level.toUpperCase().split('!');
-
-			console.log(level.join('!'), parseUserAuth(), parseAuthLevel(level[level.length - 1]));
 
 			return level.length == 1 ?
 				parseUserAuth() >= parseAuthLevel(level.pop()) :
@@ -128,7 +136,7 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		authService.enableSU = function () {
+		var enableSU = function () {
 			$http
 				.post('/api/user/superuser/on')
 				.success(function (data) {
@@ -139,7 +147,7 @@ define(['app/config/module'], function (module) {
 				});
 		};
 
-		authService.disableSU = function () {
+		var disableSU = function () {
 			$http
 				.post('/api/user/superuser/off')
 				.success(function (data) {
@@ -150,11 +158,11 @@ define(['app/config/module'], function (module) {
 				});
 		};
 
-		authService.toggleSU = function () {
-			if(authService.isAuth('SUPER'))
-				authService.disableSU();
+		authService.toggleSU = function (state) {
+			if ((angular.isDefined(state) && !state) || authService.isAuth('SUPER'))
+				disableSU();
 			else
-				authService.enableSU();
+				enableSU();
 		};
 
 		//

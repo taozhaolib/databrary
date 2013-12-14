@@ -9,7 +9,7 @@ define(['app/config/module'], function (module) {
 				$animate[!!$scope.authService.hasAuth($attrs.hasAuth) ? 'removeClass' : 'addClass']($element, 'ng-hide');
 			};
 
-			$scope.$watch('authService.user', function () {
+			$scope.$watch('authService.userUpdated', function () {
 				update();
 			}, true);
 
