@@ -115,10 +115,10 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
     Action("add participant", controllers.routes.Record.slotAdd(volumeId, id, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
   )
 
-  lazy val json = JsonObject.flatten(
-    Some('container -> containerId),
-    Some('segment -> segment),
-    Maybe(consent).opt.map('consent -> _)
+  lazy val jsonFields : Seq[JsonField] = Seq(
+    'container -> container.json,
+    'segment -> segment
+    // Maybe(consent).opt.map('consent -> _)
   )
 }
 

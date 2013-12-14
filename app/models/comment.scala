@@ -15,10 +15,9 @@ final class Comment private (val id : Comment.Id, val who : Account, val time : 
   lazy val json = JsonRecord.flatten(id,
     Some('who -> who.party.json),
     Some('time -> time),
-    Some('slot -> slot.json),
     Some('text -> text),
     parentId.map('parent -> _)
-  )
+  ) ++ slot.jsonFields
 }
 
 object Comment extends TableId[Comment]("comment") {

@@ -19,11 +19,7 @@ sealed trait SiteRequest[A] extends Request[A] with Site {
   def clientIP = Inet(remoteAddress)
   def withObj[O](obj : O) : RequestObject[O]#Site[A]
   val isApi = path.startsWith("/api/")
-  def apiOptions : JsonOptions.Options =
-    queryString.getOrElse("with", Nil)
-      .flatMap(_.split(',')
-        .map(k => k -> queryString.getOrElse(k, Nil)))
-      .toMap
+  def apiOptions : JsonOptions.Options = queryString
 }
 
 object SiteRequest {
@@ -142,7 +138,7 @@ object Site extends SiteController {
   def start = Login.html.view
 
   def test = Action { request =>
-    Ok("Ok")
+    Ok(request.queryString.toString)
   }
 
   def tinyUrl(path : String, prefix : String) = Action {

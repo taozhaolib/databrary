@@ -145,7 +145,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       Some('creation -> creation)
     )
 
-  def json(options : Map[String,Seq[String]] = Map.empty)(implicit site : Site) : Future[JsonRecord] =
+  def json(options : Map[String,Seq[String]] = Map.empty) : Future[JsonRecord] =
     JsonOptions(json, options,
       "access" -> (opt => partyAccess.map(l =>
         Json.toJson(l.map(_.json - "volume"))

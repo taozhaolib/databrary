@@ -80,7 +80,7 @@ package object Login extends SiteController {
   def superuserOn = SiteAction.access(Permission.ADMIN) { implicit request =>
     val expires = System.currentTimeMillis + 60*60*1000
     Audit.action(Audit.Action.superuser)
-    (if (request.isApi) Ok(api.json ++ JsonObject('superuser -> new Timestamp(expires)))
+    (if (request.isApi) Ok(api.json + ('superuser -> new Timestamp(expires)))
     else Redirect(request.headers.get(REFERER).getOrElse(controllers.routes.Static.index.url)))
       .withSession(session + ("superuser" -> expires.toString))
   }
