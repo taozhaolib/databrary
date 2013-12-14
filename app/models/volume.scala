@@ -9,7 +9,7 @@ import site._
 /** Main organizational unit or package of data, within which everything else exists.
   * Usually represents a single project or dataset with a single set of procedures.
   * @param permission the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than [[Permission.VIEW]] except possibly for transient objects, as unavailable volumes should never be returned in the first place. */
-final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], val permission : Permission.Value, val creation : Timestamp)(implicit override val site : Site) extends TableRowId[Volume] with SiteObject with InVolume with JsonableRecord {
+final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], val permission : Permission.Value, val creation : Timestamp)(implicit override val site : Site) extends TableRowId[Volume] with SiteObject with InVolume {
   private[this] var _name = name_
   /** Title headline of this volume. */
   def name = _name
@@ -137,7 +137,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     Action("add participant", controllers.routes.Record.add(id, RecordCategory.PARTICIPANT), Permission.CONTRIBUTE)
   )
 
-  def json(implicit site : Site) =
+  def json =
     JsonRecord.flatten(id,
       Some('name -> name),
       body.map('body -> _),

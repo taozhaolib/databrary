@@ -40,7 +40,7 @@ object RecordCategory extends HasId[RecordCategory] {
 }
 
 /** A set of Measures. */
-final class Record private (val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE, measures_ : Measures = Measures.empty) extends TableRowId[Record] with SiteObject with InVolume with JsonableRecord {
+final class Record private (val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE, measures_ : Measures = Measures.empty) extends TableRowId[Record] with SiteObject with InVolume {
   private[this] var _category = category_
   def category : Option[RecordCategory] = _category
   def categoryId = category.map(_.id)
@@ -106,7 +106,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
     Action("edit", controllers.routes.Record.edit(volumeId, id), Permission.EDIT)
   )
 
-  def json(implicit site : Site) =
+  def json =
     JsonRecord.flatten(id,
       category.map('category -> _.name),
       Some('measures -> measures)

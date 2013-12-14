@@ -92,8 +92,8 @@ object TagUse extends Table[TagUse]("tag_use") {
 }
 
 /** Summary representation of tag information for a single slot and current user. */
-final case class TagWeight private (tag : Tag, weight : Int, user : Option[Boolean] = None) extends TableRow with JsonableRecord {
-  def json(implicit site : Site) =
+final case class TagWeight private (tag : Tag, weight : Int, user : Option[Boolean] = None) extends TableRow {
+  def json =
     JsonRecord.flatten(tag.id,
       Some('name -> tag.name),
       Some('weight -> weight),

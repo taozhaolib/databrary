@@ -156,7 +156,7 @@ package object Slot extends ObjectController[Slot] {
           for {
             _ <- request.obj.setTag(name, vote)(request.asInstanceOf[AuthSite])
             tags <- request.obj.tags(true)
-          } yield (Ok(Json.toJson(tags.map(_.json))(JsField.hashWrites)))
+          } yield (Ok(JsonRecord.seq(tags.map(_.json))))
         }
       )
     }

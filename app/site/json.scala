@@ -1,26 +1,25 @@
 package site
 
+import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.json._
 import play.api.http.Writeable
+import macros._
 
 sealed trait JsField {
-  def field : String
+  def name : String
   def value : JsValue
 }
 
-final class JsonField(val field : String, val value : JsValue) extends Tuple2[String, JsValue](field, value) with JsField
+final class JsonField(val name : String, val value : JsValue) extends Tuple2[String, JsValue](name, value) with JsField
 
 object JsonField {
+  def apply[J](name : String, value : J)(implicit w : Writes[J]) : JsonField =
+    new JsonField(name, w.writes(value))
   import scala.language.implicitConversions
   implicit def ofTuple[J](x : (Symbol, J))(implicit w : Writes[J]) : JsonField =
     new JsonField(x._1.name, w.writes(x._2))
   implicit def ofField(f : JsField) : JsonField =
-    new JsonField(f.field, f.value)
-}
-
-object JsField {
-  implicit val hashWrites : OWrites[Seq[JsField]] =
-    OWrites[Seq[JsField]](s => JsObject(s.map(JsonField.ofField(_))))
+    new JsonField(f.name, f.value)
 }
 
 object JsonObject {
@@ -31,7 +30,7 @@ object JsonObject {
 }
 
 final class JsonRecord(val id : JsValue, fields : Seq[(String, JsValue)]) extends JsField {
-  def field = id.toString
+  def name = id.toString
   def value = JsObject(fields)
   def obj = JsObject(("id" -> id) +: fields)
   def +(field : JsonField) =
@@ -53,8 +52,21 @@ object JsonRecord {
     OWrites[JsonRecord](_.obj)
   implicit def writable(implicit codec : play.api.mvc.Codec) : Writeable[JsonRecord] =
     Writeable.writeableOf_JsValue(codec).map(_.obj)
+  def seq(s : Seq[JsonRecord]) : JsValue =
+    // JsObject(s.map(JsonField.ofField(_))) /* FIXME */
+    JsArray(s.map(_.obj))
 }
 
-trait JsonableRecord {
-  def json(implicit site : Site) : JsonRecord
+object JsonOptions {
+  type Key = String
+  type Opt = Seq[String]
+  type Value = Opt => Future[JsValue]
+  type Tuple = (Key, Value)
+  type Options = Map[String, Opt]
+  def run(options : Options, opts : Tuple*)(implicit executionContext : ExecutionContext) : Future[JsObject] =
+    Async.map[Tuple, Option[JsonField], Seq[Option[JsonField]]](opts, { case (key, fun) =>
+      Async.map[Seq[String], JsonField](options.get(key), fun(_).map(JsonField(key, _)))
+    }).map(r => new JsObject(r.flatten))
+  def apply(base : JsonRecord, options : Options, opts : Tuple*)(implicit exceutionContext : ExecutionContext) : Future[JsonRecord] =
+    run(options, opts : _*).map(base ++ _)
 }

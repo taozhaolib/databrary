@@ -114,6 +114,12 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
     // Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
     Action("add participant", controllers.routes.Record.slotAdd(volumeId, id, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
   )
+
+  def json = JsonObject.flatten(
+    Some('container -> containerId),
+    // Some('segment -> segment), /* TODO */
+    Maybe(consent).opt.map('consent -> _)
+  )
 }
 
 object Slot extends TableId[Slot]("slot") {
