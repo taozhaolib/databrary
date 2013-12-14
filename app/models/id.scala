@@ -17,7 +17,7 @@ private[models] class GenericId[I,+T](val unId : I) {
   override def hashCode = unId.hashCode
   override def toString = unId.toString
 }
-/** [[GenericId]] specific to integers.  The most common (only?) type of identifier we have. */
+/** GenericId specific to integers.  The most common (only?) type of identifier we have. */
 final class IntId[+T] private (unId : Int) extends GenericId[Int,T](unId) {
   override def hashCode = unId
   /** Forcibly coerce to a different type. */

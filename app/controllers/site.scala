@@ -19,6 +19,11 @@ sealed trait SiteRequest[A] extends Request[A] with Site {
   def clientIP = Inet(remoteAddress)
   def withObj[O](obj : O) : RequestObject[O]#Site[A]
   val isApi = path.startsWith("/api/")
+  def apiOptions : JsonOptions.Options =
+    queryString.getOrElse("with", Nil)
+      .flatMap(_.split(',')
+        .map(k => k -> queryString.getOrElse(k, Nil)))
+      .toMap
 }
 
 object SiteRequest {

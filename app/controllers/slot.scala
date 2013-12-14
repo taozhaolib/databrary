@@ -22,7 +22,7 @@ package object Slot extends ObjectController[Slot] {
   def view(v : models.Volume.Id, i : models.Slot.Id) = Action(v, i).async { implicit request =>
     val slot = request.obj
     if (slot.isFull && slot.container.top)
-      ARedirect(controllers.routes.Volume.view(slot.volumeId))
+      ARedirect(controllers.Volume.routes.html.view(slot.volumeId))
     else for {
       records <- slot.records
       assets <- slot.assets
@@ -156,7 +156,7 @@ package object Slot extends ObjectController[Slot] {
           for {
             _ <- request.obj.setTag(name, vote)(request.asInstanceOf[AuthSite])
             tags <- request.obj.tags(true)
-          } yield (Ok(Json.toJson(tags.map(_.json))(JsField.hashWrites)))
+          } yield (Ok(JsonRecord.seq(tags.map(_.json))))
         }
       )
     }

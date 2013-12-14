@@ -22,30 +22,30 @@ POST        /token/password                                                     
 GET         /token/:token                                                                              controllers.Token.token(token : String)
 
 # parties
-GET         /party/$pID<-?[0-9]+>                                                                      controllers.Party.view(pID : models.Party.Id)
-GET         /party/$pID<[0-9]+>/edit                                                                   controllers.Party.edit(pID : models.Party.Id)
-POST        /party/$pID<[0-9]+>/edit                                                                   controllers.Party.change(pID : models.Party.Id)
+GET         /party/$pID<-?[0-9]+>                                                                     controllers.Party.html.view(pID : models.Party.Id)
+GET         /party/$pID<[0-9]+>/edit                                                                  controllers.Party.html.edit(pID : models.Party.Id)
+POST        /party/$pID<[0-9]+>/edit                                                                  controllers.Party.html.change(pID : models.Party.Id)
 POST        /party/$pID<[0-9]+>/token                                                                  controllers.Token.password(pID : models.Account.Id)
-GET         /party/$pID<[0-9]+>/authorize                                                              controllers.Party.admin(pID : models.Party.Id)
-GET         /party/$pID<[0-9]+>/authorize/search/child                                                 controllers.Party.authorizeSearch(pID : models.Party.Id, which : Boolean = false)
-GET         /party/$pID<[0-9]+>/authorize/search/parent                                                controllers.Party.authorizeSearch(pID : models.Party.Id, which : Boolean = true)
-POST        /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>                                             controllers.Party.authorizeChange(pID : models.Party.Id, child : models.Party.Id)
-POST        /party/$pID<[0-9]+>/authorize/$parent<-?[0-9]+>/apply                                      controllers.Party.authorizeApply(pID : models.Party.Id, parent : models.Party.Id)
+GET         /party/$pID<[0-9]+>/authorize                                                             controllers.Party.html.admin(pID : models.Party.Id)
+GET         /party/$pID<[0-9]+>/authorize/search/child                                                controllers.Party.html.authorizeSearch(pID : models.Party.Id, which : Boolean = false)
+GET         /party/$pID<[0-9]+>/authorize/search/parent                                               controllers.Party.html.authorizeSearch(pID : models.Party.Id, which : Boolean = true)
+POST        /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>                                            controllers.Party.html.authorizeChange(pID : models.Party.Id, child : models.Party.Id)
+POST        /party/$pID<[0-9]+>/authorize/$parent<-?[0-9]+>/apply                                     controllers.Party.html.authorizeApply(pID : models.Party.Id, parent : models.Party.Id)
 # TODO: should be POST but currently used as link:
-GET         /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>/remove                                      controllers.Party.authorizeDelete(pID : models.Party.Id, child : models.Party.Id)
+GET         /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>/remove                                     controllers.Party.html.authorizeDelete(pID : models.Party.Id, child : models.Party.Id)
 
 # volumes
-GET         /search                                                                                    controllers.Volume.search
-GET         /volume/create                                                                             controllers.Volume.create(owner : Option[models.Party.Id] ?= None)
-POST        /volume/create/$pID<[0-9]+>                                                                controllers.Volume.add(pID : models.Party.Id)
-GET         /volume/$vID<[0-9]+>                                                                       controllers.Volume.view(vID : models.Volume.Id)
-GET         /volume/$vID<[0-9]+>/edit                                                                  controllers.Volume.edit(vID : models.Volume.Id)
-POST        /volume/$vID<[0-9]+>/edit                                                                  controllers.Volume.change(vID : models.Volume.Id)
-GET         /volume/$vID<[0-9]+>/access                                                                controllers.Volume.admin(vID : models.Volume.Id)
-GET         /volume/$vID<[0-9]+>/access/search                                                         controllers.Volume.accessSearch(vID : models.Volume.Id)
+GET         /search                                                                                   controllers.Volume.html.search
+GET         /volume/create                                                                            controllers.Volume.html.create(owner : Option[models.Party.Id] ?= None)
+POST        /volume/create/$pID<[0-9]+>                                                               controllers.Volume.html.add(pID : models.Party.Id)
+GET         /volume/$vID<[0-9]+>                                                                      controllers.Volume.html.view(vID : models.Volume.Id)
+GET         /volume/$vID<[0-9]+>/edit                                                                 controllers.Volume.html.edit(vID : models.Volume.Id)
+POST        /volume/$vID<[0-9]+>/edit                                                                 controllers.Volume.html.change(vID : models.Volume.Id)
+GET         /volume/$vID<[0-9]+>/access                                                               controllers.Volume.html.admin(vID : models.Volume.Id)
+GET         /volume/$vID<[0-9]+>/access/search                                                        controllers.Volume.html.accessSearch(vID : models.Volume.Id)
 # TODO: should be POST:
-GET         /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>/remove                                          controllers.Volume.accessDelete(vID : models.Volume.Id, pID : models.Party.Id)
-POST        /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                                                 controllers.Volume.accessChange(vID : models.Volume.Id, pID : models.Party.Id)
+GET         /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>/remove                                         controllers.Volume.html.accessDelete(vID : models.Volume.Id, pID : models.Party.Id)
+POST        /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                                                controllers.Volume.html.accessChange(vID : models.Volume.Id, pID : models.Party.Id)
 GET         /volume/$vID<[0-9]+>/thumb                                                                 controllers.Volume.thumb(vID : models.Volume.Id)
 
 # slots
@@ -107,6 +107,11 @@ POST        /api/user/login                                                     
 POST        /api/user/logout                                                                           controllers.Login.logout
 POST        /api/user/superuser/on                                                                     controllers.Login.superuserOn
 POST        /api/user/superuser/off                                                                    controllers.Login.superuserOff
+
+
+GET         /api/party/$partyId<-?[0-9]+>                                                             controllers.Party.api.get(partyId : models.Party.Id)
+
+GET         /api/volume/$volumeId<[0-9]+>                                                             controllers.Volume.api.get(volumeId : models.Volume.Id)
 
 POST        /api/volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/tag                                             controllers.Slot.api.tag(vID : models.Volume.Id, sID : models.Slot.Id)
 

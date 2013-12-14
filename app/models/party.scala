@@ -10,7 +10,7 @@ import site._
 /** Any real-world individual, group, institution, etc.
   * Instances are generally obtained from [[Party.get]] or [[Party.create]].
   * @param delegated permission delegated by this party to the current user */
-final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid]) extends TableRowId[Party] with SitePage with JsonableRecord {
+final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid]) extends TableRowId[Party] with SitePage {
   private[this] var _name = name_
   def name = _name
   private[this] var _orcid = orcid_
@@ -55,15 +55,40 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
 
   def pageName = name
   def pageParent = None
-  def pageURL = controllers.routes.Party.view(id)
+  def pageURL = controllers.Party.routes.html.view(id)
 
   def perSite(implicit site : Site) : Future[SiteParty] = SiteParty.make(this)
 
-  def json(implicit site : Site) =
+  def json(implicit site : Site) : JsonRecord =
     JsonRecord.flatten(id,
       Some('name -> name), 
       orcid.map('orcid -> _), 
       account.filter(_ => site.access >= Permission.VIEW).map('email -> _.email)
+    )
+
+  def json(options : Map[String,Seq[String]] = Map.empty)(implicit site : Site) : Future[JsonRecord] =
+    JsonOptions(json, options,
+      "parents" -> (opt => authorizeParents(opt.contains("all")).map(l =>
+        JsonRecord.seq(l.map(a => JsonRecord(a.parentId,
+          'parent -> a.parent.json,
+          'access -> a.access
+        )))
+      )),
+      "children" -> (opt => authorizeChildren(opt.contains("all")).map(l =>
+        JsonRecord.seq(l.map(a => JsonRecord(a.childId,
+          'child -> a.child.json,
+          'access -> a.access
+        )))
+      )),
+      "volumes" -> (opt => volumeAccess.map(l =>
+        Json.toJson(l.map(_.json - "party"))
+      )),
+      "funding" -> (opt => funding.map(l =>
+        Json.toJson(l.map(_.json - "funder"))
+      )),
+      "comments" -> (opt => account.fold[Future[Seq[Comment]]](Async(Nil))(_.comments).map(l =>
+        Json.toJson(l.map(c => c.json - "who" + ('volume -> c.volume.json)))
+      ))
     )
 }
 
@@ -74,10 +99,10 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
   def pageParent = party.pageParent
   def pageURL = party.pageURL
   def pageActions = Seq(
-    Action("view", controllers.routes.Party.view(party.id), Permission.VIEW),
-    Action("edit", controllers.routes.Party.edit(party.id), Permission.EDIT),
-    Action("authorization", controllers.routes.Party.admin(party.id), Permission.ADMIN),
-    SiteAction("add volume", controllers.routes.Volume.create(Some(party.id)),
+    Action("view", controllers.Party.routes.html.view(party.id), Permission.VIEW),
+    Action("edit", controllers.Party.routes.html.edit(party.id), Permission.EDIT),
+    Action("authorization", controllers.Party.routes.html.admin(party.id), Permission.ADMIN),
+    SiteAction("add volume", controllers.Volume.routes.html.create(Some(party.id)),
       !party.id.equals(Party.ROOT) && checkPermission(Permission.CONTRIBUTE) && access >= Permission.CONTRIBUTE)
   )
 }

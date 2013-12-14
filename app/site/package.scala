@@ -2,7 +2,7 @@ package object site {
   implicit def siteDB : Site.DB = Site.dbPool
 
   /** Group adjacent elements with identical keys into nested lists, such that the concatenation of the resulting _2 elements is the original list.
-    * This is more like Haskell's group than scala's [[Seq#groupBy]]: only adjacent elements are grouped.
+    * This is more like Haskell's group than scala's Seq.groupBy: only adjacent elements are grouped.
     * @param l the list to group
     * @param f the key-generating function to group by
     */

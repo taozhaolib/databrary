@@ -2,6 +2,7 @@ package models
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.Json
 import macros._
 import dbrary._
 import site._
@@ -9,7 +10,7 @@ import site._
 /** Main organizational unit or package of data, within which everything else exists.
   * Usually represents a single project or dataset with a single set of procedures.
   * @param permission the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than [[Permission.VIEW]] except possibly for transient objects, as unavailable volumes should never be returned in the first place. */
-final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], val permission : Permission.Value, val creation : Timestamp)(implicit override val site : Site) extends TableRowId[Volume] with SiteObject with InVolume with JsonableRecord {
+final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], val permission : Permission.Value, val creation : Timestamp)(implicit override val site : Site) extends TableRowId[Volume] with SiteObject with InVolume {
   private[this] var _name = name_
   /** Title headline of this volume. */
   def name = _name
@@ -127,21 +128,40 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
   def pageName = name
   def pageParent = None
-  def pageURL = controllers.routes.Volume.view(id)
+  def pageURL = controllers.Volume.routes.html.view(id)
   def pageActions = Seq(
-    Action("view", controllers.routes.Volume.view(id), Permission.VIEW),
-    Action("edit", controllers.routes.Volume.edit(id), Permission.EDIT),
-    Action("access", controllers.routes.Volume.admin(id), Permission.ADMIN),
+    Action("view", controllers.Volume.routes.html.view(id), Permission.VIEW),
+    Action("edit", controllers.Volume.routes.html.edit(id), Permission.EDIT),
+    Action("access", controllers.Volume.routes.html.admin(id), Permission.ADMIN),
     Action("add file", controllers.routes.Asset.createTop(id), Permission.CONTRIBUTE),
     Action("add session", controllers.routes.Slot.createContainer(id), Permission.CONTRIBUTE),
     Action("add participant", controllers.routes.Record.add(id, RecordCategory.PARTICIPANT), Permission.CONTRIBUTE)
   )
 
-  def json(implicit site : Site) =
+  lazy val json : JsonRecord =
     JsonRecord.flatten(id,
       Some('name -> name),
       body.map('body -> _),
       Some('creation -> creation)
+    )
+
+  def json(options : Map[String,Seq[String]] = Map.empty)(implicit site : Site) : Future[JsonRecord] =
+    JsonOptions(json, options,
+      "access" -> (opt => partyAccess.map(l =>
+        Json.toJson(l.map(_.json - "volume"))
+      )),
+      "funding" -> (opt => citations.map(l =>
+        Json.toJson(l.map(_.json - "volume"))
+      )),
+      "citations" -> (opt => citations.map(l =>
+        Json.toJson(l.map(_.json))
+      )),
+      "comments" -> (opt => comments.map(l =>
+        Json.toJson(l.map(_.json))
+      )),
+      "tags" -> (opt => tags.map(l =>
+        Json.toJson(l.map(_.json))
+      ))
     )
 }
 

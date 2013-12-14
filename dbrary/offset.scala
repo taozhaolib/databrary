@@ -2,6 +2,7 @@ package dbrary
 
 import play.api.mvc.{PathBindable,QueryStringBindable,JavascriptLitteral}
 import play.api.data.format.Formatter
+import play.api.libs.json
 import org.postgresql.util.PGInterval
 import macros._
 
@@ -74,6 +75,14 @@ object Offset {
           left.map(_ => Seq(play.api.data.FormError(key, "error.offset", Nil)))
       }
     def unbind(key: String, value: Offset) = Map(key -> value.toString)
+  }
+
+  implicit val jsonFormat : json.Format[Offset] = new json.Format[Offset] {
+    def writes(o : Offset) = json.JsNumber(o.millis)
+    def reads(j : json.JsValue) = j match {
+      case json.JsNumber(s) => json.JsSuccess(apply(s/1000))
+      case _ => json.JsError("error.expected.jsnumber")
+    }
   }
 
   import scala.language.implicitConversions

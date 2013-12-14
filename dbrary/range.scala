@@ -1,5 +1,6 @@
 package dbrary
 
+import play.api.libs.json
 import macros._
 
 trait RangeType[A] extends Ordering[A]
@@ -154,6 +155,10 @@ object Range {
 
   implicit val segmentSqlType : SQLType[Range[Offset]] = PGRangeType.segment.sqlType
   implicit val dateSqlType : SQLType[Range[Date]] = PGRangeType.date.sqlType
+  implicit def jsonWrites[T](implicit w : json.Writes[T]) : json.Writes[Range[T]] =
+    json.Writes[Range[T]](o =>
+      if (o.isEmpty) json.JsNull
+      else json.JsArray(Seq(json.Json.toJson(o.lowerBound), json.Json.toJson(o.upperBound))))
 }
 
 abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends RangeType[A] {

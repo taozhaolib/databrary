@@ -14,7 +14,10 @@ abstract class PGEnum(name : String) extends Enumeration {
     )
   implicit val jsonFormat : json.Format[Value] = new json.Format[Value] {
     def writes(v : Value) = json.JsNumber(v.id)
-    def reads(j : json.JsValue) = json.Json.fromJson[Int](j).map(apply(_))
+    def reads(j : json.JsValue) = j match {
+      case json.JsNumber(i) if i.isValidInt && i >= 0 && i < maxId => json.JsSuccess(apply(i.toInt))
+      case _ => json.JsError("error.expected.jsnumber")
+    }
   }
 }
 
