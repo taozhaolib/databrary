@@ -12,8 +12,10 @@ define(['app/config/module'], function (module) {
 		var updateUser = function (user) {
 			var reload = false;
 
-			if (angular.isUndefined(user))
-				return authService.user = user;
+			authService.userUpdated = new Date();
+
+			if (!user)
+				return authService.user = undefined;
 
 			if (angular.isDefined(user.superuser) && user.superuser > 0)
 				user.superuser = new Date(user.superuser);
@@ -24,7 +26,6 @@ define(['app/config/module'], function (module) {
 				reload = true;
 
 			authService.user = user;
-			authService.userUpdated = new Date();
 
 			if (reload)
 				$route.reload();
@@ -73,6 +74,8 @@ define(['app/config/module'], function (module) {
 		authService.hasAuth = function (level) {
 			level = level.toUpperCase().split('!');
 
+			console.log(level, parseUserAuth(), parseAuthLevel(level[level.length - 1]), authService.user);
+
 			return level.length == 1 ?
 				parseUserAuth() >= parseAuthLevel(level.pop()) :
 				parseUserAuth() < parseAuthLevel(level.pop());
@@ -109,8 +112,6 @@ define(['app/config/module'], function (module) {
 				openid: ''
 			}, data);
 
-			console.log(data);
-
 			$http
 				.post('/api/user/login', data)
 				.success(function (data) {
@@ -132,6 +133,10 @@ define(['app/config/module'], function (module) {
 				.error(function () {
 					$location.path('/');
 				});
+		};
+
+		authService.showProfile = function () {
+			$location.path('/party/' + authService.user.id);
 		};
 
 		//
