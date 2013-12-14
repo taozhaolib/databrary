@@ -12,7 +12,7 @@ final class Comment private (val id : Comment.Id, val who : Account, val time : 
   def slotId = slot.id
   def whoId = who.id
 
-  def json(implicit site : Site) = JsonRecord.flatten(id,
+  lazy val json = JsonRecord.flatten(id,
     Some('who -> who.party.json),
     Some('time -> time),
     Some('slot -> slot.json),

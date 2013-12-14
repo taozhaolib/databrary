@@ -93,9 +93,8 @@ object TagUse extends Table[TagUse]("tag_use") {
 
 /** Summary representation of tag information for a single slot and current user. */
 final case class TagWeight private (tag : Tag, weight : Int, user : Option[Boolean] = None) extends TableRow {
-  def json =
-    JsonRecord.flatten(tag.id,
-      Some('name -> tag.name),
+  lazy val json =
+    JsonRecord.flatten(tag.name,
       Some('weight -> weight),
       user.map(u => 'vote -> (if (u) 1 else -1))
     )

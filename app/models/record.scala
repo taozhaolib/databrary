@@ -106,7 +106,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
     Action("edit", controllers.routes.Record.edit(volumeId, id), Permission.EDIT)
   )
 
-  def json =
+  lazy val json =
     JsonRecord.flatten(id,
       category.map('category -> _.name),
       Some('measures -> measures)

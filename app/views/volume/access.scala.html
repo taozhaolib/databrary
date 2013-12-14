@@ -28,14 +28,14 @@
                     <tbody>
                         @accessForms.map { case (party,form) =>
                             <tr>
-                                @widget.tag.form(routes.Volume.accessChange(volume.id, party.id), 'id -> ("party_"+party.id.toString)) {
+                                @widget.tag.form(controllers.Volume.routes.html.accessChange(volume.id, party.id), 'id -> ("party_"+party.id.toString)) {
                                     @accessFields(party, form)
                                 }
 
                                 <td>
                                     <button type='submit' class="button second" form="party_@party.id">Update</button>
                                     @if(party.id != request.identity.id) {
-                                        <a href='@routes.Volume.accessDelete(volume.id, party.id)' class="button first">Revoke</a>
+                                        <a href='@controllers.Volume.routes.html.accessDelete(volume.id, party.id)' class="button first">Revoke</a>
                                     }
                                     @widget.formErrors(form)
                                 </td>
@@ -44,7 +44,7 @@
                     </tbody>
 
                     <tfoot>
-                        @widget.tag.form(routes.Volume.accessSearch(volume.id)) {
+                        @widget.tag.form(controllers.Volume.routes.html.accessSearch(volume.id)) {
                             <tr class="null">
                                 @widget.tag.inputText(accessSearch("name"), 'placeholder -> "Search users and institutions...")
                                 <td/>
@@ -57,7 +57,7 @@
                         }
 
                         @accessResults.map { case (party,form) =>
-                            @widget.tag.form(routes.Volume.accessChange(volume.id, party.id)) {
+                            @widget.tag.form(controllers.Volume.routes.html.accessChange(volume.id, party.id)) {
                                 <tr>
                                     @accessFields(party, form)
                                     <td>

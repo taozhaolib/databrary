@@ -81,19 +81,13 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
         )))
       )),
       "volumes" -> (opt => volumeAccess.map(l =>
-        JsonRecord.seq(l.map(a => JsonRecord(a.volumeId,
-          'volume -> a.volume.json,
-          'access -> a.access
-        )))
+        Json.toJson(l.map(_.json - "party"))
       )),
       "funding" -> (opt => funding.map(l =>
-        JsonRecord.seq(l.map(a => JsonRecord.flatten(a.volumeId,
-          Some('volume -> a.volume.json),
-          a.grant.map('grant -> _)
-        )))
+        Json.toJson(l.map(_.json - "funder"))
       )),
       "comments" -> (opt => account.fold[Future[Seq[Comment]]](Async(Nil))(_.comments).map(l =>
-        Json.toJson(l.map(_.json))
+        Json.toJson(l.map(c => c.json - "who" + ('volume -> c.volume.json)))
       ))
     )
 }
@@ -108,7 +102,7 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
     Action("view", controllers.Party.routes.html.view(party.id), Permission.VIEW),
     Action("edit", controllers.Party.routes.html.edit(party.id), Permission.EDIT),
     Action("authorization", controllers.Party.routes.html.admin(party.id), Permission.ADMIN),
-    SiteAction("add volume", controllers.routes.Volume.create(Some(party.id)),
+    SiteAction("add volume", controllers.Volume.routes.html.create(Some(party.id)),
       !party.id.equals(Party.ROOT) && checkPermission(Permission.CONTRIBUTE) && access >= Permission.CONTRIBUTE)
   )
 }
