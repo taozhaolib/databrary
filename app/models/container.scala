@@ -42,7 +42,7 @@ final class Container protected (override val id : Container.Id, val volume : Vo
     // Some('volume -> volume.json),
     if (top) Some('top -> top) else None,
     name.map('name -> _),
-    date.map('date -> _)
+    getDate.map('date -> _.toString)
     // Maybe(consent).opt.map('consent -> _)
   )
 }
