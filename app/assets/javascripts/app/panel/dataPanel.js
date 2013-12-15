@@ -3,7 +3,7 @@ define(['app/config/module'], function (module) {
 
 	module.controller('DataPanel', ['$scope', 'Party', '$routeParams', '$filter', function ($scope, Party, $routeParams, $filter) {
 		$scope.bootPanel = function () {
-//			if (!$scope.party || !$scope.party.volumes)
+//			if (!$scope.party || !$scope.party.volumes || !$scope.funding)
 //				Party.get({
 //					id: $routeParams.id,
 //					volumes: 'all'
@@ -14,8 +14,13 @@ define(['app/config/module'], function (module) {
 		};
 
 		$scope.updateVolumes = function () {
+			$scope.funded = [];
 			$scope.investigated = [];
 			$scope.contributed = [];
+
+			angular.forEach($scope.party.funding, function (volumeAccess) {
+				$scope.investigated.push(volumeAccess.volume);
+			});
 
 			angular.forEach($scope.party.volumes, function (volumeAccess) {
 				if (volumeAccess.access == 4)

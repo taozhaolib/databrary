@@ -19,9 +19,11 @@
         </div>
 
         <aside class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 col-cell">
-                    @*
-            @widget.figure.thumbVolume(volume, scalar = "square")
-                    *@
+            <figure baseline="square">
+                <figmedia>
+                    <img ng-src="/volume/{{volume.id}}/thumb">
+                </figmedia>
+            </figure>
         </aside>
     </div>
 </article>

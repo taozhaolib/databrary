@@ -6,8 +6,7 @@ figure, .figure {
 
 	> a,
 	.media,
-	.text,
-	.image {
+	.text {
 		position: absolute;
 		overflow: hidden;
 		display: block;
@@ -15,6 +14,18 @@ figure, .figure {
 		left: 0;
 		right: 0;
 		bottom: 0;
+
+		.inner {
+			width: 2000px;
+			position: absolute;
+			left: 50%;
+			top: 0;
+			margin-left: -1000px;
+
+			* {
+				margin: 0 auto;
+			}
+		}
 	}
 
 //	.text {
@@ -24,13 +35,6 @@ figure, .figure {
 
 	&.square,
 	&.wide {
-		.scalar {
-			position: relative;
-			visibility: hidden !important;
-			width: 100%;
-			min-width: 100%;
-			z-index: -1;
-		}
 	}
 
 	&.square {
@@ -40,21 +44,9 @@ figure, .figure {
 	}
 
 	&.wide {
-		.scalar {
-			margin-top: -43.75%;
-		}
 	}
 
 	&.tube {
-		.scalar {
-			margin-top: -25%;
-		}
-	}
-
-	.image {
-		background-size: cover;
-		background-repeat: no-repeat;
-		background-position: center center;
 	}
 
 	&.hoverable {

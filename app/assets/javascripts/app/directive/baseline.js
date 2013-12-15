@@ -7,32 +7,41 @@ define(['app/config/module'], function (module) {
 
 		var link = function ($scope, $element, $attrs) {
 			var ratio,
+				ratioClass,
 				timeout;
 
-			$scope.updateRatio = function (val) {
-				if ($.isNumeric(val))
-					ratio = parseFloat(val);
-				else
-					switch (val) {
+			$scope.updateBaseline = function () {
+				$element.removeClass(ratioClass);
+
+				if (isNaN($attrs.baseline)) {
+					switch ($attrs.baseline) {
 						case 'wide':
 						case '16x9':
 							ratio = .5625;
+							ratioClass = 'wide';
 							break;
 
 						case 'tube':
 						case '4x3':
 							ratio = .75;
+							ratioClass = 'tube';
 							break;
 
 						case 'square':
 						case '1x1':
 						default:
 							ratio = 1;
+							ratioClass = 'square';
 							break;
 					}
+				} else {
+					ratio = parseFloat($attrs.baseline);
+				}
+
+				$element.addClass(ratioClass);
 			};
 
-			$scope.trigger = function () {
+			$scope.triggerBaseline = function () {
 				var width = $element.outerWidth(false),
 					height;
 
@@ -43,13 +52,43 @@ define(['app/config/module'], function (module) {
 					$element.height(height);
 				else
 					$element.css('height', '');
+
+				var $img = $element.find('.media img');
+
+				if(!$img.length > 0)
+					return;
+
+				var imgWidth = $img.width(),
+					imgHeight = $img.height();
+
+				console.log(imgWidth, imgHeight, width, height);
+
+				if(imgWidth >= imgHeight)
+					$img.css({
+						'width': 'auto',
+						'height': height+'px'
+					});
+				else
+					$img.css({
+						'width': width+'px',
+						'height': 'auto'
+					});
 			};
+
+			//
+
+			$attrs.$observe('baseline', function () {
+				$scope.updateBaseline();
+				$scope.triggerBaseline();
+			});
+
+			//
 
 			$(window).on('resize', function () {
 				clearTimeout(timeout);
 
 				timeout = setTimeout(function () {
-					$scope.trigger();
+					$scope.triggerBaseline();
 				}, pauseTime);
 			});
 
@@ -57,15 +96,13 @@ define(['app/config/module'], function (module) {
 				$timeout.cancel(timeout);
 			});
 
-			$scope.updateRatio($attrs.dbBaselineRatio);
-			$element.removeAttr('db-baseline-ratio');
-
-			$scope.trigger();
+			$scope.triggerBaseline();
 		};
 
 		return {
 			restrict: 'A',
 			scope: true,
+			priority: 150,
 			link: link
 		};
 	}]);
