@@ -133,9 +133,9 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     Action("view", controllers.Volume.routes.html.view(id), Permission.VIEW),
     Action("edit", controllers.Volume.routes.html.edit(id), Permission.EDIT),
     Action("access", controllers.Volume.routes.html.admin(id), Permission.ADMIN),
-    Action("add file", controllers.routes.Asset.createTop(id), Permission.CONTRIBUTE),
+    Action("add file", controllers.Asset.routes.html.createTop(id), Permission.CONTRIBUTE),
     Action("add session", controllers.routes.Slot.createContainer(id), Permission.CONTRIBUTE),
-    Action("add participant", controllers.routes.Record.add(id, RecordCategory.PARTICIPANT), Permission.CONTRIBUTE)
+    Action("add participant", controllers.Record.routes.html.add(id, RecordCategory.PARTICIPANT), Permission.CONTRIBUTE)
   )
 
   lazy val json : JsonRecord =
@@ -145,7 +145,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       Some('creation -> creation)
     )
 
-  def json(options : Map[String,Seq[String]] = Map.empty)(implicit site : Site) : Future[JsonRecord] =
+  def json(options : Map[String,Seq[String]] = Map.empty) : Future[JsonRecord] =
     JsonOptions(json, options,
       "access" -> (opt => partyAccess.map(l =>
         Json.toJson(l.map(_.json - "volume"))

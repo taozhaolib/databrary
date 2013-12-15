@@ -4,6 +4,7 @@ import scala.concurrent.Future
 import scala.collection.concurrent
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.Files.TemporaryFile
+import play.api.libs.json.{JsValue,JsNull}
 import macros._
 import dbrary._
 import site._
@@ -157,12 +158,25 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
 
   def pageName = name
   def pageParent = Some(volume)
-  def pageURL = controllers.routes.Asset.view(volume.id, id)
+  def pageURL = controllers.Asset.routes.html.view(volume.id, id)
   def pageActions = Seq(
-    Action("view", controllers.routes.Asset.view(volumeId, id), Permission.VIEW),
-    Action("edit", controllers.routes.Asset.edit(volumeId, id), Permission.EDIT),
-    Action("remove", controllers.routes.Asset.remove(volumeId, id), Permission.CONTRIBUTE)
+    Action("view", controllers.Asset.routes.html.view(volumeId, id), Permission.VIEW),
+    Action("edit", controllers.Asset.routes.html.edit(volumeId, id), Permission.EDIT),
+    Action("remove", controllers.Asset.routes.html.remove(volumeId, id), Permission.CONTRIBUTE)
   )
+
+  lazy val json : JsonRecord = JsonRecord.flatten(id,
+    Some('format -> format.name),
+    Some('classification -> classification),
+    Some('name -> name),
+    body.map('body -> _),
+    cast[Timeseries](this).map('duration -> _.duration)
+  )
+
+  def json(options : Map[String,Seq[String]] = Map.empty) : Future[JsonRecord] =
+    JsonOptions(json, options,
+      "slot" -> (opt => slot.map(_.fold[JsValue](JsNull)(_.slot.jsonFields)))
+    )
 }
 
 /** Special timeseries assets in a designated format.

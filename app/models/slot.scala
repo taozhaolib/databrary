@@ -110,15 +110,15 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
   def pageActions = Seq(
     Action("view", controllers.routes.Slot.view(volumeId, id), Permission.VIEW),
     Action("edit", controllers.routes.Slot.edit(volumeId, id), Permission.EDIT),
-    Action("add file", controllers.routes.Asset.create(volumeId, id), Permission.CONTRIBUTE),
+    Action("add file", controllers.Asset.routes.html.create(volumeId, id), Permission.CONTRIBUTE),
     // Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
-    Action("add participant", controllers.routes.Record.slotAdd(volumeId, id, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
+    Action("add participant", controllers.Record.routes.html.slotAdd(volumeId, id, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
   )
 
-  lazy val json = JsonObject.flatten(
-    Some('container -> containerId),
-    Some('segment -> segment),
-    Maybe(consent).opt.map('consent -> _)
+  lazy val jsonFields = JsonObject(
+    'container -> container.json,
+    'segment -> segment
+    // Maybe(consent).opt.map('consent -> _)
   )
 }
 

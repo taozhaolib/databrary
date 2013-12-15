@@ -65,31 +65,6 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
       orcid.map('orcid -> _), 
       account.filter(_ => site.access >= Permission.VIEW).map('email -> _.email)
     )
-
-  def json(options : Map[String,Seq[String]] = Map.empty)(implicit site : Site) : Future[JsonRecord] =
-    JsonOptions(json, options,
-      "parents" -> (opt => authorizeParents(opt.contains("all")).map(l =>
-        JsonRecord.seq(l.map(a => JsonRecord(a.parentId,
-          'parent -> a.parent.json,
-          'access -> a.access
-        )))
-      )),
-      "children" -> (opt => authorizeChildren(opt.contains("all")).map(l =>
-        JsonRecord.seq(l.map(a => JsonRecord(a.childId,
-          'child -> a.child.json,
-          'access -> a.access
-        )))
-      )),
-      "volumes" -> (opt => volumeAccess.map(l =>
-        Json.toJson(l.map(_.json - "party"))
-      )),
-      "funding" -> (opt => funding.map(l =>
-        Json.toJson(l.map(_.json - "funder"))
-      )),
-      "comments" -> (opt => account.fold[Future[Seq[Comment]]](Async(Nil))(_.comments).map(l =>
-        Json.toJson(l.map(c => c.json - "who" + ('volume -> c.volume.json)))
-      ))
-    )
 }
 
 final class SiteParty(val party : Party, val access : Permission.Value, val delegated : Permission.Value)(implicit val site : Site) extends SiteObject {
@@ -105,6 +80,31 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
     SiteAction("add volume", controllers.Volume.routes.html.create(Some(party.id)),
       !party.id.equals(Party.ROOT) && checkPermission(Permission.CONTRIBUTE) && access >= Permission.CONTRIBUTE)
   )
+
+  def json(options : Map[String,Seq[String]] = Map.empty) : Future[JsonRecord] =
+    JsonOptions(party.json, options,
+      "parents" -> (opt => party.authorizeParents(opt.contains("all")).map(l =>
+        JsonRecord.seq(l.map(a => JsonRecord(a.parentId,
+          'parent -> a.parent.json,
+          'access -> a.access
+        )))
+      )),
+      "children" -> (opt => party.authorizeChildren(opt.contains("all")).map(l =>
+        JsonRecord.seq(l.map(a => JsonRecord(a.childId,
+          'child -> a.child.json,
+          'access -> a.access
+        )))
+      )),
+      "volumes" -> (opt => party.volumeAccess.map(l =>
+        Json.toJson(l.map(_.json - "party"))
+      )),
+      "funding" -> (opt => party.funding.map(l =>
+        Json.toJson(l.map(_.json - "funder"))
+      )),
+      "comments" -> (opt => party.account.fold[Future[Seq[Comment]]](Async(Nil))(_.comments).map(l =>
+        Json.toJson(l.map(c => c.json - "who" + ('volume -> c.volume.json)))
+      ))
+    )
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
