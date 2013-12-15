@@ -96,7 +96,7 @@ object display {
     case "National Science Foundation" => routes.Assets.at("private/profiles/nsf.png").url
     case "Databrary" => routes.Assets.at("private/profiles/databrary.png").url
     case "New York University" => routes.Assets.at("private/profiles/nyu.jpg").url
-    case _ => gravatarUrlByParty(party, size)
+    case _ => ""
   }
 
   def permissionToRole(permission : models.Permission.Value) = permission match {

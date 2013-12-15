@@ -7,8 +7,8 @@ define(['app/config/module'], function (module) {
 
 			var href = ($attrs.ngHref) ? $attrs.ngHref : $attrs.href;
 
-			if (href) { console.log('href');
-				var $wrap = ('<a></a>');
+			if (href) {
+				var $wrap = $('<a></a>');
 
 				$wrap.attr('ng-href', href);
 

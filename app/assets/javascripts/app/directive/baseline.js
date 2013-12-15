@@ -61,8 +61,6 @@ define(['app/config/module'], function (module) {
 				var imgWidth = $img.width(),
 					imgHeight = $img.height();
 
-				console.log(imgWidth, imgHeight, width, height);
-
 				if(imgWidth >= imgHeight)
 					$img.css({
 						'width': 'auto',

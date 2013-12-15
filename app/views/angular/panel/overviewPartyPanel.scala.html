@@ -1,5 +1,9 @@
 <panel ng-controller="OverviewPartyPanel" top id="panel_overview" title="Overview">
     <panel-mode name="view" active>
+        <figure class="panel_overview_thumbnail">
+            <figmedia><img ng-src="{{party.avatar || party.email | gravatar:400}}"></figmedia>
+        </figure>
+
         <h1 class="panel_title">{{party.name}}</h1>
 
         <div frame id="frame_contact" title="Contact" fold>
@@ -15,8 +19,6 @@
                 </div>
             </div>
         </div>
-
-        <p>AVATARS NOT IMPLEMENTED</p>
     </panel-mode>
 
     <panel-mode name="edit">
