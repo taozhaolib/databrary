@@ -1,13 +1,21 @@
 <panel ng-controller="DataPanel" id="panel_data" title="Data" fold>
-    <panel-mode name="view">
+    <panel-mode name="view" active>
+        <p>FUNDED VOLUMES NOT IMPLEMENTED.</p>
 
-    </panel-mode>
+        <div ng-show="panel.investigated">
+            <h2>Investigator</h2>
 
-    <panel-mode name="edit">
+            <div class="row">
+                <div ng-repeat="volume in panel.investigated" ng-include="'volumeBlurb.html'"></div>
+            </div>
+        </div>
 
-    </panel-mode>
+        <div ng-show="panel.contributed">
+            <h2>Contributor</h2>
 
-    <panel-mode name="admin">
-
+            <div class="row">
+                <div ng-repeat="volume in panel.contributed" ng-include="'volumeBlurb.html'"></div>
+            </div>
+        </div>
     </panel-mode>
 </panel>

@@ -1,3 +1,3 @@
 define([
-//	'app/model/'
+	'app/model/party'
 ], function () {});

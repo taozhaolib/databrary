@@ -1,13 +1,29 @@
 <panel ng-controller="OverviewPartyPanel" top id="panel_overview" title="Overview">
-    <panel-mode name="view">
+    <panel-mode name="view" active>
+        <h1 class="col-full panel_title">{{party.name}}</h1>
 
+        <div frame id="frame_contact" title="Contact" fold>
+            <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+                <div class="metadata">
+                    <dl class="flat">
+                        <dt ng-if="party.email">Email</dt>
+                        <dd ng-if="party.email"><a ng-href="mailto:{{party.email}}" title="Email {{party.name}}">{{party.email}}</a></dd>
+
+                        <dt ng-if="party.orcid">ORCiD</dt>
+                        <dd ng-if="party.orcid"><a ng-href="{{party.orcid}}" title="{{party.name}} on ORCID">{{party.orcid}}</a></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div frame id="frame_funding" title="Funding" fold>
+            FUNDING NOT IMPLEMENTED
+        </div>
+
+        <p>AVATARS NOT IMPLEMENTED</p>
     </panel-mode>
 
     <panel-mode name="edit">
-
-    </panel-mode>
-
-    <panel-mode name="admin">
-
+        EDIT NOT IMPLEMENTED
     </panel-mode>
 </panel>

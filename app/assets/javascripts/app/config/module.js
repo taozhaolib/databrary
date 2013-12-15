@@ -6,7 +6,7 @@ define([
 	'ngRoute',
 	'ngSanitize',
 	'ngStorage',
-	'ngRestangular'
+	'ngResource'
 ], function (angular) {
 	'use strict';
 
@@ -16,16 +16,11 @@ define([
 		'ngRoute',
 		'ngSanitize',
 		'ngStorage',
-	'ngRestangular'
+		'ngResource'
 	]);
 
 	module.config(['$logProvider', function ($logProvider) {
 		$logProvider.debugEnabled(true);
-	}]);
-
-	module.config(['RestangularProvider', function (RestangularProvider) {
-		RestangularProvider.seBaseUrl('/api');
-		// TODO; RestangularProvider.setDefaultHttpFields({cache: myCache}) where myCache has the special features I need: refreshing on authChange, checking whether var is ID (for return or GET) or object (for storage), etc
 	}]);
 
 	module.run(['$rootScope', '$location', function ($rootScope, $location) {

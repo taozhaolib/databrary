@@ -74,8 +74,6 @@ define(['app/config/module'], function (module) {
 		authService.hasAuth = function (level) {
 			level = level.toUpperCase().split('!');
 
-			console.log(level, parseUserAuth(), parseAuthLevel(level[level.length - 1]), authService.user);
-
 			return level.length == 1 ?
 				parseUserAuth() >= parseAuthLevel(level.pop()) :
 				parseUserAuth() < parseAuthLevel(level.pop());

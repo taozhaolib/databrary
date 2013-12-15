@@ -90,11 +90,16 @@ define(['app/config/module'], function (module) {
 					$scope.title = (angular.isDefined($attrs.title)) ? $attrs.title : '';
 					$scope.top = (angular.isDefined($attrs.top) && $attrs.top != 'false') ? true : false;
 
+					$element.attr('title', '');
+
 					$scope.container = $scope;
 
 					transclude($scope, function ($clone) {
 						$element.find('[panel-body]').append($clone);
 					});
+
+					if(angular.isFunction($scope.bootPanel))
+						$scope.bootPanel();
 
 					panelService.add($scope);
 				};

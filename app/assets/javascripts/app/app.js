@@ -26,8 +26,7 @@ require.config({
 
 		// angular, third-party
 
-		'ngStorage': 'vendors/ngStorage/ngStorage.min',
-		'ngRestangular': 'vendors/ngRestangular-1.2.1/restangular.min'
+		'ngStorage': 'vendors/ngStorage/ngStorage.min'
 	},
 
 	shim: {
@@ -54,8 +53,7 @@ require.config({
 
 		// angular, third-party
 
-		'ngStorage': {deps: ['angular']},
-		'ngRestangular': {deps: ['angular']}
+		'ngStorage': {deps: ['angular']}
 	},
 
 	deps: [

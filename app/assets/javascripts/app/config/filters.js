@@ -1,3 +1,3 @@
 define([
-//	'app/filter/NULL'
+	'app/filter/format'
 ], function () {});

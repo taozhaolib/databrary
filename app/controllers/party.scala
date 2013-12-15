@@ -38,7 +38,7 @@ package object Party extends ObjectController[SiteParty] {
     SiteAction.auth ~> action(i, p)
 
   type PasswordMapping = Mapping[Option[String]]
-  val passwordMapping : PasswordMapping = 
+  val passwordMapping : PasswordMapping =
     tuple(
       "once" -> optional(text(7)),
       "again" -> text
@@ -120,7 +120,7 @@ package object Party extends ObjectController[SiteParty] {
         status(views.html.party.authorize(parents, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults))
       }}
     }
-    
+
     private def AdminAction(i : models.Party.Id, delegate : Boolean = true) =
       Action(Some(i), if (delegate) Some(Permission.ADMIN) else None)
 
@@ -189,7 +189,7 @@ package object Party extends ObjectController[SiteParty] {
         form => viewAdmin(BadRequest, authorizeWhich = Some(apply), authorizeSearchForm = form),
         name =>
           models.Party.searchForAuthorize(name, request.obj.party).flatMap { res =>
-          viewAdmin(Ok, authorizeWhich = Some(apply), authorizeSearchForm = form, 
+          viewAdmin(Ok, authorizeWhich = Some(apply), authorizeSearchForm = form,
             authorizeResults = res.map(e => (e, authorizeForm.fill(
               if (apply) (Permission.NONE, Permission.NONE, true, None)
               else (Permission.NONE, Permission.NONE, false, Some((new Date).plus(maxExpiration)))))))

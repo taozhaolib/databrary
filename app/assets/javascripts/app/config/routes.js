@@ -46,11 +46,23 @@ define(['app/config/module'], function (module) {
 		var partyView = {
 			controller: 'PartyView',
 			templateUrl: 'partyView.html',
+			resolve: {
+				party: ['$route', 'Party', function ($route, Party) {
+					return Party.get({
+						id: $route.current.params.id,
+						volumes: 'all',
+						comments: 'all',
+						parents: 'all',
+						children: 'all',
+						funding: 'all'
+					});
+				}]
+			},
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/party/:pid', partyView);
-		$routeProvider.when('/party/:pid/:path*', {
+		$routeProvider.when('/party/:id', partyView);
+		$routeProvider.when('/party/:id/:path*', {
 			redirectTo: function (params) {
 				return '/party/' + params.pid;
 			}
