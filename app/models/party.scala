@@ -63,7 +63,8 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
     JsonRecord.flatten(id,
       Some('name -> name), 
       orcid.map('orcid -> _), 
-      account.filter(_ => site.access >= Permission.VIEW).map('email -> _.email)
+      account.filter(_ => site.access >= Permission.VIEW).map('email -> _.email),
+      Some('avatar -> views.html.display.avatar(this))
     )
 }
 
