@@ -38,7 +38,7 @@ final class Container protected (override val id : Container.Id, val volume : Vo
   /** List of slots on this container. */
   def slots : Future[Seq[Slot]] = Slot.getContainer(this)
 
-  lazy val json = JsonRecord.flatten(id,
+  lazy val json : JsonRecord = JsonRecord.flatten(id,
     // Some('volume -> volume.json),
     if (top) Some('top -> top) else None,
     name.map('name -> _),

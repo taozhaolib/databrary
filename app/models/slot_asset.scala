@@ -36,8 +36,8 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offse
   def pageActions = Seq(
       Action("view", controllers.routes.SlotAsset.view(volumeId, slotId, assetId), Permission.VIEW)
     ) ++ (if (slot.isFull) Seq(
-      Action("edit", controllers.routes.Asset.edit(volumeId, assetId), Permission.EDIT),
-      Action("remove", controllers.routes.Asset.remove(volumeId, assetId), Permission.CONTRIBUTE)
+      Action("edit", controllers.Asset.routes.html.edit(volumeId, assetId), Permission.EDIT),
+      Action("remove", controllers.Asset.routes.html.remove(volumeId, assetId), Permission.CONTRIBUTE)
     ) else Nil)
 }
 

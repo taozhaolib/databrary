@@ -2,6 +2,7 @@ package models
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.Json
 import macros._
 import dbrary._
 import site._
@@ -100,16 +101,23 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   def pageName = category.fold("")(_.name.capitalize + " ") + ident
   def pageParent = Some(volume)
-  def pageURL = controllers.routes.Record.view(volume.id, id)
+  def pageURL = controllers.Record.routes.html.view(volume.id, id)
   def pageActions = Seq(
-    Action("view", controllers.routes.Record.view(volumeId, id), Permission.VIEW),
-    Action("edit", controllers.routes.Record.edit(volumeId, id), Permission.EDIT)
+    Action("view", controllers.Record.routes.html.view(volumeId, id), Permission.VIEW),
+    Action("edit", controllers.Record.routes.html.edit(volumeId, id), Permission.EDIT)
   )
 
-  lazy val json =
+  lazy val json : JsonRecord =
     JsonRecord.flatten(id,
       category.map('category -> _.name),
       Some('measures -> measures)
+    )
+
+  def json(options : Map[String,Seq[String]] = Map.empty) : Future[JsonRecord] =
+    JsonOptions(json, options,
+      "slots" -> (opt => slots.map(l =>
+        Json.toJson(l.map(_.jsonFields))
+      ))
     )
 }
 
