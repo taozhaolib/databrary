@@ -161,6 +161,9 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       )),
       "tags" -> (opt => tags.map(l =>
         Json.toJson(l.map(_.json))
+      )),
+      "categories" -> (opt => RecordCategory.getVolume(this).map(l =>
+        Json.toJson(l.map(_.name))
       ))
     )
 }
