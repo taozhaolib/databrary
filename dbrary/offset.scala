@@ -22,7 +22,7 @@ case class Offset(seconds : Double)
   def samples(rate : Double) = math.round(rate*seconds)
   def +(other : Offset) = Offset(seconds + other.seconds)
   def -(other : Offset) = Offset(seconds - other.seconds)
-  def compare(other : Offset) = seconds.compare(other.seconds)
+  def compare(other : Offset) : Int = seconds.compare(other.seconds)
   def min(other : Offset) = Offset(seconds.min(other.seconds))
   def max(other : Offset) = Offset(seconds.max(other.seconds))
   def approx(other : Offset) = (other.seconds - seconds).abs < 0.001

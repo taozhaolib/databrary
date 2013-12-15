@@ -35,13 +35,18 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
       }
   }
 
+  /** The permisison level granted to identifiable data within this slot. */
+  final def dataPermission : HasPermission =
+    Permission.data(getPermission, getConsent, Classification.IDENTIFIED)
+  /** Whether the current user may download identifiable data within this slot. */
+  final lazy val downloadable : Boolean =
+    dataPermission.checkPermission(Permission.DOWNLOAD)
+
   private val publicFields = Array(org.joda.time.DateTimeFieldType.year)
   final def getDate : Option[org.joda.time.ReadablePartial] =
     container.date.map { date =>
-      if (Permission.data(getPermission, getConsent, Classification.IDENTIFIED).checkPermission(Permission.DOWNLOAD))
-        date
-      else
-        new org.joda.time.Partial(publicFields, publicFields.map(date.get _))
+      if (downloadable) date
+      else new org.joda.time.Partial(publicFields, publicFields.map(date.get _))
     }
 
   /** Effective start point of this slot within the container. */
@@ -119,6 +124,7 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
     'container -> container.json,
     'segment -> segment
     // Maybe(consent).opt.map('consent -> _)
+    // getDate.map('date -> _.toString)
   )
 }
 

@@ -87,6 +87,13 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def age(date : Date) : Option[Age] =
     measures_.value(Metric.Birthdate).map(dob => Age(dob, date))
 
+  /** The age at test during a specific slot, with privacy limits applied. */
+  def age(slot : Slot) : Option[Age] =
+    slot.container.date.flatMap(age(_).map { a =>
+      if (a > Age.LIMIT && !slot.downloadable) Age.LIMIT
+      else a
+    })
+
   /** The set of slots to which this record applies. */
   lazy val slots : Future[Seq[Slot]] =
     Slot.volumeRow(volume)
@@ -116,7 +123,10 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def json(options : Map[String,Seq[String]] = Map.empty) : Future[JsonRecord] =
     JsonOptions(json, options,
       "slots" -> (opt => slots.map(l =>
-        Json.toJson(l.map(_.jsonFields))
+        Json.toJson(l.map(s => 
+          JsonObject.flatten(age(s).map('age -> _)) ++
+          s.jsonFields
+        ))
       ))
     )
 }

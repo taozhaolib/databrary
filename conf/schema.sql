@@ -549,7 +549,7 @@ COMMENT ON TYPE data_type IS 'Types of measurement data corresponding to measure
 
 CREATE TABLE "metric" (
 	"id" serial Primary Key,
-	"name" varchar(64) NOT NULL,
+	"name" varchar(64) NOT NULL Unique,
 	"classification" classification NOT NULL DEFAULT 'DEIDENTIFIED',
 	"type" data_type NOT NULL,
 	"values" text[] -- options for text enumerations, not enforced (could be pulled out to separate kind/table)
