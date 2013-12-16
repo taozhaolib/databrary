@@ -64,7 +64,7 @@ define(['app/config/module'], function (module) {
 		$routeProvider.when('/party/:id', partyView);
 		$routeProvider.when('/party/:id/:path*', {
 			redirectTo: function (params) {
-				return '/party/' + params.pid;
+				return '/party/' + params.id;
 			}
 		});
 
@@ -76,17 +76,17 @@ define(['app/config/module'], function (module) {
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/volume/:vid/slot/:sid/asset/:aid', assetView);
-		$routeProvider.when('/volume/:vid/slot/:sid/asset/:aid/:path*', {
+		$routeProvider.when('/volume/:vid/slot/:sid/asset/:id', assetView);
+		$routeProvider.when('/volume/:vid/slot/:sid/asset/:id/:path*', {
 			redirectTo: function (params) {
-				return '/volume/' + params.vid + '/slot/' + params.sid + '/asset/' + params.aid;
+				return '/volume/' + params.vid + '/slot/' + params.sid + '/asset/' + params.id;
 			}
 		});
 
-		$routeProvider.when('/volume/:vid/asset/:aid', assetView);
-		$routeProvider.when('/volume/:vid/asset/:aid/:path*', {
+		$routeProvider.when('/volume/:vid/asset/:id', assetView);
+		$routeProvider.when('/volume/:vid/asset/:id/:path*', {
 			redirectTo: function (params) {
-				return '/volume/' + params.vid + '/asset/' + params.aid;
+				return '/volume/' + params.vid + '/asset/' + params.id;
 			}
 		});
 
@@ -98,10 +98,10 @@ define(['app/config/module'], function (module) {
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/volume/:vid/slot/:sid', slotView);
-		$routeProvider.when('/volume/:vid/slot/:sid/:path*', {
+		$routeProvider.when('/volume/:vid/slot/:id', slotView);
+		$routeProvider.when('/volume/:vid/slot/:id/:path*', {
 			redirectTo: function (params) {
-				return '/volume/' + params.vid + '/slot/' + params.sid;
+				return '/volume/' + params.vid + '/slot/' + params.id;
 			}
 		});
 
@@ -113,10 +113,10 @@ define(['app/config/module'], function (module) {
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/volume/:vid/record/:rid', recordView);
-		$routeProvider.when('/volume/:vid/record/:rid/:path*', {
+		$routeProvider.when('/volume/:vid/record/:id', recordView);
+		$routeProvider.when('/volume/:vid/record/:id/:path*', {
 			redirectTo: function (params) {
-				return '/volume/' + params.vid + '/record/' + params.rid;
+				return '/volume/' + params.vid + '/record/' + params.id;
 			}
 		});
 

@@ -49,12 +49,12 @@ define(['app/config/module'], function (module) {
 
 				if (angular.isUndefined($attrs.absolute)) {
 					height = height - (height % base);
-
-					if (height > 0)
-						$element.height(height);
-					else
-						$element.css('height', '');
 				}
+
+				if (height > 0)
+					$element.height(height);
+				else
+					$element.css('height', '');
 
 				var $img = $element.find('.media img');
 

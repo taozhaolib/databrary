@@ -28,35 +28,40 @@
 
         <article ng-repeat="comment in comments" class="comment col-full">
             <div class="row">
-                <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3" ng-init="party = comment.who">
+                <aside class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3" ng-init="party = comment.who">
                     <portrait class="portrait_avatar" hover></portrait>
-                </div>
+                </aside>
 
                 <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
-                    <div class="comment_meta row">
-                        @*
-                        @if(slot.isEmpty || (slot.nonEmpty && slot.get.id.unId.toString != c.slot.id.unId.toString)) {
-                        @if(c.slot.container.top) {
+                    <footer ng-if="comment.container.top" class="comment_meta row">
+                        <div class="comment_info col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
+                            <div class="inner">
+                                <time datetime="{{volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>{{volume.creation | date:'MMMM d, yyyy'}}</time>
+                            </div>
+                        </div>
+                    </footer>
+
+                    <footer ng-if="!comment.container.top" class="comment_meta row">
                         <div class="comment_info comment_location col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-5 col-cell">
-                        <div class="inner">
-                        @display(c.slot.volume) <span class="sep">|</span> @display(c.time)
+                            <div class="inner">
+                                <time datetime="{{volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>{{volume.creation | date:'MMMM d, yyyy'}}</time>
+                                <span class="sep">|</span>
+                                <a ng-href="/volume/{{volume.id}}/slot/{{comment.container.id}}?start={{comment.container.segment[0]}}&end={{comment.container.segment[1]}}">{{comment.container.name}}</a>
+                            </div>
                         </div>
+
+                        <div class="comment_location_thumb col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+                            <div class="inner">
+                                <figure baseline="tube" ng-href="/volume/{{volume.id}}/slot/{{comment.container.id}}?start={{comment.container.segment[0]}}&end={{comment.container.segment[1]}}">
+                                    <figmedia>
+                                        <img ng-src="/volume/{{volume.id}}/slot/{{comment.container.id}}/thumb">
+                                    </figmedia>
+                                </figure>
+                            </div>
                         </div>
+                    </footer>
 
-                        <div class="comment_location_thumb col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">@widget.figure.thumbVolume(c.slot.volume, scalar = "tube", link = c.slot.volume.pageURL.url)</div>
-                        } else {
-                        <div class="comment_info comment_location col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-5 col-cell"><div class="inner"><a href="@routes.Slot.view(c.slot.volumeId, c.slot.id)">@c.slot.pageName</a> <span class="sep">
-                        |</span> @display(c.time)</div></div>
-
-                        <div class="comment_location_thumb col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">@widget.figure.thumbSlot(c.slot, scalar = "tube", link = routes.Slot.view(c.slot.volumeId, c.slot.id).toString)</div>
-                        }
-                        } else {
-                        <div class="comment_info col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell"><div class="inner">@display(c.time)</div></div>
-                        }
-                        *@
-                    </div>
-
-                    <div class="comment_body" ng-bind-html="comment.body | format"></div>
+                    <div class="comment_body" ng-bind-html="comment.text | format"></div>
                 </div>
             </div>
         </article>
