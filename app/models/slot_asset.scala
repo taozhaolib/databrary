@@ -6,16 +6,19 @@ import macros._
 import dbrary._
 import site._
 
-/** A segment of an asset as used in a slot.
-  * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offset], val slot : Slot, val excerpt : Boolean) extends TableRow with SiteObject with BackedAsset with InVolume {
-  def slotId = slot.id
+abstract class AbstractSlotAsset protected (val asset : Asset, asset_segment : Range[Offset], val slot : AbstractSlot) extends BackedAsset with InVolume {
   def volume = asset.volume
   def assetId = asset.id
   def source = asset.source
   override def format = asset.format
   def etag = asset.etag
   def position = asset_segment.lowerBound.map(_ - slot.segment.lowerBound.getOrElse(0))
+}
+
+/** A segment of an asset as used in a slot.
+  * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
+sealed class SlotAsset protected (asset : Asset, asset_segment : Range[Offset], override val slot : Slot, val excerpt : Boolean) extends AbstractSlotAsset(asset, asset_segment, slot) with TableRow with SiteObject {
+  def slotId = slot.id
 
   def classification = asset.classification match {
     case Classification.IDENTIFIED if excerpt => Classification.EXCERPT

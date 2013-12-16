@@ -32,7 +32,7 @@
                 @if(tags.nonEmpty) {
                     @tags.map { case TagWeight(tag, weight, user) =>
                         <li id="tag_@tag.id" class="panel_tags_item col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-6">
-                        @widget.tag.form(routes.Slot.tag(slot.volumeId, slot.id)) {
+                        @widget.tag.form(controllers.Slot.routes.html.tag(slot.volumeId, slot.id)) {
                             @widget.tag.inputHidden(form("name").copy(value = Some(tag.name)), 'id -> Html("name-"+tag.id.toString))(widget.tag.rawFieldConstructor.f, Lang("en"))
 
                             <div class="controls">
@@ -59,7 +59,7 @@
                 <button name="vote" ng-click="voteUp(tag)" class="hide">add</button>
             </form>
         }{
-            @widget.tag.form(routes.Slot.tag(slot.volumeId, slot.id)) {
+            @widget.tag.form(controllers.Slot.routes.html.tag(slot.volumeId, slot.id)) {
                 @widget.tag.inputText(form("name"), 'placeholder -> "Add new tag")
                 <button name="vote" value="@true" class="hide">add</button>
             }

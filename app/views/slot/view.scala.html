@@ -6,6 +6,6 @@
     @widget.panel.records(slot, records)
     @widget.panel.materials(assets)
     @widget.panel.tags(slot)
-    @widget.panel.comments(Some(slot), Some((routes.Slot.comment(slot.volumeId, slot.id), commentForm)), comments)
+    @widget.panel.comments(Some(slot), Some((controllers.Slot.routes.html.comment(slot.volumeId, slot.id), commentForm)), comments)
 }
 }

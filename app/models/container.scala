@@ -10,10 +10,10 @@ import site._
   * To be used, all assets must be placed into containers.
   * These containers can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.
   */
-final class Container protected (override val id : Container.Id, val volume : Volume, val top : Boolean = false, val name_ : Option[String], val date_ : Option[Date], consent_ : Consent.Value = Consent.NONE) extends Slot(id, Container.range, consent_) with TableRowId[Container] with InVolume {
+final class Container protected (override val id : Container.Id, override val volume : Volume, val top : Boolean = false, val name_ : Option[String], val date_ : Option[Date], consent_ : Consent.Value = Consent.NONE) extends Slot(id, Container.range, consent_) with TableRowId[Container] with InVolume {
   def container = this
-  def isFull = true
-  def isTop = top
+  override def isFull = true
+  override def isTop = top
   def context = this
   private[this] var _name = name_
   /** Descriptive name to help with organization by contributors.

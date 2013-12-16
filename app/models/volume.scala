@@ -134,7 +134,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     Action("edit", controllers.Volume.routes.html.edit(id), Permission.EDIT),
     Action("access", controllers.Volume.routes.html.admin(id), Permission.ADMIN),
     Action("add file", controllers.Asset.routes.html.createTop(id), Permission.CONTRIBUTE),
-    Action("add session", controllers.routes.Slot.createContainer(id), Permission.CONTRIBUTE),
+    Action("add session", controllers.Slot.routes.html.createContainer(id), Permission.CONTRIBUTE),
     Action("add participant", controllers.Record.routes.html.add(id, RecordCategory.PARTICIPANT), Permission.CONTRIBUTE)
   )
 

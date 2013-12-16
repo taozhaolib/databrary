@@ -6,18 +6,33 @@ import macros._
 import dbrary._
 import site._
 
+trait AbstractSlot extends InVolume {
+  def container : Container
+  final def containerId : Container.Id = container.id
+  val segment : Range[Offset]
+  /** True if this is its container's full slot. */
+  def isFull : Boolean = segment.isFull
+  def isTop : Boolean = container.top && isFull
+  def volume = container.volume
+
+  /** Effective start point of this slot within the container. */
+  final def position : Offset = segment.lowerBound.getOrElse(0)
+
+  lazy val jsonFields = JsonObject(
+    'container -> container.json,
+    'segment -> segment
+    // Maybe(consent).opt.map('consent -> _)
+    // getDate.map('date -> _.toString)
+  )
+}
+
 /** Smallest organizatonal unit of related data.
   * Primarily used for an individual session of data with a single date and place.
   * Critically, contained data are should be covered by a single consent level and share the same annotations. */
-abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE) extends TableRowId[Slot] with InVolume with SiteObject {
-  def container : Container
-  def containerId : Container.Id = container.id
+abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE) extends TableRowId[Slot] with AbstractSlot with SiteObject {
   private[this] final var _consent = consent_
   /** Effective consent for covered assets, or [[Consent.NONE]] if no matching consent. */
   final def consent = _consent
-  /** True if this is its container's full slot. */
-  def isFull : Boolean
-  def isTop : Boolean
   /** The relevant consented slot containing this one.
     * Defaults to fullSlot. */
   def context : Slot
@@ -48,9 +63,6 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
       if (downloadable) date
       else new org.joda.time.Partial(publicFields, publicFields.map(date.get _))
     }
-
-  /** Effective start point of this slot within the container. */
-  final def position : Offset = segment.lowerBound.getOrElse(0)
 
   /** List of contained asset segments within this slot. */
   final def assets : Future[Seq[SlotAsset]] = SlotAsset.getSlot(this)
@@ -111,29 +123,18 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
   }
   override def pageCrumbName : Option[String] = if (isFull) None else Some(segment.lowerBound.fold("")(_.toString) + " - " + segment.upperBound.fold("")(_.toString))
   def pageParent = Some(if (isContext) volume else context)
-  def pageURL = controllers.routes.Slot.view(container.volumeId, id)
+  def pageURL = controllers.Slot.routes.html.view(container.volumeId, id)
   def pageActions = Seq(
-    Action("view", controllers.routes.Slot.view(volumeId, id), Permission.VIEW),
-    Action("edit", controllers.routes.Slot.edit(volumeId, id), Permission.EDIT),
+    Action("view", controllers.Slot.routes.html.view(volumeId, id), Permission.VIEW),
+    Action("edit", controllers.Slot.routes.html.edit(volumeId, id), Permission.EDIT),
     Action("add file", controllers.Asset.routes.html.create(volumeId, id), Permission.CONTRIBUTE),
     // Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
     Action("add participant", controllers.Record.routes.html.slotAdd(volumeId, id, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
-  )
-
-  lazy val jsonFields = JsonObject(
-    'container -> container.json,
-    'segment -> segment
-    // Maybe(consent).opt.map('consent -> _)
-    // getDate.map('date -> _.toString)
   )
 }
 
 object Slot extends TableId[Slot]("slot") {
   private final class SubSlot private[Slot] (id : Slot.Id, val container : Container, segment : Range[Offset], consent_ : Consent.Value = Consent.NONE) extends Slot(id, segment, consent_) {
-    def volume = container.volume
-    def isFull = segment.isFull
-    def isTop = container.top && isFull
-
     /* must be set on construction */
     private[Slot] var _context : Slot = if (isContext) this else container
     /** The relevant consented slot containing this one.
