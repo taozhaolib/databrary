@@ -1,13 +1,67 @@
 <panel ng-controller="MaterialsPanel" id="panel_materials" title="Materials" fold>
-    <panel-mode name="view">
+    <panel-mode name="view" active>
+        <div class="panel_materials_list col-full">
+            <ul class="flat panel_materials_items">
+                <li ng-repeat="asset in assets" class="panel_materials_item" ng-click="selectAsset(asset)" ng-class="getAssetClass(asset)">
+                    <span class="filetype {{ext}}"><img ng-src="/public/images/filetypes/16px/{{ext}}.png"></span>
 
-    </panel-mode>
+                    <span ng-if="path">
+                        <span class="session">@* @display(link.slot) *@</span>
+                        <span class="participant"><a ng-href="/{{}}">{{}}</a></span>
+                        <span class="sep">/</span>
+                    </span>
 
-    <panel-mode name="edit">
 
-    </panel-mode>
+                    <a ng-href="/{{}}" class="filename">@* @link.pageName.@link.format.extension *@</a>
 
-    <panel-mode name="admin">
+                    <span class="classification">@* @link.classification.toString.charAt(0) *@</span>
 
+                    <span class="duration">@* @cast[SlotTimeseries](link).map(_.duration) *@</span>
+                </li>
+
+                <li ng-if="!assets" class="empty">There are no assets here.</li>
+            </ul>
+        </div>
+
+        <div class="panel_materials_display col-full" ng-init="currentAsset = assets[0].id">
+            <div ng-repeat="asset in assets" id="asset_{{asset.id}}" ng-show="currentAsset == asset.id" class="panel_materials_frame">
+                <h2>
+                    {{asset.name}}.{{asset.format.extension}}
+                    <a ng-href="/{{}}" class="link">download</a>
+                </h2>
+
+                <div ng-switch="{{asset.format.mimeSubTypes}}">
+                    <div ng-switch-when="['image', '']">
+                        <img ng-src="/{{}}" />
+                    </div>
+
+                    <div ng-switch-when="['video', '']">
+                        <video controls>
+                            <source ng-src="/{{}}" type="{{asset.format.mimetype}}">
+                        </video>
+                    </div>
+
+                    <div ng-switch-when="['text', 'html']">
+                        <iframe ng-src="/{{}}" />
+                    </div>
+
+                    <div ng-switch-when="['text', 'plain']">
+                        <iframe ng-src="/{{}}" />
+                    </div>
+
+                    <div ng-switch-default>
+
+                    </div>
+                </div>
+
+                <div class="panel_materials_description" ng-bing-html="asset.body | format"></div>
+            </div>
+        </div>
     </panel-mode>
 </panel>
+
+
+
+
+
+

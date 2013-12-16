@@ -1,13 +1,13 @@
 <panel ng-controller="PublicationsPanel" id="panel_publications" title="Publications" fold>
-    <panel-mode name="view">
+    <panel-mode name="view" active>
+        <div ng-repeat="publication in publications" class="publication">
+            <h3>{{publication.head}} <a ng-if="publication.url" ng-href="{{publication.url}}" title="{{publication.head}}" class="cit_link">link</a></h3>
 
+            <div class="publication_description" ng-bind-html="publication.body | format"></div>
+        </div>
     </panel-mode>
 
     <panel-mode name="edit">
-
-    </panel-mode>
-
-    <panel-mode name="admin">
-
+        <p>NOT IMPLEMENTED</p>
     </panel-mode>
 </panel>

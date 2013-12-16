@@ -19,6 +19,10 @@ define([
 		'ngResource'
 	]);
 
+//	module.config(['$httpProvider', function ($httpProvider) {
+//		$httpProvider.defaults.headers.common[] = '';
+//	}]);
+
 	module.config(['$logProvider', function ($logProvider) {
 		$logProvider.debugEnabled(true);
 	}]);

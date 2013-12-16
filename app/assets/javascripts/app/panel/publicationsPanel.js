@@ -2,14 +2,14 @@ define(['app/config/module'], function (module) {
 	'use strict';
 
 	module.controller('PublicationsPanel', ['$scope', function ($scope) {
-
-
-		//
-
-		var start = function () {
-
+		$scope.updateData = function () {
+			switch($scope.view.view) {
+				case 'volume':
+					$scope.publications = $scope.volume.citations;
+					break;
+			}
 		};
 
-		start();
+		$scope.$watch('view', function () {$scope.updateData();}, true);
 	}]);
 });

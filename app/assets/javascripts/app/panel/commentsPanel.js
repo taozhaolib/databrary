@@ -1,13 +1,49 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.controller('CommentsPanel', ['$scope', 'AuthService', function ($scope, authService) {
+	module.controller('CommentsPanel', ['$scope', 'AuthService', '$route', function ($scope, authService, $route) {
 		$scope.authService = authService;
 
-		$scope.updateComments = function () {
-			$scope.comments = $scope.volume.comments;
+		//
+
+		$scope.commentParty = function (comment) {
+			switch($scope.view.view) {
+				case 'volume':
+					return comment.who;
+					break;
+				case 'party':
+					return $scope.party;
+					break;
+			}
 		};
 
-		$scope.$watch('volume', function () {$scope.updateComments();}, true);
+		$scope.commentVolume = function (comment) {
+			switch($scope.view.view) {
+				case 'volume':
+					return $scope.volume;
+					break;
+				case 'party':
+					return {
+						id: 0,
+						name: 'NULL'
+					};
+					break;
+			}
+		};
+
+		//
+
+		$scope.updateComments = function () {
+			switch($scope.view.view) {
+				case 'volume':
+					$scope.comments = $scope.volume.comments;
+					break;
+				case 'party':
+					$scope.comments = $scope.party.comments;
+					break;
+			}
+		};
+
+		$scope.$watch('view', function () {$scope.updateComments();}, true);
 	}]);
 });
