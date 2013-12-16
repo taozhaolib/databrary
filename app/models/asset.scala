@@ -173,7 +173,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
     cast[Timeseries](this).map('duration -> _.duration)
   )
 
-  def json(options : Map[String,Seq[String]] = Map.empty) : Future[JsonRecord] =
+  def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
       "slot" -> (opt => slot.map(_.fold[JsValue](JsNull)(_.slot.jsonFields)))
     )

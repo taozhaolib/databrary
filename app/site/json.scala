@@ -55,6 +55,16 @@ object JsonRecord {
   def seq(s : Seq[JsonRecord]) : JsValue =
     // JsObject(s.map(JsonField.ofField(_))) /* FIXME */
     JsArray(s.map(_.obj))
+  def map[A](f : A => JsonRecord)(l : Seq[A]) : JsValue =
+    seq(l.map(f))
+}
+
+object JsonArray {
+  /** Stupidly duplicates the existing Writes[Seq[J : Writes]]. */
+  def apply[J](l : Seq[J])(implicit w : Writes[J]) : JsValue =
+    JsArray(l.map(w.writes))
+  def map[A,J](f : A => J)(l : Seq[A])(implicit w : Writes[J]) : JsValue =
+    JsArray(l.map(f.andThen(w.writes)))
 }
 
 object JsonOptions {

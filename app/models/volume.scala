@@ -145,26 +145,14 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       Some('creation -> creation)
     )
 
-  def json(options : Map[String,Seq[String]] = Map.empty) : Future[JsonRecord] =
+  def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
-      "access" -> (opt => partyAccess.map(l =>
-        Json.toJson(l.map(_.json - "volume"))
-      )),
-      "funding" -> (opt => citations.map(l =>
-        Json.toJson(l.map(_.json - "volume"))
-      )),
-      "citations" -> (opt => citations.map(l =>
-        Json.toJson(l.map(_.json))
-      )),
-      "comments" -> (opt => comments.map(l =>
-        Json.toJson(l.map(_.json))
-      )),
-      "tags" -> (opt => tags.map(l =>
-        Json.toJson(l.map(_.json))
-      )),
-      "categories" -> (opt => RecordCategory.getVolume(this).map(l =>
-        Json.toJson(l.map(_.name))
-      ))
+      "access" -> (opt => partyAccess.map(JsonArray.map(_.json - "volume"))),
+      "funding" -> (opt => citations.map(JsonArray.map(_.json - "volume"))),
+      "citations" -> (opt => citations.map(JsonArray.map(_.json))),
+      "comments" -> (opt => comments.map(JsonArray.map(_.json))),
+      "tags" -> (opt => tags.map(JsonArray.map(_.json))),
+      "categories" -> (opt => RecordCategory.getVolume(this).map(JsonArray.map(_.name)))
     )
 }
 
