@@ -1,13 +1,28 @@
 <panel ng-controller="TagsPanel" id="panel_tags" title="Tags" fold>
-    <panel-mode name="view">
+    <panel-mode name="view" active>
+        <div class="panel_tags_list col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3 col-cell">
+            <form name="tagForm" novalidate>
+                <ol class="panel_tags_items row">
+                    <li ng-repeat="tag in tags" class="panel_tags_item col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3 col-cell">
+                        <div class="controls">
+                            <button class="vote down" name="vote" ng-click="voteDown(tag);" ng-disabled="tag.vote == -1">-</button>
+                            <button class="vote null" name="vote" ng-click="voteNone(tag)" ng-disabled="tag.vote == 0">0</button>
+                            <button class="vote up" name="vote" ng-click="voteUp(tag)" ng-disabled="tag.vote == 1">+</button>
+                        </div>
 
-    </panel-mode>
+                        <span class="name">{{tag.id}}</span>
 
-    <panel-mode name="edit">
+                        <span class="weight">{{tag.weight}}</span>
+                    </li>
+                </ol>
+            </form>
+        </div>
 
-    </panel-mode>
-
-    <panel-mode name="admin">
-
+        <div id="tag_add" class="panel_tags_form col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3 col-cell">
+            <form name="tagNewForm" novalidate ng-submit="voteNew()">
+                <input type="text" id="newName" name="newName" ng-model="newName" placeholder="Add new tag..." ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/" required ng-change="newNameChange()"  ng-focus="newNameChange()" ng-blur="newNameBlur()">
+                <button name="vote" ng-click="voteUp(tag)" class="hide">add</button>
+            </form>
+        </div>
     </panel-mode>
 </panel>
