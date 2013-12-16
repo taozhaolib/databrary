@@ -81,7 +81,7 @@ define(['app/config/module'], function (module) {
 
 			$scope.timeoutBaseline = function () {
 				$timeout.cancel(timeout);
-				timeout = $timeout(function () { console.log(new Date());
+				timeout = $timeout(function () {
 					$scope.triggerBaseline();
 				}, pauseTime);
 			};

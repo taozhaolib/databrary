@@ -150,7 +150,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       "access" -> (opt => partyAccess.map(l =>
         Json.toJson(l.map(_.json - "volume"))
       )),
-      "funding" -> (opt => citations.map(l =>
+      "funding" -> (opt => funding.map(l =>
         Json.toJson(l.map(_.json - "volume"))
       )),
       "citations" -> (opt => citations.map(l =>
@@ -192,7 +192,7 @@ object Volume extends TableId[Volume]("volume") {
   def getAll(implicit site : Site) : Future[Seq[Volume]] =
     row.SELECT("WHERE", condition, "ORDER BY volume.name")
       .apply(conditionArgs).list
-    
+
   /** Create a new, empty volume with no permissions.
     * The caller should probably add a [[VolumeAccess]] for this volume to grant [[Permission.ADMIN]] access to some user. */
   def create(name : String, body : Option[String] = None)(implicit site : Site) : Future[Volume] =

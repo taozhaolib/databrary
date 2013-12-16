@@ -24,6 +24,10 @@ define(['app/config/module'], function (module) {
 
 			$element.find('figmedia').first().replaceWith('<div class="media"><div class="inner">'+$element.find('figmedia').first().html()+'</div></div>');
 			$element.find('figcaption').first().replaceWith('<div class="text">'+$element.find('figcaption').first().html()+'</div>');
+
+			return function ($scope, $element, $attrs) {
+				$scope.caption = $attrs.caption;
+			};
 		};
 
 		return {

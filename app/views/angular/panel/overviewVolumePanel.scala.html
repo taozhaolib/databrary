@@ -4,19 +4,42 @@
             <figmedia><img ng-src="/volume/{{volume.id}}/thumb"></figmedia>
         </figure>
 
-        <h1 class="panel_title">{{volume.name}}</h1>
+        <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
 
-        <div frame id="frame_contact" title="Contact" fold>
+        <div frame id="frame_people" title="Investigators" fold>
+            <div ng-repeat="party in investigators" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
+                <portrait hover class="portrait_vertical portrait_small"></portrait>
+            </div>
+        </div>
+
+        <div frame id="frame_funding" title="Funding" fold>
+            <div ng-repeat="party in funding" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
+                <portrait hover class="portrait_vertical portrait_small" caption="{{party.grant}}"></portrait>
+            </div>
+        </div>
+
+        <div frame id="frame_metadata" title="Metadata" fold>
             <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+                <div class="description" ng-bind-html="volume.body | format"></div>
+
                 <div class="metadata">
                     <dl class="flat">
-                        <dt ng-if="party.email">Email</dt>
-                        <dd ng-if="party.email"><a ng-href="mailto:{{party.email}}" title="Email {{party.name}}">{{party.email}}</a></dd>
+                        <dt>Data collected</dt>
+                        <dd><time datetime="{{volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>{{volume.creation | date:'MMMM yyyy'}}</time></dd>
 
-                        <dt ng-if="party.orcid">ORCiD</dt>
-                        <dd ng-if="party.orcid"><a ng-href="{{party.orcid}}" title="{{party.name}} on ORCID">{{party.orcid}}</a></dd>
+                        <dt>Sessions</dt>
+                        <dd>NOT IMPLEMENTED</dd>
+
+                        <dt>Ages</dt>
+                        <dd>NOT IMPLEMENTED</dd>
                     </dl>
                 </div>
+            </div>
+        </div>
+
+        <div frame id="frame_citation" title="Citation" fold>
+            <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+                <p ng-bind-html="volume | cite"></p>
             </div>
         </div>
     </panel-mode>
