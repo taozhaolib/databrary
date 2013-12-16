@@ -84,27 +84,15 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(party.json, options,
-<<<<<<< HEAD
-      "parents" -> (opt => party.authorizeParents(opt.contains("all")).map(l =>
-        JsonRecord.seq(l.map(a => JsonRecord(a.parentId,
-          'party -> a.parent.json,
-          'access -> a.access
-        )))
-      )),
-      "children" -> (opt => party.authorizeChildren(opt.contains("all")).map(l =>
-        JsonRecord.seq(l.map(a => JsonRecord(a.childId,
-          'party -> a.child.json,
-=======
       "parents" -> (opt => party.authorizeParents(opt.contains("all"))
         .map(JsonRecord.map(a => JsonRecord(a.parentId,
-          'parent -> a.parent.json,
+          'party -> a.parent.json,
           'access -> a.access
         )))
       ),
       "children" -> (opt => party.authorizeChildren(opt.contains("all"))
         .map(JsonRecord.map(a => JsonRecord(a.childId,
-          'child -> a.child.json,
->>>>>>> remotes/origin/master
+          'party -> a.child.json,
           'access -> a.access
         )))
       ),

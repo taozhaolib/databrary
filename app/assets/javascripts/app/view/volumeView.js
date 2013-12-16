@@ -3,5 +3,6 @@ define(['app/config/module'], function (module) {
 
 	module.controller('VolumeView', ['$scope', 'volume', function ($scope, volume) {
 		$scope.volume = volume;
+		$scope.comments = volume.comments;
 	}]);
 });
