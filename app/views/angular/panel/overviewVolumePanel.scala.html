@@ -1,6 +1,6 @@
-<panel ng-controller="OverviewVolumePanel" top id="panel_overview" title="Overview">
+<panel ng-controller="OverviewVolumePanel" top id="panel_overview" title="Overview" ng-mouseover="hoverPanel()">
     <panel-mode name="view" active>
-        <figure class="panel_overview_thumbnail">
+        <figure class="panel_overview_thumbnail" baseline="square" absolute watch="{{volume.id}}">
             <figmedia><img ng-src="/volume/{{volume.id}}/thumb"></figmedia>
         </figure>
 

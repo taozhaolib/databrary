@@ -46,31 +46,44 @@ define(['app/config/module'], function (module) {
 					height;
 
 				height = width * ratio;
-				height = height - (height % base);
 
-				if (height > 0)
-					$element.height(height);
-				else
-					$element.css('height', '');
+				if (angular.isUndefined($attrs.absolute)) {
+					height = height - (height % base);
+
+					if (height > 0)
+						$element.height(height);
+					else
+						$element.css('height', '');
+				}
 
 				var $img = $element.find('.media img');
 
-				if(!$img.length > 0)
+				if (!$img.length > 0)
 					return;
 
 				var imgWidth = $img.width(),
 					imgHeight = $img.height();
 
-				if(imgWidth >= imgHeight)
+				if (imgWidth >= imgHeight)
 					$img.css({
 						'width': 'auto',
-						'height': height+'px'
+						'height': height + 'px'
 					});
 				else
 					$img.css({
-						'width': width+'px',
+						'width': width + 'px',
 						'height': 'auto'
 					});
+
+				if(imgWidth == 0 || imgHeight == 0)
+					return $scope.timeoutBaseline();
+			};
+
+			$scope.timeoutBaseline = function () {
+				$timeout.cancel(timeout);
+				timeout = $timeout(function () { console.log(new Date());
+					$scope.triggerBaseline();
+				}, pauseTime);
 			};
 
 			//
@@ -83,11 +96,7 @@ define(['app/config/module'], function (module) {
 			//
 
 			$(window).on('resize', function () {
-				clearTimeout(timeout);
-
-				timeout = setTimeout(function () {
-					$scope.triggerBaseline();
-				}, pauseTime);
+				$scope.timeoutBaseline();
 			});
 
 			$element.on('$destroy', function () {
