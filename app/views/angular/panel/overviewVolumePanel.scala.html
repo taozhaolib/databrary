@@ -1,13 +1,27 @@
 <panel ng-controller="OverviewVolumePanel" top id="panel_overview" title="Overview">
     <panel-mode name="view" active>
-        <div>
-            view
+        <figure class="panel_overview_thumbnail">
+            <figmedia><img ng-src="/volume/{{volume.id}}/thumb"></figmedia>
+        </figure>
+
+        <h1 class="panel_title">{{volume.name}}</h1>
+
+        <div frame id="frame_contact" title="Contact" fold>
+            <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+                <div class="metadata">
+                    <dl class="flat">
+                        <dt ng-if="party.email">Email</dt>
+                        <dd ng-if="party.email"><a ng-href="mailto:{{party.email}}" title="Email {{party.name}}">{{party.email}}</a></dd>
+
+                        <dt ng-if="party.orcid">ORCiD</dt>
+                        <dd ng-if="party.orcid"><a ng-href="{{party.orcid}}" title="{{party.name}} on ORCID">{{party.orcid}}</a></dd>
+                    </dl>
+                </div>
+            </div>
         </div>
     </panel-mode>
 
     <panel-mode name="edit">
-        <div>
-            edit
-        </div>
+        <p>EDIT MODE NOT IMPLEMENTED.</p>
     </panel-mode>
 </panel>

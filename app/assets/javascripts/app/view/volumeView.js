@@ -1,15 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.controller('VolumeView', ['$scope', function ($scope) {
-
-
-		//
-
-		var start = function () {
-			$scope.id = 0;
-		};
-
-		start();
+	module.controller('VolumeView', ['$scope', 'volume', function ($scope, volume) {
+		$scope.volume = volume;
 	}]);
 });

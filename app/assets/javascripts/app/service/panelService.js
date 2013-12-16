@@ -25,7 +25,8 @@ define(['app/config/module'], function (module) {
 
 		panelService.focus = function (item) {
 			return panelService.echo(item, function (item) {
-				item.toggleFold(false);
+				if (angular.isFunction(item.toggleFold))
+					item.toggleFold(false);
 
 				var $document = $(document),
 					oldHeight = 0,

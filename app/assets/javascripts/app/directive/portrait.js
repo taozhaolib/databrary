@@ -4,20 +4,19 @@ define(['app/config/module'], function (module) {
 	module.directive('portrait', [function () {
 		var compile = function ($element, $attrs, transclude) {
 			return function ($scope, $element, $attrs) {
+				$scope.avatar = $attrs.avatar !== false;
+				$scope.info = $attrs.info !== false;
+				$scope.name = $attrs.name !== false;
+				$scope.institution = $attrs.institution !== false;
 
-				//
-
-				var start = function () {};
-
-				start();
+				$scope.extras = $attrs.extras;
+				$scope.links = $attrs.links;
 			};
 		};
 
 		return {
 			restrict: 'E',
-			scope: true,
 			templateUrl: 'portrait.html',
-			transclude: true,
 			replace: true,
 			compile: compile
 		};

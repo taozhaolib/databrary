@@ -1,21 +1,13 @@
-<section class="ng-cloak" ng-class="getPanelClasses()">
-    <div class="wrap">
-        <div class="row">
-            <div class="col-full">
-                <div class="pr">
-                    <ul ng-if="showModeLinks()" class="panel_mode_links">
-                        <li ng-repeat="mode in panel.modes track by $index | filter:{enabled: true}" ng-class="getModeLinkClasses(mode)"><a href="#" ng-click="activateMode(mode)">{{mode.name}}</a></li>
-                    </ul>
-                </div>
+<aside class="portrait ng-cloak">
+    <figure ng-if="avatar" baseline="square" class="portrait_avatar" ng-href="/party/{{party.id}}">
+        <figmedia><img ng-src="{{party.avatar || party.email | gravatar:400}}"></figmedia>
+        <figcaption ng-if="caption" ng-bind-html="caption"></figcaption>
+    </figure>
 
-                <h2 ng-show="!panel.top" class="panel_header" folder ng-click="toggleFold()">{{panel.title}}</h2>
-
-                <div folded>
-                    <div class="row">
-                        <div class="col-full" panel-body></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div ng-if="info" class="portrait_info">
+        <a ng-if="name" class="portrait_name db" ng-href="/party/{{party.id}}">{{party.name}}</a>
+        <a ng-if="institution" ng-repeat="institution in party.parents" class="portrait_institution db" ng-href="/party/{{institution.party.id}}">{{institution.party.name}}</a>
+        <div ng-if="extra" class="portrait_extra" ng-bind-html="extra"></div>
+        <div ng-if="links" class="portrait_links" ng-bind-html="links"></div>
     </div>
-</section>
+</aside>

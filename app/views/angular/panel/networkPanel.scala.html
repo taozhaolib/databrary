@@ -1,13 +1,27 @@
 <panel ng-controller="NetworkPanel" id="panel_network" title="Network" fold>
-    <panel-mode name="view">
+    <panel-mode name="view" active>
+        <div ng-show="parents">
+            <h2>Memberships</h2>
 
+            <div class="row">
+                <div ng-repeat="party in parents" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
+                    <portrait class="portrait_avatar" hover></portrait>
+                </div>
+            </div>
+        </div>
+
+        <div ng-show="children">
+            <h2>Members</h2>
+
+            <div class="row">
+                <div ng-repeat="party in children" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
+                    <portrait class="portrait_avatar" hover></portrait>
+                </div>
+            </div>
+        </div>
     </panel-mode>
 
     <panel-mode name="edit">
-
-    </panel-mode>
-
-    <panel-mode name="admin">
-
+        <p>EDIT MODE NOT IMPLEMENTED.</p>
     </panel-mode>
 </panel>

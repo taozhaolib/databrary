@@ -3,13 +3,5 @@ define(['app/config/module'], function (module) {
 
 	module.controller('PartyView', ['$scope', 'party', function ($scope, party) {
 		$scope.party = party;
-
-		//
-
-		var start = function () {
-			$scope.id = 0;
-		};
-
-		start();
 	}]);
 });

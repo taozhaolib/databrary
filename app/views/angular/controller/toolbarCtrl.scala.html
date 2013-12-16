@@ -30,7 +30,7 @@
                             <a has-auth="super" class="superuser on" href="#" ng-click="authService.toggleSU(false)">SU</a>
                         </span>
 
-                        <a href="#" ng-click="authService.showProfile()" class="img"><img ng-src="{{authService.user.avatar}}" alt="{{authService.user.username}}"></a>
+                        <a href="#" ng-click="authService.showProfile()" class="img"><img ng-src="{{authService.user.avatar || authService.user.email | gravatar:16}}" alt="{{authService.user.username}}"></a>
                     </span>
                 </div>
             </div>

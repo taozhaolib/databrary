@@ -1,3 +1,4 @@
 define([
-	'app/model/party'
+	'app/model/party',
+	'app/model/volume'
 ], function () {});

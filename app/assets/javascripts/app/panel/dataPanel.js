@@ -3,10 +3,11 @@ define(['app/config/module'], function (module) {
 
 	module.controller('DataPanel', ['$scope', 'Party', '$routeParams', '$filter', function ($scope, Party, $routeParams, $filter) {
 		$scope.bootPanel = function () {
-//			if (!$scope.party || !$scope.party.volumes || !$scope.funding)
+//			if (!$scope.party || !$scope.party.volumes || !$scope.party.funding)
 //				Party.get({
 //					id: $routeParams.id,
-//					volumes: 'all'
+//					volumes: 'all',
+//					funding: 'all'
 //				}, function (party) {
 //					$scope.party = party;
 //					$scope.updateVolumes();

@@ -61,8 +61,8 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
 
   def json(implicit site : Site) : JsonRecord =
     JsonRecord.flatten(id,
-      Some('name -> name), 
-      orcid.map('orcid -> _), 
+      Some('name -> name),
+      orcid.map('orcid -> _),
       account.filter(_ => site.access >= Permission.VIEW).map('email -> _.email),
       Some('avatar -> views.html.display.avatar(this))
     )
@@ -86,13 +86,13 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
     JsonOptions(party.json, options,
       "parents" -> (opt => party.authorizeParents(opt.contains("all")).map(l =>
         JsonRecord.seq(l.map(a => JsonRecord(a.parentId,
-          'parent -> a.parent.json,
+          'party -> a.parent.json,
           'access -> a.access
         )))
       )),
       "children" -> (opt => party.authorizeChildren(opt.contains("all")).map(l =>
         JsonRecord.seq(l.map(a => JsonRecord(a.childId,
-          'child -> a.child.json,
+          'party -> a.child.json,
           'access -> a.access
         )))
       )),
@@ -247,7 +247,7 @@ object Account extends Table[Account]("account") {
     if (i == site.identity.id) Future.successful(site.user) else // optimization
     row.SELECT("WHERE id = ?").apply(i).singleOpt
   /** Look up a user by email. */
-  def getEmail(email : String) : Future[Option[Account]] = 
+  def getEmail(email : String) : Future[Option[Account]] =
     row.SELECT("WHERE email = ?").apply(email).singleOpt
   /** Look up a user by openid.
     * @param email optionally limit results to the given email

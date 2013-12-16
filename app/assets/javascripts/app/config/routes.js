@@ -125,13 +125,26 @@ define(['app/config/module'], function (module) {
 		var volumeView = {
 			controller: 'VolumeView',
 			templateUrl: 'volumeView.html',
+			resolve: {
+				volume: ['$route', 'Volume', function ($route, Volume) {
+					return Volume.get({
+						id: $route.current.params.id,
+						access: 'all',
+						citations: 'all',
+						tags: 'all',
+						comments: 'all',
+						categories: 'all',
+						funding: 'all'
+					});
+				}]
+			},
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/volume/:vid', volumeView);
-		$routeProvider.when('/volume/:vid/:path*', {
+		$routeProvider.when('/volume/:id', volumeView);
+		$routeProvider.when('/volume/:id/:path*', {
 			redirectTo: function (params) {
-				return '/volume/' + params.vid;
+				return '/volume/' + params.id;
 			}
 		});
 
