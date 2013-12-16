@@ -24,9 +24,20 @@ object RecordCategory extends HasId[RecordCategory] {
     case VISIT => Some(Visit)
     case _ => None
   }
+  
+  def getName(name : String) : Option[RecordCategory] = name match {
+    case "participant" => Some(Participant)
+    case "visit" => Some(Visit)
+    case _ => None
+  }
 
   def getAll : Seq[RecordCategory] =
     Seq(Participant, Visit)
+
+  def getVolume(volume : Volume) : Future[Seq[RecordCategory]] =
+    SQL("SELECT DISTINCT category FROM record WHERE volume = ? AND category IS NOT NULL")
+      .apply(volume.id)
+      .list(SQLCols[RecordCategory.Id].map(get(_).get))
 
   final val PARTICIPANT : Id = asId(-500)
   final val VISIT : Id = asId(-200)
@@ -120,14 +131,12 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
       Some('measures -> measures)
     )
 
-  def json(options : Map[String,Seq[String]] = Map.empty) : Future[JsonRecord] =
+  def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
-      "slots" -> (opt => slots.map(l =>
-        Json.toJson(l.map(s => 
-          JsonObject.flatten(age(s).map('age -> _)) ++
-          s.jsonFields
-        ))
-      ))
+      "slots" -> (opt => slots.map(JsonArray.map(s =>
+        JsonObject.flatten(age(s).map('age -> _)) ++
+        s.jsonFields
+      )))
     )
 }
 

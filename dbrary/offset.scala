@@ -69,18 +69,15 @@ object Offset {
   implicit val offsetFormat : Formatter[Offset] = new Formatter[Offset] {
     override val format = Some(("format.offset", Nil))
     def bind(key: String, data: Map[String, String]) =
-      play.api.data.format.Formats.stringFormat.bind(key, data).right.flatMap { s =>
-        scala.util.control.Exception.catching(classOf[java.lang.NumberFormatException]).
-          either(fromString(s)).
-          left.map(_ => Seq(play.api.data.FormError(key, "error.offset", Nil)))
-      }
+      data.get(key).flatMap(s => Maybe.toNumber(fromString(s)))
+        .toRight(Seq(play.api.data.FormError(key, "error.offset", Nil)))
     def unbind(key: String, value: Offset) = Map(key -> value.toString)
   }
 
   implicit val jsonFormat : json.Format[Offset] = new json.Format[Offset] {
-    def writes(o : Offset) = json.JsNumber(o.millis)
+    def writes(o : Offset) = json.JsNumber(o.seconds)
     def reads(j : json.JsValue) = j match {
-      case json.JsNumber(s) => json.JsSuccess(apply(s/1000))
+      case json.JsNumber(s) => json.JsSuccess(apply(s))
       case _ => json.JsError("error.expected.jsnumber")
     }
   }

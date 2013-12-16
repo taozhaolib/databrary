@@ -8,7 +8,7 @@ import          Play.current
 import          mvc._
 import          data._
 import               Forms._
-import          libs.json._
+import play.api.libs.json.Json
 import site._
 import models._
 
@@ -183,6 +183,27 @@ package object Record extends ObjectController[Record] {
 
     def get(i : models.Record.Id) = Action(i).async { implicit request =>
       request.obj.json(request.apiOptions).map(Ok(_))
+    }
+
+    private implicit val categoryFormatter : format.Formatter[RecordCategory] = new format.Formatter[RecordCategory] {
+      def bind(key : String, data : Map[String, String]) =
+        data.get(key).flatMap(RecordCategory.getName(_))
+          .toRight(Seq(FormError(key, "error.invalid", Nil)))
+      def unbind(key : String, value : RecordCategory) =
+        Map(key -> value.name)
+    }
+
+    private val queryForm = Form(single(
+      "category" -> optional(of[RecordCategory])
+    ))
+
+    def query(volume : models.Volume.Id) = Volume.Action(volume).async { implicit request =>
+      queryForm.bindFromRequest.fold(
+        form => ABadRequest(Json.toJson(form.errors)),
+        category =>
+          request.obj.allRecords(category).map(l =>
+            Ok(JsonRecord.map[Record](_.json)(l)))
+      )
     }
   }
 }

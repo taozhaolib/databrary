@@ -82,8 +82,9 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
       !party.id.equals(Party.ROOT) && checkPermission(Permission.CONTRIBUTE) && access >= Permission.CONTRIBUTE)
   )
 
-  def json(options : Map[String,Seq[String]] = Map.empty) : Future[JsonRecord] =
+  def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(party.json, options,
+<<<<<<< HEAD
       "parents" -> (opt => party.authorizeParents(opt.contains("all")).map(l =>
         JsonRecord.seq(l.map(a => JsonRecord(a.parentId,
           'party -> a.parent.json,
@@ -93,18 +94,25 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
       "children" -> (opt => party.authorizeChildren(opt.contains("all")).map(l =>
         JsonRecord.seq(l.map(a => JsonRecord(a.childId,
           'party -> a.child.json,
+=======
+      "parents" -> (opt => party.authorizeParents(opt.contains("all"))
+        .map(JsonRecord.map(a => JsonRecord(a.parentId,
+          'parent -> a.parent.json,
           'access -> a.access
         )))
-      )),
-      "volumes" -> (opt => party.volumeAccess.map(l =>
-        Json.toJson(l.map(_.json - "party"))
-      )),
-      "funding" -> (opt => party.funding.map(l =>
-        Json.toJson(l.map(_.json - "funder"))
-      )),
-      "comments" -> (opt => party.account.fold[Future[Seq[Comment]]](Async(Nil))(_.comments).map(l =>
-        Json.toJson(l.map(c => c.json - "who" + ('volume -> c.volume.json)))
-      ))
+      ),
+      "children" -> (opt => party.authorizeChildren(opt.contains("all"))
+        .map(JsonRecord.map(a => JsonRecord(a.childId,
+          'child -> a.child.json,
+>>>>>>> remotes/origin/master
+          'access -> a.access
+        )))
+      ),
+      "volumes" -> (opt => party.volumeAccess.map(JsonArray.map(_.json - "party"))),
+      "funding" -> (opt => party.funding.map(JsonArray.map(_.json - "funder"))),
+      "comments" -> (opt => party.account.fold[Future[Seq[Comment]]](Async(Nil))(_.comments)
+        .map(JsonArray.map(c => c.json - "who" + ('volume -> c.volume.json)))
+      )
     )
 }
 
