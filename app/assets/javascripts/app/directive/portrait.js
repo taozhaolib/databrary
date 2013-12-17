@@ -12,8 +12,7 @@ define(['app/config/module'], function (module) {
 				$scope.extras = $attrs.extras;
 				$scope.links = $attrs.links;
 
-				if($attrs.caption)
-					$element.find('figure').attr('caption', $attrs.caption);
+				$scope.caption = $attrs.caption;
 			};
 		};
 

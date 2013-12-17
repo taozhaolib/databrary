@@ -1,32 +1,8 @@
 <panel ng-controller="PeoplePanel" id="panel_people" title="People" fold>
     <panel-mode name="view" active>
-        <div ng-show="investigators">
-            <h2>Investigators</h2>
-
-            <div class="row">
-                <div ng-repeat="party in investigators" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
-                    <portrait class="portrait_avatar" hover></portrait>
-                </div>
-            </div>
-        </div>
-
-        <div ng-show="contributors">
-            <h2>Contributors</h2>
-
-            <div class="row">
-                <div ng-repeat="party in contributors" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
-                    <portrait class="portrait_avatar" hover></portrait>
-                </div>
-            </div>
-        </div>
-
-        <div ng-show="observers">
-            <h2>Observers</h2>
-
-            <div class="row">
-                <div ng-repeat="party in observers" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
-                    <portrait class="portrait_avatar" hover></portrait>
-                </div>
+        <div class="row">
+            <div ng-repeat="volumeAccess in volume.access" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">
+                <portrait class="portrait_avatar" hover caption="{{getVolumeRole(volumeAccess)}}"></portrait>
             </div>
         </div>
     </panel-mode>

@@ -1,5 +1,5 @@
 <aside class="portrait ng-cloak">
-    <figure ng-if="avatar" baseline="square" class="portrait_avatar" ng-href="/party/{{party.id}}">
+    <figure ng-if="avatar" baseline="square" class="figure_avatar" ng-href="/party/{{party.id}}" caption="{{caption}}">
         <figmedia><img ng-src="{{party.avatar || party.email | gravatar:400}}"></figmedia>
         <figcaption ng-if="caption" ng-bind-html="caption"></figcaption>
     </figure>

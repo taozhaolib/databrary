@@ -5,6 +5,17 @@ define(['app/config/module'], function (module) {
 		var compile = function ($element, $attrs) {
 			$element.addClass('figure');
 
+			$element.find('figmedia').first().replaceWith('<div class="media"><div class="inner">' + $element.find('figmedia').first().html() + '</div></div>');
+
+			var $figcaption = $element.find('figcaption').first();
+
+			if ($figcaption.length > 0) {
+				$element.attr('caption', $figcaption.html());
+				$figcaption.replaceWith('<div class="text" ng-bind-html="caption"></div>');
+			} else {
+				$element.append('<div class="text" ng-bind-html="caption"></div>')
+			}
+
 			var href = ($attrs.ngHref) ? $attrs.ngHref : $attrs.href;
 
 			if (href) {
@@ -22,11 +33,10 @@ define(['app/config/module'], function (module) {
 				$element.attr('title', '');
 			}
 
-			$element.find('figmedia').first().replaceWith('<div class="media"><div class="inner">'+$element.find('figmedia').first().html()+'</div></div>');
-			$element.find('figcaption').first().replaceWith('<div class="text">'+$element.find('figcaption').first().html()+'</div>');
-
 			return function ($scope, $element, $attrs) {
-				$scope.caption = $attrs.caption;
+				$attrs.$observe('caption', function () {
+					$scope.caption = $attrs.caption;
+				});
 			};
 		};
 
