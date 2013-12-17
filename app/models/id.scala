@@ -9,16 +9,18 @@ import dbrary._
   * @tparam I the type of the identifier
   * @tparam T the tag
   */
-private[models] class GenericId[I,+T](val unId : I) {
-  // I don't understand why this is necessary (and it's also not quite right with inheritance):
-  def equals(i : GenericId[I,_]) = i.unId equals unId
-  def ==(i : GenericId[I,_]) = i.unId == unId
-  def !=(i : GenericId[I,_]) = !(this == i)
+private[models] abstract class GenericId[I,+T](val unId : I) {
+  def ===[X >: T](i : GenericId[I,X]) : Boolean
+  @deprecated("by ===", "") def equals(i : GenericId[I,_]) = i.unId equals unId
+  // this is necessary for match:
+  def ==(i : GenericId[_,_]) = i.unId == unId
+  @deprecated("by ===", "") def !=(i : GenericId[I,_]) = unId != i.unId
   override def hashCode = unId.hashCode
   override def toString = unId.toString
 }
 /** GenericId specific to integers.  The most common (only?) type of identifier we have. */
 final class IntId[+T] private (unId : Int) extends GenericId[Int,T](unId) {
+  def ===[X >: T](i : GenericId[Int,X]) = unId == i.unId
   override def hashCode = unId
   /** Forcibly coerce to a different type. */
   private[models] def coerce[A] = new IntId[A](unId)

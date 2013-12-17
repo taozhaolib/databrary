@@ -34,7 +34,7 @@
 
                                 <td>
                                     <button type='submit' class="button second" form="party_@party.id">Update</button>
-                                    @if(party.id != request.identity.id) {
+                                    @if(!(request.identity === party)) {
                                         <a href='@controllers.Volume.routes.html.accessDelete(volume.id, party.id)' class="button first">Revoke</a>
                                     }
                                     @widget.formErrors(form)

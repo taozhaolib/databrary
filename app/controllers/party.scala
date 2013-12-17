@@ -23,7 +23,7 @@ package object Party extends ObjectController[SiteParty] {
     optionZip(i, p).fold[ActionFunction[SiteRequest.Auth,Request]] {
       new ActionRefiner[SiteRequest.Auth,Request] {
         protected def refine[A](request : SiteRequest.Auth[A]) =
-          if (i.fold(true)(_.equals(request.identity.id)))
+          if (i.fold(true)(_ === request.identity.id))
             request.identity.perSite(request).map { p =>
               Right(request.withObj(p))
             }
@@ -49,7 +49,7 @@ package object Party extends ObjectController[SiteParty] {
       )
 
   private def adminAccount(implicit request : Request[_]) : Option[Account] =
-    request.obj.party.account.filter(_.id.equals(request.identity.id) || request.superuser)
+    request.obj.party.account.filter(_ === request.identity || request.superuser)
 
   type EditForm = Form[(String, Option[Orcid], Option[(String, String, Option[String], String)])]
   private[this] def formFill(implicit request : Request[_]) : EditForm = {
@@ -114,7 +114,7 @@ package object Party extends ObjectController[SiteParty] {
       request.obj.party.authorizeChildren(true).flatMap { children =>
       request.obj.party.authorizeParents(true).map { parents =>
         val authorizeForms = children
-          .filter(t => authorizeChange.fold(true)(_.equals(t.childId)))
+          .filter(t => authorizeChange.fold(true)(_ === t.childId))
           .map(t => (t.child, authorizeFormFill(t))) ++
           authorizeChangeForm
         status(views.html.party.authorize(parents, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults))

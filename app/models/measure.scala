@@ -195,7 +195,7 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
 
 case class Measures(list : Seq[Measure[_]]) extends TableRow {
   private def find(id : Metric.Id) : Option[Measure[_]] =
-    list.find(_.metricId.unId >= id.unId).filter(_.metricId.equals(id))
+    list.find(_.metricId.unId >= id.unId).filter(_.metricId === id)
 
   def apply[T](metric : Metric[T]) : Option[Measure[T]] =
     find(metric.id).asInstanceOf[Option[Measure[T]]]

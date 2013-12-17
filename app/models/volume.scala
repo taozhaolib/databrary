@@ -74,7 +74,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       case None => r.result
       case Some((None, _)) => group(l.tail)
       case Some((Some(k), _)) =>
-        val (p, s) = l.span(_._1.get.equals(k)) // safe because sorted
+        val (p, s) = l.span(_._1.get === k) // safe because sorted
         r += k -> p.flatMap(_._2)
         group(s)
     }
@@ -88,7 +88,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Record,Seq[Slot])] = l.headOption match {
       case None => r.result
       case Some((_, Some(k))) if k.category.isDefined =>
-        val (p, s) = l.span(_._2.get.equals(k)) // safe because sorted
+        val (p, s) = l.span(_._2.get === k) // safe because sorted
         r += k -> p.flatMap(_._1)
         group(s)
       case _ => group(l.tail)
@@ -103,7 +103,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     var agemin, agemax = Age(0)
     var agesum = 0
     sess.foreach {
-      case (Some(s), Some(r)) if r.category.equals(Some(RecordCategory.Participant)) =>
+      case (Some(s), Some(r)) if r.category.fold(false)(_ === RecordCategory.Participant) =>
         sessions = sessions + 1
         if (s.consent >= Consent.SHARED) shared = shared + 1
         s.container.date.flatMap(r.age(_)).foreach { a =>

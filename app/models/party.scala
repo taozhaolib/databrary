@@ -69,6 +69,9 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
 }
 
 final class SiteParty(val party : Party, val access : Permission.Value, val delegated : Permission.Value)(implicit val site : Site) extends SiteObject {
+  def ===(a : SiteParty) = party === a.party
+  def ===(a : Party) = party === a
+
   def getPermission = delegated
 
   def pageName = party.pageName
@@ -79,7 +82,7 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
     Action("edit", controllers.Party.routes.html.edit(party.id), Permission.EDIT),
     Action("authorization", controllers.Party.routes.html.admin(party.id), Permission.ADMIN),
     SiteAction("add volume", controllers.Volume.routes.html.create(Some(party.id)),
-      !party.id.equals(Party.ROOT) && checkPermission(Permission.CONTRIBUTE) && access >= Permission.CONTRIBUTE)
+      !(party.id === Party.ROOT) && checkPermission(Permission.CONTRIBUTE) && access >= Permission.CONTRIBUTE)
   )
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
@@ -106,6 +109,9 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
 final class Account protected (val party : Party, email_ : String, password_ : String, openid_ : Option[String]) extends TableRow {
+  def ===(a : Account) = party === a.party
+  def ===(a : Party) = party === a
+
   party._account = Some(this)
 
   def id = party.id
@@ -161,7 +167,7 @@ object Party extends TableId[Party]("party") {
   def get(i : Id)(implicit site : Site) : Future[Option[Party]] = i match {
     case NOBODY => Async(Some(Nobody))
     case ROOT => Async(Some(Root))
-    case i if i.equals(site.identity.id) => Async(Some(site.identity))
+    case i if i === site.identity.id => Async(Some(site.identity))
     case _ => row.SELECT("WHERE id = ?").apply(i).singleOpt
   }
 
@@ -202,8 +208,8 @@ object Party extends TableId[Party]("party") {
 
 object SiteParty {
   private[models] def make(p : Party)(implicit site : Site) : Future[SiteParty] =
-    if (p.equals(site.identity))
-      Async(new SiteParty(p, site.access, if (p.id.equals(Party.NOBODY)) Permission.NONE else Permission.ADMIN))
+    if (p === site.identity)
+      Async(new SiteParty(p, site.access, if (p.id === Party.NOBODY) Permission.NONE else Permission.ADMIN))
     else
       for {
         a <- p.access
@@ -240,7 +246,7 @@ object Account extends Table[Account]("account") {
     * @return None if no party or no account for given party
     */
   def get(i : Id)(implicit site : Site) : Future[Option[Account]] =
-    if (i == site.identity.id) Future.successful(site.user) else // optimization
+    if (i === site.identity.id) Future.successful(site.user) else // optimization
     row.SELECT("WHERE id = ?").apply(i).singleOpt
   /** Look up a user by email. */
   def getEmail(email : String) : Future[Option[Account]] = 

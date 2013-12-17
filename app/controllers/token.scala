@@ -39,7 +39,7 @@ object Token extends SiteController {
       form => ABadRequest(views.html.token.password(a, form)),
       { case (token, password) =>
         models.LoginToken.get(token).flatMap(_
-          .filter(t => t.valid && t.password && t.accountId == a)
+          .filter(t => t.valid && t.password && t.accountId === a)
           .fold[Future[SimpleResult]](AForbidden) { token =>
             password.fold(macros.Async(false))(p => token.account.changeAccount(password = p)).flatMap { _ =>
               Login.login(token.account)
