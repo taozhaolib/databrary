@@ -6,10 +6,7 @@ import macros._
 import dbrary._
 import site._
 
-/** A segment of an asset as used in a slot.
-  * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offset], val slot : Slot, val excerpt : Boolean) extends TableRow with SiteObject with BackedAsset with InVolume {
-  def slotId = slot.id
+abstract class AbstractSlotAsset protected (val asset : Asset, asset_segment : Range[Offset], val slot : AbstractSlot, val excerpt : Boolean) extends BackedAsset with InVolume {
   def volume = asset.volume
   def assetId = asset.id
   def source = asset.source
@@ -29,6 +26,12 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offse
 
   def in(s : Slot) =
     SlotAsset.make(asset, asset_segment, s, excerpt && slot.segment @> s.segment /* not quite right but should be fine for this use */)
+}
+
+/** A segment of an asset as used in a slot.
+  * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
+sealed class SlotAsset protected (asset : Asset, asset_segment : Range[Offset], override val slot : Slot, excerpt : Boolean) extends AbstractSlotAsset(asset, asset_segment, slot, excerpt) with TableRow with SiteObject {
+  def slotId = slot.id
 
   def pageName = asset.name
   def pageParent = if (slot.container.top) slot.pageParent else Some(slot)
@@ -63,7 +66,7 @@ final class SlotTimeseries private[models] (override val asset : Timeseries, ass
 }
 
 object SlotAsset extends Table[SlotAsset]("slot_asset") {
-  private def make(asset : Asset, segment : Range[Offset], slot : Slot, excerpt : Boolean) = asset match {
+  private[models] def make(asset : Asset, segment : Range[Offset], slot : Slot, excerpt : Boolean) = asset match {
     case ts : Timeseries => new SlotTimeseries(ts, segment, slot, excerpt)
     case _ => new SlotAsset(asset, segment, slot, excerpt)
   }

@@ -114,20 +114,20 @@ object TagWeight extends Table[TagWeight]("tag_weight") {
       case ((weight, tag), up) => TagWeight(tag, weight, up)
     }
 
-  private[models] def getSlot(slot : Slot, all : Boolean = true)(implicit site : Site) : Future[Seq[TagWeight]] =
-    if (all)
-      aggregate.SELECT("""
-         JOIN slot ON tag_weight.slot = slot.id 
-        WHERE slot.source = ? AND slot.segment <@ ?::segment
-        GROUP BY tag.id, tag.name
-        HAVING sum(tag_weight.weight) > 0 OR count(tag_use.up) > 0
-        ORDER BY agg_weight DESC""")
-        .apply(slot.id, site.identity.id, slot.containerId, slot.segment).list
-    else
-      row.SELECT("WHERE tag_weight.slot = ? ORDER BY weight DESC")
-        .apply(slot.id, site.identity.id, slot.id).list
+  private[models] def getSlot(slot : Slot) : Future[Seq[TagWeight]] =
+    row.SELECT("WHERE tag_weight.slot = ? ORDER BY weight DESC")
+      .apply(slot.id, slot.site.identity.id, slot.id).list
 
-  private[models] def getVolume(volume : Volume)(implicit site : Site) : Future[Seq[TagWeight]] =
+  private[models] def getSlotAll(slot : Slot) : Future[Seq[TagWeight]] =
+    aggregate.SELECT("""
+       JOIN slot ON tag_weight.slot = slot.id 
+      WHERE slot.source = ? AND slot.segment && ?::segment
+      GROUP BY tag.id, tag.name
+      HAVING sum(tag_weight.weight) > 0 OR count(tag_use.up) > 0
+      ORDER BY agg_weight DESC""")
+      .apply(slot.id, slot.site.identity.id, slot.containerId, slot.segment).list
+
+  private[models] def getVolume(volume : Volume) : Future[Seq[TagWeight]] =
     volume.top.flatMap { topSlot =>
       aggregate.SELECT("""
          JOIN slot ON tag_weight.slot = slot.id 
@@ -136,6 +136,6 @@ object TagWeight extends Table[TagWeight]("tag_weight") {
         GROUP BY tag.id, tag.name
         HAVING sum(tag_weight.weight) > 0 OR count(tag_use.up) > 0
         ORDER BY agg_weight DESC""")
-        .apply(topSlot.id, site.identity.id, volume.id).list
+        .apply(topSlot.id, volume.site.identity.id, volume.id).list
     }
 }

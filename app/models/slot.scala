@@ -2,28 +2,67 @@ package models
 
 import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.JsObject
 import macros._
 import dbrary._
 import site._
 
+/** Conceptually a slot represents a segment of a container. */
+trait AbstractSlot extends InVolume {
+  def container : Container
+  val segment : Range[Offset]
+
+  final def containerId : Container.Id = container.id
+  def volume = container.volume
+
+  /** True if this is its container's full slot. */
+  def isFull : Boolean = segment.isFull
+  def isTop : Boolean = container.top && isFull
+  /** Effective start point of this slot within the container. */
+  final def position : Offset = segment.lowerBound.getOrElse(0)
+
+  /** The relevant consented slot containing this one. */
+  def context : Slot
+  /** The effective consent level that applies to contained data. */
+  final def getConsent : Consent.Value = context.consent
+
+  /** The permisison level granted to identifiable data within this slot. */
+  final def dataPermission : HasPermission =
+    Permission.data(getPermission, getConsent, Classification.IDENTIFIED)
+  /** Whether the current user may download identifiable data within this slot. */
+  final lazy val downloadable : Boolean =
+    dataPermission.checkPermission(Permission.DOWNLOAD)
+
+  private[this] final val publicDateFields = Array(org.joda.time.DateTimeFieldType.year)
+  final def getDate : Option[org.joda.time.ReadablePartial] =
+    container.date.map { date =>
+      if (downloadable) date
+      else new org.joda.time.Partial(publicDateFields, publicDateFields.map(date.get _))
+    }
+
+  lazy val jsonFields = JsonObject.flatten(
+    Some('container -> container.json),
+    Some('segment -> segment),
+    Maybe(getConsent).opt.map('consent -> _)
+  )
+
+  def json(options : JsonOptions.Options) : Future[JsObject] =
+    JsonOptions(jsonFields, options,
+      "records" -> (opt => Record.getSlotAll(this).map(JsonRecord.map(_.json)))
+      // "tags" -> (opt => TagWeight.getSlotAll(this).map(JsonArray.map(_.json)))
+    )
+}
+
 /** Smallest organizatonal unit of related data.
   * Primarily used for an individual session of data with a single date and place.
   * Critically, contained data are should be covered by a single consent level and share the same annotations. */
-abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE) extends TableRowId[Slot] with InVolume with SiteObject {
-  def container : Container
-  def containerId : Container.Id = container.id
+abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE) extends TableRowId[Slot] with AbstractSlot with SiteObject {
   private[this] final var _consent = consent_
-  /** Effective consent for covered assets, or [[Consent.NONE]] if no matching consent. */
+  /** Directly assigned consent for covered assetsd. */
   final def consent = _consent
-  /** True if this is its container's full slot. */
-  def isFull : Boolean
-  def isTop : Boolean
-  /** The relevant consented slot containing this one.
-    * Defaults to fullSlot. */
-  def context : Slot
 
-  final def isContext : Boolean = consent != Consent.NONE || isFull
-  final def getConsent : Consent.Value = context.consent
+  final def hasConsent : Boolean = consent != Consent.NONE
+  final def isContext : Boolean = hasConsent || isFull
 
   /** Update the given values in the database and this object in-place. */
   final def setConsent(consent : Consent.Value = _consent) : Future[Boolean] = {
@@ -34,23 +73,6 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
         _consent = consent
       }
   }
-
-  /** The permisison level granted to identifiable data within this slot. */
-  final def dataPermission : HasPermission =
-    Permission.data(getPermission, getConsent, Classification.IDENTIFIED)
-  /** Whether the current user may download identifiable data within this slot. */
-  final lazy val downloadable : Boolean =
-    dataPermission.checkPermission(Permission.DOWNLOAD)
-
-  private val publicFields = Array(org.joda.time.DateTimeFieldType.year)
-  final def getDate : Option[org.joda.time.ReadablePartial] =
-    container.date.map { date =>
-      if (downloadable) date
-      else new org.joda.time.Partial(publicFields, publicFields.map(date.get _))
-    }
-
-  /** Effective start point of this slot within the container. */
-  final def position : Offset = segment.lowerBound.getOrElse(0)
 
   /** List of contained asset segments within this slot. */
   final def assets : Future[Seq[SlotAsset]] = SlotAsset.getSlot(this)
@@ -67,10 +89,13 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
   /** The list of tags on the current slot along with the current user's applications.
     * @param all add any tags applied to child slots to weight (but not use) as well, and if this is the top slot, return all volume tags instead */
   final def tags(all : Boolean = true) =
-    if (all && isTop)
-      TagWeight.getVolume(volume)
+    if (all)
+      if (isTop)
+        TagWeight.getVolume(volume)
+      else
+        TagWeight.getSlotAll(this)
     else
-      TagWeight.getSlot(this, all)
+      TagWeight.getSlot(this)
   /** Tag this slot.
     * @param up Some(true) for up, Some(false) for down, or None to remove
     * @return true if the tag name is valid
@@ -81,7 +106,6 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
 
   private[this] final val _records : FutureVar[Seq[Record]] = FutureVar[Seq[Record]](Record.getSlot(this))
   /** The list of records on this object.
-    * @param all include indirect records on any contained objects
     */
   final def records : Future[Seq[Record]] = _records.apply
   /** Remove the given record from this slot. */
@@ -111,29 +135,18 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
   }
   override def pageCrumbName : Option[String] = if (isFull) None else Some(segment.lowerBound.fold("")(_.toString) + " - " + segment.upperBound.fold("")(_.toString))
   def pageParent = Some(if (isContext) volume else context)
-  def pageURL = controllers.routes.Slot.view(container.volumeId, id)
+  def pageURL = controllers.Slot.routes.html.view(container.volumeId, id)
   def pageActions = Seq(
-    Action("view", controllers.routes.Slot.view(volumeId, id), Permission.VIEW),
-    Action("edit", controllers.routes.Slot.edit(volumeId, id), Permission.EDIT),
+    Action("view", controllers.Slot.routes.html.view(volumeId, id), Permission.VIEW),
+    Action("edit", controllers.Slot.routes.html.edit(volumeId, id), Permission.EDIT),
     Action("add file", controllers.Asset.routes.html.create(volumeId, id), Permission.CONTRIBUTE),
     // Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
     Action("add participant", controllers.Record.routes.html.slotAdd(volumeId, id, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
   )
-
-  lazy val jsonFields = JsonObject(
-    'container -> container.json,
-    'segment -> segment
-    // Maybe(consent).opt.map('consent -> _)
-    // getDate.map('date -> _.toString)
-  )
 }
 
 object Slot extends TableId[Slot]("slot") {
-  private final class SubSlot private[Slot] (id : Slot.Id, val container : Container, segment : Range[Offset], consent_ : Consent.Value = Consent.NONE) extends Slot(id, segment, consent_) {
-    def volume = container.volume
-    def isFull = segment.isFull
-    def isTop = container.top && isFull
-
+  private final class SubSlot (id : Slot.Id, val container : Container, segment : Range[Offset], consent_ : Consent.Value = Consent.NONE) extends Slot(id, segment, consent_) {
     /* must be set on construction */
     private[Slot] var _context : Slot = if (isContext) this else container
     /** The relevant consented slot containing this one.
@@ -154,8 +167,8 @@ object Slot extends TableId[Slot]("slot") {
     .map { case (slot, context) =>
       (container : Container) =>
         val s = slot(container)
-        if (s.consent == Consent.NONE && container.consent == Consent.NONE)
-          s._context = context.map(_(container)).getOrElse(container)
+        if (!(s.hasConsent || container.hasConsent))
+          s._context = context.fold[Slot](container)(_(container))
         s
     }
   private[models] def row(implicit site : Site) =
@@ -163,7 +176,7 @@ object Slot extends TableId[Slot]("slot") {
       case (slot, cont) => slot(cont)
     }
   private[models] def containerRow(container : Container) =
-    (if (container.consent != Consent.NONE)
+    (if (container.hasConsent)
       base
     else
       columns)
@@ -203,4 +216,31 @@ object Slot extends TableId[Slot]("slot") {
       SQL("INSERT INTO slot", args.insert, "RETURNING id")(dbc, exc)
         .apply(args).single(SQLCols[Id].map(new SubSlot(_, container, segment)))
     }
+
+  object Virtual {
+    /** A slot that is not (necessarily) in the database, but for which we know all the relevant information. */
+    private final class VirtualSlot (val segment : Range[Offset], val context : Slot) extends AbstractSlot {
+      def container = context.container
+    }
+
+    private def columns(segment : Range[Offset]) = base.fromAlias("context").map { context =>
+      (container : Container) =>
+        new VirtualSlot(segment, context(container))
+    }
+
+    def get(container : Container, segment : Range[Offset]) : Future[AbstractSlot] =
+      if (segment.isFull) Async(container)
+      else if (container.hasConsent) Async(new VirtualSlot(segment, container))
+      else columns(segment).map(_(container))
+        .SELECT("WHERE context.source = ? AND context.segment @> ?::segment AND context.consent IS NOT NULL")
+        .apply(container.id, segment).singleOpt
+        .map(_.getOrElse(container))
+
+    def get(container : Container.Id, segment : Range[Offset])(implicit site : Site) : Future[Option[AbstractSlot]] =
+      Container.row
+        .leftJoin(columns(segment), "container.id = context.source AND context.segment @> ?::segment AND context.consent IS NOT NULL")
+        .map { case (cont, slot) => slot.fold[AbstractSlot](cont)(_(cont)) }
+        .SELECT("WHERE container.id = ? AND", Volume.condition)
+        .apply(SQLArgs(segment, container) ++ Volume.conditionArgs).singleOpt
+  }
 }

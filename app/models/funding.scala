@@ -14,7 +14,7 @@ final case class VolumeFunding(val volume : Volume, val funder : Party, val gran
 
   lazy val json = JsonObject.flatten(
     Some('volume -> volume.json),
-    Some('funder -> funder.json),
+    Some('party -> funder.json),
     grant.map('grant -> _)
   )
 }

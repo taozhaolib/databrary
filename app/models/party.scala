@@ -97,7 +97,7 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
         )))
       ),
       "volumes" -> (opt => party.volumeAccess.map(JsonArray.map(_.json - "party"))),
-      "funding" -> (opt => party.funding.map(JsonArray.map(_.json - "funder"))),
+      "funding" -> (opt => party.funding.map(JsonArray.map(_.json - "party"))),
       "comments" -> (opt => party.account.fold[Future[Seq[Comment]]](Async(Nil))(_.comments)
         .map(JsonArray.map(c => c.json - "who" + ('volume -> c.volume.json)))
       )
