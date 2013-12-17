@@ -11,9 +11,14 @@ import dbrary._
   */
 private[models] abstract class GenericId[I,+T](val unId : I) {
   def ===[X >: T](i : GenericId[I,X]) : Boolean
-  @deprecated("by ===", "") def equals(i : GenericId[I,_]) = i.unId equals unId
+  /** Equality based on id value.
+    * This doesn't properly check types due to erasure, so === should be preferred. */
+  override def equals(i : Any) = i match {
+    case i : GenericId[I,T] => i.unId equals unId
+    case _ => false
+  }
   // this is necessary for match:
-  def ==(i : GenericId[_,_]) = i.unId == unId
+  def ==(i : GenericId[I,_]) = i.unId == unId
   @deprecated("by ===", "") def !=(i : GenericId[I,_]) = unId != i.unId
   override def hashCode = unId.hashCode
   override def toString = unId.toString
