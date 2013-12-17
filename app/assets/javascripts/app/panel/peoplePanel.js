@@ -3,13 +3,10 @@ define(['app/config/module'], function (module) {
 
 	module.controller('PeoplePanel', ['$scope', 'Volume', '$routeParams', function ($scope, Volume, $routeParams) {
 		$scope.bootPanel = function () {
-			if (!$scope.volume)
-				Volume.get({
+			if (!angular.isObject($scope.volume))
+				$scope.volume = Volume.get($routeParams.id, {
 					id: $routeParams.id,
 					access: 'all'
-				}, function (volume) {
-					console.log(volume);
-					$scope.volume = volume;
 				});
 		};
 
@@ -23,6 +20,8 @@ define(['app/config/module'], function (module) {
 					return 'Observer';
 				case 1:
 					return 'Viewer';
+				default:
+					return '';
 			}
 		};
 	}]);

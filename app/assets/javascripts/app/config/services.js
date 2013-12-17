@@ -3,5 +3,6 @@ define([
 	'app/service/messageService',
 	'app/service/authService',
 	'app/service/retryService',
+	'app/service/resourceService',
 	'app/service/panelService'
 ], function () {});

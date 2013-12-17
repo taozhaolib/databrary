@@ -127,7 +127,7 @@ define(['app/config/module'], function (module) {
 			templateUrl: 'volumeView.html',
 			resolve: {
 				volume: ['$route', 'Volume', function ($route, Volume) {
-					return Volume.get({
+					return Volume.get($route.current.params.id, {
 						id: $route.current.params.id,
 						access: 'all',
 						citations: 'all',

@@ -1,9 +1,16 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('Volume', ['$rootScope', '$resource', '$filter', function ($rootScope, $resource, $filter) {
-		return $resource('/api/volume/:id', {
+	module.factory('Volume', ['$rootScope', 'resourceService', function ($rootScope, resourceService) {
+		return resourceService('volume', '/api/volume/:id', {
 			id: '@id'
-		});
+		}, [
+			'access',
+			'citations',
+			'tags',
+			'comments',
+			'categories',
+			'funding'
+		]);
 	}]);
 });

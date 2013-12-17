@@ -1,7 +1,15 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.controller('TagsPanel', ['$scope', function ($scope) {
+	module.controller('TagsPanel', ['$scope', 'Volume', '$routeParams', function ($scope, Volume, $routeParams) {
+		$scope.bootPanel = function () {
+			if (!$routeParams.vid && !angular.isObject($scope.volume))
+				$scope.volume = Volume.get($routeParams.id, {
+					id: $routeParams.id,
+					tags: 'all'
+				});
+			// else Slot
+		};
 
 
 		//
