@@ -43,7 +43,6 @@ final class Container protected (override val id : Container.Id, override val vo
     if (top) Some('top -> top) else None,
     name.map('name -> _),
     getDate.map('date -> _.toString)
-    // Maybe(consent).opt.map('consent -> _)
   )
 }
 

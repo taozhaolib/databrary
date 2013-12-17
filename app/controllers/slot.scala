@@ -157,8 +157,8 @@ package object Slot extends ObjectController[Slot] {
     private[controllers] def Action(i : models.Container.Id, start : Option[Offset], end : Option[Offset], p : Permission.Value = Permission.VIEW) =
       SiteAction ~> action(i, start, end, p)
 
-    def get(c : models.Container.Id, start : Option[Offset], end : Option[Offset]) = Action(c, start, end) { request =>
-      Ok(request.obj.jsonFields)
+    def get(c : models.Container.Id, start : Option[Offset], end : Option[Offset]) = Action(c, start, end).async { request =>
+      request.obj.json(request.apiOptions).map(Ok(_))
     }
   }
 }

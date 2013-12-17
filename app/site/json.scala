@@ -79,4 +79,6 @@ object JsonOptions {
     }).map(r => new JsObject(r.flatten))
   def apply(base : JsonRecord, options : Options, opts : Tuple*)(implicit exceutionContext : ExecutionContext) : Future[JsonRecord] =
     run(options, opts : _*).map(base ++ _)
+  def apply(base : JsObject, options : Options, opts : Tuple*)(implicit exceutionContext : ExecutionContext) : Future[JsObject] =
+    run(options, opts : _*).map(base ++ _)
 }

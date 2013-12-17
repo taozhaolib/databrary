@@ -2,6 +2,7 @@ package models
 
 import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.JsObject
 import macros._
 import dbrary._
 import site._
@@ -39,12 +40,17 @@ trait AbstractSlot extends InVolume {
       else new org.joda.time.Partial(publicDateFields, publicDateFields.map(date.get _))
     }
 
-  lazy val jsonFields = JsonObject(
-    'container -> container.json,
-    'segment -> segment
-    // Maybe(consent).opt.map('consent -> _)
-    // getDate.map('date -> _.toString)
+  lazy val jsonFields = JsonObject.flatten(
+    Some('container -> container.json),
+    Some('segment -> segment),
+    Maybe(getConsent).opt.map('consent -> _)
   )
+
+  def json(options : JsonOptions.Options) : Future[JsObject] =
+    JsonOptions(jsonFields, options,
+      "records" -> (opt => Record.getSlotAll(this).map(JsonRecord.map(_.json)))
+      // "tags" -> (opt => TagWeight.getSlotAll(this).map(JsonArray.map(_.json)))
+    )
 }
 
 /** Smallest organizatonal unit of related data.
@@ -83,10 +89,13 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
   /** The list of tags on the current slot along with the current user's applications.
     * @param all add any tags applied to child slots to weight (but not use) as well, and if this is the top slot, return all volume tags instead */
   final def tags(all : Boolean = true) =
-    if (all && isTop)
-      TagWeight.getVolume(volume)
+    if (all)
+      if (isTop)
+        TagWeight.getVolume(volume)
+      else
+        TagWeight.getSlotAll(this)
     else
-      TagWeight.getSlot(this, all)
+      TagWeight.getSlot(this)
   /** Tag this slot.
     * @param up Some(true) for up, Some(false) for down, or None to remove
     * @return true if the tag name is valid
@@ -97,7 +106,6 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
 
   private[this] final val _records : FutureVar[Seq[Record]] = FutureVar[Seq[Record]](Record.getSlot(this))
   /** The list of records on this object.
-    * @param all include indirect records on any contained objects
     */
   final def records : Future[Seq[Record]] = _records.apply
   /** Remove the given record from this slot. */
