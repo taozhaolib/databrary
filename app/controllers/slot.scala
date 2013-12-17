@@ -151,14 +151,14 @@ package object Slot extends ObjectController[Slot] {
   }
 
   object api {
-    private[controllers] def action(i : models.Container.Id, p : Permission.Value = Permission.VIEW) =
-      RequestObject.check(models.Container.get(i)(_), p)
+    private[controllers] def action(i : models.Container.Id, start : Option[Offset], end : Option[Offset], p : Permission.Value = Permission.VIEW) =
+      RequestObject.check(models.Slot.Virtual.get(i, Range[Offset](start, end))(_), p)
 
-    private[controllers] def Action(i : models.Container.Id, p : Permission.Value = Permission.VIEW) =
-      SiteAction ~> action(i, p)
+    private[controllers] def Action(i : models.Container.Id, start : Option[Offset], end : Option[Offset], p : Permission.Value = Permission.VIEW) =
+      SiteAction ~> action(i, start, end, p)
 
-    def get(c : models.Container.Id, start : Option[Offset], end : Option[Offset]) = Action(c) { request =>
-      NotImplemented
+    def get(c : models.Container.Id, start : Option[Offset], end : Option[Offset]) = Action(c, start, end) { request =>
+      Ok(request.obj.jsonFields)
     }
   }
 }
