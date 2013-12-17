@@ -150,8 +150,8 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       "access" -> (opt => partyAccess.map(JsonArray.map(_.json - "volume"))),
       "funding" -> (opt => funding.map(JsonArray.map(_.json - "volume"))),
       "citations" -> (opt => citations.map(JsonArray.map(_.json))),
-      "comments" -> (opt => comments.map(JsonArray.map(_.json))),
-      "tags" -> (opt => tags.map(JsonArray.map(_.json))),
+      "comments" -> (opt => comments.map(JsonRecord.map(_.json))),
+      "tags" -> (opt => tags.map(JsonRecord.map(_.json))),
       "categories" -> (opt => RecordCategory.getVolume(this).map(JsonArray.map(_.name)))
     )
 }

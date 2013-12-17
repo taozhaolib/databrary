@@ -53,7 +53,7 @@ package object Slot extends ObjectController[Slot] {
       else for {
         records <- slot.records
         assets <- slot.assets
-        comments <- slot.comments(true)
+        comments <- slot.comments
       } yield (Ok(views.html.slot.view(records, assets, comments)))
     }
 

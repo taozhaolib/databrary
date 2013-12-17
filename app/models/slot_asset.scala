@@ -26,6 +26,7 @@ abstract class AbstractSlotAsset protected (val asset : Asset, asset_segment : R
 
   def in(s : Slot) =
     SlotAsset.make(asset, asset_segment, s, excerpt && slot.segment @> s.segment /* not quite right but should be fine for this use */)
+  // def inContext = TODO
 }
 
 /** A segment of an asset as used in a slot.

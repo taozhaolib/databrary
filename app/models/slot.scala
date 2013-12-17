@@ -40,6 +40,16 @@ trait AbstractSlot extends InVolume {
       else new org.joda.time.Partial(publicDateFields, publicDateFields.map(date.get _))
     }
 
+  /** The list of comments that apply to this object. */
+  final def comments = Comment.getSlotAll(this)
+
+  /** The list of tags on the current slot along with the current user's applications. */
+  final def tags =
+    if (isTop)
+      TagWeight.getVolume(volume)
+    else
+      TagWeight.getSlotAll(this)
+
   lazy val jsonFields = JsonObject.flatten(
     Some('container -> container.json),
     Some('segment -> segment),
@@ -48,8 +58,10 @@ trait AbstractSlot extends InVolume {
 
   def json(options : JsonOptions.Options) : Future[JsObject] =
     JsonOptions(jsonFields, options,
-      "records" -> (opt => Record.getSlotAll(this).map(JsonRecord.map(_.json)))
-      // "tags" -> (opt => TagWeight.getSlotAll(this).map(JsonArray.map(_.json)))
+      // "assets" -> (opt => ),
+      "records" -> (opt => Record.getSlotAll(this).map(JsonRecord.map(_.json))),
+      "tags" -> (opt => tags.map(JsonRecord.map(_.json))),
+      "comments" -> (opt => comments.map(JsonRecord.map(_.json)))
     )
 }
 
@@ -77,10 +89,6 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
   /** List of contained asset segments within this slot. */
   final def assets : Future[Seq[SlotAsset]] = SlotAsset.getSlot(this)
 
-  /** The list of comments on this object.
-    * @param all include indirect comments on any contained objects
-    */
-  final def comments(all : Boolean = true) = Comment.getSlot(this, all)
   /** Post a new comment this object.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
   final def postComment(text : String, parent : Option[Comment.Id] = None)(implicit site : AuthSite) : Future[Boolean] =
@@ -89,13 +97,8 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
   /** The list of tags on the current slot along with the current user's applications.
     * @param all add any tags applied to child slots to weight (but not use) as well, and if this is the top slot, return all volume tags instead */
   final def tags(all : Boolean = true) =
-    if (all)
-      if (isTop)
-        TagWeight.getVolume(volume)
-      else
-        TagWeight.getSlotAll(this)
-    else
-      TagWeight.getSlot(this)
+    if (all) super.tags
+    else TagWeight.getSlot(this)
   /** Tag this slot.
     * @param up Some(true) for up, Some(false) for down, or None to remove
     * @return true if the tag name is valid
