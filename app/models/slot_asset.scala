@@ -6,12 +6,13 @@ import macros._
 import dbrary._
 import site._
 
-abstract class AbstractSlotAsset protected (val asset : Asset, asset_segment : Range[Offset], val slot : AbstractSlot, val excerpt : Boolean) extends BackedAsset with InVolume {
+/** A segment of an asset as used in a slot.
+  * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
+sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offset], val slot : AbstractSlot, val excerpt : Boolean) extends TableRow with BackedAsset with SiteObject with InVolume {
   def volume = asset.volume
   def assetId = asset.id
   def source = asset.source
   override def format = asset.format
-  def etag = asset.etag
   def position = asset_segment.lowerBound.map(_ - slot.segment.lowerBound.getOrElse(0))
 
   def classification = asset.classification match {
@@ -21,31 +22,51 @@ abstract class AbstractSlotAsset protected (val asset : Asset, asset_segment : R
 
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
     * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
-  override def getPermission : Permission.Value =
+  override lazy val getPermission : Permission.Value =
     Permission.data(asset.getPermission, slot.getConsent, classification).getPermission
 
   def in(s : Slot) =
-    SlotAsset.make(asset, asset_segment, s, excerpt && slot.segment @> s.segment /* not quite right but should be fine for this use */)
-  // def inContext = TODO
-}
+    if (s.equals(slot))
+      this
+    else
+      SlotAsset.make(asset, asset_segment, s, excerpt && slot.segment @> s.segment /* not quite right but should be fine for this use */)
+  /** "Expand" this slot asset to a larger one with equivalent permissions.
+    * This determines what segment should be shown to users when they request a smaller one.
+    */
+  def inContext = {
+    val c = in(slot.context)
+    if (c.getPermission < getPermission)
+      this
+    else {
+      val a = c.in(slot.container)
+      if (a.getPermission < c.getPermission)
+        c
+      else
+        a
+    }
+  }
 
-/** A segment of an asset as used in a slot.
-  * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (asset : Asset, asset_segment : Range[Offset], override val slot : Slot, excerpt : Boolean) extends AbstractSlotAsset(asset, asset_segment, slot, excerpt) with TableRow with SiteObject {
-  def slotId = slot.id
-
+  def containingSlot : Slot = slot match {
+    case s : Slot => s
+    case _ => slot.context
+  }
+  @deprecated("SlotAsset may refer to AbstractSlot; falling back to containingSlot", "") def slotId =
+    containingSlot.id
   def pageName = asset.name
-  def pageParent = if (slot.container.top) slot.pageParent else Some(slot)
+  def pageParent = slot match {
+    case p : SitePage => Some(p)
+    case _ => Some(slot.context)
+  }
   def pageURL = controllers.routes.SlotAsset.view(volume.id, slotId, assetId)
   def pageActions = Seq(
-      Action("view", controllers.routes.SlotAsset.view(volumeId, slotId, assetId), Permission.VIEW)
+      Action("view", pageURL, Permission.VIEW)
     ) ++ (if (slot.isFull) Seq(
       Action("edit", controllers.Asset.routes.html.edit(volumeId, assetId), Permission.EDIT),
       Action("remove", controllers.Asset.routes.html.remove(volumeId, assetId), Permission.CONTRIBUTE)
     ) else Nil)
 }
 
-final class SlotTimeseries private[models] (override val asset : Timeseries, asset_segment : Range[Offset], slot : Slot, excerpt : Boolean) extends SlotAsset(asset, asset_segment, slot, excerpt) with TimeseriesData {
+final class SlotTimeseries private[models] (override val asset : Timeseries, asset_segment : Range[Offset], slot : AbstractSlot, excerpt : Boolean) extends SlotAsset(asset, asset_segment, slot, excerpt) with TimeseriesData {
   override def source = asset.source
   def segment = slot.segment.singleton.fold {
       /* We need to determine the portion of this asset and the slot which overlap, in asset-source space: */
@@ -62,8 +83,6 @@ final class SlotTimeseries private[models] (override val asset : Timeseries, ass
       Range.singleton[Offset](s - asset_segment.lowerBound.getOrElse(0 : Offset))
     }
   def entire = slot.segment @> asset_segment
-  override def etag = if (entire) super.etag else "slot:" + slot.id + ":" + super.etag
-  def sample(offset : Offset) = new TimeseriesSample(this, offset)
 }
 
 object SlotAsset extends Table[SlotAsset]("slot_asset") {

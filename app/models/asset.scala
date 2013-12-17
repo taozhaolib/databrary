@@ -100,10 +100,9 @@ object AssetFormat extends TableId[AssetFormat]("format") {
 trait BackedAsset {
   /** The backing asset from which this data is taken, which may be itself or a containing asset. */
   def source : Asset
-  /** The backing asset from which this data is taken, which may be itself or a containing asset. */
   def sourceId : Asset.Id = source.id
   def format : AssetFormat = source.format
-  def etag : String
+  def etag : String = "obj:" + sourceId
 }
 
 /** Refinement (implicitly of Asset) for objects representing timeseries data. */
@@ -116,6 +115,14 @@ trait TimeseriesData extends BackedAsset {
   /** Length of time represented by this object, which may be zero if it is a single sample. */
   def duration : Offset = segment.zip((l,u) => u-l).get
   override def format : AssetFormat = if (segment.isSingleton) source.format.sampleFormat else source.format
+  override def etag : String =
+    if (entire) super.etag
+    else {
+      val seg = segment
+      super.etag + ":" + seg.lowerBound.get.millis +
+        (if (seg.isSingleton) "" else "-" + seg.upperBound.get.millis)
+    }
+  def sample(offset : Offset) = new TimeseriesSample(this, offset)
 }
 
 /** File assets: objects within the system backed by primary file storage. */
@@ -132,7 +139,6 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   def duration : Offset = 0
   def source = this
   override def sourceId = id
-  def etag = "obj:" + id
 
   def creation : Future[Option[Timestamp]] =
     SQL("SELECT asset_creation(?)").apply(id).single(SQLCols[Option[Timestamp]])
@@ -198,7 +204,6 @@ final case class TimeseriesSample private[models] (val parent : TimeseriesData, 
   def entire = false
   override def duration = 0
   override def format = parent.source.format.sampleFormat
-  def etag = parent.etag + ":sample:" + offset.millis
 }
 
 

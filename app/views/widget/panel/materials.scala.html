@@ -19,9 +19,9 @@
                             <span class="filetype @link.format.extension"><img src="@routes.Assets.at("images/filetypes/16px/" + link.format.extension.getOrElse("_blank") + ".png")"></span>
 
                             @if(path) {
-                                <span class="session">@display(link.slot)</span>
+                                <span class="session">@display(link.containingSlot)</span>
 
-                                @defining(Async.wait(link.slot.records).filter(r => r.category.fold(false)(c => c == RecordCategory.Participant))) { parts =>
+                                @defining(Async.wait(link.containingSlot.records).filter(r => r.category.fold(false)(c => c == RecordCategory.Participant))) { parts =>
                                     @if(parts.nonEmpty) {
                                         with <span class="participant">@parts.map(r => raw("<a href='"+r.pageURL+"'>"+r.pageName+"</a>"))</span>
                                     }
