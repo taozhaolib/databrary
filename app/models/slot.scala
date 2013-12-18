@@ -52,13 +52,13 @@ trait AbstractSlot extends InVolume {
 
   lazy val jsonFields = JsonObject.flatten(
     Some('container -> container.json),
-    Some('segment -> segment),
-    Maybe(getConsent).opt.map('consent -> _)
+    Some('segment -> segment)
+    // Maybe(getConsent).opt.map('consent -> _)
   )
 
   def json(options : JsonOptions.Options) : Future[JsObject] =
     JsonOptions(jsonFields, options,
-      "assets" -> (opt => SlotAsset.getSlotAll(this).map(JsonArray.map(_.json - "slot"))),
+      "assets" -> (opt => SlotAsset.getSlotAll(this).map(JsonArray.map(_.inContext.json - "container"))),
       "records" -> (opt => Record.getSlotAll(this).map(JsonRecord.map(_.json))),
       "tags" -> (opt => tags.map(JsonRecord.map(_.json))),
       "comments" -> (opt => comments.map(JsonRecord.map(_.json)))

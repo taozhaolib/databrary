@@ -35,7 +35,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offse
   /** "Expand" this slot asset to a larger one with equivalent permissions.
     * This determines what segment should be shown to users when they request a smaller one.
     */
-  def inContext = {
+  def inContext : SlotAsset = {
     val c = in(slot.context)
     if (c.getPermission < getPermission)
       this
@@ -68,10 +68,8 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offse
     ) else Nil)
 
   lazy val json = JsonObject(
-    'asset -> asset.json,
-    'segment -> asset_segment,
-    'slot -> slot.jsonFields
-  )
+    'asset -> (asset.json + ('segment -> asset_segment))
+  ) ++ slot.jsonFields
 }
 
 final class SlotTimeseries private[models] (override val asset : Timeseries, asset_segment : Range[Offset], slot : AbstractSlot, excerpt_segment : Option[Range[Offset]]) extends SlotAsset(asset, asset_segment, slot, excerpt_segment) with TimeseriesData {
