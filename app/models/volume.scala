@@ -2,7 +2,7 @@ package models
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.json.Json
+import play.api.libs.json.{Json,JsObject}
 import macros._
 import dbrary._
 import site._
@@ -62,39 +62,41 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   /** An image-able "asset" that may be used as the volume's thumbnail. */
   def thumb = SlotAsset.getThumb(this)
 
-  private type Session = (Option[Slot],Option[Record])
-  private lazy val _sessions : Future[Seq[Session]] =
+  private type Session = (Record,Container)
+  private[this] lazy val _sessions : Future[Seq[Session]] =
     Record.getSessions(this)
 
   /** The list of all sessions and their associated record on this volume. */
   def slotRecords : Future[Seq[(Slot,Seq[Record])]] = _sessions.map { sess =>
-    val l = sess.sortBy(_._1.map(s => (s.consent == Consent.PRIVATE) -> s.id.unId))
+    val l = sess.sortBy { case (_, c) => (c.consent == Consent.PRIVATE) -> c.id.unId }
     val r = l.genericBuilder[(Slot,Seq[Record])]
     @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Slot,Seq[Record])] = l.headOption match {
       case None => r.result
-      case Some((None, _)) => group(l.tail)
-      case Some((Some(k), _)) =>
-        val (p, s) = l.span(_._1.get === k) // safe because sorted
-        r += k -> p.flatMap(_._2)
+      case Some((_, k)) =>
+        val (p, s) = l.span(_._2 === k)
+        r += k -> p.map(_._1)
         group(s)
     }
     group(l)
   }
 
   /** The list of all records and their associated sessions on this volume. */
-  def recordSlots : Future[Seq[(RecordCategory,Seq[(Record,Seq[Slot])])]] = _sessions.map { sess =>
-    val l = sess.sortBy(_._2.map(r => r.category.map(_.id.unId) -> r.id.unId))
-    val r = l.genericBuilder[(Record,Seq[Slot])]
-    @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Record,Seq[Slot])] = l.headOption match {
-      case None => r.result
-      case Some((_, Some(k))) if k.category.isDefined =>
-        val (p, s) = l.span(_._2.get === k) // safe because sorted
-        r += k -> p.flatMap(_._1)
+  def recordSlots : Future[Seq[(Record,Seq[Container])]] = _sessions.map { sess =>
+    val l = sess // already sorted
+    // val l = sess.sortBy { case (r, _) => r.category.map(_.id.unId) -> r.id.unId }
+    val r = l.genericBuilder[(Record,Seq[Container])]
+    @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Record,Seq[Container])] = l.headOption match {
+      case Some((k, _)) if k.category.isDefined =>
+        val (p, s) = l.span(_._1 === k)
+        r += k -> p.map(_._2)
         group(s)
-      case _ => group(l.tail)
+      case _ => r.result
     }
-    groupBy(group(l), (r : (Record, Seq[Slot])) => r._1.category.get)
+    group(l)
   }
+
+  def recordCategorySlots : Future[Seq[(RecordCategory,Seq[(Record,Seq[Slot])])]] =
+    recordSlots.map(groupBy(_, (r : (Record, Seq[Slot])) => r._1.category.get))
 
   /** Basic summary information on this volume.
     * For now this only includes session (cross participant) information. */
@@ -103,7 +105,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     var agemin, agemax = Age(0)
     var agesum = 0
     sess.foreach {
-      case (Some(s), Some(r)) if r.category.fold(false)(_ === RecordCategory.Participant) =>
+      case (r, s) if r.category.fold(false)(_ === RecordCategory.Participant) =>
         sessions = sessions + 1
         if (s.consent >= Consent.SHARED) shared = shared + 1
         s.container.date.flatMap(r.age(_)).foreach { a =>
@@ -147,12 +149,23 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
+      "summary" -> (opt => summary.map(_.json)),
       "access" -> (opt => partyAccess.map(JsonArray.map(_.json - "volume"))),
       "funding" -> (opt => funding.map(JsonArray.map(_.json - "volume"))),
       "citations" -> (opt => citations.map(JsonArray.map(_.json))),
       "comments" -> (opt => comments.map(JsonRecord.map(_.json))),
       "tags" -> (opt => tags.map(JsonRecord.map(_.json))),
-      "categories" -> (opt => RecordCategory.getVolume(this).map(JsonArray.map(_.name)))
+      "categories" -> (opt => RecordCategory.getVolume(this).map(JsonArray.map(_.name))),
+      "records" -> (opt => recordSlots.map(JsonRecord.map { case (r, ss) =>
+        r.json - "volume" + ('sessions -> JsonRecord.map[Container] { s =>
+          JsonRecord.flatten(s.id, r.age(s).map('age -> _))
+        }(ss))
+      })),
+      "sessions" -> (opt => _sessions.map { ss =>
+        JsonRecord.map[Container](_.json - "volume")(ss.map(_._2).distinct)
+      }),
+      "assets" -> (opt => toplevelAssets.map(JsonArray.map(_.json))),
+      "top" -> (opt => top.map(t => (t.json - "volume" - "top").obj))
     )
 }
 
@@ -196,7 +209,14 @@ object Volume extends TableId[Volume]("volume") {
   final def Databrary(implicit site : Site) : Future[Volume] =
     row.SELECT("WHERE id = ?").apply(DATABRARY).single
 
-  case class Summary(sessions : Int, shared : Int, agerange : Range[Age], agemean : Age)
+  case class Summary(sessions : Int, shared : Int, agerange : Range[Age], agemean : Age) {
+    lazy val json = JsonObject(
+      'sessions -> sessions,
+      'shared -> shared,
+      'agerange -> agerange,
+      'agemean -> agemean
+    )
+  }
 }
 
 trait InVolume extends HasPermission {

@@ -32,7 +32,7 @@ object JsonObject {
 final class JsonRecord(val id : JsValue, fields : Seq[(String, JsValue)]) extends JsField {
   def name = id.toString
   def value = JsObject(fields)
-  def obj = JsObject(("id" -> id) +: fields)
+  def obj : JsValue = if (fields.isEmpty) id else JsObject(("id" -> id) +: fields)
   def +(field : JsonField) =
     new JsonRecord(id, fields :+ field)
   def ++(list : Traversable[JsonField]) =
@@ -48,8 +48,8 @@ object JsonRecord {
     new JsonRecord(Json.toJson(id), fields)
   def flatten[I : Writes](id : I, fields : Option[JsonField]*) =
     new JsonRecord(Json.toJson(id), fields.flatten)
-  implicit val writes : OWrites[JsonRecord] =
-    OWrites[JsonRecord](_.obj)
+  implicit val writes : Writes[JsonRecord] =
+    Writes[JsonRecord](_.obj)
   implicit def writable(implicit codec : play.api.mvc.Codec) : Writeable[JsonRecord] =
     Writeable.writeableOf_JsValue(codec).map(_.obj)
   def seq(s : Seq[JsonRecord]) : JsValue =
