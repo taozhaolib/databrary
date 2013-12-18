@@ -134,8 +134,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
       "slots" -> (opt => slots.map(JsonArray.map(s =>
-        JsonObject.flatten(age(s).map('age -> _)) ++
-        s.jsonFields
+        s.jsonFields ++ JsonObject.flatten(age(s).map('age -> _))
       )))
     )
 }
@@ -162,14 +161,12 @@ object Record extends TableId[Record]("record") {
       SelectColumn[Id]("id")
     , SelectColumn[Option[RecordCategory.Id]]("category")
     ).leftJoin(Measures.row, "record.id = measures.record")
-    .?.join(Container.volumeRow(vol).?, _ + " JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id FULL JOIN " + _ + " ON slot.source = container.id AND record.volume = container.volume")
+    .join(Container.volumeRow(vol), _ + " JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id JOIN " + _ + " ON slot.source = container.id AND record.volume = container.volume")
     .map {
-      case (Some(((id, cat), meas)), slot) =>
-        val r = new Record(id, vol, cat.flatMap(RecordCategory.get(_)), slot.fold(Consent.NONE)(_.consent), Measures(meas))
-        r._daterange.set(slot.flatMap(_.container.date).fold[Range[Date]](Range.empty)(Range.singleton _))
-        (slot, Some(r))
-      case (None, slot) =>
-        (slot, None)
+      case (((id, cat), meas), cont) =>
+        val r = new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cont.consent, Measures(meas))
+        r._daterange.set(cont.date.fold[Range[Date]](Range.empty)(Range.singleton _))
+        (r, cont)
     }
 
   /** Retrieve a specific record by id. */
@@ -199,9 +196,9 @@ object Record extends TableId[Record]("record") {
       .apply(volume.id +: category.fold(SQLArgs())(c => SQLArgs(c.id))).list
 
   /** Return the full outer product of all slot, record pairs on the given volume for "session" slots and categorized records. */
-  private[models] def getSessions(vol : Volume) : Future[Seq[(Option[Slot],Option[Record])]] =
+  private[models] def getSessions(vol : Volume) : Future[Seq[(Record,Container)]] =
     sessionRow(vol)
-      .SELECT("WHERE container.volume = ? AND NOT container.top OR record.volume = ? AND record.category IS NOT NULL")
+      .SELECT("WHERE record.volume = ? AND record.category IS NOT NULL OR container.volume = ? AND NOT container.top ORDER BY record.category NULLS LAST, record.id")
       .apply(vol.id, vol.id).list
 
   /** Retrieve the records in the given volume with a measure of the given value.

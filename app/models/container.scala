@@ -39,7 +39,7 @@ final class Container protected (override val id : Container.Id, override val vo
   def slots : Future[Seq[Slot]] = Slot.getContainer(this)
 
   lazy val json : JsonRecord = JsonRecord.flatten(id,
-    // Some('volume -> volume.json),
+    Some('volume -> volumeId),
     if (top) Some('top -> top) else None,
     name.map('name -> _),
     getDate.map('date -> _.toString)

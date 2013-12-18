@@ -52,7 +52,7 @@ trait AbstractSlot extends InVolume {
 
   lazy val jsonFields = JsonObject.flatten(
     Some('container -> container.json),
-    Some('segment -> segment)
+    if (segment.isFull) None else Some('segment -> segment)
     // Maybe(getConsent).opt.map('consent -> _)
   )
 
