@@ -7,6 +7,14 @@ define(['app/config/module'], function (module) {
 				id: $routeParams.id,
 				assets: 'all'
 			});
+
+			$scope.$watch('volume', function () {
+				$scope.automatePanel();
+			}, true);
+		};
+
+		$scope.automatePanel = function () {
+			$scope.enabled = angular.isArray($scope.volume.assets) && $scope.volume.assets.length > 0;
 		};
 
 		//

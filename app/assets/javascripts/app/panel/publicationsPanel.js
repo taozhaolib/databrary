@@ -7,6 +7,14 @@ define(['app/config/module'], function (module) {
 				id: $routeParams.id,
 				citations: 'all'
 			});
+
+			$scope.$watch('volume', function () {
+				$scope.automatePanel();
+			}, true);
+		};
+
+		$scope.automatePanel = function () {
+			$scope.enabled = angular.isArray($scope.volume.citations) && $scope.volume.citations.length > 0;
 		};
 	}]);
 });

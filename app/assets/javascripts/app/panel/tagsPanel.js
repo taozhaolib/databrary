@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.controller('TagsPanel', ['$scope', 'Volume', 'Slot', '$route', '$routeParams', function ($scope, Volume, Slot, $route, $routeParams) {
+	module.controller('TagsPanel', ['$scope', 'Volume', 'Slot', 'Party', '$route', '$routeParams', function ($scope, Volume, Slot, Party, $route, $routeParams) {
 		$scope.bootPanel = function () {
 			switch ($route.current.controller) {
 				case 'VolumeView':
@@ -9,6 +9,10 @@ define(['app/config/module'], function (module) {
 						id: $routeParams.id,
 						tags: 'all'
 					});
+
+					$scope.$watch('volume', function () {
+						$scope.automatePanel();
+					}, true);
 					break;
 
 				case 'SlotView':
@@ -16,27 +20,45 @@ define(['app/config/module'], function (module) {
 						id: $routeParams.id,
 						tags: 'all'
 					});
+
+					$scope.$watch('slot', function () {
+						$scope.automatePanel();
+					}, true);
+					break;
+
+				case 'PartyView':
+					$scope.slot = Party.get($routeParams.id, {
+						id: $routeParams.id,
+						tags: 'all'
+					});
+
+					$scope.$watch('party', function () {
+						$scope.automatePanel();
+					}, true);
 					break;
 			}
 		};
 
 		//
 
-		$scope.updateData = function () {
+		$scope.automatePanel = function () {
 			switch ($route.current.controller) {
 				case 'VolumeView':
 					$scope.tags = $scope.volume.tags;
+					$scope.enabled = true;
 					break;
 
 				case 'SlotView':
 					$scope.tags = $scope.slot.tags;
+					$scope.enabled = true;
+					break;
+
+				case 'PartyView':
+					$scope.tags = $scope.party.tags;
+					$scope.enabled = angular.isArray($scope.tags) && $scope.tags.length > 0;
 					break;
 			}
 		};
-
-		$scope.$watch('view', function () {
-			$scope.updateData();
-		}, true);
 	}]);
 });
 

@@ -13,7 +13,7 @@ define(['app/config/module'], function (module) {
 					});
 
 					$scope.$watch('volume', function () {
-						$scope.updateData();
+						$scope.automatePanel();
 					}, true);
 					break;
 
@@ -24,7 +24,7 @@ define(['app/config/module'], function (module) {
 					});
 
 					$scope.$watch('slot', function () {
-						$scope.updateData();
+						$scope.automatePanel();
 					}, true);
 					break;
 
@@ -35,7 +35,7 @@ define(['app/config/module'], function (module) {
 					});
 
 					$scope.$watch('party', function () {
-						$scope.updateData();
+						$scope.automatePanel();
 					}, true);
 					break;
 			}
@@ -43,18 +43,21 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		$scope.updateData = function () {
+		$scope.automatePanel = function () {
 			switch ($route.current.controller) {
 				case 'VolumeView':
 					$scope.comments = $scope.volume.comments;
+					$scope.enabled = !!authService.user || (angular.isArray($scope.comments) && $scope.comments.length > 0);
 					break;
 
 				case 'SlotView':
 					$scope.comments = $scope.slot.comments;
+					$scope.enabled = !!authService.user || (angular.isArray($scope.comments) && $scope.comments.length > 0);
 					break;
 
 				case 'PartyView':
 					$scope.comments = $scope.party.comments;
+					$scope.enabled = angular.isArray($scope.comments) && $scope.comments.length > 0;
 					break;
 			}
 		};
@@ -72,6 +75,7 @@ define(['app/config/module'], function (module) {
 
 				case 'VolumeView':
 				case 'SlotView':
+				default:
 					return comment.who;
 			}
 		};

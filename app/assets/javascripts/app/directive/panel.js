@@ -5,21 +5,7 @@ define(['app/config/module'], function (module) {
 		var compile = function ($element, $attrs, transclude) {
 			return function ($scope, $element, $attrs) {
 				$scope.modes = arrayHelper([]);
-
-				$scope.enablePanel = function () {
-					$scope.isEnabled = true;
-				};
-
-				$scope.disablePanel = function () {
-					$scope.isEnabled = false;
-				};
-
-				$scope.togglePanel = function () {
-					if ($scope.isEnabled)
-						$scope.enablePanel();
-					else
-						$scope.disablePanel();
-				};
+				$scope.enabled = true;
 
 				//
 

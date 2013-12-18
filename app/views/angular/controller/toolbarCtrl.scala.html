@@ -42,7 +42,7 @@
             <div class="row">
                 <div class="col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-4 col-cell">
                     <ul class="toolbar_menu toolbar_menu_left">
-                        <li ng-repeat="panel in panels" class="link_{{panel.panel.id}}" ng-class="getPanelClasses(panel)"><a ng-click="focusPanel(panel)">{{panel.panel.title}}</a></li>
+                        <li ng-repeat="panel in panels | filter:{enabled: true}" class="link_{{panel.panel.id}}" ng-class="getPanelClasses(panel)"><a ng-click="focusPanel(panel)">{{panel.panel.title}}</a></li>
                     </ul>
                 </div>
 

@@ -7,6 +7,7 @@ define(['app/config/module'], function (module) {
 		}, [
 			'access',
 			'citations',
+			'top',
 			'tags',
 			'comments',
 			'categories',

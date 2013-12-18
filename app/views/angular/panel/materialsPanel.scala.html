@@ -1,9 +1,9 @@
 <panel ng-controller="MaterialsPanel" id="panel_materials" title="Materials" fold>
-    <panel-mode name="view" active>
+    <panel-mode name="view" active ng-if="false"><!-- LOOK AT THIS -->
         <div class="panel_materials_list col-full">
             <ul class="flat panel_materials_items">
-                <li ng-repeat="asset in assets" class="panel_materials_item" ng-click="selectAsset(asset)" ng-class="getAssetClass(asset)">
-                    <span class="filetype {{ext}}"><img ng-src="/public/images/filetypes/16px/{{ext}}.png"></span>
+                <li ng-repeat="slotAsset in volume.assets" class="panel_materials_item" ng-init="" ng-click="selectAsset(asset)" ng-class="getAssetClass(asset)">
+                    <span class="filetype"><img ng-src="/public/images/filetypes/16px/{{ext}}.png"></span>
 
                     <span ng-if="path">
                         <span class="session">@* @display(link.slot) *@</span>
@@ -19,12 +19,12 @@
                     <span class="duration">@* @cast[SlotTimeseries](link).map(_.duration) *@</span>
                 </li>
 
-                <li ng-if="!assets" class="empty">There are no assets here.</li>
+                <li ng-if="!volume.assets" class="empty">There are no assets here.</li>
             </ul>
         </div>
 
         <div class="panel_materials_display col-full" ng-init="currentAsset = assets[0].id">
-            <div ng-repeat="asset in assets" id="asset_{{asset.id}}" ng-show="currentAsset == asset.id" class="panel_materials_frame">
+            <div ng-repeat="slotAsset in volume.assets" id="asset_{{slotAsset.asset.id}}" ng-show="currentAsset == slotAsset.asset.id" class="panel_materials_frame">
                 <h2>
                     {{asset.name}}.{{asset.format.extension}}
                     <a ng-href="/{{}}" class="link">download</a>
