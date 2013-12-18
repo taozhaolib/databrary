@@ -2,34 +2,6 @@
 
 @panelpad: 1;
 
-// MIXINS
-
-.panel-color(@c) {
-	.panel_header {
-		&.folder {
-			&:hover {
-				color: mix(@c, @g1, 75%);
-			}
-		}
-	}
-
-	&.folded {
-		border-bottom-color: mix(@c, @g4, 75%);
-		background-color: mix(@c, @g5, 10%);
-
-		.panel_header {
-			&.folder {
-				color: mix(@c, @g1, 50%);
-			}
-		}
-	}
-
-	&:hover {
-		border-bottom-color: mix(@c, @g4, 25%);
-		background-color: mix(@c, @g5, 1%);
-	}
-}
-
 // STYLES
 
 .panel {
@@ -76,12 +48,26 @@
 		}
 
 		&.folded {
+			border-bottom-color: mix(@c4, @g3, 25%);
+			background-color: mix(@c4, @g5, 4%);
+
 			.panel_header {
 				.line-height(4);
+
+				&.folder {
+					color: mix(@c4, @g1, 50%);
+				}
 
 				&:before {
 					.transform-rotate(-90deg);
 					top: @b1 + @b2 + @b8;
+				}
+
+
+				&:hover {
+					&:before {
+						.transform-rotate(-45deg);
+					}
 				}
 			}
 
@@ -90,10 +76,11 @@
 				max-height: 0;
 			}
 		}
-	}
 
-	&:hover {
-		border-bottom: 2px solid @g4;
+		&:hover {
+			border-bottom: 2px solid mix(@c4, @g3, 10%);
+			background-color: mix(@c4, @g5, 1%);
+		}
 	}
 
 	h3, .h3 {
@@ -126,7 +113,7 @@
 		}
 
 		&:hover {
-			color: @g3;
+			color: mix(@c4, @g1, 25%);
 
 			&:before {
 				.transform-rotate(-45deg);
@@ -170,36 +157,6 @@
 	&:before {
 		display: none;
 	}
-}
-
-//
-
-.panel_data,
-.panel_browser,
-.panel_records,
-.panel_volumes {
-	.panel-color(@c8);
-}
-
-.panel_materials {
-	.panel-color(@c6);
-}
-
-.panel_publications {
-	.panel-color(@c4);
-}
-
-.panel_people,
-.panel_network {
-	.panel-color(@c2);
-}
-
-.panel_tags {
-	.panel-color(@c0);
-}
-
-.panel_comments {
-	.panel-color(@c10);
 }
 
 //

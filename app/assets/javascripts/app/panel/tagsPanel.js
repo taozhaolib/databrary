@@ -1,21 +1,21 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.controller('TagsPanel', ['$scope', 'Volume', 'Slot', '$routeParams', function ($scope, Volume, Slot, $routeParams) {
+	module.controller('TagsPanel', ['$scope', 'Volume', 'Slot', '$route', '$routeParams', function ($scope, Volume, Slot, $route, $routeParams) {
 		$scope.bootPanel = function () {
-			switch($scope.view.view) {
-				case 'volume':
-						$scope.volume = Volume.get($routeParams.id, {
-							id: $routeParams.id,
-							tags: 'all'
-						});
+			switch ($route.current.controller) {
+				case 'VolumeView':
+					$scope.volume = Volume.get($routeParams.id, {
+						id: $routeParams.id,
+						tags: 'all'
+					});
 					break;
 
-				case 'slot':
-						$scope.slot = Slot.get($routeParams.id, {
-							id: $routeParams.id,
-							tags: 'all'
-						});
+				case 'SlotView':
+					$scope.slot = Slot.get($routeParams.id, {
+						id: $routeParams.id,
+						tags: 'all'
+					});
 					break;
 			}
 		};
@@ -23,18 +23,20 @@ define(['app/config/module'], function (module) {
 		//
 
 		$scope.updateData = function () {
-			switch($scope.view.view) {
-				case 'volume':
+			switch ($route.current.controller) {
+				case 'VolumeView':
 					$scope.tags = $scope.volume.tags;
 					break;
 
-				case 'slot':
+				case 'SlotView':
 					$scope.tags = $scope.slot.tags;
 					break;
 			}
 		};
 
-		$scope.$watch('view', function () {$scope.updateData();}, true);
+		$scope.$watch('view', function () {
+			$scope.updateData();
+		}, true);
 	}]);
 });
 

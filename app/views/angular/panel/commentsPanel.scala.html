@@ -1,6 +1,6 @@
 <panel ng-controller="CommentsPanel" id="panel_comments" title="Comments" fold>
     <panel-mode name="view" active>
-        <aside ng-if="authService.user && view.view != 'party'" class="comment col-full">
+        <aside ng-if="authService.user && routeController != 'PartyView'" class="comment col-full">
             <div class="row">
                 <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3" ng-init="party = authService.user">
                     <portrait class="portrait_avatar" hover></portrait>
@@ -32,7 +32,7 @@
                     <portrait class="portrait_avatar" hover></portrait>
                 </aside>
 
-                <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6" ng-init="volume = commentVolume(comment)">
+                <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
                     <footer ng-if="comment.container.top" class="comment_meta row">
                         <div class="comment_info col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
                             <div class="inner">
@@ -47,20 +47,20 @@
                                 <time datetime="{{volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>{{comment.time | date:'MMMM d, yyyy'}}</time>
                                 <span class="sep">|</span>
 
-                                <span ng-if="view.view == 'party'">
-                                    <a ng-href="/volume/{{volume.id}}">{{volume.name}}</a>
+                                <span ng-if="routeController == 'PartyView'">
+                                    <a ng-href="/volume/{{comment.container.volume}}">{{comment.volume.name | truncate:20}}</a>
                                     <span class="sep">/</span>
                                 </span>
 
-                                <a ng-href="/volume/{{volume.id}}/slot/{{comment.container.id}}?start={{comment.container.segment[0]}}&end={{comment.container.segment[1]}}">{{comment.container.name}}</a>
+                                <a ng-href="/volume/{{comment.container.volume}}/slot/{{comment.container.id}}?start={{comment.container.segment[0]}}&end={{comment.container.segment[1]}}">{{comment.container.name}}</a>
                             </div>
                         </div>
 
                         <div class="comment_location_thumb col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
                             <div class="inner">
-                                <figure baseline="tube" ng-href="/volume/{{volume.id}}/slot/{{comment.container.id}}?start={{comment.container.segment[0]}}&end={{comment.container.segment[1]}}">
+                                <figure baseline="tube" ng-href="/volume/{{comment.container.volume}}/slot/{{comment.container.id}}?start={{comment.container.segment[0]}}&end={{comment.container.segment[1]}}">
                                     <figmedia>
-                                        <img ng-src="/volume/{{volume.id}}/slot/{{comment.container.id}}/thumb">
+                                        <img ng-src="/volume/{{comment.container.volume}}/slot/{{comment.container.id}}/thumb">
                                     </figmedia>
                                 </figure>
                             </div>

@@ -2,27 +2,41 @@ define(['app/config/module'], function (module) {
 	'use strict';
 
 	module.controller('CommentsPanel', ['$scope', 'AuthService', '$route', 'Volume', '$routeParams', 'Party', 'Slot', function ($scope, authService, $route, Volume, $routeParams, Party, Slot) {
+		$scope.routeController = $route.current.controller;
+
 		$scope.bootPanel = function () {
-			switch ($scope.view.view) {
-				case 'volume':
+			switch ($route.current.controller) {
+				case 'VolumeView':
 					$scope.volume = Volume.get($routeParams.id, {
 						id: $routeParams.id,
 						comments: 'all'
 					});
+
+					$scope.$watch('volume', function () {
+						$scope.updateData();
+					}, true);
 					break;
 
-				case 'slot':
+				case 'SlotView':
 					$scope.slot = Slot.get($routeParams.id, {
 						id: $routeParams.id,
 						comments: 'all'
 					});
+
+					$scope.$watch('slot', function () {
+						$scope.updateData();
+					}, true);
 					break;
 
-				case 'party':
+				case 'PartyView':
 					$scope.party = Party.get($routeParams.id, {
 						id: $routeParams.id,
 						comments: 'all'
 					});
+
+					$scope.$watch('party', function () {
+						$scope.updateData();
+					}, true);
 					break;
 			}
 		};
@@ -30,20 +44,20 @@ define(['app/config/module'], function (module) {
 		//
 
 		$scope.updateData = function () {
-			switch ($scope.view.view) {
-				case 'volume':
+			switch ($route.current.controller) {
+				case 'VolumeView':
 					$scope.comments = $scope.volume.comments;
 					break;
 
-				case 'party':
+				case 'SlotView':
+					$scope.comments = $scope.slot.comments;
+					break;
+
+				case 'PartyView':
 					$scope.comments = $scope.party.comments;
 					break;
 			}
 		};
-
-		$scope.$watch('view', function () {
-			$scope.updateData();
-		}, true);
 
 		//
 
@@ -52,25 +66,13 @@ define(['app/config/module'], function (module) {
 		//
 
 		$scope.commentParty = function (comment) {
-			switch ($scope.view.view) {
-				case 'volume':
-					return comment.who;
-
-				case 'party':
+			switch ($route.current.controller) {
+				case 'PartyView':
 					return $scope.party;
-			}
-		};
 
-		$scope.commentVolume = function (comment) {
-			switch ($scope.view.view) {
-				case 'volume':
-					return $scope.volume;
-
-				case 'party':
-					return {
-						id: 0,
-						name: 'NULL'
-					};
+				case 'VolumeView':
+				case 'SlotView':
+					return comment.who;
 			}
 		};
 	}]);
