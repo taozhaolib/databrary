@@ -136,6 +136,6 @@ object TagWeight extends Table[TagWeight]("tag_weight") {
         GROUP BY tag.id, tag.name
         HAVING sum(tag_weight.weight) > 0 OR count(tag_use.up) > 0
         ORDER BY agg_weight DESC""")
-        .apply(topSlot.id, volume.site.identity.id, volume.id).list
+        .apply(volume.site.identity.id, volume.id).list
     }
 }

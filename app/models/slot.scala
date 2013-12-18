@@ -58,7 +58,7 @@ trait AbstractSlot extends InVolume {
 
   def json(options : JsonOptions.Options) : Future[JsObject] =
     JsonOptions(jsonFields, options,
-      // "assets" -> (opt => ),
+      "assets" -> (opt => SlotAsset.getSlotAll(this).map(JsonArray.map(_.json - "slot"))),
       "records" -> (opt => Record.getSlotAll(this).map(JsonRecord.map(_.json))),
       "tags" -> (opt => tags.map(JsonRecord.map(_.json))),
       "comments" -> (opt => comments.map(JsonRecord.map(_.json)))
