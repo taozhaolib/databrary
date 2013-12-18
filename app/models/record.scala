@@ -99,7 +99,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
     measures_.value(Metric.Birthdate).map(dob => Age(dob, date))
 
   /** The age at test during a specific slot, with privacy limits applied. */
-  def age(slot : Slot) : Option[Age] =
+  def age(slot : AbstractSlot) : Option[Age] =
     slot.container.date.flatMap(age(_).map { a =>
       if (a > Age.LIMIT && !slot.downloadable) Age.LIMIT
       else a
