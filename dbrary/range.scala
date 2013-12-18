@@ -84,12 +84,15 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
       l <- lowerBound
       u <- upperBound
     } yield (f(l,u))
-  def equals(r : Range[A]) =
-    lowerBound.equals(r.lowerBound) &&
-    upperBound.equals(r.upperBound) &&
-    lowerClosed.equals(r.lowerClosed) &&
-    upperClosed.equals(r.upperClosed) &&
-    isEmpty.equals(r.isEmpty)
+  override def equals(a : Any) = a match {
+    case r : Range[A] =>
+      lowerBound.equals(r.lowerBound) &&
+      upperBound.equals(r.upperBound) &&
+      lowerClosed.equals(r.lowerClosed) &&
+      upperClosed.equals(r.upperClosed) &&
+      isEmpty.equals(r.isEmpty)
+    case _ => false
+  }
   override def toString =
     if (isEmpty)
       "empty"

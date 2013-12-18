@@ -19,12 +19,6 @@ object SlotAsset extends ObjectController[SlotAsset] {
     Asset.assetResult(request.obj, if (inline) None else Some(request.obj.asset.name))
   }
 
-  def downloadOlder(v : models.Volume.Id, s : models.Slot.Id, a : models.Asset.Id, o : models.Asset.Id, inline : Boolean) = Action(v, s, a, Permission.DOWNLOAD).async { implicit request =>
-    models.Asset.getOlder(request.obj.asset, o).flatMap(_.fold(ANotFound) { a =>
-      Asset.assetResult(a, if (inline) None else Some(request.obj.asset.name))
-    })
-  }
-
   private[controllers] def getFrame(offset : Either[Float,Offset])(implicit request : Request[_]) =
     request.obj match {
       case ts : SlotTimeseries =>

@@ -48,12 +48,12 @@ package object Slot extends ObjectController[Slot] {
 
     def view(v : models.Volume.Id, i : models.Slot.Id) = Action(v, i).async { implicit request =>
       val slot = request.obj
-      if (slot.isFull && slot.container.top)
+      if (slot.isTop)
         ARedirect(controllers.Volume.routes.html.view(slot.volumeId))
       else for {
         records <- slot.records
         assets <- slot.assets
-        comments <- slot.comments(true)
+        comments <- slot.comments
       } yield (Ok(views.html.slot.view(records, assets, comments)))
     }
 

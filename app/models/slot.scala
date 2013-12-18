@@ -40,6 +40,16 @@ trait AbstractSlot extends InVolume {
       else new org.joda.time.Partial(publicDateFields, publicDateFields.map(date.get _))
     }
 
+  /** The list of comments that apply to this object. */
+  final def comments = Comment.getSlotAll(this)
+
+  /** The list of tags on the current slot along with the current user's applications. */
+  final def tags =
+    if (isTop)
+      TagWeight.getVolume(volume)
+    else
+      TagWeight.getSlotAll(this)
+
   lazy val jsonFields = JsonObject.flatten(
     Some('container -> container.json),
     Some('segment -> segment),
@@ -48,8 +58,10 @@ trait AbstractSlot extends InVolume {
 
   def json(options : JsonOptions.Options) : Future[JsObject] =
     JsonOptions(jsonFields, options,
-      "records" -> (opt => Record.getSlotAll(this).map(JsonRecord.map(_.json)))
-      // "tags" -> (opt => TagWeight.getSlotAll(this).map(JsonArray.map(_.json)))
+      "assets" -> (opt => SlotAsset.getSlotAll(this).map(JsonArray.map(_.json - "slot"))),
+      "records" -> (opt => Record.getSlotAll(this).map(JsonRecord.map(_.json))),
+      "tags" -> (opt => tags.map(JsonRecord.map(_.json))),
+      "comments" -> (opt => comments.map(JsonRecord.map(_.json)))
     )
 }
 
@@ -77,10 +89,6 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
   /** List of contained asset segments within this slot. */
   final def assets : Future[Seq[SlotAsset]] = SlotAsset.getSlot(this)
 
-  /** The list of comments on this object.
-    * @param all include indirect comments on any contained objects
-    */
-  final def comments(all : Boolean = true) = Comment.getSlot(this, all)
   /** Post a new comment this object.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
   final def postComment(text : String, parent : Option[Comment.Id] = None)(implicit site : AuthSite) : Future[Boolean] =
@@ -89,13 +97,8 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
   /** The list of tags on the current slot along with the current user's applications.
     * @param all add any tags applied to child slots to weight (but not use) as well, and if this is the top slot, return all volume tags instead */
   final def tags(all : Boolean = true) =
-    if (all)
-      if (isTop)
-        TagWeight.getVolume(volume)
-      else
-        TagWeight.getSlotAll(this)
-    else
-      TagWeight.getSlot(this)
+    if (all) super.tags
+    else TagWeight.getSlot(this)
   /** Tag this slot.
     * @param up Some(true) for up, Some(false) for down, or None to remove
     * @return true if the tag name is valid
@@ -137,7 +140,7 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
   def pageParent = Some(if (isContext) volume else context)
   def pageURL = controllers.Slot.routes.html.view(container.volumeId, id)
   def pageActions = Seq(
-    Action("view", controllers.Slot.routes.html.view(volumeId, id), Permission.VIEW),
+    Action("view", pageURL, Permission.VIEW),
     Action("edit", controllers.Slot.routes.html.edit(volumeId, id), Permission.EDIT),
     Action("add file", controllers.Asset.routes.html.create(volumeId, id), Permission.CONTRIBUTE),
     // Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
@@ -162,8 +165,9 @@ object Slot extends TableId[Slot]("slot") {
       (container : Container) =>
         new SubSlot(id, container, segment, consent)
     }
+  private val context = base.fromAlias("context")
   private[models] val columns : Selector[Container => Slot] = base
-    .leftJoin(base.fromAlias("context"), "slot.source = context.source AND slot.segment <@ context.segment AND context.consent IS NOT NULL")
+    .leftJoin(context, "slot.source = context.source AND slot.segment <@ context.segment AND context.consent IS NOT NULL")
     .map { case (slot, context) =>
       (container : Container) =>
         val s = slot(container)
@@ -223,9 +227,13 @@ object Slot extends TableId[Slot]("slot") {
       def container = context.container
     }
 
-    private def columns(segment : Range[Offset]) = base.fromAlias("context").map { context =>
+    private def make(segment : Range[Offset], context : Slot) : AbstractSlot =
+      if (context.segment.equals(segment)) context
+      else new VirtualSlot(segment, context)
+
+    private def columns(segment : Range[Offset]) = context.map { context =>
       (container : Container) =>
-        new VirtualSlot(segment, context(container))
+        make(segment, context(container))
     }
 
     def get(container : Container, segment : Range[Offset]) : Future[AbstractSlot] =
@@ -238,8 +246,8 @@ object Slot extends TableId[Slot]("slot") {
 
     def get(container : Container.Id, segment : Range[Offset])(implicit site : Site) : Future[Option[AbstractSlot]] =
       Container.row
-        .leftJoin(columns(segment), "container.id = context.source AND context.segment @> ?::segment AND context.consent IS NOT NULL")
-        .map { case (cont, slot) => slot.fold[AbstractSlot](cont)(_(cont)) }
+        .leftJoin(context, "container.id = context.source AND context.segment @> ?::segment AND context.consent IS NOT NULL")
+        .map { case (cont, slot) => make(segment, slot.fold[Slot](cont)(_(cont))) }
         .SELECT("WHERE container.id = ? AND", Volume.condition)
         .apply(SQLArgs(segment, container) ++ Volume.conditionArgs).singleOpt
   }

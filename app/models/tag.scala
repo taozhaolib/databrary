@@ -100,7 +100,7 @@ final case class TagWeight private (tag : Tag, weight : Int, user : Option[Boole
 }
 
 object TagWeight extends Table[TagWeight]("tag_weight") {
-  private val useJoinOn = "tag_weight.tag = tag_use.tag AND tag_use.slot = ? AND tag_use.who = ?"
+  private val useJoinOn = "tag_weight.tag = tag_use.tag AND tag_weight.slot = tag_use.slot AND tag_use.who = ?"
   private val row = 
     Columns(SelectColumn[Int]("weight"))
     .join(Tag.row, "tag_weight.tag = tag.id")
@@ -116,16 +116,16 @@ object TagWeight extends Table[TagWeight]("tag_weight") {
 
   private[models] def getSlot(slot : Slot) : Future[Seq[TagWeight]] =
     row.SELECT("WHERE tag_weight.slot = ? ORDER BY weight DESC")
-      .apply(slot.id, slot.site.identity.id, slot.id).list
+      .apply(slot.site.identity.id, slot.id).list
 
-  private[models] def getSlotAll(slot : Slot) : Future[Seq[TagWeight]] =
+  private[models] def getSlotAll(slot : AbstractSlot) : Future[Seq[TagWeight]] =
     aggregate.SELECT("""
        JOIN slot ON tag_weight.slot = slot.id 
       WHERE slot.source = ? AND slot.segment && ?::segment
       GROUP BY tag.id, tag.name
       HAVING sum(tag_weight.weight) > 0 OR count(tag_use.up) > 0
       ORDER BY agg_weight DESC""")
-      .apply(slot.id, slot.site.identity.id, slot.containerId, slot.segment).list
+      .apply(slot.site.identity.id, slot.containerId, slot.segment).list
 
   private[models] def getVolume(volume : Volume) : Future[Seq[TagWeight]] =
     volume.top.flatMap { topSlot =>
@@ -136,6 +136,6 @@ object TagWeight extends Table[TagWeight]("tag_weight") {
         GROUP BY tag.id, tag.name
         HAVING sum(tag_weight.weight) > 0 OR count(tag_use.up) > 0
         ORDER BY agg_weight DESC""")
-        .apply(topSlot.id, volume.site.identity.id, volume.id).list
+        .apply(volume.site.identity.id, volume.id).list
     }
 }

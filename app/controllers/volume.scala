@@ -140,7 +140,7 @@ package object Volume extends ObjectController[Volume] {
       val accessChange = accessChangeForm.map(_._1.id)
       request.obj.partyAccess.map { access =>
         val accessForms = access
-          .filter(a => accessChange.fold(true)(_.equals(a.partyId)))
+          .filter(a => accessChange.fold(true)(_ === a.partyId))
           .map(a => (a.party, accessFormFill(a))) ++
           accessChangeForm
         status(views.html.volume.access(request.obj, accessForms, accessSearchForm, accessResults))
@@ -169,7 +169,7 @@ package object Volume extends ObjectController[Volume] {
     }
 
     def accessDelete(id : models.Volume.Id, e : models.Party.Id) = Action(id, Permission.ADMIN).async { implicit request =>
-      (if (e != request.identity.id)
+      (if (!(e === request.identity.id))
         VolumeAccess.delete(request.obj, e)
       else macros.Async(false)).map { _ =>
         Redirect(routes.html.admin(id))

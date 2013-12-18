@@ -153,7 +153,7 @@ package object Record extends ObjectController[Record] {
             _ <- r.addSlot(request.obj)
           } yield (Created(views.html.record.edit(r, cat.fold[Seq[Metric[_]]](Nil)(_.template), editForm.fill((cat.map(_.id), Seq())), jsonCategories, jsonMetrics)))
         } (models.Record.get(_).flatMap(_
-          .filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId == v)
+          .filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId === v)
           .fold(
             Slot.html.viewEdit(Slot.BadRequest, request.obj)(recordForm = form.withError("record", "record.bad"))
           ) { r => r.addSlot(request.obj).map { _ =>

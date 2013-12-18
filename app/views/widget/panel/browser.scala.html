@@ -21,7 +21,7 @@
                     @recordSlots.map { case (record, slots)  =>
                         @slots.map { slot =>
                             <tr>
-                                @if(slot.equals(slots.head)) {
+                                @if(slot === slots.head) {
                                     <td class="meta record-holder bgwhite" rowspan="@slots.length">
                                         <div class="record"><a href='@record.pageURL'>@record.ident</a></div>
                                         <div class="gender">@record.measures.value(Metric.Gender)</div>

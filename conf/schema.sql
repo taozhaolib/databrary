@@ -473,7 +473,7 @@ SELECT audit.CREATE_TABLE ('excerpt');
 
 
 CREATE VIEW "slot_asset" ("asset", "segment", "slot", "excerpt") AS
-	SELECT asset_slot.asset, slot_asset.segment, slot.id, excerpt.asset IS NOT NULL
+	SELECT asset_slot.asset, slot_asset.segment, slot.id, slot_excerpt.segment
 	  FROM asset_slot 
 	  JOIN slot AS slot_asset ON asset_slot.slot = slot_asset.id
 	  JOIN slot ON slot_asset.source = slot.source AND slot_asset.segment && slot.segment

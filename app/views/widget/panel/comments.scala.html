@@ -1,4 +1,4 @@
-@(slot : Option[Slot], post : Option[(Call, controllers.Slot.CommentForm)], comments : Seq[Comment])(implicit request : SiteRequest[_])
+@(context : Option[AbstractSlot], post : Option[(Call, controllers.Slot.CommentForm)], comments : Seq[Comment])(implicit request : SiteRequest[_])
 
 @import helper.FieldConstructor
     @implicitField = @{
@@ -45,7 +45,7 @@
 
                 <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
                     <div class="comment_meta row">
-                    @if(slot.isEmpty || (slot.nonEmpty && slot.get.id.unId.toString != c.slot.id.unId.toString)) {
+		    @if(context.fold(true)(!c.slot.equals(_))) {
                             @if(c.slot.container.top) {
                                 <div class="comment_info comment_location col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-5 col-cell">
                                     <div class="inner">
