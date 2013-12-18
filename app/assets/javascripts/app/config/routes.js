@@ -133,6 +133,9 @@ define(['app/config/module'], function (module) {
 						citations: 'all',
 						tags: 'all',
 						comments: 'all',
+						records: 'all',
+						summary: 'all',
+						sessions: 'all',
 						categories: 'all',
 						funding: 'all'
 					});

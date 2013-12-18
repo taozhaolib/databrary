@@ -28,10 +28,10 @@
                         <dd><time datetime="{{volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>{{volume.creation | date:'MMMM yyyy'}}</time></dd>
 
                         <dt>Sessions</dt>
-                        <dd>NOT IMPLEMENTED</dd>
+                        <dd>{{volume.summary.sessions}} sessions ({{volume.summary.sessions - volume.summary.shared}} unconsenting)</dd>
 
-                        <dt>Ages</dt>
-                        <dd>NOT IMPLEMENTED</dd>
+                        <dt ng-if="volume.summary.agemean > 0">Ages</dt>
+                        <dd ng-if="volume.summary.agemean > 0">{{volume.summary.agerange[0] | age}} - {{volume.summary.agerange[1] | age}} (<em>M</em> = {{volume.summary.agemean | age}})</dd>
                     </dl>
                 </div>
             </div>

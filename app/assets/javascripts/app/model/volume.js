@@ -10,6 +10,9 @@ define(['app/config/module'], function (module) {
 			'tags',
 			'comments',
 			'categories',
+			'records',
+			'summary',
+			'sessions',
 			'assets',
 			'funding'
 		]);

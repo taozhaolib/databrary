@@ -1,4 +1,5 @@
 define([
+	'app/filter/age',
 	'app/filter/gravatar',
 	'app/filter/cite',
 	'app/filter/format',

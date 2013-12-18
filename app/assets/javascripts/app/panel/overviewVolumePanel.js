@@ -6,6 +6,7 @@ define(['app/config/module'], function (module) {
 			$scope.volume = Volume.get($routeParams.id, {
 				id: $routeParams.id,
 				funding: 'all',
+				summary: 'all',
 				access: 'all'
 			});
 		};
