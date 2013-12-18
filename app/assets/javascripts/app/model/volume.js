@@ -10,6 +10,7 @@ define(['app/config/module'], function (module) {
 			'tags',
 			'comments',
 			'categories',
+			'assets',
 			'funding'
 		]);
 	}]);

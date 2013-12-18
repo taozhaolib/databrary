@@ -1,16 +1,24 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.controller('TagsPanel', ['$scope', 'Volume', '$routeParams', function ($scope, Volume, $routeParams) {
+	module.controller('TagsPanel', ['$scope', 'Volume', 'Slot', '$routeParams', function ($scope, Volume, Slot, $routeParams) {
 		$scope.bootPanel = function () {
-			if (!$routeParams.vid && !angular.isObject($scope.volume))
-				$scope.volume = Volume.get($routeParams.id, {
-					id: $routeParams.id,
-					tags: 'all'
-				});
-			// else Slot
-		};
+			switch($scope.view.view) {
+				case 'volume':
+						$scope.volume = Volume.get($routeParams.id, {
+							id: $routeParams.id,
+							tags: 'all'
+						});
+					break;
 
+				case 'slot':
+						$scope.slot = Slot.get($routeParams.id, {
+							id: $routeParams.id,
+							tags: 'all'
+						});
+					break;
+			}
+		};
 
 		//
 
@@ -19,6 +27,7 @@ define(['app/config/module'], function (module) {
 				case 'volume':
 					$scope.tags = $scope.volume.tags;
 					break;
+
 				case 'slot':
 					$scope.tags = $scope.slot.tags;
 					break;

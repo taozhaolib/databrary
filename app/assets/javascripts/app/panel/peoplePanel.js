@@ -3,12 +3,13 @@ define(['app/config/module'], function (module) {
 
 	module.controller('PeoplePanel', ['$scope', 'Volume', '$routeParams', function ($scope, Volume, $routeParams) {
 		$scope.bootPanel = function () {
-			if (!angular.isObject($scope.volume))
-				$scope.volume = Volume.get($routeParams.id, {
-					id: $routeParams.id,
-					access: 'all'
-				});
+			$scope.volume = Volume.get($routeParams.id, {
+				id: $routeParams.id,
+				access: 'all'
+			});
 		};
+
+		//
 
 		$scope.getVolumeRole = function (volumeAccess) {
 			switch (volumeAccess.access) {

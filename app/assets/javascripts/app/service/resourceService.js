@@ -13,7 +13,7 @@ define(['app/config/module'], function (module) {
 
 			//
 
-			var updateCacheObject = function (key, data) { console.log(data);
+			var updateCacheObject = function (key, data) {
 				var obj = resource.cache.get(key);
 
 				if (obj)

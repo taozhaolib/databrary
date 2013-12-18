@@ -1,15 +1,12 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.controller('PublicationsPanel', ['$scope', function ($scope) {
-		$scope.updateData = function () {
-			switch($scope.view.view) {
-				case 'volume':
-					$scope.publications = $scope.volume.citations;
-					break;
-			}
+	module.controller('PublicationsPanel', ['$scope', 'Volume', '$routeParams', function ($scope, Volume, $routeParams) {
+		$scope.bootPanel = function () {
+			$scope.volume = Volume.get($routeParams.id, {
+				id: $routeParams.id,
+				citations: 'all'
+			});
 		};
-
-		$scope.$watch('view', function () {$scope.updateData();}, true);
 	}]);
 });
