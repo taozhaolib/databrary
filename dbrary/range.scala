@@ -158,10 +158,13 @@ object Range {
 
   implicit val segmentSqlType : SQLType[Range[Offset]] = PGRangeType.segment.sqlType
   implicit val dateSqlType : SQLType[Range[Date]] = PGRangeType.date.sqlType
-  implicit def jsonWrites[T](implicit w : json.Writes[T]) : json.Writes[Range[T]] =
-    json.Writes[Range[T]](o =>
+  implicit def jsonWrites[T : json.Writes] : json.Writes[Range[T]] =
+    json.Writes[Range[T]] { o =>
       if (o.isEmpty) json.JsNull
-      else json.JsArray(Seq(json.Json.toJson(o.lowerBound), json.Json.toJson(o.upperBound))))
+      else o.singleton.fold[json.JsValue](
+        json.JsArray(Seq(json.Json.toJson(o.lowerBound), json.Json.toJson(o.upperBound))))(
+        json.Json.toJson(_))
+    }
 }
 
 abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends RangeType[A] {

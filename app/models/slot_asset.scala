@@ -68,7 +68,8 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offse
     ) else Nil)
 
   lazy val json = JsonObject(
-    'asset -> (asset.json + ('segment -> asset_segment))
+    'asset -> (asset.json ++
+      JsonObject.flatten(if (asset_segment.isFull) None else Some('segment -> asset_segment)))
   ) ++ slot.jsonFields
 }
 

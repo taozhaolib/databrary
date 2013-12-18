@@ -127,6 +127,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   lazy val json : JsonRecord =
     JsonRecord.flatten(id,
+      Some('volume -> volumeId),
       category.map('category -> _.name),
       Some('measures -> measures)
     )
