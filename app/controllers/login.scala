@@ -9,7 +9,6 @@ import          libs.openid._
 import          libs.concurrent._
 import                          Execution.Implicits.defaultContext
 import          i18n.Messages
-import play.api.libs.json
 import scala.concurrent.Future
 import org.mindrot.jbcrypt.BCrypt
 import macros._
@@ -17,28 +16,38 @@ import dbrary._
 import site._
 import models._
 
-package object Login extends SiteController {
+private[controllers] object LoginController extends LoginController {
   private[controllers] def needed(message : String)(implicit request : SiteRequest[_]) : SimpleResult = {
     val msg = Messages(message)
     if (request.isApi) Forbidden(msg)
-    else Forbidden(html.viewLogin(msg))
+    else Forbidden(LoginHtml.viewLogin(msg))
   }
+}
 
-  type LoginForm = Form[(Option[String],String,String)]
-  private[this] val loginForm : LoginForm = Form(tuple(
-    "email" -> optional(email),
-    "password" -> text,
-    "openid" -> text(0, 256)
-  ))
+private[controllers] sealed class LoginController extends SiteController {
+
+  protected def json(implicit site : SiteRequest.Auth[_]) =
+    site.identity.json ++
+    JsonObject.flatten(
+      Some('access -> site.access),
+      if (site.access == Permission.ADMIN) Some('superuser -> new Timestamp(site.session.get("superuser").flatMap(Maybe.toLong _).getOrElse(0L))) else None
+    )
 
   private[controllers] def login(a : Account)(implicit request : SiteRequest[_]) : Future[SimpleResult] = {
     Audit.actionFor(Audit.Action.open, a.id, dbrary.Inet(request.remoteAddress))
     SessionToken.create(a).map { token =>
-      (if (request.isApi) Ok(api.json(new SiteRequest.Auth(request, token)))
+      (if (request.isApi) Ok(json(new SiteRequest.Auth(request, token)))
       else Redirect(controllers.Party.routes.html.view(a.id)))
         .withSession("session" -> token.id)
     }
   }
+
+  type LoginForm = Form[(Option[String],String,String)]
+  protected val loginForm : LoginForm = Form(tuple(
+    "email" -> optional(email),
+    "password" -> text,
+    "openid" -> text(0, 256)
+  ))
 
   def post = SiteAction.async { implicit request =>
     val form = loginForm.bindFromRequest
@@ -53,9 +62,9 @@ package object Login extends SiteController {
         if (!password.isEmpty) {
           acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(password, a.password)).fold(error)(login)
         } else if (!openid.isEmpty)
-          OpenID.redirectURL(openid, routes.html.openID(email.getOrElse("")).absoluteURL(), realm = Some("http://" + request.host))
+          OpenID.redirectURL(openid, routes.LoginHtml.openID(email.getOrElse("")).absoluteURL(), realm = Some("http://" + request.host))
             .map(Redirect(_))
-            .recover { case e : OpenIDError => InternalServerError(html.viewLogin(e.toString)) }
+            .recover { case e : OpenIDError => InternalServerError(LoginHtml.viewLogin(e.toString)) }
         else
           acct.filterNot(_ => isSecure).fold(error)(login)
         }
@@ -80,45 +89,38 @@ package object Login extends SiteController {
   def superuserOn = SiteAction.access(Permission.ADMIN) { implicit request =>
     val expires = System.currentTimeMillis + 60*60*1000
     Audit.action(Audit.Action.superuser)
-    (if (request.isApi) Ok(api.json + ('superuser -> new Timestamp(expires)))
+    (if (request.isApi) Ok(json + ('superuser -> new Timestamp(expires)))
     else Redirect(request.headers.get(REFERER).getOrElse(controllers.routes.Static.index.url)))
       .withSession(session + ("superuser" -> expires.toString))
   }
 
   def superuserOff = SiteAction.access(Permission.ADMIN) { implicit request =>
-    (if (request.isApi) Ok(api.json - "superuser")
+    (if (request.isApi) Ok(json - "superuser")
     else Redirect(request.headers.get(REFERER).getOrElse(controllers.routes.Static.index.url)))
       .withSession(session - "superuser")
   }
+}
 
-  object html {
-    def viewLogin()(implicit request: SiteRequest[_]) : templates.Html =
-      views.html.party.login(loginForm)
-    def viewLogin(err : String)(implicit request: SiteRequest[_]) : templates.Html =
-      views.html.party.login(loginForm.withGlobalError(err))
+object LoginHtml extends LoginController {
+  def viewLogin()(implicit request: SiteRequest[_]) : templates.Html =
+    views.html.party.login(loginForm)
+  def viewLogin(err : String)(implicit request: SiteRequest[_]) : templates.Html =
+    views.html.party.login(loginForm.withGlobalError(err))
 
-    def view = SiteAction { implicit request =>
-      request.user.fold(Ok(viewLogin()))(u => Redirect(u.party.pageURL))
-    }
-
-    def openID(email : String) = SiteAction.async { implicit request =>
-      val em = Maybe(email).opt
-      OpenID.verifiedId
-        .flatMap { info =>
-          Account.getOpenid(info.id, em).flatMap(_.fold(
-            ABadRequest(views.html.party.login(loginForm.fill((em, "", info.id)).withError("openid", "login.openID.notFound")))
-          )(login))
-        }.recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
-    }
-
+  def view = SiteAction { implicit request =>
+    request.user.fold(Ok(viewLogin()))(u => Redirect(u.party.pageURL))
   }
 
-  object api {
-    private[Login] def json(implicit site : SiteRequest.Auth[_]) =
-      site.identity.json ++
-      JsonObject.flatten(
-        Some('access -> site.access),
-        if (site.access == Permission.ADMIN) Some('superuser -> new Timestamp(site.session.get("superuser").flatMap(Maybe.toLong _).getOrElse(0L))) else None
-      )
+  def openID(email : String) = SiteAction.async { implicit request =>
+    val em = Maybe(email).opt
+    OpenID.verifiedId
+      .flatMap { info =>
+        Account.getOpenid(info.id, em).flatMap(_.fold(
+          ABadRequest(views.html.party.login(loginForm.fill((em, "", info.id)).withError("openid", "login.openID.notFound")))
+        )(login))
+      }.recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
   }
+}
+
+object LoginApi extends LoginController {
 }

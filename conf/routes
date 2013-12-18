@@ -10,14 +10,14 @@ GET     /about                                                                  
 GET     /about/$page<[a-z]+>                                                                      controllers.Static.page(page : String)
 
 # users
-GET     /login                                                                                    controllers.Login.html.view
-POST    /login                                                                                    controllers.Login.post
-GET     /OpenID                                                                                   controllers.Login.html.openID(email = "")
-GET     /OpenID/$email<.+\@.+\..+>                                                                controllers.Login.html.openID(email : String)
+GET     /login                                                                                    controllers.LoginHtml.view
+POST    /login                                                                                    controllers.LoginHtml.post
+GET     /OpenID                                                                                   controllers.LoginHtml.openID(email = "")
+GET     /OpenID/$email<.+\@.+\..+>                                                                controllers.LoginHtml.openID(email : String)
 # TODO: should be POST:
-GET     /logout                                                                                   controllers.Login.logout
-GET     /superuser/on                                                                             controllers.Login.superuserOn
-GET     /superuser/off                                                                            controllers.Login.superuserOff
+GET     /logout                                                                                   controllers.LoginHtml.logout
+GET     /superuser/on                                                                             controllers.LoginHtml.superuserOn
+GET     /superuser/off                                                                            controllers.LoginHtml.superuserOff
 GET     /token/password                                                                           controllers.Token.getPassword
 POST    /token/password                                                                           controllers.Token.issuePassword
 GET     /token/:token                                                                             controllers.Token.token(token : String)
@@ -98,10 +98,10 @@ POST    /volume/$vID<[0-9]+>/ingest/curated                                     
 
 # API
 GET     /api/about/$page<[a-z]+>                                                                  controllers.Static.api.page(page : String)
-POST    /api/login                                                                                controllers.Login.post
-POST    /api/logout                                                                               controllers.Login.logout
-POST    /api/superuser/on                                                                         controllers.Login.superuserOn
-POST    /api/superuser/off                                                                        controllers.Login.superuserOff
+POST    /api/login                                                                                controllers.LoginApi.post
+POST    /api/logout                                                                               controllers.LoginApi.logout
+POST    /api/superuser/on                                                                         controllers.LoginApi.superuserOn
+POST    /api/superuser/off                                                                        controllers.LoginApi.superuserOff
 
 GET     /api/party/$partyId<-?[0-9]+>                                                             controllers.Party.api.get(partyId : models.Party.Id)
 

@@ -36,16 +36,16 @@
                     </div>
 
                     @requestOption.filter(_.user.isDefined).fold {
-                        <a href="@controllers.Login.routes.html.view">login</a>
+                        <a href="@routes.LoginHtml.view">login</a>
                     } { request =>
-                        <a href="@routes.Login.logout">logout</a>
+                        <a href="@routes.LoginHtml.logout">logout</a>
 
                         @if(request.access == Permission.ADMIN) {
                             <span class="sep">|</span>
                             @if(request.superuser) {
-                                <a class="superuser on" href="@routes.Login.superuserOff">SU</a>
+                                <a class="superuser on" href="@routes.LoginHtml.superuserOff">SU</a>
                             }else{
-                                <a class="superuser off" href="@routes.Login.superuserOn">SU</a>
+                                <a class="superuser off" href="@routes.LoginHtml.superuserOn">SU</a>
                             }
                         }
 

@@ -29,7 +29,7 @@ object Token extends SiteController {
         AOk(views.html.token.password(token.accountId, passwordForm.fill((token.id, None))))
       else {
         token.remove
-        Login.login(token.account)
+        LoginController.login(token.account)
       }
     })
   }
@@ -42,7 +42,7 @@ object Token extends SiteController {
           .filter(t => t.valid && t.password && t.accountId === a)
           .fold[Future[SimpleResult]](AForbidden) { token =>
             password.fold(macros.Async(false))(p => token.account.changeAccount(password = p)).flatMap { _ =>
-              Login.login(token.account)
+              LoginController.login(token.account)
             }
           }
         )
