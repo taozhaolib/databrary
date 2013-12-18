@@ -93,7 +93,7 @@ final class SlotTimeseries private[models] (override val asset : Timeseries, ass
   def entire = slot.segment @> asset_segment
 }
 
-object SlotAsset extends Table[SlotAsset]("asset_slot") {
+object SlotAsset extends Table[SlotAsset]("slot_asset") {
   private[models] def make(asset : Asset, segment : Range[Offset], slot : AbstractSlot, excerpt : Option[Range[Offset]]) = asset match {
     case ts : Timeseries => new SlotTimeseries(ts, segment, slot, excerpt)
     case _ => new SlotAsset(asset, segment, slot, excerpt)
