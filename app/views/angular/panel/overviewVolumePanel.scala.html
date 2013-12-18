@@ -7,19 +7,19 @@
         <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
 
         <div frame id="frame_people" title="Investigators" fold>
-            <div ng-repeat="party in investigators" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
+            <div ng-repeat="volumeAccess in volume.access | filter:{access: 4}" class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-3 col-cell" ng-init="party = volumeAccess.party">
                 <portrait hover class="portrait_vertical portrait_small"></portrait>
             </div>
         </div>
 
         <div frame id="frame_funding" title="Funding" fold>
-            <div ng-repeat="party in funding" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
-                <portrait hover class="portrait_vertical portrait_small" caption="{{party.grant}}"></portrait>
+            <div ng-repeat="funding in volume.funding" class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell" ng-init="party = funding.party">
+                <portrait hover class="portrait_vertical portrait_small portrait_more" extra="{{funding.grant}}"></portrait>
             </div>
         </div>
 
         <div frame id="frame_metadata" title="Metadata" fold>
-            <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+            <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell">
                 <div class="description" ng-bind-html="volume.body | format"></div>
 
                 <div class="metadata">

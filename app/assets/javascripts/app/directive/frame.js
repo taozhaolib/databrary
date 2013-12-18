@@ -8,6 +8,8 @@ define(['app/config/module'], function (module) {
 					$scope.id = (angular.isDefined($attrs.id)) ? $attrs.id : '';
 					$scope.title = (angular.isDefined($attrs.title)) ? $attrs.title : '';
 
+					$element.removeAttr('title');
+
 					transclude($scope, function ($clone) {
 						$element.find('[frame-body]').append($clone);
 					});

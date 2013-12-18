@@ -7,20 +7,5 @@ define(['app/config/module'], function (module) {
 			volume: volume
 		};
 		$scope.volume = volume;
-
-		//
-
-		$scope.updateNetwork = function () {
-			$scope.funding = [];
-
-			angular.forEach($scope.volume.funding, function (funding) {
-				var funder = funding.party;
-				funder.grant = funding.grant;
-
-				$scope.funding.push(funder);
-			});
-		};
-
-		$scope.$watch('volume', function () {$scope.updateNetwork();}, true);
 	}]);
 });

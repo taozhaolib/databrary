@@ -9,7 +9,7 @@ define(['app/config/module'], function (module) {
 				$scope.name = $attrs.name !== false;
 				$scope.institution = $attrs.institution !== false;
 
-				$scope.extras = $attrs.extras;
+				$scope.extra = $attrs.extra;
 				$scope.links = $attrs.links;
 
 				$scope.caption = $attrs.caption;
