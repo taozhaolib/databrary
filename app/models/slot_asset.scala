@@ -163,7 +163,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   private[models] def getToplevel(volume : Volume) : Future[Seq[SlotAsset]] =
     for {
       l <- volumeRow(volume)
-        .SELECT("WHERE excerpt AND asset.volume = ?")
+        .SELECT("WHERE excerpt IS NOT NULL AND asset.volume = ?")
         .apply(volume.id).list
       s <- volume.top
       t <- getSlot(s)
@@ -173,11 +173,11 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   private[models] def getThumb(volume : Volume)(implicit site : Site) : Future[Option[SlotAsset]] =
     volumeRow(volume).SELECT("""
        JOIN format ON asset.format = format.id
-      WHERE (excerpt OR container.top AND slot.segment = '(,)' OR slot.consent >= 'PRIVATE')
+      WHERE (excerpt IS NOT NULL OR container.top AND slot.segment = '(,)' OR slot.consent >= 'PRIVATE')
         AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')
-        AND data_permission(?::permission, context.consent, asset.classification, ?::permission, excerpt) >= 'DOWNLOAD'
+        AND data_permission(?::permission, context.consent, asset.classification, ?::permission, excerpt IS NOT NULL) >= 'DOWNLOAD'
         AND asset.volume = ?
-        ORDER BY excerpt DESC, container.top DESC, slot.consent DESC NULLS LAST LIMIT 1""")
+        ORDER BY excerpt NULLS LAST, container.top DESC, slot.consent DESC NULLS LAST LIMIT 1""")
       .apply(volume.getPermission, site.access, volume.id).singleOpt
 
   /** Find an asset suitable for use as a slot thumbnail. */
@@ -186,7 +186,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
        JOIN format ON asset.format = format.id
       WHERE asset.volume = ? AND slot_asset.slot = ?
         AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%') 
-        AND data_permission(?::permission, ?::consent, asset.classification, ?::permission, excerpt) >= 'DOWNLOAD'
-        ORDER BY excerpt DESC LIMIT 1""")
+        AND data_permission(?::permission, ?::consent, asset.classification, ?::permission, excerpt IS NOT NULL) >= 'DOWNLOAD'
+        ORDER BY excerpt NULLS LAST LIMIT 1""")
       .apply(slot.volumeId, slot.id, slot.getPermission, slot.getConsent, site.access).singleOpt
 }
