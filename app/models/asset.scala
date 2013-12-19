@@ -21,6 +21,12 @@ sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype 
       (mimetype.substring(0, slash), mimetype.substring(slash+1))
   }
   AssetFormat.add(this)
+
+  lazy val json = JsonRecord.flatten(id,
+    Some('mimetype -> mimetype),
+    extension.map('extension -> _),
+    Some('name -> name)
+  )
 }
 
 /** Specialization of [[AssetFormat]] for timeseries files stored in special internal formats.
@@ -172,7 +178,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   )
 
   lazy val json : JsonRecord = JsonRecord.flatten(id,
-    Some('format -> format.name),
+    Some('format -> format.json /* XXX */),
     Some('classification -> classification),
     Some('name -> name),
     body.map('body -> _),
