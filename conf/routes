@@ -10,14 +10,14 @@ GET         /about                                                              
 GET         /about/$page<[a-z]+>                                                                       controllers.Static.page(page : String)
 
 # users
-GET         /login                                                                                     controllers.Login.html.view
-POST        /login                                                                                     controllers.Login.post
-GET         /OpenID                                                                                    controllers.Login.html.openID(email = "")
-GET         /OpenID/$email<.+\@.+\..+>                                                                 controllers.Login.html.openID(email : String)
+GET     /login                                                                                    controllers.LoginHtml.view
+POST    /login                                                                                    controllers.LoginHtml.post
+GET     /OpenID                                                                                   controllers.LoginHtml.openID(email = "")
+GET     /OpenID/$email<.+\@.+\..+>                                                                controllers.LoginHtml.openID(email : String)
 # TODO: should be POST:
-GET         /logout                                                                                    controllers.Login.logout
-GET         /superuser/on                                                                              controllers.Login.superuserOn
-GET         /superuser/off                                                                             controllers.Login.superuserOff
+GET     /logout                                                                                   controllers.LoginHtml.logout
+GET     /superuser/on                                                                             controllers.LoginHtml.superuserOn
+GET     /superuser/off                                                                            controllers.LoginHtml.superuserOff
 GET         /token/password                                                                            controllers.Token.getPassword
 POST        /token/password                                                                            controllers.Token.issuePassword
 GET         /token/:token                                                                              controllers.Token.token(token : String)
@@ -36,18 +36,18 @@ POST        /party/$pID<[0-9]+>/authorize/$parent<-?[0-9]+>/apply               
 GET         /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>/remove                                      controllers.Party.html.authorizeDelete(pID : models.Party.Id, child : models.Party.Id)
 
 # volumes
-GET         /search                                                                                    controllers.Volume.html.search
-GET         /volume/create                                                                             controllers.Volume.html.create(owner : Option[models.Party.Id] ?= None)
-POST        /volume/create/$pID<[0-9]+>                                                                controllers.Volume.html.add(pID : models.Party.Id)
-GET         /volume/$vID<[0-9]+>                                                                       controllers.Volume.html.view(vID : models.Volume.Id)
-GET         /volume/$vID<[0-9]+>/edit                                                                  controllers.Volume.html.edit(vID : models.Volume.Id)
-POST        /volume/$vID<[0-9]+>/edit                                                                  controllers.Volume.html.change(vID : models.Volume.Id)
-GET         /volume/$vID<[0-9]+>/access                                                                controllers.Volume.html.admin(vID : models.Volume.Id)
-GET         /volume/$vID<[0-9]+>/access/search                                                         controllers.Volume.html.accessSearch(vID : models.Volume.Id)
+GET     /search                                                                                   controllers.VolumeHtml.search
+GET     /volume/create                                                                            controllers.VolumeHtml.add(owner : Option[models.Party.Id] ?= None)
+POST    /volume/create/$pID<[0-9]+>                                                               controllers.VolumeHtml.create(pID : models.Party.Id)
+GET     /volume/$vID<[0-9]+>                                                                      controllers.VolumeHtml.view(vID : models.Volume.Id)
+GET     /volume/$vID<[0-9]+>/edit                                                                 controllers.VolumeHtml.edit(vID : models.Volume.Id)
+POST    /volume/$vID<[0-9]+>/edit                                                                 controllers.VolumeHtml.update(vID : models.Volume.Id)
+GET     /volume/$vID<[0-9]+>/access                                                               controllers.VolumeHtml.admin(vID : models.Volume.Id)
+GET     /volume/$vID<[0-9]+>/access/search                                                        controllers.VolumeHtml.accessSearch(vID : models.Volume.Id)
 # TODO: should be POST:
-GET         /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>/remove                                          controllers.Volume.html.accessDelete(vID : models.Volume.Id, pID : models.Party.Id)
-POST        /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                                                 controllers.Volume.html.accessChange(vID : models.Volume.Id, pID : models.Party.Id)
-GET         /volume/$vID<[0-9]+>/thumb                                                                 controllers.Volume.thumb(vID : models.Volume.Id)
+GET     /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>/remove                                         controllers.VolumeHtml.accessDelete(vID : models.Volume.Id, pID : models.Party.Id)
+POST    /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                                                controllers.VolumeHtml.accessChange(vID : models.Volume.Id, pID : models.Party.Id)
+GET     /volume/$vID<[0-9]+>/thumb                                                                controllers.VolumeController.thumb(vID : models.Volume.Id)
 
 # slots
 POST    /volume/$vID<[0-9]+>/slot/container                                                       controllers.Slot.html.addContainer(vID : models.Volume.Id)
@@ -101,15 +101,17 @@ GET         /api/about                                                          
 GET         /api/about/team                                                                            controllers.Static.api.team
 GET         /api/about/$page<[a-z]+>                                                                   controllers.Static.api.page(page : String)
 
-GET         /api/user                                                                                  controllers.Login.getUser
-POST        /api/user/login                                                                            controllers.Login.post
-POST        /api/user/logout                                                                           controllers.Login.logout
-POST        /api/user/superuser/on                                                                     controllers.Login.superuserOn
-POST        /api/user/superuser/off                                                                    controllers.Login.superuserOff
+GET         /api/user                                                                                  controllers.LoginApi.get
+POST        /api/user/login                                                                            controllers.LoginApi.post
+POST        /api/user/logout                                                                           controllers.LoginApi.logout
+POST        /api/user/superuser/on                                                                     controllers.LoginApi.superuserOn
+POST        /api/user/superuser/off                                                                    controllers.LoginApi.superuserOff
 
 GET         /api/party/$partyId<-?[0-9]+>                                                              controllers.Party.api.get(partyId : models.Party.Id)
 
-GET         /api/volume/$volumeId<[0-9]+>                                                              controllers.Volume.api.get(volumeId : models.Volume.Id)
+GET     /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.get(volumeId : models.Volume.Id)
+POST    /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.update(volumeId : models.Volume.Id)
+POST    /api/volume                                                                               controllers.VolumeApi.create(owner : models.Party.Id)
 
 GET     /api/slot/$containerId<[0-9]+>                                                            controllers.Slot.api.get(containerId : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
 

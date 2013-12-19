@@ -105,7 +105,7 @@ package object Asset extends ObjectController[Asset] {
       Ok(views.html.asset.edit(Left(request.obj), uploadForm.fill(("", "", Classification.IDENTIFIED, Some((None, false, None, ()))))))
     }
 
-    def createTop(v : models.Volume.Id) = Volume.Action(v, Permission.CONTRIBUTE).async { implicit request =>
+    def createTop(v : models.Volume.Id) = VolumeController.Action(v, Permission.CONTRIBUTE).async { implicit request =>
       request.obj.top.map { slot =>
         Ok(views.html.asset.edit(Left(slot), uploadForm.fill(("", "", Classification.MATERIAL, Some((None, false, None, ()))))))
       }

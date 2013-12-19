@@ -49,7 +49,7 @@ package object Slot extends ObjectController[Slot] {
     def view(v : models.Volume.Id, i : models.Slot.Id) = Action(v, i).async { implicit request =>
       val slot = request.obj
       if (slot.isTop)
-        ARedirect(controllers.Volume.routes.html.view(slot.volumeId))
+        ARedirect(controllers.routes.VolumeHtml.view(slot.volumeId))
       else for {
         records <- slot.records
         assets <- slot.assets
@@ -70,7 +70,7 @@ package object Slot extends ObjectController[Slot] {
       viewEdit(Ok, request.obj)()
     }
 
-    def createContainer(v : models.Volume.Id) = Volume.Action(v, Permission.EDIT) { implicit request =>
+    def createContainer(v : models.Volume.Id) = VolumeController.Action(v, Permission.EDIT) { implicit request =>
       Ok(views.html.slot.edit(Left(request.obj), editForm(true), None))
     }
 
@@ -88,7 +88,7 @@ package object Slot extends ObjectController[Slot] {
       )
     }
 
-    def addContainer(s : models.Volume.Id) = Volume.Action(s, Permission.CONTRIBUTE).async { implicit request =>
+    def addContainer(s : models.Volume.Id) = VolumeController.Action(s, Permission.CONTRIBUTE).async { implicit request =>
       val form = editForm(true).bindFromRequest
       form.fold(
         form => ABadRequest(views.html.slot.edit(Left(request.obj), form, None)),

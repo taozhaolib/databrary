@@ -166,7 +166,7 @@ package object Record extends ObjectController[Record] {
       )
     }
 
-    def add(v : models.Volume.Id, catID : models.RecordCategory.Id) = Volume.Action(v, Permission.EDIT).async { implicit request =>
+    def add(v : models.Volume.Id, catID : models.RecordCategory.Id) = VolumeController.Action(v, Permission.EDIT).async { implicit request =>
       val cat = RecordCategory.get(catID)
       models.Record.create(request.obj.volume, cat).map { r =>
         Created(views.html.record.edit(r, cat.fold[Seq[Metric[_]]](Nil)(_.template), editForm.fill((cat.map(_.id), Seq())), jsonCategories, jsonMetrics))
@@ -197,7 +197,7 @@ package object Record extends ObjectController[Record] {
       "category" -> optional(of[RecordCategory])
     ))
 
-    def query(volume : models.Volume.Id) = Volume.Action(volume).async { implicit request =>
+    def query(volume : models.Volume.Id) = VolumeController.Action(volume).async { implicit request =>
       queryForm.bindFromRequest.fold(
         form => ABadRequest(Json.toJson(form.errors)),
         category =>

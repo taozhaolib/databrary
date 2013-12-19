@@ -75,7 +75,7 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
       case Some(session) if !session.valid =>
         implicit val site = new SiteRequest.Anon[A](request)
         session.remove.map { _ =>
-          Login.needed("login.expired")
+          LoginController.needed("login.expired")
         }
       case Some(session) =>
         block(new SiteRequest.Auth[A](request, session))
@@ -84,7 +84,7 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
   object Auth extends ActionRefiner[SiteRequest,SiteRequest.Auth] {
     protected def refine[A](request : SiteRequest[A]) = macros.Async(request match {
       case request : SiteRequest.Auth[A] => Right(request)
-      case _ => Left(Login.needed("login.noCookie")(request))
+      case _ => Left(LoginController.needed("login.noCookie")(request))
     })
   }
 
@@ -135,7 +135,7 @@ class ObjectController[O] extends SiteController {
 }
 
 object Site extends SiteController {
-  def start = Login.html.view
+  def start = LoginHtml.view
 
   def test = Action { request =>
     Ok(request.queryString.toString)
