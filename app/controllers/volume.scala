@@ -47,6 +47,11 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       editForm.fill((v.name, v.body, cites.map(citationFill(_))))
     }
 
+  private[this] def result(volume : Volume)(implicit request : SiteRequest[_]) =
+    if (request.isApi) Ok(volume.json)
+    else Redirect(volume.pageURL)
+
+
   def update(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
     editFormFill(request.obj).flatMap {
       _.bindFromRequest.fold(
@@ -54,13 +59,25 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
         { case (name, body, cites) =>
           request.obj.change(name = name, body = body.flatMap(Maybe(_).opt)).flatMap { _ =>
             citationSet(request.obj, cites).map { _ =>
-              if (request.isApi) Ok(request.obj.json)
-              else Redirect(request.obj.pageURL)
+              result(request.obj)
             }
           }
         }
       )
     }
+  }
+
+  def create(owner : models.Party.Id) = ContributeAction(Some(owner)).async { implicit request =>
+    editForm.bindFromRequest.fold(
+      form => ABadForm[VolumeFields](views.html.volume.edit(Left(request.obj), _), form),
+      { case (name, body, cites) =>
+        for {
+          volume <- models.Volume.create(name, body)
+          _ <- citationSet(volume, cites)
+          _ <- VolumeAccess.set(volume, owner, Permission.ADMIN, Permission.CONTRIBUTE)
+        } yield (result(volume))
+      }
+    )
   }
 
   protected def ContributeAction(e : Option[models.Party.Id]) =
@@ -126,21 +143,8 @@ object VolumeHtml extends VolumeController {
     }
   }
 
-  def create(e : Option[models.Party.Id]) = ContributeAction(e) { implicit request =>
+  def add(e : Option[models.Party.Id]) = ContributeAction(e) { implicit request =>
     Ok(views.html.volume.edit(Left(request.obj), editForm))
-  }
-
-  def add(e : models.Party.Id) = ContributeAction(Some(e)).async { implicit request =>
-    editForm.bindFromRequest.fold(
-      form => ABadRequest(views.html.volume.edit(Left(request.obj), form)),
-      { case (name, body, cites) =>
-        for {
-          volume <- models.Volume.create(name, body)
-          _ <- citationSet(volume, cites)
-          _ <- VolumeAccess.set(volume, e, Permission.ADMIN, Permission.CONTRIBUTE)
-        } yield (Redirect(volume.pageURL))
-      }
-    )
   }
 
   private[this] def viewAdmin(

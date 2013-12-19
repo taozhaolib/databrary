@@ -81,7 +81,7 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
     Action("view", controllers.Party.routes.html.view(party.id), Permission.VIEW),
     Action("edit", controllers.Party.routes.html.edit(party.id), Permission.EDIT),
     Action("authorization", controllers.Party.routes.html.admin(party.id), Permission.ADMIN),
-    SiteAction("add volume", controllers.routes.VolumeHtml.create(Some(party.id)),
+    SiteAction("add volume", controllers.routes.VolumeHtml.add(Some(party.id)),
       !(party.id === Party.ROOT) && checkPermission(Permission.CONTRIBUTE) && access >= Permission.CONTRIBUTE)
   )
 

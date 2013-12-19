@@ -37,8 +37,8 @@ GET     /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>/remove                   
 
 # volumes
 GET     /search                                                                                   controllers.VolumeHtml.search
-GET     /volume/create                                                                            controllers.VolumeHtml.create(owner : Option[models.Party.Id] ?= None)
-POST    /volume/create/$pID<[0-9]+>                                                               controllers.VolumeHtml.add(pID : models.Party.Id)
+GET     /volume/create                                                                            controllers.VolumeHtml.add(owner : Option[models.Party.Id] ?= None)
+POST    /volume/create/$pID<[0-9]+>                                                               controllers.VolumeHtml.create(pID : models.Party.Id)
 GET     /volume/$vID<[0-9]+>                                                                      controllers.VolumeHtml.view(vID : models.Volume.Id)
 GET     /volume/$vID<[0-9]+>/edit                                                                 controllers.VolumeHtml.edit(vID : models.Volume.Id)
 POST    /volume/$vID<[0-9]+>/edit                                                                 controllers.VolumeHtml.update(vID : models.Volume.Id)
@@ -106,6 +106,8 @@ POST    /api/superuser/off                                                      
 GET     /api/party/$partyId<-?[0-9]+>                                                             controllers.Party.api.get(partyId : models.Party.Id)
 
 GET     /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.get(volumeId : models.Volume.Id)
+POST    /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.update(volumeId : models.Volume.Id)
+POST    /api/volume                                                                               controllers.VolumeApi.create(owner : models.Party.Id)
 
 GET     /api/slot/$containerId<[0-9]+>                                                            controllers.Slot.api.get(containerId : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
 
