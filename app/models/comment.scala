@@ -17,7 +17,7 @@ final class Comment private (val id : Comment.Id, val who : Account, val time : 
     Some('time -> time),
     Some('text -> text),
     parentId.map('parent -> _)
-  ) ++ slot.jsonFields
+  ) ++ slot.json
 }
 
 object Comment extends TableId[Comment]("comment") {

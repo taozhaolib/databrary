@@ -35,8 +35,8 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       ))
     } else macros.Async(false)
 
-  type VolumeFields = (Option[String], Option[String], Seq[CitationMapping])
-  type VolumeForm = Form[VolumeFields]
+  type VolumeMapping = (Option[String], Option[String], Seq[CitationMapping])
+  type VolumeForm = Form[VolumeMapping]
   protected val editForm = Form(tuple(
     "name" -> OptionMapping(nonEmptyText),
     "body" -> OptionMapping(text),
@@ -47,17 +47,13 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       editForm.fill((Some(v.name), Some(v.body.getOrElse("")), cites.map(citationFill(_))))
     }
 
-  private[this] def result(volume : Volume)(implicit request : SiteRequest[_]) =
-    if (request.isApi) Ok(volume.json)
-    else Redirect(volume.pageURL)
-
-
   def update(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
     val vol = request.obj
+    def bad(form : VolumeForm) =
+      ABadForm[VolumeMapping](views.html.volume.edit(Right(vol), _), form)
     editFormFill(vol).flatMap {
-      _.bindFromRequest.fold(
-        form => ABadForm[VolumeFields](views.html.volume.edit(Right(vol), _), form),
-        { case (name, body, cites) =>
+      _.bindFromRequest.fold(bad _, {
+        case (name, body, cites) =>
           for {
             _ <- vol.change(name = name.getOrElse(vol.name), body = body.fold(vol.body)(Maybe(_).opt))
             _ <- citationSet(vol, cites)
@@ -69,25 +65,23 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
 
   def create(owner : models.Party.Id) = ContributeAction(Some(owner)).async { implicit request =>
     def bad(form : VolumeForm) =
-      ABadForm[VolumeFields](views.html.volume.edit(Left(request.obj), _), form)
+      ABadForm[VolumeMapping](views.html.volume.edit(Left(request.obj), _), form)
     val form = editForm.bindFromRequest
-    form.fold(
-      bad _,
-      { case (None, _, _) => bad(form.withError("name", "error.required"))
-        case (Some(name), body, cites) =>
+    form.fold(bad _, {
+      case (None, _, _) => bad(form.withError("name", "error.required"))
+      case (Some(name), body, cites) =>
         for {
           vol <- models.Volume.create(name, body.flatMap(Maybe(_).opt))
           _ <- citationSet(vol, cites)
           _ <- VolumeAccess.set(vol, owner, Permission.ADMIN, Permission.CONTRIBUTE)
         } yield (result(vol))
-      }
-    )
+    })
   }
 
   protected def ContributeAction(e : Option[models.Party.Id]) =
-    Party.Action(e, Some(Permission.CONTRIBUTE)) ~>
-      new ActionHandler[Party.Request] {
-        protected def handle[A](request : Party.Request[A]) =
+    PartyController.Action(e, Some(Permission.CONTRIBUTE)) ~>
+      new ActionHandler[PartyController.Request] {
+        protected def handle[A](request : PartyController.Request[A]) =
           macros.Async(if (request.obj.access < Permission.CONTRIBUTE) Some(Forbidden) else None)
       }
 

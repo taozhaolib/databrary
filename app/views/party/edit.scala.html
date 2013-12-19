@@ -1,4 +1,4 @@
-@(form : controllers.Party.EditForm)(implicit request : controllers.Party.Request[_])
+@(form : controllers.PartyHtml.EditForm)(implicit request : controllers.PartyHtml.Request[_])
 
 @import helper.FieldConstructor
 
@@ -11,10 +11,10 @@
         <div class="col-full">
             @widget.formErrors(form)
 
-            @widget.tag.form(controllers.Party.routes.html.change(request.obj.party.id)) {
+            @widget.tag.form(routes.PartyHtml.update(request.obj.party.id)) {
                 @widget.tag.inputText(form("name"), 'placeholder -> "Full name")
 
-                @if(controllers.Party.formForAccount(form)) {
+                @if(controllers.PartyHtml.formForAccount(form)) {
                     @widget.tag.inputPassword(form("auth"), 'placeholder -> "Current Password")
                     @widget.tag.inputText(form("email"), 'placeholder -> "Email")
                     @widget.tag.inputPassword(form("password.once"), 'placeholder -> "New Password")
@@ -23,7 +23,7 @@
 
                 @widget.tag.inputText(form("orcid"), 'placeholder -> "ORCiD")
 
-                @if(controllers.Party.formForAccount(form)) {
+                @if(controllers.PartyHtml.formForAccount(form)) {
                     @widget.tag.inputText(form("openid"), 'placeholder -> "OpenID")
                 }
 

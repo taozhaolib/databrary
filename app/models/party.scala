@@ -55,7 +55,7 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
 
   def pageName = name
   def pageParent = None
-  def pageURL = controllers.Party.routes.html.view(id)
+  def pageURL = controllers.routes.PartyHtml.view(id)
 
   def perSite(implicit site : Site) : Future[SiteParty] = SiteParty.make(this)
 
@@ -78,12 +78,14 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
   def pageParent = party.pageParent
   def pageURL = party.pageURL
   def pageActions = Seq(
-    Action("view", controllers.Party.routes.html.view(party.id), Permission.VIEW),
-    Action("edit", controllers.Party.routes.html.edit(party.id), Permission.EDIT),
-    Action("authorization", controllers.Party.routes.html.admin(party.id), Permission.ADMIN),
+    Action("view", pageURL, Permission.VIEW),
+    Action("edit", controllers.routes.PartyHtml.edit(party.id), Permission.EDIT),
+    Action("authorization", controllers.routes.PartyHtml.admin(party.id), Permission.ADMIN),
     SiteAction("add volume", controllers.routes.VolumeHtml.add(Some(party.id)),
       !(party.id === Party.ROOT) && checkPermission(Permission.CONTRIBUTE) && access >= Permission.CONTRIBUTE)
   )
+
+  def json = party.json
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(party.json, options,

@@ -1,4 +1,4 @@
-@(authorizeParents : Seq[Authorize], authorizeForms : Seq[(Party,controllers.Party.AuthorizeForm)], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Party,controllers.Party.AuthorizeForm)])(implicit request : controllers.Party.Request[_])
+@(authorizeParents : Seq[Authorize], authorizeForms : Seq[(Party,PartyHtml.AuthorizeForm)], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Party,PartyHtml.AuthorizeForm)])(implicit request : PartyHtml.Request[_])
 
 @import helper.FieldConstructor
 
@@ -6,7 +6,7 @@
         FieldConstructor(widget.tag.minimalFieldConstructor.f)
     }
 
-@authorizeFields(party : Party, form : controllers.Party.AuthorizeForm)(implicit fieldConstructor : helper.FieldConstructor) = {
+@authorizeFields(party : Party, form : controllers.PartyHtml.AuthorizeForm)(implicit fieldConstructor : helper.FieldConstructor) = {
     <td>
         @display(party)
     </td>
@@ -28,7 +28,7 @@
     @if(authorizeWhich.fold(true)(_ == which)) {
             <tr class="null">
                 <td>
-                @widget.tag.form(controllers.Party.routes.html.authorizeSearch(party.id, which), 'id -> ("search_"+which.toString)) {
+                @widget.tag.form(routes.PartyHtml.authorizeSearch(party.id, which), 'id -> ("search_"+which.toString)) {
                     @widget.tag.inputText(authorizeSearch("name"), 'id -> ("name_"+which.toString))
                     @widget.formErrors(authorizeSearch)
                 }
@@ -45,7 +45,7 @@
 
         @authorizeResults.map { case (other,form) =>
             <tr>
-                @widget.tag.form(if (which) controllers.Party.routes.html.authorizeApply(party.id, other.id) else controllers.Party.routes.html.authorizeChange(party.id, other.id), 'id -> ("which_"+which.toString)) {
+                @widget.tag.form(if (which) routes.PartyHtml.authorizeApply(party.id, other.id) else routes.PartyHtml.authorizeChange(party.id, other.id), 'id -> ("which_"+which.toString)) {
                     @authorizeFields(other, form)
                     @widget.formErrors(form)
                 }
@@ -109,13 +109,13 @@
 
                 <tbody>
                 @authorizeForms.map { case (child,form) =>
-                    @widget.tag.form(controllers.Party.routes.html.authorizeChange(party.id, child.id)) {
+                    @widget.tag.form(routes.PartyHtml.authorizeChange(party.id, child.id)) {
                         <tr>
                             @authorizeFields(child, form)
                             <td>
                             @defining(form("pending").value == Some("true")) { pending =>
                                 <button type='submit' class="button second">@{if(pending) "Authorize" else "Change"}</button>
-                                <a href='@controllers.Party.routes.html.authorizeDelete(party.id, child.id)' class="button first">@{if(pending) "Deny" else "Revoke"}</a>
+                                <a href='@routes.PartyHtml.authorizeDelete(party.id, child.id)' class="button first">@{if(pending) "Deny" else "Revoke"}</a>
                             @widget.formErrors(form)
                             }
                             </td>

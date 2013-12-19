@@ -66,4 +66,5 @@ trait SiteObject extends SitePage with HasPermission {
     SiteAction(name, route, checkPermission(permission))
   /** The actions available for this page. */
   def pageActions : Seq[SiteAction]
+  def json : JsonValue
 }

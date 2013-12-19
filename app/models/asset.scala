@@ -187,7 +187,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
-      "slot" -> (opt => slot.map(_.fold[JsValue](JsNull)(_.slot.jsonFields)))
+      "slot" -> (opt => slot.map(_.fold[JsValue](JsNull)(_.slot.json.js)))
     )
 }
 

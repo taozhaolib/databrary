@@ -149,7 +149,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
-      "summary" -> (opt => summary.map(_.json)),
+      "summary" -> (opt => summary.map(_.json.js)),
       "access" -> (opt => partyAccess.map(JsonArray.map(_.json - "volume"))),
       "funding" -> (opt => funding.map(JsonArray.map(_.json - "volume"))),
       "citations" -> (opt => citations.map(JsonArray.map(_.json))),
