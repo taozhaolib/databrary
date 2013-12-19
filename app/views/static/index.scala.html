@@ -4,7 +4,7 @@
     <section id="carousel" class="carousel">
         <div class="carousel_panels" carousel>
             <div class="carousel_panel" id="panel_8">
-                <img style="position: relative; top: -100px;" src="@routes.Volume.thumb(models.Volume.asId(8))">
+                <img style="position: relative; top: -100px;" src="@routes.VolumeController.thumb(models.Volume.asId(8))">
             </div>
             <div class="carousel_panel" id="panel_2">
                 <img src="@routes.Assets.at("private/carousel/carousel-2.jpg")">
@@ -16,7 +16,7 @@
                 <img src="@routes.Assets.at("private/carousel/carousel-3.jpg")">
             </div>
             <div class="carousel_panel" id="panel_4">
-                <img src="@routes.Volume.thumb(models.Volume.asId(2))">
+                <img src="@routes.VolumeController.thumb(models.Volume.asId(2))">
             </div>
             <div class="carousel_panel" id="panel_6">
                 <img src="@routes.Assets.at("private/carousel/carousel-5.jpg")">
@@ -37,7 +37,7 @@
     <section>
         <div class="row">
             <div class="box_minor col-desktop-5 col-laptop-4 col-tablet-3 col-mobile-6">
-                <h2 class="box_minor_header"><a href="@controllers.Volume.routes.html.search">Explore</a></h2>
+                <h2 class="box_minor_header"><a href="@routes.VolumeHtml.search">Explore</a></h2>
                 <p>Databrary is a repository of discoveries waiting to happen. Dig into the diverse source materials of developmental researchers world-wide. Spark your ideas, engage your students, and learn about behavior and development.</p>
             </div>
 

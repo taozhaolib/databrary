@@ -36,18 +36,18 @@ POST    /party/$pID<[0-9]+>/authorize/$parent<-?[0-9]+>/apply                   
 GET     /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>/remove                                     controllers.Party.html.authorizeDelete(pID : models.Party.Id, child : models.Party.Id)
 
 # volumes
-GET     /search                                                                                   controllers.Volume.html.search
-GET     /volume/create                                                                            controllers.Volume.html.create(owner : Option[models.Party.Id] ?= None)
-POST    /volume/create/$pID<[0-9]+>                                                               controllers.Volume.html.add(pID : models.Party.Id)
-GET     /volume/$vID<[0-9]+>                                                                      controllers.Volume.html.view(vID : models.Volume.Id)
-GET     /volume/$vID<[0-9]+>/edit                                                                 controllers.Volume.html.edit(vID : models.Volume.Id)
-POST    /volume/$vID<[0-9]+>/edit                                                                 controllers.Volume.html.change(vID : models.Volume.Id)
-GET     /volume/$vID<[0-9]+>/access                                                               controllers.Volume.html.admin(vID : models.Volume.Id)
-GET     /volume/$vID<[0-9]+>/access/search                                                        controllers.Volume.html.accessSearch(vID : models.Volume.Id)
+GET     /search                                                                                   controllers.VolumeHtml.search
+GET     /volume/create                                                                            controllers.VolumeHtml.create(owner : Option[models.Party.Id] ?= None)
+POST    /volume/create/$pID<[0-9]+>                                                               controllers.VolumeHtml.add(pID : models.Party.Id)
+GET     /volume/$vID<[0-9]+>                                                                      controllers.VolumeHtml.view(vID : models.Volume.Id)
+GET     /volume/$vID<[0-9]+>/edit                                                                 controllers.VolumeHtml.edit(vID : models.Volume.Id)
+POST    /volume/$vID<[0-9]+>/edit                                                                 controllers.VolumeHtml.update(vID : models.Volume.Id)
+GET     /volume/$vID<[0-9]+>/access                                                               controllers.VolumeHtml.admin(vID : models.Volume.Id)
+GET     /volume/$vID<[0-9]+>/access/search                                                        controllers.VolumeHtml.accessSearch(vID : models.Volume.Id)
 # TODO: should be POST:
-GET     /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>/remove                                         controllers.Volume.html.accessDelete(vID : models.Volume.Id, pID : models.Party.Id)
-POST    /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                                                controllers.Volume.html.accessChange(vID : models.Volume.Id, pID : models.Party.Id)
-GET     /volume/$vID<[0-9]+>/thumb                                                                controllers.Volume.thumb(vID : models.Volume.Id)
+GET     /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>/remove                                         controllers.VolumeHtml.accessDelete(vID : models.Volume.Id, pID : models.Party.Id)
+POST    /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                                                controllers.VolumeHtml.accessChange(vID : models.Volume.Id, pID : models.Party.Id)
+GET     /volume/$vID<[0-9]+>/thumb                                                                controllers.VolumeController.thumb(vID : models.Volume.Id)
 
 # slots
 POST    /volume/$vID<[0-9]+>/slot/container                                                       controllers.Slot.html.addContainer(vID : models.Volume.Id)
@@ -105,7 +105,7 @@ POST    /api/superuser/off                                                      
 
 GET     /api/party/$partyId<-?[0-9]+>                                                             controllers.Party.api.get(partyId : models.Party.Id)
 
-GET     /api/volume/$volumeId<[0-9]+>                                                             controllers.Volume.api.get(volumeId : models.Volume.Id)
+GET     /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.get(volumeId : models.Volume.Id)
 
 GET     /api/slot/$containerId<[0-9]+>                                                            controllers.Slot.api.get(containerId : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
 

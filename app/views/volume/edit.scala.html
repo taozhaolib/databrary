@@ -1,4 +1,4 @@
-@(a : Either[SiteParty, Volume], editForm : controllers.Volume.VolumeForm)(implicit request : RequestObject[SiteObject]#Site[_])
+@(a : Either[SiteParty, Volume], editForm : VolumeHtml.VolumeForm)(implicit request : RequestObject[SiteObject]#Site[_])
 
 @import helper.FieldConstructor
 
@@ -9,7 +9,7 @@
 @widget.template.crud(a.fold(_.toString + ": Create Volume", "Edit Volume: " + _.name)) {
     @widget.panel.form(a.fold(_ => "", _.pageName), a.fold(_ => "Create Volume", _ => "Edit Volume")) {
         <div class="col-full">
-        @widget.tag.form(a.fold(p => controllers.Volume.routes.html.add(p.party.id), s => controllers.Volume.routes.html.change(s.id))) {
+        @widget.tag.form(a.fold(p => routes.VolumeHtml.add(p.party.id), s => routes.VolumeHtml.update(s.id))) {
             @widget.formErrors(editForm)
 
             @widget.tag.inputText(editForm("name"), 'placeholder -> "Title", '_class -> "")
