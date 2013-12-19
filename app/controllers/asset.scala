@@ -17,7 +17,6 @@ import models._
 
 package object Asset extends ObjectController[Asset] {
   private[controllers] def assetResult(asset : BackedAsset, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[SimpleResult] = {
-    val now = new Timestamp
     val tag = asset.etag
     /* The split works because we never use commas within etags. */
     val ifNoneMatch = request.headers.getAll(IF_NONE_MATCH).flatMap(_.split(',').map(_.trim))
@@ -36,7 +35,6 @@ package object Asset extends ObjectController[Asset] {
           None
       val subdata = range.fold(data)((data.range _).tupled)
       val headers = Seq[Option[(String, String)]](
-        Some(DATE -> HTTP.date(now)),
         Some(CONTENT_LENGTH -> subdata.size.toString),
         range.map(r => CONTENT_RANGE -> ("bytes " + (if (r._1 >= size) "*" else r._1.toString + "-" + r._2.toString) + "/" + data.size.toString)),
         Some(CONTENT_TYPE -> asset.format.mimetype),

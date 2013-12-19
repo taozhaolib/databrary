@@ -68,7 +68,8 @@ object RequestObject {
 }
 
 object SiteAction extends ActionCreator[SiteRequest.Base] {
-  def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) =
+  def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) = {
+    val now = new Timestamp
     macros.Async.flatMap(request.session.get("session"), models.SessionToken.get _).flatMap {
       case None =>
         block(new SiteRequest.Anon[A](request))
@@ -79,7 +80,8 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
         }
       case Some(session) =>
         block(new SiteRequest.Auth[A](request, session))
-    }
+    }.map(_.withHeaders(HeaderNames.DATE -> HTTP.date(now)))
+  }
 
   object Auth extends ActionRefiner[SiteRequest,SiteRequest.Auth] {
     protected def refine[A](request : SiteRequest[A]) = macros.Async(request match {
