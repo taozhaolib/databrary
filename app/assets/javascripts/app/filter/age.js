@@ -3,7 +3,7 @@ define(['app/config/module'], function (module) {
 
 	module.filter('age', ['$filter', function ($filter) {
 		var daysTo = {
-			months: 30.4375,
+			months: 30.436849,
 			years: 365.24219
 		};
 
@@ -21,7 +21,7 @@ define(['app/config/module'], function (module) {
 
 			switch(inputFormat) {
 				case 'seconds':
-					days = age * 86400
+					days = age / 86400;
 					break;
 
 				case 'days':
