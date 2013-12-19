@@ -71,8 +71,8 @@ define(['app/config/module'], function (module) {
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/volume/:vid/slot/:sid/asset/:id', assetView);
-		$routeProvider.when('/volume/:vid/asset/:id', assetView);
+		$routeProvider.when('/slot/:sid/asset/:id', assetView);
+		$routeProvider.when('/asset/:id', assetView);
 
 		//
 
@@ -82,7 +82,7 @@ define(['app/config/module'], function (module) {
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/volume/:vid/slot/:id', slotView);
+		$routeProvider.when('/slot/:id', slotView);
 
 		//
 
@@ -92,7 +92,7 @@ define(['app/config/module'], function (module) {
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/volume/:vid/record/:id', recordView);
+		$routeProvider.when('/record/:id', recordView);
 
 		//
 

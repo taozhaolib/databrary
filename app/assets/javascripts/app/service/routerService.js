@@ -11,6 +11,21 @@ define(['app/config/module'], function (module) {
 		routerService.makeUrl = function (url, params) {
 			if (!params) return url;
 
+			if(!angular.isArray(params) && !angular.isObject(params))
+				params = [params];
+
+			if(angular.isArray(params)) {
+				angular.forEach(params, function (param) {
+					var regex = new RegExp(':[\\w]+\\*?'),
+						match = url.match(regex);
+
+					if(match[0].length > 0)
+						url = url.replace(regex, param);
+				});
+
+				return url;
+			}
+
 			var parts = [];
 
 			angular.forEach(params, function (value, key) {
@@ -27,7 +42,7 @@ define(['app/config/module'], function (module) {
 					var regex = new RegExp(':' + key + '\\*?'),
 						match = url.match(regex);
 
-					if (match.length > 0)
+					if (match[0].length > 0)
 						url = url.replace(regex, v);
 					else
 						parts.push($filter('uri')(key, true) + '=' +
