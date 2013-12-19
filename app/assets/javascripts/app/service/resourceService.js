@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('resourceService', ['$rootScope', '$resource', '$cacheFactory', function ($rootScope, $resource, $cacheFactory) {
+	module.factory('ResourceService', ['$rootScope', '$resource', '$cacheFactory', function ($rootScope, $resource, $cacheFactory) {
 		return function (id, url, paramDefaults, hotParamsArray, actions) {
 			var resource = {};
 

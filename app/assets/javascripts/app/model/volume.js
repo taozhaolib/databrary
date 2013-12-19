@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('Volume', ['$rootScope', 'resourceService', function ($rootScope, resourceService) {
+	module.factory('Volume', ['$rootScope', 'ResourceService', function ($rootScope, resourceService) {
 		return resourceService('volume', '/api/volume/:id', {
 			id: '@id'
 		}, [

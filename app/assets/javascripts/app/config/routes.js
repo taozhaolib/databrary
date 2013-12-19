@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	return module.config(['$locationProvider', '$routeProvider', '$httpProvider', function ($locationProvider, $routeProvider, $httpProvider) {
+	module.config(['$locationProvider', '$routeProvider', '$httpProvider', function ($locationProvider, $routeProvider, $httpProvider) {
 		$locationProvider.html5Mode(true);
 
 		//
@@ -62,11 +62,6 @@ define(['app/config/module'], function (module) {
 		};
 
 		$routeProvider.when('/party/:id', partyView);
-		$routeProvider.when('/party/:id/:path*', {
-			redirectTo: function (params) {
-				return '/party/' + params.id;
-			}
-		});
 
 		//
 
@@ -77,18 +72,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		$routeProvider.when('/volume/:vid/slot/:sid/asset/:id', assetView);
-		$routeProvider.when('/volume/:vid/slot/:sid/asset/:id/:path*', {
-			redirectTo: function (params) {
-				return '/volume/' + params.vid + '/slot/' + params.sid + '/asset/' + params.id;
-			}
-		});
-
 		$routeProvider.when('/volume/:vid/asset/:id', assetView);
-		$routeProvider.when('/volume/:vid/asset/:id/:path*', {
-			redirectTo: function (params) {
-				return '/volume/' + params.vid + '/asset/' + params.id;
-			}
-		});
 
 		//
 
@@ -99,11 +83,6 @@ define(['app/config/module'], function (module) {
 		};
 
 		$routeProvider.when('/volume/:vid/slot/:id', slotView);
-		$routeProvider.when('/volume/:vid/slot/:id/:path*', {
-			redirectTo: function (params) {
-				return '/volume/' + params.vid + '/slot/' + params.id;
-			}
-		});
 
 		//
 
@@ -114,11 +93,6 @@ define(['app/config/module'], function (module) {
 		};
 
 		$routeProvider.when('/volume/:vid/record/:id', recordView);
-		$routeProvider.when('/volume/:vid/record/:id/:path*', {
-			redirectTo: function (params) {
-				return '/volume/' + params.vid + '/record/' + params.id;
-			}
-		});
 
 		//
 
@@ -147,21 +121,6 @@ define(['app/config/module'], function (module) {
 		};
 
 		$routeProvider.when('/volume/:id', volumeView);
-		$routeProvider.when('/volume/:id/:path*', {
-			redirectTo: function (params) {
-				return '/volume/' + params.id;
-			}
-		});
-
-		//
-
-		// TODO: replace PhonyView with actual controllers
-
-		$routeProvider.when('/:page*', {
-			controller: 'PhonyView',
-			templateUrl: 'phonyView.html',
-			reloadOnSearch: false
-		});
 
 		//
 
@@ -169,4 +128,10 @@ define(['app/config/module'], function (module) {
 			redirectTo: '/'
 		});
 	}]);
+
+	module.run(['$rootScope', 'RouterService', function ($rootScope, router) {
+		$rootScope.router = router;
+	}]);
+
+	return module;
 });

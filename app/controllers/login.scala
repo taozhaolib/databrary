@@ -101,7 +101,7 @@ private[controllers] sealed class LoginController extends SiteController {
   }
 
   def get = SiteAction.access(Permission.VIEW) { implicit request =>
-    Ok(api.json)
+    Ok(json)
   }
 }
 
