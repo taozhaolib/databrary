@@ -31,7 +31,8 @@
                         <dd>{{volume.summary.sessions}} sessions ({{volume.summary.sessions - volume.summary.shared}} unconsenting)</dd>
 
                         <dt ng-if="volume.summary.agemean > 0">Ages</dt>
-                        <dd ng-if="volume.summary.agemean > 0">{{volume.summary.agerange[0] | age}} - {{volume.summary.agerange[1] | age}} (<em>M</em> = {{volume.summary.agemean | age}})</dd>
+                        <dd ng-if="volume.summary.agemean > 0">{{volume.summary.agerange[0] | age}} - {{volume.summary.agerange[1] | age}} (<em>M</em>
+                            = {{volume.summary.agemean | age}})</dd>
                     </dl>
                 </div>
             </div>
@@ -45,6 +46,27 @@
     </panel-mode>
 
     <panel-mode name="edit">
-        <p>EDIT MODE NOT IMPLEMENTED.</p>
+        <hgroup>
+            <h1 class="panel_context">Edit Volume</h1>
+            <h2 class="panel_title with_context" ng-bind-html="volume.name | format:true"></h2>
+        </hgroup>
+
+        <form name="overviewVolumeForm" class="row">
+            <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell">
+                <div class="field">
+                    <label for="overviewVolumeForm_name">Title</label>
+                    <input type="text" id="overviewVolumeForm_name" ng-model="volumeForm.name">
+                </div>
+
+                <div class="field">
+                    <label for="overviewVolumeForm_name">Description</label>
+                    <textarea id="overviewVolumeForm_body" ng-model="volumeForm.body"></textarea>
+                </div>
+
+
+                <button type="submit" class="button second" ng-click="formSave()">Save</button>
+                <button type="submit" class="button first" ng-click="formReset()">Reset</button>
+            </div>
+        </form>
     </panel-mode>
 </panel>

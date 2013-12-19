@@ -44,13 +44,33 @@ define(['app/config/module'], function (module) {
 				//
 
 				$scope.activateMode = function (mode) {
+					var func;
+
 					for (var i = 0; i < $scope.modes.length; i++) {
-						$scope.modes[i].active = $scope.modes[i] == mode;
+						if ($scope.modes[i] == mode) {
+							func = 'onMode' + $scope.modes[i].name.charAt(0).toUpperCase() + $scope.modes[i].name.slice(1);
+
+							if ($scope.hasOwnProperty(func))
+								$scope[func]();
+
+							$scope.modes[i].active = true;
+						} else {
+							if($scope.modes[i] == false)
+								continue;
+
+							func = 'offMode' + $scope.modes[i].name.charAt(0).toUpperCase() + $scope.modes[i].name.slice(1);
+
+							if($scope.hasOwnProperty(func))
+								$scope[func]();
+
+							$scope.modes[i].active = false;
+						}
 					}
-				};
+				}
+				;
 
 				$scope.updateModes = function () {
-					if($scope.modes.length == 1 && !$scope.modes[0].active)
+					if ($scope.modes.length == 1 && !$scope.modes[0].active)
 						$scope.modes[0].active = true;
 				};
 
@@ -62,7 +82,7 @@ define(['app/config/module'], function (module) {
 					var classes = {};
 
 					classes['panel_mode_link'] = true;
-					classes['panel_mode_'+mode.name] = true;
+					classes['panel_mode_' + mode.name] = true;
 					classes['active'] = mode.active;
 
 					return classes;
@@ -84,7 +104,7 @@ define(['app/config/module'], function (module) {
 						$element.find('[panel-body]').append($clone);
 					});
 
-					if(angular.isFunction($scope.bootPanel))
+					if (angular.isFunction($scope.bootPanel))
 						$scope.bootPanel();
 
 					panelService.add($scope);
@@ -103,5 +123,7 @@ define(['app/config/module'], function (module) {
 			priority: 100,
 			compile: compile
 		};
-	}]);
+	}
+	])
+	;
 });

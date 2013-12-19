@@ -5,29 +5,30 @@ define(['app/config/module'], function (module) {
 		return function (id, url, paramDefaults, hotParamsArray, actions) {
 			var resource = {};
 
-			resource.cache = $cacheFactory(id + 'Cache');
-			resource.resource = $resource(url, paramDefaults, actions);
-
-			// TODO: implement queue so that objects are updated before the next is get
-			// var queue = [];
+			resource.$cache = $cacheFactory(id + 'Cache');
+			resource.$resource = $resource(url, paramDefaults, actions);
 
 			//
 
 			var updateCacheObject = function (key, data) {
-				var obj = resource.cache.get(key);
+				var obj = resource.$cache.get(key);
 
 				if (obj)
-					return resource.cache.put(key, angular.extend(obj, data));
+					return resource.$cache.put(key, angular.extend(obj, data));
 				else
-					return resource.cache.put(key, data);
+					return resource.$cache.put(key, data);
 			};
 
 			//
 
+			resource.shell = function () {
+				return $resource(url, paramDefaults, actions);
+			};
+
 			resource.get = function (key, params) {
 				params = angular.isObject(params) ? params : {};
 
-				var result = resource.cache.get(key);
+				var result = resource.$cache.get(key);
 
 				if (result) {
 					var incomplete = false;
@@ -41,7 +42,7 @@ define(['app/config/module'], function (module) {
 						return result;
 				}
 
-				return resource.resource.get(params, function (data) {
+				return resource.$resource.get(params, function (data) {
 					return updateCacheObject(data.id, data);
 				});
 			};

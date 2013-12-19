@@ -9,6 +9,33 @@ define(['app/config/module'], function (module) {
 				summary: 'all',
 				access: 'all'
 			});
+
+			$scope.$watch('volume', function () {
+				$scope.automatePanel();
+			}, true);
 		};
+
+		$scope.automatePanel = function () {
+			$scope.enabled = angular.isObject($scope.volume);
+		};
+
+		//
+
+		$scope.onModeEdit = function () {
+			$scope.formReset();
+		};
+
+		//
+
+		$scope.formSave = function () {
+
+		};
+
+		$scope.formReset = function () {
+			$scope.volumeForm = {
+				name: $scope.volume.name,
+				body: $scope.volume.body
+			};
+		}
 	}]);
 });

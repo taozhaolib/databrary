@@ -1,8 +1,10 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.controller('SearchView', ['$scope', function ($scope) {
-
+	module.controller('SearchView', ['$scope',
+//		'volumes',
+		function ($scope, volumes) {
+		$scope.volumes = volumes;
 
 		//
 

@@ -34,6 +34,15 @@ define(['app/config/module'], function (module) {
 		var SearchView = {
 			controller: 'SearchView',
 			templateUrl: 'searchView.html',
+//			resolve: {
+//				volumes: ['$route', 'Volume', function ($route, Volume) {
+//					return Volume.query({
+//						access: 'all',
+//						top: 'all',
+//						summary: 'all'
+//					});
+//				}]
+//			},
 			reloadOnSearch: false
 		};
 
