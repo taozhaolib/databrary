@@ -63,8 +63,8 @@ object JsonArray {
   /** Stupidly duplicates the existing Writes[Seq[J : Writes]]. */
   def apply[J](l : Seq[J])(implicit w : Writes[J]) : JsValue =
     JsArray(l.map(w.writes))
-  def map[A,J](f : A => J)(l : Seq[A])(implicit w : Writes[J]) : JsValue =
-    JsArray(l.map(f.andThen(w.writes)))
+  def map[A,J](f : A => J)(l : Iterable[A])(implicit w : Writes[J]) : JsValue =
+    JsArray(l.map(f.andThen(w.writes)).toSeq)
 }
 
 object JsonOptions {

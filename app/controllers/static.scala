@@ -17,7 +17,7 @@ package object Static extends SiteController {
   }
 
   def page(page : String) = SiteAction { implicit request =>
-    views.html.static.mapPages.get(page).fold[SimpleResult](NotFound)(page =>
+    views.html.static.pages.get(page).fold[SimpleResult](NotFound)(page =>
       Ok(views.html.widget.template.static(page.title)(page.template.render)))
   }
 
@@ -35,7 +35,7 @@ package object Static extends SiteController {
     }
 
     def page(page : String) = Action { implicit request =>
-      views.html.static.mapPages.get(page).fold[SimpleResult](NotFound)(page =>
+      views.html.static.pages.get(page).fold[SimpleResult](NotFound)(page =>
         Ok(page.template.render))
     }
   }
