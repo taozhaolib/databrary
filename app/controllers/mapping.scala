@@ -4,6 +4,10 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.data.validation._
 
+object Field {
+  def enum(enum : Enumeration, maxId : Option[Int] = None) = number(min=0, max=maxId.getOrElse(enum.maxId-1)).transform[enum.Value](enum(_), _.id)
+}
+
 object EmptyMapping extends Mapping[Unit] {
   val key = ""
   val mappings = Nil
@@ -49,4 +53,28 @@ final case class SomeMapping[T](wrapped : Mapping[T]) extends MaybeMapping[T] {
 
 object MaybeMapping {
   def apply[T](m : Option[Mapping[T]]) : MaybeMapping[T] = m.fold[MaybeMapping[T]](NoMapping[T])(SomeMapping[T](_))
+}
+
+
+/** Identical to OptionalMapping except that empty fields are not treated as missing. */
+final case class OptionMapping[T](wrapped : Mapping[T], val constraints: Seq[Constraint[Option[T]]] = Nil) extends Mapping[Option[T]] {
+  val key = wrapped.key
+  val mappings = wrapped.mappings
+  override val format = wrapped.format
+  def bind(data: Map[String, String]): Either[Seq[FormError], Option[T]] = {
+    if (data.contains(key) || data.keys.exists(p => p.startsWith(key) && ".[".contains(p(key.length))))
+      wrapped.bind(data).right.map(Some(_))
+    else
+      Right(None)
+  }
+  def unbind(value : Option[T]) = {
+    val (m, e) = value.fold[(Map[String,String],Seq[FormError])](
+      Map.empty -> Nil)(
+      wrapped.unbind(_))
+    (m, e ++ collectErrors(value))
+  }
+  def withPrefix(prefix : String) : Mapping[Option[T]] = 
+    copy(wrapped = wrapped.withPrefix(prefix))
+  def verifying(addConstraints : Constraint[Option[T]]*) : Mapping[Option[T]] =
+    copy(constraints = constraints ++ addConstraints)
 }
