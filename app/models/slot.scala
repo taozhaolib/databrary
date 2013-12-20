@@ -46,14 +46,14 @@ trait AbstractSlot extends InVolume {
   /** The list of tags on the current slot along with the current user's applications. */
   final def tags = TagWeight.getSlotAll(this)
 
-  lazy val jsonFields = JsonObject.flatten(
-    Some('container -> container.json),
-    if (segment.isFull) None else Some('segment -> segment)
+  def json : JsonObject = JsonObject(
+    'container -> container.json,
+    'segment -> segment
     // Maybe(getConsent).opt.map('consent -> _)
   )
 
   def json(options : JsonOptions.Options) : Future[JsObject] =
-    JsonOptions(jsonFields, options,
+    JsonOptions(json.obj, options,
       "assets" -> (opt => SlotAsset.getSlotAll(this).map(JsonArray.map(_.inContext.json - "container"))),
       "records" -> (opt => Record.getSlotAll(this).map(JsonRecord.map { r =>
         r.json ++ JsonObject.flatten(r.age(this).map('age -> _))

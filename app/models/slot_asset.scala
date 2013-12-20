@@ -67,10 +67,10 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offse
       Action("remove", controllers.Asset.routes.html.remove(volumeId, assetId), Permission.CONTRIBUTE)
     ) else Nil)
 
-  lazy val json = JsonObject(
+  lazy val json : JsonObject = JsonObject(
     'asset -> (asset.json ++
       JsonObject.flatten(if (asset_segment.isFull) None else Some('segment -> asset_segment)))
-  ) ++ slot.jsonFields
+  ) ++ slot.json
 }
 
 final class SlotTimeseries private[models] (override val asset : Timeseries, asset_segment : Range[Offset], slot : AbstractSlot, excerpt_segment : Option[Range[Offset]]) extends SlotAsset(asset, asset_segment, slot, excerpt_segment) with TimeseriesData {

@@ -37,7 +37,7 @@ private[controllers] sealed class LoginController extends SiteController {
     Audit.actionFor(Audit.Action.open, a.id, dbrary.Inet(request.remoteAddress))
     SessionToken.create(a).map { token =>
       (if (request.isApi) Ok(json(new SiteRequest.Auth(request, token)))
-      else Redirect(controllers.Party.routes.html.view(a.id)))
+      else Redirect(routes.PartyHtml.view(a.id)))
         .withSession("session" -> token.id)
     }
   }

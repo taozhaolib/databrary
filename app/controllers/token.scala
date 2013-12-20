@@ -15,7 +15,7 @@ object Token extends SiteController {
   type PasswordForm = Form[(String, Option[String])]
   val passwordForm = Form(tuple(
     "token" -> text,
-    "password" -> Party.passwordMapping.verifying(Messages("error.required"), _.isDefined)
+    "password" -> PartyHtml.passwordMapping.verifying(Messages("error.required"), _.isDefined)
   ))
 
   def token(token : String) = SiteAction.async { implicit request =>

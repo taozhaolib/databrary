@@ -28,62 +28,60 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     case _ => false
   })
   private def citationFill(cite : VolumeCitation) = (Some(cite.head), cite.url, cite.body)
-  protected def citationSet(volume : Volume, cites : Seq[CitationMapping])(implicit site : Site) =
+  private def citationSet(volume : Volume, cites : Seq[CitationMapping])(implicit site : Site) =
     if (cites.nonEmpty) {
       volume.setCitations(cites.flatMap(c =>
         c._1.map(h => VolumeCitation(volume, h, c._2, c._3))
       ))
     } else macros.Async(false)
 
-  type VolumeFields = (String, Option[String], Seq[CitationMapping])
-  type VolumeForm = Form[VolumeFields]
+  type VolumeMapping = (Option[String], Option[String], Seq[CitationMapping])
+  type VolumeForm = Form[VolumeMapping]
   protected val editForm = Form(tuple(
-    "name" -> nonEmptyText,
-    "body" -> optional(text),
+    "name" -> OptionMapping(nonEmptyText),
+    "body" -> OptionMapping(text),
     "citation" -> seq(citationMapping)
   ))
   protected def editFormFill(v : Volume)(implicit site : Site) =
     v.citations.map { cites =>
-      editForm.fill((v.name, v.body, cites.map(citationFill(_))))
+      editForm.fill((Some(v.name), Some(v.body.getOrElse("")), cites.map(citationFill(_))))
     }
 
-  private[this] def result(volume : Volume)(implicit request : SiteRequest[_]) =
-    if (request.isApi) Ok(volume.json)
-    else Redirect(volume.pageURL)
-
-
   def update(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
-    editFormFill(request.obj).flatMap {
-      _.bindFromRequest.fold(
-        form => ABadForm[VolumeFields](views.html.volume.edit(Right(request.obj), _), form),
-        { case (name, body, cites) =>
-          request.obj.change(name = name, body = body.flatMap(Maybe(_).opt)).flatMap { _ =>
-            citationSet(request.obj, cites).map { _ =>
-              result(request.obj)
-            }
-          }
+    val vol = request.obj
+    def bad(form : VolumeForm) =
+      ABadForm[VolumeMapping](views.html.volume.edit(Right(vol), _), form)
+    editFormFill(vol).flatMap {
+      _.bindFromRequest.fold(bad _, {
+        case (name, body, cites) =>
+          for {
+            _ <- vol.change(name = name.getOrElse(vol.name), body = body.fold(vol.body)(Maybe(_).opt))
+            _ <- citationSet(vol, cites)
+          } yield (result(vol))
         }
       )
     }
   }
 
   def create(owner : models.Party.Id) = ContributeAction(Some(owner)).async { implicit request =>
-    editForm.bindFromRequest.fold(
-      form => ABadForm[VolumeFields](views.html.volume.edit(Left(request.obj), _), form),
-      { case (name, body, cites) =>
+    def bad(form : VolumeForm) =
+      ABadForm[VolumeMapping](views.html.volume.edit(Left(request.obj), _), form)
+    val form = editForm.bindFromRequest
+    form.fold(bad _, {
+      case (None, _, _) => bad(form.withError("name", "error.required"))
+      case (Some(name), body, cites) =>
         for {
-          volume <- models.Volume.create(name, body)
-          _ <- citationSet(volume, cites)
-          _ <- VolumeAccess.set(volume, owner, Permission.ADMIN, Permission.CONTRIBUTE)
-        } yield (result(volume))
-      }
-    )
+          vol <- models.Volume.create(name, body.flatMap(Maybe(_).opt))
+          _ <- citationSet(vol, cites)
+          _ <- VolumeAccess.set(vol, owner, Permission.ADMIN, Permission.CONTRIBUTE)
+        } yield (result(vol))
+    })
   }
 
   protected def ContributeAction(e : Option[models.Party.Id]) =
-    Party.Action(e, Some(Permission.CONTRIBUTE)) ~>
-      new ActionHandler[Party.Request] {
-        protected def handle[A](request : Party.Request[A]) =
+    PartyController.Action(e, Some(Permission.CONTRIBUTE)) ~>
+      new ActionHandler[PartyController.Request] {
+        protected def handle[A](request : PartyController.Request[A]) =
           macros.Async(if (request.obj.access < Permission.CONTRIBUTE) Some(Forbidden) else None)
       }
 
@@ -110,6 +108,7 @@ object VolumeController extends VolumeController {
       Assets.at("/public", "images/draft.png")(request))(
       a => SlotAsset.getFrame(Left(0.25f))(request.withObj(a))))
   }
+
 }
 
 object VolumeHtml extends VolumeController {

@@ -16,7 +16,7 @@ abstract class StructData {
   private val valFields : Iterator[String] = getValFields.iterator
 
   private val fieldMap : mutable.Map[String, StructMember[_]] = mutable.Map.empty[String, StructMember[_]]
-  protected abstract class StructMember[T] private[StructData] (val name : String, _map : Mapping[T]) {
+  protected sealed abstract class StructMember[T] private[StructData] (val name : String, _map : Mapping[T]) {
     fieldMap.put(name, this).ensuring(_.isEmpty, "Duplicate field: " + name)
     private[StructData] final val struct = self
     def value : T
@@ -26,10 +26,22 @@ abstract class StructData {
     final def unbind(key : String) = mapping(key).unbind(value)
     final def field(form : Form[_]) = form(name)
   }
-  protected final class StructField[T] private[StructData] (name : String, _map : Mapping[T]) extends StructMember[T](name, _map) {
+  protected sealed class StructField[T] private[StructData] (name : String, _map : Mapping[T]) extends StructMember[T](name, _map) {
     var value : T = _
     def bind(key : String, data : Map[String,String]) : Option[Seq[FormError]] =
       mapping(key).bind(data).fold(Some(_), v => { value = v ; None })
+    final def withName(name : String) = new StructField[T](name, _map)
+    final def defaulting(init : T) = new StructFieldDefault[T](name, _map, init)
+  }
+  protected sealed class StructFieldDefault[T] private[StructData] (name : String, _map : Mapping[T], init : T) extends StructField[T](name, _map) {
+    value = init
+    override def bind(key : String, data : Map[String,String]) : Option[Seq[FormError]] = {
+      val k = mapping(key).key
+      if (data.contains(k) || data.keys.exists(p => p.startsWith(k + ".") || p.startsWith(k + "[")))
+        super.bind(key, data)
+      else
+        None
+    }
   }
   /*
   protected final class StructNested[T >: StructData <: StructData] private[StructData] (name : String, val struct : T) extends StructMember[T](name, struct.mapping) {
@@ -39,22 +51,8 @@ abstract class StructData {
   }
   */
 
-  protected def Field[T](name : String, mapping : Mapping[T]) = {
-    valFields.next
+  protected def Field[T](mapping : Mapping[T], name : String = valFields.next) =
     new StructField[T](name, mapping)
-  }
-  /*
-  protected def Nested[T <: StructData](name : String, struct : T) = {
-    valFields.next
-    new StructNested[T](name, struct)
-  }
-  */
-  protected def Field[T](mapping : Mapping[T]) =
-    new StructField[T](valFields.next, mapping)
-  /*
-  protected def Nested[T <: StructData](struct : T) =
-    new StructNested[T](valFields.next, struct)
-  */
 
   protected case class StructMapping private[StructData] (key : String = "", constraints : Seq[Constraint[self.type]] = Nil) extends Mapping[self.type] {
     private val fields = fieldMap.values.toSeq
@@ -82,23 +80,4 @@ abstract class StructData {
     def field(f : self.type => StructMember[_]) : Field = f(self).field(this)
   }
   def form = new StructForm(mapping, Map.empty, Nil, None)
-  def form(mapping : StructMapping) = new StructForm(mapping, Map.empty, Nil, None)
 }
-
-/*
-object test {
-  class stuff extends StructData {
-    val y = Field(Forms.number)
-  }
-  class foo extends StructData {
-    val x = Field(Forms.number)
-    val s = Nested(new stuff)
-  }
-  def bar : Option[Int] = {
-    val f = new foo
-    f.x.value = 0
-    f.s.value.y.value = 0
-    f.form.bind(Map("x" -> "3", "s.y" -> "4")).value.map(_.s.value.y.value)
-  }
-}
-*/

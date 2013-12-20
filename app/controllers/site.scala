@@ -132,8 +132,12 @@ class SiteController extends Controller {
   protected def ABadForm[A](view : Form[A] => templates.HtmlFormat.Appendable, form : Form[A])(implicit request : SiteRequest[_]) : Future[SimpleResult] = macros.Async(badForm[A](view, form))
 }
 
-class ObjectController[O] extends SiteController {
+class ObjectController[O <: SiteObject] extends SiteController {
   type Request[A] = RequestObject[O]#Site[A]
+
+  protected def result(o : O)(implicit request : SiteRequest[_]) : SimpleResult =
+    if (request.isApi) Ok(o.json.js)
+    else Redirect(o.pageURL)
 }
 
 object Site extends SiteController {

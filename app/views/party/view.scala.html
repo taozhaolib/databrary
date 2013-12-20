@@ -1,4 +1,4 @@
-@(parents : Seq[Authorize], children : Seq[Authorize], accesses : Seq[VolumeAccess], funded : Seq[VolumeFunding], comments : Seq[Comment])(implicit request : controllers.Party.Request[_])
+@(parents : Seq[Authorize], children : Seq[Authorize], accesses : Seq[VolumeAccess], funded : Seq[VolumeFunding], comments : Seq[Comment])(implicit request : controllers.PartyHtml.Request[_])
 
 @defining(request.obj.party) { party =>
 @defining(both[Seq[VolumeAccess], Seq[Volume]](accesses.span(a => a.access >= Permission.ADMIN), _.map(_.volume))) { case (owned, edited) =>

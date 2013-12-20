@@ -22,24 +22,52 @@ object JsonField {
     new JsonField(f.name, f.value)
 }
 
-object JsonObject {
-  def apply(fields : JsonField*) =
-    new JsObject(fields)
-  def flatten(fields : Option[JsonField]*) =
-    new JsObject(fields.flatten)
+trait JsonValue {
+  def js : JsValue
 }
 
-final class JsonRecord(val id : JsValue, fields : Seq[(String, JsValue)]) extends JsField {
+object JsonValue {
+  implicit val writes : Writes[JsonValue] =
+    Writes[JsonValue](_.js)
+}
+
+class JsonObject(val fields : Seq[(String, JsValue)]) extends JsonValue {
+  def obj : JsObject = JsObject(fields)
+  def js : JsValue = obj
+  def +(field : JsonField) =
+    new JsonObject(fields :+ field)
+  def ++(list : Traversable[JsonField]) =
+    new JsonObject(fields ++ list)
+  def ++(obj : JsObject) =
+    new JsonObject(fields ++ obj.fields)
+  def ++(obj : JsonObject) =
+    new JsonObject(fields ++ obj.fields)
+  def -(field : String) =
+    new JsonObject(fields.filterNot(_._1.equals(field)))
+}
+
+object JsonObject {
+  def apply(fields : JsonField*) =
+    new JsonObject(fields)
+  def flatten(fields : Option[JsonField]*) =
+    new JsonObject(fields.flatten)
+  implicit val writes : OWrites[JsonObject] =
+    OWrites[JsonObject](_.obj)
+}
+
+final class JsonRecord(val id : JsValue, fields : Seq[(String, JsValue)]) extends JsonObject(("id" -> id) +: fields) with JsonValue with JsField {
   def name = id.toString
   def value = JsObject(fields)
-  def obj : JsValue = if (fields.isEmpty) id else JsObject(("id" -> id) +: fields)
-  def +(field : JsonField) =
+  override def js = if (fields.isEmpty) id else super.js
+  override def +(field : JsonField) =
     new JsonRecord(id, fields :+ field)
-  def ++(list : Traversable[JsonField]) =
+  override def ++(list : Traversable[JsonField]) =
     new JsonRecord(id, fields ++ list)
-  def ++(obj : JsObject) =
+  override def ++(obj : JsObject) =
     new JsonRecord(id, fields ++ obj.fields)
-  def -(field : String) =
+  override def ++(obj : JsonObject) =
+    new JsonRecord(id, fields ++ obj.fields)
+  override def -(field : String) =
     new JsonRecord(id, fields.filterNot(_._1.equals(field)))
 }
 
@@ -48,8 +76,6 @@ object JsonRecord {
     new JsonRecord(Json.toJson(id), fields)
   def flatten[I : Writes](id : I, fields : Option[JsonField]*) =
     new JsonRecord(Json.toJson(id), fields.flatten)
-  implicit val writes : Writes[JsonRecord] =
-    Writes[JsonRecord](_.obj)
   implicit def writable(implicit codec : play.api.mvc.Codec) : Writeable[JsonRecord] =
     Writeable.writeableOf_JsValue(codec).map(_.obj)
   def seq(s : Seq[JsonRecord]) : JsValue =

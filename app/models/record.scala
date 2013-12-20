@@ -135,7 +135,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
       "slots" -> (opt => slots.map(JsonArray.map(s =>
-        s.jsonFields ++ JsonObject.flatten(age(s).map('age -> _))
+        s.json ++ JsonObject.flatten(age(s).map('age -> _))
       )))
     )
 }

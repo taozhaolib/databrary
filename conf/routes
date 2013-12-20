@@ -23,17 +23,17 @@ POST        /token/password                                                     
 GET         /token/:token                                                                              controllers.Token.token(token : String)
 
 # parties
-GET         /party/$pID<-?[0-9]+>                                                                      controllers.Party.html.view(pID : models.Party.Id)
-GET         /party/$pID<[0-9]+>/edit                                                                   controllers.Party.html.edit(pID : models.Party.Id)
-POST        /party/$pID<[0-9]+>/edit                                                                   controllers.Party.html.change(pID : models.Party.Id)
+GET     /party/$pID<-?[0-9]+>                                                                     controllers.PartyHtml.view(pID : models.Party.Id)
+GET     /party/$pID<[0-9]+>/edit                                                                  controllers.PartyHtml.edit(pID : models.Party.Id)
+POST    /party/$pID<[0-9]+>/edit                                                                  controllers.PartyHtml.update(pID : models.Party.Id)
 POST        /party/$pID<[0-9]+>/token                                                                  controllers.Token.password(pID : models.Account.Id)
-GET         /party/$pID<[0-9]+>/authorize                                                              controllers.Party.html.admin(pID : models.Party.Id)
-GET         /party/$pID<[0-9]+>/authorize/search/child                                                 controllers.Party.html.authorizeSearch(pID : models.Party.Id, which : Boolean = false)
-GET         /party/$pID<[0-9]+>/authorize/search/parent                                                controllers.Party.html.authorizeSearch(pID : models.Party.Id, which : Boolean = true)
-POST        /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>                                             controllers.Party.html.authorizeChange(pID : models.Party.Id, child : models.Party.Id)
-POST        /party/$pID<[0-9]+>/authorize/$parent<-?[0-9]+>/apply                                      controllers.Party.html.authorizeApply(pID : models.Party.Id, parent : models.Party.Id)
+GET     /party/$pID<[0-9]+>/authorize                                                             controllers.PartyHtml.admin(pID : models.Party.Id)
+GET     /party/$pID<[0-9]+>/authorize/search/child                                                controllers.PartyHtml.authorizeSearch(pID : models.Party.Id, which : Boolean = false)
+GET     /party/$pID<[0-9]+>/authorize/search/parent                                               controllers.PartyHtml.authorizeSearch(pID : models.Party.Id, which : Boolean = true)
+POST    /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>                                            controllers.PartyHtml.authorizeChange(pID : models.Party.Id, child : models.Party.Id)
+POST    /party/$pID<[0-9]+>/authorize/$parent<-?[0-9]+>/apply                                     controllers.PartyHtml.authorizeApply(pID : models.Party.Id, parent : models.Party.Id)
 # TODO: should be POST but currently used as link:
-GET         /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>/remove                                      controllers.Party.html.authorizeDelete(pID : models.Party.Id, child : models.Party.Id)
+GET     /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>/remove                                     controllers.PartyHtml.authorizeDelete(pID : models.Party.Id, child : models.Party.Id)
 
 # volumes
 GET     /search                                                                                   controllers.VolumeHtml.search
@@ -107,7 +107,8 @@ POST        /api/user/logout                                                    
 POST        /api/user/superuser/on                                                                     controllers.LoginApi.superuserOn
 POST        /api/user/superuser/off                                                                    controllers.LoginApi.superuserOff
 
-GET         /api/party/$partyId<-?[0-9]+>                                                              controllers.Party.api.get(partyId : models.Party.Id)
+GET     /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.get(partyId : models.Party.Id)
+POST    /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.update(partyId : models.Party.Id)
 
 GET     /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.get(volumeId : models.Volume.Id)
 POST    /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.update(volumeId : models.Volume.Id)
