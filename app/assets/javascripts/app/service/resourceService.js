@@ -118,6 +118,16 @@ define(['app/config/module'], function (module) {
 			this.urlParams = {};
 		}
 
+		//
+
+		var DEFAULT_CACHE = {
+			key: 'id',
+			number: Number.MAX_VALUE,
+			watch: []
+		};
+
+		//
+
 		Route.prototype = {
 			setUrlParams: function (config, params, actionUrl) {
 				var self = this,
@@ -173,7 +183,7 @@ define(['app/config/module'], function (module) {
 		};
 
 
-		function resourceFactory(url, paramDefaults, actions) {
+		function resourceFactory(url, paramDefaults, actions, cacheConfig) {
 			var route = new Route(url);
 
 			actions = extend({}, DEFAULT_ACTIONS, actions);
@@ -202,6 +212,14 @@ define(['app/config/module'], function (module) {
 			function Resource(value) {
 				copy(value || {}, this);
 			}
+
+			//
+
+			cacheConfig = extend({}, DEFAULT_CACHE, cacheConfig);
+
+			var cache = $cacheFactory(url.replaceAll(/(\/|api|:[\w]+\*?)/g, '')+'Cache', cacheConfig.number);
+
+			//
 
 			forEach(actions, function (action, name) {
 				var hasBody = /^(POST|PUT|PATCH)$/i.test(action.method);
@@ -246,6 +264,24 @@ define(['app/config/module'], function (module) {
 								"Expected up to 4 arguments [params, data, success, error], got {0} arguments",
 								arguments.length);
 					}
+
+					//
+
+					var cacheObject = cache.get(params[cacheConfig.key]);
+
+					if (cacheObject) {
+						var incomplete = false;
+
+						angular.forEach(params, function (value, key) {
+							if (cacheConfig.watch.indexOf(key) > -1 && !cacheObject.hasOwnProperty(key))
+								incomplete = true;
+						});
+
+						if (!incomplete)
+							return cacheObject;
+					}
+
+					//
 
 					var isInstanceCall = this instanceof Resource;
 					var value = isInstanceCall ? data : (action.isArray ? [] : new Resource(data));
