@@ -72,7 +72,7 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
   def ===(a : SiteParty) = party === a.party
   def ===(a : Party) = party === a
 
-  def getPermission = delegated
+  def getPermission = Seq(delegated, Seq(site.access, Permission.DOWNLOAD).min).max
 
   def pageName = party.pageName
   def pageParent = party.pageParent
@@ -85,10 +85,11 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
       !(party.id === Party.ROOT) && checkPermission(Permission.CONTRIBUTE) && access >= Permission.CONTRIBUTE)
   )
 
-  def json = party.json
+  def json = party.json + 
+    ('permission -> getPermission)
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
-    JsonOptions(party.json, options,
+    JsonOptions(json, options,
       "parents" -> (opt => party.authorizeParents(opt.contains("all"))
         .map(JsonRecord.map(a => JsonRecord(a.parentId,
           'party -> a.parent.json,

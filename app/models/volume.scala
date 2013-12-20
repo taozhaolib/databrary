@@ -144,7 +144,8 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     JsonRecord.flatten(id,
       Some('name -> name),
       body.map('body -> _),
-      Some('creation -> creation)
+      Some('creation -> creation),
+      Some('permission -> getPermission)
     )
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
