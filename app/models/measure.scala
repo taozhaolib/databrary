@@ -176,8 +176,7 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
       val metric = Metric.row.parse.get(m)
       val d = dl(metric.dataType.id)
       make(metric, metric.sqlType.get(d))
-    }),
-    Nil
+    })
   )
   
   /** Retrieve the specific measure of the specified metric in the given record.

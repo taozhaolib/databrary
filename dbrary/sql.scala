@@ -5,34 +5,37 @@ import scala.util.control.Exception.catching
 import com.github.mauricio.async.db
 import macros._
 
-/** Arguments that may be passed to a query. */
-trait SQLArgs {
-  def args : Seq[Any]
-  def ++(other : SQLArgs) : SQLArgseq = new SQLArgseq(args ++ other.args)
+class SQLArg[A](value : A)(implicit val sqlType : SQLType[A]) {
+  def put : Any = sqlType.put(value)
+  def placeholder = "?::" + sqlType.name
+}
+
+object SQLArg {
+  def apply[A](value : A)(implicit sqlType : SQLType[A]) = new SQLArg[A](value)(sqlType)
+}
+
+/** A list of arguments that may be passed to a query. */
+class SQLArgs(val args : Seq[SQLArg[_]]) extends Iterable[SQLArg[_]] {
+  def iterator = args.iterator
+  def ++(other : Iterable[SQLArg[_]]) : SQLArgs = new SQLArgs(args ++ other)
+  def :+(other : SQLArg[_]) : SQLArgs = new SQLArgs(args :+ other)
+  def +:(other : SQLArg[_]) : SQLArgs = new SQLArgs(other +: args)
+  def :+[A : SQLType](other : A) : SQLArgs = new SQLArgs(args :+ SQLArg(other))
+  def +:[A : SQLType](other : A) : SQLArgs = new SQLArgs(SQLArg(other) +: args)
+  def *(n : Int) : SQLArgs = new SQLArgs(0.until(n).flatMap(_ => args))
 }
 
 /** A special case of SQLArgs for running simple queries with no arguments. */
-object SQLNoArgs extends SQLArgs {
-  val args = Nil
-}
-
-/** A list of marshalled arguments for passing to a query. */
-final class SQLArgseq(val args : /*=>*/ Seq[Any]) extends SQLArgs {
-  import SQLType.put
-
-  def :+[A : SQLType](other : A) : SQLArgseq = new SQLArgseq(args :+ put[A](other))
-  def +:[A : SQLType](other : A) : SQLArgseq = new SQLArgseq(put[A](other) +: args)
-  def *(n : Int) : SQLArgseq = new SQLArgseq(0.until(n).flatMap(_ => args))
-}
+object SQLNoArgs extends SQLArgs(Nil)
 
 /** Generic trait for anything which may accept SQLType args to produce a result. */
-protected sealed abstract trait SQLArgsView[R] extends RepeatedView[SQLType, Any, R] {
-  protected def arg[A : SQLType](a : A) = SQLType.put[A](a)
+protected sealed abstract trait SQLArgsView[R] extends RepeatedView[SQLType, SQLArg[_], R] {
+  protected def arg[A : SQLType](a : A) = SQLArg(a)
   final def apply(a : SQLArgs) : R = result(a.args : _*)
 }
 
-object SQLArgs extends SQLArgsView[SQLArgseq] {
-  protected def result(args : Any*) : SQLArgseq = new SQLArgseq(args)
+object SQLArgs extends SQLArgsView[SQLArgs] {
+  protected def result(args : SQLArg[_]*) : SQLArgs = new SQLArgs(args)
 }
 
 /** Exceptions that may occur during parsing query results, usually indicating type or arity mismatches. */
@@ -192,17 +195,17 @@ final class SQLCols7[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 
 /** A generic class representing a query which may (or may not) be applied to arguments, and produces a particular result type.
   * @param query SQL statement */
 protected sealed abstract class SQLBuilder[A] protected (val query : String)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLArgsView[A] {
-  protected def send(args : Seq[Any]) : Future[db.QueryResult] = {
+  protected def send(args : Seq[SQLArg[_]]) : Future[db.QueryResult] = {
     if (args.isEmpty)
       dbconn.sendQuery(query)
     else
-      dbconn.sendPreparedStatement(query, args)
+      dbconn.sendPreparedStatement(query, args.map(_.put))
   }
 }
 
 /** A simple query which may be applied to arguments, producing a SQLResult. */
 final class SQL private (override val query : String)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLResult](query)(dbconn, context) {
-  final protected def result(args : Any*) : SQLResult = new SQLResult(send(args))
+  final protected def result(args : SQLArg[_]*) : SQLResult = new SQLResult(send(args))
   final protected def as[A](parse : SQLRow[A]) : SQLToRows[A] = new SQLToRows(query, parse)(dbconn, context)
 }
 object SQL {
@@ -212,6 +215,6 @@ object SQL {
 
 /** A query which may be applied to arguments, producing rows to be parsed to a particular type.
   * @param parse the parser to use on result rows */
-final case class SQLToRows[A](override val query : String, parse : SQLRow[A], preargs : Seq[Any] = Nil)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLRows[A]](query)(dbconn, context) {
-  final protected def result(args : Any*) : SQLRows[A] = new SQLRows(send(preargs ++ args), parse)
+final case class SQLToRows[A](override val query : String, parse : SQLRow[A], preargs : Seq[SQLArg[_]] = Nil)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLRows[A]](query)(dbconn, context) {
+  final protected def result(args : SQLArg[_]*) : SQLRows[A] = new SQLRows(send(preargs ++ args), parse)
 }
