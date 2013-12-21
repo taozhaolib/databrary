@@ -123,6 +123,9 @@ class SiteController extends Controller {
   protected def badForm[A](view : Form[A] => templates.HtmlFormat.Appendable, form : Form[A])(implicit request : SiteRequest[_]) : SimpleResult =
     if (request.isApi) BadRequest(json.Json.toJson(form.errors))
     else BadRequest(view(form))
+  protected def AbadForm[A](view : Form[A] => Future[templates.HtmlFormat.Appendable], form : Form[A])(implicit request : SiteRequest[_]) : Future[SimpleResult] =
+    if (request.isApi) ABadRequest(json.Json.toJson(form.errors))
+    else view(form).map(BadRequest(_))
 
   protected def AOk[C : Writeable](c : C) : Future[SimpleResult] = macros.Async(Ok[C](c))
   protected def ABadRequest[C : Writeable](c : C) : Future[SimpleResult] = macros.Async(BadRequest[C](c))

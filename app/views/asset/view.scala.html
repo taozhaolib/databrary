@@ -3,5 +3,5 @@
 @widget.template.crud("Asset: " + asset.asset.name) {
     @widget.panel.asset(asset)
     @widget.panel.materials(Seq(asset))
-    @widget.panel.comments(Some(asset.slot), Some((controllers.Slot.routes.html.comment(asset.volumeId, asset.slotId), controllers.Slot.commentForm)), Async.wait(asset.slot.comments))
+    @widget.panel.comments(Some(asset.slot), Some((routes.SlotHtml.comment(asset.slotId), SlotHtml.commentForm)), Async.wait(asset.slot.comments))
 }

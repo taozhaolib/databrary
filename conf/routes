@@ -50,16 +50,16 @@ POST    /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                              
 GET     /volume/$vID<[0-9]+>/thumb                                                                controllers.VolumeController.thumb(vID : models.Volume.Id)
 
 # slots
-POST    /volume/$vID<[0-9]+>/slot/container                                                       controllers.Slot.html.addContainer(vID : models.Volume.Id)
-GET     /volume/$vID<[0-9]+>/slot/container                                                       controllers.Slot.html.createContainer(vID : models.Volume.Id)
+POST    /volume/$vID<[0-9]+>/slot/container                                                       controllers.SlotHtml.addContainer(vID : models.Volume.Id)
+GET     /volume/$vID<[0-9]+>/slot/container                                                       controllers.SlotHtml.createContainer(vID : models.Volume.Id)
 
-GET     /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.Slot.html.create(vID : models.Volume.Id, cID : models.Slot.Id)
-POST    /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.Slot.html.add(vID : models.Volume.Id, cID : models.Slot.Id)
+GET     /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.SlotHtml.create(vID : models.Volume.Id, cID : models.Slot.Id)
+POST    /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.SlotHtml.add(vID : models.Volume.Id, cID : models.Slot.Id)
 
-GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>                                                    controllers.Slot.html.view(vID : models.Volume.Id, sID : models.Slot.Id)
-GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/edit                                               controllers.Slot.html.edit(vID : models.Volume.Id, sID : models.Slot.Id)
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/edit                                               controllers.Slot.html.change(vID : models.Volume.Id, sID : models.Slot.Id)
-GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/thumb                                              controllers.Slot.html.thumb(vID : models.Volume.Id, sID : models.Slot.Id)
+GET     /slot/$id<[0-9]+>                                                                         controllers.SlotHtml.view(id : models.Slot.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
+GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/edit                                               controllers.SlotHtml.edit(vID : models.Volume.Id, sID : models.Slot.Id)
+POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/edit                                               controllers.SlotHtml.change(vID : models.Volume.Id, sID : models.Slot.Id)
+GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/thumb                                              controllers.SlotHtml.thumb(vID : models.Volume.Id, sID : models.Slot.Id)
 
 # assets
 GET     /volume/$vID<[0-9]+>/asset/create                                                         controllers.Asset.html.createTop(vID : models.Volume.Id)
@@ -78,9 +78,9 @@ GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb         
 GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>        controllers.SlotAsset.frame(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, offset : dbrary.Offset)
 
 # annotations
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/comment/create                                     controllers.Slot.html.comment(vID : models.Volume.Id, sID : models.Slot.Id, parent : Option[models.Comment.Id] ?= None)
+POST    /slot/$sID<[0-9]+>/comment/create                                                         controllers.SlotHtml.comment(sID : models.Slot.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None, parent : Option[models.Comment.Id] ?= None)
 
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/tag                                                controllers.Slot.html.tag(vID : models.Volume.Id, sID : models.Slot.Id)
+POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/tag                                                controllers.SlotHtml.tag(vID : models.Volume.Id, sID : models.Slot.Id)
 
 # records
 POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                         controllers.Record.html.slotRemove(vID : models.Volume.Id, sID : models.Slot.Id, rID : models.Record.Id, editRedirect : Boolean = false)
@@ -110,12 +110,15 @@ GET     /api/volume/$volumeId<[0-9]+>                                           
 POST    /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.update(volumeId : models.Volume.Id)
 POST    /api/volume                                                                               controllers.VolumeApi.create(owner : models.Party.Id)
 
-GET     /api/slot/$containerId<[0-9]+>                                                            controllers.Slot.api.get(containerId : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
+GET     /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.get(containerId : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
 
 GET     /api/record/$recordId<[0-9]+>                                                             controllers.Record.api.get(recordId : models.Record.Id)
 GET     /api/record                                                                               controllers.Record.api.query(volume : models.Volume.Id)
 
 GET     /api/asset/$assetId<[0-9]+>                                                               controllers.Asset.api.get(assetId : models.Asset.Id)
+
+POST    /api/comment                                                                              controllers.SlotApi.comment(container : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None, parent : Option[models.Comment.Id] ?= None)
+#POST    /api/tag/:name                                                                            controllers.SlotApi.tag(name : String, container : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
 
 # static resources
 GET     /public/*file                                                                             controllers.Assets.at(path="/public", file)

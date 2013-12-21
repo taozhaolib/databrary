@@ -46,7 +46,7 @@ object display {
     }
     "%.1f %s".format(n, u)
   }
-  def age(record : models.Record, slot : models.Slot) : Option[String] =
+  def age(record : models.Record, slot : models.AbstractSlot) : Option[String] =
     slot.container.date.flatMap(d => record.age(d)).map(age _)
 
   def agerange(a : dbrary.Range[Age]) : String = range(age)(a)
@@ -60,7 +60,7 @@ object display {
     if (date.isInstanceOf[Date]) dateFmtYMD.print(date)
     else date.toString
 
-  def date(s : Slot) =
+  def date(s : AbstractSlot) =
     s.getDate.map(fuzzyDate _)
 
   def formatTitle(text: String = "") =

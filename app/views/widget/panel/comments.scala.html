@@ -1,4 +1,4 @@
-@(context : Option[AbstractSlot], post : Option[(Call, controllers.Slot.CommentForm)], comments : Seq[Comment])(implicit request : SiteRequest[_])
+@(context : Option[AbstractSlot], post : Option[(Call, SlotHtml.CommentForm)], comments : Seq[Comment])(implicit request : SiteRequest[_])
 
 @import helper.FieldConstructor
     @implicitField = @{
@@ -59,12 +59,12 @@
                             } else {
                                 <div class="comment_info comment_location col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-5 col-cell">
                                     <div class="inner">
-                                        <a href="@controllers.Slot.routes.html.view(c.slot.volumeId, c.slot.id)">@c.slot.pageName</a> <span class="sep">|</span> @display(c.time)
+                                        @display(c.slot) <span class="sep">|</span> @display(c.time)
                                     </div>
                                 </div>
 
                                 <div class="comment_location_thumb col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-                                @widget.figure.thumbSlot(c.slot, scalar = "tube", link = controllers.Slot.routes.html.view(c.slot.volumeId, c.slot.id).toString)
+                                @widget.figure.thumbSlot(c.slot, scalar = "tube", link = c.slot.pageURL.url)
                                 </div>
                             }
                     }else{

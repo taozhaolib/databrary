@@ -133,19 +133,19 @@ package object Record extends ObjectController[Record] {
       )
     }
 
-    def slotRemove(v : models.Volume.Id, s : models.Slot.Id, r : models.Record.Id, editRedirect : Boolean = false) = Slot.html.Action(v, s, Permission.EDIT).async { implicit request =>
+    def slotRemove(v : models.Volume.Id, s : models.Slot.Id, r : models.Record.Id, editRedirect : Boolean = false) = SlotHtml.ActionId(v, s, Permission.EDIT).async { implicit request =>
       request.obj.removeRecord(r).map { _ =>
         if (editRedirect)
-          Redirect(controllers.Slot.routes.html.edit(v, s))
+          Redirect(controllers.routes.SlotHtml.edit(v, s))
         else
           Redirect(request.obj.pageURL)
       }
     }
 
-    def slotAdd(v : models.Volume.Id, s : models.Slot.Id, catID : models.RecordCategory.Id, editRedirect : Boolean = false) = Slot.html.Action(v, s, Permission.EDIT).async { implicit request =>
+    def slotAdd(v : models.Volume.Id, s : models.Slot.Id, catID : models.RecordCategory.Id, editRedirect : Boolean = false) = SlotHtml.ActionId(v, s, Permission.EDIT).async { implicit request =>
       val form = selectForm.bindFromRequest
       form.fold(
-        form => Slot.html.viewEdit(Slot.BadRequest, request.obj)(recordForm = form),
+        form => SlotHtml.viewEdit(SlotHtml.BadRequest, request.obj)(recordForm = form),
         _.fold {
           val cat = RecordCategory.get(catID)
           for {
@@ -155,10 +155,10 @@ package object Record extends ObjectController[Record] {
         } (models.Record.get(_).flatMap(_
           .filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId === v)
           .fold(
-            Slot.html.viewEdit(Slot.BadRequest, request.obj)(recordForm = form.withError("record", "record.bad"))
+            SlotHtml.viewEdit(SlotHtml.BadRequest, request.obj)(recordForm = form.withError("record", "record.bad"))
           ) { r => r.addSlot(request.obj).map { _ =>
             if (editRedirect)
-              Redirect(controllers.Slot.routes.html.edit(v, s))
+              Redirect(controllers.routes.SlotHtml.edit(v, s))
             else
               Redirect(request.obj.pageURL)
           } }

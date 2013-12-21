@@ -1,4 +1,4 @@
-@()(implicit request: RequestObject[Volume]#Site[_])
+@()(implicit request: VolumeHtml.Request[_])
 
 @defining(request.obj) { volume =>
 @defining(Async.wait(volume.top)) { topslot =>
@@ -19,7 +19,7 @@
         @widget.panel.publications(Async.wait(volume.citations))
         @widget.panel.people(volume)
         @widget.panel.tags(topslot, Some(volume))
-        @widget.panel.comments(Some(topslot), Some((controllers.Slot.routes.html.comment(volume.id, topslot.id), controllers.Slot.commentForm)), Async.wait(volume.comments))
+        @widget.panel.comments(Some(topslot), Some((routes.SlotHtml.comment(topslot.id), SlotHtml.commentForm)), Async.wait(volume.comments))
     }
 
 }

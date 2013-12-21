@@ -1,4 +1,4 @@
-@(c : Either[Volume, Slot], form : controllers.Slot.EditForm, recordForm : Option[controllers.Record.SelectForm], selectList : Seq[(String,String)] = Nil)(implicit request : RequestObject[SiteObject]#Site[_])
+@(c : Either[Volume, Slot], form : SlotHtml.EditForm, recordForm : Option[controllers.Record.SelectForm], selectList : Seq[(String,String)] = Nil)(implicit request : RequestObject[SiteObject]#Site[_])
 
 @import helper.FieldConstructor
 
@@ -11,7 +11,7 @@
         <div class="col-full">
             @widget.formErrors(form)
 
-            @widget.tag.form(c.fold(volume => controllers.Slot.routes.html.addContainer(volume.id), slot => controllers.Slot.routes.html.change(slot.volumeId, slot.id)), 'id -> "slot_edit") {
+            @widget.tag.form(c.fold(volume => routes.SlotHtml.addContainer(volume.id), slot => routes.SlotHtml.change(slot.volumeId, slot.id)), 'id -> "slot_edit") {
                 @if(form("name").name) {
                     @widget.tag.inputText(form("name"), 'placeholder -> "Name")
                     @widget.tag.inputDate(form("date"), 'placeholder -> "Date", 'class -> "half")

@@ -99,7 +99,7 @@ package object Asset extends ObjectController[Asset] {
 
     private[this] val uploadForm = assetForm(true)
 
-    def create(v : models.Volume.Id, c : models.Slot.Id) = Slot.html.Action(v, c, Permission.CONTRIBUTE) { implicit request =>
+    def create(v : models.Volume.Id, c : models.Slot.Id) = SlotHtml.ActionId(v, c, Permission.CONTRIBUTE) { implicit request =>
       Ok(views.html.asset.edit(Left(request.obj), uploadForm.fill(("", "", Classification.IDENTIFIED, Some((None, false, None, ()))))))
     }
 
@@ -109,7 +109,7 @@ package object Asset extends ObjectController[Asset] {
       }
     }
 
-    def upload(v : models.Volume.Id, c : models.Slot.Id) = Slot.html.Action(v, c, Permission.CONTRIBUTE).async { implicit request =>
+    def upload(v : models.Volume.Id, c : models.Slot.Id) = SlotHtml.ActionId(v, c, Permission.CONTRIBUTE).async { implicit request =>
       def error(form : AssetForm) : Future[SimpleResult] =
         ABadRequest(views.html.asset.edit(Left(request.obj), form))
       val form = uploadForm.bindFromRequest
