@@ -181,7 +181,7 @@ object PartyHtml extends PartyController {
         if (!expok)
           viewAdmin(BadRequest, authorizeChangeForm = Some((child, form.withError("expires", "error.max", maxExpiration))))
         else
-          Authorize.set(childId, id, access, delegate, if (pending) None else Some(new Timestamp), exp.map(_.toDateTimeAtStartOfDay)).map { _ =>
+          Authorize.set(childId, id, access, delegate, if (pending) None else Some(new Timestamp), exp.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT))).map { _ =>
             Redirect(routes.PartyHtml.admin(id))
           }
       }
@@ -214,7 +214,7 @@ object PartyHtml extends PartyController {
     authorizeForm.bindFromRequest.fold(
       form => viewAdmin(BadRequest, authorizeWhich = Some(true), authorizeResults = Seq((parent, form))),
       { case (access, delegate, _, expires) =>
-        Authorize.set(id, parentId, access, delegate, None, expires.map(_.toDateTimeAtStartOfDay)).map { _ =>
+        Authorize.set(id, parentId, access, delegate, None, expires.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT))).map { _ =>
           Redirect(routes.PartyHtml.admin(id))
         }
       }

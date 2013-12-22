@@ -6,10 +6,7 @@ import org.postgresql.Driver
 
 object Connection {
   def factory(conf : play.api.Configuration) = {
-    val c = conf.getString("url")
-      /* https://github.com/mauricio/postgresql-async/pull/64 */
-      .flatMap(url => catching(classOf[NoSuchElementException]).opt(db.postgresql.util.URLParser.parse(url)))
-      .getOrElse(db.Configuration.Default)
+    val c = conf.getString("url").fold(db.Configuration.Default)(db.postgresql.util.URLParser.parse(_))
     new db.postgresql.pool.PostgreSQLConnectionFactory(c.copy(
       username = conf.getString("user").getOrElse(c.username),
       password = conf.getString("password").orElse(c.password)

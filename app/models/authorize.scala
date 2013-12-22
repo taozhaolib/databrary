@@ -24,7 +24,7 @@ final class Authorize protected (val child : Party, val parent : Party, val acce
   /** Determine if this authorization is currently in effect.
     * @return true if authorized is set and in the past, and expires is unset or in the future */
   def valid = {
-    authorized.fold(false)(_.isBeforeNow) && expires.fold(true)(_.isAfterNow)
+    authorized.fold(false)(_.toDateTime.isBeforeNow) && expires.fold(true)(_.toDateTime.isAfterNow)
   }
 }
 

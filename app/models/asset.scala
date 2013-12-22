@@ -142,7 +142,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   private[this] var _classification = classification_
   def classification : Classification.Value = _classification
 
-  def duration : Offset = 0
+  def duration : Offset = Offset.ZERO
   def source = this
   override def sourceId = id
 
@@ -197,7 +197,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
 final class Timeseries private[models] (id : Asset.Id, volume : Volume, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, name : String, body : Option[String], sha1 : Array[Byte]) extends Asset(id, volume, format, classification, name, body, sha1) with TimeseriesData {
   override def source = this
   def entire = true
-  def segment : Range[Offset] = Range[Offset](0, duration)
+  def segment : Range[Offset] = Range[Offset](Offset.ZERO, duration)
 }
 
 final case class TimeseriesSample private[models] (val parent : TimeseriesData, val offset : Offset) extends TimeseriesData {
@@ -208,7 +208,7 @@ final case class TimeseriesSample private[models] (val parent : TimeseriesData, 
     Range.singleton((seg.lowerBound.get + offset).ensuring(seg @> _))
   }
   def entire = false
-  override def duration = 0
+  override def duration = Offset.ZERO
   override def format = parent.source.format.sampleFormat
 }
 

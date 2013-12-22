@@ -19,7 +19,7 @@ trait AbstractSlot extends InVolume with SiteObject {
   def isFull : Boolean = segment.isFull
   def isTop : Boolean = container.top && isFull
   /** Effective start point of this slot within the container. */
-  final def position : Offset = segment.lowerBound.getOrElse(0)
+  final def position : Offset = segment.lowerBound.getOrElse(Offset.ZERO)
 
   /** Turn this abstract slot into a real slot in the database. */
   def realize : Future[Slot]

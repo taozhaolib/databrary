@@ -22,8 +22,9 @@ object SlotAsset extends ObjectController[SlotAsset] {
   private[controllers] def getFrame(offset : Either[Float,Offset])(implicit request : Request[_]) =
     request.obj match {
       case ts : SlotTimeseries =>
-        val off = offset.fold(f => Offset(10*(f*ts.duration.seconds/10).floor), identity)
-        if (off < 0 || off > ts.duration)
+        /* round down to a 10-second boundry, which is our i-frame interval. */
+        val off = offset.fold[Offset](f => Offset(10000L*(f*ts.duration.millis/10000).toLong), o => o)
+        if (off < Offset.ZERO || off > ts.duration)
           ANotFound
         else
           Asset.assetResult(ts.sample(off))
@@ -38,7 +39,7 @@ object SlotAsset extends ObjectController[SlotAsset] {
     getFrame(Right(eo))
   }
   def head(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) =
-    frame(v, i, o, 0)
+    frame(v, i, o, Offset.ZERO)
   def thumb(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) = Action(v, i, o, Permission.DOWNLOAD).async { implicit request =>
     getFrame(Left(0.25f))
   }

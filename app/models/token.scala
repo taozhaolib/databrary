@@ -7,7 +7,7 @@ import dbrary._
 import site._
 
 sealed abstract class Token protected (val id : Token.Id, val expires : Timestamp) extends TableRow {
-  def valid = expires.isAfterNow
+  def valid = expires.toDateTime.isAfterNow
   def redeemURL = controllers.routes.Token.token(id)
   def remove : Future[Boolean]
 }

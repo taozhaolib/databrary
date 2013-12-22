@@ -13,7 +13,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offse
   def assetId = asset.id
   def source = asset.source
   override def format = asset.format
-  def position = asset_segment.lowerBound.map(_ - slot.segment.lowerBound.getOrElse(0))
+  def position = asset_segment.lowerBound.map(_ - slot.segment.lowerBound.getOrElse(Offset.ZERO))
   require(excerpt_segment.fold(true)(slot.segment @> _))
   def excerpt = excerpt_segment.isDefined
 
@@ -82,13 +82,13 @@ final class SlotTimeseries private[models] (override val asset : Timeseries, ass
       val l = asset.duration
       /* shifted forward if the slot starts later than the asset */
       val t0 = (for { s <- slot.segment.lowerBound ; p <- asset_segment.lowerBound ; if s > p }
-        yield (s - p)).getOrElse(0 : Offset)
+        yield (s - p)).getOrElse(Offset.ZERO)
       /* the lesser of the slot end and the asset end */
       val t1 = l + (for { s <- slot.segment.upperBound ; p <- asset_segment.upperBound ; if s < p }
-        yield (s - p)).getOrElse(0 : Offset)
+        yield (s - p)).getOrElse(Offset.ZERO)
       Range[Offset](t0, t1)
     } { s =>
-      Range.singleton[Offset](s - asset_segment.lowerBound.getOrElse(0 : Offset))
+      Range.singleton[Offset](s - asset_segment.lowerBound.getOrElse(Offset.ZERO))
     }
   def entire = slot.segment @> asset_segment
 }

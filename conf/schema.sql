@@ -252,7 +252,7 @@ COMMENT ON TABLE "volume_funding" IS 'Quick and dirty funding list.  No PK: only
 CREATE FUNCTION "interval_mi_epoch" (interval, interval) RETURNS double precision LANGUAGE sql IMMUTABLE STRICT AS 
 	$$ SELECT date_part('epoch', interval_mi($1, $2)) $$;
 CREATE TYPE segment AS RANGE (
-	SUBTYPE = interval HOUR TO SECOND,
+	SUBTYPE = interval HOUR TO SECOND (3),
 	SUBTYPE_DIFF = "interval_mi_epoch"
 );
 COMMENT ON TYPE "segment" IS 'Intervals of time, used primarily for representing clips of timeseries data.';
@@ -260,10 +260,10 @@ COMMENT ON TYPE "segment" IS 'Intervals of time, used primarily for representing
 CREATE FUNCTION "segment" (interval) RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT segment('0', $1) $$;
 COMMENT ON FUNCTION "segment" (interval) IS 'The segment [0,X) but strict in X.';
-CREATE FUNCTION "duration" (segment) RETURNS interval HOUR TO SECOND LANGUAGE sql IMMUTABLE STRICT AS
+CREATE FUNCTION "duration" (segment) RETURNS interval HOUR TO SECOND (3) LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT CASE WHEN isempty($1) THEN '0' ELSE interval_mi(upper($1), lower($1)) END $$;
 COMMENT ON FUNCTION "duration" (segment) IS 'Determine the length of a segment, or NULL if unbounded.';
-CREATE FUNCTION "singleton" (interval HOUR TO SECOND) RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS
+CREATE FUNCTION "singleton" (interval HOUR TO SECOND (3)) RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT segment($1, $1, '[]') $$;
 CREATE FUNCTION "singleton" (segment) RETURNS interval LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT lower($1) WHERE lower_inc($1) AND upper_inc($1) AND lower($1) = upper($1) $$;
@@ -431,7 +431,7 @@ CREATE TABLE "asset" (
 	"volume" integer NOT NULL References "volume",
 	"format" smallint NOT NULL References "format",
 	"classification" classification NOT NULL,
-	"duration" interval HOUR TO SECOND Check ("duration" > interval '0'),
+	"duration" interval HOUR TO SECOND (3) Check ("duration" > interval '0'),
 	"name" text NOT NULL,
 	"body" text,
 	"sha1" bytea NOT NULL Check (octet_length("sha1") = 20)

@@ -35,18 +35,21 @@ abstract class SQLType[A](val name : String, val aClass : Class[A]) {
     }
 }
 
+abstract class SQLDBType[A](name : String, aClass : Class[A], column : db.column.ColumnEncoderDecoder) extends SQLType[A](name, aClass) {
+  override def show(a : A) : String = column.encode(a)
+  override def read(s : String) : Option[A] = Some(column.decode(s).asInstanceOf[A])
+}
+
 object SQLType {
   def transform[A,B](name : String, cls : Class[B])(get : A => Option[B], put : B => A)(implicit base : SQLType[A]) : SQLType[B] =
     base.transform(name, cls)(get, put)
   def apply[A](name : String, cls : Class[A])(get : String => Option[A], put : A => String) : SQLType[A] =
     string.transform(name, cls)(get, put)
 
-  implicit object string extends SQLType[String]("text", classOf[String]) {
-    def read(s : String) = Some(s)
-  }
+  implicit object string extends SQLDBType[String]("text", classOf[String], db.column.StringEncoderDecoder)
 
-  implicit object boolean extends SQLType[Boolean]("boolean", classOf[Boolean]) {
-    def read(s : String) = s.toLowerCase match {
+  implicit object boolean extends SQLDBType[Boolean]("boolean", classOf[Boolean], db.postgresql.column.BooleanEncoderDecoder) {
+    override def read(s : String) = s.toLowerCase match {
       case "t" => Some(true)
       case "f" => Some(false)
       case "true" => Some(true)
@@ -70,8 +73,7 @@ object SQLType {
     }
   }
 
-  implicit object int extends SQLType[Int]("integer", classOf[Int]) {
-    def read(s : String) = Maybe.toInt(s)
+  implicit object int extends SQLDBType[Int]("integer", classOf[Int], db.column.IntegerEncoderDecoder) {
     override def get(x : Any, where : String = "") : Int = x match {
       case null => throw new SQLUnexpectedNull(this, where)
       case i : Int => i
@@ -83,8 +85,7 @@ object SQLType {
     }
   }
 
-  implicit object long extends SQLType[Long]("bigint", classOf[Long]) {
-    def read(s : String) = Maybe.toLong(s)
+  implicit object long extends SQLDBType[Long]("bigint", classOf[Long], db.column.LongEncoderDecoder) {
     override def get(x : Any, where : String = "") : Long = x match {
       case null => throw new SQLUnexpectedNull(this, where)
       case i : Long => i
@@ -94,25 +95,19 @@ object SQLType {
     }
   }
 
-  implicit object date extends SQLType[Date]("date", classOf[Date]) {
-    def read(s : String) =
-      catching(classOf[java.lang.IllegalArgumentException]).opt(
-        org.joda.time.LocalDate.parse(s))
-  }
+  implicit object date extends SQLDBType[Date]("date", classOf[Date], db.column.DateEncoderDecoder)
 
   implicit object timestamp extends SQLType[Timestamp]("timestamp", classOf[Timestamp]) {
     def read(s : String) =
       catching(classOf[java.lang.IllegalArgumentException]).opt(
-        org.joda.time.DateTime.parse(s))
+        org.joda.time.LocalDateTime.parse(s))
   }
 
-  implicit object bigdecimal extends SQLType[BigDecimal]("numeric", classOf[BigDecimal]) {
-    def read(s : String) = Maybe.toNumber(BigDecimal(s))
-  }
+  implicit object interval extends SQLDBType[org.joda.time.Period]("interval", classOf[org.joda.time.Period], db.postgresql.column.PostgreSQLIntervalEncoderDecoder)
 
-  implicit object bytea extends SQLType[Array[Byte]]("bytea", classOf[Array[Byte]]) {
-    def read(s : String) = Some(s.getBytes)
-  }
+  implicit object bigdecimal extends SQLDBType[BigDecimal]("numeric", classOf[BigDecimal], db.column.BigDecimalEncoderDecoder)
+
+  implicit object bytea extends SQLDBType[Array[Byte]]("bytea", classOf[Array[Byte]], db.postgresql.column.ByteArrayEncoderDecoder)
 
   implicit def array[A](implicit t : SQLType[A]) : SQLType[IndexedSeq[A]] =
     new SQLType[IndexedSeq[A]](t.name + "[]", classOf[IndexedSeq[A]]) {

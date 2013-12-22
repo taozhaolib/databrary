@@ -115,6 +115,6 @@ object display {
   }
 
   def apply(x : SitePage, full : Boolean = false)(implicit site : Site) = if (full) path(x) else page(x)
-  def apply(x : Timestamp) = time(x)
+  def apply(x : Timestamp) = time(x.toDateTime)
   def apply(x : Range[Offset]) = x.singleton.fold(x.lowerBound.fold("")(_.toString) + "-" + x.upperBound.fold("")(_.toString))(_.toString)
 }
