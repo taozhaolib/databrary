@@ -115,13 +115,15 @@ object VolumeHtml extends VolumeController {
   def view(i : models.Volume.Id) = Action(i).async { implicit request =>
     val vol = request.obj
     for {
-      _ <- vol.partyAccess
-      _ <- vol.toplevelAssets
-      _ <- vol.citations
-      _ <- vol.summary
-      _ <- vol.comments
-      _ <- vol.tags
-    } yield (Ok(views.html.volume.view()))
+      summary <- vol.summary
+      access <- vol.partyAccess
+      funding <- vol.funding
+      assets <- vol.toplevelAssets
+      citations <- vol.citations
+      comments <- vol.comments
+      tags <- vol.tags
+      top <- vol.top
+    } yield (Ok(views.html.volume.view(summary, access, funding, top, assets, citations, comments, tags)))
   }
 
   def search = SiteAction.async { implicit request =>
