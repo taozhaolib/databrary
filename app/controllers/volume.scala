@@ -55,7 +55,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       _.bindFromRequest.fold(bad _, {
         case (name, body, cites) =>
           for {
-            _ <- vol.change(name = name.getOrElse(vol.name), body = body.fold(vol.body)(Maybe(_).opt))
+            _ <- vol.change(name = name, body = body.map(Maybe(_).opt))
             _ <- citationSet(vol, cites)
           } yield (result(vol))
         }

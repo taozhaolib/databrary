@@ -25,13 +25,11 @@ final class Container protected (override val id : Container.Id, override val vo
   def date = _date
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : Option[String] = _name, date : Option[Date] = _date) : Future[Boolean] = {
-    if (name == _name && date == _date)
-      return Async(true)
-    Audit.change("container", SQLTerms('name -> name, 'date -> date), SQLTerms('id -> id)).execute
+  def change(name : Option[Option[String]] = None, date : Option[Option[Date]] = None) : Future[Boolean] = {
+    Audit.change("container", SQLTerms.flatten(name.map('name -> _), date.map('date -> _)), SQLTerms('id -> id)).execute
       .andThen { case scala.util.Success(true) =>
-        _name = name
-        _date = date
+        name.foreach(_name = _)
+        date.foreach(_date = _)
       }
   }
 

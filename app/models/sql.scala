@@ -39,6 +39,7 @@ private[models] final class SQLTerms private (private val terms : Seq[SQLTerm[_]
 }
 private[models] object SQLTerms {
   def apply(terms : SQLTerm[_]*) = new SQLTerms(terms)
+  def flatten(terms : Option[SQLTerm[_]]*) = new SQLTerms(terms.flatten)
 }
 
 object SQLDuplicateKeyException {

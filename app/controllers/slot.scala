@@ -122,7 +122,7 @@ object SlotHtml extends SlotController {
       { case (container, consent) =>
         for {
           _ <- macros.Async.map[(Option[String], Option[Date]), Boolean](container, {
-            case (name, date) => request.obj.container.change(name = name, date = date)
+            case (name, date) => request.obj.container.change(name = Some(name), date = Some(date))
           })
           _ <- request.obj.setConsent(consent)
         } yield (Redirect(request.obj.pageURL))

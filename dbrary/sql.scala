@@ -66,6 +66,11 @@ class SQLResult(val result : Future[db.QueryResult])(implicit context : Executio
   def single[A](parse : SQLRow[A]) : Future[A] = map(r => parse(single(r)))
 }
 
+object SQLResult {
+  private final val emptyResult = new db.QueryResult(0, "")
+  def empty(implicit context : ExecutionContext) = new SQLResult(Async(emptyResult))(context)
+}
+
 /** SQLResult with an associated row parser. */
 final class SQLRows[A](result : Future[db.QueryResult], parse : SQLRow[A])(implicit context : ExecutionContext) extends SQLResult(result)(context) {
   override def future(f : Future[db.QueryResult] => Future[db.QueryResult]) : SQLRows[A] =

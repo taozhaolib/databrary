@@ -84,13 +84,14 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
         bad(form.withError("cur_password", "password.incorrect"))
       case (name, orcid, accts) =>
         for {
-          _ <- party.change(name = name.getOrElse(party.name), orcid = orcid.getOrElse(party.orcid))
+          _ <- party.change(name = name, orcid = orcid)
           _ <- macros.Async.map[(String, Option[String], Option[String], Option[String]), Boolean](accts, { case (_, email, password, openid) =>
             val a = acct.get
-            a.changeAccount(
-              email = email.getOrElse(a.email),
-              password = password.getOrElse(a.password),
-              openid = openid.fold(a.openid)(Maybe(_).opt))
+            a.change(
+              email = email,
+              password = password,
+              openid = openid.map(Maybe(_).opt)
+            )
           })
         } yield (result(request.obj))
     })

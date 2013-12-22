@@ -20,13 +20,11 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
   def account = _account
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Future[Boolean] = {
-    if (name == _name && orcid == _orcid)
-      return Async(true)
-    Audit.change("party", SQLTerms('name -> name, 'orcid -> orcid), SQLTerms('id -> id))
+  def change(name : Option[String] = None, orcid : Option[Option[Orcid]] = None)(implicit site : Site) : Future[Boolean] = {
+    Audit.change("party", SQLTerms.flatten(name.map('name -> _), orcid.map('orcid -> _)), SQLTerms('id -> id))
       .execute.andThen { case scala.util.Success(true) =>
-        _name = name
-        _orcid = orcid
+        name.foreach(_name = _)
+        orcid.foreach(_orcid = _)
       }
   }
 
@@ -127,16 +125,14 @@ final class Account protected (val party : Party, email_ : String, password_ : S
   def openid = _openid
 
   /** Update the given values in the database and this object in-place. */
-  def changeAccount(email : String = _email, password : String = _password, openid : Option[String] = _openid)(implicit site : Site) : Future[Boolean] = {
-    if (email == _email && password == _password && openid == _openid)
-      return Async(true)
+  def change(email : Option[String] = None, password : Option[String] = None, openid : Option[Option[String]] = None)(implicit site : Site) : Future[Boolean] = {
     if (password != _password)
       clearTokens(cast[AuthSite](site).map(_.token))
-    Audit.change(Account.table, SQLTerms('email -> email, 'password -> password, 'openid -> openid), SQLTerms('id -> id))
+    Audit.change(Account.table, SQLTerms.flatten(email.map('email -> _), password.map('password -> _), openid.map('openid -> _)), SQLTerms('id -> id))
       .execute.andThen { case scala.util.Success(true) =>
-        _email = email
-        _password = password
-        _openid = openid
+        email.foreach(_email = _)
+        password.foreach(_password = _)
+        openid.foreach(_openid = _)
       }
   }
 
