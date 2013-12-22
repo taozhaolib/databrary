@@ -43,13 +43,32 @@ private[controllers] sealed class SlotController extends ObjectController[Abstra
     "parent" -> OptionMapping(of[Comment.Id])
   ))
 
-  def comment(c : models.Slot.Id, start : Option[Offset], end : Option[Offset], parent : Option[Comment.Id]) =
-    (SiteAction.access(Permission.VIEW) ~> action(c, start, end)).async { implicit request =>
+  def comment(i : models.Slot.Id, start : Option[Offset], end : Option[Offset], parent : Option[Comment.Id] = None) =
+    (SiteAction.access(Permission.VIEW) ~> action(i, start, end)).async { implicit request =>
       commentForm.bindFromRequest.fold(
-        AbadForm[CommentMapping](SlotHtml.show(_), _),
+        AbadForm[CommentMapping](f => SlotHtml.show(commentForm = f), _),
         { case (text, parent2) =>
           for {
             _ <- request.obj.postComment(text, parent orElse parent2)(request.asInstanceOf[AuthSite])
+          } yield (result(request.obj))
+        }
+      )
+    }
+
+  type TagMapping = (Option[String], Option[Boolean])
+  type TagForm = Form[TagMapping]
+  val tagForm : TagForm = Form(tuple(
+    "name" -> OptionMapping(nonEmptyText),
+    "vote" -> optional(boolean)
+  ))
+
+  def tag(i : models.Slot.Id, start : Option[Offset], end : Option[Offset], name : String = "") =
+    (SiteAction.access(Permission.VIEW) ~> action(i, start, end)).async { implicit request =>
+      tagForm.bindFromRequest().fold(
+        AbadForm[TagMapping](f => SlotHtml.show(tagForm = f), _),
+        { case (name2, vote) =>
+          for {
+            _ <- request.obj.setTag(name2.getOrElse(name), vote)(request.asInstanceOf[AuthSite])
           } yield (result(request.obj))
         }
       )
@@ -63,13 +82,14 @@ object SlotHtml extends SlotController {
   private[controllers] def ActionId(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW) =
     SiteAction ~> actionId(v, i, p)
 
-  private[controllers] def show(commentForm : CommentForm = commentForm)(implicit request : Request[_]) = {
+  private[controllers] def show(commentForm : CommentForm = commentForm, tagForm : TagForm = tagForm)(implicit request : Request[_]) = {
     val slot = request.obj
     for {
       records <- slot.records
       assets <- slot.assets
       comments <- slot.comments
-    } yield (views.html.slot.view(records, assets, comments, commentForm))
+      tags <- slot.tags
+    } yield (views.html.slot.view(records, assets, comments, commentForm, tags, tagForm))
   }
 
   def view(i : models.Slot.Id, start : Option[Offset] = None, end : Option[Offset] = None) = Action(i, start, end).async { implicit request =>
@@ -139,23 +159,6 @@ object SlotHtml extends SlotController {
       { case (start, end) =>
         models.Slot.getOrCreate(request.obj.container, Range[Offset](start, end).map(request.obj.position + _)).map { slot =>
           Redirect(slot.pageURL)
-        }
-      }
-    )
-  }
-
-  type TagForm = Form[(String, Option[Boolean])]
-  val tagForm : TagForm = Form(tuple(
-    "name" -> nonEmptyText,
-    "vote" -> optional(boolean)
-  ))
-
-  def tag(v : models.Volume.Id, s : models.Slot.Id) = (SiteAction.access(Permission.VIEW) ~> actionId(v, s)).async { implicit request =>
-    tagForm.bindFromRequest().fold(
-      form => ABadRequest(""/* FIXME */),
-      { case (name, vote) =>
-        request.obj.setTag(name, vote)(request.asInstanceOf[AuthSite]).map { _ =>
-          Redirect(request.obj.pageURL)
         }
       }
     )

@@ -51,11 +51,8 @@ object Tag extends TableId[Tag]("tag") {
 
   /** Retrieve or, if none exists, create an individual tag by name. */
   private[models] def getOrCreate(name : String) : Future[Tag] =
-    DBUtil.selectOrInsert(_get(name)(_, _)) { (dbc, exc) =>
-      val args = SQLTerms('name -> name)
-      SQL("INSERT INTO tag", args.insert, "RETURNING", row.select)(dbc, exc)
-        .apply(args).single(row.parse)
-    }
+    SQL("SELECT get_tag(?)")
+      .apply(name).single(SQLCols[Id].map(new Tag(_, name)))
 }
 
 /** A tag applied by a user to an object. */

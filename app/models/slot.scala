@@ -59,6 +59,16 @@ trait AbstractSlot extends InVolume with SiteObject {
 
   /** The list of tags on the current slot along with the current user's applications. */
   final def tags = TagWeight.getSlotAll(this)
+  /** Tag this slot.
+    * @param up Some(true) for up, Some(false) for down, or None to remove
+    * @return true if the tag name is valid
+    */
+  final def setTag(tag : String, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Future[Boolean] =
+    Tag.valid(tag).fold(Async(false))(tname => for {
+      t <- Tag.getOrCreate(tname)
+      s <- realize
+      r <- t.set(s, up)
+    } yield(r))
 
   def pageName = container.name.getOrElse("Slot")
   override def pageCrumbName : Option[String] = if (isFull) None else Some(segment.lowerBound.fold("")(_.toString) + "-" + segment.upperBound.fold("")(_.toString))
@@ -118,13 +128,6 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
   final def tags(all : Boolean = true) =
     if (all) super.tags
     else TagWeight.getSlot(this)
-  /** Tag this slot.
-    * @param up Some(true) for up, Some(false) for down, or None to remove
-    * @return true if the tag name is valid
-    */
-  final def setTag(tag : String, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Future[Boolean] =
-    Tag.valid(tag).fold(Async(false))(
-      Tag.getOrCreate(_).flatMap(_.set(this, up)))
 
   private[this] final val _records : FutureVar[Seq[Record]] = FutureVar[Seq[Record]](Record.getSlot(this))
   /** The list of records on this object.

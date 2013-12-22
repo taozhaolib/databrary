@@ -1,11 +1,11 @@
-@(records : Seq[Record], assets : Seq[SlotAsset], comments : Seq[Comment], commentForm : controllers.SlotHtml.CommentForm = controllers.SlotHtml.commentForm)(implicit request : controllers.SlotHtml.Request[_])
+@(records : Seq[Record], assets : Seq[SlotAsset], comments : Seq[Comment], commentForm : SlotHtml.CommentForm = controllers.SlotHtml.commentForm, tags : Seq[TagWeight], tagForm : SlotHtml.TagForm = SlotHtml.tagForm)(implicit request : controllers.SlotHtml.Request[_])
 
 @defining(request.obj) { slot =>
 @widget.template.crud("Session: " + slot.pageName) {
     @widget.panel.slot(slot)
     @widget.panel.records(slot, records)
     @widget.panel.materials(assets)
-    @widget.panel.tags(slot)
+    @widget.panel.tags(slot, tags = tags, form = tagForm)
     @widget.panel.comments(Some(slot), Some((routes.SlotHtml.comment(slot.containerId, slot.segment.lowerBound, slot.segment.upperBound), commentForm)), comments)
 }
 }

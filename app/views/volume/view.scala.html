@@ -18,7 +18,7 @@
         @widget.panel.materials(toplevel)
         @widget.panel.publications(Async.wait(volume.citations))
         @widget.panel.people(volume)
-        @widget.panel.tags(topslot, Some(volume))
+        @widget.panel.tags(topslot, Some(volume), Async.wait(volume.tags))
         @widget.panel.comments(Some(topslot), Some((routes.SlotHtml.comment(topslot.id), SlotHtml.commentForm)), Async.wait(volume.comments))
     }
 

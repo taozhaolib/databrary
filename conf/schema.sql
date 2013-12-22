@@ -514,6 +514,24 @@ CREATE TABLE "tag" (
 );
 COMMENT ON TABLE "tag" IS 'Tag/keywords that can be applied to objects.';
 
+CREATE FUNCTION "get_tag" ("tag_name" varchar(32)) RETURNS integer STRICT LANGUAGE plpgsql AS $$
+DECLARE
+	tag_id integer;
+BEGIN
+	LOOP
+		SELECT id INTO tag_id FROM tag WHERE name = tag_name;
+		IF FOUND THEN
+			RETURN tag_id;
+		END IF;
+		BEGIN
+			INSERT INTO tag (name) VALUES (tag_name) RETURNING id INTO tag_id;
+			RETURN tag_id;
+		EXCEPTION WHEN unique_violation THEN
+		END;
+	END LOOP;
+END; $$;
+
+
 CREATE TABLE "tag_use" (
 	"tag" integer NOT NULL References "tag",
 	"who" integer NOT NULL References "account",
