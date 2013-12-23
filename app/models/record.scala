@@ -119,10 +119,10 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   def pageName = category.fold("")(_.name.capitalize + " ") + ident
   def pageParent = Some(volume)
-  def pageURL = controllers.Record.routes.html.view(volume.id, id)
+  def pageURL = controllers.routes.RecordHtml.view(id)
   def pageActions = Seq(
-    Action("view", controllers.Record.routes.html.view(volumeId, id), Permission.VIEW),
-    Action("edit", controllers.Record.routes.html.edit(volumeId, id), Permission.EDIT)
+    Action("view", pageURL, Permission.VIEW),
+    Action("edit", controllers.routes.RecordHtml.edit(id), Permission.EDIT)
   )
 
   lazy val json : JsonRecord =

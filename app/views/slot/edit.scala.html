@@ -1,4 +1,4 @@
-@(c : Either[Volume, Slot], form : SlotHtml.EditForm, recordForm : Option[controllers.Record.SelectForm], selectList : Seq[(String,String)] = Nil)(implicit request : RequestObject[SiteObject]#Site[_])
+@(c : Either[Volume, Slot], form : SlotHtml.EditForm, recordForm : Option[RecordHtml.SelectForm], selectList : Seq[(String,String)] = Nil)(implicit request : RequestObject[SiteObject]#Site[_])
 
 @import helper.FieldConstructor
 
@@ -48,8 +48,8 @@
                                             </td>
 
                                             <td class="meta">
-                                            @widget.tag.form(controllers.Record.routes.html.slotRemove(slot.volumeId, slot.id, record.id, true)) {
-                                                <a href="@controllers.Record.routes.html.edit(record.volume.id, record.id)" class="button">edit</a>
+                                            @widget.tag.form(routes.RecordHtml.slotRemove(slot.volumeId, slot.id, record.id, true)) {
+                                                <a href="@routes.RecordHtml.edit(record.id)" class="button">edit</a>
 
                                                 <button type='submit' class="button first">remove</button>
                                             }
@@ -67,7 +67,7 @@
                             @recordForm.map { f =>
                                 <tfoot>
                                     <tr>
-                                    @widget.tag.form(controllers.Record.routes.html.slotAdd(slot.volumeId, slot.id, RecordCategory.PARTICIPANT, true)) {
+                                    @widget.tag.form(routes.RecordHtml.slotAdd(slot.volumeId, slot.id, RecordCategory.PARTICIPANT, true)) {
                                         <td colspan="2">
                                         @widget.tag.select(f("record"), selectList, '_default -> "Create new record...", '_colspan -> 2)(widget.tag.minimalFieldConstructor.f, Lang("en"))
                                         </td>

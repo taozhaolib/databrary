@@ -101,9 +101,9 @@ object SlotHtml extends SlotController {
 
   private[controllers] def viewEdit(status : Status, slot : Slot)(
     editForm : EditForm = editFormFill(slot),
-    recordForm : Record.SelectForm = Record.selectForm)(
+    recordForm : RecordHtml.SelectForm = RecordHtml.selectForm)(
     implicit request : Request[_]) = {
-    Record.selectList(slot).map { selectList =>
+    RecordHtml.selectList(slot).map { selectList =>
       status(views.html.slot.edit(Right(slot), editForm, Some(recordForm), selectList))
     }
   }

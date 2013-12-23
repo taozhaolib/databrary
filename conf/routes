@@ -83,15 +83,15 @@ POST    /slot/$sID<[0-9]+>/comment/create                                       
 POST    /slot/$sID<[0-9]+>/tag                                                                    controllers.SlotHtml.tag(sID : models.Slot.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None, name : String ?= "")
 
 # records
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                         controllers.Record.html.slotRemove(vID : models.Volume.Id, sID : models.Slot.Id, rID : models.Record.Id, editRedirect : Boolean = false)
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove/return                  controllers.Record.html.slotRemove(vID : models.Volume.Id, sID : models.Slot.Id, rID : models.Record.Id, editRedirect : Boolean = true)
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create                       controllers.Record.html.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = false)
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create/return                controllers.Record.html.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = true)
+POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                         controllers.RecordHtml.slotRemove(vID : models.Volume.Id, sID : models.Slot.Id, rID : models.Record.Id, editRedirect : Boolean = false)
+POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove/return                  controllers.RecordHtml.slotRemove(vID : models.Volume.Id, sID : models.Slot.Id, rID : models.Record.Id, editRedirect : Boolean = true)
+POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create                       controllers.RecordHtml.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = false)
+POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create/return                controllers.RecordHtml.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = true)
 
-GET     /volume/$vID<[0-9]+>/record/$rID<[0-9]+>                                                  controllers.Record.html.view(vID : models.Volume.Id, rID : models.Record.Id)
-GET     /volume/$vID<[0-9]+>/record/$cID<-?[0-9]+>/create                                         controllers.Record.html.add(vID : models.Volume.Id, cID : models.RecordCategory.Id)
-GET     /volume/$vID<[0-9]+>/record/$rID<[0-9]+>/edit                                             controllers.Record.html.edit(vID : models.Volume.Id, rID : models.Record.Id)
-POST    /volume/$vID<[0-9]+>/record/$rID<[0-9]+>/edit                                             controllers.Record.html.update(vID : models.Volume.Id, rID : models.Record.Id)
+GET     /record/$rID<[0-9]+>                                                                      controllers.RecordHtml.view(rID : models.Record.Id)
+GET     /volume/$vID<[0-9]+>/record/$cID<-?[0-9]+>/create                                         controllers.RecordHtml.add(vID : models.Volume.Id, cID : models.RecordCategory.Id)
+GET     /record/$rID<[0-9]+>/edit                                                                 controllers.RecordHtml.edit(rID : models.Record.Id)
+POST    /record/$rID<[0-9]+>/edit                                                                 controllers.RecordHtml.update(rID : models.Record.Id)
 
 GET     /volume/$vID<[0-9]+>/ingest/csv                                                           controllers.Ingest.csv(vID : models.Volume.Id)
 POST    /volume/$vID<[0-9]+>/ingest/curated                                                       controllers.Ingest.curated(vID : models.Volume.Id)
@@ -121,8 +121,8 @@ DELETE  /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                 
 
 GET     /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.get(containerId : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
 
-GET     /api/record/$recordId<[0-9]+>                                                             controllers.Record.api.get(recordId : models.Record.Id)
-GET     /api/record                                                                               controllers.Record.api.query(volume : models.Volume.Id)
+GET     /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.get(recordId : models.Record.Id)
+GET     /api/record                                                                               controllers.RecordApi.query(volume : models.Volume.Id)
 
 GET     /api/asset/$assetId<[0-9]+>                                                               controllers.Asset.api.get(assetId : models.Asset.Id)
 
