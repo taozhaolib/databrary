@@ -33,7 +33,7 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
     * Computed by [Authorize.access_check] and usually accessed through [[site.Site.access]]. */
   def access : Future[Permission.Value] = _access.apply
 
-  /** List of authorizations granted to this user. Cached for !all.
+  /** List of authorizations granted to this user.
     * @param all include inactive authorizations */
   final def authorizeParents(all : Boolean = false) : Future[Seq[Authorize]] =
     Authorize.getParents(this, all)
