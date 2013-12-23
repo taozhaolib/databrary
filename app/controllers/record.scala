@@ -8,7 +8,7 @@ import          Play.current
 import          mvc._
 import          data._
 import               Forms._
-import play.api.libs.json.Json
+import play.api.libs.json
 import site._
 import models._
 
@@ -62,34 +62,19 @@ object RecordHtml extends RecordController {
     ))
   }
 
-  private val jsonCategories = {
-    Html(Json.stringify(Json.toJson(RecordCategory.getAll.map {
-      case c =>
-        Json.toJson(Map(
-          "id" -> Json.toJson(c.id.toString),
-          "name" -> Json.toJson(c.name),
-          "template" -> Json.toJson(c.template.map {
-            case m =>
-              Json.toJson(m.id.toString)
-          })
-        ))
-    }
-    )))
-  }
+  private val jsonCategories =
+    Html(RecordCategory.getAll.map[JsonRecord, json.JsValue](c => JsonRecord(c.id,
+      'name -> c.name,
+      'template -> c.template.map(_.id)
+    )).toString)
 
-  private val jsonMetrics = {
-    Html(Json.stringify(Json.toJson(Metric.getAll.map {
-      case m =>
-        Json.toJson(Map(
-          "id" -> Json.toJson(m.id.toString),
-          "name" -> Json.toJson(m.name),
-          "dataType" -> Json.toJson(m.dataType.toString),
-          "classification" -> Json.toJson(m.classification.toString),
-          "values" -> Json.toJson(m.values)
-        ))
-      }
-    )))
-  }
+  private val jsonMetrics =
+    Html(Metric.getAll.toSeq.map[JsonRecord, json.JsValue](m => JsonRecord(m.id,
+      'name -> m.name,
+      'dataType -> m.dataType,
+      'classification -> m.classification,
+      'values -> m.values
+    )).toString)
 
   def edit(i : models.Record.Id) = Action(i, Permission.EDIT) { implicit request =>
     val (m, f) = editFormFill
@@ -194,7 +179,7 @@ object RecordApi extends RecordController {
 
   def query(volume : models.Volume.Id) = VolumeController.Action(volume).async { implicit request =>
     queryForm.bindFromRequest.fold(
-      form => ABadRequest(Json.toJson(form.errors)),
+      form => ABadRequest(json.Json.toJson(form.errors)),
       category =>
         request.obj.allRecords(category).map(l =>
           Ok(JsonRecord.map[Record](_.json)(l)))
