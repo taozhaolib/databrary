@@ -58,13 +58,13 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def categoryId = category.map(_.id)
 
   /** Update the given values in the database and this object in-place. */
-  def change(category : Option[RecordCategory] = _category) : Future[Boolean] = {
-    if (category == _category)
-      return Async(true)
-    SQL("UPDATE record SET category = ? WHERE id = ?").apply(category.map(_.id), id)
+  def change(category : Option[Option[RecordCategory]] = None) : Future[Boolean] = {
+    category.fold(Async(false)) { cat =>
+    SQL("UPDATE record SET category = ? WHERE id = ?").apply(cat.map(_.id), id)
       .execute.andThen { case scala.util.Success(true) =>
-        _category = category
+        _category = cat
       }
+    }
   }
 
   /** The set of measures on the current volume readable by the current user. */

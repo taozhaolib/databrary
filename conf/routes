@@ -123,6 +123,8 @@ GET     /api/slot/$containerId<[0-9]+>                                          
 
 GET     /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.get(recordId : models.Record.Id)
 GET     /api/record                                                                               controllers.RecordApi.query(volume : models.Volume.Id)
+POST    /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.update(recordId : models.Record.Id)
+POST    /api/record                                                                               controllers.RecordApi.create(volume : models.Volume.Id, category : Option[String] ?= None)
 
 GET     /api/asset/$assetId<[0-9]+>                                                               controllers.Asset.api.get(assetId : models.Asset.Id)
 
