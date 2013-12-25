@@ -24,13 +24,13 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
   protected def metricMapping : Mapping[Metric[_]]
 
   protected type MeasureMapping = (Metric[_], Option[String])
-  private val measureMapping = tuple(
+  private[this] def measureMapping = tuple(
     "metric" -> metricMapping,
     "datum" -> optional(nonEmptyText)
   )
   type EditMapping = (Option[Option[RecordCategory]], Seq[MeasureMapping])
   type EditForm = Form[EditMapping]
-  protected val editForm = Form(tuple(
+  protected lazy val editForm = Form(tuple(
     "category" -> OptionMapping(optional(categoryMapping)),
     "measure" -> seq(measureMapping)
   ))
