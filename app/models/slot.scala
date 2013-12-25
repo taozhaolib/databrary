@@ -30,6 +30,9 @@ trait AbstractSlot extends InVolume with SiteObject {
   def context : Slot
   /** The effective consent level that applies to contained data. */
   final def getConsent : Consent.Value = context.consent
+  def setConsent(consent : Consent.Value) : Future[Boolean] =
+    if (consent == Consent.NONE) Async(true)
+    else realize.flatMap(_.setConsent(consent))
 
   /** The permisison level granted to identifiable data within this slot. */
   final def dataPermission : HasPermission =
@@ -111,12 +114,15 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
   final def isContext : Boolean = hasConsent || isFull
 
   /** Update the given values in the database and this object in-place. */
-  final def setConsent(consent : Consent.Value = _consent) : Future[Boolean] = {
+  final override def setConsent(consent : Consent.Value) : Future[Boolean] = {
     if (consent == _consent)
       return Async(true)
     Audit.change("slot", SQLTerms('consent -> Maybe(consent).opt), SQLTerms('id -> id)).execute
       .andThen { case scala.util.Success(true) =>
         _consent = consent
+      }
+      .recover {
+        case e : com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("conflicting key value violates exclusion constraint ") => false
       }
   }
 
