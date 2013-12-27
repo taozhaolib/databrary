@@ -3,7 +3,9 @@ package controllers
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc._
 
-package object Static extends SiteController {
+private[controllers] sealed class StaticController extends SiteController
+
+object StaticHtml extends StaticController {
   def index() = SiteAction {
     implicit request =>
       Ok(views.html.static.index(request))
@@ -20,11 +22,11 @@ package object Static extends SiteController {
     views.html.static.pages.get(page).fold[SimpleResult](NotFound)(page =>
       Ok(views.html.widget.template.static(page.name)(page.template.render)))
   }
+}
 
-  object api {
-    def page(page : String) = Action { implicit request =>
-      views.html.static.pages.get(page).fold[SimpleResult](NotFound)(page =>
-        Ok(page.template.render))
-    }
+object StaticApi extends StaticController {
+  def page(page : String) = Action { implicit request =>
+    views.html.static.pages.get(page).fold[SimpleResult](NotFound)(page =>
+      Ok(page.template.render))
   }
 }

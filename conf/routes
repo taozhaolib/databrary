@@ -4,10 +4,10 @@
 # ~~~~
 
 # Static content
-GET     /                                                                                         controllers.Static.index
-GET     /about/team                                                                               controllers.Static.team
-GET     /about                                                                                    controllers.Static.page(page = "about")
-GET     /about/$page<[a-z]+>                                                                      controllers.Static.page(page : String)
+GET     /                                                                                         controllers.StaticHtml.index
+GET     /about/team                                                                               controllers.StaticHtml.team
+GET     /about                                                                                    controllers.StaticHtml.page(page = "about")
+GET     /about/$page<[a-z]+>                                                                      controllers.StaticHtml.page(page : String)
 
 # users
 GET     /login                                                                                    controllers.LoginHtml.view
@@ -97,7 +97,7 @@ GET     /volume/$vID<[0-9]+>/ingest/csv                                         
 POST    /volume/$vID<[0-9]+>/ingest/curated                                                       controllers.Ingest.curated(vID : models.Volume.Id)
 
 # API
-GET     /api/about/$page<[a-z]+>                                                                  controllers.Static.api.page(page : String)
+GET     /api/about/$page<[a-z]+>                                                                  controllers.StaticApi.page(page : String)
 POST    /api/login                                                                                controllers.LoginApi.post
 POST    /api/logout                                                                               controllers.LoginApi.logout
 POST    /api/superuser/on                                                                         controllers.LoginApi.superuserOn
