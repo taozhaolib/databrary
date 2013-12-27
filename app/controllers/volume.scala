@@ -129,7 +129,7 @@ object VolumeController extends VolumeController {
   def thumb(v : models.Volume.Id) = Action(v, Permission.VIEW).async { implicit request =>
     request.obj.thumb.flatMap(_.fold(
       Assets.at("/public", "images/draft.png")(request))(
-      a => SlotAsset.getFrame(Left(0.25f))(request.withObj(a))))
+      a => SlotAssetController.getFrame(Left(0.25f))(request.withObj(a))))
   }
 }
 

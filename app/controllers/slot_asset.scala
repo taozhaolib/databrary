@@ -4,7 +4,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import dbrary._
 import models._
 
-object SlotAsset extends ObjectController[SlotAsset] {
+object SlotAssetController extends ObjectController[SlotAsset] {
   private[controllers] def action(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW, full : Boolean = false) =
     RequestObject.check(v, models.SlotAsset.get(a, i, full)(_), p)
 
@@ -16,7 +16,7 @@ object SlotAsset extends ObjectController[SlotAsset] {
   }
 
   def download(v : models.Volume.Id, s : models.Slot.Id, o : models.Asset.Id, inline : Boolean) = Action(v, s, o, Permission.DOWNLOAD).async { implicit request =>
-    Asset.assetResult(request.obj, if (inline) None else Some(request.obj.asset.name))
+    AssetController.assetResult(request.obj, if (inline) None else Some(request.obj.asset.name))
   }
 
   private[controllers] def getFrame(offset : Either[Float,Offset])(implicit request : Request[_]) =
@@ -27,12 +27,12 @@ object SlotAsset extends ObjectController[SlotAsset] {
         if (off < Offset.ZERO || off > ts.duration)
           ANotFound
         else
-          Asset.assetResult(ts.sample(off))
+          AssetController.assetResult(ts.sample(off))
       case _ =>
         if (!offset.fold(_ => true, _ == 0))
           ANotFound
         else
-          Asset.assetResult(request.obj)
+          AssetController.assetResult(request.obj)
     }
 
   def frame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, eo : Offset) = Action(v, i, o, Permission.DOWNLOAD).async { implicit request =>

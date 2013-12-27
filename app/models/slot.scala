@@ -168,7 +168,7 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
   override def pageURL = controllers.routes.SlotHtml.view(id)
   override def pageActions = super.pageActions ++ Seq(
     Action("edit", controllers.routes.SlotHtml.edit(volumeId, id), Permission.EDIT),
-    Action("add file", controllers.Asset.routes.html.create(volumeId, id), Permission.CONTRIBUTE),
+    Action("add file", controllers.routes.AssetHtml.create(volumeId, id), Permission.CONTRIBUTE),
     // Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
     Action("add participant", controllers.routes.RecordHtml.slotAdd(volumeId, id, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
   )

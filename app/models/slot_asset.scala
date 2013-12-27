@@ -59,12 +59,12 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offse
     case p : SitePage => Some(p)
     case _ => Some(slot.context)
   }
-  def pageURL = controllers.routes.SlotAsset.view(volume.id, slotId, assetId)
+  def pageURL = controllers.routes.SlotAssetController.view(volume.id, slotId, assetId)
   def pageActions = Seq(
       Action("view", pageURL, Permission.VIEW)
     ) ++ (if (slot.isFull) Seq(
-      Action("edit", controllers.Asset.routes.html.edit(volumeId, assetId), Permission.EDIT),
-      Action("remove", controllers.Asset.routes.html.remove(volumeId, assetId), Permission.CONTRIBUTE)
+      Action("edit", controllers.routes.AssetHtml.edit(volumeId, assetId), Permission.EDIT),
+      Action("remove", controllers.routes.AssetHtml.remove(volumeId, assetId), Permission.CONTRIBUTE)
     ) else Nil)
 
   lazy val json : JsonObject = JsonObject(
