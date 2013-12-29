@@ -236,7 +236,8 @@ object Asset extends TableId[Asset]("asset") {
 
 
   def get(a : Asset.Id)(implicit site : Site) : Future[Option[Asset]] =
-    row.SELECT("WHERE asset.id = ?").apply(a).singleOpt
+    row.SELECT("WHERE asset.id = ? AND", Volume.condition)
+      .apply(a +: Volume.conditionArgs).singleOpt
 
   def getOlder(a : Asset, o : Id) : Future[Option[Asset]] =
     volumeRow(a.volume)

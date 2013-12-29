@@ -122,9 +122,6 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
       LEFT JOIN excerpt JOIN slot AS slot_excerpt ON excerpt.slot = slot_excerpt.id
         ON asset_slot.asset = excerpt.asset AND slot_asset.source = slot_excerpt.source AND ?::segment <@ slot_excerpt.segment""")
     .join(Asset.columns, "asset_slot.asset = asset.id")
-    .map { case ((segment, excerpt), asset) =>
-      (slot : AbstractSlot) => make(asset(slot.volume), segment, slot, excerpt)
-    }
 
   /** Retrieve a single SlotAsset by asset id and slot id.
     * This checks permissions on the slot('s container's volume) which must also be the asset's volume.
@@ -142,9 +139,20 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   /** Retrieve the list of all assets within the given slot. */
   private[models] def getSlotAll(slot : AbstractSlot) : Future[Seq[SlotAsset]] =
-    base.map(_(slot))
-      .SELECT("WHERE slot_asset.source = ? AND slot_asset.segment && ?::segment")
-      .apply(slot.segment, slot.containerId, slot.segment).list
+    base.map { case ((segment, excerpt), asset) =>
+        make(asset(slot.volume), segment, slot, excerpt)
+      }
+      .SELECT("WHERE slot_asset.source = ? AND slot_asset.segment && ?::segment AND asset.volume = ?")
+      .apply(slot.segment, slot.containerId, slot.segment, slot.volumeId).list
+
+  /** Retrieve the list of all foreign assets (from a different volume) within the given slot. */
+  private[models] def getSlotForeign(slot : AbstractSlot)(implicit site : Site) : Future[Seq[SlotAsset]] =
+    base.join(Volume.row, "asset.volume = volume.id")
+      .map { case (((segment, excerpt), asset), vol) =>
+        make(asset(vol), segment, slot, excerpt)
+      }
+      .SELECT("WHERE slot_asset.source = ? AND slot_asset.segment && ?::segment AND asset.volume != ? AND", Volume.condition)
+      .apply(SQLArgs(slot.segment, slot.containerId, slot.segment, slot.volumeId) ++ Volume.conditionArgs).list
 
   /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */
   private[models] def getAsset(asset : Asset) : Future[Option[SlotAsset]] =
