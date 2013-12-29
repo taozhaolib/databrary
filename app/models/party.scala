@@ -10,21 +10,24 @@ import site._
 /** Any real-world individual, group, institution, etc.
   * Instances are generally obtained from [[Party.get]] or [[Party.create]].
   * @param delegated permission delegated by this party to the current user */
-final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid]) extends TableRowId[Party] with SitePage {
+final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid], affiliation_ : Option[String]) extends TableRowId[Party] with SitePage {
   private[this] var _name = name_
   def name = _name
   private[this] var _orcid = orcid_
   def orcid = _orcid
+  private[this] var _affiliation = affiliation_
+  def affiliation = _affiliation
 
   private[models] var _account : Option[Account] = None
   def account = _account
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : Option[String] = None, orcid : Option[Option[Orcid]] = None)(implicit site : Site) : Future[Boolean] = {
-    Audit.change("party", SQLTerms.flatten(name.map('name -> _), orcid.map('orcid -> _)), SQLTerms('id -> id))
+  def change(name : Option[String] = None, orcid : Option[Option[Orcid]] = None, affiliation : Option[Option[String]])(implicit site : Site) : Future[Boolean] = {
+    Audit.change("party", SQLTerms.flatten(name.map('name -> _), orcid.map('orcid -> _), affiliation.map('affiliation -> _)), SQLTerms('id -> id))
       .execute.andThen { case scala.util.Success(true) =>
         name.foreach(_name = _)
         orcid.foreach(_orcid = _)
+        affiliation.foreach(_affiliation = _)
       }
   }
 
@@ -61,6 +64,7 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
     JsonRecord.flatten(id,
       Some('name -> name), 
       orcid.map('orcid -> _), 
+      affiliation.map('affiliation -> _), 
       account.filter(_ => site.access >= Permission.VIEW).map('email -> _.email),
       Some('avatar -> views.html.display.avatar(this))
     )
@@ -149,8 +153,9 @@ object Party extends TableId[Party]("party") {
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
     , SelectColumn[Option[Orcid]]("orcid")
-    ).map { (id, name, orcid) =>
-      new Party(id, name, orcid)
+    , SelectColumn[Option[String]]("affiliation")
+    ).map { (id, name, orcid, affiliation) =>
+      new Party(id, name, orcid, affiliation)
     }
   private[models] val row : Selector[Party] =
     columns.leftJoin(Account.columns, using = 'id)
@@ -173,7 +178,7 @@ object Party extends TableId[Party]("party") {
   /** Create a new party. */
   def create(name : String)(implicit site : Site) : Future[Party] =
     Audit.add(table, SQLTerms('name -> name), "id").single(SQLCols[Id])
-      .map(new Party(_, name, None))
+      .map(new Party(_, name, None, None))
 
   private def byName = "(name ILIKE ? OR email ILIKE ?)"
   private def byNameArgs(name : String) =
@@ -199,10 +204,10 @@ object Party extends TableId[Party]("party") {
   final val ROOT   : Id = asId(0)
   /** The special party group representing everybody (including anonymous users) on the site.
     * This is also in the database, but is cached here for special handling. */
-  final val Nobody = new Party(NOBODY, "Everybody", None)
+  final val Nobody = new Party(NOBODY, "Everybody", None, None)
   /** The special party group representing authorized users on the site.
     * This is also in the database, but is cached here for special handling. */
-  final val Root   = new Party(ROOT,   "Databrary", None)
+  final val Root   = new Party(ROOT,   "Databrary", None, None)
 }
 
 object SiteParty {

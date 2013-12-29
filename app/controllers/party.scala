@@ -53,7 +53,7 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
   protected def adminAccount(implicit request : Request[_]) : Option[Account] =
     request.obj.party.account.filter(_ === request.identity || request.superuser)
 
-  type EditMapping = (Option[String], Option[Option[Orcid]], Option[(String, Option[String], Option[String], Option[String])])
+  type EditMapping = (Option[String], Option[Option[Orcid]], Option[String], Option[(String, Option[String], Option[String], Option[String])])
   type EditForm = Form[EditMapping]
   protected def formFill(implicit request : Request[_]) : EditForm = {
     val e = request.obj.party
@@ -62,13 +62,14 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
       "name" -> OptionMapping(nonEmptyText),
       "orcid" -> OptionMapping(text(0,20).transform[Option[Orcid]](Maybe(_).opt.map(Orcid.apply _), _.fold("")(_.toString)))
         .verifying(Messages("orcid.invalid"), _.flatten.fold(true)(_.valid)),
+      "affiliation" -> OptionMapping(text),
       "" -> MaybeMapping(acct.map(_ => tuple(
         "auth" -> text,
         "email" -> OptionMapping(email),
         "password" -> passwordMapping,
         "openid" -> OptionMapping(text(0,256))
       )))
-    )).fill((Some(e.name), Some(e.orcid), acct.map(a => ("", Some(a.email), None, a.openid))))
+    )).fill((Some(e.name), Some(e.orcid), Some(e.affiliation.getOrElse("")), acct.map(a => ("", Some(a.email), None, a.openid))))
   }
 
   def formForAccount(form : EditForm)(implicit request : Request[_]) =
@@ -81,11 +82,11 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
     val party = request.obj.party
     val acct = adminAccount
     form.fold(bad _, {
-      case (_, _, Some((cur, _, _, _))) if !acct.fold(false)(a => BCrypt.checkpw(cur, a.password)) =>
+      case (_, _, _, Some((cur, _, _, _))) if !acct.fold(false)(a => BCrypt.checkpw(cur, a.password)) =>
         bad(form.withError("cur_password", "password.incorrect"))
-      case (name, orcid, accts) =>
+      case (name, orcid, affiliation, accts) =>
         for {
-          _ <- party.change(name = name, orcid = orcid)
+          _ <- party.change(name = name, orcid = orcid, affiliation = affiliation.map(Maybe(_).opt))
           _ <- macros.Async.map[(String, Option[String], Option[String], Option[String]), Boolean](accts, { case (_, email, password, openid) =>
             val a = acct.get
             a.change(

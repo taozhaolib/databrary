@@ -93,7 +93,8 @@ COMMENT ON FUNCTION audit.CREATE_TABLE (name) IS 'Create an audit.$1 table mirro
 CREATE TABLE "party" (
 	"id" serial NOT NULL Primary Key,
 	"name" text NOT NULL,
-	"orcid" char(16)
+	"orcid" char(16),
+	"affiliation" text
 );
 COMMENT ON TABLE "party" IS 'Users, groups, organizations, and other logical identities';
 
@@ -700,12 +701,12 @@ COMMENT ON TABLE "session" IS 'Tokens associated with currently logged-in sessio
 
 ----------------------------------------------------------- bootstrap/test data
 
-INSERT INTO party (id, name, orcid) VALUES (1, 'Dylan Simon', '0000000227931679');
-INSERT INTO party (id, name) VALUES (2, 'Mike Continues');
-INSERT INTO party (id, name) VALUES (3, 'Lisa Steiger');
-INSERT INTO party (id, name) VALUES (4, 'Andrea Byrne');
-INSERT INTO party (id, name) VALUES (5, 'Karen Adolph');
-INSERT INTO party (id, name) VALUES (6, 'Rick Gilmore');
+INSERT INTO party (id, name, orcid, affiliation) VALUES (1, 'Dylan Simon', '0000000227931679', 'Databrary');
+INSERT INTO party (id, name, affiliation) VALUES (2, 'Mike Continues', 'Databrary');
+INSERT INTO party (id, name, affiliation) VALUES (3, 'Lisa Steiger', 'Databrary');
+INSERT INTO party (id, name, affiliation) VALUES (4, 'Andrea Byrne', 'Databrary');
+INSERT INTO party (id, name, affiliation) VALUES (5, 'Karen Adolph', 'New York University');
+INSERT INTO party (id, name, affiliation) VALUES (6, 'Rick Gilmore', 'Penn State University');
 SELECT setval('party_id_seq', 6);
 
 INSERT INTO account (id, email, openid) VALUES (1, 'dylan@databrary.org', 'http://dylex.net/');
