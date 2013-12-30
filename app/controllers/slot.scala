@@ -1,6 +1,5 @@
 package controllers
 
-import site._
 import play.api._
 import          Play.current
 import          mvc._
@@ -9,6 +8,7 @@ import               Forms._
 import          i18n.Messages
 import          libs.json._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import site._
 import dbrary._
 import models._
 
@@ -54,26 +54,9 @@ private[controllers] sealed class SlotController extends ObjectController[Abstra
         }
       )
     }
-
-  type TagMapping = (Option[String], Option[Boolean])
-  type TagForm = Form[TagMapping]
-  val tagForm : TagForm = Form(tuple(
-    "name" -> OptionMapping(nonEmptyText),
-    "vote" -> optional(boolean)
-  ))
-
-  def tag(i : models.Slot.Id, start : Option[Offset], end : Option[Offset], name : String = "") =
-    (SiteAction.access(Permission.VIEW) ~> action(i, start, end)).async { implicit request =>
-      tagForm.bindFromRequest().fold(
-        AbadForm[TagMapping](f => SlotHtml.show(tagForm = f), _),
-        { case (name2, vote) =>
-          for {
-            _ <- request.obj.setTag(name2.getOrElse(name), vote)(request.asInstanceOf[AuthSite])
-          } yield (result(request.obj))
-        }
-      )
-    }
 }
+
+object SlotController extends SlotController
 
 object SlotHtml extends SlotController {
   private[controllers] def actionId(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW) =
@@ -82,14 +65,14 @@ object SlotHtml extends SlotController {
   private[controllers] def ActionId(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW) =
     SiteAction ~> actionId(v, i, p)
 
-  private[controllers] def show(commentForm : CommentForm = commentForm, tagForm : TagForm = tagForm)(implicit request : Request[_]) = {
+  private[controllers] def show(commentForm : CommentForm = commentForm, tagForm : TagHtml.TagForm = TagHtml.tagForm)(implicit request : Request[_]) = {
     val slot = request.obj
     for {
       records <- slot.records
       assets <- slot.assets
       comments <- slot.comments
       tags <- slot.tags
-    } yield (views.html.slot.view(records, assets, comments, commentForm, tags, tagForm))
+    } yield (views.html.slot.view(records, assets, comments, commentForm, tags, TagHtml.tagForm))
   }
 
   def view(i : models.Slot.Id, start : Option[Offset] = None, end : Option[Offset] = None) = Action(i, start, end).async { implicit request =>

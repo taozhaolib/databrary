@@ -113,7 +113,7 @@ class SiteController extends Controller {
   def forbidden(implicit request : SiteRequest[_]) : SimpleResult =
     if (request.isApi) Forbidden
     else Forbidden // FIXME: blank page
-  protected implicit val jsonFormErrors : json.OWrites[Seq[FormError]] =
+  protected final implicit val jsonFormErrors : json.OWrites[Seq[FormError]] =
     json.OWrites[Seq[FormError]](errs =>
       json.JsObject(errs
         .groupBy(e => Maybe(e.key).orElse("error"))
@@ -138,7 +138,7 @@ class SiteController extends Controller {
 class ObjectController[O <: SiteObject] extends SiteController {
   type Request[A] = RequestObject[O]#Site[A]
 
-  protected def result(o : O)(implicit request : SiteRequest[_]) : SimpleResult =
+  private[controllers] def result(o : O)(implicit request : SiteRequest[_]) : SimpleResult =
     if (request.isApi) Ok(o.json.js)
     else Redirect(o.pageURL)
 }

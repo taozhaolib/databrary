@@ -24,7 +24,7 @@ abstract class StructForm {
     final def mapping(key : String) = map.withPrefix(key)
     def bind(key : String, data : Map[String,String]) : Option[Seq[FormError]]
     final def unbind(key : String) = mapping(key).unbind(value)
-    final def field(form : Form[_]) = form(name)
+    final def field = self.apply.form(name) // XXX nested structs
   }
   protected sealed class StructField[T] private[StructForm] (name : String, _map : Mapping[T]) extends StructMember[T](name, _map) {
     var value : T = _
@@ -84,9 +84,7 @@ abstract class StructForm {
     val mappings : Seq[Mapping[_]] =
       this +: fields.flatMap(_.mapping(key).mappings)
 
-    protected[StructMapping] class StructMappingForm private[StructMapping] (mapping : StructMapping, data : Map[String, String], errors : Seq[FormError], value : Option[self.type]) extends Form[self.type](mapping, data, errors, value) {
-      def field(f : self.type => StructMember[_]) : Field = f(self).field(this)
-    }
+    protected[StructMapping] class StructMappingForm private[StructMapping] (mapping : StructMapping, data : Map[String, String], errors : Seq[FormError], value : Option[self.type]) extends Form[self.type](mapping, data, errors, value)
     def form = new StructMappingForm(this, Map.empty, Nil, None)
   }
 

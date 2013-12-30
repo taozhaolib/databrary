@@ -80,7 +80,7 @@ GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<
 # annotations
 POST    /slot/$sID<[0-9]+>/comment/create                                                         controllers.SlotHtml.comment(sID : models.Slot.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None, parent : Option[models.Comment.Id] ?= None)
 
-POST    /slot/$sID<[0-9]+>/tag                                                                    controllers.SlotHtml.tag(sID : models.Slot.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None, name : String ?= "")
+POST    /slot/$sID<[0-9]+>/tag                                                                    controllers.TagHtml.update(name : String ?= "", sID : models.Slot.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
 
 # records
 POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                         controllers.RecordHtml.slotRemove(vID : models.Volume.Id, sID : models.Slot.Id, rID : models.Record.Id, editRedirect : Boolean = false)
@@ -129,7 +129,9 @@ POST    /api/record                                                             
 GET     /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.get(assetId : models.Asset.Id)
 
 POST    /api/comment                                                                              controllers.SlotApi.comment(container : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None, parent : Option[models.Comment.Id] ?= None)
-POST    /api/tag/:name                                                                            controllers.SlotApi.tag(container : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None, name : String)
+
+GET     /api/tag/:name                                                                            controllers.TagApi.get(name : String)
+POST    /api/tag/:name                                                                            controllers.TagApi.update(name : String, container : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
 
 # static resources
 GET     /public/*file                                                                             controllers.Assets.at(path="/public", file)
