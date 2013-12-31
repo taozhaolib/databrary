@@ -187,6 +187,12 @@ object Record extends TableId[Record]("record") {
       .SELECT("JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id WHERE slot.source = ? AND slot.segment && ?::segment AND record.volume = ?")
       .apply(slot.containerId, slot.segment, slot.volumeId).list
 
+  /** Retrieve the list of all foreign records (from a different volume) that apply to the given slot. */
+  private[models] def getSlotForeign(slot : AbstractSlot)(implicit site : Site) : Future[Seq[Record]] =
+    row
+      .SELECT("JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id WHERE slot.source = ? AND slot.segment && ?::segment AND record.volume <> ? AND", Volume.condition)
+      .apply(SQLArgs(slot.containerId, slot.segment, slot.volumeId) ++ Volume.conditionArgs).list
+
   /** Retrieve all the categorized records associated with the given volume.
     * @param category restrict to the specified category, or include all categories
     * @return records sorted by category, ident */

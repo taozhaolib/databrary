@@ -151,7 +151,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
       .map { case (((segment, excerpt), asset), vol) =>
         make(asset(vol), segment, slot, excerpt)
       }
-      .SELECT("WHERE slot_asset.source = ? AND slot_asset.segment && ?::segment AND asset.volume != ? AND", Volume.condition)
+      .SELECT("WHERE slot_asset.source = ? AND slot_asset.segment && ?::segment AND asset.volume <> ? AND", Volume.condition)
       .apply(SQLArgs(slot.segment, slot.containerId, slot.segment, slot.volumeId) ++ Volume.conditionArgs).list
 
   /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */
