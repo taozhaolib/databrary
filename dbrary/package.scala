@@ -1,4 +1,6 @@
 package object dbrary {
+  type Segment = Range[Offset]
+
   import org.joda.time
   /* All times are assumed to be UTC. */
   type Date = time.LocalDate

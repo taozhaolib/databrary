@@ -67,12 +67,21 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
     )
   }
 
+  def remove(r : models.Record.Id, s : models.Slot.Id, editRedirect : Boolean = false) = Action(r, Permission.EDIT).async { implicit request =>
+    request.obj.removeSlot(s).map { _ =>
+      if (editRedirect)
+        Redirect(controllers.routes.SlotHtml.edit(s))
+      else
+        result(request.obj)
+    }
+  }
+
   type SelectForm = Form[Option[models.Record.Id]]
   protected[controllers] val selectForm = Form(
     "record" -> optional(of[models.Record.Id])
   )
 
-  private[controllers] def selectList(target : Slot)(implicit request : SiteRequest[_]) : Future[Seq[(String, String)]] =
+  private[controllers] def selectList(target : AbstractSlot)(implicit request : SiteRequest[_]) : Future[Seq[(String, String)]] =
     /* ideally we'd remove already used records here */
     target.volume.allRecords().map(_ map { r : Record =>
       (r.id.toString, r.category.fold("")(_.name + ':') + r.ident)
@@ -132,19 +141,11 @@ object RecordHtml extends RecordController {
     Ok(viewEdit(m, f))
   }
 
-  def slotRemove(v : models.Volume.Id, s : models.Slot.Id, r : models.Record.Id, editRedirect : Boolean = false) = SlotHtml.ActionId(v, s, Permission.EDIT).async { implicit request =>
-    request.obj.removeRecord(r).map { _ =>
-      if (editRedirect)
-        Redirect(controllers.routes.SlotHtml.edit(v, s))
-      else
-        Redirect(request.obj.pageURL)
-    }
-  }
-
   def slotAdd(v : models.Volume.Id, s : models.Slot.Id, catID : models.RecordCategory.Id, editRedirect : Boolean = false) = SlotHtml.ActionId(v, s, Permission.EDIT).async { implicit request =>
+    def bad(form : SelectForm) =
+      SlotHtml.viewEdit(request.obj)(recordForm = form).map(BadRequest(_))
     val form = selectForm.bindFromRequest
-    form.fold(
-      form => SlotHtml.viewEdit(SlotHtml.BadRequest, request.obj)(recordForm = form),
+    form.fold(bad _,
       _.fold {
         val cat = RecordCategory.get(catID)
         for {
@@ -153,14 +154,13 @@ object RecordHtml extends RecordController {
         } yield (Created(views.html.record.edit(r, cat.fold[Seq[Metric[_]]](Nil)(_.template), editForm.fill((Some(cat), Seq())), jsonCategories, jsonMetrics)))
       } (models.Record.get(_).flatMap(_
         .filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId === v)
-        .fold(
-          SlotHtml.viewEdit(SlotHtml.BadRequest, request.obj)(recordForm = form.withError("record", "record.bad"))
-        ) { r => r.addSlot(request.obj).map { _ =>
+        .fold(bad(form.withError("record", "record.bad")))(
+          _.addSlot(request.obj).map { _ =>
           if (editRedirect)
-            Redirect(controllers.routes.SlotHtml.edit(v, s))
+            Redirect(controllers.routes.SlotHtml.edit(s))
           else
-            Redirect(request.obj.pageURL)
-        } }
+            SlotHtml.result(request.obj)
+        })
       ))
     )
   }

@@ -112,6 +112,8 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
       .apply(id).list
   /** Attach this record to a slot. */
   def addSlot(s : Slot) = Record.addSlot(id, s.id)
+  /** Remove this record from a slot. */
+  def removeSlot(s : Slot.Id) = Record.removeSlot(id, s)
 
   /** The set of assets to which this record applies. */
   def assets : Future[Seq[SlotAsset]] =

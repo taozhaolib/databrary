@@ -10,7 +10,7 @@ import site._
 /** Conceptually a slot represents a segment of a container. */
 trait AbstractSlot extends InVolume with SiteObject {
   def container : Container
-  val segment : Range[Offset]
+  val segment : Segment
 
   final def containerId : Container.Id = container.id
   def volume = container.volume
@@ -26,6 +26,8 @@ trait AbstractSlot extends InVolume with SiteObject {
   private[models] def sqlId : String
   private[models] def sqlArgs : SQLArgs
 
+  /** Directly assigned consent for covered assets, or NONE. */
+  def consent : Consent.Value
   /** The relevant consented slot containing this one. */
   def context : Slot
   /** The effective consent level that applies to contained data. */
@@ -101,9 +103,8 @@ trait AbstractSlot extends InVolume with SiteObject {
 /** Smallest organizatonal unit of related data.
   * Primarily used for an individual session of data with a single date and place.
   * Critically, contained data are should be covered by a single consent level and share the same annotations. */
-abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], consent_ : Consent.Value = Consent.NONE) extends TableRowId[Slot] with AbstractSlot {
+abstract class Slot protected (val id : Slot.Id, val segment : Segment, consent_ : Consent.Value = Consent.NONE) extends TableRowId[Slot] with AbstractSlot {
   private[this] final var _consent = consent_
-  /** Directly assigned consent for covered assets. */
   final def consent = _consent
 
   final override def realize = Async(this)
@@ -139,8 +140,6 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
   /** The list of records on this object.
     */
   override final def records : Future[Seq[Record]] = _records.apply
-  /** Remove the given record from this slot. */
-  final def removeRecord(rec : Record.Id) : Future[Boolean] = Record.removeSlot(rec, id)
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */
   private final def idents : Seq[String] =
@@ -167,7 +166,7 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
   override def pageParent = Some(if (isContext) volume else context)
   override def pageURL = controllers.routes.SlotHtml.view(id)
   override def pageActions = super.pageActions ++ Seq(
-    Action("edit", controllers.routes.SlotHtml.edit(volumeId, id), Permission.EDIT),
+    Action("edit", controllers.routes.SlotHtml.edit(id), Permission.EDIT),
     Action("add file", controllers.routes.AssetHtml.create(volumeId, id), Permission.CONTRIBUTE),
     // Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
     Action("add participant", controllers.routes.RecordHtml.slotAdd(volumeId, id, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
@@ -175,7 +174,7 @@ abstract class Slot protected (val id : Slot.Id, val segment : Range[Offset], co
 }
 
 object Slot extends TableId[Slot]("slot") {
-  private final class SubSlot (id : Slot.Id, val container : Container, segment : Range[Offset], consent_ : Consent.Value = Consent.NONE) extends Slot(id, segment, consent_) {
+  private final class SubSlot (id : Slot.Id, val container : Container, segment : Segment, consent_ : Consent.Value = Consent.NONE) extends Slot(id, segment, consent_) {
     /* must be set on construction */
     private[Slot] var _context : Slot = if (isContext) this else container
     /** The relevant consented slot containing this one.
@@ -183,8 +182,9 @@ object Slot extends TableId[Slot]("slot") {
     def context = _context
   }
   /** A slot that is not (necessarily) in the database, but for which we know all the relevant information. */
-  private final class VirtualSlot (val segment : Range[Offset], val context : Slot) extends AbstractSlot {
+  private final class VirtualSlot (val segment : Segment, val context : Slot) extends AbstractSlot {
     def container = context.container
+    def consent = Consent.NONE
     def realize = Slot.getOrCreate(container, segment)
     private[models] def sqlId : String = "get_slot(?, ?::segment)"
     private[models] def sqlArgs : SQLArgs = SQLArgs(containerId, segment)
@@ -192,7 +192,7 @@ object Slot extends TableId[Slot]("slot") {
 
   private val base = Columns(
       SelectColumn[Id]("id")
-    , SelectColumn[Range[Offset]]("segment")
+    , SelectColumn[Segment]("segment")
     , SelectColumn[Consent.Value]("consent")
     ).map { (id, segment, consent) =>
       (container : Container) =>
@@ -231,6 +231,15 @@ object Slot extends TableId[Slot]("slot") {
     columns.join(Container.volumeRow(volume), "slot.source = container.id") map {
       case (slot, cont) => slot(cont)
     }
+  private[models] def abstractRow(segment : Segment)(implicit site : Site) = Container.row
+    .leftJoin(base, "container.id = slot.source AND slot.segment = ?::segment")
+    .leftJoin(context, "container.id = context.source AND ?::segment <@ context.segment AND context.consent IS NOT NULL")
+    .pushArgs(SQLArgs(segment, segment))
+    .map {
+      case ((c, Some(slot)), _) => slot(c)
+      case ((c, None), None) => new VirtualSlot(segment, c)
+      case ((c, None), Some(slot)) => new VirtualSlot(segment, slot(c))
+    }
 
   /** Retrieve an individual Slot.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access.
@@ -239,31 +248,24 @@ object Slot extends TableId[Slot]("slot") {
     row.SELECT("WHERE slot.id = ? AND", Volume.condition)
       .apply(i +: Volume.conditionArgs).singleOpt
 
-  def get(id : Slot.Id, segment : Range[Offset])(implicit site : Site) : Future[Option[AbstractSlot]] =
+  def get(id : Slot.Id, segment : Segment)(implicit site : Site) : Future[Option[AbstractSlot]] =
     if (segment.isFull) /* may be container or actual slot id */
       get(id)
-    else /* must be container id */ Container.row
-      .leftJoin(base, "container.id = slot.source AND slot.segment = ?::segment")
-      .leftJoin(context, "container.id = context.source AND ?::segment <@ context.segment AND context.consent IS NOT NULL")
-      .map {
-        case ((c, Some(slot)), _) => slot(c)
-        case ((c, None), None) => new VirtualSlot(segment, c)
-        case ((c, None), Some(slot)) => new VirtualSlot(segment, slot(c))
-      }
+    else /* must be container id */ abstractRow(segment)
       .SELECT("WHERE container.id = ? AND", Volume.condition)
-      .apply(SQLArgs(segment, segment, id) ++ Volume.conditionArgs).singleOpt
+      .apply(id +: Volume.conditionArgs).singleOpt
 
   /** Retrieve a list of slots within the given container. */
   private[models] def getContainer(c : Container) : Future[Seq[Slot]] =
     containerRow(c).SELECT("WHERE slot.source = ? ORDER BY slot.segment")
       .apply(c.id).list
 
-  private def _get(container : Container, segment : Range[Offset])(implicit dbc : Site.DB, exc : ExecutionContext) : Future[Option[Slot]] =
+  private def _get(container : Container, segment : Segment)(implicit dbc : Site.DB, exc : ExecutionContext) : Future[Option[Slot]] =
     containerRow(container).SELECT("WHERE slot.source = ? AND slot.segment = ?::segment")(dbc, exc)
       .apply(container.id, segment).singleOpt
 
   /** Create a new slot in the specified container or return a matching one if it already exists. */
-  def getOrCreate(container : Container, segment : Range[Offset]) : Future[Slot] =
+  def getOrCreate(container : Container, segment : Segment) : Future[Slot] =
     if (segment.isFull) Async(container) else
     DBUtil.selectOrInsert(_get(container, segment)(_, _)) { (dbc, exc) =>
       val args = SQLTerms('source -> container.id, 'segment -> segment)

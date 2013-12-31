@@ -113,8 +113,9 @@ object AssetHtml extends AssetController {
   }
 
   def upload(v : models.Volume.Id, c : models.Slot.Id) = SlotHtml.ActionId(v, c, Permission.CONTRIBUTE).async { implicit request =>
+    val slot = request.obj
     def error(form : AssetForm) : Future[SimpleResult] =
-      ABadRequest(views.html.asset.edit(Left(request.obj), form))
+      ABadRequest(views.html.asset.edit(Left(slot), form))
     val form = uploadForm.bindFromRequest
     form.fold(error _, {
       case (name, body, classification, Some((format, timeseries, localfile, ()))) =>
@@ -145,12 +146,12 @@ object AssetHtml extends AssetController {
             asset <- fmt match {
               case fmt : TimeseriesFormat if adm && timeseries =>
                 val probe = media.AV.probe(file.file)
-                models.Asset.create(request.obj.volume, fmt, classification, probe.duration, aname, abody, file)
+                models.Asset.create(slot.volume, fmt, classification, probe.duration, aname, abody, file)
               case _ =>
-                models.Asset.create(request.obj.volume, fmt, classification, aname, abody, file)
+                models.Asset.create(slot.volume, fmt, classification, aname, abody, file)
             }
             _ <- asset.link(request.obj)
-          } yield (Redirect(controllers.routes.SlotAssetHtml.view(request.obj.volumeId, request.obj.id, asset.id)))
+          } yield (Redirect(controllers.routes.SlotAssetHtml.view(slot.containerId, slot.segment.lowerBound, slot.segment.upperBound, asset.id)))
         })
       case _ => error(uploadForm) /* should not happen */
     })

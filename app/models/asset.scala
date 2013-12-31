@@ -116,7 +116,7 @@ trait TimeseriesData extends BackedAsset {
   def source : Timeseries
   /** The range of times represented by this object.
     * Should be a valid, finite, bounded range. */
-  def segment : Range[Offset]
+  def segment : Segment
   def entire : Boolean
   /** Length of time represented by this object, which may be zero if it is a single sample. */
   def duration : Offset = segment.zip((l,u) => u-l).get
@@ -197,7 +197,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
 final class Timeseries private[models] (id : Asset.Id, volume : Volume, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, name : String, body : Option[String], sha1 : Array[Byte]) extends Asset(id, volume, format, classification, name, body, sha1) with TimeseriesData {
   override def source = this
   def entire = true
-  def segment : Range[Offset] = Range[Offset](Offset.ZERO, duration)
+  def segment : Segment = Segment(Offset.ZERO, duration)
 }
 
 final case class TimeseriesSample private[models] (val parent : TimeseriesData, val offset : Offset) extends TimeseriesData {

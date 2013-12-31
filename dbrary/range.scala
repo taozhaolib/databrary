@@ -167,6 +167,11 @@ object Range {
     }
 }
 
+object Segment {
+  def singleton(x : Offset) : Segment = Range.singleton[Offset](x)
+  def apply(lb : Offset, ub : Offset) : Segment = Range.apply[Offset](lb, ub)
+}
+
 abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends RangeType[A] {
   implicit val sqlType = SQLType[Range[A]](name, classOf[Range[A]])({ s =>
     if (s.equals("empty") || s.isEmpty)

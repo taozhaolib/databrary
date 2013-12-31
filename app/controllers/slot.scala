@@ -13,13 +13,14 @@ import dbrary._
 import models._
 
 private[controllers] sealed class SlotController extends ObjectController[AbstractSlot] {
-  private[controllers] def action(i : models.Slot.Id, start : Option[Offset] = None, end : Option[Offset] = None, p : Permission.Value = Permission.VIEW) =
-    RequestObject.check(models.Slot.get(i, Range[Offset](start, end))(_), p)
+  private[controllers] def action(i : Slot.Id, start : Option[Offset] = None, end : Option[Offset] = None, p : Permission.Value = Permission.VIEW) =
+    RequestObject.check(Slot.get(i, Range[Offset](start, end))(_), p)
 
-  private[controllers] def Action(i : models.Slot.Id, start : Option[Offset] = None, end : Option[Offset] = None, p : Permission.Value = Permission.VIEW) =
+  private[controllers] def Action(i : Slot.Id, start : Option[Offset] = None, end : Option[Offset] = None, p : Permission.Value = Permission.VIEW) =
     SiteAction ~> action(i, start, end, p)
 
-  type EditForm = Form[(Option[(Option[String], Option[Date])], Consent.Value)]
+  type EditMapping = (Option[(Option[String], Option[Date])], Consent.Value)
+  type EditForm = Form[EditMapping]
   protected def editForm(container : Boolean) : EditForm = Form(tuple(
     "" -> MaybeMapping(if (container) Some(tuple(
       "name" -> optional(nonEmptyText),
@@ -27,14 +28,28 @@ private[controllers] sealed class SlotController extends ObjectController[Abstra
     )) else None),
     "consent" -> Field.enum(Consent)
   ))
-  protected def editFormFill(s : Slot) = {
+  protected def editFormFill(s : AbstractSlot) = {
     val full = s.isFull
     val cont = (if (full) Some(s.container) else None)
     editForm(full).fill((cont.map(c => (c.name, c.date)), s.consent))
   }
 
-  def formForContainer(form : EditForm, slot : Slot) =
+  def formForContainer(form : EditForm, slot : AbstractSlot) =
     form.value.fold(slot.isFull)(_._1.isDefined)
+
+  def update(i : Slot.Id, start : Option[Offset], end : Option[Offset]) = Action(i, start, end, Permission.EDIT).async { implicit request =>
+    editFormFill(request.obj).bindFromRequest.fold(
+      AbadForm[EditMapping](f => SlotHtml.viewEdit(request.obj)(editForm = f), _),
+      { case (container, consent) =>
+        for {
+          _ <- macros.Async.map[(Option[String], Option[Date]), Boolean](container, {
+            case (name, date) => request.obj.container.change(name = Some(name), date = Some(date))
+          })
+          _ <- request.obj.setConsent(consent)
+        } yield (result(request.obj))
+      }
+    )
+  }
 
   type CommentMapping = (String, Option[Comment.Id])
   type CommentForm = Form[CommentMapping]
@@ -43,7 +58,7 @@ private[controllers] sealed class SlotController extends ObjectController[Abstra
     "parent" -> OptionMapping(of[Comment.Id])
   ))
 
-  def comment(i : models.Slot.Id, start : Option[Offset], end : Option[Offset], parent : Option[Comment.Id] = None) =
+  def comment(i : Slot.Id, start : Option[Offset], end : Option[Offset], parent : Option[Comment.Id] = None) =
     (SiteAction.access(Permission.VIEW) ~> action(i, start, end)).async { implicit request =>
       commentForm.bindFromRequest.fold(
         AbadForm[CommentMapping](f => SlotHtml.show(commentForm = f), _),
@@ -82,35 +97,21 @@ object SlotHtml extends SlotController {
       show().map(Ok(_))
   }
 
-  private[controllers] def viewEdit(status : Status, slot : Slot)(
+  private[controllers] def viewEdit(slot : AbstractSlot)(
     editForm : EditForm = editFormFill(slot),
     recordForm : RecordHtml.SelectForm = RecordHtml.selectForm)(
     implicit request : Request[_]) = {
     RecordHtml.selectList(slot).map { selectList =>
-      status(views.html.slot.edit(Right(slot), editForm, Some(recordForm), selectList))
+      views.html.slot.edit(Right(slot), editForm, Some(recordForm), selectList)
     }
   }
 
-  def edit(v : models.Volume.Id, i : models.Slot.Id) = ActionId(v, i, Permission.EDIT).async { implicit request =>
-    viewEdit(Ok, request.obj)()
+  def edit(i : models.Slot.Id, start : Option[Offset] = None, end : Option[Offset] = None) = Action(i, start, end, Permission.EDIT).async { implicit request =>
+    viewEdit(request.obj)().map(Ok(_))
   }
 
   def createContainer(v : models.Volume.Id) = VolumeController.Action(v, Permission.EDIT) { implicit request =>
     Ok(views.html.slot.edit(Left(request.obj), editForm(true), None))
-  }
-
-  def change(v : models.Volume.Id, i : models.Slot.Id) = ActionId(v, i, Permission.EDIT).async { implicit request =>
-    editFormFill(request.obj).bindFromRequest.fold(
-      form => viewEdit(BadRequest, request.obj)(editForm = form),
-      { case (container, consent) =>
-        for {
-          _ <- macros.Async.map[(Option[String], Option[Date]), Boolean](container, {
-            case (name, date) => request.obj.container.change(name = Some(name), date = Some(date))
-          })
-          _ <- request.obj.setConsent(consent)
-        } yield (Redirect(request.obj.pageURL))
-      }
-    )
   }
 
   def addContainer(s : models.Volume.Id) = VolumeController.Action(s, Permission.CONTRIBUTE).async { implicit request =>
