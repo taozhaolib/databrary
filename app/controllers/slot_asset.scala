@@ -4,21 +4,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import dbrary._
 import models._
 
-object SlotAssetController extends ObjectController[SlotAsset] {
-  private[controllers] def action(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW, full : Boolean = false) =
-    RequestObject.check(v, models.SlotAsset.get(a, i, full)(_), p)
-
-  private[controllers] def Action(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW, full : Boolean = false) =
-    SiteAction ~> action(v, i, a, p, full)
-
-  def view(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id) = Action(v, i, a) { implicit request =>
-    Ok(views.html.asset.view(request.obj))
-  }
-
-  def download(v : models.Volume.Id, s : models.Slot.Id, o : models.Asset.Id, inline : Boolean) = Action(v, s, o, Permission.DOWNLOAD).async { implicit request =>
-    AssetController.assetResult(request.obj, if (inline) None else Some(request.obj.asset.name))
-  }
-
+private[controllers] sealed class SlotAssetController extends ObjectController[SlotAsset] {
   private[controllers] def getFrame(offset : Either[Float,Offset])(implicit request : Request[_]) =
     request.obj match {
       case ts : SlotTimeseries =>
@@ -34,6 +20,24 @@ object SlotAssetController extends ObjectController[SlotAsset] {
         else
           AssetController.assetResult(request.obj)
     }
+}
+
+object SlotAssetController extends SlotAssetController
+
+object SlotAssetHtml extends SlotAssetController {
+  private[controllers] def action(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW, full : Boolean = false) =
+    RequestObject.check(v, models.SlotAsset.get(a, i, full)(_), p)
+
+  private[controllers] def Action(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW, full : Boolean = false) =
+    SiteAction ~> action(v, i, a, p, full)
+
+  def view(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id) = Action(v, i, a) { implicit request =>
+    Ok(views.html.asset.view(request.obj))
+  }
+
+  def download(v : models.Volume.Id, s : models.Slot.Id, o : models.Asset.Id, inline : Boolean) = Action(v, s, o, Permission.DOWNLOAD).async { implicit request =>
+    AssetController.assetResult(request.obj, if (inline) None else Some(request.obj.asset.name))
+  }
 
   def frame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, eo : Offset) = Action(v, i, o, Permission.DOWNLOAD).async { implicit request =>
     getFrame(Right(eo))
