@@ -59,7 +59,7 @@ POST    /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                      
 GET     /slot/$id<[0-9]+>                                                                         controllers.SlotHtml.view(   id : models.Slot.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
 GET     /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.edit(  sID : models.Slot.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
 POST    /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.update(sID : models.Slot.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
-GET     /slot/$sID<[0-9]+>/thumb                                                                  controllers.SlotHtml.thumb(vID : models.Volume.Id, sID : models.Slot.Id)
+GET     /slot/$sID<[0-9]+>/thumb                                                                  controllers.SlotHtml.thumb( sID : models.Slot.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
 
 # assets
 GET     /volume/$vID<[0-9]+>/asset/create                                                         controllers.AssetHtml.createTop(vID : models.Volume.Id)

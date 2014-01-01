@@ -53,6 +53,9 @@ trait AbstractSlot extends InVolume with SiteObject {
   /** List of asset that overlap with this slot. */
   def assets : Future[Seq[SlotAsset]] = SlotAsset.getSlotAll(this)
 
+  /** An image-able "asset" that may be used as the slot's thumbnail. */
+  final def thumb : Future[Option[SlotAsset]] = SlotAsset.getThumb(this)
+
   /** The list of records that apply to this slot. */
   def records = Record.getSlotAll(this)
 
@@ -149,9 +152,6 @@ abstract class Slot protected (val id : Slot.Id, val segment : Segment, consent_
         c.fold("")(_.name.capitalize + " ") + l.map(_.ident).mkString(", ")
       }
     }
-
-  /** An image-able "asset" that may be used as the slot's thumbnail. */
-  final def thumb : Future[Option[SlotAsset]] = SlotAsset.getThumb(this)
 
   override def pageName = container.name.getOrElse { 
     val i = idents

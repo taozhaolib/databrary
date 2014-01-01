@@ -1,5 +1,5 @@
 @(slot : Slot, caption: Html = Html(""), scalar: String = "wide", link: String = "", title: String = "", classes: String = "", hoverable: Boolean = false, arbitrary: Html = Html(""))(implicit request : SiteRequest[_])
 
 @widget.figure.raw("slot_"+slot.id, ("figure_slot "+classes).trim)(caption, scalar, link, title, hoverable, arbitrary){
-    <div class="image" style="background-image: url('@if(slot.consent == Consent.PRIVATE){@routes.Assets.at("images/draft-lock.png")}else{@routes.SlotHtml.thumb(slot.volumeId, slot.id)}')"></div>
+    <div class="image" style="background-image: url('@if(slot.consent == Consent.PRIVATE){@routes.Assets.at("images/draft-lock.png")}else{@routes.SlotHtml.thumb(slot.id)}')"></div>
 }

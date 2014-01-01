@@ -51,6 +51,12 @@ private[controllers] sealed class SlotController extends ObjectController[Abstra
     )
   }
 
+  def thumb(i : models.Slot.Id, start : Option[Offset], end : Option[Offset]) = Action(i, start, end, Permission.VIEW).async { implicit request =>
+    request.obj.thumb.flatMap(_.fold(
+      Assets.at("/public", "images/draft.png")(request))(
+      a => SlotAssetHtml.getFrame(Left(0.25f))(request.withObj(a))))
+  }
+
   type CommentMapping = (String, Option[Comment.Id])
   type CommentForm = Form[CommentMapping]
   val commentForm : CommentForm = Form(tuple(
@@ -146,12 +152,6 @@ object SlotHtml extends SlotController {
         }
       }
     )
-  }
-
-  def thumb(v : models.Volume.Id, s : models.Slot.Id) = ActionId(v, s, Permission.VIEW).async { implicit request =>
-    request.obj.thumb.flatMap(_.fold(
-      Assets.at("/public", "images/draft.png")(request))(
-      a => SlotAssetHtml.getFrame(Left(0.25f))(request.withObj(a))))
   }
 }
 
