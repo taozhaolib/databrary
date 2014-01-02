@@ -57,7 +57,16 @@ object Offset {
     )
 
   implicit val pathBindable : PathBindable[Offset] = PathBindable.bindableLong.transform(new Offset(_), _.millis)
-  implicit val queryStringBindable : QueryStringBindable[Offset] = QueryStringBindable.bindableLong.transform(new Offset(_), _.millis)
+  implicit val queryStringBindable : QueryStringBindable[Offset] = new QueryStringBindable[Offset] {
+    def bind(key : String, params : Map[String, Seq[String]]) : Option[Either[String, Offset]] =
+      params.get(key).flatMap(_.headOption).map { s =>
+        Maybe.toLong(s).map(new Offset(_))
+          .orElse(Maybe.toNumber(fromString(s)))
+          .toRight("invalid offset parameter value for " + key)
+      }
+    def unbind(key : String, offset : Offset) : String =
+      QueryStringBindable.bindableLong.unbind(key, offset.millis)
+  }
   implicit val javascriptLitteral : JavascriptLitteral[Offset] = new JavascriptLitteral[Offset] {
     def to(value : Offset) = value.millis.toString
   }
