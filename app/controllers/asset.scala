@@ -151,7 +151,7 @@ object AssetHtml extends AssetController {
                 models.Asset.create(slot.volume, fmt, classification, aname, abody, file)
             }
             _ <- asset.link(request.obj)
-          } yield (Redirect(controllers.routes.SlotAssetHtml.view(slot.containerId, slot.segment.lowerBound, slot.segment.upperBound, asset.id)))
+          } yield (Redirect(controllers.routes.SlotAssetHtml.view(slot.containerId, slot.segment, asset.id)))
         })
       case _ => error(uploadForm) /* should not happen */
     })

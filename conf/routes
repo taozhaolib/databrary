@@ -56,10 +56,10 @@ GET     /volume/$vID<[0-9]+>/slot/container                                     
 GET     /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.SlotHtml.create(vID : models.Volume.Id, cID : models.Slot.Id)
 POST    /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.SlotHtml.add(vID : models.Volume.Id, cID : models.Slot.Id)
 
-GET     /slot/$id<[0-9]+>                                                                         controllers.SlotHtml.view(   id : models.Slot.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
-GET     /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.edit(  sID : models.Slot.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
-POST    /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.update(sID : models.Slot.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
-GET     /slot/$sID<[0-9]+>/thumb                                                                  controllers.SlotHtml.thumb( sID : models.Slot.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
+GET     /slot/$id<[0-9]+>                                                                         controllers.SlotHtml.view(   id : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset])
+GET     /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.edit(  sID : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset])
+POST    /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.update(sID : models.Slot.Id, segment : dbrary.Segment)
+GET     /slot/$sID<[0-9]+>/thumb                                                                  controllers.SlotHtml.thumb( sID : models.Slot.Id, segment : dbrary.Segment)
 
 # assets
 GET     /volume/$vID<[0-9]+>/asset/create                                                         controllers.AssetHtml.createTop(vID : models.Volume.Id)
@@ -70,17 +70,17 @@ GET     /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>/edit                            
 POST    /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>/edit                                              controllers.AssetHtml.change(vID : models.Volume.Id, aID : models.Asset.Id)
 POST    /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>/remove                                            controllers.AssetHtml.remove(vID : models.Volume.Id, aID : models.Asset.Id)
 
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                                     controllers.SlotAssetHtml.view(    sID : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None, aID : models.Asset.Id)
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                                            controllers.SlotAssetHtml.download(sID : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None, aID : models.Asset.Id, inline : Boolean = false)
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/inline                                              controllers.SlotAssetHtml.download(sID : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None, aID : models.Asset.Id, inline : Boolean = true)
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/head                                                controllers.SlotAssetHtml.head(    sID : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None, aID : models.Asset.Id)
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb                                               controllers.SlotAssetHtml.thumb(   sID : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None, aID : models.Asset.Id)
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>                            controllers.SlotAssetHtml.frame(   sID : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None, aID : models.Asset.Id, offset : dbrary.Offset)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                                     controllers.SlotAssetHtml.view(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                                            controllers.SlotAssetHtml.download(sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, inline : Boolean = false)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/inline                                              controllers.SlotAssetHtml.download(sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, inline : Boolean = true)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/head                                                controllers.SlotAssetHtml.head(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb                                               controllers.SlotAssetHtml.thumb(   sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>                            controllers.SlotAssetHtml.frame(   sID : models.Container.Id, aID : models.Asset.Id, offset : dbrary.Offset)
 
 # annotations
-POST    /slot/$sID<[0-9]+>/comment/create                                                         controllers.SlotHtml.comment(sID : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None, parent : Option[models.Comment.Id] ?= None)
+POST    /slot/$sID<[0-9]+>/comment/create                                                         controllers.SlotHtml.comment(sID : models.Container.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset], parent : Option[models.Comment.Id] ?= None)
 
-POST    /slot/$sID<[0-9]+>/tag                                                                    controllers.TagHtml.update(name : String ?= "", sID : models.Slot.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
+POST    /slot/$sID<[0-9]+>/tag                                                                    controllers.TagHtml.update(name : String ?= "", sID : models.Slot.Id, segment : dbrary.Segment)
 
 # records
 POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                                             controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Slot.Id, editRedirect : Boolean = false)
@@ -119,8 +119,8 @@ GET     /api/volume/$volumeId<[0-9]+>/access                                    
 POST    /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                                   controllers.VolumeApi.accessChange(volumeId : models.Volume.Id, partyId : models.Party.Id)
 DELETE  /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                                   controllers.VolumeApi.accessDelete(volumeId : models.Volume.Id, partyId : models.Party.Id)
 
-GET     /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.get(containerId : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
-POST    /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.update(containerId : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
+GET     /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.get(containerId : models.Container.Id, segment : dbrary.Segment)
+POST    /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.update(containerId : models.Container.Id, segment : dbrary.Segment)
 
 GET     /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.get(recordId : models.Record.Id)
 GET     /api/record                                                                               controllers.RecordApi.query(volume : models.Volume.Id)
@@ -129,10 +129,10 @@ POST    /api/record                                                             
 
 GET     /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.get(assetId : models.Asset.Id)
 
-POST    /api/comment                                                                              controllers.SlotApi.comment(container : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None, parent : Option[models.Comment.Id] ?= None)
+POST    /api/comment                                                                              controllers.SlotApi.comment(container : models.Container.Id, segment : dbrary.Segment, parent : Option[models.Comment.Id] ?= None)
 
 GET     /api/tag/:name                                                                            controllers.TagApi.get(name : String)
-POST    /api/tag/:name                                                                            controllers.TagApi.update(name : String, container : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
+POST    /api/tag/:name                                                                            controllers.TagApi.update(name : String, container : models.Container.Id, segment : dbrary.Segment)
 
 # static resources
 GET     /public/*file                                                                             controllers.Assets.at(path="/public", file)

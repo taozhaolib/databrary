@@ -57,7 +57,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
     case p : SitePage => Some(p)
     case _ => Some(slot.context)
   }
-  def pageURL = controllers.routes.SlotAssetHtml.view(slot.containerId, slot.segment.lowerBound, slot.segment.upperBound, assetId)
+  def pageURL = controllers.routes.SlotAssetHtml.view(slot.containerId, slot.segment, assetId)
   def pageActions = Seq(
       Action("view", pageURL, Permission.VIEW)
     ) ++ (if (slot.isFull) Seq(

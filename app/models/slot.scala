@@ -81,7 +81,7 @@ trait AbstractSlot extends InVolume with SiteObject {
   def pageName = container.name.getOrElse("Slot")
   override def pageCrumbName : Option[String] = if (isFull) None else Some(segment.lowerBound.fold("")(_.toString) + "-" + segment.upperBound.fold("")(_.toString))
   def pageParent : Option[SitePage] = Some(context)
-  def pageURL = controllers.routes.SlotHtml.view(containerId, segment.lowerBound, segment.upperBound)
+  def pageURL = controllers.routes.SlotHtml.view(containerId, segment)
   def pageActions = Seq(
     Action("view", pageURL, Permission.VIEW)
   )

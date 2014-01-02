@@ -13,11 +13,11 @@ import dbrary._
 import models._
 
 private[controllers] sealed class SlotController extends ObjectController[AbstractSlot] {
-  private[controllers] def action(i : Slot.Id, start : Option[Offset] = None, end : Option[Offset] = None, p : Permission.Value = Permission.VIEW) =
-    RequestObject.check(Slot.get(i, Range[Offset](start, end))(_), p)
+  private[controllers] def action(i : Slot.Id, segment : Segment, p : Permission.Value = Permission.VIEW) =
+    RequestObject.check(Slot.get(i, segment)(_), p)
 
-  private[controllers] def Action(i : Slot.Id, start : Option[Offset] = None, end : Option[Offset] = None, p : Permission.Value = Permission.VIEW) =
-    SiteAction ~> action(i, start, end, p)
+  private[controllers] def Action(i : Slot.Id, segment : Segment, p : Permission.Value = Permission.VIEW) =
+    SiteAction ~> action(i, segment, p)
 
   type EditMapping = (Option[(Option[String], Option[Date])], Consent.Value)
   type EditForm = Form[EditMapping]
@@ -37,7 +37,7 @@ private[controllers] sealed class SlotController extends ObjectController[Abstra
   def formForContainer(form : EditForm, slot : AbstractSlot) =
     form.value.fold(slot.isFull)(_._1.isDefined)
 
-  def update(i : Slot.Id, start : Option[Offset], end : Option[Offset]) = Action(i, start, end, Permission.EDIT).async { implicit request =>
+  def update(i : Slot.Id, segment : Segment) = Action(i, segment, Permission.EDIT).async { implicit request =>
     editFormFill(request.obj).bindFromRequest.fold(
       AbadForm[EditMapping](f => SlotHtml.viewEdit(request.obj)(editForm = f), _),
       { case (container, consent) =>
@@ -51,7 +51,7 @@ private[controllers] sealed class SlotController extends ObjectController[Abstra
     )
   }
 
-  def thumb(i : models.Slot.Id, start : Option[Offset], end : Option[Offset]) = Action(i, start, end, Permission.VIEW).async { implicit request =>
+  def thumb(i : models.Slot.Id, segment : Segment) = Action(i, segment, Permission.VIEW).async { implicit request =>
     request.obj.thumb.flatMap(_.fold(
       Assets.at("/public", "images/draft.png")(request))(
       a => SlotAssetHtml.getFrame(Left(0.25f))(request.withObj(a))))
@@ -64,8 +64,8 @@ private[controllers] sealed class SlotController extends ObjectController[Abstra
     "parent" -> OptionMapping(of[Comment.Id])
   ))
 
-  def comment(i : Slot.Id, start : Option[Offset], end : Option[Offset], parent : Option[Comment.Id] = None) =
-    (SiteAction.access(Permission.VIEW) ~> action(i, start, end)).async { implicit request =>
+  def comment(i : Slot.Id, segment : Segment, parent : Option[Comment.Id] = None) =
+    (SiteAction.access(Permission.VIEW) ~> action(i, segment)).async { implicit request =>
       commentForm.bindFromRequest.fold(
         AbadForm[CommentMapping](f => SlotHtml.show(commentForm = f), _),
         { case (text, parent2) =>
@@ -96,7 +96,7 @@ object SlotHtml extends SlotController {
     } yield (views.html.slot.view(records, assets, comments, commentForm, tags, TagHtml.tagForm))
   }
 
-  def view(i : models.Slot.Id, start : Option[Offset] = None, end : Option[Offset] = None) = Action(i, start, end).async { implicit request =>
+  def view(i : models.Slot.Id, segment : Segment) = Action(i, segment).async { implicit request =>
     if (request.obj.isTop)
       ARedirect(controllers.routes.VolumeHtml.view(request.obj.volumeId))
     else
@@ -112,7 +112,7 @@ object SlotHtml extends SlotController {
     }
   }
 
-  def edit(i : models.Slot.Id, start : Option[Offset] = None, end : Option[Offset] = None) = Action(i, start, end, Permission.EDIT).async { implicit request =>
+  def edit(i : models.Slot.Id, segment : Segment) = Action(i, segment, Permission.EDIT).async { implicit request =>
     viewEdit(request.obj)().map(Ok(_))
   }
 
@@ -156,7 +156,7 @@ object SlotHtml extends SlotController {
 }
 
 object SlotApi extends SlotController {
-  def get(c : models.Container.Id, start : Option[Offset], end : Option[Offset]) = Action(c, start, end).async { request =>
+  def get(c : models.Container.Id, segment : Segment) = Action(c, segment).async { request =>
     request.obj.json(request.apiOptions).map(Ok(_))
   }
 }

@@ -13,7 +13,7 @@
         <div class="col-full">
             @widget.formErrors(form)
 
-            @widget.tag.form(c.fold(volume => routes.SlotHtml.addContainer(volume.id), slot => routes.SlotHtml.update(slot.containerId, slot.segment.lowerBound, slot.segment.upperBound)), 'id -> "slot_edit") {
+            @widget.tag.form(c.fold(volume => routes.SlotHtml.addContainer(volume.id), slot => routes.SlotHtml.update(slot.containerId, slot.segment)), 'id -> "slot_edit") {
 	        @if(c.fold(_ => true, SlotHtml.formForContainer(form, _))) {
                     @widget.tag.inputText(form("name"), 'placeholder -> "Name")
                     @widget.tag.inputDate(form("date"), 'placeholder -> "Date", 'class -> "half")

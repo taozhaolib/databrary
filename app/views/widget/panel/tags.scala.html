@@ -31,7 +31,7 @@
                 @if(tags.nonEmpty) {
                     @tags.map { tw =>
                         <li id="tag_@tw.tag.id" class="panel_tags_item col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-6">
-                        @widget.tag.form(routes.TagHtml.update(tw.tag.name, slot.containerId, slot.segment.lowerBound, slot.segment.upperBound)) {
+                        @widget.tag.form(routes.TagHtml.update(tw.tag.name, slot.containerId, slot.segment)) {
 
                             <div class="controls">
                                 <button class="vote down" name="vote" value="false" @if(!tw.user.getOrElse(true)){disabled}>-</button>
@@ -57,7 +57,7 @@
                 <button name="vote" ng-click="voteUp(tag)" class="hide">add</button>
             </form>
         }{
-            @widget.tag.form(routes.TagHtml.update("", slot.containerId, slot.segment.lowerBound, slot.segment.upperBound)) {
+            @widget.tag.form(routes.TagHtml.update("", slot.containerId, slot.segment)) {
                 @widget.tag.inputText(form("name"), 'placeholder -> "Add new tag")
                 <button name="vote" value="@true" class="hide">add</button>
             }
