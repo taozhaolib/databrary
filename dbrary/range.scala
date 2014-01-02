@@ -10,7 +10,7 @@ trait RangeType[A] extends Ordering[A] {
 trait DiscreteRangeType[A] extends RangeType[A] {
   def increment(a : A) : A // = a + 1
   def decrement(a : A) : A // = a - 1
-  override def isDiscrete = true
+  override final def isDiscrete = true
 }
 
 object RangeType {
@@ -50,7 +50,7 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
     upperPoint.flatMap(u => lowerPoint.filter(t.equiv(_, u)))
   def isSingleton : Boolean = singleton.isDefined
   /** Is this a canonical representation of this range, meaning EmptyRange, FullRange, SingletonRange, [x,y] for discrete types, or [x,y) for continuous types. */
-  def isNormalized = lowerClosed && upperClosed == t.isDiscrete
+  def isNormalized = lowerClosed == lowerBound.isDefined && upperClosed == (t.isDiscrete && upperBound.isDefined)
   def normalize =
     singleton.fold {
       if (isNormalized) self
