@@ -150,14 +150,12 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
     SQL("SELECT asset_creation(?)").apply(id).single(SQLCols[Option[Timestamp]])
 
   /** Update the given values in the database and this object in-place. */
-  def change(classification : Classification.Value = _classification, name : String = _name, body : Option[String] = _body) : Future[Boolean] = {
-    if (classification == _classification && name == _name && body == _body)
-      return Async(true)
-    Audit.change("asset", SQLTerms('classification -> classification, 'name -> name, 'body -> body), SQLTerms('id -> id)).execute
+  def change(classification : Option[Classification.Value] = None, name : Option[String] = None, body : Option[Option[String]] = None) : Future[Boolean] = {
+    Audit.change("asset", SQLTerms.flatten(classification.map('classification -> _), name.map('name -> _), body.map('body -> _)), SQLTerms('id -> id)).execute
       .andThen { case scala.util.Success(true) =>
-        _classification = classification
-        _name = name
-        _body = body
+        classification.foreach(_classification = _)
+        name.foreach(_name = _)
+        body.foreach(_body = _)
       }
   }
 
@@ -170,11 +168,11 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
 
   def pageName = name
   def pageParent = Some(volume)
-  def pageURL = controllers.routes.AssetHtml.view(volume.id, id)
+  def pageURL = controllers.routes.AssetHtml.view(id)
   def pageActions = Seq(
-    Action("view", controllers.routes.AssetHtml.view(volumeId, id), Permission.VIEW),
-    Action("edit", controllers.routes.AssetHtml.edit(volumeId, id), Permission.EDIT),
-    Action("remove", controllers.routes.AssetHtml.remove(volumeId, id), Permission.CONTRIBUTE)
+    Action("view", pageURL, Permission.VIEW),
+    Action("edit", controllers.routes.AssetHtml.edit(id), Permission.EDIT),
+    Action("remove", controllers.routes.AssetHtml.remove(id), Permission.CONTRIBUTE)
   )
 
   lazy val json : JsonRecord = JsonRecord.flatten(id,

@@ -65,10 +65,10 @@ GET     /slot/$sID<[0-9]+>/thumb                                                
 GET     /volume/$vID<[0-9]+>/asset/create                                                         controllers.AssetHtml.createTop(vID : models.Volume.Id)
 GET     /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.AssetHtml.create(vID : models.Volume.Id, cID : models.Slot.Id)
 POST    /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.AssetHtml.upload(vID : models.Volume.Id, cID : models.Slot.Id)
-GET     /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>                                                   controllers.AssetHtml.view(vID : models.Volume.Id, aID : models.Asset.Id)
-GET     /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>/edit                                              controllers.AssetHtml.edit(vID : models.Volume.Id, aID : models.Asset.Id)
-POST    /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>/edit                                              controllers.AssetHtml.change(vID : models.Volume.Id, aID : models.Asset.Id)
-POST    /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>/remove                                            controllers.AssetHtml.remove(vID : models.Volume.Id, aID : models.Asset.Id)
+GET     /asset/$aID<[0-9]+>                                                                       controllers.AssetHtml.view(aID : models.Asset.Id)
+GET     /asset/$aID<[0-9]+>/edit                                                                  controllers.AssetHtml.edit(aID : models.Asset.Id)
+POST    /asset/$aID<[0-9]+>/edit                                                                  controllers.AssetHtml.update(aID : models.Asset.Id)
+POST    /asset/$aID<[0-9]+>/remove                                                                controllers.AssetHtml.remove(aID : models.Asset.Id)
 
 GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                                     controllers.SlotAssetHtml.view(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
 GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                                            controllers.SlotAssetHtml.download(sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, inline : Boolean = false)
@@ -128,6 +128,7 @@ POST    /api/record/$recordId<[0-9]+>                                           
 POST    /api/record                                                                               controllers.RecordApi.create(volume : models.Volume.Id, category : Option[String] ?= None)
 
 GET     /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.get(assetId : models.Asset.Id)
+POST    /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.update(assetId : models.Asset.Id)
 
 POST    /api/comment                                                                              controllers.SlotApi.comment(container : models.Container.Id, segment : dbrary.Segment, parent : Option[models.Comment.Id] ?= None)
 

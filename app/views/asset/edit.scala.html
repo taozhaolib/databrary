@@ -13,7 +13,7 @@
 
             @widget.tag.form(target.fold(
             container => routes.AssetHtml.upload(container.volumeId, container.id),
-            asset => routes.AssetHtml.change(asset.volumeId, asset.id)), 'enctype -> "multipart/form-data") {
+            asset => routes.AssetHtml.update(asset.id)), 'enctype -> "multipart/form-data") {
 
                 @widget.tag.inputText(form("name"), 'placeholder -> "Title")
                 @widget.tag.textarea(form("body"), 'placeholder -> "Description")

@@ -61,8 +61,8 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
   def pageActions = Seq(
       Action("view", pageURL, Permission.VIEW)
     ) ++ (if (slot.isFull) Seq(
-      Action("edit", controllers.routes.AssetHtml.edit(volumeId, assetId), Permission.EDIT),
-      Action("remove", controllers.routes.AssetHtml.remove(volumeId, assetId), Permission.CONTRIBUTE)
+      Action("edit", controllers.routes.AssetHtml.edit(assetId), Permission.EDIT),
+      Action("remove", controllers.routes.AssetHtml.remove(assetId), Permission.CONTRIBUTE)
     ) else Nil)
 
   lazy val json : JsonObject = JsonObject(
