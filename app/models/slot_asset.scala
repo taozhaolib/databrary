@@ -2,6 +2,7 @@ package models
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.JsObject
 import macros._
 import dbrary._
 import site._
@@ -65,11 +66,16 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
       Action("remove", controllers.routes.AssetHtml.remove(assetId), Permission.CONTRIBUTE)
     ) else Nil)
 
-  lazy val json : JsonObject = JsonObject(
-    'asset -> (asset.json ++
-      JsonObject.flatten(if (asset_segment.isFull) None else Some('segment -> asset_segment))),
-    'permission -> getPermission
+  lazy val json : JsonObject = JsonObject.flatten(
+    Some('permission -> getPermission),
+    if (format === asset.format) None else Some('format -> format.json),
+    Some('asset -> (asset.json ++
+      JsonObject.flatten(if (asset_segment.isFull) None else Some('segment -> asset_segment))))
   ) ++ slot.json
+
+  def json(options : JsonOptions.Options) : Future[JsObject] =
+    JsonOptions(json.obj, options
+    )
 }
 
 final class SlotTimeseries private[models] (override val asset : Timeseries, asset_segment : Segment, slot : AbstractSlot, excerpt_segment : Option[Segment]) extends SlotAsset(asset, asset_segment, slot, excerpt_segment) with TimeseriesData {

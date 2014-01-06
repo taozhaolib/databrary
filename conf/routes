@@ -130,6 +130,8 @@ POST    /api/record                                                             
 GET     /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.get(assetId : models.Asset.Id)
 POST    /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.update(assetId : models.Asset.Id)
 
+GET     /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>                                     controllers.SlotAssetApi.get(containerId : models.Container.Id, segment : dbrary.Segment, assetId : models.Asset.Id)
+
 POST    /api/comment                                                                              controllers.SlotApi.comment(container : models.Container.Id, segment : dbrary.Segment, parent : Option[models.Comment.Id] ?= None)
 
 GET     /api/tag/:name                                                                            controllers.TagApi.get(name : String)

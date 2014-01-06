@@ -49,3 +49,9 @@ object SlotAssetHtml extends SlotAssetController {
     } yield (Ok(views.html.asset.view(request.obj, comments)))
   }
 }
+
+object SlotAssetApi extends SlotAssetController {
+  def get(i : Container.Id, segment : Segment, a : Asset.Id) = Action(i, segment, a).async { implicit request =>
+    request.obj.json(request.apiOptions).map(Ok(_))
+  }
+}
