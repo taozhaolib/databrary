@@ -7,13 +7,18 @@ import macros._
 import dbrary._
 import site._
 
-/** A segment of an asset as used in a slot.
-  * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : AbstractSlot, excerpt_segment : Option[Segment]) extends TableRow with BackedAsset with SiteObject with InVolume {
+sealed private[models] trait AssetSlot extends BackedAsset with InVolume {
+  val asset : Asset
+  val slot : AbstractSlot
   def volume = asset.volume
   def assetId = asset.id
   def source = asset.source
   override def format = asset.format
+}
+
+/** A segment of an asset as used in a slot.
+  * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
+sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : AbstractSlot, excerpt_segment : Option[Segment]) extends TableRow with AssetSlot with SiteObject {
   def position = asset_segment.lowerBound.map(_ - slot.segment.lowerBound.getOrElse(Offset.ZERO))
   require(excerpt_segment.fold(true)(slot.segment @> _))
   def excerpt = excerpt_segment.isDefined
@@ -49,10 +54,6 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
     }
   }
 
-  def containingSlot : Slot = slot match {
-    case s : Slot => s
-    case _ => slot.context
-  }
   def pageName = asset.name
   def pageParent = slot match {
     case p : SitePage => Some(p)
