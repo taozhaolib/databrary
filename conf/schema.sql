@@ -93,7 +93,8 @@ COMMENT ON FUNCTION audit.CREATE_TABLE (name) IS 'Create an audit.$1 table mirro
 CREATE TABLE "party" (
 	"id" serial NOT NULL Primary Key,
 	"name" text NOT NULL,
-	"orcid" char(16)
+	"orcid" char(16),
+	"affiliation" text
 );
 COMMENT ON TABLE "party" IS 'Users, groups, organizations, and other logical identities';
 
@@ -252,7 +253,7 @@ COMMENT ON TABLE "volume_funding" IS 'Quick and dirty funding list.  No PK: only
 CREATE FUNCTION "interval_mi_epoch" (interval, interval) RETURNS double precision LANGUAGE sql IMMUTABLE STRICT AS 
 	$$ SELECT date_part('epoch', interval_mi($1, $2)) $$;
 CREATE TYPE segment AS RANGE (
-	SUBTYPE = interval HOUR TO SECOND,
+	SUBTYPE = interval HOUR TO SECOND (3),
 	SUBTYPE_DIFF = "interval_mi_epoch"
 );
 COMMENT ON TYPE "segment" IS 'Intervals of time, used primarily for representing clips of timeseries data.';
@@ -260,10 +261,10 @@ COMMENT ON TYPE "segment" IS 'Intervals of time, used primarily for representing
 CREATE FUNCTION "segment" (interval) RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT segment('0', $1) $$;
 COMMENT ON FUNCTION "segment" (interval) IS 'The segment [0,X) but strict in X.';
-CREATE FUNCTION "duration" (segment) RETURNS interval HOUR TO SECOND LANGUAGE sql IMMUTABLE STRICT AS
+CREATE FUNCTION "duration" (segment) RETURNS interval HOUR TO SECOND (3) LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT CASE WHEN isempty($1) THEN '0' ELSE interval_mi(upper($1), lower($1)) END $$;
 COMMENT ON FUNCTION "duration" (segment) IS 'Determine the length of a segment, or NULL if unbounded.';
-CREATE FUNCTION "singleton" (interval HOUR TO SECOND) RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS
+CREATE FUNCTION "singleton" (interval HOUR TO SECOND (3)) RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT segment($1, $1, '[]') $$;
 CREATE FUNCTION "singleton" (segment) RETURNS interval LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT lower($1) WHERE lower_inc($1) AND upper_inc($1) AND lower($1) = upper($1) $$;
@@ -431,7 +432,7 @@ CREATE TABLE "asset" (
 	"volume" integer NOT NULL References "volume",
 	"format" smallint NOT NULL References "format",
 	"classification" classification NOT NULL,
-	"duration" interval HOUR TO SECOND Check ("duration" > interval '0'),
+	"duration" interval HOUR TO SECOND (3) Check ("duration" > interval '0'),
 	"name" text NOT NULL,
 	"body" text,
 	"sha1" bytea NOT NULL Check (octet_length("sha1") = 20)
@@ -513,6 +514,24 @@ CREATE TABLE "tag" (
 	"name" varchar(32) NOT NULL Unique
 );
 COMMENT ON TABLE "tag" IS 'Tag/keywords that can be applied to objects.';
+
+CREATE FUNCTION "get_tag" ("tag_name" varchar(32)) RETURNS integer STRICT LANGUAGE plpgsql AS $$
+DECLARE
+	tag_id integer;
+BEGIN
+	LOOP
+		SELECT id INTO tag_id FROM tag WHERE name = tag_name;
+		IF FOUND THEN
+			RETURN tag_id;
+		END IF;
+		BEGIN
+			INSERT INTO tag (name) VALUES (tag_name) RETURNING id INTO tag_id;
+			RETURN tag_id;
+		EXCEPTION WHEN unique_violation THEN
+		END;
+	END LOOP;
+END; $$;
+
 
 CREATE TABLE "tag_use" (
 	"tag" integer NOT NULL References "tag",
@@ -682,12 +701,12 @@ COMMENT ON TABLE "session" IS 'Tokens associated with currently logged-in sessio
 
 ----------------------------------------------------------- bootstrap/test data
 
-INSERT INTO party (id, name, orcid) VALUES (1, 'Dylan Simon', '0000000227931679');
-INSERT INTO party (id, name) VALUES (2, 'Mike Continues');
-INSERT INTO party (id, name) VALUES (3, 'Lisa Steiger');
-INSERT INTO party (id, name) VALUES (4, 'Andrea Byrne');
-INSERT INTO party (id, name) VALUES (5, 'Karen Adolph');
-INSERT INTO party (id, name) VALUES (6, 'Rick Gilmore');
+INSERT INTO party (id, name, orcid, affiliation) VALUES (1, 'Dylan Simon', '0000000227931679', 'Databrary');
+INSERT INTO party (id, name, affiliation) VALUES (2, 'Mike Continues', 'Databrary');
+INSERT INTO party (id, name, affiliation) VALUES (3, 'Lisa Steiger', 'Databrary');
+INSERT INTO party (id, name, affiliation) VALUES (4, 'Andrea Byrne', 'Databrary');
+INSERT INTO party (id, name, affiliation) VALUES (5, 'Karen Adolph', 'New York University');
+INSERT INTO party (id, name, affiliation) VALUES (6, 'Rick Gilmore', 'Penn State University');
 SELECT setval('party_id_seq', 6);
 
 INSERT INTO account (id, email, openid) VALUES (1, 'dylan@databrary.org', 'http://dylex.net/');

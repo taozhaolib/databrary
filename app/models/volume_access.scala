@@ -20,10 +20,11 @@ import site._
 final class VolumeAccess(val volume : Volume, val party : Party, val access : Permission.Value, val inherit : Permission.Value) extends TableRow with InVolume {
   def partyId = party.id
 
-  lazy val json = JsonObject(
+  def json = JsonObject(
     'volume -> volume.json,
     'party -> party.json,
-    'access -> access
+    'access -> access,
+    'inherit -> inherit
   )
 }
 

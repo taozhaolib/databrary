@@ -93,8 +93,10 @@ object Audit {
     * @param returning optional values to return from the query. It must not reference the original table explicitly as it is evaluated on the audit table.
     */
   private[models] def change(table : String, sets : SQLTerms, where : SQLTerms, returning : String = "")(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
-    SQLon(Action.change, table, "SET " + sets.set() + " WHERE " + where.where, returning)(sets ++ where)(site, dbc, exc)
+    if (sets.isEmpty) SQLResult.empty
+    else SQLon(Action.change, table, "SET " + sets.set() + " WHERE " + where.where, returning)(sets ++ where)(site, dbc, exc)
 
   private[models] def changeOrAdd(table : String, sets : SQLTerms, ids : SQLTerms)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
-    DBUtil.updateOrInsert(change(table, sets, ids)(site, _, _))(add(table, sets ++ ids)(site, _, _))(dbc, exc)
+    if (sets.isEmpty) SQLResult.empty
+    else DBUtil.updateOrInsert(change(table, sets, ids)(site, _, _))(add(table, sets ++ ids)(site, _, _))(dbc, exc)
 }

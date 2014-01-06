@@ -55,7 +55,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       _.bindFromRequest.fold(bad _, {
         case (name, body, cites) =>
           for {
-            _ <- vol.change(name = name.getOrElse(vol.name), body = body.fold(vol.body)(Maybe(_).opt))
+            _ <- vol.change(name = name, body = body.map(Maybe(_).opt))
             _ <- citationSet(vol, cites)
           } yield (result(vol))
         }
@@ -85,7 +85,8 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
           macros.Async(if (request.obj.access < Permission.CONTRIBUTE) Some(Forbidden) else None)
       }
 
-  type AccessForm = Form[(Permission.Value, Permission.Value)]
+  type AccessMapping = (Permission.Value, Permission.Value)
+  type AccessForm = Form[AccessMapping]
   protected val accessForm : AccessForm = Form(
     tuple(
       "access" -> Field.enum(Permission),
@@ -96,9 +97,31 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
   protected def accessFormFill(access : VolumeAccess) : AccessForm =
     accessForm.fill((access.access, access.inherit))
 
-  protected val accessSearchForm = Form(
-    "name" -> nonEmptyText
-  )
+  def accessChange(id : models.Volume.Id, e : models.Party.Id) = Action(id, Permission.ADMIN).async { implicit request =>
+    models.Party.get(e).flatMap(_.fold(ANotFound) { who =>
+    val form = accessForm.bindFromRequest
+    def bad(form : AccessForm) =
+      AbadForm[AccessMapping](f => VolumeHtml.viewAdmin(accessChangeForm = Some((who, f))), form)
+    form.fold(bad _, {
+      case (access, inherit) =>
+        if (e.unId <= 0 && inherit >= Permission.EDIT)
+          bad(form.withError("inherit", "access.group.inherit"))
+        else
+          VolumeAccess.set(request.obj, e, if (access < inherit) inherit else access, inherit).map { _ =>
+            result(request.obj)
+          }
+      }
+    )
+    })
+  }
+
+  def accessDelete(id : models.Volume.Id, e : models.Party.Id) = Action(id, Permission.ADMIN).async { implicit request =>
+    (if (!(e === request.identity.id))
+      VolumeAccess.delete(request.obj, e)
+    else macros.Async(false)).map { _ =>
+      result(request.obj)
+    }
+  }
 
 }
 
@@ -106,22 +129,23 @@ object VolumeController extends VolumeController {
   def thumb(v : models.Volume.Id) = Action(v, Permission.VIEW).async { implicit request =>
     request.obj.thumb.flatMap(_.fold(
       Assets.at("/public", "images/draft.png")(request))(
-      a => SlotAsset.getFrame(Left(0.25f))(request.withObj(a))))
+      a => SlotAssetController.getFrame(Left(0.25f))(request.withObj(a))))
   }
-
 }
 
 object VolumeHtml extends VolumeController {
   def view(i : models.Volume.Id) = Action(i).async { implicit request =>
     val vol = request.obj
     for {
-      _ <- vol.partyAccess
-      _ <- vol.toplevelAssets
-      _ <- vol.citations
-      _ <- vol.summary
-      _ <- vol.comments
-      _ <- vol.tags
-    } yield (Ok(views.html.volume.view()))
+      summary <- vol.summary
+      access <- vol.partyAccess
+      funding <- vol.funding
+      assets <- vol.toplevelAssets
+      citations <- vol.citations
+      comments <- vol.comments
+      tags <- vol.tags
+      top <- vol.top
+    } yield (Ok(views.html.volume.view(summary, access, funding, top, assets, citations, comments, tags)))
   }
 
   def search = SiteAction.async { implicit request =>
@@ -146,8 +170,11 @@ object VolumeHtml extends VolumeController {
     Ok(views.html.volume.edit(Left(request.obj), editForm))
   }
 
-  private[this] def viewAdmin(
-    status : Status,
+  protected val accessSearchForm = Form(
+    "name" -> nonEmptyText
+  )
+
+  private[controllers] def viewAdmin(
     accessChangeForm : Option[(models.Party,AccessForm)] = None,
     accessSearchForm : Form[String] = accessSearchForm,
     accessResults : Seq[(models.Party,AccessForm)] = Seq())(
@@ -158,47 +185,23 @@ object VolumeHtml extends VolumeController {
         .filter(a => accessChange.fold(true)(_ === a.partyId))
         .map(a => (a.party, accessFormFill(a))) ++
         accessChangeForm
-      status(views.html.volume.access(request.obj, accessForms, accessSearchForm, accessResults))
+      views.html.volume.access(request.obj, accessForms, accessSearchForm, accessResults)
     }
   }
 
   def admin(id : models.Volume.Id) = Action(id, Permission.ADMIN).async { implicit request =>
-    viewAdmin(Ok)
-  }
-
-  def accessChange(id : models.Volume.Id, e : models.Party.Id) = Action(id, Permission.ADMIN).async { implicit request =>
-    models.Party.get(e).flatMap(_.fold(ANotFound) { who =>
-    val form = accessForm.bindFromRequest
-    form.fold(
-      form => viewAdmin(BadRequest, accessChangeForm = Some((who, form))),
-      { case (access, inherit) =>
-        if (e.unId <= 0 && inherit >= Permission.EDIT)
-          viewAdmin(BadRequest, accessChangeForm = Some((who, form.withError("inherit", "access.group.inherit"))))
-        else
-          VolumeAccess.set(request.obj, e, if (access < inherit) inherit else access, inherit).map { _ =>
-            Redirect(routes.VolumeHtml.admin(id))
-          }
-      }
-    )
-    })
-  }
-
-  def accessDelete(id : models.Volume.Id, e : models.Party.Id) = Action(id, Permission.ADMIN).async { implicit request =>
-    (if (!(e === request.identity.id))
-      VolumeAccess.delete(request.obj, e)
-    else macros.Async(false)).map { _ =>
-      Redirect(routes.VolumeHtml.admin(id))
-    }
+    viewAdmin().map(Ok(_))
   }
 
   def accessSearch(id : models.Volume.Id) = Action(id, Permission.ADMIN).async { implicit request =>
     val form = accessSearchForm.bindFromRequest
     form.fold(
-      form => viewAdmin(BadRequest, accessSearchForm = form),
+      AbadForm[String](f => viewAdmin(accessSearchForm = f), _),
       name =>
         models.Party.searchForVolumeAccess(name, request.obj).flatMap { res =>
-          viewAdmin(Ok, accessSearchForm = form,
+          viewAdmin(accessSearchForm = form,
             accessResults = res.map(e => (e, accessForm)))
+            .map(Ok(_))
         }
     )
   }
@@ -208,4 +211,17 @@ object VolumeApi extends VolumeController {
   def get(i : models.Volume.Id) = Action(i).async { implicit request =>
     request.obj.json(request.apiOptions).map(Ok(_))
   }
+
+  def accessGet(volumeId : models.Volume.Id) = Action(volumeId, Permission.ADMIN).async { implicit request =>
+    for {
+      parents <- request.obj.partyAccess
+    } yield (Ok(JsonRecord.map[VolumeAccess](a =>
+      JsonRecord(a.partyId) ++ (a.json - "volume"))(parents)))
+  }
+
+  def accessSearch(volumeId : models.Volume.Id, name : String) = Action(volumeId, Permission.ADMIN).async { implicit request =>
+    models.Party.searchForVolumeAccess(name, request.obj)
+      .map(r => Ok(JsonRecord.map[Party](_.json)(r)))
+  }
+
 }

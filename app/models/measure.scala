@@ -55,8 +55,13 @@ sealed class Metric[T] private[models] (val id : Metric.Id, val name : String, v
   Metric.add(this)
 }
 object Metric extends TableId[Metric[_]]("metric") {
+  /* XXX: we may wish to pre-populate these somehow. */
   private val cache : concurrent.Map[Int, Metric[_]] = concurrent.TrieMap.empty[Int, Metric[_]]
-  protected def add(m : Metric[_]) = cache.update(m.id.unId, m)
+  private val cacheByName : concurrent.Map[String, Metric[_]] = concurrent.TrieMap.empty[String, Metric[_]]
+  protected def add(m : Metric[_]) = {
+    cache.update(m.id.unId, m)
+    cacheByName.update(m.name, m)
+  }
 
   private[models] val row : Selector[Metric[_]] = Columns(
       SelectColumn[Id]("id")
@@ -75,7 +80,13 @@ object Metric extends TableId[Metric[_]]("metric") {
       scala.concurrent.Await.result(
         row.SELECT("WHERE id = ?").apply(id).singleOpt,
         scala.concurrent.duration.Duration(1, scala.concurrent.duration.MINUTES))
+  
+  /** Retrieve a single metric by name.
+    * Like getAll, this only includes already-retrieved (by get) metrics. */
+  def getName(name : String) : Option[Metric[_]] =
+    cacheByName.get(name)
 
+  /** Retrieve all metrics that have been retrieved. */
   def getAll : Iterable[Metric[_]] =
     cache.values // XXX incomplete but assymptotically correct
 
@@ -176,8 +187,7 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
       val metric = Metric.row.parse.get(m)
       val d = dl(metric.dataType.id)
       make(metric, metric.sqlType.get(d))
-    }),
-    Nil
+    })
   )
   
   /** Retrieve the specific measure of the specified metric in the given record.

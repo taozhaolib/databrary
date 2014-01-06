@@ -4,10 +4,10 @@
 # ~~~~
 
 # Static content
-GET     /                                                                                         controllers.Static.index
-GET     /about/team                                                                               controllers.Static.team
-GET     /about                                                                                    controllers.Static.page(page = "about")
-GET     /about/$page<[a-z]+>                                                                      controllers.Static.page(page : String)
+GET     /                                                                                         controllers.StaticHtml.index
+GET     /about/team                                                                               controllers.StaticHtml.team
+GET     /about                                                                                    controllers.StaticHtml.page(page = "about")
+GET     /about/$page<[a-z]+>                                                                      controllers.StaticHtml.page(page : String)
 
 # users
 GET     /login                                                                                    controllers.LoginHtml.view
@@ -50,56 +50,57 @@ POST    /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                              
 GET     /volume/$vID<[0-9]+>/thumb                                                                controllers.VolumeController.thumb(vID : models.Volume.Id)
 
 # slots
-POST    /volume/$vID<[0-9]+>/slot/container                                                       controllers.Slot.html.addContainer(vID : models.Volume.Id)
-GET     /volume/$vID<[0-9]+>/slot/container                                                       controllers.Slot.html.createContainer(vID : models.Volume.Id)
+POST    /volume/$vID<[0-9]+>/slot/container                                                       controllers.SlotHtml.addContainer(vID : models.Volume.Id)
+GET     /volume/$vID<[0-9]+>/slot/container                                                       controllers.SlotHtml.createContainer(vID : models.Volume.Id)
 
-GET     /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.Slot.html.create(vID : models.Volume.Id, cID : models.Slot.Id)
-POST    /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.Slot.html.add(vID : models.Volume.Id, cID : models.Slot.Id)
+GET     /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.SlotHtml.create(vID : models.Volume.Id, cID : models.Slot.Id)
+POST    /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.SlotHtml.add(vID : models.Volume.Id, cID : models.Slot.Id)
 
-GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>                                                    controllers.Slot.html.view(vID : models.Volume.Id, sID : models.Slot.Id)
-GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/edit                                               controllers.Slot.html.edit(vID : models.Volume.Id, sID : models.Slot.Id)
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/edit                                               controllers.Slot.html.change(vID : models.Volume.Id, sID : models.Slot.Id)
-GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/thumb                                              controllers.Slot.html.thumb(vID : models.Volume.Id, sID : models.Slot.Id)
+GET     /slot/$id<[0-9]+>                                                                         controllers.SlotHtml.view(   id : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset])
+GET     /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.edit(  sID : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset])
+POST    /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.update(sID : models.Slot.Id, segment : dbrary.Segment)
+GET     /slot/$sID<[0-9]+>/thumb                                                                  controllers.SlotHtml.thumb( sID : models.Slot.Id, segment : dbrary.Segment)
 
 # assets
-GET     /volume/$vID<[0-9]+>/asset/create                                                         controllers.Asset.html.createTop(vID : models.Volume.Id)
-GET     /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.Asset.html.create(vID : models.Volume.Id, cID : models.Slot.Id)
-POST    /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.Asset.html.upload(vID : models.Volume.Id, cID : models.Slot.Id)
-GET     /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>                                                   controllers.Asset.html.view(vID : models.Volume.Id, aID : models.Asset.Id)
-GET     /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>/edit                                              controllers.Asset.html.edit(vID : models.Volume.Id, aID : models.Asset.Id)
-POST    /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>/edit                                              controllers.Asset.html.change(vID : models.Volume.Id, aID : models.Asset.Id)
-POST    /volume/$vID<[0-9]+>/asset/$aID<[0-9]+>/remove                                            controllers.Asset.html.remove(vID : models.Volume.Id, aID : models.Asset.Id)
+GET     /volume/$vID<[0-9]+>/asset/create                                                         controllers.AssetHtml.createTop(vID : models.Volume.Id)
+GET     /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.AssetHtml.create(vID : models.Volume.Id, cID : models.Slot.Id)
+POST    /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.AssetHtml.upload(vID : models.Volume.Id, cID : models.Slot.Id)
+GET     /asset/$aID<[0-9]+>                                                                       controllers.AssetHtml.view(aID : models.Asset.Id)
+GET     /asset/$aID<[0-9]+>/edit                                                                  controllers.AssetHtml.edit(aID : models.Asset.Id)
+POST    /asset/$aID<[0-9]+>/edit                                                                  controllers.AssetHtml.update(aID : models.Asset.Id)
+POST    /asset/$aID<[0-9]+>/remove                                                                controllers.AssetHtml.remove(aID : models.Asset.Id)
 
-GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                 controllers.SlotAsset.view(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id)
-GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                        controllers.SlotAsset.download(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, inline : Boolean = false)
-GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/inline                          controllers.SlotAsset.download(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, inline : Boolean = true)
-GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/head                            controllers.SlotAsset.head(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id)
-GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb                           controllers.SlotAsset.thumb(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id)
-GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>        controllers.SlotAsset.frame(vID : models.Volume.Id, sID : models.Slot.Id, aID : models.Asset.Id, offset : dbrary.Offset)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                                     controllers.SlotAssetHtml.view(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                                            controllers.SlotAssetHtml.download(sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, inline : Boolean = false)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/inline                                              controllers.SlotAssetHtml.download(sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, inline : Boolean = true)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/head                                                controllers.SlotAssetHtml.head(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb                                               controllers.SlotAssetHtml.thumb(   sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>                            controllers.SlotAssetHtml.frame(   sID : models.Container.Id, aID : models.Asset.Id, offset : dbrary.Offset)
 
 # annotations
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/comment/create                                     controllers.Slot.html.comment(vID : models.Volume.Id, sID : models.Slot.Id, parent : Option[models.Comment.Id] ?= None)
+POST    /slot/$sID<[0-9]+>/comment/create                                                         controllers.SlotHtml.comment(sID : models.Container.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset], parent : Option[models.Comment.Id] ?= None)
 
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/tag                                                controllers.Slot.html.tag(vID : models.Volume.Id, sID : models.Slot.Id)
+POST    /slot/$sID<[0-9]+>/tag                                                                    controllers.TagHtml.update(name : String ?= "", sID : models.Slot.Id, segment : dbrary.Segment)
 
 # records
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                         controllers.Record.html.slotRemove(vID : models.Volume.Id, sID : models.Slot.Id, rID : models.Record.Id, editRedirect : Boolean = false)
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove/return                  controllers.Record.html.slotRemove(vID : models.Volume.Id, sID : models.Slot.Id, rID : models.Record.Id, editRedirect : Boolean = true)
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create                       controllers.Record.html.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = false)
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create/return                controllers.Record.html.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = true)
+POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                                             controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Slot.Id, editRedirect : Boolean = false)
+POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove/return                                      controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Slot.Id, editRedirect : Boolean = true)
+POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create                       controllers.RecordHtml.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = false)
+POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create/return                controllers.RecordHtml.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = true)
 
-GET     /volume/$vID<[0-9]+>/record/$rID<[0-9]+>                                                  controllers.Record.html.view(vID : models.Volume.Id, rID : models.Record.Id)
-GET     /volume/$vID<[0-9]+>/record/$cID<-?[0-9]+>/create                                         controllers.Record.html.add(vID : models.Volume.Id, cID : models.RecordCategory.Id)
-GET     /volume/$vID<[0-9]+>/record/$rID<[0-9]+>/edit                                             controllers.Record.html.edit(vID : models.Volume.Id, rID : models.Record.Id)
-POST    /volume/$vID<[0-9]+>/record/$rID<[0-9]+>/edit                                             controllers.Record.html.update(vID : models.Volume.Id, rID : models.Record.Id)
+GET     /record/$rID<[0-9]+>                                                                      controllers.RecordHtml.view(rID : models.Record.Id)
+GET     /volume/$vID<[0-9]+>/record/$cID<-?[0-9]+>/create                                         controllers.RecordHtml.add(vID : models.Volume.Id, cID : models.RecordCategory.Id)
+GET     /record/$rID<[0-9]+>/edit                                                                 controllers.RecordHtml.edit(rID : models.Record.Id)
+POST    /record/$rID<[0-9]+>/edit                                                                 controllers.RecordHtml.update(rID : models.Record.Id)
 
 GET     /volume/$vID<[0-9]+>/ingest/csv                                                           controllers.Ingest.csv(vID : models.Volume.Id)
 POST    /volume/$vID<[0-9]+>/ingest/curated                                                       controllers.Ingest.curated(vID : models.Volume.Id)
 
 # API
-GET     /api/about                                                                                controllers.Static.api.index
-GET     /api/about/team                                                                           controllers.Static.api.team
-GET     /api/about/$page<[a-z]+>                                                                  controllers.Static.api.page(page : String)
+GET     /api/about/$page<[a-z]+>                                                                  controllers.StaticApi.page(page : String)
+GET     /api/about                                                                                controllers.StaticApi.index
+GET     /api/about/team                                                                           controllers.StaticApi.team
+GET     /api/about/$page<[a-z]+>                                                                  controllers.StaticApi.page(page : String)
 
 GET     /api/user                                                                                 controllers.LoginApi.get
 POST    /api/user/login                                                                           controllers.LoginApi.post
@@ -109,17 +110,35 @@ POST    /api/user/superuser/off                                                 
 
 GET     /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.get(partyId : models.Party.Id)
 POST    /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.update(partyId : models.Party.Id)
+GET     /api/party/$partyId<-?[0-9]+>/authorize/:name                                             controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, name : String)
+GET     /api/party/$partyId<-?[0-9]+>/authorize                                                   controllers.PartyApi.authorizeGet(partyId : models.Party.Id)
+POST    /api/party/$partyId<-?[0-9]+>/authorize/$childId<[0-9]+>                                  controllers.PartyApi.authorizeChange(partyId : models.Party.Id, childId : models.Party.Id)
+POST    /api/party/$partyId<-?[0-9]+>/authorize/$parentId<[0-9]+>/apply                           controllers.PartyApi.authorizeApply(partyId : models.Party.Id, parentId : models.Party.Id)
+DELETE  /api/party/$partyId<-?[0-9]+>/authorize/$otherId<[0-9]+>                                  controllers.PartyApi.authorizeDelete(partyId : models.Party.Id, otherId : models.Party.Id)
 
 GET     /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.get(volumeId : models.Volume.Id)
 POST    /api/volume                                                                               controllers.VolumeApi.create(owner : models.Party.Id)
 POST    /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.update(volumeId : models.Volume.Id)
+GET     /api/volume/$volumeId<[0-9]+>/access/:name                                                controllers.VolumeApi.accessSearch(volumeId : models.Volume.Id, name : String)
+GET     /api/volume/$volumeId<[0-9]+>/access                                                      controllers.VolumeApi.accessGet(volumeId : models.Volume.Id)
+POST    /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                                   controllers.VolumeApi.accessChange(volumeId : models.Volume.Id, partyId : models.Party.Id)
+DELETE  /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                                   controllers.VolumeApi.accessDelete(volumeId : models.Volume.Id, partyId : models.Party.Id)
 
-GET     /api/slot/$containerId<[0-9]+>                                                            controllers.Slot.api.get(containerId : models.Container.Id, start : Option[dbrary.Offset] ?= None, end : Option[dbrary.Offset] ?= None)
+GET     /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.get(containerId : models.Container.Id, segment : dbrary.Segment)
+POST    /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.update(containerId : models.Container.Id, segment : dbrary.Segment)
 
-GET     /api/record                                                                               controllers.Record.api.query(volume : models.Volume.Id)
-GET     /api/record/$recordId<[0-9]+>                                                             controllers.Record.api.get(recordId : models.Record.Id)
+GET     /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.get(recordId : models.Record.Id)
+GET     /api/record                                                                               controllers.RecordApi.query(volume : models.Volume.Id)
+POST    /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.update(recordId : models.Record.Id)
+POST    /api/record                                                                               controllers.RecordApi.create(volume : models.Volume.Id, category : Option[String] ?= None)
 
-GET     /api/asset/$assetId<[0-9]+>                                                               controllers.Asset.api.get(assetId : models.Asset.Id)
+GET     /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.get(assetId : models.Asset.Id)
+POST    /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.update(assetId : models.Asset.Id)
+
+POST    /api/comment                                                                              controllers.SlotApi.comment(container : models.Container.Id, segment : dbrary.Segment, parent : Option[models.Comment.Id] ?= None)
+
+GET     /api/tag/:name                                                                            controllers.TagApi.get(name : String)
+POST    /api/tag/:name                                                                            controllers.TagApi.update(name : String, container : models.Container.Id, segment : dbrary.Segment)
 
 # static resources
 GET     /public/*file                                                                             controllers.Assets.at(path="/public", file)

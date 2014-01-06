@@ -22,6 +22,7 @@
                 }
 
                 @widget.tag.inputText(form("orcid"), 'placeholder -> "ORCiD")
+                @widget.tag.inputText(form("affiliation"), 'placeholder -> "Affiliation")
 
                 @if(controllers.PartyHtml.formForAccount(form)) {
                     @widget.tag.inputText(form("openid"), 'placeholder -> "OpenID")

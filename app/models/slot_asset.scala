@@ -8,12 +8,12 @@ import site._
 
 /** A segment of an asset as used in a slot.
   * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offset], val slot : AbstractSlot, excerpt_segment : Option[Range[Offset]]) extends TableRow with BackedAsset with SiteObject with InVolume {
+sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : AbstractSlot, excerpt_segment : Option[Segment]) extends TableRow with BackedAsset with SiteObject with InVolume {
   def volume = asset.volume
   def assetId = asset.id
   def source = asset.source
   override def format = asset.format
-  def position = asset_segment.lowerBound.map(_ - slot.segment.lowerBound.getOrElse(0))
+  def position = asset_segment.lowerBound.map(_ - slot.segment.lowerBound.getOrElse(Offset.ZERO))
   require(excerpt_segment.fold(true)(slot.segment @> _))
   def excerpt = excerpt_segment.isDefined
 
@@ -52,28 +52,27 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Range[Offse
     case s : Slot => s
     case _ => slot.context
   }
-  @deprecated("SlotAsset may refer to AbstractSlot; falling back to containingSlot", "") def slotId =
-    containingSlot.id
   def pageName = asset.name
   def pageParent = slot match {
     case p : SitePage => Some(p)
     case _ => Some(slot.context)
   }
-  def pageURL = controllers.routes.SlotAsset.view(volume.id, slotId, assetId)
+  def pageURL = controllers.routes.SlotAssetHtml.view(slot.containerId, slot.segment, assetId)
   def pageActions = Seq(
       Action("view", pageURL, Permission.VIEW)
     ) ++ (if (slot.isFull) Seq(
-      Action("edit", controllers.Asset.routes.html.edit(volumeId, assetId), Permission.EDIT),
-      Action("remove", controllers.Asset.routes.html.remove(volumeId, assetId), Permission.CONTRIBUTE)
+      Action("edit", controllers.routes.AssetHtml.edit(assetId), Permission.EDIT),
+      Action("remove", controllers.routes.AssetHtml.remove(assetId), Permission.CONTRIBUTE)
     ) else Nil)
 
   lazy val json : JsonObject = JsonObject(
     'asset -> (asset.json ++
-      JsonObject.flatten(if (asset_segment.isFull) None else Some('segment -> asset_segment)))
+      JsonObject.flatten(if (asset_segment.isFull) None else Some('segment -> asset_segment))),
+    'permission -> getPermission
   ) ++ slot.json
 }
 
-final class SlotTimeseries private[models] (override val asset : Timeseries, asset_segment : Range[Offset], slot : AbstractSlot, excerpt_segment : Option[Range[Offset]]) extends SlotAsset(asset, asset_segment, slot, excerpt_segment) with TimeseriesData {
+final class SlotTimeseries private[models] (override val asset : Timeseries, asset_segment : Segment, slot : AbstractSlot, excerpt_segment : Option[Segment]) extends SlotAsset(asset, asset_segment, slot, excerpt_segment) with TimeseriesData {
   override def source = asset.source
   def segment = slot.segment.singleton.fold {
       /* We need to determine the portion of this asset and the slot which overlap, in asset-source space: */
@@ -81,25 +80,25 @@ final class SlotTimeseries private[models] (override val asset : Timeseries, ass
       val l = asset.duration
       /* shifted forward if the slot starts later than the asset */
       val t0 = (for { s <- slot.segment.lowerBound ; p <- asset_segment.lowerBound ; if s > p }
-        yield (s - p)).getOrElse(0 : Offset)
+        yield (s - p)).getOrElse(Offset.ZERO)
       /* the lesser of the slot end and the asset end */
       val t1 = l + (for { s <- slot.segment.upperBound ; p <- asset_segment.upperBound ; if s < p }
-        yield (s - p)).getOrElse(0 : Offset)
-      Range[Offset](t0, t1)
+        yield (s - p)).getOrElse(Offset.ZERO)
+      Segment(t0, t1)
     } { s =>
-      Range.singleton[Offset](s - asset_segment.lowerBound.getOrElse(0 : Offset))
+      Range.singleton[Offset](s - asset_segment.lowerBound.getOrElse(Offset.ZERO))
     }
   def entire = slot.segment @> asset_segment
 }
 
 object SlotAsset extends Table[SlotAsset]("slot_asset") {
-  private[models] def make(asset : Asset, segment : Range[Offset], slot : AbstractSlot, excerpt : Option[Range[Offset]]) = asset match {
+  private[models] def make(asset : Asset, segment : Segment, slot : AbstractSlot, excerpt : Option[Segment]) = asset match {
     case ts : Timeseries => new SlotTimeseries(ts, segment, slot, excerpt)
     case _ => new SlotAsset(asset, segment, slot, excerpt)
   }
   private val columns = Columns(
-      SelectColumn[Range[Offset]]("segment")
-    , SelectColumn[Option[Range[Offset]]]("excerpt")
+      SelectColumn[Segment]("segment")
+    , SelectColumn[Option[Segment]]("excerpt")
     )
     .join(Asset.columns, "slot_asset.asset = asset.id")
     .map { case ((segment, excerpt), asset) =>
@@ -114,15 +113,17 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
     .join(if (full) Container.row else Slot.row, "slot_asset.slot = slot.id AND asset.volume = container.volume")
     .map { case (asset, slot) => asset(slot) }
   private val base = Columns(
-      SelectColumn[Range[Offset]]("slot_asset", "segment")
-    , SelectColumn[Option[Range[Offset]]]("slot_excerpt", "segment")
+      SelectColumn[Segment]("slot_asset", "segment")
+    , SelectColumn[Option[Segment]]("slot_excerpt", "segment")
     )
     .from("""asset_slot JOIN slot AS slot_asset ON asset_slot.slot = slot_asset.id
       LEFT JOIN excerpt JOIN slot AS slot_excerpt ON excerpt.slot = slot_excerpt.id
         ON asset_slot.asset = excerpt.asset AND slot_asset.source = slot_excerpt.source AND ?::segment <@ slot_excerpt.segment""")
     .join(Asset.columns, "asset_slot.asset = asset.id")
+  private def abstractSlotRow(slot : AbstractSlot) = base
+    .pushArgs(SQLArgs(slot.segment))
     .map { case ((segment, excerpt), asset) =>
-      (slot : AbstractSlot) => make(asset(slot.volume), segment, slot, excerpt)
+      make(asset(slot.volume), segment, slot, excerpt)
     }
 
   /** Retrieve a single SlotAsset by asset id and slot id.
@@ -133,6 +134,17 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
       .SELECT("WHERE asset = ? AND slot = ? AND", Volume.condition)
       .apply(SQLArgs(asset, slot) ++ Volume.conditionArgs).singleOpt
 
+  def get(asset : Asset.Id, slot : Slot.Id, segment : Segment)(implicit site : Site) : Future[Option[SlotAsset]] =
+    if (segment.isFull) /* may be container or actual slot id */
+      get(asset, slot, false)
+    else /* must be container id */ base
+      .join(Slot.abstractRow(segment), "slot_asset.source = container.id AND slot_asset.segment && ?::segment AND asset.volume = container.volume")
+      .map { case (((segment, excerpt), asset), slot) =>
+        make(asset(slot.volume), segment, slot, excerpt)
+      }
+      .SELECT("WHERE asset.id = ? AND container.id = ? AND", Volume.condition)
+      .apply(SQLArgs(segment, segment, asset, slot) ++ Volume.conditionArgs).singleOpt
+
   /** Retrieve the list of all assets within the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[SlotAsset]] =
     slotRow(slot)
@@ -141,9 +153,18 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   /** Retrieve the list of all assets within the given slot. */
   private[models] def getSlotAll(slot : AbstractSlot) : Future[Seq[SlotAsset]] =
-    base.map(_(slot))
-      .SELECT("WHERE slot_asset.source = ? AND slot_asset.segment && ?::segment")
-      .apply(slot.segment, slot.containerId, slot.segment).list
+    abstractSlotRow(slot)
+      .SELECT("WHERE slot_asset.source = ? AND slot_asset.segment && ?::segment AND asset.volume = ?")
+      .apply(slot.containerId, slot.segment, slot.volumeId).list
+
+  /** Retrieve the list of all foreign assets (from a different volume) within the given slot. */
+  private[models] def getSlotForeign(slot : AbstractSlot)(implicit site : Site) : Future[Seq[SlotAsset]] =
+    base.join(Volume.row, "asset.volume = volume.id")
+      .map { case (((segment, excerpt), asset), vol) =>
+        make(asset(vol), segment, slot, excerpt)
+      }
+      .SELECT("WHERE slot_asset.source = ? AND slot_asset.segment && ?::segment AND asset.volume <> ? AND", Volume.condition)
+      .apply(SQLArgs(slot.segment, slot.containerId, slot.segment, slot.volumeId) ++ Volume.conditionArgs).list
 
   /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */
   private[models] def getAsset(asset : Asset) : Future[Option[SlotAsset]] =
@@ -180,12 +201,12 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
       .apply(volume.getPermission, site.access, volume.id).singleOpt
 
   /** Find an asset suitable for use as a slot thumbnail. */
-  private[models] def getThumb(slot : Slot)(implicit site : Site) : Future[Option[SlotAsset]] =
-    slotRow(slot).SELECT("""
-       JOIN format ON asset.format = format.id
-      WHERE asset.volume = ? AND slot_asset.slot = ?
+  private[models] def getThumb(slot : AbstractSlot)(implicit site : Site) : Future[Option[SlotAsset]] =
+    abstractSlotRow(slot)
+      .SELECT("""JOIN format ON asset.format = format.id
+      WHERE slot_asset.source = ? AND slot_asset.segment && ?::segment AND asset.volume = ?
         AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%') 
-        AND data_permission(?::permission, ?::consent, asset.classification, ?::permission, excerpt IS NOT NULL) >= 'DOWNLOAD'
+        AND data_permission(?::permission, ?::consent, asset.classification, ?::permission, slot_excerpt.segment IS NOT NULL) >= 'DOWNLOAD'
         ORDER BY excerpt NULLS LAST LIMIT 1""")
-      .apply(slot.volumeId, slot.id, slot.getPermission, slot.getConsent, site.access).singleOpt
+      .apply(slot.containerId, slot.segment, slot.volumeId, slot.getPermission, slot.getConsent, site.access).singleOpt
 }

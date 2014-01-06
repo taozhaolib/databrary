@@ -1,4 +1,4 @@
-@(assets : Seq[SlotAsset])(implicit request : controllers.Record.Request[_])
+@(assets : Seq[SlotAsset])(implicit request : RecordHtml.Request[_])
 
 @widget.template.crud("Record: " + request.obj.pageName) {
     @widget.panel.record(request.obj)

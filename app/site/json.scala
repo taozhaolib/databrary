@@ -1,5 +1,6 @@
 package site
 
+import scala.collection.generic.CanBuildFrom
 import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.json._
 import play.api.http.Writeable
@@ -79,10 +80,25 @@ object JsonRecord {
   implicit def writable(implicit codec : play.api.mvc.Codec) : Writeable[JsonRecord] =
     Writeable.writeableOf_JsValue(codec).map(_.obj)
   def seq(s : Seq[JsonRecord]) : JsValue =
-    // JsObject(s.map(JsonField.ofField(_))) /* FIXME */
-    JsArray(s.map(_.obj))
+    // JsObject(s.map(JsonField.ofField(_))) /* TODO */
+    JsArray(s.map(_.js))
+
+  implicit object SeqBuild extends CanBuildFrom[Seq[_], JsonRecord, JsValue] {
+    final class SeqBuilder extends scala.collection.mutable.Builder[JsonRecord, JsValue] {
+      private[this] val builder = Seq.newBuilder[JsValue]
+      def +=(e : JsonRecord) = {
+        builder += e.js
+        this
+      }
+      def clear() = builder.clear
+      def result() = JsArray(builder.result) /* TODO: object */
+    }
+    def apply(coll : Seq[_]) = new SeqBuilder
+    def apply() = new SeqBuilder
+  }
+
   def map[A](f : A => JsonRecord)(l : Seq[A]) : JsValue =
-    seq(l.map(f))
+    l.map(f)
 }
 
 object JsonArray {

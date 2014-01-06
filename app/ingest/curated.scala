@@ -201,7 +201,7 @@ object Curated {
               PopulateException("inconsistent classification for asset " + name + ": " + classification + " <> " + asset.classification))
             _ <- info match {
               case ts : Asset.TimeseriesInfo =>
-                check(asset.asInstanceOf[Timeseries].duration.approx(ts.duration),
+                check(asset.asInstanceOf[Timeseries].duration.equals(ts.duration),
                   PopulateException("inconsistent duration for asset " + name + ": " + ts.duration + " <> " + asset.asInstanceOf[Timeseries].duration))
               case _ => Async(())
             }
@@ -237,7 +237,7 @@ object Curated {
       def duration : Offset
     }
     final case class FileInfo(override val file : File, override val format : AssetFormat) extends Info(file, format) {
-      def duration : Offset = 0
+      def duration : Offset = Offset.ZERO
     }
     final case class TimeseriesInfo(override val file : File, override val format : TimeseriesFormat, val duration : Offset, original : FileInfo) extends Info(file, format)
   }
@@ -251,12 +251,12 @@ object Curated {
       val info = asset.info
       val container = session.container
       val rng = (asset.position, session.last) match {
-        case (Some(p), _) if p.seconds > 0 =>
+        case (Some(p), _) if p > Offset.ZERO =>
           session.last = None
           Range[Offset](p, p + info.duration)
         case (Some(Offset(0)), Some(Offset(0))) =>
           session.last = Some(info.duration)
-          Range[Offset](0, info.duration)
+          Range[Offset](Offset.ZERO, info.duration)
         case (Some(Offset(p)), Some(e)) if p < 0 =>
           session.last = Some(e + info.duration)
           Range[Offset](e, e + info.duration)
@@ -276,7 +276,7 @@ object Curated {
         } { sa => for {
           _ <- check(sa.slot.container === container,
             PopulateException("inconsistant container for previously ingested asset " + name))
-          _ <- check(sa.slot.segment.lowerBound.get.approx(rng.lowerBound.get),
+          _ <- check(sa.slot.segment.lowerBound.get.equals(rng.lowerBound.get),
             PopulateException("inconsistent position for asset " + name + ": " + asset.position + "(=> " + rng + ") <> " + sa.slot.segment))
         } yield (sa)
         })
@@ -326,7 +326,7 @@ object Curated {
     _ <- Async.foreach[SubjectSession, Unit](data.subjectSessions, ss =>
       ss.populate(subjs(ss.subjectKey), sess(ss.sessionKey)))
     assets <- Async.map[SessionAsset, SlotAsset, Seq[SlotAsset]](data.assets
-      .sortBy(_.asset.position.map(-_.seconds)), sa =>
+      .sortBy(_.asset.position.map(-_)), sa =>
       sa.populate(sess(sa.sessionKey)))
   } yield ((subjs.values, assets))
 

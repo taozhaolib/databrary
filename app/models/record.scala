@@ -58,13 +58,13 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def categoryId = category.map(_.id)
 
   /** Update the given values in the database and this object in-place. */
-  def change(category : Option[RecordCategory] = _category) : Future[Boolean] = {
-    if (category == _category)
-      return Async(true)
-    SQL("UPDATE record SET category = ? WHERE id = ?").apply(category.map(_.id), id)
+  def change(category : Option[Option[RecordCategory]] = None) : Future[Boolean] = {
+    category.fold(Async(false)) { cat =>
+    SQL("UPDATE record SET category = ? WHERE id = ?").apply(cat.map(_.id), id)
       .execute.andThen { case scala.util.Success(true) =>
-        _category = category
+        _category = cat
       }
+    }
   }
 
   /** The set of measures on the current volume readable by the current user. */
@@ -112,6 +112,8 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
       .apply(id).list
   /** Attach this record to a slot. */
   def addSlot(s : Slot) = Record.addSlot(id, s.id)
+  /** Remove this record from a slot. */
+  def removeSlot(s : Slot.Id) = Record.removeSlot(id, s)
 
   /** The set of assets to which this record applies. */
   def assets : Future[Seq[SlotAsset]] =
@@ -119,10 +121,10 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   def pageName = category.fold("")(_.name.capitalize + " ") + ident
   def pageParent = Some(volume)
-  def pageURL = controllers.Record.routes.html.view(volume.id, id)
+  def pageURL = controllers.routes.RecordHtml.view(id)
   def pageActions = Seq(
-    Action("view", controllers.Record.routes.html.view(volumeId, id), Permission.VIEW),
-    Action("edit", controllers.Record.routes.html.edit(volumeId, id), Permission.EDIT)
+    Action("view", pageURL, Permission.VIEW),
+    Action("edit", controllers.routes.RecordHtml.edit(id), Permission.EDIT)
   )
 
   lazy val json : JsonRecord =
@@ -186,6 +188,12 @@ object Record extends TableId[Record]("record") {
     volumeRow(slot.volume)
       .SELECT("JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id WHERE slot.source = ? AND slot.segment && ?::segment AND record.volume = ?")
       .apply(slot.containerId, slot.segment, slot.volumeId).list
+
+  /** Retrieve the list of all foreign records (from a different volume) that apply to the given slot. */
+  private[models] def getSlotForeign(slot : AbstractSlot)(implicit site : Site) : Future[Seq[Record]] =
+    row
+      .SELECT("JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id WHERE slot.source = ? AND slot.segment && ?::segment AND record.volume <> ? AND", Volume.condition)
+      .apply(SQLArgs(slot.containerId, slot.segment, slot.volumeId) ++ Volume.conditionArgs).list
 
   /** Retrieve all the categorized records associated with the given volume.
     * @param category restrict to the specified category, or include all categories

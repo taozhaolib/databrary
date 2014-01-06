@@ -8,6 +8,7 @@ import          data._
 import               Forms._
 import          i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json
 import org.mindrot.jbcrypt.BCrypt
 import macros._
 import dbrary._
@@ -52,7 +53,7 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
   protected def adminAccount(implicit request : Request[_]) : Option[Account] =
     request.obj.party.account.filter(_ === request.identity || request.superuser)
 
-  type EditMapping = (Option[String], Option[Option[Orcid]], Option[(String, Option[String], Option[String], Option[String])])
+  type EditMapping = (Option[String], Option[Option[Orcid]], Option[String], Option[(String, Option[String], Option[String], Option[String])])
   type EditForm = Form[EditMapping]
   protected def formFill(implicit request : Request[_]) : EditForm = {
     val e = request.obj.party
@@ -61,13 +62,14 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
       "name" -> OptionMapping(nonEmptyText),
       "orcid" -> OptionMapping(text(0,20).transform[Option[Orcid]](Maybe(_).opt.map(Orcid.apply _), _.fold("")(_.toString)))
         .verifying(Messages("orcid.invalid"), _.flatten.fold(true)(_.valid)),
+      "affiliation" -> OptionMapping(text),
       "" -> MaybeMapping(acct.map(_ => tuple(
         "auth" -> text,
         "email" -> OptionMapping(email),
         "password" -> passwordMapping,
         "openid" -> OptionMapping(text(0,256))
       )))
-    )).fill((Some(e.name), Some(e.orcid), acct.map(a => ("", Some(a.email), None, a.openid))))
+    )).fill((Some(e.name), Some(e.orcid), Some(e.affiliation.getOrElse("")), acct.map(a => ("", Some(a.email), None, a.openid))))
   }
 
   def formForAccount(form : EditForm)(implicit request : Request[_]) =
@@ -80,23 +82,25 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
     val party = request.obj.party
     val acct = adminAccount
     form.fold(bad _, {
-      case (_, _, Some((cur, _, _, _))) if !acct.fold(false)(a => BCrypt.checkpw(cur, a.password)) =>
+      case (_, _, _, Some((cur, _, _, _))) if !acct.fold(false)(a => BCrypt.checkpw(cur, a.password)) =>
         bad(form.withError("cur_password", "password.incorrect"))
-      case (name, orcid, accts) =>
+      case (name, orcid, affiliation, accts) =>
         for {
-          _ <- party.change(name = name.getOrElse(party.name), orcid = orcid.getOrElse(party.orcid))
+          _ <- party.change(name = name, orcid = orcid, affiliation = affiliation.map(Maybe(_).opt))
           _ <- macros.Async.map[(String, Option[String], Option[String], Option[String]), Boolean](accts, { case (_, email, password, openid) =>
             val a = acct.get
-            a.changeAccount(
-              email = email.getOrElse(a.email),
-              password = password.getOrElse(a.password),
-              openid = openid.fold(a.openid)(Maybe(_).opt))
+            a.change(
+              email = email,
+              password = password,
+              openid = openid.map(Maybe(_).opt)
+            )
           })
         } yield (result(request.obj))
     })
   }
 
-  type AuthorizeForm = Form[(Permission.Value, Permission.Value, Boolean, Option[Date])]
+  type AuthorizeMapping = (Permission.Value, Permission.Value, Boolean, Option[Date])
+  type AuthorizeForm = Form[AuthorizeMapping]
   protected val authorizeForm : AuthorizeForm = Form(
     tuple(
       "access" -> Field.enum(Permission),
@@ -109,9 +113,51 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
   protected def authorizeFormFill(auth : Authorize, apply : Boolean = false) : AuthorizeForm =
     authorizeForm.fill((auth.access, auth.delegate, auth.authorized.isEmpty, auth.expires.map(_.toLocalDate)))
 
-  protected val authorizeSearchForm = Form(
-    "name" -> nonEmptyText
-  )
+  protected final val maxExpiration = org.joda.time.Years.years(1)
+
+  def authorizeChange(id : models.Party.Id, childId : models.Party.Id) = AdminAction(id).async { implicit request =>
+    models.Party.get(childId).flatMap(_.fold(ANotFound) { child =>
+    def bad(form : AuthorizeForm) =
+      AbadForm[AuthorizeMapping](f => PartyHtml.viewAdmin(authorizeChangeForm = Some((child, f))), form)
+    val form = authorizeForm.bindFromRequest
+    form.fold(bad, {
+      case (access, delegate, pending, expires) =>
+        val (exp, expok) = if (request.superuser) (expires, true)
+          else {
+            val maxexp = (new Date).plus(maxExpiration)
+            val exp = expires.getOrElse(maxexp)
+            (Some(exp), exp.isAfter(maxexp))
+          }
+        if (!expok)
+          bad(form.withError("expires", "error.max", maxExpiration))
+        else
+          Authorize.set(childId, id, access, delegate, if (pending) None else Some(new Timestamp), exp.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT))).map { _ =>
+            result(request.obj)
+          }
+      }
+    )
+    })
+  }
+
+  def authorizeDelete(id : models.Party.Id, other : models.Party.Id) = AdminAction(id).async { implicit request =>
+    for {
+      /* users can remove themselves from any relationship */
+      _ <- models.Authorize.delete(id, other)
+      _ <- models.Authorize.delete(other, id)
+    } yield (result(request.obj))
+  }
+
+  def authorizeApply(id : models.Party.Id, parentId : models.Party.Id) = AdminAction(id).async { implicit request =>
+    models.Party.get(parentId).flatMap(_.fold(ANotFound) { parent =>
+    authorizeForm.bindFromRequest.fold(
+      AbadForm[AuthorizeMapping](f => PartyHtml.viewAdmin(authorizeWhich = Some(true), authorizeResults = Seq((parent, f))), _),
+      { case (access, delegate, _, expires) =>
+        Authorize.set(id, parentId, access, delegate, None, expires.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT))).map { _ =>
+          result(request.obj)
+        }
+      }
+    )})
+  }
 }
 
 private[controllers] object PartyController extends PartyController {
@@ -137,22 +183,25 @@ object PartyHtml extends PartyController {
     } yield (Ok(views.html.party.view(parents, children, vols, fund, comments)))
   }
 
-  private[this] def viewAdmin(
-    status : Status,
+  private val authorizeSearchForm = Form(
+    "name" -> nonEmptyText
+  )
+
+  private[controllers] def viewAdmin(
     authorizeChangeForm : Option[(models.Party,AuthorizeForm)] = None,
     authorizeWhich : Option[Boolean] = None,
     authorizeSearchForm : Form[String] = authorizeSearchForm,
     authorizeResults : Seq[(models.Party,AuthorizeForm)] = Seq())(
     implicit request : Request[_]) = {
     val authorizeChange = authorizeChangeForm.map(_._1.id)
-    request.obj.party.authorizeChildren(true).flatMap { children =>
-    request.obj.party.authorizeParents(true).map { parents =>
-      val authorizeForms = children
+    for {
+      children <- request.obj.party.authorizeChildren(true)
+      parents <- request.obj.party.authorizeParents(true)
+      authorizeForms = children
         .filter(t => authorizeChange.fold(true)(_ === t.childId))
         .map(t => (t.child, authorizeFormFill(t))) ++
         authorizeChangeForm
-      status(views.html.party.authorize(parents, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults))
-    }}
+    } yield (views.html.party.authorize(parents, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults))
   }
   
   def edit(i : models.Party.Id) = AdminAction(i) { implicit request =>
@@ -160,64 +209,22 @@ object PartyHtml extends PartyController {
   }
 
   def admin(i : models.Party.Id) = AdminAction(i).async { implicit request =>
-    viewAdmin(Ok)
-  }
-
-  private final val maxExpiration = org.joda.time.Years.years(1)
-
-  def authorizeChange(id : models.Party.Id, childId : models.Party.Id) = AdminAction(id).async { implicit request =>
-    models.Party.get(childId).flatMap(_.fold(ANotFound) { child =>
-    val form = authorizeForm.bindFromRequest
-    form.fold(
-      form => viewAdmin(BadRequest, authorizeChangeForm = Some((child, form))),
-      { case (access, delegate, pending, expires) =>
-        val (exp, expok) = if (request.superuser) (expires, true)
-          else {
-            val maxexp = (new Date).plus(maxExpiration)
-            val exp = expires.getOrElse(maxexp)
-            (Some(exp), exp.isAfter(maxexp))
-          }
-        if (!expok)
-          viewAdmin(BadRequest, authorizeChangeForm = Some((child, form.withError("expires", "error.max", maxExpiration))))
-        else
-          Authorize.set(childId, id, access, delegate, if (pending) None else Some(new Timestamp), exp.map(_.toDateTimeAtStartOfDay)).map { _ =>
-            Redirect(routes.PartyHtml.admin(id))
-          }
-      }
-    )
-    })
-  }
-
-  def authorizeDelete(id : models.Party.Id, child : models.Party.Id) = AdminAction(id).async { implicit request =>
-    models.Authorize.delete(child, id).map { _ =>
-      Redirect(routes.PartyHtml.admin(id))
-    }
+    viewAdmin().map(Ok(_))
   }
 
   def authorizeSearch(id : models.Party.Id, apply : Boolean) = AdminAction(id).async { implicit request =>
     val form = authorizeSearchForm.bindFromRequest
     form.fold(
-      form => viewAdmin(BadRequest, authorizeWhich = Some(apply), authorizeSearchForm = form),
+      AbadForm[String](f => viewAdmin(authorizeWhich = Some(apply), authorizeSearchForm = f), _),
       name =>
         models.Party.searchForAuthorize(name, request.obj.party).flatMap { res =>
-        viewAdmin(Ok, authorizeWhich = Some(apply), authorizeSearchForm = form, 
+        viewAdmin(authorizeWhich = Some(apply), authorizeSearchForm = form, 
           authorizeResults = res.map(e => (e, authorizeForm.fill(
             if (apply) (Permission.NONE, Permission.NONE, true, None)
             else (Permission.NONE, Permission.NONE, false, Some((new Date).plus(maxExpiration)))))))
+          .map(Ok(_))
         }
     )
-  }
-
-  def authorizeApply(id : models.Party.Id, parentId : models.Party.Id) = AdminAction(id).async { implicit request =>
-    models.Party.get(parentId).flatMap(_.fold(ANotFound) { parent =>
-    authorizeForm.bindFromRequest.fold(
-      form => viewAdmin(BadRequest, authorizeWhich = Some(true), authorizeResults = Seq((parent, form))),
-      { case (access, delegate, _, expires) =>
-        Authorize.set(id, parentId, access, delegate, None, expires.map(_.toDateTimeAtStartOfDay)).map { _ =>
-          Redirect(routes.PartyHtml.admin(id))
-        }
-      }
-    )})
   }
 }
 
@@ -226,5 +233,24 @@ object PartyApi extends PartyController {
 
   def get(partyId : models.Party.Id) = Action(Some(partyId), Some(Permission.NONE)).async { implicit request =>
     request.obj.json(request.apiOptions).map(Ok(_))
+  }
+
+  def authorizeGet(partyId : models.Party.Id) = AdminAction(partyId).async { implicit request =>
+    for {
+      parents <- request.obj.party.authorizeParents(true)
+      children <- request.obj.party.authorizeChildren(true)
+    } yield (Ok(JsonObject(
+      'parents -> JsonRecord.map[Authorize](a => JsonRecord(a.parentId,
+        'party -> a.parent.json) ++
+        a.json)(parents),
+      'children -> JsonRecord.map[Authorize](a => JsonRecord(a.childId,
+        'party -> a.child.json) ++
+        a.json)(children)
+      ).obj))
+  }
+
+  def authorizeSearch(partyId : models.Party.Id, name : String) = AdminAction(partyId).async { implicit request =>
+    models.Party.searchForAuthorize(name, request.obj.party)
+      .map(r => Ok(JsonRecord.map[Party](_.json)(r)))
   }
 }

@@ -11,7 +11,7 @@ import site._
 final case class VolumeCitation(val volume : Volume, val head : String, val url : Option[String], val body : Option[String]) extends TableRow with InVolume {
   private def args = SQLTerms('volume -> volumeId, 'head -> head, 'url -> url, 'body -> body)
 
-  lazy val json = JsonObject.flatten(
+  def json = JsonObject.flatten(
     Some('head -> head),
     url.map('url -> _),
     body.map('body -> _)

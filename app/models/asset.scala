@@ -116,7 +116,7 @@ trait TimeseriesData extends BackedAsset {
   def source : Timeseries
   /** The range of times represented by this object.
     * Should be a valid, finite, bounded range. */
-  def segment : Range[Offset]
+  def segment : Segment
   def entire : Boolean
   /** Length of time represented by this object, which may be zero if it is a single sample. */
   def duration : Offset = segment.zip((l,u) => u-l).get
@@ -142,7 +142,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   private[this] var _classification = classification_
   def classification : Classification.Value = _classification
 
-  def duration : Offset = 0
+  def duration : Offset = Offset.ZERO
   def source = this
   override def sourceId = id
 
@@ -150,14 +150,12 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
     SQL("SELECT asset_creation(?)").apply(id).single(SQLCols[Option[Timestamp]])
 
   /** Update the given values in the database and this object in-place. */
-  def change(classification : Classification.Value = _classification, name : String = _name, body : Option[String] = _body) : Future[Boolean] = {
-    if (classification == _classification && name == _name && body == _body)
-      return Async(true)
-    Audit.change("asset", SQLTerms('classification -> classification, 'name -> name, 'body -> body), SQLTerms('id -> id)).execute
+  def change(classification : Option[Classification.Value] = None, name : Option[String] = None, body : Option[Option[String]] = None) : Future[Boolean] = {
+    Audit.change("asset", SQLTerms.flatten(classification.map('classification -> _), name.map('name -> _), body.map('body -> _)), SQLTerms('id -> id)).execute
       .andThen { case scala.util.Success(true) =>
-        _classification = classification
-        _name = name
-        _body = body
+        classification.foreach(_classification = _)
+        name.foreach(_name = _)
+        body.foreach(_body = _)
       }
   }
 
@@ -170,11 +168,11 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
 
   def pageName = name
   def pageParent = Some(volume)
-  def pageURL = controllers.Asset.routes.html.view(volume.id, id)
+  def pageURL = controllers.routes.AssetHtml.view(id)
   def pageActions = Seq(
-    Action("view", controllers.Asset.routes.html.view(volumeId, id), Permission.VIEW),
-    Action("edit", controllers.Asset.routes.html.edit(volumeId, id), Permission.EDIT),
-    Action("remove", controllers.Asset.routes.html.remove(volumeId, id), Permission.CONTRIBUTE)
+    Action("view", pageURL, Permission.VIEW),
+    Action("edit", controllers.routes.AssetHtml.edit(id), Permission.EDIT),
+    Action("remove", controllers.routes.AssetHtml.remove(id), Permission.CONTRIBUTE)
   )
 
   lazy val json : JsonRecord = JsonRecord.flatten(id,
@@ -197,7 +195,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
 final class Timeseries private[models] (id : Asset.Id, volume : Volume, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, name : String, body : Option[String], sha1 : Array[Byte]) extends Asset(id, volume, format, classification, name, body, sha1) with TimeseriesData {
   override def source = this
   def entire = true
-  def segment : Range[Offset] = Range[Offset](0, duration)
+  def segment : Segment = Segment(Offset.ZERO, duration)
 }
 
 final case class TimeseriesSample private[models] (val parent : TimeseriesData, val offset : Offset) extends TimeseriesData {
@@ -208,7 +206,7 @@ final case class TimeseriesSample private[models] (val parent : TimeseriesData, 
     Range.singleton((seg.lowerBound.get + offset).ensuring(seg @> _))
   }
   def entire = false
-  override def duration = 0
+  override def duration = Offset.ZERO
   override def format = parent.source.format.sampleFormat
 }
 
@@ -236,7 +234,8 @@ object Asset extends TableId[Asset]("asset") {
 
 
   def get(a : Asset.Id)(implicit site : Site) : Future[Option[Asset]] =
-    row.SELECT("WHERE asset.id = ?").apply(a).singleOpt
+    row.SELECT("WHERE asset.id = ? AND", Volume.condition)
+      .apply(a +: Volume.conditionArgs).singleOpt
 
   def getOlder(a : Asset, o : Id) : Future[Option[Asset]] =
     volumeRow(a.volume)

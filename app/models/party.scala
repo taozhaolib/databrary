@@ -10,23 +10,24 @@ import site._
 /** Any real-world individual, group, institution, etc.
   * Instances are generally obtained from [[Party.get]] or [[Party.create]].
   * @param delegated permission delegated by this party to the current user */
-final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid]) extends TableRowId[Party] with SitePage {
+final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid], affiliation_ : Option[String]) extends TableRowId[Party] with SitePage {
   private[this] var _name = name_
   def name = _name
   private[this] var _orcid = orcid_
   def orcid = _orcid
+  private[this] var _affiliation = affiliation_
+  def affiliation = _affiliation
 
   private[models] var _account : Option[Account] = None
   def account = _account
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : String = _name, orcid : Option[Orcid] = _orcid)(implicit site : Site) : Future[Boolean] = {
-    if (name == _name && orcid == _orcid)
-      return Async(true)
-    Audit.change("party", SQLTerms('name -> name, 'orcid -> orcid), SQLTerms('id -> id))
+  def change(name : Option[String] = None, orcid : Option[Option[Orcid]] = None, affiliation : Option[Option[String]])(implicit site : Site) : Future[Boolean] = {
+    Audit.change("party", SQLTerms.flatten(name.map('name -> _), orcid.map('orcid -> _), affiliation.map('affiliation -> _)), SQLTerms('id -> id))
       .execute.andThen { case scala.util.Success(true) =>
-        _name = name
-        _orcid = orcid
+        name.foreach(_name = _)
+        orcid.foreach(_orcid = _)
+        affiliation.foreach(_affiliation = _)
       }
   }
 
@@ -35,7 +36,7 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
     * Computed by [Authorize.access_check] and usually accessed through [[site.Site.access]]. */
   def access : Future[Permission.Value] = _access.apply
 
-  /** List of authorizations granted to this user. Cached for !all.
+  /** List of authorizations granted to this user.
     * @param all include inactive authorizations */
   final def authorizeParents(all : Boolean = false) : Future[Seq[Authorize]] =
     Authorize.getParents(this, all)
@@ -61,8 +62,14 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
 
   def json(implicit site : Site) : JsonRecord =
     JsonRecord.flatten(id,
+<<<<<<< HEAD
       Some('name -> name),
       orcid.map('orcid -> _),
+=======
+      Some('name -> name), 
+      orcid.map('orcid -> _), 
+      affiliation.map('affiliation -> _), 
+>>>>>>> remotes/origin/master
       account.filter(_ => site.access >= Permission.VIEW).map('email -> _.email),
       Some('avatar -> views.html.display.avatar(this))
     )
@@ -72,7 +79,7 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
   def ===(a : SiteParty) = party === a.party
   def ===(a : Party) = party === a
 
-  def getPermission = delegated
+  def getPermission = Seq(delegated, Seq(site.access, Permission.DOWNLOAD).min).max
 
   def pageName = party.pageName
   def pageParent = party.pageParent
@@ -85,10 +92,11 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
       !(party.id === Party.ROOT) && checkPermission(Permission.CONTRIBUTE) && access >= Permission.CONTRIBUTE)
   )
 
-  def json = party.json
+  def json = party.json + 
+    ('permission -> getPermission)
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
-    JsonOptions(party.json, options,
+    JsonOptions(json, options,
       "parents" -> (opt => party.authorizeParents(opt.contains("all"))
         .map(JsonRecord.map(a => JsonRecord(a.parentId,
           'party -> a.parent.json,
@@ -126,16 +134,14 @@ final class Account protected (val party : Party, email_ : String, password_ : S
   def openid = _openid
 
   /** Update the given values in the database and this object in-place. */
-  def changeAccount(email : String = _email, password : String = _password, openid : Option[String] = _openid)(implicit site : Site) : Future[Boolean] = {
-    if (email == _email && password == _password && openid == _openid)
-      return Async(true)
+  def change(email : Option[String] = None, password : Option[String] = None, openid : Option[Option[String]] = None)(implicit site : Site) : Future[Boolean] = {
     if (password != _password)
       clearTokens(cast[AuthSite](site).map(_.token))
-    Audit.change(Account.table, SQLTerms('email -> email, 'password -> password, 'openid -> openid), SQLTerms('id -> id))
+    Audit.change(Account.table, SQLTerms.flatten(email.map('email -> _), password.map('password -> _), openid.map('openid -> _)), SQLTerms('id -> id))
       .execute.andThen { case scala.util.Success(true) =>
-        _email = email
-        _password = password
-        _openid = openid
+        email.foreach(_email = _)
+        password.foreach(_password = _)
+        openid.foreach(_openid = _)
       }
   }
 
@@ -152,8 +158,9 @@ object Party extends TableId[Party]("party") {
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
     , SelectColumn[Option[Orcid]]("orcid")
-    ).map { (id, name, orcid) =>
-      new Party(id, name, orcid)
+    , SelectColumn[Option[String]]("affiliation")
+    ).map { (id, name, orcid, affiliation) =>
+      new Party(id, name, orcid, affiliation)
     }
   private[models] val row : Selector[Party] =
     columns.leftJoin(Account.columns, using = 'id)
@@ -176,7 +183,7 @@ object Party extends TableId[Party]("party") {
   /** Create a new party. */
   def create(name : String)(implicit site : Site) : Future[Party] =
     Audit.add(table, SQLTerms('name -> name), "id").single(SQLCols[Id])
-      .map(new Party(_, name, None))
+      .map(new Party(_, name, None, None))
 
   private def byName = "(name ILIKE ? OR email ILIKE ?)"
   private def byNameArgs(name : String) =
@@ -202,10 +209,10 @@ object Party extends TableId[Party]("party") {
   final val ROOT   : Id = asId(0)
   /** The special party group representing everybody (including anonymous users) on the site.
     * This is also in the database, but is cached here for special handling. */
-  final val Nobody = new Party(NOBODY, "Everybody", None)
+  final val Nobody = new Party(NOBODY, "Everybody", None, None)
   /** The special party group representing authorized users on the site.
     * This is also in the database, but is cached here for special handling. */
-  final val Root   = new Party(ROOT,   "Databrary", None)
+  final val Root   = new Party(ROOT,   "Databrary", None, None)
 }
 
 object SiteParty {

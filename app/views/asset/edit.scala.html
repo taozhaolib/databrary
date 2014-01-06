@@ -1,4 +1,4 @@
-@(target : Either[Slot, Asset], form : controllers.Asset.html.AssetForm)(implicit request : RequestObject[SiteObject]#Site[_])
+@(target : Either[Slot, Asset], form : AssetHtml.AssetForm)(implicit request : RequestObject[SiteObject]#Site[_])
 
 @import helper.FieldConstructor
 
@@ -12,14 +12,14 @@
             @widget.formErrors(form)
 
             @widget.tag.form(target.fold(
-            container => controllers.Asset.routes.html.upload(container.volumeId, container.id),
-            asset => controllers.Asset.routes.html.change(asset.volumeId, asset.id)), 'enctype -> "multipart/form-data") {
+            container => routes.AssetHtml.upload(container.volumeId, container.id),
+            asset => routes.AssetHtml.update(asset.id)), 'enctype -> "multipart/form-data") {
 
                 @widget.tag.inputText(form("name"), 'placeholder -> "Title")
                 @widget.tag.textarea(form("body"), 'placeholder -> "Description")
 		@widget.enumSelect(form("classification"), Classification)
 
-                @if(controllers.Asset.html.formForFile(form, target)) {
+                @if(AssetHtml.formForFile(form, target)) {
                     @widget.tag.inputFile(form("file"))
 
                     @if(request.access >= Permission.ADMIN) {

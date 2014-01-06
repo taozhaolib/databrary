@@ -6,22 +6,23 @@ import macros._
 import dbrary._
 import site._
 
-case class SQLTerm[A](name : String, value : A)(implicit val sqlType : SQLType[A]) {
-  def put : Any = SQLType.put[A](value)
+class SQLTerm[A](val name : String, value : A)(implicit sqlType : SQLType[A]) extends SQLArg[A](value)(sqlType) {
 }
 object SQLTerm {
+  def apply[A](name : String, value : A)(implicit sqlType : SQLType[A]) = new SQLTerm[A](name, value)(sqlType)
   import scala.language.implicitConversions
   implicit def ofTuple[A : SQLType](x : (Symbol, A)) : SQLTerm[A] = SQLTerm[A](x._1.name, x._2)
 }
 
 /** Parameters (names and values) that may be passed to SQL queries. */
-private[models] final class SQLTerms private (private val terms : Seq[SQLTerm[_]]) extends SQLArgs {
+private[models] final class SQLTerms private (private val terms : Seq[SQLTerm[_]]) extends SQLArgs(terms) {
   def ++(other : SQLTerms) : SQLTerms = new SQLTerms(terms ++ other.terms)
   def :+(other : SQLTerm[_]) : SQLTerms = new SQLTerms(terms :+ other)
   def +:(other : SQLTerm[_]) : SQLTerms = new SQLTerms(other +: terms)
-  def args : Seq[Any] = terms.map(_.put)
+  def :+[A : SQLType](other : (Symbol, A)) : SQLTerms = new SQLTerms(terms :+ SQLTerm.ofTuple(other))
+  def +:[A : SQLType](other : (Symbol, A)) : SQLTerms = new SQLTerms(SQLTerm.ofTuple(other) +: terms)
   private lazy val names = terms.map(_.name)
-  def placeholders : String = terms.map("?::" + _.sqlType.name).mkString(", ")
+  def placeholders : String = terms.map(_.placeholder).mkString(", ")
 
   /** Terms appropriate for INSERT INTO statements.
     * @returns `(arg, ...) VALUES ({arg}, ...)`
@@ -33,11 +34,12 @@ private[models] final class SQLTerms private (private val terms : Seq[SQLTerm[_]
     * @returns `arg = {arg} sep ...`
     */
   def set(sep : String = ", ") =
-    terms.map(t => t.name + " = ?::" + t.sqlType.name).mkString(sep)
+    terms.map(t => t.name + " = " + t.placeholder).mkString(sep)
   def where = set(" AND ")
 }
 private[models] object SQLTerms {
   def apply(terms : SQLTerm[_]*) = new SQLTerms(terms)
+  def flatten(terms : Option[SQLTerm[_]]*) = new SQLTerms(terms.flatten)
 }
 
 object SQLDuplicateKeyException {

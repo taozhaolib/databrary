@@ -20,13 +20,11 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   def volume = this
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : String = _name, body : Option[String] = _body) : Future[Boolean] = {
-    if (name == _name && body == _body)
-      return Async(true)
-    Audit.change("volume", SQLTerms('name -> name, 'body -> body), SQLTerms('id -> id))
+  def change(name : Option[String] = None, body : Option[Option[String]] = None) : Future[Boolean] = {
+    Audit.change("volume", SQLTerms.flatten(name.map('name -> _), body.map('body -> _)), SQLTerms('id -> id))
       .execute.andThen { case scala.util.Success(true) =>
-        _name = name
-        _body = body
+        name.foreach(_name = _)
+        body.foreach(_body = _)
       }
   }
 
@@ -135,16 +133,17 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     Action("view", pageURL, Permission.VIEW),
     Action("edit", controllers.routes.VolumeHtml.edit(id), Permission.EDIT),
     Action("access", controllers.routes.VolumeHtml.admin(id), Permission.ADMIN),
-    Action("add file", controllers.Asset.routes.html.createTop(id), Permission.CONTRIBUTE),
-    Action("add session", controllers.Slot.routes.html.createContainer(id), Permission.CONTRIBUTE),
-    Action("add participant", controllers.Record.routes.html.add(id, RecordCategory.PARTICIPANT), Permission.CONTRIBUTE)
+    Action("add file", controllers.routes.AssetHtml.createTop(id), Permission.CONTRIBUTE),
+    Action("add session", controllers.routes.SlotHtml.createContainer(id), Permission.CONTRIBUTE),
+    Action("add participant", controllers.routes.RecordHtml.add(id, RecordCategory.PARTICIPANT), Permission.CONTRIBUTE)
   )
 
   lazy val json : JsonRecord =
     JsonRecord.flatten(id,
       Some('name -> name),
       body.map('body -> _),
-      Some('creation -> creation)
+      Some('creation -> creation),
+      Some('permission -> getPermission)
     )
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =

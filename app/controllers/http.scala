@@ -17,9 +17,9 @@ object HTTP {
   private val rfc850Date  = org.joda.time.format.DateTimeFormat.forPattern("EEEE, dd-MMM-yy HH:mm:ss 'GMT'").withZone(org.joda.time.DateTimeZone.UTC)
   private val asctimeDate = org.joda.time.format.DateTimeFormat.forPattern("EEE MMM d HH:mm:ss yyyy").withZone(org.joda.time.DateTimeZone.UTC)
   def parseDate(s : String) : Option[Timestamp] =
-    catching(classOf[IllegalArgumentException]).opt(rfc1123Date.parseDateTime(s)) orElse
-    catching(classOf[IllegalArgumentException]).opt(rfc850Date.parseDateTime(s)) orElse
-    catching(classOf[IllegalArgumentException]).opt(asctimeDate.parseDateTime(s))
+    catching(classOf[IllegalArgumentException]).opt(rfc1123Date.parseLocalDateTime(s)) orElse
+    catching(classOf[IllegalArgumentException]).opt(rfc850Date.parseLocalDateTime(s)) orElse
+    catching(classOf[IllegalArgumentException]).opt(asctimeDate.parseLocalDateTime(s))
   def date(d : Timestamp) : String =
     rfc1123Date.print(d)
   
