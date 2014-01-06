@@ -24,29 +24,9 @@ object StaticHtml extends StaticController {
   }
 }
 
-<<<<<<< HEAD
-  object api {
-    def index() = SiteAction {
-      implicit request =>
-        Ok(views.html.static.index(request))
-    }
-
-    def team() = SiteAction.async { implicit request =>
-      for {
-        v <- models.Volume.Databrary
-        a <- v.partyAccess
-      } yield (Ok(views.html.static.team(a)))
-    }
-
-    def page(page : String) = Action { implicit request =>
-      views.html.static.pages.get(page).fold[SimpleResult](NotFound)(page =>
-        Ok(page.template.render))
-    }
-=======
 object StaticApi extends StaticController {
   def page(page : String) = Action { implicit request =>
     views.html.static.pages.get(page).fold[SimpleResult](NotFound)(page =>
       Ok(page.template.render))
->>>>>>> remotes/origin/master
   }
 }

@@ -62,14 +62,9 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
 
   def json(implicit site : Site) : JsonRecord =
     JsonRecord.flatten(id,
-<<<<<<< HEAD
-      Some('name -> name),
-      orcid.map('orcid -> _),
-=======
       Some('name -> name), 
       orcid.map('orcid -> _), 
-      affiliation.map('affiliation -> _), 
->>>>>>> remotes/origin/master
+      affiliation.map('affiliation -> _),
       account.filter(_ => site.access >= Permission.VIEW).map('email -> _.email),
       Some('avatar -> views.html.display.avatar(this))
     )

@@ -98,9 +98,6 @@ POST    /volume/$vID<[0-9]+>/ingest/curated                                     
 
 # API
 GET     /api/about/$page<[a-z]+>                                                                  controllers.StaticApi.page(page : String)
-GET     /api/about                                                                                controllers.StaticApi.index
-GET     /api/about/team                                                                           controllers.StaticApi.team
-GET     /api/about/$page<[a-z]+>                                                                  controllers.StaticApi.page(page : String)
 
 GET     /api/user                                                                                 controllers.LoginApi.get
 POST    /api/user/login                                                                           controllers.LoginApi.post
