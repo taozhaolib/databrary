@@ -55,10 +55,10 @@ private[controllers] sealed class LoginController extends SiteController {
       form => ABadForm(views.html.party.login(_ : LoginForm), form),
       { case (email, password, openid) =>
         macros.Async.flatMap(email, Account.getEmail _).flatMap { acct =>
-        def error : Future[SimpleResult] = macros.Async {
-          acct.foreach(a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)))
-          badForm(views.html.party.login(_ : LoginForm), form.copy(data = form.data.updated("password", "")).withGlobalError(Messages("login.bad")))
-        }
+        def error : Future[SimpleResult] =
+          macros.Async.foreach[Account, Unit](acct, a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)).execute).flatMap { _ =>
+            ABadForm(views.html.party.login(_ : LoginForm), form.copy(data = form.data.updated("password", "")).withGlobalError(Messages("login.bad")))
+          }
         if (!password.isEmpty) {
           acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(password, a.password)).fold(error)(login)
         } else if (!openid.isEmpty)

@@ -22,6 +22,35 @@ sealed trait SiteRequest[A] extends Request[A] with Site {
   def apiOptions : JsonOptions.Options = queryString
 }
 
+abstract class SiteException extends Exception with Results {
+  def resultHtml : Future[SimpleResult]
+  def resultApi : Future[SimpleResult]
+  def result(implicit request : SiteRequest[_]) : Future[SimpleResult] =
+    if (request.isApi) resultApi else resultHtml
+}
+
+abstract trait HtmlException extends SiteException {
+  def resultApi = ???
+  final override def result(implicit request : SiteRequest[_]) : Future[SimpleResult] =
+    resultHtml
+}
+
+abstract trait ApiException extends SiteException {
+  def resultHtml = ???
+  final override def result(implicit request : SiteRequest[_]) : Future[SimpleResult] =
+    resultApi
+}
+
+private[controllers] object NotFoundException extends SiteException {
+  def resultHtml = macros.Async(NotFound) // FIXME: blank page
+  def resultApi = macros.Async(NotFound)
+}
+
+private[controllers] object ForbiddenException extends SiteException {
+  def resultHtml = macros.Async(Forbidden) // FIXME: blank page
+  def resultApi = macros.Async(Forbidden)
+}
+
 object SiteRequest {
   sealed abstract class Base[A](request : Request[A]) extends WrappedRequest[A](request) with SiteRequest[A]
   sealed class Anon[A](request : Request[A]) extends Base[A](request) with AnonSite {
@@ -39,6 +68,10 @@ object SiteRequest {
       new ro.Auth(request, token, obj)
     }
   }
+  def apply[A](request : Request[A], session : Option[SessionToken]) : Base[A] =
+    session.filter(_.valid).fold[Base[A]](
+      new Anon[A](request))(
+      new Auth[A](request, _))
 }
 
 trait RequestObject[+O] {
@@ -51,15 +84,15 @@ trait RequestObject[+O] {
     extends SiteRequest.Auth[A](request, token) with Site[A]
 }
 object RequestObject {
-  def getter[O](get : SiteRequest[_] => Future[Option[O]]) = new ActionRefiner[SiteRequest.Base,RequestObject[O]#Site] {
-    protected def refine[A](request : SiteRequest.Base[A]) =
-      get(request).map(_.fold[Either[SimpleResult,RequestObject[O]#Site[A]]](
-        Left(Site.notFound(request)))(
-        o => Right(request.withObj(o))))
+  def getter[O](get : SiteRequest[_] => Future[Option[O]]) = new ActionTransformer[SiteRequest.Base,RequestObject[O]#Site] {
+    protected def transform[A](request : SiteRequest.Base[A]) =
+      get(request).map(_.fold[RequestObject[O]#Site[A]](
+        throw NotFoundException)(
+        o => request.withObj(o)))
   }
-  def permission[O <: HasPermission](perm : Permission.Value = Permission.VIEW) = new ActionHandler[RequestObject[O]#Site] {
-    protected def handle[A](request : RequestObject[O]#Site[A]) =
-      Future.successful(if (request.obj.checkPermission(perm)) None else Some(Site.Forbidden))
+  def permission[O <: HasPermission](perm : Permission.Value = Permission.VIEW) = new ActionChecker[RequestObject[O]#Site] {
+    protected def check[A](request : RequestObject[O]#Site[A]) =
+      macros.Async(if (!request.obj.checkPermission(perm)) throw ForbiddenException)
   }
   def check[O <: HasPermission](get : SiteRequest[_] => Future[Option[O]], perm : Permission.Value = Permission.VIEW) =
     getter(get) ~> permission(perm)
@@ -70,17 +103,20 @@ object RequestObject {
 object SiteAction extends ActionCreator[SiteRequest.Base] {
   def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) = {
     val now = new Timestamp
-    macros.Async.flatMap(request.session.get("session"), models.SessionToken.get _).flatMap {
-      case None =>
-        block(new SiteRequest.Anon[A](request))
-      case Some(session) if !session.valid =>
-        implicit val site = new SiteRequest.Anon[A](request)
-        session.remove.map { _ =>
+    macros.Async.flatMap(request.session.get("session"), models.SessionToken.get _).flatMap { session =>
+      implicit val site = SiteRequest[A](request, session)
+      if (session.fold(false)(!_.valid))
+        Async.foreach[SessionToken, Unit](session, _.remove).map { _ =>
           LoginController.needed("login.expired")
         }
-      case Some(session) =>
-        block(new SiteRequest.Auth[A](request, session))
-    }.map(_.withHeaders(HeaderNames.DATE -> HTTP.date(now)))
+      else
+        /* we have to catch immediate exceptions, too */
+        macros.Async.catching(classOf[SiteException])(block(site))
+          .recoverWith {
+            case e : SiteException => e.result
+          }
+          .map(_.withHeaders(HeaderNames.DATE -> HTTP.date(now)))
+    }
   }
 
   object Auth extends ActionRefiner[SiteRequest,SiteRequest.Auth] {
@@ -102,17 +138,7 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
   def access(access : Permission.Value) = auth ~> Access[SiteRequest.Auth](access)
 }
 
-class SiteController extends Controller {
-  protected def isSecure : Boolean =
-    current.configuration.getString("application.secret").exists(_ != "databrary").
-      ensuring(s => s, "Application is insecure. You must set application.secret appropriately (see README).")
-
-  def notFound(implicit request : SiteRequest[_]) : SimpleResult =
-    if (request.isApi) NotFound
-    else NotFound // FIXME: blank page
-  def forbidden(implicit request : SiteRequest[_]) : SimpleResult =
-    if (request.isApi) Forbidden
-    else Forbidden // FIXME: blank page
+private[controllers] abstract class FormException(form : Form[_]) extends SiteException {
   protected final implicit val jsonFormErrors : json.OWrites[Seq[FormError]] =
     json.OWrites[Seq[FormError]](errs =>
       json.JsObject(errs
@@ -120,19 +146,32 @@ class SiteController extends Controller {
         .mapValues(e => json.JsArray(
           e.map { case FormError(_, msg, args) => json.JsString(Messages(msg, args : _*)) }))
         .toSeq))
-  protected def badForm[A](view : Form[A] => templates.HtmlFormat.Appendable, form : Form[A])(implicit request : SiteRequest[_]) : SimpleResult =
-    if (request.isApi) BadRequest(json.Json.toJson(form.errors))
-    else BadRequest(view(form))
-  protected def AbadForm[A](view : Form[A] => Future[templates.HtmlFormat.Appendable], form : Form[A])(implicit request : SiteRequest[_]) : Future[SimpleResult] =
-    if (request.isApi) ABadRequest(json.Json.toJson(form.errors))
-    else view(form).map(BadRequest(_))
+  def resultApi : Future[SimpleResult] =
+    macros.Async(BadRequest(json.Json.toJson(form.errors)))
+}
+
+private[controllers] final class BadFormException[A](view : Form[A] => templates.HtmlFormat.Appendable)(form : Form[A]) extends FormException(form) {
+  def resultHtml = macros.Async(BadRequest(view(form)))
+}
+private[controllers] final class ABadFormException[A](view : Form[A] => Future[templates.HtmlFormat.Appendable])(form : Form[A]) extends FormException(form) {
+  def resultHtml = view(form).map(BadRequest(_))
+}
+private[controllers] final class ApiFormException(form : Form[_]) extends FormException(form) with ApiException
+
+class SiteController extends Controller {
+  protected def isSecure : Boolean =
+    current.configuration.getString("application.secret").exists(_ != "databrary").
+      ensuring(s => s, "Application is insecure. You must set application.secret appropriately (see README).")
 
   protected def AOk[C : Writeable](c : C) : Future[SimpleResult] = macros.Async(Ok[C](c))
   protected def ABadRequest[C : Writeable](c : C) : Future[SimpleResult] = macros.Async(BadRequest[C](c))
   protected def ARedirect(c : Call) : Future[SimpleResult] = macros.Async(Redirect(c))
-  protected def ANotFound(implicit request : SiteRequest[_]) : Future[SimpleResult] = macros.Async(notFound)
-  protected def AForbidden(implicit request : SiteRequest[_]) : Future[SimpleResult] = macros.Async(forbidden)
-  protected def ABadForm[A](view : Form[A] => templates.HtmlFormat.Appendable, form : Form[A])(implicit request : SiteRequest[_]) : Future[SimpleResult] = macros.Async(badForm[A](view, form))
+  protected def ANotFound(implicit request : SiteRequest[_]) : Future[SimpleResult] =
+    NotFoundException.result
+  protected def ABadForm[A](view : Form[A] => templates.HtmlFormat.Appendable, form : Form[A])(implicit request : SiteRequest[_]) : Future[SimpleResult] =
+    new BadFormException(view)(form).result
+  protected def AbadForm[A](view : Form[A] => Future[templates.HtmlFormat.Appendable], form : Form[A])(implicit request : SiteRequest[_]) : Future[SimpleResult] =
+    new ABadFormException(view)(form).result
 }
 
 class ObjectController[O <: SiteObject] extends SiteController {
