@@ -62,9 +62,8 @@ POST    /slot/$sID<[0-9]+>/edit                                                 
 GET     /slot/$sID<[0-9]+>/thumb                                                                  controllers.SlotHtml.thumb( sID : models.Slot.Id, segment : dbrary.Segment)
 
 # assets
-GET     /volume/$vID<[0-9]+>/asset/create                                                         controllers.AssetHtml.createTop(vID : models.Volume.Id)
-GET     /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.AssetHtml.create(vID : models.Volume.Id, cID : models.Slot.Id)
-POST    /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/asset/create                                       controllers.AssetHtml.upload(vID : models.Volume.Id, cID : models.Slot.Id)
+GET     /volume/$vID<[0-9]+>/asset/create                                                         controllers.AssetHtml.create(vID : models.Volume.Id, container : Option[models.Container.Id] ?= None, position : Option[dbrary.Offset] ?= None)
+POST    /volume/$vID<[0-9]+>/asset/create                                                         controllers.AssetHtml.upload(vID : models.Volume.Id)
 GET     /asset/$aID<[0-9]+>                                                                       controllers.AssetHtml.view(aID : models.Asset.Id)
 GET     /asset/$aID<[0-9]+>/edit                                                                  controllers.AssetHtml.edit(aID : models.Asset.Id)
 POST    /asset/$aID<[0-9]+>/edit                                                                  controllers.AssetHtml.update(aID : models.Asset.Id)

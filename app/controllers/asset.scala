@@ -22,12 +22,29 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   protected def Action(i : models.Asset.Id, p : Permission.Value) =
     SiteAction ~> action(i, p)
 
-  type AssetMapping = (Option[String], Option[String], Option[Classification.Value], Option[(Option[AssetFormat.Id], Boolean, Option[String], Unit)])
+  type AssetMapping = (
+    Option[String], 
+    Option[String], 
+    Option[Classification.Value], 
+    Option[(
+      Container.Id, 
+      Option[Offset]
+    )], 
+    Option[(
+      Option[AssetFormat.Id], 
+      Boolean, 
+      Option[String], Unit)
+    ]
+  )
   type AssetForm = Form[AssetMapping]
   protected def assetForm(file : Boolean) : AssetForm = Form(tuple(
     "name" -> OptionMapping(nonEmptyText),
     "body" -> OptionMapping(text),
     "classification" -> OptionMapping(Field.enum(Classification)),
+    "" -> optional(tuple(
+      "container" -> of[Container.Id],
+      "position" -> optional(of[Offset])
+    )),
     "" -> MaybeMapping(if (file) Some(tuple(
       "format" -> optional(of[AssetFormat.Id]),
       "timeseries" -> boolean,
@@ -37,17 +54,22 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
 
   protected def formFill(implicit request : Request[_]) : AssetForm = {
     /* TODO Under what conditions should FileAsset data be allowed to be changed? */
-    assetForm(false).fill((Some(request.obj.name), Some(request.obj.body.getOrElse("")), Some(request.obj.classification), None))
+    assetForm(false).fill((Some(request.obj.name), Some(request.obj.body.getOrElse("")), Some(request.obj.classification), None, None))
   }
 
-  def formForFile(form : AssetForm, target : Either[Slot,Asset]) =
+  def formForFile(form : AssetForm, target : Either[Volume,Asset]) =
     form.value.fold(target.isLeft)(_._4.isDefined)
 
   def update(o : models.Asset.Id) = Action(o, Permission.EDIT).async { implicit request =>
-    formFill.bindFromRequest.fold(
-      ABadForm[AssetMapping](views.html.asset.edit(Right(request.obj), _), _), {
-      case (name, body, classification, _) => for {
+    def bad(form : AssetForm) =
+      new BadFormException[AssetMapping](views.html.asset.edit(Right(request.obj), _))(form)
+    val form = formFill.bindFromRequest
+    form.fold(bad(_).result, {
+      case (name, body, classification, slot, _) => for {
+          container <- macros.Async.map[Container.Id, Container](slot.map(_._1), Container.get(_).map(_.getOrElse(
+            throw bad(form.withError("container", "Invalid container ID")))))
           _ <- request.obj.change(classification = classification, name = name, body = body.map(Maybe(_).opt))
+          _ <- macros.Async.foreach[Container, Unit](container, request.obj.link(_, slot.flatMap(_._2)))
         } yield (result(request.obj))
       }
     )
@@ -103,58 +125,50 @@ object AssetHtml extends AssetController {
 
   private[this] val uploadForm = assetForm(true)
 
-  def create(v : models.Volume.Id, c : models.Slot.Id) = SlotHtml.ActionId(v, c, Permission.CONTRIBUTE) { implicit request =>
-    Ok(views.html.asset.edit(Left(request.obj), uploadForm.fill((Some(""), Some(""), Some(Classification.IDENTIFIED), Some((None, false, None, ()))))))
+  def create(v : models.Volume.Id, c : Option[Container.Id], pos : Option[Offset]) = VolumeHtml.Action(v, Permission.CONTRIBUTE) { implicit request =>
+    Ok(views.html.asset.edit(Left(request.obj), uploadForm.fill((Some(""), Some(""), Some(Classification.IDENTIFIED), c.map((_, pos)), Some((None, false, None, ()))))))
   }
 
-  def createTop(v : models.Volume.Id) = VolumeController.Action(v, Permission.CONTRIBUTE).async { implicit request =>
-    request.obj.top.map { slot =>
-      Ok(views.html.asset.edit(Left(slot), uploadForm.fill((Some(""), Some(""), Some(Classification.MATERIAL), Some((None, false, None, ()))))))
-    }
-  }
-
-  def upload(v : models.Volume.Id, c : models.Slot.Id) = SlotHtml.ActionId(v, c, Permission.CONTRIBUTE).async { implicit request =>
-    val slot = request.obj
-    def error(form : AssetForm) : Future[SimpleResult] =
-      ABadRequest(views.html.asset.edit(Left(slot), form))
+  def upload(v : models.Volume.Id) = VolumeHtml.Action(v, Permission.CONTRIBUTE).async { implicit request =>
+    val volume = request.obj
+    def Error(form : AssetForm) =
+      throw new BadFormException[AssetMapping](views.html.asset.edit(Left(request.obj), _))(form)
     val form = uploadForm.bindFromRequest
-    form.fold(error _, {
-      case (name, body, classification, Some((format, timeseries, localfile, ()))) =>
+    form.fold(Error _, {
+      case (name, body, classification, slot, Some((format, timeseries, localfile, ()))) =>
         val adm = request.access >= Permission.ADMIN
-        val fmt = format.filter(_ => adm).flatMap(AssetFormat.get(_))
-        type ER = Either[AssetForm,(TemporaryFile,AssetFormat,String)]
-        request.body.asMultipartFormData.flatMap(_.file("file")).fold {
-          localfile.filter(_ => adm).fold[ER](
-            Left(form.withError("file", "error.required"))) { localfile =>
+        val ifmt = format.filter(_ => adm).flatMap(AssetFormat.get(_))
+        val (file, fmt, fname) =
+          request.body.asMultipartFormData.flatMap(_.file("file")).fold {
             /* local file handling, for admin only: */
-            val file = new java.io.File(localfile)
+            val file = new java.io.File(localfile.filter(_ => adm) getOrElse
+              Error(form.withError("file", "error.required")))
             val name = file.getName
-            if (file.isFile)
-              (fmt orElse AssetFormat.getFilename(name)).fold[ER](
-                Left(form.withError("format", "Unknown format")))(
-                fmt => Right((store.TemporaryFileLinkOrCopy(file), fmt, name)))
-            else
-              Left(form.withError("localfile", "File not found"))
+            if (!file.isFile)
+              Error(form.withError("localfile", "File not found"))
+            val ffmt = ifmt orElse AssetFormat.getFilename(name) getOrElse
+              Error(form.withError("format", "Unknown format"))
+            (store.TemporaryFileLinkOrCopy(file) : TemporaryFile, ffmt, name)
+          } { file =>
+            val ffmt = ifmt orElse AssetFormat.getFilePart(file) getOrElse
+              Error(form.withError("file", "file.format.unknown", file.contentType.getOrElse("unknown")))
+            (file.ref, ffmt, file.filename)
           }
-        } { file =>
-          (fmt orElse AssetFormat.getFilePart(file)).fold[ER](
-            Left(form.withError("file", "file.format.unknown", file.contentType.getOrElse("unknown"))))(
-            fmt => Right((file.ref, fmt, file.filename)))
-        }.fold(error _, { case (file, fmt, fname) =>
-          val aname = name.flatMap(Maybe(_).opt).getOrElse(fname)
-          val abody = body.flatMap(Maybe(_).opt)
-          for {
-            asset <- fmt match {
-              case fmt : TimeseriesFormat if adm && timeseries =>
-                val probe = media.AV.probe(file.file)
-                models.Asset.create(slot.volume, fmt, classification.getOrElse(Classification(0)), probe.duration, aname, abody, file)
-              case _ =>
-                models.Asset.create(slot.volume, fmt, classification.getOrElse(Classification(0)), aname, abody, file)
-            }
-            _ <- asset.link(request.obj)
-          } yield (Redirect(controllers.routes.SlotAssetHtml.view(slot.containerId, slot.segment, asset.id)))
-        })
-      case _ => error(uploadForm) /* should not happen */
+        val aname = name.flatMap(Maybe(_).opt).getOrElse(fname)
+        val abody = body.flatMap(Maybe(_).opt)
+        for {
+          container <- macros.Async.map[Container.Id, Container](slot.map(_._1), Container.get(_).map(_ getOrElse
+            Error(form.withError("container", "Invalid container ID"))))
+          asset <- fmt match {
+            case fmt : TimeseriesFormat if adm && timeseries =>
+              val probe = media.AV.probe(file.file)
+              models.Asset.create(volume, fmt, classification.getOrElse(Classification(0)), probe.duration, aname, abody, file)
+            case _ =>
+              models.Asset.create(volume, fmt, classification.getOrElse(Classification(0)), aname, abody, file)
+          }
+          sa <- macros.Async.map[Container, SlotAsset](container, asset.link(_, slot.flatMap(_._2)))
+        } yield (Redirect(sa.getOrElse(asset).pageURL))
+      case _ => Error(uploadForm) /* should not happen */
     })
   }
 

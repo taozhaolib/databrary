@@ -250,37 +250,36 @@ object Curated {
     def populate(session : ModelSession)(implicit site : Site) : Future[models.SlotAsset] = {
       val info = asset.info
       val container = session.container
-      val rng = (asset.position, session.last) match {
+      val pos = (asset.position, session.last) match {
         case (Some(p), _) if p > Offset.ZERO =>
           session.last = None
-          Range[Offset](p, p + info.duration)
+          Some(p)
         case (Some(Offset(0)), Some(Offset(0))) =>
           session.last = Some(info.duration)
-          Range[Offset](Offset.ZERO, info.duration)
+          Some(Offset.ZERO)
         case (Some(Offset(p)), Some(e)) if p < 0 =>
           session.last = Some(e + info.duration)
-          Range[Offset](e, e + info.duration)
+          Some(e)
         case (Some(Offset(p)), _) if p < 0 =>
           throw PopulateException("unexpected negative position at asset " + name)
         case (Some(p), _) =>
-          Range[Offset](p, p + info.duration)
+          Some(p)
         case (None, _) =>
-          Range.full[Offset]
+          None
       }
-      asset.populate(container.volume, info).flatMap { a =>
-        a.slot.flatMap(_.fold {
-          Slot.getOrCreate(container, rng)
-            .flatMap(a.link(_)).flatMap { _ =>
-              a.slot.map(_.get)
-            }
-        } { sa => for {
-          _ <- check(sa.slot.container === container,
-            PopulateException("inconsistant container for previously ingested asset " + name))
-          _ <- check(sa.slot.segment.lowerBound.get.equals(rng.lowerBound.get),
-            PopulateException("inconsistent position for asset " + name + ": " + asset.position + "(=> " + rng + ") <> " + sa.slot.segment))
-        } yield (sa)
-        })
-      }
+      for {
+        a <- asset.populate(container.volume, info)
+        s <- a.slot
+        sa <- s.fold(
+          a.link(container, pos, info.duration)) { sa =>
+          for {
+            _ <- check(sa.slot.container === container,
+              PopulateException("inconsistant container for previously ingested asset " + name))
+            _ <- check(sa.slot.segment.lowerBound.equals(pos),
+              PopulateException("inconsistent position for asset " + name + ": " + asset.position + "(=> " + pos + ") <> " + sa.slot.segment))
+          } yield (sa)
+        }
+      } yield (sa)
     }
   }
 
