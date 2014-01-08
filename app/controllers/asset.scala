@@ -24,7 +24,6 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
 
   type AssetMapping = (
     Option[String], 
-    Option[String], 
     Option[Classification.Value], 
     Option[(
       Container.Id, 
@@ -38,8 +37,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   )
   type AssetForm = Form[AssetMapping]
   protected def assetForm(file : Boolean) : AssetForm = Form(tuple(
-    "name" -> OptionMapping(nonEmptyText),
-    "body" -> OptionMapping(text),
+    "name" -> OptionMapping(text),
     "classification" -> OptionMapping(Field.enum(Classification)),
     "" -> optional(tuple(
       "container" -> of[Container.Id],
@@ -54,7 +52,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
 
   protected def formFill(implicit request : Request[_]) : AssetForm = {
     /* TODO Under what conditions should FileAsset data be allowed to be changed? */
-    assetForm(false).fill((Some(request.obj.name), Some(request.obj.body.getOrElse("")), Some(request.obj.classification), None, None))
+    assetForm(false).fill((Some(request.obj.name.getOrElse("")), Some(request.obj.classification), None, None))
   }
 
   def formForFile(form : AssetForm, target : Either[Volume,Asset]) =
@@ -65,10 +63,10 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       new BadFormException[AssetMapping](views.html.asset.edit(Right(request.obj), _))(form)
     val form = formFill.bindFromRequest
     form.fold(bad(_).result, {
-      case (name, body, classification, slot, _) => for {
+      case (name, classification, slot, _) => for {
           container <- macros.Async.map[Container.Id, Container](slot.map(_._1), Container.get(_).map(_.getOrElse(
             throw bad(form.withError("container", "Invalid container ID")))))
-          _ <- request.obj.change(classification = classification, name = name, body = body.map(Maybe(_).opt))
+          _ <- request.obj.change(classification = classification, name = name.map(Maybe(_).opt))
           _ <- macros.Async.foreach[Container, Unit](container, request.obj.link(_, slot.flatMap(_._2)))
         } yield (result(request.obj))
       }
@@ -126,7 +124,7 @@ object AssetHtml extends AssetController {
   private[this] val uploadForm = assetForm(true)
 
   def create(v : models.Volume.Id, c : Option[Container.Id], pos : Option[Offset]) = VolumeHtml.Action(v, Permission.CONTRIBUTE) { implicit request =>
-    Ok(views.html.asset.edit(Left(request.obj), uploadForm.fill((Some(""), Some(""), Some(Classification.IDENTIFIED), c.map((_, pos)), Some((None, false, None, ()))))))
+    Ok(views.html.asset.edit(Left(request.obj), uploadForm.fill((Some(""), Some(Classification.IDENTIFIED), c.map((_, pos)), Some((None, false, None, ()))))))
   }
 
   def upload(v : models.Volume.Id) = VolumeHtml.Action(v, Permission.CONTRIBUTE).async { implicit request =>
@@ -135,7 +133,7 @@ object AssetHtml extends AssetController {
       throw new BadFormException[AssetMapping](views.html.asset.edit(Left(request.obj), _))(form)
     val form = uploadForm.bindFromRequest
     form.fold(Error _, {
-      case (name, body, classification, slot, Some((format, timeseries, localfile, ()))) =>
+      case (name, classification, slot, Some((format, timeseries, localfile, ()))) =>
         val adm = request.access >= Permission.ADMIN
         val ifmt = format.filter(_ => adm).flatMap(AssetFormat.get(_))
         val (file, fmt, fname) =
@@ -154,17 +152,16 @@ object AssetHtml extends AssetController {
               Error(form.withError("file", "file.format.unknown", file.contentType.getOrElse("unknown")))
             (file.ref, ffmt, file.filename)
           }
-        val aname = name.flatMap(Maybe(_).opt).getOrElse(fname)
-        val abody = body.flatMap(Maybe(_).opt)
+        val aname = name.flatMap(Maybe(_).opt).orElse(Maybe(fname).opt)
         for {
           container <- macros.Async.map[Container.Id, Container](slot.map(_._1), Container.get(_).map(_ getOrElse
             Error(form.withError("container", "Invalid container ID"))))
           asset <- fmt match {
             case fmt : TimeseriesFormat if adm && timeseries =>
               val probe = media.AV.probe(file.file)
-              models.Asset.create(volume, fmt, classification.getOrElse(Classification(0)), probe.duration, aname, abody, file)
+              models.Asset.create(volume, fmt, classification.getOrElse(Classification(0)), probe.duration, aname, file)
             case _ =>
-              models.Asset.create(volume, fmt, classification.getOrElse(Classification(0)), aname, abody, file)
+              models.Asset.create(volume, fmt, classification.getOrElse(Classification(0)), aname, file)
           }
           sa <- macros.Async.map[Container, SlotAsset](container, asset.link(_, slot.flatMap(_._2)))
         } yield (Redirect(sa.getOrElse(asset).pageURL))

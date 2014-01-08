@@ -184,11 +184,11 @@ object Curated {
               case Asset.TimeseriesInfo(_, fmt, duration, orig) =>
                 for {
                   o <- populate(volume, orig)
-                  a <- models.Asset.create(volume, fmt, classification, duration, name, None, infile)
+                  a <- models.Asset.create(volume, fmt, classification, duration, Some(name), infile)
                   _ <- SQL("INSERT INTO asset_revision VALUES (?, ?)").apply(o.id, a.id).execute
                 } yield (a)
               case Asset.FileInfo(_, fmt) =>
-                models.Asset.create(volume, fmt, classification, name, None, infile)
+                models.Asset.create(volume, fmt, classification, Some(name), infile)
             }
             _ <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, info.path).execute
           } yield (asset)

@@ -54,7 +54,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
     }
   }
 
-  def pageName = asset.name
+  def pageName = asset.pageName
   def pageParent = slot match {
     case p : SitePage => Some(p)
     case _ => Some(slot.context)

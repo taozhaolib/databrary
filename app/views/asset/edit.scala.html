@@ -6,8 +6,8 @@
         FieldConstructor(widget.tag.labeledFieldConstructor.f)
     }
 
-@widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.name)) {
-    @widget.panel.form(target.fold(_ => "New Asset", _.name), target.fold(_ => "Upload Asset", _ => "Edit Asset")) {
+@widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.pageName)) {
+    @widget.panel.form(target.fold(_ => "New Asset", _.pageName), target.fold(_ => "Upload Asset", _ => "Edit Asset")) {
         <div class="col-full">
             @widget.formErrors(form)
 
