@@ -13,6 +13,8 @@ object Curated {
   import Parse._
   implicit val executionContext = site.context.process
 
+  final val ingestDirectory = new File("/databrary/stage")
+
   /* These are all upper-case to allow case-folding insensitive matches.
    * They also must match (in order) the option in the various metrics. */
   private class MetricENUM(metric : Metric[String]) extends ENUM(metric.name) {
@@ -175,7 +177,7 @@ object Curated {
     }
 
     def populate(volume : Volume, info : Asset.Info)(implicit site : Site) : Future[models.Asset] =
-      SQL("SELECT id FROM ingest.asset WHERE file = ?").apply(file.getPath).list(SQLCols[models.Asset.Id]).flatMap(_.toSeq match {
+      SQL("SELECT id FROM ingest.asset WHERE file = ?").apply(info.ingestPath).list(SQLCols[models.Asset.Id]).flatMap(_.toSeq match {
         case Nil =>
           /* for now copy and don't delete */
           val infile = store.TemporaryFileLinkOrCopy(info.file)
@@ -190,7 +192,7 @@ object Curated {
               case Asset.FileInfo(_, fmt) =>
                 models.Asset.create(volume, fmt, classification, Some(name), infile)
             }
-            _ <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, info.path).execute
+            _ <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, info.ingestPath).execute
           } yield (asset)
         case Seq(iid) =>
           for {
@@ -217,7 +219,8 @@ object Curated {
       pos <- listHead(option(offset), "offset")
       classification <- listHead(enum(Classification, "classification").mapInput(_.toUpperCase), "classification")
       path <- listHead(trimmed.map { p =>
-        val f = new java.io.File(if (p.headOption.equals(Some('/'))) "" else "/databrary/stage", p)
+        val i = new File(p)
+	val f = if (i.isAbsolute) i else new File(ingestDirectory, p)
         if (!f.isFile) fail("file not found: " + p)
         f
       }, "file path")
@@ -227,19 +230,23 @@ object Curated {
       pos <- listHead(guard(name.isDefined, option(offset)), "offset")
       classification <- listHead(guard(name.isDefined, enum(Classification, "classification").mapInput(_.toUpperCase)), "classification")
       path <- listHead(guard(name.isDefined, trimmed.map { p =>
-        val f = new java.io.File(if (p.headOption.equals(Some('/'))) "" else "/databrary/stage", p)
+        val i = new File(p)
+	val f = if (i.isAbsolute) i else new File(ingestDirectory, p)
         if (!f.isFile) fail("file not found: " + p)
         f
       }), "file path")
     } yield (name.map(Asset(_, pos.get, classification.get, path.get)))
-    sealed abstract class Info(val file : File, val format : AssetFormat) {
-      def path = file.getPath
+    sealed abstract class Info {
+      val file : File
+      val format : AssetFormat
+      final def path = file.getPath
+      final def ingestPath = path.stripPrefix(ingestDirectory.getPath + '/')
       def duration : Offset
     }
-    final case class FileInfo(override val file : File, override val format : AssetFormat) extends Info(file, format) {
+    final case class FileInfo(val file : File, val format : AssetFormat) extends Info {
       def duration : Offset = Offset.ZERO
     }
-    final case class TimeseriesInfo(override val file : File, override val format : TimeseriesFormat, val duration : Offset, original : FileInfo) extends Info(file, format)
+    final case class TimeseriesInfo(val file : File, val format : TimeseriesFormat, val duration : Offset, original : FileInfo) extends Info
   }
 
   private final case class SessionAsset(sessionKey : String, asset : Asset) extends KeyedData {
