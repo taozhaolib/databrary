@@ -84,7 +84,20 @@ Controllers and other callers should do any necessary checking to ensure appropr
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="models.Account" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="models.AbstractSlot" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="AbstractSlotextendsInVolumewithSiteObject"></a>
+      <a id="AbstractSlot:AbstractSlot"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="AbstractSlot.html"><span class="name">AbstractSlot</span></a><span class="result"> extends <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Conceptually a slot represents a segment of a container.</p>
+    </li><li name="models.Account" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="AccountextendsTableRow"></a>
       <a id="Account:Account"></a>
       <h4 class="signature">
@@ -239,7 +252,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <a href="IntId.html"><span class="name">IntId</span></a><span class="tparams">[<span name="T">+T</span>]</span><span class="result"> extends <span class="extype" name="models.GenericId">GenericId</span>[<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="models.IntId.T">T</span>]</span>
       </span>
       </h4>
-      <p class="comment cmt"><span class="extype" name="GenericId">GenericId</span> specific to integers.</p>
+      <p class="comment cmt">GenericId specific to integers.</p>
     </li><li name="models.LoginToken" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="LoginTokenextendsAccountToken"></a>
       <a id="LoginToken:LoginToken"></a>
@@ -319,7 +332,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">An <a href="http://orcid.org/" target="_blank">ORCID</a> identifier.</p>
     </li><li name="models.Party" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="PartyextendsTableRowId[models.Party]withSitePagewithJsonableRecord"></a>
+      <a id="PartyextendsTableRowId[models.Party]withSitePage"></a>
       <a id="Party:Party"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -327,12 +340,12 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Party.html"><span class="name">Party</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>] with <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a> with <a href="../site/JsonableRecord.html" class="extype" name="site.JsonableRecord">JsonableRecord</a></span>
+        <a href="Party.html"><span class="name">Party</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>] with <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></span>
       </span>
       </h4>
       <p class="comment cmt">Any real-world individual, group, institution, etc.</p>
     </li><li name="models.Record" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="RecordextendsTableRowId[models.Record]withSiteObjectwithInVolumewithJsonableRecord"></a>
+      <a id="RecordextendsTableRowId[models.Record]withSiteObjectwithInVolume"></a>
       <a id="Record:Record"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -340,7 +353,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Record.html"><span class="name">Record</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>] with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <a href="../site/JsonableRecord.html" class="extype" name="site.JsonableRecord">JsonableRecord</a></span>
+        <a href="Record.html"><span class="name">Record</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>] with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
       </span>
       </h4>
       <p class="comment cmt">A set of Measures.</p>
@@ -358,15 +371,15 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">Types of Records that are relevant for data organization.</p>
     </li><li name="models.SQLTerm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="SQLTerm[A]extendsProductwithSerializable"></a>
+      <a id="SQLTerm[A]extendsSQLArg[A]"></a>
       <a id="SQLTerm[A]:SQLTerm[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">case class</span>
+        <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="SQLTerm.html"><span class="name">SQLTerm</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="value">value: <span class="extype" name="models.SQLTerm.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="sqlType">sqlType: <span class="extype" name="dbrary.SQLType">SQLType</span>[<span class="extype" name="models.SQLTerm.A">A</span>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="SQLTerm.html"><span class="name">SQLTerm</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <span class="extype" name="dbrary.SQLArg">SQLArg</span>[<span class="extype" name="models.SQLTerm.A">A</span>]</span>
       </span>
       </h4>
       
@@ -397,7 +410,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       
     </li><li name="models.Slot" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="SlotextendsTableRowId[models.Slot]withInVolumewithSiteObject"></a>
+      <a id="SlotextendsTableRowId[models.Slot]withAbstractSlot"></a>
       <a id="Slot:Slot"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -405,12 +418,12 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Slot.html"><span class="name">Slot</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>] with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></span>
+        <a href="Slot.html"><span class="name">Slot</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>] with <a href="AbstractSlot.html" class="extype" name="models.AbstractSlot">AbstractSlot</a></span>
       </span>
       </h4>
       <p class="comment cmt">Smallest organizatonal unit of related data.</p>
     </li><li name="models.SlotAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="SlotAssetextendsTableRowwithSiteObjectwithBackedAssetwithInVolume"></a>
+      <a id="SlotAssetextendsTableRowwithAssetSlotwithSiteObject"></a>
       <a id="SlotAsset:SlotAsset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -418,7 +431,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="SlotAsset.html"><span class="name">SlotAsset</span></a><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a> with <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
+        <a href="SlotAsset.html"><span class="name">SlotAsset</span></a><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="models.AssetSlot">AssetSlot</span> with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></span>
       </span>
       </h4>
       <p class="comment cmt">A segment of an asset as used in a slot.</p>
@@ -435,6 +448,19 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       
+    </li><li name="models.SlotWeight" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SlotWeightextendsWeight"></a>
+      <a id="SlotWeight:SlotWeight"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="SlotWeight.html"><span class="name">SlotWeight</span></a><span class="result"> extends <span class="extype" name="models.Weight">Weight</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Summary representation of tag information for a single tag and current user.</p>
     </li><li name="models.Tag" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="TagextendsTableRowId[models.Tag]"></a>
       <a id="Tag:Tag"></a>
@@ -462,15 +488,15 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">A tag applied by a user to an object.</p>
     </li><li name="models.TagWeight" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="TagWeightextendsTableRowwithJsonableRecordwithProductwithSerializable"></a>
+      <a id="TagWeightextendsWeight"></a>
       <a id="TagWeight:TagWeight"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
-        <span class="kind">case class</span>
+        <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="TagWeight.html"><span class="name">TagWeight</span></a><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <a href="../site/JsonableRecord.html" class="extype" name="site.JsonableRecord">JsonableRecord</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="TagWeight.html"><span class="name">TagWeight</span></a><span class="result"> extends <span class="extype" name="models.Weight">Weight</span></span>
       </span>
       </h4>
       <p class="comment cmt">Summary representation of tag information for a single slot and current user.</p>
@@ -540,7 +566,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       
     </li><li name="models.Volume" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="VolumeextendsTableRowId[models.Volume]withSiteObjectwithInVolumewithJsonableRecord"></a>
+      <a id="VolumeextendsTableRowId[models.Volume]withSiteObjectwithInVolume"></a>
       <a id="Volume:Volume"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -548,7 +574,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Volume.html"><span class="name">Volume</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>] with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <a href="../site/JsonableRecord.html" class="extype" name="site.JsonableRecord">JsonableRecord</a></span>
+        <a href="Volume.html"><span class="name">Volume</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>] with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
       </span>
       </h4>
       <p class="comment cmt">Main organizational unit or package of data, within which everything else exists.</p>
@@ -906,7 +932,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="SQLTerm$.html"><span class="name">SQLTerm</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="SQLTerm$.html"><span class="name">SQLTerm</span></a>
       </span>
       </h4>
       
@@ -962,6 +988,19 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       
+    </li><li name="models.SlotWeight" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SlotWeight"></a>
+      <a id="SlotWeight:SlotWeight"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="SlotWeight$.html"><span class="name">SlotWeight</span></a><span class="result"> extends <span class="extype" name="models.WeightView">WeightView</span>[<a href="SlotWeight.html" class="extype" name="models.SlotWeight">SlotWeight</a>]</span>
+      </span>
+      </h4>
+      
     </li><li name="models.Tag" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Tag"></a>
       <a id="Tag:Tag"></a>
@@ -997,7 +1036,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="TagWeight$.html"><span class="name">TagWeight</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>] with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="TagWeight$.html"><span class="name">TagWeight</span></a><span class="result"> extends <span class="extype" name="models.WeightView">WeightView</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]</span>
       </span>
       </h4>
       

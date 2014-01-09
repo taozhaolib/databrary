@@ -35,13 +35,13 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">JsonRecord</span><span class="result"> extends <a href="JsField.html" class="extype" name="site.JsField">JsField</a></span>
+        <span class="name">JsonRecord</span><span class="result"> extends <a href="JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a> with <a href="JsonValue.html" class="extype" name="site.JsonValue">JsonValue</a> with <a href="JsField.html" class="extype" name="site.JsField">JsField</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/site/json.scala" target="_blank">json.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="JsField.html" class="extype" name="site.JsField">JsField</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="JsField.html" class="extype" name="site.JsField">JsField</a>, <a href="JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a>, <a href="JsonValue.html" class="extype" name="site.JsonValue">JsonValue</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="site.JsonRecord"><span>JsonRecord</span></li><li class="in" name="site.JsField"><span>JsField</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="site.JsonRecord"><span>JsonRecord</span></li><li class="in" name="site.JsField"><span>JsField</span></li><li class="in" name="site.JsonObject"><span>JsonObject</span></li><li class="in" name="site.JsonValue"><span>JsonValue</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -140,6 +140,71 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="site.JsonRecord#+" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="+(field:site.JsonField):site.JsonRecord"></a>
+      <a id="+(JsonField):JsonRecord"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $plus" class="name">+</span><span class="params">(<span name="field">field: <a href="JsonField.html" class="extype" name="site.JsonField">JsonField</a></span>)</span><span class="result">: <a href="" class="extype" name="site.JsonRecord">JsonRecord</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="site.JsonRecord">JsonRecord</a> → <a href="JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a></dd></dl></div>
+    </li><li name="site.JsonRecord#++" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="++(obj:site.JsonObject):site.JsonRecord"></a>
+      <a id="++(JsonObject):JsonRecord"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $plus$plus" class="name">++</span><span class="params">(<span name="obj">obj: <a href="JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a></span>)</span><span class="result">: <a href="" class="extype" name="site.JsonRecord">JsonRecord</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="site.JsonRecord">JsonRecord</a> → <a href="JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a></dd></dl></div>
+    </li><li name="site.JsonRecord#++" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="++(obj:play.api.libs.json.JsObject):site.JsonRecord"></a>
+      <a id="++(JsObject):JsonRecord"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $plus$plus" class="name">++</span><span class="params">(<span name="obj">obj: <span class="extype" name="play.api.libs.json.JsObject">JsObject</span></span>)</span><span class="result">: <a href="" class="extype" name="site.JsonRecord">JsonRecord</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="site.JsonRecord">JsonRecord</a> → <a href="JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a></dd></dl></div>
+    </li><li name="site.JsonRecord#++" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="++(list:Traversable[site.JsonField]):site.JsonRecord"></a>
+      <a id="++(Traversable[JsonField]):JsonRecord"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $plus$plus" class="name">++</span><span class="params">(<span name="list">list: <span class="extype" name="scala.Traversable">Traversable</span>[<a href="JsonField.html" class="extype" name="site.JsonField">JsonField</a>]</span>)</span><span class="result">: <a href="" class="extype" name="site.JsonRecord">JsonRecord</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="site.JsonRecord">JsonRecord</a> → <a href="JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a></dd></dl></div>
+    </li><li name="site.JsonRecord#-" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="-(field:String):site.JsonRecord"></a>
+      <a id="-(String):JsonRecord"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $minus" class="name">-</span><span class="params">(<span name="field">field: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="" class="extype" name="site.JsonRecord">JsonRecord</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="site.JsonRecord">JsonRecord</a> → <a href="JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a></dd></dl></div>
     </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:AnyRef):Boolean"></a>
       <a id="==(AnyRef):Boolean"></a>
@@ -224,19 +289,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="site.JsonRecord#field" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="field:String"></a>
-      <a id="field:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">field</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="site.JsonRecord">JsonRecord</a> → <a href="JsField.html" class="extype" name="site.JsField">JsField</a></dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -308,6 +360,32 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="site.JsonRecord#js" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="js:play.api.libs.json.JsValue"></a>
+      <a id="js:JsValue"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">js</span><span class="result">: <span class="extype" name="play.api.libs.json.JsValue">JsValue</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="site.JsonRecord">JsonRecord</a> → <a href="JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a> → <a href="JsonValue.html" class="extype" name="site.JsonValue">JsonValue</a></dd></dl></div>
+    </li><li name="site.JsonRecord#name" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="name:String"></a>
+      <a id="name:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">name</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="site.JsonRecord">JsonRecord</a> → <a href="JsField.html" class="extype" name="site.JsField">JsField</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -347,7 +425,7 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="site.JsonRecord#obj" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="site.JsonObject#obj" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="obj:play.api.libs.json.JsObject"></a>
       <a id="obj:JsObject"></a>
       <h4 class="signature">
@@ -359,7 +437,7 @@
         <span class="name">obj</span><span class="result">: <span class="extype" name="play.api.libs.json.JsObject">JsObject</span></span>
       </span>
       </h4>
-      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -467,6 +545,10 @@
         <div id="inheritedMembers">
         <div class="parent" name="site.JsField">
               <h3>Inherited from <a href="JsField.html" class="extype" name="site.JsField">JsField</a></h3>
+            </div><div class="parent" name="site.JsonObject">
+              <h3>Inherited from <a href="JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a></h3>
+            </div><div class="parent" name="site.JsonValue">
+              <h3>Inherited from <a href="JsonValue.html" class="extype" name="site.JsonValue">JsonValue</a></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">

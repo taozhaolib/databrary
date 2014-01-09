@@ -441,7 +441,7 @@ Metrics are strongly cached, so this provides a synchronous interface which may 
         <span class="name">getAll</span><span class="result">: <span class="extype" name="scala.Iterable">Iterable</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Retrieve all metrics that have been retrieved.</p>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -455,6 +455,20 @@ Metrics are strongly cached, so this provides a synchronous interface which may 
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.Metric#getName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getName(name:String):Option[models.Metric[_]]"></a>
+      <a id="getName(String):Option[Metric[_]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getName</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Retrieve a single metric by name.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve a single metric by name.
+Like getAll, this only includes already-retrieved (by get) metrics.</p></div></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <a id="hashCode():Int"></a>

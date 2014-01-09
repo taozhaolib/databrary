@@ -321,6 +321,19 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="models.Slot#get" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="get(id:models.Slot.Id,segment:dbrary.Segment)(implicitsite:site.Site):scala.concurrent.Future[Option[models.AbstractSlot]]"></a>
+      <a id="get(Id,Segment)(Site):Future[Option[AbstractSlot]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">get</span><span class="params">(<span name="id">id: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">Id</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Segment">Segment</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="AbstractSlot.html" class="extype" name="models.AbstractSlot">AbstractSlot</a>]]</span>
+      </span>
+      </h4>
+      
     </li><li name="models.Slot#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="get(i:models.Slot.Id)(implicitsite:site.Site):scala.concurrent.Future[Option[models.Slot]]"></a>
       <a id="get(Id)(Site):Future[Option[Slot]]"></a>
@@ -349,15 +362,15 @@ This checks user permissions and returns None if the user lacks <a href="Permiss
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.Slot#getOrCreate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getOrCreate(container:models.Container,segment:dbrary.Range[dbrary.Offset]):scala.concurrent.Future[models.Slot]"></a>
-      <a id="getOrCreate(Container,Range[Offset]):Future[Slot]"></a>
+      <a id="getOrCreate(container:models.Container,segment:dbrary.Segment):scala.concurrent.Future[models.Slot]"></a>
+      <a id="getOrCreate(Container,Segment):Future[Slot]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getOrCreate</span><span class="params">(<span name="container">container: <a href="Container.html" class="extype" name="models.Container">Container</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Range">Range</span>[<span class="extype" name="dbrary.Offset">Offset</span>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>]</span>
+        <span class="name">getOrCreate</span><span class="params">(<span name="container">container: <a href="Container.html" class="extype" name="models.Container">Container</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Segment">Segment</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Create a new slot in the specified container or return a matching one if it already exists.</p>

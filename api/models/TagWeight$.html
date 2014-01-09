@@ -35,13 +35,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">TagWeight</span><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>] with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">TagWeight</span><span class="result"> extends <span class="extype" name="models.WeightView">WeightView</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]</span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/tag.scala" target="_blank">tag.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="models.Table">Table</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="models.WeightView">WeightView</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>], <span class="extype" name="models.Table">Table</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.TagWeight"><span>TagWeight</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.TagWeight"><span>TagWeight</span></li><li class="in" name="models.WeightView"><span>WeightView</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -218,6 +218,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
+    </li><li name="models.WeightView#aggColumns" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="aggColumns(implicitsite:site.Site):dbrary.Selector[(Int,Option[Boolean])]"></a>
+      <a id="aggColumns(Site):Selector[(Int,Option[Boolean])]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">aggColumns</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="dbrary.Selector">Selector</span>[(<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>])]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>WeightView</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -250,6 +263,19 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="models.WeightView#columns" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="columns(implicitsite:site.Site):dbrary.Selector[(Int,Option[Boolean])]"></a>
+      <a id="columns(Site):Selector[(Int,Option[Boolean])]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">columns</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="dbrary.Selector">Selector</span>[(<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>])]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>WeightView</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -425,6 +451,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.WeightView#useJoinOn" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="useJoinOn:String"></a>
+      <a id="useJoinOn:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">useJoinOn</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>WeightView</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -491,10 +530,8 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.Serializable">
-              <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
-            </div><div class="parent" name="java.io.Serializable">
-              <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
+        <div class="parent" name="models.WeightView">
+              <h3>Inherited from <span class="extype" name="models.WeightView">WeightView</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]</h3>
             </div><div class="parent" name="models.Table">
               <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]</h3>
             </div><div class="parent" name="models.TableView">

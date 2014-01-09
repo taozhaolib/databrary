@@ -166,6 +166,32 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.Account#===" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="===(a:models.Party):Boolean"></a>
+      <a id="===(Party):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $eq$eq$eq" class="name">===</span><span class="params">(<span name="a">a: <a href="Party.html" class="extype" name="models.Party">Party</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="models.Account#===" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="===(a:models.Account):Boolean"></a>
+      <a id="===(Account):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $eq$eq$eq" class="name">===</span><span class="params">(<span name="a">a: <a href="" class="extype" name="models.Account">Account</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -179,16 +205,16 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.Account#changeAccount" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="changeAccount(email:String,password:String,openid:Option[String])(implicitsite:site.Site):scala.concurrent.Future[Boolean]"></a>
-      <a id="changeAccount(String,String,Option[String])(Site):Future[Boolean]"></a>
+    </li><li name="models.Account#change" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="change(email:Option[String],password:Option[String],openid:Option[Option[String]])(implicitsite:site.Site):scala.concurrent.Future[Boolean]"></a>
+      <a id="change(Option[String],Option[String],Option[Option[String]])(Site):Future[Boolean]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">changeAccount</span><span class="params">(<span name="email">email: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">_email</span></span>, <span name="password">password: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">_password</span></span>, <span name="openid">openid: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">_openid</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+        <span class="name">change</span><span class="params">(<span name="email">email: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="password">password: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="openid">openid: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p>

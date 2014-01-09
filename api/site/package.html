@@ -133,8 +133,21 @@
       </span>
       </h4>
       
+    </li><li name="site.JsonObject" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="JsonObjectextendsJsonValue"></a>
+      <a id="JsonObject:JsonObject"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="JsonObject.html"><span class="name">JsonObject</span></a><span class="result"> extends <a href="JsonValue.html" class="extype" name="site.JsonValue">JsonValue</a></span>
+      </span>
+      </h4>
+      
     </li><li name="site.JsonRecord" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="JsonRecordextendsJsField"></a>
+      <a id="JsonRecordextendsJsonObjectwithJsonValuewithJsField"></a>
       <a id="JsonRecord:JsonRecord"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -142,20 +155,20 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="JsonRecord.html"><span class="name">JsonRecord</span></a><span class="result"> extends <a href="JsField.html" class="extype" name="site.JsField">JsField</a></span>
+        <a href="JsonRecord.html"><span class="name">JsonRecord</span></a><span class="result"> extends <a href="JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a> with <a href="JsonValue.html" class="extype" name="site.JsonValue">JsonValue</a> with <a href="JsField.html" class="extype" name="site.JsField">JsField</a></span>
       </span>
       </h4>
       
-    </li><li name="site.JsonableRecord" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="JsonableRecordextendsAnyRef"></a>
-      <a id="JsonableRecord:JsonableRecord"></a>
+    </li><li name="site.JsonValue" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="JsonValueextendsAnyRef"></a>
+      <a id="JsonValue:JsonValue"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="JsonableRecord.html"><span class="name">JsonableRecord</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <a href="JsonValue.html"><span class="name">JsonValue</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
       
@@ -244,16 +257,16 @@
       </span>
       </h4>
       
-    </li><li name="site.JsField" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="JsField"></a>
-      <a id="JsField:JsField"></a>
+    </li><li name="site.JsonArray" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="JsonArray"></a>
+      <a id="JsonArray:JsonArray"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="JsField$.html"><span class="name">JsField</span></a>
+        <a href="JsonArray$.html"><span class="name">JsonArray</span></a>
       </span>
       </h4>
       
@@ -283,6 +296,19 @@
       </span>
       </h4>
       
+    </li><li name="site.JsonOptions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="JsonOptions"></a>
+      <a id="JsonOptions:JsonOptions"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="JsonOptions$.html"><span class="name">JsonOptions</span></a>
+      </span>
+      </h4>
+      
     </li><li name="site.JsonRecord" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="JsonRecord"></a>
       <a id="JsonRecord:JsonRecord"></a>
@@ -293,6 +319,19 @@
       </span>
       <span class="symbol">
         <a href="JsonRecord$.html"><span class="name">JsonRecord</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="site.JsonValue" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="JsonValue"></a>
+      <a id="JsonValue:JsonValue"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="JsonValue$.html"><span class="name">JsonValue</span></a>
       </span>
       </h4>
       
@@ -335,7 +374,7 @@
       </span>
       </h4>
       <p class="shortcomment cmt">Group adjacent elements with identical keys into nested lists, such that the concatenation of the resulting _2 elements is the original list.</p><div class="fullcomment"><div class="comment cmt"><p>Group adjacent elements with identical keys into nested lists, such that the concatenation of the resulting _2 elements is the original list.
-This is more like Haskell's group than scala's <span class="extype" name="Seq#groupBy">Seq#groupBy</span>: only adjacent elements are grouped.</p></div><dl class="paramcmts block"><dt class="param">l</dt><dd class="cmt"><p>the list to group</p></dd><dt class="param">f</dt><dd class="cmt"><p>the key-generating function to group by
+This is more like Haskell's group than scala's Seq.groupBy: only adjacent elements are grouped.</p></div><dl class="paramcmts block"><dt class="param">l</dt><dd class="cmt"><p>the list to group</p></dd><dt class="param">f</dt><dd class="cmt"><p>the key-generating function to group by
 </p></dd></dl></div>
     </li><li name="site.package#siteDB" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="siteDB:site.Site.DB"></a>

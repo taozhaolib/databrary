@@ -41,7 +41,7 @@
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/slot_asset.scala" target="_blank">slot_asset.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a>, <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a>, <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a>, <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a>, <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a>, <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>, <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <span class="extype" name="models.AssetSlot">AssetSlot</span>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a>, <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a>, <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.SlotTimeseries"><span>SlotTimeseries</span></li><li class="in" name="models.TimeseriesData"><span>TimeseriesData</span></li><li class="in" name="models.SlotAsset"><span>SlotAsset</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.BackedAsset"><span>BackedAsset</span></li><li class="in" name="site.SiteObject"><span>SiteObject</span></li><li class="in" name="models.HasPermission"><span>HasPermission</span></li><li class="in" name="site.PerSite"><span>PerSite</span></li><li class="in" name="site.SitePage"><span>SitePage</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.SlotTimeseries"><span>SlotTimeseries</span></li><li class="in" name="models.TimeseriesData"><span>TimeseriesData</span></li><li class="in" name="models.SlotAsset"><span>SlotAsset</span></li><li class="in" name="site.SiteObject"><span>SiteObject</span></li><li class="in" name="site.SitePage"><span>SitePage</span></li><li class="in" name="models.AssetSlot"><span>AssetSlot</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.HasPermission"><span>HasPermission</span></li><li class="in" name="site.PerSite"><span>PerSite</span></li><li class="in" name="models.BackedAsset"><span>BackedAsset</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -188,8 +188,8 @@
         <span class="name">asset</span><span class="result">: <a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotTimeseries">SlotTimeseries</a> → <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a></dd></dl></div>
-    </li><li name="models.SlotAsset#assetId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotTimeseries">SlotTimeseries</a> → <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a> → AssetSlot</dd></dl></div>
+    </li><li name="models.AssetSlot#assetId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="assetId:models.Asset.Id"></a>
       <a id="assetId:Asset.Id"></a>
       <h4 class="signature">
@@ -201,7 +201,7 @@
         <span class="name">assetId</span><span class="result">: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AssetSlot</dd></dl></div>
     </li><li name="models.HasPermission#checkPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="checkPermission(need:models.Permission.Value):Boolean"></a>
       <a id="checkPermission(Permission.Value):Boolean"></a>
@@ -299,7 +299,7 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.SlotTimeseries#etag" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.TimeseriesData#etag" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="etag:String"></a>
       <a id="etag:String"></a>
       <h4 class="signature">
@@ -308,10 +308,23 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">etag</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+        <span class="name">etag</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotTimeseries">SlotTimeseries</a> → <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
+    </li><li name="models.SlotAsset#excerpt" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="excerpt:Boolean"></a>
+      <a id="excerpt:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">excerpt</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a></dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -363,7 +376,7 @@
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">lazy val</span>
       </span>
       <span class="symbol">
         <span class="name">getPermission</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
@@ -397,6 +410,21 @@ Asset permissions depend on volume permissions, but can be further restricted by
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a></dd></dl></div>
+    </li><li name="models.SlotAsset#inContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="inContext:models.SlotAsset"></a>
+      <a id="inContext:SlotAsset"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">inContext</span><span class="result">: <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">&quot;Expand&quot; this slot asset to a larger one with equivalent permissions.</p><div class="fullcomment"><div class="comment cmt"><p>&quot;Expand&quot; this slot asset to a larger one with equivalent permissions.
+This determines what segment should be shown to users when they request a smaller one.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a></dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -410,6 +438,32 @@ Asset permissions depend on volume permissions, but can be further restricted by
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.SlotAsset#json" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="json(options:site.JsonOptions.Options):scala.concurrent.Future[play.api.libs.json.JsObject]"></a>
+      <a id="json(Options):Future[JsObject]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">json</span><span class="params">(<span name="options">options: <a href="../site/JsonOptions$.html#Options=Map[String,site.JsonOptions.Opt]" class="extmbr" name="site.JsonOptions.Options">Options</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.libs.json.JsObject">JsObject</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a></dd></dl></div>
+    </li><li name="models.SlotAsset#json" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="json:site.JsonObject"></a>
+      <a id="json:JsonObject"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">lazy val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">json</span><span class="result">: <a href="../site/JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -527,7 +581,7 @@ Asset permissions depend on volume permissions, but can be further restricted by
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a></dd></dl></div>
-    </li><li name="models.SlotTimeseries#sample" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.TimeseriesData#sample" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="sample(offset:dbrary.Offset):models.TimeseriesSample"></a>
       <a id="sample(Offset):TimeseriesSample"></a>
       <h4 class="signature">
@@ -539,17 +593,17 @@ Asset permissions depend on volume permissions, but can be further restricted by
         <span class="name">sample</span><span class="params">(<span name="offset">offset: <span class="extype" name="dbrary.Offset">Offset</span></span>)</span><span class="result">: <a href="TimeseriesSample.html" class="extype" name="models.TimeseriesSample">TimeseriesSample</a></span>
       </span>
       </h4>
-      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></dd></dl></div>
     </li><li name="models.SlotTimeseries#segment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="segment:dbrary.Range[dbrary.Offset]"></a>
-      <a id="segment:Range[Offset]"></a>
+      <a id="segment:dbrary.Segment"></a>
+      <a id="segment:Segment"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">segment</span><span class="result">: <span class="extype" name="dbrary.Range">Range</span>[<span class="extype" name="dbrary.Offset">Offset</span>]</span>
+        <span class="name">segment</span><span class="result">: <span class="extype" name="dbrary.Segment">Segment</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">The range of times represented by this object.</p><div class="fullcomment"><div class="comment cmt"><p>The range of times represented by this object.
@@ -567,19 +621,6 @@ Should be a valid, finite, bounded range.</p></div><dl class="attributes block">
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a></dd></dl></div>
-    </li><li name="models.SlotAsset#slotId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="slotId:models.Slot.Id"></a>
-      <a id="slotId:Slot.Id"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">slotId</span><span class="result">: <a href="Slot$.html#Id=models.IntId[T]" class="extmbr" name="models.Slot.Id">Slot.Id</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a></dd></dl></div>
     </li><li name="models.SlotTimeseries#source" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="source:models.Timeseries"></a>
       <a id="source:Timeseries"></a>
@@ -592,7 +633,7 @@ Should be a valid, finite, bounded range.</p></div><dl class="attributes block">
         <span class="name">source</span><span class="result">: <a href="Timeseries.html" class="extype" name="models.Timeseries">Timeseries</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The backing asset from which this data is taken, which may be itself or a containing asset.</p><div class="fullcomment"><div class="comment cmt"><p>The backing asset from which this data is taken, which may be itself or a containing asset.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotTimeseries">SlotTimeseries</a> → <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a> → <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
+      <p class="shortcomment cmt">The backing asset from which this data is taken, which may be itself or a containing asset.</p><div class="fullcomment"><div class="comment cmt"><p>The backing asset from which this data is taken, which may be itself or a containing asset.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotTimeseries">SlotTimeseries</a> → <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a> → AssetSlot → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
     </li><li name="models.BackedAsset#sourceId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="sourceId:models.Asset.Id"></a>
       <a id="sourceId:Asset.Id"></a>
@@ -605,7 +646,7 @@ Should be a valid, finite, bounded range.</p></div><dl class="attributes block">
         <span class="name">sourceId</span><span class="result">: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The backing asset from which this data is taken, which may be itself or a containing asset.</p><div class="fullcomment"><div class="comment cmt"><p>The backing asset from which this data is taken, which may be itself or a containing asset.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -632,7 +673,7 @@ Should be a valid, finite, bounded range.</p></div><dl class="attributes block">
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.SlotAsset#volume" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.AssetSlot#volume" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volume:models.Volume"></a>
       <a id="volume:Volume"></a>
       <h4 class="signature">
@@ -644,7 +685,7 @@ Should be a valid, finite, bounded range.</p></div><dl class="attributes block">
         <span class="name">volume</span><span class="result">: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AssetSlot → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="models.InVolume#volumeId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volumeId:models.Volume.Id"></a>
       <a id="volumeId:Volume.Id"></a>
@@ -728,18 +769,20 @@ Should be a valid, finite, bounded range.</p></div><dl class="attributes block">
               <h3>Inherited from <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></h3>
             </div><div class="parent" name="models.SlotAsset">
               <h3>Inherited from <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a></h3>
-            </div><div class="parent" name="models.InVolume">
-              <h3>Inherited from <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></h3>
-            </div><div class="parent" name="models.BackedAsset">
-              <h3>Inherited from <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></h3>
             </div><div class="parent" name="site.SiteObject">
               <h3>Inherited from <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></h3>
+            </div><div class="parent" name="site.SitePage">
+              <h3>Inherited from <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></h3>
+            </div><div class="parent" name="models.AssetSlot">
+              <h3>Inherited from <span class="extype" name="models.AssetSlot">AssetSlot</span></h3>
+            </div><div class="parent" name="models.InVolume">
+              <h3>Inherited from <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></h3>
             </div><div class="parent" name="models.HasPermission">
               <h3>Inherited from <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></h3>
             </div><div class="parent" name="site.PerSite">
               <h3>Inherited from <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a></h3>
-            </div><div class="parent" name="site.SitePage">
-              <h3>Inherited from <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></h3>
+            </div><div class="parent" name="models.BackedAsset">
+              <h3>Inherited from <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></h3>
             </div><div class="parent" name="models.TableRow">
               <h3>Inherited from <span class="extype" name="models.TableRow">TableRow</span></h3>
             </div><div class="parent" name="scala.AnyRef">

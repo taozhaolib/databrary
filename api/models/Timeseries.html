@@ -152,6 +152,19 @@ They are never created directly by users but through a conversion process on exi
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.TableRowId#===" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="===[X&gt;:T](a:models.TableRowId[X]):Boolean"></a>
+      <a id="===[X&gt;:Asset](TableRowId[X]):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $eq$eq$eq" class="name">===</span><span class="tparams">[<span name="X">X &gt;: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>]</span><span class="params">(<span name="a">a: <span class="extype" name="models.TableRowId">TableRowId</span>[<span class="extype" name="models.TableRowId.===.X">X</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Equality based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality based on primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId</dd></dl></div>
     </li><li name="site.SiteObject#Action" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Action(name:String,route:play.api.mvc.Call,permission:models.Permission.Value):site.SiteAction"></a>
       <a id="Action(String,Call,Permission.Value):SiteAction"></a>
@@ -179,15 +192,15 @@ They are never created directly by users but through a conversion process on exi
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.Asset#change" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="change(classification:models.Classification.Value,name:String,body:Option[String]):scala.concurrent.Future[Boolean]"></a>
-      <a id="change(Classification.Value,String,Option[String]):Future[Boolean]"></a>
+      <a id="change(classification:Option[models.Classification.Value],name:Option[Option[String]]):scala.concurrent.Future[Boolean]"></a>
+      <a id="change(Option[Classification.Value],Option[Option[String]]):Future[Boolean]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">change</span><span class="params">(<span name="classification">classification: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a> = <span class="symbol">_classification</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">_name</span></span>, <span name="body">body: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">_body</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+        <span class="name">change</span><span class="params">(<span name="classification">classification: <span class="extype" name="scala.Option">Option</span>[<a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a>] = <span class="symbol">None</span></span>, <span name="name">name: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p><div class="fullcomment"><div class="comment cmt"><p>Update the given values in the database and this object in-place.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a></dd></dl></div>
@@ -276,20 +289,7 @@ They are never created directly by users but through a conversion process on exi
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.TableRowId#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="equals(a:models.TableRowId[_]):Boolean"></a>
-      <a id="equals(TableRowId[_]):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">equals</span><span class="params">(<span name="a">a: <span class="extype" name="models.TableRowId">TableRowId</span>[_]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Equality is based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality is based on primary key.  This assumes that two objects representing the same row are the same (even if they aren't), and also doesn't properly check types.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId</dd></dl></div>
-    </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="equals(x$1:Any):Boolean"></a>
+      <a id="equals(a:Any):Boolean"></a>
       <a id="equals(Any):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -297,11 +297,12 @@ They are never created directly by users but through a conversion process on exi
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">equals</span><span class="params">(<span name="a">a: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.Asset#etag" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <p class="shortcomment cmt">Equality is based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality is based on primary key.
+This assumes that two objects representing the same row are the same (even if they aren't), and also doesn't properly check types due to erasure, so === should be preferred.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
+    </li><li name="models.TimeseriesData#etag" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="etag:String"></a>
       <a id="etag:String"></a>
       <h4 class="signature">
@@ -310,10 +311,10 @@ They are never created directly by users but through a conversion process on exi
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">etag</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+        <span class="name">etag</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -398,16 +399,42 @@ They are never created directly by users but through a conversion process on exi
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.Asset#link" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="link(s:models.Slot):scala.concurrent.Future[Boolean]"></a>
-      <a id="link(Slot):Future[Boolean]"></a>
+    </li><li name="models.Asset#json" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="json(options:site.JsonOptions.Options):scala.concurrent.Future[site.JsonRecord]"></a>
+      <a id="json(Options):Future[JsonRecord]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">link</span><span class="params">(<span name="s">s: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+        <span class="name">json</span><span class="params">(<span name="options">options: <a href="../site/JsonOptions$.html#Options=Map[String,site.JsonOptions.Opt]" class="extmbr" name="site.JsonOptions.Options">Options</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../site/JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a></dd></dl></div>
+    </li><li name="models.Asset#json" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="json:site.JsonRecord"></a>
+      <a id="json:JsonRecord"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">lazy val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">json</span><span class="result">: <a href="../site/JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a> → <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></dd></dl></div>
+    </li><li name="models.Asset#link" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="link(c:models.Container,offset:Option[dbrary.Offset],duration:dbrary.Offset):scala.concurrent.Future[models.SlotAsset]"></a>
+      <a id="link(Container,Option[Offset],Offset):Future[SlotAsset]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">link</span><span class="params">(<span name="c">c: <a href="Container.html" class="extype" name="models.Container">Container</a></span>, <span name="offset">offset: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Offset">Offset</span>] = <span class="symbol">None</span></span>, <span name="duration">duration: <span class="extype" name="dbrary.Offset">Offset</span> = <span class="symbol">duration</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a></dd></dl></div>
@@ -515,16 +542,29 @@ They are never created directly by users but through a conversion process on exi
       </span>
       </h4>
       <p class="shortcomment cmt">The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
-    </li><li name="models.Timeseries#segment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="segment:dbrary.Range[dbrary.Offset]"></a>
-      <a id="segment:Range[Offset]"></a>
+    </li><li name="models.TimeseriesData#sample" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="sample(offset:dbrary.Offset):models.TimeseriesSample"></a>
+      <a id="sample(Offset):TimeseriesSample"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">segment</span><span class="result">: <span class="extype" name="dbrary.Range">Range</span>[<span class="extype" name="dbrary.Offset">Offset</span>]</span>
+        <span class="name">sample</span><span class="params">(<span name="offset">offset: <span class="extype" name="dbrary.Offset">Offset</span></span>)</span><span class="result">: <a href="TimeseriesSample.html" class="extype" name="models.TimeseriesSample">TimeseriesSample</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></dd></dl></div>
+    </li><li name="models.Timeseries#segment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="segment:dbrary.Segment"></a>
+      <a id="segment:Segment"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">segment</span><span class="result">: <span class="extype" name="dbrary.Segment">Segment</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">The range of times represented by this object.</p><div class="fullcomment"><div class="comment cmt"><p>The range of times represented by this object.
@@ -580,7 +620,7 @@ Should be a valid, finite, bounded range.</p></div><dl class="attributes block">
         <span class="name">sourceId</span><span class="result">: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The backing asset from which this data is taken, which may be itself or a containing asset.</p><div class="fullcomment"><div class="comment cmt"><p>The backing asset from which this data is taken, which may be itself or a containing asset.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Asset.html" class="extype" name="models.Asset">Asset</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

@@ -150,6 +150,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="site.JsonRecord.SeqBuild" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SeqBuild"></a>
+      <a id="SeqBuild:SeqBuild"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="JsonRecord$$SeqBuild$.html"><span class="name">SeqBuild</span></a><span class="result"> extends <span class="extype" name="scala.collection.generic.CanBuildFrom">CanBuildFrom</span>[<span class="extype" name="scala.Seq">Seq</span>[_], <a href="JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a>, <span class="extype" name="play.api.libs.json.JsValue">JsValue</span>]</span>
+      </span>
+      </h4>
+      
     </li><li name="site.JsonRecord#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="apply[I](id:I,fields:site.JsonField*)(implicitevidence$1:play.api.libs.json.Writes[I]):site.JsonRecord"></a>
       <a id="apply[I](I,JsonField*)(Writes[I]):JsonRecord"></a>
@@ -292,6 +305,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="site.JsonRecord#map" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="map[A](f:A=&gt;site.JsonRecord)(l:Seq[A]):play.api.libs.json.JsValue"></a>
+      <a id="map[A]((A)⇒JsonRecord)(Seq[A]):JsValue"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">map</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="site.JsonRecord.map.A">A</span>) ⇒ <a href="JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a></span>)</span><span class="params">(<span name="l">l: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="site.JsonRecord.map.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.libs.json.JsValue">JsValue</span></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -331,6 +357,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="site.JsonRecord#seq" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="seq(s:Seq[site.JsonRecord]):play.api.libs.json.JsValue"></a>
+      <a id="seq(Seq[JsonRecord]):JsValue"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">seq</span><span class="params">(<span name="s">s: <span class="extype" name="scala.Seq">Seq</span>[<a href="JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a>]</span>)</span><span class="result">: <span class="extype" name="play.api.libs.json.JsValue">JsValue</span></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -414,16 +453,16 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="site.JsonRecord#writes" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="writes:play.api.libs.json.OWrites[site.JsonRecord]"></a>
-      <a id="writes:OWrites[JsonRecord]"></a>
+    </li><li name="site.JsonRecord#writable" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="writable(implicitcodec:play.api.mvc.Codec):play.api.http.Writeable[site.JsonRecord]"></a>
+      <a id="writable(Codec):Writeable[JsonRecord]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">implicit </span>
-        <span class="kind">val</span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">writes</span><span class="result">: <span class="extype" name="play.api.libs.json.OWrites">OWrites</span>[<a href="JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a>]</span>
+        <span class="name">writable</span><span class="params">(<span class="implicit">implicit </span><span name="codec">codec: <span class="extype" name="play.api.mvc.Codec">Codec</span></span>)</span><span class="result">: <span class="extype" name="play.api.http.Writeable">Writeable</span>[<a href="JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a>]</span>
       </span>
       </h4>
       

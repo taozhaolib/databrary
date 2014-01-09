@@ -221,7 +221,7 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.TimeseriesSample#etag" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.TimeseriesData#etag" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="etag:String"></a>
       <a id="etag:String"></a>
       <h4 class="signature">
@@ -230,10 +230,10 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">etag</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+        <span class="name">etag</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.TimeseriesSample">TimeseriesSample</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -357,6 +357,19 @@
       </span>
       </h4>
       
+    </li><li name="models.TimeseriesData#sample" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="sample(offset:dbrary.Offset):models.TimeseriesSample"></a>
+      <a id="sample(Offset):TimeseriesSample"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">sample</span><span class="params">(<span name="offset">offset: <span class="extype" name="dbrary.Offset">Offset</span></span>)</span><span class="result">: <a href="" class="extype" name="models.TimeseriesSample">TimeseriesSample</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></dd></dl></div>
     </li><li name="models.TimeseriesSample#segment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="segment:dbrary.Range[dbrary.Offset]"></a>
       <a id="segment:Range[Offset]"></a>
@@ -396,7 +409,7 @@ Should be a valid, finite, bounded range.</p></div><dl class="attributes block">
         <span class="name">sourceId</span><span class="result">: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">The backing asset from which this data is taken, which may be itself or a containing asset.</p><div class="fullcomment"><div class="comment cmt"><p>The backing asset from which this data is taken, which may be itself or a containing asset.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.TimeseriesSample">TimeseriesSample</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.TimeseriesSample">TimeseriesSample</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
