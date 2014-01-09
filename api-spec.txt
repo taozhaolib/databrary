@@ -77,7 +77,7 @@ delete(id) TODO
 
 /api/asset(/:id)
 ----------------
-GET /api/asset/ID?slot
+GET /api/asset/ID?slot;revisions
 POST /api/asset/ID
 create() TODO
 

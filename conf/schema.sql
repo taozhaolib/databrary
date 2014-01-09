@@ -461,6 +461,14 @@ CREATE TABLE "asset_revision" (
 );
 COMMENT ON TABLE "asset_revision" IS 'Assets that reflect different versions of the same content, either generated automatically from reformatting or a replacement provided by the user.';
 
+CREATE VIEW "asset_revisions" AS
+	WITH RECURSIVE r AS (
+		SELECT * FROM asset_revision
+		UNION ALL
+		SELECT asset_revision.prev, r.next FROM asset_revision JOIN r ON asset_revision.next = r.prev
+	) SELECT * FROM r;
+COMMENT ON VIEW "asset_revisions" IS 'Transitive closure of asset_revision.  Revisions must never form a cycle or this will not terminate.';
+
 
 CREATE TABLE "excerpt" (
 	"asset" integer NOT NULL References "asset",

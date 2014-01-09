@@ -183,7 +183,8 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
-      "slot" -> (opt => slot.map(_.fold[JsValue](JsNull)(_.slot.json.js)))
+      "slot" -> (opt => slot.map(_.fold[JsValue](JsNull)(_.slot.json.js))),
+      "revisions" -> (opt => Asset.getRevisions(this).map(JsonRecord.map(_.json)))
     )
 }
 
@@ -234,9 +235,16 @@ object Asset extends TableId[Asset]("asset") {
     row.SELECT("WHERE asset.id = ? AND", Volume.condition)
       .apply(a +: Volume.conditionArgs).singleOpt
 
-  def getOlder(a : Asset, o : Id) : Future[Option[Asset]] =
+  /** Get the list of older versions of this asset. */
+  def getRevisions(a : Asset) : Future[Seq[Asset]] =
     volumeRow(a.volume)
-      .SELECT("JOIN asset_revision ON asset.id = prev WHERE next = ? AND asset.id = ? AND asset.volume = ?")
+      .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ? AND asset.volume = ?")
+      .apply(a.id, a.volumeId).list
+
+  /** Get a particular older version of this asset. */
+  def getRevision(a : Asset, o : Id) : Future[Option[Asset]] =
+    volumeRow(a.volume)
+      .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ? AND asset.id = ? AND asset.volume = ?")
       .apply(a.id, o, a.volumeId).singleOpt
 
   /** Create a new asset from an uploaded file.
