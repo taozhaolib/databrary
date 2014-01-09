@@ -23,7 +23,7 @@ sealed trait SiteRequest[A] extends Request[A] with Site {
 }
 
 abstract class SiteException extends Exception with Results {
-  def resultHtml : Future[SimpleResult]
+  def resultHtml(implicit request : SiteRequest[_]) : Future[SimpleResult]
   def resultApi : Future[SimpleResult]
   def result(implicit request : SiteRequest[_]) : Future[SimpleResult] =
     if (request.isApi) resultApi else resultHtml
@@ -36,18 +36,18 @@ abstract trait HtmlException extends SiteException {
 }
 
 abstract trait ApiException extends SiteException {
-  def resultHtml = ???
+  def resultHtml(implicit request : SiteRequest[_]) = ???
   final override def result(implicit request : SiteRequest[_]) : Future[SimpleResult] =
     resultApi
 }
 
 private[controllers] object NotFoundException extends SiteException {
-  def resultHtml = macros.Async(NotFound) // FIXME: blank page
+  def resultHtml(implicit request : SiteRequest[_]) = macros.Async(NotFound(views.html.error.notFound(request)))
   def resultApi = macros.Async(NotFound)
 }
 
 private[controllers] object ForbiddenException extends SiteException {
-  def resultHtml = macros.Async(Forbidden) // FIXME: blank page
+  def resultHtml(implicit request : SiteRequest[_]) = macros.Async(Forbidden(views.html.error.forbidden(request)))
   def resultApi = macros.Async(Forbidden)
 }
 
@@ -151,10 +151,10 @@ private[controllers] abstract class FormException(form : Form[_]) extends SiteEx
 }
 
 private[controllers] final class BadFormException[A](view : Form[A] => templates.HtmlFormat.Appendable)(form : Form[A]) extends FormException(form) {
-  def resultHtml = macros.Async(BadRequest(view(form)))
+  def resultHtml(implicit site : SiteRequest[_]) = macros.Async(BadRequest(view(form)))
 }
 private[controllers] final class ABadFormException[A](view : Form[A] => Future[templates.HtmlFormat.Appendable])(form : Form[A]) extends FormException(form) {
-  def resultHtml = view(form).map(BadRequest(_))
+  def resultHtml(implicit site : SiteRequest[_]) = view(form).map(BadRequest(_))
 }
 private[controllers] final class ApiFormException(form : Form[_]) extends FormException(form) with ApiException
 

@@ -1,0 +1,9 @@
+@(implicit request: SiteRequest[_])
+
+@widget.template.html5("Access denied") {
+    @widget.panel.error("Access denied.") {
+	@if(request.user.isEmpty) {
+	    You might try <a href="@routes.LoginHtml.view">logging in</a>.
+	}
+    }
+}
