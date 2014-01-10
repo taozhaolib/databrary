@@ -5,9 +5,9 @@ define(['app/config/module'], function (module) {
 		$scope.bootPanel = function () {
 			$scope.volume = Volume.get($routeParams.id, {
 				id: $routeParams.id,
-				funding: 'all',
-				summary: 'all',
-				access: 'all'
+				funding: '',
+				summary: '',
+				access: ''
 			});
 
 			$scope.$watch('volume', function () {

@@ -6,8 +6,8 @@ define(['app/config/module'], function (module) {
 //			if (!$scope.party || !$scope.party.volumes || !$scope.party.funding)
 //				Party.get({
 //					id: $routeParams.id,
-//					volumes: 'all',
-//					funding: 'all'
+//					volumes: '',
+//					funding: ''
 //				}, function (party) {
 //					$scope.party = party;
 //					$scope.updateVolumes();

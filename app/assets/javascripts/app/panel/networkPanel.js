@@ -6,8 +6,8 @@ define(['app/config/module'], function (module) {
 //			if (!$scope.party || !$scope.party.parents || !$scope.party.children)
 //				Party.get({
 //					id: $routeParams.id,
-//					parents: 'all',
-//					children: 'all'
+//					parents: '',
+//					children: ''
 //				}, function (party) {
 //					$scope.party = party;
 //					$scope.updateNetwork();

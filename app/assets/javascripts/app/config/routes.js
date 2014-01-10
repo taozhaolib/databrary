@@ -37,9 +37,9 @@ define(['app/config/module'], function (module) {
 //			resolve: {
 //				volumes: ['$route', 'Volume', function ($route, Volume) {
 //					return Volume.query({
-//						access: 'all',
-//						top: 'all',
-//						summary: 'all'
+//						access: '',
+//						top: '',
+//						summary: ''
 //					});
 //				}]
 //			},
@@ -59,11 +59,11 @@ define(['app/config/module'], function (module) {
 				party: ['$route', 'Party', function ($route, Party) {
 					return Party.get($route.current.params.id, {
 						id: $route.current.params.id,
-						volumes: 'all',
-						comments: 'all',
-						parents: 'all',
-						children: 'all',
-						funding: 'all'
+						volumes: '',
+						comments: '',
+						parents: '',
+						children: '',
+						funding: ''
 					});
 				}]
 			},
@@ -112,17 +112,17 @@ define(['app/config/module'], function (module) {
 				volume: ['$route', 'Volume', function ($route, Volume) {
 					return Volume.get($route.current.params.id, {
 						id: $route.current.params.id,
-						access: 'all',
-						citations: 'all',
-						top: 'all',
-						tags: 'all',
-						assets: 'all',
-						comments: 'all',
-						records: 'all',
-						summary: 'all',
-						sessions: 'all',
-						categories: 'all',
-						funding: 'all'
+						access: '',
+						citations: '',
+						top: '',
+						tags: '',
+						assets: '',
+						comments: '',
+						records: '',
+						summary: '',
+						sessions: '',
+						categories: '',
+						funding: ''
 					});
 				}]
 			},

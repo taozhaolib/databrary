@@ -9,7 +9,7 @@ define(['app/config/module'], function (module) {
 				case 'VolumeView':
 					$scope.volume = Volume.get($routeParams.id, {
 						id: $routeParams.id,
-						comments: 'all'
+						comments: ''
 					});
 
 					$scope.$watch('volume', function () {
@@ -20,7 +20,7 @@ define(['app/config/module'], function (module) {
 				case 'SlotView':
 					$scope.slot = Slot.get($routeParams.id, {
 						id: $routeParams.id,
-						comments: 'all'
+						comments: ''
 					});
 
 					$scope.$watch('slot', function () {
@@ -31,7 +31,7 @@ define(['app/config/module'], function (module) {
 				case 'PartyView':
 					$scope.party = Party.get($routeParams.id, {
 						id: $routeParams.id,
-						comments: 'all'
+						comments: ''
 					});
 
 					$scope.$watch('party', function () {

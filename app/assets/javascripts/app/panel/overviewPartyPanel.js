@@ -6,7 +6,7 @@ define(['app/config/module'], function (module) {
 			if (!$scope.party)
 				Party.get({
 					id: $routeParams.id,
-					funding: 'all'
+					funding: ''
 				}, function (party) {
 					$scope.party = party;
 				});
