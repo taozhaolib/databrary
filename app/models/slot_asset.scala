@@ -2,17 +2,23 @@ package models
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.JsObject
 import macros._
 import dbrary._
 import site._
 
-/** A segment of an asset as used in a slot.
-  * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : AbstractSlot, excerpt_segment : Option[Segment]) extends TableRow with BackedAsset with SiteObject with InVolume {
+sealed private[models] trait AssetSlot extends BackedAsset with InVolume {
+  val asset : Asset
+  val slot : AbstractSlot
   def volume = asset.volume
   def assetId = asset.id
   def source = asset.source
   override def format = asset.format
+}
+
+/** A segment of an asset as used in a slot.
+  * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
+sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : AbstractSlot, excerpt_segment : Option[Segment]) extends TableRow with AssetSlot with SiteObject {
   def position = asset_segment.lowerBound.map(_ - slot.segment.lowerBound.getOrElse(Offset.ZERO))
   require(excerpt_segment.fold(true)(slot.segment @> _))
   def excerpt = excerpt_segment.isDefined
@@ -48,11 +54,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
     }
   }
 
-  def containingSlot : Slot = slot match {
-    case s : Slot => s
-    case _ => slot.context
-  }
-  def pageName = asset.name
+  def pageName = asset.pageName
   def pageParent = slot match {
     case p : SitePage => Some(p)
     case _ => Some(slot.context)
@@ -65,11 +67,16 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
       Action("remove", controllers.routes.AssetHtml.remove(assetId), Permission.CONTRIBUTE)
     ) else Nil)
 
-  lazy val json : JsonObject = JsonObject(
-    'asset -> (asset.json ++
-      JsonObject.flatten(if (asset_segment.isFull) None else Some('segment -> asset_segment))),
-    'permission -> getPermission
+  lazy val json : JsonObject = JsonObject.flatten(
+    Some('permission -> getPermission),
+    if (format === asset.format) None else Some('format -> format.json),
+    Some('asset -> (asset.json ++
+      JsonObject.flatten(if (asset_segment.isFull) None else Some('segment -> asset_segment))))
   ) ++ slot.json
+
+  def json(options : JsonOptions.Options) : Future[JsObject] =
+    JsonOptions(json.obj, options
+    )
 }
 
 final class SlotTimeseries private[models] (override val asset : Timeseries, asset_segment : Segment, slot : AbstractSlot, excerpt_segment : Option[Segment]) extends SlotAsset(asset, asset_segment, slot, excerpt_segment) with TimeseriesData {

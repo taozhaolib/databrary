@@ -40,7 +40,7 @@ object Token extends SiteController {
       { case (token, password) =>
         models.LoginToken.get(token).flatMap(_
           .filter(t => t.valid && t.password && t.accountId === a)
-          .fold[Future[SimpleResult]](AForbidden) { token =>
+          .fold[Future[SimpleResult]](ForbiddenException.result) { token =>
             password.fold(macros.Async(false))(p => token.account.change(password = Some(p))).flatMap { _ =>
               LoginController.login(token.account)
             }

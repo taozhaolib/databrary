@@ -38,9 +38,9 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
   def update(i : models.Record.Id) = Action(i, Permission.EDIT).async { implicit request =>
     val (meas, formin) = RecordHtml.editFormFill
     def bad(form : EditForm) =
-      badForm[EditMapping](RecordHtml.viewEdit(meas, _), form)
+      ABadForm[EditMapping](RecordHtml.viewEdit(meas, _), form)
     val form = formin.bindFromRequest
-    form.fold(f => macros.Async(bad(f)), {
+    form.fold(bad _, {
       case (category, data) =>
         request.obj.change(category = category).flatMap { _ =>
         val filled = scala.collection.mutable.Set.empty[Int] // temporary hack to prevent data corruption with duplicate metrics
@@ -57,11 +57,11 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
               case true => None
             }
           }
-        macros.Async.map(data, (update _).tupled).map {
+        macros.Async.map(data, (update _).tupled).flatMap {
         _.zipWithIndex.foldLeft(form) { (form, error) => error match {
           case (None, _) => form
           case (Some(error), i) => form.withError("measure.datum[" + i + "]", error)
-        } }.fold(bad _, _ => result(request.obj))
+        } }.fold(bad _, _ => macros.Async(result(request.obj)))
         } }
       }
     )
@@ -202,7 +202,7 @@ object RecordApi extends RecordController {
 
   def query(volume : models.Volume.Id) = VolumeController.Action(volume).async { implicit request =>
     queryForm.bindFromRequest.fold(
-      form => ABadRequest(json.Json.toJson(form.errors)),
+      new ApiFormException(_).result,
       category =>
         request.obj.allRecords(category).map(l =>
           Ok(JsonRecord.map[Record](_.json)(l)))

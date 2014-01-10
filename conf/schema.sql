@@ -433,8 +433,7 @@ CREATE TABLE "asset" (
 	"format" smallint NOT NULL References "format",
 	"classification" classification NOT NULL,
 	"duration" interval HOUR TO SECOND (3) Check ("duration" > interval '0'),
-	"name" text NOT NULL,
-	"body" text,
+	"name" text,
 	"sha1" bytea NOT NULL Check (octet_length("sha1") = 20)
 );
 COMMENT ON TABLE "asset" IS 'Assets reflecting files in primary storage.';
@@ -461,6 +460,14 @@ CREATE TABLE "asset_revision" (
 	Primary Key ("next", "prev")
 );
 COMMENT ON TABLE "asset_revision" IS 'Assets that reflect different versions of the same content, either generated automatically from reformatting or a replacement provided by the user.';
+
+CREATE VIEW "asset_revisions" AS
+	WITH RECURSIVE r AS (
+		SELECT * FROM asset_revision
+		UNION ALL
+		SELECT asset_revision.prev, r.next FROM asset_revision JOIN r ON asset_revision.next = r.prev
+	) SELECT * FROM r;
+COMMENT ON VIEW "asset_revisions" IS 'Transitive closure of asset_revision.  Revisions must never form a cycle or this will not terminate.';
 
 
 CREATE TABLE "excerpt" (

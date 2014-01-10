@@ -1,4 +1,4 @@
-@(target : Either[Slot, Asset], form : AssetHtml.AssetForm)(implicit request : RequestObject[SiteObject]#Site[_])
+@(target : Either[Volume, Asset], form : AssetHtml.AssetForm)(implicit request : RequestObject[SiteObject]#Site[_])
 
 @import helper.FieldConstructor
 
@@ -6,18 +6,21 @@
         FieldConstructor(widget.tag.labeledFieldConstructor.f)
     }
 
-@widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.name)) {
-    @widget.panel.form(target.fold(_ => "New Asset", _.name), target.fold(_ => "Upload Asset", _ => "Edit Asset")) {
+@widget.template.crud(target.fold(_ => "Upload Asset", "Edit Asset: " + _.pageName)) {
+    @widget.panel.form(target.fold(_ => "New Asset", _.pageName), target.fold(_ => "Upload Asset", _ => "Edit Asset")) {
         <div class="col-full">
             @widget.formErrors(form)
 
             @widget.tag.form(target.fold(
-            container => routes.AssetHtml.upload(container.volumeId, container.id),
+            volume => routes.AssetHtml.upload(volume.id),
             asset => routes.AssetHtml.update(asset.id)), 'enctype -> "multipart/form-data") {
 
                 @widget.tag.inputText(form("name"), 'placeholder -> "Title")
                 @widget.tag.textarea(form("body"), 'placeholder -> "Description")
 		@widget.enumSelect(form("classification"), Classification)
+
+		@widget.tag.inputHidden(form("container"))
+		@widget.tag.inputHidden(form("position"))
 
                 @if(AssetHtml.formForFile(form, target)) {
                     @widget.tag.inputFile(form("file"))
