@@ -10,8 +10,11 @@ import site._
   * To be used, all assets must be placed into containers.
   * These containers can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.
   */
-final class Container protected (val id : Container.Id, val volume : Volume, val top : Boolean = false, val name_ : Option[String], val date_ : Option[Date]) extends TableRowId[Container] with InVolume {
+final class Container protected (override val id : Container.Id, override val volume : Volume, val top : Boolean = false, val name_ : Option[String], val date_ : Option[Date], consent_ : Consent.Value = Consent.NONE) extends Slot(id, Container.range, consent_) with TableRowId[Container] with InVolume {
   def container = this
+  override def isFull = true
+  override def isTop = top
+  def context = this
   private[this] var _name = name_
   /** Descriptive name to help with organization by contributors.
     * This (as with Container in general) is not necessarily intended for public consumption. */
@@ -22,53 +25,47 @@ final class Container protected (val id : Container.Id, val volume : Volume, val
   def date = _date
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : Option[String] = _name, date : Option[Date] = _date) : Future[Boolean] = {
-    if (name == _name && date == _date)
-      return Async(true)
-    Audit.change("container", SQLTerms('name -> name, 'date -> date), SQLTerms('id -> id)).execute
+  def change(name : Option[Option[String]] = None, date : Option[Option[Date]] = None) : Future[Boolean] = {
+    Audit.change("container", SQLTerms.flatten(name.map('name -> _), date.map('date -> _)), SQLTerms('id -> id)).execute
       .andThen { case scala.util.Success(true) =>
-        _name = name
-        _date = date
+        name.foreach(_name = _)
+        date.foreach(_date = _)
       }
   }
 
   /** List of slots on this container. */
   def slots : Future[Seq[Slot]] = Slot.getContainer(this)
-  private[models] var _fullSlot : Slot = null /* Should always be set on construction. */
-  /** Slot that covers this entire container and which thus serves as a proxy for display and metadata. */
-  def fullSlot : Slot = _fullSlot
+
+  override lazy val json : JsonRecord = JsonRecord.flatten(id,
+    Some('volume -> volumeId),
+    if (top) Some('top -> top) else None,
+    name.map('name -> _),
+    getDate.map('date -> _.toString)
+  )
 }
 
 object Container extends TableId[Container]("container") {
-  private val base = Columns(
+  final val range : Range[Offset] = Range.full[Offset]
+  private val columns = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[Boolean]("top")
     , SelectColumn[Option[String]]("name")
     , SelectColumn[Option[Date]]("date")
-    ).map { (id, top, name, date) =>
-      (vol : Volume) => new Container(id, vol, top, name, date)
-    }
-  private val full = base
-    .join(Slot.Full.columns.fromAlias("full_slot"), "full_slot.source = container.id AND full_slot.segment = '(,)'")
-    .map { case (cont, full) =>
-      (vol : Volume) =>
-        val c = cont(vol)
-        full(c)
-        c
-    }
-  private def columns(haveFull : Boolean) =
-    if (haveFull) base else full
-  private[models] def row(full : Boolean)(implicit site : Site) =
-    Volume.row.join(columns(full), "container.volume = volume.id") map {
+    , SelectColumn[Consent.Value]("full_slot", "consent")
+    ).map { (id, top, name, date, consent) =>
+      (vol : Volume) => new Container(id, vol, top, name, date, consent)
+    } from "container JOIN slot AS full_slot USING (id)"
+  private[models] def row(implicit site : Site) =
+    Volume.row.join(columns, "container.volume = volume.id") map {
       case (vol, cont) => cont(vol)
     }
-  private[models] def volumeRow(volume : Volume, full : Boolean = false) =
-    columns(full).map(_(volume))
+  private[models] def volumeRow(volume : Volume) =
+    columns.map(_(volume))
 
   /** Retrieve an individual Container.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   def get(i : Id)(implicit site : Site) : Future[Option[Container]] =
-    row(false).SELECT("WHERE container.id = ? AND", Volume.condition)
+    row.SELECT("WHERE container.id = ? AND", Volume.condition)
       .apply(i +: Volume.conditionArgs).singleOpt
 
   /** Retrieve all the (non-top) containers in a given volume. */
@@ -88,11 +85,6 @@ object Container extends TableId[Container]("container") {
 
   /** Create a new container in the specified volume. */
   def create(volume : Volume, name : Option[String] = None, date : Option[Date] = None)(implicit site : Site) : Future[Container] =
-    for {
-      cont <- Audit.add(table, SQLTerms('volume -> volume.id, 'name -> name, 'date -> date), "id")
-        .single(SQLCols[Id].map(new Container(_, volume, false, name, date)))
-      full <- Slot.Full.containerRow(cont)
-        .SELECT("WHERE slot.source = ? AND slot.segment = '(,)'")
-        .apply(cont.id).single
-    } yield (cont)
+    Audit.add(table, SQLTerms('volume -> volume.id, 'name -> name, 'date -> date), "id")
+      .single(SQLCols[Id].map(new Container(_, volume, false, name, date)))
 }

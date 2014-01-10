@@ -4,6 +4,7 @@ import scala.concurrent.Future
 import scala.collection.concurrent
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.Files.TemporaryFile
+import play.api.libs.json.{JsValue,JsNull}
 import macros._
 import dbrary._
 import site._
@@ -20,6 +21,12 @@ sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype 
       (mimetype.substring(0, slash), mimetype.substring(slash+1))
   }
   AssetFormat.add(this)
+
+  lazy val json = JsonRecord.flatten(id,
+    Some('mimetype -> mimetype),
+    extension.map('extension -> _),
+    Some('name -> name)
+  )
 }
 
 /** Specialization of [[AssetFormat]] for timeseries files stored in special internal formats.
@@ -99,10 +106,9 @@ object AssetFormat extends TableId[AssetFormat]("format") {
 trait BackedAsset {
   /** The backing asset from which this data is taken, which may be itself or a containing asset. */
   def source : Asset
-  /** The backing asset from which this data is taken, which may be itself or a containing asset. */
   def sourceId : Asset.Id = source.id
   def format : AssetFormat = source.format
-  def etag : String
+  def etag : String = "obj:" + sourceId
 }
 
 /** Refinement (implicitly of Asset) for objects representing timeseries data. */
@@ -110,68 +116,85 @@ trait TimeseriesData extends BackedAsset {
   def source : Timeseries
   /** The range of times represented by this object.
     * Should be a valid, finite, bounded range. */
-  def segment : Range[Offset]
+  def segment : Segment
   def entire : Boolean
   /** Length of time represented by this object, which may be zero if it is a single sample. */
   def duration : Offset = segment.zip((l,u) => u-l).get
   override def format : AssetFormat = if (segment.isSingleton) source.format.sampleFormat else source.format
+  override def etag : String =
+    if (entire) super.etag
+    else {
+      val seg = segment
+      super.etag + ":" + seg.lowerBound.get.millis +
+        (if (seg.isSingleton) "" else "-" + seg.upperBound.get.millis)
+    }
+  def sample(offset : Offset) = new TimeseriesSample(this, offset)
 }
 
 /** File assets: objects within the system backed by primary file storage. */
-sealed class Asset protected (val id : Asset.Id, val volume : Volume, override val format : AssetFormat, classification_ : Classification.Value, name_ : String, body_ : Option[String], val sha1 : Array[Byte]) extends TableRowId[Asset] with BackedAsset with InVolume with SiteObject {
+sealed class Asset protected (val id : Asset.Id, val volume : Volume, override val format : AssetFormat, classification_ : Classification.Value, name_ : Option[String], val sha1 : Array[Byte]) extends TableRowId[Asset] with BackedAsset with InVolume with SiteObject {
   private[this] var _name = name_
   /** Title or name of the asset as used in the container. */
-  def name : String = _name
-  private[this] var _body = body_
-  /** Optional description of this asset. */
-  def body : Option[String] = _body
+  def name : Option[String] = _name
   private[this] var _classification = classification_
   def classification : Classification.Value = _classification
 
-  def duration : Offset = 0
+  def duration : Offset = Offset.ZERO
   def source = this
   override def sourceId = id
-  def etag = "obj:" + id
 
   def creation : Future[Option[Timestamp]] =
     SQL("SELECT asset_creation(?)").apply(id).single(SQLCols[Option[Timestamp]])
 
   /** Update the given values in the database and this object in-place. */
-  def change(classification : Classification.Value = _classification, name : String = _name, body : Option[String] = _body) : Future[Boolean] = {
-    if (classification == _classification && name == _name && body == _body)
-      return Async(true)
-    Audit.change("asset", SQLTerms('classification -> classification, 'name -> name, 'body -> body), SQLTerms('id -> id)).execute
+  def change(classification : Option[Classification.Value] = None, name : Option[Option[String]] = None) : Future[Boolean] = {
+    Audit.change("asset", SQLTerms.flatten(classification.map('classification -> _), name.map('name -> _)), SQLTerms('id -> id)).execute
       .andThen { case scala.util.Success(true) =>
-        _classification = classification
-        _name = name
-        _body = body
+        classification.foreach(_classification = _)
+        name.foreach(_name = _)
       }
   }
 
   def slot : Future[Option[SlotAsset]] = SlotAsset.getAsset(this)
 
-  def link(s : Slot) : Future[Boolean] =
-    Audit.changeOrAdd("asset_slot", SQLTerms('slot -> s.id), SQLTerms('asset -> id)).execute
+  def link(c : Container, offset : Option[Offset] = None, duration : Offset = duration) : Future[SlotAsset] =
+    for {
+      s <- offset.map(o => Range(o, o + duration)).fold[Future[Slot]](Async(c))(Slot.getOrCreate(c, _))
+      _ <- Audit.changeOrAdd("asset_slot", SQLTerms('slot -> s.id), SQLTerms('asset -> id)).execute
+    } yield (SlotAsset.make(this, s.segment, s, None))
   def unlink : Future[Boolean] =
     Audit.remove("asset_slot", SQLTerms('asset -> id)).execute
 
-  def pageName = name
+  def pageName = name.getOrElse("file")
   def pageParent = Some(volume)
-  def pageURL = controllers.routes.Asset.view(volume.id, id)
+  def pageURL = controllers.routes.AssetHtml.view(id)
   def pageActions = Seq(
-    Action("view", controllers.routes.Asset.view(volumeId, id), Permission.VIEW),
-    Action("edit", controllers.routes.Asset.edit(volumeId, id), Permission.EDIT),
-    Action("remove", controllers.routes.Asset.remove(volumeId, id), Permission.CONTRIBUTE)
+    Action("view", pageURL, Permission.VIEW),
+    Action("edit", controllers.routes.AssetHtml.edit(id), Permission.EDIT),
+    Action("remove", controllers.routes.AssetHtml.remove(id), Permission.CONTRIBUTE)
   )
+
+  lazy val json : JsonRecord = JsonRecord.flatten(id,
+    Some('format -> format.json /* XXX */),
+    Some('classification -> classification),
+    name.map('name -> _),
+    cast[Timeseries](this).map('duration -> _.duration)
+  )
+
+  def json(options : JsonOptions.Options) : Future[JsonRecord] =
+    JsonOptions(json, options,
+      "slot" -> (opt => slot.map(_.fold[JsValue](JsNull)(_.slot.json.js))),
+      "revisions" -> (opt => Asset.getRevisions(this).map(JsonRecord.map(_.json)))
+    )
 }
 
 /** Special timeseries assets in a designated format.
   * These assets may be handled in their entirety as FileAssets, extracted from to produce Clips.
   * They are never created directly by users but through a conversion process on existing FileAssets. */
-final class Timeseries private[models] (id : Asset.Id, volume : Volume, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, name : String, body : Option[String], sha1 : Array[Byte]) extends Asset(id, volume, format, classification, name, body, sha1) with TimeseriesData {
+final class Timeseries private[models] (id : Asset.Id, volume : Volume, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, name : Option[String], sha1 : Array[Byte]) extends Asset(id, volume, format, classification, name, sha1) with TimeseriesData {
   override def source = this
   def entire = true
-  def segment : Range[Offset] = Range[Offset](0, duration)
+  def segment : Segment = Segment(Offset.ZERO, duration)
 }
 
 final case class TimeseriesSample private[models] (val parent : TimeseriesData, val offset : Offset) extends TimeseriesData {
@@ -182,9 +205,8 @@ final case class TimeseriesSample private[models] (val parent : TimeseriesData, 
     Range.singleton((seg.lowerBound.get + offset).ensuring(seg @> _))
   }
   def entire = false
-  override def duration = 0
+  override def duration = Offset.ZERO
   override def format = parent.source.format.sampleFormat
-  def etag = parent.etag + ":sample:" + offset.millis
 }
 
 
@@ -194,13 +216,12 @@ object Asset extends TableId[Asset]("asset") {
     , SelectColumn[AssetFormat.Id]("format")
     , SelectColumn[Classification.Value]("classification")
     , SelectColumn[Option[Offset]]("duration")
-    , SelectColumn[String]("name")
-    , SelectColumn[Option[String]]("body")
+    , SelectColumn[Option[String]]("name")
     , SelectColumn[Array[Byte]]("sha1")
-    ).map { (id, format, classification, duration, name, body, sha1) =>
+    ).map { (id, format, classification, duration, name, sha1) =>
       duration.fold(
-        (volume : Volume) => new Asset(id, volume, AssetFormat.get(format).get, classification, name, body, sha1))(
-        dur => (volume : Volume) => new Timeseries(id, volume, AssetFormat.getTimeseries(format).get, classification, dur, name, body, sha1))
+        (volume : Volume) => new Asset(id, volume, AssetFormat.get(format).get, classification, name, sha1))(
+        dur => (volume : Volume) => new Timeseries(id, volume, AssetFormat.getTimeseries(format).get, classification, dur, name, sha1))
     }
 
   private def volumeRow(vol : Volume) =
@@ -211,34 +232,42 @@ object Asset extends TableId[Asset]("asset") {
 
 
   def get(a : Asset.Id)(implicit site : Site) : Future[Option[Asset]] =
-    row.SELECT("WHERE asset.id = ?").apply(a).singleOpt
+    row.SELECT("WHERE asset.id = ? AND", Volume.condition)
+      .apply(a +: Volume.conditionArgs).singleOpt
 
-  def getOlder(a : Asset, o : Id) : Future[Option[Asset]] =
+  /** Get the list of older versions of this asset. */
+  def getRevisions(a : Asset) : Future[Seq[Asset]] =
     volumeRow(a.volume)
-      .SELECT("JOIN asset_revision ON asset.id = prev WHERE next = ? AND asset.id = ? AND asset.volume = ?")
+      .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ? AND asset.volume = ?")
+      .apply(a.id, a.volumeId).list
+
+  /** Get a particular older version of this asset. */
+  def getRevision(a : Asset, o : Id) : Future[Option[Asset]] =
+    volumeRow(a.volume)
+      .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ? AND asset.id = ? AND asset.volume = ?")
       .apply(a.id, o, a.volumeId).singleOpt
 
   /** Create a new asset from an uploaded file.
     * @param format the format of the file, taken as given
     * @param file a complete, uploaded file which will be moved into the appropriate storage location
     */
-  def create(volume : Volume, format : AssetFormat, classification : Classification.Value, name : String, body : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
+  def create(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
     val sha1 = store.SHA1(file.file)
     /* TODO transaction */
-    Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name, 'body -> body, 'sha1 -> sha1), "id")
+    Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name, 'sha1 -> sha1), "id")
       .single(SQLCols[Id]).map { id =>
-        val a = new Asset(id, volume, format, classification, name, body, sha1)
+        val a = new Asset(id, volume, format, classification, name, sha1)
         store.FileAsset.store(a, file)
         a
       }
   }
 
-  def create(volume : Volume, format : TimeseriesFormat, classification : Classification.Value, duration : Offset, name : String, body : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
+  def create(volume : Volume, format : TimeseriesFormat, classification : Classification.Value, duration : Offset, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
     val sha1 = store.SHA1(file.file)
     /* TODO transaction */
-    Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> duration, 'name -> name, 'body -> body, 'sha1 -> sha1), "id")
+    Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> duration, 'name -> name, 'sha1 -> sha1), "id")
       .single(SQLCols[Id]).map { id =>
-        val a = new Timeseries(id, volume, format, classification, duration, name, body, sha1)
+        val a = new Timeseries(id, volume, format, classification, duration, name, sha1)
         store.FileAsset.store(a, file)
         a
       }

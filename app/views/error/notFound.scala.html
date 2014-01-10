@@ -1,0 +1,10 @@
+@(implicit request: SiteRequest[_])
+
+@widget.template.html5("There's nothing here") {
+    @widget.panel.error("There's nothing here.") {
+        The resource you requested may no longer be available.
+	@if(request.user.isEmpty) {
+	    You might try <a href="@routes.LoginHtml.view">logging in</a>.
+	}
+    }
+}

@@ -4,50 +4,54 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import dbrary._
 import models._
 
-object SlotAsset extends SiteController {
-  type Request[A] = RequestObject[SlotAsset]#Site[A]
+private[controllers] sealed class SlotAssetController extends ObjectController[SlotAsset] {
+  private[controllers] def action(i : models.Slot.Id, segment : Segment, a : models.Asset.Id, p : Permission.Value = Permission.VIEW) =
+    RequestObject.check(models.SlotAsset.get(a, i, segment)(_), p)
 
-  private[controllers] def action(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW, full : Boolean = false) =
-    RequestObject.check(v, models.SlotAsset.get(a, i, full)(_), p)
-
-  private[controllers] def Action(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id, p : Permission.Value = Permission.VIEW, full : Boolean = false) =
-    SiteAction ~> action(v, i, a, p, full)
-
-  def view(v : models.Volume.Id, i : models.Slot.Id, a : models.Asset.Id) = Action(v, i, a) { implicit request =>
-    Ok(views.html.asset.view(request.obj))
-  }
-
-  def download(v : models.Volume.Id, s : models.Slot.Id, o : models.Asset.Id, inline : Boolean) = Action(v, s, o, Permission.DOWNLOAD).async { implicit request =>
-    Asset.assetResult(request.obj, if (inline) None else Some(request.obj.asset.name))
-  }
-
-  def downloadOlder(v : models.Volume.Id, s : models.Slot.Id, a : models.Asset.Id, o : models.Asset.Id, inline : Boolean) = Action(v, s, a, Permission.DOWNLOAD).async { implicit request =>
-    models.Asset.getOlder(request.obj.asset, o).flatMap(_.fold(ANotFound) { a =>
-      Asset.assetResult(a, if (inline) None else Some(request.obj.asset.name))
-    })
-  }
+  private[controllers] def Action(i : models.Slot.Id, segment : Segment, a : models.Asset.Id, p : Permission.Value = Permission.VIEW) =
+    SiteAction ~> action(i, segment, a, p)
 
   private[controllers] def getFrame(offset : Either[Float,Offset])(implicit request : Request[_]) =
     request.obj match {
       case ts : SlotTimeseries =>
-        val off = offset.fold(f => Offset(10*(f*ts.duration.seconds/10).floor), identity)
-        if (off < 0 || off > ts.duration)
+        /* round down to a 10-second boundry, which is our i-frame interval. */
+        val off = offset.fold[Offset](f => Offset(10000L*(f*ts.duration.millis/10000).toLong), o => o)
+        if (off < Offset.ZERO || off > ts.duration)
           ANotFound
         else
-          Asset.assetResult(ts.sample(off))
+          AssetController.assetResult(ts.sample(off))
       case _ =>
         if (!offset.fold(_ => true, _ == 0))
           ANotFound
         else
-          Asset.assetResult(request.obj)
+          AssetController.assetResult(request.obj)
     }
 
-  def frame(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id, eo : Offset) = Action(v, i, o, Permission.DOWNLOAD).async { implicit request =>
-    getFrame(Right(eo))
+  def download(s : models.Slot.Id, segment : Segment, o : models.Asset.Id, inline : Boolean) = Action(s, segment, o, Permission.DOWNLOAD).async { implicit request =>
+    AssetController.assetResult(request.obj, if (inline) None else Some(request.obj.asset.name.getOrElse("file")))
   }
-  def head(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) =
-    frame(v, i, o, 0)
-  def thumb(v : models.Volume.Id, i : models.Slot.Id, o : models.Asset.Id) = Action(v, i, o, Permission.DOWNLOAD).async { implicit request =>
+
+  def frame(i : models.Container.Id, o : models.Asset.Id, eo : Offset) = head(i, Range.singleton(eo), o)
+  def head(i : models.Slot.Id, segment : Segment, o : models.Asset.Id) = Action(i, segment, o, Permission.DOWNLOAD).async { implicit request =>
+    getFrame(Right(Offset.ZERO))
+  }
+  def thumb(i : models.Slot.Id, segment : Segment, o : models.Asset.Id) = Action(i, segment, o, Permission.DOWNLOAD).async { implicit request =>
     getFrame(Left(0.25f))
+  }
+}
+
+object SlotAssetController extends SlotAssetController
+
+object SlotAssetHtml extends SlotAssetController {
+  def view(i : models.Slot.Id, segment : Segment, a : models.Asset.Id) = Action(i, segment, a).async { implicit request =>
+    for {
+      comments <- request.obj.slot.comments
+    } yield (Ok(views.html.asset.view(request.obj, comments)))
+  }
+}
+
+object SlotAssetApi extends SlotAssetController {
+  def get(i : Container.Id, segment : Segment, a : Asset.Id) = Action(i, segment, a).async { implicit request =>
+    request.obj.json(request.apiOptions).map(Ok(_))
   }
 }

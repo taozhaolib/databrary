@@ -10,6 +10,12 @@ import site._
   * This interface is temporary, quick and dirty, just to provide minimal functionality, and should not be expected to remain as is. */
 final case class VolumeCitation(val volume : Volume, val head : String, val url : Option[String], val body : Option[String]) extends TableRow with InVolume {
   private def args = SQLTerms('volume -> volumeId, 'head -> head, 'url -> url, 'body -> body)
+
+  def json = JsonObject.flatten(
+    Some('head -> head),
+    url.map('url -> _),
+    body.map('body -> _)
+  )
 }
 
 object VolumeCitation extends Table[VolumeCitation]("volume_citation") {

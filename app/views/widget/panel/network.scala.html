@@ -3,7 +3,7 @@
 @import play.api.templates.HtmlFormat._
 @import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
-@defining(volumes.map(v => (v, Async.wait(v.partyAccess).filter(a => a.access >= Permission.ADMIN && a.party.id != party.id).map(a => a.party))).filter(vp => vp._2.nonEmpty)) { volumeParties =>
+@defining(volumes.map(v => (v, Async.wait(v.partyAccess).filter(a => a.access >= Permission.ADMIN && !(a.party === party)).map(a => a.party))).filter(vp => vp._2.nonEmpty)) { volumeParties =>
 @if(volumeParties.nonEmpty) {
 @widget.panel.raw("network", "")(title = "Network", foldable = true){
     <div class="col-full">

@@ -24,8 +24,15 @@ final class Authorize protected (val child : Party, val parent : Party, val acce
   /** Determine if this authorization is currently in effect.
     * @return true if authorized is set and in the past, and expires is unset or in the future */
   def valid = {
-    authorized.fold(false)(_.isBeforeNow) && expires.fold(true)(_.isAfterNow)
+    authorized.fold(false)(_.toDateTime.isBeforeNow) && expires.fold(true)(_.toDateTime.isAfterNow)
   }
+
+  def json = JsonObject.flatten(
+    Some('access -> access),
+    Some('delegate -> delegate),
+    authorized.map('authorized -> _),
+    expires.map('expires -> _)
+  )
 }
 
 object Authorize extends Table[Authorize]("authorize") {
@@ -80,7 +87,7 @@ object Authorize extends Table[Authorize]("authorize") {
   /** Determine the permission level granted to a child by a parent.
     * The child is granted all the same rights of the parent up to this level. */
   private[models] def delegate_check(child : Party.Id, parent : Party.Id) : Future[Permission.Value] =
-    if (child == parent) Async(Permission.ADMIN) else // optimization
+    if (child === parent) Async(Permission.ADMIN) else // optimization
     SQL("SELECT authorize_delegate_check(?, ?)")
       .apply(child, parent).single(SQLCols[Permission.Value])
 }

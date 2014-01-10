@@ -1,4 +1,4 @@
-@(slot : Slot, volume : Option[Volume] = None, form : controllers.Slot.TagForm = controllers.Slot.tagForm)(implicit request : SiteRequest[_])
+@(slot : AbstractSlot, volume : Option[Volume] = None, tags : Seq[TagWeight], form : TagHtml.TagForm = TagHtml.tagForm)(implicit request : SiteRequest[_])
 
 @import play.api.data.Form
 @import play.api.data.Forms._
@@ -8,8 +8,7 @@
         FieldConstructor(widget.tag.minimalFieldConstructor.f)
     }
 
-@defining(Async.wait(volume.fold(slot.tags(true))(_.tags))) { tags =>
-    @widget.panel.raw("tags", "", "ng-controller" -> "TagsPanelCtrl", "ng-init" -> {tags.map(t => "{id: "+t.tag.id+", name: '"+t.tag.name+"', weight: "+t.weight+", vote: "+(if(t.user.isEmpty){0}else{if(t.user.get){1}else{-1}})+"}").mkString("tags = [",",","];")+" formAction = '/volume/"+slot.volume.id+"/slot/"+slot.id+"/tag'"})(title = "Tags", foldable = true){
+    @widget.panel.raw("tags", "", "ng-controller" -> "TagsPanelCtrl", "ng-init" -> {tags.map(t => "{id: "+t.tag.id+", name: '"+t.tag.name+"', weight: "+t.weight+", vote: "+(if(t.user.isEmpty){0}else{if(t.user.get){1}else{-1}})+"}").mkString("tags = [",",","];")+" formAction = '/volume/"+slot.volume.id+"/slot/"+slot.context.id+"/tag'"})(title = "Tags", foldable = true){
         <div class="panel_tags_list col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-3">
         @angular.directives.mode {
             <form name="tagForm" novalidate>
@@ -30,20 +29,19 @@
         } {
             <ol class="panel_tags_items row">
                 @if(tags.nonEmpty) {
-                    @tags.map { case TagWeight(tag, weight, user) =>
-                        <li id="tag_@tag.id" class="panel_tags_item col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-6">
-                        @widget.tag.form(routes.Slot.tag(slot.volumeId, slot.id)) {
-                            @widget.tag.inputHidden(form("name").copy(value = Some(tag.name)), 'id -> Html("name-"+tag.id.toString))(widget.tag.rawFieldConstructor.f, Lang("en"))
+                    @tags.map { tw =>
+                        <li id="tag_@tw.tag.id" class="panel_tags_item col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-6">
+                        @widget.tag.form(routes.TagHtml.update(tw.tag.name, slot.containerId, slot.segment)) {
 
                             <div class="controls">
-                                <button class="vote down" name="vote" value="false" @if(!user.getOrElse(true)){disabled}>-</button>
-                                <button class="vote null" name="vote" value="" @if(user.isEmpty){disabled}>0</button>
-                                <button class="vote up" name="vote" value="true" @if(user.getOrElse(false)){disabled}>+</button>
+                                <button class="vote down" name="vote" value="false" @if(!tw.user.getOrElse(true)){disabled}>-</button>
+                                <button class="vote null" name="vote" value="" @if(tw.user.isEmpty){disabled}>0</button>
+                                <button class="vote up" name="vote" value="true" @if(tw.user.getOrElse(false)){disabled}>+</button>
                             </div>
 
-                            <span class="name">@tag.name</span>
+                            <span class="name">@tw.tag.name</span>
 
-                            <span class="weight">@weight</span>
+                            <span class="weight">@tw.weight</span>
                         }
                         </li>
                     }
@@ -59,11 +57,10 @@
                 <button name="vote" ng-click="voteUp(tag)" class="hide">add</button>
             </form>
         }{
-            @widget.tag.form(routes.Slot.tag(slot.volumeId, slot.id)) {
+            @widget.tag.form(routes.TagHtml.update("", slot.containerId, slot.segment)) {
                 @widget.tag.inputText(form("name"), 'placeholder -> "Add new tag")
                 <button name="vote" value="@true" class="hide">add</button>
             }
         }
         </div>
     }
-}

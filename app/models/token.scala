@@ -7,7 +7,7 @@ import dbrary._
 import site._
 
 sealed abstract class Token protected (val id : Token.Id, val expires : Timestamp) extends TableRow {
-  def valid = expires.isAfterNow
+  def valid = expires.toDateTime.isAfterNow
   def redeemURL = controllers.routes.Token.token(id)
   def remove : Future[Boolean]
 }
@@ -105,7 +105,8 @@ object LoginToken extends TokenTable[LoginToken]("login_token") {
   def create(account : Account, password : Boolean = false) : Future[LoginToken] =
     (if (password) DELETE('account -> account.id, 'password -> true).execute
     else Async(false)).flatMap { _ =>
-      insert(SQLTerms('account -> account.id, 'password -> password), columns.map(_(account)))
+      insert(SQLTerms('account -> account.id, 'password -> password),
+        columns.map(_(account)))
         .map(_._2)
     }
 }
@@ -121,6 +122,10 @@ object SessionToken extends TokenTable[SessionToken]("session") {
     map { case (t, (p, a)) => t(p, a) }
 
   /** Issue a new token for the given party. */
-  def create(account : Account) : Future[Token.Id] =
-    insert(SQLTerms('account -> account.id))
+  def create(account : Account) : Future[SessionToken] =
+    account.party.access.flatMap { access =>
+      insert(SQLTerms('account -> account.id),
+        columns.map(_(account, access)))
+        .map(_._2)
+    }
 }

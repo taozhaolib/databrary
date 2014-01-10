@@ -1,6 +1,6 @@
-@(volume : Volume, accessForms : Seq[(Party,controllers.Volume.AccessForm)], accessSearch : Form[String], accessResults : Seq[(Party,controllers.Volume.AccessForm)])(implicit request : RequestObject[Volume]#Site[_])
+@(volume : Volume, accessForms : Seq[(Party,VolumeHtml.AccessForm)], accessSearch : Form[String], accessResults : Seq[(Party,VolumeHtml.AccessForm)])(implicit request : VolumeHtml.Request[_])
 
-@accessFields(party : Party, form : controllers.Volume.AccessForm)(implicit fieldConstructor : helper.FieldConstructor) = {
+@accessFields(party : Party, form : VolumeHtml.AccessForm)(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@display(party)</td>
 	@widget.enumSelect(form("access"), Permission)
 	@widget.tag.select(form("inherit"), Permission.values.to(if (party.id.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
@@ -28,14 +28,14 @@
                     <tbody>
                         @accessForms.map { case (party,form) =>
                             <tr>
-                                @widget.tag.form(routes.Volume.accessChange(volume.id, party.id), 'id -> ("party_"+party.id.toString)) {
+                                @widget.tag.form(routes.VolumeHtml.accessChange(volume.id, party.id), 'id -> ("party_"+party.id.toString)) {
                                     @accessFields(party, form)
                                 }
 
                                 <td>
                                     <button type='submit' class="button second" form="party_@party.id">Update</button>
-                                    @if(party.id != request.identity.id) {
-                                        <a href='@routes.Volume.accessDelete(volume.id, party.id)' class="button first">Revoke</a>
+                                    @if(!(request.identity === party)) {
+                                        <a href='@routes.VolumeHtml.accessDelete(volume.id, party.id)' class="button first">Revoke</a>
                                     }
                                     @widget.formErrors(form)
                                 </td>
@@ -44,7 +44,7 @@
                     </tbody>
 
                     <tfoot>
-                        @widget.tag.form(routes.Volume.accessSearch(volume.id)) {
+                        @widget.tag.form(routes.VolumeHtml.accessSearch(volume.id)) {
                             <tr class="null">
                                 @widget.tag.inputText(accessSearch("name"), 'placeholder -> "Search users and institutions...")
                                 <td/>
@@ -57,7 +57,7 @@
                         }
 
                         @accessResults.map { case (party,form) =>
-                            @widget.tag.form(routes.Volume.accessChange(volume.id, party.id)) {
+                            @widget.tag.form(routes.VolumeHtml.accessChange(volume.id, party.id)) {
                                 <tr>
                                     @accessFields(party, form)
                                     <td>

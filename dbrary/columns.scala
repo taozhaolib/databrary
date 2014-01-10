@@ -40,7 +40,7 @@ final case class SelectAs[A : SQLType](expr : String, name : String) extends Sel
   * @param source table name or other FROM expression
   * @param res parser for rows returned by the query
   */
-case class Selector[A](selects : Seq[SelectExpr[_]], source : String, parse : SQLLine[A], preargs : Seq[Any]) {
+case class Selector[A](selects : Seq[SelectExpr[_]], source : String, parse : SQLLine[A], preargs : SQLArgs = SQLNoArgs) {
   def select = selects.mkString(", ")
   val length : Int = parse.arity.ensuring(_ == selects.length)
 
@@ -60,7 +60,7 @@ case class Selector[A](selects : Seq[SelectExpr[_]], source : String, parse : SQ
     copy[A](selects.map(_.fromTable(name)), source = source + " AS " + name)
   /** Add arguments needed for the select expressions that will be passed (first) to any queries executed. */
   def pushArgs(args : SQLArgs) : Selector[A] =
-    copy[A](preargs = preargs ++ args.args)
+    copy[A](preargs = preargs ++ args)
 
   def join[B](that : Selector[B], joiner : (String, String) => String) : Selector[(A,B)] =
     Selector[(A,B)](selects ++ that.selects, joiner(source, that.source), parse.~[B](that.parse), preargs ++ that.preargs)
@@ -81,17 +81,16 @@ case class Selector[A](selects : Seq[SelectExpr[_]], source : String, parse : SQ
 
   private[this] def selectStmt(q : Seq[String]) : String = unwords(Seq("SELECT", select, "FROM", source) ++ q : _*)
   def SELECT(q : String*)(implicit dbc : db.Connection, executionContext : ExecutionContext) : SQLToRows[A] =
-    SQLToRows(selectStmt(q), parse, preargs)(dbc, executionContext)
+    SQLToRows(selectStmt(q), parse, preargs.args)(dbc, executionContext)
 }
 
 object Selector {
   def apply(selects : Seq[SelectExpr[_]])(implicit from : FromTable) : Selector[Seq[Any]] =
     new Selector[Seq[Any]](selects, from.table,
-      new SQLLine[Seq[Any]](selects.length, _.zip(selects).map { case (v, s) => s.get(v) }),
-      Nil)
+      new SQLLine[Seq[Any]](selects.length, _.zip(selects).map { case (v, s) => s.get(v) }))
 }
 
-abstract sealed class Columns[A,C <: SQLCols[A]] protected (selects : Seq[SelectExpr[_]], from : FromTable, override val parse : C) extends Selector[A](selects, from.table, parse, Nil) {
+abstract sealed class Columns[A,C <: SQLCols[A]] protected (selects : Seq[SelectExpr[_]], from : FromTable, override val parse : C) extends Selector[A](selects, from.table, parse) {
   def ~+[C : SQLType](a : SelectExpr[C]) : Columns[_,_]
 }
 

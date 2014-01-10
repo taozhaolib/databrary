@@ -1,28 +1,15 @@
-@()(implicit request: RequestObject[Volume]#Site[_])
+@(summary : Volume.Summary, access : Seq[VolumeAccess], funding : Seq[VolumeFunding], top : Container, assets : Seq[SlotAsset], citations : Seq[VolumeCitation], comments : Seq[Comment], tags : Seq[TagWeight])(implicit request: VolumeHtml.Request[_])
 
 @defining(request.obj) { volume =>
-@defining(Async.wait(volume.topSlot)) { topslot =>
-@defining(Async.wait(volume.toplevelAssets)) { toplevel =>
-@defining(toplevel groupBy { sa =>
-	if(!sa.checkPermission(Permission.DOWNLOAD)) 'o' else sa.format.mimeSubTypes._1 match {
-	    case "image" => 'i'
-	    case "video" => 'v'
-	    case "audio" => 'a'
-	    case _ => 'o'
-        }
-    }) { assets =>
 
     @widget.template.crud("Volume: " + volume.name) {
-        @widget.panel.volume(volume)
+        @widget.panel.volume(volume, summary, access, funding)
         @widget.panel.browser(volume)
-        @widget.panel.materials(toplevel)
-        @widget.panel.publications(Async.wait(volume.citations))
-        @widget.panel.people(volume)
-        @widget.panel.tags(topslot, Some(volume))
-        @widget.panel.comments(Some(topslot), Some((routes.Slot.comment(volume.id, topslot.id), controllers.Slot.commentForm)), Async.wait(volume.comments))
+        @widget.panel.materials(assets)
+        @widget.panel.publications(citations)
+        @widget.panel.people(access)
+        @widget.panel.tags(top, Some(volume), tags)
+        @widget.panel.comments(Some(top), Some((routes.SlotHtml.comment(top.id), SlotHtml.commentForm)), comments)
     }
 
-}
-}
-}
 }

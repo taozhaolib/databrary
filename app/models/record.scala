@@ -2,6 +2,7 @@ package models
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.Json
 import macros._
 import dbrary._
 import site._
@@ -23,9 +24,20 @@ object RecordCategory extends HasId[RecordCategory] {
     case VISIT => Some(Visit)
     case _ => None
   }
+  
+  def getName(name : String) : Option[RecordCategory] = name match {
+    case "participant" => Some(Participant)
+    case "visit" => Some(Visit)
+    case _ => None
+  }
 
   def getAll : Seq[RecordCategory] =
     Seq(Participant, Visit)
+
+  def getVolume(volume : Volume) : Future[Seq[RecordCategory]] =
+    SQL("SELECT DISTINCT category FROM record WHERE volume = ? AND category IS NOT NULL")
+      .apply(volume.id)
+      .list(SQLCols[RecordCategory.Id].map(get(_).get))
 
   final val PARTICIPANT : Id = asId(-500)
   final val VISIT : Id = asId(-200)
@@ -40,19 +52,19 @@ object RecordCategory extends HasId[RecordCategory] {
 }
 
 /** A set of Measures. */
-final class Record private (val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE, measures_ : Measures = Measures.empty) extends TableRowId[Record] with SiteObject with InVolume with JsonableRecord {
+final class Record private (val id : Record.Id, val volume : Volume, val category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE, measures_ : Measures = Measures.empty) extends TableRowId[Record] with SiteObject with InVolume {
   private[this] var _category = category_
   def category : Option[RecordCategory] = _category
   def categoryId = category.map(_.id)
 
   /** Update the given values in the database and this object in-place. */
-  def change(category : Option[RecordCategory] = _category) : Future[Boolean] = {
-    if (category == _category)
-      return Async(true)
-    SQL("UPDATE record SET category = ? WHERE id = ?").apply(category.map(_.id), id)
+  def change(category : Option[Option[RecordCategory]] = None) : Future[Boolean] = {
+    category.fold(Async(false)) { cat =>
+    SQL("UPDATE record SET category = ? WHERE id = ?").apply(cat.map(_.id), id)
       .execute.andThen { case scala.util.Success(true) =>
-        _category = category
+        _category = cat
       }
+    }
   }
 
   /** The set of measures on the current volume readable by the current user. */
@@ -86,13 +98,22 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def age(date : Date) : Option[Age] =
     measures_.value(Metric.Birthdate).map(dob => Age(dob, date))
 
+  /** The age at test during a specific slot, with privacy limits applied. */
+  def age(slot : AbstractSlot) : Option[Age] =
+    slot.container.date.flatMap(age(_).map { a =>
+      if (a > Age.LIMIT && !slot.downloadable) Age.LIMIT
+      else a
+    })
+
   /** The set of slots to which this record applies. */
   lazy val slots : Future[Seq[Slot]] =
-    Slot.volumeRow(volume, false)
+    Slot.volumeRow(volume)
       .SELECT("JOIN slot_record ON slot.id = slot_record.slot WHERE slot_record.record = ? ORDER BY slot.source, slot.segment")
       .apply(id).list
   /** Attach this record to a slot. */
   def addSlot(s : Slot) = Record.addSlot(id, s.id)
+  /** Remove this record from a slot. */
+  def removeSlot(s : Slot.Id) = Record.removeSlot(id, s)
 
   /** The set of assets to which this record applies. */
   def assets : Future[Seq[SlotAsset]] =
@@ -100,16 +121,24 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   def pageName = category.fold("")(_.name.capitalize + " ") + ident
   def pageParent = Some(volume)
-  def pageURL = controllers.routes.Record.view(volume.id, id)
+  def pageURL = controllers.routes.RecordHtml.view(id)
   def pageActions = Seq(
-    Action("view", controllers.routes.Record.view(volumeId, id), Permission.VIEW),
-    Action("edit", controllers.routes.Record.edit(volumeId, id), Permission.EDIT)
+    Action("view", pageURL, Permission.VIEW),
+    Action("edit", controllers.routes.RecordHtml.edit(id), Permission.EDIT)
   )
 
-  def json(implicit site : Site) =
+  lazy val json : JsonRecord =
     JsonRecord.flatten(id,
+      Some('volume -> volumeId),
       category.map('category -> _.name),
       Some('measures -> measures)
+    )
+
+  def json(options : JsonOptions.Options) : Future[JsonRecord] =
+    JsonOptions(json, options,
+      "slots" -> (opt => slots.map(JsonArray.map(s =>
+        s.json ++ JsonObject.flatten(age(s).map('age -> _))
+      )))
     )
 }
 
@@ -135,14 +164,12 @@ object Record extends TableId[Record]("record") {
       SelectColumn[Id]("id")
     , SelectColumn[Option[RecordCategory.Id]]("category")
     ).leftJoin(Measures.row, "record.id = measures.record")
-    .?.join(Slot.volumeRow(vol, true).?, _ + " JOIN slot_record ON record.id = slot_record.record FULL JOIN " + _ + " ON slot_record.slot = slot.id AND container.volume = record.volume")
+    .join(Container.volumeRow(vol), _ + " JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id JOIN " + _ + " ON slot.source = container.id AND record.volume = container.volume")
     .map {
-      case (Some(((id, cat), meas)), slot) =>
-        val r = new Record(id, vol, cat.flatMap(RecordCategory.get(_)), slot.fold(Consent.NONE)(_.consent), Measures(meas))
-        r._daterange.set(slot.flatMap(_.container.date).fold[Range[Date]](Range.empty)(Range.singleton _))
-        (slot, Some(r))
-      case (None, slot) =>
-        (slot, None)
+      case (((id, cat), meas), cont) =>
+        val r = new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cont.consent, Measures(meas))
+        r._daterange.set(cont.date.fold[Range[Date]](Range.empty)(Range.singleton _))
+        (r, cont)
     }
 
   /** Retrieve a specific record by id. */
@@ -156,6 +183,18 @@ object Record extends TableId[Record]("record") {
       .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.slot = ? AND record.volume = ? ORDER BY record.category")
       .apply(slot.id, slot.volumeId).list
 
+  /** Retrieve the list of all records that apply to the given slot. */
+  private[models] def getSlotAll(slot : AbstractSlot) : Future[Seq[Record]] =
+    volumeRow(slot.volume)
+      .SELECT("JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id WHERE slot.source = ? AND slot.segment && ?::segment AND record.volume = ?")
+      .apply(slot.containerId, slot.segment, slot.volumeId).list
+
+  /** Retrieve the list of all foreign records (from a different volume) that apply to the given slot. */
+  private[models] def getSlotForeign(slot : AbstractSlot)(implicit site : Site) : Future[Seq[Record]] =
+    row
+      .SELECT("JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id WHERE slot.source = ? AND slot.segment && ?::segment AND record.volume <> ? AND", Volume.condition)
+      .apply(SQLArgs(slot.containerId, slot.segment, slot.volumeId) ++ Volume.conditionArgs).list
+
   /** Retrieve all the categorized records associated with the given volume.
     * @param category restrict to the specified category, or include all categories
     * @return records sorted by category, ident */
@@ -166,9 +205,9 @@ object Record extends TableId[Record]("record") {
       .apply(volume.id +: category.fold(SQLArgs())(c => SQLArgs(c.id))).list
 
   /** Return the full outer product of all slot, record pairs on the given volume for "session" slots and categorized records. */
-  private[models] def getSessions(vol : Volume) : Future[Seq[(Option[Slot],Option[Record])]] =
+  private[models] def getSessions(vol : Volume) : Future[Seq[(Record,Container)]] =
     sessionRow(vol)
-      .SELECT("WHERE container.volume = ? AND (slot.consent IS NOT NULL OR slot.segment = '(,)') AND NOT container.top OR record.volume = ? AND record.category IS NOT NULL")
+      .SELECT("WHERE record.volume = ? AND record.category IS NOT NULL OR container.volume = ? AND NOT container.top ORDER BY record.category NULLS LAST, record.id")
       .apply(vol.id, vol.id).list
 
   /** Retrieve the records in the given volume with a measure of the given value.

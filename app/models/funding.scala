@@ -11,6 +11,12 @@ import site._
 final case class VolumeFunding(val volume : Volume, val funder : Party, val grant : Option[String]) extends TableRow with InVolume {
   def funderId = funder.id
   private def args = SQLTerms('volume -> volumeId, 'funder -> funderId, 'grant -> grant)
+
+  def json = JsonObject.flatten(
+    Some('volume -> volume.json),
+    Some('party -> funder.json),
+    grant.map('grant -> _)
+  )
 }
 
 object VolumeFunding extends Table[VolumeFunding]("volume_funding") {

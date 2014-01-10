@@ -51,16 +51,16 @@
                     @if(link.checkPermission(Permission.DOWNLOAD)) {
                         <div id="asset_@link.sourceId.toString" ng-show="currentAsset == @link.sourceId" class="panel_materials_frame">
                             <h2>
-                                @link.pageName.@link.format.extension <a href='@routes.SlotAsset.download(link.volumeId, link.slotId, link.assetId, false)' class="link">download</a>
+                                @link.pageName.@link.format.extension <a href='@routes.SlotAssetHtml.download(link.slot.containerId, link.slot.segment, link.assetId, false)' class="link">download</a>
                             </h2>
 
                             @link.format.mimeSubTypes match {
                                 case ("image", _) => {
-                                    <img src='@routes.SlotAsset.download(link.volumeId, link.slotId, link.assetId, true)'/>
+                                    <img src='@routes.SlotAssetHtml.download(link.slot.containerId, link.slot.segment, link.assetId, true)'/>
                                 }
                                 case ("video", _) => {
                                     <video controls>
-                                        <source src="@routes.SlotAsset.download(link.volumeId, link.slotId, link.assetId, true)" type="@link.asset.format.mimetype">
+                                        <source src="@routes.SlotAssetHtml.download(link.slot.containerId, link.slot.segment, link.assetId, true)" type="@link.asset.format.mimetype">
                                     </video>
 
                                     @if(!link.isInstanceOf[SlotTimeseries]) {
@@ -68,16 +68,14 @@
                                     }
                                 }
                                 case ("text", "html") => {
-                                    <iframe src='@routes.SlotAsset.download(link.volumeId, link.slotId, link.assetId, true)'/>
+                                    <iframe src='@routes.SlotAssetHtml.download(link.slot.containerId, link.slot.segment, link.assetId, true)'/>
                                 }
                                 case ("text", "plain") => {
-                                    <iframe src='@routes.SlotAsset.download(link.volumeId, link.slotId, link.assetId, true)'/>
+                                    <iframe src='@routes.SlotAssetHtml.download(link.slot.containerId, link.slot.segment, link.assetId, true)'/>
                                 }
                                 case _ => {
                                 }
                             }
-
-                            @link.asset.body.map(display.plainText _)
                         </div>
                     }
                 }

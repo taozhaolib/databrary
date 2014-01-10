@@ -13,6 +13,9 @@ http://databrary.github.io/databrary
 
 ### Postgres
 
+We assume that the server's timezone (for timestamp without timezone values) is
+UTC, which means timezone should be unset in postgresql.conf.
+
 Postgres must be installed and listening on localhost:5432, for example with a
 line like this in pg\_hba.conf:
 

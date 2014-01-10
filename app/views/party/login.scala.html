@@ -1,4 +1,4 @@
-@(form : Login.LoginForm)(implicit request: SiteRequest[_])
+@(form : LoginHtml.LoginForm)(implicit request: SiteRequest[_])
 
 @import helper.FieldConstructor
 
@@ -9,7 +9,7 @@
 @widget.template.action("Enter Databrary") {
     @widget.panel.form("Enter Databrary", "Login", controller = "LoginPanelCtrl") {
         <div class="col-full">
-            @widget.tag.form(routes.Login.post) {
+            @widget.tag.form(routes.LoginHtml.post) {
                 @widget.formErrors(form)
 
                 <div ng-show="method == 1">

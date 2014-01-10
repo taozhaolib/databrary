@@ -1,9 +1,11 @@
 package macros
 
 import scala.concurrent.{Future,ExecutionContext}
-import Future.successful
+import Future.{successful,failed}
+import scala.util.{Success,Failure}
+import scala.util.control.Exception
+import Exception.Catch
 import scala.collection.{GenTraversableOnce,generic}
-import scala.util.Success
 import scala.language.higherKinds
 
 /** Various utilities for dealing with Futures.
@@ -12,6 +14,19 @@ import scala.language.higherKinds
 object Async {
   /** Shorter alias for Future.successful. */
   def apply[A](a : A) : Future[A] = successful(a)
+
+  /** Transform a Catch to a Future. */
+  private def apply[T](c : Catch[T]) : Catch[Future[T]] =
+    c.withApply(failed)
+  def catching[T](exceptions : Class[_]*) : Catch[Future[T]] =
+    apply(Exception.catching(exceptions : _*))
+  /** Wrap any thrown exception in a future. */
+  def Try[A](a : => A) : Future[A] =
+    /* this is stupid: Promise lacks the direct constructor */
+    scala.util.Try(a) match {
+      case Success(a) => successful(a)
+      case Failure(a) => failed(a)
+    }
 
   private[this] def ss[A](a : A) : Future[Option[A]] = successful(Some(a))
   /** Unwrap and map an Option into a Future Option. */
@@ -28,7 +43,7 @@ object Async {
     flatMap[A,A](a, a => f(a).map { case false => None ; case true => Some(a) })
 
   /** Evaluate each of the futures, serially. */
-  def foreach[A, R](l : Seq[A], f : A => Future[_], r : => R = ())(implicit context : ExecutionContext) : Future[R] = {
+  def foreach[A, R](l : TraversableOnce[A], f : A => Future[_], r : => R = ())(implicit context : ExecutionContext) : Future[R] = {
     l.foldLeft[Future[Any]](successful(())) { (r, a) =>
       r.flatMap(_ => f(a))
     }.map(_ => r)

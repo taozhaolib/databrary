@@ -3,7 +3,7 @@
 @import play.api.templates.HtmlFormat._
 @import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
-@defining(Async.wait(record.fold(volume.recordSlots.map(_.find(r => r._1 == RecordCategory.Participant).getOrElse((Seq(),Seq()))._2))(r => r.slots.map(s => Seq((r, s)))))) { recordSlots =>
+@defining(Async.wait(record.fold(volume.recordCategorySlots.map(_.find(r => r._1 == RecordCategory.Participant).getOrElse((Seq(),Seq()))._2))(r => r.slots.map(s => Seq((r, s)))))) { recordSlots =>
     @if(recordSlots.nonEmpty){
         @widget.panel.raw("browser", "", "ng-controller" -> "BrowserPanelCtrl")(title = "Browser", foldable = true){
             <div class="col-full">
@@ -21,7 +21,7 @@
                     @recordSlots.map { case (record, slots)  =>
                         @slots.map { slot =>
                             <tr>
-                                @if(slot.equals(slots.head)) {
+                                @if(slot === slots.head) {
                                     <td class="meta record-holder bgwhite" rowspan="@slots.length">
                                         <div class="record"><a href='@record.pageURL'>@record.ident</a></div>
                                         <div class="gender">@record.measures.value(Metric.Gender)</div>

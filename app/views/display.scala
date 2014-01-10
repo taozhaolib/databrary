@@ -46,7 +46,7 @@ object display {
     }
     "%.1f %s".format(n, u)
   }
-  def age(record : models.Record, slot : models.Slot) : Option[String] =
+  def age(record : models.Record, slot : models.AbstractSlot) : Option[String] =
     slot.container.date.flatMap(d => record.age(d)).map(age _)
 
   def agerange(a : dbrary.Range[Age]) : String = range(age)(a)
@@ -60,7 +60,7 @@ object display {
     if (date.isInstanceOf[Date]) dateFmtYMD.print(date)
     else date.toString
 
-  def date(s : Slot) =
+  def date(s : AbstractSlot) =
     s.getDate.map(fuzzyDate _)
 
   def formatTitle(text: String = "") =
@@ -81,21 +81,21 @@ object display {
   private def gravatarUrlByParty(party: Party, size: Int = 64) =
     gravatarUrlByEmailOpt(party.account.map(_.email), size)
 
-  def avatar(party : Party, size : Int = 64) = party.name match {
+  def avatar(party : Party, size : Int = 64) : String = party.name match {
     /* Temporary hack */
-    case "Karen Adolph" => routes.Assets.at("private/profiles/karen.jpg")
-    case "Rick Gilmore" => routes.Assets.at("private/profiles/rick.jpg")
-    case "David Millman" => routes.Assets.at("private/profiles/david.jpg")
-    case "Catherine Tamis-LeMonda" => routes.Assets.at("private/profiles/cathy.jpg")
-    case "Dylan Simon" => routes.Assets.at("private/profiles/dylan.jpg")
-    case "Lisa Steiger" => routes.Assets.at("private/profiles/lisa.jpg")
-    case "Lina Wictoren Roy" => routes.Assets.at("private/profiles/lina.jpg")
-    case "Andrea Byrne" => routes.Assets.at("private/profiles/andrea.jpg")
-    case "National Institutes of Health" => routes.Assets.at("private/profiles/nih.jpg")
-    case "National Institute of Child Health and Human Development" => routes.Assets.at("private/profiles/nih.jpg")
-    case "National Science Foundation" => routes.Assets.at("private/profiles/nsf.png")
-    case "Databrary" => routes.Assets.at("private/profiles/databrary.png")
-    case "New York University" => routes.Assets.at("private/profiles/nyu.jpg")
+    case "Karen Adolph" => routes.Assets.at("private/profiles/karen.jpg").url
+    case "Rick Gilmore" => routes.Assets.at("private/profiles/rick.jpg").url
+    case "David Millman" => routes.Assets.at("private/profiles/david.jpg").url
+    case "Catherine Tamis-LeMonda" => routes.Assets.at("private/profiles/cathy.jpg").url
+    case "Dylan Simon" => routes.Assets.at("private/profiles/dylan.jpg").url
+    case "Lisa Steiger" => routes.Assets.at("private/profiles/lisa.jpg").url
+    case "Lina Wictoren Roy" => routes.Assets.at("private/profiles/lina.jpg").url
+    case "Andrea Byrne" => routes.Assets.at("private/profiles/andrea.jpg").url
+    case "National Institutes of Health" => routes.Assets.at("private/profiles/nih.jpg").url
+    case "National Institute of Child Health and Human Development" => routes.Assets.at("private/profiles/nih.jpg").url
+    case "National Science Foundation" => routes.Assets.at("private/profiles/nsf.png").url
+    case "Databrary" => routes.Assets.at("private/profiles/databrary.png").url
+    case "New York University" => routes.Assets.at("private/profiles/nyu.jpg").url
     case _ => gravatarUrlByParty(party, size)
   }
 
@@ -115,6 +115,6 @@ object display {
   }
 
   def apply(x : SitePage, full : Boolean = false)(implicit site : Site) = if (full) path(x) else page(x)
-  def apply(x : Timestamp) = time(x)
+  def apply(x : Timestamp) = time(x.toDateTime)
   def apply(x : Range[Offset]) = x.singleton.fold(x.lowerBound.fold("")(_.toString) + "-" + x.upperBound.fold("")(_.toString))(_.toString)
 }

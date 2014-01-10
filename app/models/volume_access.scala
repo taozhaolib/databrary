@@ -19,6 +19,13 @@ import site._
   */
 final class VolumeAccess(val volume : Volume, val party : Party, val access : Permission.Value, val inherit : Permission.Value) extends TableRow with InVolume {
   def partyId = party.id
+
+  def json = JsonObject(
+    'volume -> volume.json,
+    'party -> party.json,
+    'access -> access,
+    'inherit -> inherit
+  )
 }
 
 object VolumeAccess extends Table[VolumeAccess]("volume_access") {

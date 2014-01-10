@@ -2,12 +2,6 @@
 
 @widget.frame.raw("asset", "")("Metadata", foldable = true) {
     <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
-	@asset.asset.body.map { body =>
-        <div class="description">
-            @display.plainText(body)
-        </div>
-        }
-
         <div class="metadata">
             <dl class="flat">
                 <dt>Format</dt>

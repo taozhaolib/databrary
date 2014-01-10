@@ -15,7 +15,7 @@ object Token extends SiteController {
   type PasswordForm = Form[(String, Option[String])]
   val passwordForm = Form(tuple(
     "token" -> text,
-    "password" -> Party.passwordMapping.verifying(Messages("error.required"), _.isDefined)
+    "password" -> PartyHtml.passwordMapping.verifying(Messages("error.required"), _.isDefined)
   ))
 
   def token(token : String) = SiteAction.async { implicit request =>
@@ -29,7 +29,7 @@ object Token extends SiteController {
         AOk(views.html.token.password(token.accountId, passwordForm.fill((token.id, None))))
       else {
         token.remove
-        Login.login(token.account)
+        LoginController.login(token.account)
       }
     })
   }
@@ -39,10 +39,10 @@ object Token extends SiteController {
       form => ABadRequest(views.html.token.password(a, form)),
       { case (token, password) =>
         models.LoginToken.get(token).flatMap(_
-          .filter(t => t.valid && t.password && t.accountId == a)
-          .fold[Future[SimpleResult]](AForbidden) { token =>
-            password.fold(macros.Async(false))(p => token.account.changeAccount(password = p)).flatMap { _ =>
-              Login.login(token.account)
+          .filter(t => t.valid && t.password && t.accountId === a)
+          .fold[Future[SimpleResult]](ForbiddenException.result) { token =>
+            password.fold(macros.Async(false))(p => token.account.change(password = Some(p))).flatMap { _ =>
+              LoginController.login(token.account)
             }
           }
         )

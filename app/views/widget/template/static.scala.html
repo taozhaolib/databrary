@@ -6,10 +6,10 @@
             <div class="row">
                 <div class="col-full">
                     <h1 class="body_header_h1">
-                        <a href="@routes.Static.index" title="Databrary: An Open Data Library"><strong>Data</strong>brary</a>
+                        <a href="@routes.StaticHtml.index" title="Databrary: An Open Data Library"><strong>Data</strong>brary</a>
                     </h1>
 
-                    <form class="body_header_search" method="get" action="@routes.Volume.search">
+                    <form class="body_header_search" method="get" action="@routes.VolumeHtml.search">
                         <div class="w">
                             <input type="search" class="searchbox" name="query" placeholder="Start your search..." value="">
                         </div>
@@ -30,16 +30,16 @@
 
                     <nav class="tap_menu">
                         <ul>
-                            <li><a href="@routes.Static.page("about")" title="About the Project">About</a></li>
-                            <li><a href="@routes.Static.page("policies")" title="Policies">Policies</a></li>
-                            <li class="foot"><a href="@routes.Static.page("faq")" title="FAQ">F.A.Q.</a></li>
+                            <li><a href="@routes.StaticHtml.page("about")" title="About the Project">About</a></li>
+                            <li><a href="@routes.StaticHtml.page("policies")" title="Policies">Policies</a></li>
+                            <li class="foot"><a href="@routes.StaticHtml.page("faq")" title="FAQ">F.A.Q.</a></li>
 
-                            <li><a href="@routes.Static.team" title="Our Team">Team</a></li>
-                            <li><a href="@routes.Static.page("board")" title="The Board">Board</a></li>
-                            <li class="foot"><a href="@routes.Static.page("contributors")" title="Contributors">Contributors</a></li>
+                            <li><a href="@routes.StaticHtml.team" title="Our Team">Team</a></li>
+                            <li><a href="@routes.StaticHtml.page("board")" title="The Board">Board</a></li>
+                            <li class="foot"><a href="@routes.StaticHtml.page("contributors")" title="Contributors">Contributors</a></li>
 
-                            <li><a href="@routes.Static.page("jobs")" title="Join Our Team">Jobs</a></li>
-                            <li><a href="@routes.Static.page("contact")" title="Contact Us">Contact</a></li>
+                            <li><a href="@routes.StaticHtml.page("jobs")" title="Join Our Team">Jobs</a></li>
+                            <li><a href="@routes.StaticHtml.page("contact")" title="Contact Us">Contact</a></li>
                         </ul>
                     </nav>
                 </section>

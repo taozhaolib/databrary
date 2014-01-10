@@ -93,7 +93,8 @@ COMMENT ON FUNCTION audit.CREATE_TABLE (name) IS 'Create an audit.$1 table mirro
 CREATE TABLE "party" (
 	"id" serial NOT NULL Primary Key,
 	"name" text NOT NULL,
-	"orcid" char(16)
+	"orcid" char(16),
+	"affiliation" text
 );
 COMMENT ON TABLE "party" IS 'Users, groups, organizations, and other logical identities';
 
@@ -252,7 +253,7 @@ COMMENT ON TABLE "volume_funding" IS 'Quick and dirty funding list.  No PK: only
 CREATE FUNCTION "interval_mi_epoch" (interval, interval) RETURNS double precision LANGUAGE sql IMMUTABLE STRICT AS 
 	$$ SELECT date_part('epoch', interval_mi($1, $2)) $$;
 CREATE TYPE segment AS RANGE (
-	SUBTYPE = interval HOUR TO SECOND,
+	SUBTYPE = interval HOUR TO SECOND (3),
 	SUBTYPE_DIFF = "interval_mi_epoch"
 );
 COMMENT ON TYPE "segment" IS 'Intervals of time, used primarily for representing clips of timeseries data.';
@@ -260,10 +261,10 @@ COMMENT ON TYPE "segment" IS 'Intervals of time, used primarily for representing
 CREATE FUNCTION "segment" (interval) RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT segment('0', $1) $$;
 COMMENT ON FUNCTION "segment" (interval) IS 'The segment [0,X) but strict in X.';
-CREATE FUNCTION "duration" (segment) RETURNS interval HOUR TO SECOND LANGUAGE sql IMMUTABLE STRICT AS
+CREATE FUNCTION "duration" (segment) RETURNS interval HOUR TO SECOND (3) LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT CASE WHEN isempty($1) THEN '0' ELSE interval_mi(upper($1), lower($1)) END $$;
 COMMENT ON FUNCTION "duration" (segment) IS 'Determine the length of a segment, or NULL if unbounded.';
-CREATE FUNCTION "singleton" (interval HOUR TO SECOND) RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS
+CREATE FUNCTION "singleton" (interval HOUR TO SECOND (3)) RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT segment($1, $1, '[]') $$;
 CREATE FUNCTION "singleton" (segment) RETURNS interval LANGUAGE sql IMMUTABLE STRICT AS
 	$$ SELECT lower($1) WHERE lower_inc($1) AND upper_inc($1) AND lower($1) = upper($1) $$;
@@ -318,14 +319,14 @@ COMMENT ON TRIGGER "container_top_create" ON "volume" IS 'Always create a top co
 
 
 CREATE TABLE "slot" (
-	"id" serial NOT NULL Primary Key,
-	"source" integer NOT NULL References "container",
-	"segment" segment NOT NULL DEFAULT '(,)',
+	"id" integer NOT NULL DEFAULT nextval('container_id_seq') Primary Key,
+	"source" integer NOT NULL References "container" ON UPDATE CASCADE ON DELETE CASCADE,
+	"segment" segment NOT NULL,
 	"consent" consent,
+	Check ((id = source) = (segment = '(,)')),
 	Unique ("source", "segment"),
 	Exclude USING gist (singleton("source") WITH =, "segment" WITH &&) WHERE ("consent" IS NOT NULL)
 ) INHERITS ("object_segment");
-CREATE UNIQUE INDEX "slot_full_container_idx" ON "slot" ("source") WHERE "segment" = '(,)';
 COMMENT ON TABLE "slot" IS 'Sections of containers selected for referencing, annotating, consenting, etc.';
 COMMENT ON COLUMN "slot"."consent" IS 'Sharing/release permissions granted by participants on (portions of) contained data.  This could equally well be an annotation, but hopefully won''t add too much space here.';
 
@@ -333,14 +334,15 @@ SELECT audit.CREATE_TABLE ('slot');
 COMMENT ON TABLE audit."slot" IS 'Partial auditing for slot table covering only consent changes.';
 
 CREATE FUNCTION "slot_full_create" () RETURNS trigger LANGUAGE plpgsql AS $$
-DECLARE
-	slot_id integer;
 BEGIN
-	INSERT INTO slot (source, segment) VALUES (NEW.id, '(,)') RETURNING id INTO STRICT slot_id;
+	INSERT INTO slot (id, source, segment) VALUES (NEW.id, NEW.id, '(,)');
 	RETURN null;
 END; $$;
 CREATE TRIGGER "slot_full_create" AFTER INSERT ON "container" FOR EACH ROW EXECUTE PROCEDURE "slot_full_create" ();
 COMMENT ON TRIGGER "slot_full_create" ON "container" IS 'Always create a "full"-range slot for each container.  Unfortunately nothing currently prevents them from being removed/changed.';
+
+ALTER TABLE "container"
+	ADD Foreign Key ("id") References "slot" Deferrable Initially Deferred;
 
 CREATE FUNCTION "get_slot" ("container" integer, "seg" segment) RETURNS integer STRICT LANGUAGE plpgsql AS $$
 DECLARE
@@ -430,9 +432,8 @@ CREATE TABLE "asset" (
 	"volume" integer NOT NULL References "volume",
 	"format" smallint NOT NULL References "format",
 	"classification" classification NOT NULL,
-	"duration" interval HOUR TO SECOND Check ("duration" > interval '0'),
-	"name" text NOT NULL,
-	"body" text,
+	"duration" interval HOUR TO SECOND (3) Check ("duration" > interval '0'),
+	"name" text,
 	"sha1" bytea NOT NULL Check (octet_length("sha1") = 20)
 );
 COMMENT ON TABLE "asset" IS 'Assets reflecting files in primary storage.';
@@ -460,6 +461,14 @@ CREATE TABLE "asset_revision" (
 );
 COMMENT ON TABLE "asset_revision" IS 'Assets that reflect different versions of the same content, either generated automatically from reformatting or a replacement provided by the user.';
 
+CREATE VIEW "asset_revisions" AS
+	WITH RECURSIVE r AS (
+		SELECT * FROM asset_revision
+		UNION ALL
+		SELECT asset_revision.prev, r.next FROM asset_revision JOIN r ON asset_revision.next = r.prev
+	) SELECT * FROM r;
+COMMENT ON VIEW "asset_revisions" IS 'Transitive closure of asset_revision.  Revisions must never form a cycle or this will not terminate.';
+
 
 CREATE TABLE "excerpt" (
 	"asset" integer NOT NULL References "asset",
@@ -472,7 +481,7 @@ SELECT audit.CREATE_TABLE ('excerpt');
 
 
 CREATE VIEW "slot_asset" ("asset", "segment", "slot", "excerpt") AS
-	SELECT asset_slot.asset, slot_asset.segment, slot.id, excerpt.asset IS NOT NULL
+	SELECT asset_slot.asset, slot_asset.segment, slot.id, slot_excerpt.segment
 	  FROM asset_slot 
 	  JOIN slot AS slot_asset ON asset_slot.slot = slot_asset.id
 	  JOIN slot ON slot_asset.source = slot.source AND slot_asset.segment && slot.segment
@@ -513,6 +522,24 @@ CREATE TABLE "tag" (
 );
 COMMENT ON TABLE "tag" IS 'Tag/keywords that can be applied to objects.';
 
+CREATE FUNCTION "get_tag" ("tag_name" varchar(32)) RETURNS integer STRICT LANGUAGE plpgsql AS $$
+DECLARE
+	tag_id integer;
+BEGIN
+	LOOP
+		SELECT id INTO tag_id FROM tag WHERE name = tag_name;
+		IF FOUND THEN
+			RETURN tag_id;
+		END IF;
+		BEGIN
+			INSERT INTO tag (name) VALUES (tag_name) RETURNING id INTO tag_id;
+			RETURN tag_id;
+		EXCEPTION WHEN unique_violation THEN
+		END;
+	END LOOP;
+END; $$;
+
+
 CREATE TABLE "tag_use" (
 	"tag" integer NOT NULL References "tag",
 	"who" integer NOT NULL References "account",
@@ -548,7 +575,7 @@ COMMENT ON TYPE data_type IS 'Types of measurement data corresponding to measure
 
 CREATE TABLE "metric" (
 	"id" serial Primary Key,
-	"name" varchar(64) NOT NULL,
+	"name" varchar(64) NOT NULL Unique,
 	"classification" classification NOT NULL DEFAULT 'DEIDENTIFIED',
 	"type" data_type NOT NULL,
 	"values" text[] -- options for text enumerations, not enforced (could be pulled out to separate kind/table)
@@ -681,12 +708,12 @@ COMMENT ON TABLE "session" IS 'Tokens associated with currently logged-in sessio
 
 ----------------------------------------------------------- bootstrap/test data
 
-INSERT INTO party (id, name, orcid) VALUES (1, 'Dylan Simon', '0000000227931679');
-INSERT INTO party (id, name) VALUES (2, 'Mike Continues');
-INSERT INTO party (id, name) VALUES (3, 'Lisa Steiger');
-INSERT INTO party (id, name) VALUES (4, 'Andrea Byrne');
-INSERT INTO party (id, name) VALUES (5, 'Karen Adolph');
-INSERT INTO party (id, name) VALUES (6, 'Rick Gilmore');
+INSERT INTO party (id, name, orcid, affiliation) VALUES (1, 'Dylan Simon', '0000000227931679', 'Databrary');
+INSERT INTO party (id, name, affiliation) VALUES (2, 'Mike Continues', 'Databrary');
+INSERT INTO party (id, name, affiliation) VALUES (3, 'Lisa Steiger', 'Databrary');
+INSERT INTO party (id, name, affiliation) VALUES (4, 'Andrea Byrne', 'Databrary');
+INSERT INTO party (id, name, affiliation) VALUES (5, 'Karen Adolph', 'New York University');
+INSERT INTO party (id, name, affiliation) VALUES (6, 'Rick Gilmore', 'Penn State University');
 SELECT setval('party_id_seq', 6);
 
 INSERT INTO account (id, email, openid) VALUES (1, 'dylan@databrary.org', 'http://dylex.net/');

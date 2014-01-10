@@ -109,9 +109,11 @@ elif [[ $# -eq 2 && ( $1 = up || $1 = down ) ]] ; then
 	evolve "$@"
 elif [[ $1 = check ]] ; then
 	dbreset
-	echo "Running schema..."
-	runsql $conf/schema.sql
-	check_dump schema
+	if ! [[ $conf/check-schema.sql -nt $conf/schema.sql ]] ; then
+		echo "Running schema..."
+		runsql $conf/schema.sql
+		check_dump schema
+	fi
 	dbreset 1
 	evolve_all 1
 	check_diff schema evolve
@@ -126,6 +128,9 @@ elif [[ $1 = dump ]] ; then
 	exec pg_dump "${args[@]}" "$@" "${database}"
 elif [[ $1 = restore ]] ; then
 	shift
+	if [[ $# -eq 0 ]] ; then
+		set -- unreset.dump
+	fi
 	dbreset 1
 	exec pg_restore "${args[@]}" -d "${database}" -O "$@"
 else

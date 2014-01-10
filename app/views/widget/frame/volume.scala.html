@@ -1,4 +1,4 @@
-@(volume: Volume)(implicit request : SiteRequest[_])
+@(volume: Volume, summary : Volume.Summary)(implicit request : SiteRequest[_])
 
 @widget.frame.raw("volume", "")("Metadata", foldable = true) {
     <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
@@ -6,7 +6,6 @@
             @volume.body.map(display.plainText _)
         </div>
 
-	@defining(Async.wait(volume.summary)) { summary =>
         <div class="metadata">
             <dl class="flat">
                 <dt>Data collected</dt>
@@ -19,6 +18,5 @@
                 <dd>@display.agerange(summary.agerange) (<em>M</em> = @display.age(summary.agemean))</dd>
             </dl>
         </div>
-	}
     </div>
 }

@@ -2,7 +2,7 @@ package media
 
 import java.lang.{ProcessBuilder}
 import java.io.{InputStream,File,FileOutputStream}
-import dbrary.{Offset,Range}
+import dbrary.{Offset,Segment}
 
 object AV {
   loadLibrary("av")
@@ -27,7 +27,7 @@ object AV {
   /* These are referenced by native code so must match their use there */
   final class Error(msg : String, val err : Int) extends RuntimeException(msg)
   final class Probe(val format : String, _duration : Double, val streams : Array[String]) {
-    def duration : Offset = _duration
+    def duration : Offset = Offset.ofSeconds(_duration)
 
     /** Test if this represents a video in primary format. */
     def isVideo : Boolean =
@@ -43,7 +43,7 @@ object AV {
     _frame(infile.getPath, offset.seconds, null)
   def frame(infile : File, offset : Offset, outfile : File) : Unit =
     _frame(infile.getPath, offset.seconds, outfile.getPath)
-  def segment(infile : File, segment : Range[Offset], outfile : File) : Unit = {
+  def segment(infile : File, segment : Segment, outfile : File) : Unit = {
     /* XXX this rounds outwards to keyframes and does other strange things with timing */
     val r = new ProcessBuilder("ffmpeg", "-loglevel", "error", "-threads", "1", "-accurate_seek", 
       "-ss", segment.lowerBound.get.seconds.toString, 

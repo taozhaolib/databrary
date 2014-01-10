@@ -11,6 +11,13 @@ final class Comment private (val id : Comment.Id, val who : Account, val time : 
   def volume = slot.volume
   def slotId = slot.id
   def whoId = who.id
+
+  lazy val json = JsonRecord.flatten(id,
+    Some('who -> who.party.json),
+    Some('time -> time),
+    Some('text -> text),
+    parentId.map('parent -> _)
+  ) ++ slot.json
 }
 
 object Comment extends TableId[Comment]("comment") {
@@ -30,7 +37,7 @@ object Comment extends TableId[Comment]("comment") {
     }
   private def volumeRow(volume : Volume) = threads
     .join(Account.row, "comment.who = party.id")
-    .join(Slot.volumeRow(volume, false), "comment.slot = slot.id") map {
+    .join(Slot.volumeRow(volume), "comment.slot = slot.id") map {
       case ((comment, who), slot) => comment(who, slot)
     }
   private def containerRow(container : Container) = threads
@@ -48,14 +55,14 @@ object Comment extends TableId[Comment]("comment") {
   private[models] def getVolume(volume : Volume) : Future[Seq[Comment]] =
     volumeRow(volume).SELECT("WHERE container.volume = ?", order).apply(volume.id).list
 
-  /** Retrieve the set of comments on the given target.
-    * @param all include all indirect annotations on any containers, objects, or clips contained within the given target */
-  private[models] def getSlot(slot : Slot, all : Boolean = true) : Future[Seq[Comment]] =
-    if (all)
-      containerRow(slot.container).SELECT("WHERE slot.source = ? AND slot.segment <@ ?::segment", order)
-        .apply(slot.containerId, slot.segment).list
-    else
-      slotRow(slot).SELECT("WHERE comment.slot = ?", order).apply(slot.id).list
+  /** Retrieve the set of comments on the given target. */
+  private[models] def getSlot(slot : Slot) : Future[Seq[Comment]] =
+    slotRow(slot).SELECT("WHERE comment.slot = ?", order).apply(slot.id).list
+
+  /** Retrieve the set of all comments that apply to the given target. */
+  private[models] def getSlotAll(slot : AbstractSlot) : Future[Seq[Comment]] =
+    containerRow(slot.container).SELECT("WHERE slot.source = ? AND slot.segment <@ ?::segment", order)
+      .apply(slot.containerId, slot.segment).list
 
   /** Retrieve the set of comments written by the specified user.
     * This checks permissions on the commented object (volume). */
@@ -65,6 +72,7 @@ object Comment extends TableId[Comment]("comment") {
 
   /** Post a new comment on a target by the current user.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
-  private[models] def post(slot : Slot, text : String, parent : Option[Id] = None)(implicit site : AuthSite) : Future[Boolean] =
-    INSERT('who -> site.identity.id, 'slot -> slot.id, 'text -> text, 'parent -> parent).execute
+  private[models] def post(slot : AbstractSlot, text : String, parent : Option[Id] = None)(implicit site : AuthSite) : Future[Boolean] =
+    SQL("INSERT INTO comment (who, text, parent) VALUES (?, ?, ?,", slot.sqlId, ")")
+      .apply(SQLArgs(site.identity.id, text, parent) ++ slot.sqlArgs).execute
 }
