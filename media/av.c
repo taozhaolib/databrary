@@ -217,6 +217,7 @@ Java_media_AV_00024__1frame(
 	AVFrame *frame = NULL;
 	int i;
 	jbyteArray jimg = NULL;
+	int gpp;
 
 	av_init_packet(&pkt);
 
@@ -236,14 +237,18 @@ Java_media_AV_00024__1frame(
 	CHECK(avformat_seek_file(in, 0, INT64_MIN, off, off, 0), "seeking to %ld", off);
 
 	frame = av_frame_alloc();
-	int gpp = 0;
+	uint64_t pts = 0;
 	do {
 		av_frame_unref(frame);
 		CHECK(av_read_frame(in, &pkt), "reading frame");
-		CHECK(avcodec_decode_video2(is->codec, frame, &gpp, &pkt), "decoding video");
-		frame->pts = av_frame_get_best_effort_timestamp(frame);
+		if (pkt.stream_index == si)
+		{
+			CHECK(avcodec_decode_video2(is->codec, frame, &gpp, &pkt), "decoding video");
+			if (gpp)
+				pts = frame->pts = av_frame_get_best_effort_timestamp(frame);
+		}
 		av_free_packet(&pkt);
-	} while (!gpp || frame->pts < off);
+	} while (pts < off);
 
 	CHECK(avformat_alloc_output_context2(&out, NULL, outfile ? "image2" : "image2pipe", outfile), "opening '%s'", outfile);
 	if (!outfile)
@@ -277,16 +282,20 @@ Java_media_AV_00024__1frame(
 				frame->width, frame->height, frame->format,
 				tmp.width, tmp.height, tmp.format,
 				SWS_POINT, NULL, NULL, NULL);
-		sws_scale(sws, frame->data, frame->linesize, 0, frame->height, tmp.data, tmp.linesize);
+		sws_scale(sws, (const uint8_t *const *)frame->data, frame->linesize, 0, frame->height, tmp.data, tmp.linesize);
 		sws_freeContext(sws);
 		av_frame_unref(frame);
 		av_frame_move_ref(frame, &tmp);
 	}
 
-	CHECK(avformat_write_header(out, NULL), "writing header to '%s'", outfile);
 	av_dict_set(&opts, "threads", "1", 0);
 	CHECK(avcodec_open2(os->codec, codec, &opts), "opening output codec %s", codec->name);
+	CHECK(avformat_write_header(out, NULL), "writing header to '%s'", outfile);
 	CHECK(avcodec_encode_video2(os->codec, &pkt, frame, &gpp), "encoding frame");
+	if (!gpp) {
+		throw(env, 0, "did not encode JPEG frame");
+		goto error;
+	}
 	CHECK(av_write_frame(out, &pkt), "writing frame to '%s'", outfile);
 	CHECK(av_write_trailer(out), "writing trailer to '%s'", outfile);
 
