@@ -3,11 +3,8 @@
 # vi:et
 # ~~~~
 
-# Static content
-GET     /                                                                                         controllers.StaticHtml.index
-GET     /about/team                                                                               controllers.StaticHtml.team
-GET     /about                                                                                    controllers.StaticHtml.page(page = "about")
-GET     /about/$page<[a-z]+>                                                                      controllers.StaticHtml.page(page : String)
+# static
+GET     /                                                                                         controllers.VolumeHtml.search
 
 # users
 GET     /login                                                                                    controllers.LoginHtml.view
@@ -95,54 +92,9 @@ POST    /record/$rID<[0-9]+>/edit                                               
 GET     /volume/$vID<[0-9]+>/ingest/csv                                                           controllers.Ingest.csv(vID : models.Volume.Id)
 POST    /volume/$vID<[0-9]+>/ingest/curated                                                       controllers.Ingest.curated(vID : models.Volume.Id)
 
-# API
-GET     /api/about/$page<[a-z]+>                                                                  controllers.StaticApi.page(page : String)
-POST    /api/login                                                                                controllers.LoginApi.post
-POST    /api/logout                                                                               controllers.LoginApi.logout
-POST    /api/superuser/on                                                                         controllers.LoginApi.superuserOn
-POST    /api/superuser/off                                                                        controllers.LoginApi.superuserOff
-
-GET     /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.get(partyId : models.Party.Id)
-POST    /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.update(partyId : models.Party.Id)
-GET     /api/party/$partyId<-?[0-9]+>/authorize/:name                                             controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, name : String)
-GET     /api/party/$partyId<-?[0-9]+>/authorize                                                   controllers.PartyApi.authorizeGet(partyId : models.Party.Id)
-POST    /api/party/$partyId<-?[0-9]+>/authorize/$childId<[0-9]+>                                  controllers.PartyApi.authorizeChange(partyId : models.Party.Id, childId : models.Party.Id)
-POST    /api/party/$partyId<-?[0-9]+>/authorize/$parentId<[0-9]+>/apply                           controllers.PartyApi.authorizeApply(partyId : models.Party.Id, parentId : models.Party.Id)
-DELETE  /api/party/$partyId<-?[0-9]+>/authorize/$otherId<[0-9]+>                                  controllers.PartyApi.authorizeDelete(partyId : models.Party.Id, otherId : models.Party.Id)
-
-GET     /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.get(volumeId : models.Volume.Id)
-POST    /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.update(volumeId : models.Volume.Id)
-POST    /api/volume                                                                               controllers.VolumeApi.create(owner : models.Party.Id)
-GET     /api/volume/$volumeId<[0-9]+>/access/:name                                                controllers.VolumeApi.accessSearch(volumeId : models.Volume.Id, name : String)
-GET     /api/volume/$volumeId<[0-9]+>/access                                                      controllers.VolumeApi.accessGet(volumeId : models.Volume.Id)
-POST    /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                                   controllers.VolumeApi.accessChange(volumeId : models.Volume.Id, partyId : models.Party.Id)
-DELETE  /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                                   controllers.VolumeApi.accessDelete(volumeId : models.Volume.Id, partyId : models.Party.Id)
-
-GET     /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.get(containerId : models.Container.Id, segment : dbrary.Segment)
-POST    /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.update(containerId : models.Container.Id, segment : dbrary.Segment)
-
-GET     /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.get(recordId : models.Record.Id)
-GET     /api/record                                                                               controllers.RecordApi.query(volume : models.Volume.Id)
-POST    /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.update(recordId : models.Record.Id)
-POST    /api/record                                                                               controllers.RecordApi.create(volume : models.Volume.Id, category : Option[String] ?= None)
-
-GET     /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.get(assetId : models.Asset.Id)
-POST    /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.update(assetId : models.Asset.Id)
-
-GET     /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>                                     controllers.SlotAssetApi.get(containerId : models.Container.Id, segment : dbrary.Segment, assetId : models.Asset.Id)
-
-POST    /api/comment                                                                              controllers.SlotApi.comment(container : models.Container.Id, segment : dbrary.Segment, parent : Option[models.Comment.Id] ?= None)
-
-GET     /api/tag/:name                                                                            controllers.TagApi.get(name : String)
-POST    /api/tag/:name                                                                            controllers.TagApi.update(name : String, container : models.Container.Id, segment : dbrary.Segment)
-
 # ===== API ===== #
-GET     /api/about/$page<[a-z]+>                                                                  controllers.StaticApi.page(page : String)
 
 # ----- LOGIN ----- #
-# GET
-GET     /api/user                                                                                 controllers.LoginApi.get
-
 # LOGIN
 POST    /api/user/login                                                                           controllers.LoginApi.post
 # LOGOUT
@@ -245,4 +197,5 @@ GET     /test                                                                   
 # redirects
 GET     /p/*path                                                                                  controllers.Site.tinyUrl(path : String, prefix : String = "party")
 GET     /v/*path                                                                                  controllers.Site.tinyUrl(path : String, prefix : String = "volume")
+
 GET     /*path/                                                                                   controllers.Site.untrail(path: String)
