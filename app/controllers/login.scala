@@ -66,7 +66,7 @@ private[controllers] sealed class LoginController extends SiteController {
             .map(Redirect(_))
             .recover { case e : OpenIDError => InternalServerError(LoginHtml.viewLogin(e.toString)) }
         else
-          acct.filterNot(_ => isSecure).fold(error)(login)
+	  error
         }
       }
     )
