@@ -3,7 +3,7 @@ define(['app/config/module'], function (module) {
 
 	module.controller('OverviewVolumePanel', ['$scope', 'Volume', '$routeParams', function ($scope, Volume, $routeParams) {
 		$scope.bootPanel = function () {
-			$scope.volume = Volume.get($routeParams.id, {
+			$scope.volume = Volume.get({
 				id: $routeParams.id,
 				funding: '',
 				summary: '',

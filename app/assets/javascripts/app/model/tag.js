@@ -1,9 +1,9 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('Tag', ['$rootScope', 'ResourceService', function ($rootScope, resourceService) {
-		return resourceService('tag', '/api/tag/:id', {
+	module.factory('Tag', ['$rootScope', '$resource', function ($rootScope, $resource) {
+		return $resource('/api/tag/:id', {
 			id: '@id'
-		}, []);
+		});
 	}]);
 });

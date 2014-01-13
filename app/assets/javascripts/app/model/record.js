@@ -1,12 +1,9 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('Record', ['$rootScope', 'ResourceService', function ($rootScope, resourceService) {
-		return resourceService('record', '/api/record/:id', {
+	module.factory('Record', ['$rootScope', '$resource', function ($rootScope, $resource) {
+		return $resource('/api/record/:id', {
 			id: '@id'
-		}, [
-//			'assets',
-			'slots'
-		]);
+		});
 	}]);
 });

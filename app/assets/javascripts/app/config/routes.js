@@ -46,7 +46,7 @@ define(['app/config/module'], function (module) {
 			templateUrl: 'partyView.html',
 			resolve: {
 				party: ['$route', 'Party', function ($route, Party) {
-					return Party.get($route.current.params.id, {
+					return Party.get({
 						id: $route.current.params.id,
 						volumes: '',
 						comments: '',
@@ -99,7 +99,7 @@ define(['app/config/module'], function (module) {
 			templateUrl: 'volumeView.html',
 			resolve: {
 				volume: ['$route', 'Volume', function ($route, Volume) {
-					return Volume.get($route.current.params.id, {
+					return Volume.get({
 						id: $route.current.params.id,
 						access: '',
 						citations: '',

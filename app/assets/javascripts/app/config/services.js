@@ -1,9 +1,8 @@
 define([
+	'app/service/authService',
 	'app/service/eventService',
 	'app/service/messageService',
-	'app/service/authService',
+	'app/service/panelService',
 	'app/service/retryService',
-	'app/service/resourceService',
-	'app/service/routerService',
-	'app/service/panelService'
+	'app/service/routerService'
 ], function () {});

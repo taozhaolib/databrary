@@ -1,9 +1,9 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('Comment', ['$rootScope', 'ResourceService', function ($rootScope, resourceService) {
-		return resourceService('comment', '/api/comment/:id', {
+	module.factory('Comment', ['$rootScope', '$resource', function ($rootScope, $resource) {
+		return $resource('/api/comment/:id', {
 			id: '@id'
-		}, []);
+		});
 	}]);
 });
