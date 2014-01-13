@@ -25,7 +25,7 @@
     @helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/app/app").url)
 
     <!-- templates -->
-    @angular.partial("staticView"){@angular.view.staticView()}
+    @angular.partial("dashboardView"){@angular.view.dashboardView()}
     @angular.partial("searchView"){@angular.view.searchView()}
     @angular.partial("partyView"){@angular.view.partyView()}
     @angular.partial("volumeView"){@angular.view.volumeView()}

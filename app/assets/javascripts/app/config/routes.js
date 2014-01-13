@@ -10,28 +10,27 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		var staticView = {
-			controller: 'StaticView',
-			templateUrl: 'staticView.html',
+		var dashboardView = {
+			controller: 'DashboardView',
+			templateUrl: 'dashboardView.html',
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/', staticView);
-		$routeProvider.when('/about/:page*', staticView);
+		$routeProvider.when('/', dashboardView);
 
 		//
 
-		var LoginView = {
+		var loginView = {
 			controller: 'LoginView',
 			templateUrl: 'loginView.html',
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/login', LoginView);
+		$routeProvider.when('/login', loginView);
 
 		//
 
-		var SearchView = {
+		var searchView = {
 			controller: 'SearchView',
 			templateUrl: 'searchView.html',
 //			resolve: {
@@ -46,7 +45,7 @@ define(['app/config/module'], function (module) {
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/search', SearchView);
+		$routeProvider.when('/search', searchView);
 
 		//
 

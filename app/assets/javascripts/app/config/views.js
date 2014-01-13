@@ -1,5 +1,5 @@
 define([
-	'app/view/staticView',
+	'app/view/dashboardView',
 	'app/view/searchView',
 	'app/view/partyView',
 	'app/view/volumeView',

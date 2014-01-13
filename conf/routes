@@ -5,9 +5,6 @@
 
 # Static content
 GET     /                                                                                         controllers.StaticHtml.index
-GET     /about/team                                                                               controllers.StaticHtml.team
-GET     /about                                                                                    controllers.StaticHtml.page(page = "about")
-GET     /about/$page<[a-z]+>                                                                      controllers.StaticHtml.page(page : String)
 
 # users
 GET     /login                                                                                    controllers.LoginHtml.view
@@ -96,7 +93,6 @@ GET     /volume/$vID<[0-9]+>/ingest/csv                                         
 POST    /volume/$vID<[0-9]+>/ingest/curated                                                       controllers.Ingest.curated(vID : models.Volume.Id)
 
 # ===== API ===== #
-GET     /api/about/$page<[a-z]+>                                                                  controllers.StaticApi.page(page : String)
 
 # ----- LOGIN ----- #
 # GET

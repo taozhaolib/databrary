@@ -47,7 +47,9 @@
                 </div>
 
                 <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 col-cell">
-
+                    <ul class="toolbar_menu toolbar_menu_right">
+                        <li ng-repeat="item in links.right" class="toolbar_menu_item"><a ng-href="{{item.url}}" target="{{item.target}}" class="{{item.classes}}" title="{{item.title}}"><img ng-if="item.image" ng-src="{{item.image}}" alt="{{item.text}}"><span ng-hide="item.image">{{item.path | uppercase}}</span></a></li>
+                    </ul>
                 </div>
             </div>
         </div>
