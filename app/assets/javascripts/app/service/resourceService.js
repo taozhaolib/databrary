@@ -52,10 +52,13 @@ define(['app/config/module'], function (module) {
 			return resource;
 		};
 	}]);
-});
 
-define(['app/config/module'], function (module) {
-	'use strict';
+
+
+
+
+
+
 
 	var $resourceMinErr = angular.$$minErr('$resource');
 
@@ -81,7 +84,7 @@ define(['app/config/module'], function (module) {
 		return obj;
 	}
 
-	module.factory('$resource', ['$http', '$q', '$cacheFactory', function ($http, $q, $cacheFactory) {
+	module.factory('ResourceService2', ['$http', '$q', '$cacheFactory', function ($http, $q, $cacheFactory) {
 		var DEFAULT_ACTIONS = {
 			'get': {method: 'GET'},
 			'save': {method: 'POST'},

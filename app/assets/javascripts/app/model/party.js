@@ -1,17 +1,19 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('Party', ['$rootScope', 'ResourceService', function ($rootScope, resourceService) {
-		return resourceService('party', '/api/party/:id', {
+	module.factory('Party', ['$rootScope', 'ResourceService2', function ($rootScope, resourceService) {
+		return resourceService('/api/party/:id', {
 			id: '@id'
-		}, [
-			'volumes',
-			'comments',
-			'parents',
-			'children',
-//			'tags',
-//			'network',
-			'funding'
-		]);
+		}, [], {
+			watch: [
+				'volumes',
+				'comments',
+				'parents',
+				'children',
+//				'tags',
+//				'network',
+				'funding'
+			]
+		});
 	}]);
 });
