@@ -1,5 +1,4 @@
 define([
-	'app/view/dashboardView',
 	'app/view/searchView',
 	'app/view/partyView',
 	'app/view/volumeView',

@@ -78,7 +78,7 @@ define(['app/config/module'], function (module) {
 
 				routerService[key] = function (params) {
 					return routerService.makeUrl(route, params);
-				}
+				};
 			});
 		};
 

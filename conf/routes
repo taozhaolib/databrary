@@ -3,7 +3,7 @@
 # vi:et
 # ~~~~
 
-# Static content
+# static
 GET     /                                                                                         controllers.StaticHtml.index
 
 # users

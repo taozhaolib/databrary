@@ -10,16 +10,6 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		var dashboardView = {
-			controller: 'DashboardView',
-			templateUrl: 'dashboardView.html',
-			reloadOnSearch: false
-		};
-
-		$routeProvider.when('/', dashboardView);
-
-		//
-
 		var loginView = {
 			controller: 'LoginView',
 			templateUrl: 'loginView.html',
@@ -133,7 +123,7 @@ define(['app/config/module'], function (module) {
 		//
 
 		$routeProvider.otherwise({
-			redirectTo: '/'
+			redirectTo: '/search'
 		});
 	}]);
 
