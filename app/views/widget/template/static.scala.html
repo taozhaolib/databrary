@@ -1,4 +1,4 @@
-@(title: String = "", css: Html = Html(""), js: Html = Html(""), sidebar: Boolean = true)(body: Html)(implicit request: SiteRequest[_])
+@(title: String = "", css: Html = Html(""), js: Html = Html(""))(body: Html)(implicit request: SiteRequest[_])
 
 @widget.template.html5(title, "about", css, js) {
     <div class="wrap">
@@ -6,7 +6,7 @@
             <div class="row">
                 <div class="col-full">
                     <h1 class="body_header_h1">
-                        <a href="@routes.StaticHtml.index" title="Databrary: An Open Data Library"><strong>Data</strong>brary</a>
+                        <a href="@routes.VolumeHtml.search" title="Databrary: An Open Data Library"><strong>Data</strong>brary</a>
                     </h1>
 
                     <form class="body_header_search" method="get" action="@routes.VolumeHtml.search">
@@ -19,36 +19,9 @@
         </section>
 
         <div class="row">
-        @if(sidebar) {
-            <article class="article article_static col-desktop-12 push-desktop-3 col-laptop-9 push-laptop-3 col-tablet-6 push-tablet-3 col-mobile-6 col-cell">
-                @body
-            </article>
-
-            <aside class="sidebar sidebar_static col-desktop-3 pull-desktop-15 col-laptop-3 pull-laptop-12 col-tablet-3 pull-tablet-9 col-mobile-6 col-cell">
-                <section id="static_links" class="sidebar_menu sidebar_widget">
-                    <h1>Mission</h1>
-
-                    <nav class="tap_menu">
-                        <ul>
-                            <li><a href="@routes.StaticHtml.page("about")" title="About the Project">About</a></li>
-                            <li><a href="@routes.StaticHtml.page("policies")" title="Policies">Policies</a></li>
-                            <li class="foot"><a href="@routes.StaticHtml.page("faq")" title="FAQ">F.A.Q.</a></li>
-
-                            <li><a href="@routes.StaticHtml.team" title="Our Team">Team</a></li>
-                            <li><a href="@routes.StaticHtml.page("board")" title="The Board">Board</a></li>
-                            <li class="foot"><a href="@routes.StaticHtml.page("contributors")" title="Contributors">Contributors</a></li>
-
-                            <li><a href="@routes.StaticHtml.page("jobs")" title="Join Our Team">Jobs</a></li>
-                            <li><a href="@routes.StaticHtml.page("contact")" title="Contact Us">Contact</a></li>
-                        </ul>
-                    </nav>
-                </section>
-            </aside>
-        } else {
             <article class="article article_static col-full">
                 @body
             </article>
-        }
         </div>
     </div>
 }

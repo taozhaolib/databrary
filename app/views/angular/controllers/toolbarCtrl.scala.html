@@ -6,14 +6,14 @@
             <div class="row">
                 <div class="title cf col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-4">
                     <h1 class="toolbar_h1">
-                        <a href="@routes.StaticHtml.index" title="Databrary: An Open Data Library"><span>Databrary</span></a>
+                        <a href="@routes.VolumeHtml.search" title="Databrary: An Open Data Library"><span>Databrary</span></a>
                     </h1>
 
                     <nav class="toolbar_nav cf hide-mobile hide-cell">
                         <ul class="toolbar_nav_ul inline-block flat cf">
                             <li><a href="@routes.VolumeHtml.search">Explore</a></li>
-                            <li><a href="@routes.StaticHtml.page("about")">Share</a></li>
-                            <li><a href="@routes.StaticHtml.page("about")">Discover</a></li>
+                            <li><a href="@routes.VolumeHtml.search">Share</a></li>
+                            <li><a href="@routes.VolumeHtml.search">Discover</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -59,28 +59,8 @@
     <nav contextbar id="toolbar_context" class="toolbar toolbar_context hide-print ng-cloak" ng-init="tempContextLinks = {
             left: [
                 {
-                    href: '@routes.StaticHtml.page("about")',
-                    text: 'About'
-                },
-                {
-                    href: '@routes.StaticHtml.team',
-                    text: 'People'
-                },
-                {
-                    href: '@routes.StaticHtml.page("policies")',
-                    text: 'Policies'
-                },
-                {
-                    href: '@routes.StaticHtml.page("faq")',
-                    text: 'FAQ'
-                },
-                {
-                    href: '@routes.StaticHtml.page("jobs")',
-                    text: 'Jobs'
-                },
-                {
-                    href: '@routes.StaticHtml.page("contact")',
-                    text: 'Contact'
+                    href: '@routes.VolumeHtml.search',
+                    text: 'Home'
                 }
             ],
             right: [
