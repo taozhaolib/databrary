@@ -136,6 +136,106 @@ POST    /api/comment                                                            
 GET     /api/tag/:name                                                                            controllers.TagApi.get(name : String)
 POST    /api/tag/:name                                                                            controllers.TagApi.update(name : String, container : models.Container.Id, segment : dbrary.Segment)
 
+# ===== API ===== #
+GET     /api/about/$page<[a-z]+>                                                                  controllers.StaticApi.page(page : String)
+
+# ----- LOGIN ----- #
+# GET
+GET     /api/user                                                                                 controllers.LoginApi.get
+
+# LOGIN
+POST    /api/user/login                                                                           controllers.LoginApi.post
+# LOGOUT
+POST    /api/user/logout                                                                          controllers.LoginApi.logout
+# SUPERUSER ON
+POST    /api/user/superuser/on                                                                    controllers.LoginApi.superuserOn
+# SUPERUSER OFF
+POST    /api/user/superuser/off                                                                   controllers.LoginApi.superuserOff
+
+# ----- PARTY ----- #
+# GET       ?volumes;comments;parents[=all];children[=all];funding                                TODO: tags;network
+GET     /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.get(partyId : models.Party.Id)
+# UPDATE
+POST    /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.update(partyId : models.Party.Id)
+
+# ----- PARTY AUTHORIZE ----- #
+# QUERY
+GET     /api/party/$partyId<-?[0-9]+>/authorize                                                   controllers.PartyApi.authorizeGet(partyId : models.Party.Id)
+# SEARCH
+GET     /api/party/$partyId<-?[0-9]+>/authorize/:name                                             controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, name : String)
+# CHANGE
+POST    /api/party/$partyId<-?[0-9]+>/authorize/$childId<[0-9]+>                                  controllers.PartyApi.authorizeChange(partyId : models.Party.Id, childId : models.Party.Id)
+# APPLY
+POST    /api/party/$partyId<-?[0-9]+>/authorize/$parentId<[0-9]+>/apply                           controllers.PartyApi.authorizeApply(partyId : models.Party.Id, parentId : models.Party.Id)
+# DELETE
+DELETE  /api/party/$partyId<-?[0-9]+>/authorize/$otherId<[0-9]+>                                  controllers.PartyApi.authorizeDelete(partyId : models.Party.Id, otherId : models.Party.Id)
+
+# ----- VOLUME ----- #
+# GET       ?summary;access;citations;tags;comments;funding;categories;records;sessions;assets;top
+GET     /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.get(volumeId : models.Volume.Id)
+# CREATE    ?owner=ID
+POST    /api/volume                                                                               controllers.VolumeApi.create(owner : models.Party.Id)
+# UPDATE
+POST    /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.update(volumeId : models.Volume.Id)
+
+# ----- VOLUME ACCESS ----- #
+# QUERY
+GET     /api/volume/$volumeId<[0-9]+>/access                                                      controllers.VolumeApi.accessGet(volumeId : models.Volume.Id)
+# SEARCH
+GET     /api/volume/$volumeId<[0-9]+>/access/:name                                                controllers.VolumeApi.accessSearch(volumeId : models.Volume.Id, name : String)
+# CHANGE
+POST    /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                                   controllers.VolumeApi.accessChange(volumeId : models.Volume.Id, partyId : models.Party.Id)
+# DELETE
+DELETE  /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                                   controllers.VolumeApi.accessDelete(volumeId : models.Volume.Id, partyId : models.Party.Id)
+
+# ----- SLOT ----- #
+# QUERY     ?volume=ID;record=ID;asset=ID
+#                                                                                                 TODO: GET     /api/slot
+# GET       ?segment=;assets;records;tags;comments
+GET     /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.get(containerId : models.Container.Id, segment : dbrary.Segment)
+# UPDATE    ?segment=
+POST    /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.update(containerId : models.Container.Id, segment : dbrary.Segment)
+# DELETE
+#                                                                                                 TODO: DELETE /api/slot/$containerId<[0-9]+>
+
+# ----- RECORD ----- #
+# QUERY     ?volume=ID;category=NAME;                                                             TODO: container=ID;asset=ID
+GET     /api/record                                                                               controllers.RecordApi.query(volume : models.Volume.Id)
+# GET       ?slots;                                                                               TODO: assets
+GET     /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.get(recordId : models.Record.Id)
+# CREATE    ?volume=ID;category=NAME
+POST    /api/record                                                                               controllers.RecordApi.create(volume : models.Volume.Id, category : Option[String] ?= None)
+# UPDATE
+POST    /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.update(recordId : models.Record.Id)
+# DELETE
+#                                                                                                 TODO: DELETE /api/record/$recordId<[0-9]+>
+
+# ----- ASSET ----- #
+# GET       ?slot;revisions
+GET     /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.get(assetId : models.Asset.Id)
+# CREATE
+#                                                                                                 TODO: POST    /api/asset
+# UPDATE
+POST    /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.update(assetId : models.Asset.Id)
+
+# ----- SLOT ASSET ----- #
+# QUERY     ?volume=ID;slot=ID;record=ID
+#                                                                                                 TODO: GET     /api/slot/$containerId<[0-9]+>/asset
+# GET       ?segment=
+GET     /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>                                     controllers.SlotAssetApi.get(containerId : models.Container.Id, segment : dbrary.Segment, assetId : models.Asset.Id)
+
+# ----- COMMENT ----- #
+# CREATE    ?container=ID;segment=
+POST    /api/comment                                                                              controllers.SlotApi.comment(container : models.Container.Id, segment : dbrary.Segment, parent : Option[models.Comment.Id] ?= None)
+
+# ----- TAG ----- #
+# GET       ?slots
+GET     /api/tag/:name                                                                            controllers.TagApi.get(name : String)
+# UPDATE    ?container=ID;segment=
+POST    /api/tag/:name                                                                            controllers.TagApi.update(name : String, container : models.Container.Id, segment : dbrary.Segment)
+
+# ===== /API ===== #
+
 # static resources
 GET     /public/*file                                                                             controllers.Assets.at(path="/public", file)
 
