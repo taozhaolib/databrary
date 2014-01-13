@@ -6,22 +6,6 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		var context = 'panels';
-
-		$scope.getContext = function () {
-			return context;
-		};
-
-		$scope.setContext = function (check) {
-			context = check;
-		};
-
-		$scope.checkContext = function (check) {
-			return context == check;
-		};
-
-		//
-
 		$scope.panels = [];
 
 		$scope.updatePanels = function () {
@@ -73,77 +57,41 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		$scope.links = {
-			left: [],
-			right: [
-				{
-					url: 'https://www.facebook.com/pages/Databrary/185349568273416',
-					target: '_blank',
-					classes: 'toolbar_img16',
-					title: 'Facebook',
-					image: '/public/images/social/16px/facebook.png'
-				},
-				{
-					url: 'https://plus.google.com/u/1/111083162045777800330/posts',
-					target: '_blank',
-					classes: 'toolbar_img16',
-					title: 'Google+',
-					image: '/public/images/social/16px/google-plus.png'
-				},
-				{
-					url: 'https://twitter.com/databrary',
-					target: '_blank',
-					classes: 'toolbar_img16',
-					title: 'Twitter',
-					image: '/public/images/social/16px/twitter.png'
-				},
-				{
-					url: 'https://github.com/databrary/',
-					target: '_blank',
-					classes: 'toolbar_img16',
-					title: 'GitHub',
-					image: '/public/images/social/16px/github.png'
-				}
-			]
-		};
-
-		$scope.updateLinks = function (links) {
-			if (angular.isObject(links)) {
-				$scope.links.left = links.left;
-				$scope.links.right = links.right;
+		$scope.links = [
+			{
+				url: 'https://www.facebook.com/pages/Databrary/185349568273416',
+				target: '_blank',
+				classes: 'toolbar_img16',
+				title: 'Facebook',
+				image: '/public/images/social/16px/facebook.png'
+			},
+			{
+				url: 'https://plus.google.com/u/1/111083162045777800330/posts',
+				target: '_blank',
+				classes: 'toolbar_img16',
+				title: 'Google+',
+				image: '/public/images/social/16px/google-plus.png'
+			},
+			{
+				url: 'https://twitter.com/databrary',
+				target: '_blank',
+				classes: 'toolbar_img16',
+				title: 'Twitter',
+				image: '/public/images/social/16px/twitter.png'
+			},
+			{
+				url: 'https://github.com/databrary/',
+				target: '_blank',
+				classes: 'toolbar_img16',
+				title: 'GitHub',
+				image: '/public/images/social/16px/github.png'
 			}
-
-			if (angular.isArray(links)) {
-				$scope.links.left = links;
-			}
-
-			return false;
-		};
-
-		$scope.getLinkClasses = function (link) {
-			return {
-				'current': $location.path().indexOf(link.url) > -1
-			};
-		};
+		];
 
 		//
 
 		eventService.listen($scope, 'toolbarCtrl-updatePanels', function ($event, context) {
 			$scope.updatePanels();
-
-			if (context !== false)
-				$scope.setContext('panels');
-		});
-
-		eventService.listen($scope, 'toolbarCtrl-updateLinks', function ($event, links, context) {
-			$scope.updateLinks(links);
-
-			if (context !== false)
-				$scope.setContext('links');
-		});
-
-		eventService.listen($scope, 'toolbarCtrl-setContext', function ($event, check) {
-			$scope.setContext(check);
 		});
 	}]);
 });
