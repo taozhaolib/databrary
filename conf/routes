@@ -117,7 +117,7 @@ POST    /api/party/$partyId<-?[0-9]+>                                           
 # QUERY
 GET     /api/party/$partyId<-?[0-9]+>/authorize                                                   controllers.PartyApi.authorizeGet(partyId : models.Party.Id)
 # SEARCH
-GET     /api/party/$partyId<-?[0-9]+>/authorize/:name                                             controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, name : String)
+GET     /api/party/$partyId<-?[0-9]+>/authorize/search                                            controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, name : String)
 # CHANGE
 POST    /api/party/$partyId<-?[0-9]+>/authorize/$childId<[0-9]+>                                  controllers.PartyApi.authorizeChange(partyId : models.Party.Id, childId : models.Party.Id)
 # APPLY
@@ -137,7 +137,7 @@ POST    /api/volume/$volumeId<[0-9]+>                                           
 # QUERY
 GET     /api/volume/$volumeId<[0-9]+>/access                                                      controllers.VolumeApi.accessGet(volumeId : models.Volume.Id)
 # SEARCH
-GET     /api/volume/$volumeId<[0-9]+>/access/:name                                                controllers.VolumeApi.accessSearch(volumeId : models.Volume.Id, name : String)
+GET     /api/volume/$volumeId<[0-9]+>/access/search                                               controllers.VolumeApi.accessSearch(volumeId : models.Volume.Id, name : String)
 # CHANGE
 POST    /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                                   controllers.VolumeApi.accessChange(volumeId : models.Volume.Id, partyId : models.Party.Id)
 # DELETE

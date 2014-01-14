@@ -1,10 +1,14 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('VolumeAccess', ['$rootScope', '$resource', function ($rootScope, $resource) {
-		return $resource('/api/volume/:volumeId/access', {
-			volumeId: '@volumeId',
-			id: '@id'
+	module.factory('VolumeAccess', ['$rootScope', '$resource', '$route', function ($rootScope, $resource, $route) {
+		return $resource('/api/volume/:id/access/:partyId', {
+			id: function () {
+				return $route.current.params.id || false;
+			},
+			partyId: function () {
+				return $route.current.params.partyId || false;
+			}
 		});
 	}]);
 });

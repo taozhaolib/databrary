@@ -39,15 +39,12 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		// TODO: route redirects need to be replaced with panel modes
-
 		var partyView = {
 			controller: 'PartyView',
 			templateUrl: 'partyView.html',
 			resolve: {
 				party: ['$route', 'Party', function ($route, Party) {
 					return Party.get({
-						id: $route.current.params.id,
 						volumes: '',
 						comments: '',
 						parents: '',
@@ -61,22 +58,57 @@ define(['app/config/module'], function (module) {
 
 		$routeProvider.when('/party/:id', partyView);
 
-		//
+		// I think this will probably disapparate...
 
 		var assetView = {
 			controller: 'AssetView',
 			templateUrl: 'assetView.html',
+			resolve: {
+				asset: ['$route', 'Asset', function ($route, Asset) {
+					return Asset.get({
+						slot: '',
+						revisions: ''
+					});
+				}]
+			},
 			reloadOnSearch: false
 		};
 
-		$routeProvider.when('/slot/:sid/asset/:id', assetView);
 		$routeProvider.when('/asset/:id', assetView);
+
+		//
+
+		var slotAssetView = {
+			controller: 'slotAssetView',
+			templateUrl: 'slotAssetView.html',
+			resolve: {
+				slotAsset: ['$route', 'SlotAsset', function ($route, SlotAsset) {
+					return SlotAsset.get({
+						slot: '',
+						revisions: ''
+					});
+				}]
+			},
+			reloadOnSearch: false
+		};
+
+		$routeProvider.when('/slot/:sid/asset/:id', slotAssetView);
 
 		//
 
 		var slotView = {
 			controller: 'SlotView',
 			templateUrl: 'slotView.html',
+			resolve: {
+				slot: ['$route', 'Slot', function ($route, Slot) {
+					return Slot.get({
+						tags: '',
+						assets: '',
+						comments: '',
+						records: ''
+					});
+				}]
+			},
 			reloadOnSearch: false
 		};
 
@@ -87,6 +119,13 @@ define(['app/config/module'], function (module) {
 		var recordView = {
 			controller: 'RecordView',
 			templateUrl: 'recordView.html',
+			resolve: {
+				record: ['$route', 'Record', function ($route, Record) {
+					return Record.get({
+						slots: ''
+					});
+				}]
+			},
 			reloadOnSearch: false
 		};
 
@@ -100,7 +139,6 @@ define(['app/config/module'], function (module) {
 			resolve: {
 				volume: ['$route', 'Volume', function ($route, Volume) {
 					return Volume.get({
-						id: $route.current.params.id,
 						access: '',
 						citations: '',
 						top: '',

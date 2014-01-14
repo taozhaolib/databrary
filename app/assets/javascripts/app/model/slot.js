@@ -1,9 +1,14 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('Slot', ['$rootScope', '$resource', function ($rootScope, $resource) {
+	module.factory('Slot', ['$rootScope', '$resource', '$route', function ($rootScope, $resource, $route) {
 		return $resource('/api/slot/:id', {
-			id: '@id'
+			id: function () {
+				return $route.current.params.id || false;
+			},
+			segment: function () {
+				return $route.current.params.segment || ',';
+			}
 		});
 	}]);
 });

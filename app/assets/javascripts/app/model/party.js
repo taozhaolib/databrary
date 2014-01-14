@@ -1,9 +1,11 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('Party', ['$rootScope', '$resource', function ($rootScope, $resource) {
+	module.factory('Party', ['$rootScope', '$resource', '$route', function ($rootScope, $resource, $route) {
 		return $resource('/api/party/:id', {
-			id: '@id'
+			id: function () {
+				return $route.current.params.id || false;
+			}
 		});
 	}]);
 });
