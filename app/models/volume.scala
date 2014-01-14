@@ -161,16 +161,17 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
         }(ss))
       })),
       "sessions" -> (opt => _sessions.map { ss =>
-        JsonRecord.map[Container](_.json - "volume")(ss.map(_._2).distinct)
+        JsonRecord.map[Container](_.containerJson - "volume")(ss.map(_._2).distinct)
       }),
       "assets" -> (opt => toplevelAssets.map(JsonArray.map(_.json))),
-      "top" -> (opt => top.map(t => (t.json - "volume" - "top").obj))
+      "top" -> (opt => top.map(t => (t.containerJson - "volume" - "top").obj))
     )
 }
 
 object Volume extends TableId[Volume]("volume") {
   private val permission = "volume_access_check(volume.id, ?::integer)"
   private[models] val condition = "(" + permission + " >= 'VIEW'::permission OR ?::boolean)"
+  private final val defaultCreation = new Timestamp(1357900000000L)
   private[models] def row(implicit site : Site) = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
@@ -178,7 +179,7 @@ object Volume extends TableId[Volume]("volume") {
     , SelectAs[Permission.Value](permission, "volume_permission")
     , SelectAs[Option[Timestamp]]("volume_creation(volume.id)", "volume_creation")
     ).map {
-      (id, name, body, permission, creation) => new Volume(id, name, body, permission, creation.getOrElse(new Timestamp(1357900000000L)))
+      (id, name, body, permission, creation) => new Volume(id, name, body, permission, creation.getOrElse(defaultCreation))
     }.pushArgs(SQLArgs(site.identity.id))
 
   private[models] def conditionArgs(implicit site : Site) =
@@ -193,7 +194,7 @@ object Volume extends TableId[Volume]("volume") {
   /** Retrieve the set of all volumes in the system.
     * This only returns volumes for which the current user has [[Permission.VIEW]] access. */
   def getAll(implicit site : Site) : Future[Seq[Volume]] =
-    row.SELECT("WHERE", condition, "ORDER BY volume.name")
+    row.SELECT("WHERE volume.id > 0 AND", condition, "ORDER BY volume.name")
       .apply(conditionArgs).list
 
   /** Create a new, empty volume with no permissions.
@@ -202,11 +203,11 @@ object Volume extends TableId[Volume]("volume") {
     Audit.add(table, SQLTerms('name -> name, 'body -> body), "id").single(SQLCols[Id])
       .map(new Volume(_, name, body, Permission.NONE, new Timestamp))
 
-  private final val DATABRARY : Id = asId(1)
-  /** The "databrary" volume, containing meta-information about Databrary itself, documents, etc.
-    * This is expected to be readable by everyone so we bypass permission checks here. */
-  final def Databrary(implicit site : Site) : Future[Volume] =
-    row.SELECT("WHERE id = ?").apply(DATABRARY).single
+  private final val CORE : Id = asId(0)
+  /** The "core" volume, containing site-wide "global" assets.
+    * We ignore any access rules here and grant everyone DOWNLOAD. */
+  final def Core(implicit site : Site) : Volume =
+    new Volume(CORE, "core", None, Permission.DOWNLOAD, defaultCreation)
 
   case class Summary(sessions : Int, shared : Int, agerange : Range[Age], agemean : Age) {
     lazy val json = JsonObject(

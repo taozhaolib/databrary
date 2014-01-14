@@ -17,6 +17,11 @@
                         <dt>ORCiD</dt>
                         <dd><a href="@o.uri" title="@party.name on ORCID">@o.toString</a></dd>
                     }
+
+                    @party.duns.map { d =>
+                        <dt>DUNS</dt>
+                        <dd>@d.toString</dd>
+                    }
                 </dl>
             </div>
         </div>

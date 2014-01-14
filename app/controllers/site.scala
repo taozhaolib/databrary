@@ -159,10 +159,6 @@ private[controllers] final class ABadFormException[A](view : Form[A] => Future[t
 private[controllers] final class ApiFormException(form : Form[_]) extends FormException(form) with ApiException
 
 class SiteController extends Controller {
-  protected def isSecure : Boolean =
-    current.configuration.getString("application.secret").exists(_ != "databrary").
-      ensuring(s => s, "Application is insecure. You must set application.secret appropriately (see README).")
-
   protected def AOk[C : Writeable](c : C) : Future[SimpleResult] = macros.Async(Ok[C](c))
   protected def ABadRequest[C : Writeable](c : C) : Future[SimpleResult] = macros.Async(BadRequest[C](c))
   protected def ARedirect(c : Call) : Future[SimpleResult] = macros.Async(Redirect(c))
@@ -183,6 +179,9 @@ class ObjectController[O <: SiteObject] extends SiteController {
 }
 
 object Site extends SiteController {
+  assert(current.configuration.getString("application.secret").exists(_ != "databrary"),
+    "Application is insecure. You must set application.secret appropriately (see README).")
+
   def start = LoginHtml.view
 
   def test = Action { request =>

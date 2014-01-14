@@ -14,6 +14,4 @@
     @defining(children.map(c => c.child)) { parties =>
         @widget.frame.parties(parties, "members", "Members")
     }
-
-    @widget.frame.funding(Async.wait(party.volumeAccess).flatMap(a => Async.wait(a.volume.funding)).distinct)
 }

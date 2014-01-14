@@ -35,9 +35,8 @@ For other settings, see conf/application.conf.
 
 ### Security
 
-By default in development mode the site is completely insecure, meaning you can
-login with only a username once you have an account, and it uses a public
-"secret".  To switch to secure mode, add a line to local.conf:
+To ensure proper application security you must add a secret to local.conf,
+e.g.:
 
     echo application.secret=\"`openssl rand -base64 -out /dev/stdout 48`\" >> local.conf
 

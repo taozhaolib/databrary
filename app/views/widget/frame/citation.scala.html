@@ -1,9 +1,9 @@
-@(volume: Volume)(implicit request : SiteRequest[_])
+@(volume: Volume, access : Seq[VolumeAccess])(implicit request : SiteRequest[_])
 
 @widget.frame.raw("citation", "")("Citation", foldable = true) {
     <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
         <p>
-        @Async.wait(volume.partyAccess).takeWhile(_.access >= Permission.ADMIN).map(a => display.citeName(a.party.name) + ", ")
+        @access.takeWhile(_.access >= Permission.ADMIN).map(a => display.citeName(a.party.name) + ", ")
         @display.dateFmtY.print(volume.creation).
         @volume.name.
         <em>Databrary</em>.

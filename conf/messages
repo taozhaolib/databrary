@@ -22,8 +22,10 @@ constraint.email=Email
 
 # --- Formats
 format.date=Select a valid date.
+format.duns=9-digit D-U-N-S
 format.numeric=Numeric
 format.offset=Position in seconds
+format.orcid=ORCID iD
 format.real=Real
 
 # --- Errors
@@ -47,6 +49,7 @@ citation.invalid=Invalid citation
 file.format.unknown=File format '{0}' is not supported.
 measure.unknown=Invalid or unknown type of measure.
 measure.bad=Invalid value for measure.
+duns.invalid=Invalid D-U-N-S
 orcid.invalid=Invalid ORCID iD
 range.invalid=Invalid time range
 access.group.inherit=You may not grant this level of access to an entire group.

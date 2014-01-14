@@ -53,23 +53,23 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
   protected def adminAccount(implicit request : Request[_]) : Option[Account] =
     request.obj.party.account.filter(_ === request.identity || request.superuser)
 
-  type EditMapping = (Option[String], Option[Option[Orcid]], Option[String], Option[(String, Option[String], Option[String], Option[String])])
+  type EditMapping = (Option[String], Option[Option[Orcid]], Option[String], Option[Option[DUNS]], Option[(String, Option[String], Option[String], Option[String])])
   type EditForm = Form[EditMapping]
   protected def formFill(implicit request : Request[_]) : EditForm = {
     val e = request.obj.party
     val acct = adminAccount
     Form(tuple(
       "name" -> OptionMapping(nonEmptyText),
-      "orcid" -> OptionMapping(text(0,20).transform[Option[Orcid]](Maybe(_).opt.map(Orcid.apply _), _.fold("")(_.toString)))
-        .verifying(Messages("orcid.invalid"), _.flatten.fold(true)(_.valid)),
+      "orcid" -> OptionMapping(optional(of[Orcid])),
       "affiliation" -> OptionMapping(text),
+      "duns" -> OptionMapping(optional(of[DUNS])),
       "" -> MaybeMapping(acct.map(_ => tuple(
         "auth" -> text,
         "email" -> OptionMapping(email),
         "password" -> passwordMapping,
         "openid" -> OptionMapping(text(0,256))
       )))
-    )).fill((Some(e.name), Some(e.orcid), Some(e.affiliation.getOrElse("")), acct.map(a => ("", Some(a.email), None, a.openid))))
+    )).fill((Some(e.name), Some(e.orcid), Some(e.affiliation.getOrElse("")), Some(e.duns), acct.map(a => ("", Some(a.email), None, a.openid))))
   }
 
   def formForAccount(form : EditForm)(implicit request : Request[_]) =
@@ -82,11 +82,11 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
     val party = request.obj.party
     val acct = adminAccount
     form.fold(bad _, {
-      case (_, _, _, Some((cur, _, _, _))) if !acct.fold(false)(a => BCrypt.checkpw(cur, a.password)) =>
+      case (_, _, _, _, Some((cur, _, _, _))) if !acct.fold(false)(a => BCrypt.checkpw(cur, a.password)) =>
         bad(form.withError("cur_password", "password.incorrect"))
-      case (name, orcid, affiliation, accts) =>
+      case (name, orcid, affiliation, duns, accts) =>
         for {
-          _ <- party.change(name = name, orcid = orcid, affiliation = affiliation.map(Maybe(_).opt))
+          _ <- party.change(name = name, orcid = orcid, affiliation = affiliation.map(Maybe(_).opt), duns = duns.filter(_ => request.access == Permission.ADMIN))
           _ <- macros.Async.map[(String, Option[String], Option[String], Option[String]), Boolean](accts, { case (_, email, password, openid) =>
             val a = acct.get
             a.change(
@@ -173,13 +173,12 @@ object PartyHtml extends PartyController {
     .transform[Option[String]](_._1, p => (p, p.getOrElse("")))
 
   def view(i : models.Party.Id) = Action(Some(i), Some(Permission.NONE)).async { implicit request =>
-    val party = request.obj.party
     for {
-      parents <- party.authorizeParents()
-      children <- party.authorizeChildren()
-      vols <- party.volumeAccess
-      fund <- party.funding
-      comments <- party.account.fold[Future[Seq[Comment]]](macros.Async(Nil))(_.comments)
+      parents <- request.obj.authorizeParents()
+      children <- request.obj.authorizeChildren()
+      vols <- request.obj.volumeAccess
+      fund <- request.obj.funding
+      comments <- request.obj.party.account.fold[Future[Seq[Comment]]](macros.Async(Nil))(_.comments)
     } yield (Ok(views.html.party.view(parents, children, vols, fund, comments)))
   }
 
@@ -195,8 +194,8 @@ object PartyHtml extends PartyController {
     implicit request : Request[_]) = {
     val authorizeChange = authorizeChangeForm.map(_._1.id)
     for {
-      children <- request.obj.party.authorizeChildren(true)
-      parents <- request.obj.party.authorizeParents(true)
+      children <- request.obj.authorizeChildren(true)
+      parents <- request.obj.authorizeParents(true)
       authorizeForms = children
         .filter(t => authorizeChange.fold(true)(_ === t.childId))
         .map(t => (t.child, authorizeFormFill(t))) ++
@@ -226,6 +225,30 @@ object PartyHtml extends PartyController {
         }
     )
   }
+
+  def avatar(i : models.Party.Id, size : Int = 64) = Action(Some(i), Some(Permission.NONE)).async { implicit request =>
+    request.obj.avatar.flatMap(_.fold(
+      macros.Async(Found("http://gravatar.com/avatar/"+request.obj.party.account.fold("none")(a => store.MD5.hex(a.email.toLowerCase))+"?s="+size+"&d=mm")))(
+      AssetController.assetResult(_)))
+  }
+
+  type AvatarMapping = Unit
+  type AvatarForm = Form[AvatarMapping]
+  val avatarForm = Form("file" -> ignored(()))
+
+  def uploadAvatar(i : models.Party.Id) = AdminAction(i).async { implicit request =>
+    def Error(form : AvatarForm) =
+      throw new BadFormException[AvatarMapping](views.html.party.edit(formFill, _))(form)
+    val form = avatarForm.bindFromRequest
+    form.fold(Error _, { _ =>
+      val file = request.body.asMultipartFormData.flatMap(_.file("file")) getOrElse
+	Error(form.withError("file", "error.required"))
+      val fmt = AssetFormat.getFilePart(file).filter(_.isImage) getOrElse
+	Error(form.withError("file", "file.format.unknown", file.contentType.getOrElse("unknown")))
+      request.obj.setAvatar(file.ref, fmt, Maybe(file.filename).opt).map(_ =>
+	result(request.obj))
+    })
+  }
 }
 
 object PartyApi extends PartyController {
@@ -237,8 +260,8 @@ object PartyApi extends PartyController {
 
   def authorizeGet(partyId : models.Party.Id) = AdminAction(partyId).async { implicit request =>
     for {
-      parents <- request.obj.party.authorizeParents(true)
-      children <- request.obj.party.authorizeChildren(true)
+      parents <- request.obj.authorizeParents(true)
+      children <- request.obj.authorizeChildren(true)
     } yield (Ok(JsonObject(
       'parents -> JsonRecord.map[Authorize](a => JsonRecord(a.parentId,
         'party -> a.parent.json) ++

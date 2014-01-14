@@ -12,17 +12,19 @@ import site._
 /** File formats for assets.
   * id should actually be a ShortId but it's just simpler to have Ints everywhere. */
 sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype : String, val extension : Option[String], val name : String) extends TableRowId[AssetFormat] {
+  AssetFormat.add(this)
+
   /** mimetype split into its two components at the slash */
-  def mimeSubTypes = {
+  final def mimeSubTypes = {
     val slash = mimetype.indexOf('/')
     if (slash == -1)
       (mimetype, "")
     else
       (mimetype.substring(0, slash), mimetype.substring(slash+1))
   }
-  AssetFormat.add(this)
+  def isImage = mimetype.startsWith("image/")
 
-  lazy val json = JsonRecord.flatten(id,
+  final lazy val json = JsonRecord.flatten(id,
     Some('mimetype -> mimetype),
     extension.map('extension -> _),
     Some('name -> name)
@@ -93,10 +95,13 @@ object AssetFormat extends TableId[AssetFormat]("format") {
   /** File type for internal image data (jpeg).
     * Images of this type may be produced and handled specially internally.
     */
-  final val Image = new AssetFormat(IMAGE, "image/jpeg", Some("jpg"), "JPEG")
+  final val Image = new AssetFormat(IMAGE, "image/jpeg", Some("jpg"), "JPEG") {
+    override def isImage = true
+  }
   /** The designated internal video format. */
   final val Video = new TimeseriesFormat(VIDEO, "video/mp4", Some("mp4"), "Video") {
     val sampleFormat = Image
+    override def isImage = false
   }
 }
 
@@ -246,6 +251,13 @@ object Asset extends TableId[Asset]("asset") {
     volumeRow(a.volume)
       .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ? AND asset.id = ? AND asset.volume = ?")
       .apply(a.id, o, a.volumeId).singleOpt
+
+  def getAvatar(p : Party)(implicit site : Site) : Future[Option[Asset]] = {
+    val vol = Volume.Core
+    volumeRow(vol)
+      .SELECT("JOIN avatar ON asset.id = avatar.asset WHERE avatar.party = ? AND asset.volume = ?")
+      .apply(p.id, vol.id).singleOpt
+  }
 
   /** Create a new asset from an uploaded file.
     * @param format the format of the file, taken as given

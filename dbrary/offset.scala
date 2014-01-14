@@ -71,7 +71,7 @@ object Offset {
     def to(value : Offset) = value.millis.toString
   }
 
-  implicit val offsetFormat : Formatter[Offset] = new Formatter[Offset] {
+  implicit val formatter : Formatter[Offset] = new Formatter[Offset] {
     override val format = Some(("format.offset", Nil))
     def bind(key: String, data: Map[String, String]) =
       data.get(key).flatMap(s => Maybe.toNumber(fromString(s)))

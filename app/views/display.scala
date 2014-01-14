@@ -72,32 +72,8 @@ object display {
   def plainTextSummary(text: String = "", length: Int = 3) =
     raw("<p>"+text.split("\\r?\\n\\r?\\n").take(length).mkString("</p><p>")+"</p>")
 
-  private def gravatarUrlByEmailOpt(email: Option[String] = None, size: Int = 64) =
-    "http://gravatar.com/avatar/"+email.fold("none")(e => store.MD5.hex(e.toLowerCase.replaceAll("\\s+", "")))+"?s="+size+"&d=mm"
-
-  private def gravatarUrlByEmail(email: String, size: Int = 64) =
-    gravatarUrlByEmailOpt(Some(email), size)
-
-  private def gravatarUrlByParty(party: Party, size: Int = 64) =
-    gravatarUrlByEmailOpt(party.account.map(_.email), size)
-
-  def avatar(party : Party, size : Int = 64) : String = party.name match {
-    /* Temporary hack */
-    case "Karen Adolph" => routes.Assets.at("private/profiles/karen.jpg").url
-    case "Rick Gilmore" => routes.Assets.at("private/profiles/rick.jpg").url
-    case "David Millman" => routes.Assets.at("private/profiles/david.jpg").url
-    case "Catherine Tamis-LeMonda" => routes.Assets.at("private/profiles/cathy.jpg").url
-    case "Dylan Simon" => routes.Assets.at("private/profiles/dylan.jpg").url
-    case "Lisa Steiger" => routes.Assets.at("private/profiles/lisa.jpg").url
-    case "Lina Wictoren Roy" => routes.Assets.at("private/profiles/lina.jpg").url
-    case "Andrea Byrne" => routes.Assets.at("private/profiles/andrea.jpg").url
-    case "National Institutes of Health" => routes.Assets.at("private/profiles/nih.jpg").url
-    case "National Institute of Child Health and Human Development" => routes.Assets.at("private/profiles/nih.jpg").url
-    case "National Science Foundation" => routes.Assets.at("private/profiles/nsf.png").url
-    case "Databrary" => routes.Assets.at("private/profiles/databrary.png").url
-    case "New York University" => routes.Assets.at("private/profiles/nyu.jpg").url
-    case _ => ""
-  }
+  def avatar(party : Party, size : Int = 64) =
+    routes.PartyHtml.avatar(party.id, size)
 
   def permissionToRole(permission : models.Permission.Value) = permission match {
     case Permission.ADMIN => "Investigator"

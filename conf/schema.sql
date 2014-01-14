@@ -94,9 +94,12 @@ CREATE TABLE "party" (
 	"id" serial NOT NULL Primary Key,
 	"name" text NOT NULL,
 	"orcid" char(16),
-	"affiliation" text
+	"affiliation" text,
+	"duns" numeric(9)
 );
 COMMENT ON TABLE "party" IS 'Users, groups, organizations, and other logical identities';
+COMMENT ON COLUMN "party"."orcid" IS 'http://en.wikipedia.org/wiki/ORCID';
+COMMENT ON COLUMN "party"."duns" IS 'http://en.wikipedia.org/wiki/DUNS';
 
 -- special parties (SERIAL starts at 1):
 INSERT INTO "party" VALUES (-1, 'Everybody'); -- NOBODY
@@ -369,6 +372,10 @@ COMMENT ON VIEW "slot_nesting" IS 'Transitive closure of slots containtained wit
 CREATE FUNCTION "slot_consent" ("slot" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS
 	$$ SELECT consent FROM slot_nesting WHERE child = $1 AND consent IS NOT NULL $$;
 COMMENT ON FUNCTION "slot_consent" (integer) IS 'Effective consent level on a given slot.';
+
+-- special volumes (SERIAL starts at 1), done after slot triggers:
+INSERT INTO "volume" (id, name) VALUES (0, 'Core'); -- CORE
+INSERT INTO "volume_access" VALUES (0, -1, 'DOWNLOAD', 'DOWNLOAD');
 
 ----------------------------------------------------------- assets
 
@@ -705,6 +712,16 @@ CREATE TABLE "session" (
 	"account" integer NOT NULL References "account"
 ) INHERITS ("account_token");
 COMMENT ON TABLE "session" IS 'Tokens associated with currently logged-in sessions.';
+
+----------------------------------------------------------- avatars
+
+CREATE TABLE "avatar" (
+	"party" integer NOT NULL Primary Key References "party",
+	"asset" integer NOT NULL References "asset"
+);
+COMMENT ON TABLE "avatar" IS 'Image assets used to represent parties on the site.  These assets are expected to be in the CORE volume.';
+
+SELECT audit.CREATE_TABLE ('avatar');
 
 ----------------------------------------------------------- bootstrap/test data
 
