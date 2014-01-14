@@ -231,6 +231,45 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.SiteParty#authorizeChildren" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="authorizeChildren(all:Boolean):scala.concurrent.Future[Seq[models.Authorize]]"></a>
+      <a id="authorizeChildren(Boolean):Future[Seq[Authorize]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">authorizeChildren</span><span class="params">(<span name="all">all: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Authorize.html" class="extype" name="models.Authorize">Authorize</a>]]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">List of authorizations granted by this user.</p><div class="fullcomment"><div class="comment cmt"><p>List of authorizations granted by this user.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include inactive authorizations</p></dd></dl></div>
+    </li><li name="models.SiteParty#authorizeParents" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="authorizeParents(all:Boolean):scala.concurrent.Future[Seq[models.Authorize]]"></a>
+      <a id="authorizeParents(Boolean):Future[Seq[Authorize]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">authorizeParents</span><span class="params">(<span name="all">all: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Authorize.html" class="extype" name="models.Authorize">Authorize</a>]]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">List of authorizations granted to this user.</p><div class="fullcomment"><div class="comment cmt"><p>List of authorizations granted to this user.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include inactive authorizations</p></dd></dl></div>
+    </li><li name="models.SiteParty#avatar" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="avatar:scala.concurrent.Future[Option[models.Asset]]"></a>
+      <a id="avatar:Future[Option[Asset]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">avatar</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>]]</span>
+      </span>
+      </h4>
+      
     </li><li name="models.HasPermission#checkPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="checkPermission(need:models.Permission.Value):Boolean"></a>
       <a id="checkPermission(Permission.Value):Boolean"></a>
@@ -321,6 +360,19 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="models.SiteParty#funding" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="funding:scala.concurrent.Future[Seq[models.VolumeFunding]]"></a>
+      <a id="funding:Future[Seq[VolumeFunding]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">funding</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="VolumeFunding.html" class="extype" name="models.VolumeFunding">VolumeFunding</a>]]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">List of volumes which this party is funding.</p>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -516,6 +568,19 @@
       </span>
       </h4>
       
+    </li><li name="models.SiteParty#setAvatar" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="setAvatar(file:play.api.libs.Files.TemporaryFile,format:models.AssetFormat,name:Option[String]):scala.concurrent.Future[models.Asset]"></a>
+      <a id="setAvatar(TemporaryFile,AssetFormat,Option[String]):Future[Asset]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setAvatar</span><span class="params">(<span name="file">file: <span class="extype" name="play.api.libs.Files.TemporaryFile">TemporaryFile</span></span>, <span name="format">format: <a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a></span>, <span name="name">name: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>]</span>
+      </span>
+      </h4>
+      
     </li><li name="models.SiteParty#site" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="site:site.Site"></a>
       <a id="site:Site"></a>
@@ -555,6 +620,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.SiteParty#volumeAccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="volumeAccess:scala.concurrent.Future[Seq[models.VolumeAccess]]"></a>
+      <a id="volumeAccess:Future[Seq[VolumeAccess]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">volumeAccess</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="VolumeAccess.html" class="extype" name="models.VolumeAccess">VolumeAccess</a>]]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">List of volumes to which this user has been granted at least CONTRIBUTE access, sorted by level (ADMIN first).</p>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>

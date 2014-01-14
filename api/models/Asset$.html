@@ -361,6 +361,19 @@
       </span>
       </h4>
       
+    </li><li name="models.Asset#getAvatar" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getAvatar(p:models.Party)(implicitsite:site.Site):scala.concurrent.Future[Option[models.Asset]]"></a>
+      <a id="getAvatar(Party)(Site):Future[Option[Asset]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getAvatar</span><span class="params">(<span name="p">p: <a href="Party.html" class="extype" name="models.Party">Party</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>]]</span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -374,19 +387,32 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.Asset#getOlder" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getOlder(a:models.Asset,o:models.Asset.Id):scala.concurrent.Future[Option[models.Asset]]"></a>
-      <a id="getOlder(Asset,Id):Future[Option[Asset]]"></a>
+    </li><li name="models.Asset#getRevision" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getRevision(a:models.Asset,o:models.Asset.Id):scala.concurrent.Future[Option[models.Asset]]"></a>
+      <a id="getRevision(Asset,Id):Future[Option[Asset]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getOlder</span><span class="params">(<span name="a">a: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>, <span name="o">o: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Id</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>]]</span>
+        <span class="name">getRevision</span><span class="params">(<span name="a">a: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>, <span name="o">o: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Id</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>]]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Get a particular older version of this asset.</p>
+    </li><li name="models.Asset#getRevisions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getRevisions(a:models.Asset):scala.concurrent.Future[Seq[models.Asset]]"></a>
+      <a id="getRevisions(Asset):Future[Seq[Asset]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getRevisions</span><span class="params">(<span name="a">a: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>]]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Get the list of older versions of this asset.</p>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <a id="hashCode():Int"></a>
