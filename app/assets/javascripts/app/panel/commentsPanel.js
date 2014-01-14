@@ -24,6 +24,7 @@ define(['app/config/module'], function (module) {
 		//
 
 		$scope.authService = authService;
+		$scope.routeController = $route.current.controller;
 
 		//
 

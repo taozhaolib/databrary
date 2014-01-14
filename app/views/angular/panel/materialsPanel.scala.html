@@ -1,9 +1,9 @@
 <panel ng-controller="MaterialsPanel" id="panel_materials" title="Materials" fold>
-    <panel-mode name="view" active ng-if="false"><!-- LOOK AT THIS -->
+    <panel-mode name="view" active>
         <div class="panel_materials_list col-full">
             <ul class="flat panel_materials_items">
                 <li ng-repeat="slotAsset in volume.assets" class="panel_materials_item" ng-init="" ng-click="selectAsset(asset)" ng-class="getAssetClass(asset)">
-                    <span class="filetype"><img ng-src="/public/images/filetypes/16px/{{ext}}.png"></span>
+                    <span class="filetype"><img ng-src="/public/images/filetypes/16px/{{slotAsset.format.extension || slotAsset.asset.format.extension}}.png"></span>
 
                     <span ng-if="path">
                         <span class="session">@* @display(link.slot) *@</span>
@@ -12,7 +12,11 @@
                     </span>
 
 
-                    <a ng-href="/{{}}" class="filename">@* @link.pageName.@link.format.extension *@</a>
+                    <a ng-href="{{route.slot({
+                        sid: slotAsset.container.id,
+                        segment: slotAsset.segment,
+                        id: slotAsset.asset.id
+                    })}}" class="filename">{{slotAsset.asset.name}}.{{slotAsset.asset.format.extension}}</a>
 
                     <span class="classification">@* @link.classification.toString.charAt(0) *@</span>
 
