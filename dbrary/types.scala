@@ -105,7 +105,7 @@ object SQLType {
 
   implicit object interval extends SQLDBType[org.joda.time.Period]("interval", classOf[org.joda.time.Period], db.postgresql.column.PostgreSQLIntervalEncoderDecoder)
 
-  implicit object bigdecimal extends SQLDBType[BigDecimal]("numeric", classOf[BigDecimal], db.column.BigDecimalEncoderDecoder)
+  implicit object numeric extends SQLDBType[BigDecimal]("numeric", classOf[BigDecimal], db.column.BigDecimalEncoderDecoder)
 
   implicit object bytea extends SQLDBType[Array[Byte]]("bytea", classOf[Array[Byte]], db.postgresql.column.ByteArrayEncoderDecoder)
 

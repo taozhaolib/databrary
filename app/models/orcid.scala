@@ -1,6 +1,7 @@
 package models
 
 import play.api.libs.json
+import play.api.data.format.Formatter
 import dbrary._
 
 /** An [[http://orcid.org/ ORCID]] identifier.
@@ -29,8 +30,18 @@ object Orcid {
   def apply(s : String) : Orcid =
     new Orcid(s.filterNot(c => c == '-' || c.isSpaceChar).stripPrefix("http://").stripPrefix("orcid.org/"))
 
+  implicit val formatter : Formatter[Orcid] = new Formatter[Orcid] {
+    override val format = Some(("format.orcid", Nil))
+    def bind(key: String, data: Map[String, String]) = {
+      val orcid = apply(data.get(key).getOrElse(""))
+      if (orcid.valid) Right(orcid)
+      else Left(Seq(play.api.data.FormError(key, "orcid.invalid", Nil)))
+    }
+    def unbind(key: String, value: Orcid) = Map(key -> value.toString)
+  }
+
   implicit val sqlType : SQLType[Orcid] =
-    SQLType[Orcid]("orcid", classOf[Orcid])(s => Some(new Orcid(s)), _.orcid)
+    SQLType[Orcid]("char(16)", classOf[Orcid])(s => Some(new Orcid(s)), _.orcid)
 
   implicit val jsWrites : json.Writes[Orcid] =
     json.Writes[Orcid](o => json.JsString(o.toString))

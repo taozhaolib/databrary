@@ -94,9 +94,12 @@ CREATE TABLE "party" (
 	"id" serial NOT NULL Primary Key,
 	"name" text NOT NULL,
 	"orcid" char(16),
-	"affiliation" text
+	"affiliation" text,
+	"duns" numeric(9)
 );
 COMMENT ON TABLE "party" IS 'Users, groups, organizations, and other logical identities';
+COMMENT ON COLUMN "party"."orcid" IS 'http://en.wikipedia.org/wiki/ORCID';
+COMMENT ON COLUMN "party"."duns" IS 'http://en.wikipedia.org/wiki/DUNS';
 
 -- special parties (SERIAL starts at 1):
 INSERT INTO "party" VALUES (-1, 'Everybody'); -- NOBODY
@@ -248,10 +251,6 @@ CREATE INDEX ON "volume_funding" ("volume");
 CREATE INDEX ON "volume_funding" ("funder");
 COMMENT ON TABLE "volume_funding" IS 'Quick and dirty funding list.  No PK: only updated in bulk on volume.';
 
--- special volumes (SERIAL starts at 1):
-INSERT INTO "volume" (id, name) VALUES (0, 'Core'); -- CORE
-INSERT INTO "volume_access" VALUES (0, -1, 'DOWNLOAD', 'DOWNLOAD');
-
 ----------------------------------------------------------- time intervals
 
 CREATE FUNCTION "interval_mi_epoch" (interval, interval) RETURNS double precision LANGUAGE sql IMMUTABLE STRICT AS 
@@ -373,6 +372,10 @@ COMMENT ON VIEW "slot_nesting" IS 'Transitive closure of slots containtained wit
 CREATE FUNCTION "slot_consent" ("slot" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS
 	$$ SELECT consent FROM slot_nesting WHERE child = $1 AND consent IS NOT NULL $$;
 COMMENT ON FUNCTION "slot_consent" (integer) IS 'Effective consent level on a given slot.';
+
+-- special volumes (SERIAL starts at 1), done after slot triggers:
+INSERT INTO "volume" (id, name) VALUES (0, 'Core'); -- CORE
+INSERT INTO "volume_access" VALUES (0, -1, 'DOWNLOAD', 'DOWNLOAD');
 
 ----------------------------------------------------------- assets
 

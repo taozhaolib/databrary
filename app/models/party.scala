@@ -10,24 +10,27 @@ import site._
 /** Any real-world individual, group, institution, etc.
   * Instances are generally obtained from [[Party.get]] or [[Party.create]].
   * @param delegated permission delegated by this party to the current user */
-final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid], affiliation_ : Option[String]) extends TableRowId[Party] with SitePage {
+final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid], affiliation_ : Option[String], duns_ : Option[DUNS] = None) extends TableRowId[Party] with SitePage {
   private[this] var _name = name_
   def name = _name
   private[this] var _orcid = orcid_
   def orcid = _orcid
   private[this] var _affiliation = affiliation_
   def affiliation = _affiliation
+  private[this] var _duns = duns_
+  def duns = _duns
 
   private[models] var _account : Option[Account] = None
   def account = _account
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : Option[String] = None, orcid : Option[Option[Orcid]] = None, affiliation : Option[Option[String]])(implicit site : Site) : Future[Boolean] = {
-    Audit.change("party", SQLTerms.flatten(name.map('name -> _), orcid.map('orcid -> _), affiliation.map('affiliation -> _)), SQLTerms('id -> id))
+  def change(name : Option[String] = None, orcid : Option[Option[Orcid]] = None, affiliation : Option[Option[String]], duns : Option[Option[DUNS]])(implicit site : Site) : Future[Boolean] = {
+    Audit.change("party", SQLTerms.flatten(name.map('name -> _), orcid.map('orcid -> _), affiliation.map('affiliation -> _), duns.map('duns -> _)), SQLTerms('id -> id))
       .execute.andThen { case scala.util.Success(true) =>
         name.foreach(_name = _)
         orcid.foreach(_orcid = _)
         affiliation.foreach(_affiliation = _)
+        duns.foreach(_duns = _)
       }
   }
 
@@ -158,8 +161,9 @@ object Party extends TableId[Party]("party") {
     , SelectColumn[String]("name")
     , SelectColumn[Option[Orcid]]("orcid")
     , SelectColumn[Option[String]]("affiliation")
-    ).map { (id, name, orcid, affiliation) =>
-      new Party(id, name, orcid, affiliation)
+    , SelectColumn[Option[DUNS]]("duns")
+    ).map { (id, name, orcid, affiliation, duns) =>
+      new Party(id, name, orcid, affiliation, duns)
     }
   private[models] val row : Selector[Party] =
     columns.leftJoin(Account.columns, using = 'id)
