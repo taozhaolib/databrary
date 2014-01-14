@@ -86,9 +86,9 @@ trait AbstractSlot extends InVolume with SiteObject {
     Action("view", pageURL, Permission.VIEW)
   )
 
-  def json : JsonObject = JsonObject(
-    'container -> container.json,
-    'segment -> segment
+  lazy val json : JsonObject = JsonObject.flatten(
+    Some('container -> container.containerJson),
+    if (segment.isFull) None else Some('segment -> segment)
     // Maybe(getConsent).opt.map('consent -> _)
   )
 

@@ -161,10 +161,10 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
         }(ss))
       })),
       "sessions" -> (opt => _sessions.map { ss =>
-        JsonRecord.map[Container](_.json - "volume")(ss.map(_._2).distinct)
+        JsonRecord.map[Container](_.containerJson - "volume")(ss.map(_._2).distinct)
       }),
       "assets" -> (opt => toplevelAssets.map(JsonArray.map(_.json))),
-      "top" -> (opt => top.map(t => (t.json - "volume" - "top").obj))
+      "top" -> (opt => top.map(t => (t.containerJson - "volume" - "top").obj))
     )
 }
 
