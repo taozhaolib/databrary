@@ -2,48 +2,7 @@ define(['app/config/module'], function (module) {
 	'use strict';
 
 	module.controller('CommentsPanel', ['$scope', 'AuthService', '$route', 'Volume', '$routeParams', 'Party', 'Slot', function ($scope, authService, $route, Volume, $routeParams, Party, Slot) {
-		$scope.routeController = $route.current.controller;
-
-		$scope.bootPanel = function () {
-			switch ($route.current.controller) {
-				case 'VolumeView':
-					$scope.volume = Volume.get($routeParams.id, {
-						id: $routeParams.id,
-						comments: ''
-					});
-
-					$scope.$watch('volume', function () {
-						$scope.automatePanel();
-					}, true);
-					break;
-
-				case 'SlotView':
-					$scope.slot = Slot.get($routeParams.id, {
-						id: $routeParams.id,
-						comments: ''
-					});
-
-					$scope.$watch('slot', function () {
-						$scope.automatePanel();
-					}, true);
-					break;
-
-				case 'PartyView':
-					$scope.party = Party.get($routeParams.id, {
-						id: $routeParams.id,
-						comments: ''
-					});
-
-					$scope.$watch('party', function () {
-						$scope.automatePanel();
-					}, true);
-					break;
-			}
-		};
-
-		//
-
-		$scope.automatePanel = function () {
+		$scope.refreshPanel = function () {
 			switch ($route.current.controller) {
 				case 'VolumeView':
 					$scope.comments = $scope.volume.comments;

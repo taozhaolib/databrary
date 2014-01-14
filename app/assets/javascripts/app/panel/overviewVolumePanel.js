@@ -2,20 +2,7 @@ define(['app/config/module'], function (module) {
 	'use strict';
 
 	module.controller('OverviewVolumePanel', ['$scope', 'Volume', '$routeParams', function ($scope, Volume, $routeParams) {
-		$scope.bootPanel = function () {
-			$scope.volume = Volume.get({
-				id: $routeParams.id,
-				funding: '',
-				summary: '',
-				access: ''
-			});
-
-			$scope.$watch('volume', function () {
-				$scope.automatePanel();
-			}, true);
-		};
-
-		$scope.automatePanel = function () {
+		$scope.refreshPanel = function () {
 			$scope.enabled = angular.isObject($scope.volume);
 		};
 
@@ -24,8 +11,6 @@ define(['app/config/module'], function (module) {
 		$scope.onModeEdit = function () {
 			$scope.formReset();
 		};
-
-		//
 
 		$scope.formSave = function () {
 

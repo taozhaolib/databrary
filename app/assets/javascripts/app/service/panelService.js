@@ -56,6 +56,15 @@ define(['app/config/module'], function (module) {
 
 		//
 
+		panelService.refreshPanels = function () {
+			angular.forEach(panelService, function (panel) {
+				if (angular.isFunction(panel.refreshPanel))
+					panel.refreshPanel();
+			});
+		};
+
+		//
+
 		$rootScope.$on('$routeChangeSuccess', function () {
 			panelService.reset();
 		});

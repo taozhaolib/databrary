@@ -3,16 +3,14 @@ define(['app/config/module'], function (module) {
 
 	module.controller('DataPanel', ['$scope', 'Party', '$routeParams', '$filter', function ($scope, Party, $routeParams, $filter) {
 		$scope.bootPanel = function () {
-//			if (!$scope.party || !$scope.party.volumes || !$scope.party.funding)
-//				Party.get({
-//					id: $routeParams.id,
-//					volumes: '',
-//					funding: ''
-//				}, function (party) {
-//					$scope.party = party;
-//					$scope.updateVolumes();
-//				});
+			$scope.updateVolumes();
 		};
+
+		$scope.refreshPanel = function () {
+			$scope.updateVolumes();
+		};
+
+		//
 
 		$scope.updateVolumes = function () {
 			$scope.funded = [];
@@ -31,7 +29,5 @@ define(['app/config/module'], function (module) {
 					$scope.contributed.push(volumeAccess.volume);
 			});
 		};
-
-		$scope.$watch('party', function () {$scope.updateVolumes();}, true)
 	}]);
 });

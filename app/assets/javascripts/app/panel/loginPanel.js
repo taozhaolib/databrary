@@ -25,13 +25,5 @@ define(['app/config/module'], function (module) {
 		$scope.submitForm = function () {
 			authService.login($scope.loginData);
 		};
-
-		//
-
-		var start = function () {
-
-		};
-
-		start();
 	}]);
 });

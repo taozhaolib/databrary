@@ -2,18 +2,7 @@ define(['app/config/module'], function (module) {
 	'use strict';
 
 	module.controller('MaterialsPanel', ['$scope', 'Volume', '$routeParams', function ($scope, Volume, $routeParams) {
-		$scope.bootPanel = function () {
-			$scope.volume = Volume.get($routeParams.id, {
-				id: $routeParams.id,
-				assets: ''
-			});
-
-			$scope.$watch('volume', function () {
-				$scope.automatePanel();
-			}, true);
-		};
-
-		$scope.automatePanel = function () {
+		$scope.refreshPanel = function () {
 			$scope.enabled = angular.isArray($scope.volume.assets) && $scope.volume.assets.length > 0;
 		};
 

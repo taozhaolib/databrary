@@ -3,15 +3,11 @@ define(['app/config/module'], function (module) {
 
 	module.controller('NetworkPanel', ['$scope', 'Party', '$routeParams', '$filter', function ($scope, Party, $routeParams, $filter) {
 		$scope.bootPanel = function () {
-//			if (!$scope.party || !$scope.party.parents || !$scope.party.children)
-//				Party.get({
-//					id: $routeParams.id,
-//					parents: '',
-//					children: ''
-//				}, function (party) {
-//					$scope.party = party;
-//					$scope.updateNetwork();
-//				});
+			$scope.updateNetwork();
+		};
+
+		$scope.refreshPanel = function () {
+			$scope.updateNetwork();
 		};
 
 		//
@@ -29,7 +25,5 @@ define(['app/config/module'], function (module) {
 				$scope.children.push(partyAuth.party);
 			});
 		};
-
-		$scope.$watch('party', function () {$scope.updateNetwork();}, true);
 	}]);
 });
