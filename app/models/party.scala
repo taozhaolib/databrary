@@ -36,24 +36,6 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
     * Computed by [Authorize.access_check] and usually accessed through [[site.Site.access]]. */
   def access : Future[Permission.Value] = _access.apply
 
-  /** List of authorizations granted to this user.
-    * @param all include inactive authorizations */
-  final def authorizeParents(all : Boolean = false) : Future[Seq[Authorize]] =
-    Authorize.getParents(this, all)
-  /** List of authorizations granted by this user.
-    * @param all include inactive authorizations */
-  final def authorizeChildren(all : Boolean = false) : Future[Seq[Authorize]] =
-    Authorize.getChildren(this, all)
-
-  /** Permission delegated by the given party to this party. */
-  final def delegatedBy(p : Party.Id) : Future[Permission.Value] = Authorize.delegate_check(id, p)
-
-  /** List of volumes to which this user has been granted at least CONTRIBUTE access, sorted by level (ADMIN first). */
-  def volumeAccess(implicit site : Site) = VolumeAccess.getVolumes(this, Permission.CONTRIBUTE)
-
-  /** List of volumes which this party is funding. */
-  def funding(implicit site : Site) = VolumeFunding.getFunder(this)
-
   def pageName = name
   def pageParent = None
   def pageURL = controllers.routes.PartyHtml.view(id)
@@ -66,7 +48,7 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
       orcid.map('orcid -> _), 
       affiliation.map('affiliation -> _), 
       account.filter(_ => site.access >= Permission.VIEW).map('email -> _.email),
-      Some('avatar -> views.html.display.avatar(this))
+      Some('avatar -> views.html.display.avatar(this).url)
     )
 }
 
@@ -75,6 +57,28 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
   def ===(a : Party) = party === a
 
   def getPermission = Seq(delegated, Seq(site.access, Permission.DOWNLOAD).min).max
+
+  /** List of authorizations granted to this user.
+    * @param all include inactive authorizations */
+  def authorizeParents(all : Boolean = false) : Future[Seq[Authorize]] =
+    Authorize.getParents(party, all)
+  /** List of authorizations granted by this user.
+    * @param all include inactive authorizations */
+  def authorizeChildren(all : Boolean = false) : Future[Seq[Authorize]] =
+    Authorize.getChildren(party, all)
+
+  /** List of volumes to which this user has been granted at least CONTRIBUTE access, sorted by level (ADMIN first). */
+  def volumeAccess = VolumeAccess.getVolumes(party, Permission.CONTRIBUTE)
+
+  /** List of volumes which this party is funding. */
+  def funding = VolumeFunding.getFunder(party)
+
+  def avatar : Future[Option[Asset]] = Asset.getAvatar(party)
+  def setAvatar(file : play.api.libs.Files.TemporaryFile, format : AssetFormat, name : Option[String] = None)  : Future[Asset] =
+    for {
+      asset <- Asset.create(Volume.Core, format, Classification.MATERIAL, name, file)
+      _ <- Audit.changeOrAdd("avatar", SQLTerms('asset -> asset.id), SQLTerms('party -> party.id)).execute
+    } yield (asset)
 
   def pageName = party.pageName
   def pageParent = party.pageParent
@@ -92,20 +96,20 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
-      "parents" -> (opt => party.authorizeParents(opt.contains("all"))
+      "parents" -> (opt => authorizeParents(opt.contains("all"))
         .map(JsonRecord.map(a => JsonRecord(a.parentId,
           'party -> a.parent.json,
           'access -> a.access
         )))
       ),
-      "children" -> (opt => party.authorizeChildren(opt.contains("all"))
+      "children" -> (opt => authorizeChildren(opt.contains("all"))
         .map(JsonRecord.map(a => JsonRecord(a.childId,
           'party -> a.child.json,
           'access -> a.access
         )))
       ),
-      "volumes" -> (opt => party.volumeAccess.map(JsonArray.map(_.json - "party"))),
-      "funding" -> (opt => party.funding.map(JsonArray.map(_.json - "party"))),
+      "volumes" -> (opt => volumeAccess.map(JsonArray.map(_.json - "party"))),
+      "funding" -> (opt => funding.map(JsonArray.map(_.json - "party"))),
       "comments" -> (opt => party.account.fold[Future[Seq[Comment]]](Async(Nil))(_.comments)
         .map(JsonArray.map(c => c.json - "who" + ('volume -> c.volume.json)))
       )

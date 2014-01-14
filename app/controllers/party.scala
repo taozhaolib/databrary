@@ -173,13 +173,12 @@ object PartyHtml extends PartyController {
     .transform[Option[String]](_._1, p => (p, p.getOrElse("")))
 
   def view(i : models.Party.Id) = Action(Some(i), Some(Permission.NONE)).async { implicit request =>
-    val party = request.obj.party
     for {
-      parents <- party.authorizeParents()
-      children <- party.authorizeChildren()
-      vols <- party.volumeAccess
-      fund <- party.funding
-      comments <- party.account.fold[Future[Seq[Comment]]](macros.Async(Nil))(_.comments)
+      parents <- request.obj.authorizeParents()
+      children <- request.obj.authorizeChildren()
+      vols <- request.obj.volumeAccess
+      fund <- request.obj.funding
+      comments <- request.obj.party.account.fold[Future[Seq[Comment]]](macros.Async(Nil))(_.comments)
     } yield (Ok(views.html.party.view(parents, children, vols, fund, comments)))
   }
 
@@ -195,8 +194,8 @@ object PartyHtml extends PartyController {
     implicit request : Request[_]) = {
     val authorizeChange = authorizeChangeForm.map(_._1.id)
     for {
-      children <- request.obj.party.authorizeChildren(true)
-      parents <- request.obj.party.authorizeParents(true)
+      children <- request.obj.authorizeChildren(true)
+      parents <- request.obj.authorizeParents(true)
       authorizeForms = children
         .filter(t => authorizeChange.fold(true)(_ === t.childId))
         .map(t => (t.child, authorizeFormFill(t))) ++
@@ -226,6 +225,30 @@ object PartyHtml extends PartyController {
         }
     )
   }
+
+  def avatar(i : models.Party.Id, size : Int = 64) = Action(Some(i), Some(Permission.NONE)).async { implicit request =>
+    request.obj.avatar.flatMap(_.fold(
+      macros.Async(Found("http://gravatar.com/avatar/"+request.obj.party.account.fold("none")(a => store.MD5.hex(a.email.toLowerCase))+"?s="+size+"&d=mm")))(
+      AssetController.assetResult(_)))
+  }
+
+  type AvatarMapping = Unit
+  type AvatarForm = Form[AvatarMapping]
+  val avatarForm = Form("file" -> ignored(()))
+
+  def uploadAvatar(i : models.Party.Id) = AdminAction(i).async { implicit request =>
+    def Error(form : AvatarForm) =
+      throw new BadFormException[AvatarMapping](views.html.party.edit(formFill, _))(form)
+    val form = avatarForm.bindFromRequest
+    form.fold(Error _, { _ =>
+      val file = request.body.asMultipartFormData.flatMap(_.file("file")) getOrElse
+	Error(form.withError("file", "error.required"))
+      val fmt = AssetFormat.getFilePart(file).filter(_.isImage) getOrElse
+	Error(form.withError("file", "file.format.unknown", file.contentType.getOrElse("unknown")))
+      request.obj.setAvatar(file.ref, fmt, Maybe(file.filename).opt).map(_ =>
+	result(request.obj))
+    })
+  }
 }
 
 object PartyApi extends PartyController {
@@ -237,8 +260,8 @@ object PartyApi extends PartyController {
 
   def authorizeGet(partyId : models.Party.Id) = AdminAction(partyId).async { implicit request =>
     for {
-      parents <- request.obj.party.authorizeParents(true)
-      children <- request.obj.party.authorizeChildren(true)
+      parents <- request.obj.authorizeParents(true)
+      children <- request.obj.authorizeChildren(true)
     } yield (Ok(JsonObject(
       'parents -> JsonRecord.map[Authorize](a => JsonRecord(a.parentId,
         'party -> a.parent.json) ++

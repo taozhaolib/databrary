@@ -248,6 +248,10 @@ CREATE INDEX ON "volume_funding" ("volume");
 CREATE INDEX ON "volume_funding" ("funder");
 COMMENT ON TABLE "volume_funding" IS 'Quick and dirty funding list.  No PK: only updated in bulk on volume.';
 
+-- special volumes (SERIAL starts at 1):
+INSERT INTO "volume" (id, name) VALUES (0, 'Core'); -- CORE
+INSERT INTO "volume_access" VALUES (0, -1, 'DOWNLOAD', 'DOWNLOAD');
+
 ----------------------------------------------------------- time intervals
 
 CREATE FUNCTION "interval_mi_epoch" (interval, interval) RETURNS double precision LANGUAGE sql IMMUTABLE STRICT AS 
@@ -705,6 +709,16 @@ CREATE TABLE "session" (
 	"account" integer NOT NULL References "account"
 ) INHERITS ("account_token");
 COMMENT ON TABLE "session" IS 'Tokens associated with currently logged-in sessions.';
+
+----------------------------------------------------------- avatars
+
+CREATE TABLE "avatar" (
+	"party" integer NOT NULL Primary Key References "party",
+	"asset" integer NOT NULL References "asset"
+);
+COMMENT ON TABLE "avatar" IS 'Image assets used to represent parties on the site.  These assets are expected to be in the CORE volume.';
+
+SELECT audit.CREATE_TABLE ('avatar');
 
 ----------------------------------------------------------- bootstrap/test data
 

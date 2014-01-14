@@ -31,6 +31,8 @@ POST    /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>                          
 POST    /party/$pID<[0-9]+>/authorize/$parent<-?[0-9]+>/apply                                     controllers.PartyHtml.authorizeApply(pID : models.Party.Id, parent : models.Party.Id)
 # TODO: should be POST but currently used as link:
 GET     /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>/remove                                     controllers.PartyHtml.authorizeDelete(pID : models.Party.Id, child : models.Party.Id)
+GET     /party/$pID<-?[0-9]+>/avatar                                                              controllers.PartyHtml.avatar(pID : models.Party.Id, size : Int ?= 64)
+POST    /party/$pID<-?[0-9]+>/avatar                                                              controllers.PartyHtml.uploadAvatar(pID : models.Party.Id)
 
 # volumes
 GET     /search                                                                                   controllers.VolumeHtml.search
