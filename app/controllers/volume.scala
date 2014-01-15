@@ -208,8 +208,8 @@ object VolumeHtml extends VolumeController {
 }
 
 object VolumeApi extends VolumeController {
-  def query(query : Option[String] = None) = SiteAction.async { implicit request =>
-    query.fold(Volume.getAll)(Volume.search(_))
+  def query(query : String = "") = SiteAction.async { implicit request =>
+    Maybe(query).opt.fold(Volume.getAll)(Volume.search(_))
       .map(l => Ok(JsonRecord.map[Volume](_.json)(l)))
   }
 
