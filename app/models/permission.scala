@@ -88,7 +88,7 @@ object Classification extends PGEnum("classification") {
 
   /** The most restricted data classification level that the current user may access under the given permission and consent level. */
   def download(p : Permission.Value, consent : Consent.Value)(implicit site : Site) : Option[Value] = {
-    if (p >= Permission.FULL)
+    if (p >= Permission.FULL || site.superuser)
       Some(Classification.values.min)
     else if (p >= Permission.DOWNLOAD)
       Some(Classification.access(consent))
