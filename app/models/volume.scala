@@ -197,6 +197,11 @@ object Volume extends TableId[Volume]("volume") {
     row.SELECT("WHERE volume.id > 0 AND", condition, "ORDER BY volume.name")
       .apply(conditionArgs).list
     
+  def search(query : String)(implicit site : Site) : Future[Seq[Volume]] =
+    /* XXX ts indexes! */
+    row.SELECT("WHERE volume.id > 0 AND to_tsvector(name || ' ' || coalesce(body, '')) @@ plainto_tsquery(?) AND", condition, "ORDER BY ts_rank(to_tsvector(name || ' ' || coalesce(body, '')), to_tsquery(?))")
+      .apply(query +: conditionArgs :+ query).list
+
   /** Create a new, empty volume with no permissions.
     * The caller should probably add a [[VolumeAccess]] for this volume to grant [[Permission.ADMIN]] access to some user. */
   def create(name : String, body : Option[String] = None)(implicit site : Site) : Future[Volume] =
