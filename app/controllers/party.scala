@@ -53,31 +53,34 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
   protected def adminAccount(implicit request : Request[_]) : Option[Account] =
     request.obj.party.account.filter(_ === request.identity || request.superuser)
 
-  type EditMapping = (Option[String], Option[Option[Orcid]], Option[String], Option[Option[DUNS]], Option[(String, Option[String], Option[String], Option[String])])
-  type EditForm = Form[EditMapping]
-  protected def formFill(implicit request : Request[_]) : EditForm = {
+  type AccountMapping = (String, Option[String], Option[String], Option[String])
+  type PartyMapping = (Option[String], Option[Option[Orcid]], Option[String], Option[Option[DUNS]], Option[AccountMapping])
+  type PartyForm = Form[PartyMapping]
+  protected def partyForm(acct : Boolean) : PartyForm = Form(tuple(
+    "name" -> OptionMapping(nonEmptyText),
+    "orcid" -> OptionMapping(optional(of[Orcid])),
+    "affiliation" -> OptionMapping(text),
+    "duns" -> OptionMapping(optional(of[DUNS])),
+    "" -> MaybeMapping(if (acct) Some(tuple(
+      "auth" -> text,
+      "email" -> OptionMapping(email),
+      "password" -> passwordMapping,
+      "openid" -> OptionMapping(text(0,256))
+    )) else None)
+  ))
+  protected def formFill(implicit request : Request[_]) : PartyForm = {
     val e = request.obj.party
     val acct = adminAccount
-    Form(tuple(
-      "name" -> OptionMapping(nonEmptyText),
-      "orcid" -> OptionMapping(optional(of[Orcid])),
-      "affiliation" -> OptionMapping(text),
-      "duns" -> OptionMapping(optional(of[DUNS])),
-      "" -> MaybeMapping(acct.map(_ => tuple(
-        "auth" -> text,
-        "email" -> OptionMapping(email),
-        "password" -> passwordMapping,
-        "openid" -> OptionMapping(text(0,256))
-      )))
-    )).fill((Some(e.name), Some(e.orcid), Some(e.affiliation.getOrElse("")), Some(e.duns), acct.map(a => ("", Some(a.email), None, a.openid))))
+    partyForm(acct.isDefined)
+      .fill((Some(e.name), Some(e.orcid), Some(e.affiliation.getOrElse("")), Some(e.duns), acct.map(a => ("", Some(a.email), None, a.openid))))
   }
 
-  def formForAccount(form : EditForm)(implicit request : Request[_]) =
+  def formForAccount(form : PartyForm)(implicit request : Request[_]) =
     form.value.fold[Option[Any]](adminAccount)(_._3).isDefined
 
   def update(i : models.Party.Id) = AdminAction(i).async { implicit request =>
-    def bad(form : EditForm) =
-      ABadForm[EditMapping](views.html.party.edit(_), form)
+    def bad(form : PartyForm) =
+      ABadForm[PartyMapping](views.html.party.edit(_), form)
     val form = formFill.bindFromRequest
     val party = request.obj.party
     val acct = adminAccount
@@ -86,8 +89,12 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
         bad(form.withError("cur_password", "password.incorrect"))
       case (name, orcid, affiliation, duns, accts) =>
         for {
-          _ <- party.change(name = name, orcid = orcid, affiliation = affiliation.map(Maybe(_).opt), duns = duns.filter(_ => request.access == Permission.ADMIN))
-          _ <- macros.Async.map[(String, Option[String], Option[String], Option[String]), Boolean](accts, { case (_, email, password, openid) =>
+          _ <- party.change(
+	    name = name,
+	    orcid = orcid,
+	    affiliation = affiliation.map(Maybe(_).opt),
+	    duns = duns.filter(_ => request.access == Permission.ADMIN))
+          _ <- macros.Async.foreach[AccountMapping, Unit](accts, { case (_, email, password, openid) =>
             val a = acct.get
             a.change(
               email = email,
@@ -96,6 +103,29 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
             )
           })
         } yield (result(request.obj))
+    })
+  }
+
+  private[this] def create(error : PartyForm => BadFormException[PartyMapping], acct : Boolean) = SiteAction.access(Permission.ADMIN).async { implicit request =>
+    def Error(form : PartyForm) =
+      throw error(form)
+    val form = partyForm(acct).bindFromRequest
+    form.fold(Error _, {
+      case (name, orcid, affiliation, duns, accts) =>
+	for {
+	  p <- Party.create(
+	    name = name getOrElse Error(form.withError("name", "error.required")),
+	    orcid = orcid.flatten,
+	    affiliation = affiliation,
+	    duns = duns.flatten)
+          a <- macros.Async.map[AccountMapping, Account](accts, { case (_, email, password, openid) =>
+	    Account.create(p,
+	      email = email getOrElse Error(form.withError("email", "error.required")),
+	      password = password,
+	      openid)
+          })
+	  s <- p.perSite
+	} yield (result(s))
     })
   }
 

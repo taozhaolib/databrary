@@ -137,9 +137,9 @@ final class Account protected (val party : Party, email_ : String, password_ : S
 
   /** Update the given values in the database and this object in-place. */
   def change(email : Option[String] = None, password : Option[String] = None, openid : Option[Option[String]] = None)(implicit site : Site) : Future[Boolean] = {
-    if (password != _password)
+    if (password.fold(false)(!_.equals(_password)))
       clearTokens(cast[AuthSite](site).map(_.token))
-    Audit.change(Account.table, SQLTerms.flatten(email.map('email -> _), password.map('password -> _), openid.map('openid -> _)), SQLTerms('id -> id))
+    Audit.change("account", SQLTerms.flatten(email.map('email -> _), password.map('password -> _), openid.map('openid -> _)), SQLTerms('id -> id))
       .execute.andThen { case scala.util.Success(true) =>
         email.foreach(_email = _)
         password.foreach(_password = _)
@@ -184,9 +184,9 @@ object Party extends TableId[Party]("party") {
   }
 
   /** Create a new party. */
-  def create(name : String)(implicit site : Site) : Future[Party] =
-    Audit.add(table, SQLTerms('name -> name), "id").single(SQLCols[Id])
-      .map(new Party(_, name, None, None))
+  def create(name : String, orcid : Option[Orcid] = None, affiliation : Option[String] = None, duns : Option[DUNS] = None)(implicit site : Site) : Future[Party] =
+    Audit.add("party", SQLTerms('name -> name, 'orcid -> orcid, 'affiliation -> affiliation, 'duns -> duns), "id").single(SQLCols[Id])
+      .map(new Party(_, name, orcid, affiliation, duns))
 
   private def byName = "(name ILIKE ? OR email ILIKE ?)"
   private def byNameArgs(name : String) =
@@ -268,4 +268,9 @@ object Account extends Table[Account]("account") {
     * @return an arbitrary account with the given openid, or the account for email if the openid matches */
   def getOpenid(openid : String, email : Option[String] = None) : Future[Option[Account]] =
     row.SELECT("WHERE openid = ? AND coalesce(email = ?, 't') LIMIT 1").apply(openid, email).singleOpt
+
+  def create(party : Party, email : String, password : Option[String] = None, openid : Option[String] = None)(implicit site : Site) : Future[Account] =
+    Audit.add("account", SQLTerms('id -> party.id, 'email -> email, 'password -> password, 'openid -> openid)).map { _ =>
+      new Account(party, email, password.getOrElse(""), openid)
+}
 }

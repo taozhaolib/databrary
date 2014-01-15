@@ -51,37 +51,40 @@ object Token extends SiteController {
   }
 
   private lazy val mailer = Play.current.plugin[com.typesafe.plugin.MailerPlugin]
+  private def getMailer = mailer.getOrElse(throw ServiceUnavailableException)
 
   val issuePasswordForm = Form("email" -> email)
 
   def getPassword = SiteAction { implicit request =>
-    mailer.fold[SimpleResult](ServiceUnavailable) { mailer =>
-      Ok(views.html.token.getPassword(issuePasswordForm))
+    getMailer // check to make sure it's available
+    Ok(views.html.token.getPassword(issuePasswordForm))
+  }
+
+  private[controllers] def newPassword(targ : Either[String,Account])(implicit request : SiteRequest[_]) : Future[Option[LoginToken]] = {
+    implicit val defaultContext = context.process
+    macros.Async.map[Account,LoginToken](targ.right.toOption, LoginToken.create(_, true)).map { token =>
+      val mail = getMailer.email
+      mail.setSubject(Messages("token.password.subject"))
+      mail.setRecipient(targ.fold(identity, _.email))
+      mail.setFrom("Databrary <help@databrary.org>")
+      token.fold {
+	mail.send(Messages("token.password.none"))
+      } { token =>
+	mail.send(Messages("token.password.body", token.redeemURL.absoluteURL()))
+      }
+      token
     }
   }
 
   def issuePassword = SiteAction.async { implicit request =>
     issuePasswordForm.bindFromRequest.fold(
       form => ABadRequest(views.html.token.getPassword(form)),
-      email => mailer.fold[Future[SimpleResult]](macros.Async(ServiceUnavailable)) { mailer =>
-        implicit val defaultContext = context.process
+      email =>
         for {
           acct <- Account.getEmail(email)
           acct <- macros.Async.filter[Account](acct, _.party.access.map(_ < Permission.ADMIN))
-          token <- macros.Async.map[Account,Token](acct, LoginToken.create(_, true))
-        } yield {
-          val mail = mailer.email
-          mail.setSubject(Messages("token.password.subject"))
-          mail.setRecipient(email)
-          mail.setFrom("Databrary <help@databrary.org>")
-          token.fold {
-            mail.send(Messages("token.password.none"))
-          } { token =>
-            mail.send(Messages("token.password.body", token.redeemURL.absoluteURL()))
-          }
-          Ok("sent")
-        }
-      }
+	  _ <- newPassword(acct.toRight(email))
+        } yield (Ok("sent"))
     )
   }
 }
