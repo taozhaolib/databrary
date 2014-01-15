@@ -4,10 +4,10 @@ define(['app/config/module'], function (module) {
 	module.factory('PartyAuthorize', ['$rootScope', '$resource', '$route', function ($rootScope, $resource, $route) {
 		return $resource('/api/party/:id/authorize/:partyId', {
 			id: function () {
-				return $route.current.params.id || false;
+				return $route.current.params.id || undefined;
 			},
 			partyId: function () {
-				return $route.current.params.partyId || false;
+				return $route.current.params.partyId || undefined;
 			}
 		});
 	}]);

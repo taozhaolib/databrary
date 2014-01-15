@@ -4,7 +4,7 @@ define(['app/config/module'], function (module) {
 	module.factory('Record', ['$rootScope', '$resource', '$route', function ($rootScope, $resource, $route) {
 		return $resource('/api/record/:id', {
 			id: function () {
-				return $route.current.params.id || false;
+				return $route.current.params.id || undefined;
 			}
 		});
 	}]);

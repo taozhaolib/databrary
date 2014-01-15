@@ -4,10 +4,10 @@ define(['app/config/module'], function (module) {
 	module.factory('VolumeAccess', ['$rootScope', '$resource', '$route', function ($rootScope, $resource, $route) {
 		return $resource('/api/volume/:id/access/:partyId', {
 			id: function () {
-				return $route.current.params.id || false;
+				return $route.current.params.id || undefined;
 			},
 			partyId: function () {
-				return $route.current.params.partyId || false;
+				return $route.current.params.partyId || undefined;
 			}
 		});
 	}]);
