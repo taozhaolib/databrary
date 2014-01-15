@@ -21,8 +21,8 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
     * @param p permission needed, or None if delegation is not allowed (must be self)
     */
   private[controllers] def action(i : Option[models.Party.Id], p : Option[Permission.Value] = Some(Permission.ADMIN)) =
-    optionZip(i, p).fold[ActionFunction[SiteRequest.Auth,Request]] {
-      new ActionRefiner[SiteRequest.Auth,Request] {
+    optionZip(i, p).fold[ActionFunction[SiteRequest.Base,Request]] {
+      SiteAction.Auth ~> new ActionRefiner[SiteRequest.Auth,Request] {
         protected def refine[A](request : SiteRequest.Auth[A]) =
           if (i.fold(true)(_ === request.identity.id))
             request.identity.perSite(request).map { p =>
@@ -36,7 +36,7 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
     }
 
   private[controllers] def Action(i : Option[models.Party.Id], p : Option[Permission.Value] = Some(Permission.ADMIN)) =
-    SiteAction.auth ~> action(i, p)
+    SiteAction ~> action(i, p)
 
   protected val passwordInputMapping : Mapping[Option[String]]
   type PasswordMapping = Mapping[Option[String]]
