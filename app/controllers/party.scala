@@ -207,9 +207,8 @@ object PartyHtml extends PartyController {
       parents <- request.obj.authorizeParents()
       children <- request.obj.authorizeChildren()
       vols <- request.obj.volumeAccess
-      fund <- request.obj.funding
       comments <- request.obj.party.account.fold[Future[Seq[Comment]]](macros.Async(Nil))(_.comments)
-    } yield (Ok(views.html.party.view(parents, children, vols, fund, comments)))
+    } yield (Ok(views.html.party.view(parents, children, vols, comments)))
   }
 
   private val authorizeSearchForm = Form(

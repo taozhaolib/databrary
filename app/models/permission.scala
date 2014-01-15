@@ -20,6 +20,7 @@ object Permission extends PGEnum("permission") {
   /** Alias for DOWNLOAD. DOWNLOAD permissions grant access to shared data, while non-data only requires VIEW. */
   def DATA = DOWNLOAD
 
+  implicit val truth : Truth[Value] = Truth[Value](_ != NONE)
   override implicit val sqlType : SQLType[Value] =
     SQLType.transform[Option[String], Value]("permission", classOf[Value])(
       _.fold[Option[Value]](Some(NONE))(s => catching(classOf[NoSuchElementException]).opt(withName(s))),

@@ -1,11 +1,11 @@
-@(parents : Seq[Authorize], children : Seq[Authorize], accesses : Seq[VolumeAccess], funded : Seq[VolumeFunding], comments : Seq[Comment])(implicit request : controllers.PartyHtml.Request[_])
+@(parents : Seq[Authorize], children : Seq[Authorize], accesses : Seq[VolumeAccess], comments : Seq[Comment])(implicit request : controllers.PartyHtml.Request[_])
 
 @defining(request.obj.party) { party =>
 @defining(both[Seq[VolumeAccess], Seq[Volume]](accesses.span(a => a.access >= Permission.ADMIN), _.map(_.volume))) { case (owned, edited) =>
 @widget.template.crud("Profile: " + request.obj.party.name) {
     @widget.panel.party(party, parents, children)
 
-    @widget.panel.volumes(owned, edited, funded.map(_.volume))
+    @widget.panel.volumes(owned, edited, accesses.filter(_.funding.isDefined).map(_.volume))
 
     @widget.panel.comments(None, None, comments)
 }

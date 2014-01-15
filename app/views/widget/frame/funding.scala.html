@@ -1,9 +1,9 @@
-@(funding: Seq[VolumeFunding])(implicit request : SiteRequest[_])
+@(funding: Seq[VolumeAccess])(implicit request : SiteRequest[_])
 
 @if(funding.nonEmpty) {
     @widget.frame.raw("funding", "")("Funding", foldable = true) {
         @funding.map { f =>
-            @widget.portrait.verticalSmallExtra(f.funder, Html(f.grant.getOrElse("")))
+            @widget.portrait.verticalSmallExtra(f.party, Html(f.funding.getOrElse("")))
         }
     }
 }

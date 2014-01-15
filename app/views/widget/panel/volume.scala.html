@@ -1,4 +1,4 @@
-@(volume : Volume, summary : Volume.Summary, access : Seq[VolumeAccess], funding : Seq[VolumeFunding])(implicit request : SiteRequest[_])
+@(volume : Volume, summary : Volume.Summary, access : Seq[VolumeAccess])(implicit request : SiteRequest[_])
 
 @widget.panel.raw("overview", "panel_volume")(){
     @widget.figure.thumbVolume(volume, scalar = "", classes = "panel_overview_thumbnail")
@@ -6,7 +6,7 @@
     <h1 class="col-full panel_title">@display.formatTitle(volume.pageName)</h1>
 
     @widget.frame.people(access)
-    @widget.frame.funding(funding)
+    @widget.frame.funding(access.filter(_.funding.isDefined))
     @widget.frame.volume(volume, summary)
     @widget.frame.citation(volume, access)
 
