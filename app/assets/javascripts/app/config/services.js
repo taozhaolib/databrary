@@ -1,5 +1,6 @@
 define([
 	'app/service/authService',
+	'app/service/browserService',
 	'app/service/eventService',
 	'app/service/messageService',
 	'app/service/panelService',

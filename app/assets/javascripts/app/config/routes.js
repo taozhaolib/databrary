@@ -25,20 +25,29 @@ define(['app/config/module'], function (module) {
 			templateUrl: 'searchView.html',
 			resolve: {
 				volumes: ['$route', 'Volume', function ($route, Volume) {
-					return Volume.query({
-						query: '',
-						access: '',
-						citations: '',
-						top: '',
-						tags: '',
-						assets: '',
-						comments: '',
-						records: '',
-						summary: '',
-						sessions: '',
-						categories: '',
-						funding: ''
+					var volumes = [];
+
+					Volume.query({}, function (data) {
+						angular.forEach(data, function (volume) {
+							volumes.push(Volume.get({
+								id: volume.id,
+
+								access: '',
+								citations: '',
+								top: '',
+								tags: '',
+								assets: '',
+								comments: '',
+								records: '',
+								summary: '',
+								sessions: '',
+								categories: '',
+								funding: ''
+							}));
+						});
 					});
+
+					return volumes;
 				}]
 			},
 			reloadOnSearch: false
@@ -174,8 +183,9 @@ define(['app/config/module'], function (module) {
 		});
 	}]);
 
-	module.run(['$rootScope', 'RouterService', function ($rootScope, router) {
+	module.run(['$rootScope', 'RouterService', 'BrowserService', function ($rootScope, router, browser) {
 		$rootScope.router = router;
+		$rootScope.browser = browser;
 	}]);
 
 	return module;

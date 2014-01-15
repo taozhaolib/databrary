@@ -13,5 +13,6 @@ define([
 	'app/directive/panelMode',
 	'app/directive/hasAuth',
 	'app/directive/hasAccess',
-	'app/directive/carousel'
+	'app/directive/carousel',
+	'app/directive/browserSort'
 ], function () {});

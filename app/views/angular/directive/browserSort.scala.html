@@ -1,0 +1,36 @@
+<div>
+    <a class="browser_sort_pill"
+    ng-click="toggleSort('volume')"
+    ng-class="sortClasses('volume')">Studies</a>
+
+    <span class="browser_sort_pill"
+    ng-repeat="(sortName, sortOptions) in browser.recordSorts|filter:{active: true}">
+        <a class="record_pill left_pill"
+        ng-click="expandRecordSorts()"
+        ng-class="recordSortClasses('asset')">
+            <span>{{sortName}}</span>
+
+            <ul class="flat inline" ng-hide="true">
+                <li ng-repeat="(potentialName, potentialOptions) in browser.recordSorts">
+                    <a ng-click="switchRecordSort(sort, potentialSort)">{{potentialName}}</a>
+                </li>
+            </ul>
+        </a>
+
+        <a class="record_pill right_pill"
+        ng-click="removeRecordSort()"
+        ng-if="canRemoveRecordSort()">x</a>
+    </span>
+
+    <a class="browser_sort_pill add"
+    ng-click="addRecordSort()"
+    ng-if="canAddRecordSort()">+</a>
+
+    <a class="browser_sort_pill"
+    ng-click="toggleSort('session')"
+    ng-class="sortClasses('session')">Sessions</a>
+
+    <a class="browser_sort_pill"
+    ng-click="toggleSort('asset')"
+    ng-class="sortClasses('asset')">Assets</a>
+</div>
