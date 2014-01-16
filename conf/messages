@@ -53,6 +53,7 @@ duns.invalid=Invalid D-U-N-S
 orcid.invalid=Invalid ORCID iD
 range.invalid=Invalid time range
 access.group.inherit=You may not grant this level of access to an entire group.
+agreement.required=You must consent to the user agreement.
 
 consent.NONE=
 consent.PRIVATE=The identifying data in this session has not been released for sharing.

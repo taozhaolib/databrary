@@ -1,0 +1,24 @@
+@(form : LoginHtml.RegistrationForm)(implicit request: SiteRequest[_])
+
+@import helper.FieldConstructor
+
+    @implicitField = @{
+        FieldConstructor(widget.tag.minimalFieldConstructor.f)
+    }
+
+@widget.template.action("Register an account") {
+    @widget.panel.form("Register an account", "Register") {
+        <div class="col-full">
+            @widget.tag.form(routes.LoginHtml.register) {
+                @widget.formErrors(form)
+
+                @widget.tag.inputText(form("name"), 'placeholder -> "Full name")
+		@widget.tag.inputText(form("email"), 'placeholder -> "Email")
+		@widget.tag.inputText(form("affiliation"), 'placeholder -> "Affiliation")
+		<!-- @widget.tag.checkbox(form("agreement")) -->
+
+                <button type="submit" class="button">Register</button>
+            }
+        </div>
+    }
+}
