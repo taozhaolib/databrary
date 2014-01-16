@@ -1,4 +1,4 @@
-@(form : controllers.PartyHtml.PartyForm, avatarForm : controllers.PartyHtml.AvatarForm = controllers.PartyHtml.avatarForm)(implicit request : controllers.PartyHtml.Request[_])
+@(party : Option[Party], form : PartyHtml.PartyForm, avatarForm : PartyHtml.AvatarForm = PartyHtml.avatarForm)(implicit request : PartyHtml.Request[_])
 
 @import helper.FieldConstructor
 
@@ -6,12 +6,10 @@
         FieldConstructor(widget.tag.labeledFieldConstructor.f)
     }
 
-@widget.template.crud("Edit Profile: " + request.obj.pageName) {
-    @widget.panel.form(request.obj.pageName, "Edit Profile") {
-        <div class="col-full">
+@widget.template.form(party, party.fold("Create Party")(_ => "Edit Profile")) {
             @widget.formErrors(form)
 
-            @widget.tag.form(routes.PartyHtml.update(request.obj.party.id)) {
+	    @widget.tag.form(party.fold(routes.PartyHtml.create)(p => routes.PartyHtml.update(p.id))) {
                 @widget.tag.inputText(form("name"), 'placeholder -> "Full name")
 
                 @if(controllers.PartyHtml.formForAccount(form)) {
@@ -31,14 +29,14 @@
                     @widget.tag.inputText(form("openid"), 'placeholder -> "OpenID")
                 }
 
-                <button type='submit' class="button">Update</button>
+		<button type='submit' class="button">@party.fold("Create")(_ => "Update")</button>
             }
 
-	    @widget.tag.form(routes.PartyHtml.uploadAvatar(request.obj.party.id), 'enctype -> "multipart/form-data") {
+	    @party.map { p =>
+	    @widget.tag.form(routes.PartyHtml.uploadAvatar(p.id), 'enctype -> "multipart/form-data") {
 		   @widget.tag.inputFile(avatarForm("file"))
 		   <button type='submit' class="button">Upload</button>
 	    }
             @widget.formErrors(avatarForm)
-        </div>
-    }
+	    }
 }

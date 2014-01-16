@@ -20,6 +20,8 @@ POST    /token/password                                                         
 GET     /token/:token                                                                             controllers.Token.token(token : String)
 
 # parties
+GET     /party/create                                                                             controllers.PartyHtml.createNew()
+POST    /party/create                                                                             controllers.PartyHtml.create()
 GET     /party/$pID<-?[0-9]+>                                                                     controllers.PartyHtml.view(pID : models.Party.Id)
 GET     /party/$pID<[0-9]+>/edit                                                                  controllers.PartyHtml.edit(pID : models.Party.Id)
 POST    /party/$pID<[0-9]+>/edit                                                                  controllers.PartyHtml.update(pID : models.Party.Id)
@@ -111,6 +113,8 @@ POST    /api/user/superuser/off                                                 
 GET     /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.get(partyId : models.Party.Id)
 # UPDATE
 POST    /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.update(partyId : models.Party.Id)
+# CREATE
+POST    /api/party                                                                                controllers.PartyApi.create()
 
 # ----- PARTY AUTHORIZE ----- #
 # QUERY

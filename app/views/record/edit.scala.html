@@ -6,9 +6,7 @@
         FieldConstructor(widget.tag.minimalFieldConstructor.f)
     }
 
-@widget.template.crud("Edit Record: " + record.pageName) {
-    @widget.panel.form(record.pageName, "Edit Record") {
-        <div class="col-full">
+@widget.template.form(Some(record), "Edit Record") {
             @widget.formErrors(form)
 
             <form metrics-repeater class="repeater" ng-init='formAction = "/volume/@record.volume.id.toString/record/@record.id.toString/edit"; category = @form("Category").value.getOrElse("undefined"); categories = @jsonCategories; metrics = @jsonMetrics; repeats = @form.data.filter(i => i._1.contains("measure")).map(i => (i._1.split("\\.").head, i._1.split("\\.").last, i._2)).groupBy(i => i._1).map(i => i._2.map(i => i._2+": '"+i._3+"'").mkString("{",",","}")).mkString("[",",","]")'>
@@ -60,6 +58,4 @@
 
                 <button type='submit' class="button" ng-click="submit()">Update</button>
             </form>
-        </div>
-    }
 }

@@ -60,9 +60,7 @@
 }
 
 @defining(request.obj.party) { party =>
-@widget.template.crud("Admin Party: " + request.obj.toString()) {
-    @widget.panel.form(request.obj.pageName, "Authorize Party") {
-        <div class="col-full">
+@widget.template.form(Some(party), "Admin Party") {
             <h3>Memberships</h3>
 
             <table>
@@ -128,7 +126,5 @@
                     @authorizeSearchWhich(party, false)
                 </tfoot>
             </table>
-        </div>
-    }
 }
 }

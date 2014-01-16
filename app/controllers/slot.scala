@@ -106,30 +106,30 @@ object SlotHtml extends SlotController {
   private[controllers] def viewEdit(slot : AbstractSlot)(
     editForm : EditForm = editFormFill(slot),
     recordForm : RecordHtml.SelectForm = RecordHtml.selectForm)(
-    implicit request : Request[_]) = {
-    RecordHtml.selectList(slot).map { selectList =>
-      views.html.slot.edit(Right(slot), editForm, Some(recordForm), selectList)
-    }
-  }
+    implicit request : Request[_]) =
+    for {
+      records <- slot.records
+      selectList <- RecordHtml.selectList(slot)
+    } yield (views.html.slot.edit(Right(slot), editForm, records, Some(recordForm), selectList))
 
   def edit(i : models.Slot.Id, segment : Segment) = Action(i, segment, Permission.EDIT).async { implicit request =>
     viewEdit(request.obj)().map(Ok(_))
   }
 
   def createContainer(v : models.Volume.Id) = VolumeController.Action(v, Permission.EDIT) { implicit request =>
-    Ok(views.html.slot.edit(Left(request.obj), editForm(true), None))
+    Ok(views.html.slot.edit(Left(request.obj), editForm(true), Nil, None))
   }
 
   def addContainer(s : models.Volume.Id) = VolumeController.Action(s, Permission.CONTRIBUTE).async { implicit request =>
     val form = editForm(true).bindFromRequest
     form.fold(
-      form => ABadRequest(views.html.slot.edit(Left(request.obj), form, None)),
+      form => ABadRequest(views.html.slot.edit(Left(request.obj), form, Nil, None)),
     { case (Some((name, date)), consent) =>
         for {
           cont <- models.Container.create(request.obj, name = name, date = date)
           _ <- cont.setConsent(consent)
         } yield (Redirect(cont.pageURL))
-      case _ => ABadRequest(views.html.slot.edit(Left(request.obj), form, None))
+      case _ => ABadRequest(views.html.slot.edit(Left(request.obj), form, Nil, None))
     })
   }
 

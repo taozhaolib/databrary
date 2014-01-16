@@ -80,7 +80,7 @@ object Authorize extends Table[Authorize]("authorize") {
     * This is defined by the minimum access level along a path of valid authorizations from [Party.Root], maximized over all possible paths, or Permission.NONE if there are no such paths. */
   private[models] def access_check(c : Party.Id) : Future[Permission.Value] = c match {
     case Party.NOBODY => Async(Permission.NONE) // anonymous users get this level
-    case Party.ROOT => throw new IllegalArgumentException("trying to get root access") // the objective value is ADMIN but this should never be used
+    case Party.ROOT => Async(Permission.ADMIN)
     case _ => SQL("SELECT authorize_access_check(?)").apply(c).single(SQLCols[Permission.Value])
   }
 

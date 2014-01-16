@@ -50,6 +50,9 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
   protected def AdminAction(i : models.Party.Id, delegate : Boolean = true) =
     Action(Some(i), if (delegate) Some(Permission.ADMIN) else None)
 
+  protected val RootAction =
+    SiteAction ~> RequestObject.check[SiteParty](Party.Root.perSite(_).map(Some(_)), Permission.ADMIN)
+
   protected def adminAccount(implicit request : Request[_]) : Option[Account] =
     request.obj.party.account.filter(_ === request.identity || request.superuser)
 
@@ -76,13 +79,13 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
   }
 
   def formForAccount(form : PartyForm)(implicit request : Request[_]) =
-    form.value.fold[Option[Any]](adminAccount)(_._3).isDefined
+    form.value.fold[Option[Any]](adminAccount)(_._5).isDefined
 
   def update(i : models.Party.Id) = AdminAction(i).async { implicit request =>
-    def bad(form : PartyForm) =
-      ABadForm[PartyMapping](views.html.party.edit(_), form)
-    val form = formFill.bindFromRequest
     val party = request.obj.party
+    def bad(form : PartyForm) =
+      ABadForm[PartyMapping](views.html.party.edit(Some(party), _), form)
+    val form = formFill.bindFromRequest
     val acct = adminAccount
     form.fold(bad _, {
       case (_, _, _, _, Some((cur, _, _, _))) if !acct.fold(false)(a => BCrypt.checkpw(cur, a.password)) =>
@@ -106,9 +109,9 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
     })
   }
 
-  private[this] def create(error : PartyForm => BadFormException[PartyMapping], acct : Boolean) = SiteAction.access(Permission.ADMIN).async { implicit request =>
+  def create(acct : Boolean = false) = RootAction.async { implicit request =>
     def Error(form : PartyForm) =
-      throw error(form)
+      throw new BadFormException[PartyMapping](views.html.party.edit(None, _))(form)
     val form = partyForm(acct).bindFromRequest
     form.fold(Error _, {
       case (name, orcid, affiliation, duns, accts) =>
@@ -233,7 +236,11 @@ object PartyHtml extends PartyController {
   }
   
   def edit(i : models.Party.Id) = AdminAction(i) { implicit request =>
-    Ok(views.html.party.edit(formFill))
+    Ok(views.html.party.edit(Some(request.obj.party), formFill))
+  }
+
+  def createNew(acct : Boolean = false) = RootAction { implicit request =>
+    Ok(views.html.party.edit(None, partyForm(acct)))
   }
 
   def admin(i : models.Party.Id) = AdminAction(i).async { implicit request =>
@@ -267,7 +274,7 @@ object PartyHtml extends PartyController {
 
   def uploadAvatar(i : models.Party.Id) = AdminAction(i).async { implicit request =>
     def Error(form : AvatarForm) =
-      throw new BadFormException[AvatarMapping](views.html.party.edit(formFill, _))(form)
+      throw new BadFormException[AvatarMapping](views.html.party.edit(Some(request.obj.party), formFill, _))(form)
     val form = avatarForm.bindFromRequest
     form.fold(Error _, { _ =>
       val file = request.body.asMultipartFormData.flatMap(_.file("file")) getOrElse
