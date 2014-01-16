@@ -84,16 +84,6 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   def ident : String = measures.value(Metric.Ident).getOrElse("[" + id + "]")
 
-  private val _daterange = FutureVar[Range[Date]] {
-    SQL("SELECT record_daterange(?)").apply(id).single(SQLCols[Range[Date]].map(_.normalize))
-  }
-  /** The range of acquisition dates covered by associated slots. Cached. */
-  def daterange : Future[Range[Date]] = _daterange.apply
-
-  /** The range of ages as defined by `daterange - birthdate`. */
-  def agerange : Future[Option[Range[Age]]] =
-    Async.map[Date, Range[Age]](measures_.value(Metric.Birthdate), dob => daterange.map(_.map(d => Age(dob, d))))
-
   /** The age at test for a specific date, as defined by `date - birthdate`. */
   def age(date : Date) : Option[Age] =
     measures_.value(Metric.Birthdate).map(dob => Age(dob, date))
@@ -111,9 +101,18 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
       .SELECT("JOIN slot_record ON slot.id = slot_record.slot WHERE slot_record.record = ? ORDER BY slot.source, slot.segment")
       .apply(id).list
   /** Attach this record to a slot. */
-  def addSlot(s : Slot) = Record.addSlot(id, s.id)
+  def addSlot(s : Slot) : Future[Boolean] = {
+    val args = SQLTerms('record -> id, 'slot -> s.id)
+    SQL("INSERT INTO slot_record", args.insert)
+      .apply(args).execute.recover {
+        case SQLDuplicateKeyException() => false
+      }
+  }
   /** Remove this record from a slot. */
-  def removeSlot(s : Slot.Id) = Record.removeSlot(id, s)
+  def removeSlot(s : Slot.Id) : Future[Boolean] = {
+    val args = SQLTerms('record -> id, 'slot -> s)
+    SQL("DELETE FROM slot_record WHERE", args.where).apply(args).execute
+  }
 
   /** The set of assets to which this record applies. */
   def assets : Future[Seq[SlotAsset]] =
@@ -168,7 +167,6 @@ object Record extends TableId[Record]("record") {
     .map {
       case (((id, cat), meas), cont) =>
         val r = new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cont.consent, Measures(meas))
-        r._daterange.set(cont.date.fold[Range[Date]](Range.empty)(Range.singleton _))
         (r, cont)
     }
 
@@ -228,14 +226,4 @@ object Record extends TableId[Record]("record") {
     SQL("INSERT INTO record", args.insert, "RETURNING id")
       .apply(args).single(SQLCols[Id].map(new Record(_, volume, category)))
   }
-
-  private[models] def addSlot(r : Record.Id, s : Slot.Id) : Future[Boolean] = {
-    val args = SQLTerms('record -> r, 'slot -> s)
-    SQL("INSERT INTO slot_record", args.insert)
-      .apply(args).execute.recover {
-        case SQLDuplicateKeyException() => false
-      }
-  }
-  private[models] def removeSlot(r : Record.Id, s : Slot.Id) : Future[Boolean] =
-    DELETE('record -> r, 'slot -> s).execute
 }
