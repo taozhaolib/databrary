@@ -1,0 +1,11 @@
+@(target: Option[SitePage], context: String)(body: Html)(implicit request : RequestObject[SiteObject]#Site[_])
+
+@defining(target.map(_.pageName)) { title =>
+@widget.template.crud(context + title.fold("")(": " + _)) {
+	@widget.panel.form(title.getOrElse(""), context) {
+		<div class="col-full">
+			@body
+		</div>
+	}
+}
+}

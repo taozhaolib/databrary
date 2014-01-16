@@ -70,11 +70,8 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
   def authorizeChildren(all : Boolean = false) : Future[Seq[Authorize]] =
     Authorize.getChildren(party, all)
 
-  /** List of volumes to which this user has been granted at least CONTRIBUTE access, sorted by level (ADMIN first). */
-  def volumeAccess = VolumeAccess.getVolumes(party, Permission.CONTRIBUTE)
-
-  /** List of volumes which this party is funding. */
-  def funding = VolumeFunding.getFunder(party)
+  /** List of volumes with which this user is associated, sorted by level (ADMIN first). */
+  def volumeAccess = VolumeAccess.getVolumes(party)
 
   def avatar : Future[Option[Asset]] = Asset.getAvatar(party)
   def setAvatar(file : play.api.libs.Files.TemporaryFile, format : AssetFormat, name : Option[String] = None)  : Future[Asset] =
@@ -112,7 +109,6 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
         )))
       ),
       "volumes" -> (opt => volumeAccess.map(JsonArray.map(_.json - "party"))),
-      "funding" -> (opt => funding.map(JsonArray.map(_.json - "party"))),
       "comments" -> (opt => party.account.fold[Future[Seq[Comment]]](Async(Nil))(_.comments)
         .map(JsonArray.map(c => c.json - "who" + ('volume -> c.volume.json)))
       )

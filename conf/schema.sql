@@ -205,6 +205,7 @@ CREATE TABLE "volume_access" (
 	"party" integer NOT NULL References "party",
 	"access" permission NOT NULL DEFAULT 'NONE',
 	"inherit" permission NOT NULL DEFAULT 'NONE' Check ("inherit" < 'ADMIN'),
+	"funding" text,
 	Check ("access" >= "inherit"),
 	Primary Key ("volume", "party")
 );
@@ -241,15 +242,6 @@ CREATE TABLE "volume_citation" (
 );
 CREATE INDEX ON "volume_citation" ("volume");
 COMMENT ON TABLE "volume_citation" IS 'Quick and dirty citation list.  Not intended to be permanent.  No PK: only updated in bulk on volume.';
-
-CREATE TABLE "volume_funding" (
-	"volume" integer NOT NULL References "volume",
-	"funder" integer NOT NULL References "party",
-	"grant" text
-);
-CREATE INDEX ON "volume_funding" ("volume");
-CREATE INDEX ON "volume_funding" ("funder");
-COMMENT ON TABLE "volume_funding" IS 'Quick and dirty funding list.  No PK: only updated in bulk on volume.';
 
 ----------------------------------------------------------- time intervals
 

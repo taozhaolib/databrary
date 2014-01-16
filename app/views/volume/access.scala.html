@@ -11,9 +11,7 @@
 }
 
 
-@widget.template.crud("Manage Access: " + volume.pageName) {
-    @widget.panel.form(volume.pageName, "Manage Access") {
-        <div class="col-full">
+@widget.template.form(Some(volume), "Manage Access") {
             <table class="permission">
                 @defining(helper.FieldConstructor(widget.tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
                     <thead>
@@ -69,6 +67,4 @@
                         }
                 }</tfoot>
             </table>
-        </div>
-    }
 }

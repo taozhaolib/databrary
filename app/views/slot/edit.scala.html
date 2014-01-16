@@ -1,4 +1,4 @@
-@(c : Either[Volume, AbstractSlot], form : SlotHtml.EditForm, recordForm : Option[RecordHtml.SelectForm], selectList : Seq[(String,String)] = Nil)(implicit request : RequestObject[SiteObject]#Site[_])
+@(c : Either[Volume, AbstractSlot], form : SlotHtml.EditForm, records : Seq[Record], recordForm : Option[RecordHtml.SelectForm], selectList : Seq[(String,String)] = Nil)(implicit request : RequestObject[SiteObject]#Site[_])
 
 @import helper.FieldConstructor
 
@@ -6,11 +6,7 @@
     FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@defining(c.fold(_ => "Create Session in Volume", _ => "Edit Session")) { action =>
-@defining(c.merge.pageName) { pageName =>
-@widget.template.crud(action + ": " + pageName) {
-    @widget.panel.form(pageName, action) {
-        <div class="col-full">
+@widget.template.form(Some(c.merge), c.fold(_ => "Create Session in Volume", _ => "Edit Session")) {
             @widget.formErrors(form)
 
             @widget.tag.form(c.fold(volume => routes.SlotHtml.addContainer(volume.id), slot => routes.SlotHtml.update(slot.containerId, slot.segment)), 'id -> "slot_edit") {
@@ -38,7 +34,6 @@
                             </thead>
 
                             <tbody>
-                            @defining(Async.wait(slot.records)) { records =>
                                 @if(records.nonEmpty) {
                                     @records.map { record =>
                                         <tr>
@@ -64,7 +59,6 @@
                                         <td class="empty" colspan="@if(recordForm.nonEmpty) {3} else {2}">There are no records assigned.</td>
                                     </tr>
                                 }
-                            }
                             </tbody>
 
                             @recordForm.map { f =>
@@ -90,9 +84,4 @@
 
                 }
             }
-
-        </div>
-    }
-}
-}
 }

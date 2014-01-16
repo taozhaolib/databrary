@@ -2,6 +2,7 @@ package models
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import macros._
 import dbrary._
 import site._
 
@@ -17,14 +18,15 @@ import site._
   * @param access the level of permission granted directly to the party. Levels at or above [[Permission.EDIT]] are considered volume "membership."
   * @param inherit the level of permission granted to all descendents/members of the party, which cannot be [[Permission.ADMIN]]
   */
-final class VolumeAccess(val volume : Volume, val party : Party, val access : Permission.Value, val inherit : Permission.Value) extends TableRow with InVolume {
+final class VolumeAccess(val volume : Volume, val party : Party, val access : Permission.Value, val inherit : Permission.Value, val funding : Option[String] = None) extends TableRow with InVolume {
   def partyId = party.id
 
-  def json = JsonObject(
-    'volume -> volume.json,
-    'party -> party.json,
-    'access -> access,
-    'inherit -> inherit
+  def json = JsonObject.flatten(
+    Some('volume -> volume.json),
+    Some('party -> party.json),
+    Maybe(access).opt.map('access -> _),
+    Maybe(inherit).opt.map('inherit -> _),
+    funding.map('funding -> _)
   )
 }
 
@@ -32,8 +34,9 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
   private val columns = Columns(
       SelectColumn[Permission.Value]("access")
     , SelectColumn[Permission.Value]("inherit")
-    ).map { (access, inherit) =>
-      (volume : Volume, party : Party) => new VolumeAccess(volume, party, access, inherit)
+    , SelectColumn[Option[String]]("funding")
+    ).map { (access, inherit, funding) =>
+      (volume : Volume, party : Party) => new VolumeAccess(volume, party, access, inherit, funding)
     }
   private def partyRow(party : Party)(implicit site : Site) =
     columns.join(Volume.row, "volume_access.volume = volume.id") map {
@@ -49,18 +52,18 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
     volumeRow(volume)
       .SELECT("WHERE volume = ? ORDER BY access DESC, party.name")
       .apply(volume.id).list
-  /** Retrieve the volume access entries granted to a party at or above the specified permission level. */ 
-  private[models] def getVolumes(party : Party, permission : Permission.Value = Permission.NONE)(implicit site : Site) : Future[Seq[VolumeAccess]] =
+  /** Retrieve the volume access entries granted to a party for (at least) CONTRIBUTE or funding. */ 
+  private[models] def getVolumes(party : Party)(implicit site : Site) : Future[Seq[VolumeAccess]] =
     partyRow(party)
-      .SELECT("WHERE party = ? AND access >= ?::permission AND", Volume.condition, "ORDER BY access DESC, volume.name")
-      .apply(SQLArgs(party.id, permission) ++ Volume.conditionArgs).list
+      .SELECT("WHERE party = ? AND (access >= 'CONTRIBUTE' OR funding IS NOT NULL) AND", Volume.condition, "ORDER BY access DESC, volume.name")
+      .apply(party.id +: Volume.conditionArgs).list
 
   /** Update or add volume access in the database.
     * If an access for the volume and party already exist, it is changed to match this.
     * Otherwise, a new one is added.
     * This may invalidate volume.access. */
-  def set(volume : Volume, party : Party.Id, access : Permission.Value, inherit : Permission.Value)(implicit site : Site) : Future[Boolean] =
-    Audit.changeOrAdd("volume_access", SQLTerms('access -> access, 'inherit -> inherit), SQLTerms('volume -> volume.id, 'party -> party)).execute
+  def set(volume : Volume, party : Party.Id, access : Permission.Value = Permission.NONE, inherit : Permission.Value = Permission.NONE, funding : Option[String] = None)(implicit site : Site) : Future[Boolean] =
+    Audit.changeOrAdd("volume_access", SQLTerms('access -> access, 'inherit -> inherit, 'funding -> funding), SQLTerms('volume -> volume.id, 'party -> party)).execute
   /** Remove a particular volume access from the database.
     * @return true if a matching volume access was found and deleted
     */

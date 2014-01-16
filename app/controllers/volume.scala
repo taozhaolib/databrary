@@ -139,13 +139,12 @@ object VolumeHtml extends VolumeController {
     for {
       summary <- vol.summary
       access <- vol.partyAccess
-      funding <- vol.funding
       assets <- vol.toplevelAssets
       citations <- vol.citations
       comments <- vol.comments
       tags <- vol.tags
       top <- vol.top
-    } yield (Ok(views.html.volume.view(summary, access, funding, top, assets, citations, comments, tags)))
+    } yield (Ok(views.html.volume.view(summary, access, top, assets, citations, comments, tags)))
   }
 
   def search = SiteAction.async { implicit request =>
@@ -208,8 +207,8 @@ object VolumeHtml extends VolumeController {
 }
 
 object VolumeApi extends VolumeController {
-  def query(query : Option[String] = None) = SiteAction.async { implicit request =>
-    query.fold(Volume.getAll)(Volume.search(_))
+  def query(query : String = "") = SiteAction.async { implicit request =>
+    Maybe(query).opt.fold(Volume.getAll)(Volume.search(_))
       .map(l => Ok(JsonRecord.map[Volume](_.json)(l)))
   }
 

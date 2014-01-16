@@ -7,9 +7,7 @@
     }
 
 @defining(request.obj.container) { container =>
-@widget.template.crud("Create Session in Container: " + container.name.getOrElse(container.toString)) {
-    @widget.panel.form(container.name.getOrElse(container.toString), "Create Session in Container") {
-        <div class="col-full">
+@widget.template.form(Some(container), "Create Session in Container") {
             @widget.formErrors(form)
 
             @widget.tag.form(routes.SlotHtml.add(container.volumeId, request.obj.id)) {
@@ -18,7 +16,5 @@
 
                 <button type='submit' class="button">Create</button>
             }
-        </div>
-    }
 }
 }

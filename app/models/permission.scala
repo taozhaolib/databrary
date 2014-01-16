@@ -20,6 +20,7 @@ object Permission extends PGEnum("permission") {
   /** Alias for DOWNLOAD. DOWNLOAD permissions grant access to shared data, while non-data only requires VIEW. */
   def DATA = DOWNLOAD
 
+  implicit val truth : Truth[Value] = Truth[Value](_ != NONE)
   override implicit val sqlType : SQLType[Value] =
     SQLType.transform[Option[String], Value]("permission", classOf[Value])(
       _.fold[Option[Value]](Some(NONE))(s => catching(classOf[NoSuchElementException]).opt(withName(s))),
@@ -88,7 +89,7 @@ object Classification extends PGEnum("classification") {
 
   /** The most restricted data classification level that the current user may access under the given permission and consent level. */
   def download(p : Permission.Value, consent : Consent.Value)(implicit site : Site) : Option[Value] = {
-    if (p >= Permission.FULL)
+    if (p >= Permission.FULL || site.superuser)
       Some(Classification.values.min)
     else if (p >= Permission.DOWNLOAD)
       Some(Classification.access(consent))
