@@ -8,7 +8,7 @@ object ApplicationBuild extends Build {
 
   val dbDependencies = Seq(
     jdbc,
-    "com.github.mauricio" %% "postgresql-async" % "0.2.10"
+    "com.github.mauricio" %% "postgresql-async" % "0.2.11"
   )
 
   val avDependencies = Seq(
@@ -23,7 +23,7 @@ object ApplicationBuild extends Build {
   val dbrary = Project("dbrary", file("dbrary")).dependsOn(macros).settings(
     libraryDependencies ++= dbDependencies ++ Seq(
       component("play"),
-      "org.postgresql" % "postgresql" % "9.2-1003-jdbc4"
+      "org.postgresql" % "postgresql" % "9.3-1100-jdbc4"
     )
   )
 
