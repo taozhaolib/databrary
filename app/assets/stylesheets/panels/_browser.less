@@ -6,15 +6,75 @@
 
 //
 
+.browser_sort_title,
+.browser_sort_wrap,
 .browser_sort_pill {
+	position: relative;
 	display: block;
 	float: left;
+}
+
+.browser_sort_title {
+	text-transform: uppercase;
+	font-weight: bold;
+	color: g2;
+	.margin-height(@f4);
+	.margin-right(@f4);
+}
+
+.browser_sort_wrap {
+	.margin-right(@f4);
+	text-transform: capitalize;
+
+	&:after {
+		content: "";
+		border: @b4 solid transparent;
+		border-left-color: @g2;
+		.size(0);
+		float: left;
+		display: block;
+		.margin-top(@f2);
+		.margin-left(@f2);
+	}
+
+	&.last {
+		&:after {
+			display: none;
+		}
+	}
+}
+
+.browser_sort_pill {
+	.transition(@transition);
+	cursor: pointer;
+	position: relative;
 	border: 1px solid @g3;
-	.border-radius(@b4);
-	.padding-width(@f3);
-	.margin-right(@f2);
+	.border-radius(@b1);
+	.padding-width(@f2);
 	.border-margin-height(1px, @f4);
 	background-color: @c4g5m1;
+
+	&.left {
+		.border-radius(@b1 0 0 @b1);
+		.padding-right(@f4);
+
+		&:after {
+			content: "";
+			border: @b6 solid transparent;
+			border-top-color: @g2;
+			.size(0);
+			display: inline-block;
+			position: relative;
+			top: 0;
+			.margin-left(@f6);
+		}
+	}
+
+	&.right {
+		.border-radius(0 @b1 @b1 0);
+		border-left-width: 0;
+		.padding-left(@f4);
+	}
 
 	&.add {
 		background-color: @c11g5m2;
@@ -22,5 +82,65 @@
 
 	&.off {
 		background-color: @g4;
+
+		&:hover {
+			background-color: @c4g4m1;
+		}
 	}
+
+	&.expanded {
+		background-color: mix(@c4, @g5, 10%);
+
+		&:hover {
+			background-color: mix(@c4, @g5, 10%);
+		}
+	}
+
+	&:hover {
+		color: inherit;
+		background-color: @c4g4m1;
+	}
+}
+
+//
+
+.record_pill_remove {
+	&:hover {
+		background-color: @c8g4m1;
+	}
+}
+
+.record_pill_options {
+	display: none;
+	position: absolute;
+	left: @b2;
+	top: @b2;
+	.margin(0);
+	.padding(0);
+	.border-radius(0 @b4 @b4 @b4);
+	background-color: @g5;
+	.box-shadow(@box-shadow);
+	overflow: hidden;
+	min-width: @b1 * 6;
+	z-index: 100;
+
+	li {
+		&:before {
+			display: none;
+		}
+	}
+
+	a {
+		display: block;
+		.padding-width(@f4);
+
+		&:hover {
+			color: inherit;
+			background-color: mix(@c4, @g5, 10%);
+		}
+	}
+}
+
+.expanded .record_pill_options {
+	display: block;
 }

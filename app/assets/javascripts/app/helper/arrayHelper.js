@@ -2,12 +2,17 @@ define(['app/config/module'], function (module) {
 	'use strict';
 
 	module.factory('ArrayHelper', ['$filter', function ($filter) {
-		return function (array, validationFn, orderFn) {
-			var _validationFn,
+		return function (array, transformFn, validationFn, orderFn) {
+			var _transformFn,
+				_validationFn,
 				_orderFn;
 
 			if (!angular.isArray(array))
 				array = [];
+
+			var newTransform = function (transformFn) {
+				_validationFn = transformFn;
+			};
 
 			var newValidation = function (validationFn) {
 				_validationFn = validationFn;
@@ -18,10 +23,14 @@ define(['app/config/module'], function (module) {
 			};
 
 			var index = function (item) {
-				if (!validate(item))
+				if (!angular.isFunction(_validationFn) || !validate(item))
 					item = $filter('filter')(array, item, true).shift();
 
 				return array.indexOf(item);
+			};
+
+			var transform = function (item) {
+				return angular.isFunction(_transformFn) ? _transformFn(item) : item;
 			};
 
 			var validate = function (item) {
@@ -37,7 +46,7 @@ define(['app/config/module'], function (module) {
 			};
 
 			var add = function (item) {
-				if (!(item = validate(item)))
+				if (!(item = validate(transform(item))))
 					return false;
 
 				array.push(item);
@@ -53,14 +62,14 @@ define(['app/config/module'], function (module) {
 				if (!~i)
 					return undefined;
 
-				if (!(item = validate(angular.extend({}, array[i], item))))
+				if (!(item = validate(angular.extend({}, array[i], transform(item)))))
 					return false;
 
 				return replace(old, item);
 			};
 
 			var replace = function (old, item) {
-				if (!(item = validate(item)))
+				if (!(item = validate(transform(item))))
 					return false;
 
 				var i = index(old);
@@ -135,12 +144,14 @@ define(['app/config/module'], function (module) {
 				toggle: toggle,
 				all: all,
 				reset: reset,
+				newTransform: newTransform,
 				newValidation: newValidation,
 				newOrder: newOrder
 			};
 
 			angular.extend(array, methods);
 
+			newTransform(transformFn);
 			newValidation(validationFn);
 			newOrder(orderFn);
 

@@ -1,36 +1,50 @@
-<div>
-    <a class="browser_sort_pill"
-    ng-click="toggleSort('volume')"
-    ng-class="sortClasses('volume')">Studies</a>
+<div class="browser_sort">
+    <span class="browser_sort_title">
+        Sort
+    </span>
 
-    <span class="browser_sort_pill"
-    ng-repeat="(sortName, sortOptions) in browser.recordSorts|filter:{active: true}">
-        <a class="record_pill left_pill"
-        ng-click="expandRecordSorts()"
-        ng-class="recordSortClasses('asset')">
-            <span>{{sortName}}</span>
+    <span class="browser_sort_wrap"
+    ng-if="browser.sort.volume.allow">
+        <a class="browser_sort_pill"
+        ng-click="toggleSort('volume')"
+        ng-class="sortClasses('volume')">Study</a>
+    </span>
 
-            <ul class="flat inline" ng-hide="true">
-                <li ng-repeat="(potentialName, potentialOptions) in browser.recordSorts">
-                    <a ng-click="switchRecordSort(sort, potentialSort)">{{potentialName}}</a>
-                </li>
-            </ul>
-        </a>
+    <span class="browser_sort_wrap"
+    ng-class="recordSortClasses(sort)"
+    ng-repeat="sort in browser.recordSorts|filter:{active: true}"
+    ng-if="browser.sort.record.allow">
+        <a class="browser_sort_pill left"
+        ng-click="toggleRecordOptions(sort)">{{sort.name}}</a>
 
-        <a class="record_pill right_pill"
-        ng-click="removeRecordSort()"
+        <ul class="record_pill_options">
+            <li ng-repeat="maybe in browser.recordSorts">
+                <a ng-click="switchRecordSort(sort, maybe)">{{maybe.name}}</a>
+            </li>
+        </ul>
+
+        <a class="browser_sort_pill right remove"
+        ng-click="removeRecordSort(sort)"
         ng-if="canRemoveRecordSort()">x</a>
     </span>
 
-    <a class="browser_sort_pill add"
-    ng-click="addRecordSort()"
-    ng-if="canAddRecordSort()">+</a>
+    <span class="browser_sort_wrap"
+    ng-if="canAddRecordSort()">
+        <a class="browser_sort_pill add"
+        ng-click="addRecordSort()">+ sort</a>
+    </span>
 
-    <a class="browser_sort_pill"
-    ng-click="toggleSort('session')"
-    ng-class="sortClasses('session')">Sessions</a>
+    <span class="browser_sort_wrap"
+    ng-if="browser.sort.session.allow">
+        <a class="browser_sort_pill"
+        ng-click="toggleSort('session')"
+        ng-class="sortClasses('session')">Session</a>
+    </span>
 
-    <a class="browser_sort_pill"
-    ng-click="toggleSort('asset')"
-    ng-class="sortClasses('asset')">Assets</a>
+    <span class="browser_sort_wrap last"
+    ng-if="browser.sort.asset.allow">
+        <a class="browser_sort_pill"
+        ng-click="toggleSort('asset')"
+        ng-class="sortClasses('asset')">Asset</a>
+    </span>
 </div>

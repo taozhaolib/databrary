@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('BrowserService' ['$rootScope', 'ArrayHelper', function ($rootScope, arrayHelper) {
+	module.factory('BrowserService', ['$rootScope', 'ArrayHelper', function ($rootScope, arrayHelper) {
 		var browserService = {};
 
 		//
@@ -17,23 +17,27 @@ define(['app/config/module'], function (module) {
 			$rootScope.$watch('browser.data', function () {
 				var tempSorts = arrayHelper([]);
 
+				// inefficient.
 				angular.forEach(browserService.data, function (volume) {
 					angular.forEach(volume.records, function (record) {
-						var temp_i = tempSorts.index({name: record.category}),
-							real_i = browserService.recordSorts.index({name: record.category});
+						var temp_i = tempSorts.index({name: record.category});
 
-						if(temp_i == -1)
-							if(real_i > -1)
-								tempSorts.update(temp_i, browserService.recordSorts.get(real_i));
+						if (temp_i == -1) {
+							var real_i = browserService.recordSorts.index({name: record.category});
+
+							if (real_i > -1)
+								tempSorts.add(browserService.recordSorts.get(real_i));
 							else
 								tempSorts.add({
 									name: record.category,
-									active: false
+									active: false,
+									enabled: true
 								});
+						}
 					});
 				});
 
-				if(browserService.recordSorts.length == 0 && tempSorts.index({name: 'participant'}))
+				if (browserService.recordSorts.length == 0 && tempSorts.index({name: 'participant'}) > -1)
 					tempSorts.update({name: 'participant'}, {active: true});
 
 				browserService.recordSorts = tempSorts;
@@ -50,70 +54,144 @@ define(['app/config/module'], function (module) {
 		};
 
 		browserService.setContext = function (newContext) {
-			if(contexts.indexOf(newContext) == -1)
+			if (contexts.indexOf(newContext) == -1)
 				return false;
 
-			switch(newContext) {
+			switch (newContext) {
 				case 'search':
-					if(angular.isUndefined(browserService.sort))
+					if (angular.isUndefined(browserService.sort))
 						browserService.sort = {
-							volume: true,
-							session: true,
-							asset: true,
-							record: ['participant']
+							volume: {
+								active: true,
+								allow: true
+							},
+							record: {
+								active: true,
+								allow: true
+							},
+							session: {
+								active: true,
+								allow: true
+							},
+							asset: {
+								active: true,
+								allow: true
+							}
 						};
 					break;
 
 				case 'party':
-					if(angular.isUndefined(browserService.sort))
+					if (angular.isUndefined(browserService.sort))
 						browserService.sort = {
-							volume: true,
-							session: true,
-							asset: true,
-							record: ['participant']
+							volume: {
+								active: true,
+								allow: true
+							},
+							record: {
+								active: true,
+								allow: true
+							},
+							session: {
+								active: true,
+								allow: true
+							},
+							asset: {
+								active: true,
+								allow: true
+							}
 						};
 					break;
 
 				case 'volume':
-					if(angular.isUndefined(browserService.sort))
+					if (angular.isUndefined(browserService.sort))
 						browserService.sort = {
-							volume: false,
-							session: true,
-							asset: true,
-							record: ['participant']
+							volume: {
+								active: false,
+								allow: false
+							},
+							record: {
+								active: true,
+								allow: true
+							},
+							session: {
+								active: true,
+								allow: true
+							},
+							asset: {
+								active: true,
+								allow: true
+							}
 						};
 					break;
 
 				case 'record':
-					if(angular.isUndefined(browserService.sort))
+					if (angular.isUndefined(browserService.sort))
 						browserService.sort = {
-							volume: false,
-							session: true,
-							asset: true,
-							record: ['participant']
+							volume: {
+								active: false,
+								allow: false
+							},
+							record: {
+								active: true,
+								allow: true
+							},
+							session: {
+								active: true,
+								allow: true
+							},
+							asset: {
+								active: true,
+								allow: true
+							}
 						};
 					break;
 
 				case 'session':
-					if(angular.isUndefined(browserService.sort))
-						browserService.sort = { // questioned
-							volume: false,
-							session: true,
-							asset: true,
-							record: undefined
+					if (angular.isUndefined(browserService.sort))
+						browserService.sort = {
+							volume: {
+								active: false,
+								allow: false
+							},
+							record: {
+								active: true,
+								allow: true
+							},
+							session: {
+								active: true,
+								allow: true
+							},
+							asset: {
+								active: true,
+								allow: true
+							}
 						};
 					break;
 
 				case 'asset':
-					if(angular.isUndefined(browserService.sort))
-						browserService.sort = { // questioned
-							volume: false,
-							session: true,
-							asset: true,
-							record: undefined
+					if (angular.isUndefined(browserService.sort))
+						browserService.sort = {
+							volume: {
+								active: false,
+								allow: false
+							},
+							record: {
+								active: false,
+								allow: false
+							},
+							session: {
+								active: true,
+								allow: true
+							},
+							asset: {
+								active: true,
+								allow: true
+							}
 						};
 					break;
 			}
+
+			context = newContext;
 
 			return newContext;
 		};
