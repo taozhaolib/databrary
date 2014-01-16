@@ -9,8 +9,30 @@ define(['app/config/module'], function (module) {
 				};
 
 				$scope.levelType = function () {
-					
+
 				};
+
+				$scope.nextLevelType = function (type) {
+					switch(type) {
+						case 'asset':
+							return undefined;
+
+						case 'session':
+							return 'asset';
+
+						case 'volume':
+							// blech. put this in Service.
+
+						default:
+
+
+							return undefined;
+					}
+				};
+
+				$scope.levelInclude = function ()  {
+					return $scope.levelType()+'.html';
+				}
 			};
 		};
 
