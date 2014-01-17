@@ -86,10 +86,11 @@ private[controllers] sealed class LoginController extends SiteController {
       .withNewSession
   }
 
+  private final val superuserTime : Long = 60*60*1000
   def superuserOn = SiteAction.access(Permission.ADMIN) { implicit request =>
-    val expires = System.currentTimeMillis + 60*60*1000
+    val expires = System.currentTimeMillis + superuserTime
     Audit.action(Audit.Action.superuser)
-    (if (request.isApi) Ok(json + ('superuser -> new Timestamp(expires)))
+    (if (request.isApi) Ok(json + ('superuser -> superuserTime))
     else Redirect(request.headers.get(REFERER).getOrElse(routes.VolumeHtml.search.url)))
       .withSession(session + ("superuser" -> expires.toString))
   }
