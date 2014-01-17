@@ -15,6 +15,8 @@ GET     /OpenID/$email<.+\@.+\..+>                                              
 GET     /logout                                                                                   controllers.LoginHtml.logout
 GET     /superuser/on                                                                             controllers.LoginHtml.superuserOn
 GET     /superuser/off                                                                            controllers.LoginHtml.superuserOff
+GET     /register                                                                                 controllers.LoginHtml.registration
+POST    /register                                                                                 controllers.LoginHtml.register
 GET     /token/password                                                                           controllers.Token.getPassword
 POST    /token/password                                                                           controllers.Token.issuePassword
 GET     /token/:token                                                                             controllers.Token.token(token : String)
@@ -106,6 +108,8 @@ GET     /api/user                                                               
 POST    /api/user/login                                                                           controllers.LoginApi.post
 # LOGOUT
 POST    /api/user/logout                                                                          controllers.LoginApi.logout
+# REGISTER
+POST    /api/user/register                                                                        controllers.LoginApi.register
 # SUPERUSER ON
 POST    /api/user/superuser/on                                                                    controllers.LoginApi.superuserOn
 # SUPERUSER OFF

@@ -102,6 +102,30 @@ private[controllers] sealed class LoginController extends SiteController {
 
   def get = SiteAction.access(Permission.VIEW) { implicit request =>
     Ok(json)
+
+  type RegistrationMapping = (String, String, String, Boolean)
+  type RegistrationForm = Form[RegistrationMapping]
+  protected val registrationForm : RegistrationForm = Form(tuple(
+    "name" -> nonEmptyText,
+    "email" -> email,
+    "affiliation" -> text,
+    "agreement" -> checked(Messages("agreement.required"))
+  ))
+
+  def register = SiteAction.async { implicit request =>
+    def Error(form : RegistrationForm) =
+      throw new BadFormException[RegistrationMapping](views.html.party.register(_))(form)
+    val form = registrationForm.bindFromRequest
+    form.fold(Error _, {
+      case (name, email, affiliation, _) =>
+	for {
+	  p <- Party.create(
+	    name = name,
+	    affiliation = Maybe(affiliation).opt)
+          a <- Account.create(p, email = email)
+	  _ <- controllers.Token.newPassword(Right(a))
+	} yield (Ok("sent"))
+    })
   }
 }
 
@@ -124,6 +148,10 @@ object LoginHtml extends LoginController {
           )(login))
         }.recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
     }
+
+  def registration = SiteAction { implicit request =>
+    Ok(views.html.party.register(registrationForm))
+}
 }
 
 object LoginApi extends LoginController {
