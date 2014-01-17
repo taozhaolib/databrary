@@ -152,7 +152,7 @@ object LoginHtml extends LoginController {
 }
 
 object LoginApi extends LoginController {
-  def get = SiteAction { implicit request =>
+  def get = SiteAction.auth { implicit request =>
     Ok(json)
   }
 }
