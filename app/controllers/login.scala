@@ -26,7 +26,7 @@ private[controllers] object LoginController extends LoginController {
 
 private[controllers] sealed class LoginController extends SiteController {
 
-  protected def json(implicit site : SiteRequest.Auth[_]) =
+  protected def json(implicit site : SiteRequest[_]) =
     site.identity.json ++
     JsonObject.flatten(
       Some('access -> site.access),
@@ -152,7 +152,7 @@ object LoginHtml extends LoginController {
 }
 
 object LoginApi extends LoginController {
-  def get = SiteAction.auth { implicit request =>
+  def get = SiteAction { implicit request =>
     Ok(json)
   }
 }
