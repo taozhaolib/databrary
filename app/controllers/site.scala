@@ -187,7 +187,7 @@ object Site extends SiteController {
   assert(current.configuration.getString("application.secret").exists(_ != "databrary"),
     "Application is insecure. You must set application.secret appropriately (see README).")
 
-  def start = LoginHtml.view
+  def start = VolumeHtml.search
 
   def test = Action { request =>
     Ok(request.queryString.toString)

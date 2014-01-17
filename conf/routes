@@ -4,7 +4,7 @@
 # ~~~~
 
 # static
-GET     /                                                                                         controllers.VolumeHtml.search
+GET     /                                                                                         controllers.Site.start
 
 # users
 GET     /login                                                                                    controllers.LoginHtml.view

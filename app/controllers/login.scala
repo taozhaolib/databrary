@@ -82,7 +82,7 @@ private[controllers] sealed class LoginController extends SiteController {
       case _ =>
     }
     (if (request.isApi) Ok("")
-    else Redirect(routes.VolumeHtml.search))
+    else Redirect(routes.Site.start))
       .withNewSession
   }
 
@@ -91,13 +91,13 @@ private[controllers] sealed class LoginController extends SiteController {
     val expires = System.currentTimeMillis + superuserTime
     Audit.action(Audit.Action.superuser)
     (if (request.isApi) Ok(json + ('superuser -> superuserTime))
-    else Redirect(request.headers.get(REFERER).getOrElse(routes.VolumeHtml.search.url)))
+    else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start.url)))
       .withSession(session + ("superuser" -> expires.toString))
   }
 
   def superuserOff = SiteAction.access(Permission.ADMIN) { implicit request =>
     (if (request.isApi) Ok(json - "superuser")
-    else Redirect(request.headers.get(REFERER).getOrElse(routes.VolumeHtml.search.url)))
+    else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start.url)))
       .withSession(session - "superuser")
   }
 
