@@ -36,7 +36,7 @@ POST    /party/$pID<[0-9]+>/authorize/$parent<-?[0-9]+>/apply                   
 # TODO: should be POST but currently used as link:
 GET     /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>/remove                                     controllers.PartyHtml.authorizeDelete(pID : models.Party.Id, child : models.Party.Id)
 GET     /party/$pID<-?[0-9]+>/avatar                                                              controllers.PartyHtml.avatar(pID : models.Party.Id, size : Int ?= 64)
-POST    /party/$pID<-?[0-9]+>/avatar                                                              controllers.PartyHtml.uploadAvatar(pID : models.Party.Id)
+POST    /party/$pID<[0-9]+>/avatar                                                                controllers.PartyHtml.uploadAvatar(pID : models.Party.Id)
 
 # volumes
 GET     /search                                                                                   controllers.VolumeHtml.search
@@ -118,21 +118,21 @@ POST    /api/user/superuser/off                                                 
 # GET       ?volumes;comments;parents[=all];children[=all];funding                                TODO: tags;network
 GET     /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.get(partyId : models.Party.Id)
 # UPDATE
-POST    /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.update(partyId : models.Party.Id)
+POST    /api/party/$partyId<[0-9]+>                                                               controllers.PartyApi.update(partyId : models.Party.Id)
 # CREATE
 POST    /api/party                                                                                controllers.PartyApi.create()
 
 # ----- PARTY AUTHORIZE ----- #
 # QUERY
-GET     /api/party/$partyId<-?[0-9]+>/authorize                                                   controllers.PartyApi.authorizeGet(partyId : models.Party.Id)
+GET     /api/party/$partyId<[0-9]+>/authorize                                                     controllers.PartyApi.authorizeGet(partyId : models.Party.Id)
 # SEARCH
-GET     /api/party/$partyId<-?[0-9]+>/authorize/:name                                             controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, name : String)
+GET     /api/party/$partyId<[0-9]+>/authorize/:name                                               controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, name : String)
 # CHANGE
-POST    /api/party/$partyId<-?[0-9]+>/authorize/$childId<[0-9]+>                                  controllers.PartyApi.authorizeChange(partyId : models.Party.Id, childId : models.Party.Id)
+POST    /api/party/$partyId<[0-9]+>/authorize/$childId<[0-9]+>                                    controllers.PartyApi.authorizeChange(partyId : models.Party.Id, childId : models.Party.Id)
 # APPLY
-POST    /api/party/$partyId<-?[0-9]+>/authorize/$parentId<[0-9]+>/apply                           controllers.PartyApi.authorizeApply(partyId : models.Party.Id, parentId : models.Party.Id)
+POST    /api/party/$partyId<[0-9]+>/authorize/$parentId<[0-9]+>/apply                             controllers.PartyApi.authorizeApply(partyId : models.Party.Id, parentId : models.Party.Id)
 # DELETE
-DELETE  /api/party/$partyId<-?[0-9]+>/authorize/$otherId<[0-9]+>                                  controllers.PartyApi.authorizeDelete(partyId : models.Party.Id, otherId : models.Party.Id)
+DELETE  /api/party/$partyId<[0-9]+>/authorize/$otherId<[0-9]+>                                    controllers.PartyApi.authorizeDelete(partyId : models.Party.Id, otherId : models.Party.Id)
 
 # ----- VOLUME ----- #
 # QUERY     ?query=search+terms
