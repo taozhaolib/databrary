@@ -30,7 +30,7 @@ private[controllers] sealed class LoginController extends SiteController {
     site.identity.json ++
     JsonObject.flatten(
       Some('access -> site.access),
-      if (site.access == Permission.ADMIN) Some('superuser -> new Timestamp(site.session.get("superuser").flatMap(Maybe.toLong _).getOrElse(0L))) else None
+      if (site.access == Permission.ADMIN) Some('superuser -> site.session.get("superuser").flatMap(Maybe.toLong _).map(_ - System.currentTimeMillis).filter(_ > 0).getOrElse(0L)) else None
     )
 
   private[controllers] def login(a : Account)(implicit request : SiteRequest[_]) : Future[SimpleResult] = {
