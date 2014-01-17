@@ -100,6 +100,9 @@ private[controllers] sealed class LoginController extends SiteController {
       .withSession(session - "superuser")
   }
 
+  def get = SiteAction.access(Permission.VIEW) { implicit request =>
+    Ok(json)
+
   type RegistrationMapping = (String, String, String, Boolean)
   type RegistrationForm = Form[RegistrationMapping]
   protected val registrationForm : RegistrationForm = Form(tuple(
@@ -127,28 +130,28 @@ private[controllers] sealed class LoginController extends SiteController {
 }
 
 object LoginHtml extends LoginController {
-  def viewLogin()(implicit request: SiteRequest[_]) : templates.Html =
-    views.html.party.login(loginForm)
-  def viewLogin(err : String)(implicit request: SiteRequest[_]) : templates.Html =
-    views.html.party.login(loginForm.withGlobalError(err))
+    def viewLogin()(implicit request: SiteRequest[_]) : templates.Html =
+      views.html.party.login(loginForm)
+    def viewLogin(err : String)(implicit request: SiteRequest[_]) : templates.Html =
+      views.html.party.login(loginForm.withGlobalError(err))
 
-  def view = SiteAction { implicit request =>
-    request.user.fold(Ok(viewLogin()))(u => Redirect(u.party.pageURL))
-  }
+    def view = SiteAction { implicit request =>
+      request.user.fold(Ok(viewLogin()))(u => Redirect(u.party.pageURL))
+    }
 
-  def openID(email : String) = SiteAction.async { implicit request =>
-    val em = Maybe(email).opt
-    OpenID.verifiedId
-      .flatMap { info =>
-        Account.getOpenid(info.id, em).flatMap(_.fold(
-          ABadRequest(views.html.party.login(loginForm.fill((em, "", info.id)).withError("openid", "login.openID.notFound")))
-        )(login))
-      }.recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
-  }
+    def openID(email : String) = SiteAction.async { implicit request =>
+      val em = Maybe(email).opt
+      OpenID.verifiedId
+        .flatMap { info =>
+          Account.getOpenid(info.id, em).flatMap(_.fold(
+            ABadRequest(views.html.party.login(loginForm.fill((em, "", info.id)).withError("openid", "login.openID.notFound")))
+          )(login))
+        }.recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
+    }
 
   def registration = SiteAction { implicit request =>
     Ok(views.html.party.register(registrationForm))
-  }
+}
 }
 
 object LoginApi extends LoginController {
