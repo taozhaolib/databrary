@@ -101,6 +101,8 @@ POST    /volume/$vID<[0-9]+>/ingest/curated                                     
 # ===== API ===== #
 
 # ----- LOGIN ----- #
+# GET
+GET     /api/user                                                                                 controllers.LoginApi.get
 # LOGIN
 POST    /api/user/login                                                                           controllers.LoginApi.post
 # LOGOUT
