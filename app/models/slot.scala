@@ -169,7 +169,7 @@ abstract class Slot protected (val id : Slot.Id, val segment : Segment, consent_
     Action("edit", controllers.routes.SlotHtml.edit(id), Permission.EDIT),
     Action("add file", controllers.routes.AssetHtml.create(volumeId, Some(containerId), segment.lowerBound), Permission.CONTRIBUTE),
     // Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
-    Action("add participant", controllers.routes.RecordHtml.slotAdd(id, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
+    Action("add participant", controllers.routes.RecordHtml.slotAdd(id, Range.full[Offset], RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
   )
 }
 

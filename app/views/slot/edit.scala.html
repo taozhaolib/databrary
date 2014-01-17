@@ -20,7 +20,7 @@
             <button type='submit' class="button" form="slot_edit">Change</button>
 
             @c match {
-                case Right(slot : Slot) => {
+                case Right(slot) => {
                     <fieldset>
                         <legend>Records</legend>
 
@@ -46,7 +46,7 @@
                                             </td>
 
                                             <td class="meta">
-                                            @widget.tag.form(routes.RecordHtml.remove(record.id, slot.id, true)) {
+                                            @widget.tag.form(routes.RecordHtml.remove(record.id, slot.containerId, slot.segment, true)) {
                                                 <a href="@routes.RecordHtml.edit(record.id)" class="button">edit</a>
 
                                                 <button type='submit' class="button first">remove</button>
@@ -64,7 +64,7 @@
                             @recordForm.map { f =>
                                 <tfoot>
                                     <tr>
-                                    @widget.tag.form(routes.RecordHtml.slotAdd(slot.id, RecordCategory.PARTICIPANT, true)) {
+                                    @widget.tag.form(routes.RecordHtml.slotAdd(slot.containerId, slot.segment, RecordCategory.PARTICIPANT, true)) {
                                         <td colspan="2">
                                         @widget.tag.select(f("record"), selectList, '_default -> "Create new record...", '_colspan -> 2)(widget.tag.minimalFieldConstructor.f, Lang("en"))
                                         </td>

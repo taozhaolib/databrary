@@ -107,10 +107,9 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
         case SQLDuplicateKeyException() => false
       }
   /** Remove this record from a slot. */
-  def removeSlot(s : Slot.Id) : Future[Boolean] = {
-    val args = SQLTerms('record -> id, 'slot -> s)
-    SQL("DELETE FROM slot_record WHERE", args.where).apply(args).execute
-  }
+  def removeSlot(s : AbstractSlot) : Future[Boolean] =
+    SQL("DELETE FROM slot_record USING slot WHERE record = ? AND slot = slot.id AND slot.container = ? AND slot.segment = ?")
+      .apply(id, s.containerId, s.segment).execute
 
   /** The set of assets to which this record applies. */
   def assets : Future[Seq[SlotAsset]] =

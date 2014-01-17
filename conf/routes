@@ -82,10 +82,10 @@ POST    /slot/$sID<[0-9]+>/comment/create                                       
 POST    /slot/$sID<[0-9]+>/tag                                                                    controllers.TagHtml.update(name : String ?= "", sID : models.Slot.Id, segment : dbrary.Segment)
 
 # records
-POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                                             controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Slot.Id, editRedirect : Boolean = false)
-POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove/return                                      controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Slot.Id, editRedirect : Boolean = true)
-POST    /slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create                                           controllers.RecordHtml.slotAdd(sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = false)
-POST    /slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create/return                                    controllers.RecordHtml.slotAdd(sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = true)
+POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                                             controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset], editRedirect : Boolean = false)
+POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove/return                                      controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset], editRedirect : Boolean = true)
+POST    /slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create                                           controllers.RecordHtml.slotAdd(sID : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset], cID : models.RecordCategory.Id, editRedirect : Boolean = false)
+POST    /slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create/return                                    controllers.RecordHtml.slotAdd(sID : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset], cID : models.RecordCategory.Id, editRedirect : Boolean = true)
 
 GET     /record/$rID<[0-9]+>                                                                      controllers.RecordHtml.view(rID : models.Record.Id)
 GET     /volume/$vID<[0-9]+>/record/$cID<-?[0-9]+>/create                                         controllers.RecordHtml.add(vID : models.Volume.Id, cID : models.RecordCategory.Id)
@@ -172,6 +172,10 @@ POST    /api/record                                                             
 POST    /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.update(recordId : models.Record.Id)
 # DELETE
 #                                                                                                 TODO: DELETE /api/record/$recordId<[0-9]+>
+# ADD           ?segment=
+POST    /api/record/$recordId<[0-9]+>/slot/$containerId<[0-9]+>                                   controllers.RecordApi.add(recordId : models.Record.Id, containerId : models.Container.Id, segment : dbrary.Segment)
+# REMOVE        ?segment=
+DELETE  /api/record/$recordId<[0-9]+>/slot/$containerId<[0-9]+>                                   controllers.RecordApi.remove(recordId : models.Record.Id, containerId : models.Container.Id, segment : dbrary.Segment)
 
 # ----- ASSET ----- #
 # GET       ?slot;revisions
