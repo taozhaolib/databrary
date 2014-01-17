@@ -60,6 +60,12 @@ define(['app/config/module'], function (module) {
 
 				$scope.removeRecordSort = function (sort) {
 					sort.active = false;
+
+					// move to end
+					var sort_i = $scope.browser.recordSorts.index(sort);
+
+					$scope.browser.recordSorts.splice(sort_i, 1);
+					$scope.browser.recordSorts.push(sort);
 				};
 
 				$scope.canRemoveRecordSort = function () {

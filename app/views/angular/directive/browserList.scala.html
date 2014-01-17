@@ -1,8 +1,10 @@
-<div class="browser_list">
-
+<div class="browser_list cf">
+    Depth: {{getDepth()}}<br>
+    Type: {{getLevelType()}}<br>
+{{item.id}}
     <ul>
-        <li ng-repeat="item in levelItems()">
-            <ng-include src="levelInclude()"></ng-include>
+        <li ng-repeat="item in getLevelItems(item)">
+            <ng-include src="getLevelInclude()"></ng-include>
         </li>
     </ul>
 </div>

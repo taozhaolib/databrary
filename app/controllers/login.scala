@@ -102,6 +102,7 @@ private[controllers] sealed class LoginController extends SiteController {
 
   def get = SiteAction.access(Permission.VIEW) { implicit request =>
     Ok(json)
+  }
 
   type RegistrationMapping = (String, String, String, Boolean)
   type RegistrationForm = Form[RegistrationMapping]

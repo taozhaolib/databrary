@@ -53,7 +53,7 @@ define(['app/config/module'], function (module) {
 			return context;
 		};
 
-		browserService.setContext = function (newContext) {
+		browserService.initialize = function (newContext) {
 			if (contexts.indexOf(newContext) == -1)
 				return false;
 
@@ -65,9 +65,9 @@ define(['app/config/module'], function (module) {
 								active: true,
 								allow: true
 							},
-							record: {
+							record: { // TEMP!
 								active: true,
-								allow: true
+								allow: false
 							},
 							session: {
 								active: true,
@@ -194,6 +194,100 @@ define(['app/config/module'], function (module) {
 			context = newContext;
 
 			return newContext;
+		};
+
+		//
+
+		browserService.getSortLevels = function ()  {
+			var levels = [];
+
+			if(browserService.sort.volume.active)
+				levels.push('volume');
+
+			if(browserService.sort.record.allow) {
+				angular.forEach(browserService.recordSorts, function (sort) {
+					if(sort.active)
+						levels.push(sort.name);
+				});
+			}
+
+			if(browserService.sort.session.active)
+				levels.push('session');
+
+			if(browserService.sort.asset.active)
+				levels.push('asset');
+
+			return levels;
+		};
+
+		browserService.getLevelType = function (depth) {
+			if(!angular.isNumber(depth))
+				return undefined;
+
+			return browserService.getSortLevels()[depth];
+		};
+
+		browserService.getLevelItems = function (depth, args) {
+			args = angular.extend({}, args);
+
+			var type = browserService.getLevelType(depth);
+
+			switch(type) {
+				case 'volume':
+					return browserService.data;
+
+				case 'session':
+					switch(args.parent) {
+						case 'volume':
+							var tmp = [];
+
+							angular.forEach(browserService.data, function (volume) {
+								if(volume.id = args.volume)
+									tmp = volume.sessions
+							});
+
+							return tmp;
+
+						default:
+							return [];
+					}
+
+				case 'asset':
+					switch(args.parent) {
+						case 'volume':
+							var tmp = [];
+
+							angular.forEach(browserService.data, function (volume) {
+								if(volume.id = args.volume)
+									tmp = volume.assets
+							});
+
+							return tmp;
+
+						case 'session':
+							var tmp = [];
+
+//							angular.forEach(browserService.data, function (volume) {
+//								if(volume.id = args.volume)
+//									angular.forEach(volume.assets, function(asset) {console.log(asset.container.id);
+//										if(asset.container.id = args.session)
+//											tmp.push(asset);
+//									});
+//							});
+
+							return tmp;
+
+						default:
+							return [];
+					}
+
+				default:
+					return [];
+			}
+		};
+
+		browserService.hasLevelItems = function (depth, args) {
+			return browserService.getLevelItems(depth, args).length > 0;
 		};
 
 		//

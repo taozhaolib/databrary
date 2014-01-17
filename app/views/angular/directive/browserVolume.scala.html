@@ -1,3 +1,5 @@
-<div class="browser_volume">
-    <browser-list></browser-list>
+<div class="browser_volume" browser-item="{{assign(item)}}">
+    Volume Name: {{item.name}}<br>
+
+    <browser-list level="{{browserDepth + 1}}"></browser-list>
 </div>

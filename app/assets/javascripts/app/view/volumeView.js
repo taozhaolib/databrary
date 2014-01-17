@@ -4,6 +4,9 @@ define(['app/config/module'], function (module) {
 	module.controller('VolumeView', ['$scope', 'volume', 'PanelService', function ($scope, volume, panelService) {
 		$scope.volume = volume;
 
+		$scope.browser.setData([volume]);
+		$scope.browser.initialize('volume');
+
 		$scope.$watch('volume', function () {
 			panelService.refreshPanels();
 		}, true);
