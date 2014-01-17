@@ -80,12 +80,6 @@ private[controllers] sealed class SlotController extends ObjectController[Abstra
 object SlotController extends SlotController
 
 object SlotHtml extends SlotController {
-  private[controllers] def actionId(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW) =
-    RequestObject.check(v, models.Slot.get(i)(_), p)
-
-  private[controllers] def ActionId(v : models.Volume.Id, i : models.Slot.Id, p : Permission.Value = Permission.VIEW) =
-    SiteAction ~> actionId(v, i, p)
-
   private[controllers] def show(commentForm : CommentForm = commentForm, tagForm : TagHtml.TagForm = TagHtml.tagForm)(implicit request : Request[_]) = {
     val slot = request.obj
     for {
@@ -131,27 +125,6 @@ object SlotHtml extends SlotController {
         } yield (Redirect(cont.pageURL))
       case _ => ABadRequest(views.html.slot.edit(Left(request.obj), form, Nil, None))
     })
-  }
-
-  type CreateForm = Form[(Option[Offset], Option[Offset])]
-  private[this] val createForm : CreateForm = Form(tuple(
-    "start" -> optional(of[Offset]),
-    "end" -> optional(of[Offset])
-  ).verifying(Messages("range.invalid"), !_.zipped.exists(_ > _)))
-
-  def create(v : models.Volume.Id, c : models.Slot.Id) = ActionId(v, c, Permission.CONTRIBUTE) { implicit request =>
-    Ok(views.html.slot.create(createForm))
-  }
-
-  def add(v : models.Volume.Id, c : models.Slot.Id) = ActionId(v, c, Permission.CONTRIBUTE).async { implicit request =>
-    createForm.bindFromRequest.fold(
-      form => ABadRequest(views.html.slot.create(form)),
-      { case (start, end) =>
-        models.Slot.getOrCreate(request.obj.container, Range[Offset](start, end).map(request.obj.position + _)).map { slot =>
-          Redirect(slot.pageURL)
-        }
-      }
-    )
   }
 }
 

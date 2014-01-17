@@ -11,6 +11,7 @@ import               Forms._
 import play.api.i18n.Messages
 import play.api.libs.json
 import site._
+import dbrary._
 import models._
 
 private[controllers] abstract sealed class RecordController extends ObjectController[Record] {
@@ -141,7 +142,7 @@ object RecordHtml extends RecordController {
     Ok(viewEdit(m, f))
   }
 
-  def slotAdd(v : models.Volume.Id, s : models.Slot.Id, catID : models.RecordCategory.Id, editRedirect : Boolean = false) = SlotHtml.ActionId(v, s, Permission.EDIT).async { implicit request =>
+  def slotAdd(s : models.Slot.Id, catID : models.RecordCategory.Id, editRedirect : Boolean = false) = SlotHtml.Action(s, Range.full[Offset], Permission.EDIT).async { implicit request =>
     def bad(form : SelectForm) =
       SlotHtml.viewEdit(request.obj)(recordForm = form).map(BadRequest(_))
     val form = selectForm.bindFromRequest
@@ -153,7 +154,7 @@ object RecordHtml extends RecordController {
           _ <- r.addSlot(request.obj)
         } yield (Created(views.html.record.edit(r, cat.fold[Seq[Metric[_]]](Nil)(_.template), editForm.fill((Some(cat), Seq())), jsonCategories, jsonMetrics)))
       } (models.Record.get(_).flatMap(_
-        .filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId === v)
+        .filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId === request.obj.volumeId)
         .fold(bad(form.withError("record", "record.bad")))(
           _.addSlot(request.obj).map { _ =>
           if (editRedirect)

@@ -101,13 +101,11 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
       .SELECT("JOIN slot_record ON slot.id = slot_record.slot WHERE slot_record.record = ? ORDER BY slot.source, slot.segment")
       .apply(id).list
   /** Attach this record to a slot. */
-  def addSlot(s : Slot) : Future[Boolean] = {
-    val args = SQLTerms('record -> id, 'slot -> s.id)
-    SQL("INSERT INTO slot_record", args.insert)
-      .apply(args).execute.recover {
+  def addSlot(s : AbstractSlot) : Future[Boolean] =
+    SQL("INSERT INTO slot_record (record, slot) VALUES (?, " + s.sqlId + ")")
+      .apply(id +: s.sqlArgs).execute.recover {
         case SQLDuplicateKeyException() => false
       }
-  }
   /** Remove this record from a slot. */
   def removeSlot(s : Slot.Id) : Future[Boolean] = {
     val args = SQLTerms('record -> id, 'slot -> s)

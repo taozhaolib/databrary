@@ -64,7 +64,7 @@
                             @recordForm.map { f =>
                                 <tfoot>
                                     <tr>
-                                    @widget.tag.form(routes.RecordHtml.slotAdd(slot.volumeId, slot.id, RecordCategory.PARTICIPANT, true)) {
+                                    @widget.tag.form(routes.RecordHtml.slotAdd(slot.id, RecordCategory.PARTICIPANT, true)) {
                                         <td colspan="2">
                                         @widget.tag.select(f("record"), selectList, '_default -> "Create new record...", '_colspan -> 2)(widget.tag.minimalFieldConstructor.f, Lang("en"))
                                         </td>

@@ -56,9 +56,6 @@ GET     /volume/$vID<[0-9]+>/thumb                                              
 POST    /volume/$vID<[0-9]+>/slot/container                                                       controllers.SlotHtml.addContainer(vID : models.Volume.Id)
 GET     /volume/$vID<[0-9]+>/slot/container                                                       controllers.SlotHtml.createContainer(vID : models.Volume.Id)
 
-GET     /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.SlotHtml.create(vID : models.Volume.Id, cID : models.Slot.Id)
-POST    /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.SlotHtml.add(vID : models.Volume.Id, cID : models.Slot.Id)
-
 GET     /slot/$id<[0-9]+>                                                                         controllers.SlotHtml.view(   id : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset])
 GET     /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.edit(  sID : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset])
 POST    /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.update(sID : models.Slot.Id, segment : dbrary.Segment)
@@ -87,8 +84,8 @@ POST    /slot/$sID<[0-9]+>/tag                                                  
 # records
 POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                                             controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Slot.Id, editRedirect : Boolean = false)
 POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove/return                                      controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Slot.Id, editRedirect : Boolean = true)
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create                       controllers.RecordHtml.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = false)
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create/return                controllers.RecordHtml.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = true)
+POST    /slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create                                           controllers.RecordHtml.slotAdd(sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = false)
+POST    /slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create/return                                    controllers.RecordHtml.slotAdd(sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = true)
 
 GET     /record/$rID<[0-9]+>                                                                      controllers.RecordHtml.view(rID : models.Record.Id)
 GET     /volume/$vID<[0-9]+>/record/$cID<-?[0-9]+>/create                                         controllers.RecordHtml.add(vID : models.Volume.Id, cID : models.RecordCategory.Id)

@@ -169,7 +169,7 @@ abstract class Slot protected (val id : Slot.Id, val segment : Segment, consent_
     Action("edit", controllers.routes.SlotHtml.edit(id), Permission.EDIT),
     Action("add file", controllers.routes.AssetHtml.create(volumeId, Some(containerId), segment.lowerBound), Permission.CONTRIBUTE),
     // Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
-    Action("add participant", controllers.routes.RecordHtml.slotAdd(volumeId, id, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
+    Action("add participant", controllers.routes.RecordHtml.slotAdd(id, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
   )
 }
 
@@ -254,11 +254,6 @@ object Slot extends TableId[Slot]("slot") {
     else /* must be container id */ abstractRow(segment)
       .SELECT("WHERE container.id = ? AND", Volume.condition)
       .apply(id +: Volume.conditionArgs).singleOpt
-
-  /** Retrieve a list of slots within the given container. */
-  private[models] def getContainer(c : Container) : Future[Seq[Slot]] =
-    containerRow(c).SELECT("WHERE slot.source = ? ORDER BY slot.segment")
-      .apply(c.id).list
 
   private def _get(container : Container, segment : Segment)(implicit dbc : Site.DB, exc : ExecutionContext) : Future[Option[Slot]] =
     containerRow(container).SELECT("WHERE slot.source = ? AND slot.segment = ?::segment")(dbc, exc)
