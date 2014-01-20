@@ -239,22 +239,6 @@ $$;
 COMMENT ON FUNCTION "segment_shift" (segment, interval) IS 'Shift both end points of a segment by the specified interval.';
 
 
-CREATE TABLE "object_segment" ( -- ABSTRACT
-	"id" integer NOT NULL,
-	"source" integer NOT NULL, -- References "source_table"
-	"segment" segment NOT NULL Check (NOT isempty("segment")),
-	Check (false) NO INHERIT
-);
-ALTER TABLE "object_segment" ALTER COLUMN "segment" SET STORAGE plain;
-COMMENT ON TABLE "object_segment" IS 'Generic table for objects defined as a temporal sub-sequence of another object.  Inherit from this table to use the functions below.';
-
-CREATE FUNCTION "object_segment_contains" ("object_segment", "object_segment") RETURNS boolean LANGUAGE sql IMMUTABLE STRICT AS
-	$$ SELECT $1.id = $2.id OR $1.source = $2.source AND $1.segment @> $2.segment $$;
-CREATE FUNCTION "object_segment_within" ("object_segment", "object_segment") RETURNS boolean LANGUAGE sql IMMUTABLE STRICT AS
-	$$ SELECT $1.id = $2.id OR $1.source = $2.source AND $1.segment <@ $2.segment $$;
-CREATE OPERATOR @> (PROCEDURE = "object_segment_contains", LEFTARG = "object_segment", RIGHTARG = "object_segment", COMMUTATOR = <@);
-CREATE OPERATOR <@ (PROCEDURE = "object_segment_within", LEFTARG = "object_segment", RIGHTARG = "object_segment", COMMUTATOR = @>);
-
 ----------------------------------------------------------- containers
 
 CREATE TABLE "container" (
@@ -278,53 +262,43 @@ CREATE TRIGGER "container_top_create" AFTER INSERT ON "volume" FOR EACH ROW EXEC
 COMMENT ON TRIGGER "container_top_create" ON "volume" IS 'Always create a top container for each volume.  Unfortunately nothing currently prevents them from being removed/changed.';
 
 
-CREATE TABLE "slot" (
-	"id" integer NOT NULL DEFAULT nextval('container_id_seq') Primary Key,
-	"source" integer NOT NULL References "container" ON UPDATE CASCADE ON DELETE CASCADE,
-	"segment" segment NOT NULL,
-	"consent" consent,
-	Check ((id = source) = (segment = '(,)')),
-	Unique ("source", "segment"),
-	Exclude USING gist (singleton("source") WITH =, "segment" WITH &&) WHERE ("consent" IS NOT NULL)
-) INHERITS ("object_segment");
-COMMENT ON TABLE "slot" IS 'Sections of containers selected for referencing, annotating, consenting, etc.';
-COMMENT ON COLUMN "slot"."consent" IS 'Sharing/release permissions granted by participants on (portions of) contained data.  This could equally well be an annotation, but hopefully won''t add too much space here.';
-
-SELECT audit.CREATE_TABLE ('slot');
-COMMENT ON TABLE audit."slot" IS 'Partial auditing for slot table covering only consent changes.';
-
-CREATE FUNCTION "slot_full_create" () RETURNS trigger LANGUAGE plpgsql AS $$
-BEGIN
-	INSERT INTO slot (id, source, segment) VALUES (NEW.id, NEW.id, '(,)');
-	RETURN null;
-END; $$;
-CREATE TRIGGER "slot_full_create" AFTER INSERT ON "container" FOR EACH ROW EXECUTE PROCEDURE "slot_full_create" ();
-COMMENT ON TRIGGER "slot_full_create" ON "container" IS 'Always create a "full"-range slot for each container.  Unfortunately nothing currently prevents them from being removed/changed.';
-
-ALTER TABLE "container"
-	ADD Foreign Key ("id") References "slot" Deferrable Initially Deferred;
-
-CREATE FUNCTION "get_slot" ("container" integer, "seg" segment) RETURNS integer STRICT LANGUAGE plpgsql AS $$
-DECLARE
-	slot_id integer;
-BEGIN
-	LOOP
-		SELECT id INTO slot_id FROM slot WHERE source = container AND segment = seg;
-		IF FOUND THEN
-			RETURN slot_id;
-		END IF;
-		BEGIN
-			INSERT INTO slot (source, segment) VALUES (container, seg) RETURNING id INTO slot_id;
-			RETURN slot_id;
-		EXCEPTION WHEN unique_violation THEN
-		END;
-	END LOOP;
-END; $$;
-
-
--- special volumes (SERIAL starts at 1), done after slot triggers:
+-- special volumes (SERIAL starts at 1), done after container triggers:
 INSERT INTO "volume" (id, name) VALUES (0, 'Core'); -- CORE
 INSERT INTO "volume_access" VALUES (0, -1, 'DOWNLOAD', 'DOWNLOAD');
+
+
+----------------------------------------------------------- slots
+
+CREATE TABLE "slot" ( -- ABSTRACT
+	"container" integer NOT NULL References "container",
+	"segment" segment NOT NULL Check (NOT isempty("segment")),
+	Check (false) NO INHERIT
+);
+ALTER TABLE "slot" ALTER COLUMN "segment" SET STORAGE plain;
+COMMENT ON TABLE "slot" IS 'Generic table for objects associated with a temporal sub-sections of a container.  Inherit from this table to use the functions below.';
+
+CREATE FUNCTION "slot_contains" ("slot", "slot") RETURNS boolean LANGUAGE sql IMMUTABLE STRICT AS
+	$$ SELECT $1.container = $2.container AND $1.segment @> $2.segment $$;
+CREATE FUNCTION "slot_within" ("slot", "slot") RETURNS boolean LANGUAGE sql IMMUTABLE STRICT AS
+	$$ SELECT $1.container = $2.container AND $1.segment <@ $2.segment $$;
+CREATE FUNCTION "slot_overlaps" ("slot", "slot") RETURNS boolean LANGUAGE sql IMMUTABLE STRICT AS
+	$$ SELECT $1.container = $2.container AND $1.segment && $2.segment $$;
+CREATE OPERATOR @> (PROCEDURE = "slot_contains", LEFTARG = "slot", RIGHTARG = "slot", COMMUTATOR = <@);
+CREATE OPERATOR <@ (PROCEDURE = "slot_within", LEFTARG = "slot", RIGHTARG = "slot", COMMUTATOR = @>);
+CREATE OPERATOR && (PROCEDURE = "slot_overlaps", LEFTARG = "slot", RIGHTARG = "slot", COMMUTATOR = &&);
+
+
+CREATE TABLE "slot_consent" (
+	"container" integer NOT NULL References "container",
+	"segment" segment NOT NULL,
+	"consent" consent NOT NULL,
+	Primary Key ("container", "segment"),
+	Exclude USING gist (singleton("container") WITH =, "segment" WITH &&)
+) INHERITS ("slot");
+COMMENT ON TABLE "slot_consent" IS 'Sharing/release permissions granted by participants on (portions of) contained data.';
+
+SELECT audit.CREATE_TABLE ('slot_consent');
+
 
 ----------------------------------------------------------- assets
 
@@ -402,13 +376,15 @@ COMMENT ON INDEX audit."asset_creation_idx" IS 'Allow efficient retrieval of ass
 CREATE FUNCTION "asset_creation" ("asset" integer) RETURNS timestamp LANGUAGE sql STABLE STRICT AS
 	$$ SELECT max("audit_time") FROM audit."asset" WHERE "id" = $1 AND "audit_action" = 'add' $$;
 
-CREATE TABLE "asset_slot" (
-	"asset" integer NOT NULL Primary Key References "asset",
-	"slot" integer NOT NULL References "slot"
-);
-COMMENT ON TABLE "asset_slot" IS 'Attachment point of assets, which, in the case of timeseries data, should match asset.duration.';
+CREATE TABLE "slot_asset" (
+	"container" integer NOT NULL References "container",
+	"segment" segment NOT NULL,
+	"asset" integer NOT NULL Primary Key References "asset"
+) INHERITS ("slot");
+CREATE INDEX "slot_asset_slot_idx" ON "slot_asset" ("container", "segment");
+COMMENT ON TABLE "slot_asset" IS 'Attachment point of assets, which, in the case of timeseries data, should match asset.duration.';
 
-SELECT audit.CREATE_TABLE ('asset_slot');
+SELECT audit.CREATE_TABLE ('slot_asset');
 
 CREATE TABLE "asset_revision" (
 	"prev" integer NOT NULL References "asset",
@@ -427,36 +403,28 @@ COMMENT ON VIEW "asset_revisions" IS 'Transitive closure of asset_revision.  Rev
 
 
 CREATE TABLE "excerpt" (
-	"asset" integer NOT NULL References "asset",
-	"slot" integer NOT NULL References "slot",
-	Primary Key ("asset", "slot")
+	"asset" integer NOT NULL References "slot_asset" ON DELETE CASCADE,
+	"segment" segment NOT NULL Check (NOT isempty("segment")),
+	Exclude USING gist (singleton("asset") WITH =, "segment" WITH &&)
 );
-COMMENT ON TABLE "excerpt" IS 'Slot asset (segments) that have been selected for possible public release and top-level display.';
+COMMENT ON TABLE "excerpt" IS 'Slot asset segments that have been selected for possible public release and top-level display.';
+COMMENT ON COLUMN "excerpt"."segment" IS 'Segment within slot_asset.container space (not asset).';
 
 SELECT audit.CREATE_TABLE ('excerpt');
 
 
-CREATE VIEW "slot_asset" ("asset", "segment", "slot", "excerpt") AS
-	SELECT asset_slot.asset, slot_asset.segment, slot.id, slot_excerpt.segment
-	  FROM asset_slot 
-	  JOIN slot AS slot_asset ON asset_slot.slot = slot_asset.id
-	  JOIN slot ON slot_asset.source = slot.source AND slot_asset.segment && slot.segment
-	  LEFT JOIN excerpt
-	       JOIN slot AS slot_excerpt ON excerpt.slot = slot_excerpt.id
-	       ON asset_slot.asset = excerpt.asset AND slot.source = slot_excerpt.source AND slot.segment <@ slot_excerpt.segment;
-COMMENT ON VIEW "slot_asset" IS 'Expanded set of all slots and the assets they include.';
-
 ----------------------------------------------------------- comments
 
 CREATE TABLE "comment" (
+	"container" integer NOT NULL References "container",
+	"segment" segment NOT NULL,
 	"id" serial NOT NULL Primary Key,
 	"who" integer NOT NULL References "account",
-	"slot" integer NOT NULL References "slot",
 	"time" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"text" text NOT NULL,
 	"parent" integer References "comment"
-);
-CREATE INDEX ON "comment" ("slot");
+) INHERITS ("slot");
+CREATE INDEX "comment_slot_idx" ON "comment" ("container", "segment");
 CREATE INDEX ON "comment" ("parent");
 COMMENT ON TABLE "comment" IS 'Free-text comments on objects (unaudited, immutable).';
 
@@ -499,15 +467,16 @@ END; $$;
 CREATE TABLE "tag_use" (
 	"tag" integer NOT NULL References "tag",
 	"who" integer NOT NULL References "account",
-	"slot" integer NOT NULL References "slot",
+	"container" integer NOT NULL References "container",
+	"segment" segment NOT NULL,
 	"up" boolean NOT NULL DEFAULT true,
-	Primary Key ("tag", "who", "slot")
-);
-CREATE INDEX ON "tag_use" ("slot");
+	Exclude USING gist (singleton("tag") WITH =, singleton("who") WITH =, singleton("container") WITH =, "segment" WITH &&)
+) INHERITS ("slot");
+CREATE INDEX ON "tag_use" ("tag");
+CREATE INDEX ON "tag_use" ("who");
+CREATE INDEX ON "tag_use" ("container", "segment");
 COMMENT ON TABLE "tag_use" IS 'Applications of tags to objects along with their weight (+-1).';
 
-CREATE VIEW "tag_weight" ("tag", "slot", "weight") AS
-	SELECT tag, slot, SUM(CASE WHEN up THEN 1::integer ELSE -1::integer END)::integer FROM tag_use GROUP BY tag, slot;
 
 ----------------------------------------------------------- records
 
@@ -604,23 +573,24 @@ COMMENT ON VIEW "measure_all" IS 'Data from all measure tables, coerced to text.
 
 
 CREATE TABLE "slot_record" (
-	"slot" integer NOT NULL References "slot",
+	"container" integer NOT NULL References "container",
+	"segment" segment NOT NULL,
 	"record" integer NOT NULL References "record",
-	Primary Key ("slot", "record")
-);
+	Exclude USING gist (singleton("record") WITH =, singleton("container") WITH =, "segment" WITH &&)
+) INHERITS ("slot");
 CREATE INDEX ON "slot_record" ("record");
+CREATE INDEX "slot_record_slot_idx" ON "slot_record" ("container", "segment");
 COMMENT ON TABLE "slot_record" IS 'Attachment of records to slots.';
 
 
 CREATE FUNCTION "record_consent" ("record" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS
-	$$ SELECT MIN(consent) FROM slot_record JOIN slot ON slot = slot.id WHERE record = $1 $$;
-COMMENT ON FUNCTION "record_consent" (integer) IS 'Effective (minimal) consent level granted on the specified record.  This should really consider containing slots, too, though for now this is sufficient because the only identified measure is on participants, which should coincide with consents.';
+	$$ SELECT MIN(consent) FROM slot_record JOIN slot_consent ON slot_record <@ slot_consent WHERE record = $1 $$;
+COMMENT ON FUNCTION "record_consent" (integer) IS 'Effective (minimal) consent level granted on the specified record.';
 
 CREATE FUNCTION "record_daterange" ("record" integer) RETURNS daterange LANGUAGE sql STABLE STRICT AS $$
 	SELECT daterange(min(date), max(date), '[]') 
 	  FROM slot_record
-	  JOIN slot ON slot = slot.id
-	  JOIN container ON slot.source = container.id
+	  JOIN container ON slot_record.container = container.id
 	 WHERE record = $1
 $$;
 COMMENT ON FUNCTION "record_daterange" (integer) IS 'Range of container dates covered by the given record.';
@@ -698,7 +668,7 @@ INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 1, 'ADMIN'
 INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 2, 'ADMIN', 'NONE');
 
 INSERT INTO asset (id, volume, format, classification, duration, name, sha1) VALUES (1, 1, -800, 'MATERIAL', interval '40', 'counting', '\x3dda3931202cbe06a9e4bbb5f0873c879121ef0a');
-INSERT INTO asset_slot VALUES (1, get_slot(1, '[0,40)'::segment));
+INSERT INTO slot_asset VALUES (1, '[0,40)'::segment, 1);
 SELECT setval('asset_id_seq', 1);
 
 ----------------------------------------------------------- ingest logs
