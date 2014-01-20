@@ -30,8 +30,8 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
 
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
     * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
-  override lazy val getPermission : Permission.Value =
-    Permission.data(asset.getPermission, slot.getConsent, classification).getPermission
+  override lazy val permission : Permission.Value =
+    Permission.data(asset.permission, slot.getConsent, classification).permission
 
   def in(s : Slot) =
     if (s.equals(slot))
@@ -43,11 +43,11 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
     */
   def inContext : SlotAsset = {
     val c = in(slot.context)
-    if (c.getPermission < getPermission)
+    if (c.permission < permission)
       this
     else {
       val a = c.in(slot.container)
-      if (a.getPermission < c.getPermission)
+      if (a.permission < c.permission)
         c
       else
         a
@@ -68,7 +68,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
     ) else Nil)
 
   lazy val json : JsonObject = JsonObject.flatten(
-    Some('permission -> getPermission),
+    Some('permission -> permission),
     if (format === asset.format) None else Some('format -> format.json),
     Some('asset -> (asset.json ++
       JsonObject.flatten(if (asset_segment.isFull) None else Some('segment -> asset_segment))))
@@ -136,7 +136,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   /** Retrieve a single SlotAsset by asset id and slot id.
     * This checks permissions on the slot('s container's volume) which must also be the asset's volume.
     * @param full only return full slots */
-  def get(asset : Asset.Id, slot : Slot.Id, full : Boolean = false)(implicit site : Site) : Future[Option[SlotAsset]] =
+  private def get(asset : Asset.Id, slot : Slot.Id, full : Boolean = false)(implicit site : Site) : Future[Option[SlotAsset]] =
     row(full)
       .SELECT("WHERE asset = ? AND slot = ? AND", Volume.condition)
       .apply(asset, slot).singleOpt
@@ -154,18 +154,12 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   /** Retrieve the list of all assets within the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[SlotAsset]] =
-    slotRow(slot)
-      .SELECT("WHERE asset.volume = ? AND slot_asset.slot = ?")
-      .apply(slot.volumeId, slot.id).list
-
-  /** Retrieve the list of all assets within the given slot. */
-  private[models] def getSlotAll(slot : AbstractSlot) : Future[Seq[SlotAsset]] =
     abstractSlotRow(slot)
       .SELECT("WHERE slot_asset.source = ? AND slot_asset.segment && ?::segment AND asset.volume = ?")
       .apply(slot.containerId, slot.segment, slot.volumeId).list
 
   /** Retrieve the list of all foreign assets (from a different volume) within the given slot. */
-  private[models] def getSlotForeign(slot : AbstractSlot)(implicit site : Site) : Future[Seq[SlotAsset]] =
+  private[models] def getSlotForeign(slot : Slot)(implicit site : Site) : Future[Seq[SlotAsset]] =
     base.join(Volume.row, "asset.volume = volume.id")
       .map { case (((segment, excerpt), asset), vol) =>
         make(asset(vol), segment, slot, excerpt)
@@ -205,7 +199,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
         AND data_permission(?::permission, context.consent, asset.classification, ?::permission, excerpt IS NOT NULL) >= 'DOWNLOAD'
         AND asset.volume = ?
         ORDER BY excerpt NULLS LAST, container.top DESC, slot.consent DESC NULLS LAST LIMIT 1""")
-      .apply(volume.getPermission, site.access, volume.id).singleOpt
+      .apply(volume.permission, site.access, volume.id).singleOpt
 
   /** Find an asset suitable for use as a slot thumbnail. */
   private[models] def getThumb(slot : AbstractSlot)(implicit site : Site) : Future[Option[SlotAsset]] =
@@ -215,5 +209,5 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
         AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%') 
         AND data_permission(?::permission, ?::consent, asset.classification, ?::permission, slot_excerpt.segment IS NOT NULL) >= 'DOWNLOAD'
         ORDER BY excerpt NULLS LAST LIMIT 1""")
-      .apply(slot.containerId, slot.segment, slot.volumeId, slot.getPermission, slot.getConsent, site.access).singleOpt
+      .apply(slot.containerId, slot.segment, slot.volumeId, slot.permission, slot.getConsent, site.access).singleOpt
 }

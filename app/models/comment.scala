@@ -9,7 +9,6 @@ import site._
   * These are immutable (and unaudited), although the author may be considered to have ownership. */
 final class Comment private (val id : Comment.Id, val who : Account, val time : Timestamp, val slot : Slot, val text : String, val parentId : Option[Comment.Id]) extends TableRowId[Comment] with InVolume {
   def volume = slot.volume
-  def slotId = slot.id
   def whoId = who.id
 
   lazy val json = JsonRecord.flatten(id,
@@ -55,12 +54,8 @@ object Comment extends TableId[Comment]("comment") {
   private[models] def getVolume(volume : Volume) : Future[Seq[Comment]] =
     volumeRow(volume).SELECT("WHERE container.volume = ?", order).apply(volume.id).list
 
-  /** Retrieve the set of comments on the given target. */
-  private[models] def getSlot(slot : Slot) : Future[Seq[Comment]] =
-    slotRow(slot).SELECT("WHERE comment.slot = ?", order).apply(slot.id).list
-
   /** Retrieve the set of all comments that apply to the given target. */
-  private[models] def getSlotAll(slot : AbstractSlot) : Future[Seq[Comment]] =
+  private[models] def getSlot(slot : Slot) : Future[Seq[Comment]] =
     containerRow(slot.container).SELECT("WHERE slot.source = ? AND slot.segment <@ ?::segment", order)
       .apply(slot.containerId, slot.segment).list
 

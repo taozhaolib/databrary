@@ -59,7 +59,7 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
   def ===(a : SiteParty) = party === a.party
   def ===(a : Party) = party === a
 
-  def getPermission = Seq(delegated, Seq(site.access, Permission.DOWNLOAD).min).max
+  def permission = Seq(delegated, Seq(site.access, Permission.DOWNLOAD).min).max
 
   /** List of authorizations granted to this user.
     * @param all include inactive authorizations */
@@ -92,7 +92,7 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
   )
 
   def json = party.json + 
-    ('permission -> getPermission)
+    ('permission -> permission)
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,

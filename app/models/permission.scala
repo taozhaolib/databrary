@@ -33,7 +33,7 @@ object Permission extends PGEnum("permission") {
     * Note that this is also implemented (and used) in the SQL function data_permission, which must be kept consistent. */
   def data(p : Value, consent : Consent.Value, classification : Classification.Value)(implicit site_ : Site) : HasPermission = new HasPermission {
     val site = site_
-    val getPermission =
+    val permission =
       if (p >= FULL)
         p
       else if (p >= VIEW)
@@ -44,12 +44,14 @@ object Permission extends PGEnum("permission") {
       else
         NONE
   }
+
+  final val publicDateFields = Array(org.joda.time.DateTimeFieldType.year)
 }
 
 trait HasPermission extends PerSite {
-  def getPermission : Permission.Value
+  def permission : Permission.Value
   final def checkPermission(need : Permission.Value) : Boolean =
-    Permission.check(getPermission, need)(site)
+    Permission.check(permission, need)(site)
 }
 
 /** The possible levels of participant consent governing [Classification.IDENTIFIED] data.

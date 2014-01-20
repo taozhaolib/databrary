@@ -133,11 +133,7 @@ object TagWeight extends WeightView[TagWeight] {
       case ((weight, up), tag) => new TagWeight(tag, weight, up)
     }
 
-  private[models] def getSlot(slot : Slot) : Future[Seq[TagWeight]] =
-    row(slot.site).SELECT("WHERE tag_weight.slot = ? ORDER BY weight DESC")
-      .apply(slot.id).list
-
-  private[models] def getSlotAll(slot : AbstractSlot) : Future[Seq[TagWeight]] =
+  private[models] def getSlot(slot : AbstractSlot) : Future[Seq[TagWeight]] =
     aggRow(slot.site).SELECT("""
        JOIN slot ON tag_weight.slot = slot.id 
       WHERE slot.source = ? AND slot.segment && ?::segment

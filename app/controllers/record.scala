@@ -87,7 +87,7 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
     } yield (result(request.obj))
   }
 
-  def remove(recordId : Record.Id, slotId : Slot.Id, segment : Segment, editRedirect : Boolean = false) = Action(recordId, Permission.EDIT).async { implicit request =>
+  def remove(recordId : Record.Id, slotId : Container.Id, segment : Segment, editRedirect : Boolean = false) = Action(recordId, Permission.EDIT).async { implicit request =>
     for {
       so <- Slot.get(slotId, segment)
       s = so.getOrElse(throw NotFoundException)
@@ -152,7 +152,7 @@ object RecordHtml extends RecordController {
     Ok(viewEdit(m, f))
   }
 
-  def slotAdd(s : models.Slot.Id, segment : Segment = Range.full[Offset], catID : models.RecordCategory.Id, editRedirect : Boolean = false) = SlotHtml.Action(s, segment, Permission.EDIT).async { implicit request =>
+  def slotAdd(s : Container.Id, segment : Segment, catID : models.RecordCategory.Id, editRedirect : Boolean = false) = SlotHtml.Action(s, segment, Permission.EDIT).async { implicit request =>
     def bad(form : SelectForm) =
       SlotHtml.viewEdit(request.obj)(recordForm = form).map(BadRequest(_))
     val form = selectForm.bindFromRequest

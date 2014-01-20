@@ -10,11 +10,11 @@ import site._
   * To be used, all assets must be placed into containers.
   * These containers can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.
   */
-final class Container protected (override val id : Container.Id, override val volume : Volume, val top : Boolean = false, val name_ : Option[String], val date_ : Option[Date], consent_ : Consent.Value = Consent.NONE) extends Slot(id, Container.range, consent_) with TableRowId[Container] with InVolume {
+final class Container protected (override val id : Container.Id, override val volume : Volume, val top : Boolean = false, val name_ : Option[String], val date_ : Option[Date], val consent : Consent.Value) extends ContextSlot with TableRowId[Container] with InVolume {
   def container = this
+  def segment = Container.range
   override def isFull = true
   override def isTop = top
-  def context = this
   private[this] var _name = name_
   /** Descriptive name to help with organization by contributors.
     * This (as with Container in general) is not necessarily intended for public consumption. */
@@ -83,5 +83,5 @@ object Container extends TableId[Container]("container") {
   /** Create a new container in the specified volume. */
   def create(volume : Volume, name : Option[String] = None, date : Option[Date] = None)(implicit site : Site) : Future[Container] =
     Audit.add(table, SQLTerms('volume -> volume.id, 'name -> name, 'date -> date), "id")
-      .single(SQLCols[Id].map(new Container(_, volume, false, name, date)))
+      .single(SQLCols[Id].map(new Container(_, volume, false, name, date, Consent.NONE)))
 }

@@ -10,7 +10,7 @@ import site._
 /** Main organizational unit or package of data, within which everything else exists.
   * Usually represents a single project or dataset with a single set of procedures.
   * @param permission the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than [[Permission.VIEW]] except possibly for transient objects, as unavailable volumes should never be returned in the first place. */
-final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], val permission : Permission.Value, val creation : Timestamp)(implicit override val site : Site) extends TableRowId[Volume] with SiteObject with InVolume {
+final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], override val permission : Permission.Value, val creation : Timestamp)(implicit override val site : Site) extends TableRowId[Volume] with SiteObject with InVolume {
   private[this] var _name = name_
   /** Title headline of this volume. */
   def name = _name
@@ -139,7 +139,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       Some('name -> name),
       body.map('body -> _),
       Some('creation -> creation),
-      Some('permission -> getPermission)
+      Some('permission -> permission)
     )
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
@@ -233,5 +233,5 @@ trait InVolume extends HasPermission {
   def volume : Volume
   implicit def site : Site = volume.site
   /** Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time. */
-  def getPermission : Permission.Value = volume.permission
+  def permission : Permission.Value = volume.permission
 }
