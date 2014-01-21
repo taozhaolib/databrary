@@ -6,6 +6,8 @@ define(['app/config/module'], function (module) {
 			id: function () {
 				return $route.current.params.id || undefined;
 			}
+		}, {
+			'query': {method: 'GET', isArray: false}
 		});
 	}]);
 });

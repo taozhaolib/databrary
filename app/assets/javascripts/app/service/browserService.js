@@ -7,6 +7,64 @@ define(['app/config/module'], function (module) {
 		//
 
 		browserService.data = [];
+		browserService.dataSorted = [];
+		browserService.options = {
+			volume: {
+				allow: true,
+				active: true,
+				filter: {},
+				order: []
+			},
+			record: {
+				allow: true,
+				active: true,
+				filter: {},
+				order: [],
+				categories: [
+					{
+						allow: true,
+						name: 'participant',
+						active: true
+					}
+				]
+			},
+			session: {
+				allow: true,
+				active: true,
+				filter: {},
+				order: []
+			},
+			asset: {
+				allow: true,
+				active: true,
+				filter: {},
+				order: []
+			}
+		};
+
+
+
+//		browserService. = function () {};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		//
+
+		browserService.data = [];
 		browserService.recordSorts = arrayHelper([]);
 
 		browserService.sort = undefined;
@@ -65,9 +123,9 @@ define(['app/config/module'], function (module) {
 								active: true,
 								allow: true
 							},
-							record: { // TEMP!
+							record: {
 								active: true,
-								allow: false
+								allow: true
 							},
 							session: {
 								active: true,
@@ -198,6 +256,12 @@ define(['app/config/module'], function (module) {
 
 		//
 
+		browserService.dataSorted = [];
+
+		browserService.updateSorted = function () {
+
+		};
+
 		browserService.getSortLevels = function ()  {
 			var levels = [];
 
@@ -228,62 +292,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		browserService.getLevelItems = function (depth, args) {
-			args = angular.extend({}, args);
-
-			var type = browserService.getLevelType(depth);
-
-			switch(type) {
-				case 'volume':
-					return browserService.data;
-
-				case 'session':
-					switch(args.parent) {
-						case 'volume':
-							var tmp = [];
-
-							angular.forEach(browserService.data, function (volume) {
-								if(volume.id = args.volume)
-									tmp = volume.sessions
-							});
-
-							return tmp;
-
-						default:
-							return [];
-					}
-
-				case 'asset':
-					switch(args.parent) {
-						case 'volume':
-							var tmp = [];
-
-							angular.forEach(browserService.data, function (volume) {
-								if(volume.id = args.volume)
-									tmp = volume.assets
-							});
-
-							return tmp;
-
-						case 'session':
-							var tmp = [];
-
-							angular.forEach(browserService.data, function (volume) {
-								if(volume.id = args.volume)
-									angular.forEach(volume.assets, function(asset) {console.log(asset.container.id);
-										if(asset.container.id = args.session)
-											tmp.push(asset);
-									});
-							});
-
-							return tmp;
-
-						default:
-							return [];
-					}
-
-				default:
-					return [];
-			}
+			return [];
 		};
 
 		browserService.hasLevelItems = function (depth, args) {

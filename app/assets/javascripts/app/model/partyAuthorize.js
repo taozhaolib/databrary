@@ -9,6 +9,8 @@ define(['app/config/module'], function (module) {
 			partyId: function () {
 				return $route.current.params.partyId || undefined;
 			}
+		}, {
+			'query': {method: 'GET', isArray: false}
 		});
 	}]);
 });

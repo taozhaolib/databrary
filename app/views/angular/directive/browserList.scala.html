@@ -1,5 +1,5 @@
 <aside class="browser_list cf">
-    <ul ng-if="getLevelItems(item)[0]">
+    <ul ng-if="hasLevelItems(item)">
         <li ng-repeat="item in getLevelItems(item)">
             <ng-include src="getLevelInclude()"></ng-include>
         </li>

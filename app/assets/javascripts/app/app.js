@@ -12,17 +12,17 @@ require.config({
 
 		// angular
 
-		'angular': 'vendors/angular-1.2.3/angular.min',
-		'ngAnimate': 'vendors/angular-1.2.3/angular-animate.min',
-		'ngCookies': 'vendors/angular-1.2.3/angular-cookies.min',
-		'ngLoader': 'vendors/angular-1.2.3/angular-loader.min',
-		'ngResource': 'vendors/angular-1.2.3/angular-resource.min',
-		'ngRoute': 'vendors/angular-1.2.3/angular-route.min',
-		'ngSanitize': 'vendors/angular-1.2.3/angular-sanitize.min',
-		'ngTouch': 'vendors/angular-1.2.3/angular-touch.min',
+		'angular': 'vendors/angular-1.2.9/angular.min',
+		'ngAnimate': 'vendors/angular-1.2.9/angular-animate.min',
+		'ngCookies': 'vendors/angular-1.2.9/angular-cookies.min',
+		'ngLoader': 'vendors/angular-1.2.9/angular-loader.min',
+		'ngResource': 'vendors/angular-1.2.9/angular-resource.min',
+		'ngRoute': 'vendors/angular-1.2.9/angular-route.min',
+		'ngSanitize': 'vendors/angular-1.2.9/angular-sanitize.min',
+		'ngTouch': 'vendors/angular-1.2.9/angular-touch.min',
 
-		'ngMocks': 'vendors/angular-1.2.3/angular-mocks',
-		'ngScenario': 'vendors/angular-1.2.3/angular-scenario',
+		'ngMocks': 'vendors/angular-1.2.9/angular-mocks',
+		'ngScenario': 'vendors/angular-1.2.9/angular-scenario',
 
 		// angular, third-party
 

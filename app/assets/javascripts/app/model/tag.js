@@ -9,6 +9,8 @@ define(['app/config/module'], function (module) {
 			segment: function () {
 				return $route.current.params.segment || ',';
 			}
+		}, {
+			'query': {method: 'GET', isArray: false}
 		});
 	}]);
 });
