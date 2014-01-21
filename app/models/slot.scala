@@ -9,6 +9,8 @@ import site._
 
 /** Conceptually a slot represents a segment of a container. */
 trait Slot extends TableRow with InVolume with SiteObject {
+  final def slotEquals(a : Slot) : Boolean = container === a.container && segment == a.segment
+
   def container : Container = context.container
   val segment : Segment
   def context : ContextSlot
@@ -75,8 +77,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
   final def setTag(tag : String, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Future[Boolean] =
     Tag.valid(tag).fold(Async(false))(tname => for {
       t <- Tag.getOrCreate(tname)
-      s <- realize
-      r <- t.set(s, up)
+      r <- t.set(this, up)
     } yield(r))
 
   /** A list of record identification strings that apply to this object.
@@ -109,7 +110,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
     Action("add participant", controllers.routes.RecordHtml.slotAdd(containerId, segment, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
   )
 
-  lazy val json : JsonObject = JsonObject.flatten(
+  def json : JsonObject = JsonObject.flatten(
     Some('container -> container.containerJson),
     if (segment.isFull) None else Some('segment -> segment)
     // Maybe(getConsent).opt.map('consent -> _)
@@ -136,40 +137,58 @@ trait ContextSlot extends Slot {
 
 final class SlotConsent private (val container : Container, val segment : Segment, val consent : Consent.Value) extends ContextSlot
 
-private[models] class SlotTable[R <: Slot](table : String) extends Table[R](table) {
-  protected val segment = SelectColumn[Segment]("segment")
-}
-
-object SlotConsent extends SlotTable[SlotConsent]("slot_consent") {
+private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") {
   private val columns = Columns(
-    segment,
-    SelectColumn[Consent.Value]("consent")
-  )
-  private[models] val row = columns
-    .map { (segment, consent) =>
+      SelectColumn[Segment]("segment")
+    , SelectColumn[Consent.Value]("consent")
+    )
+  private[models] val row =
+    columns.map { (segment, consent) =>
       (container : Container) => new SlotConsent(container, segment, consent)
     }
 }
 
-object Slot extends SlotTable[Slot]("slot") {
-  private final class VirtualSlot private (val segment : Segment, val context : ContextSlot) extends Slot
-  private object VirtualSlot {
-    def apply(segment : Segment, context : ContextSlot) : Slot =
-      if (segment === context.segment) context
-      else new VirtualSlot(segment, context)
-  }
-  private def make(segment : Segment)(container : Container, consent : Option[Container => SlotConsent]) : Slot =
-    VirtualSlot(segment, consent.fold[ContextSlot](container)(_(container)))
+private[models] trait TableSlot[R <: Slot] extends Table[R] {
+  protected type A
+  protected final def segment = SelectColumn[Segment]("segment")
+  protected final def makeContext(container : Container, consent : Option[Container => SlotConsent]) : ContextSlot =
+    consent.fold[ContextSlot](container)(_(container))
 
+  protected final def slotColumns(columns : Selector[ContextSlot => A], container : Selector[Container]) : Selector[A] =
+    columns
+      .join(container, table + ".container = container.id")
+      .leftJoin(SlotConsent.row, table + ".segment <@ slot_consent.segment AND " + table + ".container = slot_consent.container")
+      .map { case ((a, container), consent) => a(makeContext(container, consent)) }
+  protected final def containerColumns(columns : Selector[ContextSlot => A], container : Container) : Selector[A] =
+    columns
+      .leftJoin(SlotConsent.row, table + ".segment <@ slot_consent.segment AND " + table + ".container = slot_consent.container")
+      .map { case (a, consent) => a(makeContext(container, consent)) }
+}
+
+private[models] abstract class SlotTable protected (table : String) extends Table[Slot](table) with TableSlot[Slot] {
+  protected type A = Slot
+  private final class Virtual (val segment : Segment, val context : ContextSlot) extends Slot
+  protected final def make(segment : Segment, context : ContextSlot) : Slot =
+    if (segment === context.segment) context
+    else new Virtual(segment, context)
+  private[this] val columns =
+    Columns(segment).map((make _).curried)
+  protected final def rowContainer(container : Selector[Container]) =
+    slotColumns(columns, container)
+}
+
+object Slot extends SlotTable("slot") {
   def get(containerId : Container.Id, segment : Segment)(implicit site : Site) : Future[Option[Slot]] =
     Container.row
       .leftJoin(SlotConsent.row, "container.id = slot_consent.container AND slot_consent.segment @> ?::segment")
-      .map((make(segment) _).tupled)
+      .map { case (container, consent) =>
+	make(segment, makeContext(container, consent))
+      }
       .SELECT("WHERE container.id = ? AND", Volume.condition)
       .apply(SQLArgs(segment, containerId) ++ Volume.conditionArgs).singleOpt
 
   def get(container : Container, segment : Segment) : Future[Slot] =
     SlotConsent.row.SELECT("WHERE container = ? AND segment @> ?::segment")
       .apply(container.id, segment).singleOpt
-      .map(make(segment)(container, _))
+      .map(consent => make(segment, makeContext(container, consent)))
 }

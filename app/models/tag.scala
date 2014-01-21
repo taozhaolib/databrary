@@ -60,6 +60,9 @@ object Tag extends TableId[Tag]("tag") {
   private[models] def getOrCreate(name : String) : Future[Tag] =
     SQL("SELECT get_tag(?)")
       .apply(name).single(SQLCols[Id].map(new Tag(_, name)))
+
+  private[models] def set(name : String, slot : Slot, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Future[Boolean] =
+    up.fold(TagUse.remove(this, slot))(TagUse.set(this, slot, _))
 }
 
 /** A tag applied by a user to an object. */
@@ -133,7 +136,7 @@ object TagWeight extends WeightView[TagWeight] {
       case ((weight, up), tag) => new TagWeight(tag, weight, up)
     }
 
-  private[models] def getSlot(slot : AbstractSlot) : Future[Seq[TagWeight]] =
+  private[models] def getSlot(slot : Slot) : Future[Seq[TagWeight]] =
     aggRow(slot.site).SELECT("""
        JOIN slot ON tag_weight.slot = slot.id 
       WHERE slot.source = ? AND slot.segment && ?::segment

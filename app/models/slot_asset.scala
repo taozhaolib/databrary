@@ -7,20 +7,16 @@ import macros._
 import dbrary._
 import site._
 
-sealed private[models] trait AssetSlot extends BackedAsset with InVolume {
-  val asset : Asset
-  val slot : AbstractSlot
+/** A segment of an asset as used in a slot.
+  * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
+sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val segment : Segment, val context : ContextSlot, excerpt_segment : Option[Segment]) extends Slot with TableRow with BackedAsset with InVolume with SiteObject {
   def volume = asset.volume
   def assetId = asset.id
   def source = asset.source
   override def format = asset.format
-}
 
-/** A segment of an asset as used in a slot.
-  * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : AbstractSlot, excerpt_segment : Option[Segment]) extends TableRow with AssetSlot with SiteObject {
-  def position = asset_segment.lowerBound.map(_ - slot.segment.lowerBound.getOrElse(Offset.ZERO))
-  require(excerpt_segment.fold(true)(slot.segment @> _))
+  override def position : Option[Offset] = asset_segment.lowerBound.map(_ - super.position)
+  require(excerpt_segment.fold(true)(segment @> _))
   def excerpt = excerpt_segment.isDefined
 
   def classification = asset.classification match {
@@ -31,13 +27,13 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
     * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
   override lazy val permission : Permission.Value =
-    Permission.data(asset.permission, slot.getConsent, classification).permission
+    Permission.data(asset.permission, consent, classification).permission
 
   def in(s : Slot) =
-    if (s.equals(slot))
+    if (slotEquals(s))
       this
     else
-      SlotAsset.make(asset, asset_segment, s, excerpt_segment.filter(slot.segment @> _))
+      SlotAsset.make(asset, asset_segment, s, excerpt_segment.filter(s.segment @> _))
   /** "Expand" this slot asset to a larger one with equivalent permissions.
     * This determines what segment should be shown to users when they request a smaller one.
     */
@@ -79,7 +75,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
     )
 }
 
-final class SlotTimeseries private[models] (override val asset : Timeseries, asset_segment : Segment, slot : AbstractSlot, excerpt_segment : Option[Segment]) extends SlotAsset(asset, asset_segment, slot, excerpt_segment) with TimeseriesData {
+final class SlotTimeseries private[models] (override val asset : Timeseries, asset_segment : Segment, val segment : Segment, val context : ContextSlot, excerpt_segment : Option[Segment]) extends SlotAsset(asset, asset_segment, segment, context, excerpt_segment) with TimeseriesData {
   override def source = asset.source
   def segment = slot.segment.singleton.fold {
       /* We need to determine the portion of this asset and the slot which overlap, in asset-source space: */
@@ -98,7 +94,7 @@ final class SlotTimeseries private[models] (override val asset : Timeseries, ass
   def entire = slot.segment @> asset_segment
 }
 
-object SlotAsset extends Table[SlotAsset]("slot_asset") {
+object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset] {
   private[models] def make(asset : Asset, segment : Segment, slot : AbstractSlot, excerpt : Option[Segment]) = asset match {
     case ts : Timeseries => new SlotTimeseries(ts, segment, slot, excerpt)
     case _ => new SlotAsset(asset, segment, slot, excerpt)
@@ -141,7 +137,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
       .SELECT("WHERE asset = ? AND slot = ? AND", Volume.condition)
       .apply(asset, slot).singleOpt
 
-  def get(asset : Asset.Id, slot : Slot.Id, segment : Segment)(implicit site : Site) : Future[Option[SlotAsset]] =
+  def get(asset : Asset.Id, container : Container.Id, segment : Segment)(implicit site : Site) : Future[Option[SlotAsset]] =
     if (segment.isFull) /* may be container or actual slot id */
       get(asset, slot, false)
     else /* must be container id */ base
@@ -202,7 +198,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
       .apply(volume.permission, site.access, volume.id).singleOpt
 
   /** Find an asset suitable for use as a slot thumbnail. */
-  private[models] def getThumb(slot : AbstractSlot)(implicit site : Site) : Future[Option[SlotAsset]] =
+  private[models] def getThumb(slot : Slot)(implicit site : Site) : Future[Option[SlotAsset]] =
     abstractSlotRow(slot)
       .SELECT("""JOIN format ON asset.format = format.id
       WHERE slot_asset.source = ? AND slot_asset.segment && ?::segment AND asset.volume = ?

@@ -89,7 +89,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
     measures_.value(Metric.Birthdate).map(dob => Age(dob, date))
 
   /** The age at test during a specific slot, with privacy limits applied. */
-  def age(slot : AbstractSlot) : Option[Age] =
+  def age(slot : Slot) : Option[Age] =
     slot.container.date.flatMap(age(_).map { a =>
       if (a > Age.LIMIT && !slot.downloadable) Age.LIMIT
       else a
@@ -97,19 +97,16 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   /** The set of slots to which this record applies. */
   lazy val slots : Future[Seq[Slot]] =
-    Slot.volumeRow(volume)
-      .SELECT("JOIN slot_record ON slot.id = slot_record.slot WHERE slot_record.record = ? ORDER BY slot.source, slot.segment")
-      .apply(id).list
+    SlotRecord.slots(this)
   /** Attach this record to a slot. */
-  def addSlot(s : AbstractSlot) : Future[Boolean] =
-    SQL("INSERT INTO slot_record (record, slot) VALUES (?, " + s.sqlId + ")")
-      .apply(id +: s.sqlArgs).execute.recover {
+  def addSlot(s : Slot) : Future[Boolean] =
+    SlotRecord.add(this, s)
+      .recover {
         case SQLDuplicateKeyException() => false
       }
   /** Remove this record from a slot. */
-  def removeSlot(s : AbstractSlot) : Future[Boolean] =
-    SQL("DELETE FROM slot_record USING slot WHERE record = ? AND slot = slot.id AND slot.container = ? AND slot.segment = ?")
-      .apply(id, s.containerId, s.segment).execute
+  def removeSlot(s : Slot) : Future[Boolean] =
+    SlotRecord.remove(this, s)
 
   /** The set of assets to which this record applies. */
   def assets : Future[Seq[SlotAsset]] =
@@ -136,6 +133,17 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
         s.json ++ JsonObject.flatten(age(s).map('age -> _))
       )))
     )
+}
+
+private[models] object SlotRecord extends SlotTable("slot_record") {
+  def add(record : Record, slot : Slot) =
+    INSERT(('record -> record.id) +: slot.sql).execute
+  def remove(record : Record, slot : Slot) =
+    DELETE(('record -> record.id) +: slot.sql).execute
+  def slots(record : Record) =
+    rowContainer(Container.volumeRow(record.volume))
+      .SELECT("WHERE slot_record.record = ? AND container.volume = ? ORDER BY slot_record.container, slot_record.segment")
+      .apply(record.id, record.volumeId).list
 }
 
 object Record extends TableId[Record]("record") {

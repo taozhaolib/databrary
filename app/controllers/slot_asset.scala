@@ -45,7 +45,7 @@ object SlotAssetController extends SlotAssetController
 object SlotAssetHtml extends SlotAssetController {
   def view(i : Container.Id, segment : Segment, a : models.Asset.Id) = Action(i, segment, a).async { implicit request =>
     for {
-      comments <- request.obj.slot.comments
+      comments <- request.obj.comments
     } yield (Ok(views.html.asset.view(request.obj, comments)))
   }
 }

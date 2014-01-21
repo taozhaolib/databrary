@@ -7,47 +7,43 @@ import site._
 
 /** A comment made by a particular user applied to exactly one object.
   * These are immutable (and unaudited), although the author may be considered to have ownership. */
-final class Comment private (val id : Comment.Id, val who : Account, val time : Timestamp, val slot : Slot, val text : String, val parentId : Option[Comment.Id]) extends TableRowId[Comment] with InVolume {
-  def volume = slot.volume
+final class Comment private (val id : Comment.Id, val who : Account, val segment : Segment, val context : ContextSlot, val time : Timestamp, val text : String, val parentId : Option[Comment.Id]) extends TableRowId[Comment] with Slot with InVolume {
   def whoId = who.id
 
-  lazy val json = JsonRecord.flatten(id,
+  override lazy val json = JsonRecord.flatten(id,
     Some('who -> who.party.json),
     Some('time -> time),
     Some('text -> text),
     parentId.map('parent -> _)
-  ) ++ slot.json
+  ) ++ super.json
 }
 
-object Comment extends TableId[Comment]("comment") {
-  private val columns = Columns(
+object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
+  override protected type A = (Account => Comment)
+  private val columns : Selector[ContextSlot => A] = Columns(
       SelectColumn[Id]("id")
+    , segment
     , SelectColumn[Timestamp]("time")
     , SelectColumn[String]("text")
     , SelectColumn[Option[Id]]("parent")
-    ).map { (id, time, text, parent) =>
-      (who : Account, slot : Slot) => new Comment(id, who, time, slot, text, parent)
+    ).map { (id, segment, time, text, parent) =>
+      (context : ContextSlot) => (who : Account) =>
+	new Comment(id, who, segment, context, time, text, parent)
     }
   /* XXX use here of comment_thread is inefficient, as it always threads the whole comment table, even if we only need a subset. */
   private val threads = columns from "comment_thread AS comment";
-  private def whoRow(who : Account)(implicit site : Site) = columns
-    .join(Slot.row, "comment.slot = slot.id") map {
-      case (comment, slot) => comment(who, slot)
-    }
-  private def volumeRow(volume : Volume) = threads
-    .join(Account.row, "comment.who = party.id")
-    .join(Slot.volumeRow(volume), "comment.slot = slot.id") map {
-      case ((comment, who), slot) => comment(who, slot)
-    }
-  private def containerRow(container : Container) = threads
-    .join(Account.row, "comment.who = party.id")
-    .join(Slot.containerRow(container), "comment.slot = slot.id") map {
-      case ((comment, who), slot) => comment(who, slot)
-    }
-  private def slotRow(slot : Slot) = threads
-    .join(Account.row, "comment.who = party.id") map {
-      case (comment, who) => comment(who, slot)
-    }
+
+  private def whoRow(who : Account)(implicit site : Site) =
+    slotColumns(columns, Container.row)
+      .map(_(who))
+  private def volumeRow(volume : Volume) =
+    slotColumns(threads, Container.volumeRow(volume))
+      .join(Account.row, "comment.who = party.id")
+      .map { case (comment, who) => comment(who) }
+  private def containerRow(container : Container) =
+    containerColumns(threads, container)
+      .join(Account.row, "comment.who = party.id")
+      .map { case (comment, who) => comment(who) }
   private val order = "ORDER BY comment.thread"
 
   /** Retrieve the set of all comments within the given volume. */
@@ -56,7 +52,7 @@ object Comment extends TableId[Comment]("comment") {
 
   /** Retrieve the set of all comments that apply to the given target. */
   private[models] def getSlot(slot : Slot) : Future[Seq[Comment]] =
-    containerRow(slot.container).SELECT("WHERE slot.source = ? AND slot.segment <@ ?::segment", order)
+    containerRow(slot.container).SELECT("WHERE comment.container = ? AND comment.segment <@ ?::segment", order)
       .apply(slot.containerId, slot.segment).list
 
   /** Retrieve the set of comments written by the specified user.
@@ -67,7 +63,6 @@ object Comment extends TableId[Comment]("comment") {
 
   /** Post a new comment on a target by the current user.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
-  private[models] def post(slot : AbstractSlot, text : String, parent : Option[Id] = None)(implicit site : AuthSite) : Future[Boolean] =
-    SQL("INSERT INTO comment (who, text, parent) VALUES (?, ?, ?,", slot.sqlId, ")")
-      .apply(SQLArgs(site.identity.id, text, parent) ++ slot.sqlArgs).execute
+  private[models] def post(slot : Slot, text : String, parent : Option[Id] = None)(implicit site : AuthSite) : Future[Boolean] =
+    INSERT(slot.sql ++ SQLTerms('who -> site.identity.id, 'text -> text, 'parent -> parent)).execute
 }

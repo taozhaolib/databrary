@@ -12,7 +12,7 @@ import site._
 import dbrary._
 import models._
 
-private[controllers] sealed class SlotController extends ObjectController[AbstractSlot] {
+private[controllers] sealed class SlotController extends ObjectController[Slot] {
   private[controllers] def action(i : Container.Id, segment : Segment, p : Permission.Value = Permission.VIEW) =
     RequestObject.check(Slot.get(i, segment)(_), p)
 
@@ -28,13 +28,13 @@ private[controllers] sealed class SlotController extends ObjectController[Abstra
     )) else None),
     "consent" -> Field.enum(Consent)
   ))
-  protected def editFormFill(s : AbstractSlot) = {
+  protected def editFormFill(s : Slot) = {
     val full = s.isFull
     val cont = (if (full) Some(s.container) else None)
     editForm(full).fill((cont.map(c => (c.name, c.date)), s.consent))
   }
 
-  def formForContainer(form : EditForm, slot : AbstractSlot) =
+  def formForContainer(form : EditForm, slot : Slot) =
     form.value.fold(slot.isFull)(_._1.isDefined)
 
   def update(i : Container.Id, segment : Segment) = Action(i, segment, Permission.EDIT).async { implicit request =>
@@ -97,7 +97,7 @@ object SlotHtml extends SlotController {
       show().map(Ok(_))
   }
 
-  private[controllers] def viewEdit(slot : AbstractSlot)(
+  private[controllers] def viewEdit(slot : Slot)(
     editForm : EditForm = editFormFill(slot),
     recordForm : RecordHtml.SelectForm = RecordHtml.selectForm)(
     implicit request : Request[_]) =

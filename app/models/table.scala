@@ -49,8 +49,8 @@ private[models] trait TableView {
     DELETE(SQLTerms(args : _*))(dbc, exc)
 }
 
-private[models] abstract class Table[R <: TableRow](private[models] val table : String) extends TableView {
+private[models] abstract class Table[R <: TableRow] protected (private[models] val table : String) extends TableView {
   type Row = R
 }
-private[models] abstract class TableId[R <: TableRowId[R]](table : String) extends Table[R](table) with HasId[R]
+private[models] abstract class TableId[R <: TableRowId[R]] protected (table : String) extends Table[R](table) with HasId[R]
 
