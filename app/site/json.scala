@@ -80,18 +80,17 @@ object JsonRecord {
   implicit def writable(implicit codec : play.api.mvc.Codec) : Writeable[JsonRecord] =
     Writeable.writeableOf_JsValue(codec).map(_.obj)
   def seq(s : Seq[JsonRecord]) : JsValue =
-    // JsObject(s.map(JsonField.ofField(_))) /* TODO */
-    JsArray(s.map(_.js))
+    JsObject(s.map(JsonField.ofField(_)))
 
   implicit object SeqBuild extends CanBuildFrom[Seq[_], JsonRecord, JsValue] {
     final class SeqBuilder extends scala.collection.mutable.Builder[JsonRecord, JsValue] {
-      private[this] val builder = Seq.newBuilder[JsValue]
+      private[this] val builder = Seq.newBuilder[JsonField]
       def +=(e : JsonRecord) = {
-        builder += e.js
+        builder += JsonField.ofField(e)
         this
       }
       def clear() = builder.clear
-      def result() = JsArray(builder.result) /* TODO: object */
+      def result() = JsObject(builder.result)
     }
     def apply(coll : Seq[_]) = new SeqBuilder
     def apply() = new SeqBuilder
