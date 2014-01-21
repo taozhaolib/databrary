@@ -165,50 +165,58 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 }
 
 object Volume extends TableId[Volume]("volume") {
-  private val permission = "volume_access_check(volume.id, ?::integer)"
-  private[models] val condition = "(" + permission + " >= 'VIEW'::permission OR ?::boolean)"
+  private object Permission {
+    private val table : String = "volume_permission"
+    private implicit val fromTable : FromTable = FromTable(table)
+    private val columns = Columns(
+	SelectColumn[models.Permission.Value]("permission")
+      ).from("LATERAL (VALUES (volume_access_check(volume.id, ?::integer), ?::boolean)) AS " + table + " (permission, superuser)")
+    def row(implicit site : Site) =
+      columns.pushArgs(SQLArgs(site.identity.id, site.superuser))
+    def condition =
+      "(" + table + ".permission >= 'VIEW'::permission OR " + table + ".superuser)"
+  }
+  private[models] val condition = Permission.condition
+
   private final val defaultCreation = new Timestamp(1357900000000L)
   private[models] def row(implicit site : Site) = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
     , SelectColumn[Option[String]]("body")
-    , SelectAs[Permission.Value](permission, "volume_permission")
     , SelectAs[Option[Timestamp]]("volume_creation(volume.id)", "volume_creation")
-    ).map {
-      (id, name, body, permission, creation) => new Volume(id, name, body, permission, creation.getOrElse(defaultCreation))
-    }.pushArgs(SQLArgs(site.identity.id))
-
-  private[models] def conditionArgs(implicit site : Site) =
-    SQLArgs(site.identity.id, site.superuser)
+    ).+(Permission.row)
+      .map { case ((id, name, body, creation), permission) =>
+	new Volume(id, name, body, permission, creation.getOrElse(defaultCreation))
+      }
 
   /** Retrieve an individual Volume.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   def get(i : Id)(implicit site : Site) : Future[Option[Volume]] =
     row.SELECT("WHERE id = ? AND", condition)
-      .apply(i +: conditionArgs).singleOpt
+      .apply(i).singleOpt
 
   /** Retrieve the set of all volumes in the system.
     * This only returns volumes for which the current user has [[Permission.VIEW]] access. */
   def getAll(implicit site : Site) : Future[Seq[Volume]] =
     row.SELECT("WHERE volume.id > 0 AND", condition, "ORDER BY volume.name")
-      .apply(conditionArgs).list
+      .apply().list
     
   def search(query : String)(implicit site : Site) : Future[Seq[Volume]] =
     /* XXX ts indexes! */
     row.SELECT("WHERE volume.id > 0 AND to_tsvector(name || ' ' || coalesce(body, '')) @@ plainto_tsquery(?) AND", condition, "ORDER BY ts_rank(to_tsvector(name || ' ' || coalesce(body, '')), to_tsquery(?))")
-      .apply(query +: conditionArgs :+ query).list
+      .apply(query, query).list
 
   /** Create a new, empty volume with no permissions.
     * The caller should probably add a [[VolumeAccess]] for this volume to grant [[Permission.ADMIN]] access to some user. */
   def create(name : String, body : Option[String] = None)(implicit site : Site) : Future[Volume] =
     Audit.add(table, SQLTerms('name -> name, 'body -> body), "id").single(SQLCols[Id])
-      .map(new Volume(_, name, body, Permission.NONE, new Timestamp))
+      .map(new Volume(_, name, body, models.Permission.NONE, new Timestamp))
 
   private final val CORE : Id = asId(0)
   /** The "core" volume, containing site-wide "global" assets.
     * We ignore any access rules here and grant everyone DOWNLOAD. */
   final def Core(implicit site : Site) : Volume =
-    new Volume(CORE, "core", None, Permission.DOWNLOAD, defaultCreation)
+    new Volume(CORE, "core", None, models.Permission.DOWNLOAD, defaultCreation)
 
   case class Summary(sessions : Int, shared : Int, agerange : Range[Age], agemean : Age) {
     lazy val json = JsonObject(

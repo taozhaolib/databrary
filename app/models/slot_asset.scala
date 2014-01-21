@@ -139,7 +139,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   def get(asset : Asset.Id, slot : Slot.Id, full : Boolean = false)(implicit site : Site) : Future[Option[SlotAsset]] =
     row(full)
       .SELECT("WHERE asset = ? AND slot = ? AND", Volume.condition)
-      .apply(SQLArgs(asset, slot) ++ Volume.conditionArgs).singleOpt
+      .apply(asset, slot).singleOpt
 
   def get(asset : Asset.Id, slot : Slot.Id, segment : Segment)(implicit site : Site) : Future[Option[SlotAsset]] =
     if (segment.isFull) /* may be container or actual slot id */
@@ -150,7 +150,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
         make(asset(slot.volume), segment, slot, excerpt)
       }
       .SELECT("WHERE asset.id = ? AND container.id = ? AND", Volume.condition)
-      .apply(SQLArgs(segment, segment, asset, slot) ++ Volume.conditionArgs).singleOpt
+      .apply(segment, segment, asset, slot).singleOpt
 
   /** Retrieve the list of all assets within the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[SlotAsset]] =
@@ -171,7 +171,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
         make(asset(vol), segment, slot, excerpt)
       }
       .SELECT("WHERE slot_asset.source = ? AND slot_asset.segment && ?::segment AND asset.volume <> ? AND", Volume.condition)
-      .apply(SQLArgs(slot.segment, slot.containerId, slot.segment, slot.volumeId) ++ Volume.conditionArgs).list
+      .apply(slot.segment, slot.containerId, slot.segment, slot.volumeId).list
 
   /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */
   private[models] def getAsset(asset : Asset) : Future[Option[SlotAsset]] =

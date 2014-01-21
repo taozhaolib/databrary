@@ -170,7 +170,7 @@ object Record extends TableId[Record]("record") {
   /** Retrieve a specific record by id. */
   def get(id : Id)(implicit site : Site) : Future[Option[Record]] =
     row.SELECT("WHERE record.id = ? AND", Volume.condition)
-      .apply(id +: Volume.conditionArgs).singleOpt
+      .apply(id).singleOpt
 
   /** Retrieve the set of records on the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[Record]] =
@@ -188,7 +188,7 @@ object Record extends TableId[Record]("record") {
   private[models] def getSlotForeign(slot : AbstractSlot)(implicit site : Site) : Future[Seq[Record]] =
     row
       .SELECT("JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id WHERE slot.source = ? AND slot.segment && ?::segment AND record.volume <> ? AND", Volume.condition)
-      .apply(SQLArgs(slot.containerId, slot.segment, slot.volumeId) ++ Volume.conditionArgs).list
+      .apply(slot.containerId, slot.segment, slot.volumeId).list
 
   /** Retrieve all the categorized records associated with the given volume.
     * @param category restrict to the specified category, or include all categories

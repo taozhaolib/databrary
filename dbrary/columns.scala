@@ -78,6 +78,8 @@ case class Selector[A](selects : Seq[SelectExpr[_]], source : String, parse : SQ
     leftJoin(that, Seq(using.name))
   def ~[B](that : Selector[B]) : Selector[(A,B)] =
     join(that, _ + " NATURAL JOIN " + _)
+  def +[B](that : Selector[B]) : Selector[(A,B)] =
+    join(that, _ + " CROSS JOIN " + _)
 
   private[this] def selectStmt(q : Seq[String]) : String = unwords(Seq("SELECT", select, "FROM", source) ++ q : _*)
   def SELECT(q : String*)(implicit dbc : db.Connection, executionContext : ExecutionContext) : SQLToRows[A] =

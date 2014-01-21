@@ -63,7 +63,7 @@ object Container extends TableId[Container]("container") {
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   def get(i : Id)(implicit site : Site) : Future[Option[Container]] =
     row.SELECT("WHERE container.id = ? AND", Volume.condition)
-      .apply(i +: Volume.conditionArgs).singleOpt
+      .apply(i).singleOpt
 
   /** Retrieve all the (non-top) containers in a given volume. */
   private[models] def getVolume(v : Volume) : Future[Seq[Container]] =

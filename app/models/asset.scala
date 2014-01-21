@@ -238,7 +238,7 @@ object Asset extends TableId[Asset]("asset") {
 
   def get(a : Asset.Id)(implicit site : Site) : Future[Option[Asset]] =
     row.SELECT("WHERE asset.id = ? AND", Volume.condition)
-      .apply(a +: Volume.conditionArgs).singleOpt
+      .apply(a).singleOpt
 
   /** Get the list of older versions of this asset. */
   def getRevisions(a : Asset) : Future[Seq[Asset]] =
