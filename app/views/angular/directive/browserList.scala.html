@@ -1,10 +1,7 @@
-<div class="browser_list cf">
-    Depth: {{getDepth()}}<br>
-    Type: {{getLevelType()}}<br>
-{{item.id}}
-    <ul>
+<aside class="browser_list cf">
+    <ul ng-if="getLevelItems(item)[0]">
         <li ng-repeat="item in getLevelItems(item)">
             <ng-include src="getLevelInclude()"></ng-include>
         </li>
     </ul>
-</div>
+</aside>

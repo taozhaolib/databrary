@@ -59,8 +59,6 @@ define(['app/config/module'], function (module) {
 
 				return {};
 			};
-
-			$scope.parentLevelArgs();
 		};
 
 		return {

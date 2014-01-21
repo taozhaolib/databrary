@@ -144,3 +144,71 @@
 .expanded .record_pill_options {
 	display: block;
 }
+
+//
+
+.browser_item {
+	.padding(@f1, 0, 0, 2);
+	.margin-bottom(@f8);
+	.border-radius(@b4 0 0 0);
+}
+
+.browser_volume {
+	background-color: @c4g5m1;
+
+	h1 {
+		.font-size(1.75);
+		.line-height(1.5);
+	}
+}
+
+.browser_record {
+	background-color: @c10g5m1;
+
+	h1 {
+		.font-size(1.5);
+		.line-height(1.5);
+	}
+}
+
+.browser_session {
+	background-color: @c8g5m1;
+
+	h1 {
+		.font-size(1.5);
+		.line-height(1.5);
+	}
+}
+
+.browser_asset {
+	background-color: @c0g5m1;
+
+	h1 {
+		.font-size(1.5);
+		.line-height(1.5);
+	}
+}
+
+//
+
+.browser_list {
+	ul {
+		.margin(0);
+		background-color: @g5;
+		.padding-top(@f8);
+		.padding-left(@f8);
+		.border-radius(@b4 0 0 0);
+	}
+
+	li {
+		&:before {
+			display: none;
+		}
+
+		&:last-child {
+			.browser_item {
+				.margin-bottom(0);
+			}
+		}
+	}
+}

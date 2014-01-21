@@ -101,10 +101,6 @@ private[controllers] sealed class LoginController extends SiteController {
       .withSession(session - "superuser")
   }
 
-  def get = SiteAction.access(Permission.VIEW) { implicit request =>
-    Ok(json)
-  }
-
   type RegistrationMapping = (String, String, String, Boolean)
   type RegistrationForm = Form[RegistrationMapping]
   protected val registrationForm : RegistrationForm = Form(tuple(

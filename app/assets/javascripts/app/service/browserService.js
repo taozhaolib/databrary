@@ -267,13 +267,13 @@ define(['app/config/module'], function (module) {
 						case 'session':
 							var tmp = [];
 
-//							angular.forEach(browserService.data, function (volume) {
-//								if(volume.id = args.volume)
-//									angular.forEach(volume.assets, function(asset) {console.log(asset.container.id);
-//										if(asset.container.id = args.session)
-//											tmp.push(asset);
-//									});
-//							});
+							angular.forEach(browserService.data, function (volume) {
+								if(volume.id = args.volume)
+									angular.forEach(volume.assets, function(asset) {console.log(asset.container.id);
+										if(asset.container.id = args.session)
+											tmp.push(asset);
+									});
+							});
 
 							return tmp;
 
