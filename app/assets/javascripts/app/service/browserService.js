@@ -6,298 +6,276 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		browserService.data = [];
-		browserService.dataSorted = [];
-		browserService.options = {
+		var DEFAULT_OPTIONS = {
 			volume: {
 				allow: true,
 				active: true,
+				expand: true,
 				filter: {},
 				order: []
 			},
 			record: {
 				allow: true,
-				active: true,
 				filter: {},
 				order: [],
-				categories: [
-					{
-						allow: true,
-						name: 'participant',
-						active: true
-					}
-				]
+				categories: {}
 			},
 			session: {
 				allow: true,
 				active: true,
+				expand: true,
 				filter: {},
 				order: []
 			},
 			asset: {
 				allow: true,
-				active: true,
+				active: false,
+				expand: true,
 				filter: {},
 				order: []
 			}
 		};
 
-
-
-//		browserService. = function () {};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		//
-
-		browserService.data = [];
-		browserService.recordSorts = arrayHelper([]);
-
-		browserService.sort = undefined;
-
-		browserService.setData = function (data) {
-			browserService.data = data;
-
-			$rootScope.$watch('browser.data', function () {
-				var tempSorts = arrayHelper([]);
-
-				// inefficient.
-				angular.forEach(browserService.data, function (volume) {
-					angular.forEach(volume.records, function (record) {
-						var temp_i = tempSorts.index({name: record.category});
-
-						if (temp_i == -1) {
-							var real_i = browserService.recordSorts.index({name: record.category});
-
-							if (real_i > -1)
-								tempSorts.add(browserService.recordSorts.get(real_i));
-							else
-								tempSorts.add({
-									name: record.category,
-									active: false,
-									enabled: true
-								});
-						}
-					});
-				});
-
-				if (browserService.recordSorts.length == 0 && tempSorts.index({name: 'participant'}) > -1)
-					tempSorts.update({name: 'participant'}, {active: true});
-
-				browserService.recordSorts = tempSorts;
-			}, true);
+		var DEFAULT_CATEGORY = {
+			allow: true,
+			active: true,
+			expand: true
 		};
 
 		//
 
+		var data = {};
+
 		var contexts = ['search', 'party', 'volume', 'record', 'session', 'asset'];
 		var context = undefined;
+
+		//
+
+		browserService.data = {
+//			expand: true,
+//			items: [
+//				{
+//					item: null,
+//					expand: true,
+//					items: [
+//						{
+//							item: null,
+//							expand: true,
+//							items: [
+//								{
+//									item: null,
+//									expand: true,
+//									items: [
+//										{
+//											item: null,
+//											expand: true,
+//											items: [
+//												{
+//													item: null,
+//													expand: true
+//												}
+//											]
+//										}
+//									]
+//								}
+//							]
+//						}
+//					]
+//				}
+//			]
+		};
+
+		browserService.options = {};
+
+		//
+
+		browserService.initialize = function (newContext, newData) {
+			browserService.initializeData(newData);
+			browserService.initializeOptions(newContext);
+		};
+
+		//
+
+		browserService.initializeOptions = function (newContext) {
+			if (contexts.indexOf(newContext) == -1)
+				return false;
+
+			context = newContext;
+
+			angular.extend(browserService.options, DEFAULT_OPTIONS);
+
+			browserService.updateCategories();
+
+			switch (context) {
+				case 'search':
+					browserService.options.volume.allow = true;
+					browserService.options.record.allow = true;
+					browserService.options.session.allow = true;
+					browserService.options.asset.allow = true;
+
+					if (angular.isObject(browserService.options.record.categories['participant']))
+						browserService.options.record.categories['participant'].active = true;
+
+					break;
+
+				case 'volume':
+					browserService.options.volume.allow = false;
+					browserService.options.record.allow = true;
+					browserService.options.session.allow = true;
+					browserService.options.asset.allow = true;
+
+					if (angular.isObject(browserService.options.record.categories['participant']))
+						browserService.options.record.categories['participant'].active = true;
+
+					break;
+
+				case 'record':
+					browserService.options.volume.allow = false;
+					browserService.options.record.allow = true;
+					browserService.options.session.allow = true;
+					browserService.options.asset.allow = true;
+
+					if (angular.isObject(browserService.options.record.categories['participant']))
+						browserService.options.record.categories['participant'].active = true;
+
+					break;
+
+				case 'session':
+					browserService.options.volume.allow = false;
+					browserService.options.record.allow = true;
+					browserService.options.session.allow = true;
+					browserService.options.asset.allow = true;
+
+					if (angular.isObject(browserService.options.record.categories['participant']))
+						browserService.options.record.categories['participant'].active = true;
+
+					break;
+
+				case 'asset':
+					browserService.options.volume.allow = false;
+					browserService.options.record.allow = true;
+					browserService.options.session.allow = true;
+					browserService.options.asset.allow = true;
+
+					if (angular.isObject(browserService.options.record.categories['participant']))
+						browserService.options.record.categories['participant'].active = true;
+
+					break;
+
+				case 'party':
+					browserService.options.volume.allow = true;
+					browserService.options.record.allow = true;
+					browserService.options.session.allow = true;
+					browserService.options.asset.allow = true;
+
+					if (angular.isObject(browserService.options.record.categories['participant']))
+						browserService.options.record.categories['participant'].active = true;
+
+					break;
+			}
+
+			return context;
+		};
+
+		browserService.updateCategories = function () {
+			angular.forEach(data, function (volume) {
+				angular.forEach(volume.categories, function (sessions, category) {
+					if (!angular.isArray(browserService.options.record.categories[category]))
+						browserService.options.record.categories[category] = angular.copy(DEFAULT_CATEGORY);
+				});
+			});
+		};
 
 		browserService.getContext = function () {
 			return context;
 		};
 
-		browserService.initialize = function (newContext) {
-			if (contexts.indexOf(newContext) == -1)
-				return false;
+		//
 
-			switch (newContext) {
-				case 'search':
-					if (angular.isUndefined(browserService.sort))
-						browserService.sort = {
-							volume: {
-								active: true,
-								allow: true
-							},
-							record: {
-								active: true,
-								allow: true
-							},
-							session: {
-								active: true,
-								allow: true
-							},
-							asset: {
-								active: true,
-								allow: true
-							}
-						};
-					break;
+		browserService.initializeData = function (newData) {
+			data = {};
 
-				case 'party':
-					if (angular.isUndefined(browserService.sort))
-						browserService.sort = {
-							volume: {
-								active: true,
-								allow: true
-							},
-							record: {
-								active: true,
-								allow: true
-							},
-							session: {
-								active: true,
-								allow: true
-							},
-							asset: {
-								active: true,
-								allow: true
-							}
-						};
-					break;
+			if (newData.id)
+				data[newData.id] = newData;
+			else if (angular.isObject(newData))
+				data = newData;
 
-				case 'volume':
-					if (angular.isUndefined(browserService.sort))
-						browserService.sort = {
-							volume: {
-								active: false,
-								allow: false
-							},
-							record: {
-								active: true,
-								allow: true
-							},
-							session: {
-								active: true,
-								allow: true
-							},
-							asset: {
-								active: true,
-								allow: true
-							}
-						};
-					break;
+			browserService.updateData();
+		};
 
-				case 'record':
-					if (angular.isUndefined(browserService.sort))
-						browserService.sort = {
-							volume: {
-								active: false,
-								allow: false
-							},
-							record: {
-								active: true,
-								allow: true
-							},
-							session: {
-								active: true,
-								allow: true
-							},
-							asset: {
-								active: true,
-								allow: true
-							}
-						};
-					break;
-
-				case 'session':
-					if (angular.isUndefined(browserService.sort))
-						browserService.sort = {
-							volume: {
-								active: false,
-								allow: false
-							},
-							record: {
-								active: true,
-								allow: true
-							},
-							session: {
-								active: true,
-								allow: true
-							},
-							asset: {
-								active: true,
-								allow: true
-							}
-						};
-					break;
-
-				case 'asset':
-					if (angular.isUndefined(browserService.sort))
-						browserService.sort = {
-							volume: {
-								active: false,
-								allow: false
-							},
-							record: {
-								active: false,
-								allow: false
-							},
-							session: {
-								active: true,
-								allow: true
-							},
-							asset: {
-								active: true,
-								allow: true
-							}
-						};
-					break;
-			}
-
-			context = newContext;
-
-			return newContext;
+		browserService.updateData = function () {
+			// convert .data into functional hierarchy
 		};
 
 		//
 
-		browserService.dataSorted = [];
+//		browserService.expandItem = function () {
+//			// if volume and no items,
+//			// browserService.expandVolume() .then expandItem()
+//
+//			//
+//		};
+//
+//		browserService.expandVolume = function () {
+//
+//		};
 
-		browserService.updateSorted = function () {
+		//
 
-		};
+		$rootScope.$watch(function () {
+			var fullCount = 0;
 
-		browserService.getSortLevels = function ()  {
-			var levels = [];
+			angular.forEach(data, function (volume) {
+				if (volume.full)
+					fullCount++;
+			});
 
-			if(browserService.sort.volume.active)
-				levels.push('volume');
+			return fullCount;
+		}, function () {
+			browserService.updateCategories();
+		});
 
-			if(browserService.sort.record.allow) {
-				angular.forEach(browserService.recordSorts, function (sort) {
-					if(sort.active)
-						levels.push(sort.name);
-				});
-			}
+		//
 
-			if(browserService.sort.session.active)
-				levels.push('session');
 
-			if(browserService.sort.asset.active)
-				levels.push('asset');
+		//
 
-			return levels;
-		};
-
-		browserService.getLevelType = function (depth) {
-			if(!angular.isNumber(depth))
-				return undefined;
-
-			return browserService.getSortLevels()[depth];
-		};
-
-		browserService.getLevelItems = function (depth, args) {
-			return [];
-		};
-
-		browserService.hasLevelItems = function (depth, args) {
-			return browserService.getLevelItems(depth, args).length > 0;
-		};
+//		browserService.getSortLevels = function () {
+//			var levels = [];
+//
+//			if (browserService.sort.volume.active)
+//				levels.push('volume');
+//
+//			if (browserService.sort.record.allow) {
+//				angular.forEach(browserService.recordSorts, function (sort) {
+//					if (sort.active)
+//						levels.push(sort.name);
+//				});
+//			}
+//
+//			if (browserService.sort.session.active)
+//				levels.push('session');
+//
+//			if (browserService.sort.asset.active)
+//				levels.push('asset');
+//
+//			return levels;
+//		};
+//
+//		browserService.getLevelType = function (depth) {
+//			if (!angular.isNumber(depth))
+//				return undefined;
+//
+//			return browserService.getSortLevels()[depth];
+//		};
+//
+//		browserService.getLevelItems = function (depth, args) {
+//			return [];
+//		};
+//
+//		browserService.hasLevelItems = function (depth, args) {
+//			return browserService.getLevelItems(depth, args).length > 0;
+//		};
 
 		//
 
