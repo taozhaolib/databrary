@@ -11,6 +11,7 @@ import               Forms._
 import play.api.i18n.Messages
 import play.api.libs.json
 import site._
+import dbrary._
 import models._
 
 private[controllers] abstract sealed class RecordController extends ObjectController[Record] {
@@ -67,15 +68,6 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
     )
   }
 
-  def remove(r : models.Record.Id, s : models.Slot.Id, editRedirect : Boolean = false) = Action(r, Permission.EDIT).async { implicit request =>
-    request.obj.removeSlot(s).map { _ =>
-      if (editRedirect)
-        Redirect(controllers.routes.SlotHtml.edit(s))
-      else
-        result(request.obj)
-    }
-  }
-
   type SelectForm = Form[Option[models.Record.Id]]
   protected[controllers] val selectForm = Form(
     "record" -> optional(of[models.Record.Id])
@@ -86,6 +78,25 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
     target.volume.allRecords().map(_ map { r : Record =>
       (r.id.toString, r.category.fold("")(_.name + ':') + r.ident)
     })
+
+  def add(recordId : Record.Id, containerId : Container.Id, segment : Segment) = Action(recordId, Permission.EDIT).async { implicit request =>
+    for {
+      so <- Slot.get(containerId, segment)
+      s = so.getOrElse(throw NotFoundException)
+      _ <- request.obj.addSlot(s)
+    } yield (result(request.obj))
+  }
+
+  def remove(recordId : Record.Id, slotId : Slot.Id, segment : Segment, editRedirect : Boolean = false) = Action(recordId, Permission.EDIT).async { implicit request =>
+    for {
+      so <- Slot.get(slotId, segment)
+      s = so.getOrElse(throw NotFoundException)
+      _ <- request.obj.removeSlot(s)
+    } yield (
+      if (editRedirect) Redirect(controllers.routes.SlotHtml.edit(slotId))
+      else result(request.obj)
+    )
+  }
 }
 
 object RecordHtml extends RecordController {
@@ -141,7 +152,7 @@ object RecordHtml extends RecordController {
     Ok(viewEdit(m, f))
   }
 
-  def slotAdd(v : models.Volume.Id, s : models.Slot.Id, catID : models.RecordCategory.Id, editRedirect : Boolean = false) = SlotHtml.ActionId(v, s, Permission.EDIT).async { implicit request =>
+  def slotAdd(s : models.Slot.Id, segment : Segment = Range.full[Offset], catID : models.RecordCategory.Id, editRedirect : Boolean = false) = SlotHtml.Action(s, segment, Permission.EDIT).async { implicit request =>
     def bad(form : SelectForm) =
       SlotHtml.viewEdit(request.obj)(recordForm = form).map(BadRequest(_))
     val form = selectForm.bindFromRequest
@@ -153,7 +164,7 @@ object RecordHtml extends RecordController {
           _ <- r.addSlot(request.obj)
         } yield (Created(views.html.record.edit(r, cat.fold[Seq[Metric[_]]](Nil)(_.template), editForm.fill((Some(cat), Seq())), jsonCategories, jsonMetrics)))
       } (models.Record.get(_).flatMap(_
-        .filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId === v)
+        .filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId === request.obj.volumeId)
         .fold(bad(form.withError("record", "record.bad")))(
           _.addSlot(request.obj).map { _ =>
           if (editRedirect)

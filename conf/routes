@@ -4,7 +4,7 @@
 # ~~~~
 
 # static
-GET     /                                                                                         controllers.VolumeHtml.search
+GET     /                                                                                         controllers.Site.start
 
 # users
 GET     /login                                                                                    controllers.LoginHtml.view
@@ -36,7 +36,7 @@ POST    /party/$pID<[0-9]+>/authorize/$parent<-?[0-9]+>/apply                   
 # TODO: should be POST but currently used as link:
 GET     /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>/remove                                     controllers.PartyHtml.authorizeDelete(pID : models.Party.Id, child : models.Party.Id)
 GET     /party/$pID<-?[0-9]+>/avatar                                                              controllers.PartyHtml.avatar(pID : models.Party.Id, size : Int ?= 64)
-POST    /party/$pID<-?[0-9]+>/avatar                                                              controllers.PartyHtml.uploadAvatar(pID : models.Party.Id)
+POST    /party/$pID<[0-9]+>/avatar                                                                controllers.PartyHtml.uploadAvatar(pID : models.Party.Id)
 
 # volumes
 GET     /search                                                                                   controllers.VolumeHtml.search
@@ -55,9 +55,6 @@ GET     /volume/$vID<[0-9]+>/thumb                                              
 # slots
 POST    /volume/$vID<[0-9]+>/slot/container                                                       controllers.SlotHtml.addContainer(vID : models.Volume.Id)
 GET     /volume/$vID<[0-9]+>/slot/container                                                       controllers.SlotHtml.createContainer(vID : models.Volume.Id)
-
-GET     /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.SlotHtml.create(vID : models.Volume.Id, cID : models.Slot.Id)
-POST    /volume/$vID<[0-9]+>/slot/$cID<[0-9]+>/slot/create                                        controllers.SlotHtml.add(vID : models.Volume.Id, cID : models.Slot.Id)
 
 GET     /slot/$id<[0-9]+>                                                                         controllers.SlotHtml.view(   id : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset])
 GET     /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.edit(  sID : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset])
@@ -85,10 +82,10 @@ POST    /slot/$sID<[0-9]+>/comment/create                                       
 POST    /slot/$sID<[0-9]+>/tag                                                                    controllers.TagHtml.update(name : String ?= "", sID : models.Slot.Id, segment : dbrary.Segment)
 
 # records
-POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                                             controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Slot.Id, editRedirect : Boolean = false)
-POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove/return                                      controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Slot.Id, editRedirect : Boolean = true)
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create                       controllers.RecordHtml.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = false)
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create/return                controllers.RecordHtml.slotAdd(vID : models.Volume.Id, sID : models.Slot.Id, cID : models.RecordCategory.Id, editRedirect : Boolean = true)
+POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                                             controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset], editRedirect : Boolean = false)
+POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove/return                                      controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset], editRedirect : Boolean = true)
+POST    /slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create                                           controllers.RecordHtml.slotAdd(sID : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset], cID : models.RecordCategory.Id, editRedirect : Boolean = false)
+POST    /slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create/return                                    controllers.RecordHtml.slotAdd(sID : models.Slot.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset], cID : models.RecordCategory.Id, editRedirect : Boolean = true)
 
 GET     /record/$rID<[0-9]+>                                                                      controllers.RecordHtml.view(rID : models.Record.Id)
 GET     /volume/$vID<[0-9]+>/record/$cID<-?[0-9]+>/create                                         controllers.RecordHtml.add(vID : models.Volume.Id, cID : models.RecordCategory.Id)
@@ -103,7 +100,6 @@ POST    /volume/$vID<[0-9]+>/ingest/curated                                     
 # ----- LOGIN ----- #
 # GET
 GET     /api/user                                                                                 controllers.LoginApi.get
-
 # LOGIN
 POST    /api/user/login                                                                           controllers.LoginApi.post
 # LOGOUT
@@ -119,21 +115,21 @@ POST    /api/user/superuser/off                                                 
 # GET       ?volumes;comments;parents[=all];children[=all];funding                                TODO: tags;network
 GET     /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.get(partyId : models.Party.Id)
 # UPDATE
-POST    /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.update(partyId : models.Party.Id)
+POST    /api/party/$partyId<[0-9]+>                                                               controllers.PartyApi.update(partyId : models.Party.Id)
 # CREATE
 POST    /api/party                                                                                controllers.PartyApi.create()
 
 # ----- PARTY AUTHORIZE ----- #
 # QUERY
-GET     /api/party/$partyId<-?[0-9]+>/authorize                                                   controllers.PartyApi.authorizeGet(partyId : models.Party.Id)
+GET     /api/party/$partyId<[0-9]+>/authorize                                                     controllers.PartyApi.authorizeGet(partyId : models.Party.Id)
 # SEARCH
 GET     /api/party/$partyId<-?[0-9]+>/authorize/search                                            controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, name : String)
 # CHANGE
-POST    /api/party/$partyId<-?[0-9]+>/authorize/$childId<[0-9]+>                                  controllers.PartyApi.authorizeChange(partyId : models.Party.Id, childId : models.Party.Id)
+POST    /api/party/$partyId<[0-9]+>/authorize/$childId<[0-9]+>                                    controllers.PartyApi.authorizeChange(partyId : models.Party.Id, childId : models.Party.Id)
 # APPLY
-POST    /api/party/$partyId<-?[0-9]+>/authorize/$parentId<[0-9]+>/apply                           controllers.PartyApi.authorizeApply(partyId : models.Party.Id, parentId : models.Party.Id)
+POST    /api/party/$partyId<[0-9]+>/authorize/$parentId<[0-9]+>/apply                             controllers.PartyApi.authorizeApply(partyId : models.Party.Id, parentId : models.Party.Id)
 # DELETE
-DELETE  /api/party/$partyId<-?[0-9]+>/authorize/$otherId<[0-9]+>                                  controllers.PartyApi.authorizeDelete(partyId : models.Party.Id, otherId : models.Party.Id)
+DELETE  /api/party/$partyId<[0-9]+>/authorize/$otherId<[0-9]+>                                    controllers.PartyApi.authorizeDelete(partyId : models.Party.Id, otherId : models.Party.Id)
 
 # ----- VOLUME ----- #
 # QUERY     ?query=search+terms
@@ -176,6 +172,10 @@ POST    /api/record                                                             
 POST    /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.update(recordId : models.Record.Id)
 # DELETE
 #                                                                                                 TODO: DELETE /api/record/$recordId<[0-9]+>
+# ADD           ?segment=
+POST    /api/record/$recordId<[0-9]+>/slot/$containerId<[0-9]+>                                   controllers.RecordApi.add(recordId : models.Record.Id, containerId : models.Container.Id, segment : dbrary.Segment)
+# REMOVE        ?segment=
+DELETE  /api/record/$recordId<[0-9]+>/slot/$containerId<[0-9]+>                                   controllers.RecordApi.remove(recordId : models.Record.Id, containerId : models.Container.Id, segment : dbrary.Segment)
 
 # ----- ASSET ----- #
 # GET       ?slot;revisions

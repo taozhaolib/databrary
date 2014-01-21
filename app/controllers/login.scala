@@ -26,11 +26,11 @@ private[controllers] object LoginController extends LoginController {
 
 private[controllers] sealed class LoginController extends SiteController {
 
-  protected def json(implicit site : SiteRequest.Auth[_]) =
+  protected def json(implicit site : SiteRequest[_]) =
     site.identity.json ++
     JsonObject.flatten(
       Some('access -> site.access),
-      if (site.access == Permission.ADMIN) Some('superuser -> new Timestamp(site.session.get("superuser").flatMap(Maybe.toLong _).getOrElse(0L))) else None
+      if (site.access == Permission.ADMIN) Some('superuser -> site.session.get("superuser").flatMap(Maybe.toLong _).map(_ - System.currentTimeMillis).filter(_ > 0).getOrElse(0L)) else None
     )
 
   private[controllers] def login(a : Account)(implicit request : SiteRequest[_]) : Future[SimpleResult] = {
@@ -82,21 +82,22 @@ private[controllers] sealed class LoginController extends SiteController {
       case _ =>
     }
     (if (request.isApi) Ok("")
-    else Redirect(routes.VolumeHtml.search))
+    else Redirect(routes.Site.start))
       .withNewSession
   }
 
+  private final val superuserTime : Long = 60*60*1000
   def superuserOn = SiteAction.access(Permission.ADMIN) { implicit request =>
-    val expires = System.currentTimeMillis + 60*60*1000
+    val expires = System.currentTimeMillis + superuserTime
     Audit.action(Audit.Action.superuser)
-    (if (request.isApi) Ok(json + ('superuser -> new Timestamp(expires)))
-    else Redirect(request.headers.get(REFERER).getOrElse(routes.VolumeHtml.search.url)))
+    (if (request.isApi) Ok(json + ('superuser -> superuserTime))
+    else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start.url)))
       .withSession(session + ("superuser" -> expires.toString))
   }
 
   def superuserOff = SiteAction.access(Permission.ADMIN) { implicit request =>
     (if (request.isApi) Ok(json - "superuser")
-    else Redirect(request.headers.get(REFERER).getOrElse(routes.VolumeHtml.search.url)))
+    else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start.url)))
       .withSession(session - "superuser")
   }
 
@@ -144,9 +145,9 @@ object LoginHtml extends LoginController {
       val em = Maybe(email).opt
       OpenID.verifiedId
         .flatMap { info =>
-          Account.getOpenid(info.id, em).flatMap(_.fold(
-            ABadRequest(views.html.party.login(loginForm.fill((em, "", info.id)).withError("openid", "login.openID.notFound")))
-          )(login))
+	Account.getOpenid(info.id, em).flatMap(_.fold(
+	  ABadRequest(views.html.party.login(loginForm.fill((em, "", info.id)).withError("openid", "login.openID.notFound")))
+	)(login))
         }.recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
     }
 
@@ -156,4 +157,7 @@ object LoginHtml extends LoginController {
 }
 
 object LoginApi extends LoginController {
+  def get = SiteAction { implicit request =>
+    Ok(json)
+}
 }
