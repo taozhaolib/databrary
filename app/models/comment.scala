@@ -35,31 +35,35 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
 
   private def whoRow(who : Account)(implicit site : Site) =
     slotColumns(columns, Container.row)
-      .map(_(who))
+    .map(_(who))
+  private def rowContainer(container : Selector[Container]) =
+    slotColumns(threads, container)
+    .join(Account.row, "comment.who = party.id")
+    .map { case (comment, who) => comment(who) }
   private def volumeRow(volume : Volume) =
-    slotColumns(threads, Container.volumeRow(volume))
-      .join(Account.row, "comment.who = party.id")
-      .map { case (comment, who) => comment(who) }
+    rowContainer(Container.volumeRow(volume))
   private def containerRow(container : Container) =
-    containerColumns(threads, container)
-      .join(Account.row, "comment.who = party.id")
-      .map { case (comment, who) => comment(who) }
+    rowContainer(Container.fixed(container))
   private val order = "ORDER BY comment.thread"
 
   /** Retrieve the set of all comments within the given volume. */
   private[models] def getVolume(volume : Volume) : Future[Seq[Comment]] =
-    volumeRow(volume).SELECT("WHERE container.volume = ?", order).apply(volume.id).list
+    volumeRow(volume)
+    .SELECT("WHERE container.volume = ?", order)
+    .apply(volume.id).list
 
   /** Retrieve the set of all comments that apply to the given target. */
   private[models] def getSlot(slot : Slot) : Future[Seq[Comment]] =
-    containerRow(slot.container).SELECT("WHERE comment.container = ? AND comment.segment <@ ?::segment", order)
-      .apply(slot.containerId, slot.segment).list
+    containerRow(slot.container)
+    .SELECT("WHERE comment.container = ? AND comment.segment <@ ?::segment", order)
+    .apply(slot.containerId, slot.segment).list
 
   /** Retrieve the set of comments written by the specified user.
     * This checks permissions on the commented object (volume). */
   private[models] def getParty(who : Account)(implicit site : Site) : Future[Seq[Comment]] =
-    whoRow(who).SELECT("WHERE who = ? AND", Volume.condition, "ORDER BY comment.id DESC").
-      apply(who.id).list
+    whoRow(who)
+    .SELECT("WHERE who = ? AND", Volume.condition, "ORDER BY comment.id DESC")
+    .apply(who.id).list
 
   /** Post a new comment on a target by the current user.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */

@@ -106,14 +106,14 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
     case ts : Timeseries => new SlotTimeseries(ts, asset_segment, slot, excerpt)
     case _ => new SlotAsset(asset, asset_segment, slot, excerpt)
   }
-  private def columnsSlotAsset[A](slot : Selector[Slot], asset : Selector[A]) : Selector[(Slot, ((Segment, Segment), A))] =
+  private def columnsSlotAsset[A](slot : Selector[Slot], asset : Selector[A]) : Selector[(((Slot, Segment), Option[Segment]), A)] =
     slot
     .join(SlotAssetSlot.columns, "slot.container = slot_asset.container AND slot.segment && slot_asset.segment")
     .leftJoin(Excerpt.columns, "excerpt.segment @> slot.segment")
     .join(asset, "slot_asset.asset = asset.id")
   private def rowSlot(slot : Selector[Slot]) : Selector[SlotAsset] =
     columnsSlotAsset(slot, Asset.columns)
-    .map { case (slot, ((segment, excerpt), asset)) =>
+    .map { case (((slot, segment), excerpt), asset) =>
       make(asset(slot.volume), segment, slot, excerpt)
     }
 
@@ -134,10 +134,10 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   /** Retrieve the list of all foreign assets (from a different volume) within the given slot. */
   private[models] def getSlotForeign(slot : Slot)(implicit site : Site) : Future[Seq[SlotAsset]] =
     columnsSlotAsset(Slot.fixed(slot), Asset.row)
-    .map { case (slot, ((segment, excerpt), asset)) =>
+    .map { case (((slot, segment), excerpt), asset) =>
       make(asset, segment, slot, excerpt)
     }
-    .SELECT("WHERE asset.volume <> ? AND", Volume.conditition)
+    .SELECT("WHERE asset.volume <> ? AND", Volume.condition)
     .apply(slot.volumeId).list
 
   /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */
@@ -157,7 +157,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
     .apply(record.id, record.volumeId).list
 
   private[models] def getExcerpt(volume : Volume) : Future[Seq[SlotAsset]] =
-    rowSlot(Excerpt.slotContainer(Container.rowVolume(volume)))
+    rowSlot(Excerpt.slotContainer(Container.volumeRow(volume)))
     .SELECT("WHERE container.volume = ? AND asset.volume = container.volume")
     .apply(volume.id).list
 

@@ -86,10 +86,10 @@ private[store] object Segment extends StoreDir("store.cache") {
   }
 
   private[store] def readFrame(t : TimeseriesData, offset : Offset) : Future[StreamEnumerator] =
-    genFrame(t.source, t.segment.lowerBound.get+offset)
+    genFrame(t.source, t.section.lowerBound.get+offset)
 
   private[store] def read(t : TimeseriesData) : Future[StreamEnumerator] = 
-    t.segment.singleton.fold(genSegment(t.source, t.segment))(genFrame(t.source, _))
+    t.section.singleton.fold(genSegment(t.source, t.segment))(genFrame(t.source, _))
 }
 
 object Asset {

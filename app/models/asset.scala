@@ -235,7 +235,7 @@ object Asset extends TableId[Asset]("asset") {
 
   private def volumeRow(vol : Volume) =
     columns.map(_(vol))
-  private def row(implicit site : Site) =
+  private[models] def row(implicit site : Site) =
     columns.join(Volume.row, "asset.volume = volume.id")
       .map { case (asset, vol) => asset(vol) }
 

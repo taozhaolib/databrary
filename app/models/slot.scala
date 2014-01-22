@@ -9,7 +9,7 @@ import site._
 
 /** Conceptually a slot represents a segment of a container. */
 trait Slot extends TableRow with InVolume with SiteObject {
-  final def ===(a : Slot) : Boolean = container === a.container && segment == a.segment
+  final def ===(a : Slot) : Boolean = containerId === a.containerId && segment === a.segment
 
   def container : Container = context.container
   val segment : Segment
@@ -155,7 +155,7 @@ private[models] trait TableSlot[R <: Slot] extends Table[R] {
     consent.fold[ContextSlot](container)(_(container))
   protected final def values(containerId : Container.Id, segment : Segment) =
     Columns(FromTable("(VALUES (?::integer, ?::segment)) AS slot (container, segment)"))
-    .pushArgs(containerId, segment)
+    .pushArgs(SQLArgs(containerId, segment))
 
   protected final def slotColumns(columns : Selector[ContextSlot => A], container : Selector[Container]) : Selector[A] =
     columns
@@ -172,10 +172,10 @@ private[models] abstract class SlotTable protected (table : String) extends Tabl
     else new Virtual(segment, context)
   private[models] final val columns =
     Columns(segment)
-  private[this] val columnsContext =
+  protected val columnsContext =
     columns.map((make _).curried)
-  protected final def valueColumns(containerId : Container.Id, segment : Segment)
-    values(containerId, segment).map(_ => make(segment, _))
+  protected final def valueColumns(containerId : Container.Id, segment : Segment) =
+    values(containerId, segment).map(_ => make(segment, _ : ContextSlot))
   private[models] final def rowContainer(container : Selector[Container]) =
     slotColumns(columnsContext, container)
 }
@@ -185,7 +185,7 @@ object Slot extends SlotTable("slot") {
     values(slot.containerId, slot.segment)
     .map(_ => slot)
 
-  private[models] def row(containerId : Container.Id, segment : Segment) =
+  private[models] def row(containerId : Container.Id, segment : Segment)(implicit site : Site) =
     slotColumns(
       valueColumns(containerId, segment),
       Container.row)
@@ -200,9 +200,9 @@ object Slot extends SlotTable("slot") {
 
   def get(containerId : Container.Id, segment : Segment)(implicit site : Site) : Future[Option[Slot]] =
     row(containerId, segment)
-    .apply().singleOpt
+    .SELECT().apply().singleOpt
 
   def get(container : Container, segment : Segment) : Future[Slot] =
     containerRow(container, segment)
-    .apply().single
+    .SELECT().apply().single
 }

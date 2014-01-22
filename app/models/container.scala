@@ -46,8 +46,8 @@ object Container extends TableId[Container]("container") {
 
   private[models] def fixed(container : Container) =
     Columns(FromTable("(VALUES (?::integer)) AS container (id)"))
-      .pushArgs(container.id)
-      .map(_ => container)
+    .pushArgs(SQLArgs(container.id))
+    .map(_ => container)
   private val columns = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[Boolean]("top")
