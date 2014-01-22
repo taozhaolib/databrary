@@ -5,7 +5,42 @@ import play.api.mvc.QueryStringBindable
 import macros._
 
 trait RangeType[A] extends Ordering[A] {
+  t =>
   def isDiscrete = false
+
+  object LowerOrdering extends Ordering[Range[A]] {
+    def compare(x : Range[A], y : Range[A]) = {
+      val xe = x.isEmpty
+      val ye = y.isEmpty
+      if (xe || ye) xe compare ye
+      else {
+	val xb = x.lowerBound
+	val yb = y.lowerBound
+	(for { xb <- xb ; yb <- yb } yield {
+	  val c = t.compare(xb, yb)
+	  if (c == 0) y.lowerClosed compare x.lowerClosed
+	  else c
+	}).getOrElse(xb.isDefined compare yb.isDefined)
+      }
+    }
+  }
+  object UpperOrdering extends Ordering[Range[A]] {
+    def compare(x : Range[A], y : Range[A]) = {
+      val xe = x.isEmpty
+      val ye = y.isEmpty
+      if (xe || ye) ye compare xe
+      else {
+	val xb = x.upperBound
+	val yb = y.upperBound
+	(for { xb <- xb ; yb <- yb } yield {
+	  val c = t.compare(xb, yb)
+	  if (c == 0) x.lowerClosed compare y.lowerClosed
+	  else c
+	}).getOrElse(xb.isEmpty compare yb.isEmpty)
+      }
+    }
+  }
+
 }
 trait DiscreteRangeType[A] extends RangeType[A] {
   def increment(a : A) : A // = a + 1
@@ -36,8 +71,8 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
   val upperBound : Option[A]
   val lowerClosed : Boolean
   val upperClosed : Boolean
-  def lowerPoint : Option[A] = if (lowerClosed) lowerBound else lowerBound.flatMap(lb => dt.map(_.increment(lb)))
-  def upperPoint : Option[A] = if (upperClosed) upperBound else upperBound.flatMap(ub => dt.map(_.decrement(ub)))
+  final def lowerPoint : Option[A] = if (lowerClosed) lowerBound else lowerBound.flatMap(lb => dt.map(_.increment(lb)))
+  final def upperPoint : Option[A] = if (upperClosed) upperBound else upperBound.flatMap(ub => dt.map(_.decrement(ub)))
   def isEmpty : Boolean =
     zip { (l, u) =>
       if (lowerClosed && upperClosed) 
@@ -48,10 +83,10 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
   def isFull : Boolean = lowerBound.isEmpty && upperBound.isEmpty
   def singleton : Option[A] = 
     upperPoint.flatMap(u => lowerPoint.filter(t.equiv(_, u)))
-  def isSingleton : Boolean = singleton.isDefined
+  final def isSingleton : Boolean = singleton.isDefined
   /** Is this a canonical representation of this range, meaning EmptyRange, FullRange, SingletonRange, [x,y] for discrete types, or [x,y) for continuous types. */
   def isNormalized = lowerClosed == lowerBound.isDefined && upperClosed == (t.isDiscrete && upperBound.isDefined)
-  def normalize =
+  final def normalize =
     singleton.fold {
       if (isNormalized) self
       if (isEmpty) new EmptyRange[A]
@@ -59,16 +94,24 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
       else if (!t.isDiscrete) self
       else Range[A](self.lowerPoint, self.upperPoint)
     } (new SingletonRange[A](_))
-  /* contains relations, as in postgres */
-  def @>(x : A) =
+  /** Contains relations, as in postgres. */
+  final def @>(x : A) = isFull || !isEmpty &&
     lowerBound.fold(true)(l => if (lowerClosed) t.lteq(l, x) else t.lt(l, x)) &&
     upperBound.fold(true)(u => if (upperClosed) t.lteq(x, u) else t.lt(x, u))
-  def @>(r : Range[A]) = 
-    lowerBound.fold(true)(sl => r.lowerBound.fold(false)(rl => if (lowerClosed >= r.lowerClosed) t.lteq(sl, rl) else t.lt(sl, rl))) &&
-    upperBound.fold(true)(su => r.upperBound.fold(false)(ru => if (upperClosed >= r.upperClosed) t.gteq(su, ru) else t.gt(su, ru)))
+  final def @>(r : Range[A]) = isFull || r.isEmpty || !isEmpty &&
+    t.LowerOrdering.lteq(this, r) && t.UpperOrdering.gteq(this, r)
+  /** Intersection, as in postgres. */
+  final def *(r : Range[A]) =
+    if (isEmpty || r.isFull) this
+    else if (isFull || r.isEmpty) r
+    else {
+      val l = t.LowerOrdering.max(this, r)
+      val u = t.UpperOrdering.min(this, r)
+      Range[A](l.lowerClosed, l.lowerBound, u.upperBound, u.upperClosed)
+    }
   /** Apply a monotonic increasing transform to both end-points.
     * Non-monotonic transforms will result in incoherent ranges. */
-  def map[B : RangeType](f : A => B) = new Range[B] {
+  final def map[B : RangeType](f : A => B) = new Range[B] {
     override val isEmpty = self.isEmpty
     override val singleton = self.singleton.map(f)
     val lowerBound = self.lowerBound.map(f)
@@ -76,12 +119,12 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
     val lowerClosed = self.lowerClosed
     val upperClosed = self.upperClosed
   }
-  def zip[B](f : (A, A) => B) : Option[B] =
+  final def zip[B](f : (A, A) => B) : Option[B] =
     for {
       l <- lowerBound
       u <- upperBound
     } yield (f(l,u))
-  def ===(a : Range[A]) = a match {
+  final def ===(a : Range[A]) = a match {
     case r : Range[A] =>
       val oo = Ordering.Option(t)
       oo.equiv(lowerBound, r.lowerBound) &&
@@ -107,8 +150,6 @@ final class EmptyRange[A : RangeType] extends Range[A] {
   val upperBound = None
   val lowerClosed = false
   val upperClosed = false
-  override def @>(x : A) = false
-  override def @>(r : Range[A]) = false
   override def isNormalized = true
   override def toString = "empty"
 }
@@ -121,8 +162,6 @@ final class FullRange[A : RangeType] extends Range[A] {
   val upperBound = None
   val lowerClosed = false
   val upperClosed = false
-  override def @>(x : A) = true
-  override def @>(r : Range[A]) = true
   override def isNormalized = true
 }
 
@@ -155,6 +194,8 @@ object Range {
     val upperClosed = uc
   }
 
+  implicit def lowerOrdering[A](implicit t : RangeType[A]) : Ordering[Range[A]] = t.LowerOrdering
+  implicit def upperOrdering[A](implicit t : RangeType[A]) : Ordering[Range[A]] = t.UpperOrdering
   implicit val segmentSqlType : SQLType[Range[Offset]] = PGRangeType.segment.sqlType
   implicit val dateSqlType : SQLType[Range[Date]] = PGRangeType.date.sqlType
   implicit def jsonWrites[T : json.Writes] : json.Writes[Range[T]] =
