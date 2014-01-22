@@ -74,8 +74,8 @@ private[models] sealed abstract class TokenTable[T <: Token](table : String) ext
   protected def insert[A](args : SQLTerms, returning : Selector[A]) : Future[(Token.Id,A)] =
     insert[A] { (token : Token.Id) =>
       val a = ('token -> token) +: args
-      SQL("INSERT INTO", table, args.insert, "RETURNING", returning.select)
-        .apply(args).single(returning.parse)
+      SQL("INSERT INTO", table, a.insert, "RETURNING", returning.select)
+        .apply(a).single(returning.parse)
     }
 }
 
