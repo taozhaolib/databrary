@@ -33,5 +33,17 @@ define([
 		$location.hash('');
 	}]);
 
+	module.run(['$rootScope', '$log', function ($rootScope, $log) {
+		$rootScope.$log = $log;
+	}]);
+
+	module.run(['$rootScope', 'RouterService', function ($rootScope, router) {
+		$rootScope.router = router;
+	}]);
+
+	module.run(['$rootScope', 'BrowserService', function ($rootScope, browser) {
+		$rootScope.browser = browser;
+	}]);
+
 	return module;
 });

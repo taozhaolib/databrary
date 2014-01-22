@@ -61,14 +61,22 @@ define(['app/config/module'], function (module) {
 			controller: 'PartyView',
 			templateUrl: 'partyView.html',
 			resolve: {
-				party: ['$route', 'Party', function ($route, Party) {
-					return Party.get({
+				party: ['$route', 'Party', '$q', function ($route, Party, $q) {
+					var deferred = $q.defer();
+
+					Party.get({
 						volumes: '',
 						comments: '',
 						parents: '',
 						children: '',
 						funding: ''
+					}, function (data) {
+						deferred.resolve(data);
+					}, function (data) {
+						deferred.reject();
 					});
+
+					return deferred.promise;
 				}]
 			},
 			reloadOnSearch: false
@@ -82,11 +90,19 @@ define(['app/config/module'], function (module) {
 			controller: 'AssetView',
 			templateUrl: 'assetView.html',
 			resolve: {
-				asset: ['$route', 'Asset', function ($route, Asset) {
-					return Asset.get({
+				asset: ['$route', 'Asset', '$q', function ($route, Asset, $q) {
+					var deferred = $q.defer();
+
+					Asset.get({
 						slot: '',
 						revisions: ''
+					}, function (data) {
+						deferred.resolve(data);
+					}, function (data) {
+						deferred.reject();
 					});
+
+					return deferred.promise;
 				}]
 			},
 			reloadOnSearch: false
@@ -100,11 +116,19 @@ define(['app/config/module'], function (module) {
 			controller: 'slotAssetView',
 			templateUrl: 'slotAssetView.html',
 			resolve: {
-				slotAsset: ['$route', 'SlotAsset', function ($route, SlotAsset) {
-					return SlotAsset.get({
+				slotAsset: ['$route', 'SlotAsset', '$q', function ($route, SlotAsset, $q) {
+					var deferred = $q.defer();
+
+					SlotAsset.get({
 						slot: '',
 						revisions: ''
+					}, function (data) {
+						deferred.resolve(data);
+					}, function (data) {
+						deferred.reject();
 					});
+
+					return deferred.promise;
 				}]
 			},
 			reloadOnSearch: false
@@ -118,13 +142,21 @@ define(['app/config/module'], function (module) {
 			controller: 'SlotView',
 			templateUrl: 'slotView.html',
 			resolve: {
-				slot: ['$route', 'Slot', function ($route, Slot) {
-					return Slot.get({
+				slot: ['$route', 'Slot', '$q', function ($route, Slot, $q) {
+					var deferred = $q.defer();
+
+					Slot.get({
 						tags: '',
 						assets: '',
 						comments: '',
 						records: ''
+					}, function (data) {
+						deferred.resolve(data);
+					}, function (data) {
+						deferred.reject();
 					});
+
+					return deferred.promise;
 				}]
 			},
 			reloadOnSearch: false
@@ -138,10 +170,18 @@ define(['app/config/module'], function (module) {
 			controller: 'RecordView',
 			templateUrl: 'recordView.html',
 			resolve: {
-				record: ['$route', 'Record', function ($route, Record) {
-					return Record.get({
+				record: ['$route', 'Record', '$q', function ($route, Record, $q) {
+					var deferred = $q.defer();
+
+					Record.get({
 						slots: ''
+					}, function (data) {
+						deferred.resolve(data);
+					}, function (data) {
+						deferred.reject();
 					});
+
+					return deferred.promise;
 				}]
 			},
 			reloadOnSearch: false
@@ -155,8 +195,10 @@ define(['app/config/module'], function (module) {
 			controller: 'VolumeView',
 			templateUrl: 'volumeView.html',
 			resolve: {
-				volume: ['$route', 'Volume', function ($route, Volume) {
-					return Volume.get({
+				volume: ['$route', 'Volume', '$q', function ($route, Volume, $q) {
+					var deferred = $q.defer();
+
+					Volume.get({
 						access: '',
 						citations: '',
 						top: '',
@@ -168,7 +210,13 @@ define(['app/config/module'], function (module) {
 						sessions: '',
 						categories: '',
 						funding: ''
+					}, function (data) {
+						deferred.resolve(data);
+					}, function (data) {
+						deferred.reject();
 					});
+
+					return deferred.promise;
 				}]
 			},
 			reloadOnSearch: false
@@ -181,11 +229,6 @@ define(['app/config/module'], function (module) {
 		$routeProvider.otherwise({
 			redirectTo: '/search'
 		});
-	}]);
-
-	module.run(['$rootScope', 'RouterService', 'BrowserService', function ($rootScope, router, browser) {
-		$rootScope.router = router;
-		$rootScope.browser = browser;
 	}]);
 
 	return module;
