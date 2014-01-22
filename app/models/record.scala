@@ -136,14 +136,18 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 }
 
 private[models] object SlotRecord extends SlotTable("slot_record") {
+  def row(record : Record) =
+    rowContainer(Container.volumeRow(record.volume))
+
+  def slots(record : Record) =
+    row(record)
+    .SELECT("WHERE slot_record.record = ? AND container.volume = ? ORDER BY slot_record.container, slot_record.segment")
+    .apply(record.id, record.volumeId).list
+
   def add(record : Record, slot : Slot) =
     INSERT(('record -> record.id) +: slot.sql).execute
   def remove(record : Record, slot : Slot) =
     DELETE(('record -> record.id) +: slot.sql).execute
-  def slots(record : Record) =
-    rowContainer(Container.volumeRow(record.volume))
-      .SELECT("WHERE slot_record.record = ? AND container.volume = ? ORDER BY slot_record.container, slot_record.segment")
-      .apply(record.id, record.volumeId).list
 }
 
 object Record extends TableId[Record]("record") {

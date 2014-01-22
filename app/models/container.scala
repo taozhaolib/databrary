@@ -43,6 +43,11 @@ final class Container protected (override val id : Container.Id, override val vo
 
 object Container extends TableId[Container]("container") {
   final val range : Range[Offset] = Range.full[Offset]
+
+  private[models] def fixed(container : Container) =
+    Columns(FromTable("(VALUES (?::integer)) AS container (id)"))
+      .pushArgs(container.id)
+      .map(_ => container)
   private val columns = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[Boolean]("top")
