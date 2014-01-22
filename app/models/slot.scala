@@ -246,14 +246,14 @@ object Slot extends TableId[Slot]("slot") {
     * @param full only return full slots */
   def get(i : Slot.Id)(implicit site : Site) : Future[Option[Slot]] =
     row.SELECT("WHERE slot.id = ? AND", Volume.condition)
-      .apply(i +: Volume.conditionArgs).singleOpt
+      .apply(i).singleOpt
 
   def get(id : Slot.Id, segment : Segment)(implicit site : Site) : Future[Option[AbstractSlot]] =
     if (segment.isFull) /* may be container or actual slot id */
       get(id)
     else /* must be container id */ abstractRow(segment)
       .SELECT("WHERE container.id = ? AND", Volume.condition)
-      .apply(id +: Volume.conditionArgs).singleOpt
+      .apply(id).singleOpt
 
   private def _get(container : Container, segment : Segment)(implicit dbc : Site.DB, exc : ExecutionContext) : Future[Option[Slot]] =
     containerRow(container).SELECT("WHERE slot.source = ? AND slot.segment = ?::segment")(dbc, exc)

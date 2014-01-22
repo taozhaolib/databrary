@@ -56,7 +56,7 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
   private[models] def getVolumes(party : Party)(implicit site : Site) : Future[Seq[VolumeAccess]] =
     partyRow(party)
       .SELECT("WHERE party = ? AND (access >= 'CONTRIBUTE' OR funding IS NOT NULL) AND", Volume.condition, "ORDER BY access DESC, volume.name")
-      .apply(party.id +: Volume.conditionArgs).list
+      .apply(party.id).list
 
   /** Update or add volume access in the database.
     * If an access for the volume and party already exist, it is changed to match this.

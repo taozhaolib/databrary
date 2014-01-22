@@ -25,7 +25,7 @@ private[models] trait TableRowId[+T] extends TableRow {
 }
 
 /** Factory/helper object for a particular table.  Usually these are used to produce [[TableRow]]s. */
-private[models] abstract trait TableView {
+private[models] trait TableView {
   /** Name of the database table. */
   private[models] val table : String
   /** Database OID of the table.  This is useful when dealing with inheritance or other tableoid selections. */
@@ -34,13 +34,10 @@ private[models] abstract trait TableView {
 
   /** Type of TableRow this object can generate. */
   private[models] type Row <: TableRow
-  /** Description of the database selection to produce a [[Row]]. */
+  /* Description of the database selection to produce a Row. */
   // private[models] val row : Selector[Row]
 
-  import scala.language.implicitConversions
-  protected implicit val tableName : FromTable = FromTable(table)
-  /** Convenient creation of column names for this table from symbols. */
-  protected implicit def tableColumn[A : SQLType](col : Symbol) = SelectColumn[A](col.name)
+  protected implicit val fromTable : FromTable = FromTable(table)
 
   protected def INSERT(args : SQLTerms)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     SQL("INSERT INTO", table, args.insert)(dbc, exc).apply(args)

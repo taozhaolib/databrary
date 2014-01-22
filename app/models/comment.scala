@@ -68,7 +68,7 @@ object Comment extends TableId[Comment]("comment") {
     * This checks permissions on the commented object (volume). */
   private[models] def getParty(who : Account)(implicit site : Site) : Future[Seq[Comment]] =
     whoRow(who).SELECT("WHERE who = ? AND", Volume.condition, "ORDER BY comment.id DESC").
-      apply(who.id +: Volume.conditionArgs).list
+      apply(who.id).list
 
   /** Post a new comment on a target by the current user.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */

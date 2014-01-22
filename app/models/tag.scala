@@ -171,5 +171,5 @@ object SlotWeight extends WeightView[SlotWeight] {
 
   private[models] def getTag(tag : Tag)(implicit site : Site) : Future[Seq[SlotWeight]] =
     row.SELECT("WHERE tag_weight.tag = ? AND", Volume.condition, "ORDER BY weight DESC")
-      .apply(tag.id +: Volume.conditionArgs).list
+      .apply(tag.id).list
 }
