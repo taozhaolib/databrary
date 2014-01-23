@@ -22,8 +22,7 @@ define(['app/config/module'], function (module) {
 			},
 			session: {
 				allow: true,
-//				active: true,
-				active: false,
+				active: true,
 				expand: true,
 				filter: {},
 				order: []
@@ -41,7 +40,6 @@ define(['app/config/module'], function (module) {
 		var DEFAULT_CATEGORY = {
 			name: null,
 			allow: true,
-//			active: false,
 			active: true,
 			expand: true
 		};
@@ -77,6 +75,9 @@ define(['app/config/module'], function (module) {
 				browserService.initializeData(newData);
 				browserService.initializeOptions(newContext);
 				browserService.updateData();
+
+				$rootScope.$log.debug(browserService.options);
+				$rootScope.$log.debug(browserService.data);
 			});
 		};
 
@@ -116,7 +117,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		browserService.updateCategories = function () {
-			angular.forEach(raw, function (volume, id) {
+			angular.forEach(raw, function (volume) {
 				angular.forEach(volume.categories, function (sessions, category) {
 					if (!browserService.options.record.categories.get({name: category}))
 						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {name: category}));
@@ -147,94 +148,107 @@ define(['app/config/module'], function (module) {
 			if (groups.length == 0)
 				return;
 
-			loopRecursive(groups, 0, data.items, raw);
+			loopRecursive(groups, 0, data.items, raw, []);
 
 			browserService.data = data;
 		};
 
-		var loopRecursive = function (groups, level, current, data) {
-			console.log('loopRecursive');
-
+		var loopRecursive = function (groups, level, current, data, ancestors) {
 			var group = groups[level];
 
 			if (['volume', 'session', 'asset'].indexOf(group) > -1)
-				loopItemRecursive[group](groups, level, current, data);
+				loopItemRecursive[group](groups, level, current, data, ancestors);
 			else
-				loopItemRecursive['record'](groups, level, current, data);
+				loopItemRecursive['record'](groups, level, current, data, ancestors);
 		};
 
-		var itemRecursive = function (groups, level, current, volume, object) {
-			console.log('itemRecursive', current.length);
-
-			var group = groups[level];
-
+		var itemRecursive = function (groups, level, current, volume, ancestors) {
 			var next = angular.extend({}, DEFAULT_GROUP, {
-				object: object,
+				object: ancestors[level],
 				items: []
 			});
 
 			current.push(next);
 
 			if (hasChildren(groups, level))
-				loopRecursive(groups, level + 1, next.items, volume);
+				loopRecursive(groups, level + 1, next.items, volume, ancestors);
 		};
 
 		var loopItemRecursive = {
-			volume: function (groups, level, current, volumes) {
-				console.log('loopRecursive volume');
-
-				angular.forEach(volumes, function (volume) {
-					itemRecursive(groups, level, current, volume, volume);
+			volume: function (groups, level, current, data, ancestors) {
+				// for one or more volumes...
+				angular.forEach(data, function (volume) {
+					// never not the top level, if present
+					ancestors = [volume];
+					itemRecursive(groups, level, current, data, ancestors);
 				});
 			},
 
-			record: function (groups, level, current, volume) {
-				console.log('loopRecursive record');
-
-				var records = [];
+			record: function (groups, level, current, data, ancestors) {
 				var group = groups[level];
+				var volumes = {};
 
-				var categoriesAbove = groups.indexOf('volume') == -1 ? groups.slice(0, level) : groups.slice(1, level);
+				// if there are no volumes, we need to iterate all records of this category
+				if (ancestors.length > 0)
+					volumes[ancestors[0].id] = ancestors[0];
+				else
+					volumes = data;
 
-				angular.forEach(volume.categories[group], function (record) {
-					var goodOne = categoriesAbove.length == 0;
+				var recordsAbove = groups.indexOf('volume') == -1 ? ancestors.slice(0, level) : ancestors.slice(1, level);
 
-					angular.forEach(categoriesAbove, function (categoryAbove) {
-						if (!goodOne)
-							angular.forEach(volume.categories[categoryAbove], function (recordAbove) { console.log(record, recordAbove);
-								goodOne = intersectRecords(volume, volume.records[record], volume.records[recordAbove])
+				// iterate one or more volumes
+				angular.forEach(volumes, function (volume) {
+					// iterate records in this category
+					angular.forEach(volume.categories[group], function (recordID) {
+						var good = true;
+
+						// check if we need to cross index other records...
+						if (recordsAbove.length != 0) {
+							// get the sessions in this record...
+							var sessions = angular.copy(volume.records[recordID].sessions);
+
+							// iterate through cross-indexed records...
+							angular.forEach(recordsAbove, function (recordAbove) {
+								if (!$.isEmptyObject(sessions))
+									// iterate through the current record's sessions...
+									angular.forEach(sessions, function (session, sessionID) {
+										// if this cross-record doesn't have this sessions, remove it
+										if (!recordAbove.sessions.hasOwnProperty(sessionID))
+											delete sessions[sessionID];
+									});
 							});
-					});
 
-					if (goodOne)
-						itemRecursive(groups, level, current, volume, volume.records[record]);
+							if($.isEmptyObject(sessions))
+								good = false;
+						}
+
+						// if there are sessions in this cross-indexed record...
+						if (good) {
+							ancestors = angular.copy(ancestors);
+							ancestors.push(volume.records[recordID]);
+							itemRecursive(groups, level, current, data, ancestors);
+						}
+					});
 				});
 			},
 
-			session: function (groups, level, current, volume) {
+			session: function (groups, level, current, data, ancestors) {
+				var sessions = {};
+
+				if (level == 0) {
+					angular.forEach(data, function (volume) {
+						if (volume.sessions)
+							angular.extend(sessions, volume.sessions);
+					})
+				} else if (groups[level - 1] == 'volume') {
+					angular.extend(sessions, data.sessions);
+				} else {
+					var categoriesAbove = groups.indexOf('volume') == -1 ? groups.slice(0, level) : groups.slice(1, level);
+				}
 			},
 
-			asset: function (groups, level, current, volume) {
+			asset: function (groups, level, current, data, ancestors) {
 			}
-		};
-
-		var intersectRecords = function (volume, recordA, recordB) {
-			var keyA = 0, keyB = 0;
-
-			var sessionsA = Object.keys(recordA.sessions).sort();
-			var sessionsB = Object.keys(recordB.sessions).sort();
-
-			while (keyA < sessionsA.length && keyB < sessionsB.length) {
-				if (sessionsA[keyA] < sessionsB[keyB]) {
-					keyA++;
-				} else if (sessionsA[keyA] > sessionsB[keyB]) {
-					keyB++;
-				} else {
-					return true;
-				}
-			}
-
-			return false;
 		};
 
 		var hasChildren = function (groups, level) {
