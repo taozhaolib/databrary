@@ -8,6 +8,12 @@ define(['app/config/module'], function (module) {
 
 		//
 
+		$scope.notFunded = function (object) {
+			return !object.funding;
+		};
+
+		//
+
 		$scope.getVolumeRole = function (volumeAccess) {
 			switch (volumeAccess.access) {
 				case 4:

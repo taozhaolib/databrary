@@ -30,26 +30,26 @@
         <div class="panel_materials_display col-full" ng-init="currentAsset = assets[0].id">
             <div ng-repeat="slotAsset in volume.assets" id="asset_{{slotAsset.asset.id}}" ng-show="currentAsset == slotAsset.asset.id" class="panel_materials_frame">
                 <h2>
-                    {{asset.name}}.{{asset.format.extension}}
+                    {{slotAsset.asset.name}}.{{slotAsset.format.extension}}
                     <a ng-href="/{{}}" class="link">download</a>
                 </h2>
 
-                <div ng-switch="{{asset.format.mimeSubTypes}}">
-                    <div ng-switch-when="['image', '']">
+                <div ng-switch="{{getMimeGroup(slotAsset)}}">
+                    <div ng-switch-when="'image'">
                         <img ng-src="/{{}}" />
                     </div>
 
-                    <div ng-switch-when="['video', '']">
+                    <div ng-switch-when="'video'">
                         <video controls>
-                            <source ng-src="/{{}}" type="{{asset.format.mimetype}}">
+                            <source ng-src="/{{}}" type="{{slotAsset.format.mimetype || slotAsset.asset.format.mimetype}}">
                         </video>
                     </div>
 
-                    <div ng-switch-when="['text', 'html']">
+                    <div ng-switch-when="'html'">
                         <iframe ng-src="/{{}}" />
                     </div>
 
-                    <div ng-switch-when="['text', 'plain']">
+                    <div ng-switch-when="'plain'">
                         <iframe ng-src="/{{}}" />
                     </div>
 
@@ -57,8 +57,6 @@
 
                     </div>
                 </div>
-
-                <div class="panel_materials_description" ng-bing-html="asset.body | format"></div>
             </div>
         </div>
     </panel-mode>

@@ -19,5 +19,11 @@ define(['app/config/module'], function (module) {
 				'active': $scope.currentAsset == asset.sourceId
 			};
 		};
+
+		$scope.getMimeGroup = function (asset) {
+			var group = asset.format ? asset.format.mimetype.split('/').unshift() : asset.asset.format.mimetype.split('/').unshift();
+
+			return group;
+		}
 	}]);
 });
