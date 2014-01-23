@@ -119,16 +119,16 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   private def row(full : Boolean)(implicit site : Site) = columns
     .join(if (full) Container.row else Slot.row, "slot_asset.slot = slot.id AND asset.volume = container.volume")
     .map { case (asset, slot) => asset(slot) }
-  private val base = Columns(
+  private def base(segment : Segment) = Columns(
       SelectColumn[Segment]("slot_asset", "segment")
     , SelectColumn[Option[Segment]]("slot_excerpt", "segment")
     )
     .from("""asset_slot JOIN slot AS slot_asset ON asset_slot.slot = slot_asset.id
       LEFT JOIN excerpt JOIN slot AS slot_excerpt ON excerpt.slot = slot_excerpt.id
         ON asset_slot.asset = excerpt.asset AND slot_asset.source = slot_excerpt.source AND ?::segment <@ slot_excerpt.segment""")
+    .pushArgs(SQLArgs(segment))
     .join(Asset.columns, "asset_slot.asset = asset.id")
-  private def abstractSlotRow(slot : AbstractSlot) = base
-    .pushArgs(SQLArgs(slot.segment))
+  private def abstractSlotRow(slot : AbstractSlot) = base(slot.segment)
     .map { case ((segment, excerpt), asset) =>
       make(asset(slot.volume), segment, slot, excerpt)
     }
@@ -144,13 +144,13 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   def get(asset : Asset.Id, slot : Slot.Id, segment : Segment)(implicit site : Site) : Future[Option[SlotAsset]] =
     if (segment.isFull) /* may be container or actual slot id */
       get(asset, slot, false)
-    else /* must be container id */ base
+    else /* must be container id */ base(segment)
       .join(Slot.abstractRow(segment), "slot_asset.source = container.id AND slot_asset.segment && ?::segment AND asset.volume = container.volume")
       .map { case (((segment, excerpt), asset), slot) =>
         make(asset(slot.volume), segment, slot, excerpt)
       }
       .SELECT("WHERE asset.id = ? AND container.id = ? AND", Volume.condition)
-      .apply(segment, segment, asset, slot).singleOpt
+      .apply(segment, asset, slot).singleOpt
 
   /** Retrieve the list of all assets within the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[SlotAsset]] =
@@ -166,12 +166,12 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   /** Retrieve the list of all foreign assets (from a different volume) within the given slot. */
   private[models] def getSlotForeign(slot : AbstractSlot)(implicit site : Site) : Future[Seq[SlotAsset]] =
-    base.join(Volume.row, "asset.volume = volume.id")
+    base(slot.segment).join(Volume.row, "asset.volume = volume.id")
       .map { case (((segment, excerpt), asset), vol) =>
         make(asset(vol), segment, slot, excerpt)
       }
       .SELECT("WHERE slot_asset.source = ? AND slot_asset.segment && ?::segment AND asset.volume <> ? AND", Volume.condition)
-      .apply(slot.segment, slot.containerId, slot.segment, slot.volumeId).list
+      .apply(slot.containerId, slot.segment, slot.volumeId).list
 
   /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */
   private[models] def getAsset(asset : Asset) : Future[Option[SlotAsset]] =
