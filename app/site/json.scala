@@ -61,7 +61,7 @@ final class JsonRecord(val id : JsValue, fields : Seq[(String, JsValue)]) extend
     case JsString(s) => s
     case j => j.toString
   }
-  def value = js // JsObject(fields)
+  def value = super.js
   override def js = if (fields.isEmpty) id else super.js
   override def +(field : JsonField) =
     new JsonRecord(id, fields :+ field)
