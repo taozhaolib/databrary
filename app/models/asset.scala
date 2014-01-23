@@ -162,13 +162,10 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
 
   def slot : Future[Option[SlotAsset]] = SlotAsset.getAsset(this)
 
-  def link(c : Container, offset : Option[Offset] = None, duration : Offset = duration) : Future[SlotAsset] =
-    for {
-      s <- offset.map(o => Range(o, o + duration)).fold[Future[Slot]](Async(c))(Slot.getOrCreate(c, _))
-      _ <- Audit.changeOrAdd("asset_slot", SQLTerms('slot -> s.id), SQLTerms('asset -> id)).execute
-    } yield (SlotAsset.make(this, s.segment, s, None))
+  def link(c : Container, offset : Option[Offset] = None, duration : Offset = duration) : Future[Boolean] =
+    Audit.changeOrAdd("slot_asset", SQLTerms('container -> c.id, 'segment -> offset.fold[Segment](Segment.full)(o => Segment(o, o + duration))), SQLTerms('asset -> id)).execute
   def unlink : Future[Boolean] =
-    Audit.remove("asset_slot", SQLTerms('asset -> id)).execute
+    Audit.remove("slot_asset", SQLTerms('asset -> id)).execute
 
   def pageName = name.getOrElse("file")
   def pageParent = Some(volume)
@@ -218,8 +215,8 @@ final case class TimeseriesSample private[models] (val parent : TimeseriesData, 
 object Asset extends TableId[Asset]("asset") {
   private[models] def fixed(asset : Asset) =
     Columns(FromTable("(VALUES (?::integer)) AS asset (id)"))
-      .pushArgs(asset.id)
-      .map(_ => asset)
+    .pushArgs(SQLArgs(asset.id))
+    .map(_ => asset)
   private[models] val columns = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[AssetFormat.Id]("format")

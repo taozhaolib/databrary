@@ -94,18 +94,40 @@ final class SlotTimeseries private[models] (override val asset : Timeseries, ass
 }
 
 object SlotAsset extends Table[SlotAsset]("slot_asset") {
-  private object SlotAssetSlot extends SlotTable("slot_asset")
-  private object Excerpt extends SlotTable("excerpt") {
-    private val slotContext =
-      columnsContext from "(SELECT container, excerpt.segment, asset FROM slot_asset JOIN excerpt USING (asset)) AS excerpt"
-    private[models] def slotContainer(container : Selector[Container]) =
-      slotColumns(slotContext, container)
-  }
-
   private[models] def make(asset : Asset, asset_segment : Segment, slot : Slot, excerpt : Option[Segment]) = asset match {
     case ts : Timeseries => new SlotTimeseries(ts, asset_segment, slot, excerpt)
     case _ => new SlotAsset(asset, asset_segment, slot, excerpt)
   }
+
+  private sealed abstract class SlotAssetTable(table : String) extends SlotTable(table) {
+    final def containerRow(container : Selector[Container]) =
+      rowContainer(container)
+      .join(Asset.columns, "slot_asset.asset = asset.id")
+      .map { case (slot, asset) =>
+	make(asset(slot.volume), slot.segment, slot, slot.segment)
+      }
+    def isExcerpt = false
+
+    final def getThumb(volume : Volume)(implicit site : Site) : Future[Option[SlotAsset]] =
+      containerRow(Container.volumeRow(volume))
+      .SELECT("""JOIN format ON asset.format = format.id
+	WHERE container.volume = ? AND asset.volume = container.volume
+	  AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')
+	  AND data_permission(?::permission, consent, asset.classification, ?::permission, """ + isExcerpt +++ """) >= 'DOWNLOAD'
+	ORDER BY container.top DESC, consent DESC NULLS LAST LIMIT 1""")
+      .apply(volume.id, volume.permission, site.access).singleOpt
+  }
+
+  private object SlotAssetSlot extends SlotAssetTable("slot_asset") {
+  }
+
+  private object Excerpt extends SlotAssetTable("excerpt") {
+    override def isExcerpt = false
+    protected override val columnsContext =
+      super.columnsContext from
+	"(SELECT container, excerpt.segment, asset FROM slot_asset JOIN " + table + " USING (asset)) AS " + table
+  }
+
   private def columnsSlotAsset[A](slot : Selector[Slot], asset : Selector[A]) : Selector[(((Slot, Segment), Option[Segment]), A)] =
     slot
     .join(SlotAssetSlot.columns, "slot.container = slot_asset.container AND slot.segment && slot_asset.segment")
@@ -157,7 +179,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
     .apply(record.id, record.volumeId).list
 
   private[models] def getExcerpt(volume : Volume) : Future[Seq[SlotAsset]] =
-    rowSlot(Excerpt.slotContainer(Container.volumeRow(volume)))
+    Excerpt.containerRow(Container.volumeRow(volume))
     .SELECT("WHERE container.volume = ? AND asset.volume = container.volume")
     .apply(volume.id).list
 
@@ -171,14 +193,9 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   /** Find an asset suitable for use as a volume thumbnail. */
   private[models] def getThumb(volume : Volume)(implicit site : Site) : Future[Option[SlotAsset]] =
-    volumeRow(volume).SELECT("""
-       JOIN format ON asset.format = format.id
-      WHERE (excerpt IS NOT NULL OR container.top AND slot.segment = '(,)' OR slot.consent >= 'PRIVATE')
-        AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')
-        AND data_permission(?::permission, context.consent, asset.classification, ?::permission, excerpt IS NOT NULL) >= 'DOWNLOAD'
-        AND asset.volume = ?
-        ORDER BY excerpt NULLS LAST, container.top DESC, slot.consent DESC NULLS LAST LIMIT 1""")
-      .apply(volume.permission, site.access, volume.id).singleOpt
+    Excerpt.getThumb(volume)
+      flatMap Async.orElse(_,
+    SlotAssetSlot.getThumb(volume))
 
   /** Find an asset suitable for use as a slot thumbnail. */
   private[models] def getThumb(slot : Slot)(implicit site : Site) : Future[Option[SlotAsset]] =

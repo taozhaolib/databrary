@@ -11,8 +11,9 @@ import site._
   * These containers can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.
   */
 final class Container protected (override val id : Container.Id, override val volume : Volume, val top : Boolean = false, val name_ : Option[String], val date_ : Option[Date], val consent : Consent.Value) extends ContextSlot with TableRowId[Container] with InVolume {
+  def ===(a : Container) = id === a.id
   def container = this
-  def segment = Container.range
+  def segment = Segment.full
   override def isFull = true
   override def isTop = top
   private[this] var _name = name_
@@ -42,8 +43,6 @@ final class Container protected (override val id : Container.Id, override val vo
 }
 
 object Container extends TableId[Container]("container") {
-  final val range : Range[Offset] = Range.full[Offset]
-
   private[models] def fixed(container : Container) =
     Columns(FromTable("(VALUES (?::integer)) AS container (id)"))
     .pushArgs(SQLArgs(container.id))

@@ -327,6 +327,8 @@ object Range {
 }
 
 object Segment {
+  val empty : Segment = Range.empty[Offset]
+  val full : Segment = Range.full[Offset]
   def singleton(x : Offset) : Section = Range.singleton[Offset](x)
   def apply(lb : Offset, ub : Offset) : Section = Range.apply[Offset](lb, ub)
 }
