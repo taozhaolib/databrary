@@ -21,7 +21,9 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
     * @param p permission needed, or None if delegation is not allowed (must be self)
     */
   private[controllers] def action(i : Option[models.Party.Id], p : Option[Permission.Value] = Some(Permission.ADMIN)) =
-    optionZip(i, p).fold[ActionFunction[SiteRequest.Base,Request]] {
+    zip[Party.Id, Permission.Value, ActionFunction[SiteRequest.Base,Request]](i, p, (i, p) =>
+      RequestObject.check[SiteParty](models.SiteParty.get(i)(_), p))
+    .getOrElse {
       SiteAction.Auth ~> new ActionRefiner[SiteRequest.Auth,Request] {
         protected def refine[A](request : SiteRequest.Auth[A]) =
           if (i.fold(true)(_ === request.identity.id))
@@ -31,8 +33,6 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
           else
             macros.Async(Left(Forbidden))
       }
-    } { case (i, p) =>
-      RequestObject.check[SiteParty](models.SiteParty.get(i)(_), p)
     }
 
   private[controllers] def Action(i : Option[models.Party.Id], p : Option[Permission.Value] = Some(Permission.ADMIN)) =

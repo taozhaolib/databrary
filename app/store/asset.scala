@@ -80,16 +80,16 @@ private[store] object Segment extends StoreDir("store.cache") {
     }
   }
 
-  private def genSegment(asset : models.Asset, segment : Range[Offset], cache : Boolean = true) : Future[StreamEnumerator] = {
-    val f = file(asset.id, "%d-%d".format(segment.lowerBound.get.millis.toLong, segment.upperBound.get.millis.toLong))
-    generate(f, (f : File) => media.AV.segment(FileAsset.file(asset), segment, f), cache)
+  private def genSegment(asset : models.Asset, section : Section, cache : Boolean = true) : Future[StreamEnumerator] = {
+    val f = file(asset.id, "%d-%d".format(section.lower.millis.toLong, section.upper.millis.toLong))
+    generate(f, (f : File) => media.AV.segment(FileAsset.file(asset), section, f), cache)
   }
 
   private[store] def readFrame(t : TimeseriesData, offset : Offset) : Future[StreamEnumerator] =
-    genFrame(t.source, t.section.lowerBound.get+offset)
+    genFrame(t.source, t.section.lower+offset)
 
   private[store] def read(t : TimeseriesData) : Future[StreamEnumerator] = 
-    t.section.singleton.fold(genSegment(t.source, t.segment))(genFrame(t.source, _))
+    t.section.singleton.fold(genSegment(t.source, t.section))(genFrame(t.source, _))
 }
 
 object Asset {

@@ -121,17 +121,17 @@ trait TimeseriesData extends BackedAsset {
   def source : Timeseries
   /** The range of times represented by this object.
     * Should be a valid, finite, bounded range. */
-  def section : Segment
+  def section : Section
   def entire : Boolean
   /** Length of time represented by this object, which may be zero if it is a single sample. */
-  def duration : Offset = section.zip((l,u) => u-l).get
+  def duration : Offset = section.upper - section.lower
   override def format : AssetFormat = if (section.isSingleton) source.format.sampleFormat else source.format
   override def etag : String =
     if (entire) super.etag
     else {
       val seg = section
-      super.etag + ":" + seg.lowerBound.get.millis +
-        (if (seg.isSingleton) "" else "-" + seg.upperBound.get.millis)
+      super.etag + ":" + seg.lower.millis +
+        (if (seg.isSingleton) "" else "-" + seg.upper.millis)
     }
   def sample(offset : Offset) = new TimeseriesSample(this, offset)
 }
@@ -199,7 +199,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
 final class Timeseries private[models] (id : Asset.Id, volume : Volume, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, name : Option[String], sha1 : Array[Byte]) extends Asset(id, volume, format, classification, name, sha1) with TimeseriesData {
   override def source = this
   def entire = true
-  def section : Segment = Segment(Offset.ZERO, duration)
+  def section : Section = Segment(Offset.ZERO, duration)
 }
 
 final case class TimeseriesSample private[models] (val parent : TimeseriesData, val offset : Offset) extends TimeseriesData {
@@ -207,7 +207,7 @@ final case class TimeseriesSample private[models] (val parent : TimeseriesData, 
   override def sourceId = parent.sourceId
   val section = {
     val seg = parent.section
-    Range.singleton((seg.lowerBound.get + offset).ensuring(seg @> _))
+    Range.singleton((seg.lower + offset).ensuring(seg @> _))
   }
   def entire = false
   override def duration = Offset.ZERO

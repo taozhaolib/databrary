@@ -3,9 +3,10 @@ package object macros {
   /** Cast Any to Option[A].  Equivalent to: `cast[A](x) = x match { a : A => Some(a) ; _ => None }` */
   def cast[A](x : Any) = macro Cast.castImpl[A]
 
-  /** What a.zip(b) should do but doesn't? */
-  def optionZip[A,B](a : Option[A], b : Option[B]) : Option[(A,B)] = (a, b) match {
-    case (Some(a), Some(b)) => Some((a, b))
+  /** What a.zip(b) should do but doesn't?
+    * Takes an optional function to map the result over. */
+  def zip[A,B,C](a : Option[A], b : Option[B], f : (A, B) => C = Tuple2.apply _) : Option[C] = (a, b) match {
+    case (Some(a), Some(b)) => Some(f(a, b))
     case _ => None
   }
 

@@ -2,7 +2,7 @@ package media
 
 import java.lang.{ProcessBuilder}
 import java.io.{InputStream,File,FileOutputStream}
-import dbrary.{Offset,Segment}
+import dbrary.{Offset,Section}
 
 object AV {
   loadLibrary("av")
@@ -43,11 +43,11 @@ object AV {
     _frame(infile.getPath, offset.seconds, null)
   def frame(infile : File, offset : Offset, outfile : File) : Unit =
     _frame(infile.getPath, offset.seconds, outfile.getPath)
-  def segment(infile : File, segment : Segment, outfile : File) : Unit = {
+  def segment(infile : File, section : Section, outfile : File) : Unit = {
     /* XXX this rounds outwards to keyframes and does other strange things with timing */
     val r = new ProcessBuilder("ffmpeg", "-loglevel", "error", "-threads", "1", "-accurate_seek", 
-      "-ss", segment.lowerBound.get.seconds.toString, 
-      "-to", segment.upperBound.get.seconds.toString, 
+      "-ss", section.lower.seconds.toString, 
+      "-to", section.upper.seconds.toString, 
       "-i", infile.getPath, 
       "-codec", "copy", 
       outfile.getPath).
