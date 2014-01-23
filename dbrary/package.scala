@@ -1,5 +1,6 @@
 package object dbrary {
   type Segment = Range[Offset]
+  type Section = BoundedRange[Offset]
 
   import org.joda.time
   /* All times are assumed to be UTC. */

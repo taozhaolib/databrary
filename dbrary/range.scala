@@ -8,8 +8,22 @@ trait RangeType[A] extends Ordering[A] {
   t =>
   def isDiscrete = false
 
+  object SomeOrdering extends PartialOrdering[Option[A]] {
+    def tryCompare(x : Option[A], y : Option[A]) : Option[Int] =
+      zip(x, y, t.compare _)
+    override def equiv(x : Option[A], y : Option[A]) : Boolean =
+      zip(x, y, t.equiv _).getOrElse(false)
+    def lteq(x : Option[A], y : Option[A]) : Boolean =
+      zip(x, y, t.lteq _).getOrElse(false)
+    override def gteq(x : Option[A], y : Option[A]) : Boolean =
+      zip(x, y, t.gteq _).getOrElse(false)
+    override def lt(x : Option[A], y : Option[A]) : Boolean =
+      zip(x, y, t.lt _).getOrElse(false)
+    override def gt(x : Option[A], y : Option[A]) : Boolean =
+      zip(x, y, t.gt _).getOrElse(false)
+  }
   object LowerOrdering extends Ordering[Range[A]] {
-    def compare(x : Range[A], y : Range[A]) = {
+    def compare(x : Range[A], y : Range[A]) : Int = {
       val xe = x.isEmpty
       val ye = y.isEmpty
       if (xe || ye) xe compare ye
@@ -25,7 +39,7 @@ trait RangeType[A] extends Ordering[A] {
     }
   }
   object UpperOrdering extends Ordering[Range[A]] {
-    def compare(x : Range[A], y : Range[A]) = {
+    def compare(x : Range[A], y : Range[A]) : Int = {
       val xe = x.isEmpty
       val ye = y.isEmpty
       if (xe || ye) ye compare xe
@@ -63,10 +77,7 @@ object RangeType {
 
 abstract sealed class Range[A](implicit t : RangeType[A]) {
   self =>
-  private[this] def dt = t match {
-    case dt : DiscreteRangeType[A] => Some(dt)
-    case _ => None
-  }
+  private[this] def dt = cast[DiscreteRangeType[A]](t)
   val lowerBound : Option[A]
   val upperBound : Option[A]
   val lowerClosed : Boolean
@@ -83,16 +94,16 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
   def isFull : Boolean = lowerBound.isEmpty && upperBound.isEmpty
   def singleton : Option[A] = 
     upperPoint.flatMap(u => lowerPoint.filter(t.equiv(_, u)))
-  final def isSingleton : Boolean = singleton.isDefined
+  def isSingleton : Boolean = singleton.isDefined
   /** Is this a canonical representation of this range, meaning EmptyRange, FullRange, SingletonRange, [x,y] for discrete types, or [x,y) for continuous types. */
-  def isNormalized = lowerClosed == lowerBound.isDefined && upperClosed == (t.isDiscrete && upperBound.isDefined)
-  final def normalize =
+  def isNormalized = false
+  final def normalize = if (isNormalized) self else
     singleton.fold {
-      if (isNormalized) self
       if (isEmpty) new EmptyRange[A]
       else if (isFull) new FullRange[A]
-      else if (!t.isDiscrete) self
-      else Range[A](self.lowerPoint, self.upperPoint)
+      else if (t.isDiscrete) new NormalRange[A](lowerPoint, upperPoint)
+      else if (lowerClosed == lowerBound.isDefined && upperClosed == t.SomeOrdering.equiv(lowerBound, upperBound)) new NormalRange[A](lowerBound, upperBound)
+      else self
     } (new SingletonRange[A](_))
   /** Contains relations, as in postgres. */
   final def @>(x : A) = isFull || !isEmpty &&
@@ -165,28 +176,42 @@ final class FullRange[A : RangeType] extends Range[A] {
   override def isNormalized = true
 }
 
-final class SingletonRange[A : RangeType](x : A) extends Range[A] {
-  override def isEmpty = false
+class NormalRange[A](lb : Option[A], ub : Option[A])(implicit t : RangeType[A]) extends Range[A] {
+  final val lowerBound = lb
+  final val upperBound = ub
+  val lowerClosed = lb.isDefined
+  val upperClosed = ub.isDefined && (t.isDiscrete || t.SomeOrdering.equiv(lb, ub))
+  override def isEmpty = t.SomeOrdering.gt(lb, ub)
+  final override def isNormalized = !isEmpty
+}
+
+case class BoundedRange[A](lower : A, upper : A)(implicit t : RangeType[A]) extends NormalRange[A](Some(lower), Some(upper)) {
+  override val lowerClosed = true
+  override val upperClosed = t.isDiscrete || isSingleton
   override def isFull = false
+  override def isEmpty = t.gt(lower, upper)
+  override def isSingleton = t.equiv(lower, upper)
+  override def singleton = if (isSingleton) Some(lower) else None
+}
+
+final class SingletonRange[A : RangeType](x : A) extends BoundedRange[A](x, x) {
+  override val upperClosed = true
+  override def isEmpty = false
+  override def isSingleton = true
   override def singleton = Some(x)
-  val lowerBound = Some(x)
-  val upperBound = Some(x)
-  val lowerClosed = true
-  val upperClosed = true
-  override def isNormalized = true
 }
 
 object Range {
-  def empty[A : RangeType] : Range[A] =
+  def empty[A : RangeType] : EmptyRange[A] =
     new EmptyRange[A]
-  def singleton[A : RangeType](x : A) : Range[A] =
+  def singleton[A : RangeType](x : A) : SingletonRange[A] =
     new SingletonRange[A](x)
-  def full[A : RangeType] : Range[A] =
+  def full[A : RangeType] : FullRange[A] =
     new FullRange[A]
-  def apply[A : RangeType](lb : A, ub : A) : Range[A] =
-    apply[A](Some(lb), Some(ub))
-  def apply[A](lb : Option[A], ub : Option[A])(implicit t : RangeType[A]) : Range[A] =
-    apply[A](lb.isDefined, lb, ub, ub.fold(false)(u => t.isDiscrete || lb.fold(false)(t.equiv(_, u))))
+  def apply[A : RangeType](lb : A, ub : A) : BoundedRange[A] =
+    new BoundedRange[A](lb, ub)
+  def apply[A](lb : Option[A], ub : Option[A])(implicit t : RangeType[A]) : NormalRange[A] =
+    new NormalRange[A](lb, ub)
   def apply[A : RangeType](lc : Boolean, lb : Option[A], ub : Option[A], uc : Boolean) : Range[A] = new Range[A] {
     val lowerBound = lb
     val upperBound = ub
@@ -275,9 +300,8 @@ object Range {
       } yield (
         if (em) empty[T]
         else sn.fold {
-          optionZip(lc, uc).fold(apply[T](lb, ub)) {
-            case (lc, uc) => apply[T](lc, lb, ub, uc)
-          }
+          zip[Boolean, Boolean, Range[T]](lc, uc, apply[T](_, lb, ub, _))
+	  .getOrElse(apply[T](lb, ub))
         } (singleton[T](_))
       ))
     }
@@ -303,8 +327,8 @@ object Range {
 }
 
 object Segment {
-  def singleton(x : Offset) : Segment = Range.singleton[Offset](x)
-  def apply(lb : Offset, ub : Offset) : Segment = Range.apply[Offset](lb, ub)
+  def singleton(x : Offset) : Section = Range.singleton[Offset](x)
+  def apply(lb : Offset, ub : Offset) : Section = Range.apply[Offset](lb, ub)
 }
 
 abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends RangeType[A] {
