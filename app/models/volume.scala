@@ -61,10 +61,10 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     Record.getSessions(this)
 
   /** The list of all sessions and their associated record on this volume. */
-  def slotRecords : Future[Seq[(Slot,Seq[Record])]] = _sessions.map { sess =>
-    val l = sess.sortBy { case (_, c) => (c.consent == Consent.PRIVATE) -> c.id.unId }
-    val r = l.genericBuilder[(Slot,Seq[Record])]
-    @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Slot,Seq[Record])] = l.headOption match {
+  private def slotRecords : Future[Seq[(Container,Seq[Record])]] = _sessions.map { sess =>
+    val l = sess.sortBy(_._2.id.unId)
+    val r = l.genericBuilder[(Container,Seq[Record])]
+    @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Container,Seq[Record])] = l.headOption match {
       case None => r.result
       case Some((_, k)) =>
         val (p, s) = l.span(_._2 === k)
@@ -75,8 +75,8 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   }
 
   /** The list of all records and their associated sessions on this volume. */
-  def recordSlots : Future[Seq[(Record,Seq[Container])]] = _sessions.map { sess =>
-    val l = sess // already sorted
+  private lazy val recordSlots : Future[Seq[(Record,Seq[Container])]] = _sessions.map { sess =>
+    val l = sess // .sortBy(_._1.id_.unId): already sorted
     // val l = sess.sortBy { case (r, _) => r.category.map(_.id.unId) -> r.id.unId }
     val r = l.genericBuilder[(Record,Seq[Container])]
     @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Record,Seq[Container])] = l.headOption match {
@@ -152,13 +152,13 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       "categories" -> (opt => recordCategorySlots.map(l =>
 	JsObject(l.map { case (c, rl) => (c.name, Json.toJson(rl.map(_._1.id))) }))),
       "records" -> (opt => recordSlots.map(JsonRecord.map { case (r, ss) =>
-        r.json - "volume" + ('sessions -> JsonRecord.map[Container] { s =>
-          JsonRecord.flatten(s.id, r.age(s).map('age -> _))
-        }(ss))
+        r.json - "volume" + ('sessions -> JsonArray.map[Container,Container.Id](_.id)(ss))
       })),
-      "sessions" -> (opt => _sessions.map { ss =>
-        JsonRecord.map[Container](_.containerJson - "volume")(ss.map(_._2).distinct)
-      }),
+      "sessions" -> (opt => slotRecords.map(JsonRecord.map { case (s, rs) =>
+        s.containerJson - "volume" + ('records -> JsonRecord.map[Record] { r =>
+          JsonRecord.flatten(r.id, r.age(s).map('age -> _))
+        }(rs))
+      })),
       "assets" -> (opt => toplevelAssets.map(JsonArray.map(_.json))),
       "top" -> (opt => top.map(t => (t.containerJson - "volume" - "top").obj))
     )
