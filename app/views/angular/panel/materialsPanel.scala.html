@@ -2,17 +2,20 @@
     <panel-mode name="view" active>
         <div class="panel_materials_list col-full">
             <ul class="flat panel_materials_items">
-                <li ng-repeat="slotAsset in volume.assets" class="panel_materials_item" ng-init="" ng-click="selectAsset(asset)" ng-class="getAssetClass(asset)">
+                <li ng-repeat="slotAsset in volume.assets" class="panel_materials_item" ng-click="selectAsset(slotAsset)" ng-class="getAssetClass(slotAsset)">
                     <span class="filetype"><img ng-src="/public/images/filetypes/16px/{{slotAsset.format.extension || slotAsset.asset.format.extension}}.png"></span>
 
                     <span ng-if="path">
-                        <span class="session">@* @display(link.slot) *@</span>
+                        <span class="session"><a ng-href="{{router.slot({
+                        id: slotAsset.container.id,
+                        segment: slotAsset.segment
+                        })}}">{{session | ident:slotAsset.session }}</a></span>
                         <span class="participant"><a ng-href="/{{}}">{{}}</a></span>
                         <span class="sep">/</span>
                     </span>
 
 
-                    <a ng-href="{{route.slot({
+                    <a ng-href="{{route.slotAsset({
                         sid: slotAsset.container.id,
                         segment: slotAsset.segment,
                         id: slotAsset.asset.id
@@ -20,7 +23,7 @@
 
                     <span class="classification">@* @link.classification.toString.charAt(0) *@</span>
 
-                    <span class="duration">@* @cast[SlotTimeseries](link).map(_.duration) *@</span>
+                    <span ng-if="slotAsset.asset.duration" class="duration">{{slotAsset.asset.duration | timecode}}</span>
                 </li>
 
                 <li ng-if="!volume.assets" class="empty">There are no assets here.</li>
