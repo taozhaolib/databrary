@@ -81,7 +81,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
 
 final class SlotTimeseries private[models] (override val asset : Timeseries, asset_segment : Segment, slot : AbstractSlot, excerpt_segment : Option[Segment]) extends SlotAsset(asset, asset_segment, slot, excerpt_segment) with TimeseriesData {
   override def source = asset.source
-  def segment = slot.segment.singleton.fold {
+  def section = slot.segment.singleton.fold {
       /* We need to determine the portion of this asset and the slot which overlap, in asset-source space: */
       /* it must be within (and default to) this asset's own space */
       val l = asset.duration
