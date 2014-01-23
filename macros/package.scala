@@ -15,4 +15,6 @@ package object macros {
     (f(a._1), f(a._2))
 
   def unwords(s : String*) = s.mkString(" ")
+
+  def const[A](x : A) : Any => A = _ => x
 }

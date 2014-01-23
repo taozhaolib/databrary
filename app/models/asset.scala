@@ -162,8 +162,12 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
 
   def slot : Future[Option[SlotAsset]] = SlotAsset.getAsset(this)
 
-  def link(c : Container, offset : Option[Offset] = None, duration : Offset = duration) : Future[Boolean] =
-    Audit.changeOrAdd("slot_asset", SQLTerms('container -> c.id, 'segment -> offset.fold[Segment](Segment.full)(o => Segment(o, o + duration))), SQLTerms('asset -> id)).execute
+  def link(c : Container, offset : Option[Offset] = None, duration : Offset = duration) : Future[SlotAsset] = {
+    val seg = offset.fold[Segment](c.segment)(o => Segment(o, o + duration))
+    for {
+      _ <- Audit.changeOrAdd("slot_asset", SQLTerms('container -> c.id, 'segment -> seg), SQLTerms('asset -> id)).execute
+    } yield (SlotAsset.make(this, seg, c, None))
+  }
   def unlink : Future[Boolean] =
     Audit.remove("slot_asset", SQLTerms('asset -> id)).execute
 
