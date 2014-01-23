@@ -31,7 +31,7 @@ define(['app/config/module'], function (module) {
 				case 'VolumeView':
 					$scope.prepareTags($scope.volume.tags);
 					$scope.target.container = $scope.volume.top.id;
-					$scope.target.segment = "-";
+					$scope.target.segment = ',';
 					$scope.enabled = true;
 					break;
 
@@ -71,73 +71,59 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		$scope.voteDown = function (name) {
-			var data = {
-				vote: "false",
-				name: name
-			};
+		$scope.vote = function (tag, vote) {
+			var tagModel = new Tag({id: tag.id});
 
-			Tag.update({
-				vote: "false",
-				name: name,
+			tagModel.$save({
+				id: tag.id,
+				vote: vote == -1 ? 'false' : vote == 1 ? "true" : "",
 				container: $scope.target.container,
 				segment: $scope.target.segment
-			}, function (data) {
+			}, function (newTag, status, headers, config) {
+//				$scope.tags.splice($scope.tags.indexOf(tag), 1, newTag); // currently returns slot
 
-			});
+				switch(vote) {
+					case -1:
+						createMessage('Tag <strong>' + tag.id + '</strong> voted down successfully!');
+						tag.weight = tag.vote ? tag.weight -2 : tag.weight - 1;
+						tag.vote = -1;
+						break;
 
+					case 0:
+						createMessage('Tag <strong>' + tag.id + '</strong> vote cancelled successfully!');
+						tag.weight = tag.weight - tag.vote;
+						delete tag.vote;
+						break;
 
-			// NOT IT!
-			$http.post($scope.formAction, data).success(function (tags) {
-				$scope.updateTags(tags);
-
-				createMessage('Tag <strong>' + tag.name + '</strong> voted down successfully!');
-			});
-		};
-
-		$scope.voteNone = function (name) {
-			var data = {
-				vote: "",
-				name: name
-			};
-
-			// NOT IT!
-			$http.post($scope.formAction, data).success(function (tags) {
-				$scope.updateTags(tags);
-
-				createMessage('Tag <strong>' + tag.name + '</strong> vote cancelled successfully!');
+					case 1:
+						createMessage('Tag <strong>' + tag.id + '</strong> voted up successfully!');
+						tag.weight = tag.vote ? tag.weight + 2 : tag.weight + 1;
+						tag.vote = 1;
+						break;
+				}
 			});
 		};
 
-		$scope.voteUp = function (name) {
-			var data = {
-				vote: "true",
-				name: name
-			};
-
-			// NOT IT!
-			$http.post($scope.formAction, data).success(function (tags) {
-				$scope.updateTags(tags);
-
-				createMessage('Tag <strong>' + tag.name + '</strong> voted up successfully!');
-			});
-		};
-
-		$scope.voteNew = function () {
-			var data = {
-				vote: "true",
-				name: $scope.newName
-			};
-
-			if ($scope.tagNewForm.$invalid)
+		$scope.voteNew = function (form) {
+			if (form.$invalid)
 				return;
 
-			// NOT IT!
-			$http.post($scope.formAction, data).success(function (tags) {
-				$scope.updateTags(tags);
+			var tagModel = new Tag({id: $scope.newName});
 
+			tagModel.$save({
+				id: $scope.newName,
+				vote: "true",
+				container: $scope.target.container,
+				segment: $scope.target.segment
+			}, function (newTag, status, headers, config) {
+//				$scope.tags.splice($scope.tags.indexOf(tag), 1, newTag); // currently returns slot
 				createMessage('Tag <strong>' + $scope.newName + '</strong> added successfully!');
 
+				$scope.tags.push({
+					id: $scope.newName,
+					weight: 1,
+					vote: 1
+				});
 				$scope.newName = '';
 			});
 		};
@@ -146,22 +132,22 @@ define(['app/config/module'], function (module) {
 
 		$scope.newName = '';
 
-		$scope.newNameChange = function () {
-			if ($scope.tagNewForm.newName.$pristine || $scope.tagNewForm.newName.$valid)
+		$scope.newNameChange = function (form) {
+			if (form.newName.$pristine || form.newName.$valid)
 				return disableNewNameError();
 
 			return enableNewNameError();
 		};
 
-		$scope.newNameBlur = function () {
+		$scope.newNameBlur = function (form) {
 			return disableNewNameError();
 		};
 
 		//
 
 		var enableNewNameError = function () {
-			if ($scope.tagNewForm.newName.message) {
-				$scope.tagNewForm.newName.message = messageService.updateMessage($scope.tagNewForm.newName.message, {enabled: true});
+			if ($scope.tagNewFormMessage) {
+				$scope.tagNewFormMessage = messageService.updateMessage($scope.tagNewFormMessage, {enabled: true});
 			} else {
 				var message = {
 					enabled: true,
@@ -173,13 +159,13 @@ define(['app/config/module'], function (module) {
 						'</dl>'
 				};
 
-				$scope.tagNewForm.newName.message = messageService.createMessage(message);
+				$scope.tagNewFormMessage = messageService.createMessage(message);
 			}
 		};
 
 		var disableNewNameError = function () {
-			if ($scope.tagNewForm.newName.message)
-				$scope.tagNewForm.newName.message = messageService.updateMessage($scope.tagNewForm.newName.message, {enabled: false});
+			if ($scope.tagNewFormMessage)
+				$scope.tagNewFormMessage = messageService.updateMessage($scope.tagNewFormMessage, {enabled: false});
 		};
 
 
