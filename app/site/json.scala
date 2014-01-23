@@ -57,8 +57,11 @@ object JsonObject {
 }
 
 final class JsonRecord(val id : JsValue, fields : Seq[(String, JsValue)]) extends JsonObject(("id" -> id) +: fields) with JsonValue with JsField {
-  def name = id.toString
-  def value = JsObject(fields)
+  def name = id match {
+    case JsString(s) => s
+    case j => j.toString
+  }
+  def value = js // JsObject(fields)
   override def js = if (fields.isEmpty) id else super.js
   override def +(field : JsonField) =
     new JsonRecord(id, fields :+ field)
