@@ -13,7 +13,7 @@
         </div>
 
         <div frame id="frame_funding" title="Funding" fold>
-            <div ng-repeat="funding in volume.funding" class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell" ng-init="party = funding.party">
+            <div ng-repeat="funding in volume.access | filter:isFunding" class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell" ng-init="party = funding.party">
                 <portrait hover class="portrait_vertical portrait_small portrait_more" extra="{{funding.grant}}"></portrait>
             </div>
         </div>

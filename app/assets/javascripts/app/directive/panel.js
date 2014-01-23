@@ -107,6 +107,9 @@ define(['app/config/module'], function (module) {
 					if (angular.isFunction($scope.bootPanel))
 						$scope.bootPanel();
 
+					if (angular.isFunction($scope.refreshPanel))
+						$scope.refreshPanel();
+
 					panelService.add($scope);
 				};
 

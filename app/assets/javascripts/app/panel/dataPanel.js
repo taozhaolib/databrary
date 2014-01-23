@@ -8,6 +8,8 @@ define(['app/config/module'], function (module) {
 
 		$scope.refreshPanel = function () {
 			$scope.updateVolumes();
+
+			$scope.enabled = $scope.funded.length > 0 || $scope.investigated.length > 0 || $scope.contributed.length > 0;
 		};
 
 		//
@@ -17,16 +19,15 @@ define(['app/config/module'], function (module) {
 			$scope.investigated = [];
 			$scope.contributed = [];
 
-			angular.forEach($scope.party.funding, function (volumeAccess) {
-				$scope.investigated.push(volumeAccess.volume);
-			});
-
 			angular.forEach($scope.party.volumes, function (volumeAccess) {
 				if (volumeAccess.access == 4)
 					$scope.investigated.push(volumeAccess.volume);
 
 				if (volumeAccess.access == 3)
 					$scope.contributed.push(volumeAccess.volume);
+console.log($scope.funded);
+				if (volumeAccess.funding)
+					$scope.funded.push(volumeAccess.volume);
 			});
 		};
 	}]);

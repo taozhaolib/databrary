@@ -1,9 +1,9 @@
 <panel ng-controller="DataPanel" id="panel_data" title="Data" fold>
     <panel-mode name="view" active>
-        <div ng-show="party.funded">
+        <div ng-show="panel.funded">
             <h2>Funded</h2>
 
-            <div ng-repeat="volume in panel.investigated" ng-include="'volumeBlurb.html'"></div>
+            <div ng-repeat="volume in panel.funded" ng-include="'volumeBlurb.html'"></div>
         </div>
 
         <div ng-show="panel.investigated">

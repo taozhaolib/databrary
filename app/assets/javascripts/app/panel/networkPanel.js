@@ -8,12 +8,12 @@ define(['app/config/module'], function (module) {
 
 		$scope.refreshPanel = function () {
 			$scope.updateNetwork();
+			$scope.enabled = $scope.parents.length > 0 || $scope.children.length > 0;
 		};
 
 		//
 
 		$scope.updateNetwork = function () {
-			$scope.network = [];
 			$scope.parents = [];
 			$scope.children = [];
 

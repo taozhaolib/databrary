@@ -6,6 +6,10 @@ define(['app/config/module'], function (module) {
 			$scope.enabled = angular.isObject($scope.volume);
 		};
 
+		$scope.isFunding = function (volumeAccess) {
+			return !!volumeAccess.funding;
+		};
+
 		//
 
 		$scope.onModeEdit = function () {
