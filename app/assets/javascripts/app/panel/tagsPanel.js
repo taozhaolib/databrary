@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.controller('TagsPanel', ['$scope', 'Tag', '$route', 'MessageService', function ($scope, Tag, $route, messageService) {
+	module.controller('TagsPanel', ['$scope', 'Tag', '$route', 'MessageService', 'Volume', function ($scope, Tag, $route, messageService, Volume) {
 		var DEFAULT_MESSAGE = {
 			type: 'alert',
 			countdown: 3000
@@ -69,6 +69,20 @@ define(['app/config/module'], function (module) {
 			});
 		};
 
+		$scope.retrieveTags = function () {
+			switch ($route.current.controller) {
+				case 'VolumeView':
+					Volume.get({
+						id: $scope.volume.id,
+						tags: ''
+					}, function (data) {
+						$scope.volume.tags = data.tags;
+						$scope.refreshPanel();
+					});
+					break;
+			}
+		};
+
 		//
 
 		$scope.vote = function (tag, vote) {
@@ -116,15 +130,11 @@ define(['app/config/module'], function (module) {
 				container: $scope.target.container,
 				segment: $scope.target.segment
 			}, function (newTag, status, headers, config) {
-//				$scope.tags.splice($scope.tags.indexOf(tag), 1, newTag); // currently returns slot
 				createMessage('Tag <strong>' + $scope.newName + '</strong> added successfully!');
 
-				$scope.tags.push({
-					id: $scope.newName,
-					weight: 1,
-					vote: 1
-				});
 				$scope.newName = '';
+
+				$scope.retrieveTags();
 			});
 		};
 
