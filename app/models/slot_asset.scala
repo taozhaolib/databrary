@@ -101,14 +101,14 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   private sealed abstract class SlotAssetTable(table : String) extends SlotTable(table) {
     protected def isExcerpt : Boolean
-    final def row(container : Selector[Container], asset : Selector[Volume => Asset] = Asset.columns) : Selector[SlotAsset] =
+    final def row(container : ObjectSelector[Container], asset : Selector[Volume => Asset] = Asset.columns) : Selector[SlotAsset] =
       rowContainer(container)
       .join(asset, table + ".asset = asset.id")
       .map { case (slot, asset) =>
 	SlotAsset.make(asset(slot.volume), slot.segment, slot, if (isExcerpt) Some(slot.segment) else None)
       }
 
-    private[this] def getThumb(container : Selector[Container], permission : Permission.Value, query : String, args : SQLArgs)(implicit site : Site) : Future[Option[SlotAsset]] =
+    private[this] def getThumb(container : ObjectSelector[Container], permission : Permission.Value, query : String, args : SQLArgs)(implicit site : Site) : Future[Option[SlotAsset]] =
       row(container)
       .SELECT(
 	 "JOIN format ON asset.format = format.id WHERE " + query +
@@ -116,10 +116,10 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 	   AND data_permission(?::permission, consent, asset.classification, ?::permission, """ + isExcerpt + """) >= 'DOWNLOAD'
 	 ORDER BY container.top DESC, consent DESC NULLS LAST LIMIT 1""")
       .apply(args ++ SQLArgs(permission, site.access)).singleOpt
-    final def getThumb(volume : Volume)(implicit site : Site) : Future[Option[SlotAsset]] =
+    final def getThumb(volume : Volume) : Future[Option[SlotAsset]] =
       getThumb(Container.volumeRow(volume), volume.permission,
 	"container.volume = ? AND asset.volume = container.volume", SQLArgs(volume.id))
-    final def getThumb(slot : Slot)(implicit site : Site) : Future[Option[SlotAsset]] =
+    final def getThumb(slot : Slot) : Future[Option[SlotAsset]] =
       getThumb(Container.fixed(slot.container), slot.permission,
 	table + ".segment <@ ? AND asset.volume = ?", SQLArgs(slot.segment, slot.volumeId))
   }
@@ -160,7 +160,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
     .apply(slot.volumeId).list
 
   /** Retrieve the list of all foreign assets (from a different volume) within the given slot. */
-  private[models] def getSlotForeign(slot : Slot)(implicit site : Site) : Future[Seq[SlotAsset]] =
+  private[models] def getSlotForeign(slot : Slot) : Future[Seq[SlotAsset]] =
     row(Slot.fixed(slot), Asset.row.map(const _))
     .SELECT("WHERE asset.volume <> ? AND", Volume.condition)
     .apply(slot.volumeId).list
@@ -191,12 +191,12 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
     } yield (e ++ t)
 
   /** Find an asset suitable for use as a volume thumbnail. */
-  private[models] def getThumb(volume : Volume)(implicit site : Site) : Future[Option[SlotAsset]] =
+  private[models] def getThumb(volume : Volume) : Future[Option[SlotAsset]] =
     Excerpt.getThumb(volume).flatMap(Async.orElse[SlotAsset](_,
       SlotAssetSlot.getThumb(volume)))
 
   /** Find an asset suitable for use as a slot thumbnail. */
-  private[models] def getThumb(slot : Slot)(implicit site : Site) : Future[Option[SlotAsset]] =
+  private[models] def getThumb(slot : Slot) : Future[Option[SlotAsset]] =
     Excerpt.getThumb(slot).flatMap(Async.orElse[SlotAsset](_,
       SlotAssetSlot.getThumb(slot)))
 }

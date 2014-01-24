@@ -44,9 +44,7 @@ final class Container protected (override val id : Container.Id, override val vo
 
 object Container extends TableId[Container]("container") {
   private[models] def fixed(container : Container) =
-    Columns(FromTable("(VALUES (?::integer)) AS container (id)"))
-    .pushArgs(SQLArgs(container.id))
-    .map(_ => container)
+    ObjectSelector(container, SQLTerms('id -> container.id))
   private val columns = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[Boolean]("top")

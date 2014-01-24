@@ -218,9 +218,7 @@ final case class TimeseriesSample private[models] (val parent : TimeseriesData, 
 
 object Asset extends TableId[Asset]("asset") {
   private[models] def fixed(asset : Asset) =
-    Columns(FromTable("(VALUES (?::integer)) AS asset (id)"))
-    .pushArgs(SQLArgs(asset.id))
-    .map(_ => asset)
+    ObjectSelector(asset, SQLTerms('id -> asset.id))
   private[models] val columns = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[AssetFormat.Id]("format")

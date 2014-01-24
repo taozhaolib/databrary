@@ -34,10 +34,10 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
   private val threads = columns from "comment_thread AS comment";
 
   private def whoRow(who : Account)(implicit site : Site) =
-    slotColumns(columns, Container.row)
+    slotColumns(columns, Container.row, false)
     .map(_(who))
   private def rowContainer(container : Selector[Container]) =
-    slotColumns(threads, container)
+    slotColumns(threads, container, false)
     .join(Account.row, "comment.who = party.id")
     .map { case (comment, who) => comment(who) }
   private def volumeRow(volume : Volume) =

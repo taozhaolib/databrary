@@ -148,20 +148,29 @@ private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") {
     }
 }
 
+/** A generic type of Table that includes (presumably inheriting from) slot. */
 private[models] trait TableSlot[R <: Slot] extends Table[R] {
   protected type A
   protected final def segment = SelectColumn[Segment]("segment")
   protected final def makeContext(container : Container, consent : Option[Container => SlotConsent]) : ContextSlot =
     consent.fold[ContextSlot](container)(_(container))
   protected final def values(containerId : Container.Id, segment : Segment) =
-    Columns(FromTable("(VALUES (?::integer, ?::segment)) AS slot (container, segment)"))
-    .pushArgs(SQLArgs(containerId, segment))
+    SQLTerms('container -> containerId, 'segment -> segment).values
 
-  protected final def slotColumns(columns : Selector[ContextSlot => A], container : Selector[Container]) : Selector[A] =
-    columns
-    .join(container, table + ".container = container.id")
-    .leftJoin(SlotConsent.row, table + ".segment <@ slot_consent.segment AND " + table + ".container = slot_consent.container")
-    .map { case ((a, container), consent) => a(makeContext(container, consent)) }
+  /** Generate a selector for the target type from a base selector.
+    * @param columns base selector requiring a ContextSlot to produce the final type
+    * @param container container selector to use
+    * @param consent determine applicable consent level, or just use container context
+    */
+  protected final def slotColumns(columns : Selector[ContextSlot => A], container : ObjectSelector[Container], consent : Boolean = true) : Selector[A] = {
+    val base = columns
+      .join(container, table + ".container = container.id")
+    if (consent && container.obj.fold(true)(_.consent == Consent.NONE)) base
+      .leftJoin(SlotConsent.row, table + ".segment <@ slot_consent.segment AND " + table + ".container = slot_consent.container")
+      .map { case ((a, container), consent) => a(makeContext(container, consent)) }
+    else base
+      .map { case (a, container) => a(container) }
+  }
 }
 
 private[models] abstract class SlotTable protected (table : String) extends Table[Slot](table) with TableSlot[Slot] {
@@ -176,14 +185,14 @@ private[models] abstract class SlotTable protected (table : String) extends Tabl
     columns.map((make _).curried)
   protected final def valueColumns(containerId : Container.Id, segment : Segment) =
     values(containerId, segment).map(_ => make(segment, _ : ContextSlot))
-  private[models] final def rowContainer(container : Selector[Container]) =
+  /** Generate a Slot selector from the given container selector. */
+  private[models] final def rowContainer(container : ObjectSelector[Container]) =
     slotColumns(columnsContext, container)
 }
 
 object Slot extends SlotTable("slot") {
   private[models] def fixed(slot : Slot) =
-    values(slot.containerId, slot.segment)
-    .map(_ => slot)
+    ObjectSelector(slot, slot.sql)
 
   private[models] def row(containerId : Container.Id, segment : Segment)(implicit site : Site) =
     slotColumns(
@@ -192,7 +201,8 @@ object Slot extends SlotTable("slot") {
   private[models] def containerRow(container : Container, segment : Segment) =
     slotColumns(
       valueColumns(container.id, segment),
-      Container.fixed(container))
+      Container.fixed(container),
+      container.consent == Consent.NONE)
   private[models] def volumeRow(volume : Volume, containerId : Container.Id, segment : Segment) =
     slotColumns(
       valueColumns(containerId, segment),

@@ -21,21 +21,27 @@ private[models] final class SQLTerms private (private val terms : Seq[SQLTerm[_]
   def +:(other : SQLTerm[_]) : SQLTerms = new SQLTerms(other +: terms)
   def :+[A : SQLType](other : (Symbol, A)) : SQLTerms = new SQLTerms(terms :+ SQLTerm.ofTuple(other))
   def +:[A : SQLType](other : (Symbol, A)) : SQLTerms = new SQLTerms(SQLTerm.ofTuple(other) +: terms)
-  private lazy val names = terms.map(_.name)
+  def names = terms.map(_.name).mkString("(", ", ", ")")
   def placeholders : String = terms.map(_.placeholder).mkString(", ")
 
   /** Terms appropriate for INSERT INTO statements.
-    * @returns `(arg, ...) VALUES ({arg}, ...)`
+    * @returns `(arg, ...) VALUES (?, ...)`
     */
   def insert =
-    names.mkString("(", ", ", ")") + " VALUES (" + placeholders + ")"
+    names + " VALUES (" + placeholders + ")"
   /** Terms appropriate for UPDATE or WHERE statements.
     * @param sep separator string, ", " for UPDATE (default), " AND " for WHERE
-    * @returns `arg = {arg} sep ...`
+    * @returns `arg = ? sep ...`
     */
   def set(sep : String = ", ") =
     terms.map(t => t.name + " = " + t.placeholder).mkString(sep)
   def where = set(" AND ")
+  /** Constant table.
+    * @returns `(VALUES (?, ...)) AS table (arg, ...)`
+    */
+  def values(implicit table : FromTable) : Selector[Unit] =
+    Columns(FromTable("(VALUES (" + placeholders + ")) AS " + table + " " + names))
+    .pushArgs(terms)
 }
 private[models] object SQLTerms {
   def apply(terms : SQLTerm[_]*) = new SQLTerms(terms)
@@ -70,4 +76,32 @@ object DBUtil {
     }
     new SQLResult(loop)
   }
+}
+
+private[models] sealed abstract class ObjectSelector[A] {
+  def selector : Selector[A]
+  def obj : Option[A]
+}
+
+private[models] object ObjectSelector {
+  private final class Sel[A](val selector : Selector[A]) extends ObjectSelector[A] {
+    def obj = None
+  }
+
+  private final class Obj[A](o : A, table : String, cols : SQLTerms) extends ObjectSelector[A] {
+    def selector =
+      Columns(FromTable("(VALUES (" + cols.placeholders + ")) AS " + table + " " + cols.names))
+      .pushArgs(cols)
+      .map(_ => o)
+    def obj = Some(o)
+  }
+
+  def apply[A](obj : A, cols : SQLTerms)(implicit table : FromTable) : ObjectSelector[A] =
+    new Obj[A](obj, table.table, cols)
+
+  import scala.language.implicitConversions
+  implicit def apply[A](selector : Selector[A]) : ObjectSelector[A] =
+    new Sel[A](selector)
+  implicit def selector[A](os : ObjectSelector[A]) : Selector[A] =
+    os.selector
 }
