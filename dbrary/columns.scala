@@ -14,7 +14,7 @@ object FromTable {
 }
 
 /** A single expression for a select statement, where toString is expected to produce valid SQL. */
-sealed class SelectExpr[A : SQLType](expr : String) {
+sealed class SelectExpr[A](expr : String)(implicit val sqlType : SQLType[A]) {
   final override def toString : String = expr
   def get(a : Any) : A = SQLType.get[A](a)
   /** Qualify this expression to select from a particular table, if applicable. */
@@ -102,24 +102,24 @@ object Selector {
 }
 
 abstract sealed class Columns[A,C <: SQLCols[A]] protected (selects : Seq[SelectExpr[_]], table : FromTable, override val parse : C) extends Selector[A](selects, table, parse) {
-  def ~+[C : SQLType](a : SelectExpr[C]) : Columns[_,_]
+  def ~+[C](a : SelectExpr[C]) : Columns[_,_]
 }
 
 object Columns {
   def apply(implicit from : FromTable) = new Columns0
-  def apply[C1 : SQLType](a1 : SelectExpr[C1])(implicit from : FromTable) =
+  def apply[C1](a1 : SelectExpr[C1])(implicit from : FromTable) =
     new Columns1[C1](a1)
-  def apply[C1 : SQLType, C2 : SQLType](a1 : SelectExpr[C1], a2 : SelectExpr[C2])(implicit from : FromTable) =
+  def apply[C1, C2](a1 : SelectExpr[C1], a2 : SelectExpr[C2])(implicit from : FromTable) =
     new Columns2[C1,C2](a1,a2)
-  def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType](a1 : SelectExpr[C1], a2 : SelectExpr[C2], a3 : SelectExpr[C3])(implicit from : FromTable) =
+  def apply[C1, C2, C3](a1 : SelectExpr[C1], a2 : SelectExpr[C2], a3 : SelectExpr[C3])(implicit from : FromTable) =
     new Columns3[C1,C2,C3](a1,a2,a3)
-  def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType](a1 : SelectExpr[C1], a2 : SelectExpr[C2], a3 : SelectExpr[C3], a4 : SelectExpr[C4])(implicit from : FromTable) =
+  def apply[C1, C2, C3, C4](a1 : SelectExpr[C1], a2 : SelectExpr[C2], a3 : SelectExpr[C3], a4 : SelectExpr[C4])(implicit from : FromTable) =
     new Columns4[C1,C2,C3,C4](a1,a2,a3,a4)
-  def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType](a1 : SelectExpr[C1], a2 : SelectExpr[C2], a3 : SelectExpr[C3], a4 : SelectExpr[C4], a5 : SelectExpr[C5])(implicit from : FromTable) =
+  def apply[C1, C2, C3, C4, C5](a1 : SelectExpr[C1], a2 : SelectExpr[C2], a3 : SelectExpr[C3], a4 : SelectExpr[C4], a5 : SelectExpr[C5])(implicit from : FromTable) =
     new Columns5[C1,C2,C3,C4,C5](a1,a2,a3,a4,a5)
-  def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType, C6 : SQLType](a1 : SelectExpr[C1], a2 : SelectExpr[C2], a3 : SelectExpr[C3], a4 : SelectExpr[C4], a5 : SelectExpr[C5], a6 : SelectExpr[C6])(implicit from : FromTable) =
+  def apply[C1, C2, C3, C4, C5, C6](a1 : SelectExpr[C1], a2 : SelectExpr[C2], a3 : SelectExpr[C3], a4 : SelectExpr[C4], a5 : SelectExpr[C5], a6 : SelectExpr[C6])(implicit from : FromTable) =
     new Columns6[C1,C2,C3,C4,C5,C6](a1,a2,a3,a4,a5,a6)
-  def apply[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType, C6 : SQLType, C7 : SQLType](a1 : SelectExpr[C1], a2 : SelectExpr[C2], a3 : SelectExpr[C3], a4 : SelectExpr[C4], a5 : SelectExpr[C5], a6 : SelectExpr[C6], a7 : SelectExpr[C7])(implicit from : FromTable) =
+  def apply[C1, C2, C3, C4, C5, C6, C7](a1 : SelectExpr[C1], a2 : SelectExpr[C2], a3 : SelectExpr[C3], a4 : SelectExpr[C4], a5 : SelectExpr[C5], a6 : SelectExpr[C6], a7 : SelectExpr[C7])(implicit from : FromTable) =
     new Columns7[C1,C2,C3,C4,C5,C6,C7](a1,a2,a3,a4,a5,a6,a7)
 }
 
@@ -128,58 +128,58 @@ final class Columns0(implicit from : FromTable)
   extends Columns[Unit,SQLCols0](Nil, from, new SQLCols0) {
   override val length = 0
   def map[A](f : => A) : Selector[A] = copy[A](parse = parse.map(f))
-  def ~+[C : SQLType](a : SelectExpr[C]) = new Columns1[C](a)
+  def ~+[C](a : SelectExpr[C]) = new Columns1[C](a)
 }
-final class Columns1[C1 : SQLType](
+final class Columns1[C1](
     a1 : SelectExpr[C1]
   )(implicit from : FromTable)
-  extends Columns[C1,SQLCols1[C1]](Seq(a1), from, new SQLCols1[C1]) {
+  extends Columns[C1,SQLCols1[C1]](Seq(a1), from, new SQLCols1[C1]()(a1.sqlType)) {
   override val length = 1
-  def ~+[C : SQLType](a : SelectExpr[C]) = new Columns2[C1,C](a1,a)
+  def ~+[C](a : SelectExpr[C]) = new Columns2[C1,C](a1,a)
 }
-final class Columns2[C1 : SQLType, C2 : SQLType](
+final class Columns2[C1, C2](
     a1 : SelectExpr[C1]
   , a2 : SelectExpr[C2]
   )(implicit from : FromTable)
-  extends Columns[(C1,C2),SQLCols2[C1,C2]](Seq(a1, a2), from, new SQLCols2[C1,C2]) {
+  extends Columns[(C1,C2),SQLCols2[C1,C2]](Seq(a1, a2), from, new SQLCols2[C1,C2]()(a1.sqlType, a2.sqlType)) {
   override val length = 2
   def map[A](f : (C1,C2) => A) : Selector[A] = copy[A](parse = parse.map(f))
-  def ~+[C : SQLType](a : SelectExpr[C]) = new Columns3[C1,C2,C](a1,a2,a)
+  def ~+[C](a : SelectExpr[C]) = new Columns3[C1,C2,C](a1,a2,a)
 }
-final class Columns3[C1 : SQLType, C2 : SQLType, C3 : SQLType](
+final class Columns3[C1, C2, C3](
     a1 : SelectExpr[C1]
   , a2 : SelectExpr[C2]
   , a3 : SelectExpr[C3]
   )(implicit from : FromTable)
-  extends Columns[(C1,C2,C3),SQLCols3[C1,C2,C3]](Seq(a1, a2, a3), from, new SQLCols3[C1,C2,C3]) {
+  extends Columns[(C1,C2,C3),SQLCols3[C1,C2,C3]](Seq(a1, a2, a3), from, new SQLCols3[C1,C2,C3]()(a1.sqlType, a2.sqlType, a3.sqlType)) {
   override val length = 3
   def map[A](f : (C1,C2,C3) => A) : Selector[A] = copy[A](parse = parse.map(f))
-  def ~+[C : SQLType](a : SelectExpr[C]) = new Columns4[C1,C2,C3,C](a1,a2,a3,a)
+  def ~+[C](a : SelectExpr[C]) = new Columns4[C1,C2,C3,C](a1,a2,a3,a)
 }
-final class Columns4[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType](
+final class Columns4[C1, C2, C3, C4](
     a1 : SelectExpr[C1]
   , a2 : SelectExpr[C2]
   , a3 : SelectExpr[C3]
   , a4 : SelectExpr[C4]
   )(implicit from : FromTable)
-  extends Columns[(C1,C2,C3,C4),SQLCols4[C1,C2,C3,C4]](Seq(a1, a2, a3, a4), from, new SQLCols4[C1,C2,C3,C4]) {
+  extends Columns[(C1,C2,C3,C4),SQLCols4[C1,C2,C3,C4]](Seq(a1, a2, a3, a4), from, new SQLCols4[C1,C2,C3,C4]()(a1.sqlType, a2.sqlType, a3.sqlType, a4.sqlType)) {
   override val length = 4
   def map[A](f : (C1,C2,C3,C4) => A) : Selector[A] = copy[A](parse = parse.map(f))
-  def ~+[C : SQLType](a : SelectExpr[C]) = new Columns5[C1,C2,C3,C4,C](a1,a2,a3,a4,a)
+  def ~+[C](a : SelectExpr[C]) = new Columns5[C1,C2,C3,C4,C](a1,a2,a3,a4,a)
 }
-final class Columns5[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType](
+final class Columns5[C1, C2, C3, C4, C5](
     a1 : SelectExpr[C1]
   , a2 : SelectExpr[C2]
   , a3 : SelectExpr[C3]
   , a4 : SelectExpr[C4]
   , a5 : SelectExpr[C5]
   )(implicit from : FromTable)
-  extends Columns[(C1,C2,C3,C4,C5),SQLCols5[C1,C2,C3,C4,C5]](Seq(a1, a2, a3, a4, a5), from, new SQLCols5[C1,C2,C3,C4,C5]) {
+  extends Columns[(C1,C2,C3,C4,C5),SQLCols5[C1,C2,C3,C4,C5]](Seq(a1, a2, a3, a4, a5), from, new SQLCols5[C1,C2,C3,C4,C5]()(a1.sqlType, a2.sqlType, a3.sqlType, a4.sqlType, a5.sqlType)) {
   override val length = 5
   def map[A](f : (C1,C2,C3,C4,C5) => A) : Selector[A] = copy[A](parse = parse.map(f))
-  def ~+[C : SQLType](a : SelectExpr[C]) = new Columns6[C1,C2,C3,C4,C5,C](a1,a2,a3,a4,a5,a)
+  def ~+[C](a : SelectExpr[C]) = new Columns6[C1,C2,C3,C4,C5,C](a1,a2,a3,a4,a5,a)
 }
-final class Columns6[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType, C6 : SQLType](
+final class Columns6[C1, C2, C3, C4, C5, C6](
     a1 : SelectExpr[C1]
   , a2 : SelectExpr[C2]
   , a3 : SelectExpr[C3]
@@ -187,12 +187,12 @@ final class Columns6[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 
   , a5 : SelectExpr[C5]
   , a6 : SelectExpr[C6]
   )(implicit from : FromTable)
-  extends Columns[(C1,C2,C3,C4,C5,C6),SQLCols6[C1,C2,C3,C4,C5,C6]](Seq(a1, a2, a3, a4, a5, a6), from, new SQLCols6[C1,C2,C3,C4,C5,C6]) {
+  extends Columns[(C1,C2,C3,C4,C5,C6),SQLCols6[C1,C2,C3,C4,C5,C6]](Seq(a1, a2, a3, a4, a5, a6), from, new SQLCols6[C1,C2,C3,C4,C5,C6]()(a1.sqlType, a2.sqlType, a3.sqlType, a4.sqlType, a5.sqlType, a6.sqlType)) {
   override val length = 6
   def map[A](f : (C1,C2,C3,C4,C5,C6) => A) : Selector[A] = copy[A](parse = parse.map(f))
-  def ~+[C : SQLType](a : SelectExpr[C]) = new Columns7[C1,C2,C3,C4,C5,C6,C](a1,a2,a3,a4,a5,a6,a)
+  def ~+[C](a : SelectExpr[C]) = new Columns7[C1,C2,C3,C4,C5,C6,C](a1,a2,a3,a4,a5,a6,a)
 }
-final class Columns7[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 : SQLType, C6 : SQLType, C7 : SQLType](
+final class Columns7[C1, C2, C3, C4, C5, C6, C7](
     a1 : SelectExpr[C1]
   , a2 : SelectExpr[C2]
   , a3 : SelectExpr[C3]
@@ -201,8 +201,8 @@ final class Columns7[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 
   , a6 : SelectExpr[C6]
   , a7 : SelectExpr[C7]
   )(implicit from : FromTable)
-  extends Columns[(C1,C2,C3,C4,C5,C6,C7),SQLCols7[C1,C2,C3,C4,C5,C6,C7]](Seq(a1, a2, a3, a4, a5, a6, a7), from, new SQLCols7[C1,C2,C3,C4,C5,C6,C7]) {
+  extends Columns[(C1,C2,C3,C4,C5,C6,C7),SQLCols7[C1,C2,C3,C4,C5,C6,C7]](Seq(a1, a2, a3, a4, a5, a6, a7), from, new SQLCols7[C1,C2,C3,C4,C5,C6,C7]()(a1.sqlType, a2.sqlType, a3.sqlType, a4.sqlType, a5.sqlType, a6.sqlType, a7.sqlType)) {
   override val length = 7
   def map[A](f : (C1,C2,C3,C4,C5,C6,C7) => A) : Selector[A] = copy[A](parse = parse.map(f))
-  def ~+[C : SQLType](a : SelectExpr[C]) = ???
+  def ~+[C](a : SelectExpr[C]) = ???
 }
