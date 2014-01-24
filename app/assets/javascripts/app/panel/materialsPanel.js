@@ -2,13 +2,15 @@ define(['app/config/module'], function (module) {
 	'use strict';
 
 	module.controller('MaterialsPanel', ['$scope', 'Volume', '$routeParams', function ($scope, Volume, $routeParams) {
+		$scope.bootPanel = function () {
+			$scope.currentAsset = $scope.volume.assets[0] || undefined;
+		};
+
 		$scope.refreshPanel = function () {
 			$scope.enabled = angular.isArray($scope.volume.assets) && $scope.volume.assets.length > 0;
 		};
 
 		//
-
-		$scope.currentAsset = $scope.currentAsset || undefined;
 
 		$scope.selectAsset = function (asset) {
 			$scope.currentAsset = asset;
@@ -16,14 +18,51 @@ define(['app/config/module'], function (module) {
 
 		$scope.getAssetClasses = function (asset) {
 			return {
-				'active': $scope.currentAsset == asset.sourceId
+				'active': $scope.currentAsset == asset
 			};
 		};
 
 		$scope.getMimeGroup = function (asset) {
-			var group = asset.format ? asset.format.mimetype.split('/').unshift() : asset.asset.format.mimetype.split('/').unshift();
+			var mimetype = asset.format ? asset.format.mimetype : asset.asset.format.mimetype,
+				type = mimetype.split('/')[0];
 
-			return group;
-		}
+			return type == 'text' ? mimetype[1] : type;
+		};
+
+		$scope.getClassification = function (asset) {
+			var brief;
+
+			switch(asset.asset.classification) {
+				case 0: // identified
+					brief = 'I';
+					break;
+
+				case 1: // excerpt
+					brief = 'E';
+					break;
+
+				case 2: // deidentified
+					brief = 'D';
+					break;
+
+				case 3: // analysis
+					brief = 'A';
+					break;
+
+				case 4: // product
+					brief = 'P';
+					break;
+
+				case 5: // material
+					brief = 'M';
+					break;
+			}
+
+			return brief;
+		};
+
+		$scope.getLink = function (asset, inline) {
+			return '/slot/'+asset.container.id+'/asset/'+asset.asset.id+'/inline?segment='+(asset.segment || ',');
+		};
 	}]);
 });
