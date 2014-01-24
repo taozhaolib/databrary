@@ -71,7 +71,7 @@ define(['app/config/module'], function (module) {
 			body: ''
 		};
 
-		$scope.addComment = function (form) {console.log(form);
+		$scope.addComment = function (form) {
 			if (form.$invalid)
 				return;
 
@@ -84,9 +84,6 @@ define(['app/config/module'], function (module) {
 			}, function (newComment, status, headers, config) {
 				createMessage('Comment added successfully!');
 				$scope.newComment.body = '';
-				console.log(newComment);
-			}, function () {
-				console.log(arguments);
 			});
 		};
 	}]);
