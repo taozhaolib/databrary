@@ -3,11 +3,11 @@ define(['app/config/module'], function (module) {
 
 	module.factory('Comment', ['$rootScope', '$resource', '$route', function ($rootScope, $resource, $route) {
 		return $resource('/api/comment/:id', {
-			id: function () {
-				return $route.current.params.id || undefined;
-			},
 			segment: function () {
 				return $route.current.params.segment || ',';
+			},
+			container: function () {
+				return $route.current.params.container || ',';
 			}
 		}, {
 			'query': {method: 'GET', isArray: false}

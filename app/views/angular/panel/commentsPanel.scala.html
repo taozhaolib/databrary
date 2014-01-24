@@ -16,10 +16,10 @@
                     </div>
 
                     <div class="comment_body comment_form">
-                        <form name="commentForm">
+                        <form name="commentForm" novalidate ng-submit="addComment(commentForm)">
                             <textarea ng-model="newComment.body"></textarea>
 
-                            <button type="submit" class="button first">Post</button>
+                            <button type="submit" class="button first" ng-click="addComment(commentForm)">Post</button>
                         </form>
                     </div>
                 </div>
