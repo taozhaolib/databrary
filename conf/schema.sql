@@ -262,11 +262,6 @@ CREATE TRIGGER "container_top_create" AFTER INSERT ON "volume" FOR EACH ROW EXEC
 COMMENT ON TRIGGER "container_top_create" ON "volume" IS 'Always create a top container for each volume.  Unfortunately nothing currently prevents them from being removed/changed.';
 
 
--- special volumes (SERIAL starts at 1), done after container triggers:
-INSERT INTO "volume" (id, name) VALUES (0, 'Core'); -- CORE
-INSERT INTO "volume_access" VALUES (0, -1, 'DOWNLOAD', 'DOWNLOAD');
-
-
 ----------------------------------------------------------- slots
 
 CREATE TABLE "slot" ( -- ABSTRACT
@@ -416,10 +411,10 @@ SELECT audit.CREATE_TABLE ('excerpt');
 ----------------------------------------------------------- comments
 
 CREATE TABLE "comment" (
-	"container" integer NOT NULL References "container",
-	"segment" segment NOT NULL,
 	"id" serial NOT NULL Primary Key,
 	"who" integer NOT NULL References "account",
+	"container" integer NOT NULL References "container",
+	"segment" segment NOT NULL,
 	"time" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"text" text NOT NULL,
 	"parent" integer References "comment"
@@ -474,7 +469,7 @@ CREATE TABLE "tag_use" (
 ) INHERITS ("slot");
 CREATE INDEX ON "tag_use" ("tag");
 CREATE INDEX ON "tag_use" ("who");
-CREATE INDEX ON "tag_use" ("container", "segment");
+CREATE INDEX "tag_use_slot_idx" ON "tag_use" ("container", "segment");
 COMMENT ON TABLE "tag_use" IS 'Applications of tags to objects along with their weight (+-1).';
 
 
@@ -670,6 +665,12 @@ INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 2, 'ADMIN'
 INSERT INTO asset (id, volume, format, classification, duration, name, sha1) VALUES (1, 1, -800, 'MATERIAL', interval '40', 'counting', '\x3dda3931202cbe06a9e4bbb5f0873c879121ef0a');
 INSERT INTO slot_asset VALUES (1, '[0,40)'::segment, 1);
 SELECT setval('asset_id_seq', 1);
+SELECT setval('container_id_seq', 2);
+
+-- special volumes (SERIAL starts at 1), done after container triggers:
+INSERT INTO "volume" (id, name) VALUES (0, 'Core'); -- CORE
+INSERT INTO "volume_access" VALUES (0, -1, 'DOWNLOAD', 'DOWNLOAD');
+
 
 ----------------------------------------------------------- ingest logs
 
