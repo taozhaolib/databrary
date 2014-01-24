@@ -41,7 +41,7 @@ private[models] final class SQLTerms private (private val terms : Seq[SQLTerm[_]
     */
   def values(implicit table : FromTable) : Selector[Unit] =
     Columns(FromTable("(VALUES (" + placeholders + ")) AS " + table + " " + names))
-    .pushArgs(terms)
+    .pushArgs(this)
 }
 private[models] object SQLTerms {
   def apply(terms : SQLTerm[_]*) = new SQLTerms(terms)

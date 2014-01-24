@@ -6,7 +6,11 @@ import macros._
 
 /** A wrapper for a table name useful for providing an implicit table context. */
 case class FromTable(table : String) {
-  implicit override def toString : String = table
+  override def toString : String = table
+}
+object FromTable {
+  import scala.language.implicitConversions
+  implicit def table(table : FromTable) : String = table.table
 }
 
 /** A single expression for a select statement, where toString is expected to produce valid SQL. */
@@ -14,7 +18,7 @@ sealed class SelectExpr[A : SQLType](expr : String) {
   final override def toString : String = expr
   def get(a : Any) : A = SQLType.get[A](a)
   /** Qualify this expression to select from a particular table, if applicable. */
-  def fromTable(table : String) : SelectExpr[A] = this
+  def fromTable(implicit table : FromTable) : SelectExpr[A] = this
 }
 object SelectExpr {
   def apply[A : SQLType](expr : String) = new SelectExpr[A](expr)
@@ -22,18 +26,20 @@ object SelectExpr {
 
 /** A simple "table.col" select expression. */
 final case class SelectColumn[A : SQLType](table : String, col : String) extends SelectExpr[A](table + "." + col) {
-  override def fromTable(table : String) = copy(table = table)
-  implicit def column : Columns1[A] = {
+  override def fromTable(implicit table : FromTable) = copy(table = table)
+  def column : Columns1[A] = {
     implicit val fromTable : FromTable = FromTable(table)
     new Columns1[A](this)
   }
 }
 object SelectColumn {
-  def apply[A : SQLType](col : String)(implicit from : FromTable) : SelectColumn[A] = SelectColumn[A](from.table, col)
+  def apply[A : SQLType](col : String)(implicit table : FromTable) : SelectColumn[A] = SelectColumn[A](table, col)
 }
 
 /** A "expression AS name" select expression. */
-final case class SelectAs[A : SQLType](expr : String, name : String) extends SelectExpr[A](expr + " AS " + name)
+final case class SelectAs[A : SQLType](expr : String, name : String) extends SelectExpr[A](expr + " AS " + name) {
+  override def fromTable(implicit table : FromTable) = SelectColumn[A](name)
+}
 
 /** Information necessary to run a simple SELECT query.
   * @param selects expressions to select in the query
@@ -54,16 +60,18 @@ case class Selector[A](selects : Seq[SelectExpr[_]], source : String, parse : SQ
     copy[A](source = from)
   def from(from : String => String) : Selector[A] =
     copy[A](source = from(source))
-  def fromTable(table : String) : Selector[A] =
+  def from(query : SQLToRows[_]) : Selector[A] =
+    copy[A](source = query.query + " AS " + source, preargs = preargs ++ query.preargs)
+  def fromTable(implicit table : FromTable) : Selector[A] =
     copy[A](selects.map(_.fromTable(table)), source = table)
-  def fromAlias(name : String) : Selector[A] =
-    copy[A](selects.map(_.fromTable(name)), source = source + " AS " + name)
+  def fromAlias(implicit table : FromTable) : Selector[A] =
+    copy[A](selects.map(_.fromTable(table)), source = source + " AS " + table)
   /** Add arguments needed for the select expressions that will be passed (first) to any queries executed. */
   def pushArgs(args : SQLArgs) : Selector[A] =
     copy[A](preargs = preargs ++ args)
 
   def join[B](that : Selector[B], joiner : (String, String) => String) : Selector[(A,B)] =
-    Selector[(A,B)](selects ++ that.selects, joiner(source, that.source), parse.~[B](that.parse), preargs ++ that.preargs)
+    Selector[(A,B)](selects ++ that.selects, if (source.equals(that.source)) source else joiner(source, that.source), parse.~[B](that.parse), preargs ++ that.preargs)
   def join[B](that : Selector[B], on : String) : Selector[(A,B)] =
     join(that, unwords(_, "JOIN", _, "ON", on))
   def join[B](that : Selector[B], using : Seq[String]) : Selector[(A,B)] =
@@ -78,21 +86,22 @@ case class Selector[A](selects : Seq[SelectExpr[_]], source : String, parse : SQ
     leftJoin(that, Seq(using.name))
   def ~[B](that : Selector[B]) : Selector[(A,B)] =
     join(that, _ + " NATURAL JOIN " + _)
-  def +[B](that : Selector[B]) : Selector[(A,B)] =
+  def *[B](that : Selector[B]) : Selector[(A,B)] =
     join(that, _ + " CROSS JOIN " + _)
 
-  private[this] def selectStmt(q : Seq[String]) : String = unwords(Seq("SELECT", select, "FROM", source) ++ q : _*)
+  private[this] def selectStmt(q : Seq[String]) : String =
+    unwords(Seq("SELECT", select, "FROM", source) ++ q : _*)
   def SELECT(q : String*)(implicit dbc : db.Connection, executionContext : ExecutionContext) : SQLToRows[A] =
     SQLToRows(selectStmt(q), parse, preargs.args)(dbc, executionContext)
 }
 
 object Selector {
-  def apply(selects : Seq[SelectExpr[_]])(implicit from : FromTable) : Selector[Seq[Any]] =
-    new Selector[Seq[Any]](selects, from.table,
+  def apply(selects : Seq[SelectExpr[_]])(implicit table : FromTable) : Selector[Seq[Any]] =
+    new Selector[Seq[Any]](selects, table,
       new SQLLine[Seq[Any]](selects.length, _.zip(selects).map { case (v, s) => s.get(v) }))
 }
 
-abstract sealed class Columns[A,C <: SQLCols[A]] protected (selects : Seq[SelectExpr[_]], from : FromTable, override val parse : C) extends Selector[A](selects, from.table, parse) {
+abstract sealed class Columns[A,C <: SQLCols[A]] protected (selects : Seq[SelectExpr[_]], table : FromTable, override val parse : C) extends Selector[A](selects, table, parse) {
   def ~+[C : SQLType](a : SelectExpr[C]) : Columns[_,_]
 }
 

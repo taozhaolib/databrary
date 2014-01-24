@@ -118,10 +118,10 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
       .apply(args ++ SQLArgs(permission, site.access)).singleOpt
     final def getThumb(volume : Volume) : Future[Option[SlotAsset]] =
       getThumb(Container.volumeRow(volume), volume.permission,
-	"container.volume = ? AND asset.volume = container.volume", SQLArgs(volume.id))
+	"container.volume = ? AND asset.volume = container.volume", SQLArgs(volume.id))(volume.site)
     final def getThumb(slot : Slot) : Future[Option[SlotAsset]] =
       getThumb(Container.fixed(slot.container), slot.permission,
-	table + ".segment <@ ? AND asset.volume = ?", SQLArgs(slot.segment, slot.volumeId))
+	table + ".segment <@ ? AND asset.volume = ?", SQLArgs(slot.segment, slot.volumeId))(slot.site)
   }
 
   private object SlotAssetSlot extends SlotAssetTable("slot_asset") {
@@ -161,7 +161,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   /** Retrieve the list of all foreign assets (from a different volume) within the given slot. */
   private[models] def getSlotForeign(slot : Slot) : Future[Seq[SlotAsset]] =
-    row(Slot.fixed(slot), Asset.row.map(const _))
+    row(Slot.fixed(slot), Asset.row(slot.site).map(const _))
     .SELECT("WHERE asset.volume <> ? AND", Volume.condition)
     .apply(slot.volumeId).list
 

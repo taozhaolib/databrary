@@ -165,12 +165,10 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 }
 
 object Volume extends TableId[Volume]("volume") {
-  private object Permission {
-    private val table : String = "volume_permission"
-    private implicit val fromTable : FromTable = FromTable(table)
+  private object Permission extends Table[models.Permission.Value]("volume_permission") {
     private val columns = Columns(
 	SelectColumn[models.Permission.Value]("permission")
-      ).from("LATERAL (VALUES (volume_access_check(volume.id, ?::integer), ?::boolean)) AS " + table + " (permission, superuser)")
+      ).from("LATERAL (VALUES (volume_access_check(volume.id, ?::integer), ?::boolean)) AS " + _ + " (permission, superuser)")
     def row(implicit site : Site) =
       columns.pushArgs(SQLArgs(site.identity.id, site.superuser))
     def condition =
@@ -184,7 +182,7 @@ object Volume extends TableId[Volume]("volume") {
     , SelectColumn[String]("name")
     , SelectColumn[Option[String]]("body")
     , SelectAs[Option[Timestamp]]("volume_creation(volume.id)", "volume_creation")
-    ).+(Permission.row)
+    ).*(Permission.row)
       .map { case ((id, name, body, creation), permission) =>
 	new Volume(id, name, body, permission, creation.getOrElse(defaultCreation))
       }

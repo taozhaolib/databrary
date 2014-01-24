@@ -196,7 +196,7 @@ GET     /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>                   
 POST    /api/comment                                                                              controllers.SlotApi.comment(container : models.Container.Id, segment : dbrary.Segment, parent : Option[models.Comment.Id] ?= None)
 
 # ----- TAG ----- #
-# GET       ?slots
+# GET       ?containers
 GET     /api/tag/:name                                                                            controllers.TagApi.get(name : String)
 # UPDATE    ?container=ID;segment=
 POST    /api/tag/:name                                                                            controllers.TagApi.update(name : String, container : models.Container.Id, segment : dbrary.Segment)
