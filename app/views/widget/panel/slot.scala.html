@@ -1,4 +1,4 @@
-@(slot : AbstractSlot)(implicit request : SiteRequest[_])
+@(slot : Slot)(implicit request : SiteRequest[_])
 
 @widget.panel.raw("overview", "panel_slot")(){
     <h1 class="col-full panel_title">@display.formatTitle(slot.pageName)</h1>

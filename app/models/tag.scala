@@ -118,7 +118,7 @@ private[models] sealed abstract class WeightView[T <: Weight] extends Table[T]("
   private[this] def aggregate =
     TagUse.aggregateColumns ~+ groupBy
   protected def columns(query : String*)(args : SQLArgs)(implicit site : Site) =
-    TagUse.aggregateColumns.fromTable(table)
+    TagUse.aggregateColumns.fromTable
     .from(aggregate.SELECT(query ++ Seq("GROUP BY", groupBy.toString) : _*))
     .pushArgs(site.identity.id +: args)
 }
@@ -131,16 +131,16 @@ object TagWeight extends WeightView[TagWeight] {
       case ((weight, up), tag) => new TagWeight(tag, weight, up)
     }
     .SELECT("WHERE weight > 0 OR user IS NOT NULL ORDER BY weight DESC")
-    .list
+    .apply().list
 
   /** Summarize all tags that overlap the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[TagWeight]] =
-    get("WHERE tag_use.container = ? AND tag_use.segment && ?::segment")
-      (SQLArgs(slot.containerId, slot.segment))
+    get("WHERE tag_use.container = ? AND tag_use.segment && ?::segment")(
+      SQLArgs(slot.containerId, slot.segment))(slot.site)
 
   private[models] def getVolume(volume : Volume) : Future[Seq[TagWeight]] =
-    get("JOIN container ON tag_use.container = container.id WHERE container.volume = ?")
-      (SQLArgs(volume.id))
+    get("JOIN container ON tag_use.container = container.id WHERE container.volume = ?")(
+      SQLArgs(volume.id))(volume.site)
 }
 
 object ContainerWeight extends WeightView[ContainerWeight] {
@@ -151,8 +151,9 @@ object ContainerWeight extends WeightView[ContainerWeight] {
       case ((weight, up), container) => new ContainerWeight(container, weight, up)
     }
     .SELECT("WHERE (weight > 0 OR user IS NOT NULL) AND", Volume.condition, "ORDER BY weight DESC")
-    .list
+    .apply().list
 
   private[models] def getTag(tag : Tag)(implicit site : Site) : Future[Seq[ContainerWeight]] =
-    get("WHERE tag_use.tag = ?")(SQLArgs(tag.id))
+    get("WHERE tag_use.tag = ?")(
+      SQLArgs(tag.id))
 }
