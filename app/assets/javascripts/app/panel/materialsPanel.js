@@ -60,9 +60,5 @@ define(['app/config/module'], function (module) {
 
 			return brief;
 		};
-
-		$scope.getLink = function (asset, inline) {
-			return '/slot/'+asset.container.id+'/asset/'+asset.asset.id+'/inline?segment='+(asset.segment || ',');
-		};
 	}]);
 });

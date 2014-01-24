@@ -11,15 +11,15 @@ define(['app/config/module'], function (module) {
 		routerService.makeUrl = function (url, params) {
 			if (!params) return url;
 
-			if(!angular.isArray(params) && !angular.isObject(params))
+			if (!angular.isArray(params) && !angular.isObject(params))
 				params = [params];
 
-			if(angular.isArray(params)) {
+			if (angular.isArray(params)) {
 				angular.forEach(params, function (param) {
 					var regex = new RegExp(':[\\w]+\\*?'),
 						match = url.match(regex);
 
-					if(match[0].length > 0)
+					if (match[0].length > 0)
 						url = url.replace(regex, param);
 				});
 
@@ -42,7 +42,7 @@ define(['app/config/module'], function (module) {
 					var regex = new RegExp(':' + key + '\\*?'),
 						match = url.match(regex);
 
-					if (match[0].length > 0)
+					if (match != null && match[0].length > 0)
 						url = url.replace(regex, v);
 					else
 						parts.push($filter('uri')(key, true) + '=' +
@@ -58,31 +58,57 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		var createRoutes = function () {
-			angular.forEach($route.routes, function (config, route) {
-				if (route == 'null' || route.length == 0 || (route.length > 1 && route.substr(route.length - 1) == '/'))
-					return;
-
-				var key = route
-					.split('/')
-					.filter(function (e) {
-						return e.length > 0 && e.substr(0, 1) != ':';
-					})
-					.map(function (e, i) {
-						return i == 0 ? e : e.charAt(0).toUpperCase() + e.slice(1);
-					})
-					.join('');
-
-				if (!key)
-					key = 'index';
-
-				routerService[key] = function (params) {
-					return routerService.makeUrl(route, params);
-				};
-			});
+		var makeRoute = function (route) {
+			return function (params) {
+				return routerService.makeUrl(route, params);
+			};
 		};
 
-		createRoutes();
+		//
+
+		routerService.index = makeRoute('/');
+		routerService.login = makeRoute('/login');
+		routerService.party = makeRoute('/party/:id');
+		routerService.volume = makeRoute('/volume/:id');
+
+		routerService.record = makeRoute('/record/:id');
+		routerService.slot = makeRoute('/slot/:id');
+		routerService.slotAsset = makeRoute('/slot/:sid/asset/:id');
+		routerService.asset = makeRoute('/asset/:id');
+
+		//
+
+		routerService.assetLink = function (data, inline) {
+			if (angular.isObject(data) && data.asset)
+				data = {
+					sid: data.container.id,
+					id: data.asset.id,
+					segment: data.segment || ','
+				};
+
+			data.inline = data.inline || inline || false;
+
+			return routerService.makeUrl('/slot/:sid/asset/:id/download', data);
+		};
+
+		routerService.partyAvatar = function (data, size) {
+			if (angular.isObject(data) && data.name)
+				data = {
+					id: data.id
+				};
+
+			if (angular.isNumber(parseInt(size)))
+				if (angular.isObject(data))
+					data.size = parseInt(size);
+				else if (angular.isArray(data))
+					data.push(parseInt(size));
+				else if (angular.isString(data))
+					data = [data, size];
+				else
+					data = '';
+
+			return routerService.makeUrl('/party/:id/avatar', data);
+		};
 
 		//
 

@@ -19,26 +19,26 @@
         <div class="panel_materials_display col-full">
             <div ng-if="currentAsset" class="panel_materials_frame">
                 <h2>
-                    <a ng-href="{{getLink(currentAsset, false)}}" class="link" target="_self">{{currentAsset.asset.name}}.{{currentAsset.asset.format.extension}}</a>
+                    <a ng-href="{{router.assetLink(currentAsset, false)}}" class="link" target="_self">{{currentAsset.asset.name}}.{{currentAsset.asset.format.extension}}</a>
                 </h2>
 
                 <div ng-switch="getMimeGroup(currentAsset)">
                     <div ng-switch-when="image">
-                        <img ng-src="{{getLink(currentAsset, true)}}" />
+                        <img ng-src="{{router.assetLink(currentAsset, true)}}" />
                     </div>
 
                     <div ng-switch-when="video">
                         <video controls>
-                            <source ng-src="{{getLink(currentAsset, true)}}" type="{{currentAsset.format.mimetype || currentAsset.asset.format.mimetype}}">
+                            <source ng-src="{{router.assetLink(currentAsset, true)}}" type="{{currentAsset.format.mimetype || currentAsset.asset.format.mimetype}}">
                         </video>
                     </div>
 
                     <div ng-switch-when="html">
-                        <iframe ng-src="{{getLink(currentAsset, true)}}"></iframe>
+                        <iframe ng-src="{{router.assetLink(currentAsset, true)}}"></iframe>
                     </div>
 
                     <div ng-switch-when="plain">
-                        <iframe ng-src="{{getLink(currentAsset, true)}}"></iframe>
+                        <iframe ng-src="{{router.assetLink(currentAsset, true)}}"></iframe>
                     </div>
 
                     <div ng-switch-default>
