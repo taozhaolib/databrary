@@ -100,8 +100,8 @@ private[models] object ObjectSelector {
     new Obj[A](obj, table.table, cols)
 
   import scala.language.implicitConversions
-  implicit def apply[A](selector : Selector[A]) : ObjectSelector[A] =
+  implicit def ofSelector[A](selector : Selector[A]) : ObjectSelector[A] =
     new Sel[A](selector)
-  implicit def selector[A](os : ObjectSelector[A]) : Selector[A] =
+  implicit def toSelector[A](os : ObjectSelector[A]) : Selector[A] =
     os.selector
 }

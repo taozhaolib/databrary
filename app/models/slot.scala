@@ -18,11 +18,11 @@ trait Slot extends TableRow with InVolume with SiteObject {
   def consent : Consent.Value = context.consent
 
   final def containerId : Container.Id = container.id
-  final def volume = container.volume
+  def volume = container.volume
 
   /** True if this is its container's full slot. */
-  final def isFull : Boolean = segment.isFull
-  final def isTop : Boolean = container.top && isFull
+  def isFull : Boolean = segment.isFull
+  def top : Boolean = container.top && isFull
   /** Effective start point of this slot within the container. */
   final def position : Offset = segment.lowerBound.getOrElse(Offset.ZERO)
 
@@ -110,14 +110,15 @@ trait Slot extends TableRow with InVolume with SiteObject {
     Action("add participant", controllers.routes.RecordHtml.slotAdd(containerId, segment, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
   )
 
-  def json : JsonObject = JsonObject.flatten(
-    Some('container -> container.containerJson),
+  lazy val slotJson : JsonObject = JsonObject.flatten(
+    Some('container -> container.json),
     if (segment.isFull) None else Some('segment -> segment)
     // Maybe(getConsent).opt.map('consent -> _)
   )
+  def json : JsonValue = slotJson
 
-  def json(options : JsonOptions.Options) : Future[JsObject] =
-    JsonOptions(json.obj, options,
+  def slotJson(options : JsonOptions.Options) : Future[JsObject] =
+    JsonOptions(slotJson.obj, options,
       "assets" -> (opt => assets.map(JsonArray.map(_.inContext.json - "container"))),
       "records" -> (opt => records.map(JsonRecord.map { r =>
         r.json ++ JsonObject.flatten(r.age(this).map('age -> _))
@@ -128,14 +129,14 @@ trait Slot extends TableRow with InVolume with SiteObject {
 }
 
 trait ContextSlot extends Slot {
-  override val container : Container
-  override def context = this
-  override val consent : Consent.Value
+  // override val container : Container
+  override final def context = this
+  // override val consent : Consent.Value
 
   override def pageParent = Some(volume)
 }
 
-final class SlotConsent private (val container : Container, val segment : Segment, val consent : Consent.Value) extends ContextSlot
+final class SlotConsent private (override val container : Container, val segment : Segment, override val consent : Consent.Value) extends ContextSlot
 
 private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") {
   private val columns = Columns(
@@ -166,7 +167,8 @@ private[models] trait TableSlot[R <: Slot] extends Table[R] {
     val base = columns
       .join(container, table + ".container = container.id")
     if (consent && container.obj.forall(_.consent == Consent.NONE)) base
-      .leftJoin(SlotConsent.row, table + ".segment <@ slot_consent.segment AND " + table + ".container = slot_consent.container")
+      .leftJoin(SlotConsent.row.fromAlias(FromTable(table + "_consent")),
+	table + ".segment <@ " + table + "_consent.segment AND " + table + ".container = " + table + "_consent.container")
       .map { case ((a, container), consent) => a(makeContext(container, consent)) }
     else base
       .map { case (a, container) => a(container) }
@@ -181,7 +183,7 @@ private[models] abstract class SlotTable protected (table : String) extends Tabl
     else new Virtual(segment, context)
   private[models] final val columns =
     Columns(segment)
-  protected val columnsContext =
+  protected def columnsContext =
     columns.map((make _).curried)
   protected final def valueColumns(containerId : Container.Id, segment : Segment) =
     values(containerId, segment).map(_ => make(segment, _ : ContextSlot))

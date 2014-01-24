@@ -91,7 +91,7 @@ object SlotHtml extends SlotController {
   }
 
   def view(i : Container.Id, segment : Segment) = Action(i, segment).async { implicit request =>
-    if (request.obj.isTop)
+    if (request.obj.top)
       ARedirect(controllers.routes.VolumeHtml.view(request.obj.volumeId))
     else
       show().map(Ok(_))
@@ -130,6 +130,6 @@ object SlotHtml extends SlotController {
 
 object SlotApi extends SlotController {
   def get(c : models.Container.Id, segment : Segment) = Action(c, segment).async { request =>
-    request.obj.json(request.apiOptions).map(Ok(_))
+    request.obj.slotJson(request.apiOptions).map(Ok(_))
   }
 }

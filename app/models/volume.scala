@@ -155,12 +155,12 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
         r.json - "volume" + ('sessions -> JsonArray.map[Container,Container.Id](_.id)(ss))
       })),
       "sessions" -> (opt => slotRecords.map(JsonRecord.map { case (s, rs) =>
-        s.containerJson - "volume" + ('records -> JsonRecord.map[Record] { r =>
+        s.json - "volume" + ('records -> JsonRecord.map[Record] { r =>
           JsonRecord.flatten(r.id, r.age(s).map('age -> _))
         }(rs))
       })),
       "assets" -> (opt => toplevelAssets.map(JsonArray.map(_.json))),
-      "top" -> (opt => top.map(t => (t.containerJson - "volume" - "top").obj))
+      "top" -> (opt => top.map(t => (t.json - "volume" - "top").obj))
     )
 }
 

@@ -10,12 +10,11 @@ import site._
   * To be used, all assets must be placed into containers.
   * These containers can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.
   */
-final class Container protected (override val id : Container.Id, override val volume : Volume, val top : Boolean = false, val name_ : Option[String], val date_ : Option[Date], val consent : Consent.Value) extends ContextSlot with TableRowId[Container] with InVolume {
+final class Container protected (override val id : Container.Id, override val volume : Volume, override val top : Boolean = false, val name_ : Option[String], val date_ : Option[Date], override val consent : Consent.Value) extends ContextSlot with TableRowId[Container] with InVolume {
   def ===(a : Container) = id === a.id
-  def container = this
-  def segment = Segment.full
+  override def container = this
+  val segment = Segment.full
   override def isFull = true
-  override def isTop = top
   private[this] var _name = name_
   /** Descriptive name to help with organization by contributors.
     * This (as with Container in general) is not necessarily intended for public consumption. */
@@ -34,7 +33,7 @@ final class Container protected (override val id : Container.Id, override val vo
       }
   }
 
-  lazy val containerJson : JsonRecord = JsonRecord.flatten(id,
+  override lazy val json : JsonRecord = JsonRecord.flatten(id,
     Some('volume -> volumeId),
     if (top) Some('top -> top) else None,
     name.map('name -> _),
@@ -50,10 +49,10 @@ object Container extends TableId[Container]("container") {
     , SelectColumn[Boolean]("top")
     , SelectColumn[Option[String]]("name")
     , SelectColumn[Option[Date]]("date")
-    , SelectColumn[Consent.Value]("full_slot", "consent")
+    , SelectColumn[Consent.Value]("container_consent", "consent")
     ).map { (id, top, name, date, consent) =>
       (vol : Volume) => new Container(id, vol, top, name, date, consent)
-    } from "container JOIN slot AS full_slot USING (id)"
+    } from "container LEFT JOIN slot_consent AS container_consent WHERE container.id = slot_consent.container AND slot_consent.segment = '(,)'::segment"
   private[models] def row(implicit site : Site) =
     Volume.row.join(columns, "container.volume = volume.id") map {
       case (vol, cont) => cont(vol)

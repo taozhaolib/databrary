@@ -15,11 +15,11 @@ final class Comment private (val id : Comment.Id, val who : Account, val segment
     Some('time -> time),
     Some('text -> text),
     parentId.map('parent -> _)
-  ) ++ super.json
+  ) ++ slotJson
 }
 
 object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
-  override protected type A = (Account => Comment)
+  override protected type A = Account => Comment
   private val columns : Selector[ContextSlot => A] = Columns(
       SelectColumn[Id]("id")
     , segment

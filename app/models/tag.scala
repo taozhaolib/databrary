@@ -109,7 +109,7 @@ final class TagWeight private (val tag : Tag, weight : Int, user : Option[Boolea
 
 /** Summary representation of tag information for a single tag and current user. */
 final class ContainerWeight private (val container : Container, weight : Int, user : Option[Boolean] = None) extends Weight(weight, user) {
-  override def json = container.containerJson ++ super.json
+  override def json = container.json ++ super.json
 }
 
 private[models] sealed abstract class WeightView[T <: Weight] extends Table[T]("tag_weight") {

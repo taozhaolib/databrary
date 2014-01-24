@@ -24,7 +24,7 @@ private[models] trait TableRowId[+T] extends TableRow {
   }
 }
 
-/** Factory/helper object for a particular table.  Usually these are used to produce [[TableRow]]s. */
+/** Factory/helper object for a particular table.  Usually these are used to produce TableRows. */
 private[models] trait TableView {
   /** Name of the database table. */
   private[models] val table : String
@@ -33,7 +33,7 @@ private[models] trait TableView {
     SQL("SELECT oid FROM pg_class WHERE relname = ?").apply(table).single(SQLCols[Long])
 
   /** Type of TableRow this object can generate. */
-  private[models] type Row <: TableRow
+  private[models] type Row // <: TableRow
   /* Description of the database selection to produce a Row. */
   // private[models] val row : Selector[Row]
 
@@ -49,7 +49,7 @@ private[models] trait TableView {
     DELETE(SQLTerms(args : _*))(dbc, exc)
 }
 
-private[models] abstract class Table[R <: TableRow] protected (private[models] val table : String) extends TableView {
+private[models] abstract class Table[R] protected (private[models] val table : String) extends TableView {
   type Row = R
 }
 private[models] abstract class TableId[R <: TableRowId[R]] protected (table : String) extends Table[R](table) with HasId[R]
