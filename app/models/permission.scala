@@ -37,7 +37,7 @@ object Permission extends PGEnum("permission") {
       if (p >= FULL)
         p
       else if (p >= VIEW)
-        if (Classification.download(p, consent).fold(false)(classification >= _))
+        if (Classification.download(p, consent).exists(classification >= _))
           DOWNLOAD
         else
           VIEW

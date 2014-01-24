@@ -18,7 +18,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
   override def format = asset.format
 
   override def position : Option[Offset] = asset_segment.lowerBound.map(_ - slot.position)
-  require(excerpt_segment.fold(true)(_ @> segment))
+  require(excerpt_segment.forall(_ @> segment))
   def excerpt = excerpt_segment.isDefined
 
   def classification = asset.classification match {

@@ -110,7 +110,7 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
     val now = new Timestamp
     macros.Async.flatMap(request.session.get("session"), models.SessionToken.get _).flatMap { session =>
       implicit val site = SiteRequest[A](request, session)
-      if (session.fold(false)(!_.valid))
+      if (session.exists(!_.valid))
         Async.foreach[SessionToken, Unit](session, _.remove).map { _ =>
           LoginController.needed("login.expired")
         }

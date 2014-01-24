@@ -99,7 +99,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     var agemin, agemax = Age(0)
     var agesum = 0
     sess.foreach {
-      case (r, s) if r.category.fold(false)(_ === RecordCategory.Participant) =>
+      case (r, s) if r.category.exists(_ === RecordCategory.Participant) =>
         sessions = sessions + 1
         if (s.consent >= Consent.SHARED) shared = shared + 1
         s.container.date.flatMap(r.age(_)).foreach { a =>

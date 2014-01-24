@@ -107,8 +107,8 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
     } (new SingletonRange[A](_))
   /** Contains relations, as in postgres. */
   final def @>(x : A) = isFull || !isEmpty &&
-    lowerBound.fold(true)(l => if (lowerClosed) t.lteq(l, x) else t.lt(l, x)) &&
-    upperBound.fold(true)(u => if (upperClosed) t.lteq(x, u) else t.lt(x, u))
+    lowerBound.forall(l => if (lowerClosed) t.lteq(l, x) else t.lt(l, x)) &&
+    upperBound.forall(u => if (upperClosed) t.lteq(x, u) else t.lt(x, u))
   final def @>(r : Range[A]) = isFull || r.isEmpty || !isEmpty &&
     t.LowerOrdering.lteq(this, r) && t.UpperOrdering.gteq(this, r)
   /** Intersection, as in postgres. */

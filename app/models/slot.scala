@@ -165,7 +165,7 @@ private[models] trait TableSlot[R <: Slot] extends Table[R] {
   protected final def slotColumns(columns : Selector[ContextSlot => A], container : ObjectSelector[Container], consent : Boolean = true) : Selector[A] = {
     val base = columns
       .join(container, table + ".container = container.id")
-    if (consent && container.obj.fold(true)(_.consent == Consent.NONE)) base
+    if (consent && container.obj.forall(_.consent == Consent.NONE)) base
       .leftJoin(SlotConsent.row, table + ".segment <@ slot_consent.segment AND " + table + ".container = slot_consent.container")
       .map { case ((a, container), consent) => a(makeContext(container, consent)) }
     else base

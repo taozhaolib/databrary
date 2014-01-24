@@ -181,7 +181,7 @@ object VolumeHtml extends VolumeController {
     val accessChange = accessChangeForm.map(_._1.id)
     request.obj.partyAccess.map { access =>
       val accessForms = access
-        .filter(a => accessChange.fold(true)(_ === a.partyId))
+        .filter(a => accessChange.forall(_ === a.partyId))
         .map(a => (a.party, accessFormFill(a))) ++
         accessChangeForm
       views.html.volume.access(request.obj, accessForms, accessSearchForm, accessResults)

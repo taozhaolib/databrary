@@ -73,7 +73,7 @@ object AssetFormat extends TableId[AssetFormat]("format") {
     * @param ts include TimeseriesFormats. */
   private def getExtension(ext : String) : Option[AssetFormat] = {
     val extension = if (ext.equals("mpeg")) "mpg" else ext
-    cache.collectFirst { case (_, a) if a.extension.fold(false)(_.equals(extension)) => a }
+    cache.collectFirst { case (_, a) if a.extension.exists(_.equals(extension)) => a }
       .orElse(wait(row.SELECT("WHERE extension = ?").apply(extension)))
   }
   /** Get a list of all file formats in the database. */
