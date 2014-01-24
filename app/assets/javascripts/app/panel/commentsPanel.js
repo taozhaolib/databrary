@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.controller('CommentsPanel', ['$scope', 'AuthService', '$route', 'Comment', 'MessageService', function ($scope, authService, $route, Comment, messageService) {
+	module.controller('CommentsPanel', ['$scope', 'AuthService', '$route', 'Comment', 'MessageService', 'Volume', function ($scope, authService, $route, Comment, messageService, Volume) {
 		var DEFAULT_MESSAGE = {
 			type: 'alert',
 			countdown: 3000
@@ -48,6 +48,22 @@ define(['app/config/module'], function (module) {
 
 		//
 
+		$scope.pullComments = function () {
+			switch($route.current.controller) {
+				case 'VolumeView':
+					Volume.get({
+						id: $scope.volume.id,
+						comments: ''
+					}, function (data) {
+						$scope.volume.comments = data.comments;
+						$scope.refreshPanel();
+					});
+					break;
+			}
+		};
+
+		//
+
 		$scope.authService = authService;
 		$scope.routeController = $route.current.controller;
 
@@ -84,6 +100,8 @@ define(['app/config/module'], function (module) {
 			}, function (newComment, status, headers, config) {
 				createMessage('Comment added successfully!');
 				$scope.newComment.body = '';
+
+				$scope.pullComments();
 			});
 		};
 	}]);
