@@ -15,21 +15,23 @@ import site._
   * @param row the remaining data columns
   */
 final case class Audit[T](when : Timestamp, who : Party.Id, ip : Inet, action : Audit.Action.Value, row : T) extends TableRow {
+  private[models] def sqlKey = SQLTerms()
+
   /** Look up the party who generated this event, if still valid. */
   def party(implicit site : Site) = Party.get(who)(site)
 
   def withRow[A](row : A) = copy[A](row = row)
 }
 
-/** Helper for audit tables.  Not a TableView because it corresponds to multiple underlying tables. */
-object Audit {
+/** Helper for audit tables. */
+object Audit extends Table[Audit[_]]("audit") {
   /** The possible events or actions on the site that can be put into audit tables. */
   object Action extends PGEnum("audit_action") {
     val attempt, open, close, add, change, remove, superuser = Value
   }
 
   private[models] def row[T](tableName : String = "audit", row : T = ()) = {
-    implicit val table : FromTable = FromTable(tableName)
+    implicit val fromTable : FromTable = FromTable(tableName)
     Columns(
       SelectColumn[Timestamp]("when"),
       SelectColumn[Party.Id]("who"),

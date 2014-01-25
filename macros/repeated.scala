@@ -7,7 +7,7 @@ import scala.language.higherKinds
   * @tparam B the result type of processing individual arguments through the view.
   * @tparam R the overall result type of aggregating all arguments, such as Seq[B]
   */
-trait RepeatedView[V[_],B,R] {
+trait RepeatedView[-V[_],B,+R] {
   /** Function to process individual arguments. */
   protected def arg[A : V](a : A) : B
   /** Function to produce final results. */

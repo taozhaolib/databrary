@@ -77,31 +77,3 @@ object DBUtil {
     new SQLResult(loop)
   }
 }
-
-private[models] sealed abstract class ObjectSelector[A] {
-  def selector : Selector[A]
-  def obj : Option[A]
-}
-
-private[models] object ObjectSelector {
-  private final class Sel[A](val selector : Selector[A]) extends ObjectSelector[A] {
-    def obj = None
-  }
-
-  private final class Obj[A](o : A, table : String, cols : SQLTerms) extends ObjectSelector[A] {
-    def selector =
-      Columns(FromTable("(VALUES (" + cols.placeholders + ")) AS " + table + " " + cols.names))
-      .pushArgs(cols)
-      .map(_ => o)
-    def obj = Some(o)
-  }
-
-  def apply[A](obj : A, cols : SQLTerms)(implicit table : FromTable) : ObjectSelector[A] =
-    new Obj[A](obj, table.table, cols)
-
-  import scala.language.implicitConversions
-  implicit def ofSelector[A](selector : Selector[A]) : ObjectSelector[A] =
-    new Sel[A](selector)
-  implicit def toSelector[A](os : ObjectSelector[A]) : Selector[A] =
-    os.selector
-}

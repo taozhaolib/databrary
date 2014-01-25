@@ -10,6 +10,7 @@ import site._
 /** A segment of an asset as used in a slot.
   * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
 sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : Slot, excerpt_segment : Option[Segment]) extends Slot with TableRow with BackedAsset with InVolume with SiteObject {
+  private[models] def sqlKey = asset.sqlKey
   final val segment = slot.segment * asset_segment
   final def context = slot.context
   final override def volume = asset.volume
@@ -102,15 +103,17 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   private sealed abstract class SlotAssetTable(table : String) extends SlotTable(table) {
     protected def isExcerpt : Boolean
-    final def row(container : ObjectSelector[Container], asset : Selector[Volume => Asset] = Asset.columns) : Selector[SlotAsset] =
-      rowContainer(container)
+    final def assetRow(slot : Selector[Slot], asset : Selector[Volume => Asset] = Asset.columns) : Selector[SlotAsset] =
+      slot
       .join(asset, table + ".asset = asset.id")
       .map { case (slot, asset) =>
 	SlotAsset.make(asset(slot.volume), slot.segment, slot, if (isExcerpt) Some(slot.segment) else None)
       }
+    final def assetRowVolume(volume : Volume, asset : Selector[Volume => Asset] = Asset.columns) =
+      assetRow(rowVolume(Volume.fixed(volume)), asset)
 
     final def getThumb(volume : Volume) : Future[Option[SlotAsset]] =
-      row(Container.volumeRow(volume))
+      assetRowVolume(volume)
       .SELECT("JOIN format ON asset.format = format.id",
 	"WHERE container.volume = ? AND asset.volume = container.volume",
 	  "AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')",
@@ -118,7 +121,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 	"ORDER BY container.top DESC,", table + "_consent.consent DESC NULLS LAST LIMIT 1")
       .apply(volume.id, volume.permission, volume.site.access).singleOpt
     final def getThumb(slot : Slot) : Future[Option[SlotAsset]] =
-      row(Container.fixed(slot.container))
+      assetRow(rowContainer(slot.container))
       .SELECT("JOIN format ON asset.format = format.id",
 	"WHERE", table + ".segment <@ ? AND asset.volume = ?",
 	  "AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')",
@@ -170,7 +173,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */
   private[models] def getAsset(asset : Asset) : Future[Option[SlotAsset]] =
-    SlotAssetSlot.row(Container.volumeRow(asset.volume), Asset.fixed(asset).map(const _))
+    SlotAssetSlot.assetRowVolume(asset.volume, Asset.fixed(asset).map(const _))
     .SELECT("WHERE slot_asset.asset = ? AND container.volume = ?")
     .apply(asset.id, asset.volumeId).singleOpt
 
@@ -181,7 +184,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
     .apply(record.id, record.volumeId).list
 
   private[models] def getExcerpt(volume : Volume) : Future[Seq[SlotAsset]] =
-    Excerpt.row(Container.volumeRow(volume))
+    Excerpt.assetRowVolume(volume)
     .SELECT("WHERE container.volume = ? AND asset.volume = container.volume")
     .apply(volume.id).list
 

@@ -116,13 +116,12 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
-final class Account protected (val party : Party, email_ : String, password_ : String, openid_ : Option[String]) extends TableRow {
-  def ===(a : Account) = party === a.party
+final class Account protected (val party : Party, email_ : String, password_ : String, openid_ : Option[String]) extends TableRowId[Party] {
   def ===(a : Party) = party === a
 
   party._account = Some(this)
 
-  def id = party.id
+  val id = party.id
   private[this] var _email = email_
   def email = _email
   private[this] var _password = password_

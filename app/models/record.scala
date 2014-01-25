@@ -18,7 +18,7 @@ sealed abstract class RecordCategory private (val id : RecordCategory.Id, val na
 
 /** Interface to record categories.
   * These are all hard-coded so bypass the database, though they are stored in record_category. */
-object RecordCategory extends HasId[RecordCategory] {
+object RecordCategory extends TableId[RecordCategory]("record_category") {
   def get(id : Id) : Option[RecordCategory] = id match {
     case PARTICIPANT => Some(Participant)
     case VISIT => Some(Visit)
@@ -137,7 +137,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
 private[models] object SlotRecord extends SlotTable("slot_record") {
   def row(record : Record) =
-    rowContainer(Container.volumeRow(record.volume))
+    rowContainer(Container.columnsVolume(Volume.fixed(record.volume)))
 
   def slots(record : Record) =
     row(record)
@@ -145,9 +145,9 @@ private[models] object SlotRecord extends SlotTable("slot_record") {
     .apply(record.id, record.volumeId).list
 
   def add(record : Record, slot : Slot) =
-    INSERT(('record -> record.id) +: slot.sql).execute
+    INSERT(('record -> record.id) +: slot.sqlKey).execute
   def remove(record : Record, slot : Slot) =
-    DELETE(('record -> record.id) +: slot.sql).execute
+    DELETE(('record -> record.id) +: slot.sqlKey).execute
 }
 
 object Record extends TableId[Record]("record") {
@@ -172,7 +172,7 @@ object Record extends TableId[Record]("record") {
       SelectColumn[Id]("id")
     , SelectColumn[Option[RecordCategory.Id]]("category")
     ).leftJoin(Measures.row, "record.id = measures.record")
-    .join(Container.volumeRow(vol), _ + " JOIN slot_record ON record.id = slot_record.record JOIN " + _ + " ON slot_record.container = container.id AND record.volume = container.volume")
+    .join(Container.rowVolume(vol), _ + " JOIN slot_record ON record.id = slot_record.record JOIN " + _ + " ON slot_record.container = container.id AND record.volume = container.volume")
     .map {
       case (((id, cat), meas), cont) =>
         val r = new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cont.consent, Measures(meas))

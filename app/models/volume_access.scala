@@ -19,6 +19,8 @@ import site._
   * @param inherit the level of permission granted to all descendents/members of the party, which cannot be [[Permission.ADMIN]]
   */
 final class VolumeAccess(val volume : Volume, val party : Party, val access : Permission.Value, val inherit : Permission.Value, val funding : Option[String] = None) extends TableRow with InVolume {
+  private[models] def sqlKey = SQLTerms('volume -> volumeId, 'party -> partyId)
+
   def partyId = party.id
 
   def json = JsonObject.flatten(

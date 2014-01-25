@@ -119,7 +119,7 @@ object Metric extends TableId[Metric[_]]("metric") {
 
 /** A measurement value with a specific (unconverted) type.
   * One or more measurements of distinct Metrics compose a Record. */
-sealed class Measure[T](val metric : Metric[T], val datum : String) extends TableRow {
+sealed class Measure[T](val metric : Metric[T], val datum : String) {
   final def metricId = metric.id
   def value : T = metric.sqlType.read(datum)
     .getOrElse(throw new SQLTypeMismatch(datum, metric.sqlType))
@@ -203,7 +203,7 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
     row.SELECT("WHERE record = ? ORDER BY metric.id").apply(record).list
 }
 
-case class Measures(list : Seq[Measure[_]]) extends TableRow {
+case class Measures(list : Seq[Measure[_]]) {
   private def find(id : Metric.Id) : Option[Measure[_]] =
     list.find(_.metricId.unId >= id.unId).filter(_.metricId === id)
 

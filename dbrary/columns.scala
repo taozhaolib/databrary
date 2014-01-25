@@ -27,10 +27,8 @@ object SelectExpr {
 /** A simple "table.col" select expression. */
 final case class SelectColumn[A : SQLType](table : String, col : String) extends SelectExpr[A](table + "." + col) {
   override def fromTable(implicit table : FromTable) = copy(table = table)
-  def column : Columns1[A] = {
-    implicit val fromTable : FromTable = FromTable(table)
-    new Columns1[A](this)
-  }
+  def column : Columns1[A] =
+    new Columns1[A](this)(FromTable(table))
 }
 object SelectColumn {
   def apply[A : SQLType](col : String)(implicit table : FromTable) : SelectColumn[A] = SelectColumn[A](table, col)
@@ -46,7 +44,7 @@ final case class SelectAs[A : SQLType](expr : String, name : String) extends Sel
   * @param source table name or other FROM expression
   * @param res parser for rows returned by the query
   */
-case class Selector[A](selects : Seq[SelectExpr[_]], source : String, parse : SQLLine[A], preargs : SQLArgs = SQLNoArgs) {
+case class Selector[+A](selects : Seq[SelectExpr[_]], source : String, parse : SQLLine[A], preargs : SQLArgs = SQLNoArgs) {
   def select = selects.mkString(", ")
   val length : Int = parse.arity.ensuring(_ == selects.length)
 
@@ -64,8 +62,8 @@ case class Selector[A](selects : Seq[SelectExpr[_]], source : String, parse : SQ
     copy[A](source = "(" + query.query + ") AS " + source, preargs = preargs ++ query.preargs)
   def fromTable(implicit table : FromTable) : Selector[A] =
     copy[A](selects.map(_.fromTable(table)), source = table)
-  def fromAlias(implicit table : FromTable) : Selector[A] =
-    copy[A](selects.map(_.fromTable(table)), source = source + " AS " + table)
+  def fromAlias(table : String) : Selector[A] =
+    copy[A](selects.map(_.fromTable(FromTable(table))), source = source + " AS " + table)
   /** Add arguments needed for the select expressions that will be passed (first) to any queries executed. */
   def pushArgs(args : SQLArgs) : Selector[A] =
     copy[A](preargs = preargs ++ args)

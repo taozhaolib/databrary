@@ -64,16 +64,7 @@ object Tag extends TableId[Tag]("tag") {
   // private[models] def set(name : String, slot : Slot, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Future[Boolean] =
 }
 
-/** A tag applied by a user to an object.
-  * This is (currently) unused. */
-final class TagUse private (val tag : Tag, val who : Account, val segment : Segment, val context : ContextSlot, val up : Boolean = true) extends TableRow with Slot with InVolume {
-  def whoId = who.id
-  def weight = if (up) 1 else -1
-
-  def remove() = TagUse.remove(tag, this, who)
-}
-
-object TagUse extends Table[TagUse]("tag_use") with TableSlot[TagUse] {
+private[models] object TagUse extends Table[Unit]("tag_use") {
   private[models] val aggregateColumns = Columns(
       SelectAs[Int]("SUM(CASE WHEN up THEN 1::integer ELSE -1::integer END)::integer", "weight")
     , SelectAs[Option[Boolean]]("bool_or(CASE WHEN who = ? THEN up ELSE NULL END)", "user")
@@ -95,7 +86,7 @@ object TagUse extends Table[TagUse]("tag_use") with TableSlot[TagUse] {
   }
 }
 
-private[models] abstract sealed class Weight protected (val weight : Int, val user : Option[Boolean] = None) extends TableRow {
+private[models] abstract sealed class Weight protected (val weight : Int, val user : Option[Boolean] = None) {
   def json : JsonObject = JsonObject.flatten(
     Some('weight -> weight),
     user.map(u => 'vote -> (if (u) 1 else -1))

@@ -9,6 +9,7 @@ import site._
 /** A citation or reference to a publication or other external resource associated with a Volume.
   * This interface is temporary, quick and dirty, just to provide minimal functionality, and should not be expected to remain as is. */
 final case class VolumeCitation(val volume : Volume, val head : String, val url : Option[String], val body : Option[String]) extends TableRow with InVolume {
+  private[models] def sqlKey = SQLTerms('volume -> volumeId)
   private def args = SQLTerms('volume -> volumeId, 'head -> head, 'url -> url, 'body -> body)
 
   def json = JsonObject.flatten(

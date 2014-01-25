@@ -48,9 +48,9 @@ INSERT INTO audit.slot_consent (audit_time, audit_user, audit_ip, audit_action, 
 DROP VIEW "slot_asset";
 
 CREATE TABLE "slot_asset" (
+	"asset" integer NOT NULL Primary Key References "asset",
 	"container" integer NOT NULL References "container",
-	"segment" segment NOT NULL,
-	"asset" integer NOT NULL Primary Key References "asset"
+	"segment" segment NOT NULL
 ) INHERITS ("slot");
 CREATE INDEX "slot_asset_slot_idx" ON "slot_asset" ("container", "segment");
 COMMENT ON TABLE "slot_asset" IS 'Attachment point of assets, which, in the case of timeseries data, should match asset.duration.';
@@ -67,12 +67,13 @@ DROP TABLE "asset_slot";
 
 
 ALTER TABLE "excerpt" RENAME TO "excerpt_old";
-ALTER TABLE "excerpt_old"
+ALTER TABLE "excerpt_old" DROP CONSTRAINT "excerpt_pkey",
 	DROP CONSTRAINT "excerpt_asset_fkey";
 
 CREATE TABLE "excerpt" (
 	"asset" integer NOT NULL References "slot_asset" ON DELETE CASCADE,
 	"segment" segment NOT NULL Check (NOT isempty("segment")),
+	Primary Key ("asset", "segment"),
 	Exclude USING gist (singleton("asset") WITH =, "segment" WITH &&)
 );
 COMMENT ON TABLE "excerpt" IS 'Slot asset segments that have been selected for possible public release and top-level display.';
@@ -132,7 +133,7 @@ COMMENT ON VIEW "comment_thread" IS 'Comments along with their parent-defined pa
 ---- up tags
 
 ALTER TABLE "tag_use" RENAME TO "tag_use_old";
-ALTER TABLE "tag_use_old"
+ALTER TABLE "tag_use_old" DROP CONSTRAINT "tag_use_pkey",
 	DROP CONSTRAINT "tag_use_tag_fkey",
 	DROP CONSTRAINT "tag_use_who_fkey";
 DROP INDEX "tag_use_slot_idx";
@@ -143,9 +144,9 @@ CREATE TABLE "tag_use" (
 	"container" integer NOT NULL References "container",
 	"segment" segment NOT NULL,
 	"up" boolean NOT NULL DEFAULT true,
+	Primary Key ("tag", "who", "container", "segment"),
 	Exclude USING gist (singleton("tag") WITH =, singleton("who") WITH =, singleton("container") WITH =, "segment" WITH &&)
 ) INHERITS ("slot");
-CREATE INDEX ON "tag_use" ("tag");
 CREATE INDEX ON "tag_use" ("who");
 CREATE INDEX "tag_use_slot_idx" ON "tag_use" ("container", "segment");
 COMMENT ON TABLE "tag_use" IS 'Applications of tags to objects along with their weight (+-1).';
@@ -158,17 +159,16 @@ DROP TABLE "tag_use_old" CASCADE;
 ---- up records
 
 ALTER TABLE "slot_record" RENAME TO "slot_record_old";
-ALTER TABLE "slot_record_old"
+ALTER TABLE "slot_record_old" DROP CONSTRAINT "slot_record_pkey",
 	DROP CONSTRAINT "slot_record_record_fkey";
-DROP INDEX "slot_record_record_idx";
 
 CREATE TABLE "slot_record" (
+	"record" integer NOT NULL References "record",
 	"container" integer NOT NULL References "container",
 	"segment" segment NOT NULL,
-	"record" integer NOT NULL References "record",
+	Primary Key ("record", "container", "segment"),
 	Exclude USING gist (singleton("record") WITH =, singleton("container") WITH =, "segment" WITH &&)
 ) INHERITS ("slot");
-CREATE INDEX ON "slot_record" ("record");
 CREATE INDEX "slot_record_slot_idx" ON "slot_record" ("container", "segment");
 COMMENT ON TABLE "slot_record" IS 'Attachment of records to slots.';
 
@@ -288,7 +288,7 @@ INSERT INTO audit.asset_slot (audit_time, audit_user, audit_ip, audit_action, as
 
 
 ALTER TABLE "excerpt" RENAME TO "excerpt_new";
-ALTER TABLE "excerpt_new"
+ALTER TABLE "excerpt_new" DROP CONSTRAINT "excerpt_pkey",
 	DROP CONSTRAINT "excerpt_asset_fkey";
 
 CREATE TABLE "excerpt" (
@@ -361,7 +361,7 @@ COMMENT ON VIEW "comment_thread" IS 'Comments along with their parent-defined pa
 ---- down tags
 
 ALTER TABLE "tag_use" RENAME TO "tag_use_new";
-ALTER TABLE "tag_use_new"
+ALTER TABLE "tag_use_new" DROP CONSTRAINT "tag_use_pkey",
 	DROP CONSTRAINT "tag_use_tag_fkey",
 	DROP CONSTRAINT "tag_use_who_fkey";
 DROP INDEX "tag_use_slot_idx";
@@ -387,9 +387,8 @@ CREATE VIEW "tag_weight" ("tag", "slot", "weight") AS
 ---- down records
 
 ALTER TABLE "slot_record" RENAME TO "slot_record_new";
-ALTER TABLE "slot_record_new"
+ALTER TABLE "slot_record_new" DROP CONSTRAINT "slot_record_pkey",
 	DROP CONSTRAINT "slot_record_record_fkey";
-DROP INDEX "slot_record_record_idx";
 
 CREATE TABLE "slot_record" (
 	"slot" integer NOT NULL References "slot",

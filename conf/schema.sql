@@ -372,9 +372,9 @@ CREATE FUNCTION "asset_creation" ("asset" integer) RETURNS timestamp LANGUAGE sq
 	$$ SELECT max("audit_time") FROM audit."asset" WHERE "id" = $1 AND "audit_action" = 'add' $$;
 
 CREATE TABLE "slot_asset" (
+	"asset" integer NOT NULL Primary Key References "asset",
 	"container" integer NOT NULL References "container",
-	"segment" segment NOT NULL,
-	"asset" integer NOT NULL Primary Key References "asset"
+	"segment" segment NOT NULL
 ) INHERITS ("slot");
 CREATE INDEX "slot_asset_slot_idx" ON "slot_asset" ("container", "segment");
 COMMENT ON TABLE "slot_asset" IS 'Attachment point of assets, which, in the case of timeseries data, should match asset.duration.';
@@ -400,6 +400,7 @@ COMMENT ON VIEW "asset_revisions" IS 'Transitive closure of asset_revision.  Rev
 CREATE TABLE "excerpt" (
 	"asset" integer NOT NULL References "slot_asset" ON DELETE CASCADE,
 	"segment" segment NOT NULL Check (NOT isempty("segment")),
+	Primary Key ("asset", "segment"),
 	Exclude USING gist (singleton("asset") WITH =, "segment" WITH &&)
 );
 COMMENT ON TABLE "excerpt" IS 'Slot asset segments that have been selected for possible public release and top-level display.';
@@ -465,9 +466,9 @@ CREATE TABLE "tag_use" (
 	"container" integer NOT NULL References "container",
 	"segment" segment NOT NULL,
 	"up" boolean NOT NULL DEFAULT true,
+	Primary Key ("tag", "who", "container", "segment"),
 	Exclude USING gist (singleton("tag") WITH =, singleton("who") WITH =, singleton("container") WITH =, "segment" WITH &&)
 ) INHERITS ("slot");
-CREATE INDEX ON "tag_use" ("tag");
 CREATE INDEX ON "tag_use" ("who");
 CREATE INDEX "tag_use_slot_idx" ON "tag_use" ("container", "segment");
 COMMENT ON TABLE "tag_use" IS 'Applications of tags to objects along with their weight (+-1).';
@@ -568,12 +569,12 @@ COMMENT ON VIEW "measure_all" IS 'Data from all measure tables, coerced to text.
 
 
 CREATE TABLE "slot_record" (
+	"record" integer NOT NULL References "record",
 	"container" integer NOT NULL References "container",
 	"segment" segment NOT NULL,
-	"record" integer NOT NULL References "record",
+	Primary Key ("record", "container", "segment"),
 	Exclude USING gist (singleton("record") WITH =, singleton("container") WITH =, "segment" WITH &&)
 ) INHERITS ("slot");
-CREATE INDEX ON "slot_record" ("record");
 CREATE INDEX "slot_record_slot_idx" ON "slot_record" ("container", "segment");
 COMMENT ON TABLE "slot_record" IS 'Attachment of records to slots.';
 
