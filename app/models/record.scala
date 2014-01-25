@@ -172,7 +172,7 @@ object Record extends TableId[Record]("record") {
       SelectColumn[Id]("id")
     , SelectColumn[Option[RecordCategory.Id]]("category")
     ).leftJoin(Measures.row, "record.id = measures.record")
-    .join(Container.volumeRow(vol), _ + " JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id JOIN " + _ + " ON slot.source = container.id AND record.volume = container.volume")
+    .join(Container.volumeRow(vol), _ + " JOIN slot_record ON record.id = slot_record.record JOIN " + _ + " ON slot_record.container = container.id AND record.volume = container.volume")
     .map {
       case (((id, cat), meas), cont) =>
         val r = new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cont.consent, Measures(meas))
@@ -187,13 +187,13 @@ object Record extends TableId[Record]("record") {
   /** Retrieve the list of all records that apply to the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[Record]] =
     volumeRow(slot.volume)
-      .SELECT("JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id WHERE slot.source = ? AND slot.segment && ?::segment AND record.volume = ?")
+      .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ? AND slot_record.segment && ?::segment AND record.volume = ?")
       .apply(slot.containerId, slot.segment, slot.volumeId).list
 
   /** Retrieve the list of all foreign records (from a different volume) that apply to the given slot. */
   private[models] def getSlotForeign(slot : Slot)(implicit site : Site) : Future[Seq[Record]] =
     row
-      .SELECT("JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id WHERE slot.source = ? AND slot.segment && ?::segment AND record.volume <> ? AND", Volume.condition)
+      .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ? AND slot_record.segment && ?::segment AND record.volume <> ? AND", Volume.condition)
       .apply(slot.containerId, slot.segment, slot.volumeId).list
 
   /** Retrieve all the categorized records associated with the given volume.

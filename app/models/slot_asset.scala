@@ -109,20 +109,22 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 	SlotAsset.make(asset(slot.volume), slot.segment, slot, if (isExcerpt) Some(slot.segment) else None)
       }
 
-    private[this] def getThumb(container : ObjectSelector[Container], permission : Permission.Value, query : String, args : SQLArgs)(implicit site : Site) : Future[Option[SlotAsset]] =
-      row(container)
-      .SELECT(
-	 "JOIN format ON asset.format = format.id WHERE " + query +
-	"""AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')
-	   AND data_permission(?::permission, consent, asset.classification, ?::permission, """ + isExcerpt + """) >= 'DOWNLOAD'
-	 ORDER BY container.top DESC, consent DESC NULLS LAST LIMIT 1""")
-      .apply(args ++ SQLArgs(permission, site.access)).singleOpt
     final def getThumb(volume : Volume) : Future[Option[SlotAsset]] =
-      getThumb(Container.volumeRow(volume), volume.permission,
-	"container.volume = ? AND asset.volume = container.volume", SQLArgs(volume.id))(volume.site)
+      row(Container.volumeRow(volume))
+      .SELECT("JOIN format ON asset.format = format.id",
+	"WHERE container.volume = ? AND asset.volume = container.volume",
+	  "AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')",
+	  "AND data_permission(?::permission,", table + "_consent.consent, asset.classification, ?::permission,", isExcerpt.toString, ") >= 'DOWNLOAD'",
+	"ORDER BY container.top DESC,", table + "_consent.consent DESC NULLS LAST LIMIT 1")
+      .apply(volume.id, volume.permission, volume.site.access).singleOpt
     final def getThumb(slot : Slot) : Future[Option[SlotAsset]] =
-      getThumb(Container.fixed(slot.container), slot.permission,
-	table + ".segment <@ ? AND asset.volume = ?", SQLArgs(slot.segment, slot.volumeId))(slot.site)
+      row(Container.fixed(slot.container))
+      .SELECT("JOIN format ON asset.format = format.id",
+	"WHERE", table + ".segment <@ ? AND asset.volume = ?",
+	  "AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')",
+	  "AND asset.classification >= ?",
+	"LIMIT 1")
+      .apply(slot.segment, slot.volumeId, Classification.download(slot.permission, slot.consent, isExcerpt)(slot.site)).singleOpt
   }
 
   private object SlotAssetSlot extends SlotAssetTable("slot_asset") {
@@ -137,10 +139,10 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 	"(SELECT container, excerpt.segment, asset FROM slot_asset JOIN " + table + " USING (asset)) AS " + table
   }
 
-  private def row(slot : Selector[Slot], asset : Selector[Volume => Asset] = Asset.columns) : Selector[SlotAsset] =
+  private def row(slot : Selector[Slot], asset : Selector[Volume => Asset] = Asset.columns, slot_table : String = "slot") : Selector[SlotAsset] =
     slot
-    .join(SlotAssetSlot.columns, "slot.container = slot_asset.container AND slot.segment && slot_asset.segment")
-    .leftJoin(Excerpt.columns, "excerpt.segment @> slot.segment")
+    .join(SlotAssetSlot.columns, slot_table + ".container = slot_asset.container AND " + slot_table + ".segment && slot_asset.segment")
+    .leftJoin(Excerpt.columns, slot_table + ".segment <@ excerpt.segment")
     .join(asset, "slot_asset.asset = asset.id")
     .map { case (((slot, segment), excerpt), asset) =>
       make(asset(slot.volume), segment, slot, excerpt)
@@ -174,7 +176,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   /** Retrieve the list of all assets assigned the given record. */
   private[models] def getRecord(record : Record) : Future[Seq[SlotAsset]] =
-    row(SlotRecord.row(record))
+    row(SlotRecord.row(record), slot_table = SlotRecord.table)
     .SELECT("WHERE slot_record.record = ? AND container.volume = ? AND asset.volume = container.volume")
     .apply(record.id, record.volumeId).list
 

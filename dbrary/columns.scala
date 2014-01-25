@@ -61,7 +61,7 @@ case class Selector[A](selects : Seq[SelectExpr[_]], source : String, parse : SQ
   def from(from : String => String) : Selector[A] =
     copy[A](source = from(source))
   def from(query : SQLToRows[_]) : Selector[A] =
-    copy[A](source = query.query + " AS " + source, preargs = preargs ++ query.preargs)
+    copy[A](source = "(" + query.query + ") AS " + source, preargs = preargs ++ query.preargs)
   def fromTable(implicit table : FromTable) : Selector[A] =
     copy[A](selects.map(_.fromTable(table)), source = table)
   def fromAlias(implicit table : FromTable) : Selector[A] =

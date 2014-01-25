@@ -52,7 +52,7 @@ object Container extends TableId[Container]("container") {
     , SelectColumn[Consent.Value]("container_consent", "consent")
     ).map { (id, top, name, date, consent) =>
       (vol : Volume) => new Container(id, vol, top, name, date, consent)
-    } from "container LEFT JOIN slot_consent AS container_consent WHERE container.id = slot_consent.container AND slot_consent.segment = '(,)'::segment"
+    } from "container LEFT JOIN slot_consent AS container_consent ON container.id = container_consent.container AND container_consent.segment = '(,)'::segment"
   private[models] def row(implicit site : Site) =
     Volume.row.join(columns, "container.volume = volume.id") map {
       case (vol, cont) => cont(vol)
