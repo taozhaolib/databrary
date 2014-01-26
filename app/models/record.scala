@@ -14,6 +14,10 @@ import site._
 sealed abstract class RecordCategory private (val id : RecordCategory.Id, val name : String) extends TableRowId[RecordCategory] {
   /** The default set of metrics which define records in this category. */
   def template : Seq[Metric[_]]
+
+  val json = JsonRecord(id,
+      'name -> name
+    )
 }
 
 /** Interface to record categories.
@@ -123,7 +127,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   lazy val json : JsonRecord =
     JsonRecord.flatten(id,
       Some('volume -> volumeId),
-      category.map('category -> _.name),
+      category.map('category -> _.id),
       Some('measures -> measures)
     )
 

@@ -193,11 +193,8 @@ object Site extends SiteController {
     Ok(request.queryString.toString)
   }
 
-  def tinyUrl(path : String, prefix : String) = Action {
-    prefix match {
-      case "party" => MovedPermanently("/party/" + path)
-      case "volume" => MovedPermanently("/volume/" + path)
-    }
+  def tinyUrl(prefix : String, path : String) = Action {
+    MovedPermanently("/" + prefix + "/" + path)
   }
 
   def untrail(path : String) = Action {

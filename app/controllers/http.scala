@@ -1,11 +1,13 @@
 package controllers
 
 import scala.util.control.Exception.catching
+import play.api.http.HeaderNames
+import play.api.mvc.Request
 import macros._
 import dbrary._
 import site._
 
-object HTTP {
+object HTTP extends HeaderNames {
   def quote(s : String) = '"' + s.replaceAll("([\\p{Cntrl}\"\\\\])", "\\\\$2") + '"'
   def unquote(s : String) =
     if (s.length >= 2 && s.head == '"' && s.last == '"')
@@ -36,4 +38,11 @@ object HTTP {
       case (None, Some(len)) => Some(((size - len).max(0), size-1))
       case _ => None
     }
+
+  def notModified(etag : String, date : Timestamp)(implicit request : Request[_]) : Boolean = {
+    /* The split works because we never use commas within etags. */
+    val ifNoneMatch = request.headers.getAll(IF_NONE_MATCH).flatMap(_.split(',').map(_.trim))
+    ifNoneMatch.exists(t => t.equals("*") || unquote(t).equals(etag)) ||
+      ifNoneMatch.isEmpty && request.headers.get(IF_MODIFIED_SINCE).flatMap(parseDate).exists(!date.isAfter(_))
+  }
 }

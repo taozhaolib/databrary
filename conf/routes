@@ -97,6 +97,9 @@ POST    /volume/$vID<[0-9]+>/ingest/curated                                     
 
 # ===== API ===== #
 
+# GET
+GET     /api/constants                                                                            controllers.SiteApi.constants
+
 # ----- LOGIN ----- #
 # GET
 GET     /api/user                                                                                 controllers.LoginApi.get
@@ -210,7 +213,7 @@ GET     /public/*file                                                           
 GET     /test                                                                                     controllers.Site.test
 
 # redirects
-GET     /p/*path                                                                                  controllers.Site.tinyUrl(path : String, prefix : String = "party")
-GET     /v/*path                                                                                  controllers.Site.tinyUrl(path : String, prefix : String = "volume")
+GET     /p/*path                                                                                  controllers.Site.tinyUrl(prefix : String = "party", path : String)
+GET     /v/*path                                                                                  controllers.Site.tinyUrl(prefix : String = "volume", path : String)
 
 GET     /*path/                                                                                   controllers.Site.untrail(path: String)

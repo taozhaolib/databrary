@@ -75,11 +75,8 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
 
   private[controllers] def assetResult(asset : BackedAsset, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[SimpleResult] = {
     val tag = asset.etag
-    /* The split works because we never use commas within etags. */
-    val ifNoneMatch = request.headers.getAll(IF_NONE_MATCH).flatMap(_.split(',').map(_.trim))
     /* Assuming assets are immutable, any if-modified-since header is good enough */
-    if (ifNoneMatch.exists(t => t.equals("*") || HTTP.unquote(t).equals(tag)) ||
-      ifNoneMatch.isEmpty && request.headers.get(IF_MODIFIED_SINCE).isDefined)
+    if (HTTP.notModified(tag, new Timestamp(0)))
       macros.Async(NotModified)
     else for {
       data <- store.Asset.read(asset)

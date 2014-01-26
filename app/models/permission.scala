@@ -58,7 +58,10 @@ trait HasPermission extends PerSite {
   * Must match the corresponding postgres "consent" type, except for the NONE value which represents NULL (missing) as this is a common possibility. */
 object Consent extends PGEnum("consent") {
   val NONE, PRIVATE, SHARED, EXCERPTS, PUBLIC = Value
-  def description(v : Value) = Messages("consent." + v.toString)
+  def description(v : Value) : Option[String] = {
+    val m = "consent." + v.toString
+    if (Messages.isDefinedAt(m)) Some(Messages(m)) else None
+  }
   implicit val truth : Truth[Value] = Truth[Value](_ != NONE)
   override implicit val sqlType : SQLType[Value] =
     SQLType.transform[Option[String], Value]("consent", classOf[Value])(
