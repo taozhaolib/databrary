@@ -84,21 +84,8 @@ Controllers and other callers should do any necessary checking to ensure appropr
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="models.AbstractSlot" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="AbstractSlotextendsInVolumewithSiteObject"></a>
-      <a id="AbstractSlot:AbstractSlot"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">trait</span>
-      </span>
-      <span class="symbol">
-        <a href="AbstractSlot.html"><span class="name">AbstractSlot</span></a><span class="result"> extends <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></span>
-      </span>
-      </h4>
-      <p class="comment cmt">Conceptually a slot represents a segment of a container.</p>
-    </li><li name="models.Account" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="AccountextendsTableRow"></a>
+              <ol><li name="models.Account" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AccountextendsTableRowId[models.Party]"></a>
       <a id="Account:Account"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -106,7 +93,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Account.html"><span class="name">Account</span></a><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span></span>
+        <a href="Account.html"><span class="name">Account</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</span>
       </span>
       </h4>
       <p class="comment cmt">Refines Party for individuals with registered (but not necessarily authorized) accounts on the site.</p>
@@ -189,7 +176,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">Assets which are backed by files on disk.</p>
     </li><li name="models.Comment" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="CommentextendsTableRowId[models.Comment]withInVolume"></a>
+      <a id="CommentextendsTableRowId[models.Comment]withSlotwithInVolume"></a>
       <a id="Comment:Comment"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -197,12 +184,12 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Comment.html"><span class="name">Comment</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>] with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
+        <a href="Comment.html"><span class="name">Comment</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>] with <a href="Slot.html" class="extype" name="models.Slot">Slot</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
       </span>
       </h4>
       <p class="comment cmt">A comment made by a particular user applied to exactly one object.</p>
     </li><li name="models.Container" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ContainerextendsSlotwithTableRowId[models.Container]withInVolume"></a>
+      <a id="ContainerextendsContextSlotwithTableRowId[models.Container]withInVolume"></a>
       <a id="Container:Container"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -210,10 +197,49 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Container.html"><span class="name">Container</span></a><span class="result"> extends <a href="Slot.html" class="extype" name="models.Slot">Slot</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Container.html" class="extype" name="models.Container">Container</a>] with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
+        <a href="Container.html"><span class="name">Container</span></a><span class="result"> extends <a href="ContextSlot.html" class="extype" name="models.ContextSlot">ContextSlot</a> with <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Container.html" class="extype" name="models.Container">Container</a>] with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
       </span>
       </h4>
       <p class="comment cmt">Collection of related assets.</p>
+    </li><li name="models.ContainerWeight" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ContainerWeightextendsWeight"></a>
+      <a id="ContainerWeight:ContainerWeight"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ContainerWeight.html"><span class="name">ContainerWeight</span></a><span class="result"> extends <span class="extype" name="models.Weight">Weight</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Summary representation of tag information for a single tag and current user.</p>
+    </li><li name="models.ContextSlot" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ContextSlotextendsSlot"></a>
+      <a id="ContextSlot:ContextSlot"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="ContextSlot.html"><span class="name">ContextSlot</span></a><span class="result"> extends <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="models.DUNS" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DUNSextendsAnyRef"></a>
+      <a id="DUNS:DUNS"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="DUNS.html"><span class="name">DUNS</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt"><a href="http://en.wikipedia.org/wiki/DUNS" target="_blank">D-U-N-S</a>.</p>
     </li><li name="models.HasPermission" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="HasPermissionextendsPerSite"></a>
       <a id="HasPermission:HasPermission"></a>
@@ -267,7 +293,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">A token, usually sent via email, granting automatic login or registration to the given party.</p>
     </li><li name="models.Measure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Measure[T]extendsTableRow"></a>
+      <a id="Measure[T]extendsAnyRef"></a>
       <a id="Measure[T]:Measure[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -275,7 +301,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Measure.html"><span class="name">Measure</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span></span>
+        <a href="Measure.html"><span class="name">Measure</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
       <p class="comment cmt">A measurement value with a specific (unconverted) type.</p>
@@ -293,7 +319,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">A measurement value with a specific (converted) type.</p>
     </li><li name="models.Measures" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="MeasuresextendsTableRowwithProductwithSerializable"></a>
+      <a id="MeasuresextendsProductwithSerializable"></a>
       <a id="Measures:Measures"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -301,7 +327,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="Measures.html"><span class="name">Measures</span></a><span class="params">(<span name="list">list: <span class="extype" name="scala.Seq">Seq</span>[<a href="Measure.html" class="extype" name="models.Measure">Measure</a>[_]]</span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="Measures.html"><span class="name">Measures</span></a><span class="params">(<span name="list">list: <span class="extype" name="scala.Seq">Seq</span>[<a href="Measure.html" class="extype" name="models.Measure">Measure</a>[_]]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
@@ -410,20 +436,20 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       
     </li><li name="models.Slot" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="SlotextendsTableRowId[models.Slot]withAbstractSlot"></a>
+      <a id="SlotextendsTableRowwithInVolumewithSiteObject"></a>
       <a id="Slot:Slot"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">class</span>
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="Slot.html"><span class="name">Slot</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>] with <a href="AbstractSlot.html" class="extype" name="models.AbstractSlot">AbstractSlot</a></span>
+        <a href="Slot.html"><span class="name">Slot</span></a><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></span>
       </span>
       </h4>
-      <p class="comment cmt">Smallest organizatonal unit of related data.</p>
+      <p class="comment cmt">Conceptually a slot represents a segment of a container.</p>
     </li><li name="models.SlotAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="SlotAssetextendsTableRowwithAssetSlotwithSiteObject"></a>
+      <a id="SlotAssetextendsSlotwithTableRowwithBackedAssetwithInVolumewithSiteObject"></a>
       <a id="SlotAsset:SlotAsset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -431,10 +457,23 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="SlotAsset.html"><span class="name">SlotAsset</span></a><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="models.AssetSlot">AssetSlot</span> with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></span>
+        <a href="SlotAsset.html"><span class="name">SlotAsset</span></a><span class="result"> extends <a href="Slot.html" class="extype" name="models.Slot">Slot</a> with <span class="extype" name="models.TableRow">TableRow</span> with <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></span>
       </span>
       </h4>
       <p class="comment cmt">A segment of an asset as used in a slot.</p>
+    </li><li name="models.SlotConsent" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SlotConsentextendsContextSlot"></a>
+      <a id="SlotConsent:SlotConsent"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="SlotConsent.html"><span class="name">SlotConsent</span></a><span class="result"> extends <a href="ContextSlot.html" class="extype" name="models.ContextSlot">ContextSlot</a></span>
+      </span>
+      </h4>
+      
     </li><li name="models.SlotTimeseries" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SlotTimeseriesextendsSlotAssetwithTimeseriesData"></a>
       <a id="SlotTimeseries:SlotTimeseries"></a>
@@ -448,19 +487,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       
-    </li><li name="models.SlotWeight" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="SlotWeightextendsWeight"></a>
-      <a id="SlotWeight:SlotWeight"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="SlotWeight.html"><span class="name">SlotWeight</span></a><span class="result"> extends <span class="extype" name="models.Weight">Weight</span></span>
-      </span>
-      </h4>
-      <p class="comment cmt">Summary representation of tag information for a single tag and current user.</p>
     </li><li name="models.Tag" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="TagextendsTableRowId[models.Tag]"></a>
       <a id="Tag:Tag"></a>
@@ -474,19 +500,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       <p class="comment cmt">All tags and their names used anywhere.</p>
-    </li><li name="models.TagUse" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="TagUseextendsTableRowwithInVolume"></a>
-      <a id="TagUse:TagUse"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="TagUse.html"><span class="name">TagUse</span></a><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>
-      </span>
-      </h4>
-      <p class="comment cmt">A tag applied by a user to an object.</p>
     </li><li name="models.TagWeight" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="TagWeightextendsWeight"></a>
       <a id="TagWeight:TagWeight"></a>
@@ -604,19 +617,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       <p class="comment cmt">A citation or reference to a publication or other external resource associated with a Volume.</p>
-    </li><li name="models.VolumeFunding" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="VolumeFundingextendsTableRowwithInVolumewithProductwithSerializable"></a>
-      <a id="VolumeFunding:VolumeFunding"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="VolumeFunding.html"><span class="name">VolumeFunding</span></a><span class="params">(<span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="funder">funder: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="grant">grant: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4>
-      <p class="comment cmt">A funding source associated with a Volume, where the agency is represented as a party.</p>
     </li></ol>
             </div>
 
@@ -685,7 +685,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Audit$.html"><span class="name">Audit</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="Audit$.html"><span class="name">Audit</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="Audit.html" class="extype" name="models.Audit">Audit</a>[_]] with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       <p class="comment cmt">Helper for audit tables.</p>
@@ -724,7 +724,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Comment$.html"><span class="name">Comment</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
+        <a href="Comment$.html"><span class="name">Comment</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>] with <span class="extype" name="models.TableSlot">TableSlot</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
       </span>
       </h4>
       
@@ -754,6 +754,19 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       
+    </li><li name="models.ContainerWeight" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ContainerWeight"></a>
+      <a id="ContainerWeight:ContainerWeight"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ContainerWeight$.html"><span class="name">ContainerWeight</span></a><span class="result"> extends <span class="extype" name="models.WeightView">WeightView</span>[<a href="ContainerWeight.html" class="extype" name="models.ContainerWeight">ContainerWeight</a>]</span>
+      </span>
+      </h4>
+      
     </li><li name="models.DBUtil" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="DBUtil"></a>
       <a id="DBUtil:DBUtil"></a>
@@ -764,6 +777,19 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       <span class="symbol">
         <a href="DBUtil$.html"><span class="name">DBUtil</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="models.DUNS" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DUNS"></a>
+      <a id="DUNS:DUNS"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="DUNS$.html"><span class="name">DUNS</span></a>
       </span>
       </h4>
       
@@ -906,7 +932,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="RecordCategory$.html"><span class="name">RecordCategory</span></a><span class="result"> extends <span class="extype" name="models.HasId">HasId</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>
+        <a href="RecordCategory$.html"><span class="name">RecordCategory</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>
       </span>
       </h4>
       <p class="comment cmt">Interface to record categories.</p>
@@ -971,7 +997,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Slot$.html"><span class="name">Slot</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>]</span>
+        <a href="Slot$.html"><span class="name">Slot</span></a><span class="result"> extends <span class="extype" name="models.SlotTable">SlotTable</span></span>
       </span>
       </h4>
       
@@ -988,19 +1014,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       
-    </li><li name="models.SlotWeight" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="SlotWeight"></a>
-      <a id="SlotWeight:SlotWeight"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="SlotWeight$.html"><span class="name">SlotWeight</span></a><span class="result"> extends <span class="extype" name="models.WeightView">WeightView</span>[<a href="SlotWeight.html" class="extype" name="models.SlotWeight">SlotWeight</a>]</span>
-      </span>
-      </h4>
-      
     </li><li name="models.Tag" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Tag"></a>
       <a id="Tag:Tag"></a>
@@ -1011,19 +1024,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       <span class="symbol">
         <a href="Tag$.html"><span class="name">Tag</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Tag.html" class="extype" name="models.Tag">Tag</a>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="models.TagUse" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="TagUse"></a>
-      <a id="TagUse:TagUse"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="TagUse$.html"><span class="name">TagUse</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="TagUse.html" class="extype" name="models.TagUse">TagUse</a>]</span>
       </span>
       </h4>
       
@@ -1089,19 +1089,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       <span class="symbol">
         <a href="VolumeCitation$.html"><span class="name">VolumeCitation</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="VolumeCitation.html" class="extype" name="models.VolumeCitation">VolumeCitation</a>] with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4>
-      
-    </li><li name="models.VolumeFunding" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="VolumeFunding"></a>
-      <a id="VolumeFunding:VolumeFunding"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="VolumeFunding$.html"><span class="name">VolumeFunding</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="VolumeFunding.html" class="extype" name="models.VolumeFunding">VolumeFunding</a>] with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       

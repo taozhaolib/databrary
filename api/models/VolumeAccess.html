@@ -83,7 +83,7 @@ Only one of these is necessary to gain access (they are unioned, not intersected
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.VolumeAccess#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(volume:models.Volume,party:models.Party,access:models.Permission.Value,inherit:models.Permission.Value):models.VolumeAccess"></a>
+      <a id="&lt;init&gt;(volume:models.Volume,party:models.Party,access:models.Permission.Value,inherit:models.Permission.Value,funding:Option[String]):models.VolumeAccess"></a>
       <a id="&lt;init&gt;:VolumeAccess"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -91,7 +91,7 @@ Only one of these is necessary to gain access (they are unioned, not intersected
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">VolumeAccess</span><span class="params">(<span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="party">party: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="inherit">inherit: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span>
+        <span class="name">VolumeAccess</span><span class="params">(<span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="party">party: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="inherit">inherit: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="funding">funding: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">scala.None</span></span>)</span>
       </span>
       </h4>
       <p class="shortcomment cmt">create an access object, not (yet) persisted to the database</p><div class="fullcomment"><div class="comment cmt"><p>create an access object, not (yet) persisted to the database</p></div><dl class="paramcmts block"><dt class="param">volume</dt><dd class="cmt"><p>the volume to which access is being granted; the target</p></dd><dt class="param">party</dt><dd class="cmt"><p>the party being granted the access; the user</p></dd><dt class="param">access</dt><dd class="cmt"><p>the level of permission granted directly to the party. Levels at or above <a href="Permission$.html#EDIT:models.Permission.Value" class="extmbr" name="models.Permission#EDIT">Permission.EDIT</a> are considered volume &quot;membership.&quot;</p></dd><dt class="param">inherit</dt><dd class="cmt"><p>the level of permission granted to all descendents/members of the party, which cannot be <a href="Permission$.html#ADMIN:models.Permission.Value" class="extmbr" name="models.Permission#ADMIN">Permission.ADMIN</a>
@@ -273,6 +273,19 @@ Only one of these is necessary to gain access (they are unioned, not intersected
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="models.VolumeAccess#funding" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="funding:Option[String]"></a>
+      <a id="funding:Option[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">funding</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -286,19 +299,6 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.InVolume#getPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getPermission:models.Permission.Value"></a>
-      <a id="getPermission:Permission.Value"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getPermission</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p><div class="fullcomment"><div class="comment cmt"><p>Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <a id="hashCode():Int"></a>
@@ -417,6 +417,19 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       </span>
       </h4>
       
+    </li><li name="models.InVolume#permission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="permission:models.Permission.Value"></a>
+      <a id="permission:Permission.Value"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">permission</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p><div class="fullcomment"><div class="comment cmt"><p>Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="models.InVolume#site" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="site:site.Site"></a>
       <a id="site:Site"></a>

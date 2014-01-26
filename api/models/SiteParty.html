@@ -360,19 +360,6 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.SiteParty#funding" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="funding:scala.concurrent.Future[Seq[models.VolumeFunding]]"></a>
-      <a id="funding:Future[Seq[VolumeFunding]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">funding</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="VolumeFunding.html" class="extype" name="models.VolumeFunding">VolumeFunding</a>]]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">List of volumes which this party is funding.</p>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -386,19 +373,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.SiteParty#getPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getPermission:models.Permission.Value"></a>
-      <a id="getPermission:Permission.Value"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getPermission</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SiteParty">SiteParty</a> → <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <a id="hashCode():Int"></a>
@@ -568,6 +542,19 @@
       </span>
       </h4>
       
+    </li><li name="models.SiteParty#permission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="permission:models.Permission.Value"></a>
+      <a id="permission:Permission.Value"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">permission</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SiteParty">SiteParty</a> → <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="models.SiteParty#setAvatar" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="setAvatar(file:play.api.libs.Files.TemporaryFile,format:models.AssetFormat,name:Option[String]):scala.concurrent.Future[models.Asset]"></a>
       <a id="setAvatar(TemporaryFile,AssetFormat,Option[String]):Future[Asset]"></a>
@@ -632,7 +619,7 @@
         <span class="name">volumeAccess</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="VolumeAccess.html" class="extype" name="models.VolumeAccess">VolumeAccess</a>]]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">List of volumes to which this user has been granted at least CONTRIBUTE access, sorted by level (ADMIN first).</p>
+      <p class="shortcomment cmt">List of volumes with which this user is associated, sorted by level (ADMIN first).</p>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>

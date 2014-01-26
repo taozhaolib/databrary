@@ -35,13 +35,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Comment</span><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
+        <span class="name">Comment</span><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>] with <span class="extype" name="models.TableSlot">TableSlot</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/comment.scala" target="_blank">comment.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="models.TableId">TableId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.HasId">HasId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.Table">Table</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="models.TableSlot">TableSlot</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.TableId">TableId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.HasId">HasId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.Table">Table</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="models.HasTable">HasTable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Comment"><span>Comment</span></li><li class="in" name="models.TableId"><span>TableId</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Comment"><span>Comment</span></li><li class="in" name="models.TableSlot"><span>TableSlot</span></li><li class="in" name="models.TableId"><span>TableId</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="models.HasTable"><span>HasTable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -81,7 +81,20 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="models.HasId.Id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+              <ol><li name="models.Comment.A" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="A=models.Account=&gt;models.Comment"></a>
+      <a id="A:(Account)⇒Comment"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">A</span><span class="result"> = (<a href="Account.html" class="extype" name="models.Account">Account</a>) ⇒ <a href="Comment.html" class="extype" name="models.Comment">Comment</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Comment">Comment</a> → TableSlot</dd></dl></div>
+    </li><li name="models.HasId.Id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Id=models.IntId[T]"></a>
       <a id="Id:Id"></a>
       <h4 class="signature">
@@ -276,6 +289,33 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="models.TableSlot#columnsSlot" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="columnsSlot(columns:dbrary.Selector[models.ContextSlot=&gt;TableSlot.this.A],container:models.Container):dbrary.Selector[TableSlot.this.A]"></a>
+      <a id="columnsSlot(Selector[(ContextSlot)⇒(Account)⇒Comment],Container):Selector[(Account)⇒Comment]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">columnsSlot</span><span class="params">(<span name="columns">columns: <span class="extype" name="dbrary.Selector">Selector</span>[(<a href="ContextSlot.html" class="extype" name="models.ContextSlot">ContextSlot</a>) ⇒ (<a href="Account.html" class="extype" name="models.Account">Account</a>) ⇒ <a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>, <span name="container">container: <a href="Container.html" class="extype" name="models.Container">Container</a></span>)</span><span class="result">: <span class="extype" name="dbrary.Selector">Selector</span>[(<a href="Account.html" class="extype" name="models.Account">Account</a>) ⇒ <a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableSlot</dd></dl></div>
+    </li><li name="models.TableSlot#columnsSlot" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="columnsSlot(columns:dbrary.Selector[models.ContextSlot=&gt;TableSlot.this.A],container:dbrary.Selector[models.Container],consent:Boolean):dbrary.Selector[TableSlot.this.A]"></a>
+      <a id="columnsSlot(Selector[(ContextSlot)⇒(Account)⇒Comment],Selector[Container],Boolean):Selector[(Account)⇒Comment]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">columnsSlot</span><span class="params">(<span name="columns">columns: <span class="extype" name="dbrary.Selector">Selector</span>[(<a href="ContextSlot.html" class="extype" name="models.ContextSlot">ContextSlot</a>) ⇒ (<a href="Account.html" class="extype" name="models.Account">Account</a>) ⇒ <a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>, <span name="container">container: <span class="extype" name="dbrary.Selector">Selector</span>[<a href="Container.html" class="extype" name="models.Container">Container</a>]</span>, <span name="consent">consent: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="result">: <span class="extype" name="dbrary.Selector">Selector</span>[(<a href="Account.html" class="extype" name="models.Account">Account</a>) ⇒ <a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Generate a selector for the target type from a base selector.</p><div class="fullcomment"><div class="comment cmt"><p>Generate a selector for the target type from a base selector.</p></div><dl class="paramcmts block"><dt class="param">columns</dt><dd class="cmt"><p>base selector requiring a ContextSlot to produce the final type</p></dd><dt class="param">container</dt><dd class="cmt"><p>container selector to use</p></dd><dt class="param">consent</dt><dd class="cmt"><p>determine applicable consent level, or just use container context
+</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableSlot</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -321,6 +361,32 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="models.TableView#fixed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="fixed(r:TableView.this.Rowwithmodels.TableRow):dbrary.Selector[TableView.this.Rowwithmodels.TableRow]"></a>
+      <a id="fixed(RowwithTableRow):Selector[RowwithTableRow]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">fixed</span><span class="params">(<span name="r">r: <a href="#Row=R" class="extmbr" name="models.Comment.Row">Row</a> with <span class="extype" name="models.TableRow">TableRow</span></span>)</span><span class="result">: <span class="extype" name="dbrary.Selector">Selector</span>[<a href="#Row=R" class="extmbr" name="models.Comment.Row">Row</a> with <span class="extype" name="models.TableRow">TableRow</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableView</dd></dl></div>
+    </li><li name="models.HasTable#fromTable" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="fromTable:dbrary.FromTable"></a>
+      <a id="fromTable:FromTable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">fromTable</span><span class="result">: <span class="extype" name="dbrary.FromTable">FromTable</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>HasTable</dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -360,6 +426,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.TableSlot#makeContext" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="makeContext(container:models.Container,consent:Option[models.Container=&gt;models.ContextSlot]):models.ContextSlot"></a>
+      <a id="makeContext(Container,Option[(Container)⇒ContextSlot]):ContextSlot"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">makeContext</span><span class="params">(<span name="container">container: <a href="Container.html" class="extype" name="models.Container">Container</a></span>, <span name="consent">consent: <span class="extype" name="scala.Option">Option</span>[(<a href="Container.html" class="extype" name="models.Container">Container</a>) ⇒ <a href="ContextSlot.html" class="extype" name="models.ContextSlot">ContextSlot</a>]</span>)</span><span class="result">: <a href="ContextSlot.html" class="extype" name="models.ContextSlot">ContextSlot</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableSlot</dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -399,6 +478,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="models.TableSlot#segment" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="segment:dbrary.SelectColumn[dbrary.Segment]"></a>
+      <a id="segment:SelectColumn[Segment]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">segment</span><span class="result">: <span class="extype" name="dbrary.SelectColumn">SelectColumn</span>[<span class="extype" name="dbrary.Segment">Segment</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableSlot</dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -412,32 +504,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.TableView#tableColumn" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="tableColumn[A](col:Symbol)(implicitevidence$1:dbrary.SQLType[A]):dbrary.SelectColumn[A]"></a>
-      <a id="tableColumn[A](Symbol)(SQLType[A]):SelectColumn[A]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">tableColumn</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="col">col: <span class="extype" name="scala.Symbol">Symbol</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="dbrary.SQLType">SQLType</span>[<span class="extype" name="models.TableView.tableColumn.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="dbrary.SelectColumn">SelectColumn</span>[<span class="extype" name="models.TableView.tableColumn.A">A</span>]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Convenient creation of column names for this table from symbols.</p><div class="fullcomment"><div class="comment cmt"><p>Convenient creation of column names for this table from symbols.</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.TableView#tableName" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="tableName:dbrary.FromTable"></a>
-      <a id="tableName:FromTable"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">tableName</span><span class="result">: <span class="extype" name="dbrary.FromTable">FromTable</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
@@ -451,6 +517,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.TableSlot#values" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="values(containerId:models.Container.Id,segment:dbrary.Segment):dbrary.Selector[Unit]"></a>
+      <a id="values(Container.Id,Segment):Selector[Unit]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">values</span><span class="params">(<span name="containerId">containerId: <a href="Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">Container.Id</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Segment">Segment</span></span>)</span><span class="result">: <span class="extype" name="dbrary.Selector">Selector</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableSlot</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -517,7 +596,9 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.TableId">
+        <div class="parent" name="models.TableSlot">
+              <h3>Inherited from <span class="extype" name="models.TableSlot">TableSlot</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</h3>
+            </div><div class="parent" name="models.TableId">
               <h3>Inherited from <span class="extype" name="models.TableId">TableId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</h3>
             </div><div class="parent" name="models.HasId">
               <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</h3>
@@ -525,6 +606,8 @@
               <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</h3>
             </div><div class="parent" name="models.TableView">
               <h3>Inherited from <span class="extype" name="models.TableView">TableView</span></h3>
+            </div><div class="parent" name="models.HasTable">
+              <h3>Inherited from <span class="extype" name="models.HasTable">HasTable</span></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">

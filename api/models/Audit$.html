@@ -35,13 +35,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Audit</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">Audit</span><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="Audit.html" class="extype" name="models.Audit">Audit</a>[_]] with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Helper for audit tables.  Not a TableView because it corresponds to multiple underlying tables.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/audit.scala" target="_blank">audit.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Helper for audit tables.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/audit.scala" target="_blank">audit.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="models.Table">Table</span>[<a href="Audit.html" class="extype" name="models.Audit">Audit</a>[_]], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="models.HasTable">HasTable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Audit"><span>Audit</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Audit"><span>Audit</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="models.HasTable"><span>HasTable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -79,7 +79,23 @@
         <div id="allMembers">
         
 
-        
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="models.Table.Row" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Row=R"></a>
+      <a id="Row:Row"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Row</span><span class="result"> = <a href="Audit.html" class="extype" name="models.Audit">Audit</a>[_]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Type of TableRow this object can generate.</p><div class="fullcomment"><div class="comment cmt"><p>Type of TableRow this object can generate.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>Table → TableView</dd></dl></div>
+    </li></ol>
+            </div>
 
         
 
@@ -163,6 +179,58 @@
       </span>
       </h4>
       <p class="comment cmt">The possible events or actions on the site that can be put into audit tables.</p>
+    </li><li name="models.TableView#DELETE" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="DELETE(args:models.SQLTerm[_]*)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
+      <a id="DELETE(SQLTerm[_]*)(DB,ExecutionContext):SQLResult"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">DELETE</span><span class="params">(<span name="args">args: <a href="SQLTerm.html" class="extype" name="models.SQLTerm">SQLTerm</a>[_]*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
+    </li><li name="models.TableView#DELETE" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="DELETE(args:models.SQLTerms)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
+      <a id="DELETE(SQLTerms)(DB,ExecutionContext):SQLResult"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">DELETE</span><span class="params">(<span name="args">args: <span class="extype" name="models.SQLTerms">SQLTerms</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
+    </li><li name="models.TableView#INSERT" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="INSERT(args:models.SQLTerm[_]*)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
+      <a id="INSERT(SQLTerm[_]*)(DB,ExecutionContext):SQLResult"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">INSERT</span><span class="params">(<span name="args">args: <a href="SQLTerm.html" class="extype" name="models.SQLTerm">SQLTerm</a>[_]*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
+    </li><li name="models.TableView#INSERT" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="INSERT(args:models.SQLTerms)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
+      <a id="INSERT(SQLTerms)(DB,ExecutionContext):SQLResult"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">INSERT</span><span class="params">(<span name="args">args: <span class="extype" name="models.SQLTerms">SQLTerms</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.Audit#action" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="action(action:models.Audit.Action.Value)(implicitsite:site.Site,implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
       <a id="action(Audit.Action.Value)(Site,DB,ExecutionContext):SQLResult"></a>
@@ -266,6 +334,32 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="models.TableView#fixed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="fixed(r:TableView.this.Rowwithmodels.TableRow):dbrary.Selector[TableView.this.Rowwithmodels.TableRow]"></a>
+      <a id="fixed(RowwithTableRow):Selector[RowwithTableRow]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">fixed</span><span class="params">(<span name="r">r: <a href="#Row=R" class="extmbr" name="models.Audit.Row">Row</a> with <span class="extype" name="models.TableRow">TableRow</span></span>)</span><span class="result">: <span class="extype" name="dbrary.Selector">Selector</span>[<a href="#Row=R" class="extmbr" name="models.Audit.Row">Row</a> with <span class="extype" name="models.TableRow">TableRow</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableView</dd></dl></div>
+    </li><li name="models.HasTable#fromTable" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="fromTable:dbrary.FromTable"></a>
+      <a id="fromTable:FromTable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">fromTable</span><span class="result">: <span class="extype" name="dbrary.FromTable">FromTable</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>HasTable</dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -440,6 +534,12 @@
               <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
             </div><div class="parent" name="java.io.Serializable">
               <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="models.Table">
+              <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="Audit.html" class="extype" name="models.Audit">Audit</a>[_]]</h3>
+            </div><div class="parent" name="models.TableView">
+              <h3>Inherited from <span class="extype" name="models.TableView">TableView</span></h3>
+            </div><div class="parent" name="models.HasTable">
+              <h3>Inherited from <span class="extype" name="models.HasTable">HasTable</span></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
