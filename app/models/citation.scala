@@ -1,6 +1,6 @@
 package models
 
-import scala.concurrent.Future
+import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import macros._
 import dbrary._
@@ -34,11 +34,14 @@ object VolumeCitation extends Table[VolumeCitation]("volume_citation") {
 
   private[models] def setVolume(vol : Volume, list : Seq[VolumeCitation]) : Future[Boolean] = {
     val l = list.map(_.ensuring(_.volume == vol).args)
-    /* TODO: transaction */
-    DELETE('volume -> vol.id).flatMap { _ =>
-      Async.map[SQLTerms, Boolean, Seq[Boolean]](l,
-        INSERT(_).execute
-      ).map(_.forall(identity))
+    val dbc = implicitly[Site.DB]
+    val exc = implicitly[ExecutionContext]
+    dbc.inTransaction { dbc =>
+      DELETE('volume -> vol.id)(dbc, exc).flatMap { _ =>
+	Async.map[SQLTerms, Boolean, Seq[Boolean]](l,
+	  INSERT(_)(dbc, exc).execute
+	).map(_.forall(identity))
+      }
     }
   }
 }

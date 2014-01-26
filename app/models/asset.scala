@@ -264,7 +264,6 @@ object Asset extends TableId[Asset]("asset") {
     */
   def create(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
     val sha1 = store.SHA1(file.file)
-    /* TODO transaction */
     Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name, 'sha1 -> sha1), "id")
       .single(SQLCols[Id]).map { id =>
         val a = new Asset(id, volume, format, classification, name, sha1)
@@ -275,7 +274,6 @@ object Asset extends TableId[Asset]("asset") {
 
   def create(volume : Volume, format : TimeseriesFormat, classification : Classification.Value, duration : Offset, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
     val sha1 = store.SHA1(file.file)
-    /* TODO transaction */
     Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> duration, 'name -> name, 'sha1 -> sha1), "id")
       .single(SQLCols[Id]).map { id =>
         val a = new Timeseries(id, volume, format, classification, duration, name, sha1)

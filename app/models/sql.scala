@@ -54,26 +54,25 @@ object SQLDuplicateKeyException {
 }
 
 object DBUtil {
-  /* TODO: wrap these in transactions once available */
   def selectOrInsert[A](select : (Site.DB, ExecutionContext) => Future[Option[A]])(insert : (Site.DB, ExecutionContext) => Future[A])(implicit dbc : Site.DB, exc : ExecutionContext) : Future[A] = {
-    /*@scala.annotation.tailrec*/ def loop : Future[A] = select(dbc, exc).flatMap {
+    /*@scala.annotation.tailrec*/ def loop(dbc : Site.DB) : Future[A] = select(dbc, exc).flatMap {
       case None => insert(dbc, exc).recoverWith {
-        case SQLDuplicateKeyException() => loop
+        case SQLDuplicateKeyException() => loop(dbc)
       }
       case Some(r) => Async(r)
     }
-    loop
+    dbc.inTransaction(loop)
   }
 
   def updateOrInsert(update : (Site.DB, ExecutionContext) => SQLResult)(insert : (Site.DB, ExecutionContext) => SQLResult)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult = {
-    /*@scala.annotation.tailrec*/ def loop : Future[db.QueryResult] = update(dbc, exc).result.flatMap { r =>
+    /*@scala.annotation.tailrec*/ def loop(dbc : Site.DB) : Future[db.QueryResult] = update(dbc, exc).result.flatMap { r =>
       if (r.rowsAffected == 0)
         insert(dbc, exc).result.recoverWith {
-          case SQLDuplicateKeyException() => loop
+          case SQLDuplicateKeyException() => loop(dbc)
         }
       else
         Async(r)
     }
-    new SQLResult(loop)
+    new SQLResult(dbc.inTransaction(loop))
   }
 }
