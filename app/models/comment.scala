@@ -64,5 +64,5 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
   /** Post a new comment on a target by the current user.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
   private[models] def post(slot : Slot, text : String, parent : Option[Id] = None)(implicit site : AuthSite) : Future[Boolean] =
-    INSERT(slot.sqlKey ++ SQLTerms('who -> site.identity.id, 'text -> text, 'parent -> parent)).execute
+    INSERT(slot.slotSql ++ SQLTerms('who -> site.identity.id, 'text -> text, 'parent -> parent)).execute
 }

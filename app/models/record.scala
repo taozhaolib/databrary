@@ -145,9 +145,9 @@ private[models] object SlotRecord extends SlotTable("slot_record") {
     .apply(record.id, record.volumeId).list
 
   def add(record : Record, slot : Slot) =
-    INSERT(('record -> record.id) +: slot.sqlKey).execute
+    INSERT(('record -> record.id) +: slot.slotSql).execute
   def remove(record : Record, slot : Slot) =
-    DELETE(('record -> record.id) +: slot.sqlKey).execute
+    DELETE(('record -> record.id) +: slot.slotSql).execute
 }
 
 object Record extends TableId[Record]("record") {
