@@ -10,7 +10,7 @@ import site._
 /** Main organizational unit or package of data, within which everything else exists.
   * Usually represents a single project or dataset with a single set of procedures.
   * @param permission the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than [[Permission.VIEW]] except possibly for transient objects, as unavailable volumes should never be returned in the first place. */
-final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], val permission : Permission.Value, val creation : Timestamp)(implicit override val site : Site) extends TableRowId[Volume] with SiteObject with InVolume {
+final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], override val permission : Permission.Value, val creation : Timestamp)(implicit override val site : Site) extends TableRowId[Volume] with SiteObject with InVolume {
   private[this] var _name = name_
   /** Title headline of this volume. */
   def name = _name
@@ -99,7 +99,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     var agemin, agemax = Age(0)
     var agesum = 0
     sess.foreach {
-      case (r, s) if r.category.fold(false)(_ === RecordCategory.Participant) =>
+      case (r, s) if r.category.exists(_ === RecordCategory.Participant) =>
         sessions = sessions + 1
         if (s.consent >= Consent.SHARED) shared = shared + 1
         s.container.date.flatMap(r.age(_)).foreach { a =>
@@ -139,7 +139,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       Some('name -> name),
       body.map('body -> _),
       Some('creation -> creation),
-      Some('permission -> getPermission)
+      Some('permission -> permission)
     )
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
@@ -155,22 +155,20 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
         r.json - "volume" + ('sessions -> JsonArray.map[Container,Container.Id](_.id)(ss))
       })),
       "sessions" -> (opt => slotRecords.map(JsonRecord.map { case (s, rs) =>
-        s.containerJson - "volume" + ('records -> JsonRecord.map[Record] { r =>
+        s.json - "volume" + ('records -> JsonRecord.map[Record] { r =>
           JsonRecord.flatten(r.id, r.age(s).map('age -> _))
         }(rs))
       })),
       "assets" -> (opt => toplevelAssets.map(JsonArray.map(_.json))),
-      "top" -> (opt => top.map(t => (t.containerJson - "volume" - "top").obj))
+      "top" -> (opt => top.map(t => (t.json - "volume" - "top").obj))
     )
 }
 
 object Volume extends TableId[Volume]("volume") {
-  private object Permission {
-    private val table : String = "volume_permission"
-    private implicit val fromTable : FromTable = FromTable(table)
+  private object Permission extends Table[models.Permission.Value]("volume_permission") {
     private val columns = Columns(
 	SelectColumn[models.Permission.Value]("permission")
-      ).from("LATERAL (VALUES (volume_access_check(volume.id, ?::integer), ?::boolean)) AS " + table + " (permission, superuser)")
+      ).from("LATERAL (VALUES (volume_access_check(volume.id, ?::integer), ?::boolean)) AS " + _ + " (permission, superuser)")
     def row(implicit site : Site) =
       columns.pushArgs(SQLArgs(site.identity.id, site.superuser))
     def condition =
@@ -184,7 +182,7 @@ object Volume extends TableId[Volume]("volume") {
     , SelectColumn[String]("name")
     , SelectColumn[Option[String]]("body")
     , SelectAs[Option[Timestamp]]("volume_creation(volume.id)", "volume_creation")
-    ).+(Permission.row)
+    ).*(Permission.row)
       .map { case ((id, name, body, creation), permission) =>
 	new Volume(id, name, body, permission, creation.getOrElse(defaultCreation))
       }
@@ -233,5 +231,5 @@ trait InVolume extends HasPermission {
   def volume : Volume
   implicit def site : Site = volume.site
   /** Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time. */
-  def getPermission : Permission.Value = volume.permission
+  def permission : Permission.Value = volume.permission
 }

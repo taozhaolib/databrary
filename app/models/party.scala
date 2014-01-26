@@ -59,7 +59,7 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
   def ===(a : SiteParty) = party === a.party
   def ===(a : Party) = party === a
 
-  def getPermission = Seq(delegated, Seq(site.access, Permission.DOWNLOAD).min).max
+  def permission = Seq(delegated, Seq(site.access, Permission.DOWNLOAD).min).max
 
   /** List of authorizations granted to this user.
     * @param all include inactive authorizations */
@@ -92,7 +92,7 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
   )
 
   def json = party.json + 
-    ('permission -> getPermission)
+    ('permission -> permission)
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
@@ -116,13 +116,12 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
-final class Account protected (val party : Party, email_ : String, password_ : String, openid_ : Option[String]) extends TableRow {
-  def ===(a : Account) = party === a.party
+final class Account protected (val party : Party, email_ : String, password_ : String, openid_ : Option[String]) extends TableRowId[Party] {
   def ===(a : Party) = party === a
 
   party._account = Some(this)
 
-  def id = party.id
+  val id = party.id
   private[this] var _email = email_
   def email = _email
   private[this] var _password = password_
@@ -133,7 +132,7 @@ final class Account protected (val party : Party, email_ : String, password_ : S
 
   /** Update the given values in the database and this object in-place. */
   def change(email : Option[String] = None, password : Option[String] = None, openid : Option[Option[String]] = None)(implicit site : Site) : Future[Boolean] = {
-    if (password.fold(false)(!_.equals(_password)))
+    if (password.exists(!_.equals(_password)))
       clearTokens(cast[AuthSite](site).map(_.token))
     Audit.change("account", SQLTerms.flatten(email.map('email -> _), password.map('password -> _), openid.map('openid -> _)), SQLTerms('id -> id))
       .execute.andThen { case scala.util.Success(true) =>

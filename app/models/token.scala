@@ -7,6 +7,7 @@ import dbrary._
 import site._
 
 sealed abstract class Token protected (val id : Token.Id, val expires : Timestamp) extends TableRow {
+  private[models] def sqlKey = SQLTerms('token -> id)
   def valid = expires.toDateTime.isAfterNow
   def redeemURL = controllers.routes.Token.token(id)
   def remove : Future[Boolean]
@@ -96,8 +97,8 @@ object LoginToken extends TokenTable[LoginToken]("login_token") {
     ).map { (token, expires, password) =>
       (account : Account) => new LoginToken(token, expires, account, password)
     }
-  protected val row = columns.join(Account.row, "login_token.account = account.id").
-    map { case (t, p) => t(p) }
+  protected val row = columns
+    .join(Account.row, "login_token.account = account.id").map(tupleApply)
 
   /** Issue a new token for the given party.
     * @param password if this token allows a password reset. There can be only one active password reset per user at a time, so this deletes any previous ones.
@@ -116,10 +117,12 @@ object SessionToken extends TokenTable[SessionToken]("session") {
       SelectColumn[Token.Id]("token")
     , SelectColumn[Timestamp]("expires")
     ).map { (token, expires) =>
-      (account : Account, access : Permission.Value) => new SessionToken(token, expires, account, access)
+      (account : Account, access : Permission.Value) =>
+	new SessionToken(token, expires, account, access)
     }
-  protected val row = columns.join(Account.rowAccess, "session.account = account.id").
-    map { case (t, (p, a)) => t(p, a) }
+  protected val row = columns
+    .join(Account.rowAccess, "session.account = account.id")
+    .map { case (t, (a, p)) => t(a, p) }
 
   /** Issue a new token for the given party. */
   def create(account : Account) : Future[SessionToken] =

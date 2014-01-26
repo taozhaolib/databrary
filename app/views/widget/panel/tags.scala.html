@@ -1,4 +1,4 @@
-@(slot : AbstractSlot, volume : Option[Volume] = None, tags : Seq[TagWeight], form : TagHtml.TagForm = TagHtml.tagForm)(implicit request : SiteRequest[_])
+@(slot : Slot, volume : Option[Volume] = None, tags : Seq[TagWeight], form : TagHtml.TagForm = TagHtml.tagForm)(implicit request : SiteRequest[_])
 
 @import play.api.data.Form
 @import play.api.data.Forms._
@@ -8,25 +8,8 @@
         FieldConstructor(widget.tag.minimalFieldConstructor.f)
     }
 
-    @widget.panel.raw("tags", "", "ng-controller" -> "TagsPanelCtrl", "ng-init" -> {tags.map(t => "{id: "+t.tag.id+", name: '"+t.tag.name+"', weight: "+t.weight+", vote: "+(if(t.user.isEmpty){0}else{if(t.user.get){1}else{-1}})+"}").mkString("tags = [",",","];")+" formAction = '/volume/"+slot.volume.id+"/slot/"+slot.context.id+"/tag'"})(title = "Tags", foldable = true){
+    @widget.panel.raw("tags", "")(title = "Tags", foldable = true){
         <div class="panel_tags_list col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-3">
-        @angular.directives.mode {
-            <form name="tagForm" novalidate>
-                <ol class="panel_tags_items row">
-                    <li ng-repeat="tag in tags" id="tag_{{tag.id}}" class="panel_tags_item col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-6">
-                        <div class="controls">
-                            <button class="vote down" name="vote" ng-click="voteDown(tag);" ng-disabled="tag.vote == -1">-</button>
-                            <button class="vote null" name="vote" ng-click="voteNone(tag)" ng-disabled="tag.vote == 0">0</button>
-                            <button class="vote up" name="vote" ng-click="voteUp(tag)" ng-disabled="tag.vote == 1">+</button>
-                        </div>
-
-                        <span class="name">{{tag.name}}</span>
-
-                        <span class="weight">{{tag.weight}}</span>
-                    </li>
-                </ol>
-            </form>
-        } {
             <ol class="panel_tags_items row">
                 @if(tags.nonEmpty) {
                     @tags.map { tw =>
@@ -47,20 +30,12 @@
                     }
                 }
             </ol>
-        }
         </div>
 
         <div id="tag_add" class="panel_tags_form col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
-        @angular.directives.mode {
-            <form name="tagNewForm" novalidate ng-submit="voteNew()">
-                <input type="text" id="newName" name="newName" ng-model="newName" placeholder="Add new tag..." ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/" required ng-change="newNameChange()"  ng-focus="newNameChange()" ng-blur="newNameBlur()">
-                <button name="vote" ng-click="voteUp(tag)" class="hide">add</button>
-            </form>
-        }{
             @widget.tag.form(routes.TagHtml.update("", slot.containerId, slot.segment)) {
                 @widget.tag.inputText(form("name"), 'placeholder -> "Add new tag")
                 <button name="vote" value="@true" class="hide">add</button>
             }
-        }
         </div>
     }

@@ -18,14 +18,15 @@ import site._
   * @param expires the time at which this authorization stops, or never if None
   */
 final class Authorize protected (val child : Party, val parent : Party, val access : Permission.Value, val delegate : Permission.Value, val authorized : Option[Timestamp], val expires : Option[Timestamp]) extends TableRow {
+  private[models] def sqlKey = SQLTerms('child -> childId, 'parent -> parentId)
+
   def childId = child.id
   def parentId = parent.id
 
   /** Determine if this authorization is currently in effect.
     * @return true if authorized is set and in the past, and expires is unset or in the future */
-  def valid = {
-    authorized.fold(false)(_.toDateTime.isBeforeNow) && expires.fold(true)(_.toDateTime.isAfterNow)
-  }
+  def valid =
+    authorized.exists(_.toDateTime.isBeforeNow) && expires.forall(_.toDateTime.isAfterNow)
 
   def json = JsonObject.flatten(
     Some('access -> access),

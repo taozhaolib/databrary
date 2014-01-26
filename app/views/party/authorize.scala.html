@@ -25,7 +25,7 @@
 }
 
 @authorizeSearchWhich(party : Party, which : Boolean)(implicit fieldConstructor : helper.FieldConstructor) = {
-    @if(authorizeWhich.fold(true)(_ == which)) {
+    @if(authorizeWhich.forall(_ == which)) {
             <tr class="null">
                 <td>
                 @widget.tag.form(routes.PartyHtml.authorizeSearch(party.id, which), 'id -> ("search_"+which.toString)) {

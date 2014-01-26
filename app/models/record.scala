@@ -18,7 +18,7 @@ sealed abstract class RecordCategory private (val id : RecordCategory.Id, val na
 
 /** Interface to record categories.
   * These are all hard-coded so bypass the database, though they are stored in record_category. */
-object RecordCategory extends HasId[RecordCategory] {
+object RecordCategory extends TableId[RecordCategory]("record_category") {
   def get(id : Id) : Option[RecordCategory] = id match {
     case PARTICIPANT => Some(Participant)
     case VISIT => Some(Visit)
@@ -89,7 +89,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
     measures_.value(Metric.Birthdate).map(dob => Age(dob, date))
 
   /** The age at test during a specific slot, with privacy limits applied. */
-  def age(slot : AbstractSlot) : Option[Age] =
+  def age(slot : Slot) : Option[Age] =
     slot.container.date.flatMap(age(_).map { a =>
       if (a > Age.LIMIT && !slot.downloadable) Age.LIMIT
       else a
@@ -97,19 +97,16 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   /** The set of slots to which this record applies. */
   lazy val slots : Future[Seq[Slot]] =
-    Slot.volumeRow(volume)
-      .SELECT("JOIN slot_record ON slot.id = slot_record.slot WHERE slot_record.record = ? ORDER BY slot.source, slot.segment")
-      .apply(id).list
+    SlotRecord.slots(this)
   /** Attach this record to a slot. */
-  def addSlot(s : AbstractSlot) : Future[Boolean] =
-    SQL("INSERT INTO slot_record (record, slot) VALUES (?, " + s.sqlId + ")")
-      .apply(id +: s.sqlArgs).execute.recover {
+  def addSlot(s : Slot) : Future[Boolean] =
+    SlotRecord.add(this, s)
+      .recover {
         case SQLDuplicateKeyException() => false
       }
   /** Remove this record from a slot. */
-  def removeSlot(s : AbstractSlot) : Future[Boolean] =
-    SQL("DELETE FROM slot_record USING slot WHERE record = ? AND slot = slot.id AND slot.container = ? AND slot.segment = ?")
-      .apply(id, s.containerId, s.segment).execute
+  def removeSlot(s : Slot) : Future[Boolean] =
+    SlotRecord.remove(this, s)
 
   /** The set of assets to which this record applies. */
   def assets : Future[Seq[SlotAsset]] =
@@ -133,9 +130,24 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
       "slots" -> (opt => slots.map(JsonArray.map(s =>
-        s.json ++ JsonObject.flatten(age(s).map('age -> _))
+        s.slotJson ++ JsonObject.flatten(age(s).map('age -> _))
       )))
     )
+}
+
+private[models] object SlotRecord extends SlotTable("slot_record") {
+  def row(record : Record) =
+    rowContainer(Container.columnsVolume(Volume.fixed(record.volume)))
+
+  def slots(record : Record) =
+    row(record)
+    .SELECT("WHERE slot_record.record = ? AND container.volume = ? ORDER BY slot_record.container, slot_record.segment")
+    .apply(record.id, record.volumeId).list
+
+  def add(record : Record, slot : Slot) =
+    INSERT(('record -> record.id) +: slot.sqlKey).execute
+  def remove(record : Record, slot : Slot) =
+    DELETE(('record -> record.id) +: slot.sqlKey).execute
 }
 
 object Record extends TableId[Record]("record") {
@@ -145,22 +157,19 @@ object Record extends TableId[Record]("record") {
     , SelectAs[Consent.Value]("record_consent(record.id)", "record_consent")
     ).leftJoin(Measures.row, "record.id = measures.record")
     .map { case ((id, cat, cons), meas) =>
-      vol => new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cons, Measures(meas))
+      (vol : Volume) => new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cons, Measures(meas))
     }
+  private def rowVolume(volume : Selector[Volume]) : Selector[Record] = columns
+    .join(volume, "record.volume = volume.id").map(tupleApply)
+  private def rowVolume(vol : Volume) : Selector[Record] =
+    rowVolume(Volume.fixed(vol))
   private def row(implicit site : Site) =
-    columns.join(Volume.row, "record.volume = volume.id") map {
-      case (rec, vol) => rec(vol)
-    }
-  private def volumeRow(vol : Volume) = columns.map(_(vol))
-  private def measureRow[T](vol : Volume, metric : Metric[T]) = {
-    val mt = metric.measureType
-    volumeRow(vol).leftJoin(mt.select.column, "record.id = " + mt.table + ".record AND " + mt.table + ".metric = ?")
-  }
+    rowVolume(Volume.row)
   private def sessionRow(vol : Volume) = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[Option[RecordCategory.Id]]("category")
     ).leftJoin(Measures.row, "record.id = measures.record")
-    .join(Container.volumeRow(vol), _ + " JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id JOIN " + _ + " ON slot.source = container.id AND record.volume = container.volume")
+    .join(Container.rowVolume(vol), _ + " JOIN slot_record ON record.id = slot_record.record JOIN " + _ + " ON slot_record.container = container.id AND record.volume = container.volume")
     .map {
       case (((id, cat), meas), cont) =>
         val r = new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cont.consent, Measures(meas))
@@ -172,32 +181,25 @@ object Record extends TableId[Record]("record") {
     row.SELECT("WHERE record.id = ? AND", Volume.condition)
       .apply(id).singleOpt
 
-  /** Retrieve the set of records on the given slot. */
-  private[models] def getSlot(slot : Slot) : Future[Seq[Record]] =
-    volumeRow(slot.volume)
-      .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.slot = ? AND record.volume = ? ORDER BY record.category")
-      .apply(slot.id, slot.volumeId).list
-
   /** Retrieve the list of all records that apply to the given slot. */
-  private[models] def getSlotAll(slot : AbstractSlot) : Future[Seq[Record]] =
-    volumeRow(slot.volume)
-      .SELECT("JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id WHERE slot.source = ? AND slot.segment && ?::segment AND record.volume = ?")
-      .apply(slot.containerId, slot.segment, slot.volumeId).list
+  private[models] def getSlot(slot : Slot) : Future[Seq[Record]] =
+    rowVolume(slot.volume)
+    .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ? AND slot_record.segment && ?::segment")
+    .apply(slot.containerId, slot.segment).list
 
   /** Retrieve the list of all foreign records (from a different volume) that apply to the given slot. */
-  private[models] def getSlotForeign(slot : AbstractSlot)(implicit site : Site) : Future[Seq[Record]] =
+  private[models] def getSlotForeign(slot : Slot)(implicit site : Site) : Future[Seq[Record]] =
     row
-      .SELECT("JOIN slot_record ON record.id = slot_record.record JOIN slot ON slot_record.slot = slot.id WHERE slot.source = ? AND slot.segment && ?::segment AND record.volume <> ? AND", Volume.condition)
+      .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ? AND slot_record.segment && ?::segment AND record.volume <> ? AND", Volume.condition)
       .apply(slot.containerId, slot.segment, slot.volumeId).list
 
   /** Retrieve all the categorized records associated with the given volume.
     * @param category restrict to the specified category, or include all categories
     * @return records sorted by category, ident */
   private[models] def getVolume(volume : Volume, category : Option[RecordCategory] = None) : Future[Seq[Record]] =
-    volumeRow(volume)
-      .SELECT("WHERE record.volume = ?",
-        (if (category.isDefined) "AND record.category = ?" else "ORDER BY record.category"))
-      .apply(volume.id +: category.fold(SQLArgs())(c => SQLArgs(c.id))).list
+    rowVolume(volume)
+    .SELECT(if (category.isDefined) "WHERE record.category = ?" else "ORDER BY record.category")
+    .apply(category.fold(SQLArgs())(c => SQLArgs(c.id))).list
 
   /** Return the full outer product of all slot, record pairs on the given volume for "session" slots and categorized records. */
   private[models] def getSessions(vol : Volume) : Future[Seq[(Record,Container)]] =
@@ -210,12 +212,15 @@ object Record extends TableId[Record]("record") {
     * @param metric search by metric
     * @param value measure value that must match
     */
-  def findMeasure[T](volume : Volume, category : Option[RecordCategory] = None, metric : Metric[T], value : T) : Future[Seq[Record]] =
-    measureRow[T](volume, metric).map(_._1)
-      .SELECT("WHERE record.volume = ?",
-        (if (category.isDefined) "AND record.category = ?" else ""),
-        "AND", metric.measureType.select.toString, "= ?")
-      .apply(SQLArgs(metric.id, volume.id) ++ category.fold(SQLArgs())(c => SQLArgs(c.id)) ++ SQLArgs(value)(metric.measureType.sqlType)).list
+  def findMeasure[T](volume : Volume, category : Option[RecordCategory] = None, metric : Metric[T], value : T) : Future[Seq[Record]] = {
+    val mt = metric.measureType
+    rowVolume(volume)
+    .leftJoin(mt.select.column, "record.id = " + mt.table + ".record AND " + mt.table + ".metric = ?")
+    .pushArgs(SQLArgs(metric.id)).map(_._1)
+    .SELECT("WHERE", metric.measureType.select.toString, "= ?",
+      (if (category.isDefined) "AND record.category = ?" else ""))
+    .apply(SQLArg(value)(mt.sqlType) +: category.fold(SQLArgs())(c => SQLArgs(c.id))).list
+  }
 
   /** Create a new record, initially unattached. */
   def create(volume : Volume, category : Option[RecordCategory] = None) : Future[Record] = {

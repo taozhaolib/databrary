@@ -14,7 +14,7 @@ private[controllers] sealed class TagController extends SiteController {
     "vote" -> Forms.optional(Forms.boolean)
   ))
 
-  def update(name : String = "", i : models.Slot.Id, segment : Segment) =
+  def update(name : String = "", i : models.Container.Id, segment : Segment) =
     (SiteAction.access(Permission.VIEW) ~> SlotController.action(i, segment)).async { implicit request =>
       tagForm.bindFromRequest.fold(
         AbadForm[TagMapping](f => SlotHtml.show(tagForm = f), _),

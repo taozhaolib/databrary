@@ -12,11 +12,11 @@ import site._
 import dbrary._
 import models._
 
-private[controllers] sealed class SlotController extends ObjectController[AbstractSlot] {
-  private[controllers] def action(i : Slot.Id, segment : Segment, p : Permission.Value = Permission.VIEW) =
+private[controllers] sealed class SlotController extends ObjectController[Slot] {
+  private[controllers] def action(i : Container.Id, segment : Segment, p : Permission.Value = Permission.VIEW) =
     RequestObject.check(Slot.get(i, segment)(_), p)
 
-  private[controllers] def Action(i : Slot.Id, segment : Segment, p : Permission.Value = Permission.VIEW) =
+  private[controllers] def Action(i : Container.Id, segment : Segment, p : Permission.Value = Permission.VIEW) =
     SiteAction ~> action(i, segment, p)
 
   type EditMapping = (Option[(Option[String], Option[Date])], Consent.Value)
@@ -28,16 +28,16 @@ private[controllers] sealed class SlotController extends ObjectController[Abstra
     )) else None),
     "consent" -> Field.enum(Consent)
   ))
-  protected def editFormFill(s : AbstractSlot) = {
+  protected def editFormFill(s : Slot) = {
     val full = s.isFull
     val cont = (if (full) Some(s.container) else None)
     editForm(full).fill((cont.map(c => (c.name, c.date)), s.consent))
   }
 
-  def formForContainer(form : EditForm, slot : AbstractSlot) =
+  def formForContainer(form : EditForm, slot : Slot) =
     form.value.fold(slot.isFull)(_._1.isDefined)
 
-  def update(i : Slot.Id, segment : Segment) = Action(i, segment, Permission.EDIT).async { implicit request =>
+  def update(i : Container.Id, segment : Segment) = Action(i, segment, Permission.EDIT).async { implicit request =>
     editFormFill(request.obj).bindFromRequest.fold(
       AbadForm[EditMapping](f => SlotHtml.viewEdit(request.obj)(editForm = f), _),
       { case (container, consent) =>
@@ -51,7 +51,7 @@ private[controllers] sealed class SlotController extends ObjectController[Abstra
     )
   }
 
-  def thumb(i : models.Slot.Id, segment : Segment) = Action(i, segment, Permission.VIEW).async { implicit request =>
+  def thumb(i : models.Container.Id, segment : Segment) = Action(i, segment, Permission.VIEW).async { implicit request =>
     request.obj.thumb.flatMap(_.fold(
       Assets.at("/public", "images/draft.png")(request))(
       a => SlotAssetHtml.getFrame(Left(0.25f))(request.withObj(a))))
@@ -64,7 +64,7 @@ private[controllers] sealed class SlotController extends ObjectController[Abstra
     "parent" -> OptionMapping(of[Comment.Id])
   ))
 
-  def comment(i : Slot.Id, segment : Segment, parent : Option[Comment.Id] = None) =
+  def comment(i : Container.Id, segment : Segment, parent : Option[Comment.Id] = None) =
     (SiteAction.access(Permission.VIEW) ~> action(i, segment)).async { implicit request =>
       commentForm.bindFromRequest.fold(
         AbadForm[CommentMapping](f => SlotHtml.show(commentForm = f), _),
@@ -90,14 +90,14 @@ object SlotHtml extends SlotController {
     } yield (views.html.slot.view(records, assets, comments, commentForm, tags, TagHtml.tagForm))
   }
 
-  def view(i : models.Slot.Id, segment : Segment) = Action(i, segment).async { implicit request =>
-    if (request.obj.isTop)
+  def view(i : Container.Id, segment : Segment) = Action(i, segment).async { implicit request =>
+    if (request.obj.top)
       ARedirect(controllers.routes.VolumeHtml.view(request.obj.volumeId))
     else
       show().map(Ok(_))
   }
 
-  private[controllers] def viewEdit(slot : AbstractSlot)(
+  private[controllers] def viewEdit(slot : Slot)(
     editForm : EditForm = editFormFill(slot),
     recordForm : RecordHtml.SelectForm = RecordHtml.selectForm)(
     implicit request : Request[_]) =
@@ -106,7 +106,7 @@ object SlotHtml extends SlotController {
       selectList <- RecordHtml.selectList(slot)
     } yield (views.html.slot.edit(Right(slot), editForm, records, Some(recordForm), selectList))
 
-  def edit(i : models.Slot.Id, segment : Segment) = Action(i, segment, Permission.EDIT).async { implicit request =>
+  def edit(i : Container.Id, segment : Segment) = Action(i, segment, Permission.EDIT).async { implicit request =>
     viewEdit(request.obj)().map(Ok(_))
   }
 
@@ -130,6 +130,6 @@ object SlotHtml extends SlotController {
 
 object SlotApi extends SlotController {
   def get(c : models.Container.Id, segment : Segment) = Action(c, segment).async { request =>
-    request.obj.json(request.apiOptions).map(Ok(_))
+    request.obj.slotJson(request.apiOptions).map(Ok(_))
   }
 }

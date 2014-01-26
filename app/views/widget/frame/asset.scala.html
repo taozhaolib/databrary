@@ -7,10 +7,8 @@
                 <dt>Format</dt>
                 <dd>@asset.format.name</dd>
 
-                @if(asset.position.nonEmpty) {
-                    <dt>Position</dt>
-                    <dd>@asset.position</dd>
-                }
+                <dt>Position</dt>
+                <dd>@asset.relativeSegment</dd>
 
 		@cast[SlotTimeseries](asset).map { ts =>
                     <dt>Duration</dt>
