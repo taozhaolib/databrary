@@ -230,12 +230,12 @@ object Asset extends TableId[Asset]("asset") {
         dur => (volume : Volume) => new Timeseries(id, volume, AssetFormat.getTimeseries(format).get, classification, dur, name, sha1))
     }
 
-  private def volumeRow(vol : Volume) =
-    columns.map(_(vol))
+  private def rowVolume(volume : Selector[Volume]) : Selector[Asset] = columns
+    .join(volume, "asset.volume = volume.id").map(tupleApply)
+  private def rowVolume(volume : Volume) : Selector[Asset] =
+    rowVolume(Volume.fixed(volume))
   private[models] def row(implicit site : Site) =
-    columns.join(Volume.row, "asset.volume = volume.id")
-      .map { case (asset, vol) => asset(vol) }
-
+    rowVolume(Volume.row)
 
   def get(a : Asset.Id)(implicit site : Site) : Future[Option[Asset]] =
     row.SELECT("WHERE asset.id = ? AND", Volume.condition)
@@ -243,22 +243,20 @@ object Asset extends TableId[Asset]("asset") {
 
   /** Get the list of older versions of this asset. */
   def getRevisions(a : Asset) : Future[Seq[Asset]] =
-    volumeRow(a.volume)
-      .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ? AND asset.volume = ?")
-      .apply(a.id, a.volumeId).list
+    rowVolume(a.volume)
+    .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ?")
+    .apply(a.id).list
 
   /** Get a particular older version of this asset. */
   def getRevision(a : Asset, o : Id) : Future[Option[Asset]] =
-    volumeRow(a.volume)
-      .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ? AND asset.id = ? AND asset.volume = ?")
-      .apply(a.id, o, a.volumeId).singleOpt
+    rowVolume(a.volume)
+    .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ? AND asset.id = ?")
+    .apply(a.id, o).singleOpt
 
-  def getAvatar(p : Party)(implicit site : Site) : Future[Option[Asset]] = {
-    val vol = Volume.Core
-    volumeRow(vol)
-      .SELECT("JOIN avatar ON asset.id = avatar.asset WHERE avatar.party = ? AND asset.volume = ?")
-      .apply(p.id, vol.id).singleOpt
-  }
+  def getAvatar(p : Party)(implicit site : Site) : Future[Option[Asset]] =
+    rowVolume(Volume.Core)
+    .SELECT("JOIN avatar ON asset.id = avatar.asset WHERE avatar.party = ?")
+    .apply(p.id).singleOpt
 
   /** Create a new asset from an uploaded file.
     * @param format the format of the file, taken as given

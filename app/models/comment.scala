@@ -34,12 +34,12 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
   /* XXX use here of comment_thread is inefficient, as it always threads the whole comment table, even if we only need a subset. */
   private val threads = columns from "comment_thread AS comment";
 
-  private def rowWhoContainer(who : Selector[Account], container : Selector[Container]) =
+  private def row(who : Selector[Account], container : Selector[Container]) =
     columnsSlot(threads, container, false)
     .join(who, "comment.who = account.id")
     .map(tupleApply)
   private def rowContainer(container : Selector[Container]) =
-    rowWhoContainer(Account.row, container)
+    row(Account.row, container)
   private val order = "ORDER BY comment.thread"
 
   /** Retrieve the set of all comments within the given volume. */
@@ -57,7 +57,7 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
   /** Retrieve the set of comments written by the specified user.
     * This checks permissions on the commented object (volume). */
   private[models] def getParty(who : Account)(implicit site : Site) : Future[Seq[Comment]] =
-    rowWhoContainer(Account.fixed(who), Container.row)
+    row(Account.fixed(who), Container.row)
     .SELECT("WHERE", Volume.condition, order)
     .apply().list
 

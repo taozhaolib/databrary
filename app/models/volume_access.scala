@@ -38,27 +38,23 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
     , SelectColumn[Permission.Value]("inherit")
     , SelectColumn[Option[String]]("funding")
     ).map { (access, inherit, funding) =>
-      (volume : Volume, party : Party) => new VolumeAccess(volume, party, access, inherit, funding)
+      (volume : Volume) => (party : Party) =>
+	new VolumeAccess(volume, party, access, inherit, funding)
     }
-  private def partyRow(party : Party)(implicit site : Site) =
-    columns.join(Volume.row, "volume_access.volume = volume.id") map {
-      case (a, vol) => a(vol, party)
-    }
-  private def volumeRow(volume : Volume) =
-    columns.join(Party.row, "volume_access.party = party.id") map {
-      case (a, who) => a(volume, who)
-    }
+  private def row(volume : Selector[Volume], party : Selector[Party]) = columns
+    .join(volume, "volume_access.volume = volume.id").map(tupleApply)
+    .join(party, "volume_access.party = party.id").map(tupleApply)
 
   /** Retrieve the access entries for a volume. */
   private[models] def getParties(volume : Volume) : Future[Seq[VolumeAccess]] =
-    volumeRow(volume)
-      .SELECT("WHERE volume = ? ORDER BY access DESC, party.name")
-      .apply(volume.id).list
+    row(Volume.fixed(volume), Party.row)
+    .SELECT("ORDER BY access DESC, party.name")
+    .apply().list
   /** Retrieve the volume access entries granted to a party for (at least) CONTRIBUTE or funding. */ 
   private[models] def getVolumes(party : Party)(implicit site : Site) : Future[Seq[VolumeAccess]] =
-    partyRow(party)
-      .SELECT("WHERE party = ? AND (access >= 'CONTRIBUTE' OR funding IS NOT NULL) AND", Volume.condition, "ORDER BY access DESC, volume.name")
-      .apply(party.id).list
+    row(Volume.row, Party.fixed(party))
+    .SELECT("WHERE (access >= 'CONTRIBUTE' OR funding IS NOT NULL) AND", Volume.condition, "ORDER BY access DESC, volume.name")
+    .apply().list
 
   /** Update or add volume access in the database.
     * If an access for the volume and party already exist, it is changed to match this.
