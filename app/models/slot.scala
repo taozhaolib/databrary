@@ -73,11 +73,12 @@ trait Slot extends TableRow with InVolume with SiteObject {
     * @param up Some(true) for up, Some(false) for down, or None to remove
     * @return true if the tag name is valid
     */
-  final def setTag(tag : String, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Future[Boolean] =
-    Tag.valid(tag).fold(Async(false))(tname => for {
+  final def setTag(tag : String, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Future[Option[TagWeight]] =
+    Tag.valid(tag).fold(Async[Option[TagWeight]](None))(tname => for {
       t <- Tag.getOrCreate(tname)
-      r <- t.set(this, up)
-    } yield(r))
+      _ <- t.set(this, up)
+      r <- t.weight(this)
+    } yield (Some(r)))
 
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */

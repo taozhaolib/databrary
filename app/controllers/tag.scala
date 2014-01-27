@@ -20,8 +20,11 @@ private[controllers] sealed class TagController extends SiteController {
         AbadForm[TagMapping](f => SlotHtml.show(tagForm = f), _),
         { case (name2, vote) =>
           for {
-            _ <- request.obj.setTag(name2.getOrElse(name), vote)(request.asInstanceOf[AuthSite])
-          } yield (SlotController.result(request.obj))
+            r <- request.obj.setTag(name2.getOrElse(name), vote)(request.asInstanceOf[AuthSite])
+          } yield {
+	    if (request.isApi) r.fold(BadRequest(""))(r => Ok(r.json.js))
+	    else Redirect(request.obj.pageURL)
+	  }
         }
       )
     }
