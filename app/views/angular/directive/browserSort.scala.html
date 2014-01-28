@@ -1,50 +1,43 @@
 <div class="browser_sort cf">
-    @*<span class="browser_sort_title">*@
-        @*Sort*@
-    @*</span>*@
+    <span class="browser_sort_title">
+        Sort
+    </span>
 
-    @*<span class="browser_sort_wrap"*@
-    @*ng-if="browser.sort.volume.allow">*@
-        @*<a class="browser_sort_pill"*@
-        @*ng-click="toggleSort('volume')"*@
-        @*ng-class="sortClasses('volume')">Study</a>*@
-    @*</span>*@
+    <span class="browser_sort_wrap"
+    ng-if="browser.options.volume.allow">
+        <a class="browser_sort_pill"
+        ng-click="toggleSort('volume')"
+        ng-class="sortClasses('volume')">Study</a>
+    </span>
 
-    @*<span class="browser_sort_wrap"*@
-    @*ng-class="recordSortClasses(sort)"*@
-    @*ng-repeat="sort in browser.recordSorts|filter:{active: true}"*@
-    @*ng-if="browser.sort.record.allow">*@
-        @*<a class="browser_sort_pill left"*@
-        @*ng-click="toggleRecordOptions(sort)">{{sort.name}}</a>*@
+    <span class="browser_sort_wrap"
+    ng-class="recordSortClasses(sort)"
+    ng-repeat="sort in browser.options.record.categories|filter:{active: true, allow: true}"
+    ng-if="browser.options.record.allow">
+        <a class="browser_sort_pill left"
+        ng-click="toggleRecordOptions(sort)">{{sort.name}}</a>
 
-        @*<ul class="record_pill_options">*@
-            @*<li ng-repeat="maybe in browser.recordSorts">*@
-                @*<a ng-click="switchRecordSort(sort, maybe)">{{maybe.name}}</a>*@
-            @*</li>*@
-        @*</ul>*@
+        <ul class="record_pill_options">
+            <li ng-repeat="maybe in browser.options.record.categories">
+                <a ng-click="switchRecordSort(sort, maybe)">{{maybe.name}}</a>
+            </li>
+        </ul>
 
-        @*<a class="browser_sort_pill right remove"*@
-        @*ng-click="removeRecordSort(sort)"*@
-        @*ng-if="canRemoveRecordSort()">x</a>*@
-    @*</span>*@
+        <a class="browser_sort_pill right remove"
+        ng-click="removeRecordSort(sort)"
+        ng-if="canRemoveRecordSort()">x</a>
+    </span>
 
-    @*<span class="browser_sort_wrap"*@
-    @*ng-if="canAddRecordSort()">*@
-        @*<a class="browser_sort_pill add"*@
-        @*ng-click="addRecordSort()">+ sort</a>*@
-    @*</span>*@
+    <span class="browser_sort_wrap"
+    ng-if="canAddRecordSort()">
+        <a class="browser_sort_pill add"
+        ng-click="addRecordSort()">+ sort</a>
+    </span>
 
-    @*<span class="browser_sort_wrap"*@
-    @*ng-if="browser.sort.session.allow">*@
-        @*<a class="browser_sort_pill"*@
-        @*ng-click="toggleSort('session')"*@
-        @*ng-class="sortClasses('session')">Session</a>*@
-    @*</span>*@
-
-    @*<span class="browser_sort_wrap last"*@
-    @*ng-if="browser.sort.asset.allow">*@
-        @*<a class="browser_sort_pill"*@
-        @*ng-click="toggleSort('asset')"*@
-        @*ng-class="sortClasses('asset')">Asset</a>*@
-    @*</span>*@
+    <span class="browser_sort_wrap"
+    ng-if="browser.options.session.allow">
+        <a class="browser_sort_pill"
+        ng-click="toggleSort('session')"
+        ng-class="sortClasses('session')">Session</a>
+    </span>
 </div>
