@@ -13,20 +13,17 @@ define(['app/config/module'], function (module) {
 
 			constantService.$promise.then(function (result) {
 				constantService.data = result.data;
-				console.log(constantService);
 			});
 		};
 
 		constantService.get = function (key, id) {
-			constantService.$promise.then(function () {
-				if (angular.isUndefined(constantService.data[key]))
-					return undefined;
+			if (angular.isUndefined(constantService.data[key]))
+				return undefined;
 
-				if (angular.isDefined(id))
-					return constantService.data[key][id] || undefined;
+			if (angular.isDefined(id))
+				return constantService.data[key][id] || undefined;
 
-				return constantService.data[key];
-			});
+			return constantService.data[key];
 		};
 
 		//

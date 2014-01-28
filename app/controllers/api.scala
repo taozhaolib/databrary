@@ -20,8 +20,7 @@ object SiteApi extends SiteController {
     , 'classification -> JsonRecord.map[Classification.Value](c => JsonRecord(c.id
 	, 'name -> c.toString
 	))(Classification.values.toSeq)
-    // to be consistent with volume."categories":
-    , 'categories -> JsonRecord.map[RecordCategory](_.json)(RecordCategory.getAll)
+    , 'category -> JsonRecord.map[RecordCategory](_.json)(RecordCategory.getAll)
     ).js
   private final val constantsETag = "constants:" + constantsJson.hashCode
   private final val constantsResult = Ok(constantsJson)

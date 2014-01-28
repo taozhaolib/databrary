@@ -26,18 +26,11 @@ define(['app/config/module'], function (module) {
 				expand: true,
 				filter: {},
 				order: []
-			},
-			asset: {
-				allow: true,
-//				active: true,
-				active: false,
-				expand: true,
-				filter: {},
-				order: []
 			}
 		};
 
 		var DEFAULT_CATEGORY = {
+			id: null,
 			name: null,
 			allow: true,
 			active: true,
@@ -55,11 +48,16 @@ define(['app/config/module'], function (module) {
 			items: []
 		};
 
+		var NULL_CATEGORY = {
+			id: 0,
+			name: undefined
+		};
+
 		//
 
 		var raw = {};
 
-		var contexts = ['search', 'party', 'volume', 'record', 'session', 'asset'];
+		var contexts = ['search', 'party', 'volume', 'record', 'session'];
 		var context = undefined;
 
 		//
@@ -98,11 +96,6 @@ define(['app/config/module'], function (module) {
 				case 'volume':
 				case 'record':
 				case 'session':
-				case 'asset':
-					browserService.options.volume.allow = false;
-					browserService.options.record.allow = true;
-					browserService.options.session.allow = true;
-					browserService.options.asset.allow = true;
 
 				case 'party':
 				case 'search':
@@ -119,8 +112,13 @@ define(['app/config/module'], function (module) {
 		browserService.updateCategories = function () {
 			angular.forEach(raw, function (volume) {
 				angular.forEach(volume.categories, function (sessions, category) {
-					if (!browserService.options.record.categories.get({name: category}))
-						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {name: category}));
+					if (!browserService.options.record.categories.get({
+						id: category
+					}))
+						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {
+							id: category,
+							name: $rootScope.constant.get('category', category).name
+						}));
 				});
 			});
 		};
@@ -141,118 +139,28 @@ define(['app/config/module'], function (module) {
 		};
 
 		browserService.updateData = function () {
-			var groups = getActiveGroups();
+			var groups = getActiveRecordGroups();
 
 			var data = angular.extend({}, DEFAULT_DATA);
 
 			if (groups.length == 0)
 				return;
 
-			loopRecursive(groups, 0, data.items, raw, []);
+			data = updateData(data, groups);
 
 			browserService.data = data;
 		};
 
-		var loopRecursive = function (groups, level, current, data, ancestors) {
-			var group = groups[level];
+		var getActiveRecordGroups = function () {
+			var groups = getActiveGroups();
 
-			if (['volume', 'session', 'asset'].indexOf(group) > -1)
-				loopItemRecursive[group](groups, level, current, data, ancestors);
-			else
-				loopItemRecursive['record'](groups, level, current, data, ancestors);
-		};
+			if (groups[0] == 'volume')
+				groups.unshift();
 
-		var itemRecursive = function (groups, level, current, volume, ancestors) {
-			var next = angular.extend({}, DEFAULT_GROUP, {
-				object: ancestors[level],
-				items: []
-			});
+			if (groups[groups.length - 1] == 'session')
+				groups.pop();
 
-			current.push(next);
-
-			if (hasChildren(groups, level))
-				loopRecursive(groups, level + 1, next.items, volume, ancestors);
-		};
-
-		var loopItemRecursive = {
-			volume: function (groups, level, current, data, ancestors) {
-				// for one or more volumes...
-				angular.forEach(data, function (volume) {
-					// never not the top level, if present
-					ancestors = [volume];
-					itemRecursive(groups, level, current, data, ancestors);
-				});
-			},
-
-			record: function (groups, level, current, data, ancestors) {
-				var group = groups[level];
-				var volumes = {};
-
-				// if there are no volumes, we need to iterate all records of this category
-				if (ancestors.length > 0)
-					volumes[ancestors[0].id] = ancestors[0];
-				else
-					volumes = data;
-
-				var recordsAbove = groups.indexOf('volume') == -1 ? ancestors.slice(0, level) : ancestors.slice(1, level);
-
-				// iterate one or more volumes
-				angular.forEach(volumes, function (volume) {
-					// iterate records in this category
-					angular.forEach(volume.categories[group], function (recordID) {
-						var good = true;
-
-						// check if we need to cross index other records...
-						if (recordsAbove.length != 0) {
-							// get the sessions in this record...
-							var sessions = angular.copy(volume.records[recordID].sessions);
-
-							// iterate through cross-indexed records...
-							angular.forEach(recordsAbove, function (recordAbove) {
-								if (!$.isEmptyObject(sessions))
-									// iterate through the current record's sessions...
-									angular.forEach(sessions, function (session, sessionID) {
-										// if this cross-record doesn't have this sessions, remove it
-										if (!recordAbove.sessions.hasOwnProperty(sessionID))
-											delete sessions[sessionID];
-									});
-							});
-
-							if($.isEmptyObject(sessions))
-								good = false;
-						}
-
-						// if there are sessions in this cross-indexed record...
-						if (good) {
-							ancestors = angular.copy(ancestors);
-							ancestors.push(volume.records[recordID]);
-							itemRecursive(groups, level, current, data, ancestors);
-						}
-					});
-				});
-			},
-
-			session: function (groups, level, current, data, ancestors) {
-				var sessions = {};
-
-				if (level == 0) {
-					angular.forEach(data, function (volume) {
-						if (volume.sessions)
-							angular.extend(sessions, volume.sessions);
-					})
-				} else if (groups[level - 1] == 'volume') {
-					angular.extend(sessions, data.sessions);
-				} else {
-					var categoriesAbove = groups.indexOf('volume') == -1 ? groups.slice(0, level) : groups.slice(1, level);
-				}
-			},
-
-			asset: function (groups, level, current, data, ancestors) {
-			}
-		};
-
-		var hasChildren = function (groups, level) {
-			return groups.length != level + 1;
+			return groups;
 		};
 
 		var getActiveGroups = function () {
@@ -264,14 +172,11 @@ define(['app/config/module'], function (module) {
 			if (browserService.options.record)
 				angular.forEach(browserService.options.record.categories, function (category) {
 					if (category.allow && category.active)
-						groups.push(category.name);
+						groups.push(category.id);
 				});
 
 			if (isGroupActive('session'))
 				groups.push('session');
-
-			if (isGroupActive('asset'))
-				groups.push('asset');
 
 			return groups;
 		};
@@ -280,16 +185,71 @@ define(['app/config/module'], function (module) {
 			return browserService.options[group].allow && browserService.options[group].active;
 		};
 
-		//
+		var updateData = function (data, groups) {
+			// note: always sort volumes
+			angular.forEach(raw, function (volume, volumeID) {
+				var newData = angular.extend({}, DEFAULT_GROUP, {
+					object: volume
+				});
 
-//		browserService.expandItem = function () {
-//			// if volume and no items,
-//			// browserService.expandVolume() .then expandItem()
-//
-//			//
-//		};
-//
-//		browserService.expandVolume = function () {
+				data.items.push(newData);
+
+				// start the record-session mayhem
+				updateRecordsCallback(newData, volume, volume.sessions, groups, 1);
+			});
+
+			return data;
+		};
+
+		var updateRecordsCallback = function (data, volume, sessions, groups, level) {
+			var categoryID = groups[++level],
+				recordLevel = categoryID != 'session'; // important for the callback at the end
+
+			if (angular.isUndefined(categoryID) || categoryID != 'session')
+				updateSessionsCallback(data, volume, sessions, groups, --level);
+
+			var tempData = {};
+
+			// iterate through sessions
+			angular.forEach(sessions, function (session, sessionID) {
+				var categoryRecords = session.categories[$rootScope.constant.get('category', categoryID)] || {};
+
+				if(!$.isEmptyObject(categoryRecords)) {
+					// iterate through records
+					angular.forEach(categoryRecords, function (record, recordID) {
+						// make level's record -> sessions
+						if(tempData[recordID])
+							tempData[recordID].push(session);
+						else
+							tempData[recordID] = [session];
+					});
+
+					if(!$.isEmptyObject(tempData)) {
+						angular.forEach(tempData, function (newSessions, recordID) {
+							//
+							// DUPLICATE OF updateData
+							//
+							var newData = angular.extend({}, DEFAULT_GROUP, {
+								object: volume.records[recordID]
+							});
+
+							data.items.push(newData);
+
+							// continue record-session mayhem
+							updateRecordsCallback(newData, volume, newSessions, groups, level);
+						});
+					}
+				}
+			});
+		};
+
+		var updateSessionsCallback = function (data, volume, sessions, groups, level) {
+			angular.forEach(sessions, function (session, sessionID) {
+				data.items.push(session);
+			});
+		};
+
+//		var updateRecordCallback = function (data, volume, sessions, groups, level) {
 //
 //		};
 
@@ -307,48 +267,6 @@ define(['app/config/module'], function (module) {
 		}, function () {
 			browserService.updateCategories();
 		});
-
-		//
-
-
-		//
-
-//		browserService.getSortLevels = function () {
-//			var levels = [];
-//
-//			if (browserService.sort.volume.active)
-//				levels.push('volume');
-//
-//			if (browserService.sort.record.allow) {
-//				angular.forEach(browserService.recordSorts, function (sort) {
-//					if (sort.active)
-//						levels.push(sort.name);
-//				});
-//			}
-//
-//			if (browserService.sort.session.active)
-//				levels.push('session');
-//
-//			if (browserService.sort.asset.active)
-//				levels.push('asset');
-//
-//			return levels;
-//		};
-//
-//		browserService.getLevelType = function (depth) {
-//			if (!angular.isNumber(depth))
-//				return undefined;
-//
-//			return browserService.getSortLevels()[depth];
-//		};
-//
-//		browserService.getLevelItems = function (depth, args) {
-//			return [];
-//		};
-//
-//		browserService.hasLevelItems = function (depth, args) {
-//			return browserService.getLevelItems(depth, args).length > 0;
-//		};
 
 		//
 
