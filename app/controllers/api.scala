@@ -10,15 +10,18 @@ object SiteApi extends SiteController {
   private final val startTime = new Timestamp
 
   private final val constantsJson = JsonObject(
-      'permision -> Permission.values.view.map(_.toString)
-    , 'consent -> Consent.values.view.map(c =>
-	JsonObject.flatten(
-	  Some('name -> c.toString)
+      'permission -> JsonRecord.map[Permission.Value](c => JsonRecord(c.id
+	, 'name -> c.toString
+	))(Permission.values.toSeq)
+    , 'consent -> JsonRecord.map[Consent.Value](c => JsonRecord.flatten(c.id
+	, Some('name -> c.toString)
 	, Consent.description(c).map('message -> _)
-	)
-      )
-    , 'classification -> Classification.values.view.map(_.toString)
-    , 'record_category -> JsonRecord.map[RecordCategory](_.json)(RecordCategory.getAll)
+	))(Consent.values.toSeq)
+    , 'classification -> JsonRecord.map[Classification.Value](c => JsonRecord(c.id
+	, 'name -> c.toString
+	))(Classification.values.toSeq)
+    // to be consistent with volume."categories":
+    , 'categories -> JsonRecord.map[RecordCategory](_.json)(RecordCategory.getAll)
     ).js
   private final val constantsETag = "constants:" + constantsJson.hashCode
   private final val constantsResult = Ok(constantsJson)
