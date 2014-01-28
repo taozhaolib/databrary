@@ -45,5 +45,9 @@ define([
 		$rootScope.browser = browser;
 	}]);
 
+	module.run(['$rootScope', 'ConstantService', function ($rootScope, constant) {
+		$rootScope.constant = constant;
+	}]);
+
 	return module;
 });

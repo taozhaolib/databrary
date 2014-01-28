@@ -33,21 +33,6 @@
         </div>
 
         <div id="tag_add" class="panel_tags_form col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
-<<<<<<< .mine
-        @angular.directive.mode {
-            <form name="tagNewForm" novalidate ng-submit="voteNew()">
-                <input type="text" id="newName" name="newName" ng-model="newName" placeholder="Add new tag..." ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/" required ng-change="newNameChange()"  ng-focus="newNameChange()" ng-blur="newNameBlur()">
-                <button name="vote" ng-click="voteUp(tag)" class="hide">add</button>
-            </form>
-        }{
-=======
-
-
-
-
-
-
->>>>>>> .theirs
             @widget.tag.form(routes.TagHtml.update("", slot.containerId, slot.segment)) {
                 @widget.tag.inputText(form("name"), 'placeholder -> "Add new tag")
                 <button name="vote" value="@true" class="hide">add</button>
