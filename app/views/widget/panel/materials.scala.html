@@ -21,7 +21,7 @@
                             @if(path) {
                                 <span class="session">@display(link.slot)</span>
 
-                                @defining(Async.wait(link.slot.records).filter(r => r.category.fold(false)(c => c == RecordCategory.Participant))) { parts =>
+                                @defining(Async.wait(link.slot.records).filter(r => r.category.exists(_ == RecordCategory.Participant))) { parts =>
                                     @if(parts.nonEmpty) {
                                         with <span class="participant">@parts.map(r => raw("<a href='"+r.pageURL+"'>"+r.pageName+"</a>"))</span>
                                     }

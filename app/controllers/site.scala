@@ -110,7 +110,7 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
     val now = new Timestamp
     macros.Async.flatMap(request.session.get("session"), models.SessionToken.get _).flatMap { session =>
       implicit val site = SiteRequest[A](request, session)
-      if (session.fold(false)(!_.valid))
+      if (session.exists(!_.valid))
         Async.foreach[SessionToken, Unit](session, _.remove).map { _ =>
           LoginController.needed("login.expired")
         }
@@ -193,11 +193,8 @@ object Site extends SiteController {
     Ok(request.queryString.toString)
   }
 
-  def tinyUrl(path : String, prefix : String) = Action {
-    prefix match {
-      case "party" => MovedPermanently("/party/" + path)
-      case "volume" => MovedPermanently("/volume/" + path)
-    }
+  def tinyUrl(prefix : String, path : String) = Action {
+    MovedPermanently("/" + prefix + "/" + path)
   }
 
   def untrail(path : String) = Action {

@@ -73,7 +73,7 @@ object AssetFormat extends TableId[AssetFormat]("format") {
     * @param ts include TimeseriesFormats. */
   private def getExtension(ext : String) : Option[AssetFormat] = {
     val extension = if (ext.equals("mpeg")) "mpg" else ext
-    cache.collectFirst { case (_, a) if a.extension.fold(false)(_.equals(extension)) => a }
+    cache.collectFirst { case (_, a) if a.extension.exists(_.equals(extension)) => a }
       .orElse(wait(row.SELECT("WHERE extension = ?").apply(extension)))
   }
   /** Get a list of all file formats in the database. */
@@ -162,13 +162,14 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
 
   def slot : Future[Option[SlotAsset]] = SlotAsset.getAsset(this)
 
-  def link(c : Container, offset : Option[Offset] = None, duration : Offset = duration) : Future[SlotAsset] =
+  def link(c : Container, offset : Option[Offset] = None, duration : Offset = duration) : Future[SlotAsset] = {
+    val seg = offset.fold[Segment](c.segment)(o => Segment(o, o + duration))
     for {
-      s <- offset.map(o => Range(o, o + duration)).fold[Future[Slot]](Async(c))(Slot.getOrCreate(c, _))
-      _ <- Audit.changeOrAdd("asset_slot", SQLTerms('slot -> s.id), SQLTerms('asset -> id)).execute
-    } yield (SlotAsset.make(this, s.segment, s, None))
+      _ <- Audit.changeOrAdd("slot_asset", SQLTerms('container -> c.id, 'segment -> seg), SQLTerms('asset -> id)).execute
+    } yield (SlotAsset.make(this, seg, c, None))
+  }
   def unlink : Future[Boolean] =
-    Audit.remove("asset_slot", SQLTerms('asset -> id)).execute
+    Audit.remove("slot_asset", SQLTerms('asset -> id)).execute
 
   def pageName = name.getOrElse("file")
   def pageParent = Some(volume)
@@ -229,12 +230,12 @@ object Asset extends TableId[Asset]("asset") {
         dur => (volume : Volume) => new Timeseries(id, volume, AssetFormat.getTimeseries(format).get, classification, dur, name, sha1))
     }
 
-  private def volumeRow(vol : Volume) =
-    columns.map(_(vol))
-  private def row(implicit site : Site) =
-    columns.join(Volume.row, "asset.volume = volume.id")
-      .map { case (asset, vol) => asset(vol) }
-
+  private def rowVolume(volume : Selector[Volume]) : Selector[Asset] = columns
+    .join(volume, "asset.volume = volume.id").map(tupleApply)
+  private def rowVolume(volume : Volume) : Selector[Asset] =
+    rowVolume(Volume.fixed(volume))
+  private[models] def row(implicit site : Site) =
+    rowVolume(Volume.row)
 
   def get(a : Asset.Id)(implicit site : Site) : Future[Option[Asset]] =
     row.SELECT("WHERE asset.id = ? AND", Volume.condition)
@@ -242,22 +243,20 @@ object Asset extends TableId[Asset]("asset") {
 
   /** Get the list of older versions of this asset. */
   def getRevisions(a : Asset) : Future[Seq[Asset]] =
-    volumeRow(a.volume)
-      .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ? AND asset.volume = ?")
-      .apply(a.id, a.volumeId).list
+    rowVolume(a.volume)
+    .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ?")
+    .apply(a.id).list
 
   /** Get a particular older version of this asset. */
   def getRevision(a : Asset, o : Id) : Future[Option[Asset]] =
-    volumeRow(a.volume)
-      .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ? AND asset.id = ? AND asset.volume = ?")
-      .apply(a.id, o, a.volumeId).singleOpt
+    rowVolume(a.volume)
+    .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ? AND asset.id = ?")
+    .apply(a.id, o).singleOpt
 
-  def getAvatar(p : Party)(implicit site : Site) : Future[Option[Asset]] = {
-    val vol = Volume.Core
-    volumeRow(vol)
-      .SELECT("JOIN avatar ON asset.id = avatar.asset WHERE avatar.party = ? AND asset.volume = ?")
-      .apply(p.id, vol.id).singleOpt
-  }
+  def getAvatar(p : Party)(implicit site : Site) : Future[Option[Asset]] =
+    rowVolume(Volume.Core)
+    .SELECT("JOIN avatar ON asset.id = avatar.asset WHERE avatar.party = ?")
+    .apply(p.id).singleOpt
 
   /** Create a new asset from an uploaded file.
     * @param format the format of the file, taken as given
@@ -265,7 +264,6 @@ object Asset extends TableId[Asset]("asset") {
     */
   def create(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
     val sha1 = store.SHA1(file.file)
-    /* TODO transaction */
     Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name, 'sha1 -> sha1), "id")
       .single(SQLCols[Id]).map { id =>
         val a = new Asset(id, volume, format, classification, name, sha1)
@@ -276,7 +274,6 @@ object Asset extends TableId[Asset]("asset") {
 
   def create(volume : Volume, format : TimeseriesFormat, classification : Classification.Value, duration : Offset, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
     val sha1 = store.SHA1(file.file)
-    /* TODO transaction */
     Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> duration, 'name -> name, 'sha1 -> sha1), "id")
       .single(SQLCols[Id]).map { id =>
         val a = new Timeseries(id, volume, format, classification, duration, name, sha1)

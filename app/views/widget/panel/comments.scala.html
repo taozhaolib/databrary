@@ -1,4 +1,4 @@
-@(context : Option[AbstractSlot], post : Option[(Call, SlotHtml.CommentForm)], comments : Seq[Comment])(implicit request : SiteRequest[_])
+@(context : Option[Slot], post : Option[(Call, SlotHtml.CommentForm)], comments : Seq[Comment])(implicit request : SiteRequest[_])
 
 @import helper.FieldConstructor
     @implicitField = @{
@@ -45,26 +45,26 @@
 
                 <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
                     <div class="comment_meta row">
-		    @if(context.fold(true)(!c.slot.equals(_))) {
-                            @if(c.slot.container.top) {
+		    @if(!context.exists(_ === c)) {
+                            @if(c.container.top) {
                                 <div class="comment_info comment_location col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-5 col-cell">
                                     <div class="inner">
-                                        @display(c.slot.volume) <span class="sep">|</span> @display(c.time)
+                                        @display(c.volume) <span class="sep">|</span> @display(c.time)
                                     </div>
                                 </div>
 
                                 <div class="comment_location_thumb col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-                                @widget.figure.thumbVolume(c.slot.volume, scalar = "tube", link = c.slot.volume.pageURL.url)
+                                @widget.figure.thumbVolume(c.volume, scalar = "tube", link = c.volume.pageURL.url)
                                 </div>
                             } else {
                                 <div class="comment_info comment_location col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-5 col-cell">
                                     <div class="inner">
-                                        @display(c.slot) <span class="sep">|</span> @display(c.time)
+                                        @display(c) <span class="sep">|</span> @display(c.time)
                                     </div>
                                 </div>
 
                                 <div class="comment_location_thumb col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-                                @widget.figure.thumbSlot(c.slot, scalar = "tube", link = c.slot.pageURL.url)
+                                @widget.figure.thumbSlot(c, scalar = "tube", link = c.pageURL.url)
                                 </div>
                             }
                     }else{

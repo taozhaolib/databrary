@@ -8,93 +8,118 @@ import dbrary._
 import site._
 
 /** Conceptually a slot represents a segment of a container. */
-trait AbstractSlot extends InVolume with SiteObject {
-  def container : Container
+trait Slot extends TableRow with InVolume with SiteObject {
+  def container : Container = context.container
   val segment : Segment
+  def context : ContextSlot
+  /** The effective consent level that applies to contained data. */
+  def consent : Consent.Value = context.consent
+
+  final def ===(a : Slot) : Boolean = containerId === a.containerId && segment === a.segment
+  private[models] def slotSql : SQLTerms = SQLTerms('container -> containerId, 'segment -> segment)
 
   final def containerId : Container.Id = container.id
   def volume = container.volume
 
   /** True if this is its container's full slot. */
   def isFull : Boolean = segment.isFull
-  def isTop : Boolean = container.top && isFull
+  def top : Boolean = container.top && isFull
   /** Effective start point of this slot within the container. */
   final def position : Offset = segment.lowerBound.getOrElse(Offset.ZERO)
 
-  /** Turn this abstract slot into a real slot in the database. */
-  def realize : Future[Slot]
-  private[models] def sqlId : String
-  private[models] def sqlArgs : SQLArgs
-
-  /** Directly assigned consent for covered assets, or NONE. */
-  def consent : Consent.Value
-  /** The relevant consented slot containing this one. */
-  def context : Slot
-  /** The effective consent level that applies to contained data. */
-  final def getConsent : Consent.Value = context.consent
-  def setConsent(consent : Consent.Value) : Future[Boolean] =
-    if (consent == Consent.NONE) Async(true)
-    else realize.flatMap(_.setConsent(consent))
+  /** Update the given values in the database and this object in-place. */
+  final def setConsent(consent : Consent.Value) : Future[Boolean] = {
+    if (consent == Consent.NONE)
+      Audit.remove("slot_consent", sqlKey).execute
+    else
+      Audit.changeOrAdd("slot_consent", SQLTerms('consent -> consent), sqlKey).execute
+	.recover {
+	  case e : com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("conflicting key value violates exclusion constraint ") => false
+	}
+  }
 
   /** The permisison level granted to identifiable data within this slot. */
   final def dataPermission : HasPermission =
-    Permission.data(getPermission, getConsent, Classification.IDENTIFIED)
+    Permission.data(permission, consent, Classification.IDENTIFIED)
   /** Whether the current user may download identifiable data within this slot. */
   final lazy val downloadable : Boolean =
     dataPermission.checkPermission(Permission.DOWNLOAD)
 
-  private[this] final val publicDateFields = Array(org.joda.time.DateTimeFieldType.year)
   final def getDate : Option[org.joda.time.ReadablePartial] =
     container.date.map { date =>
       if (downloadable) date
-      else new org.joda.time.Partial(publicDateFields, publicDateFields.map(date.get _))
+      else new org.joda.time.Partial(Permission.publicDateFields, Permission.publicDateFields.map(date.get _))
     }
 
   /** List of asset that overlap with this slot. */
-  def assets : Future[Seq[SlotAsset]] = SlotAsset.getSlotAll(this)
+  final def assets : Future[Seq[SlotAsset]] = SlotAsset.getSlot(this)
 
   /** An image-able "asset" that may be used as the slot's thumbnail. */
   final def thumb : Future[Option[SlotAsset]] = SlotAsset.getThumb(this)
 
+  private[this] def _records : FutureVar[Seq[Record]] = FutureVar[Seq[Record]](Record.getSlot(this))
   /** The list of records that apply to this slot. */
-  def records = Record.getSlotAll(this)
+  final def records : Future[Seq[Record]] = _records.apply
 
   /** The list of comments that apply to this slot. */
-  final def comments = Comment.getSlotAll(this)
+  final def comments = Comment.getSlot(this)
   /** Post a new comment this object. */
   final def postComment(text : String, parent : Option[Comment.Id] = None)(implicit site : AuthSite) : Future[Boolean] =
     Comment.post(this, text, parent)
 
   /** The list of tags on the current slot along with the current user's applications. */
-  final def tags = TagWeight.getSlotAll(this)
+  final def tags = TagWeight.getSlot(this)
   /** Tag this slot.
     * @param up Some(true) for up, Some(false) for down, or None to remove
     * @return true if the tag name is valid
     */
-  final def setTag(tag : String, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Future[Boolean] =
-    Tag.valid(tag).fold(Async(false))(tname => for {
+  final def setTag(tag : String, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Future[Option[TagWeight]] =
+    Tag.valid(tag).fold(Async[Option[TagWeight]](None))(tname => for {
       t <- Tag.getOrCreate(tname)
-      s <- realize
-      r <- t.set(s, up)
-    } yield(r))
+      _ <- t.set(this, up)
+      r <- t.weight(this)
+    } yield (Some(r)))
 
-  def pageName = container.name.getOrElse("Slot")
+  /** A list of record identification strings that apply to this object.
+    * This is probably not a permanent solution for naming, but it's a start. */
+  private[this] def idents : Seq[String] =
+    _records.peek.fold[Seq[String]](Nil) {
+      groupBy[Record,Option[RecordCategory]](_, ri => ri.category)
+      .map { case (c,l) =>
+        c.fold("")(_.name.capitalize + " ") + l.map(_.ident).mkString(", ")
+      }
+    }
+
+  def pageName = container.name.getOrElse { 
+    val i = idents
+    if (i.isEmpty)
+      if (container.top)
+        volume.name
+      else
+        "Slot"
+    else
+      i.mkString(", ")
+  }
   override def pageCrumbName : Option[String] = if (isFull) None else Some(segment.lowerBound.fold("")(_.toString) + "-" + segment.upperBound.fold("")(_.toString))
-  def pageParent : Option[SitePage] = Some(context)
+  def pageParent : Option[SitePage] = Some(container)
   def pageURL = controllers.routes.SlotHtml.view(containerId, segment)
   def pageActions = Seq(
-    Action("view", pageURL, Permission.VIEW)
+    Action("view", pageURL, Permission.VIEW),
+    Action("edit", controllers.routes.SlotHtml.edit(containerId, segment), Permission.EDIT),
+    Action("add file", controllers.routes.AssetHtml.create(volumeId, Some(containerId), segment.lowerBound), Permission.CONTRIBUTE),
+    Action("add participant", controllers.routes.RecordHtml.slotAdd(containerId, segment, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
   )
 
-  lazy val json : JsonObject = JsonObject.flatten(
-    Some('container -> container.containerJson),
+  lazy val slotJson : JsonObject = JsonObject.flatten(
+    Some('container -> container.json),
     if (segment.isFull) None else Some('segment -> segment)
     // Maybe(getConsent).opt.map('consent -> _)
   )
+  def json : JsonValue = slotJson
 
-  def json(options : JsonOptions.Options) : Future[JsObject] =
-    JsonOptions(json.obj, options,
-      "assets" -> (opt => SlotAsset.getSlotAll(this).map(JsonArray.map(_.inContext.json - "container"))),
+  def slotJson(options : JsonOptions.Options) : Future[JsObject] =
+    JsonOptions(slotJson.obj, options,
+      "assets" -> (opt => assets.map(JsonArray.map(_.inContext.json - "container"))),
       "records" -> (opt => records.map(JsonRecord.map { r =>
         r.json ++ JsonObject.flatten(r.age(this).map('age -> _))
       })),
@@ -103,168 +128,106 @@ trait AbstractSlot extends InVolume with SiteObject {
     )
 }
 
-/** Smallest organizatonal unit of related data.
-  * Primarily used for an individual session of data with a single date and place.
-  * Critically, contained data are should be covered by a single consent level and share the same annotations. */
-abstract class Slot protected (val id : Slot.Id, val segment : Segment, consent_ : Consent.Value = Consent.NONE) extends TableRowId[Slot] with AbstractSlot {
-  private[this] final var _consent = consent_
-  final def consent = _consent
+trait ContextSlot extends Slot {
+  // override val container : Container
+  override final def context = this
+  // override val consent : Consent.Value
 
-  final override def realize = Async(this)
-  private[models] def sqlId : String = "?"
-  private[models] def sqlArgs : SQLArgs = SQLArgs(id)
-
-  final def hasConsent : Boolean = consent != Consent.NONE
-  final def isContext : Boolean = hasConsent || isFull
-
-  /** Update the given values in the database and this object in-place. */
-  final override def setConsent(consent : Consent.Value) : Future[Boolean] = {
-    if (consent == _consent)
-      return Async(true)
-    Audit.change("slot", SQLTerms('consent -> Maybe(consent).opt), SQLTerms('id -> id)).execute
-      .andThen { case scala.util.Success(true) =>
-        _consent = consent
-      }
-      .recover {
-        case e : com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("conflicting key value violates exclusion constraint ") => false
-      }
-  }
-
-  /** List of contained asset segments within this slot. */
-  override final def assets : Future[Seq[SlotAsset]] = SlotAsset.getSlot(this)
-
-  /** The list of tags on the current slot along with the current user's applications.
-    * @param all add any tags applied to child slots to weight (but not use) as well, and if this is the top slot, return all volume tags instead */
-  final def tags(all : Boolean = true) =
-    if (all) super.tags
-    else TagWeight.getSlot(this)
-
-  private[this] final val _records : FutureVar[Seq[Record]] = FutureVar[Seq[Record]](Record.getSlot(this))
-  /** The list of records on this object.
-    */
-  override final def records : Future[Seq[Record]] = _records.apply
-  /** A list of record identification strings that apply to this object.
-    * This is probably not a permanent solution for naming, but it's a start. */
-  private final def idents : Seq[String] =
-    _records.peek.fold[Seq[String]](Nil) {
-      groupBy[Record,Option[RecordCategory]](_, ri => ri.category)
-      .map { case (c,l) =>
-        c.fold("")(_.name.capitalize + " ") + l.map(_.ident).mkString(", ")
-      }
-    }
-
-  override def pageName = container.name.getOrElse { 
-    val i = idents
-    if (i.isEmpty)
-      if (container.top)
-        volume.name
-      else
-        "Session [" + id + "]"
-    else
-      "Session: " + i.mkString(", ")
-  }
-  override def pageParent = Some(if (isContext) volume else context)
-  override def pageURL = controllers.routes.SlotHtml.view(id)
-  override def pageActions = super.pageActions ++ Seq(
-    Action("edit", controllers.routes.SlotHtml.edit(id), Permission.EDIT),
-    Action("add file", controllers.routes.AssetHtml.create(volumeId, Some(containerId), segment.lowerBound), Permission.CONTRIBUTE),
-    // Action("add slot", controllers.routes.Slot.create(volumeId, containerId), Permission.CONTRIBUTE),
-    Action("add participant", controllers.routes.RecordHtml.slotAdd(id, Range.full[Offset], RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
-  )
+  override def pageParent = Some(volume)
 }
 
-object Slot extends TableId[Slot]("slot") {
-  private final class SubSlot (id : Slot.Id, val container : Container, segment : Segment, consent_ : Consent.Value = Consent.NONE) extends Slot(id, segment, consent_) {
-    /* must be set on construction */
-    private[Slot] var _context : Slot = if (isContext) this else container
-    /** The relevant consented slot containing this one.
-      * Defaults to fullSlot. */
-    def context = _context
-  }
-  /** A slot that is not (necessarily) in the database, but for which we know all the relevant information. */
-  private final class VirtualSlot (val segment : Segment, val context : Slot) extends AbstractSlot {
-    def container = context.container
-    def consent = Consent.NONE
-    def realize = Slot.getOrCreate(container, segment)
-    private[models] def sqlId : String = "get_slot(?, ?::segment)"
-    private[models] def sqlArgs : SQLArgs = SQLArgs(containerId, segment)
-  }
+final class SlotConsent private (override val container : Container, val segment : Segment, override val consent : Consent.Value) extends ContextSlot {
+  private[models] def sqlKey = slotSql
+}
 
-  private val base = Columns(
-      SelectColumn[Id]("id")
-    , SelectColumn[Segment]("segment")
+private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") {
+  private val columns = Columns(
+      SelectColumn[Segment]("segment")
     , SelectColumn[Consent.Value]("consent")
-    ).map { (id, segment, consent) =>
-      (container : Container) =>
-        if ((id === container.id).ensuring(_ == segment.isFull))
-          container.ensuring(_.consent == consent)
-        else
-          new SubSlot(id, container, segment, consent)
+    )
+  private[models] val row : Selector[Container => ContextSlot] = columns
+    .map { (segment, consent) =>
+      if (segment.isFull) { (container : Container) =>
+	container._consent = consent
+	container
+      } else { (container : Container) =>
+	new SlotConsent(container, segment, consent)
+      }
     }
-  private val context = base.fromAlias("context")
-  private[models] val columns : Selector[Container => Slot] = base
-    .leftJoin(context, "slot.source = context.source AND slot.segment <@ context.segment AND context.consent IS NOT NULL")
-    .map {
-      case (slot, None) =>
-        (container : Container) => slot(container)
-      case (slot, Some(context)) =>
-        (container : Container) =>
-          val s = slot(container)
-          s match {
-            case s : SubSlot if !(s.hasConsent || container.hasConsent) =>
-              s._context = context(container)
-            case _ =>
-          }
-          s
-    }
-  private[models] def row(implicit site : Site) =
-    columns.join(Container.row, "slot.source = container.id") map {
-      case (slot, cont) => slot(cont)
-    }
-  private[models] def containerRow(container : Container) =
-    (if (container.hasConsent)
-      base
-    else
-      columns)
-      .map(_(container))
-  private[models] def volumeRow(volume : Volume) =
-    columns.join(Container.volumeRow(volume), "slot.source = container.id") map {
-      case (slot, cont) => slot(cont)
-    }
-  private[models] def abstractRow(segment : Segment)(implicit site : Site) = Container.row
-    .leftJoin(base, "container.id = slot.source AND slot.segment = ?::segment")
-    .leftJoin(context, "container.id = context.source AND ?::segment <@ context.segment AND context.consent IS NOT NULL")
-    .pushArgs(SQLArgs(segment, segment))
-    .map {
-      case ((c, Some(slot)), _) => slot(c)
-      case ((c, None), None) => new VirtualSlot(segment, c)
-      case ((c, None), Some(slot)) => new VirtualSlot(segment, slot(c))
-    }
+}
 
-  /** Retrieve an individual Slot.
-    * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access.
-    * @param full only return full slots */
-  def get(i : Slot.Id)(implicit site : Site) : Future[Option[Slot]] =
-    row.SELECT("WHERE slot.id = ? AND", Volume.condition)
-      .apply(i).singleOpt
+/** A generic type of Table that includes (presumably inheriting from) slot. */
+private[models] trait TableSlot[R <: Slot] extends Table[R] {
+  protected type A
+  protected final def segment = SelectColumn[Segment]("segment")
+  protected final def makeContext(container : Container, consent : Option[Container => ContextSlot]) : ContextSlot =
+    consent.fold[ContextSlot](container)(_(container))
+  protected final def values(containerId : Container.Id, segment : Segment) =
+    SQLTerms('container -> containerId, 'segment -> segment).values
 
-  def get(id : Slot.Id, segment : Segment)(implicit site : Site) : Future[Option[AbstractSlot]] =
-    if (segment.isFull) /* may be container or actual slot id */
-      get(id)
-    else /* must be container id */ abstractRow(segment)
-      .SELECT("WHERE container.id = ? AND", Volume.condition)
-      .apply(id).singleOpt
+  /** Generate a selector for the target type from a base selector.
+    * @param columns base selector requiring a ContextSlot to produce the final type
+    * @param container container selector to use
+    * @param consent determine applicable consent level, or just use container context
+    */
+  protected final def columnsSlot(columns : Selector[ContextSlot => A], container : Selector[Container], consent : Boolean = true) : Selector[A] = {
+    val base = columns
+      .join(container, table + ".container = container.id")
+    if (consent) base
+      .leftJoin(SlotConsent.row.fromAlias(table + "_consent"),
+	table + ".segment <@ " + table + "_consent.segment AND " + table + ".container = " + table + "_consent.container")
+      .map { case ((a, container), consent) => a(makeContext(container, consent)) }
+    else base
+      .map(tupleApply)
+  }
+  protected final def columnsSlot(columns : Selector[ContextSlot => A], container : Container) : Selector[A] =
+    columnsSlot(columns, Container.fixed(container), container.consent == Consent.NONE)
+}
 
-  private def _get(container : Container, segment : Segment)(implicit dbc : Site.DB, exc : ExecutionContext) : Future[Option[Slot]] =
-    containerRow(container).SELECT("WHERE slot.source = ? AND slot.segment = ?::segment")(dbc, exc)
-      .apply(container.id, segment).singleOpt
+private[models] abstract class SlotTable protected (table : String) extends Table[Slot](table) with TableSlot[Slot] {
+  protected final type A = Slot
+  private final class Virtual (val segment : Segment, val context : ContextSlot) extends Slot {
+    private[models] def sqlKey = slotSql
+  }
+  protected final def make(segment : Segment, context : ContextSlot) : Slot =
+    if (segment === context.segment) context
+    else new Virtual(segment, context)
+  private[models] final val columns =
+    Columns(segment)
+  protected def columnsContext =
+    columns.map((make _).curried)
+  protected final def valueColumns(containerId : Container.Id, segment : Segment) =
+    values(containerId, segment).map(_ => make(segment, _ : ContextSlot))
+  /** Generate a Slot selector from the given container selector. */
+  private[models] final def rowContainer(container : Selector[Container]) =
+    columnsSlot(columnsContext, container)
+  private[models] final def rowContainer(container : Container) =
+    columnsSlot(columnsContext, container)
+  private[models] final def rowVolume(volume : Selector[Volume]) =
+    rowContainer(Container.columnsVolume(volume))
+  private[models] final def row(implicit site : Site) =
+    rowVolume(Volume.row)
+}
 
-  /** Create a new slot in the specified container or return a matching one if it already exists. */
-  def getOrCreate(container : Container, segment : Segment) : Future[Slot] =
-    if (segment.isFull) Async(container) else
-    DBUtil.selectOrInsert(_get(container, segment)(_, _)) { (dbc, exc) =>
-      val args = SQLTerms('source -> container.id, 'segment -> segment)
-      SQL("INSERT INTO slot", args.insert, "RETURNING id")(dbc, exc)
-        .apply(args).single(SQLCols[Id].map(new SubSlot(_, container, segment)))
-    }
+object Slot extends SlotTable("slot") {
+  def fixed(slot : Slot) = slot.slotSql.values.map(_ => slot)
+
+  private[models] def rowContainer(container : Container, segment : Segment) =
+    columnsSlot(
+      valueColumns(container.id, segment),
+      container)
+  private[models] def rowVolume(volume : Selector[Volume], containerId : Container.Id, segment : Segment) =
+    columnsSlot(
+      valueColumns(containerId, segment),
+      Container.columnsVolume(volume))
+  private[models] def row(containerId : Container.Id, segment : Segment)(implicit site : Site) =
+    rowVolume(Volume.row, containerId, segment)
+
+  def get(containerId : Container.Id, segment : Segment)(implicit site : Site) : Future[Option[Slot]] =
+    row(containerId, segment)
+    .SELECT().apply().singleOpt
+
+  def get(container : Container, segment : Segment) : Future[Slot] =
+    rowContainer(container, segment)
+    .SELECT().apply().single
 }

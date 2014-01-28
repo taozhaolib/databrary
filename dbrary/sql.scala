@@ -29,7 +29,7 @@ class SQLArgs(val args : Seq[SQLArg[_]]) extends Iterable[SQLArg[_]] {
 object SQLNoArgs extends SQLArgs(Nil)
 
 /** Generic trait for anything which may accept SQLType args to produce a result. */
-protected sealed abstract trait SQLArgsView[R] extends RepeatedView[SQLType, SQLArg[_], R] {
+protected sealed abstract trait SQLArgsView[+R] extends RepeatedView[SQLType, SQLArg[_], R] {
   protected def arg[A : SQLType](a : A) = SQLArg(a)
   final def apply(a : SQLArgs) : R = result(a.args : _*)
 }
@@ -72,7 +72,7 @@ object SQLResult {
 }
 
 /** SQLResult with an associated row parser. */
-final class SQLRows[A](result : Future[db.QueryResult], parse : SQLRow[A])(implicit context : ExecutionContext) extends SQLResult(result)(context) {
+final class SQLRows[+A](result : Future[db.QueryResult], parse : SQLRow[A])(implicit context : ExecutionContext) extends SQLResult(result)(context) {
   override def future(f : Future[db.QueryResult] => Future[db.QueryResult]) : SQLRows[A] =
     new SQLRows[A](f(result), parse)
   def map[B](f : A => B) : SQLRows[B] = new SQLRows[B](result, parse.map[B](f))
@@ -82,7 +82,7 @@ final class SQLRows[A](result : Future[db.QueryResult], parse : SQLRow[A])(impli
 }
 
 /** A generic row parser that can transform RowData query results. */
-trait SQLRow[A] extends (db.RowData => A) {
+trait SQLRow[+A] extends (db.RowData => A) {
   parent =>
 
   def map[B](f : A => B) : SQLRow[B] = new SQLRow[B] {
@@ -125,7 +125,7 @@ object SQLRow {
 /** A parser for a query result row of a specific size (or a part of the row with said size).
   * @param arity the number of columns consumed by this parser
   * @param get the parser which will be passed only the first (next) arity columns */
-class SQLLine[A](val arity : Int, val get : IndexedSeq[Any] => A) extends SQLRow[A] {
+class SQLLine[+A](val arity : Int, val get : IndexedSeq[Any] => A) extends SQLRow[A] {
   def apply(r : db.RowData) : A = {
     if (r.length != arity)
       throw new SQLResultException("got " + r.length + " fields, expecting " + arity)
@@ -199,7 +199,7 @@ final class SQLCols7[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 
 
 /** A generic class representing a query which may (or may not) be applied to arguments, and produces a particular result type.
   * @param query SQL statement */
-protected sealed abstract class SQLBuilder[A] protected (val query : String)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLArgsView[A] {
+protected sealed abstract class SQLBuilder[+A] protected (val query : String)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLArgsView[A] {
   protected def send(args : Seq[SQLArg[_]]) : Future[db.QueryResult] = {
     if (args.isEmpty)
       dbconn.sendQuery(query)
@@ -220,6 +220,6 @@ object SQL {
 
 /** A query which may be applied to arguments, producing rows to be parsed to a particular type.
   * @param parse the parser to use on result rows */
-final case class SQLToRows[A](override val query : String, parse : SQLRow[A], preargs : Seq[SQLArg[_]] = Nil)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLRows[A]](query)(dbconn, context) {
+final case class SQLToRows[+A](override val query : String, parse : SQLRow[A], preargs : Seq[SQLArg[_]] = Nil)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLRows[A]](query)(dbconn, context) {
   final protected def result(args : SQLArg[_]*) : SQLRows[A] = new SQLRows(send(preargs ++ args), parse)
 }

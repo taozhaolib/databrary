@@ -14,14 +14,17 @@ private[controllers] sealed class TagController extends SiteController {
     "vote" -> Forms.optional(Forms.boolean)
   ))
 
-  def update(name : String = "", i : models.Slot.Id, segment : Segment) =
+  def update(name : String = "", i : models.Container.Id, segment : Segment) =
     (SiteAction.access(Permission.VIEW) ~> SlotController.action(i, segment)).async { implicit request =>
       tagForm.bindFromRequest.fold(
         AbadForm[TagMapping](f => SlotHtml.show(tagForm = f), _),
         { case (name2, vote) =>
           for {
-            _ <- request.obj.setTag(name2.getOrElse(name), vote)(request.asInstanceOf[AuthSite])
-          } yield (SlotController.result(request.obj))
+            r <- request.obj.setTag(name2.getOrElse(name), vote)(request.asInstanceOf[AuthSite])
+          } yield {
+	    if (request.isApi) r.fold(BadRequest(""))(r => Ok(r.json.js))
+	    else Redirect(request.obj.pageURL)
+	  }
         }
       )
     }

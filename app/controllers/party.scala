@@ -26,7 +26,7 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
     .getOrElse {
       SiteAction.Auth ~> new ActionRefiner[SiteRequest.Auth,Request] {
         protected def refine[A](request : SiteRequest.Auth[A]) =
-          if (i.fold(true)(_ === request.identity.id))
+          if (i.forall(_ === request.identity.id))
             request.identity.perSite(request).map { p =>
               Right(request.withObj(p))
             }
@@ -88,7 +88,7 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
     val form = formFill.bindFromRequest
     val acct = adminAccount
     form.fold(bad _, {
-      case (_, _, _, _, Some((cur, _, _, _))) if !acct.fold(false)(a => BCrypt.checkpw(cur, a.password)) =>
+      case (_, _, _, _, Some((cur, _, _, _))) if !acct.exists(a => BCrypt.checkpw(cur, a.password)) =>
         bad(form.withError("cur_password", "password.incorrect"))
       case (name, orcid, affiliation, duns, accts) =>
         for {
@@ -202,7 +202,7 @@ object PartyHtml extends PartyController {
     tuple(
       "once" -> optional(text(7)),
       "again" -> text
-    ).verifying(Messages("password.again"), pa => pa._1.fold(true)(_ == pa._2))
+    ).verifying(Messages("password.again"), pa => pa._1.forall(_ == pa._2))
     .transform[Option[String]](_._1, p => (p, p.getOrElse("")))
 
   def view(i : models.Party.Id) = Action(Some(i), Some(Permission.NONE)).async { implicit request =>
@@ -229,7 +229,7 @@ object PartyHtml extends PartyController {
       children <- request.obj.authorizeChildren(true)
       parents <- request.obj.authorizeParents(true)
       authorizeForms = children
-        .filter(t => authorizeChange.fold(true)(_ === t.childId))
+        .filter(t => authorizeChange.forall(_ === t.childId))
         .map(t => (t.child, authorizeFormFill(t))) ++
         authorizeChangeForm
     } yield (views.html.party.authorize(parents, authorizeForms, authorizeWhich, authorizeSearchForm, authorizeResults))

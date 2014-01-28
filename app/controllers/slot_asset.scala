@@ -5,10 +5,10 @@ import dbrary._
 import models._
 
 private[controllers] sealed class SlotAssetController extends ObjectController[SlotAsset] {
-  private[controllers] def action(i : models.Slot.Id, segment : Segment, a : models.Asset.Id, p : Permission.Value = Permission.VIEW) =
+  private[controllers] def action(i : Container.Id, segment : Segment, a : Asset.Id, p : Permission.Value = Permission.VIEW) =
     RequestObject.check(models.SlotAsset.get(a, i, segment)(_), p)
 
-  private[controllers] def Action(i : models.Slot.Id, segment : Segment, a : models.Asset.Id, p : Permission.Value = Permission.VIEW) =
+  private[controllers] def Action(i : Container.Id, segment : Segment, a : Asset.Id, p : Permission.Value = Permission.VIEW) =
     SiteAction ~> action(i, segment, a, p)
 
   private[controllers] def getFrame(offset : Either[Float,Offset])(implicit request : Request[_]) =
@@ -27,15 +27,15 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
           AssetController.assetResult(request.obj)
     }
 
-  def download(s : models.Slot.Id, segment : Segment, o : models.Asset.Id, inline : Boolean) = Action(s, segment, o, Permission.DOWNLOAD).async { implicit request =>
+  def download(s : Container.Id, segment : Segment, o : models.Asset.Id, inline : Boolean) = Action(s, segment, o, Permission.DOWNLOAD).async { implicit request =>
     AssetController.assetResult(request.obj, if (inline) None else Some(request.obj.asset.name.getOrElse("file")))
   }
 
-  def frame(i : models.Container.Id, o : models.Asset.Id, eo : Offset) = head(i, Range.singleton(eo), o)
-  def head(i : models.Slot.Id, segment : Segment, o : models.Asset.Id) = Action(i, segment, o, Permission.DOWNLOAD).async { implicit request =>
+  def frame(i : Container.Id, o : Asset.Id, eo : Offset) = head(i, Range.singleton(eo), o)
+  def head(i : Container.Id, segment : Segment, o : models.Asset.Id) = Action(i, segment, o, Permission.DOWNLOAD).async { implicit request =>
     getFrame(Right(Offset.ZERO))
   }
-  def thumb(i : models.Slot.Id, segment : Segment, o : models.Asset.Id) = Action(i, segment, o, Permission.DOWNLOAD).async { implicit request =>
+  def thumb(i : Container.Id, segment : Segment, o : models.Asset.Id) = Action(i, segment, o, Permission.DOWNLOAD).async { implicit request =>
     getFrame(Left(0.25f))
   }
 }
@@ -43,9 +43,9 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
 object SlotAssetController extends SlotAssetController
 
 object SlotAssetHtml extends SlotAssetController {
-  def view(i : models.Slot.Id, segment : Segment, a : models.Asset.Id) = Action(i, segment, a).async { implicit request =>
+  def view(i : Container.Id, segment : Segment, a : models.Asset.Id) = Action(i, segment, a).async { implicit request =>
     for {
-      comments <- request.obj.slot.comments
+      comments <- request.obj.comments
     } yield (Ok(views.html.asset.view(request.obj, comments)))
   }
 }

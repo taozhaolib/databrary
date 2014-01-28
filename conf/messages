@@ -55,7 +55,6 @@ range.invalid=Invalid time range
 access.group.inherit=You may not grant this level of access to an entire group.
 agreement.required=You must consent to the user agreement.
 
-consent.NONE=
 consent.PRIVATE=The identifying data in this session has not been released for sharing.
 consent.SHARED=The identifying data in this session has been released for sharing on Databrary.
 consent.EXCERPTS=The identifying data in this session has been released for sharing on Databrary, and selected excerpts may be used in public settings.

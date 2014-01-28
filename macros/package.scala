@@ -15,4 +15,9 @@ package object macros {
     (f(a._1), f(a._2))
 
   def unwords(s : String*) = s.mkString(" ")
+
+  def const[A](x : A) : Any => A = _ => x
+
+  def apply[A,B](f : A => B, a : A) : B = f(a)
+  def tupleApply[A,B](fa : (A => B, A)) : B = fa._1(fa._2)
 }
