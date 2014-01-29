@@ -189,7 +189,7 @@ GET     /api/asset/$assetId<[0-9]+>                                             
 POST    /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.update(assetId : models.Asset.Id)
 
 # ----- SLOT ASSET ----- #
-# QUERY     ?volume=ID;slot=ID;record=ID
+# QUERY     ?volume=ID;segment=
 #                                                                                                 TODO: GET     /api/slot/$containerId<[0-9]+>/asset
 # GET       ?segment=
 GET     /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>                                     controllers.SlotAssetApi.get(containerId : models.Container.Id, segment : dbrary.Segment, assetId : models.Asset.Id)
