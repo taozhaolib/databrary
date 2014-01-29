@@ -2,6 +2,5 @@
 
 @widget.template.crud("Record: " + request.obj.pageName) {
     @widget.panel.record(request.obj)
-    @widget.panel.browser(request.obj.volume, record = Some(request.obj))
     @widget.panel.materials(assets, true)
 }

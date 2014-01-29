@@ -57,7 +57,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
   /** An image-able "asset" that may be used as the slot's thumbnail. */
   final def thumb : Future[Option[SlotAsset]] = SlotAsset.getThumb(this)
 
-  private[this] def _records : FutureVar[Seq[Record]] = FutureVar[Seq[Record]](Record.getSlot(this))
+  private[models] val _records : FutureVar[Seq[Record]] = FutureVar[Seq[Record]](Record.getSlot(this))
   /** The list of records that apply to this slot. */
   final def records : Future[Seq[Record]] = _records.apply
 
@@ -83,7 +83,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */
   private[this] def idents : Seq[String] =
-    _records.peek.fold[Seq[String]](Nil) {
+    _records.peek.fold[Seq[String]](Seq("unknown")) {
       groupBy[Record,Option[RecordCategory]](_, ri => ri.category)
       .map { case (c,l) =>
         c.fold("")(_.name.capitalize + " ") + l.map(_.ident).mkString(", ")
