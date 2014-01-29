@@ -10,6 +10,12 @@ package object macros {
     case _ => None
   }
 
+  /** Apply a function to the first component of a tuple. */
+  def first[A,B,C](a : (A, B), f : A => C) : (C, B) =
+    (f(a._1), a._2)
+  /** Apply a function to the first component of a tuple. */
+  def second[A,B,C](a : (A, B), f : B => C) : (A, C) =
+    (a._1, f(a._2))
   /** Apply a function to both components of a homogenous tuple. */
   def both[A,B](a : (A, A), f : A => B) : (B, B) =
     (f(a._1), f(a._2))

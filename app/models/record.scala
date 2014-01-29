@@ -155,30 +155,27 @@ private[models] object SlotRecord extends SlotTable("slot_record") {
 }
 
 object Record extends TableId[Record]("record") {
-  private val columns : Selector[Volume => Record] = Columns(
+  private[models] val columns = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[Option[RecordCategory.Id]]("category")
-    , SelectAs[Consent.Value]("record_consent(record.id)", "record_consent")
-    ).leftJoin(Measures.row, "record.id = measures.record")
-    .map { case ((id, cat, cons), meas) =>
-      (vol : Volume) => new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cons, Measures(meas))
+    )
+  private[models] def sessionRow(vol : Volume) = columns
+    .leftJoin(Measures.row, "record.id = measures.record")
+    .map { case ((id, cat), meas) =>
+      (consent : Consent.Value) =>
+	new Record(id, vol, cat.flatMap(RecordCategory.get(_)), consent, Measures(meas))
     }
   private def rowVolume(volume : Selector[Volume]) : Selector[Record] = columns
-    .join(volume, "record.volume = volume.id").map(tupleApply)
+    .~+(SelectAs[Consent.Value]("record_consent(record.id)", "record_consent"))
+    .leftJoin(Measures.row, "record.id = measures.record")
+    .join(volume, "record.volume = volume.id")
+    .map { case (((id, cat, cons), meas), vol) =>
+      new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cons, Measures(meas))
+    }
   private def rowVolume(vol : Volume) : Selector[Record] =
     rowVolume(Volume.fixed(vol))
   private def row(implicit site : Site) =
     rowVolume(Volume.row)
-  private def sessionRow(vol : Volume) = Columns(
-      SelectColumn[Id]("id")
-    , SelectColumn[Option[RecordCategory.Id]]("category")
-    ).leftJoin(Measures.row, "record.id = measures.record")
-    .join(Container.rowVolume(vol), _ + " JOIN slot_record ON record.id = slot_record.record JOIN " + _ + " ON slot_record.container = container.id AND record.volume = container.volume")
-    .map {
-      case (((id, cat), meas), cont) =>
-        val r = new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cont.consent, Measures(meas))
-        (r, cont)
-    }
 
   /** Retrieve a specific record by id. */
   def get(id : Id)(implicit site : Site) : Future[Option[Record]] =
@@ -204,12 +201,6 @@ object Record extends TableId[Record]("record") {
     rowVolume(volume)
     .SELECT(if (category.isDefined) "WHERE record.category = ?" else "ORDER BY record.category")
     .apply(category.fold(SQLArgs())(c => SQLArgs(c.id))).list
-
-  /** Return the full outer product of all slot, record pairs on the given volume for "session" slots and categorized records. */
-  private[models] def getSessions(vol : Volume) : Future[Seq[(Record,Container)]] =
-    sessionRow(vol)
-      .SELECT("WHERE record.volume = ? AND record.category IS NOT NULL OR container.volume = ? AND NOT container.top ORDER BY record.category NULLS LAST, record.id")
-      .apply(vol.id, vol.id).list
 
   /** Retrieve the records in the given volume with a measure of the given value.
     * @param category restrict to the specified category, or include all categories
