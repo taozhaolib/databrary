@@ -42,7 +42,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   /** List of records defined in this volume.
     * @param category restrict to the specified category
     * @return records sorted by category */
-  def allRecords(category : Option[RecordCategory] = None) = Record.getVolume(this, category)
+  def records(category : Option[RecordCategory] = None) = Record.getVolume(this, category)
 
   /** List of all citations on this volume. */
   lazy val citations = VolumeCitation.getVolume(this)
@@ -56,41 +56,71 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   /** An image-able "asset" that may be used as the volume's thumbnail. */
   def thumb = SlotAsset.getThumb(this)
 
-  private type Session = (Record,Container)
-  private[this] lazy val _sessions : Future[Seq[Session]] =
-    Record.getSessions(this)
+  private[this] lazy val _sessions : Future[Seq[Volume.Session]] =
+    Volume.Session.get(this)
 
-  /** The list of all sessions and their associated record on this volume. */
-  private def slotRecords : Future[Seq[(Container,Seq[Record])]] = _sessions.map { sess =>
-    val l = sess.sortBy(_._2.id.unId)
-    val r = l.genericBuilder[(Container,Seq[Record])]
-    @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Container,Seq[Record])] = l.headOption match {
-      case None => r.result
-      case Some((_, k)) =>
-        val (p, s) = l.span(_._2 === k)
-        r += k -> p.map(_._1)
-        group(s)
+  type Session = (Container, Seq[(Option[RecordCategory.Id], Seq[(Segment, Record)])])
+  private[this] def groupSessions(l : Seq[Volume.Session]) : Seq[Session] = {
+    if (l.isEmpty)
+      return Nil
+    val r = l.genericBuilder[Session]
+    var c1 : Container = l.head._1
+    val r1 = Seq.newBuilder[(Option[RecordCategory.Id], Seq[(Segment, Record)])]
+    var c2 : Option[Option[RecordCategory.Id]] = None
+    val r2 = Seq.newBuilder[(Segment, Record)]
+    def next2(n2 : Option[Option[RecordCategory.Id]]) {
+      c2.foreach { c2s =>
+	r1 += c2s -> r2.result
+	r2.clear
+      }
+      c2 = n2
     }
-    group(l)
+    def next1() {
+      next2(None)
+      r += c1 -> r1.result
+      r1.clear
+    }
+    for ((c, or) <- l) {
+      if (!(c1 === c)) {
+	next1()
+	c1 = c
+      }
+      or foreach { case (seg, rec) =>
+	val cat = rec.categoryId
+	if (!c2.exists(_.equals(cat)))
+	  next2(Some(cat))
+	r2 += seg -> rec
+      }
+    }
+    next1()
+    r.result
   }
 
+  private[this] def sessions = _sessions.map(groupSessions)
+
+  private[this] type SessionRecord = (Record, Seq[(Container, Segment)])
   /** The list of all records and their associated sessions on this volume. */
-  private lazy val recordSlots : Future[Seq[(Record,Seq[Container])]] = _sessions.map { sess =>
-    val l = sess // .sortBy(_._1.id_.unId): already sorted
-    // val l = sess.sortBy { case (r, _) => r.category.map(_.id.unId) -> r.id.unId }
-    val r = l.genericBuilder[(Record,Seq[Container])]
-    @scala.annotation.tailrec def group(l : Seq[Session]) : Seq[(Record,Seq[Container])] = l.headOption match {
-      case Some((k, _)) if k.category.isDefined =>
-        val (p, s) = l.span(_._1 === k)
-        r += k -> p.map(_._2)
-        group(s)
-      case _ => r.result
+  private[this] lazy val recordSlots : Future[Seq[SessionRecord]] = _sessions.map { sess =>
+    val l = sess.sortBy(_._2.map { case (_, r) => r.category.map(_.id.unId) -> r.id.unId })
+    val r = l.genericBuilder[(Record,Seq[(Container, Segment)])]
+    @scala.annotation.tailrec def group(l : Seq[Volume.Session]) {
+      l.headOption match {
+	case None =>
+	case Some((c, None)) =>
+	  group(l.tail)
+	case Some((c, Some((seg, rec)))) =>
+	  val (p, s) = l.span(_._2.exists(_._2 === rec))
+	  r += rec -> p.map(second[Container, Option[(Segment, Record)], Segment](_, _.get._1))
+	  group(s)
+      }
     }
     group(l)
+    r.result
   }
 
-  def recordCategorySlots : Future[Seq[(RecordCategory,Seq[(Record,Seq[Slot])])]] =
-    recordSlots.map(groupBy(_, (r : (Record, Seq[Slot])) => r._1.category.get))
+  def recordCategorySlots : Future[Seq[(RecordCategory,Seq[SessionRecord])]] =
+    recordSlots.map(rs =>
+      groupBy[SessionRecord, RecordCategory](rs.dropWhile(_._1.category.isEmpty), _._1.category.get))
 
   /** Basic summary information on this volume.
     * For now this only includes session (cross participant) information. */
@@ -99,7 +129,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     var agemin, agemax = Age(0)
     var agesum = 0
     sess.foreach {
-      case (r, s) if r.category.exists(_ === RecordCategory.Participant) =>
+      case (s, Some((_, r))) if r.category.exists(_ === RecordCategory.Participant) =>
         sessions = sessions + 1
         if (s.consent >= Consent.SHARED) shared = shared + 1
         s.container.date.flatMap(r.age(_)).foreach { a =>
@@ -152,12 +182,17 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       "categories" -> (opt => recordCategorySlots.map(l =>
 	JsObject(l.map { case (c, rl) => (c.id.toString, Json.toJson(rl.map(_._1.id))) }))),
       "records" -> (opt => recordSlots.map(JsonRecord.map { case (r, ss) =>
-        r.json - "volume" + ('sessions -> JsonArray.map[Container,Container.Id](_.id)(ss))
+        r.json - "volume" + ('sessions -> JsonArray.map[(Container,Segment),Container.Id](_._1.id)(ss))
       })),
-      "sessions" -> (opt => slotRecords.map(JsonRecord.map { case (s, rs) =>
-        s.json - "volume" + ('records -> JsonRecord.map[Record] { r =>
-          JsonRecord.flatten(r.id, r.age(s).map('age -> _))
-        }(rs))
+      "sessions" -> (opt => sessions.map(JsonRecord.map { case (cont, crs) =>
+	cont.json - "volume" + ('categories -> JsObject(crs.map { case (cat, rs) =>
+	  (cat.fold("")(_.toString), JsonArray.map[(Segment, Record), JsonRecord] { case (seg, rec) =>
+	    JsonRecord.flatten(rec.id
+	    , if (seg.isFull) None else Some('segment -> seg)
+	    , rec.age(cont).map('age -> _)
+	    )
+	  }(rs))
+	}))
       })),
       "assets" -> (opt => toplevelAssets.map(JsonArray.map(_.json))),
       "top" -> (opt => top.map(t => (t.json - "volume" - "top").obj))
@@ -223,6 +258,24 @@ object Volume extends TableId[Volume]("volume") {
       'agerange -> agerange,
       'agemean -> agemean
     )
+  }
+
+  type Session = (Container, Option[(Segment, Record)])
+  private object Session {
+    private def row(vol : Volume) : Selector[Session] =
+      Container.rowVolume(vol)
+      .leftJoin(SlotRecord.columns
+	.join(Record.sessionRow(vol), "slot_record.record = record.id"),
+	"container.id = slot_record.container AND container.volume = record.volume")
+      .map {
+	case (cont, None) => (cont, None)
+	case (cont, Some((seg, rec))) => (cont, Some((seg, rec(cont.consent))))
+      }
+
+    def get(vol : Volume) : Future[Seq[Session]] =
+      row(vol)
+      .SELECT("WHERE container.volume = ? ORDER BY container.id, record.category NULLS LAST, record.id")
+      .apply(vol.id).list
   }
 }
 

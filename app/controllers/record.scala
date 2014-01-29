@@ -75,7 +75,7 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
 
   private[controllers] def selectList(target : Slot)(implicit request : SiteRequest[_]) : Future[Seq[(String, String)]] =
     /* ideally we'd remove already used records here */
-    target.volume.allRecords().map(_ map { r : Record =>
+    target.volume.records().map(_ map { r : Record =>
       (r.id.toString, r.category.fold("")(_.name + ':') + r.ident)
     })
 
@@ -215,7 +215,7 @@ object RecordApi extends RecordController {
     queryForm.bindFromRequest.fold(
       new ApiFormException(_).result,
       category =>
-        request.obj.allRecords(category).map(l =>
+        request.obj.records(category).map(l =>
           Ok(JsonRecord.map[Record](_.json)(l)))
     )
   }
