@@ -1,6 +1,6 @@
 package macros
 
-import scala.concurrent.Future
+import scala.concurrent.{Future,ExecutionContext}
 
 trait OptionVar[T] {
   def peek : Option[T]
@@ -8,6 +8,7 @@ trait OptionVar[T] {
   def get : T
   /** Change the value, discarding any current computation. */
   def set(v : T) : Unit
+  // def map[A](f : T => A) : OptionVar[A]
   def clear() : Unit
 }
 
@@ -29,6 +30,11 @@ final class LazyOptionVar[T](init : => T) extends LazyVar[T](init) with OptionVa
   def peek : Option[T] = value
   def get : T = value.get
   def set(v : T) = update(v)
+  def map[A](f : T => A) : LazyOptionVar[A] = {
+    val v = new LazyOptionVar[A](f(init))
+    v.value = value.map(f)
+    v
+  }
 }
 
 object LazyVar {
@@ -40,6 +46,11 @@ final class FutureVar[T](init : => Future[T]) extends LazyVar[Future[T]](init) w
   def peek : Option[T] = value.flatMap(_.value.map(_.get))
   def get : T = value.get.value.get.get
   def set(v : T) = update(Future.successful(v))
+  def map[A](f : T => A)(implicit ctx : ExecutionContext) : FutureVar[A] = {
+    val v = new FutureVar[A](init.map(f))
+    v.value = value.map(_.map(f))
+    v
+  }
 }
 
 object FutureVar {
