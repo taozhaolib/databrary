@@ -83,22 +83,21 @@ trait Slot extends TableRow with InVolume with SiteObject {
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */
   private[this] def idents : Seq[String] =
-    _records.peek.fold[Seq[String]](Seq("unknown")) {
+    _records.peek.fold[Seq[String]](Nil) {
       groupBy[Record,Option[RecordCategory]](_, ri => ri.category)
       .map { case (c,l) =>
         c.fold("")(_.name.capitalize + " ") + l.map(_.ident).mkString(", ")
       }
     }
 
-  def pageName = container.name.getOrElse { 
-    val i = idents
-    if (i.isEmpty)
-      if (container.top)
-        volume.name
-      else
-        "Slot"
+  protected def ident : Option[String] =
+    Maybe(idents).opt.map(_.mkString(", "))
+
+  def pageName = container.name orElse ident getOrElse {
+    if (container.top)
+      volume.name
     else
-      i.mkString(", ")
+      "Slot"
   }
   override def pageCrumbName : Option[String] = if (isFull) None else Some(segment.lowerBound.fold("")(_.toString) + "-" + segment.upperBound.fold("")(_.toString))
   def pageParent : Option[SitePage] = Some(container)
@@ -112,8 +111,9 @@ trait Slot extends TableRow with InVolume with SiteObject {
 
   lazy val slotJson : JsonObject = JsonObject.flatten(
     Some('container -> container.json),
-    if (segment.isFull) None else Some('segment -> segment)
-    // Maybe(getConsent).opt.map('consent -> _)
+    if (segment.isFull) None else Some('segment -> segment),
+    Maybe(consent).opt.map('consent -> _),
+    ident.map('name -> _)
   )
   def json : JsonValue = slotJson
 
