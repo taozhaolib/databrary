@@ -33,24 +33,8 @@ define(['app/config/module'], function (module) {
 			id: null,
 			name: null,
 			allow: true,
-			active: true,
+			active: false,
 			expand: true
-		};
-
-		var DEFAULT_DATA = {
-//			expand: true,
-			items: []
-		};
-
-		var DEFAULT_GROUP = {
-			object: null,
-//			expand: false,
-			items: []
-		};
-
-		var NULL_CATEGORY = {
-			id: 0,
-			name: undefined
 		};
 
 		//
@@ -103,8 +87,9 @@ define(['app/config/module'], function (module) {
 			}
 
 			var participant = browserService.options.record.categories.get({name: 'participant'});
-			if (participant)
-				participant.active = true;
+
+//			if (participant)
+//				participant.active = true;
 
 			return context;
 		};
@@ -139,26 +124,31 @@ define(['app/config/module'], function (module) {
 		};
 
 		browserService.updateData = function () {
-			var groups = getActiveRecordGroups();
+			var start = new Date().getTime();
 
-			var data = angular.extend({}, DEFAULT_DATA);
+			var groups = getActiveGroups();
 
-			if (groups.length == 0)
-				return;
+			var data = {
+				items: []
+			};
 
 			data = updateData(data, groups);
 
 			browserService.data = data;
+
+			var end = new Date().getTime();
+			console.log(end - start);
 		};
 
 		var getActiveRecordGroups = function () {
-			var groups = getActiveGroups();
+			var groups = [];
 
-			if (groups[0] == 'volume')
-				groups.unshift();
+			angular.forEach(getActiveGroups(), function (group) {
+				var group = parseInt(group);
 
-			if (groups[groups.length - 1] == 'session')
-				groups.pop();
+				if (!isNaN(group))
+					groups.push(group);
+			});
 
 			return groups;
 		};
@@ -172,7 +162,7 @@ define(['app/config/module'], function (module) {
 			if (browserService.options.record)
 				angular.forEach(browserService.options.record.categories, function (category) {
 					if (category.allow && category.active)
-						groups.push(category.id);
+						groups.push(parseInt(category.id));
 				});
 
 			if (isGroupActive('session'))
@@ -186,15 +176,34 @@ define(['app/config/module'], function (module) {
 		};
 
 		var updateData = function (data, groups) {
-			// note: always sort volumes
+			if(!groups[0])
+				return data;
+
+			switch(groups[0]) {
+				case 'volume':
+					updateVolumesCallback(data, groups);
+					break;
+
+				case 'session':
+					angular.forEach(raw, function (volume, volumeID) {
+						updateSessionsCallback(data, volume, volume.sessions);
+					});
+					break;
+
+				default:
+					angular.forEach(raw, function (volume, volumeID) {
+						updateRecordsCallback(data, volume, volume.sessions, groups, 0);
+					});
+					break;
+			}
+
+			return data;
+		};
+
+		var updateVolumesCallback = function (data, groups) {
 			angular.forEach(raw, function (volume, volumeID) {
-				var newData = angular.extend({}, DEFAULT_GROUP, {
-					object: volume
-				});
+				var newData = updateItemCallback(data, volume, 'volume');
 
-				data.items.push(newData);
-
-				// start the record-session mayhem
 				updateRecordsCallback(newData, volume, volume.sessions, groups, 1);
 			});
 
@@ -202,56 +211,58 @@ define(['app/config/module'], function (module) {
 		};
 
 		var updateRecordsCallback = function (data, volume, sessions, groups, level) {
-			var categoryID = groups[++level],
-				recordLevel = categoryID != 'session'; // important for the callback at the end
+			var categoryID = groups[level];
 
-			if (angular.isUndefined(categoryID) || categoryID != 'session')
-				updateSessionsCallback(data, volume, sessions, groups, --level);
+			if (categoryID == 'session')
+				return updateSessionsCallback(data, volume, sessions);
 
 			var tempData = {};
 
-			// iterate through sessions
 			angular.forEach(sessions, function (session, sessionID) {
-				var categoryRecords = session.categories[$rootScope.constant.get('category', categoryID)] || {};
+				var categoryRecords = session.categories[categoryID];
 
-				if(!$.isEmptyObject(categoryRecords)) {
-					// iterate through records
+				if (angular.isDefined(categoryRecords)) {
 					angular.forEach(categoryRecords, function (record, recordID) {
-						// make level's record -> sessions
-						if(tempData[recordID])
-							tempData[recordID].push(session);
-						else
-							tempData[recordID] = [session];
+						recordID = record.id;
+
+						if (!tempData[recordID])
+							tempData[recordID] = {};
+
+						tempData[recordID][session.id] = session;
 					});
-
-					if(!$.isEmptyObject(tempData)) {
-						angular.forEach(tempData, function (newSessions, recordID) {
-							//
-							// DUPLICATE OF updateData
-							//
-							var newData = angular.extend({}, DEFAULT_GROUP, {
-								object: volume.records[recordID]
-							});
-
-							data.items.push(newData);
-
-							// continue record-session mayhem
-							updateRecordsCallback(newData, volume, newSessions, groups, level);
-						});
-					}
 				}
 			});
+
+			if (!$.isEmptyObject(tempData)) {
+				angular.forEach(tempData, function (newSessions, recordID) {
+					var newData = updateItemCallback(data, volume.records[recordID], 'record');
+
+					updateRecordsCallback(newData, volume, newSessions, groups, level + 1);
+				});
+			}
+			
+			return data;
 		};
 
-		var updateSessionsCallback = function (data, volume, sessions, groups, level) {
+		var updateSessionsCallback = function (data, volume, sessions) {
 			angular.forEach(sessions, function (session, sessionID) {
-				data.items.push(session);
+				updateItemCallback(data, session, 'session');
 			});
+			
+			return data;
 		};
 
-//		var updateRecordCallback = function (data, volume, sessions, groups, level) {
-//
-//		};
+		var updateItemCallback = function (data, object, type) {
+			var newData = {
+				object: object,
+				type: type,
+				items: []
+			};
+
+			data.items.push(newData);
+
+			return newData;
+		};
 
 		//
 

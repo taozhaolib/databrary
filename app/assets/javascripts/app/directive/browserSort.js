@@ -6,6 +6,8 @@ define(['app/config/module'], function (module) {
 			return function ($scope, $element, $attrs) {
 				$scope.toggleSort = function (sort) {
 					$scope.browser.options[sort].active = !$scope.browser.options[sort].active;
+
+					$scope.browser.updateData();
 				};
 
 				$scope.sortClasses = function (sort) {
@@ -33,6 +35,8 @@ define(['app/config/module'], function (module) {
 					}
 
 					$scope.browser.options.record.categories[sort_i] = $scope.browser.options.record.categories.splice(maybe_i, 1, $scope.browser.options.record.categories[sort_i])[0];
+
+					$scope.browser.updateData();
 				};
 
 				$scope.addRecordSort = function () {
@@ -44,6 +48,8 @@ define(['app/config/module'], function (module) {
 							go = false;
 						}
 					});
+
+					$scope.browser.updateData();
 				};
 
 				$scope.canAddRecordSort = function () {
@@ -66,6 +72,8 @@ define(['app/config/module'], function (module) {
 
 					$scope.browser.options.record.categories.splice(sort_i, 1);
 					$scope.browser.options.record.categories.push(sort);
+
+					$scope.browser.updateData();
 				};
 
 				$scope.canRemoveRecordSort = function () {

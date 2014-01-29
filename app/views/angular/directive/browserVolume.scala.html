@@ -1,7 +1,7 @@
 <article class="browser_item browser_volume">
     <header>
-        <h1>{{item.name}}</h1>
+        <h1>{{item.object.name}}</h1>
     </header>
 
-    <browser-list level="{{browserDepth + 1}}" item="{{assign(item)}}"></browser-list>
+    <browser-list data="item"></browser-list>
 </article>
