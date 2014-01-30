@@ -275,12 +275,117 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		var types = ['volume', 'record', 'session'];
+		browserService.isItemType = function (type) {
+			return !!browserService.options[type];
+		};
+
+		browserService.isItemCategory = function (type) {
+			return !!browserService.options.record.categories[type];
+		};
+
+		browserService.getItemType = function (object) {
+			if (!angular.isObject(object))
+				return undefined;
+
+			if (object.measures)
+				return 'record';
+
+			if (object.body)
+				return 'volume';
+
+			return 'session';
+		};
+
+		//
+
+		var recordGroupToggle = undefined;
+
+		browserService.setRecordGroupToggle = function (group) {
+			recordGroupToggle = angular.isUndefined(recordGroupToggle) ? group : undefined;
+		};
+
+		browserService.isRecordGroupToggle = function (group) {
+			return recordGroupToggle == group;
+		};
+
+		//
+
+		browserService.setGroupActive = function (type, active) {
+			if (!browserService.isItemType(type))
+				return undefined;
+
+			browserService.options[type].active =
+				angular.isUndefined(active) ?
+					!browserService.options[type].active : !!active;
+
+			browserService.updateData();
+
+			return true;
+		};
+
+		browserService.canAddRecordGroup = function () {
+			var canAdd = false;
+
+			angular.forEach(browserService.options.record.categories, function (recordGroup) {
+				if (!canAdd && !recordGroup.active) {
+					canAdd = true;
+				}
+			});
+
+			return canAdd;
+		};
+
+		browserService.addRecordGroup = function () {
+			var go = true;
+
+			angular.forEach(browserService.options.record.categories, function (recordGroup) {
+				if (go && !recordGroup.active) {
+					recordGroup.active = true;
+					go = false;
+				}
+			});
+
+			browserService.updateData();
+		};
+
+		browserService.canRemoveRecordGroup = function () {
+			return true;
+		};
+
+		browserService.removeRecordGroup = function (group) {
+			group.active = false;
+
+			// move to end
+			var group_i = browserService.options.record.categories.index(group);
+
+			browserService.options.record.categories.splice(group_i, 1);
+			browserService.options.record.categories.push(group);
+
+			browserService.updateData();
+		};
+
+		browserService.switchRecordGroup = function (group, maybe) {
+			browserService.setRecordGroupToggle(undefined);
+
+			var group_i = browserService.options.record.categories.index(group),
+				maybe_i = browserService.options.record.categories.index(maybe);
+
+			if (group.active != maybe.active) {
+				group.active = !group.active;
+				maybe.active = !maybe.active;
+			}
+
+			browserService.options.record.categories[group_i] = browserService.options.record.categories.splice(maybe_i, 1, browserService.options.record.categories[group_i])[0];
+
+			browserService.updateData();
+		};
+
+		//
 
 		browserService.setItemExpand = function (object, expand, type) {
 			var option, id;
 
-			type = types.indexOf(type) > -1 ? type : browserService.getItemType(object);
+			type = browserService.isItemType(type) ? type : browserService.getItemType(object);
 
 			switch (type) {
 				case 'volume':
@@ -309,7 +414,7 @@ define(['app/config/module'], function (module) {
 		browserService.getItemExpand = function (object, type) {
 			var option;
 
-			type = types.indexOf(type) > -1 ? type : browserService.getItemType(object);
+			type = browserService.isItemType(type) ? type : browserService.getItemType(object);
 
 			switch (type) {
 				case 'volume':
@@ -326,19 +431,6 @@ define(['app/config/module'], function (module) {
 			}
 
 			return option.expanded.indexOf(object.id) > -1;
-		};
-
-		browserService.getItemType = function (object) {
-			if (!angular.isObject(object))
-				return undefined;
-
-			if (object.measures)
-				return 'record';
-
-			if (object.body)
-				return 'volume';
-
-			return 'session';
 		};
 
 		//
