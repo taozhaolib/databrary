@@ -8,9 +8,10 @@ define(['app/config/module'], function (module) {
 
 		var DEFAULT_OPTIONS = {
 			volume: {
-				allow: true,
+				allow: false,
 				active: true,
-				expand: true,
+				expand: false,
+				expanded: [],
 				filter: {},
 				order: []
 			},
@@ -22,8 +23,9 @@ define(['app/config/module'], function (module) {
 			},
 			session: {
 				allow: true,
-				active: true,
-				expand: true,
+				active: false,
+				expand: false,
+				expanded: [],
 				filter: {},
 				order: []
 			}
@@ -34,7 +36,8 @@ define(['app/config/module'], function (module) {
 			name: null,
 			allow: true,
 			active: false,
-			expand: true
+			expand: false,
+			expanded: null // array
 		};
 
 		//
@@ -76,20 +79,22 @@ define(['app/config/module'], function (module) {
 			browserService.updateCategories();
 
 			switch (context) {
-
-				case 'volume':
-				case 'record':
-				case 'session':
-
 				case 'party':
 				case 'search':
 					browserService.options.volume.allow = true;
+
+					break;
+
+				case 'volume':
+//				case 'record':
+//				case 'session':
+					var participant = browserService.options.record.categories.get({name: 'participant'});
+
+					if (participant)
+						participant.active = true;
+
+					break;
 			}
-
-			var participant = browserService.options.record.categories.get({name: 'participant'});
-
-//			if (participant)
-//				participant.active = true;
 
 			return context;
 		};
@@ -102,7 +107,8 @@ define(['app/config/module'], function (module) {
 					}))
 						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {
 							id: category,
-							name: $rootScope.constant.get('category', category).name
+							name: $rootScope.constant.get('category', category).name,
+							expanded: []
 						}));
 				});
 			});
@@ -176,10 +182,10 @@ define(['app/config/module'], function (module) {
 		};
 
 		var updateData = function (data, groups) {
-			if(!groups[0])
+			if (!groups[0])
 				return data;
 
-			switch(groups[0]) {
+			switch (groups[0]) {
 				case 'volume':
 					updateVolumesCallback(data, groups);
 					break;
@@ -240,7 +246,7 @@ define(['app/config/module'], function (module) {
 					updateRecordsCallback(newData, volume, newSessions, groups, level + 1);
 				});
 			}
-			
+
 			return data;
 		};
 
@@ -248,7 +254,7 @@ define(['app/config/module'], function (module) {
 			angular.forEach(sessions, function (session, sessionID) {
 				updateItemCallback(data, session, 'session');
 			});
-			
+
 			return data;
 		};
 
@@ -262,6 +268,82 @@ define(['app/config/module'], function (module) {
 			data.items.push(newData);
 
 			return newData;
+		};
+
+		//
+
+		var types = ['volume', 'record', 'session'];
+
+		browserService.setItemExpand = function (object, expand, type) {
+			var option;
+
+			type = types.indexOf(type) > -1 ? type : browserService.getItemType(object);
+
+			switch (type) {
+				case 'volume':
+					option = browserService.options.volume;
+					break;
+
+				case 'session':
+					option = browserService.options.session;
+					break;
+
+				case 'record':
+					option = browserService.options.record.categories[object.category];
+					break;
+
+				default:
+					return undefined;
+					break;
+			}
+
+			var index = option.expanded.indexOf(object.id);
+
+			if (index == -1 && expand !== false)
+				option.expanded.push(object.id);
+			else if (index > -1 && expand !== true)
+				option.expanded.splice(index, 1);
+
+			return true;
+		};
+
+		browserService.getItemExpand = function (object, type) {
+			var option;
+
+			type = types.indexOf(type) > -1 ? type : browserService.getItemType(object);
+
+			switch (type) {
+				case 'volume':
+					option = browserService.options.volume;
+					break;
+
+				case 'session':
+					option = browserService.options.session;
+					break;
+
+				case 'record':
+					option = browserService.options.record.categories[object.category];
+					break;
+
+				default:
+					return undefined;
+					break;
+			}
+
+			return option.expanded.indexOf(object.id) > -1;
+		};
+
+		browserService.getItemType = function (object) {
+			if (!angular.isObject(object))
+				return undefined;
+
+			if (object.measures)
+				return 'record';
+
+			if (object.body)
+				return 'volume';
+
+			return 'session';
 		};
 
 		//

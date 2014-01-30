@@ -14,6 +14,6 @@ define([
 	'app/directive/hasAuth',
 	'app/directive/hasAccess',
 	'app/directive/carousel',
-	'app/directive/browserSort',
+	'app/directive/browserGroup',
 	'app/directive/browserList'
 ], function () {});
