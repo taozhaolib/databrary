@@ -210,7 +210,8 @@ define(['app/config/module'], function (module) {
 			angular.forEach(raw, function (volume, volumeID) {
 				var newData = updateItemCallback(data, volume, 'volume');
 
-				updateRecordsCallback(newData, volume, volume.sessions, groups, 1);
+				if (browserService.options.volume.expanded.indexOf(volumeID) > -1)
+					updateRecordsCallback(newData, volume, volume.sessions, groups, 1);
 			});
 
 			return data;
@@ -243,7 +244,9 @@ define(['app/config/module'], function (module) {
 				angular.forEach(tempData, function (newSessions, recordID) {
 					var newData = updateItemCallback(data, volume.records[recordID], 'record');
 
-					updateRecordsCallback(newData, volume, newSessions, groups, level + 1);
+					if (browserService.options.record.categories[categoryID] &&
+						browserService.options.record.categories[categoryID].expanded.indexOf(recordID) > -1)
+						updateRecordsCallback(newData, volume, newSessions, groups, level + 1);
 				});
 			}
 
@@ -275,17 +278,13 @@ define(['app/config/module'], function (module) {
 		var types = ['volume', 'record', 'session'];
 
 		browserService.setItemExpand = function (object, expand, type) {
-			var option;
+			var option, id;
 
 			type = types.indexOf(type) > -1 ? type : browserService.getItemType(object);
 
 			switch (type) {
 				case 'volume':
 					option = browserService.options.volume;
-					break;
-
-				case 'session':
-					option = browserService.options.session;
 					break;
 
 				case 'record':
@@ -315,10 +314,6 @@ define(['app/config/module'], function (module) {
 			switch (type) {
 				case 'volume':
 					option = browserService.options.volume;
-					break;
-
-				case 'session':
-					option = browserService.options.session;
 					break;
 
 				case 'record':
