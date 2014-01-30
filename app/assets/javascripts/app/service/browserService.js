@@ -59,7 +59,7 @@ define(['app/config/module'], function (module) {
 			newData.$promise.then(function (newData) {
 				browserService.initializeData(newData);
 				browserService.initializeOptions(newContext);
-				browserService.updateData();
+				browserService.rebuildData();
 
 				$rootScope.$log.debug(browserService.options);
 				$rootScope.$log.debug(browserService.data);
@@ -129,34 +129,77 @@ define(['app/config/module'], function (module) {
 				raw = newData;
 		};
 
-		browserService.updateData = function () {
-			var start = new Date().getTime();
+		browserService.rebuildData = function () {
+			var groups = getActiveGroups(),
+				data = {
+					items: []
+				};
 
-			var groups = getActiveGroups();
+			switch (groups[0]) {
+				case 'volume':
+					callbackVolumes(data, groups);
+					break;
 
-			var data = {
-				items: []
-			};
+				case 'session':
+					angular.forEach(raw, function (volume, volumeID) {
+						callbackSessions(data, volume, volume.sessions);
+					});
+					break;
 
-			data = updateData(data, groups);
+				default:
+					angular.forEach(raw, function (volume, volumeID) {
+						callbackRecords(data, volume, volume.sessions, groups, 0);
+					});
+					break;
+			}
 
 			browserService.data = data;
 
-			var end = new Date().getTime();
-			console.log(end - start);
+			return data;
 		};
 
-		var getActiveRecordGroups = function () {
-			var groups = [];
+		browserService.updateData = function (levelData) {
+			if (!levelData.object)
+				return undefined;
 
-			angular.forEach(getActiveGroups(), function (group) {
-				var group = parseInt(group);
+			var type;
 
-				if (!isNaN(group))
-					groups.push(group);
-			});
+			if (browserService.isItemCategory(levelData.object.category)) {
+				type = levelData.object.category;
+			} else if (browserService.isItemType(levelData.type)) {
+				type = levelData.type;
+			}
 
-			return groups;
+			var groups = getActiveGroups(),
+				level = groups.indexOf(type);
+
+			if (level == -1)
+				return undefined;
+
+			switch (type) {
+				case 'volume':
+					callbackVolumeChildren(levelData, levelData.object, groups, level + 1);
+					break;
+
+				default:
+					var currentVolume;
+
+					angular.forEach(raw, function (volume) {
+						if(angular.isUndefined(currentVolume) && volume.records[levelData.object.id])
+							currentVolume = volume;
+					});
+
+					callbackRecordChildren(levelData, currentVolume, undefined, groups, level + 1);
+					break;
+			}
+
+			return levelData;
+		};
+
+		//
+
+		var isGroupActive = function (group) {
+			return browserService.options[group].allow && browserService.options[group].active;
 		};
 
 		var getActiveGroups = function () {
@@ -165,11 +208,7 @@ define(['app/config/module'], function (module) {
 			if (isGroupActive('volume'))
 				groups.push('volume');
 
-			if (browserService.options.record)
-				angular.forEach(browserService.options.record.categories, function (category) {
-					if (category.allow && category.active)
-						groups.push(parseInt(category.id));
-				});
+			groups.push.apply(groups, getActiveRecordGroups());
 
 			if (isGroupActive('session'))
 				groups.push('session');
@@ -177,56 +216,48 @@ define(['app/config/module'], function (module) {
 			return groups;
 		};
 
-		var isGroupActive = function (group) {
-			return browserService.options[group].allow && browserService.options[group].active;
+		var getActiveRecordGroups = function () {
+			var groups = [];
+
+			angular.forEach(browserService.options.record.categories, function (category) {
+				if (category.allow && category.active)
+					groups.push(parseInt(category.id));
+			});
+
+			return groups;
 		};
 
-		var updateData = function (data, groups) {
-			if (!groups[0])
-				return data;
+		//
 
-			switch (groups[0]) {
-				case 'volume':
-					updateVolumesCallback(data, groups);
-					break;
-
-				case 'session':
-					angular.forEach(raw, function (volume, volumeID) {
-						updateSessionsCallback(data, volume, volume.sessions);
-					});
-					break;
-
-				default:
-					angular.forEach(raw, function (volume, volumeID) {
-						updateRecordsCallback(data, volume, volume.sessions, groups, 0);
-					});
-					break;
-			}
-
-			return data;
-		};
-
-		var updateVolumesCallback = function (data, groups) {
+		var callbackVolumes = function (data, groups) {
 			angular.forEach(raw, function (volume, volumeID) {
-				var newData = updateItemCallback(data, volume, 'volume');
+				var newData = callbackItem(data, volume, 'volume');
 
-				if (browserService.options.volume.expanded.indexOf(volumeID) > -1)
-					updateRecordsCallback(newData, volume, volume.sessions, groups, 1);
+				callbackVolumeChildren(data, volume, groups, 1);
 			});
 
 			return data;
 		};
 
-		var updateRecordsCallback = function (data, volume, sessions, groups, level) {
-			var categoryID = groups[level];
+		var callbackVolumeChildren = function (data, volume, groups, level) {
+			if (browserService.options.volume.expanded.indexOf(volume.id) == -1)
+				return data;
 
-			if (categoryID == 'session')
-				return updateSessionsCallback(data, volume, sessions);
+			level = level || 1;
 
+			if (groups[level] == 'session')
+				callbackSessions(data, volume, volume.sessions);
+			else
+				callbackRecords(data, volume, volume.sessions, groups, level);
+
+			return data;
+		};
+
+		var callbackRecords = function (data, volume, sessions, groups, level) {
 			var tempData = {};
 
 			angular.forEach(sessions, function (session, sessionID) {
-				var categoryRecords = session.categories[categoryID];
+				var categoryRecords = session.categories[groups[level]];
 
 				if (angular.isDefined(categoryRecords)) {
 					angular.forEach(categoryRecords, function (record, recordID) {
@@ -242,26 +273,44 @@ define(['app/config/module'], function (module) {
 
 			if (!$.isEmptyObject(tempData)) {
 				angular.forEach(tempData, function (newSessions, recordID) {
-					var newData = updateItemCallback(data, volume.records[recordID], 'record');
+					var newData = callbackItem(data, volume.records[recordID], 'record');
 
-					if (browserService.options.record.categories[categoryID] &&
-						browserService.options.record.categories[categoryID].expanded.indexOf(recordID) > -1)
-						updateRecordsCallback(newData, volume, newSessions, groups, level + 1);
+					callbackRecordChildren(newData, volume, newSessions, groups, level + 1);
 				});
 			}
 
 			return data;
 		};
 
-		var updateSessionsCallback = function (data, volume, sessions) {
+		var callbackRecordChildren = function (data, volume, sessions, groups, level) {
+			if (!browserService.getItemExpand(data, 'record'))
+				return data;
+
+			if(angular.isUndefined(sessions)) {
+				sessions = {};
+
+				angular.forEach(data.object.sessions, function (sessionID) {
+					sessions[sessionID] = volume.sessions[sessionID];
+				})
+			}
+
+			if (groups[level] == 'session')
+				callbackSessions(data, volume, sessions);
+			else
+				callbackRecords(data, volume, sessions, groups, level);
+
+			return data;
+		};
+
+		var callbackSessions = function (data, volume, sessions) {
 			angular.forEach(sessions, function (session, sessionID) {
-				updateItemCallback(data, session, 'session');
+				callbackItem(data, session, 'session');
 			});
 
 			return data;
 		};
 
-		var updateItemCallback = function (data, object, type) {
+		var callbackItem = function (data, object, type) {
 			var newData = {
 				object: object,
 				type: type,
@@ -318,7 +367,7 @@ define(['app/config/module'], function (module) {
 				angular.isUndefined(active) ?
 					!browserService.options[type].active : !!active;
 
-			browserService.updateData();
+			browserService.rebuildData();
 
 			return true;
 		};
@@ -345,11 +394,11 @@ define(['app/config/module'], function (module) {
 				}
 			});
 
-			browserService.updateData();
+			browserService.rebuildData();
 		};
 
 		browserService.canRemoveRecordGroup = function () {
-			return true;
+			return true; // TODO: for manditory grouping in future...
 		};
 
 		browserService.removeRecordGroup = function (group) {
@@ -361,7 +410,7 @@ define(['app/config/module'], function (module) {
 			browserService.options.record.categories.splice(group_i, 1);
 			browserService.options.record.categories.push(group);
 
-			browserService.updateData();
+			browserService.rebuildData();
 		};
 
 		browserService.switchRecordGroup = function (group, maybe) {
@@ -377,15 +426,15 @@ define(['app/config/module'], function (module) {
 
 			browserService.options.record.categories[group_i] = browserService.options.record.categories.splice(maybe_i, 1, browserService.options.record.categories[group_i])[0];
 
-			browserService.updateData();
+			browserService.rebuildData();
 		};
 
 		//
 
-		browserService.setItemExpand = function (object, expand, type) {
+		browserService.setItemExpand = function (levelData, expand, type) {
 			var option, id;
 
-			type = browserService.isItemType(type) ? type : browserService.getItemType(object);
+			type = browserService.isItemType(type) ? type : browserService.getItemType(levelData.object);
 
 			switch (type) {
 				case 'volume':
@@ -393,7 +442,7 @@ define(['app/config/module'], function (module) {
 					break;
 
 				case 'record':
-					option = browserService.options.record.categories[object.category];
+					option = browserService.options.record.categories[levelData.object.category];
 					break;
 
 				default:
@@ -401,20 +450,22 @@ define(['app/config/module'], function (module) {
 					break;
 			}
 
-			var index = option.expanded.indexOf(object.id);
+			var index = option.expanded.indexOf(levelData.object.id);
 
-			if (index == -1 && expand !== false)
-				option.expanded.push(object.id);
-			else if (index > -1 && expand !== true)
+			if (index == -1 && expand !== false) {
+				option.expanded.push(levelData.object.id);
+				browserService.updateData(levelData); // todo: what must we pass?
+			} else if (index > -1 && expand !== true) {
 				option.expanded.splice(index, 1);
+			}
 
 			return true;
 		};
 
-		browserService.getItemExpand = function (object, type) {
+		browserService.getItemExpand = function (levelData, type) {
 			var option;
 
-			type = browserService.isItemType(type) ? type : browserService.getItemType(object);
+			type = browserService.isItemType(type) ? type : browserService.getItemType(levelData.object);
 
 			switch (type) {
 				case 'volume':
@@ -422,7 +473,7 @@ define(['app/config/module'], function (module) {
 					break;
 
 				case 'record':
-					option = browserService.options.record.categories[object.category];
+					option = browserService.options.record.categories[levelData.object.category];
 					break;
 
 				default:
@@ -430,7 +481,10 @@ define(['app/config/module'], function (module) {
 					break;
 			}
 
-			return option.expanded.indexOf(object.id) > -1;
+			if (!option)
+				return undefined;
+
+			return option.expanded.indexOf(levelData.object.id) > -1;
 		};
 
 		//
