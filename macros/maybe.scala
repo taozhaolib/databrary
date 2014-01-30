@@ -16,18 +16,19 @@ object Truth {
     def pass(a : A) = p(a)
   }
 
+  import scala.language.higherKinds
   def all[A] : Truth[A] = Truth[A](_ => true)
   def none[A] : Truth[A] = Truth[A](_ => false)
   implicit val trueBoolean : Truth[Boolean] = Truth[Boolean](a => a)
-  implicit val someOption : Truth[Option[_]] = Truth[Option[_]](_.isDefined)
-  implicit val nonEmptyTraversable : Truth[GenTraversableOnce[_]] = Truth[GenTraversableOnce[_]](_.nonEmpty)
+  implicit def someOption[A] : Truth[Option[A]] = Truth[Option[A]](_.isDefined)
+  implicit def nonEmptyTraversable[A, T[A] <: GenTraversableOnce[A]] : Truth[T[A]] = Truth[T[A]](_.nonEmpty)
   implicit val nonEmptyString : Truth[String] = Truth[String](_.nonEmpty)
   /* useful with String.index */
   implicit val nonNegativeInt : Truth[Int] = Truth[Int](_ >= 0)
 }
 
 /** A passively conditional value based on a Truth instance. */
-final case class Maybe[A](a : A)(implicit t : Truth[A]) {
+final case class Maybe[+A](a : A)(implicit t : Truth[A]) {
   final implicit val pass : Boolean = t.pass(a)
   /** A more concise version of the common `Some(_).filter(_)` idiom.
     * @return Some(a) if pass(a), None otherwise
@@ -37,7 +38,7 @@ final case class Maybe[A](a : A)(implicit t : Truth[A]) {
   /** Conditionally map only true values. */
   final def map[B >: A](f : A => B) : B =
     if (pass) f(a) else a
-  final def orElse(b : A) =
+  final def orElse[B >: A](b : B) : B =
     if (pass) a else b
 }
 

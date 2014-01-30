@@ -1,1 +1,16 @@
-@(volume: Volume, record: Option[Record] = None)(implicit request : SiteRequest[_])
+@(sessions : Seq[(Slot, Any)])(implicit request : SiteRequest[_])
+
+@import play.api.templates.HtmlFormat._
+@import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
+    @if(sessions.nonEmpty){
+        @widget.panel.raw("browser", "")(title = "Browser", foldable = true){
+            <div class="col-full">
+                <ul>
+                    @sessions.map { case (slot, _)  =>
+			    <li>@display(slot)</li>
+                    }
+                </ul>
+            </div>
+        }
+    }

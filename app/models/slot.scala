@@ -57,7 +57,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
   /** An image-able "asset" that may be used as the slot's thumbnail. */
   final def thumb : Future[Option[SlotAsset]] = SlotAsset.getThumb(this)
 
-  private[this] def _records : FutureVar[Seq[Record]] = FutureVar[Seq[Record]](Record.getSlot(this))
+  private[models] val _records : FutureVar[Seq[Record]] = FutureVar[Seq[Record]](Record.getSlot(this))
   /** The list of records that apply to this slot. */
   final def records : Future[Seq[Record]] = _records.apply
 
@@ -90,15 +90,14 @@ trait Slot extends TableRow with InVolume with SiteObject {
       }
     }
 
-  def pageName = container.name.getOrElse { 
-    val i = idents
-    if (i.isEmpty)
-      if (container.top)
-        volume.name
-      else
-        "Slot"
+  protected def ident : Option[String] =
+    Maybe(idents).opt.map(_.mkString(", "))
+
+  def pageName = container.name orElse ident getOrElse {
+    if (container.top)
+      volume.name
     else
-      i.mkString(", ")
+      "Slot"
   }
   override def pageCrumbName : Option[String] = if (isFull) None else Some(segment.lowerBound.fold("")(_.toString) + "-" + segment.upperBound.fold("")(_.toString))
   def pageParent : Option[SitePage] = Some(container)
@@ -112,8 +111,9 @@ trait Slot extends TableRow with InVolume with SiteObject {
 
   lazy val slotJson : JsonObject = JsonObject.flatten(
     Some('container -> container.json),
-    if (segment.isFull) None else Some('segment -> segment)
-    // Maybe(getConsent).opt.map('consent -> _)
+    if (segment.isFull) None else Some('segment -> segment),
+    Maybe(consent).opt.map('consent -> _),
+    ident.map('name -> _)
   )
   def json : JsonValue = slotJson
 

@@ -272,16 +272,6 @@ CREATE TABLE "slot" ( -- ABSTRACT
 ALTER TABLE "slot" ALTER COLUMN "segment" SET STORAGE plain;
 COMMENT ON TABLE "slot" IS 'Generic table for objects associated with a temporal sub-sections of a container.  Inherit from this table to use the functions below.';
 
-CREATE FUNCTION "slot_contains" ("slot", "slot") RETURNS boolean LANGUAGE sql IMMUTABLE STRICT AS
-	$$ SELECT $1.container = $2.container AND $1.segment @> $2.segment $$;
-CREATE FUNCTION "slot_within" ("slot", "slot") RETURNS boolean LANGUAGE sql IMMUTABLE STRICT AS
-	$$ SELECT $1.container = $2.container AND $1.segment <@ $2.segment $$;
-CREATE FUNCTION "slot_overlaps" ("slot", "slot") RETURNS boolean LANGUAGE sql IMMUTABLE STRICT AS
-	$$ SELECT $1.container = $2.container AND $1.segment && $2.segment $$;
-CREATE OPERATOR @> (PROCEDURE = "slot_contains", LEFTARG = "slot", RIGHTARG = "slot", COMMUTATOR = <@);
-CREATE OPERATOR <@ (PROCEDURE = "slot_within", LEFTARG = "slot", RIGHTARG = "slot", COMMUTATOR = @>);
-CREATE OPERATOR && (PROCEDURE = "slot_overlaps", LEFTARG = "slot", RIGHTARG = "slot", COMMUTATOR = &&);
-
 
 CREATE TABLE "slot_consent" (
 	"container" integer NOT NULL References "container",
@@ -580,7 +570,7 @@ COMMENT ON TABLE "slot_record" IS 'Attachment of records to slots.';
 
 
 CREATE FUNCTION "record_consent" ("record" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS
-	$$ SELECT MIN(consent) FROM slot_record JOIN slot_consent ON slot_record <@ slot_consent WHERE record = $1 $$;
+	$$ SELECT MIN(consent) FROM slot_record JOIN slot_consent ON slot_record.container = slot_consent.container AND slot_record.segment <@ slot_consent.segment WHERE record = $1 $$;
 COMMENT ON FUNCTION "record_consent" (integer) IS 'Effective (minimal) consent level granted on the specified record.';
 
 CREATE FUNCTION "record_daterange" ("record" integer) RETURNS daterange LANGUAGE sql STABLE STRICT AS $$

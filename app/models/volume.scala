@@ -68,6 +68,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     val r1 = Seq.newBuilder[(Option[RecordCategory.Id], Seq[(Segment, Record)])]
     var c2 : Option[Option[RecordCategory.Id]] = None
     val r2 = Seq.newBuilder[(Segment, Record)]
+    val rc = Seq.newBuilder[Record]
     def next2(n2 : Option[Option[RecordCategory.Id]]) {
       c2.foreach { c2s =>
 	r1 += c2s -> r2.result
@@ -77,6 +78,8 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
     }
     def next1() {
       next2(None)
+      c1._records.set(rc.result)
+      rc.clear
       r += c1 -> r1.result
       r1.clear
     }
@@ -90,13 +93,14 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 	if (!c2.exists(_.equals(cat)))
 	  next2(Some(cat))
 	r2 += seg -> rec
+	rc += rec
       }
     }
     next1()
     r.result
   }
 
-  private[this] def sessions = _sessions.map(groupSessions)
+  lazy val sessions : Future[Seq[Session]] = _sessions.map(groupSessions)
 
   private[this] type SessionRecord = (Record, Seq[(Container, Segment)])
   /** The list of all records and their associated sessions on this volume. */
