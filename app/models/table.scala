@@ -42,7 +42,7 @@ private[models] trait TableView extends HasTable {
   private[models] type Row // <: TableRow
   /* Description of the database selection to produce a Row. */
   // private[models] val row : Selector[Row]
-  def fixed(r : Row with TableRow) = r.sqlKey.values.map(_ => r)
+  private[models] def fixed(r : Row with TableRow) = r.sqlKey.values.map(_ => r)
 
   protected def INSERT(args : SQLTerms)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     SQL("INSERT INTO", table, args.insert)(dbc, exc).apply(args)
