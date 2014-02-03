@@ -1,10 +1,6 @@
 @(slot : Slot)(implicit request : SiteRequest[_])
 
 @widget.panel.raw("overview", "panel_slot")(){
-    <h1 class="col-full panel_title">@display.formatTitle(slot.pageName)</h1>
-
-    @widget.frame.slot(slot)
-
     <div class="col-full panel_overview_actions">
         <ul class="breadcrumbs">
         @Path(slot).toHtml
@@ -18,4 +14,8 @@
 	    }
         </ul>
     </div>
+
+    <h1 class="col-full panel_title">@display.formatTitle(slot.pageName)</h1>
+
+    @widget.frame.slot(slot)
 }

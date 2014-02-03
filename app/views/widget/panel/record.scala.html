@@ -1,10 +1,6 @@
 @(record : Record)(implicit request : SiteRequest[_])
 
 @widget.panel.raw("overview", "panel_record")(){
-    <h1 class="col-full panel_title">@display.formatTitle(record.pageName)</h1>
-
-    @widget.frame.record(record)
-
     <div class="col-full panel_overview_actions">
         <ul class="breadcrumbs">
         @Path(record).toHtml
@@ -18,4 +14,8 @@
 	    }
         </ul>
     </div>
+
+    <h1 class="col-full panel_title">@display.formatTitle(record.pageName)</h1>
+
+    @widget.frame.record(record)
 }

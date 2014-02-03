@@ -1,15 +1,6 @@
 @(volume : Volume, summary : Volume.Summary, access : Seq[VolumeAccess])(implicit request : SiteRequest[_])
 
 @widget.panel.raw("overview", "panel_volume")(){
-    @widget.figure.thumbVolume(volume, scalar = "", classes = "panel_overview_thumbnail")
-
-    <h1 class="col-full panel_title">@display.formatTitle(volume.pageName)</h1>
-
-    @widget.frame.people(access)
-    @widget.frame.funding(access.filter(_.funding.isDefined))
-    @widget.frame.volume(volume, summary)
-    @widget.frame.citation(volume, access)
-
     <div class="col-full panel_overview_actions">
         <ul class="breadcrumbs">
         @Path(volume).toHtml
@@ -28,4 +19,13 @@
 	    }
         </ul>
     </div>
+
+    @widget.figure.thumbVolume(volume, scalar = "", classes = "panel_overview_thumbnail")
+
+    <h1 class="col-full panel_title">@display.formatTitle(volume.pageName)</h1>
+
+    @widget.frame.people(access)
+    @widget.frame.funding(access.filter(_.funding.isDefined))
+    @widget.frame.volume(volume, summary)
+    @widget.frame.citation(volume, access)
 }
