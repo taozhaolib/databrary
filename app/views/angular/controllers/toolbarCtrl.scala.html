@@ -1,6 +1,6 @@
 @(requestOption: Option[SiteRequest[_]] = None)
 
-<section id="toolbars" ng-controller="ToolbarCtrl">
+<section id="toolbars">
     <nav id="toolbar_databrary" class="toolbar toolbar_databrary">
         <div class="wrap">
             <div class="row">
@@ -18,23 +18,7 @@
                     </nav>
                 </div>
 
-                <div class="toolbar_user col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 ng-cloak">
-                    <div has-auth="!view" ng-if="false">
-                        <a href="#" ng-click="logIn()">login</a>
-                    </div>
-
-                    <div has-auth="!view" ng-if="false">
-                        <a href="#" ng-click="logOut()">logout</a>
-
-                        <span has-auth="!admin">
-                            <span class="sep">|</span>
-                            <a class="superuser on" href="#" ng-click="disableSU()">SU</a>
-                            <a class="superuser off" href="#" ng-click="enableSU()">SU</a>
-                        </span>
-
-                        <a href="#" ng-click="showProfile()" class="img"><img ng-src="{{authUser.avatar}}" alt="{{authUser.username}}"></a>
-                    </div>
-
+                <div class="toolbar_user col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
                     @requestOption.filter(_.user.isDefined).fold {
                         <a href="@routes.LoginHtml.view">login</a>
                     } { request =>
@@ -51,74 +35,6 @@
 
                         <a href="@requestOption.get.identity.pageURL" id="modal_profile_link" class="img modal_link" data-target="modal_profile"><img src="@display.avatar(requestOption.get.identity, 16)" alt="@requestOption.get.identity.name" class="s16"></a>
                     }
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <nav contextbar id="toolbar_context" class="toolbar toolbar_context hide-print ng-cloak" ng-init="tempContextLinks = {
-            left: [
-                {
-                    href: '@routes.VolumeHtml.search',
-                    text: 'Home'
-                }
-            ],
-            right: [
-                {
-                    href: 'https://www.facebook.com/pages/Databrary/185349568273416',
-                    target: '_blank',
-                    classes: 'toolbar_img16',
-                    text: 'Facebook',
-                    image: '@routes.Assets.at("images/social/16px/facebook.png")'
-                },
-                {
-                    href: 'https://plus.google.com/u/1/111083162045777800330/posts',
-                    target: '_blank',
-                    classes: 'toolbar_img16',
-                    text: 'Google+',
-                    image: '@routes.Assets.at("images/social/16px/google-plus.png")'
-                },
-                {
-                    href: 'https://twitter.com/databrary',
-                    target: '_blank',
-                    classes: 'toolbar_img16',
-                    text: 'Twitter',
-                    image: '@routes.Assets.at("images/social/16px/twitter.png")'
-                },
-                {
-                    href: 'https://github.com/databrary/',
-                    target: '_blank',
-                    classes: 'toolbar_img16',
-                    text: 'GitHub',
-                    image: '@routes.Assets.at("images/social/16px/github.png")'
-                }
-            ]}">
-        <div ng-show="contextbar.mode == 'panels'" class="wrap">
-            <div class="row">
-                <div class="col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-4 col-cell">
-                    <ul class="toolbar_menu toolbar_menu_left">
-                        <li ng-repeat="(key, panel) in contextbar.panels"><a ng-click="scrollTo(panel)">{{panel.title}}</a></li>
-                    </ul>
-                </div>
-
-                <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 col-cell">
-
-                </div>
-            </div>
-        </div>
-
-        <div ng-show="contextbar.mode == 'links'" class="wrap">
-            <div class="row">
-                <div class="col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-4 col-cell">
-                    <ul class="toolbar_menu toolbar_menu_left">
-                        <li ng-repeat="item in contextbar.linksLeft" class="toolbar_menu_item"><a ng-href="{{item.href}}" target="{{item.target}}" class="{{item.classes}}" title="{{item.title}}"><img ng-show="item.image" ng-src="{{item.image}}" alt="{{item.text}}"><span ng-hide="item.image">{{item.text}}</span></a></li>
-                    </ul>
-                </div>
-
-                <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 col-cell">
-                    <ul class="toolbar_menu toolbar_menu_right">
-                        <li ng-repeat="item in contextbar.linksRight" class="toolbar_menu_item"><a ng-href="{{item.href}}" target="{{item.target}}" class="{{item.classes}}" title="{{item.title}}"><img ng-show="item.image" ng-src="{{item.image}}" alt="{{item.text}}"><span ng-hide="item.image">{{item.text}}</span></a></li>
-                    </ul>
                 </div>
             </div>
         </div>
