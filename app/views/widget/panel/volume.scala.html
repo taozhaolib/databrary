@@ -17,21 +17,15 @@
 
 
         <ul class="actions">
-        @volume.pageActions.filter(_.available).map { act =>
-            <li class="@{
-                if(request.path == act.route.url) {
-                    "current"
-                }
-            }">
-            @if(act.route.method != "GET") {
-                @widget.tag.form(act.route) {
-                    <button type="submit" class="link">@act.name</button>
-                }
-            } else {
-                <a href="@act.route" alt="@act.name">@act.name</a>
-            }
-            </li>
-        }
+	        <li><a href="@volume.pageURL">view</a></li>
+	    @if(volume.permission >= Permission.EDIT) {
+	        <li><a href="@controllers.routes.VolumeHtml.edit(volume.id)">edit</a></li>
+	        <li><a href="@controllers.routes.AssetHtml.create(volume.id)">add file</a></li>
+	        <li><a href="@controllers.routes.SlotHtml.createContainer(volume.id)">add session/folder</a></li>
+	    }
+	    @if(volume.permission >= Permission.ADMIN) {
+	        <li><a href="@controllers.routes.VolumeHtml.admin(volume.id)">access</a></li>
+	    }
         </ul>
     </div>
 }

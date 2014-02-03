@@ -57,12 +57,6 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
   override def pageName = asset.pageName
   override def pageParent = Some(slot)
   override def pageURL = controllers.routes.SlotAssetHtml.view(containerId, slot.segment, assetId)
-  override def pageActions = Seq(
-      Action("view", pageURL, Permission.VIEW)
-    ) ++ (if (slot.isFull) Seq(
-      Action("edit", controllers.routes.AssetHtml.edit(assetId), Permission.EDIT),
-      Action("remove", controllers.routes.AssetHtml.remove(assetId), Permission.CONTRIBUTE)
-    ) else Nil)
 
   override lazy val json : JsonObject = JsonObject.flatten(
     Some('permission -> permission),

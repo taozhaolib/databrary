@@ -121,14 +121,6 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   def pageName = name
   def pageParent = None
   def pageURL = controllers.routes.VolumeHtml.view(id)
-  def pageActions = Seq(
-    Action("view", pageURL, Permission.VIEW),
-    Action("edit", controllers.routes.VolumeHtml.edit(id), Permission.EDIT),
-    Action("access", controllers.routes.VolumeHtml.admin(id), Permission.ADMIN),
-    Action("add file", controllers.routes.AssetHtml.create(id), Permission.CONTRIBUTE),
-    Action("add session", controllers.routes.SlotHtml.createContainer(id), Permission.CONTRIBUTE),
-    Action("add participant", controllers.routes.RecordHtml.add(id, RecordCategory.PARTICIPANT), Permission.CONTRIBUTE)
-  )
 
   lazy val json : JsonRecord =
     JsonRecord.flatten(id,
