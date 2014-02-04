@@ -60,9 +60,6 @@ define(['app/config/module'], function (module) {
 				browserService.initializeData(newData);
 				browserService.initializeOptions(newContext);
 				browserService.rebuildData();
-
-				$rootScope.$log.debug(browserService.options);
-				$rootScope.$log.debug(browserService.data);
 			});
 		};
 
@@ -190,7 +187,7 @@ define(['app/config/module'], function (module) {
 					callbackRecordChildren(levelData, currentVolume, undefined, groups, level + 1);
 					break;
 			}
-			console.log(levelData);
+
 			return levelData;
 		};
 
@@ -559,8 +556,11 @@ define(['app/config/module'], function (module) {
 			if(angular.isDefined(itemSelect))
 				itemSelect.select = false;
 
-			itemSelect = data;
+			if(itemSelect == data)
+				return itemSelect = undefined;
+
 			data.select = true;
+			return itemSelect = data;
 		};
 
 		browserService.getItemSelect = function () {

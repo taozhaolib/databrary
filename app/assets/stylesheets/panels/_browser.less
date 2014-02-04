@@ -16,9 +16,9 @@
 .browser_widget_title {
 	text-transform: uppercase;
 	font-weight: bold;
-	color: g2;
+	color: @g2;
 	.margin-height(@f4);
-	.margin-right(@f4);
+	.margin-width(@f4);
 }
 
 .browser_widget_wrap {
@@ -69,6 +69,11 @@
 		}
 	}
 
+	&.middle {
+		.border-radius(0);
+		border-left-width: 0;
+	}
+
 	&.right {
 		.border-radius(0 @b1 @b1 0);
 		border-left-width: 0;
@@ -103,10 +108,36 @@
 
 //
 
+.browser_tool {
+	.size(24px);
+	display: inline-block;
+	.border-radius(@border-radius);
+	background-color: @g5;
+
+	&:hover {
+		background-color: @g4;
+	}
+
+	&.expander {
+		background: url('/public/images/browser/tool-folder-closed.png') no-repeat 3px 4px;
+
+		&.active {
+			background-image: url('/public/images/browser/tool-folder-open.png');
+		}
+	}
+
+	&.filter {
+		background: url('/public/images/browser/tool-filter.png') no-repeat 4px 4px;
+
+		&.active {
+
+		}
+	}
+}
+
 .browser_filters {
 	border-top: 1px solid fade(@g1, 25%);
 	.border-padding-top(1px, @f4);
-	.margin-top(@f4);
 }
 
 //
@@ -166,7 +197,7 @@
 .browser_item_controller {
 	background-color: fade(@g5, 90%);
 	.border-radius(@border-radius);
-	.padding(@f8);
+	.padding(@f4, @f4, 0, @f4);
 	.margin-bottom(@f4);
 }
 
@@ -227,9 +258,13 @@
 	ul {
 		.margin(0);
 		background-color: @g5;
+		.padding-left(0);
 		.padding-top(@f8);
-		.padding-left(@f8);
 		.border-radius(@b4 0 0 0);
+
+		ul {
+			.padding-left(@f8);
+		}
 	}
 
 	li {

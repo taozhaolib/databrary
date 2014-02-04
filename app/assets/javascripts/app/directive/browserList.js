@@ -24,7 +24,7 @@ define(['app/config/module'], function (module) {
 			$scope.expanderClasses = function (data) {
 				var classes = [];
 
-				classes.push($scope.browser.getItemExpand(data) ? 'first' : '');
+				classes.push($scope.browser.getItemExpand(data) ? 'active' : '');
 
 				return classes;
 			};
@@ -42,10 +42,10 @@ define(['app/config/module'], function (module) {
 
 					case 'record':
 						var category = $scope.constant.data.category[data.object.category].name;
-						return category.charAt(0).toUpperCase() + category.slice(1) + ' ' + data.object.id;
+						return category.charAt(0).toUpperCase() + category.slice(1) + ': ' + (data.object.measures.ident || data.object.id);
 
 					case 'session':
-						return 'Session ' + data.object.id;
+						return 'Session: ' + (data.object.name || data.object.id);
 				}
 			}
 		};
