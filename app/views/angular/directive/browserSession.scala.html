@@ -1,5 +1,9 @@
-<article class="browser_item browser_session">
-    <header>
-        <h1>Session {{item.object.id}}</h1>
-    </header>
+<article bindonce class="browser_item browser_session">
+    <div class="browser_item_content">
+        <header>
+            <h1 bo-html="getName(item)"></h1>
+        </header>
+    </div>
+
+    <browser-list data="item"></browser-list>
 </article>

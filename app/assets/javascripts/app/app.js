@@ -26,7 +26,8 @@ require.config({
 
 		// angular, third-party
 
-		'ngStorage': 'vendors/ngStorage/ngStorage.min'
+		'ngStorage': 'vendors/ngStorage/ngStorage.min',
+		'bindonce': 'vendors/bindonce/bindonce.min'
 	},
 
 	shim: {
@@ -53,7 +54,8 @@ require.config({
 
 		// angular, third-party
 
-		'ngStorage': {deps: ['angular']}
+		'ngStorage': {deps: ['angular']},
+		'bindonce': {deps: ['angular']}
 	},
 
 	deps: [

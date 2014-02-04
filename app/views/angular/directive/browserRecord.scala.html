@@ -1,7 +1,9 @@
-<article class="browser_item browser_record">
-    <header>
-        <h1>Record {{item.object.id}}</h1>
-    </header>
+<article bindonce class="browser_item browser_record">
+    <div class="browser_item_content">
+        <header>
+            <h1 bo-html="getName(item)"></h1>
+        </header>
+    </div>
 
     <browser-list data="item"></browser-list>
 </article>

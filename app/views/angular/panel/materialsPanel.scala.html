@@ -24,21 +24,21 @@
 
                 <div ng-switch="getMimeGroup(currentAsset)">
                     <div ng-switch-when="image">
-                        <img ng-src="{{router.assetLink(currentAsset, true)}}" />
+                        <img ng-src="{{router.assetLink(currentAsset, true)}}" style="max-width: 100%;">
                     </div>
 
                     <div ng-switch-when="video">
-                        <video controls>
+                        <video controls style="max-width: 100%;">
                             <source ng-src="{{router.assetLink(currentAsset, true)}}" type="{{currentAsset.format.mimetype || currentAsset.asset.format.mimetype}}">
                         </video>
                     </div>
 
                     <div ng-switch-when="html">
-                        <iframe ng-src="{{router.assetLink(currentAsset, true)}}"></iframe>
+                        <iframe ng-src="{{router.assetLink(currentAsset, true)}}" style="max-width: 100%;"></iframe>
                     </div>
 
                     <div ng-switch-when="plain">
-                        <iframe ng-src="{{router.assetLink(currentAsset, true)}}"></iframe>
+                        <iframe ng-src="{{router.assetLink(currentAsset, true)}}" style="max-width: 100%;"></iframe>
                     </div>
 
                     <div ng-switch-default>

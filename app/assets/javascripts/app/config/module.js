@@ -6,7 +6,9 @@ define([
 	'ngRoute',
 	'ngSanitize',
 	'ngStorage',
-	'ngResource'
+
+	'ngResource',
+	'bindonce'
 ], function (angular) {
 	'use strict';
 
@@ -16,7 +18,8 @@ define([
 		'ngRoute',
 		'ngSanitize',
 		'ngStorage',
-		'ngResource'
+		'ngResource',
+		'pasvaz.bindonce'
 	]);
 
 	module.config(['$httpProvider', function ($httpProvider) {

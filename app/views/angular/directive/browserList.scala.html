@@ -1,14 +1,21 @@
 <aside class="browser_list cf">
-    <browser-filter ng-if="data.select"></browser-filter>
-    <button
-    ng-click="toggleExpand()"
-    ng-class="expanderClasses(data)"
-    ng-if="browser.data != data">X</button>
+    <div class="browser_item_content browser_item_controller">
+        <button class="mini"
+        ng-click="toggleExpand()"
+        ng-class="expanderClasses(data)"
+        ng-if="browser.data != data && data.type != 'session'">expand</button>
+        <button class="mini"
+        ng-click="setItemSelect(data)"
+        ng-class="selectorClasses(data)"
+        ng-if="browser.data != data">filter / sort</button>
 
-    <ul ng-if="browser.getItemExpand(data) || browser.data == data">
+        <browser-filter ng-if="data.select"></browser-filter>
+    </div>
+
+    <ul ng-if="browser.getItemExpand(data) || browser.data == data" class="cf">
         <li ng-if="!data.items[0]">There are no items matching these groups.</li>
 
-        <li ng-repeat="item in data.items" ng-click="setItemSelect(item)">
+        <li ng-repeat="item in data.items">
             <ng-include src="getInclude()"></ng-include>
         </li>
     </ul>

@@ -1,7 +1,6 @@
 // STYLES
 
 .panel_browser {
-
 }
 
 //
@@ -104,6 +103,14 @@
 
 //
 
+.browser_filters {
+	border-top: 1px solid fade(@g1, 25%);
+	.border-padding-top(1px, @f4);
+	.margin-top(@f4);
+}
+
+//
+
 .record_pill_remove {
 	&:hover {
 		background-color: @c8g4m1;
@@ -149,9 +156,21 @@
 
 .browser_item {
 	.padding(@f1, 0, 0, 2);
-	.margin-bottom(@f8);
 	.border-radius(@b4 0 0 0);
 }
+
+.browser_item_content {
+	.margin-right(1);
+}
+
+.browser_item_controller {
+	background-color: fade(@g5, 90%);
+	.border-radius(@border-radius);
+	.padding(@f8);
+	.margin-bottom(@f4);
+}
+
+//
 
 .browser_volume {
 	background-color: @c4g5m1;
@@ -163,7 +182,29 @@
 }
 
 .browser_record {
-	background-color: @c10g5m1;
+	@color: @c10;
+
+	background-color: mix(@color, @g5, 15%);
+
+	.browser_record {
+		background-color: mix(@color, @g5, 30%);
+
+		.browser_record {
+			background-color: mix(@color, @g5, 45%);
+
+			.browser_record {
+				background-color: mix(@color, @g5, 15%);
+
+				.browser_record {
+					background-color: mix(@color, @g5, 30%);
+
+					.browser_record {
+						background-color: mix(@color, @g5, 45%);
+					}
+				}
+			}
+		}
+	}
 
 	h1 {
 		.font-size(1.5);
@@ -172,15 +213,6 @@
 }
 
 .browser_session {
-	background-color: @c8g5m1;
-
-	h1 {
-		.font-size(1.5);
-		.line-height(1.5);
-	}
-}
-
-.browser_asset {
 	background-color: @c0g5m1;
 
 	h1 {
@@ -201,14 +233,14 @@
 	}
 
 	li {
-		&:before {
-			display: none;
-		}
+		.padding-bottom(@f8);
 
 		&:last-child {
-			.browser_item {
-				.margin-bottom(0);
-			}
+			.padding-bottom(0);
+		}
+
+		&:before {
+			display: none;
 		}
 	}
 }
