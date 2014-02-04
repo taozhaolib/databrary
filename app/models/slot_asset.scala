@@ -171,12 +171,6 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
     .SELECT("WHERE slot_asset.asset = ? AND container.volume = ?")
     .apply(asset.id, asset.volumeId).singleOpt
 
-  /** Retrieve the list of all assets assigned the given record. */
-  private[models] def getRecord(record : Record) : Future[Seq[SlotAsset]] =
-    row(SlotRecord.row(record), slot_table = SlotRecord.table)
-    .SELECT("WHERE slot_record.record = ? AND container.volume = ? AND asset.volume = container.volume")
-    .apply(record.id, record.volumeId).list
-
   private[models] def getExcerpt(volume : Volume) : Future[Seq[SlotAsset]] =
     Excerpt.assetRowVolume(volume)
     .SELECT("WHERE container.volume = ? AND asset.volume = container.volume")

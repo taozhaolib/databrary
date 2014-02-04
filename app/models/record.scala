@@ -112,10 +112,6 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def removeSlot(s : Slot) : Future[Boolean] =
     SlotRecord.remove(this, s)
 
-  /** The set of assets to which this record applies. */
-  def assets : Future[Seq[SlotAsset]] =
-    SlotAsset.getRecord(this)
-
   def pageName = category.fold("")(_.name.capitalize + " ") + ident
   def pageParent = Some(volume)
   def pageURL = controllers.routes.RecordHtml.view(id)
@@ -181,7 +177,7 @@ object Record extends TableId[Record]("record") {
   /** Retrieve the list of all records that apply to the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[Record]] =
     rowVolume(slot.volume)
-    .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ? AND slot_record.segment && ?::segment")
+    .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ? AND slot_record.segment && ?::segment ORDER BY record.category NULLS LAST, record.id")
     .apply(slot.containerId, slot.segment).list
 
   /** Retrieve the list of all foreign records (from a different volume) that apply to the given slot. */

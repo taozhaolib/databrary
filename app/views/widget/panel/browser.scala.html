@@ -1,10 +1,10 @@
-@(sessions : Seq[(Slot, Any)])(implicit request : SiteRequest[_])
+@(sessions : Seq[(Slot, Any)], records : Seq[(RecordCategory,Seq[(Record,Any)])])(implicit request : SiteRequest[_])
 
 @import play.api.templates.HtmlFormat._
 @import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
     @if(sessions.nonEmpty){
-        @widget.panel.raw("browser", "")(title = "Browser", foldable = true){
+        @widget.panel.raw("sessions", "")(title = "Sessions", foldable = true){
             <div class="col-full">
                 <ul>
                     @sessions.map { case (slot, _)  =>
@@ -12,5 +12,17 @@
                     }
                 </ul>
             </div>
+        }
+    }
+
+    @records.map { case (cat, rl)  =>
+	@widget.panel.raw(cat.name.toLowerCase, "")(title = cat.name, foldable = true){
+	    <div class="col-full">
+		<ul>
+		    @rl.map { case (r, _) =>
+			<li>@display(r)</li>
+		    }
+		</ul>
+	    </div>
         }
     }
