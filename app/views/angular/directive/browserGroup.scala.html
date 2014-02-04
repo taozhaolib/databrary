@@ -1,20 +1,20 @@
-<div class="browser_group cf">
-    <span class="browser_group_title">
+<div class="browser_widget browser_group cf">
+    <span class="browser_widget_title">
         Group by
     </span>
 
-    <span class="browser_group_wrap"
+    <span class="browser_widget_wrap"
     ng-if="browser.options.volume.allow">
-        <a class="browser_group_pill"
+        <a class="browser_widget_pill"
         ng-click="browser.toggleGroup('volume')"
         ng-class="groupClasses('volume')">Study</a>
     </span>
 
-    <span class="browser_group_wrap"
+    <span class="browser_widget_wrap"
     ng-class="recordGroupClasses(group)"
     ng-repeat="group in browser.options.record.categories|filter:{active: true, allow: true}"
     ng-if="browser.options.record.allow">
-        <a class="browser_group_pill left"
+        <a class="browser_widget_pill left"
         ng-click="browser.setRecordGroupToggle(group)">{{group.name}}</a>
 
         <ul class="record_pill_options">
@@ -23,20 +23,20 @@
             </li>
         </ul>
 
-        <a class="browser_group_pill right remove"
+        <a class="browser_widget_pill right remove"
         ng-click="browser.removeRecordGroup(group)"
         ng-if="browser.canRemoveRecordGroup()">x</a>
     </span>
 
-    <span class="browser_group_wrap"
+    <span class="browser_widget_wrap"
     ng-if="browser.canAddRecordGroup()">
-        <a class="browser_group_pill add"
+        <a class="browser_widget_pill add"
         ng-click="browser.addRecordGroup()">+ group</a>
     </span>
 
-    <span class="browser_group_wrap"
+    <span class="browser_widget_wrap"
     ng-if="browser.options.session.allow">
-        <a class="browser_group_pill"
+        <a class="browser_widget_pill"
         ng-click="browser.setGroupActive('session')"
         ng-class="groupClasses('session')">Session</a>
     </span>

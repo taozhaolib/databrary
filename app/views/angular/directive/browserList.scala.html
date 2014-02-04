@@ -1,6 +1,8 @@
 <aside class="browser_list cf">
+    <browser-filter ng-if="data.select"></browser-filter>
+
     <ul ng-if="data.items[0]">
-        <li ng-repeat="item in data.items">
+        <li ng-repeat="item in data.items" ng-click="setItemSelect(item)">
             <ng-include src="getInclude()"></ng-include>
         </li>
     </ul>
