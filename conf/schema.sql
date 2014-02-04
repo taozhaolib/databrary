@@ -569,6 +569,7 @@ CREATE INDEX "slot_record_slot_idx" ON "slot_record" ("container", "segment");
 COMMENT ON TABLE "slot_record" IS 'Attachment of records to slots.';
 
 
+-- TODO review this: other places we may effectively enforce the much looser MAX(consent) with &&
 CREATE FUNCTION "record_consent" ("record" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS
 	$$ SELECT MIN(consent) FROM slot_record JOIN slot_consent ON slot_record.container = slot_consent.container AND slot_record.segment <@ slot_consent.segment WHERE record = $1 $$;
 COMMENT ON FUNCTION "record_consent" (integer) IS 'Effective (minimal) consent level granted on the specified record.';

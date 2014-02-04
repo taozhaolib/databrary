@@ -1,4 +1,5 @@
 <aside class="browser_list cf">
+    <browser-filter ng-if="data.select"></browser-filter>
     <button
     ng-click="toggleExpand()"
     ng-class="expanderClasses(data)"
@@ -7,7 +8,7 @@
     <ul ng-if="browser.getItemExpand(data) || browser.data == data">
         <li ng-if="!data.items[0]">There are no items matching these groups.</li>
 
-        <li ng-repeat="item in data.items">
+        <li ng-repeat="item in data.items" ng-click="setItemSelect(item)">
             <ng-include src="getInclude()"></ng-include>
         </li>
     </ul>

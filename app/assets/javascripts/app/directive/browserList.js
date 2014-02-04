@@ -27,6 +27,11 @@ define(['app/config/module'], function (module) {
 			};
 		};
 
+			$scope.setItemSelect = function (data) {
+				$scope.browser.setItemSelect(data);
+			};
+		};
+
 		return {
 			restrict: 'E',
 			scope: {

@@ -27,6 +27,10 @@ trait Slot extends TableRow with InVolume with SiteObject {
   /** Effective start point of this slot within the container. */
   final def position : Offset = segment.lowerBound.getOrElse(Offset.ZERO)
 
+  /** Intersect this Slot with a segment, in the current context.
+    * If current context is not consented, the result may be incorrect.  */
+  private[models] def *(seg : Segment) : Slot = Slot.make(segment * seg, context)
+
   /** Update the given values in the database and this object in-place. */
   final def setConsent(consent : Consent.Value) : Future[Boolean] = {
     if (consent == Consent.NONE)
@@ -189,7 +193,7 @@ private[models] abstract class SlotTable protected (table : String) extends Tabl
   private final class Virtual (val segment : Segment, val context : ContextSlot) extends Slot {
     private[models] def sqlKey = slotSql
   }
-  protected final def make(segment : Segment, context : ContextSlot) : Slot =
+  private[models] final def make(segment : Segment, context : ContextSlot) : Slot =
     if (segment === context.segment) context
     else new Virtual(segment, context)
   private[models] final val columns =
@@ -210,7 +214,7 @@ private[models] abstract class SlotTable protected (table : String) extends Tabl
 }
 
 object Slot extends SlotTable("slot") {
-  def fixed(slot : Slot) = slot.slotSql.values.map(_ => slot)
+  private[models] def fixed(slot : Slot) = slot.slotSql.values.map(_ => slot)
 
   private[models] def rowContainer(container : Container, segment : Segment) =
     columnsSlot(

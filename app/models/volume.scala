@@ -59,54 +59,13 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   private[this] lazy val _sessions : Future[Seq[Volume.Session]] =
     Volume.Session.get(this)
 
-  type Session = (Container, Seq[(Option[RecordCategory.Id], Seq[(Segment, Record)])])
-  private[this] def groupSessions(l : Seq[Volume.Session]) : Seq[Session] = {
-    if (l.isEmpty)
-      return Nil
-    val r = l.genericBuilder[Session]
-    var c1 : Container = l.head._1
-    val r1 = Seq.newBuilder[(Option[RecordCategory.Id], Seq[(Segment, Record)])]
-    var c2 : Option[Option[RecordCategory.Id]] = None
-    val r2 = Seq.newBuilder[(Segment, Record)]
-    val rc = Seq.newBuilder[Record]
-    def next2(n2 : Option[Option[RecordCategory.Id]]) {
-      c2.foreach { c2s =>
-	r1 += c2s -> r2.result
-	r2.clear
-      }
-      c2 = n2
-    }
-    def next1() {
-      next2(None)
-      c1._records.set(rc.result)
-      rc.clear
-      r += c1 -> r1.result
-      r1.clear
-    }
-    for ((c, or) <- l) {
-      if (!(c1 === c)) {
-	next1()
-	c1 = c
-      }
-      or foreach { case (seg, rec) =>
-	val cat = rec.categoryId
-	if (!c2.exists(_.equals(cat)))
-	  next2(Some(cat))
-	r2 += seg -> rec
-	rc += rec
-      }
-    }
-    next1()
-    r.result
-  }
+  lazy val sessions : Future[Seq[Volume.Session.Group]] = _sessions.map(Volume.Session.group)
 
-  lazy val sessions : Future[Seq[Session]] = _sessions.map(groupSessions)
-
-  private[this] type SessionRecord = (Record, Seq[(Container, Segment)])
+  private[this] type SessionRecord = (Record, Seq[Slot])
   /** The list of all records and their associated sessions on this volume. */
   private[this] lazy val recordSlots : Future[Seq[SessionRecord]] = _sessions.map { sess =>
     val l = sess.sortBy(_._2.map { case (_, r) => r.category.map(_.id.unId) -> r.id.unId })
-    val r = l.genericBuilder[(Record,Seq[(Container, Segment)])]
+    val r = l.genericBuilder[(Record,Seq[Slot])]
     @scala.annotation.tailrec def group(l : Seq[Volume.Session]) {
       l.headOption match {
 	case None =>
@@ -114,7 +73,10 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 	  group(l.tail)
 	case Some((c, Some((seg, rec)))) =>
 	  val (p, s) = l.span(_._2.exists(_._2 === rec))
-	  r += rec -> p.map(second[Container, Option[(Segment, Record)], Segment](_, _.get._1))
+	  r += rec -> p.map {
+	    case (cont, Some((seg, _))) => cont * seg
+	    case (cont, None) => cont // impossible
+	  }
 	  group(s)
       }
     }
@@ -186,7 +148,7 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       "categories" -> (opt => recordCategorySlots.map(l =>
 	JsObject(l.map { case (c, rl) => (c.id.toString, Json.toJson(rl.map(_._1.id))) }))),
       "records" -> (opt => recordSlots.map(JsonRecord.map { case (r, ss) =>
-        r.json - "volume" + ('sessions -> JsonArray.map[(Container,Segment),Container.Id](_._1.id)(ss))
+        r.json - "volume" + ('sessions -> JsonArray.map[Slot,Container.Id](_.containerId)(ss))
       })),
       "sessions" -> (opt => sessions.map(JsonRecord.map { case (cont, crs) =>
 	cont.json - "volume" + ('categories -> JsObject(crs.map { case (cat, rs) =>
@@ -264,23 +226,79 @@ object Volume extends TableId[Volume]("volume") {
     )
   }
 
-  type Session = (Container, Option[(Segment, Record)])
-  private object Session {
+  type Session = (ContextSlot, Option[(Segment, Record)])
+
+  object Session {
+    private val base =
+      SlotConsent.row.from(
+      """(SELECT id AS container, COALESCE(segment, '(,)'::segment) AS segment, consent
+           FROM container LEFT JOIN slot_consent ON id = container
+	  WHERE volume = ?) AS """ + _)
+      // TODO: UNION ALL volume_slot study inclusion
+    private def baseVolume(vol : Volume) =
+      base.pushArgs(SQLArgs(vol.id))
+    private def columnsVolume(vol : Volume) =
+      baseVolume(vol)
+      .join(Container.columns.map(_(vol)), "slot_consent.container = container.id")
+      .map(tupleApply)
+
     private def row(vol : Volume) : Selector[Session] =
-      Container.rowVolume(vol)
+      columnsVolume(vol)
       .leftJoin(SlotRecord.columns
 	.join(Record.sessionRow(vol), "slot_record.record = record.id"),
-	"container.id = slot_record.container AND container.volume = record.volume")
+	"container.id = slot_record.container AND slot_consent.segment && slot_record.segment AND container.volume = record.volume")
       .map {
-	case (cont, None) => (cont, None)
-	case (cont, Some((seg, rec))) => (cont, Some((seg, rec(cont.consent))))
+	case (slot, None) => (slot, None)
+	case (slot, Some((seg, rec))) => (slot, Some((seg, rec(slot.consent))))
       }
 
-    def get(vol : Volume) : Future[Seq[Session]] =
+    private[Volume] def get(vol : Volume) : Future[Seq[Session]] =
       row(vol)
-      .SELECT("WHERE container.volume = ? ORDER BY container.id, record.category NULLS LAST, record.id")
-      .apply(vol.id).list
+      .SELECT("ORDER BY container.id, record.category NULLS LAST, record.id")
+      .apply().list
+
+    type Group = (Container, Seq[(Option[RecordCategory.Id], Seq[(Segment, Record)])])
+    private[Volume] def group(l : Seq[Session]) : Seq[Group] = {
+      if (l.isEmpty)
+	return Nil
+      val r = l.genericBuilder[Group]
+      var c1 : Container = l.head._1.container
+      val r1 = Seq.newBuilder[(Option[RecordCategory.Id], Seq[(Segment, Record)])]
+      var c2 : Option[Option[RecordCategory.Id]] = None
+      val r2 = Seq.newBuilder[(Segment, Record)]
+      val rc = Seq.newBuilder[Record]
+      def next2(n2 : Option[Option[RecordCategory.Id]]) {
+	c2.foreach { c2s =>
+	  r1 += c2s -> r2.result
+	  r2.clear
+	}
+	c2 = n2
+      }
+      def next1() {
+	next2(None)
+	c1._records.set(rc.result)
+	rc.clear
+	r += c1 -> r1.result
+	r1.clear
+      }
+      for ((c, or) <- l) {
+	if (!(c1.id === c.containerId)) {
+	  next1()
+	  c1 = c.container
+	}
+	or foreach { case (seg, rec) =>
+	  val cat = rec.categoryId
+	  if (!c2.exists(_.equals(cat)))
+	    next2(Some(cat))
+	  r2 += c.segment * seg -> rec
+	  rc += rec
+	}
+      }
+      next1()
+      r.result
+    }
   }
+
 }
 
 trait InVolume extends HasPermission {

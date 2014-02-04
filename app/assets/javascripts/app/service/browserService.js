@@ -333,6 +333,7 @@ define(['app/config/module'], function (module) {
 			var newData = {
 				object: object,
 				type: type,
+				select: false,
 				items: []
 			};
 
@@ -504,6 +505,70 @@ define(['app/config/module'], function (module) {
 				return undefined;
 
 			return option.expanded.indexOf(levelData.object.id) > -1;
+		};
+
+		//
+
+		browserService.getSorts = function (data, active) {
+
+		};
+
+		var sortToggle = undefined;
+
+		browserService.setSortToggle = function (sort) {
+			sortToggle = angular.isUndefined(sortToggle) ? sort : undefined;
+		};
+
+		browserService.isSortToggle = function (sort) {
+			return sortToggle == sort;
+		};
+
+		browserService.switchSort = function (sort, maybe) {
+
+		};
+
+		browserService.canReverseSort = function () {
+
+		};
+
+		browserService.reverseSort = function (sort) {
+
+		};
+
+		browserService.canRemoveSort = function () {
+
+		};
+
+		browserService.removeSort = function (sort) {
+
+		};
+
+		browserService.canAddSort = function () {
+
+		};
+
+		browserService.addSort = function (sort) {
+
+		};
+
+		//
+
+		var itemSelect = undefined;
+
+		browserService.setItemSelect = function (data) {
+			if(angular.isDefined(itemSelect))
+				itemSelect.select = false;
+
+			itemSelect = data;
+			data.select = true;
+		};
+
+		browserService.getItemSelect = function () {
+			return itemSelect;
+		};
+
+		browserService.isItemSelect = function (data) {
+			return data = itemSelect;
 		};
 
 		//

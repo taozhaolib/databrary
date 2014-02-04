@@ -46,7 +46,7 @@ final class Container protected (override val id : Container.Id, override val vo
 }
 
 object Container extends TableId[Container]("container") {
-  private val columns = Columns(
+  private[models] val columns = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[Boolean]("top")
     , SelectColumn[Option[String]]("name")
