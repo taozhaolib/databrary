@@ -22,7 +22,6 @@ define(['app/config/module'], function (module) {
 				var classes = [];
 
 				classes.push('on');
-
 				classes.push($scope.browser.isRecordGroupToggle(group) ? 'expanded' : '');
 
 				return classes;

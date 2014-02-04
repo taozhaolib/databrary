@@ -102,9 +102,7 @@ define(['app/config/module'], function (module) {
 		browserService.updateCategories = function () {
 			angular.forEach(raw, function (volume) {
 				angular.forEach(volume.categories, function (sessions, category) {
-					if (!browserService.options.record.categories.get({
-						id: category
-					}))
+					if (!browserService.options.record.categories.get({id: category}))
 						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {
 							id: category,
 							name: $rootScope.constant.get('category', category).name,
@@ -171,7 +169,7 @@ define(['app/config/module'], function (module) {
 			}
 
 			var groups = getActiveGroups(),
-				level = groups.indexOf(type);
+				level = groups.indexOf(type + '');
 
 			if (level == -1)
 				return undefined;
@@ -185,14 +183,14 @@ define(['app/config/module'], function (module) {
 					var currentVolume;
 
 					angular.forEach(raw, function (volume) {
-						if(angular.isUndefined(currentVolume) && volume.records[levelData.object.id])
+						if (angular.isUndefined(currentVolume) && volume.records[levelData.object.id])
 							currentVolume = volume;
 					});
 
 					callbackRecordChildren(levelData, currentVolume, undefined, groups, level + 1);
 					break;
 			}
-
+			console.log(levelData);
 			return levelData;
 		};
 
@@ -221,7 +219,7 @@ define(['app/config/module'], function (module) {
 
 			angular.forEach(browserService.options.record.categories, function (category) {
 				if (category.allow && category.active)
-					groups.push(parseInt(category.id));
+					groups.push(category.id);
 			});
 
 			return groups;
@@ -286,7 +284,7 @@ define(['app/config/module'], function (module) {
 			if (!browserService.getItemExpand(data, 'record'))
 				return data;
 
-			if(angular.isUndefined(sessions)) {
+			if (angular.isUndefined(sessions)) { // TODO: should be complete thing...
 				sessions = {};
 
 				angular.forEach(data.object.sessions, function (sessionID) {
@@ -300,6 +298,27 @@ define(['app/config/module'], function (module) {
 				callbackRecords(data, volume, sessions, groups, level);
 
 			return data;
+		};
+
+		var callbackRecordSessions = function (sessions, groups, level) {
+			var tempData = {};
+
+			angular.forEach(sessions, function (session) {
+				var categoryRecords = session.categories[groups[level]];
+
+				if (angular.isDefined(categoryRecords)) {
+					angular.forEach(categoryRecords, function (record, recordID) {
+						recordID = record.id;
+
+						if (!tempData[recordID])
+							tempData[recordID] = {};
+
+						tempData[recordID][session.id] = session;
+					});
+				}
+			});
+
+			return tempData;
 		};
 
 		var callbackSessions = function (data, volume, sessions) {
@@ -329,7 +348,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		browserService.isItemCategory = function (type) {
-			return !!browserService.options.record.categories[type];
+			return browserService.options.record.categories.index({id: type + ''}) > -1;
 		};
 
 		browserService.getItemType = function (object) {
@@ -398,7 +417,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		browserService.canRemoveRecordGroup = function () {
-			return true; // TODO: for manditory grouping in future...
+			return true;
 		};
 
 		browserService.removeRecordGroup = function (group) {
@@ -442,7 +461,7 @@ define(['app/config/module'], function (module) {
 					break;
 
 				case 'record':
-					option = browserService.options.record.categories[levelData.object.category];
+					option = browserService.options.record.categories.get({id: levelData.object.category + ''});
 					break;
 
 				default:
@@ -454,12 +473,12 @@ define(['app/config/module'], function (module) {
 
 			if (index == -1 && expand !== false) {
 				option.expanded.push(levelData.object.id);
-				browserService.updateData(levelData); // todo: what must we pass?
+				browserService.updateData(levelData);
 			} else if (index > -1 && expand !== true) {
 				option.expanded.splice(index, 1);
 			}
 
-			return true;
+			return levelData;
 		};
 
 		browserService.getItemExpand = function (levelData, type) {
@@ -473,7 +492,7 @@ define(['app/config/module'], function (module) {
 					break;
 
 				case 'record':
-					option = browserService.options.record.categories[levelData.object.category];
+					option = browserService.options.record.categories.get({id: levelData.object.category + ''});
 					break;
 
 				default:
