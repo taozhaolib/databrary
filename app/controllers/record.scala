@@ -102,8 +102,10 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
 object RecordHtml extends RecordController {
   def view(i : models.Record.Id) = Action(i).async { implicit request =>
     for {
-      assets <- request.obj.assets
-    } yield (Ok(views.html.record.view(assets)))
+      slots <- request.obj.slots
+      _ <- macros.Async.foreach[Slot, Unit](slots, _.records)
+      assets <- macros.Async.flatMap[Slot, SlotAsset, Seq[SlotAsset]](slots, _.assets)
+    } yield (Ok(views.html.record.view(slots, assets)))
   }
 
   protected val categoryMapping : Mapping[RecordCategory] =
