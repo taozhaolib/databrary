@@ -16,7 +16,7 @@
     }
 
     @records.map { case (cat, rl)  =>
-	@widget.panel.raw(cat.name.toLowerCase, "")(title = cat.name, foldable = true){
+	@widget.panel.raw(cat.name.toLowerCase, "")(title = "Sessions by " + cat.name.capitalize, foldable = true){
 	    <div class="col-full">
 		<ul>
 		    @rl.map { case (r, _) =>
