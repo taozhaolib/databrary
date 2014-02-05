@@ -18,6 +18,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
   def source = asset.source
   override def format = asset.format
 
+  def entire = slot.segment @> asset_segment
   /** Segment occupied by asset wrt slot position. */
   final def relativeSegment = segment.map(_ - slot.position)
   require(excerpt_segment.forall(_ @> segment))
@@ -86,7 +87,6 @@ final class SlotTimeseries private[models] (override val asset : Timeseries, ass
     } { s =>
       Range.singleton[Offset](s - asset_segment.lowerBound.getOrElse(Offset.ZERO))
     }
-  def entire = segment @> asset_segment
 }
 
 object SlotAsset extends Table[SlotAsset]("slot_asset") {

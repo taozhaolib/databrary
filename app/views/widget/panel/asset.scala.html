@@ -9,7 +9,7 @@
 
         <ul class="actions">
 	        <li><a href="@asset.pageURL">view</a></li>
-	    @if(asset.permission >= Permission.EDIT && asset.slot.isFull) {
+	    @if(asset.permission >= Permission.EDIT && asset.entire) {
 	        <li><a href="@controllers.routes.AssetHtml.edit(asset.assetId)">edit</a></li>
 	        <li><a href="@controllers.routes.AssetHtml.remove(asset.assetId)">remove</a></li>
 	    }
