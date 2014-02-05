@@ -1,10 +1,6 @@
 @(asset : SlotAsset)(implicit request : SiteRequest[_])
 
 @widget.panel.raw("overview", "panel_asset")(){
-    <h1 class="col-full panel_title">@display.formatTitle(asset.pageName)</h1>
-
-    @widget.frame.asset(asset)
-
     <div class="col-full panel_overview_actions">
         <ul class="breadcrumbs">
         @Path(asset).toHtml
@@ -12,21 +8,15 @@
 
 
         <ul class="actions">
-        @asset.pageActions.filter(_.available).map { act =>
-            <li class="@{
-                if(request.path == act.route.url) {
-                    "current"
-                }
-            }">
-            @if(act.route.method != "GET") {
-                @widget.tag.form(act.route) {
-                    <button type="submit" class="link">@act.name</button>
-                }
-            } else {
-                <a href="@act.route" alt="@act.name">@act.name</a>
-            }
-            </li>
-        }
+	        <li><a href="@asset.pageURL">view</a></li>
+	    @if(asset.permission >= Permission.EDIT && asset.entire) {
+	        <li><a href="@controllers.routes.AssetHtml.edit(asset.assetId)">edit</a></li>
+	        <li><a href="@controllers.routes.AssetHtml.remove(asset.assetId)">remove</a></li>
+	    }
         </ul>
     </div>
+
+    <h1 class="col-full panel_title">@display.formatTitle(asset.pageName)</h1>
+
+    @widget.frame.asset(asset)
 }

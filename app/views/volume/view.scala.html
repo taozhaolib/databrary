@@ -1,10 +1,10 @@
-@(summary : Volume.Summary, access : Seq[VolumeAccess], top : Container, sessions : Seq[(Slot, Any)], assets : Seq[SlotAsset], citations : Seq[VolumeCitation], comments : Seq[Comment], tags : Seq[TagWeight])(implicit request: VolumeHtml.Request[_])
+@(summary : Volume.Summary, access : Seq[VolumeAccess], top : Container, sessions : Seq[(Slot,Any)], records : Seq[(RecordCategory,Seq[(Record,Any)])], assets : Seq[SlotAsset], citations : Seq[VolumeCitation], comments : Seq[Comment], tags : Seq[TagWeight])(implicit request: VolumeHtml.Request[_])
 
 @defining(request.obj) { volume =>
 
     @widget.template.crud("Volume: " + volume.name) {
         @widget.panel.volume(volume, summary, access)
-        @widget.panel.browser(sessions)
+        @widget.panel.browser(sessions, records)
         @widget.panel.materials(assets)
         @widget.panel.publications(citations)
         @widget.panel.people(access)

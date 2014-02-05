@@ -106,12 +106,6 @@ trait Slot extends TableRow with InVolume with SiteObject {
   override def pageCrumbName : Option[String] = if (isFull) None else Some(segment.lowerBound.fold("")(_.toString) + "-" + segment.upperBound.fold("")(_.toString))
   def pageParent : Option[SitePage] = Some(container)
   def pageURL = controllers.routes.SlotHtml.view(containerId, segment)
-  def pageActions = Seq(
-    Action("view", pageURL, Permission.VIEW),
-    Action("edit", controllers.routes.SlotHtml.edit(containerId, segment), Permission.EDIT),
-    Action("add file", controllers.routes.AssetHtml.create(volumeId, Some(containerId), segment.lowerBound), Permission.CONTRIBUTE),
-    Action("add participant", controllers.routes.RecordHtml.slotAdd(containerId, segment, RecordCategory.PARTICIPANT, false), Permission.CONTRIBUTE)
-  )
 
   lazy val slotJson : JsonObject = JsonObject.flatten(
     Some('container -> container.json),

@@ -83,13 +83,6 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
   def pageName = party.pageName
   def pageParent = party.pageParent
   def pageURL = party.pageURL
-  def pageActions = Seq(
-    Action("view", pageURL, Permission.VIEW),
-    Action("edit", controllers.routes.PartyHtml.edit(party.id), Permission.EDIT),
-    Action("authorization", controllers.routes.PartyHtml.admin(party.id), Permission.ADMIN),
-    SiteAction("add volume", controllers.routes.VolumeHtml.add(Some(party.id)),
-      !(party.id === Party.ROOT) && checkPermission(Permission.CONTRIBUTE) && access >= Permission.CONTRIBUTE)
-  )
 
   def json = party.json + 
     ('permission -> permission)

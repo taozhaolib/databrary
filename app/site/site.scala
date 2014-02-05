@@ -44,11 +44,6 @@ trait PerSite {
   implicit def site : Site
 }
 
-/** A generic action that may be performed on the site.
-  * It may make sense to add a target : SitePage value here, too.
-  */
-case class SiteAction(name : String, route : play.api.mvc.Call, available : Boolean = true)
-
 /** An object with a corresponding page on the site. */
 trait SitePage {
   /** The title of the object/page in the hierarchy, which may only make sense within [[pageParent]]. */
@@ -62,9 +57,5 @@ trait SitePage {
 }
 
 trait SiteObject extends SitePage with HasPermission {
-  protected def Action(name : String, route : play.api.mvc.Call, permission : Permission.Value) =
-    SiteAction(name, route, checkPermission(permission))
-  /** The actions available for this page. */
-  def pageActions : Seq[SiteAction]
   def json : JsonValue
 }

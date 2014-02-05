@@ -1,10 +1,6 @@
 @(record : Record)(implicit request : SiteRequest[_])
 
 @widget.panel.raw("overview", "panel_record")(){
-    <h1 class="col-full panel_title">@display.formatTitle(record.pageName)</h1>
-
-    @widget.frame.record(record)
-
     <div class="col-full panel_overview_actions">
         <ul class="breadcrumbs">
         @Path(record).toHtml
@@ -12,21 +8,14 @@
 
 
         <ul class="actions">
-        @record.pageActions.filter(_.available).map { act =>
-            <li class="@{
-                if(request.path == act.route.url) {
-                    "current"
-                }
-            }">
-            @if(act.route.method != "GET") {
-                @widget.tag.form(act.route) {
-                    <button type="submit" class="link">@act.name</button>
-                }
-            } else {
-                <a href="@act.route" alt="@act.name">@act.name</a>
-            }
-            </li>
-        }
+	        <li><a href="@record.pageURL">view</a></li>
+	    @if(record.permission >= Permission.EDIT) {
+	        <li><a href="@controllers.routes.RecordHtml.edit(record.id)">edit</a></li>
+	    }
         </ul>
     </div>
+
+    <h1 class="col-full panel_title">@display.formatTitle(record.pageName)</h1>
+
+    @widget.frame.record(record)
 }

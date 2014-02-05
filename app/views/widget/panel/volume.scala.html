@@ -1,6 +1,25 @@
 @(volume : Volume, summary : Volume.Summary, access : Seq[VolumeAccess])(implicit request : SiteRequest[_])
 
 @widget.panel.raw("overview", "panel_volume")(){
+    <div class="col-full panel_overview_actions">
+        <ul class="breadcrumbs">
+        @Path(volume).toHtml
+        </ul>
+
+
+        <ul class="actions">
+	        <li><a href="@volume.pageURL">view</a></li>
+	    @if(volume.permission >= Permission.EDIT) {
+	        <li><a href="@controllers.routes.VolumeHtml.edit(volume.id)">edit</a></li>
+	        <li><a href="@controllers.routes.AssetHtml.create(volume.id)">add file</a></li>
+	        <li><a href="@controllers.routes.SlotHtml.createContainer(volume.id)">add session/folder</a></li>
+	    }
+	    @if(volume.permission >= Permission.ADMIN) {
+	        <li><a href="@controllers.routes.VolumeHtml.admin(volume.id)">access</a></li>
+	    }
+        </ul>
+    </div>
+
     @widget.figure.thumbVolume(volume, scalar = "", classes = "panel_overview_thumbnail")
 
     <h1 class="col-full panel_title">@display.formatTitle(volume.pageName)</h1>
@@ -9,29 +28,4 @@
     @widget.frame.funding(access.filter(_.funding.isDefined))
     @widget.frame.volume(volume, summary)
     @widget.frame.citation(volume, access)
-
-    <div class="col-full panel_overview_actions">
-        <ul class="breadcrumbs">
-        @Path(volume).toHtml
-        </ul>
-
-
-        <ul class="actions">
-        @volume.pageActions.filter(_.available).map { act =>
-            <li class="@{
-                if(request.path == act.route.url) {
-                    "current"
-                }
-            }">
-            @if(act.route.method != "GET") {
-                @widget.tag.form(act.route) {
-                    <button type="submit" class="link">@act.name</button>
-                }
-            } else {
-                <a href="@act.route" alt="@act.name">@act.name</a>
-            }
-            </li>
-        }
-        </ul>
-    </div>
 }

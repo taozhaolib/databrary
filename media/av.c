@@ -217,7 +217,7 @@ Java_media_AV_00024__1frame(
 	AVFrame *frame = NULL;
 	int i;
 	jbyteArray jimg = NULL;
-	int gpp;
+	int gpp = 0;
 
 	av_init_packet(&pkt);
 
@@ -247,8 +247,10 @@ Java_media_AV_00024__1frame(
 			if (gpp)
 				pts = frame->pts = av_frame_get_best_effort_timestamp(frame);
 		}
+		else
+			gpp = 0;
 		av_free_packet(&pkt);
-	} while (pts < off);
+	} while (!gpp || pts < off);
 
 	CHECK(avformat_alloc_output_context2(&out, NULL, outfile ? "image2" : "image2pipe", outfile), "opening '%s'", outfile);
 	if (!outfile)

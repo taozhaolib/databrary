@@ -174,11 +174,6 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   def pageName = name.getOrElse("file")
   def pageParent = Some(volume)
   def pageURL = controllers.routes.AssetHtml.view(id)
-  def pageActions = Seq(
-    Action("view", pageURL, Permission.VIEW),
-    Action("edit", controllers.routes.AssetHtml.edit(id), Permission.EDIT),
-    Action("remove", controllers.routes.AssetHtml.remove(id), Permission.CONTRIBUTE)
-  )
 
   lazy val json : JsonRecord = JsonRecord.flatten(id,
     Some('format -> format.json /* XXX */),

@@ -18,6 +18,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
   def source = asset.source
   override def format = asset.format
 
+  def entire = slot.segment @> asset_segment
   /** Segment occupied by asset wrt slot position. */
   final def relativeSegment = segment.map(_ - slot.position)
   require(excerpt_segment.forall(_ @> segment))
@@ -57,12 +58,6 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
   override def pageName = asset.pageName
   override def pageParent = Some(slot)
   override def pageURL = controllers.routes.SlotAssetHtml.view(containerId, slot.segment, assetId)
-  override def pageActions = Seq(
-      Action("view", pageURL, Permission.VIEW)
-    ) ++ (if (slot.isFull) Seq(
-      Action("edit", controllers.routes.AssetHtml.edit(assetId), Permission.EDIT),
-      Action("remove", controllers.routes.AssetHtml.remove(assetId), Permission.CONTRIBUTE)
-    ) else Nil)
 
   override lazy val json : JsonObject = JsonObject.flatten(
     Some('permission -> permission),
@@ -92,7 +87,6 @@ final class SlotTimeseries private[models] (override val asset : Timeseries, ass
     } { s =>
       Range.singleton[Offset](s - asset_segment.lowerBound.getOrElse(Offset.ZERO))
     }
-  def entire = segment @> asset_segment
 }
 
 object SlotAsset extends Table[SlotAsset]("slot_asset") {
@@ -176,12 +170,6 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
     SlotAssetSlot.assetRowVolume(asset.volume, Asset.fixed(asset).map(const _))
     .SELECT("WHERE slot_asset.asset = ? AND container.volume = ?")
     .apply(asset.id, asset.volumeId).singleOpt
-
-  /** Retrieve the list of all assets assigned the given record. */
-  private[models] def getRecord(record : Record) : Future[Seq[SlotAsset]] =
-    row(SlotRecord.row(record), slot_table = SlotRecord.table)
-    .SELECT("WHERE slot_record.record = ? AND container.volume = ? AND asset.volume = container.volume")
-    .apply(record.id, record.volumeId).list
 
   private[models] def getExcerpt(volume : Volume) : Future[Seq[SlotAsset]] =
     Excerpt.assetRowVolume(volume)

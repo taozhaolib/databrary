@@ -53,6 +53,10 @@ object Async {
     val b = bf()
     foreach[A, R](l, f(_).andThen { case Success(a) => b += a }, b.result)
   }
+  def flatMap[A, B, R](l : Seq[A], f : A => Future[Seq[B]])(implicit bf : generic.CanBuildFrom[Seq[A], B, R], context : ExecutionContext) : Future[R] = {
+    val b = bf()
+    foreach[A, R](l, f(_).andThen { case Success(a) => b ++= a }, b.result)
+  }
   /** Evaluate each of the futures in the Map in an arbitrary order and produce a collection of the results.
     * This is not as efficient as it could be due to a lack of foldMap/mapAccum-type functions. */
   def mapValues[K, A, B, R](m : Map[K, A], f : A => Future[B])(implicit bf : generic.CanBuildFrom[Map[K, A], (K, B), R], context : ExecutionContext) : Future[R] = {
