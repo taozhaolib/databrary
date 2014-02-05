@@ -78,6 +78,27 @@ define(['app/config/module'], function (module) {
 
 		//
 
+		routerService.volumeThumb = function (data) {
+			if ($rootScope.browser.isVolume(data))
+				data = {
+					id: data.id
+				};
+
+			return routerService.makeUrl('/volume/:id/thumb', data);
+		};
+
+		routerService.slotThumb = function (data) {
+			if ($rootScope.browser.isSession(data))
+				data = {
+					id: data.id,
+					segment: data.segment || ','
+				};
+
+			return routerService.makeUrl('/slot/:id/thumb', data);
+		};
+
+		//
+
 		routerService.assetLink = function (data, inline) {
 			if (angular.isObject(data) && data.asset)
 				data = {
@@ -108,6 +129,36 @@ define(['app/config/module'], function (module) {
 					data = '';
 
 			return routerService.makeUrl('/party/:id/avatar', data);
+		};
+
+		//
+
+		routerService.slotEdit = function (data) {
+			if ($rootScope.browser.isSession(data))
+				data = {
+					id: data.id,
+					segment: data.segment || ','
+				};
+
+			return routerService.makeUrl('/slot/:id/edit', data);
+		};
+
+		routerService.recordEdit = function (data) {
+			if ($rootScope.browser.isRecord(data))
+				data = {
+					id: data.id
+				};
+
+			return routerService.makeUrl('/record/:id/edit', data);
+		};
+
+		routerService.volumeEdit = function (data) {
+			if ($rootScope.browser.isVolume(data))
+				data = {
+					id: data.id
+				};
+
+			return routerService.makeUrl('/volume/:id/edit', data);
 		};
 
 		//

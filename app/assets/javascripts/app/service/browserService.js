@@ -362,6 +362,18 @@ define(['app/config/module'], function (module) {
 			return 'session';
 		};
 
+		browserService.isVolume = function (object) {
+			return angular.isObject(object) && !!object.body;
+		};
+
+		browserService.isRecord = function (object) {
+			return angular.isObject(object) && !!object.measures;
+		};
+
+		browserService.isSession = function (object) {
+			return angular.isObject(object) && !object.body && !object.measures;
+		};
+
 		//
 
 		var recordGroupToggle = undefined;

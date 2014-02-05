@@ -226,6 +226,16 @@ define(['app/config/module'], function (module) {
 
 		//
 
+		// TODO: implement real editing and remove phonyView
+
+		$routeProvider.when('/:page*', {
+			controller: 'PhonyView',
+			templateUrl: 'phonyView.html',
+			reloadOnSearch: false
+		});
+
+		//
+
 		$routeProvider.otherwise({
 			redirectTo: '/search'
 		});

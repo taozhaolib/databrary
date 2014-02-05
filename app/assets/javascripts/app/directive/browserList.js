@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.directive('browserList', ['BrowserService', '$filter', 'ConstantService', function (browserService, $filter, constantService) {
+	module.directive('browserList', ['BrowserService', '$filter', 'ConstantService', 'RouterService', function (browserService, $filter, constantService, router) {
 		var link = function ($scope, $element, $attrs) {
 			if(!$scope.browser)
 				$scope.browser = browserService;
@@ -47,7 +47,22 @@ define(['app/config/module'], function (module) {
 					case 'session':
 						return 'Session: ' + (data.object.name || data.object.id);
 				}
-			}
+			};
+
+			//
+
+			$scope.editLink = function (data) {
+				switch($scope.browser.getItemType(data.object)) {
+					case 'volume':
+						return router.volumeEdit(data.object);
+
+					case 'record':
+						return router.recordEdit(data.object);
+
+					case 'session':
+						return router.slotEdit(data.object);
+				}
+			};
 		};
 
 		return {

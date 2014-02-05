@@ -1,12 +1,17 @@
-<aside class="browser_list cf">
+<aside bindonce class="browser_list cf">
     <div class="browser_item_content browser_item_controller cf">
         <a class="browser_tool expander"
         ng-click="toggleExpand()"
         ng-class="expanderClasses(data)"
         ng-if="browser.data != data && data.type != 'session'"></a>
+
         <a class="browser_tool filter"
         ng-click="setItemSelect(data)"
         ng-class="selectorClasses(data)"
+        ng-if="browser.data != data"></a>
+
+        <a class="browser_tool edit"
+        bo-href="editLink(data)"
         ng-if="browser.data != data"></a>
 
         <browser-filter ng-if="data.select"></browser-filter>
