@@ -34,9 +34,9 @@ trait Slot extends TableRow with InVolume with SiteObject {
   /** Update the given values in the database and this object in-place. */
   final def setConsent(consent : Consent.Value) : Future[Boolean] = {
     if (consent == Consent.NONE)
-      Audit.remove("slot_consent", sqlKey).execute
+      Audit.remove("slot_consent", slotSql).execute
     else
-      Audit.changeOrAdd("slot_consent", SQLTerms('consent -> consent), sqlKey).execute
+      Audit.changeOrAdd("slot_consent", SQLTerms('consent -> consent), slotSql).execute
 	.recover {
 	  case e : com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("conflicting key value violates exclusion constraint ") => false
 	}
