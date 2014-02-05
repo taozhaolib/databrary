@@ -109,10 +109,11 @@
 //
 
 .browser_tool {
-	.size(24px);
+	height: 24px;
 	display: inline-block;
 	.border-radius(@border-radius);
 	background-color: @g5;
+	.padding-left(@f1);
 
 	&:hover {
 		background-color: @g4;
@@ -128,10 +129,10 @@
 
 	&.filter {
 		background: url('/public/images/browser/tool-filter.png') no-repeat 4px 4px;
+	}
 
-		&.active {
-
-		}
+	&.edit {
+		background: url('/public/images/browser/tool-edit.png') no-repeat 4px 4px;
 	}
 }
 

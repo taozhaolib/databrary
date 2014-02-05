@@ -25,7 +25,7 @@ define(['app/config/module'], function (module) {
 
 				if (volumeAccess.access == 3)
 					$scope.contributed.push(volumeAccess.volume);
-console.log($scope.funded);
+
 				if (volumeAccess.funding)
 					$scope.funded.push(volumeAccess.volume);
 			});
