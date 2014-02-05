@@ -126,7 +126,7 @@ POST    /api/party                                                              
 # QUERY
 GET     /api/party/$partyId<[0-9]+>/authorize                                                     controllers.PartyApi.authorizeGet(partyId : models.Party.Id)
 # SEARCH
-GET     /api/party/$partyId<-?[0-9]+>/authorize/search                                            controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, name : String)
+GET     /api/party/$partyId<[0-9]+>/authorize/search                                              controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, name : String)
 # CHANGE
 POST    /api/party/$partyId<[0-9]+>/authorize/$childId<[0-9]+>                                    controllers.PartyApi.authorizeChange(partyId : models.Party.Id, childId : models.Party.Id)
 # APPLY

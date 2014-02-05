@@ -260,5 +260,5 @@ object Account extends Table[Account]("account") {
   def create(party : Party, email : String, password : Option[String] = None, openid : Option[String] = None)(implicit site : Site) : Future[Account] =
     Audit.add("account", SQLTerms('id -> party.id, 'email -> email, 'password -> password, 'openid -> openid)).map { _ =>
       new Account(party, email, password.getOrElse(""), openid)
-}
+    }
 }
