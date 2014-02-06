@@ -359,15 +359,22 @@ define(['app/config/module'], function (module) {
 			if (browserService.isVolume(object))
 				return 'volume';
 
+			if(browserService.isAsset(object))
+				return 'asset';
+
 			return 'session';
 		};
 
 		browserService.isVolume = function (object) {
-			return angular.isObject(object) && !!object.body;
+			return angular.isObject(object) && object.body;
 		};
 
 		browserService.isRecord = function (object) {
-			return angular.isObject(object) && !!object.measures;
+			return angular.isObject(object) && object.measures;
+		};
+
+		browserService.isAsset = function (object) {
+			return angular.isObject(object) && object.asset;
 		};
 
 		browserService.isSession = function (object) {

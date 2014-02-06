@@ -29,34 +29,35 @@ define([
 		$logProvider.debugEnabled(true);
 	}]);
 
-	module.run(['$window', '$rootScope', '$location', 'BrowserService', function ($window, $rootScope, $location, browser) {
+	module.run(['$window', '$rootScope', '$location', '$log', 'RouterService', 'BrowserService', 'ConstantService', function ($window, $rootScope, $location, $log, router, browser, constant) {
+		// $rootScope specials
+		$rootScope.$log = $log;
+		$rootScope.router = router;
+		$rootScope.browser = browser;
+		$rootScope.constant = constant;
+
+		// play->angular redirects
 		if(angular.isDefined($window.$play) && $window.$play.redirect){
 			switch(browser.getItemType($window.$play.object)) {
 				case 'session':
-					$location.path('/volume/'+$window.$play.object.volume);
+					$location.url('/volume/'+$window.$play.object.volume+'?session_limit='+$window.$play.object.id);
 					break;
 
 				case 'record':
-					$location.path();
+					constant.$promise.then(function (data) {
+						$location.url('/volume/'+$window.$play.object.volume+'?'+constant.data.category[$window.$play.object.category].name+'_limit='+$window.$play.object.id);
+					});
 					break;
 
-				default:
+				case 'asset':
 					// asset
-					$location.path();
+					$location.url('/volume/'+$window.$play.object.container.volume+'?session_limit='+$window.$play.object.container.id+'&asset_limit='+$window.$play.object.asset.id);
 					break;
 			}
 		}
 
 		// TODO: anchor scroll on page load. I think the problem is animated items on load.
 		$location.hash('');
-	}]);
-
-	module.run(['$rootScope', '$log', 'RouterService', 'BrowserService', 'ConstantService', function ($rootScope, $log, router, browser, constant) {
-		$rootScope.$log = $log;
-
-		$rootScope.router = router;
-		$rootScope.browser = browser;
-		$rootScope.constant = constant;
 	}]);
 
 	return module;
