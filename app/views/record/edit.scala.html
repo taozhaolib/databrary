@@ -9,7 +9,7 @@
 @widget.template.form(Some(record), "Edit Record") {
             @widget.formErrors(form)
 
-            <form metrics-repeater class="repeater" ng-init='formAction = "/volume/@record.volume.id.toString/record/@record.id.toString/edit"; category = @form("Category").value.getOrElse("undefined"); categories = @jsonCategories; metrics = @jsonMetrics; repeats = @form.data.filter(i => i._1.contains("measure")).map(i => (i._1.split("\\.").head, i._1.split("\\.").last, i._2)).groupBy(i => i._1).map(i => i._2.map(i => i._2+": '"+i._3+"'").mkString("{",",","}")).mkString("[",",","]")'>
+            <form metrics-repeater class="repeater" ng-init='formAction = "/record/@record.id.toString/edit"; category = @form("Category").value.getOrElse("undefined"); categories = @jsonCategories; metrics = @jsonMetrics; repeats = @form.data.filter(i => i._1.contains("measure")).map(i => (i._1.split("\\.").head, i._1.split("\\.").last, i._2)).groupBy(i => i._1).map(i => i._2.map(i => i._2+": '"+i._3+"'").mkString("{",",","}")).mkString("[",",","]")'>
 
                 <div class="field cf" id="category_field">
                     <label for="category">Record Category</label>
