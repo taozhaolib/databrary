@@ -1,4 +1,4 @@
-@(title : String = "The Databrary Project")(requestOption: Option[SiteRequest[_]] = None)(body : Html)
+@(title : String = "The Databrary Project", angularRedirect : Option[String] = None)(requestOption: Option[SiteRequest[_]] = None)(body : Html)
 
 @import play.api._
 @import play.api.Play.current
@@ -28,18 +28,11 @@
     @angular.partial("searchView"){@angular.view.searchView()}
     @angular.partial("partyView"){@angular.view.partyView()}
     @angular.partial("volumeView"){@angular.view.volumeView()}
-    @angular.partial("slotView"){@angular.view.slotView()}
-    @angular.partial("recordView"){@angular.view.recordView()}
-    @angular.partial("assetView"){@angular.view.assetView()}
-    @angular.partial("playerView"){@angular.view.playerView()}
     @angular.partial("loginView"){@angular.view.loginView()}
     @angular.partial("phonyView"){@angular.view.phonyView()}
 
     @angular.partial("overviewPartyPanel"){@angular.panel.overviewPartyPanel()}
     @angular.partial("overviewVolumePanel"){@angular.panel.overviewVolumePanel()}
-    @angular.partial("overviewSlotPanel"){@angular.panel.overviewSlotPanel()}
-    @angular.partial("overviewRecordPanel"){@angular.panel.overviewRecordPanel()}
-    @angular.partial("overviewAssetPanel"){@angular.panel.overviewAssetPanel()}
     @angular.partial("dataPanel"){@angular.panel.dataPanel()}
     @angular.partial("networkPanel"){@angular.panel.networkPanel()}
     @angular.partial("browserPanel"){@angular.panel.browserPanel()}
@@ -65,6 +58,21 @@
     @angular.partial("browserSession"){@angular.directive.browserSession()}
 
     @angular.partial("volumeBlurb"){@angular.temp.volumeBlurb()}
+
+    @angularRedirect match {
+    case Some(redirect) => {
+    <!-- redirect -->
+    <script>
+        window.$play = { redirect: "@redirect" };
+    </script>
+    }
+    case None => {
+    <!-- json -->
+    <script>
+        // TODO: pass initial json for view
+    </script>
+    }
+    }
 
     <!-- more -->
 </head>

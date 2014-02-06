@@ -31,6 +31,11 @@ define([
 		$logProvider.debugEnabled(true);
 	}]);
 
+	module.run(['$window', '$location', function ($window, $location) {
+		if(angular.isDefined($window.$play) && $window.$play.redirect)
+			$location.path($window.$play.redirect);
+	}]);
+
 	module.run(['$rootScope', '$location', function ($rootScope, $location) {
 		// TODO: anchor scroll on page load. I think the problem is animated items on load.
 		$location.hash('');

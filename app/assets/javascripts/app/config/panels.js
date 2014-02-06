@@ -1,9 +1,6 @@
 define([
 	'app/panel/overviewPartyPanel',
 	'app/panel/overviewVolumePanel',
-	'app/panel/overviewSlotPanel',
-	'app/panel/overviewRecordPanel',
-	'app/panel/overviewAssetPanel',
 	'app/panel/dataPanel',
 	'app/panel/browserPanel',
 	'app/panel/materialsPanel',

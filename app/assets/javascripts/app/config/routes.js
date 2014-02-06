@@ -84,111 +84,6 @@ define(['app/config/module'], function (module) {
 
 		$routeProvider.when('/party/:id', partyView);
 
-		// I think this will probably disapparate...
-
-		var assetView = {
-			controller: 'AssetView',
-			templateUrl: 'assetView.html',
-			resolve: {
-				asset: ['$route', 'Asset', '$q', function ($route, Asset, $q) {
-					var deferred = $q.defer();
-
-					Asset.get({
-						slot: '',
-						revisions: ''
-					}, function (data) {
-						deferred.resolve(data);
-					}, function (data) {
-						deferred.reject();
-					});
-
-					return deferred.promise;
-				}]
-			},
-			reloadOnSearch: false
-		};
-
-		$routeProvider.when('/asset/:id', assetView);
-
-		//
-
-		var slotAssetView = {
-			controller: 'slotAssetView',
-			templateUrl: 'slotAssetView.html',
-			resolve: {
-				slotAsset: ['$route', 'SlotAsset', '$q', function ($route, SlotAsset, $q) {
-					var deferred = $q.defer();
-
-					SlotAsset.get({
-						slot: '',
-						revisions: ''
-					}, function (data) {
-						deferred.resolve(data);
-					}, function (data) {
-						deferred.reject();
-					});
-
-					return deferred.promise;
-				}]
-			},
-			reloadOnSearch: false
-		};
-
-		$routeProvider.when('/slot/:sid/asset/:id', slotAssetView);
-
-		//
-
-		var slotView = {
-			controller: 'SlotView',
-			templateUrl: 'slotView.html',
-			resolve: {
-				slot: ['$route', 'Slot', '$q', function ($route, Slot, $q) {
-					var deferred = $q.defer();
-
-					Slot.get({
-						tags: '',
-						assets: '',
-						comments: '',
-						records: ''
-					}, function (data) {
-						deferred.resolve(data);
-					}, function (data) {
-						deferred.reject();
-					});
-
-					return deferred.promise;
-				}]
-			},
-			reloadOnSearch: false
-		};
-
-		$routeProvider.when('/slot/:id', slotView);
-
-		//
-
-		var recordView = {
-			controller: 'RecordView',
-			templateUrl: 'recordView.html',
-			resolve: {
-				record: ['$route', 'Record', '$q', function ($route, Record, $q) {
-					var deferred = $q.defer();
-
-					Record.get({
-						slots: ''
-					}, function (data) {
-						deferred.resolve(data);
-					}, function (data) {
-						deferred.reject();
-					});
-
-					return deferred.promise;
-				}]
-			},
-			reloadOnSearch: false
-		};
-
-		$routeProvider.when('/record/:id', recordView);
-
 		//
 
 		var volumeView = {
@@ -225,6 +120,19 @@ define(['app/config/module'], function (module) {
 		$routeProvider.when('/volume/:id', volumeView);
 
 		//
+
+		var redirectToVolume = {
+			redirectTo: function (params, path) {
+
+
+				console.log(params, path);
+			}
+		};
+
+		$routeProvider.when('/record/:id', redirectToVolume);
+		$routeProvider.when('/slot/:id', redirectToVolume);
+		$routeProvider.when('/slot/:sid/asset/:id', redirectToVolume);
+		$routeProvider.when('/asset/:id', redirectToVolume);
 
 		// TODO: implement real editing and remove phonyView
 

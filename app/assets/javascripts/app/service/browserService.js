@@ -353,10 +353,10 @@ define(['app/config/module'], function (module) {
 			if (!angular.isObject(object))
 				return undefined;
 
-			if (object.measures)
+			if (browserService.isRecord(object))
 				return 'record';
 
-			if (object.body)
+			if (browserService.isVolume(object))
 				return 'volume';
 
 			return 'session';
