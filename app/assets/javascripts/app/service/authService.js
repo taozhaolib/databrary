@@ -42,14 +42,15 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		var levels = {
-			NONE: 0,
-			VIEW: 1,
-			DOWNLOAD: 2,
-			EDIT: 3,
-			ADMIN: 4,
-			SUPER: 5
-		};
+		var levels = {};
+
+		$rootScope.constant.$promise.then(function () {
+			angular.forEach($rootScope.constant.data.permission, function (permission) {
+				levels[permission.name] = permission.id;
+			});
+
+			levels['SUPER'] = 5;
+		});
 
 		var parseAuthLevel = function (level) {
 			return angular.isString(level) ? levels[level] : level;
@@ -61,12 +62,18 @@ define(['app/config/module'], function (module) {
 
 			if (angular.isDate(authService.user.superuser) && authService.user.superuser > new Date())
 				return parseAuthLevel('SUPER');
-
+			console.log("superuser always returns", authService.user.superuser);
 			return authService.user.access;
 		};
 
-		var parseUserAccess = function () {
-// TODO...........................................
+		var parseUserAccess = function (object) {
+			if(!object || !object.access)
+				return parseAuthLevel('NONE');
+
+			var level;
+
+//			angular.forEach(object.access, function (access) {
+//			});
 		};
 
 		//
@@ -85,16 +92,16 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		authService.hasAccess = function (level) {
+		authService.hasAccess = function (level, object) {
 			level = level.toUpperCase().split('!');
 
 			return level.length == 1 ?
-				parseUserAccess() >= parseAuthLevel(level.pop()) :
-				parseUserAccess() < parseAuthLevel(level.pop());
+				parseUserAccess(object) >= parseAuthLevel(level.pop()) :
+				parseUserAccess(object) < parseAuthLevel(level.pop());
 		};
 
-		authService.isAccess = function (level) {
-			return parseUserAccess() == parseAuthLevel(level.toUpperCase().split('!').pop());
+		authService.isAccess = function (level, object) {
+			return parseUserAccess(object) == parseAuthLevel(level.toUpperCase().split('!').pop());
 		};
 
 		//
