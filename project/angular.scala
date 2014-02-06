@@ -1,6 +1,7 @@
 import sbt._
 import Keys._
 import scala.util.matching.Regex
+import com.googlecode.htmlcompressor.compressor.HtmlCompressor
 
 object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
   val directory = SettingKey[String]("angular-template-directory")
@@ -48,24 +49,29 @@ object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
       })
   }
   private object AllSubstTemplate {
-    private final val templateRegex = "(?ms)(.*?)(?:^\\{\\{\\{$(.*?))?(?:^\\}\\}\\}$(.*))?".r
+    private final val templateRegex = "(?ms)(?:(.*)^\\{\\{\\{$)?(.*?)(?:^\\}\\}\\}$(.*))?".r
     private final val eachRegex = "@FILENAME@|@CONTENTS@".r
+    private def coalesce[A](x : A, default : A = "") : A = Option(x).getOrElse(default)
 
     def apply(t : String) =
       t match {
 	case templateRegex(pre, each, post) =>
-	  new AllSubstTemplate(pre, Option(each).getOrElse(""), Option(post).getOrElse(""))
+	  new AllSubstTemplate(coalesce(pre), each, coalesce(post))
       }
   }
 
+  private val compressor = new HtmlCompressor
+  compressor.setRemoveIntertagSpaces(true)
+
   private def compile(file : File, options : Seq[String]) : (String, Option[String], Seq[File]) = {
-    if (file.getName.equals("_all.html")) {
+    val (text, dep) = if (file.getName.equals("_all.html")) {
       val all = file.getParentFile.listFiles(new java.io.FilenameFilter {
 	def accept(dir : File, name : String) = name.endsWith(".html") && !name.startsWith("_")
       })
-      (AllSubstTemplate(read(file))(all), None, all)
+      (AllSubstTemplate(read(file))(all), all : Seq[File])
     } else
-      (read(file), None, Nil)
+      (read(file), Nil)
+    (text, Some(compressor.compress(text)), dep)
   }
 
   val Compiler = AssetsCompiler("angular",
@@ -77,7 +83,7 @@ object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
   )
 
   override val projectSettings = Seq(
-    directory := "ng-templates",
+    directory := "templates",
     entryPoints <<= (sourceDirectory in Compile, directory){ (base, dir) =>
       base / "assets" / dir ** "*.html"
     },
