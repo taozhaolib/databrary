@@ -1,6 +1,6 @@
-@(title : String = "", angularRedirect : Option[String] = None)(body : Html)(implicit request : RequestObject[SiteObject]#Site[_])
+@(title : String = "", redirect : Boolean = false)(body : Html)(implicit request : RequestObject[SiteObject]#Site[_])
 
-@widget.template.html5(title, angularRedirect) {
+@widget.template.html5(title, redirect) {
     <article class="article article_crud article_@request.obj.getClass.getSimpleName.toLowerCase">
         @body
     </article>

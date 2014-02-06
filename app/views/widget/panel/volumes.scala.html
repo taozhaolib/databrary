@@ -4,7 +4,7 @@
 @import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 @if(owned.nonEmpty || edited.nonEmpty || funded.nonEmpty) {
-    @widget.panel.raw("volumes", "")(title = "Data", foldable = true){
+    @widget.panel.raw("volumes", "")(title = "Data"){
         @if(funded.nonEmpty) {
             <div class="col-full">
                 <h2>Funded</h2>

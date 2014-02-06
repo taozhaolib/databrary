@@ -119,21 +119,6 @@ define(['app/config/module'], function (module) {
 
 		$routeProvider.when('/volume/:id', volumeView);
 
-		//
-
-		var redirectToVolume = {
-			redirectTo: function (params, path) {
-
-
-				console.log(params, path);
-			}
-		};
-
-		$routeProvider.when('/record/:id', redirectToVolume);
-		$routeProvider.when('/slot/:id', redirectToVolume);
-		$routeProvider.when('/slot/:sid/asset/:id', redirectToVolume);
-		$routeProvider.when('/asset/:id', redirectToVolume);
-
 		// TODO: implement real editing and remove phonyView
 
 		$routeProvider.when('/:page*', {

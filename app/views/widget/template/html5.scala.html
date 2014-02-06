@@ -1,5 +1,5 @@
-@(title : String = "The Databrary Project", angularRedirect : Option[String] = None)(body : Html)(implicit request: SiteRequest[_])
+@(title : String = "The Databrary Project", redirect : Boolean = false)(body : Html)(implicit request: SiteRequest[_])
 
-@widget.template.raw(title, angularRedirect)(Some(request)) {
+@widget.template.raw(title, redirect)(Some(request)) {
     @body
 }

@@ -1,4 +1,4 @@
-@(title : String = "The Databrary Project", angularRedirect : Option[String] = None)(requestOption: Option[SiteRequest[_]] = None)(body : Html)
+@(title : String = "The Databrary Project", redirect : Boolean = false)(requestOption: Option[SiteRequest[_]] = None)(body : Html)
 
 @import play.api._
 @import play.api.Play.current
@@ -59,20 +59,26 @@
 
     @angular.partial("volumeBlurb"){@angular.temp.volumeBlurb()}
 
-    @angularRedirect match {
-    case Some(redirect) => {
     <!-- redirect -->
     <script>
-        window.$play = { redirect: "@redirect" };
+        window.$play = {};
+
+        @requestOption match {
+            case Some(request:RequestObject[_]#Site[_]) => {
+                @request.obj match {
+                    case obj:SiteObject => {
+        window.$play.object = @format.raw(play.api.libs.json.Json.toJson(obj.json).toString);
+                    }
+                    case _ => {}
+                }
+            }
+            case _ => {}
+        }
+
+        @if(redirect) {
+        window.$play.redirect = true;
+        }
     </script>
-    }
-    case None => {
-    <!-- json -->
-    <script>
-        // TODO: pass initial json for view
-    </script>
-    }
-    }
 
     <!-- more -->
 </head>

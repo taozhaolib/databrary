@@ -1,7 +1,7 @@
-@(target: Option[SitePage], context: String, angularRedirect : Option[String] = None)(body: Html)(implicit request : RequestObject[SiteObject]#Site[_])
+@(target: Option[SitePage], context: String, redirect : Boolean = false)(body: Html)(implicit request : RequestObject[SiteObject]#Site[_])
 
 @defining(target.map(_.pageName)) { title =>
-@widget.template.crud(context + title.fold("")(": " + _), angularRedirect) {
+@widget.template.crud(context + title.fold("")(": " + _), redirect) {
 	@widget.panel.form(title.getOrElse(""), context) {
 		<div class="col-full">
 			@body

@@ -5,7 +5,7 @@
 
 @defining(records.groupBy(r => r.category.fold("uncategorized")(c => c.name))) { recordCategories =>
 @if(recordCategories.nonEmpty) {
-    @widget.panel.raw("records", "")(title = "Records", foldable = true){
+    @widget.panel.raw("records", "")(title = "Records"){
         <div class="col-full">
         @if(recordCategories.contains("participant")) {
             <h2>Participants</h2>

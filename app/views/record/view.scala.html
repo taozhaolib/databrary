@@ -1,9 +1,9 @@
 @(slots : Seq[Slot], assets : Seq[SlotAsset])(implicit request : RecordHtml.Request[_])
 
-@widget.template.crud("Record: " + request.obj.pageName) {
+@widget.template.crud("Record: " + request.obj.pageName, redirect = true) {
     @widget.panel.record(request.obj)
 
-      @widget.panel.raw("sessions", "")(title = "Sessions", foldable = true){
+      @widget.panel.raw("sessions", "")(title = "Sessions"){
 	  <div class="col-full">
 	      <ul>
 		  @slots.map { slot =>

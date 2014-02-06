@@ -1,6 +1,6 @@
-@(title : String = "There's been an error!", angularRedirect : Option[String] = None)(body : Html)
+@(title : String = "There's been an error!", redirect : Boolean = false)(body : Html)
 
-@widget.template.raw(title, angularRedirect)(None) {
+@widget.template.raw(title, redirect)(None) {
     <article class="article article_error">
         @body
     </article>

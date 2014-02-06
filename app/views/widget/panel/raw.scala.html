@@ -1,22 +1,13 @@
-@(id: String, classes: String, attr: (String,String)*)(controller: String = "", title: String = "", foldable: Boolean = false, foldCurrently: Boolean = false)(body: Html)
+@(id: String, classes: String, attr: (String,String)*)(title: String = "")(body: Html)
 
-<section panel db-panel-title="@title" id="panel_@id" class="panel panel_@id @classes" @if(controller){ng-controller="@controller"} ng-class="{enabled: isEnabled, folded: isFolded}" @if(foldable){fold @if(foldCurrently){db-fold-currently="true"}} @El.attrToHtml(attr)>
+<section panel id="panel_@id" class="panel panel_@id @classes" @El.attrToHtml(attr)>
     <div class="wrap">
         <div class="row">
         @if(title.nonEmpty) {
-            <h2 class="col-full panel_header" @if(foldable){folder ng-click="foldToggle()"}>@title</h2>
-        }
-        @if(foldable){
-            <div class="col-full" folded>
-                <div class="row">
+            <h2 class="col-full panel_header">@title</h2>
         }
 
-                    @body
-
-        @if(foldable){
-                </div>
-            </div>
-        }
+            @body
         </div>
     </div>
 </section>

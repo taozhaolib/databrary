@@ -1,21 +1,11 @@
-@(id: String, classes: String, attr: (String,String)*)(title: String = "", foldable: Boolean = false, foldCurrently: Boolean = false)(body: Html)
+@(id: String, classes: String, attr: (String,String)*)(title: String = "")(body: Html)
 
-<aside id="frame_@id" class="frame col-full frame_@id @classes" @if(foldable){fold ng-class="{folded: isFolded}" @if(foldCurrently){db-fold-currently="true"}} @El.attrToHtml(attr)>
+<aside id="frame_@id" class="frame col-full frame_@id @classes" @El.attrToHtml(attr)>
     <div class="row">
         @if(title.nonEmpty) {
-            <h2 class="col-full frame_header" @if(foldable){folder ng-click="foldToggle()"}>@title</h2>
+            <h2 class="col-full frame_header">@title</h2>
         }
 
-        @if(foldable) {
-            <div class="col-full frame_body" folded>
-                <div class="row">
-                }
-
-                    @body
-
-        @if(foldable) {
-                </div>
-            </div>
-        }
+        @body
     </div>
 </aside>

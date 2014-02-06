@@ -6,7 +6,7 @@
     }
 
 @if(post.nonEmpty || comments.nonEmpty) {
-@widget.panel.raw("comments", "")(title = "Comments", foldable = true){
+@widget.panel.raw("comments", "")(title = "Comments"){
     @post.map { case (post, form) =>
         @if(request.access >= Permission.VIEW) {
             <div class="comment col-full">

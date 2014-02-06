@@ -1,7 +1,7 @@
 @(citations : Seq[VolumeCitation])(implicit request : SiteRequest[_])
 
 @if(citations.nonEmpty) {
-    @widget.panel.raw("publications", "")(title = "Publications", foldable = true){
+    @widget.panel.raw("publications", "")(title = "Publications"){
         <div class="publication col-full">
             @for(citation <- citations) {
                 <div class="publication">

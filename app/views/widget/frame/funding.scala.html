@@ -1,7 +1,7 @@
 @(funding: Seq[VolumeAccess])(implicit request : SiteRequest[_])
 
 @if(funding.nonEmpty) {
-    @widget.frame.raw("funding", "")("Funding", foldable = true) {
+    @widget.frame.raw("funding", "")("Funding") {
         @funding.map { f =>
             @widget.portrait.verticalSmallExtra(f.party, Html(f.funding.getOrElse("")))
         }

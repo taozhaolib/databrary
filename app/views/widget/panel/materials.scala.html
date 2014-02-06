@@ -3,7 +3,7 @@
 @import play.api.templates.HtmlFormat._
 
 @if(assets.nonEmpty) {
-    @widget.panel.raw("materials", "", "ng-controller" -> "MaterialsPanelCtrl")(title = "Materials", foldable = true) {
+    @widget.panel.raw("materials", "")(title = "Materials") {
         <div class="panel_materials_list col-full">
             <ul class="flat panel_materials_items">
             @if(assets.nonEmpty) {

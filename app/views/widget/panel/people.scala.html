@@ -2,7 +2,7 @@
 
 @import play.api.templates.HtmlFormat._
 
-@widget.panel.raw("people", "")(title = "People", foldable = true){
+@widget.panel.raw("people", "")(title = "People"){
     <div class="col-full">
         <div class="row">
         @groupBy[VolumeAccess, Permission.Value](access, _.access).map { case (permission, volumeAccesses) =>
