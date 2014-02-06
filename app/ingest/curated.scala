@@ -154,7 +154,7 @@ object Curated {
       Asset.FileInfo(file, AssetFormat.getFilename(file.getPath)
         .getOrElse(throw PopulateException("no file format found for " + file.getPath)))
 
-    private val transcodedRegex = "^(.*)/transcoded/(.*)-01.mp4$".r
+    private val transcodedRegex = "(.*)/transcoded/(.*)-01.mp4".r
     def info : Asset.Info = {
       val path = file.getPath
       path match {
