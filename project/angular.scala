@@ -32,12 +32,12 @@ object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
   }
 
   private trait AllTemplater {
-    def apply(l : Array[File]) : String
+    def apply(l : Seq[File]) : String
   }
 
   private abstract class AllTemplate(pre : String, post : String) extends AllTemplater {
     def each(f : File) : String
-    final def apply(l : Array[File]) =
+    final def apply(l : Seq[File]) =
       (pre +: l.map(each) :+ post).mkString("\n")
   }
   private final class AllSubstTemplate(pre : String = "", each : String, post : String = "") extends AllTemplate(pre, post) {
@@ -65,9 +65,7 @@ object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
 
   private def compile(file : File, options : Seq[String]) : (String, Option[String], Seq[File]) = {
     val (text, dep) = if (file.getName.equals("_all.html")) {
-      val all = file.getParentFile.listFiles(new java.io.FilenameFilter {
-	def accept(dir : File, name : String) = name.endsWith(".html") && !name.startsWith("_")
-      })
+      val all = PathFinder(file.getParentFile).descendantsExcept("*.html", "_*").get
       (AllSubstTemplate(read(file))(all), all : Seq[File])
     } else
       (read(file), Nil)
