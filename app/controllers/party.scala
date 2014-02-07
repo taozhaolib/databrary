@@ -109,27 +109,33 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
     })
   }
 
-  def create(acct : Boolean = false) = RootAction.async { implicit request =>
-    def Error(form : PartyForm) =
-      throw new BadFormException[PartyMapping](views.html.party.edit(None, _))(form)
-    val form = partyForm(acct).bindFromRequest
-    form.fold(Error _, {
-      case (name, orcid, affiliation, duns, accts) =>
+  private def create(form : PartyForm, passwd : Boolean)(implicit site : Site) : Either[PartyForm, Future[SiteParty]] =
+    form.fold(Left(_), {
+      case (None, _, _, _, _) => Left(form.withError("name", "error.required"))
+      case (_, _, _, _, Some((_, None, _, _))) => Left(form.withError("email", "error.required"))
+      case (Some(name), orcid, affiliation, duns, accts) => Right {
 	for {
 	  p <- Party.create(
-	    name = name getOrElse Error(form.withError("name", "error.required")),
+	    name = name,
 	    orcid = orcid.flatten,
 	    affiliation = affiliation,
 	    duns = duns.flatten)
           a <- macros.Async.map[AccountMapping, Account](accts, { case (_, email, password, openid) =>
 	    Account.create(p,
-	      email = email getOrElse Error(form.withError("email", "error.required")),
-	      password = password,
+	      email = email.get,
+	      password = password.filter(_ => passwd),
 	      openid)
           })
 	  s <- p.perSite
-	} yield (result(s))
+	} yield (s)
+      }
     })
+
+
+  def create(acct : Boolean = false) : Action[_] = RootAction.async { implicit request =>
+    create(partyForm(acct).bindFromRequest, true).fold(
+      ABadForm[PartyMapping](views.html.party.edit(None, _), _),
+      _.map(result))
   }
 
   type AuthorizeMapping = (Permission.Value, Permission.Value, Boolean, Option[Date])
