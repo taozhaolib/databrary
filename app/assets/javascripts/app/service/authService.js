@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('AuthService', ['$rootScope', '$location', '$cookieStore', '$http', '$route', function ($rootScope, $location, $cookieStore, $http, $route) {
+	module.factory('AuthService', ['$rootScope', '$location', '$cookieStore', '$http', '$route', '$cacheFactory', function ($rootScope, $location, $cookieStore, $http, $route, $cacheFactory) {
 		var authService = {};
 
 		//
@@ -14,21 +14,23 @@ define(['app/config/module'], function (module) {
 
 			authService.userUpdated = new Date();
 
-			if (!user)
-				return authService.user = undefined;
+			if (user) {
+				if (angular.isDefined(user.superuser) && user.superuser > 0)
+					user.superuser = new Date(Date.now() + user.superuser);
+				else
+					user.superuser = false;
 
-			if (angular.isDefined(user.superuser) && user.superuser > 0)
-				user.superuser = new Date(user.superuser);
-			else
-				user.superuser = false;
+				if (authService.user && (!!user.superuser != !!authService.user.superuser || user.id != authService.user.id))
+					reload = true;
+			}
 
-			if (!!user.superuser != !!authService.user)
-				reload = true;
+			authService.user = user || undefined;
 
-			authService.user = user;
-
-			if (reload)
+			if (reload) {
+				console.log(reload);
+				$cacheFactory.get('$http').removeAll();
 				$route.reload();
+			}
 		};
 
 		$http
@@ -62,12 +64,12 @@ define(['app/config/module'], function (module) {
 
 			if (angular.isDate(authService.user.superuser) && authService.user.superuser > new Date())
 				return parseAuthLevel('SUPER');
-			console.log("superuser always returns", authService.user.superuser);
+
 			return authService.user.access;
 		};
 
 		var parseUserAccess = function (object) {
-			if(!object || !object.access)
+			if (!object || !object.access)
 				return parseAuthLevel('NONE');
 
 			var level;

@@ -36,7 +36,7 @@
                     </span>
                 </div>
 
-                <div ng-hide class="toolbar_user col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
+                <div mode-server class="toolbar_user col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
                 @requestOption.filter(_.user.isDefined).fold {
                     <a href="@routes.LoginHtml.view">login</a>
                 } { request =>
