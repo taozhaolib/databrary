@@ -1,0 +1,81 @@
+<panel ng-controller="CommentsPanel" id="panel_comments" title="Comments" fold>
+    <panel-mode name="view" active>
+        <aside ng-if="authService.user && routeController != 'PartyView'" class="comment col-full">
+            <div class="row">
+                <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3" ng-init="party = authService.user">
+                    <portrait class="portrait_avatar" hover></portrait>
+                </div>
+
+                <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
+                    <div class="comment_meta row">
+                        <div class="comment_info col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
+                            <div class="inner">
+                                Post a comment...
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comment_body comment_form">
+                        <form name="commentForm" novalidate>
+                            <textarea ng-model="newComment.body"></textarea>
+
+                            <button type="submit" class="button first" ng-click="addComment(commentForm)">Post</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <article ng-repeat="comment in comments" class="comment col-full">
+            <div class="row">
+                <aside class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3" ng-init="party = commentParty(comment)">
+                    <portrait class="portrait_avatar" hover></portrait>
+                </aside>
+
+                <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
+                    <footer ng-if="comment.container.top" class="comment_meta row">
+                        <div class="comment_info col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
+                            <div class="inner">
+                                <time datetime="{{volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>{{volume.creation | date:'MMMM d, yyyy'}}</time>
+                            </div>
+                        </div>
+                    </footer>
+
+                    <footer ng-if="!comment.container.top" class="comment_meta row">
+                        <div class="comment_info comment_location col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-5 col-cell">
+                            <div class="inner">
+                                <time datetime="{{volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>{{comment.time | date:'MMMM d, yyyy'}}</time>
+                                <span class="sep">|</span>
+
+                                <span ng-if="routeController == 'PartyView'">
+                                    <a ng-href="{{router.volume({id: comment.volume.id})}}">{{comment.volume.name | truncate:20}}</a>
+                                    <span class="sep">/</span>
+                                </span>
+
+                                <a ng-href="{{router.slot({
+                                    id: comment.container.id,
+                                    segment: comment.segment
+                                })}}">{{comment.container.name}}</a>
+                            </div>
+                        </div>
+
+                        <div class="comment_location_thumb col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+                            <div class="inner">
+                                <figure baseline="tube" ng-href="{{router.slot({
+                                    id: comment.container.id,
+                                    segment: comment.segment
+                                })}}">
+                                    <figmedia>
+                                        <img ng-src="/volume/{{comment.container.volume}}/slot/{{comment.container.id}}/thumb">
+                                    </figmedia>
+                                </figure>
+                            </div>
+                        </div>
+                    </footer>
+
+                    <div class="comment_body" ng-bind-html="comment.text | format"></div>
+                </div>
+            </div>
+        </article>
+    </panel-mode>
+</panel>

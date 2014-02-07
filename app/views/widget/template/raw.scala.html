@@ -24,6 +24,41 @@
     <!-- js -->
     @helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/app/app").url)
 
+    <!-- templates -->
+    @angular.partial("searchView"){@angular.view.searchView()}
+    @angular.partial("partyView"){@angular.view.partyView()}
+    @angular.partial("volumeView"){@angular.view.volumeView()}
+    @angular.partial("loginView"){@angular.view.loginView()}
+    @angular.partial("phonyView"){@angular.view.phonyView()}
+
+    @angular.partial("overviewPartyPanel"){@angular.panel.overviewPartyPanel()}
+    @angular.partial("overviewVolumePanel"){@angular.panel.overviewVolumePanel()}
+    @angular.partial("dataPanel"){@angular.panel.dataPanel()}
+    @angular.partial("networkPanel"){@angular.panel.networkPanel()}
+    @angular.partial("browserPanel"){@angular.panel.browserPanel()}
+    @angular.partial("materialsPanel"){@angular.panel.materialsPanel()}
+    @angular.partial("publicationsPanel"){@angular.panel.publicationsPanel()}
+    @angular.partial("peoplePanel"){@angular.panel.peoplePanel()}
+    @angular.partial("tagsPanel"){@angular.panel.tagsPanel()}
+    @angular.partial("commentsPanel"){@angular.panel.commentsPanel()}
+    @angular.partial("playerPanel"){@angular.panel.playerPanel()}
+    @angular.partial("searchPanel"){@angular.panel.searchPanel()}
+    @angular.partial("loginPanel"){@angular.panel.loginPanel()}
+
+    @angular.partial("frame"){@angular.directive.frame()}
+    @angular.partial("portrait"){@angular.directive.portrait()}
+    @angular.partial("panel"){@angular.directive.panel()}
+    @angular.partial("panelMode"){@angular.directive.panelMode()}
+    @angular.partial("browserGroup"){@angular.directive.browserGroup()}
+    @angular.partial("browserFilter"){@angular.directive.browserFilter()}
+    @angular.partial("browserList"){@angular.directive.browserList()}
+
+    @angular.partial("browserVolume"){@angular.directive.browserVolume()}
+    @angular.partial("browserRecord"){@angular.directive.browserRecord()}
+    @angular.partial("browserSession"){@angular.directive.browserSession()}
+
+    @angular.partial("volumeBlurb"){@angular.temp.volumeBlurb()}
+
     <!-- redirect -->
     <script>
         window.$play = {};

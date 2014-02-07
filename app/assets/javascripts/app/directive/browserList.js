@@ -63,6 +63,10 @@ define(['app/config/module'], function (module) {
 						return router.slotEdit(data.object);
 				}
 			};
+
+			$scope.canEdit = function (data) {
+
+			}
 		};
 
 		return {

@@ -1,0 +1,9 @@
+<panel ng-controller="PeoplePanel" id="panel_people" title="People" fold>
+    <panel-mode name="view" active>
+        <div class="row">
+            <div ng-repeat="volumeAccess in volume.access | filter:notFunded" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">
+                <portrait class="portrait_avatar" hover caption="{{getVolumeRole(volumeAccess)}}"></portrait>
+            </div>
+        </div>
+    </panel-mode>
+</panel>

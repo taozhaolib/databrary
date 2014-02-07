@@ -569,6 +569,38 @@ define(['app/config/module'], function (module) {
 
 		//
 
+		browserService.getObjectPermission = function (object) {
+			var type = browserService.getItemType(object),
+				permission = undefined;
+
+			angular.forEach(raw, function (volume) {
+				switch(type) {
+					case 'volume':
+						if(volume.id == object.id)
+							permission = volume.permission;
+						break;
+
+					case 'session':
+						if(volume.sessions.indexOf(object.id) > -1)
+							permission = volume.permission;
+						break;
+
+					case 'record':
+						if(volume.records.indexOf(object.id) > -1)
+							permission = volume.permission;
+						break;
+
+					case 'asset':
+						permission = object.permission;
+						break;
+				}
+			});
+
+			return permission;
+		};
+
+		//
+
 		var itemSelect = undefined;
 
 		browserService.setItemSelect = function (data) {

@@ -73,8 +73,8 @@ define(['app/config/module'], function (module) {
 
 			var level;
 
-//			angular.forEach(object.access, function (access) {
-//			});
+			angular.forEach(object.access, function (access) {
+			});
 		};
 
 		//

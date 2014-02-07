@@ -12,7 +12,7 @@
 
         <a class="browser_tool edit"
         bo-href="editLink(data)"
-        has-access=""></a>
+        ng-if="browser.data != data"></a>
 
         <browser-filter ng-if="data.select"></browser-filter>
     </div>

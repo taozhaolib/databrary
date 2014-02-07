@@ -1,0 +1,41 @@
+<section class="browser_filters">
+    <div class="browser_widget browser_sort cf">
+        <span class="browser_widget_title">
+            Sort by
+        </span>
+
+        <span class="browser_widget_wrap"
+        ng-repeat="sort in browser.getSorts(data, true)"
+        ng-class="sortClasses(sort)">
+            <a class="browser_widget_pill left"
+            ng-click="browser.setSortToggle(sort)">{{sort.name}}</a>
+
+            <ul class="record_pill_options">
+                <li ng-repeat="maybe in browser.getSorts(data, false)">
+                    <a ng-click="browser.switchSort(sort, maybe)">{{maybe.name}}</a>
+                </li>
+            </ul>
+
+            <a class="browser_widget_pill middle reverse"
+            ng-click="browser.reverseSort(sort)"
+            ng-if="browser.canReverseSort()">{{sort.order}}</a>
+
+            <a class="browser_widget_pill right remove"
+            ng-click="browser.removeSort(sort)"
+            ng-if="browser.canRemoveSort()">x</a>
+        </span>
+
+        <span class="browser_widget_wrap"
+        ng-if="browser.canAddSort()">
+            <a class="browser_widget_pill add"
+            ng-click="browser.addSort()">+ sort</a>
+        </span>
+    </div>
+
+    <div class="browser_widget browser_sort cf">
+        <span class="browser_widget_title">
+            Filter by
+        </span>
+    </div>
+</section>
+

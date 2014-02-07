@@ -1,0 +1,9 @@
+<panel ng-controller="PublicationsPanel" id="panel_publications" title="Publications" fold>
+    <panel-mode name="view" active>
+        <div ng-repeat="citation in volume.citations" class="publication">
+            <h3>{{citation.head}} <a ng-if="citation.url" ng-href="{{citation.url}}" title="{{citation.head}}" class="cit_link">link</a></h3>
+
+            <div class="publication_description" ng-bind-html="citation.body | format"></div>
+        </div>
+    </panel-mode>
+</panel>
