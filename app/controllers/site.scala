@@ -51,7 +51,7 @@ private[controllers] object ForbiddenException extends SiteException {
   def resultApi = macros.Async(Forbidden)
 }
 
-private[controllers] object ServiceUnavailableException extends SiteException {
+object ServiceUnavailableException extends SiteException {
   def resultHtml(implicit request : SiteRequest[_]) = macros.Async(ServiceUnavailable) // TODO page content
   def resultApi = macros.Async(ServiceUnavailable)
 }
