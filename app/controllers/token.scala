@@ -50,31 +50,26 @@ object Token extends SiteController {
     )
   }
 
-  private lazy val mailer = Play.current.plugin[com.typesafe.plugin.MailerPlugin]
-  private def getMailer = mailer.getOrElse(throw ServiceUnavailableException)
-
   val issuePasswordForm = Form("email" -> email)
 
   def getPassword = SiteAction { implicit request =>
-    getMailer // check to make sure it's available
+    Mail.check
     Ok(views.html.token.getPassword(issuePasswordForm))
   }
 
-  private[controllers] def newPassword(targ : Either[String,Account], msg : String = "password")(implicit request : SiteRequest[_]) : Future[Option[LoginToken]] = {
-    implicit val defaultContext = context.process
-    macros.Async.map[Account,LoginToken](targ.right.toOption, LoginToken.create(_, true)).map { token =>
-      val mail = getMailer.email
-      mail.setSubject(Messages("mail." + msg + ".subject"))
-      mail.setRecipient(targ.fold(identity, _.email))
-      mail.setFrom("Databrary <help@databrary.org>")
-      token.fold {
-	mail.send(Messages("mail." + msg + ".none"))
-      } { token =>
-	mail.send(Messages("mail." + msg + ".body", token.redeemURL.absoluteURL()))
-      }
-      token
-    }
-  }
+  private[controllers] def newPassword(targ : Either[String,Account], msg : String = "password")(implicit request : SiteRequest[_]) : Future[Option[LoginToken]] =
+    for {
+      token <- macros.Async.map[Account,LoginToken](targ.right.toOption, LoginToken.create(_, true))
+      _ <- Mail.send(
+	to = targ.fold(identity, _.email),
+	subject = Messages("mail." + msg + ".subject"),
+	body = token.fold {
+	  Messages("mail." + msg + ".none")
+	} { token =>
+	  Messages("mail." + msg + ".body", token.redeemURL.absoluteURL())
+	}
+      )
+    } yield (token)
 
   def issuePassword = SiteAction.async { implicit request =>
     issuePasswordForm.bindFromRequest.fold(
