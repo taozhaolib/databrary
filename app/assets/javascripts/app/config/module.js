@@ -29,6 +29,42 @@ define([
 		$logProvider.debugEnabled(true);
 	}]);
 
+	module.config(["$provide", function ($provide) {
+		$provide.decorator("$templateCache", ["$delegate", "$http", "$injector", function ($delegate, $http, $injector) {
+
+			var allTemplatesPromise,
+				allTemplatesUrl = '/public/templates/_all.html';
+
+			var loadAllTemplates = function (url) {
+				if (!allTemplatesPromise) {
+					allTemplatesPromise = $http.get(allTemplatesUrl).then(function (response) {
+						$injector.get("$compile")(response.data);
+						return response;
+					});
+				}
+
+				return allTemplatesPromise.then(function (response) {
+					return {
+						status: response.status,
+						data: get(url)
+					};
+				});
+			};
+
+			var get = $delegate.get;
+
+			$delegate.get = function (url) {
+				if (!allTemplatesPromise) {
+					return loadAllTemplates(url);
+				}
+
+				return get(url);
+			};
+
+			return $delegate;
+		}]);
+	}]);
+
 	module.run(['$window', '$rootScope', '$location', '$log', 'RouterService', 'BrowserService', 'ConstantService', function ($window, $rootScope, $location, $log, router, browser, constant) {
 		// $rootScope specials
 		$rootScope.$log = $log;

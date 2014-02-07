@@ -27,7 +27,6 @@ define(['app/config/module'], function (module) {
 			authService.user = user || undefined;
 
 			if (reload) {
-				console.log(reload);
 				$cacheFactory.get('$http').removeAll();
 				$route.reload();
 			}
