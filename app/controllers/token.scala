@@ -60,17 +60,17 @@ object Token extends SiteController {
     Ok(views.html.token.getPassword(issuePasswordForm))
   }
 
-  private[controllers] def newPassword(targ : Either[String,Account])(implicit request : SiteRequest[_]) : Future[Option[LoginToken]] = {
+  private[controllers] def newPassword(targ : Either[String,Account], msg : String = "password")(implicit request : SiteRequest[_]) : Future[Option[LoginToken]] = {
     implicit val defaultContext = context.process
     macros.Async.map[Account,LoginToken](targ.right.toOption, LoginToken.create(_, true)).map { token =>
       val mail = getMailer.email
-      mail.setSubject(Messages("token.password.subject"))
+      mail.setSubject(Messages("mail." + msg + ".subject"))
       mail.setRecipient(targ.fold(identity, _.email))
       mail.setFrom("Databrary <help@databrary.org>")
       token.fold {
-	mail.send(Messages("token.password.none"))
+	mail.send(Messages("mail." + msg + ".none"))
       } { token =>
-	mail.send(Messages("token.password.body", token.redeemURL.absoluteURL()))
+	mail.send(Messages("mail." + msg + ".body", token.redeemURL.absoluteURL()))
       }
       token
     }

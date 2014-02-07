@@ -8,9 +8,13 @@ login.expired=Your session has expired. Please login again.
 login.logout=You have been logged out.
 password.incorrect=Incorrect password.
 password.again=Passwords do not match.
-token.password.subject=Databrary password reset
-token.password.none=No account found.
-token.password.body={0}
+
+# --- Emails
+mail.password.subject=Databrary password reset
+mail.password.none=No account found.
+mail.password.body={0}
+mail.register.subject=Databrary account created
+mail.register.body={0}
 
 # --- Constraints
 constraint.required=This field is required.
