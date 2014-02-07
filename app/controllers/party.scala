@@ -186,14 +186,26 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
     } yield (result(request.obj))
   }
 
+  private def delegates(party : Party) : Future[Seq[Account]] =
+    party.authorizeChildren().map(_.filter(_.delegate >= Permission.ADMIN).flatMap(_.child.account)
+      ++ party.account)
+
   def authorizeApply(id : models.Party.Id, parentId : models.Party.Id) = AdminAction(id).async { implicit request =>
     models.Party.get(parentId).flatMap(_.fold(ANotFound) { parent =>
     authorizeForm.bindFromRequest.fold(
       AbadForm[AuthorizeMapping](f => PartyHtml.viewAdmin(authorizeWhich = Some(true), authorizeResults = Seq((parent, f))), _),
       { case (access, delegate, _, expires) =>
-        Authorize.set(id, parentId, access, delegate, None, expires.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT))).map { _ =>
-          result(request.obj)
-        }
+	for {
+	  dl <- delegates(parent)
+	  _ <- Authorize.set(id, parentId, access, delegate, None, expires.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT)))
+	  _ <- Mail.send(
+	    to = (dl.map(_.email) :+ Messages("mail.authorize")).mkString(", "),
+	    subject = Messages("mail.authorize.subject"),
+	    body = Messages("mail.authorize.body", routes.PartyHtml.admin(parentId))
+	  ).recover {
+	    case ServiceUnavailableException => ()
+	  }
+        } yield (result(request.obj))
       }
     )})
   }
@@ -213,8 +225,8 @@ object PartyHtml extends PartyController {
 
   def view(i : models.Party.Id) = Action(Some(i), Some(Permission.NONE)).async { implicit request =>
     for {
-      parents <- request.obj.authorizeParents()
-      children <- request.obj.authorizeChildren()
+      parents <- request.obj.party.authorizeParents()
+      children <- request.obj.party.authorizeChildren()
       vols <- request.obj.volumeAccess
       comments <- request.obj.party.account.fold[Future[Seq[Comment]]](macros.Async(Nil))(_.comments)
     } yield (Ok(views.html.party.view(parents, children, vols, comments)))
@@ -232,8 +244,8 @@ object PartyHtml extends PartyController {
     implicit request : Request[_]) = {
     val authorizeChange = authorizeChangeForm.map(_._1.id)
     for {
-      children <- request.obj.authorizeChildren(true)
-      parents <- request.obj.authorizeParents(true)
+      children <- request.obj.party.authorizeChildren(true)
+      parents <- request.obj.party.authorizeParents(true)
       authorizeForms = children
         .filter(t => authorizeChange.forall(_ === t.childId))
         .map(t => (t.child, authorizeFormFill(t))) ++
@@ -302,8 +314,8 @@ object PartyApi extends PartyController {
 
   def authorizeGet(partyId : models.Party.Id) = AdminAction(partyId).async { implicit request =>
     for {
-      parents <- request.obj.authorizeParents(true)
-      children <- request.obj.authorizeChildren(true)
+      parents <- request.obj.party.authorizeParents(true)
+      children <- request.obj.party.authorizeChildren(true)
     } yield (Ok(JsonObject(
       'parents -> JsonRecord.map[Authorize](a => JsonRecord(a.parentId,
         'party -> a.parent.json) ++

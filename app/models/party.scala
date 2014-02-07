@@ -34,6 +34,15 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
       }
   }
 
+  /** List of authorizations granted to this user.
+    * @param all include inactive authorizations */
+  def authorizeParents(all : Boolean = false) : Future[Seq[Authorize]] =
+    Authorize.getParents(this, all)
+  /** List of authorizations granted by this user.
+    * @param all include inactive authorizations */
+  def authorizeChildren(all : Boolean = false) : Future[Seq[Authorize]] =
+    Authorize.getChildren(this, all)
+
   private[models] val _access : FutureVar[Permission.Value] = FutureVar[Permission.Value](Authorize.access_check(id))
   /** Level of access user has to the site.
     * Computed by [Authorize.access_check] and usually accessed through [[site.Site.access]]. */
@@ -61,15 +70,6 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
 
   def permission = Seq(delegated, Seq(site.access, Permission.DOWNLOAD).min).max
 
-  /** List of authorizations granted to this user.
-    * @param all include inactive authorizations */
-  def authorizeParents(all : Boolean = false) : Future[Seq[Authorize]] =
-    Authorize.getParents(party, all)
-  /** List of authorizations granted by this user.
-    * @param all include inactive authorizations */
-  def authorizeChildren(all : Boolean = false) : Future[Seq[Authorize]] =
-    Authorize.getChildren(party, all)
-
   /** List of volumes with which this user is associated, sorted by level (ADMIN first). */
   def volumeAccess = VolumeAccess.getVolumes(party)
 
@@ -89,13 +89,13 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
-      "parents" -> (opt => authorizeParents(opt.contains("all"))
+      "parents" -> (opt => party.authorizeParents(opt.contains("all"))
         .map(JsonRecord.map(a => JsonRecord(a.parentId,
           'party -> a.parent.json,
           'access -> a.access
         )))
       ),
-      "children" -> (opt => authorizeChildren(opt.contains("all"))
+      "children" -> (opt => party.authorizeChildren(opt.contains("all"))
         .map(JsonRecord.map(a => JsonRecord(a.childId,
           'party -> a.child.json,
           'access -> a.access

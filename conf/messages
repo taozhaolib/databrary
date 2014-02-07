@@ -17,6 +17,8 @@ mail.password.none=No account found.
 mail.password.body={0}
 mail.register.subject=Databrary account created
 mail.register.body={0}
+mail.authorize.subject=Databrary authorization request
+mail.authorize.body={0}
 
 # --- Constraints
 constraint.required=This field is required.
