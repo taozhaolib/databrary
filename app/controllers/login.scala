@@ -121,7 +121,7 @@ private[controllers] sealed class LoginController extends SiteController {
 	    name = name,
 	    affiliation = Maybe(affiliation).opt)
           a <- Account.create(p, email = email)
-	  _ <- controllers.Token.newPassword(Right(a))
+	  _ <- controllers.Token.newPassword(Right(a), "register")
 	} yield (Ok("sent"))
     })
   }
