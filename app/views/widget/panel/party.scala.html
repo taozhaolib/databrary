@@ -1,6 +1,19 @@
-@(party : Party, parents : Seq[Authorize], children : Seq[Authorize])(implicit request : SiteRequest[_])
+@(parents : Seq[Authorize], children : Seq[Authorize])(implicit request : PartyHtml.Request[_])
 
+@defining(request.obj.party) { party =>
 @widget.panel.raw("overview", "panel_party")(){
+    <div class="col-full panel_overview_actions">
+        <ul class="actions">
+	        <li><a href="@request.obj.pageURL">view</a></li>
+	    @if(request.obj.permission >= Permission.EDIT) {
+	        <li><a href="@controllers.routes.PartyHtml.edit(party.id)">edit</a></li>
+	    }
+	    @if(request.obj.permission >= Permission.ADMIN) {
+	        <li><a href="@controllers.routes.PartyHtml.admin(party.id)">admin</a></li>
+	    }
+        </ul>
+    </div>
+
     @widget.figure.thumbParty(party, classes = "panel_overview_thumbnail")
 
     <h1 class="col-full panel_title">@display.formatTitle(party.pageName)</h1>
@@ -14,4 +27,5 @@
     @defining(children.map(c => c.child)) { parties =>
         @widget.frame.parties(parties, "members", "Members")
     }
+}
 }
