@@ -152,7 +152,7 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
   protected def authorizeFormFill(auth : Authorize, apply : Boolean = false) : AuthorizeForm =
     authorizeForm.fill((auth.access, auth.delegate, auth.authorized.isEmpty, auth.expires.map(_.toLocalDate)))
 
-  protected final val maxExpiration = org.joda.time.Years.years(1)
+  protected final val maxExpiration = org.joda.time.Years.years(2)
 
   def authorizeChange(id : models.Party.Id, childId : models.Party.Id) = AdminAction(id).async { implicit request =>
     models.Party.get(childId).flatMap(_.fold(ANotFound) { child =>
