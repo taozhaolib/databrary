@@ -1,7 +1,7 @@
 @(title: String = "")(body: Html)(implicit request : SiteRequest[_])
 
 @widget.panel.raw("overview", "panel_ingest")(){
-    @widget.figure.raw("ingest_animals", "figure_volume panel_overview_thumbnail")(scalar = "", link = "", title = ""){
+    @widget.figure.raw("ingest_animals", "figure_volume panel_overview_thumbnail")(link = "", title = ""){
         <div class="image" style="background-image: url('@routes.Assets.at("private/other/ingest-animals.jpg")')"></div>
     }
 

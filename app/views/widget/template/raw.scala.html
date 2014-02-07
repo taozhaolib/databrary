@@ -84,7 +84,7 @@
 </head>
 
 <body class="@if(Play.isDev){dev}">
-    @angular.controller.toolbarCtrl()
+    @angular.controller.toolbarCtrl(requestOption)
 
     <main ng-view id="main" class="main">
         <noscript>

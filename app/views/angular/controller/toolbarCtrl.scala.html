@@ -1,3 +1,5 @@
+@(requestOption: Option[SiteRequest[_]] = None)
+
 <section id="toolbars" ng-controller="ToolbarCtrl" class="cf">
     <nav id="toolbar_databrary" class="toolbar toolbar_databrary">
         <div class="wrap">
@@ -33,6 +35,26 @@
                         <a href="#" ng-click="authService.showProfile()" class="img"><img ng-src="{{authService.user.avatar || authService.user.email | gravatar:16}}" alt="{{authService.user.username}}"></a>
                     </span>
                 </div>
+
+                <div ng-hide class="toolbar_user col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
+                @requestOption.filter(_.user.isDefined).fold {
+                    <a href="@routes.LoginHtml.view">login</a>
+                } { request =>
+                    <a href="@routes.LoginHtml.logout">logout</a>
+
+                    @if(request.access == Permission.ADMIN) {
+                        <span class="sep">|</span>
+
+                        @if(request.superuser) {
+                        <a class="superuser on" href="@routes.LoginHtml.superuserOff">SU</a>
+                        } else {
+                        <a class="superuser off" href="@routes.LoginHtml.superuserOn">SU</a>
+                        }
+                    }
+
+                    <a href="@requestOption.get.identity.pageURL" class="img"><img src="@display.avatar(requestOption.get.identity, 16)" alt="@requestOption.get.identity.name"></a>
+                }
+                </div>
             </div>
         </div>
     </nav>
@@ -48,7 +70,7 @@
 
                 <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 col-cell">
                     <ul class="toolbar_menu toolbar_menu_right">
-                        <li ng-repeat="item in links" class="toolbar_menu_item"><a ng-href="{{item.url}}" target="{{item.target}}" class="{{item.classes}}" title="{{item.title}}"><img ng-if="item.image" ng-src="{{item.image}}" alt="{{item.text}}"><span ng-hide="item.image">{{item.path | uppercase}}</span></a></li>
+                        <li ng-repeat="item in links" class="toolbar_menu_item"><a ng-href="{{item.url}}" target="{{item.target}}" class="{{item.classes}}" title="{{item.title}}"><img ng-if="item.image" ng-src="{{item.image}}" alt="{{item.text}}"> <span ng-hide="item.image">{{item.path | uppercase}}</span></a></li>
                     </ul>
                 </div>
             </div>
