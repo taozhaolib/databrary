@@ -24,7 +24,7 @@ define(['app/config/module'], function (module) {
 			$scope.expanderClasses = function (data) {
 				var classes = [];
 
-				classes.push($scope.browser.getItemExpand(data) ? 'active' : '');
+				classes.push(data.expand ? 'active' : '');
 
 				return classes;
 			};

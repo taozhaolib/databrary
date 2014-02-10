@@ -23,7 +23,7 @@ define(['app/config/module'], function (module) {
 			},
 			session: {
 				allow: true,
-				active: false,
+				active: true,
 				expand: false,
 				expanded: [],
 				filter: {},
@@ -44,7 +44,7 @@ define(['app/config/module'], function (module) {
 
 		var raw = {};
 
-		var contexts = ['search', 'party', 'volume', 'record', 'session'];
+		var contexts = ['search', 'party', 'volume'];
 		var context = undefined;
 
 		//
@@ -252,7 +252,7 @@ define(['app/config/module'], function (module) {
 			var tempData = {};
 			var sessions = data.sessions || volume.sessions;
 
-			angular.forEach(sessions, function (session, sessionID) {
+			angular.forEach(sessions, function (session) {
 				var categoryRecords = session.categories[groups[level]];
 
 				if (angular.isDefined(categoryRecords)) {
@@ -272,6 +272,18 @@ define(['app/config/module'], function (module) {
 					var newData = callbackItem(data, volume, newSessions, volume.records[recordID], 'record');
 
 					callbackRecordChildren(newData, volume, groups, level + 1);
+
+					if (groups[level+1] == 'session') {
+						var c = 0;
+
+						for (var key in newData.sessions) {
+							if (newData.sessions.hasOwnProperty(key) && c++ == 1)
+								break;
+						}
+
+						if (c <= 1)
+							browserService.setItemExpand(newData, true);
+					}
 				});
 			}
 
@@ -279,7 +291,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		var callbackRecordChildren = function (data, volume, groups, level) {
-			if (!browserService.getItemExpand(data, 'record'))
+			if (!browserService.getItemExpand(data))
 				return data;
 
 			if (groups[level] == 'session')
@@ -293,8 +305,11 @@ define(['app/config/module'], function (module) {
 		var callbackSessions = function (data, volume) {
 			var sessions = data.sessions || volume.sessions;
 
-			angular.forEach(sessions, function (session, sessionID) {
-				callbackItem(data, volume, undefined, session, 'session');
+			angular.forEach(sessions, function (session) {
+				if (session.top)
+					return;
+
+				var newData = callbackItem(data, volume, undefined, session, 'session');
 			});
 
 			return data;
@@ -306,6 +321,7 @@ define(['app/config/module'], function (module) {
 				type: type,
 				permission: object.permission || volume.permission,
 				select: false,
+				expand: false,
 				items: [],
 				parent: data,
 				sessions: sessions
@@ -336,7 +352,7 @@ define(['app/config/module'], function (module) {
 			if (browserService.isVolume(object))
 				return 'volume';
 
-			if(browserService.isAsset(object))
+			if (browserService.isAsset(object))
 				return 'asset';
 
 			return 'session';
@@ -444,60 +460,19 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		browserService.setItemExpand = function (levelData, expand, type) {
-			var options, id;
-
-			type = browserService.isItemType(type) ? type : browserService.getItemType(levelData.object);
-
-			switch (type) {
-				case 'volume':
-					options = browserService.options.volume;
-					break;
-
-				case 'record':
-					options = browserService.options.record.categories.get({id: levelData.object.category + ''});
-					break;
-
-				default:
-					return undefined;
-					break;
-			}
-
-			var index = options.expanded.indexOf(levelData.object.id);
-
-			if (index == -1 && expand !== false) {
-				options.expanded.push(levelData.object.id);
+		browserService.setItemExpand = function (levelData, expand) {
+			if (!levelData.expand && expand !== false) {
+				levelData.expand = true;
 				browserService.updateData(levelData);
-			} else if (index > -1 && expand !== true) {
-				options.expanded.splice(index, 1);
+			} else if (levelData.expand && expand !== true) {
+				levelData.expand = false;
 			}
 
 			return levelData;
 		};
 
-		browserService.getItemExpand = function (levelData, type) {
-			var option;
-
-			type = browserService.isItemType(type) ? type : browserService.getItemType(levelData.object);
-
-			switch (type) {
-				case 'volume':
-					option = browserService.options.volume;
-					break;
-
-				case 'record':
-					option = browserService.options.record.categories.get({id: levelData.object.category + ''});
-					break;
-
-				default:
-					return undefined;
-					break;
-			}
-
-			if (!option)
-				return undefined;
-
-			return option.expanded.indexOf(levelData.object.id) > -1;
+		browserService.getItemExpand = function (levelData) {
+			return levelData.expand;
 		};
 
 		//
@@ -551,19 +526,19 @@ define(['app/config/module'], function (module) {
 				permission = undefined;
 
 			angular.forEach(raw, function (volume) {
-				switch(type) {
+				switch (type) {
 					case 'volume':
-						if(volume.id == object.id)
+						if (volume.id == object.id)
 							permission = volume.permission;
 						break;
 
 					case 'session':
-						if(volume.sessions.indexOf(object.id) > -1)
+						if (volume.sessions.indexOf(object.id) > -1)
 							permission = volume.permission;
 						break;
 
 					case 'record':
-						if(volume.records.indexOf(object.id) > -1)
+						if (volume.records.indexOf(object.id) > -1)
 							permission = volume.permission;
 						break;
 
@@ -585,10 +560,10 @@ define(['app/config/module'], function (module) {
 		var itemSelect = undefined;
 
 		browserService.setItemSelect = function (data) {
-			if(angular.isDefined(itemSelect))
+			if (angular.isDefined(itemSelect))
 				itemSelect.select = false;
 
-			if(itemSelect == data)
+			if (itemSelect == data)
 				return itemSelect = undefined;
 
 			data.select = true;

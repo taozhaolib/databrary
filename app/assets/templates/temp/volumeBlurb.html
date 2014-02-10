@@ -5,16 +5,6 @@
                 <h1 class="h3"><a ng-href="{{router.volume({id: volume.id})}}">{{volume.name}}</a></h1>
             </header>
 
-            <footer class="search_volume_footer cf">
-                <div class="people">
-                    @*
-                    @Async.wait(volume.partyAccess).takeWhile(_.access >= Permission.ADMIN).map { a =>
-                        @widget.portrait.verticalMicro(a.party)
-                    }
-                    *@
-                </div>
-            </footer>
-
             <div class="search_volume_body cf" ng-bind-html="volume.body | format:body"></div>
         </div>
 
