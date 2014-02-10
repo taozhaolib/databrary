@@ -136,14 +136,14 @@ define(['app/config/module'], function (module) {
 					break;
 
 				case 'session':
-					angular.forEach(raw, function (volume, volumeID) {
-						callbackSessions(data, volume, volume.sessions);
+					angular.forEach(raw, function (volume) {
+						callbackSessions(data, volume);
 					});
 					break;
 
 				default:
-					angular.forEach(raw, function (volume, volumeID) {
-						callbackRecords(data, volume, volume.sessions, groups, 0);
+					angular.forEach(raw, function (volume) {
+						callbackRecords(data, volume, groups, 0);
 					});
 					break;
 			}
@@ -184,7 +184,7 @@ define(['app/config/module'], function (module) {
 							currentVolume = volume;
 					});
 
-					callbackRecordChildren(levelData, currentVolume, undefined, groups, level + 1);
+					callbackRecordChildren(levelData, currentVolume, groups, level + 1);
 					break;
 			}
 
@@ -226,9 +226,9 @@ define(['app/config/module'], function (module) {
 
 		var callbackVolumes = function (data, groups) {
 			angular.forEach(raw, function (volume, volumeID) {
-				var newData = callbackItem(data, volume, volume, 'volume');
+				var newData = callbackItem(data, volume, volume.sessions, volume, 'volume');
 
-				callbackVolumeChildren(data, volume, groups, 1);
+				callbackVolumeChildren(newData, volume, groups, 1);
 			});
 
 			return data;
@@ -241,15 +241,16 @@ define(['app/config/module'], function (module) {
 			level = level || 1;
 
 			if (groups[level] == 'session')
-				callbackSessions(data, volume, volume.sessions);
+				callbackSessions(data, volume);
 			else
-				callbackRecords(data, volume, volume.sessions, groups, level);
+				callbackRecords(data, volume, groups, level);
 
 			return data;
 		};
 
-		var callbackRecords = function (data, volume, sessions, groups, level) {
+		var callbackRecords = function (data, volume, groups, level) {
 			var tempData = {};
+			var sessions = data.sessions || volume.sessions;
 
 			angular.forEach(sessions, function (session, sessionID) {
 				var categoryRecords = session.categories[groups[level]];
@@ -268,71 +269,46 @@ define(['app/config/module'], function (module) {
 
 			if (!$.isEmptyObject(tempData)) {
 				angular.forEach(tempData, function (newSessions, recordID) {
-					var newData = callbackItem(data, volume, volume.records[recordID], 'record');
+					var newData = callbackItem(data, volume, newSessions, volume.records[recordID], 'record');
 
-					callbackRecordChildren(newData, volume, newSessions, groups, level + 1);
+					callbackRecordChildren(newData, volume, groups, level + 1);
 				});
 			}
 
 			return data;
 		};
 
-		var callbackRecordChildren = function (data, volume, sessions, groups, level) {
+		var callbackRecordChildren = function (data, volume, groups, level) {
 			if (!browserService.getItemExpand(data, 'record'))
 				return data;
 
-			if (angular.isUndefined(sessions)) { // TODO: should be complete thing...
-				sessions = {};
-
-				angular.forEach(data.object.sessions, function (sessionID) {
-					sessions[sessionID] = volume.sessions[sessionID];
-				})
-			}
-
 			if (groups[level] == 'session')
-				callbackSessions(data, volume, sessions);
+				callbackSessions(data, volume);
 			else
-				callbackRecords(data, volume, sessions, groups, level);
+				callbackRecords(data, volume, groups, level);
 
 			return data;
 		};
 
-		var callbackRecordSessions = function (sessions, groups, level) {
-			var tempData = {};
+		var callbackSessions = function (data, volume) {
+			var sessions = data.sessions || volume.sessions;
 
-			angular.forEach(sessions, function (session) {
-				var categoryRecords = session.categories[groups[level]];
-
-				if (angular.isDefined(categoryRecords)) {
-					angular.forEach(categoryRecords, function (record, recordID) {
-						recordID = record.id;
-
-						if (!tempData[recordID])
-							tempData[recordID] = {};
-
-						tempData[recordID][session.id] = session;
-					});
-				}
-			});
-
-			return tempData;
-		};
-
-		var callbackSessions = function (data, volume, sessions) {
 			angular.forEach(sessions, function (session, sessionID) {
-				callbackItem(data, volume, session, 'session');
+				callbackItem(data, volume, undefined, session, 'session');
 			});
 
 			return data;
 		};
 
-		var callbackItem = function (data, volume, object, type) {
+		var callbackItem = function (data, volume, sessions, object, type) {
 			var newData = {
 				object: object,
 				type: type,
 				permission: object.permission || volume.permission,
 				select: false,
-				items: []
+				items: [],
+				parent: data,
+				sessions: sessions
 			};
 
 			data.items.push(newData);
@@ -469,17 +445,17 @@ define(['app/config/module'], function (module) {
 		//
 
 		browserService.setItemExpand = function (levelData, expand, type) {
-			var option, id;
+			var options, id;
 
 			type = browserService.isItemType(type) ? type : browserService.getItemType(levelData.object);
 
 			switch (type) {
 				case 'volume':
-					option = browserService.options.volume;
+					options = browserService.options.volume;
 					break;
 
 				case 'record':
-					option = browserService.options.record.categories.get({id: levelData.object.category + ''});
+					options = browserService.options.record.categories.get({id: levelData.object.category + ''});
 					break;
 
 				default:
@@ -487,13 +463,13 @@ define(['app/config/module'], function (module) {
 					break;
 			}
 
-			var index = option.expanded.indexOf(levelData.object.id);
+			var index = options.expanded.indexOf(levelData.object.id);
 
 			if (index == -1 && expand !== false) {
-				option.expanded.push(levelData.object.id);
+				options.expanded.push(levelData.object.id);
 				browserService.updateData(levelData);
 			} else if (index > -1 && expand !== true) {
-				option.expanded.splice(index, 1);
+				options.expanded.splice(index, 1);
 			}
 
 			return levelData;
