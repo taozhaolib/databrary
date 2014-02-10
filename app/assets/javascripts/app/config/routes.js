@@ -119,6 +119,48 @@ define(['app/config/module'], function (module) {
 
 		$routeProvider.when('/volume/:id', volumeView);
 
+		//
+
+		$routeProvider.when('/record/:id', {
+			resolve: {
+				redirect: ['$location', 'Record', function ($location, Record) {
+					Record.get({}, function (data) {
+						$location.path('/volume/'+data.volume);
+					});
+				}]
+			}
+		});
+
+		$routeProvider.when('/slot/:id', {
+			resolve: {
+				redirect: ['$location', 'Slot', function ($location, Slot) {
+					Slot.get({}, function (data) {
+						$location.path('/volume/'+data.volume);
+					});
+				}]
+			}
+		});
+
+		$routeProvider.when('/slot/:sid/asset/:id', {
+			resolve: {
+				redirect: ['$location', 'SlotAsset', function ($location, SlotAsset) {
+					SlotAsset.get({}, function (data) {
+						$location.path('/volume/'+data.volume);
+					});
+				}]
+			}
+		});
+
+		$routeProvider.when('/asset/:id', {
+			resolve: {
+				redirect: ['$location', 'Asset', function ($location, Asset) {
+					Asset.get({}, function (data) {
+						$location.path('/volume/'+data.volume);
+					});
+				}]
+			}
+		});
+
 		// TODO: implement real editing and remove phonyView
 
 		$routeProvider.when('/:page*', {
