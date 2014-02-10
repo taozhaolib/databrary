@@ -6,12 +6,12 @@
 	@widget.tag.select(form("inherit"), Permission.values.to(if (party.id.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
 }
 
-@widget.template.crud() {
+@template.crud() {
 
 }
 
 
-@widget.template.form(Some(volume), "Manage Access") {
+@template.form(Some(volume), "Manage Access") {
             <table class="permission">
                 @defining(helper.FieldConstructor(widget.tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
                     <thead>

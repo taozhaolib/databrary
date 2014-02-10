@@ -1,7 +1,7 @@
 @(records : Seq[Record], assets : Seq[SlotAsset], comments : Seq[Comment], commentForm : SlotHtml.CommentForm = controllers.SlotHtml.commentForm, tags : Seq[TagWeight], tagForm : TagHtml.TagForm = TagHtml.tagForm)(implicit request : controllers.SlotHtml.Request[_])
 
 @defining(request.obj) { slot =>
-@widget.template.crud("Session: " + slot.pageName, redirect = true) {
+@template.crud("Session: " + slot.pageName, redirect = true) {
     @widget.panel.slot(slot)
     @widget.panel.records(slot, records)
     @widget.panel.materials(assets)

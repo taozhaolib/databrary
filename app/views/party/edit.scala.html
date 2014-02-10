@@ -6,7 +6,7 @@
         FieldConstructor(widget.tag.labeledFieldConstructor.f)
     }
 
-@widget.template.form(party, party.fold("Create Party")(_ => "Edit Profile")) {
+@template.form(party, party.fold("Create Party")(_ => "Edit Profile")) {
             @widget.formErrors(form)
 
 	    @widget.tag.form(party.fold(routes.PartyHtml.create)(p => routes.PartyHtml.update(p.id))) {

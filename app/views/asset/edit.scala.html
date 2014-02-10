@@ -6,7 +6,7 @@
         FieldConstructor(widget.tag.labeledFieldConstructor.f)
     }
 
-@widget.template.form(Some(target.merge), target.fold(_ => "Upload Asset", _ => "Edit Asset")) {
+@template.form(Some(target.merge), target.fold(_ => "Upload Asset", _ => "Edit Asset")) {
             @widget.formErrors(form)
 
             @widget.tag.form(target.fold(

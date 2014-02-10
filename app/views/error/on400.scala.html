@@ -1,6 +1,6 @@
 @(request: RequestHeader, error: String)
 
-@widget.template.error("400! What a naughty request.") {
+@template.error("400! What a naughty request.") {
     @widget.panel.error("400! What a naughty request.") {
         <div class="col-full panel_error_error">@error</div>
         <div class="col-full panel_error_error">@request.path</div>

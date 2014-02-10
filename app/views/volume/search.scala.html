@@ -6,7 +6,7 @@
         FieldConstructor(widget.tag.labeledFieldConstructor.f)
     }
 
-@widget.template.action("Search the Databrary") {
+@template.action("Search the Databrary") {
     @widget.panel.search("", "", "SearchViewCtrl") {
         <section ng-controller="SearchFilterCtrl" id="panel_search_filter" class="panel_search_filter col-full">
             <input type="search" placeholder="Search the databrary...">

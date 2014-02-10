@@ -6,7 +6,7 @@
         FieldConstructor(widget.tag.labeledFieldConstructor.f)
     }
 
-@widget.template.form(Some(a.merge), a.fold(_ => "Create Volume", _ => "Edit Volume")) {
+@template.form(Some(a.merge), a.fold(_ => "Create Volume", _ => "Edit Volume")) {
         @widget.tag.form(a.fold(p => routes.VolumeHtml.create(p.party.id), s => routes.VolumeHtml.update(s.id))) {
             @widget.formErrors(editForm)
 

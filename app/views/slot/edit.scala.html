@@ -6,7 +6,7 @@
     FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@widget.template.form(Some(c.merge), c.fold(_ => "Create Session in Volume", _ => "Edit Session")) {
+@template.form(Some(c.merge), c.fold(_ => "Create Session in Volume", _ => "Edit Session")) {
             @widget.formErrors(form)
 
             @widget.tag.form(c.fold(volume => routes.SlotHtml.addContainer(volume.id), slot => routes.SlotHtml.update(slot.containerId, slot.segment)), 'id -> "slot_edit") {
