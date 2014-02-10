@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('BrowserService', ['$rootScope', 'ArrayHelper', function ($rootScope, arrayHelper) {
+	module.factory('BrowserService', ['$rootScope', 'ArrayHelper', 'AuthService', function ($rootScope, arrayHelper, authService) {
 		var browserService = {};
 
 		//
@@ -226,7 +226,7 @@ define(['app/config/module'], function (module) {
 
 		var callbackVolumes = function (data, groups) {
 			angular.forEach(raw, function (volume, volumeID) {
-				var newData = callbackItem(data, volume, 'volume');
+				var newData = callbackItem(data, volume, volume, 'volume');
 
 				callbackVolumeChildren(data, volume, groups, 1);
 			});
@@ -268,7 +268,7 @@ define(['app/config/module'], function (module) {
 
 			if (!$.isEmptyObject(tempData)) {
 				angular.forEach(tempData, function (newSessions, recordID) {
-					var newData = callbackItem(data, volume.records[recordID], 'record');
+					var newData = callbackItem(data, volume, volume.records[recordID], 'record');
 
 					callbackRecordChildren(newData, volume, newSessions, groups, level + 1);
 				});
@@ -320,16 +320,17 @@ define(['app/config/module'], function (module) {
 
 		var callbackSessions = function (data, volume, sessions) {
 			angular.forEach(sessions, function (session, sessionID) {
-				callbackItem(data, session, 'session');
+				callbackItem(data, volume, session, 'session');
 			});
 
 			return data;
 		};
 
-		var callbackItem = function (data, object, type) {
+		var callbackItem = function (data, volume, object, type) {
 			var newData = {
 				object: object,
 				type: type,
+				permission: object.permission || volume.permission,
 				select: false,
 				items: []
 			};
@@ -597,6 +598,10 @@ define(['app/config/module'], function (module) {
 			});
 
 			return permission;
+		};
+
+		browserService.hasAccess = function (object, level) {
+			return object >= level || authService.hasAuth('SUPER');
 		};
 
 		//

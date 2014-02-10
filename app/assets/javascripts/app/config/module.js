@@ -65,12 +65,13 @@ define([
 		}]);
 	}]);
 
-	module.run(['$window', '$rootScope', '$location', '$log', 'RouterService', 'BrowserService', 'ConstantService', function ($window, $rootScope, $location, $log, router, browser, constant) {
+	module.run(['$window', '$rootScope', '$location', '$log', 'RouterService', 'BrowserService', 'ConstantService', 'AuthService', function ($window, $rootScope, $location, $log, router, browser, constant, auth) {
 		// $rootScope specials
 		$rootScope.$log = $log;
 		$rootScope.router = router;
 		$rootScope.browser = browser;
 		$rootScope.constant = constant;
+		$rootScope.auth = auth;
 
 		// play->angular redirects
 		if(angular.isDefined($window.$play) && $window.$play.redirect){

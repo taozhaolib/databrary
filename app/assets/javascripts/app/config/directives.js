@@ -12,7 +12,6 @@ define([
 	'app/directive/panel',
 	'app/directive/panelMode',
 	'app/directive/hasAuth',
-	'app/directive/hasAccess',
 	'app/directive/carousel',
 	'app/directive/browserGroup',
 	'app/directive/browserFilter',

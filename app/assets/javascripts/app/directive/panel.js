@@ -55,12 +55,12 @@ define(['app/config/module'], function (module) {
 
 							$scope.modes[i].active = true;
 						} else {
-							if($scope.modes[i] == false)
+							if ($scope.modes[i] == false)
 								continue;
 
 							func = 'offMode' + $scope.modes[i].name.charAt(0).toUpperCase() + $scope.modes[i].name.slice(1);
 
-							if($scope.hasOwnProperty(func))
+							if ($scope.hasOwnProperty(func))
 								$scope[func]();
 
 							$scope.modes[i].active = false;
@@ -126,7 +126,5 @@ define(['app/config/module'], function (module) {
 			priority: 100,
 			compile: compile
 		};
-	}
-	])
-	;
+	}]);
 });
