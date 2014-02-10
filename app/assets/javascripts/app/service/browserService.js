@@ -35,7 +35,7 @@ define(['app/config/module'], function (module) {
 			id: null,
 			name: null,
 			allow: true,
-			active: false,
+			active: true,
 			expand: false,
 			expanded: null // array
 		};
@@ -74,6 +74,9 @@ define(['app/config/module'], function (module) {
 			angular.extend(browserService.options, DEFAULT_OPTIONS);
 
 			browserService.updateCategories();
+			browserService.options.record.categories.sort(function (a, b) {
+				return a.id - b.id;
+			});
 
 			switch (context) {
 				case 'party':
@@ -83,13 +86,6 @@ define(['app/config/module'], function (module) {
 					break;
 
 				case 'volume':
-//				case 'record':
-//				case 'session':
-					var participant = browserService.options.record.categories.get({name: 'participant'});
-
-					if (participant)
-						participant.active = true;
-
 					break;
 			}
 
@@ -273,7 +269,7 @@ define(['app/config/module'], function (module) {
 
 					callbackRecordChildren(newData, volume, groups, level + 1);
 
-					if (groups[level+1] == 'session') {
+					if (groups[level + 1] == 'session') {
 						var c = 0;
 
 						for (var key in newData.sessions) {
