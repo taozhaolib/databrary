@@ -32,20 +32,20 @@ object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
   }
 
   private trait AllTemplater {
-    def apply(l : Seq[File]) : String
+    def apply(l : Seq[File], p : String => String = identity) : String
   }
 
   private abstract class AllTemplate(pre : String, post : String) extends AllTemplater {
-    def each(f : File) : String
-    final def apply(l : Seq[File]) =
-      (pre +: l.map(each) :+ post).mkString("\n")
+    protected def each(f : File, p : String => String) : String
+    final def apply(l : Seq[File], p : String => String = identity) =
+      (pre +: l.map(each(_, p)) :+ post).mkString("\n")
   }
   private final class AllSubstTemplate(pre : String = "", each : String, post : String = "") extends AllTemplate(pre, post) {
     val replacer = Replacer(each, AllSubstTemplate.eachRegex)
-    def each(f : File) : String =
+    protected def each(f : File, p : String => String) : String =
       replacer(_.matched match {
 	case "@FILENAME@" => f.getName
-	case "@CONTENTS@" => read(f)
+	case "@CONTENTS@" => p(read(f))
       })
   }
   private object AllSubstTemplate {
@@ -64,12 +64,15 @@ object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
   compressor.setRemoveIntertagSpaces(true)
 
   private def compile(file : File, options : Seq[String]) : (String, Option[String], Seq[File]) = {
-    val (text, dep) = if (file.getName.equals("_all.html")) {
+    if (file.getName.equals("_all.html")) {
       val all = PathFinder(file.getParentFile).descendantsExcept("*.html", "_*").get
-      (AllSubstTemplate(read(file))(all), all : Seq[File])
-    } else
-      (read(file), Nil)
-    (text, Some(compressor.compress(text)), dep)
+      val tpl = AllSubstTemplate(read(file))
+      // compressor won't go inside <script>s so we have to do two passes (or compress tpl ahead of time)
+      (tpl(all), Some(compressor.compress(tpl(all, compressor.compress))), all : Seq[File])
+    } else {
+      val c = read(file)
+      (c, Some(compressor.compress(c)), Nil)
+    }
   }
 
   val Compiler = AssetsCompiler("angular",
