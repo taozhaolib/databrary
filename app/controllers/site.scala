@@ -16,7 +16,7 @@ import site._
 import models._
 
 sealed trait SiteRequest[A] extends Request[A] with Site {
-  def clientIP = Inet(remoteAddress)
+  val clientIP = Inet(remoteAddress)
   def withObj[O](obj : O) : RequestObject[O]#Site[A]
   val isApi = path.startsWith("/api/")
   def apiOptions : JsonOptions.Options = queryString
@@ -65,8 +65,6 @@ object SiteRequest {
     }
   }
   sealed class Auth[A](request : Request[A], val token : SessionToken) extends Base[A](request) with AuthSite {
-    val account = token.account
-    val access = token.access
     val superuser = token.superuser(request)
     def withObj[O](obj : O) : RequestObject[O]#Auth[A] = {
       object ro extends RequestObject[O]
@@ -133,14 +131,18 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
 
   val auth : ActionCreator[SiteRequest.Auth] = ~>(Auth)
 
-  case class Access[R[_] <: SiteRequest[_]](access : Permission.Value) extends ActionHandler[R] {
+  class AccessCheck[R[_] <: SiteRequest[_]](check : site.Access => Boolean) extends ActionHandler[R] {
     def handle[A](request : R[A]) = macros.Async {
-      if (request.access >= access) None
+      if (check(request.access)) None
       else Some(Results.Forbidden)
     }
   }
 
+  case class Access[R[_] <: SiteRequest[_]](access : Permission.Value) extends AccessCheck[R](_.group >= access)
+  case class RootAccess[R[_] <: SiteRequest[_]](permission : Permission.Value = Permission.ADMIN) extends AccessCheck[R](_.permission >= permission)
+
   def access(access : Permission.Value) = auth ~> Access[SiteRequest.Auth](access)
+  def rootAccess(permission : Permission.Value = Permission.ADMIN) = auth ~> RootAccess[SiteRequest.Auth](permission)
 }
 
 private[controllers] abstract class FormException(form : Form[_]) extends SiteException {

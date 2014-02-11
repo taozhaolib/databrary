@@ -81,7 +81,7 @@ object Classification extends PGEnum("classification") {
     * Actual access to data will additionally depend on volume permissions not checked here. */
   def access(consent : Consent.Value, excerpt : Boolean = false)(implicit site : Site) : Value = {
     val c = consent
-    val a = site.access
+    val a = site.access.group
     if (c >= Consent.PUBLIC ||
         c >= Consent.SHARED && a >= Permission.DOWNLOAD)
       IDENTIFIED

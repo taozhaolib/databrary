@@ -26,4 +26,7 @@ package object macros {
 
   def apply[A,B](f : A => B, a : A) : B = f(a)
   def tupleApply[A,B](fa : (A => B, A)) : B = fa._1(fa._2)
+
+  def max[A](x : A, y : A)(implicit o : Ordering[A]) = o.max(x, y)
+  def min[A](x : A, y : A)(implicit o : Ordering[A]) = o.min(x, y)
 }

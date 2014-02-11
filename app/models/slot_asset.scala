@@ -113,7 +113,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 	  "AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')",
 	  "AND data_permission(?::permission,", table + "_consent.consent, asset.classification, ?::permission,", isExcerpt.toString, ") >= 'DOWNLOAD'",
 	"ORDER BY container.top DESC,", table + "_consent.consent DESC NULLS LAST LIMIT 1")
-      .apply(volume.id, volume.permission, volume.site.access).singleOpt
+      .apply(volume.id, volume.permission, volume.site.access.group).singleOpt
     final def getThumb(slot : Slot) : Future[Option[SlotAsset]] =
       assetRow(rowContainer(slot.container))
       .SELECT("JOIN format ON asset.format = format.id",

@@ -82,7 +82,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     PartyController.Action(e, Some(Permission.CONTRIBUTE)) ~>
       new ActionHandler[PartyController.Request] {
         protected def handle[A](request : PartyController.Request[A]) =
-          macros.Async(if (request.obj.access < Permission.CONTRIBUTE) Some(Forbidden) else None)
+	  request.obj.party.access.map(a => if (a.group < Permission.CONTRIBUTE) Some(Forbidden) else None)
       }
 
   type AccessMapping = (Permission.Value, Permission.Value)

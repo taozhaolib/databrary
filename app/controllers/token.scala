@@ -77,7 +77,7 @@ object Token extends SiteController {
       email =>
         for {
           acct <- Account.getEmail(email)
-          acct <- macros.Async.filter[Account](acct, _.party.access.map(_ < Permission.ADMIN))
+          acct <- macros.Async.filter[Account](acct, _.party.access.map(_.direct < Permission.ADMIN))
 	  _ <- newPassword(acct.toRight(email))
         } yield (Ok("sent"))
     )

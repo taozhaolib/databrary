@@ -78,8 +78,8 @@
                 @authorizeParents.map { t =>
                     <tr>
                         <td>@display(t.parent)</td>
-                        <td>@t.access</td>
-                        <td>@t.delegate</td>
+                        <td>@t.inherit</td>
+                        <td>@t.direct</td>
                         <td>@t.expires.fold("never")( e => display.dateFmtYMD.print(e) )</td>
                         <td>@{if(t.authorized.isEmpty) "pending"}</td>
                     </tr>

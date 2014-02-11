@@ -105,8 +105,8 @@ COMMENT ON TYPE consent IS 'Levels of sharing that participants may consent to.'
 CREATE TABLE "authorize" (
 	"child" integer NOT NULL References "party" ON DELETE Cascade,
 	"parent" integer NOT NULL References "party",
-	"access" permission NOT NULL DEFAULT 'NONE',
-	"delegate" permission NOT NULL DEFAULT 'NONE',
+	"inherit" permission NOT NULL DEFAULT 'NONE',
+	"direct" permission NOT NULL DEFAULT 'NONE',
 	"authorized" timestamp DEFAULT CURRENT_TIMESTAMP,
 	"expires" timestamp,
 	Primary Key ("parent", "child"),
@@ -115,39 +115,46 @@ CREATE TABLE "authorize" (
 COMMENT ON TABLE "authorize" IS 'Relationships and permissions granted between parties';
 COMMENT ON COLUMN "authorize"."child" IS 'Party granted permissions';
 COMMENT ON COLUMN "authorize"."parent" IS 'Party granting permissions';
-COMMENT ON COLUMN "authorize"."access" IS 'Level of independent site access granted to child (effectively minimum level on path to ROOT)';
-COMMENT ON COLUMN "authorize"."delegate" IS 'Permissions for which child may act as parent (not inherited)';
+COMMENT ON COLUMN "authorize"."inherit" IS 'Level of site/group access granted to child, inherited (but degraded) from parent';
+COMMENT ON COLUMN "authorize"."direct" IS 'Permissions that child is granted directly on parent''s data';
 
 SELECT audit.CREATE_TABLE ('authorize');
 
 -- To allow normal users to inherit from nobody:
-INSERT INTO "authorize" ("child", "parent", "access", "delegate", "authorized") VALUES (0, -1, 'ADMIN', 'ADMIN', '2013-1-1');
+INSERT INTO "authorize" ("child", "parent", "inherit", "authorized") VALUES (0, -1, 'ADMIN', '2013-1-1');
+
+CREATE MATERIALIZED VIEW "authorize_inherit" AS
+	WITH RECURSIVE aa AS (
+		SELECT * FROM authorize WHERE authorized IS NOT NULL
+		UNION
+		SELECT a.child, aa.parent, LEAST(a.inherit,
+			CASE WHEN aa.child <= 0 THEN aa.inherit
+			     WHEN aa.inherit = 'ADMIN' THEN 'CONTRIBUTE'
+			     WHEN aa.inherit = 'CONTRIBUTE' THEN 'DOWNLOAD'
+			     ELSE 'NONE' END), NULL, GREATEST(a.authorized, aa.authorized), LEAST(a.expires, aa.expires)
+	          FROM aa JOIN authorize a ON aa.child = a.parent WHERE a.authorized IS NOT NULL
+	) SELECT * FROM aa
+	UNION ALL SELECT id, id, enum_last(NULL::permission), enum_last(NULL::permission), NULL, NULL FROM party WHERE id >= 0;
+COMMENT ON MATERIALIZED VIEW "authorize_inherit" IS 'Transitive inheritance closure of authorize.';
+CREATE INDEX ON "authorize_inherit" ("parent", "child");
+
+CREATE FUNCTION "authorize_refresh" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+	REFRESH MATERIALIZED VIEW "authorize_inherit";
+	RETURN null;
+END; $$;
+CREATE TRIGGER "authorize_changed" AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON "authorize" FOR EACH STATEMENT EXECUTE PROCEDURE "authorize_refresh" ();
+CREATE TRIGGER "party_created" AFTER INSERT ON "party" FOR EACH STATEMENT EXECUTE PROCEDURE "authorize_refresh" ();
 
 CREATE VIEW "authorize_valid" AS
-	SELECT * FROM authorize WHERE authorized < CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP);
+	SELECT * FROM authorize WHERE authorized <= CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP);
 COMMENT ON VIEW "authorize_valid" IS 'Active records from "authorize"';
 
-CREATE FUNCTION "authorize_access_parents" (IN "child" integer, OUT "parent" integer, INOUT "access" permission = NULL) RETURNS SETOF RECORD LANGUAGE sql STABLE AS $$
-	WITH RECURSIVE closure AS (
-		SELECT $1 AS parent, enum_last(null::permission) AS access
-		UNION
-		SELECT p.parent, LEAST(p.access, c.access)
-			FROM authorize_valid p, closure c
-			WHERE p.child = c.parent AND ($2 IS NULL OR p.access >= $2)
-	)
-	SELECT * FROM closure
-$$;
-COMMENT ON FUNCTION "authorize_access_parents" (integer, permission) IS 'All ancestors (recursive) of a given child';
-
-CREATE FUNCTION "authorize_access_check" ("child" integer, "parent" integer = 0, "access" permission = NULL) RETURNS permission LANGUAGE sql STABLE AS $$
-	SELECT max(access) FROM authorize_access_parents($1, $3) WHERE parent = $2
-$$;
-COMMENT ON FUNCTION "authorize_access_check" (integer, integer, permission) IS 'Test if a given child inherits the given permission [any] from the given parent [root]';
-
-CREATE FUNCTION "authorize_delegate_check" ("child" integer, "parent" integer, "delegate" permission = NULL) RETURNS permission LANGUAGE sql STABLE AS $$
-	SELECT CASE WHEN $1 = $2 THEN enum_last(max(delegate)) ELSE max(delegate) END FROM authorize_valid WHERE child = $1 AND parent = $2
-$$;
-COMMENT ON FUNCTION "authorize_delegate_check" (integer, integer, permission) IS 'Test if a given child has the given permission [any] over the given parent';
+CREATE VIEW "authorize_view" ("child", "parent", "inherit", "direct") AS
+	SELECT child, parent, MAX(inherit), MAX(direct)
+	  FROM authorize_inherit
+	 WHERE (authorized IS NULL OR authorized <= CURRENT_TIMESTAMP) AND (expires IS NULL OR expires > CURRENT_TIMESTAMP)
+	 GROUP BY parent, child;
+COMMENT ON VIEW "authorize_view" IS 'Expanded list of effective, active authorizations.';
 
 ----------------------------------------------------------- volumes
 
@@ -178,26 +185,27 @@ COMMENT ON TABLE "volume_access" IS 'Permissions over volumes assigned to users.
 
 SELECT audit.CREATE_TABLE ('volume_access');
 
-CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer, "access" permission = NULL) RETURNS permission LANGUAGE sql STABLE AS $$
-	WITH sa AS (
+CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer) RETURNS permission LANGUAGE sql STABLE AS $$
+	WITH va AS (
 		SELECT party, access, inherit
 		  FROM volume_access 
-		 WHERE volume = $1 AND ($3 IS NULL OR access >= $3)
+		 WHERE volume = $1
 	)
-	SELECT max(access) FROM (
+	SELECT access FROM (
 		SELECT access 
-		  FROM sa
+		  FROM va
 		 WHERE party = $2
 	UNION ALL
-		SELECT LEAST(sa.inherit, aap.access) 
-		  FROM sa JOIN authorize_access_parents($2, $3) aap ON party = parent 
-	UNION ALL
-		SELECT LEAST(sa.access, ad.delegate)
-		  FROM sa JOIN authorize_valid ad ON party = parent 
+		SELECT MAX(LEAST(va.access, ad.direct))
+		  FROM va JOIN authorize_valid ad ON party = parent 
 		 WHERE child = $2
-	) a WHERE $3 IS NULL OR access >= $3
+	UNION ALL
+		SELECT MAX(LEAST(va.inherit, ai.inherit))
+		  FROM va JOIN authorize_view ai ON party = parent 
+		 WHERE child = $2
+	) a LIMIT 1
 $$;
-COMMENT ON FUNCTION "volume_access_check" (integer, integer, permission) IS 'Test if a given party has the given permission [any] on the given volume, either directly, inherited through site access, or delegated.';
+COMMENT ON FUNCTION "volume_access_check" (integer, integer) IS 'Permission level the party has on the given volume, either directly, delegated, or inherited.';
 
 CREATE TABLE "volume_citation" (
 	"volume" integer NOT NULL References "volume",
@@ -640,10 +648,10 @@ INSERT INTO account (id, email, openid) VALUES (2, 'mike@databrary.org', NULL);
 INSERT INTO account (id, email, openid) VALUES (3, 'lisa@databrary.org', NULL);
 INSERT INTO account (id, email, openid) VALUES (4, 'andrea@databrary.org', NULL);
 
-INSERT INTO authorize (child, parent, access, delegate, authorized) VALUES (1, 0, 'ADMIN', 'ADMIN', '2013-3-1');
-INSERT INTO authorize (child, parent, access, delegate, authorized) VALUES (2, 0, 'ADMIN', 'ADMIN', '2013-8-1');
-INSERT INTO authorize (child, parent, access, delegate, authorized) VALUES (3, 0, 'CONTRIBUTE', 'NONE', '2013-4-1');
-INSERT INTO authorize (child, parent, access, delegate, authorized) VALUES (4, 0, 'CONTRIBUTE', 'NONE', '2013-9-1');
+INSERT INTO authorize (child, parent, inherit, direct, authorized) VALUES (1, 0, 'ADMIN', 'ADMIN', '2013-3-1');
+INSERT INTO authorize (child, parent, inherit, direct, authorized) VALUES (2, 0, 'ADMIN', 'ADMIN', '2013-8-1');
+INSERT INTO authorize (child, parent, inherit, direct, authorized) VALUES (3, 0, 'CONTRIBUTE', 'NONE', '2013-4-1');
+INSERT INTO authorize (child, parent, inherit, direct, authorized) VALUES (4, 0, 'CONTRIBUTE', 'NONE', '2013-9-1');
 
 INSERT INTO volume (id, name, body) VALUES (1, 'Databrary', 'Databrary is an open data library for developmental science. Share video, audio, and related metadata. Discover more, faster.
 Most developmental scientists rely on video recordings to capture the complexity and richness of behavior. However, researchers rarely share video data, and this has impeded scientific progress. By creating the cyber-infrastructure and community to enable open video sharing, the Databrary project aims to facilitate deeper, richer, and broader understanding of behavior.

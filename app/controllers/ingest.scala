@@ -14,7 +14,7 @@ import ingest._
 
 object Ingest extends SiteController {
   private def Action(i : models.Volume.Id) =
-    SiteAction.access(Permission.ADMIN) ~> VolumeController.action(i, Permission.EDIT)
+    SiteAction.rootAccess(Permission.ADMIN) ~> VolumeController.action(i, Permission.EDIT)
 
   type CSVForm = Form[(Unit, Boolean)]
   private val csvForm : CSVForm = Form(tuple(
