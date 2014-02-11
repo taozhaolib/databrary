@@ -266,7 +266,7 @@ define(['app/config/module'], function (module) {
 					var newData = callbackItem(data, volume, newSessions, volume.records[recordID], 'record');
 
 					callbackRecordChildren(newData, volume, groups);
-					
+
 					if (groups[newData.level + 1] == 'session') {
 						var c = 0;
 
@@ -483,7 +483,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		browserService.canExpand = function (data) {
-			return getActiveGroups()[data.level];
+			return data.level >= 0 && getActiveGroups()[data.level + 1];
 		};
 
 		//
