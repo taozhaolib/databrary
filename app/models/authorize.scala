@@ -84,7 +84,7 @@ object Authorize extends Table[Authorize]("authorize") {
     Audit.remove("authorize", SQLTerms('child -> child, 'parent -> parent)).execute
 }
 
-object Authorization extends Table[Authorization]("authorize_volume") {
+object Authorization extends Table[Authorization]("authorize_view") {
   private[models] val columns = Columns(
       SelectColumn[Permission.Value]("inherit")
     , SelectColumn[Permission.Value]("direct")
