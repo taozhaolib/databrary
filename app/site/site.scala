@@ -12,10 +12,15 @@ object Site {
     app.plugin[PostgresAsyncPlugin].fold(throw new Exception("PostgresAsyncPlugin not registered"))(_.pool)
   lazy val dbPool : DB = getDBPool(play.api.Play.current)
 }
+
+trait SiteAccess extends models.Access {
+  def target = Party.Root
+}
+
 /** Basic information about each request.  Primarily implemented by [[controllers.SiteRequest]]. */
-trait Site {
+trait Site extends SiteAccess {
   /** [[models.Party]] of the logged-in user, possibly [[models.Party.Nobody]]. */
-  def identity : models.Party
+  def identity : Party
   /** Some(identity) only if actual logged-in user. */
   def user : Option[models.Account] = identity.account
   /** Level of site access [[models.Permission]] current user has.
@@ -28,16 +33,19 @@ trait Site {
 }
 
 trait AnonSite extends Site {
-  val identity = models.Party.Nobody
-  val superuser = false
-  val access = models.Permission.NONE
+  final def identity = models.Party.Nobody
+  final val superuser = false
+  final val access = models.Permission.NONE
+  final val directAccess = models.Permission.NONE
 }
 
 trait AuthSite extends Site {
-  val token : Token
-  val account : Account
-  def identity = account.party
+  val token : SessionToken
+  val account : Account = token.account
+  final def identity = account.party
   override def user = Some(account)
+  final val access = token.access
+  final val directAccess = token.directAccess
 }
 
 trait PerSite {

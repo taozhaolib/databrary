@@ -142,15 +142,15 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
   type AuthorizeForm = Form[AuthorizeMapping]
   protected val authorizeForm : AuthorizeForm = Form(
     tuple(
-      "access" -> Field.enum(Permission),
-      "delegate" -> Field.enum(Permission),
+      "inherit" -> Field.enum(Permission),
+      "direct" -> Field.enum(Permission),
       "pending" -> boolean,
       "expires" -> optional(jodaLocalDate)
     )
   )
 
   protected def authorizeFormFill(auth : Authorize, apply : Boolean = false) : AuthorizeForm =
-    authorizeForm.fill((auth.access, auth.delegate, auth.authorized.isEmpty, auth.expires.map(_.toLocalDate)))
+    authorizeForm.fill((auth.inherit, auth.direct, auth.authorized.isEmpty, auth.expires.map(_.toLocalDate)))
 
   protected final val maxExpiration = org.joda.time.Years.years(2)
 
@@ -160,7 +160,7 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
       AbadForm[AuthorizeMapping](f => PartyHtml.viewAdmin(authorizeChangeForm = Some((child, f))), form)
     val form = authorizeForm.bindFromRequest
     form.fold(bad, {
-      case (access, delegate, pending, expires) =>
+      case (inherit, direct, pending, expires) =>
         val (exp, expok) = if (request.superuser) (expires, true)
           else {
             val maxexp = (new Date).plus(maxExpiration)
@@ -170,7 +170,7 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
         if (!expok)
           bad(form.withError("expires", "error.max", maxExpiration))
         else
-          Authorize.set(childId, id, access, delegate, if (pending) None else Some(new Timestamp), exp.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT))).map { _ =>
+          Authorize.set(childId, id, inherit, direct, if (pending) None else Some(new Timestamp), exp.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT))).map { _ =>
             result(request.obj)
           }
       }
@@ -187,17 +187,17 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
   }
 
   private def delegates(party : Party) : Future[Seq[Account]] =
-    party.authorizeChildren().map(_.filter(_.delegate >= Permission.ADMIN).flatMap(_.child.account)
+    party.authorizeChildren().map(_.filter(_.direct >= Permission.ADMIN).flatMap(_.child.account)
       ++ party.account)
 
   def authorizeApply(id : models.Party.Id, parentId : models.Party.Id) = AdminAction(id).async { implicit request =>
     models.Party.get(parentId).flatMap(_.fold(ANotFound) { parent =>
     authorizeForm.bindFromRequest.fold(
       AbadForm[AuthorizeMapping](f => PartyHtml.viewAdmin(authorizeWhich = Some(true), authorizeResults = Seq((parent, f))), _),
-      { case (access, delegate, _, expires) =>
+      { case (inherit, direct, _, expires) =>
 	for {
 	  dl <- delegates(parent)
-	  _ <- Authorize.set(id, parentId, access, delegate, None, expires.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT)))
+	  _ <- Authorize.set(id, parentId, inherit, direct, None, expires.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT)))
 	  _ <- Mail.send(
 	    to = (dl.map(_.email) :+ Messages("mail.authorize")).mkString(", "),
 	    subject = Messages("mail.authorize.subject"),

@@ -13,27 +13,6 @@ sealed abstract class Token protected (val id : Token.Id, val expires : Timestam
   def remove : Future[Boolean]
 }
 
-sealed abstract class AccountToken protected (id : Token.Id, expires : Timestamp, val account : Account) extends Token(id, expires) {
-  def accountId = account.id
-}
-
-/** A token, usually sent via email, granting automatic login or registration to the given party.
-  * @constructor
-  * @param password allow a password reset if true; just login (and require a password for changes) otherwise
-  */
-final class LoginToken protected (id : Token.Id, expires : Timestamp, account : Account, val password : Boolean) extends AccountToken(id, expires, account) {
-  def remove = LoginToken.delete(id)
-}
-
-/** A token set in a cookie designating a particular session.
-  */
-final class SessionToken protected (id : Token.Id, expires : Timestamp, account : Account, val access : Permission.Value) extends AccountToken(id, expires, account) {
-  def superuser(implicit request : play.api.mvc.Request[_]) : Boolean =
-    access == Permission.ADMIN &&
-      request.session.get("superuser").flatMap(Maybe.toLong _).exists(_ > System.currentTimeMillis)
-  def remove = SessionToken.delete(id)
-}
-
 object Token extends Table[Token]("token") {
   type Id = String
   private final val length = 64
@@ -80,6 +59,10 @@ private[models] sealed abstract class TokenTable[T <: Token](table : String) ext
     }
 }
 
+sealed abstract class AccountToken protected (id : Token.Id, expires : Timestamp, val account : Account) extends Token(id, expires) {
+  def accountId = account.id
+}
+
 object AccountToken extends Table[AccountToken]("account_token") {
   private[models] def clearAccount(account : Account.Id, except : Option[Token] = None) : Future[Boolean] =
     except.fold {
@@ -87,6 +70,14 @@ object AccountToken extends Table[AccountToken]("account_token") {
     } { token =>
       SQL("DELETE FROM", table, "WHERE account = ? AND token <> ?").apply(account, token.id)
     }.execute
+}
+
+/** A token, usually sent via email, granting automatic login or registration to the given party.
+  * @constructor
+  * @param password allow a password reset if true; just login (and require a password for changes) otherwise
+  */
+final class LoginToken protected (id : Token.Id, expires : Timestamp, account : Account, val password : Boolean) extends AccountToken(id, expires, account) {
+  def remove = LoginToken.delete(id)
 }
 
 object LoginToken extends TokenTable[LoginToken]("login_token") {
@@ -112,17 +103,31 @@ object LoginToken extends TokenTable[LoginToken]("login_token") {
     }
 }
 
+/** A token set in a cookie designating a particular session.
+  */
+final class SessionToken protected (id : Token.Id, expires : Timestamp, account : Account, access_ : SiteAccess) extends AccountToken(id, expires, account) with SiteAccess {
+  assert(account === access_.identity)
+  def identity = access_.identity
+  val access = access_.access
+  val directAccess = access_.directAccess
+  def superuser(implicit request : play.api.mvc.Request[_]) : Boolean =
+    directAccess == Permission.ADMIN &&
+      request.session.get("superuser").flatMap(Maybe.toLong _).exists(_ > System.currentTimeMillis)
+  def remove = SessionToken.delete(id)
+}
+
 object SessionToken extends TokenTable[SessionToken]("session") {
   private val columns = Columns(
       SelectColumn[Token.Id]("token")
     , SelectColumn[Timestamp]("expires")
     ).map { (token, expires) =>
-      (account : Account, access : Permission.Value) =>
+      (account : Account, access : SiteAccess) =>
 	new SessionToken(token, expires, account, access)
     }
   protected val row = columns
-    .join(Account.rowAccess, "session.account = account.id")
-    .map { case (t, (a, p)) => t(a, p) }
+    .join(Account.row, "session.account = account.id")
+    .leftJoin(Authorization.columns, "authorize_view.child = session.account AND authorize_view.parent = 0")
+    .map { case ((t, a), p) => t(a, Authorization.make(a.party)(p)) }
 
   /** Issue a new token for the given party. */
   def create(account : Account) : Future[SessionToken] =

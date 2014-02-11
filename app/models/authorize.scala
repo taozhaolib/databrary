@@ -6,31 +6,37 @@ import macros._
 import dbrary._
 import site._
 
+class Authorization (child : Party, parent : Party, inherit : Permission.Value, direct : Permission.Value) extends Access with TableRow {
+  def childId = child.id
+  def parentId = parent.id
+  private[models] def sqlKey = SQLTerms('child -> childId, 'parent -> parentId)
+
+  def target = parent
+  def identity = child
+  val access = inherit
+  val directAccess = direct
+}
+
 /** A specific authorization by one party of another.
   * An authorization represents granting of certain permissions to a party by/under another, which can also be viewed as group membership.
   * Unlike most [TableRow] classes, these may be constructed directly, and thus are not expected to reflect the current state of the database in the same way and have different update semantics.
   * @constructor create an authorization object, not (yet) persisted to the database
   * @param childId the party being authorized, the "member"
   * @param parentId the party whose permissions are being authorized, the "group"
-  * @param access the level of site access granted via the parent to the child, thus the maximum site permission level inherited by the child from the parent
-  * @param delegate the specific permissions granted on behalf of the parent to the child, such tha the child has rights to perform actions up to this permission as the parent (not inherited)
+  * @param inherit the level of site/group access granted via the parent to the child, thus the maximum site permission level inherited by the child from the parent
+  * @param delegate the specific permissions granted on behalf of the parent to the child, such that the child has rights to perform actions up to this permission as the parent (not inherited)
   * @param authorized the time at which this authorization takes/took effect, or never (not yet) if None
   * @param expires the time at which this authorization stops, or never if None
   */
-final class Authorize protected (val child : Party, val parent : Party, val access : Permission.Value, val delegate : Permission.Value, val authorized : Option[Timestamp], val expires : Option[Timestamp]) extends TableRow {
-  private[models] def sqlKey = SQLTerms('child -> childId, 'parent -> parentId)
-
-  def childId = child.id
-  def parentId = parent.id
-
+final class Authorize protected (val child : Party, val parent : Party, val inherit : Permission.Value, val direct : Permission.Value, val authorized : Option[Timestamp], val expires : Option[Timestamp]) extends Authorization(child, parent, inherit, direct) {
   /** Determine if this authorization is currently in effect.
     * @return true if authorized is set and in the past, and expires is unset or in the future */
   def valid =
     authorized.exists(_.toDateTime.isBeforeNow) && expires.forall(_.toDateTime.isAfterNow)
 
   def json = JsonObject.flatten(
-    Some('access -> access),
-    Some('delegate -> delegate),
+    Some('inherit -> inherit),
+    Some('direct -> direct),
     authorized.map('authorized -> _),
     expires.map('expires -> _)
   )
@@ -38,15 +44,15 @@ final class Authorize protected (val child : Party, val parent : Party, val acce
 
 object Authorize extends Table[Authorize]("authorize") {
   private val columns = Columns(
-      SelectColumn[Permission.Value]("access")
-    , SelectColumn[Permission.Value]("delegate")
+      SelectColumn[Permission.Value]("inherit")
+    , SelectColumn[Permission.Value]("direct")
     , SelectColumn[Option[Timestamp]]("authorized")
     , SelectColumn[Option[Timestamp]]("expires")
-    ).map { (access, delegate, authorized, expires) =>
-      (child : Party, parent : Party) => new Authorize(child, parent, access, delegate, authorized, expires)
+    ).map { (inherit, direct, authorized, expires) =>
+      (child : Party, parent : Party) => new Authorize(child, parent, inherit, direct, authorized, expires)
     }
 
-  private[this] val condition = "AND authorized < CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP)"
+  private[this] val condition = "AND authorized <= CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP)"
   private[this] def conditionIf(all : Boolean) =
     if (all) "" else condition
 
@@ -69,26 +75,54 @@ object Authorize extends Table[Authorize]("authorize") {
     * If an authorization for the child and parent already exist, it is changed to match this.
     * Otherwise, a new one is added.
     * This may invalidate child.access. */
-  def set(child : Party.Id, parent : Party.Id, access : Permission.Value, delegate : Permission.Value = Permission.NONE, authorized : Option[Timestamp] = Some(new Timestamp), expires : Option[Timestamp] = None)(implicit site : Site) : Future[Boolean] =
-    Audit.changeOrAdd(Authorize.table, SQLTerms('access -> access, 'delegate -> delegate, 'authorized -> authorized, 'expires -> expires), SQLTerms('child -> child, 'parent -> parent)).execute
+  def set(child : Party.Id, parent : Party.Id, inherit : Permission.Value, direct : Permission.Value, authorized : Option[Timestamp] = Some(new Timestamp), expires : Option[Timestamp] = None)(implicit site : Site) : Future[Boolean] =
+    Audit.changeOrAdd(Authorize.table, SQLTerms('inherit -> inherit, 'direct -> direct, 'authorized -> authorized, 'expires -> expires), SQLTerms('child -> child, 'parent -> parent)).execute
   /** Remove a particular authorization from the database.
     * @return true if a matching authorization was found and deleted
     */
   def delete(child : Party.Id, parent : Party.Id)(implicit site : Site) : Future[Boolean] =
     Audit.remove("authorize", SQLTerms('child -> child, 'parent -> parent)).execute
+}
 
-  /** Determine the site access granted to a particular party.
-    * This is defined by the minimum access level along a path of valid authorizations from [Party.Root], maximized over all possible paths, or Permission.NONE if there are no such paths. */
-  private[models] def access_check(c : Party.Id) : Future[Permission.Value] = c match {
-    case Party.NOBODY => Async(Permission.NONE) // anonymous users get this level
-    case Party.ROOT => Async(Permission.ADMIN)
-    case _ => SQL("SELECT authorize_access_check(?)").apply(c).single(SQLCols[Permission.Value])
+object Authorization extends Table[Authorization]("authorize_volume") {
+  private[models] val columns = Columns(
+      SelectColumn[Permission.Value]("inherit")
+    , SelectColumn[Permission.Value]("direct")
+    )
+
+  private def unOpt(access : Option[(Permission.Value, Permission.Value)]) : (Permission.Value, Permission.Value) =
+    access.getOrElse((Permission.NONE, Permission.NONE))
+
+  private final class Self (party : Party) extends Authorization(party, party,
+    if (party.id === Party.NOBODY) Permission.NONE else Permission.ADMIN,
+    if (party.id === Party.NOBODY) Permission.NONE else Permission.ADMIN)
+
+  private[models] final class Root (party : Party, inherit : Permission.Value, direct : Permission.Value) extends Authorization(party, Party.Root, inherit, direct) with SiteAccess {
+    override def target = Party.Root
   }
 
-  /** Determine the permission level granted to a child by a parent.
-    * The child is granted all the same rights of the parent up to this level. */
-  private[models] def delegate_check(child : Party.Id, parent : Party.Id) : Future[Permission.Value] =
-    if (child === parent) Async(Permission.ADMIN) else // optimization
-    SQL("SELECT authorize_delegate_check(?, ?)")
-      .apply(child, parent).single(SQLCols[Permission.Value])
+  private[models] def make(child : Party, parent : Party)(access : Option[(Permission.Value, Permission.Value)]) : Authorization = {
+    val (inherit, direct) = unOpt(access)
+    new Authorization(child, parent, inherit, direct)
+  }
+
+  private[models] def make(party : Party)(access : Option[(Permission.Value, Permission.Value)]) : Root = {
+    val (inherit, direct) = unOpt(access)
+    new Root(party, inherit, direct)
+  }
+
+  /** Determine the effective inherited and direct permission levels granted to a child by a parent. */
+  private[models] def get(child : Party, parent : Party) : Future[Authorization] =
+    if (child === parent) Async(new Self(child)) // optimization
+    else columns
+      .SELECT("WHERE child = ? AND parent = ?")
+      .apply(child.id, parent.id).singleOpt
+      .map(make(child, parent))
+
+  /** Determine the effective inherited and direct permission levels granted to a child on the site. */
+  private[models] def get(party : Party) : Future[Root] =
+    columns
+      .SELECT("WHERE child = ? AND parent = 0")
+      .apply(party.id).singleOpt
+      .map(make(party))
 }

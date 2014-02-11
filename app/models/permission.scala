@@ -6,6 +6,18 @@ import macros._
 import dbrary._
 import site._
 
+/** An effective authorization of identity by target. */
+trait Access {
+  /** The user/group to which this user is granted access.  The "parent" in the authorization relationship. */
+  def target : Party
+  /** The user granted this access level.  The "child" in the authorization relationship. */
+  def identity : Party
+  /** The inherited level of access ("site" access when target == Root). */
+  val access : Permission.Value
+  /** The direct level of access. */
+  val directAccess : Permission.Value
+}
+
 /** The possible levels of permission used for site access, user delegation, and volume permissions.
   * Must match the corresponding postgres "permission" type. */
 object Permission extends PGEnum("permission") {

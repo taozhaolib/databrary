@@ -43,16 +43,17 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
   def authorizeChildren(all : Boolean = false) : Future[Seq[Authorize]] =
     Authorize.getChildren(this, all)
 
-  private[models] val _access : FutureVar[Permission.Value] = FutureVar[Permission.Value](Authorize.access_check(id))
+  private[models] val _access : FutureVar[SiteAccess] =
+    FutureVar[SiteAccess](Authorization.get(this))
   /** Level of access user has to the site.
-    * Computed by [Authorize.access_check] and usually accessed through [[site.Site.access]]. */
-  def access : Future[Permission.Value] = _access.apply
+    * Usually accessed through [[site.Site.access]] or [[SiteParty]]. */
+  def access : Future[SiteAccess] = _access.apply
 
   def pageName = name
   def pageParent = None
   def pageURL = controllers.routes.PartyHtml.view(id)
 
-  def perSite(implicit site : Site) : Future[SiteParty] = SiteParty.make(this)
+  def perSite(implicit site : Site) : Future[SiteParty] = SiteParty.get(this)
 
   def json(implicit site : Site) : JsonRecord =
     JsonRecord.flatten(id,
@@ -64,11 +65,18 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
     )
 }
 
-final class SiteParty(val party : Party, val access : Permission.Value, val delegated : Permission.Value)(implicit val site : Site) extends SiteObject {
+final class SiteParty(access_ : Access)(implicit val site : Site) extends SiteObject with Access {
+  assert(access_.identity === site.identity)
+  def identity = site.identity
+  def target = access_.target
+  val access = access_.access
+  val directAccess = access_.directAccess
+
+  def party = target
   def ===(a : SiteParty) = party === a.party
   def ===(a : Party) = party === a
 
-  def permission = Seq(delegated, Seq(site.access, Permission.DOWNLOAD).min).max
+  def permission = max(min(access, directAccess), min(site.access, Permission.DOWNLOAD))
 
   /** List of volumes with which this user is associated, sorted by level (ADMIN first). */
   def volumeAccess = VolumeAccess.getVolumes(party)
@@ -90,15 +98,13 @@ final class SiteParty(val party : Party, val access : Permission.Value, val dele
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
       "parents" -> (opt => party.authorizeParents(opt.contains("all"))
-        .map(JsonRecord.map(a => JsonRecord(a.parentId,
-          'party -> a.parent.json,
-          'access -> a.access
+        .map(JsonRecord.map(a => JsonRecord(a.parentId
+	, 'party -> a.parent.json
         )))
       ),
       "children" -> (opt => party.authorizeChildren(opt.contains("all"))
-        .map(JsonRecord.map(a => JsonRecord(a.childId,
-          'party -> a.child.json,
-          'access -> a.access
+        .map(JsonRecord.map(a => JsonRecord(a.childId
+	, 'party -> a.child.json
         )))
       ),
       "volumes" -> (opt => volumeAccess.map(JsonArray.map(_.json - "party"))),
@@ -160,16 +166,19 @@ object Party extends TableId[Party]("party") {
       party
     }
 
-  private[models] val delegated = SelectAs[Permission.Value]("authorize_delegate_check(?, party.id)", "party_delegated")
-  private[models] val access = SelectAs[Permission.Value]("authorize_access_check(party.id)", "party_access")
-
-  /** Look up a party by id. */
-  def get(i : Id)(implicit site : Site) : Future[Option[Party]] = i match {
-    case NOBODY => Async(Some(Nobody))
-    case ROOT => Async(Some(Root))
-    case i if i === site.identity.id => Async(Some(site.identity))
-    case _ => row.SELECT("WHERE id = ?").apply(i).singleOpt
+  private[models] def getStatic(i : Id)(implicit site : Site) : Option[Party] = i match {
+    case NOBODY => Some(Nobody)
+    case ROOT => Some(Root)
+    case i if i === site.identity.id => Some(site.identity)
+    case _ => None
   }
+  /** Look up a party by id. */
+  def get(i : Id)(implicit site : Site) : Future[Option[Party]] =
+    getStatic(i).fold {
+      row.SELECT("WHERE id = ?").apply(i).singleOpt
+    } { p =>
+      Async(Some(p))
+    }
 
   /** Create a new party. */
   def create(name : String, orcid : Option[Orcid] = None, affiliation : Option[String] = None, duns : Option[DUNS] = None)(implicit site : Site) : Future[Party] =
@@ -207,20 +216,20 @@ object Party extends TableId[Party]("party") {
 }
 
 object SiteParty {
-  private[models] def make(p : Party)(implicit site : Site) : Future[SiteParty] =
-    if (p === site.identity)
-      Async(new SiteParty(p, site.access, if (p.id === Party.NOBODY) Permission.NONE else Permission.ADMIN))
-    else
-      for {
-        a <- p.access
-        d <- Authorize.delegate_check(site.identity.id, p.id)
-      } yield (new SiteParty(p, a, d))
+  def get(p : Party)(implicit site : Site) : Future[SiteParty] =
+    if (p.id === Party.ROOT) Async(new SiteParty(site))
+    else if (p.id == Party.NOBODY) Async(new SiteParty(new Authorization(site.identity, Party.Nobody, site.access, Permission.NONE)))
+    else Authorization.get(site.identity, p).map(new SiteParty(_))
 
   def get(i : Party.Id)(implicit site : Site) : Future[Option[SiteParty]] =
-    (Party.row ~ Party.access ~ Party.delegated)
-      .map { case ((party, access), delegated) =>
-        new SiteParty(party, access, delegated)
-      }.SELECT("WHERE id = ?").apply(site.identity.id, i).singleOpt
+    Party.getStatic(i).fold {
+    Party.row
+      .leftJoin(Authorization.columns, "authorize_view.parent = party.id AND authorize_view.child = ?")
+      .pushArgs(SQLArgs(site.identity.id))
+      .map {
+	case (party, access) => new SiteParty(Authorization.make(site.identity, party)(access))
+      }.SELECT("WHERE party.id = ?").apply(i).singleOpt
+    } (get(_).map(Some(_)))
 }
 
 object Account extends Table[Account]("account") {
@@ -235,11 +244,6 @@ object Account extends Table[Account]("account") {
   private[models] val row : Selector[Account] =
     Party.columns.join(columns, using = 'id) map {
       case (party, acct) => acct(party)
-    }
-  private[models] val rowAccess : Selector[(Account, Permission.Value)] =
-    (row ~ Party.access) map { a =>
-      a._1.party._access.set(a._2)
-      a
     }
 
   /** Look up a user by id.
