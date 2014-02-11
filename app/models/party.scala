@@ -43,11 +43,11 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
   def authorizeChildren(all : Boolean = false) : Future[Seq[Authorize]] =
     Authorize.getChildren(this, all)
 
-  private[models] val _access : FutureVar[SiteAccess] =
-    FutureVar[SiteAccess](Authorization.get(this))
+  private[models] val _access : FutureVar[Access] =
+    FutureVar[Access](Authorization.get(this))
   /** Level of access user has to the site.
     * Usually accessed through [[site.Site.access]] or [[SiteParty]]. */
-  def access : Future[SiteAccess] = _access.apply
+  def access : Future[Access] = _access.apply
 
   def pageName = name
   def pageParent = None
@@ -60,23 +60,18 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
       Some('name -> name), 
       orcid.map('orcid -> _), 
       affiliation.map('affiliation -> _),
-      account.filter(_ => site.access >= Permission.VIEW).map('email -> _.email),
+      account.filter(_ => site.access.group >= Permission.VIEW).map('email -> _.email),
       Some('avatar -> views.html.display.avatar(this).url)
     )
 }
 
-final class SiteParty(access_ : Access)(implicit val site : Site) extends SiteObject with Access {
-  assert(access_.identity === site.identity)
-  def identity = site.identity
-  def target = access_.target
-  val access = access_.access
-  val directAccess = access_.directAccess
-
-  def party = target
+final class SiteParty(access : Access)(implicit val site : Site) extends SiteObject {
+  assert(access.identity === site.identity)
+  def party = access.target
   def ===(a : SiteParty) = party === a.party
   def ===(a : Party) = party === a
 
-  def permission = max(min(access, directAccess), min(site.access, Permission.DOWNLOAD))
+  def permission = max(access.permission, min(site.access.group, Permission.DOWNLOAD))
 
   /** List of volumes with which this user is associated, sorted by level (ADMIN first). */
   def volumeAccess = VolumeAccess.getVolumes(party)
@@ -217,8 +212,8 @@ object Party extends TableId[Party]("party") {
 
 object SiteParty {
   def get(p : Party)(implicit site : Site) : Future[SiteParty] =
-    if (p.id === Party.ROOT) Async(new SiteParty(site))
-    else if (p.id == Party.NOBODY) Async(new SiteParty(new Authorization(site.identity, Party.Nobody, site.access, Permission.NONE)))
+    if (p.id === Party.ROOT) Async(new SiteParty(site.access))
+    else if (p.id == Party.NOBODY) Async(new SiteParty(new Authorization(site.identity, Party.Nobody, site.access.group, Permission.NONE)))
     else Authorization.get(site.identity, p).map(new SiteParty(_))
 
   def get(i : Party.Id)(implicit site : Site) : Future[Option[SiteParty]] =

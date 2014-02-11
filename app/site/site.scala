@@ -13,39 +13,43 @@ object Site {
   lazy val dbPool : DB = getDBPool(play.api.Play.current)
 }
 
-trait SiteAccess extends models.Access {
-  def target = Party.Root
+/** An effective authorization of identity by target. */
+trait Access {
+  /** The user/group to which this user is granted access.  The "parent" in the authorization relationship. */
+  def target : Party
+  /** The user granted this access level.  The "child" in the authorization relationship. */
+  def identity : Party
+  /** The inherited level of group access within target ("site" access when target == Root). */
+  val group : Permission.Value
+  /** The direct level of access granted to target's data. */
+  val direct : Permission.Value
+  /** The level of delegated access identity has over the target party itself. */
+  def permission = min(group, direct)
+  def isAdmin = permission == Permission.ADMIN
 }
 
 /** Basic information about each request.  Primarily implemented by [[controllers.SiteRequest]]. */
-trait Site extends SiteAccess {
+trait Site {
+  def access : Access
   /** [[models.Party]] of the logged-in user, possibly [[models.Party.Nobody]]. */
-  def identity : Party
+  final def identity : Party = access.identity
   /** Some(identity) only if actual logged-in user. */
   def user : Option[models.Account] = identity.account
-  /** Level of site access [[models.Permission]] current user has.
-    * VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for admins.
-    */
-  val access : Permission.Value
   val superuser : Boolean
   /** IP of the client's host. */
-  def clientIP : dbrary.Inet
+  val clientIP : dbrary.Inet
 }
 
 trait AnonSite extends Site {
-  final def identity = models.Party.Nobody
+  final def access = Authorization.Nobody
   final val superuser = false
-  final val access = models.Permission.NONE
-  final val directAccess = models.Permission.NONE
 }
 
 trait AuthSite extends Site {
   val token : SessionToken
-  val account : Account = token.account
-  final def identity = account.party
+  def account : Account = token.account
   override def user = Some(account)
-  final val access = token.access
-  final val directAccess = token.directAccess
+  final def access = token.access
 }
 
 trait PerSite {

@@ -29,8 +29,8 @@ private[controllers] sealed class LoginController extends SiteController {
   protected def json(implicit site : SiteRequest[_]) =
     site.identity.json ++
     JsonObject.flatten(
-      Some('access -> site.access),
-      if (site.access == Permission.ADMIN) Some('superuser -> site.session.get("superuser").flatMap(Maybe.toLong _).map(_ - System.currentTimeMillis).filter(_ > 0).getOrElse(0L)) else None
+      Some('access -> site.access.group),
+      if (site.access.isAdmin) Some('superuser -> site.session.get("superuser").flatMap(Maybe.toLong _).map(_ - System.currentTimeMillis).filter(_ > 0).getOrElse(0L)) else None
     )
 
   private[controllers] def login(a : Account)(implicit request : SiteRequest[_]) : Future[SimpleResult] = {
@@ -87,7 +87,7 @@ private[controllers] sealed class LoginController extends SiteController {
   }
 
   private final val superuserTime : Long = 60*60*1000
-  def superuserOn = SiteAction.access(Permission.ADMIN) { implicit request =>
+  def superuserOn = SiteAction.rootAccess() { implicit request =>
     val expires = System.currentTimeMillis + superuserTime
     Audit.action(Audit.Action.superuser)
     (if (request.isApi) Ok(json + ('superuser -> superuserTime))
@@ -95,7 +95,7 @@ private[controllers] sealed class LoginController extends SiteController {
       .withSession(session + ("superuser" -> expires.toString))
   }
 
-  def superuserOff = SiteAction.access(Permission.ADMIN) { implicit request =>
+  def superuserOff = SiteAction { implicit request =>
     (if (request.isApi) Ok(json - "superuser")
     else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start.url)))
       .withSession(session - "superuser")

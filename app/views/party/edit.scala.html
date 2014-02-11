@@ -21,7 +21,7 @@
 
                 @widget.tag.inputText(form("orcid"), 'placeholder -> "ORCiD")
                 @widget.tag.inputText(form("affiliation"), 'placeholder -> "Affiliation")
-		@if(request.access == Permission.ADMIN) {
+		@if(request.access.direct == Permission.ADMIN) {
                     @widget.tag.inputText(form("duns"), 'placeholder -> "DUNS")
 		}
 

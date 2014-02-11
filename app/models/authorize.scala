@@ -6,15 +6,15 @@ import macros._
 import dbrary._
 import site._
 
-class Authorization (child : Party, parent : Party, inherit : Permission.Value, direct : Permission.Value) extends Access with TableRow {
-  def childId = child.id
-  def parentId = parent.id
+/** Link between Authorize (rows in table/view) and Access. */
+sealed class Authorization (val child : Party, val parent : Party, val inherit : Permission.Value, val direct : Permission.Value) extends Access with TableRow {
+  final def childId = child.id
+  final def parentId = parent.id
   private[models] def sqlKey = SQLTerms('child -> childId, 'parent -> parentId)
 
-  def target = parent
-  def identity = child
-  val access = inherit
-  val directAccess = direct
+  final def target = parent
+  final def identity = child
+  final val group = inherit
 }
 
 /** A specific authorization by one party of another.
@@ -28,7 +28,7 @@ class Authorization (child : Party, parent : Party, inherit : Permission.Value, 
   * @param authorized the time at which this authorization takes/took effect, or never (not yet) if None
   * @param expires the time at which this authorization stops, or never if None
   */
-final class Authorize protected (val child : Party, val parent : Party, val inherit : Permission.Value, val direct : Permission.Value, val authorized : Option[Timestamp], val expires : Option[Timestamp]) extends Authorization(child, parent, inherit, direct) {
+final class Authorize protected (child : Party, parent : Party, inherit : Permission.Value, direct : Permission.Value, val authorized : Option[Timestamp], val expires : Option[Timestamp]) extends Authorization(child, parent, inherit, direct) {
   /** Determine if this authorization is currently in effect.
     * @return true if authorized is set and in the past, and expires is unset or in the future */
   def valid =
@@ -93,36 +93,22 @@ object Authorization extends Table[Authorization]("authorize_volume") {
   private def unOpt(access : Option[(Permission.Value, Permission.Value)]) : (Permission.Value, Permission.Value) =
     access.getOrElse((Permission.NONE, Permission.NONE))
 
+  object Nobody extends Authorization(Party.Nobody, Party.Root, Permission.NONE, Permission.NONE)
+
   private final class Self (party : Party) extends Authorization(party, party,
     if (party.id === Party.NOBODY) Permission.NONE else Permission.ADMIN,
     if (party.id === Party.NOBODY) Permission.NONE else Permission.ADMIN)
 
-  private[models] final class Root (party : Party, inherit : Permission.Value, direct : Permission.Value) extends Authorization(party, Party.Root, inherit, direct) with SiteAccess {
-    override def target = Party.Root
-  }
-
-  private[models] def make(child : Party, parent : Party)(access : Option[(Permission.Value, Permission.Value)]) : Authorization = {
+  private[models] def make(child : Party, parent : Party = Party.Root)(access : Option[(Permission.Value, Permission.Value)]) : Authorization = {
     val (inherit, direct) = unOpt(access)
     new Authorization(child, parent, inherit, direct)
   }
 
-  private[models] def make(party : Party)(access : Option[(Permission.Value, Permission.Value)]) : Root = {
-    val (inherit, direct) = unOpt(access)
-    new Root(party, inherit, direct)
-  }
-
   /** Determine the effective inherited and direct permission levels granted to a child by a parent. */
-  private[models] def get(child : Party, parent : Party) : Future[Authorization] =
+  private[models] def get(child : Party, parent : Party = Party.Root) : Future[Authorization] =
     if (child === parent) Async(new Self(child)) // optimization
     else columns
       .SELECT("WHERE child = ? AND parent = ?")
       .apply(child.id, parent.id).singleOpt
       .map(make(child, parent))
-
-  /** Determine the effective inherited and direct permission levels granted to a child on the site. */
-  private[models] def get(party : Party) : Future[Root] =
-    columns
-      .SELECT("WHERE child = ? AND parent = 0")
-      .apply(party.id).singleOpt
-      .map(make(party))
 }

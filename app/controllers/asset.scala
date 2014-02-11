@@ -131,7 +131,7 @@ object AssetHtml extends AssetController {
     val form = uploadForm.bindFromRequest
     form.fold(Error _, {
       case (name, classification, slot, Some((format, timeseries, localfile, ()))) =>
-        val adm = request.access >= Permission.ADMIN
+        val adm = request.access.isAdmin
         val ifmt = format.filter(_ => adm).flatMap(AssetFormat.get(_))
         val (file, fmt, fname) =
           request.body.asMultipartFormData.flatMap(_.file("file")).fold {

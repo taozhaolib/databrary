@@ -96,7 +96,7 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
 	    name = name,
 	    orcid = orcid,
 	    affiliation = affiliation.map(Maybe(_).opt),
-	    duns = duns.filter(_ => request.access == Permission.ADMIN))
+	    duns = duns.filter(_ => request.access.direct == Permission.ADMIN))
           _ <- macros.Async.foreach[AccountMapping, Unit](accts, { case (_, email, password, openid) =>
             val a = acct.get
             a.change(

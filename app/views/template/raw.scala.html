@@ -91,7 +91,7 @@
                     } { request =>
                         <a href="@routes.LoginHtml.logout">logout</a>
 
-                        @if(request.access == Permission.ADMIN) {
+                        @if(request.access.isAdmin) {
                             <span class="sep">|</span>
 
                             @if(request.superuser) {

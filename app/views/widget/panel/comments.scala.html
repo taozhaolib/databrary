@@ -8,7 +8,7 @@
 @if(post.nonEmpty || comments.nonEmpty) {
 @widget.panel.raw("comments", "")(title = "Comments"){
     @post.map { case (post, form) =>
-        @if(request.access >= Permission.VIEW) {
+        @if(request.access.group >= Permission.VIEW) {
             <div class="comment col-full">
                 <div class="row">
                     @widget.portrait.maximal(request.identity, "comment_author")

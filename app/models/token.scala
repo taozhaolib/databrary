@@ -105,13 +105,10 @@ object LoginToken extends TokenTable[LoginToken]("login_token") {
 
 /** A token set in a cookie designating a particular session.
   */
-final class SessionToken protected (id : Token.Id, expires : Timestamp, account : Account, access_ : SiteAccess) extends AccountToken(id, expires, account) with SiteAccess {
-  assert(account === access_.identity)
-  def identity = access_.identity
-  val access = access_.access
-  val directAccess = access_.directAccess
+final class SessionToken protected (id : Token.Id, expires : Timestamp, account : Account, val access : Access) extends AccountToken(id, expires, account) {
+  assert(account === access.identity)
   def superuser(implicit request : play.api.mvc.Request[_]) : Boolean =
-    directAccess == Permission.ADMIN &&
+    access.isAdmin &&
       request.session.get("superuser").flatMap(Maybe.toLong _).exists(_ > System.currentTimeMillis)
   def remove = SessionToken.delete(id)
 }
@@ -121,7 +118,7 @@ object SessionToken extends TokenTable[SessionToken]("session") {
       SelectColumn[Token.Id]("token")
     , SelectColumn[Timestamp]("expires")
     ).map { (token, expires) =>
-      (account : Account, access : SiteAccess) =>
+      (account : Account, access : Access) =>
 	new SessionToken(token, expires, account, access)
     }
   protected val row = columns
