@@ -11,21 +11,23 @@ define(['app/config/module'], function (module) {
 				allow: false,
 				active: true,
 				expand: false,
-				expanded: [],
+
 				filter: {},
 				order: []
 			},
 			record: {
 				allow: true,
+
 				filter: {},
 				order: [],
+
 				categories: arrayHelper([])
 			},
 			session: {
 				allow: true,
 				active: true,
 				expand: false,
-				expanded: [],
+
 				filter: {},
 				order: []
 			}
@@ -34,10 +36,10 @@ define(['app/config/module'], function (module) {
 		var DEFAULT_CATEGORY = {
 			id: null,
 			name: null,
+
 			allow: true,
 			active: true,
-			expand: false,
-			expanded: null // array
+			expand: false
 		};
 
 		//
@@ -93,13 +95,15 @@ define(['app/config/module'], function (module) {
 		};
 
 		browserService.updateCategories = function () {
+			if (browserService.options.record)
+				browserService.options.record.categories.length = 0;
+
 			angular.forEach(raw, function (volume) {
 				angular.forEach(volume.categories, function (sessions, category) {
 					if (!browserService.options.record.categories.get({id: category}))
 						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {
 							id: category,
-							name: $rootScope.constant.get('category', category).name,
-							expanded: []
+							name: $rootScope.constant.get('category', category).name
 						}));
 				});
 			});
@@ -123,7 +127,8 @@ define(['app/config/module'], function (module) {
 		browserService.rebuildData = function () {
 			var groups = getActiveGroups(),
 				data = {
-					items: []
+					items: [],
+					level: -1
 				};
 
 			switch (groups[0]) {
@@ -139,7 +144,7 @@ define(['app/config/module'], function (module) {
 
 				default:
 					angular.forEach(raw, function (volume) {
-						callbackRecords(data, volume, groups, 0);
+						callbackRecords(data, volume, groups);
 					});
 					break;
 			}
@@ -149,42 +154,37 @@ define(['app/config/module'], function (module) {
 			return data;
 		};
 
-		browserService.updateData = function (levelData) {
-			if (!levelData.object)
+		browserService.updateData = function (data) {
+			if (!data.object)
 				return undefined;
 
 			var type;
 
-			if (browserService.isItemCategory(levelData.object.category)) {
-				type = levelData.object.category;
-			} else if (browserService.isItemType(levelData.type)) {
-				type = levelData.type;
+			if (browserService.isItemCategory(data.object.category)) {
+				type = data.object.category;
+			} else if (browserService.isItemType(data.type)) {
+				type = data.type;
 			}
 
-			var groups = getActiveGroups(),
-				level = groups.indexOf(type + '');
+			var groups = getActiveGroups();
 
-			if (level == -1)
+			if (!groups[data.level])
 				return undefined;
 
 			switch (type) {
 				case 'volume':
-					callbackVolumeChildren(levelData, levelData.object, groups, level + 1);
+					callbackVolumeChildren(data, data.object, groups);
 					break;
 
 				default:
-					var currentVolume;
-
 					angular.forEach(raw, function (volume) {
-						if (angular.isUndefined(currentVolume) && volume.records[levelData.object.id])
-							currentVolume = volume;
+						if (volume.records[data.object.id])
+							callbackRecordChildren(data, volume, groups);
 					});
-
-					callbackRecordChildren(levelData, currentVolume, groups, level + 1);
 					break;
 			}
 
-			return levelData;
+			return data;
 		};
 
 		//
@@ -224,32 +224,30 @@ define(['app/config/module'], function (module) {
 			angular.forEach(raw, function (volume, volumeID) {
 				var newData = callbackItem(data, volume, volume.sessions, volume, 'volume');
 
-				callbackVolumeChildren(newData, volume, groups, 1);
+				callbackVolumeChildren(newData, volume, groups);
 			});
 
 			return data;
 		};
 
-		var callbackVolumeChildren = function (data, volume, groups, level) {
-			if (browserService.options.volume.expanded.indexOf(volume.id) == -1)
+		var callbackVolumeChildren = function (data, volume, groups) {
+			if (!browserService.getItemExpand(data))
 				return data;
 
-			level = level || 1;
-
-			if (groups[level] == 'session')
+			if (groups[data.level + 1] == 'session')
 				callbackSessions(data, volume);
 			else
-				callbackRecords(data, volume, groups, level);
+				callbackRecords(data, volume, groups);
 
 			return data;
 		};
 
-		var callbackRecords = function (data, volume, groups, level) {
+		var callbackRecords = function (data, volume, groups) {
 			var tempData = {};
 			var sessions = data.sessions || volume.sessions;
 
 			angular.forEach(sessions, function (session) {
-				var categoryRecords = session.categories[groups[level]];
+				var categoryRecords = session.categories[groups[data.level + 1]];
 
 				if (angular.isDefined(categoryRecords)) {
 					angular.forEach(categoryRecords, function (record, recordID) {
@@ -267,9 +265,9 @@ define(['app/config/module'], function (module) {
 				angular.forEach(tempData, function (newSessions, recordID) {
 					var newData = callbackItem(data, volume, newSessions, volume.records[recordID], 'record');
 
-					callbackRecordChildren(newData, volume, groups, level + 1);
-
-					if (groups[level + 1] == 'session') {
+					callbackRecordChildren(newData, volume, groups);
+					
+					if (groups[newData.level + 1] == 'session') {
 						var c = 0;
 
 						for (var key in newData.sessions) {
@@ -286,14 +284,14 @@ define(['app/config/module'], function (module) {
 			return data;
 		};
 
-		var callbackRecordChildren = function (data, volume, groups, level) {
+		var callbackRecordChildren = function (data, volume, groups) {
 			if (!browserService.getItemExpand(data))
 				return data;
 
-			if (groups[level] == 'session')
+			if (groups[data.level + 1] == 'session')
 				callbackSessions(data, volume);
 			else
-				callbackRecords(data, volume, groups, level);
+				callbackRecords(data, volume, groups);
 
 			return data;
 		};
@@ -316,6 +314,7 @@ define(['app/config/module'], function (module) {
 				parent: data,
 				volume: volume,
 				sessions: sessions,
+				level: data.level + 1,
 
 				object: object,
 				permission: object.permission || volume.permission,
@@ -466,21 +465,25 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		browserService.setItemExpand = function (levelData, expand) {
-			if (!levelData.expand && expand !== false) {
-				levelData.expand = true;
+		browserService.setItemExpand = function (data, expand) {
+			if (!data.expand && expand !== false) {
+				data.expand = true;
 
-				if(levelData.items == 0)
-					browserService.updateData(levelData);
-			} else if (levelData.expand && expand !== true) {
-				levelData.expand = false;
+				if (data.items == 0)
+					browserService.updateData(data);
+			} else if (data.expand && expand !== true) {
+				data.expand = false;
 			}
 
-			return levelData;
+			return data;
 		};
 
-		browserService.getItemExpand = function (levelData) {
-			return levelData.expand;
+		browserService.getItemExpand = function (data) {
+			return data.expand;
+		};
+
+		browserService.canExpand = function (data) {
+			return getActiveGroups()[data.level];
 		};
 
 		//

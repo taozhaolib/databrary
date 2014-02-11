@@ -3,7 +3,7 @@
         <a class="browser_tool expander"
         ng-click="toggleExpand()"
         ng-class="expanderClasses(data)"
-        ng-if="browser.data != data && data.type != 'session'"></a>
+        ng-if="browser.canExpand(data)"></a>
 
         <a class="browser_tool filter"
         ng-click="setItemSelect(data)"
@@ -17,7 +17,7 @@
     </div>
 
     <ul ng-if="browser.getItemExpand(data) || browser.data == data" class="cf">
-        <li ng-if="!data.items[0]">There are no items matching these groups.</li>
+        <li ng-if="!data.items[0]">This group is empty.</li>
 
         <li ng-repeat="item in data.items" ng-class="itemClasses(item)">
             <ng-include src="getInclude()"></ng-include>
