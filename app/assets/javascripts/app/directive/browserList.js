@@ -29,6 +29,15 @@ define(['app/config/module'], function (module) {
 				return classes;
 			};
 
+			$scope.itemClasses = function (data) {
+				var classes = [];
+
+				if(!data.expand)
+					classes.push('deepest');
+
+				return classes;
+			};
+
 			$scope.setItemSelect = function (data) {
 				$scope.browser.setItemSelect(data);
 			};
@@ -49,6 +58,22 @@ define(['app/config/module'], function (module) {
 				}
 			};
 
+			$scope.formatAge = function (age) {
+				return $filter('age')(age);
+			};
+
+			$scope.formatSessionCategory = function (data, categoryID) {
+				var category = $scope.constant.get('category', categoryID);
+
+				if(!category)
+					return 'Uncategorized';
+
+				switch(category.name) {
+					default:
+						return category.name.charAt(0).toUpperCase() + category.name.slice(1) + 's';
+				}
+			};
+
 			//
 
 			$scope.editLink = function (data) {
@@ -63,10 +88,6 @@ define(['app/config/module'], function (module) {
 						return router.slotEdit(data.object);
 				}
 			};
-
-			$scope.canEdit = function (data) {
-
-			}
 		};
 
 		return {

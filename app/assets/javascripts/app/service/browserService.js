@@ -313,14 +313,17 @@ define(['app/config/module'], function (module) {
 
 		var callbackItem = function (data, volume, sessions, object, type) {
 			var newData = {
-				object: object,
-				type: type,
-				permission: object.permission || volume.permission,
-				select: false,
-				expand: false,
-				items: [],
 				parent: data,
-				sessions: sessions
+				volume: volume,
+				sessions: sessions,
+
+				object: object,
+				permission: object.permission || volume.permission,
+				type: type,
+				items: [],
+
+				select: false,
+				expand: false
 			};
 
 			data.items.push(newData);
@@ -351,7 +354,14 @@ define(['app/config/module'], function (module) {
 			if (browserService.isAsset(object))
 				return 'asset';
 
+			if (browserService.isParty(object))
+				return 'party';
+
 			return 'session';
+		};
+
+		browserService.isAsset = function (object) {
+			return angular.isObject(object) && object.asset;
 		};
 
 		browserService.isVolume = function (object) {
@@ -362,12 +372,12 @@ define(['app/config/module'], function (module) {
 			return angular.isObject(object) && object.measures;
 		};
 
-		browserService.isAsset = function (object) {
-			return angular.isObject(object) && object.asset;
+		browserService.isParty = function (object) {
+			return angular.isObject(object) && object.avatar;
 		};
 
 		browserService.isSession = function (object) {
-			return angular.isObject(object) && !object.body && !object.measures;
+			return angular.isObject(object) && !object.body && !object.measures && !object.avatar;
 		};
 
 		//
@@ -459,7 +469,9 @@ define(['app/config/module'], function (module) {
 		browserService.setItemExpand = function (levelData, expand) {
 			if (!levelData.expand && expand !== false) {
 				levelData.expand = true;
-				browserService.updateData(levelData);
+
+				if(levelData.items == 0)
+					browserService.updateData(levelData);
 			} else if (levelData.expand && expand !== true) {
 				levelData.expand = false;
 			}

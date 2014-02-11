@@ -161,6 +161,24 @@ define(['app/config/module'], function (module) {
 			return routerService.makeUrl('/volume/:id/edit', data);
 		};
 
+		routerService.partyEdit = function (data) {
+			if ($rootScope.browser.isParty(data))
+				data = {
+					id: data.id
+				};
+
+			return routerService.makeUrl('/party/:id/edit', data);
+		};
+
+		routerService.partyAuthorize = function (data) {
+			if ($rootScope.browser.isParty(data))
+				data = {
+					id: data.id
+				};
+
+			return routerService.makeUrl('/party/:id/authorize', data);
+		};
+
 		//
 
 		return routerService;

@@ -187,19 +187,12 @@
 //
 
 .browser_item {
-	.padding(@f1, 0, 0, 2);
 	.border-radius(@b4 0 0 0);
 }
 
 .browser_item_content {
-	.margin-right(1);
-}
-
-.browser_item_controller {
-	background-color: fade(@g5, 90%);
-	.border-radius(@border-radius);
-	.padding(@f4, @f4, 0, @f4);
-	.margin-bottom(@f4);
+	.padding(0, @f4);
+	.margin-right(@f4);
 }
 
 //
@@ -248,24 +241,79 @@
 	background-color: @c0g5m1;
 
 	h1 {
+		background: url('/public/images/browser/icon-session.png') no-repeat 0 6px;
+		.padding-left(1.25);
 		.font-size(1.5);
 		.line-height(1.5);
+	}
+
+	header,
+	footer {
+		display: inline-block;
+	}
+
+	header {
+		float: left;
+	}
+
+	footer {
+		.line-height(1.5);
+		float: right;
+	}
+
+	.item_meta {
+		display: inline-block;
+	}
+
+	.item_main {
+		.margin-left(1.25);
+	}
+
+	.records_list {
+		.margin-bottom(0);
+
+		dt {
+			float: left;
+			clear: both;
+			width: 15%;
+			text-align: right;
+			.padding-right(@f4);
+
+			&:after {
+				content: ":";
+			}
+		}
+
+		dd {
+			.margin-left(0);
+			float: right;
+			clear: right;
+			width: 85%;
+		}
 	}
 }
 
 //
 
-.browser_list {
-	ul {
-		.margin(0);
-		background-color: @g5;
-		.padding-left(0);
-		.padding-top(@f8);
-		.border-radius(@b4 0 0 0);
+.browser_controller {
+	background-color: mix(@g4, @g5, 50%);
+	.border-radius(@b4 0 0 @b4);
+	.padding(@f4, @f4, 0, @f4);
+}
 
-		ul {
-			.padding-left(@f8);
-		}
+.browser_list {
+	background-color: @g5;
+	.padding-top(@f8);
+	.padding-left(@f8);
+	.border-radius(@b4 0 0 0);
+
+	.browser_list {
+		.margin-left(@f1);
+	}
+
+	ul {
+		.margin(@f8, 0, 0, 0);
+		.padding-left(0);
 	}
 
 	li {
@@ -277,6 +325,16 @@
 
 		&:before {
 			display: none;
+		}
+
+		&.deepest {
+			.browser_item {
+				.border-radius(@b4 0 0 @b4);
+			}
+
+			.browser_controller {
+				.border-radius(@b4 0 0 0);
+			}
 		}
 	}
 }

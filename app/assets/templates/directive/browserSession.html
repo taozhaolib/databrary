@@ -1,9 +1,32 @@
-<article bindonce class="browser_item browser_session">
+<article bindonce class="browser_item browser_session cf">
     <div class="browser_item_content">
-        <header>
-            <h1 bo-html="getName(item)"></h1>
-        </header>
-    </div>
+        <div class="cf">
+            <header>
+                <h1>Session</h1>
+            </header>
 
-    <browser-list data="item"></browser-list>
+            <footer>
+                <div class="item_meta date"
+                     bo-if="item.object.date"
+                     bo-html="item.object.date"></div>
+
+                <div class="item_meta sep"
+                     bo-if="item.object.date && item.object.consent">|</div>
+
+                <div class="item_meta consent"
+                     bo-if="item.object.consent"
+                     bo-html="constant.get('consent', item.object.consent).name"></div>
+            </footer>
+        </div>
+
+        <div class="item_main">
+            <dl class="records_list" ng-repeat="(categoryID, records) in item.object.categories">
+                <dt bo-html="formatSessionCategory(item, categoryID)"></dt>
+
+                <dd ng-repeat="record in records">
+                    <span bo-html="item.volume.records[record.id].measures.ident"></span><span bo-if="record.age">, </span><span bo-if="record.age" bo-html="formatAge(record.age)"></span>
+                </dd>
+            </dl>
+        </div>
+    </div>
 </article>
