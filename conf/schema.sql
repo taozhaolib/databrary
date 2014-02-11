@@ -132,7 +132,7 @@ CREATE MATERIALIZED VIEW "authorize_inherit" AS
 			     WHEN aa.inherit = 'ADMIN' THEN 'CONTRIBUTE'
 			     WHEN aa.inherit = 'CONTRIBUTE' THEN 'DOWNLOAD'
 			     ELSE 'NONE' END), NULL, GREATEST(a.authorized, aa.authorized), LEAST(a.expires, aa.expires)
-	          FROM aa JOIN authorize a ON aa.child = a.parent WHERE authorized IS NOT NULL
+	          FROM aa JOIN authorize a ON aa.child = a.parent WHERE a.authorized IS NOT NULL
 	) SELECT * FROM aa
 	UNION ALL SELECT id, id, enum_last(NULL::permission), enum_last(NULL::permission), NULL, NULL FROM party WHERE id >= 0;
 COMMENT ON MATERIALIZED VIEW "authorize_inherit" IS 'Transitive inheritance closure of authorize.';
@@ -196,14 +196,14 @@ CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer) RETURN
 		  FROM va
 		 WHERE party = $2
 	UNION ALL
-		SELECT LEAST(va.access, ad.direct)
+		SELECT MAX(LEAST(va.access, ad.direct))
 		  FROM va JOIN authorize_valid ad ON party = parent 
 		 WHERE child = $2
 	UNION ALL
-		SELECT LEAST(va.inherit, ai.inherit)
-		  FROM va JOIN authorize_inherit_valid ai ON party = parent 
+		SELECT MAX(LEAST(va.inherit, ai.inherit))
+		  FROM va JOIN authorize_view ai ON party = parent 
 		 WHERE child = $2
-	) a LIMIT 1;
+	) a LIMIT 1
 $$;
 COMMENT ON FUNCTION "volume_access_check" (integer, integer) IS 'Permission level the party has on the given volume, either directly, delegated, or inherited.';
 
