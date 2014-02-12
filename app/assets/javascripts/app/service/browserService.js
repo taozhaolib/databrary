@@ -12,12 +12,11 @@ define(['app/config/module'], function (module) {
 				active: true,
 				expand: false,
 
-				filter: {},
+//				filter: {},
 				sort: arrayHelper([])
 			},
 			record: {
 				allow: true,
-
 				categories: arrayHelper([])
 			},
 			session: {
@@ -25,7 +24,7 @@ define(['app/config/module'], function (module) {
 				active: true,
 				expand: false,
 
-				filter: {},
+//				filter: {},
 				sort: arrayHelper([])
 			}
 		};
@@ -38,7 +37,7 @@ define(['app/config/module'], function (module) {
 			active: true,
 			expand: false,
 
-			filter: {},
+//			filter: {},
 			sort: null // see updateCategories
 		};
 
@@ -54,6 +53,8 @@ define(['app/config/module'], function (module) {
 		browserService.options = {};
 
 		browserService.data = {};
+
+		browserService.groups = {};
 
 		//
 
@@ -132,6 +133,12 @@ define(['app/config/module'], function (module) {
 					level: -1
 				};
 
+			browserService.groups = {};
+
+			angular.forEach(groups, function (group) {
+				browserService.groups[group] = [];
+			});
+
 			switch (groups[0]) {
 				case 'volume':
 					callbackVolumes(data, groups);
@@ -159,20 +166,12 @@ define(['app/config/module'], function (module) {
 			if (!data.object)
 				return undefined;
 
-			var type;
-
-			if (browserService.isItemCategory(data.object.category)) {
-				type = data.object.category;
-			} else if (browserService.isItemType(data.type)) {
-				type = data.type;
-			}
-
 			var groups = getActiveGroups();
 
 			if (!groups[data.level])
 				return undefined;
 
-			switch (type) {
+			switch (data.group) {
 				case 'volume':
 					callbackVolumeChildren(data, data.object, groups);
 					break;
@@ -261,7 +260,7 @@ define(['app/config/module'], function (module) {
 
 			if (!$.isEmptyObject(tempData)) {
 				angular.forEach(tempData, function (newSessions, recordID) {
-					var newData = callbackItem(data, volume, newSessions, volume.records[recordID], 'record');
+					var newData = callbackItem(data, volume, newSessions, volume.records[recordID], volume.records[recordID].category);
 
 					callbackRecordChildren(newData, volume, groups);
 
@@ -307,7 +306,7 @@ define(['app/config/module'], function (module) {
 			return data;
 		};
 
-		var callbackItem = function (data, volume, sessions, object, type) {
+		var callbackItem = function (data, volume, sessions, object, group) {
 			var newData = {
 				parent: data,
 				volume: volume,
@@ -316,13 +315,14 @@ define(['app/config/module'], function (module) {
 
 				object: object,
 				permission: object.permission || volume.permission,
-				type: type,
+				group: group,
 				items: [],
 
 				select: false,
 				expand: false
 			};
 
+			browserService.groups[group].push(newData);
 			data.items.push(newData);
 
 			return newData;
@@ -487,7 +487,7 @@ define(['app/config/module'], function (module) {
 		//
 
 		var getOption = function (data) {
-			switch(data.type) {
+			switch(data.group) {
 				case 'session':
 					return browserService.options.session;
 
@@ -495,7 +495,7 @@ define(['app/config/module'], function (module) {
 					return browserService.options.volume;
 
 				default:
-					return browserService.options.record.categories.get({id: data.type});
+					return browserService.options.record.categories.get({id: data.group});
 			}
 		};
 

@@ -3,18 +3,26 @@ define(['app/config/module'], function (module) {
 
 	module.directive('browserList', ['BrowserService', '$filter', 'ConstantService', 'RouterService', function (browserService, $filter, constantService, router) {
 		var link = function ($scope, $element, $attrs) {
-			if(!$scope.browser)
+			if (!$scope.browser)
 				$scope.browser = browserService;
 
-			if(!$scope.constant)
+			if (!$scope.constant)
 				$scope.constant = constantService;
 
 			$scope.getInclude = function () {
-				if ($scope.data.items[0])
-					return 'browser' +
-						$scope.data.items[0].type.charAt(0).toUpperCase() +
-						$scope.data.items[0].type.slice(1) +
-						'.html';
+				if (!$scope.data.items[0])
+					return;
+
+				switch ($scope.data.items[0].group) {
+					case 'volume':
+						return 'browserVolume.html';
+
+					case 'session':
+						return 'browserSession.html';
+
+					default:
+						return 'browserRecord.html';
+				}
 			};
 
 			$scope.toggleExpand = function () {
@@ -32,7 +40,7 @@ define(['app/config/module'], function (module) {
 			$scope.itemClasses = function (data) {
 				var classes = [];
 
-				if(!data.expand)
+				if (!data.expand)
 					classes.push('deepest');
 
 				return classes;
@@ -45,7 +53,7 @@ define(['app/config/module'], function (module) {
 			//
 
 			$scope.getName = function (data) {
-				switch($scope.browser.getItemType(data.object)) {
+				switch ($scope.browser.getItemType(data.object)) {
 					case 'volume':
 						return data.object.name;
 
@@ -65,10 +73,10 @@ define(['app/config/module'], function (module) {
 			$scope.formatSessionCategory = function (data, categoryID) {
 				var category = $scope.constant.get('category', categoryID);
 
-				if(!category)
+				if (!category)
 					return 'Uncategorized';
 
-				switch(category.name) {
+				switch (category.name) {
 					default:
 						return category.name.charAt(0).toUpperCase() + category.name.slice(1) + 's';
 				}
@@ -77,7 +85,7 @@ define(['app/config/module'], function (module) {
 			//
 
 			$scope.editLink = function (data) {
-				switch($scope.browser.getItemType(data.object)) {
+				switch ($scope.browser.getItemType(data.object)) {
 					case 'volume':
 						return router.volumeEdit(data.object);
 
