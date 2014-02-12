@@ -66,7 +66,7 @@ object Token extends SiteController {
 	body = token.fold {
 	  Messages("mail." + msg + ".none")
 	} { token =>
-	  Messages("mail." + msg + ".body", token.redeemURL.absoluteURL())
+	  Messages("mail." + msg + ".body", token.redeemURL.absoluteURL(true))
 	}
       )
     } yield (token)

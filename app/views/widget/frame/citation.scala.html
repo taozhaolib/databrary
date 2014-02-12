@@ -7,7 +7,7 @@
         @display.dateFmtY.print(volume.creation).
         @volume.name.
         <em>Databrary</em>.
-        Retrieved @display.dateFmtCite.print(new dbrary.Date) from <a href="@volume.pageURL.absoluteURL()" title="@volume.name on Databrary.org">http://databrary.org/volume/@volume.id</a>.
+        Retrieved @display.dateFmtCite.print(new dbrary.Date) from <a href="@volume.pageURL.absoluteURL(true)" title="@volume.name on Databrary.org">http://databrary.org/volume/@volume.id</a>.
         </p>
     </div>
 }

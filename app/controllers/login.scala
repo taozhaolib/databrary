@@ -62,7 +62,7 @@ private[controllers] sealed class LoginController extends SiteController {
         if (!password.isEmpty) {
           acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(password, a.password)).fold(error)(login)
         } else if (!openid.isEmpty)
-          OpenID.redirectURL(openid, routes.LoginHtml.openID(email.getOrElse("")).absoluteURL(), realm = Some("http://" + request.host))
+          OpenID.redirectURL(openid, routes.LoginHtml.openID(email.getOrElse("")).absoluteURL(true), realm = Some("http://" + request.host))
             .map(Redirect(_))
             .recover { case e : OpenIDError => InternalServerError(LoginHtml.viewLogin(e.toString)) }
         else
