@@ -12,7 +12,7 @@
 
             <ul class="record_pill_options">
                 <li ng-repeat="maybe in browser.getSorts(data, false)">
-                    <a ng-click="browser.switchSort(sort, maybe)">{{maybe.name}}</a>
+                    <a ng-click="browser.switchSort(data, sort, maybe)">{{maybe.name}}</a>
                 </li>
             </ul>
 

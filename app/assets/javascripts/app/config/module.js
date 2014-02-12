@@ -74,21 +74,21 @@ define([
 		$rootScope.auth = auth;
 
 		// play->angular redirects
-		if(angular.isDefined($window.$play) && $window.$play.redirect){
-			switch(browser.getItemType($window.$play.object)) {
+		if (angular.isDefined($window.$play) && $window.$play.redirect) {
+			switch (browser.getItemType($window.$play.object)) {
 				case 'session':
-					$location.url('/volume/'+$window.$play.object.volume+'?session_limit='+$window.$play.object.id);
+					$location.url('/volume/' + $window.$play.object.volume + '?session_limit=' + $window.$play.object.id);
 					break;
 
 				case 'record':
 					constant.$promise.then(function (data) {
-						$location.url('/volume/'+$window.$play.object.volume+'?'+constant.data.category[$window.$play.object.category].name+'_limit='+$window.$play.object.id);
+						$location.url('/volume/' + $window.$play.object.volume + '?' + constant.data.category[$window.$play.object.category].name + '_limit=' + $window.$play.object.id);
 					});
 					break;
 
 				case 'asset':
 					// asset
-					$location.url('/volume/'+$window.$play.object.container.volume+'?session_limit='+$window.$play.object.container.id+'&asset_limit='+$window.$play.object.asset.id);
+					$location.url('/volume/' + $window.$play.object.container.volume + '?session_limit=' + $window.$play.object.container.id + '&asset_limit=' + $window.$play.object.asset.id);
 					break;
 			}
 		}

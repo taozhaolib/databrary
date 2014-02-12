@@ -10,7 +10,7 @@ define(['app/config/module'], function (module) {
 			$scope.sortClasses = function (sort) {
 				var classes = [];
 
-				if ($scope.browser.options[group].active)
+				if ($scope.browser.options[sort].active)
 					classes.push('on');
 				else
 					classes.push('off');

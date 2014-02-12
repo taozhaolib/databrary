@@ -13,13 +13,10 @@ define(['app/config/module'], function (module) {
 				expand: false,
 
 				filter: {},
-				order: []
+				sort: arrayHelper([])
 			},
 			record: {
 				allow: true,
-
-				filter: {},
-				order: [],
 
 				categories: arrayHelper([])
 			},
@@ -29,7 +26,7 @@ define(['app/config/module'], function (module) {
 				expand: false,
 
 				filter: {},
-				order: []
+				sort: arrayHelper([])
 			}
 		};
 
@@ -39,7 +36,10 @@ define(['app/config/module'], function (module) {
 
 			allow: true,
 			active: true,
-			expand: false
+			expand: false,
+
+			filter: {},
+			sort: null // see updateCategories
 		};
 
 		//
@@ -103,7 +103,8 @@ define(['app/config/module'], function (module) {
 					if (!browserService.options.record.categories.get({id: category}))
 						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {
 							id: category,
-							name: $rootScope.constant.get('category', category).name
+							name: $rootScope.constant.get('category', category).name,
+							sort: arrayHelper([])
 						}));
 				});
 			});
@@ -177,10 +178,7 @@ define(['app/config/module'], function (module) {
 					break;
 
 				default:
-					angular.forEach(raw, function (volume) {
-						if (volume.records[data.object.id])
-							callbackRecordChildren(data, volume, groups);
-					});
+					callbackRecordChildren(data, data.volume, groups);
 					break;
 			}
 
@@ -488,6 +486,19 @@ define(['app/config/module'], function (module) {
 
 		//
 
+		var getOption = function (data) {
+			switch(data.type) {
+				case 'session':
+					return browserService.options.session;
+
+				case 'volume':
+					return browserService.options.volume;
+
+				default:
+					return browserService.options.record.categories.get({id: data.type});
+			}
+		};
+
 		browserService.getSorts = function (data, active) {
 
 		};
@@ -502,8 +513,22 @@ define(['app/config/module'], function (module) {
 			return sortToggle == sort;
 		};
 
-		browserService.switchSort = function (sort, maybe) {
+		browserService.switchSort = function (data, sort, maybe) {
+			browserService.setSortToggle(undefined);
 
+			var option = getOption(data);
+
+			var group_i = option.sort.index(group),
+				maybe_i = option.sort.index(maybe);
+
+			if (group.active != maybe.active) {
+				group.active = !group.active;
+				maybe.active = !maybe.active;
+			}
+
+			option.sort[group_i] = option.sort.splice(maybe_i, 1, option.sort[group_i])[0];
+
+			browserService.rebuildData();
 		};
 
 		browserService.canReverseSort = function () {
