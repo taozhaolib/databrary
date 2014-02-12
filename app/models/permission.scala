@@ -20,6 +20,11 @@ object Permission extends PGEnum("permission") {
   /** Alias for DOWNLOAD. DOWNLOAD permissions grant access to shared data, while non-data only requires VIEW. */
   def DATA = DOWNLOAD
 
+  def message(v : Value, kind : String) : Option[String] = {
+    val m = "auth." + kind + "." + v.toString
+    if (Messages.isDefinedAt(m)) Some(Messages(m)) else None
+  }
+
   implicit val truth : Truth[Value] = Truth[Value](_ != NONE)
   override implicit val sqlType : SQLType[Value] =
     SQLType.transform[Option[String], Value]("permission", classOf[Value])(
@@ -58,7 +63,7 @@ trait HasPermission extends PerSite {
   * Must match the corresponding postgres "consent" type, except for the NONE value which represents NULL (missing) as this is a common possibility. */
 object Consent extends PGEnum("consent") {
   val NONE, PRIVATE, SHARED, EXCERPTS, PUBLIC = Value
-  def description(v : Value) : Option[String] = {
+  def message(v : Value) : Option[String] = {
     val m = "consent." + v.toString
     if (Messages.isDefinedAt(m)) Some(Messages(m)) else None
   }
