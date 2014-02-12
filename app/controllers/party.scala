@@ -138,19 +138,20 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
       _.map(result))
   }
 
-  type AuthorizeMapping = (Permission.Value, Permission.Value, Boolean, Option[Date])
+  type AuthorizeMapping = (Permission.Value, Permission.Value, Permission.Value, Boolean, Option[Date])
   type AuthorizeForm = Form[AuthorizeMapping]
   protected val authorizeForm : AuthorizeForm = Form(
     tuple(
-      "inherit" -> Field.enum(Permission),
-      "direct" -> Field.enum(Permission),
+      "inherit" -> default(Field.enum(Permission), Permission.NONE),
+      "direct" -> default(Field.enum(Permission), Permission.NONE),
+      "permission" -> default(Field.enum(Permission), Permission.NONE),
       "pending" -> boolean,
       "expires" -> optional(jodaLocalDate)
     )
   )
 
   protected def authorizeFormFill(auth : Authorize, apply : Boolean = false) : AuthorizeForm =
-    authorizeForm.fill((auth.inherit, auth.direct, auth.authorized.isEmpty, auth.expires.map(_.toLocalDate)))
+    authorizeForm.fill((auth.inherit, auth.direct, auth.permission, auth.authorized.isEmpty, auth.expires.map(_.toLocalDate)))
 
   protected final val maxExpiration = org.joda.time.Years.years(2)
 
@@ -160,17 +161,17 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
       AbadForm[AuthorizeMapping](f => PartyHtml.viewAdmin(authorizeChangeForm = Some((child, f))), form)
     val form = authorizeForm.bindFromRequest
     form.fold(bad, {
-      case (inherit, direct, pending, expires) =>
+      case (inherit, direct, permission, pending, expires) =>
         val (exp, expok) = if (request.superuser) (expires, true)
           else {
             val maxexp = (new Date).plus(maxExpiration)
             val exp = expires.getOrElse(maxexp)
-            (Some(exp), exp.isAfter(maxexp))
+            (Some(exp), !exp.isAfter(maxexp))
           }
         if (!expok)
           bad(form.withError("expires", "error.max", maxExpiration))
         else
-          Authorize.set(childId, id, inherit, direct, if (pending) None else Some(new Timestamp), exp.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT))).map { _ =>
+          Authorize.set(childId, id, max(inherit, permission), max(direct, permission), if (pending) None else Some(new Timestamp), exp.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT))).map { _ =>
             result(request.obj)
           }
       }
@@ -194,10 +195,10 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
     models.Party.get(parentId).flatMap(_.fold(ANotFound) { parent =>
     authorizeForm.bindFromRequest.fold(
       AbadForm[AuthorizeMapping](f => PartyHtml.viewAdmin(authorizeWhich = Some(true), authorizeResults = Seq((parent, f))), _),
-      { case (inherit, direct, _, expires) =>
+      { case (inherit, _, _, _, expires) =>
 	for {
 	  dl <- delegates(parent)
-	  _ <- Authorize.set(id, parentId, inherit, direct, None, expires.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT)))
+	  _ <- Authorize.set(id, parentId, inherit, Permission.NONE, None, expires.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT)))
 	  _ <- Mail.send(
 	    to = (dl.map(_.email) :+ Messages("mail.authorize")).mkString(", "),
 	    subject = Messages("mail.authorize.subject"),
@@ -273,8 +274,8 @@ object PartyHtml extends PartyController {
         models.Party.searchForAuthorize(name, request.obj.party).flatMap { res =>
         viewAdmin(authorizeWhich = Some(apply), authorizeSearchForm = form, 
           authorizeResults = res.map(e => (e, authorizeForm.fill(
-            if (apply) (Permission.NONE, Permission.NONE, true, None)
-            else (Permission.NONE, Permission.NONE, false, Some((new Date).plus(maxExpiration)))))))
+            if (apply) (Permission.NONE, Permission.NONE, Permission.NONE, true, None)
+            else (Permission.NONE, Permission.NONE, Permission.NONE, false, Some((new Date).plus(maxExpiration)))))))
           .map(Ok(_))
         }
     )

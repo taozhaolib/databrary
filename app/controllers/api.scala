@@ -15,7 +15,7 @@ object SiteApi extends SiteController {
 	))(Permission.values.toSeq)
     , 'consent -> JsonRecord.map[Consent.Value](c => JsonRecord.flatten(c.id
 	, Some('name -> c.toString)
-	, Consent.description(c).map('message -> _)
+	, Consent.message(c).map('message -> _)
 	))(Consent.values.toSeq)
     , 'classification -> JsonRecord.map[Classification.Value](c => JsonRecord(c.id
 	, 'name -> c.toString

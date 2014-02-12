@@ -9,7 +9,7 @@ login.logout=You have been logged out.
 password.incorrect=Incorrect password.
 password.again=Passwords do not match.
 
-# --- Emails
+# Emails
 mail.from=Databrary <help@databrary.org>
 mail.authorize=authorize@databrary.org
 mail.password.subject=Databrary password reset
@@ -19,6 +19,21 @@ mail.register.subject=Databrary account created
 mail.register.body={0}
 mail.authorize.subject=Databrary authorization request
 mail.authorize.body={0}
+
+# Authorizations
+auth.inherit.NONE=No access
+auth.inherit.VIEW=Browse only
+auth.inherit.DOWNLOAD=View and download (Affiliate)
+auth.inherit.CONTRIBUTE=Share new data (Principal)
+auth.inherit.ADMIN=Manage authorizations
+auth.direct.NONE=No access
+auth.direct.VIEW=Browse only
+auth.direct.DOWNLOAD=View and download
+auth.direct.CONTRIBUTE=Edit and upload
+auth.direct.ADMIN=Manage sharing
+auth.permission.NONE=
+auth.permission.CONTRIBUTE=Create new data
+auth.permission.ADMIN=Manage profile and authorizations
 
 # --- Constraints
 constraint.required=This field is required.
