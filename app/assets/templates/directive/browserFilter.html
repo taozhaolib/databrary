@@ -26,9 +26,9 @@
         </span>
 
         <span class="browser_widget_wrap"
-        ng-if="browser.canAddSort()">
+        ng-if="browser.canAddSort(data)">
             <a class="browser_widget_pill add"
-            ng-click="browser.addSort()">+ sort</a>
+            ng-click="browser.addSort(data)">+ sort</a>
         </span>
     </div>
 

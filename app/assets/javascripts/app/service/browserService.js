@@ -184,6 +184,27 @@ define(['app/config/module'], function (module) {
 			return data;
 		};
 
+		browserService.filterDataGroup = function (group) {
+			var groups = getActiveGroups(),
+				filterables = sortables = browserService.groups[group],
+				sortables;
+
+			if(groups[groups.indexOf(group) - 1])
+				sortables = browserService.groups[groups[groups.indexOf(group) - 1]];
+			else
+				sortables = browserService.data.items;
+
+			angular.forEach(sortables, function (data) {
+				// TODO: sort
+				// adjust data.items
+			});
+
+			angular.forEach(filterables, function (data) {
+				// TODO: filter
+				// adjust data.active
+			});
+		};
+
 		//
 
 		var isGroupActive = function (group) {
@@ -518,21 +539,21 @@ define(['app/config/module'], function (module) {
 
 			var option = getOption(data);
 
-			var group_i = option.sort.index(group),
+			var sort_i = option.sort.index(sort),
 				maybe_i = option.sort.index(maybe);
 
-			if (group.active != maybe.active) {
-				group.active = !group.active;
+			if (sort.active != maybe.active) {
+				sort.active = !sort.active;
 				maybe.active = !maybe.active;
 			}
 
-			option.sort[group_i] = option.sort.splice(maybe_i, 1, option.sort[group_i])[0];
+			option.sort[sort_i] = option.sort.splice(maybe_i, 1, option.sort[sort_i])[0];
 
-			browserService.rebuildData();
+			browserService.filterDataGroup(data.group);
 		};
 
 		browserService.canReverseSort = function () {
-
+			return true;
 		};
 
 		browserService.reverseSort = function (sort) {
@@ -540,15 +561,24 @@ define(['app/config/module'], function (module) {
 		};
 
 		browserService.canRemoveSort = function () {
-
+			return true;
 		};
 
 		browserService.removeSort = function (sort) {
 
 		};
 
-		browserService.canAddSort = function () {
+		browserService.canAddSort = function (data) {
+			var canAdd = false;
 
+			var option = getOption(data);
+
+			angular.forEach(option.sort, function (sort) {
+				if (!canAdd && !sort.active)
+					canAdd = true;
+			});
+
+			return canAdd;
 		};
 
 		browserService.addSort = function (sort) {
