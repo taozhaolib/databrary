@@ -16,12 +16,12 @@
             <fieldset class="publications">
                 <legend>Publications</legend>
 
-                <div repeater class="repeater" ng-init="repeats = @editForm.data.filter(i => i._1.contains("citation")).map(i => (i._1.split("\\.").head, i._1.split("\\.").last, i._2)).groupBy(i => i._1).map(i => i._2.map(i => i._2+": '"+i._3+"'").mkString("{",",","}")).mkString("[",",","]")">
-                        @widget.tag.repeat(editForm("citation")) { f =>
-                            @widget.tag.inputText(f("head"), 'placeholder -> "Citation")
-                            @widget.tag.inputText(f("url"), 'placeholder -> "DOI or URL")
-                            @widget.tag.textarea(f("body"), 'placeholder -> "Abstract")
-                        }
+                <div class="repeater">
+                    @widget.tag.repeat(editForm("citation")) { f =>
+                        @widget.tag.inputText(f("head"), 'placeholder -> "Citation")
+                        @widget.tag.inputText(f("url"), 'placeholder -> "DOI or URL")
+                        @widget.tag.textarea(f("body"), 'placeholder -> "Abstract")
+                    }
                 </div>
             </fieldset>
 
