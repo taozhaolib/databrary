@@ -97,6 +97,7 @@ define(['app/config/module'], function (module) {
 				case 'party':
 				case 'search':
 					browserService.options.volume.allow = true;
+					browserService.options.session.allow = false;
 
 					break;
 
