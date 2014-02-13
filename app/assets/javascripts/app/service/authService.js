@@ -100,7 +100,11 @@ define(['app/config/module'], function (module) {
 				.post('/api/user/login', data)
 				.success(function (data) {
 					updateUser(data);
-					$location.path('/');
+
+					if (authService.next)
+						$location.path(authService.next);
+					else
+						$location.path('/');
 				})
 				.error(function () {
 					updateUser(undefined);
@@ -121,6 +125,14 @@ define(['app/config/module'], function (module) {
 
 		authService.showProfile = function () {
 			$location.path('/party/' + authService.user.id);
+		};
+
+		//
+
+		authService.tryLogin = function (next, current) {
+			authService.next = $location.url();
+
+			$location.url('/login');
 		};
 
 		//

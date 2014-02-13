@@ -100,5 +100,12 @@ define([
 		$location.hash('');
 	}]);
 
+	module.run(['$rootScope', function ($rootScope) {
+		$rootScope.$on('$routeChangeError', function ($event, next, current, rejection) {
+			if ($rootScope.auth.user.id == -1 && (!current || current.$$route.controller != 'LoginView'))
+				$rootScope.auth.tryLogin(next, current);
+		});
+	}]);
+
 	return module;
 });

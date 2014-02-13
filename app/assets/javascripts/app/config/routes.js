@@ -6,10 +6,6 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		$httpProvider.responseInterceptors.push('AuthInterceptor');
-
-		//
-
 		var loginView = {
 			controller: 'LoginView',
 			templateUrl: 'loginView.html',
@@ -24,30 +20,16 @@ define(['app/config/module'], function (module) {
 			controller: 'SearchView',
 			templateUrl: 'searchView.html',
 			resolve: {
-				volumes: ['$route', 'Volume', function ($route, Volume) {
-					var volumes = [];
+				volumes: ['$route', 'Volume', '$q', function ($route, Volume, $q) {
+					var deferred = $q.defer();
 
 					Volume.query({}, function (data) {
-						angular.forEach(data, function (volume) {
-							volumes.push(Volume.get({
-								id: volume.id,
-
-								access: '',
-								citations: '',
-								top: '',
-								tags: '',
-								assets: '',
-								comments: '',
-								records: '',
-								summary: '',
-								sessions: '',
-								categories: '',
-								funding: ''
-							}));
-						});
+						deferred.resolve(data);
+					}, function (data) {
+						deferred.reject();
 					});
 
-					return volumes;
+					return deferred.promise;
 				}]
 			},
 			reloadOnSearch: false
@@ -72,7 +54,7 @@ define(['app/config/module'], function (module) {
 						funding: ''
 					}, function (data) {
 						deferred.resolve(data);
-					}, function (data) {
+					}, function (error) {
 						deferred.reject();
 					});
 
@@ -107,7 +89,7 @@ define(['app/config/module'], function (module) {
 						funding: ''
 					}, function (data) {
 						deferred.resolve(data);
-					}, function (data) {
+					}, function (error) {
 						deferred.reject();
 					});
 
