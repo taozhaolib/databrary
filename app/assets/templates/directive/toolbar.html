@@ -1,0 +1,57 @@
+<section id="toolbars" class="cf">
+    <nav id="toolbar_databrary" class="toolbar toolbar_databrary">
+        <div class="wrap">
+            <div class="row">
+                <div class="title cf col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-4">
+                    <h1 class="toolbar_h1">
+                        <a ng-href="{{router.index()}}" title="Databrary: An Open Data Library"><span>Databrary</span></a>
+                    </h1>
+
+                    <nav class="toolbar_nav cf hide-mobile hide-cell">
+                        <ul class="toolbar_nav_ul inline-block flat cf">
+                            <li><a ng-href="{{router.search()}}">Explore</a></li>
+                            <li><a ng-href="{{router.search()}}">Share</a></li>
+                            <li><a ng-href="{{router.search()}}">Discover</a></li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <div class="toolbar_user col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 ng-cloak">
+                    <span has-auth="!view">
+                        <a href="#" ng-click="authService.showLogin()">login</a>
+                    </span>
+
+                    <span has-auth="view">
+                        <a href="#" ng-click="authService.logout()">logout</a>
+
+                        <span has-auth="admin">
+                            <span class="sep">|</span>
+                            <a has-auth="!super" class="superuser off" href="#" ng-click="authService.toggleSU(true)">SU</a>
+                            <a has-auth="super" class="superuser on" href="#" ng-click="authService.toggleSU(false)">SU</a>
+                        </span>
+
+                        <a href="#" ng-click="authService.showProfile()" class="img"><img ng-src="{{authService.user.avatar || authService.user.email | gravatar:16}}" alt="{{authService.user.username}}"></a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <nav id="toolbar_context" class="toolbar toolbar_context hide-print ng-cloak">
+        <div class="wrap">
+            <div class="row">
+                <div class="col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-4 col-cell">
+                    <ul class="toolbar_menu toolbar_menu_left">
+                        <li ng-repeat="panel in panels | filter:{enabled: true}" class="link_{{panel.panel.id}}" ng-class="getPanelClasses(panel)"><a ng-click="focusPanel(panel)">{{panel.panel.title}}</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 col-cell">
+                    <ul class="toolbar_menu toolbar_menu_right">
+                        <li ng-repeat="item in links" class="toolbar_menu_item"><a ng-href="{{item.url}}" target="{{item.target}}" class="{{item.classes}}" title="{{item.title}}"><img ng-if="item.image" ng-src="{{item.image}}" alt="{{item.text}}"> <span ng-hide="item.image">{{item.path | uppercase}}</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+</section>
