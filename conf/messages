@@ -66,6 +66,7 @@ error.minLength=Minimum length is {0}
 error.maxLength=Maximum length is {0}
 error.email=Valid email required
 error.pattern=Must satisfy {0}
+error.both=Only one of {0} and {1} may be specified
 
 # --- Unsorted
 citation.invalid=Invalid citation

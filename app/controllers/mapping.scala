@@ -57,11 +57,11 @@ object MaybeMapping {
 
 
 /** Identical to OptionalMapping except that empty fields are not treated as missing. */
-final case class OptionMapping[T](wrapped : Mapping[T], val constraints: Seq[Constraint[Option[T]]] = Nil) extends Mapping[Option[T]] {
+final case class OptionMapping[T](wrapped : Mapping[T], val constraints : Seq[Constraint[Option[T]]] = Nil) extends Mapping[Option[T]] {
   val key = wrapped.key
   val mappings = wrapped.mappings
   override val format = wrapped.format
-  def bind(data: Map[String, String]): Either[Seq[FormError], Option[T]] = {
+  def bind(data: Map[String, String]) : Either[Seq[FormError], Option[T]] = {
     if (data.contains(key) || data.keys.exists(p => p.startsWith(key) && ".[".contains(p(key.length))))
       wrapped.bind(data).right.map(Some(_))
     else
@@ -76,5 +76,25 @@ final case class OptionMapping[T](wrapped : Mapping[T], val constraints: Seq[Con
   def withPrefix(prefix : String) : Mapping[Option[T]] = 
     copy(wrapped = wrapped.withPrefix(prefix))
   def verifying(addConstraints : Constraint[Option[T]]*) : Mapping[Option[T]] =
+    copy(constraints = constraints ++ addConstraints)
+}
+
+final case class EitherMapping[L,R](leftMapping : Mapping[L], rightMapping : Mapping[R], val key : String = "", val constraints : Seq[Constraint[Either[L,R]]] = Nil) extends Mapping[Either[L,R]] {
+  private val left = leftMapping.withPrefix(key)
+  private val right = rightMapping.withPrefix(key)
+  val mappings = left.mappings ++ right.mappings
+  def bind(data: Map[String, String]) : Either[Seq[FormError], Either[L,R]] = {
+    val l = left.bind(data)
+    val r = right.bind(data)
+    l.fold(e => r.fold(er => Left(e ++ er),
+	r => Right(Right(r))),
+      l => r.fold(_ => Right(Left(l)),
+	_ => Left(Seq(FormError(key, "error.both", Seq(left.key, right.key))))))
+  }
+  def unbind(value : Either[L,R]) =
+    value.fold(left.unbind(_), right.unbind(_))
+  def withPrefix(prefix : String) : Mapping[Either[L,R]] =
+    addPrefix(prefix).fold(this)(k => copy(key = k))
+  def verifying(addConstraints : Constraint[Either[L,R]]*) : Mapping[Either[L,R]] =
     copy(constraints = constraints ++ addConstraints)
 }
