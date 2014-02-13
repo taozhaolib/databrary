@@ -1,4 +1,3 @@
 define([
-	'app/controller/messageCtrl',
-	'app/controller/toolbarCtrl'
+	'app/controller/messageCtrl'
 ], function () {});

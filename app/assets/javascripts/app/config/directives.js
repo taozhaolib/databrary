@@ -1,5 +1,5 @@
 define([
-	'app/directive/mode',
+	'app/directive/toolbar',
 	'app/directive/frame',
 	'app/directive/figure',
 	'app/directive/portrait',

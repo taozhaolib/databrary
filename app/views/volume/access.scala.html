@@ -6,65 +6,60 @@
 	@widget.tag.select(form("inherit"), Permission.values.to(if (party.id.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
 }
 
-@template.crud() {
-
-}
-
-
 @template.form(Some(volume), "Manage Access") {
-            <table class="permission">
-                @defining(helper.FieldConstructor(widget.tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Individual</th>
-                            <th>Group</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
+    <table class="permission">
+        @defining(helper.FieldConstructor(widget.tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Individual</th>
+                    <th>Group</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
 
-                    <tbody>
-                        @accessForms.map { case (party,form) =>
-                            <tr>
-                                @widget.tag.form(routes.VolumeHtml.accessChange(volume.id, party.id), 'id -> ("party_"+party.id.toString)) {
-                                    @accessFields(party, form)
-                                }
-
-                                <td>
-                                    <button type='submit' class="button second" form="party_@party.id">Update</button>
-                                    @if(!(request.identity === party)) {
-                                        <a href='@routes.VolumeHtml.accessDelete(volume.id, party.id)' class="button first">Revoke</a>
-                                    }
-                                    @widget.formErrors(form)
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-
-                    <tfoot>
-                        @widget.tag.form(routes.VolumeHtml.accessSearch(volume.id)) {
-                            <tr class="null">
-                                @widget.tag.inputText(accessSearch("name"), 'placeholder -> "Search users and institutions...")
-                                <td/>
-                                <td/>
-                                <td>
-                                    <button type='submit' class="button third">Search</button>
-                                    @widget.formErrors(accessSearch)
-                                </td>
-                            </tr>
+            <tbody>
+                @accessForms.map { case (party,form) =>
+                    <tr>
+                        @widget.tag.form(routes.VolumeHtml.accessChange(volume.id, party.id), 'id -> ("party_"+party.id.toString)) {
+                            @accessFields(party, form)
                         }
 
-                        @accessResults.map { case (party,form) =>
-                            @widget.tag.form(routes.VolumeHtml.accessChange(volume.id, party.id)) {
-                                <tr>
-                                    @accessFields(party, form)
-                                    <td>
-                                        <button type='submit' class="button">Add</button>
-                                        @widget.formErrors(form)
-                                    </td>
-                                </tr>
+                        <td>
+                            <button type='submit' class="button second" form="party_@party.id">Update</button>
+                            @if(!(request.identity === party)) {
+                                <a href='@routes.VolumeHtml.accessDelete(volume.id, party.id)' class="button first">Revoke</a>
                             }
-                        }
-                }</tfoot>
-            </table>
+                            @widget.formErrors(form)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+            <tfoot>
+                @widget.tag.form(routes.VolumeHtml.accessSearch(volume.id)) {
+                    <tr class="null">
+                        @widget.tag.inputText(accessSearch("name"), 'placeholder -> "Search users and institutions...")
+                        <td/>
+                        <td/>
+                        <td>
+                            <button type='submit' class="button third">Search</button>
+                            @widget.formErrors(accessSearch)
+                        </td>
+                    </tr>
+                }
+
+                @accessResults.map { case (party,form) =>
+                    @widget.tag.form(routes.VolumeHtml.accessChange(volume.id, party.id)) {
+                        <tr>
+                            @accessFields(party, form)
+                            <td>
+                                <button type='submit' class="button">Add</button>
+                                @widget.formErrors(form)
+                            </td>
+                        </tr>
+                    }
+                }
+        }</tfoot>
+    </table>
 }

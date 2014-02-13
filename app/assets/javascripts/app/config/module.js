@@ -32,18 +32,21 @@ define([
 	module.config(["$provide", function ($provide) {
 		$provide.decorator("$templateCache", ["$delegate", "$http", "$injector", function ($delegate, $http, $injector) {
 
-			var allTemplatesPromise,
+			var promise,
+				returned = false,
 				allTemplatesUrl = '/public/templates/_all.html';
 
 			var loadAllTemplates = function (url) {
-				if (!allTemplatesPromise) {
-					allTemplatesPromise = $http.get(allTemplatesUrl).then(function (response) {
+				if (!promise) {
+					promise = $http.get(allTemplatesUrl).then(function (response) {
 						$injector.get("$compile")(response.data);
 						return response;
 					});
 				}
 
-				return allTemplatesPromise.then(function (response) {
+				return promise.then(function (response) {
+					returned = true;
+
 					return {
 						status: response.status,
 						data: get(url)
@@ -54,7 +57,7 @@ define([
 			var get = $delegate.get;
 
 			$delegate.get = function (url) {
-				if (!allTemplatesPromise) {
+				if (!returned) {
 					return loadAllTemplates(url);
 				}
 

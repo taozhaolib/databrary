@@ -43,6 +43,11 @@
                 <p ng-bind-html="volume | cite"></p>
             </div>
         </div>
+
+        <div class="temporary">
+            <a class="button mini" ng-href="{{router.volumeEdit(volume)}}">edit</a>
+            <a class="button mini" ng-href="{{router.volumeAccess(volume)}}">authorize</a>
+        </div>
     </panel-mode>
     <!--
     <panel-mode name="edit">
