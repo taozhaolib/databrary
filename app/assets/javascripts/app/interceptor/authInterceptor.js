@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('authInterceptor', ['$injector', 'RetryService', function ($injector, retryService) {
+	module.factory('AuthInterceptor', ['$injector', 'RetryService', function ($injector, retryService) {
 		return function (promise) {
 			var $http = $injector.get('$http');
 

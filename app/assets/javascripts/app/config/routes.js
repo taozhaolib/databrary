@@ -6,7 +6,7 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		$httpProvider.responseInterceptors.push('authInterceptor');
+		$httpProvider.responseInterceptors.push('AuthInterceptor');
 
 		//
 
