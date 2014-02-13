@@ -21,14 +21,14 @@ sealed class Authorization (val child : Party, val parent : Party, val inherit :
   * An authorization represents granting of certain permissions to a party by/under another, which can also be viewed as group membership.
   * Unlike most [TableRow] classes, these may be constructed directly, and thus are not expected to reflect the current state of the database in the same way and have different update semantics.
   * @constructor create an authorization object, not (yet) persisted to the database
-  * @param childId the party being authorized, the "member"
-  * @param parentId the party whose permissions are being authorized, the "group"
+  * @param child the party being authorized, the "member"
+  * @param parent the party whose permissions are being authorized, the "group"
   * @param inherit the level of site/group access granted via the parent to the child, thus the maximum site permission level inherited by the child from the parent
-  * @param delegate the specific permissions granted on behalf of the parent to the child, such that the child has rights to perform actions up to this permission as the parent (not inherited)
+  * @param direct the specific permissions granted on behalf of the parent to the child, such that the child has rights to perform actions up to this permission as the parent (not inherited)
   * @param authorized the time at which this authorization takes/took effect, or never (not yet) if None
   * @param expires the time at which this authorization stops, or never if None
   */
-final class Authorize protected (child : Party, parent : Party, inherit : Permission.Value, direct : Permission.Value, val authorized : Option[Timestamp], val expires : Option[Timestamp]) extends Authorization(child, parent, inherit, direct) {
+final class Authorize protected (child : Party, parent : Party, inherit : Permission.Value, direct : Permission.Value, val authorized : Option[Timestamp], val expires : Option[Timestamp], val info : Option[String]) extends Authorization(child, parent, inherit, direct) {
   /** Determine if this authorization is currently in effect.
     * @return true if authorized is set and in the past, and expires is unset or in the future */
   def valid =
@@ -48,8 +48,9 @@ object Authorize extends Table[Authorize]("authorize") {
     , SelectColumn[Permission.Value]("direct")
     , SelectColumn[Option[Timestamp]]("authorized")
     , SelectColumn[Option[Timestamp]]("expires")
-    ).map { (inherit, direct, authorized, expires) =>
-      (child : Party, parent : Party) => new Authorize(child, parent, inherit, direct, authorized, expires)
+    ).~?(Info.columns)
+    .map { case ((inherit, direct, authorized, expires), info) =>
+      (child : Party, parent : Party) => new Authorize(child, parent, inherit, direct, authorized, expires, info)
     }
 
   private[this] val condition = "AND authorized <= CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP)"
@@ -82,6 +83,20 @@ object Authorize extends Table[Authorize]("authorize") {
     */
   def delete(child : Party.Id, parent : Party.Id)(implicit site : Site) : Future[Boolean] =
     Audit.remove("authorize", SQLTerms('child -> child, 'parent -> parent)).execute
+
+  object Info extends Table[String]("authorize_info") {
+    private[Authorize] val columns = Columns(
+      SelectColumn[String]("info")
+    )
+    def set(child : Party.Id, parent : Party.Id, info : Option[String]) : Future[Boolean] = {
+      val id = SQLTerms('child -> child, 'parent -> parent)
+      info.fold(DELETE(id)) { info =>
+	DBUtil.updateOrInsert(
+	  SQL("UPDATE", table, "SET info = ? WHERE", id.where)(_, _).apply(info +: id))(
+	  INSERT(id :+ ('info -> info))(_, _))
+      }.execute
+    }
+  }
 }
 
 object Authorization extends Table[Authorization]("authorize_view") {

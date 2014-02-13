@@ -84,6 +84,8 @@ case class Selector[+A](selects : Seq[SelectExpr[_]], source : String, parse : S
     leftJoin(that, Seq(using.name))
   def ~[B](that : Selector[B]) : Selector[(A,B)] =
     join(that, _ + " NATURAL JOIN " + _)
+  def ~?[B](that : Selector[B]) : Selector[(A,Option[B])] =
+    join(that.?, _ + " NATURAL LEFT JOIN " + _)
   def *[B](that : Selector[B]) : Selector[(A,B)] =
     join(that, _ + " CROSS JOIN " + _)
 
