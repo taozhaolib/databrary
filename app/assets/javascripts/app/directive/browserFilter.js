@@ -10,10 +10,8 @@ define(['app/config/module'], function (module) {
 			$scope.sortClasses = function (sort) {
 				var classes = [];
 
-				if ($scope.browser.options[sort].active)
-					classes.push('on');
-				else
-					classes.push('off');
+				classes.push('on');
+				classes.push($scope.browser.isSortToggle(sort) ? 'expanded' : '');
 
 				return classes;
 			};

@@ -41,6 +41,12 @@ define(['app/config/module'], function (module) {
 				return angular.isFunction(_orderFn) ? array.sort(_orderFn) : array;
 			};
 
+			var find = function (item, strict) {
+				strict = angular.isUndefined(strict) ? true : strict;
+
+				return $filter('filter')(array, item, strict).shift();
+			};
+
 			var get = function (item) {
 				return array[index(item)];
 			};
@@ -140,6 +146,7 @@ define(['app/config/module'], function (module) {
 				replace: replace,
 				remove: remove,
 				filter: filter,
+				find: find,
 				order: order,
 				toggle: toggle,
 				all: all,

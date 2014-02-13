@@ -1,27 +1,28 @@
 <section class="browser_filters">
-    <div class="browser_widget browser_sort cf">
+    <div class="browser_widget browser_sort cf"
+            ng-if="browser.getSorts(data)">
         <span class="browser_widget_title">
             Sort by
         </span>
 
         <span class="browser_widget_wrap"
-        ng-repeat="sort in browser.getSorts(data, true)"
+        ng-repeat="sort in browser.getSorts(data)|filter:{active: true}"
         ng-class="sortClasses(sort)">
             <a class="browser_widget_pill left"
             ng-click="browser.setSortToggle(sort)">{{sort.name}}</a>
 
             <ul class="record_pill_options">
-                <li ng-repeat="maybe in browser.getSorts(data, false)">
+                <li ng-repeat="maybe in browser.getSorts(data)">
                     <a ng-click="browser.switchSort(data, sort, maybe)">{{maybe.name}}</a>
                 </li>
             </ul>
 
             <a class="browser_widget_pill middle reverse"
-            ng-click="browser.reverseSort(sort)"
-            ng-if="browser.canReverseSort()">{{sort.order}}</a>
+            ng-click="browser.reverseSort(data, sort)"
+            ng-if="browser.canReverseSort()">{{sort.order ? 'ASC' : 'DESC'}}</a>
 
             <a class="browser_widget_pill right remove"
-            ng-click="browser.removeSort(sort)"
+            ng-click="browser.removeSort(data, sort)"
             ng-if="browser.canRemoveSort()">x</a>
         </span>
 
