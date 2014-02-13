@@ -1,4 +1,4 @@
-@(authorizeParents : Seq[Authorize], authorizeForms : Seq[(Party,PartyHtml.AuthorizeForm)], authorizeWhich : Option[Boolean], authorizeSearch : Form[String], authorizeResults : Seq[(Party,PartyHtml.AuthorizeForm)])(implicit request : PartyHtml.Request[_])
+@(authorizeParents : Seq[Authorize], authorizeForms : Seq[(Boolean,Option[Party],PartyHtml.AuthorizeForm)])(implicit request : PartyHtml.Request[_])
 
 @import helper.FieldConstructor
 
@@ -6,67 +6,78 @@
         FieldConstructor(widget.tag.minimalFieldConstructor.f)
     }
 
-@authorizeFields(party : Party, form : controllers.PartyHtml.AuthorizeForm, full : Boolean = true)(implicit fieldConstructor : helper.FieldConstructor) = {
+@authorizeFields(party : Option[Party], form : controllers.PartyHtml.AuthorizeForm, which : Boolean)(implicit fieldConstructor : helper.FieldConstructor) = {
     <td>
-        @display(party)
+    @party.fold {
+	@widget.tag.inputText(form("name"), 'id -> ("name_"+which.toString))
+    } { party =>
+	@display(party)
+    }
+    @form("info").value.map { info =>
+	OSP: @info
+    }
     </td>
 
     <td>
         @widget.tag.select(form("inherit"), Permission.values.toSeq.flatMap(p => Permission.message(p, "inherit").map((p.id.toString, _))))
     </td>
 
+    @if(which) {
+    <td colspan=3>
+    @if(party.isDefined && form("inherit").value == Some(Permission.CONTRIBUTE.id.toString)) {
+    	Contact info for your institution's authorizing official (OSP):
+    	@widget.tag.inputText(form("info"))
+    }
+    </td>
+    } else {
     <td>
-    @if(full) {
         @widget.tag.select(form("direct"), Permission.values.toSeq.flatMap(p => Permission.message(p, "direct").map((p.id.toString, _))))
-    }
     </td>
 
     <td>
-    @if(full) {
         @widget.tag.select(form("permission"), Permission.values.toSeq.flatMap(p => Permission.message(p, "permission").map((p.id.toString, _))))
-    }
     </td>
 
     <td>
-    @if(full) {
         @widget.tag.inputDate(form("expires"), 'placeholder -> "Expiration date", 'class -> "half")
+    </td>
     }
+
+    <td>
+    @party.fold {
+        <input type='hidden' name='pending' value='true'/>
+	<button type='submit' class="button third">Search</button>
+    } { party =>
+    @if(which) {
+        <button type='submit' class="button">Request</button>
+    } else {
+    @defining(form("pending").value == Some("true")) { pending =>
+	<button type='submit' class="button second">@{if(pending) "Authorize" else "Change"}</button>
+	<a href='@routes.PartyHtml.authorizeDelete(request.obj.party.id, party.id)' class="button first">@{if(pending) "Deny" else "Revoke"}</a>
+    }
+    }
+    }
+    @widget.formErrors(form)
     </td>
 }
 
 @authorizeSearchWhich(party : Party, which : Boolean)(implicit fieldConstructor : helper.FieldConstructor) = {
-    @if(authorizeWhich.forall(_ == which)) {
-            <tr class="null">
-                <td>
-                @widget.tag.form(routes.PartyHtml.authorizeSearch(party.id, which), 'id -> ("search_"+which.toString)) {
-                    @widget.tag.inputText(authorizeSearch("name"), 'id -> ("name_"+which.toString))
-                    @widget.formErrors(authorizeSearch)
-                }
-                </td>
+    @authorizeForms.filter(_._1 == which).map { case (_,other,form) =>
+	@widget.tag.form(other match {
+	    case None => routes.PartyHtml.authorizeSearch(party.id, which)
+	    case Some(other) if which => routes.PartyHtml.authorizeApply(party.id, other.id)
+	    case Some(other) => routes.PartyHtml.authorizeChange(party.id, other.id)
+	}) {
+	<tr>
+	    @authorizeFields(other, form, which)
+	    @widget.formErrors(form)
 
-                <td/>
-                <td/>
-                <td/>
-                <td/>
-
-                <td>
-                    <button type='submit' class="button third" form="search_@which.toString">Search</button>
-                </td>
-            </tr>
-
-        @authorizeResults.map { case (other,form) =>
-            <tr>
-                @widget.tag.form(if (which) routes.PartyHtml.authorizeApply(party.id, other.id) else routes.PartyHtml.authorizeChange(party.id, other.id), 'id -> ("which_"+which.toString)) {
-                    @authorizeFields(other, form)
-                    @widget.formErrors(form)
-                }
-
-                <td>
-                    <input type='hidden' name='pending' value='@which'/>
-                    <button type='submit' class="button" form="which_@which.toString">@{if (which) "Request" else "Authorize"}</button>
-                </td>
-            </tr>
-        }
+	    <td>
+		<input type='hidden' name='pending' value='@which'/>
+		<button type='submit' class="button" form="which_@which.toString">@{if (which) "Request" else "Authorize"}</button>
+	    </td>
+	</tr>
+	}
     }
 }
 
@@ -100,28 +111,19 @@
                         <td>@{if(t.authorized.isEmpty) "pending"}</td>
                     </tr>
                 }
-		} else {
-                @authorizeForms.map { case (child,form) =>
-                    @widget.tag.form(routes.PartyHtml.authorizeChange(request.obj.party.id, child.id)) {
+		}
+		@authorizeForms.filter(_._1 == which).map { case (_,other,form) =>
+		    @widget.tag.form(other match {
+			case None => routes.PartyHtml.authorizeSearch(request.obj.party.id, which)
+			case Some(other) if which => routes.PartyHtml.authorizeApply(request.obj.party.id, other.id)
+			case Some(other) => routes.PartyHtml.authorizeChange(request.obj.party.id, other.id)
+		    }) {
                         <tr>
-                            @authorizeFields(child, form)
-                            <td>
-                            @defining(form("pending").value == Some("true")) { pending =>
-                                <button type='submit' class="button second">@{if(pending) "Authorize" else "Change"}</button>
-                                <a href='@routes.PartyHtml.authorizeDelete(request.obj.party.id, child.id)' class="button first">@{if(pending) "Deny" else "Revoke"}</a>
-                            @widget.formErrors(form)
-                            }
-                            </td>
+                            @authorizeFields(other, form, which)
                         </tr>
                     }
                 }
-		}
                 </tbody>
-
-
-                <tfoot>
-                    @authorizeSearchWhich(request.obj.party, which)
-                </tfoot>
             </table>
 }
 

@@ -164,7 +164,7 @@ CREATE TABLE "authorize_info" (
 	Primary Key ("parent", "child"),
 	Foreign Key ("parent", "child") References "authorize" ON DELETE CASCADE
 );
-COMMENT ON TABLE "authorize_request_info" IS 'Additional information provided with authorization requests for internal staff stuff.  Temporary.';
+COMMENT ON TABLE "authorize_info" IS 'Additional information provided with authorization requests for internal staff stuff.  Temporary.';
 
 
 ----------------------------------------------------------- volumes
