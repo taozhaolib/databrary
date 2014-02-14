@@ -6,108 +6,104 @@
         FieldConstructor(widget.tag.minimalFieldConstructor.f)
     }
 
-@authorizeFields(party : Option[Party], form : controllers.PartyHtml.AuthorizeForm, which : Boolean)(implicit fieldConstructor : helper.FieldConstructor) = {
-    <td>
-    @party.fold {
-	@widget.tag.inputText(form("name"), 'id -> ("name_"+which.toString))
-    } { party =>
-	@display(party)
-    }
-    @form("info").value.map { info =>
-	OSP: @info
-    }
-    </td>
-
-    <td>
-        @widget.tag.select(form("inherit"), Permission.values.toSeq.flatMap(p => Permission.message(p, "inherit").map((p.id.toString, _))))
-    </td>
-
-    @if(which) {
-    <td colspan=3>
-    @if(form("inherit").value == Some(Permission.CONTRIBUTE.id.toString)) {
-    	Contact info for your institution's authorizing official (OSP):
-    	@widget.tag.inputText(form("info"))
-    }
-    </td>
-    } else {
-    <td>
-        @widget.tag.select(form("direct"), Permission.values.toSeq.flatMap(p => Permission.message(p, "direct").map((p.id.toString, _))))
-    </td>
-
-    <td>
-        @widget.tag.select(form("permission"), Permission.values.toSeq.flatMap(p => Permission.message(p, "permission").map((p.id.toString, _))))
-    </td>
-
-    <td>
-        @widget.tag.inputDate(form("expires"), 'placeholder -> "Expiration date", 'class -> "half")
-    </td>
-    }
-
-    <td>
-    @party.fold {
-        <input type='hidden' name='pending' value='true'/>
-	<button type='submit' class="button third">Search</button>
-    @if(form("inherit").value == Some(Permission.CONTRIBUTE.id.toString) && form("name").value.isDefined) {
-	<button type='submit' class="button first" name='delete' value='true'>Not found</button>
-    }
-    } { party =>
-    @if(which) {
-        <button type='submit' class="button">Request</button>
-    } else {
-    @defining(form("pending").value == Some("true")) { pending =>
-	<button type='submit' class="button second">@{if(pending) "Authorize" else "Change"}</button>
-	<button class="button first" name='delete' value='true'>@{if(pending) "Deny" else "Revoke"}</button>
-    }
-    }
-    }
-    @widget.formErrors(form)
-    </td>
-}
-
 @authList(which : Boolean) = {
-            <h3>@{if(which) "Memberships" else "Authorizations"}</h3>
+    <h3>@{if(which) "Memberships" else "Authorizations"}</h3>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th rowspan=2>Name</th>
-                        <th colspan=3>Access permissions granted for:</th>
-                        <th rowspan=2>Expiration</th>
-                        <th rowspan=2>Action</th>
-                    </tr>
-                    <tr>
-			<th>Databrary data (Investigator status)</th>
-			<th>@{if(which) "Their" else if(request.obj === request.identity) "My" else request.obj.party.name + "'s"} data</th>
-			<th>Administrative tasks</th>
-                    </tr>
-                </thead>
+    <table>
+    <thead>
+	<tr>
+	    <th rowspan=2>Name</th>
+	    <th colspan=3>Access permissions granted for:</th>
+	    <th rowspan=2>Expiration</th>
+	    <th rowspan=2>Action</th>
+	</tr>
+	<tr>
+	    <th>Databrary data (Investigator status)</th>
+	    <th>@{if(which) "Their" else if(request.obj === request.identity) "My" else request.obj.party.name + "'s"} data</th>
+	    <th>Administrative tasks</th>
+	</tr>
+    </thead>
 
-                <tbody>
-		@if(which) {
-                @authorizeParents.map { t =>
-                    <tr>
-                        <td>@display(t.parent)</td>
-                        <td>@Permission.message(t.inherit, "inherit")</td>
-                        <td>@Permission.message(t.direct, "direct")</td>
-                        <td>@Permission.message(t.permission, "permission")</td>
-                        <td>@t.expires.fold("never")( e => display.dateFmtYMD.print(e) )</td>
-                        <td>@{if(t.authorized.isEmpty) "pending"}</td>
-                    </tr>
-                }
+    <tbody>
+    @if(which) {
+    @authorizeParents.map { t =>
+	<tr>
+	    <td>@display(t.parent)</td>
+	    <td>@Permission.message(t.inherit, "inherit")</td>
+	    <td>@Permission.message(t.direct, "direct")</td>
+	    <td>@Permission.message(t.permission, "permission")</td>
+	    <td>@t.expires.fold("never")( e => display.dateFmtYMD.print(e) )</td>
+	    <td>@{if(t.authorized.isEmpty) "pending"}</td>
+	</tr>
+    }
+    }
+    @authorizeForms.filter(_._1 == which).map { case (_,other,form) =>
+	@widget.tag.form(other match {
+	    case None => routes.PartyHtml.authorizeSearch(request.obj.party.id, which)
+	    case Some(other) if which => routes.PartyHtml.authorizeApply(request.obj.party.id, other.id)
+	    case Some(other) => routes.PartyHtml.authorizeChange(request.obj.party.id, other.id)
+	}) {
+	    <tr>
+		<td>
+		@other.fold {
+		    @widget.tag.inputText(form("name"), 'id -> ("name_"+which.toString))
+		} { party =>
+		    @display(party)
 		}
-		@authorizeForms.filter(_._1 == which).map { case (_,other,form) =>
-		    @widget.tag.form(other match {
-			case None => routes.PartyHtml.authorizeSearch(request.obj.party.id, which)
-			case Some(other) if which => routes.PartyHtml.authorizeApply(request.obj.party.id, other.id)
-			case Some(other) => routes.PartyHtml.authorizeChange(request.obj.party.id, other.id)
-		    }) {
-                        <tr>
-                            @authorizeFields(other, form, which)
-                        </tr>
-                    }
-                }
-                </tbody>
-            </table>
+		@form("info").value.map { info =>
+		    OSP: @info
+		}
+		</td>
+
+		<td>
+		    @widget.tag.select(form("inherit"), Permission.values.toSeq.flatMap(p => Permission.message(p, "inherit").map((p.id.toString, _))))
+		</td>
+
+		@if(which) {
+		<td colspan=3>
+		@if(form("inherit").value == Some(Permission.CONTRIBUTE.id.toString)) {
+		    Contact info for your institution's authorizing official (OSP):
+		    @widget.tag.inputText(form("info"))
+		}
+		</td>
+		} else {
+		<td>
+		    @widget.tag.select(form("direct"), Permission.values.toSeq.flatMap(p => Permission.message(p, "direct").map((p.id.toString, _))))
+		</td>
+
+		<td>
+		    @widget.tag.select(form("permission"), Permission.values.toSeq.flatMap(p => Permission.message(p, "permission").map((p.id.toString, _))))
+		</td>
+
+		<td>
+		    @widget.tag.inputDate(form("expires"), 'placeholder -> "Expiration date", 'class -> "half")
+		</td>
+		}
+
+		<td>
+		@other.fold {
+		    <input type='hidden' name='pending' value='true'/>
+		    <button type='submit' class="button third">Search</button>
+		@if(form("inherit").value == Some(Permission.CONTRIBUTE.id.toString) && form("name").value.isDefined) {
+		    <button type='submit' class="button first" name='delete' value='true'>Not found</button>
+		}
+		} { party =>
+		@if(which) {
+		    <button type='submit' class="button">Request</button>
+		} else {
+		@defining(form("pending").value == Some("true")) { pending =>
+		    <button type='submit' class="button second">@{if(pending) "Authorize" else "Change"}</button>
+		    <button class="button first" name='delete' value='true'>@{if(pending) "Deny" else "Revoke"}</button>
+		}
+		}
+		}
+		@widget.formErrors(form)
+		</td>
+	    </tr>
+	}
+    }
+    </tbody>
+    </table>
 }
 
 @template.form(Some(request.obj.party), "Admin Party") {

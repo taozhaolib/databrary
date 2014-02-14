@@ -53,7 +53,8 @@ object Authorize extends Table[Authorize]("authorize") {
       (child : Party, parent : Party) => new Authorize(child, parent, inherit, direct, authorized, expires, info)
     }
 
-  private[this] val condition = "AND authorized <= CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP)"
+  private[this] val valid = "authorized <= CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP)"
+  private[this] val condition = "AND " + valid
   private[this] def conditionIf(all : Boolean) =
     if (all) "" else condition
 
@@ -71,6 +72,14 @@ object Authorize extends Table[Authorize]("authorize") {
     columns.join(Party.row, "child = party.id")
       .map { case (a, c) => a(c, parent) }
       .SELECT("WHERE parent = ?", conditionIf(all)).apply(parent.id).list
+
+  def getAll() : Future[Seq[Authorize]] =
+    columns
+    .join(Party.columns.fromAlias("child"), "child = child.id")
+    .join(Party.columns.fromAlias("parent"), "parent = parent.id")
+    .map { case ((auth, child), parent) => auth(child, parent) }
+    .SELECT("ORDER BY authorized IS NOT NULL,", valid, ", parent.id, inherit")
+    .apply().list
 
   /** Update or add a specific authorization in the database.
     * If an authorization for the child and parent already exist, it is changed to match this.

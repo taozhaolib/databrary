@@ -292,6 +292,14 @@ object PartyHtml extends PartyController {
     })
   }
 
+  def authorizeAdmin = SiteAction.rootAccess().async { implicit request =>
+    Authorize.getAll.map { a =>
+      val (pend, rest) = a.span(_.authorized.isEmpty)
+      val (exp, act) = rest.span(!_.valid)
+      Ok(views.html.party.authorizeAdmin(pend.map(a => (a, authorizeFormFill(a))), act, exp))
+    }
+  }
+
   def avatar(i : models.Party.Id, size : Int = 64) = Action(Some(i), Some(Permission.NONE)).async { implicit request =>
     request.obj.avatar.flatMap(_.fold(
       macros.Async(Found("http://gravatar.com/avatar/"+request.obj.party.account.fold("none")(a => store.MD5.hex(a.email.toLowerCase))+"?s="+size+"&d=mm")))(

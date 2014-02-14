@@ -36,6 +36,9 @@ POST    /party/$pID<[0-9]+>/authorize/$parent<-?[0-9]+>/apply                   
 GET     /party/$pID<-?[0-9]+>/avatar                                                              controllers.PartyHtml.avatar(pID : models.Party.Id, size : Int ?= 64)
 POST    /party/$pID<[0-9]+>/avatar                                                                controllers.PartyHtml.uploadAvatar(pID : models.Party.Id)
 
+# admin
+GET     /admin/authorize                                                                          controllers.PartyHtml.authorizeAdmin
+
 # volumes
 GET     /search                                                                                   controllers.VolumeHtml.search
 GET     /volume/create                                                                            controllers.VolumeHtml.add(owner : Option[models.Party.Id] ?= None)

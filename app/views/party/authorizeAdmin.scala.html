@@ -1,0 +1,83 @@
+@(pending : Seq[(Authorize, PartyHtml.AuthorizeForm)], active : Seq[Authorize], expired : Seq[Authorize])(implicit request : SiteRequest[_])
+
+@import helper.FieldConstructor
+
+@implicitField = @{
+    FieldConstructor(widget.tag.minimalFieldConstructor.f)
+}
+
+@authorizeList(authorize : Seq[Authorize]) = {
+    <table>
+    <thead>
+	<tr>
+	    <th>Parent</th>
+	    <th>Child</th>
+	    <th>Info</th>
+	    <th>Inherit</th>
+	    <th>Direct</th>
+	    <th>Expires</th>
+	</tr>
+    </thead>
+
+    <tbody>
+	@authorize.map { authorize =>
+	@widget.tag.form(routes.PartyHtml.authorizeChange(authorize.parentId, authorize.childId)) {
+	<tr>
+	    <td>@display(authorize.parent)</td>
+	    <td>@display(authorize.child)</td>
+	    <td>@authorize.info</td>
+	    <td>@authorize.inherit</td>
+	    <td>@authorize.direct</td>
+	    <td>@authorize.expires</td>
+	</tr>
+	}
+	}
+    </tbody>
+    </table>
+}
+
+@template.action("Admin Authorizations") {
+    <h3>Pending</h3>
+
+    <table>
+    <thead>
+	<tr>
+	    <th>Parent</th>
+	    <th>Child</th>
+	    <th>Info</th>
+	    <th>Inherit</th>
+	    <th>Direct</th>
+	    <th>Expires</th>
+	    <th>Action</th>
+	</tr>
+    </thead>
+
+    <tbody>
+	@pending.map { case (authorize, form) =>
+	@widget.tag.form(routes.PartyHtml.authorizeChange(authorize.parentId, authorize.childId)) {
+	<tr>
+	    <td>@display(authorize.parent)</td>
+	    <td>@display(authorize.child)</td>
+	    <td>@widget.tag.inputText(form("info"))</td>
+	    <td>@widget.enumSelect(form("inherit"), Permission)</td>
+	    <td>@widget.enumSelect(form("direct"), Permission)</td>
+	    <td>@widget.tag.inputDate(form("expires"))</td>
+	    <td>
+	    @defining(authorize.authorized.isEmpty) { pending =>
+		<button type='submit' class="button second">@{if(pending) "Authorize" else "Change"}</button>
+		<button class="button first" name='delete' value='true'>@{if(pending) "Deny" else "Revoke"}</button>
+	    }
+	    @widget.formErrors(form)
+	    </td>
+	</tr>
+	}
+	}
+    </tbody>
+    </table>
+
+    <h3>Active</h3>
+    @authorizeList(active)
+
+    <h3>Expried</h3>
+    @authorizeList(expired)
+}
