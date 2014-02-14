@@ -1,12 +1,13 @@
 package controllers
 
-import site._
+import scala.concurrent.Future
 import play.api._
 import          mvc._
 import          data._
 import               Forms._
 import          i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import site._
 import macros._
 import models._
 
@@ -16,6 +17,20 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
 
   private[controllers] def Action(i : models.Volume.Id, p : Permission.Value = Permission.VIEW) =
     SiteAction ~> action(i, p)
+
+  private type SearchMapping = (Option[String], Option[Party.Id])
+  type SearchForm = Form[SearchMapping]
+  protected val searchForm = Form(tuple(
+    "query" -> optional(nonEmptyText),
+    "party" -> OptionMapping(of[Party.Id])
+  ))
+
+  protected def searchResults(form : SearchForm)(implicit request : SiteRequest[_]) : Future[Seq[Volume]] = {
+    form.fold(
+      form => throw new BadFormException[SearchMapping](views.html.volume.search(Nil, _))(form),
+      (Volume.search _).tupled
+    )
+  }
 
   type CitationMapping = (Option[String], Option[String], Option[String])
   private val citationMapping = tuple(
@@ -138,7 +153,7 @@ object VolumeHtml extends VolumeController {
     val vol = request.obj
     for {
       summary <- vol.summary
-      access <- vol.partyAccess
+      access <- vol.partyAccess()
       top <- vol.top
       sessions <- vol.sessions
       records <- vol.recordCategorySlots
@@ -150,15 +165,13 @@ object VolumeHtml extends VolumeController {
   }
 
   def search = SiteAction.async { implicit request =>
-    models.Volume.getAll.flatMap { all =>
-      macros.Async.foreach[Volume, SimpleResult](all, vol =>
-        for {
-          _ <- vol.partyAccess
-          _ <- vol.summary
-        } yield (()),
-        Ok(views.html.volume.search(all, request.queryString.getOrElse("query", Seq("")).head.toString))
-      )
-    }
+    val form = searchForm.bindFromRequest
+    for {
+      vl <- searchResults(form)
+      vols <- macros.Async.map[Volume, (Volume, Seq[Party]), Seq[(Volume, Seq[Party])]](vl, vol => for {
+	access <- vol.partyAccess(Permission.ADMIN)
+      } yield ((vol, access.map(_.party))))
+    } yield (Ok(views.html.volume.search(vols, form)))
   }
 
   def edit(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
@@ -181,7 +194,7 @@ object VolumeHtml extends VolumeController {
     accessResults : Seq[(models.Party,AccessForm)] = Seq())(
     implicit request : Request[_]) = {
     val accessChange = accessChangeForm.map(_._1.id)
-    request.obj.partyAccess.map { access =>
+    request.obj.partyAccess().map { access =>
       val accessForms = access
         .filter(a => accessChange.forall(_ === a.partyId))
         .map(a => (a.party, accessFormFill(a))) ++
@@ -209,18 +222,21 @@ object VolumeHtml extends VolumeController {
 }
 
 object VolumeApi extends VolumeController {
-  def query(query : String = "") = SiteAction.async { implicit request =>
-    Maybe(query).opt.fold(Volume.getAll)(Volume.search(_))
-      .map(l => Ok(JsonRecord.map[Volume](_.json)(l)))
-  }
-
   def get(i : models.Volume.Id) = Action(i).async { implicit request =>
     request.obj.json(request.apiOptions).map(Ok(_))
   }
 
+  private final val queryOpts : JsonOptions.Options = Map("summary" -> Nil, "access" -> Seq("ADMIN"))
+  def query = SiteAction.async { implicit request =>
+    for {
+      vl <- searchResults(searchForm.bindFromRequest)
+      vols <- macros.Async.map[Volume, JsonRecord, Seq[JsonRecord]](vl, _.json(queryOpts))
+    } yield (Ok(JsonArray(vols)))
+  }
+
   def accessGet(volumeId : models.Volume.Id) = Action(volumeId, Permission.ADMIN).async { implicit request =>
     for {
-      parents <- request.obj.partyAccess
+      parents <- request.obj.partyAccess()
     } yield (Ok(JsonRecord.map[VolumeAccess](a =>
       JsonRecord(a.partyId) ++ (a.json - "volume"))(parents)))
   }

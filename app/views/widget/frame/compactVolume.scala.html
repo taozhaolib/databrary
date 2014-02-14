@@ -1,4 +1,4 @@
-@(volume: Volume)(implicit request : SiteRequest[_])
+@(volume: Volume, access : Seq[Party])(implicit request : SiteRequest[_])
 
 @widget.frame.raw("volume", "")("") {
     <article id="volume_@volume.id" class="search_volume">
@@ -10,8 +10,8 @@
 
                 <footer class="search_volume_footer cf">
                     <div class="people">
-                    @Async.wait(volume.partyAccess).takeWhile(_.access >= Permission.ADMIN).map { a =>
-                        @widget.portrait.verticalMicro(a.party)
+                    @access.map { a =>
+                        @widget.portrait.verticalMicro(a)
                     }
                     </div>
                 </footer>

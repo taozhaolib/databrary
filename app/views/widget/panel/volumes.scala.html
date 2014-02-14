@@ -10,7 +10,7 @@
                 <h2>Funded</h2>
 
                 @funded.map { volume =>
-                    @widget.frame.compactVolume(volume)
+                    @widget.frame.compactVolume(volume, Nil)
                 }
             </div>
         }
@@ -20,7 +20,7 @@
                 <h2>Investigator</h2>
 
                 @owned.map { volume =>
-                    @widget.frame.compactVolume(volume)
+                    @widget.frame.compactVolume(volume, Nil)
                 }
             </div>
         }
@@ -30,7 +30,7 @@
                 <h2>Contributor</h2>
 
                 @edited.map { volume =>
-                    @widget.frame.compactVolume(volume)
+                    @widget.frame.compactVolume(volume, Nil)
                 }
             </div>
         }

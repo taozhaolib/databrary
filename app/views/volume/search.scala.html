@@ -1,4 +1,4 @@
-@(list: Seq[Volume], query: String = "")(implicit request: SiteRequest[_])
+@(list : Seq[(Volume, Seq[Party])], form : VolumeHtml.SearchForm)(implicit request : SiteRequest[_])
 
 @import helper.FieldConstructor
 
@@ -9,12 +9,14 @@
 @template.action("Search the Databrary") {
     @widget.panel.search("", "", "SearchViewCtrl") {
         <section ng-controller="SearchFilterCtrl" id="panel_search_filter" class="panel_search_filter col-full">
-            <input type="search" placeholder="Search the databrary...">
+	@widget.tag.form(routes.VolumeHtml.search) {
+	    @widget.tag.inputText(form("query"), 'placeholder -> "Search the databrary...")
+	}
         </section>
 
         <div ng-controller="SearchListCtrl" class="col-full">
-        @list.map { volume =>
-            @widget.frame.compactVolume(volume)
+        @list.map { case (volume, access) =>
+            @widget.frame.compactVolume(volume, access)
         }
         </div>
     }

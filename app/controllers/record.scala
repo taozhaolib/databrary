@@ -218,7 +218,7 @@ object RecordApi extends RecordController {
       new ApiFormException(_).result,
       category =>
         request.obj.records(category).map(l =>
-          Ok(JsonRecord.map[Record](_.json)(l)))
+          Ok(JsonArray.map[Record,JsonRecord](_.json)(l)))
     )
   }
 
