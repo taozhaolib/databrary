@@ -68,7 +68,7 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		browserService.initialize = function (newContext, newData) {
+		browserService.initialize = function (newContext, newData) { console.log(newContext, newData);
 			newData.$promise.then(function (newData) {
 				browserService.initializeData(newData);
 				browserService.initializeOptions(newContext);
@@ -102,6 +102,8 @@ define(['app/config/module'], function (module) {
 					break;
 
 				case 'volume':
+					browserService.options.volume.allow = false;
+					browserService.options.session.allow = true;
 					break;
 			}
 
@@ -119,6 +121,11 @@ define(['app/config/module'], function (module) {
 
 			if (option)
 				option.sort.length = 0;
+
+			option.sort.push(angular.extend({}, DEFAULT_SORT, {
+				name: 'Name',
+				property: ['name']
+			}));
 		};
 
 		browserService.updateSessionSorts = function () {
@@ -286,13 +293,19 @@ define(['app/config/module'], function (module) {
 			return groups;
 		};
 
+		browserService.showList = function (data) {
+			return !!getActiveGroups()[data.level + 1];
+		};
+
 		//
 
 		var callbackVolumes = function (data, groups) {
 			angular.forEach(raw, function (volume, volumeID) {
-				var newData = callbackItem(data, volume, volume.sessions, volume, 'volume');
+				if($.isNumeric(volumeID)) {
+					var newData = callbackItem(data, volume, volume.sessions, volume, 'volume');
 
-				callbackVolumeChildren(newData, volume, groups);
+					callbackVolumeChildren(newData, volume, groups);
+				}
 			});
 
 			return data;
