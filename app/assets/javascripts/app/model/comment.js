@@ -9,8 +9,6 @@ define(['app/config/module'], function (module) {
 			container: function () {
 				return $route.current.params.container || ',';
 			}
-		}, {
-			'query': {method: 'GET', isArray: false}
 		});
 	}]);
 });

@@ -53,7 +53,7 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		var raw = {};
+		var raw = [];
 
 		var contexts = ['search', 'party', 'volume'];
 		var context = undefined;
@@ -68,7 +68,7 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		browserService.initialize = function (newContext, newData) { console.log(newContext, newData);
+		browserService.initialize = function (newContext, newData) {
 			newData.$promise.then(function (newData) {
 				browserService.initializeData(newData);
 				browserService.initializeOptions(newContext);
@@ -126,6 +126,11 @@ define(['app/config/module'], function (module) {
 				name: 'Name',
 				property: ['name']
 			}));
+
+			option.sort.push(angular.extend({}, DEFAULT_SORT, {
+				name: 'Creation Date',
+				property: ['creation']
+			}));
 		};
 
 		browserService.updateSessionSorts = function () {
@@ -173,11 +178,9 @@ define(['app/config/module'], function (module) {
 		//
 
 		browserService.initializeData = function (newData) {
-			raw = {};
-
 			if (newData.id)
-				raw[newData.id] = newData;
-			else if (angular.isObject(newData))
+				raw = [newData];
+			else if (angular.isArray(newData))
 				raw = newData;
 		};
 
@@ -240,26 +243,67 @@ define(['app/config/module'], function (module) {
 			return data;
 		};
 
-		browserService.filterDataGroup = function (group) {
+		browserService.filterDataGroup = function (level) {
 			var groups = getActiveGroups(),
-				sortables = browserService.groups[group],
-				filterables,
-				filterables_group = groups[groups.indexOf(group) + 1];
+				parent = groups[level],
+				children = groups[level + 1],
+				sortables, filterables;
 
-			if (filterables_group)
-				filterables = browserService.groups[filterables_group];
+			if (!children)
+				return;
+
+			if(parent)
+				sortables = browserService.groups[parent];
 			else
-				filterables = browserService.data.items;
+				sortables = [browserService.data];
+
+			filterables = browserService.groups[children];
 
 			angular.forEach(sortables, function (data) {
-				// TODO: sort
-				// adjust data.items
+				sortItems(data, children);
 			});
 
 			angular.forEach(filterables, function (data) {
 				// TODO: filter
 				// adjust data.active
 			});
+		};
+
+		var sortItems = function (data, group) {
+			var option = getOption(data, true),
+				length = option.sort.length;
+
+			for (var i = length - 1; i >= 0; i--) {
+				switch(group) {
+					case 'volume':
+						sortVolumes(data, option.sort[i]);
+						break;
+
+					case 'session':
+						sortSessions(data, option.sort[i]);
+						break;
+
+					default:
+						sortRecords(data, option.sort[i]);
+						break;
+				}
+			}
+		};
+
+		var sortVolumes = function (data, sort) {
+
+		};
+
+		var sortRecords = function (data, sort) {
+
+		};
+
+		var sortSessions = function (data, sort) {
+			switch (sort.name) {
+				default:
+					// if property exists, sort array callback...
+					break;
+			}
 		};
 
 		//
@@ -300,8 +344,8 @@ define(['app/config/module'], function (module) {
 		//
 
 		var callbackVolumes = function (data, groups) {
-			angular.forEach(raw, function (volume, volumeID) {
-				if($.isNumeric(volumeID)) {
+			angular.forEach(raw, function (volume) {
+				if (volume.id) {
 					var newData = callbackItem(data, volume, volume.sessions, volume, 'volume');
 
 					callbackVolumeChildren(newData, volume, groups);
@@ -571,7 +615,7 @@ define(['app/config/module'], function (module) {
 		//
 
 		var getOption = function (data, child) {
-			var level = child ? data.level + 1 : data.level,
+			var level = child === true ? data.level + 1 : data.level,
 				group = getActiveGroups()[level];
 
 			switch (group) {
