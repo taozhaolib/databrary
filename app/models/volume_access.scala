@@ -46,14 +46,14 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
     .join(party, "volume_access.party = party.id").map(tupleApply)
 
   /** Retrieve the access entries for a volume. */
-  private[models] def getParties(volume : Volume) : Future[Seq[VolumeAccess]] =
+  private[models] def getParties(volume : Volume, access : Permission.Value = Permission.NONE) : Future[Seq[VolumeAccess]] =
     row(Volume.fixed(volume), Party.row)
-    .SELECT("ORDER BY access DESC, party.name")
-    .apply().list
+    .SELECT("WHERE access >= ? ORDER BY access DESC")
+    .apply(access).list
   /** Retrieve the volume access entries granted to a party for (at least) CONTRIBUTE or funding. */ 
   private[models] def getVolumes(party : Party)(implicit site : Site) : Future[Seq[VolumeAccess]] =
     row(Volume.row, Party.fixed(party))
-    .SELECT("WHERE (access >= 'CONTRIBUTE' OR funding IS NOT NULL) AND", Volume.condition, "ORDER BY access DESC, volume.name")
+    .SELECT("WHERE (access >= 'CONTRIBUTE' OR funding IS NOT NULL) AND", Volume.condition, "ORDER BY access DESC")
     .apply().list
 
   /** Update or add volume access in the database.

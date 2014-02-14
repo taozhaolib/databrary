@@ -8,10 +8,7 @@ import macros._
   * Any PGEnum should exactly match the correspending database type. */
 abstract class PGEnum(name : String) extends Enumeration {
   implicit val sqlType : SQLType[Value] =
-    SQLType[Value](name, classOf[Value])(
-      s => catching(classOf[NoSuchElementException]).opt(withName(s)),
-      _.toString
-    )
+    SQLType[Value](name, classOf[Value])(withNameOpt, _.toString)
   implicit val jsonFormat : json.Format[Value] = new json.Format[Value] {
     def writes(v : Value) = json.JsNumber(v.id)
     def reads(j : json.JsValue) = j match {
@@ -19,6 +16,11 @@ abstract class PGEnum(name : String) extends Enumeration {
       case _ => json.JsError("error.expected.jsnumber")
     }
   }
+  final def withNameOpt(name : String) : Option[Value] =
+    catching(classOf[NoSuchElementException]).opt(withName(name))
+  final def fromString(s : String) : Option[Value] =
+    withNameOpt(s) orElse
+      Maybe.toInt(s).flatMap(i => catching(classOf[NoSuchElementException]).opt(apply(i)))
 }
 
 object PGEnum {

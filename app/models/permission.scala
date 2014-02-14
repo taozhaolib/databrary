@@ -28,7 +28,7 @@ object Permission extends PGEnum("permission") {
   implicit val truth : Truth[Value] = Truth[Value](_ != NONE)
   override implicit val sqlType : SQLType[Value] =
     SQLType.transform[Option[String], Value]("permission", classOf[Value])(
-      _.fold[Option[Value]](Some(NONE))(s => catching(classOf[NoSuchElementException]).opt(withName(s))),
+      _.fold[Option[Value]](Some(NONE))(withNameOpt),
       p => Some(p.toString))
 
   def check(has : Value, need : Value)(implicit site : Site) : Boolean =
@@ -70,7 +70,7 @@ object Consent extends PGEnum("consent") {
   implicit val truth : Truth[Value] = Truth[Value](_ != NONE)
   override implicit val sqlType : SQLType[Value] =
     SQLType.transform[Option[String], Value]("consent", classOf[Value])(
-      _.fold[Option[Value]](Some(NONE))(s => catching(classOf[NoSuchElementException]).opt(withName(s))),
+      _.fold[Option[Value]](Some(NONE))(withNameOpt),
       Maybe(_).opt.map(_.toString))
 }
 

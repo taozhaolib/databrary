@@ -29,15 +29,15 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   }
 
   /** List of parties access to this volume, sorted by level (ADMIN first). */
-  lazy val partyAccess : Future[Seq[VolumeAccess]] = VolumeAccess.getParties(this)
+  def partyAccess(access : Permission.Value = Permission.NONE) : Future[Seq[VolumeAccess]] = VolumeAccess.getParties(this, access)
 
   /** List of containers within this volume, except the top. */
   def containers : Future[Seq[Container]] = Container.getVolume(this)
   /** The master container corresponding to this volume, which serves as a proxy target for many annotations. */
-  lazy val top : Future[Container] = Container.getTop(this)
+  def top : Future[Container] = Container.getTop(this)
 
   /** List of toplevel assets within this volume. */
-  lazy val toplevelAssets = SlotAsset.getToplevel(this)
+  def toplevelAssets = SlotAsset.getToplevel(this)
 
   /** List of records defined in this volume.
     * @param category restrict to the specified category
@@ -49,9 +49,9 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   def setCitations(list : Seq[VolumeCitation]) = VolumeCitation.setVolume(this, list)
 
   /** The list of comments in this volume. */
-  lazy val comments = Comment.getVolume(this)
+  def comments = Comment.getVolume(this)
   /** The list of tags on this volume and their use on the topSlot by the current user. */
-  lazy val tags = TagWeight.getVolume(this)
+  def tags = TagWeight.getVolume(this)
 
   /** An image-able "asset" that may be used as the volume's thumbnail. */
   def thumb = SlotAsset.getThumb(this)
@@ -133,14 +133,15 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
       "summary" -> (opt => summary.map(_.json.js)),
-      "access" -> (opt => partyAccess.map(JsonArray.map(_.json - "volume"))),
+      "access" -> (opt => partyAccess(opt.headOption.flatMap(Permission.fromString(_)).getOrElse(Permission.NONE))
+	.map(JsonArray.map(_.json - "volume"))),
       "citations" -> (opt => citations.map(JsonArray.map(_.json))),
       "comments" -> (opt => comments.map(JsonRecord.map(_.json))),
       "tags" -> (opt => tags.map(JsonRecord.map(_.json))),
       "categories" -> (opt => recordCategorySlots.map(l =>
 	JsObject(l.map { case (c, rl) => (c.id.toString, Json.toJson(rl.map(_._1.id))) }))),
       "records" -> (opt => recordSlots.map(JsonRecord.map { case (r, ss) =>
-        r.json - "volume" + ('sessions -> JsonArray.map[Slot,Container.Id](_.containerId)(ss))
+        r.json - "volume"
       })),
       "sessions" -> (opt => sessions.map(JsonRecord.map { case (cont, crs) =>
 	cont.json - "volume" + ('categories -> JsObject(crs.map { case (cat, rs) =>
@@ -189,13 +190,22 @@ object Volume extends TableId[Volume]("volume") {
   /** Retrieve the set of all volumes in the system.
     * This only returns volumes for which the current user has [[Permission.VIEW]] access. */
   def getAll(implicit site : Site) : Future[Seq[Volume]] =
-    row.SELECT("WHERE volume.id > 0 AND", condition, "ORDER BY volume.name")
+    row.SELECT("WHERE volume.id > 0 AND", condition)
       .apply().list
 
-  def search(query : String)(implicit site : Site) : Future[Seq[Volume]] =
+  def search(query : Option[String], party : Option[Party.Id])(implicit site : Site) : Future[Seq[Volume]] =
     /* XXX ts indexes! */
-    row.SELECT("WHERE volume.id > 0 AND to_tsvector(name || ' ' || coalesce(body, '')) @@ plainto_tsquery(?) AND", condition, "ORDER BY ts_rank(to_tsvector(name || ' ' || coalesce(body, '')), to_tsquery(?))")
-      .apply(query, query).list
+    row.SELECT(
+      party.fold("")(_ => "JOIN volume_access ON volume.id = volume_access.volume"),
+      "WHERE volume.id > 0 AND",
+      party.fold("")(_ => "volume_access.party = ? AND (volume_access.access >= 'CONTRIBUTE' OR funding IS NOT NULL AND"),
+      query.fold("")(_ => "to_tsvector(name || ' ' || coalesce(body, '')) @@ plainto_tsquery(?) AND"),
+      condition,
+      "ORDER BY",
+      query.fold("")(_ => "ts_rank(to_tsvector(name || ' ' || coalesce(body, '')), to_tsquery(?)),"),
+      party.fold("")(_ => "access DESC,"),
+      "volume.id")
+    .apply(party.fold(SQLArgs())(SQLArgs(_)) ++ query.fold(SQLArgs())(q => SQLArgs(q, q))).list
 
   /** Create a new, empty volume with no permissions.
     * The caller should probably add a [[VolumeAccess]] for this volume to grant [[Permission.ADMIN]] access to some user. */
