@@ -59,19 +59,6 @@ define(['app/config/module'], function (module) {
 					});
 
 					return deferred.promise;
-				}],
-				volumes: ['$route', 'Volume', '$q', function ($route, Volume, $q) {
-					var deferred = $q.defer();
-
-					Volume.query({
-						party: $route.current.params.id
-					}, function (data) {
-						deferred.resolve(data);
-					}, function (data) {
-						deferred.reject();
-					});
-
-					return deferred.promise;
 				}]
 			},
 			reloadOnSearch: false
