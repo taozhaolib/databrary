@@ -198,7 +198,7 @@ object Volume extends TableId[Volume]("volume") {
     row.SELECT(
       party.fold("")(_ => "JOIN volume_access ON volume.id = volume_access.volume"),
       "WHERE volume.id > 0 AND",
-      party.fold("")(_ => "volume_access.party = ? AND (volume_access.access >= 'CONTRIBUTE' OR funding IS NOT NULL AND"),
+      party.fold("")(_ => "volume_access.party = ? AND (volume_access.access >= 'CONTRIBUTE' OR funding IS NOT NULL) AND"),
       query.fold("")(_ => "to_tsvector(name || ' ' || coalesce(body, '')) @@ plainto_tsquery(?) AND"),
       condition,
       "ORDER BY",
