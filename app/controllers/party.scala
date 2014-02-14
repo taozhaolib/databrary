@@ -138,22 +138,25 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
       _.map(result))
   }
 
-  type AuthorizeMapping = (Option[String], Permission.Value, Permission.Value, Permission.Value, Boolean, Option[Date], Option[String])
+  type AuthorizeMapping = (Option[String], Permission.Value, Permission.Value, Permission.Value, Boolean, Option[Date], Option[String], Boolean)
   type AuthorizeForm = Form[AuthorizeMapping]
   protected val authorizeForm : AuthorizeForm = Form(tuple(
-    "name" -> optional(nonEmptyText), // for search
+    "name" -> optional(nonEmptyText),
     "inherit" -> default(Field.enum(Permission), Permission.NONE),
     "direct" -> default(Field.enum(Permission), Permission.NONE),
     "permission" -> default(Field.enum(Permission), Permission.NONE),
     "pending" -> boolean,
     "expires" -> optional(jodaLocalDate),
-    "info" -> optional(nonEmptyText)
+    "info" -> optional(nonEmptyText),
+    "delete" -> boolean
   ))
 
-  protected def authorizeFormFill(auth : Authorize, apply : Boolean = false) : AuthorizeForm =
-    authorizeForm.fill((None, auth.inherit, auth.direct, auth.permission, auth.authorized.isEmpty, auth.expires.map(_.toLocalDate), auth.info))
-
   protected final val maxExpiration = org.joda.time.Years.years(2)
+
+  protected def authorizeFormFill(auth : Authorize, apply : Boolean = false) : AuthorizeForm =
+    authorizeForm.fill((None, auth.inherit, auth.direct, auth.permission,
+      auth.authorized.isEmpty, auth.expires.map(_.toLocalDate),
+      auth.info, false))
 
   def authorizeChange(id : models.Party.Id, childId : models.Party.Id) = AdminAction(id).async { implicit request =>
     models.Party.get(childId).flatMap(_.fold(ANotFound) { child =>
@@ -161,7 +164,11 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
       AbadForm[AuthorizeMapping](f => PartyHtml.viewAdmin(Seq((false, Some(child), f))), form)
     val form = authorizeForm.bindFromRequest
     form.fold(bad, {
-      case (_, inherit, direct, permission, pending, expires, info) =>
+      case (_, _, _, _, _, _, _, true) =>
+	for {
+	  _ <- models.Authorize.delete(childId, id)
+	} yield (result(request.obj))
+      case (_, inherit, direct, permission, pending, expires, info, _) =>
         val (exp, expok) = if (request.superuser) (expires, true)
           else {
             val maxexp = (new Date).plus(maxExpiration)
@@ -195,10 +202,10 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
     models.Party.get(parentId).flatMap(_.fold(ANotFound) { parent =>
     authorizeForm.bindFromRequest.fold(
       AbadForm[AuthorizeMapping](f => PartyHtml.viewAdmin(Seq((true, Some(parent), f))), _),
-      { case (_, inherit, _, _, _, expires, info) =>
+      { case (_, inherit, _, _, _, _, info, _) =>
 	for {
 	  dl <- delegates(parent)
-	  _ <- Authorize.set(id, parentId, inherit, Permission.NONE, None, expires.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT)))
+	  _ <- Authorize.set(id, parentId, inherit, Permission.NONE, None, None)
 	  _ <- Authorize.Info.set(id, parentId, info)
 	  _ <- Mail.send(
 	    to = (dl.map(_.email) :+ Messages("mail.authorize")).mkString(", "),
@@ -246,7 +253,7 @@ object PartyHtml extends PartyController {
         .filterNot(t => change.contains(t.childId.unId))
         .map(t => (false, Some(t.child), authorizeFormFill(t))) ++
 	search.map(apply =>
-	  (apply, None, authorizeForm.fill((None, Permission.NONE, Permission.NONE, Permission.NONE, true, Some((new Date).plus(maxExpiration)), None)))) ++
+	  (apply, None, authorizeForm.fill((None, Permission.NONE, Permission.NONE, Permission.NONE, true, Some((new Date).plus(maxExpiration)), None, false)))) ++
         authorizeForms
     } yield (views.html.party.authorize(parents, forms))
   }
@@ -264,15 +271,25 @@ object PartyHtml extends PartyController {
   }
 
   def authorizeSearch(id : models.Party.Id, apply : Boolean) = AdminAction(id).async { implicit request =>
+    def bad(form : AuthorizeForm) =
+      AbadForm[AuthorizeMapping](f => viewAdmin(Seq((apply, None, f))), form)
     val form = authorizeForm.bindFromRequest
-    form.fold(
-      AbadForm[AuthorizeMapping](f => viewAdmin(Seq((apply, None, f))), _),
-      data => for {
-        res <- data._1.fold(macros.Async[Seq[Party]](Nil))(models.Party.searchForAuthorize(_, request.obj.party))
+    form.fold(bad _, {
+      case (None, _, _, _, _, _, _, _) =>
+	bad(form.withError("name", "error.required"))
+      case (Some(name), _, _, _, _, _, info, true) => for {
+	_ <- Mail.send(
+	  to = Messages("mail.authorize"),
+	  subject = Messages("mail.authorize.subject"),
+	  body = Messages("mail.authorize.body", routes.PartyHtml.view(id).absoluteURL(true) + " " +
+	    request.obj.party.name + " (" + request.obj.party.affiliation + ") " + name + ": " + info))
+      } yield (Ok("request sent"))
+      case (Some(name), _, _, _, _, _, _, _) => for {
+        res <- models.Party.searchForAuthorize(name, request.obj.party)
         r <- viewAdmin((apply, None, form) +: 
           res.map(e => (apply, Some(e), form)))
       } yield (Ok(r))
-    )
+    })
   }
 
   def avatar(i : models.Party.Id, size : Int = 64) = Action(Some(i), Some(Permission.NONE)).async { implicit request =>

@@ -29,12 +29,10 @@ GET     /party/$pID<[0-9]+>/edit                                                
 POST    /party/$pID<[0-9]+>/edit                                                                  controllers.PartyHtml.update(pID : models.Party.Id)
 POST    /party/$pID<[0-9]+>/token                                                                 controllers.Token.password(pID : models.Account.Id)
 GET     /party/$pID<[0-9]+>/authorize                                                             controllers.PartyHtml.admin(pID : models.Party.Id)
-GET     /party/$pID<[0-9]+>/authorize/search/child                                                controllers.PartyHtml.authorizeSearch(pID : models.Party.Id, which : Boolean = false)
-GET     /party/$pID<[0-9]+>/authorize/search/parent                                               controllers.PartyHtml.authorizeSearch(pID : models.Party.Id, which : Boolean = true)
+GET     /party/$pID<[0-9]+>/authorize/search                                                      controllers.PartyHtml.authorizeSearch(pID : models.Party.Id, apply : Boolean = false)
+GET     /party/$pID<[0-9]+>/authorize/search/apply                                                controllers.PartyHtml.authorizeSearch(pID : models.Party.Id, apply : Boolean = true)
 POST    /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>                                            controllers.PartyHtml.authorizeChange(pID : models.Party.Id, child : models.Party.Id)
 POST    /party/$pID<[0-9]+>/authorize/$parent<-?[0-9]+>/apply                                     controllers.PartyHtml.authorizeApply(pID : models.Party.Id, parent : models.Party.Id)
-# TODO: should be POST but currently used as link:
-GET     /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>/remove                                     controllers.PartyHtml.authorizeDelete(pID : models.Party.Id, child : models.Party.Id)
 GET     /party/$pID<-?[0-9]+>/avatar                                                              controllers.PartyHtml.avatar(pID : models.Party.Id, size : Int ?= 64)
 POST    /party/$pID<[0-9]+>/avatar                                                                controllers.PartyHtml.uploadAvatar(pID : models.Party.Id)
 

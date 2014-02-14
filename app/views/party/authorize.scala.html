@@ -24,7 +24,7 @@
 
     @if(which) {
     <td colspan=3>
-    @if(party.isDefined && form("inherit").value == Some(Permission.CONTRIBUTE.id.toString)) {
+    @if(form("inherit").value == Some(Permission.CONTRIBUTE.id.toString)) {
     	Contact info for your institution's authorizing official (OSP):
     	@widget.tag.inputText(form("info"))
     }
@@ -47,38 +47,21 @@
     @party.fold {
         <input type='hidden' name='pending' value='true'/>
 	<button type='submit' class="button third">Search</button>
+    @if(form("inherit").value == Some(Permission.CONTRIBUTE.id.toString) && form("name").value.isDefined) {
+	<button type='submit' class="button first" name='delete' value='true'>Not found</button>
+    }
     } { party =>
     @if(which) {
         <button type='submit' class="button">Request</button>
     } else {
     @defining(form("pending").value == Some("true")) { pending =>
 	<button type='submit' class="button second">@{if(pending) "Authorize" else "Change"}</button>
-	<a href='@routes.PartyHtml.authorizeDelete(request.obj.party.id, party.id)' class="button first">@{if(pending) "Deny" else "Revoke"}</a>
+	<button class="button first" name='delete' value='true'>@{if(pending) "Deny" else "Revoke"}</button>
     }
     }
     }
     @widget.formErrors(form)
     </td>
-}
-
-@authorizeSearchWhich(party : Party, which : Boolean)(implicit fieldConstructor : helper.FieldConstructor) = {
-    @authorizeForms.filter(_._1 == which).map { case (_,other,form) =>
-	@widget.tag.form(other match {
-	    case None => routes.PartyHtml.authorizeSearch(party.id, which)
-	    case Some(other) if which => routes.PartyHtml.authorizeApply(party.id, other.id)
-	    case Some(other) => routes.PartyHtml.authorizeChange(party.id, other.id)
-	}) {
-	<tr>
-	    @authorizeFields(other, form, which)
-	    @widget.formErrors(form)
-
-	    <td>
-		<input type='hidden' name='pending' value='@which'/>
-		<button type='submit' class="button" form="which_@which.toString">@{if (which) "Request" else "Authorize"}</button>
-	    </td>
-	</tr>
-	}
-    }
 }
 
 @authList(which : Boolean) = {
