@@ -61,10 +61,36 @@ dbreset () {
 	runsql $conf/reset.sql
 }
 
-declare -A evoexpr=([up]='0,/^# --- !Ups$/d;/^# --- !Downs$/,$d' [down]='1,/^# --- !Downs$/d')
+declare -A evomark=([up]='/^#.*!Ups/' [down]='/^#.*!Downs/')
+declare -A evoexpr=([up]="0,${evomark[up]}d;${evomark[down]}q" [down]="1,${evomark[down]}d")
+evolution () {
+	sed -n 's/^[\c@- ]*//;s/[\c@- ]*$//;'"${evoexpr[$1]};/[^\\c@- ]/,\$p" $evolutions/$2.sql
+}
+
+evolution_hash () {
+	echo -n "$(evolution down $1)$(evolution up $1)" | sha1sum | cut -d' ' -f1
+}
+
 evolve () {
-	local evo=$evolutions/$2.sql
-	sed -n "${evoexpr[$1]}"';/^#/d;s/;;/;/g;p' $evo | runsql
+	local dir=$1 ; shift
+	local play
+	if [[ $1 = -p ]] ; then
+		shift
+		play=1
+	fi
+	for id in "$@" ; do
+		if [[ -n $play ]] ; then
+			runsql <<EOF
+DELETE FROM play_evolutions WHERE id = $id;
+EOF
+		fi
+		evolution $dir $id | sed 's/;;/;/g' | runsql
+		if [[ -n $play && $dir = up ]] ; then
+			runsql <<EOF
+INSERT INTO play_evolutions VALUES ($id, '`evolution_hash $id`', CURRENT_TIMESTAMP, \$evolution_up\$$(evolution up $id)\$evolution_up\$, \$evolution_down\$$(evolution down $id)\$evolution_down\$, 'applied');
+EOF
+		fi
+	done
 }
 
 check_dump() {
@@ -102,10 +128,13 @@ elif [[ $# -eq 1 && $1 = reset ]] ; then
 elif [[ $# -eq 1 && $1 = schema ]] ; then
 	dbreset
 	runsql $conf/schema.sql
+elif [[ $# -eq 2 && $1 = hash ]] ; then
+	shift
+	evolution_hash "$@"
 elif [[ $# -eq 1 && $1 = up ]] ; then
 	dbreset
 	evolve_all
-elif [[ $# -eq 2 && ( $1 = up || $1 = down ) ]] ; then
+elif [[ $# -ge 2 && ( $1 = up || $1 = down ) ]] ; then
 	evolve "$@"
 elif [[ $1 = check ]] ; then
 	dbreset
