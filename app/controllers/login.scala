@@ -117,10 +117,13 @@ private[controllers] sealed class LoginController extends SiteController {
     form.fold(Error _, {
       case (name, email, affiliation, _) =>
 	for {
-	  p <- Party.create(
-	    name = name,
-	    affiliation = Maybe(affiliation).opt)
-          a <- Account.create(p, email = email)
+	  e <- Account.getEmail(email)
+	  a <- macros.Async.getOrElse(e, {
+	    Party.create(
+	      name = name,
+	      affiliation = Maybe(affiliation).opt)
+	    .flatMap(Account.create(_, email = email))
+	  })
 	  _ <- controllers.Token.newPassword(Right(a), "register")
 	} yield (Ok("sent"))
     })
