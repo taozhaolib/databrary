@@ -21,7 +21,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
   private type SearchMapping = (Option[String], Option[Party.Id])
   type SearchForm = Form[SearchMapping]
   protected val searchForm = Form(tuple(
-    "query" -> optional(nonEmptyText),
+    ("query", optional(nonEmptyText)),
     "party" -> OptionMapping(of[Party.Id])
   ))
 
@@ -104,8 +104,8 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
   type AccessForm = Form[AccessMapping]
   protected val accessForm : AccessForm = Form(
     tuple(
-      "access" -> Field.enum(Permission),
-      "inherit" -> Field.enum(Permission, maxId = Some(Permission.EDIT.id))
+      ("access", Field.enum(Permission)),
+      ("inherit", Field.enum(Permission, maxId = Some(Permission.EDIT.id)))
     )
   )
 

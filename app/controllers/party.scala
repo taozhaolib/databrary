@@ -64,12 +64,12 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
     "orcid" -> OptionMapping(optional(of[Orcid])),
     "affiliation" -> OptionMapping(text),
     "duns" -> OptionMapping(optional(of[DUNS])),
-    "" -> MaybeMapping(if (acct) Some(tuple(
+    ("", MaybeMapping(if (acct) Some(tuple(
       "auth" -> text,
       "email" -> OptionMapping(email),
       "password" -> passwordMapping,
       "openid" -> OptionMapping(text(0,256))
-    )) else None)
+    )) else None))
   ))
   protected def formFill(implicit request : Request[_]) : PartyForm = {
     val e = request.obj.party
@@ -141,7 +141,7 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
   type AuthorizeMapping = (Option[String], Permission.Value, Permission.Value, Permission.Value, Boolean, Option[Date], Option[String], Boolean)
   type AuthorizeForm = Form[AuthorizeMapping]
   protected val authorizeForm : AuthorizeForm = Form(tuple(
-    "name" -> optional(nonEmptyText),
+    ("name", optional(nonEmptyText)),
     "inherit" -> default(Field.enum(Permission), Permission.NONE),
     "direct" -> default(Field.enum(Permission), Permission.NONE),
     "permission" -> default(Field.enum(Permission), Permission.NONE),

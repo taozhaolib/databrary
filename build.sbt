@@ -1,4 +1,4 @@
-scalacOptions in ThisBuild ++= Seq("-target:jvm-1.7","-feature","-deprecation","-Xlint")
+scalacOptions in ThisBuild ++= Seq("-target:jvm-1.7","-optimise","-feature","-deprecation","-Xlint","-Yinline-warnings")
 
 // scalacOptions += "-Ymacro-debug-lite"
 

@@ -132,18 +132,18 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
-      "summary" -> (opt => summary.map(_.json.js)),
-      "access" -> (opt => partyAccess(opt.headOption.flatMap(Permission.fromString(_)).getOrElse(Permission.NONE))
+      ("summary", opt => summary.map(_.json.js)),
+      ("access", opt => partyAccess(opt.headOption.flatMap(Permission.fromString(_)).getOrElse(Permission.NONE))
 	.map(JsonArray.map(_.json - "volume"))),
-      "citations" -> (opt => citations.map(JsonArray.map(_.json))),
-      "comments" -> (opt => comments.map(JsonRecord.map(_.json))),
-      "tags" -> (opt => tags.map(JsonRecord.map(_.json))),
-      "categories" -> (opt => recordCategorySlots.map(l =>
+      ("citations", opt => citations.map(JsonArray.map(_.json))),
+      ("comments", opt => comments.map(JsonRecord.map(_.json))),
+      ("tags", opt => tags.map(JsonRecord.map(_.json))),
+      ("categories", opt => recordCategorySlots.map(l =>
 	JsObject(l.map { case (c, rl) => (c.id.toString, Json.toJson(rl.map(_._1.id))) }))),
-      "records" -> (opt => recordSlots.map(JsonRecord.map { case (r, ss) =>
+      ("records", opt => recordSlots.map(JsonRecord.map { case (r, ss) =>
         r.json - "volume"
       })),
-      "sessions" -> (opt => sessions.map(JsonRecord.map { case (cont, crs) =>
+      ("sessions", opt => sessions.map(JsonRecord.map { case (cont, crs) =>
 	cont.json - "volume" + ('categories -> JsObject(crs.map { case (cat, rs) =>
 	  (cat.fold("")(_.toString), JsonArray.map[(Segment, Record), JsonRecord] { case (seg, rec) =>
 	    JsonRecord.flatten(rec.id
@@ -153,8 +153,8 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
 	  }(rs))
 	}))
       })),
-      "assets" -> (opt => toplevelAssets.map(JsonArray.map(_.json))),
-      "top" -> (opt => top.map(t => (t.json - "volume" - "top").obj))
+      ("assets", opt => toplevelAssets.map(JsonArray.map(_.json))),
+      ("top", opt => top.map(t => (t.json - "volume" - "top").obj))
     )
 }
 

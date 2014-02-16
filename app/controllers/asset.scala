@@ -41,13 +41,13 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
     "classification" -> OptionMapping(Field.enum(Classification)),
     "" -> optional(tuple(
       "container" -> of[Container.Id],
-      "position" -> optional(of[Offset])
+      ("position", optional(of[Offset]))
     )),
-    "" -> MaybeMapping(if (file) Some(tuple(
+    ("", MaybeMapping(if (file) Some(tuple(
       "format" -> optional(of[AssetFormat.Id]),
       "timeseries" -> boolean,
       "localfile" -> optional(nonEmptyText),
-      "file" -> ignored(()))) else None)
+      "file" -> ignored(()))) else None))
   ))
 
   protected def formFill(implicit request : Request[_]) : AssetForm = {

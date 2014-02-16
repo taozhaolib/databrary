@@ -60,7 +60,7 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
       Some('name -> name), 
       orcid.map('orcid -> _), 
       affiliation.map('affiliation -> _),
-      account.filter(_ => site.access.group >= Permission.VIEW).map('email -> _.email),
+      account.filter(_ => site.access.group >= Permission.VIEW).map(a => ('email, a.email)),
       Some('avatar -> views.html.display.avatar(this).url)
     )
 }
