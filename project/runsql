@@ -61,10 +61,17 @@ dbreset () {
 	runsql $conf/reset.sql
 }
 
+# play does _.trim on each line, which has weird semantics:
+trim='s/^[\c@- ]*//;s/[\c@- ]*$//'
+
+schema () {
+	sed "$trim" $conf/schema.sql | runsql
+}
+
 declare -A evomark=([up]='/^#.*!Ups/' [down]='/^#.*!Downs/')
 declare -A evoexpr=([up]="0,${evomark[up]}d;${evomark[down]}q" [down]="1,${evomark[down]}d")
 evolution () {
-	sed -n 's/^[\c@- ]*//;s/[\c@- ]*$//;'"${evoexpr[$1]};/[^\\c@- ]/,\$p" $evolutions/$2.sql
+	sed -n "$trim;${evoexpr[$1]};/[^\\c@- ]/,\$p" $evolutions/$2.sql
 }
 
 evolution_hash () {
@@ -127,7 +134,7 @@ elif [[ $# -eq 1 && $1 = reset ]] ; then
 	dbreset
 elif [[ $# -eq 1 && $1 = schema ]] ; then
 	dbreset
-	runsql $conf/schema.sql
+	schema
 elif [[ $# -eq 2 && $1 = hash ]] ; then
 	shift
 	evolution_hash "$@"
@@ -140,7 +147,7 @@ elif [[ $1 = check ]] ; then
 	dbreset
 	if ! [[ $conf/check-schema.sql -nt $conf/schema.sql ]] ; then
 		echo "Running schema..."
-		runsql $conf/schema.sql
+		schema
 		check_dump schema
 	fi
 	dbreset 1
