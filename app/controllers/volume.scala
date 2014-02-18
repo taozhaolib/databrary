@@ -18,18 +18,10 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
   private[controllers] def Action(i : models.Volume.Id, p : Permission.Value = Permission.VIEW) =
     SiteAction ~> action(i, p)
 
-  private type SearchMapping = (Option[String], Option[Party.Id])
-  type SearchForm = Form[SearchMapping]
-  protected val searchForm = Form(tuple(
-    ("query", optional(nonEmptyText)),
-    "party" -> OptionMapping(of[Party.Id])
-  ))
-
-  protected def searchResults(form : SearchForm)(implicit request : SiteRequest[_]) : Future[Seq[Volume]] = {
-    form.fold(
-      form => throw new BadFormException[SearchMapping](views.html.volume.search(Nil, _))(form),
-      (Volume.search _).tupled
-    )
+  protected def searchResults(implicit request : SiteRequest[_]) : (VolumeController.SearchForm, Future[Seq[Volume]]) = {
+    val form = new VolumeController.SearchForm
+    form._bind
+    (form, Volume.search(form.query.value, form.party.value))
   }
 
   type CitationMapping = (Option[String], Option[String], Option[String])
@@ -121,6 +113,11 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
 }
 
 object VolumeController extends VolumeController {
+  class SearchForm(implicit request : SiteRequest[_]) extends HtmlForm[SearchForm](routes.VolumeHtml.search, views.html.volume.search(Nil, _)) {
+    val query = Field(optional(nonEmptyText))
+    val party = Field(OptionMapping(of[Party.Id]))
+  }
+
   trait VolumeForm extends FormView[VolumeForm] {
     def actionName : String
     def formName : String = actionName + " Volume"
@@ -170,9 +167,9 @@ object VolumeHtml extends VolumeController {
   }
 
   def search = SiteAction.async { implicit request =>
-    val form = searchForm.bindFromRequest
+    val (form, res) = searchResults
     for {
-      vl <- searchResults(form)
+      vl <- res
       vols <- macros.Async.map[Volume, (Volume, Seq[Party]), Seq[(Volume, Seq[Party])]](vl, vol => for {
 	access <- vol.partyAccess(Permission.ADMIN)
       } yield ((vol, access.map(_.party))))
@@ -232,7 +229,7 @@ object VolumeApi extends VolumeController {
   private final val queryOpts : JsonOptions.Options = Map("summary" -> Nil, "access" -> Seq("ADMIN"))
   def query = SiteAction.async { implicit request =>
     for {
-      vl <- searchResults(searchForm.bindFromRequest)
+      vl <- searchResults._2
       vols <- macros.Async.map[Volume, JsonRecord, Seq[JsonRecord]](vl, _.json(queryOpts))
     } yield (Ok(JsonArray(vols)))
   }
