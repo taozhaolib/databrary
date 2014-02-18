@@ -1,10 +1,12 @@
 package controllers
 
 import scala.collection.mutable
-import scala.concurrent.{ExecutionContext,Future}
+import scala.concurrent.Future
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.data._
 import play.api.data.validation._
-import play.api.mvc.Call
+import play.api.mvc._
+import play.api.templates.HtmlFormat
 
 /** This is an alternative to play.api.data.Form that provides more structure and safety.
   * The disadvantage of this class is mutability and less efficiency. */
@@ -29,6 +31,8 @@ abstract class StructForm {
     private[StructForm] def bind(data : Map[String,String]) : Option[Seq[FormError]] =
       mapping.bind(data).fold(Some(_), v => { value = v ; None })
     private[StructForm] def unbind = mapping.unbind(value)
+
+    def apply() = self()(_name)
   }
 
   private[this] def getValFields = {
@@ -106,28 +110,39 @@ abstract class StructForm {
   protected def _fill() {
     _data = _mapping.unbind(self)._1
   }
+  def _bind(implicit request : Request[_]) {
+    apply().bindFromRequest
+  }
 }
 
-abstract class FormView[F <: FormView[F]](val _action : Call) extends StructForm {
+abstract class FormView[+F <: FormView[F]](val _action : Call) extends StructForm {
   def _exception : FormException
   final def orThrow() {
     if (hasErrors)
       throw _exception
   }
-}
-
-class HtmlForm[F <: HtmlForm[F]](action : Call, errorView : F => play.api.templates.HtmlFormat.Appendable) extends FormView[F](action) {
-  self : F =>
-  final def _exception = new FormException(new form()) {
-    def resultHtml(implicit site : SiteRequest[_]) = macros.Async(BadRequest(errorView(self)))
+  override def _bind(implicit request : Request[_]) {
+    super._bind
+    orThrow
   }
 }
 
-class AHtmlForm[F <: HtmlForm[F]](action : Call, errorView : F => Future[play.api.templates.HtmlFormat.Appendable])(implicit context : ExecutionContext) extends FormView[F](action) {
-  self : F =>
+abstract class HtmlFormView[+F <: HtmlFormView[F]](action : Call) extends FormView[F](action) {
+  def _view : Future[HtmlFormat.Appendable]
+  final def Bad : Future[SimpleResult] = _view.map(Results.BadRequest(_))
+  final def Ok : Future[SimpleResult] = _view.map(Results.Ok(_))
   final def _exception = new FormException(new form()) {
-    def resultHtml(implicit site : SiteRequest[_]) = errorView(self).map(BadRequest(_))
+    def resultHtml(implicit site : SiteRequest[_]) = Bad
   }
+}
+
+class HtmlForm[+F <: HtmlFormView[F]](action : Call, view : F => HtmlFormat.Appendable) extends HtmlFormView[F](action) {
+  this : F =>
+  final def _view = macros.Async(view(this))
+}
+class AHtmlForm[+F <: HtmlFormView[F]](action : Call, view : F => Future[HtmlFormat.Appendable]) extends HtmlFormView[F](action) {
+  this : F =>
+  final def _view = view(this)
 }
 
 class ApiForm[F <: ApiForm[F]](action : Call) extends FormView[F](action) {

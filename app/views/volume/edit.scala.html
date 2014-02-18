@@ -1,4 +1,4 @@
-@(a : Either[SiteParty, Volume], editForm : VolumeHtml.VolumeForm)(implicit request : RequestObject[SiteObject]#Site[_])
+@(form : VolumeController.VolumeForm)(implicit request : RequestObject.Site[_])
 
 @import helper.FieldConstructor
 
@@ -6,18 +6,18 @@
         FieldConstructor(widget.tag.labeledFieldConstructor.f)
     }
 
-@template.form(Some(a.merge), a.fold(_ => "Create Volume", _ => "Edit Volume")) {
-        @widget.tag.form(a.fold(p => routes.VolumeHtml.create(p.party.id), s => routes.VolumeHtml.update(s.id))) {
-            @widget.formErrors(editForm)
+@template.form(Some(request.obj), form.formName) {
+        @widget.tag.form(form._action) {
+            @widget.formErrors(form())
 
-            @widget.tag.inputText(editForm("name"), 'placeholder -> "Title", '_class -> "")
-            @widget.tag.textarea(editForm("body"), 'placeholder -> "Description", '_class -> "")
+            @widget.tag.inputText(form.name(), 'placeholder -> "Title", '_class -> "")
+            @widget.tag.textarea(form.body(), 'placeholder -> "Description", '_class -> "")
 
             <fieldset class="publications">
                 <legend>Publications</legend>
 
                 <div class="repeater">
-                    @widget.tag.repeat(editForm("citation")) { f =>
+                    @widget.tag.repeat(form.citation()) { f =>
                         @widget.tag.inputText(f("head"), 'placeholder -> "Citation")
                         @widget.tag.inputText(f("url"), 'placeholder -> "DOI or URL")
                         @widget.tag.textarea(f("body"), 'placeholder -> "Abstract")
@@ -25,6 +25,6 @@
                 </div>
             </fieldset>
 
-            <button type="submit" class="button">@a.fold(_ => "Create", _ => "Change")</button>
+            <button type="submit" class="button">@form.actionName</button>
         }
 }

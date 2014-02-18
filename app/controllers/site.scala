@@ -87,6 +87,8 @@ trait RequestObject[+O] {
     extends SiteRequest.Auth[A](request, token) with Site[A]
 }
 object RequestObject {
+  type Site[A] = RequestObject[SiteObject]#Site[A]
+
   def getter[O](get : SiteRequest[_] => Future[Option[O]]) = new ActionTransformer[SiteRequest.Base,RequestObject[O]#Site] {
     protected def transform[A](request : SiteRequest.Base[A]) =
       get(request).map(_.fold[RequestObject[O]#Site[A]](

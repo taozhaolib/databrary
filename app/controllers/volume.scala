@@ -42,7 +42,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     case (None, None, None) => true
     case _ => false
   })
-  private def citationFill(cite : VolumeCitation) = (Some(cite.head), cite.url, cite.body)
+  protected def citationFill(cite : VolumeCitation) = (Some(cite.head), cite.url, cite.body)
   private def citationSet(volume : Volume, cites : Seq[CitationMapping])(implicit site : Site) =
     if (cites.nonEmpty) {
       volume.setCitations(cites.flatMap(c =>
@@ -50,47 +50,27 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       ))
     } else macros.Async(false)
 
-  type VolumeMapping = (Option[String], Option[String], Seq[CitationMapping])
-  type VolumeForm = Form[VolumeMapping]
-  protected val editForm = Form(tuple(
-    "name" -> OptionMapping(nonEmptyText),
-    "body" -> OptionMapping(text),
-    "citation" -> seq(citationMapping)
-  ))
-  protected def editFormFill(v : Volume)(implicit site : Site) =
-    v.citations.map { cites =>
-      editForm.fill((Some(v.name), Some(v.body.getOrElse("")), cites.map(citationFill(_))))
-    }
+  protected def editFormFill(implicit request : Request[_]) =
+    request.obj.citations.map(new VolumeController.EditForm(_))
 
   def update(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
     val vol = request.obj
-    def bad(form : VolumeForm) =
-      ABadForm[VolumeMapping](views.html.volume.edit(Right(vol), _), form)
-    editFormFill(vol).flatMap {
-      _.bindFromRequest.fold(bad _, {
-        case (name, body, cites) =>
-          for {
-            _ <- vol.change(name = name, body = body.map(Maybe(_).opt))
-            _ <- citationSet(vol, cites)
-          } yield (result(vol))
-        }
-      )
-    }
+    for {
+      form <- editFormFill
+      _ = form._bind
+      _ <- vol.change(name = form.name.value, body = form.body.value.map(Maybe(_).opt))
+      _ <- citationSet(vol, form.citation.value)
+    } yield (result(vol))
   }
 
   def create(owner : models.Party.Id) = ContributeAction(Some(owner)).async { implicit request =>
-    def bad(form : VolumeForm) =
-      ABadForm[VolumeMapping](views.html.volume.edit(Left(request.obj), _), form)
-    val form = editForm.bindFromRequest
-    form.fold(bad _, {
-      case (None, _, _) => bad(form.withError("name", "error.required"))
-      case (Some(name), body, cites) =>
-        for {
-          vol <- models.Volume.create(name, body.flatMap(Maybe(_).opt))
-          _ <- citationSet(vol, cites)
-          _ <- VolumeAccess.set(vol, owner, Permission.ADMIN, Permission.CONTRIBUTE)
-        } yield (result(vol))
-    })
+    val form = new VolumeController.CreateForm
+    form._bind
+    for {
+      vol <- models.Volume.create(form.name.value.get, form.body.value.flatMap(Maybe(_).opt))
+      _ <- citationSet(vol, form.citation.value)
+      _ <- VolumeAccess.set(vol, owner, Permission.ADMIN, Permission.CONTRIBUTE)
+    } yield (result(vol))
   }
 
   protected def ContributeAction(e : Option[models.Party.Id]) =
@@ -141,6 +121,31 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
 }
 
 object VolumeController extends VolumeController {
+  trait VolumeForm extends FormView[VolumeForm] {
+    def actionName : String
+    def formName : String = actionName + " Volume"
+
+    val name : Field[Option[String]]
+    val body = Field(OptionMapping(text))
+    val citation = Field(seq(citationMapping))
+  }
+
+  class EditForm(cites : Seq[VolumeCitation])(implicit request : Request[_])
+    extends HtmlForm[EditForm](routes.VolumeHtml.update(request.obj.id), views.html.volume.edit(_)) with VolumeForm {
+    def actionName = "Change"
+    override def formName = "Edit Volume"
+    val name = Field(OptionMapping(nonEmptyText)).init(Some(request.obj.name))
+    body.init(Some(request.obj.body.getOrElse("")))
+    citation.init(cites.map(citationFill(_)))
+    _fill
+  }
+
+  class CreateForm(implicit request : PartyController.Request[_])
+    extends HtmlForm[CreateForm](routes.VolumeHtml.create(request.obj.party.id), views.html.volume.edit(_)) with VolumeForm {
+    def actionName = "Create"
+    val name = Field(nonEmptyText.transform[Option[String]](Some(_), _.getOrElse("")))
+  }
+
   def thumb(v : models.Volume.Id) = Action(v, Permission.VIEW).async { implicit request =>
     request.obj.thumb.flatMap(_.fold(
       Assets.at("/public", "images/draft.png")(request))(
@@ -175,13 +180,11 @@ object VolumeHtml extends VolumeController {
   }
 
   def edit(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
-    editFormFill(request.obj).map { form =>
-      Ok(views.html.volume.edit(Right(request.obj), form))
-    }
+    editFormFill.flatMap(_.Ok)
   }
 
-  def add(e : Option[models.Party.Id]) = ContributeAction(e) { implicit request =>
-    Ok(views.html.volume.edit(Left(request.obj), editForm))
+  def add(e : Option[models.Party.Id]) = ContributeAction(e).async { implicit request =>
+    (new VolumeController.CreateForm).Ok
   }
 
   protected val accessSearchForm = Form(
