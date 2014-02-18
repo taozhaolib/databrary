@@ -1,6 +1,8 @@
 require.config({
 	baseUrl: '/public/javascripts',
 
+	optimize: 'none',
+
 	paths: {
 		// requirejs, third-party
 

@@ -29,8 +29,8 @@ define([
 		$logProvider.debugEnabled(true);
 	}]);
 
-	module.config(["$provide", function ($provide) {
-		$provide.decorator("$templateCache", ["$delegate", "$http", "$injector", function ($delegate, $http, $injector) {
+	module.config(['$provide', function ($provide) {
+		$provide.decorator('$templateCache', ['$delegate', '$http', '$injector', function ($delegate, $http, $injector) {
 
 			var promise,
 				returned = false,
