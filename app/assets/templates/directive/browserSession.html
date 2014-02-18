@@ -1,10 +1,6 @@
 <article bindonce class="browser_item browser_session cf">
     <div class="browser_item_content">
         <div class="cf">
-            <header>
-                <h1>Session<span bo-if="data.object.name">: <span bo-html="data.object.name"></span></span></h1>
-            </header>
-
             <footer>
                 <div class="item_meta date"
                      bo-if="data.object.date"
@@ -17,10 +13,14 @@
                      bo-if="data.object.consent"
                      bo-html="constant.get('consent', data.object.consent).name"></div>
             </footer>
+
+            <header>
+                <h1>Session<span bo-if="data.object.name">: <span bo-html="data.object.name"></span></span></h1>
+            </header>
         </div>
 
         <div class="item_main">
-            <dl class="records_list" ng-repeat="(categoryID, records) in data.object.categories">
+            <dl class="flat_list cf" ng-repeat="(categoryID, records) in data.object.categories">
                 <dt bo-html="formatSessionCategory(data, categoryID)"></dt>
 
                 <dd ng-repeat="record in records">

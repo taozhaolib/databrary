@@ -85,6 +85,10 @@ define(['app/config/module'], function (module) {
 				}
 			};
 
+			$scope.capitalize = function (input) {
+				return input.charAt(0).toUpperCase() + input.slice(1);
+			};
+
 			//
 
 			$scope.editLink = function (data) {

@@ -188,6 +188,60 @@
 
 .browser_item {
 	.border-radius(@b4 0 0 0);
+
+	header {
+		display: inline;
+	}
+
+	h1 {
+		.padding-left(1.25);
+		.font-size(1.5);
+		.line-height(1.5);
+	}
+
+	footer {
+		display: inline-block;
+		.line-height(1.5);
+		.margin-left(@f2);
+		float: right;
+	}
+
+	.item_meta {
+		display: inline-block;
+	}
+
+	.item_main {
+		.margin-left(1.25);
+	}
+
+	.item_body {
+		p:last-of-type {
+			.margin-bottom(0);
+		}
+	}
+
+	.flat_list {
+		.margin-bottom(0);
+
+		dt {
+			float: left;
+			clear: both;
+			width: 20%;
+			text-align: right;
+			.padding-right(@f4);
+
+			&:after {
+				content: ":";
+			}
+		}
+
+		dd {
+			.margin-left(0);
+			float: right;
+			clear: right;
+			width: 80%;
+		}
+	}
 }
 
 .browser_item_content {
@@ -201,8 +255,7 @@
 	background-color: @c4g5m1;
 
 	h1 {
-		.font-size(1.75);
-		.line-height(1.5);
+		background: url('/public/images/browser/icon-volume.png') no-repeat 0 6px;
 	}
 }
 
@@ -210,6 +263,10 @@
 
 .browser_record {
 	@color: @c10;
+
+	h1 {
+		background: url('/public/images/browser/icon-record.png') no-repeat 0 6px;
+	}
 
 	background-color: mix(@color, @g5, 15%);
 
@@ -247,54 +304,6 @@
 
 	h1 {
 		background: url('/public/images/browser/icon-session.png') no-repeat 0 6px;
-		.padding-left(1.25);
-		.font-size(1.5);
-		.line-height(1.5);
-	}
-
-	header,
-	footer {
-		display: inline-block;
-	}
-
-	header {
-		float: left;
-	}
-
-	footer {
-		.line-height(1.5);
-		float: right;
-	}
-
-	.item_meta {
-		display: inline-block;
-	}
-
-	.item_main {
-		.margin-left(1.25);
-	}
-
-	.records_list {
-		.margin-bottom(0);
-
-		dt {
-			float: left;
-			clear: both;
-			width: 20%;
-			text-align: right;
-			.padding-right(@f4);
-
-			&:after {
-				content: ":";
-			}
-		}
-
-		dd {
-			.margin-left(0);
-			float: right;
-			clear: right;
-			width: 80%;
-		}
 	}
 }
 
@@ -311,10 +320,12 @@
 	.padding-top(@f8);
 	.padding-left(0);
 	.border-radius(@b4 0 0 0);
+	.margin-bottom(2);
 
 	.browser_list {
-		.margin-left(@f1);
+		.margin-left(1.5);
 		.padding-left(@f8);
+		.margin-bottom(0);
 	}
 
 	ul {
