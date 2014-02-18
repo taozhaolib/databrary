@@ -1,47 +1,57 @@
 package controllers
 
 import scala.collection.mutable
+import scala.concurrent.{ExecutionContext,Future}
 import play.api.data._
 import play.api.data.validation._
+import play.api.mvc.Call
 
-abstract class StructForm(val action : play.api.mvc.Call) {
+/** This is an alternative to play.api.data.Form that provides more structure and safety.
+  * The disadvantage of this class is mutability and less efficiency. */
+abstract class StructForm {
   self =>
 
   /** A field in this form, which should only be used to declare vals. */
-  protected final case class Field[T](mapping : Mapping[T]) {
+  protected final case class Field[T](map : Mapping[T]) {
+    private[this] var _name : String = _
+    def name : String = _name
+    private[StructForm] def name_=(name : String) {
+      _name = name
+    }
     /** The value of this field, which will be filled in by binding the form. */
     var value : T = _
     def init(v : T) : Field[T] = {
       value = v
       this
     }
+
+    private[StructForm] lazy val mapping : Mapping[T] = map.withPrefix(name)
+    private[StructForm] def bind(data : Map[String,String]) : Option[Seq[FormError]] =
+      mapping.bind(data).fold(Some(_), v => { value = v ; None })
+    private[StructForm] def unbind = mapping.unbind(value)
   }
 
-  private[this] sealed class ValField[T](val name : String, val field : Field[T]) {
-    private[StructForm] def mapping : Mapping[T] = field.mapping.withPrefix(name)
-    private[StructForm] final def bind(data : Map[String,String]) : Option[Seq[FormError]] =
-      mapping.bind(data).fold(Some(_), v => { field.value = v ; None })
-    private[StructForm] final def unbind = mapping.unbind(field.value)
+  private[this] def getValFields = {
+    val cls = getClass
+    cls.getDeclaredFields.toIterator
+      .filter(f => classOf[Field[_]].isAssignableFrom(f.getType))
+      .map { f =>
+	val name = f.getName
+	val field = cls.getDeclaredMethod(name).invoke(self).asInstanceOf[Field[_]]
+	field.name = name
+	field
+      }.toSeq
   }
-  private[this] def valField(v : java.lang.reflect.Field) : ValField[_] = {
-    val name = v.getName
-    new ValField(name, getClass.getDeclaredMethod(name).invoke(self).asInstanceOf[Field[_]])
-  }
-  private[this] def getValFields : Array[ValField[_]] =
-    getClass.getDeclaredFields.
-      filter { f =>
-        classOf[Field[_]].isAssignableFrom(f.getType)
-      }.map(valField)
-  private lazy val valFields = getValFields
+  private[this] lazy val fields = getValFields
 
-  protected case class mapping private[StructForm] (key : String = "", constraints : Seq[Constraint[self.type]] = Nil) extends Mapping[self.type] {
-    private[this] final class MappingField[T](name : String, field : Field[T]) extends ValField[T](name, field) {
-      final val mapping = super.mapping.withPrefix(key)
-    }
-    private[this] def mappingField[T](f : ValField[T]) =
-      new MappingField[T](f.name, f.field)
-    private val fields = valFields.map[MappingField[_], Seq[MappingField[_]]](mappingField(_))
+  private[this] var _data : Map[String, String] = Map.empty[String, String]
+  private[this] val _errors : mutable.ListBuffer[FormError] = mutable.ListBuffer.empty[FormError]
+  private[this] val _constraints : mutable.ListBuffer[Constraint[self.type]] = mutable.ListBuffer.empty[Constraint[self.type]]
+  final def hasErrors = _errors.nonEmpty
 
+  protected object _mapping extends Mapping[self.type] {
+    val key : String = ""
+    val constraints : Seq[Constraint[self.type]] = _constraints
     def bind(data : Map[String,String]) : Either[Seq[FormError], self.type] = {
       val l = fields.flatMap(_.bind(data))
       if (l.isEmpty)
@@ -53,16 +63,73 @@ abstract class StructForm(val action : play.api.mvc.Call) {
       val (m, e) = fields.map(_.unbind).unzip
       (m.fold(Map.empty[String, String])(_ ++ _), e.flatten[FormError])
     }
-    def withPrefix(prefix : String) : mapping =
-      addPrefix(prefix).fold(this)(k => copy(key = k))
-    def verifying(c : Constraint[self.type]*) : mapping =
-      copy(constraints = constraints ++ c)
     val mappings : Seq[Mapping[_]] =
       this +: fields.flatMap(_.mapping.mappings)
-
-    protected class form private[mapping] (mapping : mapping, data : Map[String, String], errors : Seq[FormError], value : Option[self.type]) extends Form[self.type](mapping, data, errors, value)
-    def form = new form(this, Map.empty, Nil, None)
+    def withPrefix(prefix : String) : Mapping[self.type] =
+      throw new UnsupportedOperationException("StructForm.mapping.withPrefix")
+    def verifying(c : Constraint[self.type]*) : Mapping[self.type] = {
+      _constraints ++= c
+      this
+    }
   }
 
-  def apply() = (new mapping).form
+  protected class form(value : Option[self.type] = None) extends Form[self.type](_mapping, _data, _errors, value) {
+    override def bind(data : Map[String, String]) : Form[self.type] = {
+      _data = data
+      mapping.bind(data).fold(
+	errors => { _errors ++= errors ; new form(None) },
+	value => new form(Some(value))
+      )
+    }
+    override def fill(value : self.type) : Form[self.type] = {
+      val (data, _) = mapping.unbind(value)
+      _data = data
+      new form(Some(value))
+    }
+    override def fillAndValidate(value : self.type) : Form[self.type] = {
+      val (data, errors) = mapping.unbind(value)
+      _data = data
+      _errors.clear
+      _errors ++= errors
+      new form(Some(value))
+    }
+    override def withError(error : FormError) : Form[self.type] = {
+      _errors += error
+      new form(None)
+    }
+    override def discardingErrors : Form[self.type] = {
+      _errors.clear
+      this
+    }
+  }
+  def apply() = new form()
+  protected def _fill() {
+    _data = _mapping.unbind(self)._1
+  }
+}
+
+abstract class FormView[F <: FormView[F]](val _action : Call) extends StructForm {
+  def _exception : FormException
+  final def orThrow() {
+    if (hasErrors)
+      throw _exception
+  }
+}
+
+class HtmlForm[F <: HtmlForm[F]](action : Call, errorView : F => play.api.templates.HtmlFormat.Appendable) extends FormView[F](action) {
+  self : F =>
+  final def _exception = new FormException(new form()) {
+    def resultHtml(implicit site : SiteRequest[_]) = macros.Async(BadRequest(errorView(self)))
+  }
+}
+
+class AHtmlForm[F <: HtmlForm[F]](action : Call, errorView : F => Future[play.api.templates.HtmlFormat.Appendable])(implicit context : ExecutionContext) extends FormView[F](action) {
+  self : F =>
+  final def _exception = new FormException(new form()) {
+    def resultHtml(implicit site : SiteRequest[_]) = errorView(self).map(BadRequest(_))
+  }
+}
+
+class ApiForm[F <: ApiForm[F]](action : Call) extends FormView[F](action) {
+  final def _exception = new ApiFormException(new form())
 }
