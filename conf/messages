@@ -19,6 +19,8 @@ mail.register.subject=Databrary account created
 mail.register.body=Thank you for registering with Databrary. Please click on the link below to validate your email and set your password.\n{0}\nOnce you've validated your e-mail, you can request authorization by clicking the 'Authorization' link on your profile page.
 mail.authorize.subject=Databrary authorization request
 mail.authorize.body={0}
+mail.authorized.subject=Databrary authorization approved
+mail.authorized.body={0}
 
 # Authorizations
 auth.inherit.NONE=No access
