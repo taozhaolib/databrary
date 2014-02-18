@@ -16,7 +16,7 @@ mail.password.subject=Databrary password reset
 mail.password.none=No account found.
 mail.password.body={0}
 mail.register.subject=Databrary account created
-mail.register.body={0}
+mail.register.body=Thank you for registering with Databrary. Please click on the link below to validate your email and set your password.\n{0}\nOnce you've validated your e-mail, you can request authorization by clicking the 'Authorization' link on your profile page.
 mail.authorize.subject=Databrary authorization request
 mail.authorize.body={0}
 
