@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('BrowserService', ['$rootScope', 'ArrayHelper', 'AuthService', function ($rootScope, arrayHelper, authService) {
+	module.factory('BrowserService', ['$rootScope', 'ArrayHelper', 'AuthService', 'Slot', function ($rootScope, arrayHelper, authService, Slot) {
 		var browserService = {};
 
 		//
@@ -24,6 +24,15 @@ define(['app/config/module'], function (module) {
 			session: {
 				allow: true,
 				active: true,
+				expand: false,
+
+//				filter: {},
+				sort: arrayHelper([])
+			},
+
+			asset: {
+				allow: true,
+				active: false,
 				expand: false,
 
 //				filter: {},
@@ -98,12 +107,15 @@ define(['app/config/module'], function (module) {
 				case 'search':
 					browserService.options.volume.allow = true;
 					browserService.options.session.allow = false;
+					browserService.options.asset.allow = false;
 
 					break;
 
 				case 'volume':
 					browserService.options.volume.allow = false;
 					browserService.options.session.allow = true;
+					browserService.options.asset.allow = true;
+					browserService.options.asset.active = true;
 					break;
 			}
 
@@ -114,6 +126,7 @@ define(['app/config/module'], function (module) {
 			browserService.updateVolumeSorts();
 			// TODO: record sorts...
 			browserService.updateSessionSorts();
+			// TODO: asset sorts...
 		};
 
 		browserService.updateVolumeSorts = function () {
@@ -205,7 +218,13 @@ define(['app/config/module'], function (module) {
 
 				case 'session':
 					angular.forEach(raw, function (volume) {
-						callbackSessions(data, volume);
+						callbackSessions(data, volume, groups);
+					});
+					break;
+
+				case 'asset':
+					angular.forEach(raw, function (volume) {
+						callbackAssets(data, volume);
 					});
 					break;
 
@@ -235,6 +254,10 @@ define(['app/config/module'], function (module) {
 					callbackVolumeChildren(data, data.object, groups);
 					break;
 
+				case 'session':
+					callbackSessionChildren(data, data.volume, groups);
+					break;
+
 				default:
 					callbackRecordChildren(data, data.volume, groups);
 					break;
@@ -252,7 +275,7 @@ define(['app/config/module'], function (module) {
 			if (!children)
 				return;
 
-			if(parent)
+			if (parent)
 				sortables = browserService.groups[parent];
 			else
 				sortables = [browserService.data];
@@ -274,13 +297,17 @@ define(['app/config/module'], function (module) {
 				length = option.sort.length;
 
 			for (var i = length - 1; i >= 0; i--) {
-				switch(group) {
+				switch (group) {
 					case 'volume':
 						sortVolumes(data, option.sort[i]);
 						break;
 
 					case 'session':
 						sortSessions(data, option.sort[i]);
+						break;
+
+					case 'asset':
+						sortAssets(data, option.sort[i]);
 						break;
 
 					default:
@@ -306,10 +333,18 @@ define(['app/config/module'], function (module) {
 			}
 		};
 
+		var sortAssets = function (data, sort) {
+
+		};
+
 		//
 
+		var isGroupAllowed = function (group) {
+			return browserService.options[group] && browserService.options[group].allow;
+		};
+
 		var isGroupActive = function (group) {
-			return browserService.options[group].allow && browserService.options[group].active;
+			return isGroupAllowed(group) && browserService.options[group].active;
 		};
 
 		var getActiveGroups = function () {
@@ -323,6 +358,26 @@ define(['app/config/module'], function (module) {
 			if (isGroupActive('session'))
 				groups.push('session');
 
+			if (isGroupActive('asset'))
+				groups.push('asset');
+
+			return groups;
+		};
+
+		var getAllowedGroups = function () {
+			var groups = [];
+
+			if (isGroupAllowed('volume'))
+				groups.push('volume');
+
+			groups.push.apply(groups, getAllowedRecordGroups());
+
+			if (isGroupAllowed('session'))
+				groups.push('session');
+
+			if (isGroupAllowed('asset'))
+				groups.push('asset');
+
 			return groups;
 		};
 
@@ -335,6 +390,23 @@ define(['app/config/module'], function (module) {
 			});
 
 			return groups;
+		};
+
+		var getAllowedRecordGroups = function () {
+			var groups = [];
+
+			angular.forEach(browserService.options.record.categories, function (category) {
+				if (category.allow)
+					groups.push(category.id);
+			});
+
+			return groups;
+		};
+
+		browserService.isLastGroup = function (group) {
+			var groups = getAllowedGroups();
+
+			return groups.indexOf(group) == groups.length - 1;
 		};
 
 		browserService.showList = function (data) {
@@ -360,7 +432,9 @@ define(['app/config/module'], function (module) {
 				return data;
 
 			if (groups[data.level + 1] == 'session')
-				callbackSessions(data, volume);
+				callbackSessions(data, volume, groups);
+			else if (groups[data.level + 1] == 'asset')
+				callbackAssets(data, volume);
 			else
 				callbackRecords(data, volume, groups);
 
@@ -414,14 +488,16 @@ define(['app/config/module'], function (module) {
 				return data;
 
 			if (groups[data.level + 1] == 'session')
-				callbackSessions(data, volume);
+				callbackSessions(data, volume, groups);
+			else if (groups[data.level + 1] == 'asset')
+				callbackAssets(data, volume);
 			else
 				callbackRecords(data, volume, groups);
 
 			return data;
 		};
 
-		var callbackSessions = function (data, volume) {
+		var callbackSessions = function (data, volume, groups) {
 			var sessions = data.sessions || volume.sessions;
 
 			angular.forEach(sessions, function (session) {
@@ -429,6 +505,36 @@ define(['app/config/module'], function (module) {
 					return;
 
 				var newData = callbackItem(data, volume, undefined, session, 'session');
+
+				callbackSessionChildren(newData, volume, groups);
+			});
+
+			return data;
+		};
+
+		var callbackSessionChildren = function (data, volume, groups) {
+			if (!browserService.getItemExpand(data))
+				return data;
+
+			if (groups[data.level + 1] == 'asset')
+				callbackAssets(data, volume);
+
+			return data;
+		};
+
+		var callbackAssets = function (data, volume) {
+			var sessions = data.sessions || volume.sessions;
+
+			Slot.get({
+				id: data.object.id,
+				segment: data.object.segment || ',',
+				assets: ''
+			}, function (object) {
+				angular.forEach(object.assets, function (asset) {
+					asset.container = object.container;
+					asset.segment = object.segment;
+					var newData = callbackItem(data, volume, undefined, asset, 'asset');
+				});
 			});
 
 			return data;
@@ -449,6 +555,11 @@ define(['app/config/module'], function (module) {
 				select: false,
 				expand: false
 			};
+
+			if (group == 'asset') {
+				data.player = false;
+				data.played = undefined;
+			}
 
 			browserService.groups[group].push(newData);
 			data.items.push(newData);
@@ -619,6 +730,9 @@ define(['app/config/module'], function (module) {
 				group = getActiveGroups()[level];
 
 			switch (group) {
+				case 'asset':
+					return browserService.options.asset;
+
 				case 'session':
 					return browserService.options.session;
 
@@ -775,6 +889,54 @@ define(['app/config/module'], function (module) {
 
 		browserService.isItemSelect = function (data) {
 			return data = itemSelect;
+		};
+
+		//
+
+		browserService.player = undefined;
+
+		browserService.setItemPlayer = function (data) {
+			var newPlayer, newPlayed;
+
+			if(data.group == 'asset') {
+				newPlayed = data;
+				newPlayer = data.parent;
+			} else {
+				newPlayed = data.items[0] || undefined;
+				newPlayer = data;
+			}
+
+			if(angular.isUndefined(browserService.player)) {
+				browserService.player = newPlayer;
+
+				browserService.player.player = true;
+
+				browserService.player.played = newPlayed;
+			} else if (browserService.player != newPlayer) {
+				browserService.player.player = false;
+
+				browserService.player = newPlayer;
+
+				browserService.player.player = true;
+
+				browserService.player.played = newPlayed;
+			} else if (browserService.player.played != newPlayed) {
+				browserService.player.played = newPlayed;
+			} else {
+				browserService.player.player = false;
+
+				browserService.player = undefined;
+			}
+
+			return browserService.player;
+		};
+
+		browserService.getItemPlayer = function () {
+			return browserService.player;
+		};
+
+		browserService.isItemPlayer = function (data) {
+			return data = browserService.player;
 		};
 
 		//

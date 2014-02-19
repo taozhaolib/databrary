@@ -4,10 +4,10 @@
     </span>
 
     <span class="browser_widget_wrap"
-    ng-if="browser.options.volume.allow">
+    ng-if="browser.options.volume.allow"
+    ng-class="groupClasses('volume')">
         <a class="browser_widget_pill"
-        ng-click="browser.setGroupActive('volume')"
-        ng-class="groupClasses('volume')">Volume</a>
+        ng-click="browser.setGroupActive('volume')">Volume</a>
     </span>
 
     <span class="browser_widget_wrap"
@@ -31,13 +31,20 @@
     <span class="browser_widget_wrap"
     ng-if="browser.canAddRecordGroup()">
         <a class="browser_widget_pill add"
-        ng-click="browser.addRecordGroup()">+ group</a>
+        ng-click="browser.addRecordGroup()">+ Group</a>
     </span>
 
-    <span class="browser_widget_wrap last"
-    ng-if="browser.options.session.allow">
+    <span class="browser_widget_wrap"
+    ng-if="browser.options.session.allow"
+    ng-class="groupClasses('session')">
         <a class="browser_widget_pill"
-        ng-click="browser.setGroupActive('session')"
-        ng-class="groupClasses('session')">Session</a>
+        ng-click="browser.setGroupActive('session')">Session</a>
+    </span>
+
+    <span class="browser_widget_wrap"
+    ng-if="browser.options.asset.allow"
+    ng-class="groupClasses('asset')">
+        <a class="browser_widget_pill"
+        ng-click="browser.setGroupActive('asset')">Asset</a>
     </span>
 </div>

@@ -15,6 +15,9 @@ define(['app/config/module'], function (module) {
 				else
 					classes.push('off');
 
+				if($scope.browser.isLastGroup(group))
+					classes.push('last');
+
 				return classes;
 			};
 

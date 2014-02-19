@@ -23,6 +23,9 @@ define(['app/config/module'], function (module) {
 					case 'session':
 						return 'browserSession.html';
 
+					case 'asset':
+						return 'browserAsset.html';
+
 					default:
 						return 'browserRecord.html';
 				}
@@ -51,6 +54,12 @@ define(['app/config/module'], function (module) {
 
 			$scope.setItemSelect = function (data) {
 				$scope.browser.setItemSelect(data);
+			};
+
+			//
+
+			$scope.setItemPlayer = function (data) {
+				$scope.browser.setItemPlayer(data);
 			};
 
 			//

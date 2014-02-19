@@ -41,6 +41,16 @@
 			display: none;
 		}
 	}
+
+	&.off {
+		.browser_widget_pill {
+			background-color: @g4;
+
+			&:hover {
+				background-color: @c4g4m1;
+			}
+		}
+	}
 }
 
 .browser_widget_pill {
@@ -84,14 +94,6 @@
 		background-color: @c11g5m2;
 	}
 
-	&.off {
-		background-color: @g4;
-
-		&:hover {
-			background-color: @c4g4m1;
-		}
-	}
-
 	&.expanded {
 		background-color: mix(@c4, @g5, 10%);
 
@@ -131,14 +133,33 @@
 		background: url('/public/images/browser/tool-filter.png') no-repeat 4px 4px;
 	}
 
+	&.player {
+		background: url('/public/images/browser/tool-player.png') no-repeat 4px 4px;
+	}
+
 	&.edit {
 		background: url('/public/images/browser/tool-edit.png') no-repeat 4px 4px;
 	}
 }
 
+//
+
 .browser_filters {
 	border-top: 1px solid fade(@g1, 25%);
 	.border-padding-top(1px, @f4);
+}
+
+//
+
+.browser_player {
+	border-top: 1px solid fade(@g1, 25%);
+	.border-padding-top(1px, @f4);
+
+	h2 {
+		font-weight: normal;
+		.margin-top(0);
+		.font-line(1.5);
+	}
 }
 
 //
@@ -300,10 +321,21 @@
 
 .browser_session {
 	background-color: @c0g5m1;
-	.padding-bottom(@f8);
 
 	h1 {
 		background: url('/public/images/browser/icon-session.png') no-repeat 0 6px;
+	}
+}
+
+//
+
+.browser_asset {
+	background-color: @c8g5m1;
+	cursor: pointer;
+
+	h1 {
+		.padding-left(@f8);
+		background: transparent;
 	}
 }
 

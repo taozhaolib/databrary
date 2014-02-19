@@ -2,7 +2,7 @@
     <div class="browser_item_content">
         <div class="cf">
             <header>
-                <h1><span bo-html="capitalize(constant.get('category', data.object.category).name)"></span><span bo-if="data.object.id">: <span bo-html="data.object.id"></span></span></h1>
+                <h1><span bo-html="capitalize(constant.get('category', data.object.category).name)"></span><span bo-if="data.object.id">: <span bo-html="data.object.measures.ident || data.object.id"></span></span></h1>
             </header>
         </div>
 

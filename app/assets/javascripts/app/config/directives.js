@@ -15,5 +15,6 @@ define([
 	'app/directive/carousel',
 	'app/directive/browserGroup',
 	'app/directive/browserFilter',
+	'app/directive/browserPlayer',
 	'app/directive/browserList'
 ], function () {});

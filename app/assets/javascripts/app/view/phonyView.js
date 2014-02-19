@@ -10,8 +10,6 @@ define(['app/config/module'], function (module) {
 			$http
 				.get($location.url())
 				.success(function (data) {
-					console.log(data);
-
 					$templateCache.put($location.url(), $(data).filter('#main').text());
 					$scope.phonyTemplateUrl = $location.url();
 				})
