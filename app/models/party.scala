@@ -54,13 +54,16 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
   def pageURL = controllers.routes.PartyHtml.view(id)
 
   def perSite(implicit site : Site) : Future[SiteParty] = SiteParty.get(this)
+  /** Email, if accessible, for convenience. */
+  def email(implicit site : Site) : Option[String] =
+    account.filter(_ => site.access.group >= Permission.VIEW).map(_.email)
 
   def json(implicit site : Site) : JsonRecord =
     JsonRecord.flatten(id,
       Some('name -> name), 
       orcid.map('orcid -> _), 
       affiliation.map('affiliation -> _),
-      account.filter(_ => site.access.group >= Permission.VIEW).map(a => ('email, a.email)),
+      email.map('email -> _),
       Some('avatar -> views.html.display.avatar(this).url)
     )
 }

@@ -49,6 +49,9 @@
 		    @widget.tag.inputText(form("name"), 'id -> ("name_"+which.toString))
 		} { party =>
 		    @display(party)
+		    @party.email.map { e =>
+		        <br/>&lt;@e&gt;
+		    }
 		}
 		@form("info").value.map { info =>
 		    OSP: @info
