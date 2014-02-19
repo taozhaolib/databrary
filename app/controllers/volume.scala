@@ -33,7 +33,6 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     case (None, None, None) => true
     case _ => false
   })
-  protected def citationFill(cite : VolumeCitation) = (Some(cite.head), cite.url, cite.body)
   private def citationSet(volume : Volume, cites : Seq[CitationMapping])(implicit site : Site) =
     if (cites.nonEmpty) {
       volume.setCitations(cites.flatMap(c =>
@@ -106,6 +105,7 @@ object VolumeController extends VolumeController {
     val citation = Field(seq(citationMapping))
   }
 
+  private def citationFill(cite : VolumeCitation) = (Some(cite.head), cite.url, cite.body)
   class EditForm(cites : Seq[VolumeCitation])(implicit request : Request[_])
     extends HtmlForm[EditForm](
       routes.VolumeHtml.update(request.obj.id),
@@ -115,7 +115,7 @@ object VolumeController extends VolumeController {
     val name = Field(OptionMapping(nonEmptyText)).fill(Some(request.obj.name))
     body.fill(Some(request.obj.body.getOrElse("")))
     alias.fill(Some(request.obj.alias.getOrElse("")))
-    citation.fill(cites.map(citationFill(_)))
+    citation.fill(cites.map(citationFill(_)) :+ ((Some(""), None, None)))
     _fill
   }
 
