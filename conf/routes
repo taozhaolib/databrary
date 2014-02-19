@@ -48,8 +48,6 @@ GET     /volume/$vID<[0-9]+>/edit                                               
 POST    /volume/$vID<[0-9]+>/edit                                                                 controllers.VolumeHtml.update(vID : models.Volume.Id)
 GET     /volume/$vID<[0-9]+>/access                                                               controllers.VolumeHtml.admin(vID : models.Volume.Id)
 GET     /volume/$vID<[0-9]+>/access/search                                                        controllers.VolumeHtml.accessSearch(vID : models.Volume.Id)
-# TODO: should be POST:
-GET     /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>/remove                                         controllers.VolumeHtml.accessDelete(vID : models.Volume.Id, pID : models.Party.Id)
 POST    /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                                                controllers.VolumeHtml.accessChange(vID : models.Volume.Id, pID : models.Party.Id)
 GET     /volume/$vID<[0-9]+>/thumb                                                                controllers.VolumeController.thumb(vID : models.Volume.Id)
 

@@ -22,7 +22,7 @@ abstract class StructForm {
     }
     /** The value of this field, which will be filled in by binding the form. */
     var value : T = _
-    def init(v : T) : Field[T] = {
+    def fill(v : T) : Field[T] = {
       value = v
       this
     }
@@ -107,23 +107,26 @@ abstract class StructForm {
     }
   }
   def apply() = new form()
-  protected def _fill() {
+  protected def _fill() : self.type = {
     _data = _mapping.unbind(self)._1
+    self
   }
-  def _bind(implicit request : Request[_]) {
+  def _bind(implicit request : Request[_]) : self.type = {
     apply().bindFromRequest
+    self
   }
 }
 
 abstract class FormView[+F <: FormView[F]](val _action : Call) extends StructForm {
+  self =>
   def _exception : FormException
-  final def orThrow() {
+  final def orThrow() : self.type = {
     if (hasErrors)
       throw _exception
+    self
   }
-  override def _bind(implicit request : Request[_]) {
-    super._bind
-    orThrow
+  override def _bind(implicit request : Request[_]) : self.type = {
+    super._bind.orThrow
   }
 }
 

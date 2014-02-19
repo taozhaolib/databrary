@@ -93,7 +93,7 @@
 		} else {
 		@defining(form("pending").value == Some("true")) { pending =>
 		    <button type='submit' class="button second">@{if(pending) "Authorize" else "Change"}</button>
-		    <button class="button first" name='delete' value='true'>@{if(pending) "Deny" else "Revoke"}</button>
+		    <button type='submit' class="button first" name='delete' value='true'>@{if(pending) "Deny" else "Revoke"}</button>
 		}
 		}
 		}

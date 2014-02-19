@@ -26,7 +26,7 @@ private[controllers] sealed class SlotController extends ObjectController[Slot] 
       "name" -> optional(nonEmptyText),
       "date" -> optional(jodaLocalDate)
     )) else None),
-    "consent" -> Field.enum(Consent)
+    "consent" -> Mappings.enum(Consent)
   ))
   protected def editFormFill(s : Slot) = {
     val full = s.isFull

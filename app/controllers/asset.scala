@@ -38,7 +38,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   type AssetForm = Form[AssetMapping]
   protected def assetForm(file : Boolean) : AssetForm = Form(tuple(
     "name" -> OptionMapping(text),
-    "classification" -> OptionMapping(Field.enum(Classification)),
+    "classification" -> OptionMapping(Mappings.enum(Classification)),
     "" -> optional(tuple(
       "container" -> of[Container.Id],
       ("position", optional(of[Offset]))

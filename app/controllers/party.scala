@@ -142,9 +142,9 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
   type AuthorizeForm = Form[AuthorizeMapping]
   protected val authorizeForm : AuthorizeForm = Form(tuple(
     ("name", optional(nonEmptyText)),
-    "inherit" -> default(Field.enum(Permission), Permission.NONE),
-    "direct" -> default(Field.enum(Permission), Permission.NONE),
-    "permission" -> default(Field.enum(Permission), Permission.NONE),
+    "inherit" -> default(Mappings.enum(Permission), Permission.NONE),
+    "direct" -> default(Mappings.enum(Permission), Permission.NONE),
+    "permission" -> default(Mappings.enum(Permission), Permission.NONE),
     "pending" -> boolean,
     "expires" -> optional(jodaLocalDate),
     "info" -> optional(nonEmptyText),
