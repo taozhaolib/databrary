@@ -8,12 +8,12 @@
 
         <ul class="actions">
 	        <li><a href="@volume.pageURL">view</a></li>
-	    @if(volume.permission >= Permission.EDIT) {
+	    @if(volume.checkPermission(Permission.EDIT)) {
 	        <li><a href="@controllers.routes.VolumeHtml.edit(volume.id)">edit</a></li>
 	        <li><a href="@controllers.routes.AssetHtml.create(volume.id)">add file</a></li>
 	        <li><a href="@controllers.routes.SlotHtml.createContainer(volume.id)">add session/folder</a></li>
 	    }
-	    @if(volume.permission >= Permission.ADMIN) {
+	    @if(volume.checkPermission(Permission.ADMIN)) {
 	        <li><a href="@controllers.routes.VolumeHtml.admin(volume.id)">access</a></li>
 	    }
         </ul>
@@ -21,7 +21,10 @@
 
     @widget.figure.thumbVolume(volume, classes = "panel_overview_thumbnail")
 
-    <h1 class="col-full panel_title">@display.formatTitle(volume.pageName)</h1>
+    <h1 class="col-full panel_title">@display.formatTitle(volume.name)</h1>
+    @volume.alias.map { a =>
+    <h2 class="col-full">@a</h2>
+    }
 
     @widget.frame.people(access)
     @widget.frame.funding(access.filter(_.funding.isDefined))

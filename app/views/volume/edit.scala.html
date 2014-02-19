@@ -11,6 +11,7 @@
             @widget.formErrors(form())
 
             @widget.tag.inputText(form.name(), 'placeholder -> "Title", '_class -> "")
+            @widget.tag.inputText(form.alias(), 'placeholder -> "Short name", '_class -> "")
             @widget.tag.textarea(form.body(), 'placeholder -> "Description", '_class -> "")
 
             <fieldset class="publications">

@@ -5,10 +5,10 @@
     <div class="col-full panel_overview_actions">
         <ul class="actions">
 	        <li><a href="@request.obj.pageURL">view</a></li>
-	    @if(request.obj.permission >= Permission.EDIT) {
+	    @if(request.obj.checkPermission(Permission.EDIT)) {
 	        <li><a href="@controllers.routes.PartyHtml.edit(party.id)">edit</a></li>
 	    }
-	    @if(request.obj.permission >= Permission.ADMIN) {
+	    @if(request.obj.checkPermission(Permission.ADMIN)) {
 	        <li><a href="@controllers.routes.PartyHtml.admin(party.id)">admin</a></li>
 	    }
         </ul>

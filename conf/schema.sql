@@ -172,9 +172,11 @@ COMMENT ON TABLE "authorize_info" IS 'Additional information provided with autho
 CREATE TABLE "volume" (
 	"id" serial NOT NULL Primary Key,
 	"name" text NOT NULL,
-	"body" text
+	"body" text,
+	"alias" varchar(64)
 );
 COMMENT ON TABLE "volume" IS 'Basic organizational unit for data.';
+COMMENT ON COLUMN "volume"."alias" IS 'Short, internal, code name for this volume, for contributors to reference their own data.';
 
 SELECT audit.CREATE_TABLE ('volume');
 CREATE INDEX "volume_creation_idx" ON audit."volume" ("id") WHERE "audit_action" = 'add';

@@ -49,7 +49,9 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     for {
       form <- editFormFill
       _ = form._bind
-      _ <- vol.change(name = form.name.value, body = form.body.value.map(Maybe(_).opt))
+      _ <- vol.change(name = form.name.value,
+	alias = form.alias.value.map(Maybe(_).opt),
+	body = form.body.value.map(Maybe(_).opt))
       _ <- citationSet(vol, form.citation.value)
     } yield (result(vol))
   }
@@ -57,7 +59,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
   def create(owner : models.Party.Id) = ContributeAction(Some(owner)).async { implicit request =>
     val form = new VolumeController.CreateForm()._bind
     for {
-      vol <- models.Volume.create(form.name.value.get, form.body.value.flatMap(Maybe(_).opt))
+      vol <- models.Volume.create(form.name.value.get, form.alias.value.flatMap(Maybe(_).opt), form.body.value.flatMap(Maybe(_).opt))
       _ <- citationSet(vol, form.citation.value)
       _ <- VolumeAccess.set(vol, owner, Permission.ADMIN, Permission.CONTRIBUTE)
     } yield (result(vol))
@@ -99,6 +101,7 @@ object VolumeController extends VolumeController {
     def formName : String = actionName + " Volume"
 
     val name : Field[Option[String]]
+    val alias = Field(OptionMapping(text))
     val body = Field(OptionMapping(text))
     val citation = Field(seq(citationMapping))
   }
@@ -111,6 +114,7 @@ object VolumeController extends VolumeController {
     override def formName = "Edit Volume"
     val name = Field(OptionMapping(nonEmptyText)).fill(Some(request.obj.name))
     body.fill(Some(request.obj.body.getOrElse("")))
+    alias.fill(Some(request.obj.alias.getOrElse("")))
     citation.fill(cites.map(citationFill(_)))
     _fill
   }

@@ -10,18 +10,21 @@ import site._
 /** Main organizational unit or package of data, within which everything else exists.
   * Usually represents a single project or dataset with a single set of procedures.
   * @param permission the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than [[Permission.VIEW]] except possibly for transient objects, as unavailable volumes should never be returned in the first place. */
-final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[String], override val permission : Permission.Value, val creation : Timestamp)(implicit override val site : Site) extends TableRowId[Volume] with SiteObject with InVolume {
+final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[String], body_ : Option[String], override val permission : Permission.Value, val creation : Timestamp)(implicit override val site : Site) extends TableRowId[Volume] with SiteObject with InVolume {
   private[this] var _name = name_
-  /** Title headline of this volume. */
+  /** Title headline. */
   def name = _name
+  private[this] var _alias = alias_
+  /** Short, internal name, only available to editors. */
+  def alias = _alias.filter(_ => checkPermission(Permission.EDIT))
   private[this] var _body = body_
-  /** Longer, abstract-like description of this volume. */
+  /** Longer, abstract-like description. */
   def body = _body
   def volume = this
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : Option[String] = None, body : Option[Option[String]] = None) : Future[Boolean] = {
-    Audit.change("volume", SQLTerms.flatten(name.map('name -> _), body.map('body -> _)), SQLTerms('id -> id))
+  def change(name : Option[String] = None, alias : Option[Option[String]] = None, body : Option[Option[String]] = None) : Future[Boolean] = {
+    Audit.change("volume", SQLTerms.flatten(name.map('name -> _), alias.map('alias -> _), body.map('body -> _)), SQLTerms('id -> id))
       .execute.andThen { case scala.util.Success(true) =>
         name.foreach(_name = _)
         body.foreach(_body = _)
@@ -118,13 +121,14 @@ final class Volume private (val id : Volume.Id, name_ : String, body_ : Option[S
       agemean = Age(if (ages == 0) 0 else agesum / ages))
   }
 
-  def pageName = name
+  def pageName = alias.getOrElse(name)
   def pageParent = None
   def pageURL = controllers.routes.VolumeHtml.view(id)
 
   lazy val json : JsonRecord =
     JsonRecord.flatten(id,
       Some('name -> name),
+      alias.map('alias -> _),
       body.map('body -> _),
       Some('creation -> creation),
       Some('permission -> permission)
@@ -174,11 +178,12 @@ object Volume extends TableId[Volume]("volume") {
   private[models] def row(implicit site : Site) = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
+    , SelectColumn[Option[String]]("alias")
     , SelectColumn[Option[String]]("body")
     , SelectAs[Option[Timestamp]]("volume_creation(volume.id)", "volume_creation")
     ).*(Permission.row)
-      .map { case ((id, name, body, creation), permission) =>
-	new Volume(id, name, body, permission, creation.getOrElse(defaultCreation))
+      .map { case ((id, name, alias, body, creation), permission) =>
+	new Volume(id, name, alias, body, permission, creation.getOrElse(defaultCreation))
       }
 
   /** Retrieve an individual Volume.
@@ -209,15 +214,15 @@ object Volume extends TableId[Volume]("volume") {
 
   /** Create a new, empty volume with no permissions.
     * The caller should probably add a [[VolumeAccess]] for this volume to grant [[Permission.ADMIN]] access to some user. */
-  def create(name : String, body : Option[String] = None)(implicit site : Site) : Future[Volume] =
-    Audit.add(table, SQLTerms('name -> name, 'body -> body), "id").single(SQLCols[Id])
-      .map(new Volume(_, name, body, models.Permission.NONE, new Timestamp))
+  def create(name : String, alias : Option[String], body : Option[String] = None)(implicit site : Site) : Future[Volume] =
+    Audit.add(table, SQLTerms('name -> name, 'alias -> alias, 'body -> body), "id").single(SQLCols[Id])
+      .map(new Volume(_, name, alias, body, models.Permission.NONE, new Timestamp))
 
   private final val CORE : Id = asId(0)
   /** The "core" volume, containing site-wide "global" assets.
     * We ignore any access rules here and grant everyone DOWNLOAD. */
   final def Core(implicit site : Site) : Volume =
-    new Volume(CORE, "core", None, models.Permission.DOWNLOAD, defaultCreation)
+    new Volume(CORE, "core", None, None, models.Permission.DOWNLOAD, defaultCreation)
 
   case class Summary(sessions : Int, shared : Int, agerange : Range[Age], agemean : Age) {
     lazy val json = JsonObject(
