@@ -1,9 +1,8 @@
 @(context : Option[Slot], post : Option[(Call, SlotHtml.CommentForm)], comments : Seq[Comment])(implicit request : SiteRequest[_])
 
-@import helper.FieldConstructor
-    @implicitField = @{
-        FieldConstructor(widget.tag.minimalFieldConstructor.f)
-    }
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
+}
 
 @if(post.nonEmpty || comments.nonEmpty) {
 @widget.panel.raw("comments", "")(title = "Comments"){

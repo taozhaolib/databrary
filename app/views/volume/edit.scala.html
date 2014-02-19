@@ -1,10 +1,8 @@
 @(form : VolumeController.VolumeForm)(implicit request : RequestObject.Site[_])
 
-@import helper.FieldConstructor
-
-    @implicitField = @{
-        FieldConstructor(widget.tag.labeledFieldConstructor.f)
-    }
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
+}
 
 @template.form(Some(request.obj), form.formName) {
         @widget.tag.form(form._action) {

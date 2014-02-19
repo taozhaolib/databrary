@@ -1,5 +1,9 @@
 @(volume : Volume, accessForms : Seq[VolumeController.AccessForm], accessSearch : VolumeHtml.AccessSearchForm, accessResults : Seq[VolumeController.AccessForm])(implicit request : VolumeHtml.Request[_])
 
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.tableFieldConstructor.f)
+}
+
 @accessFields(form : VolumeController.AccessForm)(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@display(form.party)</td>
 	@widget.enumSelect(form.access(), Permission)
@@ -8,7 +12,6 @@
 
 @template.form(Some(volume), "Manage Access") {
     <table class="permission">
-        @defining(helper.FieldConstructor(widget.tag.tableFieldConstructor.f)) { implicit fieldConstructor =>
             <thead>
                 <tr>
                     <th>Name</th>
@@ -60,6 +63,6 @@
                         </tr>
                     }
                 }
-        }</tfoot>
+        </tfoot>
     </table>
 }

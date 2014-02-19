@@ -1,10 +1,8 @@
 @(party : Option[Party], form : PartyHtml.PartyForm, avatarForm : PartyHtml.AvatarForm = PartyHtml.avatarForm)(implicit request : PartyHtml.Request[_])
 
-@import helper.FieldConstructor
-
-    @implicitField = @{
-        FieldConstructor(widget.tag.labeledFieldConstructor.f)
-    }
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
+}
 
 @template.form(party, party.fold("Create Party")(_ => "Edit Profile")) {
             @widget.formErrors(form)

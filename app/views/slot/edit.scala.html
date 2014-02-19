@@ -1,9 +1,7 @@
 @(c : Either[Volume, Slot], form : SlotHtml.EditForm, records : Seq[Record], recordForm : Option[RecordHtml.SelectForm], selectList : Seq[(String,String)] = Nil)(implicit request : RequestObject[SiteObject]#Site[_])
 
-@import helper.FieldConstructor
-
 @implicitField = @{
-    FieldConstructor(widget.tag.labeledFieldConstructor.f)
+    helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
 @template.form(Some(c.merge), c.fold(_ => "Create Session in Volume", _ => "Edit Session")) {

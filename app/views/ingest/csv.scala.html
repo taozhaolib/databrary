@@ -1,10 +1,8 @@
 @(vol : models.Volume, form : controllers.Ingest.CSVForm, text : String = "", target : Option[SitePage] = None)(implicit request : SiteRequest[_])
 
-@import helper.FieldConstructor
-
-    @implicitField = @{
-        FieldConstructor(widget.tag.labeledFieldConstructor.f)
-    }
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
+}
 
 @template.action("CSV Ingestion") {
     @widget.panel.ingest("CSV Ingestion"){

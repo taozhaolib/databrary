@@ -1,10 +1,8 @@
 @(form : LoginHtml.LoginForm)(implicit request: SiteRequest[_])
 
-@import helper.FieldConstructor
-
-    @implicitField = @{
-        FieldConstructor(widget.tag.minimalFieldConstructor.f)
-    }
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
+}
 
 @template.action("Enter Databrary") {
     @widget.panel.form("Enter Databrary", "Login", controller = "LoginPanelCtrl") {

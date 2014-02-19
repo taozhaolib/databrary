@@ -1,9 +1,7 @@
 @(pending : Seq[(Authorize, PartyHtml.AuthorizeForm)], active : Seq[Authorize], expired : Seq[Authorize])(implicit request : SiteRequest[_])
 
-@import helper.FieldConstructor
-
 @implicitField = @{
-    FieldConstructor(widget.tag.minimalFieldConstructor.f)
+    helper.FieldConstructor(widget.tag.tableFieldConstructor.f)
 }
 
 @authorizeList(authorize : Seq[Authorize]) = {
@@ -21,16 +19,18 @@
 
     <tbody>
 	@authorize.map { authorize =>
-	@widget.tag.form(routes.PartyHtml.authorizeChange(authorize.parentId, authorize.childId)) {
 	<tr>
 	    <td>@display(authorize.parent)</td>
-	    <td>@display(authorize.child)</td>
+	    <td>@display(authorize.child)
+		@authorize.child.email.map { e =>
+		    <br/>&lt;@e&gt;
+		}
+	    </td>
 	    <td>@authorize.info</td>
 	    <td>@authorize.inherit</td>
 	    <td>@authorize.direct</td>
 	    <td>@authorize.expires</td>
 	</tr>
-	}
 	}
     </tbody>
     </table>
@@ -58,10 +58,10 @@
 	<tr>
 	    <td>@display(authorize.parent)</td>
 	    <td>@display(authorize.child)</td>
-	    <td>@widget.tag.inputText(form("info"))</td>
-	    <td>@widget.enumSelect(form("inherit"), Permission)</td>
-	    <td>@widget.enumSelect(form("direct"), Permission)</td>
-	    <td>@widget.tag.inputDate(form("expires"))</td>
+	    @widget.tag.inputText(form("info"))
+	    @widget.enumSelect(form("inherit"), Permission)
+	    @widget.enumSelect(form("direct"), Permission)
+	    @widget.tag.inputDate(form("expires"))
 	    <td>
 	    @defining(authorize.authorized.isEmpty) { pending =>
 		<button type='submit' class="button second">@{if(pending) "Authorize" else "Change"}</button>

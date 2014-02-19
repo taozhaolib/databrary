@@ -1,10 +1,8 @@
 @(target : Either[Volume, Asset], form : AssetHtml.AssetForm)(implicit request : RequestObject[SiteObject]#Site[_])
 
-@import helper.FieldConstructor
-
-    @implicitField = @{
-        FieldConstructor(widget.tag.labeledFieldConstructor.f)
-    }
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
+}
 
 @template.form(Some(target.merge), target.fold(_ => "Upload Asset", _ => "Edit Asset")) {
             @widget.formErrors(form)

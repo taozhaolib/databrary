@@ -1,10 +1,8 @@
 @(authorizeParents : Seq[Authorize], authorizeForms : Seq[(Boolean,Option[Party],PartyHtml.AuthorizeForm)])(implicit request : PartyHtml.Request[_])
 
-@import helper.FieldConstructor
-
-    @implicitField = @{
-        FieldConstructor(widget.tag.tableFieldConstructor.f)
-    }
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.tableFieldConstructor.f)
+}
 
 @authList(which : Boolean)(implicit fieldConstructor : helper.FieldConstructor) = {
     <h3>@{if(which) "Memberships" else "Authorizations"}</h3>

@@ -1,10 +1,8 @@
 @(record : models.Record, meas : Seq[Metric[_]], form : RecordHtml.EditForm, jsonCategories : Html, jsonMetrics : Html)(implicit request : RequestObject[SiteObject]#Site[_])
 
-@import helper.FieldConstructor
-
-    @implicitField = @{
-        FieldConstructor(widget.tag.minimalFieldConstructor.f)
-    }
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
+}
 
 @template.form(Some(record), "Edit Record") {
             @widget.formErrors(form)

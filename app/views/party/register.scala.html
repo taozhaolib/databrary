@@ -1,10 +1,8 @@
 @(form : LoginHtml.RegistrationForm)(implicit request: SiteRequest[_])
 
-@import helper.FieldConstructor
-
-    @implicitField = @{
-        FieldConstructor(widget.tag.minimalFieldConstructor.f)
-    }
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
+}
 
 @template.action("Register an account") {
     @widget.panel.form("Register an account", "Register") {

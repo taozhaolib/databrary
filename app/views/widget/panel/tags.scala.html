@@ -1,12 +1,8 @@
 @(slot : Slot, volume : Option[Volume] = None, tags : Seq[TagWeight], form : TagHtml.TagForm = TagHtml.tagForm)(implicit request : SiteRequest[_])
 
-@import play.api.data.Form
-@import play.api.data.Forms._
-
-@import helper.FieldConstructor
-    @implicitField = @{
-        FieldConstructor(widget.tag.minimalFieldConstructor.f)
-    }
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
+}
 
     @widget.panel.raw("tags", "")(title = "Tags"){
         <div class="panel_tags_list col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-3">

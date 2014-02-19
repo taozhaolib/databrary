@@ -1,10 +1,8 @@
 @(vol : models.Volume, res : (Iterable[Record], Iterable[SlotAsset]))(implicit request : SiteRequest[_])
 
-@import helper.FieldConstructor
-
-    @implicitField = @{
-        FieldConstructor(widget.tag.labeledFieldConstructor.f)
-    }
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
+}
 
 @template.action("CSV Ingestion Result") {
     @widget.panel.ingest("CSV Ingestion Results"){

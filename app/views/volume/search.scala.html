@@ -1,10 +1,8 @@
 @(list : Seq[(Volume, Seq[Party])], form : VolumeController.SearchForm)(implicit request : SiteRequest[_])
 
-@import helper.FieldConstructor
-
-    @implicitField = @{
-        FieldConstructor(widget.tag.labeledFieldConstructor.f)
-    }
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
+}
 
 @template.action("Search the Databrary") {
     @widget.panel.search("", "", "SearchViewCtrl") {
