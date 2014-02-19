@@ -3,10 +3,10 @@
 @import helper.FieldConstructor
 
     @implicitField = @{
-        FieldConstructor(widget.tag.minimalFieldConstructor.f)
+        FieldConstructor(widget.tag.tableFieldConstructor.f)
     }
 
-@authList(which : Boolean) = {
+@authList(which : Boolean)(implicit fieldConstructor : helper.FieldConstructor) = {
     <h3>@{if(which) "Memberships" else "Authorizations"}</h3>
 
     <table>
@@ -44,40 +44,34 @@
 	    case Some(other) => routes.PartyHtml.authorizeChange(request.obj.party.id, other.id)
 	}) {
 	    <tr>
-		<td>
 		@other.fold {
-		    @widget.tag.inputText(form("name"), 'id -> ("name_"+which.toString))
+		@widget.tag.inputText(form("name"), 'id -> ("name_"+which.toString))
 		} { party =>
+		<td>
 		    @display(party)
-		}
+		    @party.email.map { e =>
+		        <br/>&lt;@e&gt;
+		    }
 		@form("info").value.map { info =>
 		    OSP: @info
 		}
 		</td>
+		}
 
-		<td>
-		    @widget.tag.select(form("inherit"), Permission.values.toSeq.flatMap(p => Permission.message(p, "inherit").map((p.id.toString, _))))
-		</td>
+		@widget.tag.select(form("inherit"), Permission.values.toSeq.flatMap(p => Permission.message(p, "inherit").map((p.id.toString, _))))
 
 		@if(which) {
-		<td colspan=3>
 		@if(form("inherit").value == Some(Permission.CONTRIBUTE.id.toString)) {
-		    Contact info for your institution's authorizing official (OSP):
-		    @widget.tag.inputText(form("info"))
+		    @widget.tag.inputText(form("info"), 'placeholder -> "Contact info for your institution's authorizing official (OSP)", '_colspan -> 3)
+	        } else {
+		    <td colspan="3"/>
 		}
-		</td>
 		} else {
-		<td>
-		    @widget.tag.select(form("direct"), Permission.values.toSeq.flatMap(p => Permission.message(p, "direct").map((p.id.toString, _))))
-		</td>
+		@widget.tag.select(form("direct"), Permission.values.toSeq.flatMap(p => Permission.message(p, "direct").map((p.id.toString, _))))
 
-		<td>
-		    @widget.tag.select(form("permission"), Permission.values.toSeq.flatMap(p => Permission.message(p, "permission").map((p.id.toString, _))))
-		</td>
+		@widget.tag.select(form("permission"), Permission.values.toSeq.flatMap(p => Permission.message(p, "permission").map((p.id.toString, _))))
 
-		<td>
-		    @widget.tag.inputDate(form("expires"), 'placeholder -> "Expiration date", 'class -> "half")
-		</td>
+		@widget.tag.inputDate(form("expires"), 'placeholder -> "Expiration date", 'class -> "half")
 		}
 
 		<td>

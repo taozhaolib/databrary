@@ -210,7 +210,9 @@ private[controllers] sealed abstract class PartyController extends ObjectControl
 	  _ <- Mail.send(
 	    to = (dl.map(_.email) :+ Messages("mail.authorize")).mkString(", "),
 	    subject = Messages("mail.authorize.subject"),
-	    body = Messages("mail.authorize.body", routes.PartyHtml.admin(parentId).absoluteURL(true))
+	    body = Messages("mail.authorize.body", routes.PartyHtml.admin(parentId).absoluteURL(true),
+	      request.obj.party.name + request.identity.email.fold("")(" <" + _ + ">"),
+	      parent.name)
 	  ).recover {
 	    case ServiceUnavailableException => ()
 	  }
@@ -281,8 +283,9 @@ object PartyHtml extends PartyController {
 	_ <- Mail.send(
 	  to = Messages("mail.authorize"),
 	  subject = Messages("mail.authorize.subject"),
-	  body = Messages("mail.authorize.body", routes.PartyHtml.view(id).absoluteURL(true) + " " +
-	    request.obj.party.name + " (" + request.obj.party.affiliation + ") " + name + ": " + info))
+	  body = Messages("mail.authorize.body", routes.PartyHtml.view(id).absoluteURL(true),
+	    request.obj.party.name + request.identity.email.fold("")(" <" + _ + ">") + request.obj.party.affiliation.fold("")(" (" + _ + ")"),
+	    name + info.fold("")(" (" + _ + ")")))
       } yield (Ok("request sent"))
       case (Some(name), _, _, _, _, _, _, _) => for {
         res <- models.Party.searchForAuthorize(name, request.obj.party)
