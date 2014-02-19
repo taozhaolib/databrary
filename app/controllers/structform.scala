@@ -77,7 +77,7 @@ abstract class StructForm {
     }
   }
 
-  protected class form(value : Option[self.type] = None) extends Form[self.type](_mapping, _data, _errors, value) {
+  protected class form(value : Option[self.type] = if (hasErrors) None else Some(self)) extends Form[self.type](_mapping, _data, _errors, value) {
     override def bind(data : Map[String, String]) : Form[self.type] = {
       _data = data
       mapping.bind(data).fold(
@@ -105,6 +105,9 @@ abstract class StructForm {
       _errors.clear
       this
     }
+    /* We change globalErrors to also include errors attached to missing fields, as this is a common bug. */
+    override def globalErrors : Seq[FormError] =
+      _errors.filter(e => e.key.isEmpty || !_data.contains(e.key))
   }
   def apply() = new form()
   protected def _fill() : self.type = {
