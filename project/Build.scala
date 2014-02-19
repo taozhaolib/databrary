@@ -8,7 +8,7 @@ object ApplicationBuild extends Build {
 
   val dbDependencies = Seq(
     jdbc,
-    "com.github.mauricio" %% "postgresql-async" % "0.2.11"
+    "com.github.mauricio" %% "postgresql-async" % "0.2.12"
   )
 
   val avDependencies = Seq(

@@ -64,7 +64,7 @@
                                     <tr>
                                     @widget.tag.form(routes.RecordHtml.slotAdd(slot.containerId, slot.segment, RecordCategory.PARTICIPANT, true)) {
                                         <td colspan="2">
-                                        @widget.tag.select(f("record"), selectList, '_default -> "Create new record...", '_colspan -> 2)(widget.tag.minimalFieldConstructor.f, Lang("en"))
+                                        @widget.tag.select(f("record"), selectList, ('_default, "Create new record..."), ('_colspan, 2))(widget.tag.minimalFieldConstructor.f, Lang("en"))
                                         </td>
 
                                         <td>
