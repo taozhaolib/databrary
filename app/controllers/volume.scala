@@ -180,13 +180,16 @@ object VolumeHtml extends VolumeController {
     (new VolumeController.CreateForm).Ok
   }
 
-  protected val accessSearchForm = Form(
-    "name" -> nonEmptyText
-  )
+  class AccessSearchForm(implicit request : Request[_])
+    extends AHtmlForm[AccessSearchForm](
+      routes.VolumeHtml.accessSearch(request.obj.id),
+      f => VolumeHtml.viewAdmin(accessSearchForm = Some(f))) {
+    val name = Field(nonEmptyText)
+  }
 
   private[controllers] def viewAdmin(
     accessChangeForm : Option[VolumeController.AccessForm] = None,
-    accessSearchForm : Form[String] = accessSearchForm,
+    accessSearchForm : Option[AccessSearchForm] = None,
     accessResults : Seq[Party] = Nil)(
     implicit request : Request[_]) = {
     val change = accessChangeForm.map(_.partyId.unId).toSet
@@ -197,7 +200,7 @@ object VolumeHtml extends VolumeController {
         .map(accessForm(_)) ++
 	accessChangeForm
       results = accessResults.map(new VolumeController.AccessForm(_))
-    } yield (views.html.volume.access(request.obj, forms, accessSearchForm, results))
+    } yield (views.html.volume.access(request.obj, forms, accessSearchForm.getOrElse(new AccessSearchForm), results))
   }
 
   def admin(id : models.Volume.Id) = Action(id, Permission.ADMIN).async { implicit request =>
@@ -205,16 +208,12 @@ object VolumeHtml extends VolumeController {
   }
 
   def accessSearch(id : models.Volume.Id) = Action(id, Permission.ADMIN).async { implicit request =>
-    val form = accessSearchForm.bindFromRequest
-    form.fold(
-      AbadForm[String](f => viewAdmin(accessSearchForm = f), _),
-      name =>
-        models.Party.searchForVolumeAccess(name, request.obj).flatMap { res =>
-          viewAdmin(accessSearchForm = form,
-            accessResults = res)
-	  .map(Ok(_))
-        }
-    )
+    val form = new AccessSearchForm()._bind
+    models.Party.searchForVolumeAccess(form.name.value, request.obj).flatMap { res =>
+      viewAdmin(accessSearchForm = Some(form),
+	accessResults = res)
+      .map(Ok(_))
+    }
   }
 }
 
