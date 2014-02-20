@@ -103,6 +103,7 @@ define(['app/config/module'], function (module) {
 
 		//
 
+		/*
 		$routeProvider.when('/record/:id', {
 			resolve: {
 				redirect: ['$location', 'Record', function ($location, Record) {
@@ -142,6 +143,7 @@ define(['app/config/module'], function (module) {
 				}]
 			}
 		});
+		*/
 
 		// TODO: implement real editing and remove phonyView
 

@@ -71,8 +71,23 @@ define(['app/config/module'], function (module) {
 		routerService.party = makeRoute('/party/:id');
 		routerService.volume = makeRoute('/volume/:id');
 
-		routerService.record = makeRoute('/record/:id');
-		routerService.slot = makeRoute('/slot/:id');
+		routerService.record = function (data) {
+			if ($rootScope.browser.isRecord(data))
+				data = {
+					id: data.id
+				};
+
+			return routerService.makeUrl('/record/:id', data);
+		};
+		routerService.slot = function (data) {
+			if ($rootScope.browser.isSession(data))
+				data = {
+					id: data.id,
+					segment: data.segment || ','
+				};
+
+			return routerService.makeUrl('/slot/:id', data);
+		};
 		routerService.slotAsset = makeRoute('/slot/:sid/asset/:id');
 		routerService.asset = makeRoute('/asset/:id');
 
