@@ -100,7 +100,7 @@ object VolumeController extends VolumeController {
     def formName : String = actionName + " Volume"
 
     val name : Field[Option[String]]
-    val alias = Field(OptionMapping(text))
+    val alias = Field(OptionMapping(text(maxLength = 64)))
     val body = Field(OptionMapping(text))
     val citation = Field(seq(citationMapping))
   }
