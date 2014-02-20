@@ -45,8 +45,8 @@
         </div>
 
         <div class="temporary">
-            <a class="button mini" ng-href="{{router.volumeEdit(volume)}}">edit</a>
-            <a class="button mini" ng-href="{{router.volumeAccess(volume)}}">authorize</a>
+	    <a class="button mini" ng-if="volume.permission >= constant.find('permission', 'CONTRIBUTE').id" ng-href="{{router.volumeEdit(volume)}}">edit</a>
+	    <a class="button mini" ng-if="volume.permission >= constant.find('permission', 'ADMIN').id" ng-href="{{router.volumeAccess(volume)}}">access</a>
         </div>
     </panel-mode>
     <!--

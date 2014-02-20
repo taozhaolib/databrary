@@ -26,6 +26,16 @@ define(['app/config/module'], function (module) {
 			return constantService.data[key];
 		};
 
+		constantService.find = function (key, name) {
+			var data = constantService.data[key];
+			if (angular.isDefined(data))
+				for (var id in data)
+					if (data.hasOwnProperty(id) && data[id].name == name)
+						return data[id];
+
+			return undefined;
+		}
+
 		//
 
 		constantService.update();
