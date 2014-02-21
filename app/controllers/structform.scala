@@ -35,18 +35,17 @@ abstract class StructForm {
     def apply() = self()(_name)
   }
 
-  private[this] def getValFields = {
-    val cls = getClass
-    cls.getDeclaredFields.toIterator
-      .filter(f => classOf[Field[_]].isAssignableFrom(f.getType))
+  private[this] def getValFields =
+    getClass.getMethods.toIterator
+      .filter(f => f.getModifiers == 1 && f.getParameterTypes.isEmpty && f.getTypeParameters.isEmpty && classOf[Field[_]].isAssignableFrom(f.getReturnType))
       .map { f =>
 	val name = f.getName
-	val field = cls.getDeclaredMethod(name).invoke(self).asInstanceOf[Field[_]]
+	println(name)
+	val field = f.invoke(self).asInstanceOf[Field[_]]
 	field.name = name
 	field
       }.toSeq
-  }
-  private[this] lazy val fields = getValFields
+  private[this] lazy val _fields = getValFields
 
   private[this] var _data : Map[String, String] = Map.empty[String, String]
   private[this] val _errors : mutable.ListBuffer[FormError] = mutable.ListBuffer.empty[FormError]
@@ -57,18 +56,18 @@ abstract class StructForm {
     val key : String = ""
     val constraints : Seq[Constraint[self.type]] = _constraints
     def bind(data : Map[String,String]) : Either[Seq[FormError], self.type] = {
-      val l = fields.flatMap(_.bind(data))
+      val l = _fields.flatMap(_.bind(data))
       if (l.isEmpty)
         Right(self)
       else
         Left(l.flatten)
     }
     def unbind(value : self.type) : (Map[String, String], Seq[FormError]) = {
-      val (m, e) = fields.map(_.unbind).unzip
+      val (m, e) = _fields.map(_.unbind).unzip
       (m.fold(Map.empty[String, String])(_ ++ _), e.flatten[FormError])
     }
     val mappings : Seq[Mapping[_]] =
-      this +: fields.flatMap(_.mapping.mappings)
+      this +: _fields.flatMap(_.mapping.mappings)
     def withPrefix(prefix : String) : Mapping[self.type] =
       throw new UnsupportedOperationException("StructForm.mapping.withPrefix")
     def verifying(c : Constraint[self.type]*) : Mapping[self.type] = {
