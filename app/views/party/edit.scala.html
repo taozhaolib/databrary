@@ -1,40 +1,37 @@
-@(party : Option[Party], form : PartyHtml.PartyForm, avatarForm : PartyHtml.AvatarForm = PartyHtml.avatarForm)(implicit request : PartyHtml.Request[_])
+@(form : PartyController#PartyForm, avatarForm : PartyHtml.AvatarForm = PartyHtml.avatarForm)(implicit request : SiteRequest[_])
 
 @implicitField = @{
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@template.form(party, party.fold("Create Party")(_ => "Edit Profile")) {
-            @widget.formErrors(form)
-
-	    @widget.tag.form(party.fold(routes.PartyHtml.create)(p => routes.PartyHtml.update(p.id))) {
-                @widget.tag.inputText(form("name"), ('placeholder, "Full name"))
-
-                @if(controllers.PartyHtml.formForAccount(form)) {
-                    @widget.tag.inputPassword(form("auth"), ('placeholder, "Current Password"))
-                    @widget.tag.inputText(form("email"), ('placeholder, "Email"))
-                    @widget.tag.inputPassword(form("password.once"), ('placeholder, "New Password"))
-                    @widget.tag.inputPassword(form("password.again"), ('placeholder, "New Password (repeat)"))
-                }
-
-                @widget.tag.inputText(form("orcid"), ('placeholder, "ORCiD"))
-                @widget.tag.inputText(form("affiliation"), ('placeholder,"Affiliation"))
+@defining(cast[PartyController#EditForm](form).map(_.party)) { party =>
+@template.form(party, form.formName) {
+	    @widget.tag.form(form._action) {
+                @widget.tag.inputText(form.name(), ('placeholder, "Full name"))
+                @widget.tag.inputText(form.orcid(), ('placeholder, "ORCiD"))
+                @widget.tag.inputText(form.affiliation(), ('placeholder,"Affiliation"))
 		@if(request.access.direct == Permission.ADMIN) {
-                    @widget.tag.inputText(form("duns"), ('placeholder, "DUNS"))
+                    @widget.tag.inputText(form.duns(), ('placeholder, "DUNS"))
 		}
 
-                @if(controllers.PartyHtml.formForAccount(form)) {
-                    @widget.tag.inputText(form("openid"), ('placeholder, "OpenID"))
+		@cast[PartyController#AccountEditForm](form).map { form =>
+                    @widget.tag.inputPassword(form.auth(), ('placeholder, "Current Password"))
+                    @widget.tag.inputText(form.email(), ('placeholder, "Email"))
+                    @widget.tag.inputPassword(form.password()("once"), ('placeholder, "New Password"))
+                    @widget.tag.inputPassword(form.password()("again"), ('placeholder, "New Password (repeat)"))
+                    @widget.tag.inputText(form.openid(), ('placeholder, "OpenID"))
                 }
 
-		<button type='submit' class="button">@party.fold("Create")(_ => "Update")</button>
+		@widget.formErrors(form())
+		<button type='submit' class="button">@form.actionName</button>
             }
 
 	    @party.map { p =>
 	    @widget.tag.form(routes.PartyHtml.uploadAvatar(p.id), ('enctype, "multipart/form-data")) {
 		   @widget.tag.inputFile(avatarForm("file"))
+		   @widget.formErrors(avatarForm)
 		   <button type='submit' class="button">Upload</button>
 	    }
-            @widget.formErrors(avatarForm)
 	    }
+}
 }

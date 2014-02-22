@@ -28,11 +28,11 @@
                         @accessFields(form)
 
                         <td>
+                            @widget.formErrors(form())
                             <button type='submit' class="button second">Update</button>
                             @if(!(request.identity === form.party)) {
                             <button type='submit' class="button first" name='delete' value='true'>Revoke</button>
 			    }
-                            @widget.formErrors(form())
                         </td>
                     </tr>
 		    }
@@ -46,8 +46,8 @@
                         <td/>
                         <td/>
                         <td>
-                            <button type='submit' class="button third">Search</button>
                             @widget.formErrors(accessSearch())
+                            <button type='submit' class="button third">Search</button>
                         </td>
                     </tr>
                 }
@@ -57,8 +57,8 @@
                         <tr>
                             @accessFields(form)
                             <td>
-                                <button type='submit' class="button">Grant</button>
                                 @widget.formErrors(form())
+                                <button type='submit' class="button">Grant</button>
                             </td>
                         </tr>
                     }

@@ -1,4 +1,4 @@
-@(target: Option[SitePage], context: String, redirect : Boolean = false)(body: Html)(implicit request : RequestObject[SiteObject]#Site[_])
+@(target: Option[SitePage], context: String, redirect : Boolean = false)(body: Html)(implicit request : SiteRequest[_])
 
 @defining(target.map(_.pageName)) { title =>
 @template.crud(context + title.fold("")(": " + _), redirect) {

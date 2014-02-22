@@ -1,8 +1,10 @@
-@(authorizeParents : Seq[Authorize], authorizeForms : Seq[(Boolean,Option[Party],PartyHtml.AuthorizeForm)])(implicit request : PartyHtml.Request[_])
+@(authorizeParents : Seq[Authorize], authorizeForms : Seq[PartyController.AuthorizeForm])(implicit request : PartyHtml.Request[_])
 
 @implicitField = @{
     helper.FieldConstructor(widget.tag.tableFieldConstructor.f)
 }
+
+@import PartyController._
 
 @authList(which : Boolean)(implicit fieldConstructor : helper.FieldConstructor) = {
     <h3>@{if(which) "Memberships" else "Authorizations"}</h3>
@@ -35,61 +37,63 @@
 	</tr>
     }
     }
-    @authorizeForms.filter(_._1 == which).map { case (_,other,form) =>
-	@widget.tag.form(other match {
-	    case None => routes.PartyHtml.authorizeSearch(request.obj.party.id, which)
-	    case Some(other) if which => routes.PartyHtml.authorizeApply(request.obj.party.id, other.id)
-	    case Some(other) => routes.PartyHtml.authorizeChange(request.obj.party.id, other.id)
-	}) {
+    @authorizeForms.filter(_._apply == which).map { form =>
+	@widget.tag.form(form._action) {
 	    <tr>
-		@other.fold {
-		@widget.tag.inputText(form("name"), 'id -> ("name_"+which.toString))
-		} { party =>
+		@form match {
+		case form : AuthorizeSearchForm => {
+		    @widget.tag.inputText(form.name(), 'id -> ("name_"+which.toString))
+		}
+		case form : AuthorizeOtherForm => {
 		<td>
-		    @display(party)
-		    @party.email.map { e =>
+		    @display(form.targetParty)
+		    @form.targetParty.email.map { e =>
 		        <br/>&lt;@e&gt;
 		    }
-		@form("info").value.map { info =>
-		    OSP: @info
-		}
+		    @form.info.value.map { info =>
+			OSP: @info
+		    }
 		</td>
 		}
+		}
 
-		@widget.tag.select(form("inherit"), Permission.values.toSeq.flatMap(p => Permission.message(p, "inherit").map((p.id.toString, _))))
+		@widget.tag.select(form.inherit(), Permission.values.toSeq.flatMap(p => Permission.message(p, "inherit").map((p.id.toString, _))))
 
-		@if(which) {
-		@if(form("inherit").value == Some(Permission.CONTRIBUTE.id.toString)) {
-		    @widget.tag.inputText(form("info"), 'placeholder -> "Contact info for your institution's authorizing official (OSP)", '_colspan -> 3)
+		@form match {
+		case form : AuthorizeChildForm => {
+		    @widget.tag.select(form.direct(), Permission.values.toSeq.flatMap(p => Permission.message(p, "direct").map((p.id.toString, _))))
+
+		    @widget.tag.select(form.permission(), Permission.values.toSeq.flatMap(p => Permission.message(p, "permission").map((p.id.toString, _))))
+
+		    @widget.tag.inputDate(form.expires(), 'placeholder -> "Expiration date", 'class -> "half")
+		}
+		case _ => {
+		@if(form.inherit.value == Permission.CONTRIBUTE) {
+		    @widget.tag.inputText(form.info(), 'placeholder -> "Contact info for your institution's authorizing official (OSP)", '_colspan -> 3)
 	        } else {
 		    <td colspan="3"/>
 		}
-		} else {
-		@widget.tag.select(form("direct"), Permission.values.toSeq.flatMap(p => Permission.message(p, "direct").map((p.id.toString, _))))
-
-		@widget.tag.select(form("permission"), Permission.values.toSeq.flatMap(p => Permission.message(p, "permission").map((p.id.toString, _))))
-
-		@widget.tag.inputDate(form("expires"), 'placeholder -> "Expiration date", 'class -> "half")
+		}
 		}
 
 		<td>
-		@other.fold {
+		@form match {
+		case form : AuthorizeSearchForm => {
 		    <input type='hidden' name='pending' value='true'/>
 		    <button type='submit' class="button third">Search</button>
-		@if(form("inherit").value == Some(Permission.CONTRIBUTE.id.toString) && form("name").value.isDefined) {
-		    <button type='submit' class="button first" name='delete' value='true'>Not found</button>
+		@if(form.inherit.value == Permission.CONTRIBUTE && form.name.value.nonEmpty) {
+		    <button type='submit' class="button first" name='notfound' value='true'>Not found</button>
 		}
-		} { party =>
-		@if(which) {
+		}
+		case form : AuthorizeApplyForm => {
 		    <button type='submit' class="button">Request</button>
-		} else {
-		@defining(form("pending").value == Some("true")) { pending =>
-		    <button type='submit' class="button second">@{if(pending) "Authorize" else "Change"}</button>
-		    <button type='submit' class="button first" name='delete' value='true'>@{if(pending) "Deny" else "Revoke"}</button>
+		}
+		case form : AuthorizeChildForm => {
+		    <button type='submit' class="button second">@{if(form.pending.value) "Authorize" else "Change"}</button>
+		    <button type='submit' class="button first" name='delete' value='true'>@{if(form.pending.value) "Deny" else "Revoke"}</button>
 		}
 		}
-		}
-		@widget.formErrors(form)
+		@widget.formErrors(form())
 		</td>
 	    </tr>
 	}

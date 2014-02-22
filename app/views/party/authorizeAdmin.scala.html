@@ -1,4 +1,4 @@
-@(pending : Seq[(Authorize, PartyHtml.AuthorizeForm)], active : Seq[Authorize], expired : Seq[Authorize])(implicit request : SiteRequest[_])
+@(pending : Seq[PartyController.AuthorizeAdminForm], active : Seq[Authorize], expired : Seq[Authorize])(implicit request : SiteRequest[_])
 
 @implicitField = @{
     helper.FieldConstructor(widget.tag.tableFieldConstructor.f)
@@ -53,21 +53,19 @@
     </thead>
 
     <tbody>
-	@pending.map { case (authorize, form) =>
-	@widget.tag.form(routes.PartyHtml.authorizeChange(authorize.parentId, authorize.childId)) {
+	@pending.map { form =>
+	@widget.tag.form(routes.PartyHtml.authorizeChange(form.authorize.parentId, form.authorize.childId)) {
 	<tr>
-	    <td>@display(authorize.parent)</td>
-	    <td>@display(authorize.child)</td>
-	    @widget.tag.inputText(form("info"))
-	    @widget.enumSelect(form("inherit"), Permission)
-	    @widget.enumSelect(form("direct"), Permission)
-	    @widget.tag.inputDate(form("expires"))
+	    <td>@display(form.authorize.parent)</td>
+	    <td>@display(form.authorize.child)</td>
+	    @widget.tag.inputText(form.info())
+	    @widget.enumSelect(form.inherit(), Permission)
+	    @widget.enumSelect(form.direct(), Permission)
+	    @widget.tag.inputDate(form.expires())
 	    <td>
-	    @defining(authorize.authorized.isEmpty) { pending =>
-		<button type='submit' class="button second">@{if(pending) "Authorize" else "Change"}</button>
-		<button class="button first" name='delete' value='true'>@{if(pending) "Deny" else "Revoke"}</button>
-	    }
-	    @widget.formErrors(form)
+		<button type='submit' class="button second">@{if(form.pending.value) "Authorize" else "Change"}</button>
+		<button class="button first" name='delete' value='true'>@{if(form.pending.value) "Deny" else "Revoke"}</button>
+		@widget.formErrors(form())
 	    </td>
 	</tr>
 	}

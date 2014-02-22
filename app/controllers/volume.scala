@@ -4,7 +4,6 @@ import scala.concurrent.Future
 import play.api._
 import          mvc._
 import          data._
-import               Forms._
 import          i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import site._
@@ -24,10 +23,10 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
   }
 
   type CitationMapping = (Option[String], Option[String], Option[String])
-  private val citationMapping = tuple(
-    "head" -> optional(nonEmptyText),
-    "url" -> optional(nonEmptyText),
-    "body" -> optional(nonEmptyText)
+  private val citationMapping = Forms.tuple(
+    "head" -> Forms.optional(Forms.nonEmptyText),
+    "url" -> Forms.optional(Forms.nonEmptyText),
+    "body" -> Forms.optional(Forms.nonEmptyText)
   ).verifying(Messages("citation.invalid"), _ match {
     case (Some(head), url, body) => true // TODO: validate URL
     case (None, None, None) => true
@@ -87,12 +86,12 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
 }
 
 object VolumeController extends VolumeController {
-  class SearchForm(implicit request : SiteRequest[_])
+  final class SearchForm(implicit request : SiteRequest[_])
     extends HtmlForm[SearchForm](
       routes.VolumeHtml.search,
       views.html.volume.search(Nil, _)) {
-    val query = Field(optional(nonEmptyText))
-    val party = Field(OptionMapping(of[Party.Id]))
+    val query = Field(Forms.optional(Forms.nonEmptyText))
+    val party = Field(OptionMapping(Forms.of[Party.Id]))
   }
 
   trait VolumeForm extends FormView[VolumeForm] {
@@ -100,41 +99,41 @@ object VolumeController extends VolumeController {
     def formName : String = actionName + " Volume"
 
     val name : Field[Option[String]]
-    val alias = Field(OptionMapping(text(maxLength = 64)))
-    val body = Field(OptionMapping(text))
-    val citation = Field(seq(citationMapping))
+    val alias = Field(OptionMapping(Forms.text(maxLength = 64)))
+    val body = Field(OptionMapping(Forms.text))
+    val citation = Field(Forms.seq(citationMapping))
   }
 
   private def citationFill(cite : VolumeCitation) = (Some(cite.head), cite.url, cite.body)
-  class EditForm(cites : Seq[VolumeCitation])(implicit request : Request[_])
+  final class EditForm(cites : Seq[VolumeCitation])(implicit request : Request[_])
     extends HtmlForm[EditForm](
       routes.VolumeHtml.update(request.obj.id),
       views.html.volume.edit(_)) with VolumeForm {
     def actionName = "Change"
     override def formName = "Edit Volume"
-    val name = Field(OptionMapping(nonEmptyText)).fill(Some(request.obj.name))
+    val name = Field(OptionMapping(Forms.nonEmptyText)).fill(Some(request.obj.name))
     body.fill(Some(request.obj.body.getOrElse("")))
     alias.fill(Some(request.obj.alias.getOrElse("")))
     citation.fill(cites.map(citationFill(_)) :+ ((Some(""), None, None)))
     _fill
   }
 
-  class CreateForm(implicit request : PartyController.Request[_])
+  final class CreateForm(implicit request : PartyController.Request[_])
     extends HtmlForm[CreateForm](
       routes.VolumeHtml.create(request.obj.party.id),
       views.html.volume.edit(_)) with VolumeForm {
     def actionName = "Create"
-    val name = Field(nonEmptyText.transform[Option[String]](Some(_), _.getOrElse("")))
+    val name = Field(Mappings.some(Forms.nonEmptyText))
   }
 
-  class AccessForm(val party : Party)(implicit request : Request[_])
+  final class AccessForm(val party : Party)(implicit request : Request[_])
     extends AHtmlForm[AccessForm](
       routes.VolumeHtml.accessChange(request.obj.id, party.id),
       f => VolumeHtml.viewAdmin(accessChangeForm = Some(f))) {
     def partyId = party.id
     val access = Field(Mappings.enum(Permission, maxId = Some(if (party.id.unId <= 0) Permission.DOWNLOAD.id else Permission.ADMIN.id)))
     val inherit = Field(Mappings.enum(Permission, maxId = Some(if (party.id.unId <= 0) Permission.DOWNLOAD.id else Permission.EDIT.id)))
-    val delete = Field(if (request.identity === party) boolean.verifying("access.delete.self", !_) else boolean).fill(false)
+    val delete = Field(if (request.identity === party) Forms.boolean.verifying("access.delete.self", !_) else Forms.boolean).fill(false)
     def _fill(a : VolumeAccess) : this.type = {
       assert(a.party === party)
       access.fill(a.access)
@@ -188,7 +187,7 @@ object VolumeHtml extends VolumeController {
     extends AHtmlForm[AccessSearchForm](
       routes.VolumeHtml.accessSearch(request.obj.id),
       f => VolumeHtml.viewAdmin(accessSearchForm = Some(f))) {
-    val name = Field(nonEmptyText)
+    val name = Field(Forms.nonEmptyText)
   }
 
   private[controllers] def viewAdmin(

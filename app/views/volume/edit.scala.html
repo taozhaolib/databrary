@@ -6,8 +6,6 @@
 
 @template.form(Some(request.obj), form.formName) {
         @widget.tag.form(form._action) {
-            @widget.formErrors(form())
-
             @widget.tag.inputText(form.name(), 'placeholder -> "Title", '_class -> "")
             @widget.tag.inputText(form.alias(), 'placeholder -> "Short name", '_class -> "")
             @widget.tag.textarea(form.body(), 'placeholder -> "Description", '_class -> "")
@@ -24,6 +22,7 @@
                 </div>
             </fieldset>
 
+            @widget.formErrors(form())
             <button type="submit" class="button">@form.actionName</button>
         }
 }

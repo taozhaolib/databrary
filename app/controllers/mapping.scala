@@ -5,7 +5,10 @@ import play.api.data.Forms._
 import play.api.data.validation._
 
 object Mappings {
-  def enum(enum : Enumeration, maxId : Option[Int] = None) = number(min=0, max=maxId.getOrElse(enum.maxId-1)).transform[enum.Value](enum(_), _.id)
+  def some[A](map : Mapping[A], default : A = "") : Mapping[Option[A]] =
+    map.transform[Option[A]](Some(_), _.getOrElse(default))
+  def enum(enum : Enumeration, maxId : Option[Int] = None) =
+    number(min=0, max=maxId.getOrElse(enum.maxId-1)).transform[enum.Value](enum(_), _.id)
 }
 
 object EmptyMapping extends Mapping[Unit] {

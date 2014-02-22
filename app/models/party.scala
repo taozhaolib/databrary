@@ -71,6 +71,7 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
 final class SiteParty(access : Access)(implicit val site : Site) extends SiteObject {
   assert(access.identity === site.identity)
   def party = access.target
+  def id = party.id
   def ===(a : SiteParty) = party === a.party
   def ===(a : Party) = party === a
 

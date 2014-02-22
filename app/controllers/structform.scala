@@ -30,7 +30,11 @@ abstract class StructForm {
     private[StructForm] lazy val mapping : Mapping[T] = map.withPrefix(name)
     private[StructForm] def bind(data : Map[String,String]) : Option[Seq[FormError]] =
       mapping.bind(data).fold(Some(_), v => { value = v ; None })
-    private[StructForm] def unbind = mapping.unbind(value)
+    private[StructForm] def unbind : (Map[String, String], Seq[FormError]) =
+      if (value == null)
+	(Map.empty[String,String], Seq(FormError(name, "error.missing")))
+      else
+	mapping.unbind(value)
 
     def apply() = self()(_name)
   }
@@ -39,10 +43,8 @@ abstract class StructForm {
     getClass.getMethods.toIterator
       .filter(f => f.getModifiers == 1 && f.getParameterTypes.isEmpty && f.getTypeParameters.isEmpty && classOf[Field[_]].isAssignableFrom(f.getReturnType))
       .map { f =>
-	val name = f.getName
-	println(name)
 	val field = f.invoke(self).asInstanceOf[Field[_]]
-	field.name = name
+	field.name = f.getName
 	field
       }.toSeq
   private[this] lazy val _fields = getValFields

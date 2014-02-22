@@ -28,16 +28,8 @@
     <script>
         window.$play = {};
 
-        @requestOption match {
-            case Some(request:RequestObject[_]#Site[_]) => {
-                @request.obj match {
-                    case obj:SiteObject => {
+	@requestOption.flatMap(RequestObject.cast).flatMap(cast[SiteObject](_)).map { obj =>
         window.$play.object = @format.raw(play.api.libs.json.Json.toJson(obj.json).toString);
-                    }
-                    case _ => {}
-                }
-            }
-            case _ => {}
         }
 
         @if(redirect) {

@@ -103,6 +103,12 @@ object RequestObject {
     getter(get) ~> permission(perm)
   def check[O <: InVolume](v : models.Volume.Id, get : SiteRequest[_] => Future[Option[O]], perm : Permission.Value = Permission.VIEW) =
     getter(get(_).map(_.filter(_.volumeId === v))) ~> permission(perm)
+
+  def cast(request : SiteRequest[_]) : Option[Any] =
+    request match {
+      case ro : RequestObject[_]#Site[_] => Some(ro.obj)
+      case _ => None
+    }
 }
 
 object SiteAction extends ActionCreator[SiteRequest.Base] {
