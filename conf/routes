@@ -17,9 +17,9 @@ GET     /superuser/on                                                           
 GET     /superuser/off                                                                            controllers.LoginHtml.superuserOff
 GET     /register                                                                                 controllers.LoginHtml.registration
 POST    /register                                                                                 controllers.LoginHtml.register
-GET     /token/password                                                                           controllers.Token.getPassword
-POST    /token/password                                                                           controllers.Token.issuePassword
-GET     /token/:token                                                                             controllers.Token.token(token : String)
+GET     /token/password                                                                           controllers.TokenController.getPassword
+POST    /token/password                                                                           controllers.TokenController.issuePassword
+GET     /token/:token                                                                             controllers.TokenController.token(token : String)
 
 # parties
 GET     /party/create                                                                             controllers.PartyHtml.createNew()
@@ -27,7 +27,7 @@ POST    /party/create                                                           
 GET     /party/$pID<-?[0-9]+>                                                                     controllers.PartyHtml.view(pID : models.Party.Id)
 GET     /party/$pID<[0-9]+>/edit                                                                  controllers.PartyHtml.edit(pID : models.Party.Id)
 POST    /party/$pID<[0-9]+>/edit                                                                  controllers.PartyHtml.update(pID : models.Party.Id)
-POST    /party/$pID<[0-9]+>/token                                                                 controllers.Token.password(pID : models.Account.Id)
+POST    /party/$pID<[0-9]+>/token                                                                 controllers.TokenController.password(pID : models.Account.Id)
 GET     /party/$pID<[0-9]+>/authorize                                                             controllers.PartyHtml.admin(pID : models.Party.Id)
 GET     /party/$pID<[0-9]+>/authorize/search                                                      controllers.PartyHtml.authorizeSearch(pID : models.Party.Id, apply : Boolean = false)
 GET     /party/$pID<[0-9]+>/authorize/search/apply                                                controllers.PartyHtml.authorizeSearch(pID : models.Party.Id, apply : Boolean = true)

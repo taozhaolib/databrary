@@ -9,7 +9,7 @@ import site._
 sealed abstract class Token protected (val id : Token.Id, val expires : Timestamp) extends TableRow {
   private[models] def sqlKey = SQLTerms('token -> id)
   def valid = expires.toDateTime.isAfterNow
-  def redeemURL = controllers.routes.Token.token(id)
+  def redeemURL = controllers.routes.TokenController.token(id)
   def remove : Future[Boolean]
 }
 

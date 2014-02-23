@@ -124,7 +124,7 @@ private[controllers] sealed class LoginController extends SiteController {
 	      affiliation = Maybe(affiliation).opt)
 	    .flatMap(Account.create(_, email = email))
 	  })
-	  _ <- controllers.Token.newPassword(Right(a), "register")
+	  _ <- controllers.TokenController.newPassword(Right(a), "register")
 	} yield (Ok("sent"))
     })
   }

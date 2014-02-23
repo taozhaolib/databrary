@@ -3,20 +3,27 @@ package controllers
 import play.api._
 import play.api.mvc._
 import play.api.data._
-import               Forms._
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
 import site._
 import models._
 
-object Token extends SiteController {
+object TokenController extends SiteController {
 
-  type PasswordForm = Form[(String, Option[String])]
-  val passwordForm = Form(tuple(
-    "token" -> text,
-    "password" -> PartyHtml.passwordMapping.verifying(Messages("error.required"), _.isDefined)
-  ))
+  final class PasswordForm(accountId : Account.Id)(implicit request : SiteRequest[_])
+    extends HtmlForm[PasswordForm](
+      routes.TokenController.password(accountId),
+      views.html.token.password(_)) {
+    val token = Field(Forms.text)
+    val password = Field(PartyHtml.passwordMapping.verifying(Messages("error.required"), _.isDefined)).fill(None)
+    def _fill(t : LoginToken) : this.type = {
+      assert(accountId === t.accountId)
+      assert(t.password)
+      token.fill(t.id)
+      _fill
+    }
+  }
 
   def token(token : String) = SiteAction.async { implicit request =>
     models.LoginToken.get(token).flatMap(_.fold(
@@ -26,7 +33,7 @@ object Token extends SiteController {
         token.remove
         macros.Async(Gone)
       } else if (token.password)
-        AOk(views.html.token.password(token.accountId, passwordForm.fill((token.id, None))))
+	new PasswordForm(token.accountId)._fill(token).Ok
       else {
         token.remove
         LoginController.login(token.account)
@@ -35,26 +42,27 @@ object Token extends SiteController {
   }
 
   def password(a : models.Account.Id) = SiteAction.async { implicit request =>
-    passwordForm.bindFromRequest.fold(
-      form => ABadRequest(views.html.token.password(a, form)),
-      { case (token, password) =>
-        models.LoginToken.get(token).flatMap(_
-          .filter(t => t.valid && t.password && t.accountId === a)
-          .fold[Future[SimpleResult]](ForbiddenException.result) { token =>
-            password.fold(macros.Async(false))(p => token.account.change(password = Some(p))).flatMap { _ =>
-              LoginController.login(token.account)
-            }
-          }
-        )
+    val form = new PasswordForm(a)._bind
+    models.LoginToken.get(form.token.value).flatMap(_
+      .filter(t => t.valid && t.password && t.accountId === a)
+      .fold[Future[SimpleResult]](ForbiddenException.result) { token =>
+	form.password.value.fold(macros.Async(false))(p => token.account.change(password = Some(p))).flatMap { _ =>
+	  LoginController.login(token.account)
+	}
       }
     )
   }
 
-  val issuePasswordForm = Form("email" -> email)
+  final class IssuePasswordForm(implicit request : SiteRequest[_])
+    extends HtmlForm[IssuePasswordForm](
+      routes.TokenController.issuePassword,
+      views.html.token.getPassword(_)) {
+    val email = Field(Forms.email)
+  }
 
-  def getPassword = SiteAction { implicit request =>
+  def getPassword = SiteAction.async { implicit request =>
     Mail.check
-    Ok(views.html.token.getPassword(issuePasswordForm))
+    new IssuePasswordForm().Ok
   }
 
   private[controllers] def newPassword(targ : Either[String,Account], msg : String = "password")(implicit request : SiteRequest[_]) : Future[Option[LoginToken]] =
@@ -72,14 +80,11 @@ object Token extends SiteController {
     } yield (token)
 
   def issuePassword = SiteAction.async { implicit request =>
-    issuePasswordForm.bindFromRequest.fold(
-      form => ABadRequest(views.html.token.getPassword(form)),
-      email =>
-        for {
-          acct <- Account.getEmail(email)
-          acct <- macros.Async.filter[Account](acct, _.party.access.map(_.direct < Permission.ADMIN))
-	  _ <- newPassword(acct.toRight(email))
-        } yield (Ok("sent"))
-    )
+    val form = new IssuePasswordForm()._bind
+    for {
+      acct <- Account.getEmail(form.email.value)
+      acct <- macros.Async.filter[Account](acct, _.party.access.map(_.direct < Permission.ADMIN))
+      _ <- newPassword(acct.toRight(form.email.value))
+    } yield (Ok("sent"))
   }
 }
