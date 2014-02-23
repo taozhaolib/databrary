@@ -88,7 +88,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
     * This is probably not a permanent solution for naming, but it's a start. */
   private[this] def idents : Seq[String] =
     _records.peek.fold[Seq[String]](Nil) {
-      groupBy[Record,Option[RecordCategory]](_, ri => ri.category)
+      groupBy(_, (ri : Record) => ri.category)
       .map { case (c,l) =>
         c.fold("")(_.name.capitalize + " ") + l.map(_.ident).mkString(", ")
       }

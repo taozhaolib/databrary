@@ -1,5 +1,7 @@
 package object macros {
+  import scala.collection._
   import scala.language.experimental.macros
+
   /** Cast Any to Option[A].  Equivalent to: `cast[A](x) = x match { a : A => Some(a) ; _ => None }` */
   def cast[A](x : Any) = macro Cast.castImpl[A]
 
@@ -8,6 +10,30 @@ package object macros {
   def zip[A,B,C](a : Option[A], b : Option[B], f : (A, B) => C = Tuple2.apply _) : Option[C] = (a, b) match {
     case (Some(a), Some(b)) => Some(f(a, b))
     case _ => None
+  }
+
+  def partition[T <: Traversable[A],A,B,C,BR,CR](l : T, f : PartialFunction[A, Either[B,C]])(implicit bf : generic.CanBuildFrom[T, B, BR], cf : generic.CanBuildFrom[T, C, CR]) : (BR,CR) = {
+    val br = bf()
+    val cr = cf()
+    for (x <- l) f(x).fold(br += _, cr += _)
+    (br.result, cr.result)
+  }
+
+  /** Group adjacent elements with identical keys into nested lists, such that the concatenation of the resulting _2 elements is the original list.
+    * This is more like Haskell's group than scala's Seq.groupBy: only adjacent elements are grouped.
+    * @param l the list to group
+    * @param f the key-generating function to group by
+    */
+  def groupBy[T <: TraversableLike[A,T],A,K,R](l : T, f : A => K)(implicit bf : generic.CanBuildFrom[T, (K,T), R]) : R = {
+    val r = bf()
+    @scala.annotation.tailrec def next(l : T) : Unit = if (l.nonEmpty) {
+      val k = f(l.head)
+      val (p, s) = l.span(f(_).equals(k))
+      r += k -> p
+      next(s)
+    }
+    next(l)
+    r.result
   }
 
   /** Apply a function to the first component of a tuple. */

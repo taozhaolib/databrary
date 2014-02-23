@@ -89,7 +89,7 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
 
   def recordCategorySlots : Future[Seq[(RecordCategory,Seq[SessionRecord])]] =
     recordSlots.map(rs =>
-      groupBy[SessionRecord, RecordCategory](rs.dropWhile(_._1.category.isEmpty), _._1.category.get))
+      groupBy(rs.dropWhile(_._1.category.isEmpty), (sr : SessionRecord) => sr._1.category.get))
 
   /** Basic summary information on this volume.
     * For now this only includes session (cross participant) information. */

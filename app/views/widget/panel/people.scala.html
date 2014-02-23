@@ -5,7 +5,7 @@
 @widget.panel.raw("people", "")(title = "People"){
     <div class="col-full">
         <div class="row">
-        @groupBy[VolumeAccess, Permission.Value](access, _.access).map { case (permission, volumeAccesses) =>
+	@groupBy(access, (va : VolumeAccess) => va.access).map { case (permission, volumeAccesses) =>
             @volumeAccesses.map { a =>
                 @widget.portrait.maximal(a.party, caption = raw(display.permissionToRole(permission)))
             }
