@@ -76,6 +76,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     def party = request.obj.party
     def accountForm : Option[(Account, AccountEditForm)]
     val name = Field(OptionMapping(Forms.nonEmptyText)).fill(Some(party.name))
+    val avatar = OptionalFile()
     orcid.fill(Some(party.orcid))
     affiliation.fill(Some(party.affiliation.getOrElse("")))
     duns.fill(Some(party.duns))
@@ -123,6 +124,11 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	  password = form.password.value,
 	  openid = form.openid.value.map(Maybe(_).opt)
 	)
+      })
+      _ <- macros.Async.foreach(form.avatar.value, { file : form.FilePart =>
+	val fmt = AssetFormat.getFilePart(file).filter(_.isImage) getOrElse
+	  form.avatar.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw
+	request.obj.setAvatar(file.ref, fmt, Maybe(file.filename).opt)
       })
     } yield (result(request.obj))
   }
@@ -351,23 +357,6 @@ object PartyHtml extends PartyController {
       AssetController.assetResult(_)))
   }
 
-  type AvatarMapping = Unit
-  type AvatarForm = Form[AvatarMapping]
-  val avatarForm = Form("file" -> Forms.ignored(()))
-
-  def uploadAvatar(i : models.Party.Id) = AdminAction(i).async { implicit request =>
-    def Error(form : AvatarForm) =
-      throw new BadFormException[AvatarMapping](views.html.party.edit(editForm, _))(form)
-    val form = avatarForm.bindFromRequest
-    form.fold(Error _, { _ =>
-      val file = request.body.asMultipartFormData.flatMap(_.file("file")) getOrElse
-	Error(form.withError("file", "error.required"))
-      val fmt = AssetFormat.getFilePart(file).filter(_.isImage) getOrElse
-	Error(form.withError("file", "file.format.unknown", file.contentType.getOrElse("unknown")))
-      request.obj.setAvatar(file.ref, fmt, Maybe(file.filename).opt).map(_ =>
-	result(request.obj))
-    })
-  }
 }
 
 object PartyApi extends PartyController {

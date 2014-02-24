@@ -17,7 +17,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
   private[controllers] def Action(i : models.Volume.Id, p : Permission.Value = Permission.VIEW) =
     SiteAction ~> action(i, p)
 
-  protected def searchResults(implicit request : SiteRequest[_]) : (VolumeController.SearchForm, Future[Seq[Volume]]) = {
+  protected def searchResults(implicit request : SiteRequest[AnyContent]) : (VolumeController.SearchForm, Future[Seq[Volume]]) = {
     val form = new VolumeController.SearchForm()._bind
     (form, Volume.search(form.query.value, form.party.value))
   }

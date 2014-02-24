@@ -7,47 +7,101 @@ import play.api.data._
 import play.api.data.validation._
 import play.api.mvc._
 import play.api.templates.HtmlFormat
+import play.api.libs.Files
+import macros._
 
 /** This is an alternative to play.api.data.Form that provides more structure and safety.
   * The disadvantage of this class is mutability and less efficiency. */
 abstract class StructForm {
   self =>
 
-  /** A field in this form, which should only be used to declare vals. */
-  protected final case class Field[T](map : Mapping[T]) {
+  protected sealed abstract class Member[T] {
     private[this] var _name : String = _
-    def name : String = _name
-    private[StructForm] def name_=(name : String) {
+    final def name : String = _name
+    private[StructForm] final def name_=(name : String) {
       _name = name
     }
     /** The value of this field, which will be filled in by binding the form. */
-    var value : T = _
-    def fill(v : T) : Field[T] = {
-      value = v
-      this
+    protected var _value : T = _
+    def value : T = _value
+
+    final def apply() = self()(name)
+    final def withError(message : String, args : Any*) : self.type = {
+      _errors += FormError(name, message, args)
+      self
     }
-
-    private[StructForm] lazy val mapping : Mapping[T] = map.withPrefix(name)
-    private[StructForm] def bind(data : Map[String,String]) : Option[Seq[FormError]] =
-      mapping.bind(data).fold(Some(_), v => { value = v ; None })
-    private[StructForm] def unbind : (Map[String, String], Seq[FormError]) =
-      if (value == null)
-	(Map.empty[String,String], Seq(FormError(name, "error.missing")))
-      else
-	mapping.unbind(value)
-
-    def apply() = self()(_name)
   }
 
-  private[this] def getValFields =
+  /** A field in this form, which should only be used to declare vals. */
+  protected final case class Field[T](map : Mapping[T]) extends Member[T] {
+    def fill(v : T) : Field[T] = {
+      _value = v
+      this
+    }
+    private[this] lazy val mapping : Mapping[T] = map.withPrefix(name)
+    private[StructForm] def mappings : Seq[Mapping[_]] = mapping.mappings
+    private[StructForm] def bind(data : Map[String,String]) : Option[Seq[FormError]] =
+      mapping.bind(data).fold(Some(_), v => { _value = v ; None })
+    private[StructForm] def unbind : (Map[String, String], Seq[FormError]) =
+      if (_value == null)
+	(Map.empty[String,String], Seq(FormError(name, "error.missing")))
+      else
+	mapping.unbind(_value)
+  }
+
+  final type FileData = MultipartFormData[Files.TemporaryFile]
+  final type FilePart = MultipartFormData.FilePart[Files.TemporaryFile]
+  protected sealed abstract class FileMember[T] extends Member[T] {
+    private[this] var constraints : Seq[Constraint[FilePart]] = Nil
+    protected[StructForm] final def verifying(c : Constraint[FilePart]*) : this.type = {
+      constraints ++= c
+      this
+    }
+    protected[StructForm] final def verifying(constraint : FilePart => Boolean) : this.type =
+      verifying("error.unknown", constraint)
+    protected[StructForm] final def verifying(error : => String, constraint : FilePart => Boolean) : this.type = {
+      verifying(Constraint { t : FilePart =>
+	if (constraint(t)) Valid else Invalid(Seq(ValidationError(error)))
+      })
+    }
+    protected final def applyConstraints(f : FilePart) : Seq[FormError] =
+      constraints.map(_(f)).collect {
+	case Invalid(errors) => errors.map(e => FormError(name, e.message, e.args))
+      }.flatten
+    def bind(body : FileData) : Seq[FormError]
+  }
+
+  protected final case class File() extends FileMember[FilePart] {
+    def bind(body : FileData) =
+      body.file(name)
+      .fold(Seq(FormError(name, "error.required"))) { f =>
+	_value = f
+	applyConstraints(f)
+      }
+  }
+
+  protected final case class OptionalFile() extends FileMember[Option[FilePart]] {
+    def bind(data : FileData) : Seq[FormError] = {
+      _value = data.file(name)
+      _value.toSeq.flatMap(applyConstraints(_))
+    }
+  }
+
+  private[this] def getValMembers : Iterator[Member[_]] =
     getClass.getMethods.toIterator
-      .filter(f => f.getModifiers == 1 && f.getParameterTypes.isEmpty && f.getTypeParameters.isEmpty && classOf[Field[_]].isAssignableFrom(f.getReturnType))
+      .filter(f => f.getModifiers == 1 && f.getParameterTypes.isEmpty && f.getTypeParameters.isEmpty && classOf[Member[_]].isAssignableFrom(f.getReturnType))
       .map { f =>
-	val field = f.invoke(self).asInstanceOf[Field[_]]
+	val field = f.invoke(self).asInstanceOf[Member[_]]
 	field.name = f.getName
 	field
-      }.toSeq
-  private[this] lazy val _fields = getValFields
+      }
+  private[this] lazy val (_fields, _files) =
+    partition(getValMembers.toSeq,
+      PartialFunction[Member[_], Either[Field[_], FileMember[_]]] {
+	case f : Field[_] => Left(f)
+	case f : FileMember[_] => Right(f)
+      }
+    )
 
   private[this] var _data : Map[String, String] = Map.empty[String, String]
   private[this] val _errors : mutable.ListBuffer[FormError] = mutable.ListBuffer.empty[FormError]
@@ -69,7 +123,7 @@ abstract class StructForm {
       (m.fold(Map.empty[String, String])(_ ++ _), e.flatten[FormError])
     }
     val mappings : Seq[Mapping[_]] =
-      this +: _fields.flatMap(_.mapping.mappings)
+      this +: _fields.flatMap(_.mappings)
     def withPrefix(prefix : String) : Mapping[self.type] =
       throw new UnsupportedOperationException("StructForm.mapping.withPrefix")
     def verifying(c : Constraint[self.type]*) : Mapping[self.type] = {
@@ -115,8 +169,15 @@ abstract class StructForm {
     _data = _mapping.unbind(self)._1
     self
   }
-  def _bind(implicit request : Request[_]) : self.type = {
+  private[this] def _bindFiles(implicit request : Request[AnyContent]) : self.type = {
+    val d = request.body.asMultipartFormData
+      .getOrElse(MultipartFormData[Files.TemporaryFile](Map.empty, Nil, Nil, Nil))
+    _errors ++= _files.flatMap(_.bind(d))
+    self
+  }
+  def _bind(implicit request : Request[AnyContent]) : self.type = {
     apply().bindFromRequest
+    _bindFiles
     self
   }
 }
@@ -124,12 +185,13 @@ abstract class StructForm {
 abstract class FormView[+F <: FormView[F]](val _action : Call) extends StructForm {
   self =>
   def _exception : FormException
+  final def _throw = throw _exception
   final def orThrow() : self.type = {
     if (hasErrors)
-      throw _exception
+      _throw
     self
   }
-  override def _bind(implicit request : Request[_]) : self.type = {
+  override def _bind(implicit request : Request[AnyContent]) : self.type = {
     super._bind.orThrow
   }
 }
