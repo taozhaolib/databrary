@@ -50,7 +50,7 @@
 		    @form.targetParty.email.map { e =>
 		        <br/>&lt;@e&gt;
 		    }
-		    @form.info.value.map { info =>
+		    @form.info.get.map { info =>
 			OSP: @info
 		    }
 		</td>
@@ -68,7 +68,7 @@
 		    @widget.tag.inputDate(form.expires(), 'placeholder -> "Expiration date", 'class -> "half")
 		}
 		case _ => {
-		@if(form.inherit.value == Permission.CONTRIBUTE) {
+		@if(form.inherit.get == Permission.CONTRIBUTE) {
 		    @widget.tag.inputText(form.info(), 'placeholder -> "Contact info for your institution's authorizing official (OSP)", '_colspan -> 3)
 	        } else {
 		    <td colspan="3"/>
@@ -81,7 +81,7 @@
 		case form : AuthorizeSearchForm => {
 		    <input type='hidden' name='pending' value='true'/>
 		    <button type='submit' class="button third">Search</button>
-		@if(form.inherit.value == Permission.CONTRIBUTE && form.name.value.nonEmpty) {
+		@if(form.inherit.get == Permission.CONTRIBUTE && form.name.get.nonEmpty) {
 		    <button type='submit' class="button first" name='notfound' value='true'>Not found</button>
 		}
 		}
@@ -89,8 +89,8 @@
 		    <button type='submit' class="button">Request</button>
 		}
 		case form : AuthorizeChildForm => {
-		    <button type='submit' class="button second">@{if(form.pending.value) "Authorize" else "Change"}</button>
-		    <button type='submit' class="button first" name='delete' value='true'>@{if(form.pending.value) "Deny" else "Revoke"}</button>
+		    <button type='submit' class="button second">@{if(form.pending.get) "Authorize" else "Change"}</button>
+		    <button type='submit' class="button first" name='delete' value='true'>@{if(form.pending.get) "Deny" else "Revoke"}</button>
 		}
 		}
 		@widget.formErrors(form())

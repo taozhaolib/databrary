@@ -43,10 +43,10 @@ object TokenController extends SiteController {
 
   def password(a : models.Account.Id) = SiteAction.async { implicit request =>
     val form = new PasswordForm(a)._bind
-    models.LoginToken.get(form.token.value).flatMap(_
+    models.LoginToken.get(form.token.get).flatMap(_
       .filter(t => t.valid && t.password && t.accountId === a)
       .fold[Future[SimpleResult]](ForbiddenException.result) { token =>
-	form.password.value.fold(macros.Async(false))(p => token.account.change(password = Some(p))).flatMap { _ =>
+	form.password.get.fold(macros.Async(false))(p => token.account.change(password = Some(p))).flatMap { _ =>
 	  LoginController.login(token.account)
 	}
       }
@@ -82,9 +82,9 @@ object TokenController extends SiteController {
   def issuePassword = SiteAction.async { implicit request =>
     val form = new IssuePasswordForm()._bind
     for {
-      acct <- Account.getEmail(form.email.value)
+      acct <- Account.getEmail(form.email.get)
       acct <- macros.Async.filter[Account](acct, _.party.access.map(_.direct < Permission.ADMIN))
-      _ <- newPassword(acct.toRight(form.email.value))
+      _ <- newPassword(acct.toRight(form.email.get))
     } yield (Ok("sent"))
   }
 }

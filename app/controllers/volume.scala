@@ -19,7 +19,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
 
   protected def searchResults(implicit request : SiteRequest[AnyContent]) : (VolumeController.SearchForm, Future[Seq[Volume]]) = {
     val form = new VolumeController.SearchForm()._bind
-    (form, Volume.search(form.query.value, form.party.value))
+    (form, Volume.search(form.query.get, form.party.get))
   }
 
   type CitationMapping = (Option[String], Option[String], Option[String])
@@ -47,18 +47,18 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     for {
       form <- editFormFill
       _ = form._bind
-      _ <- vol.change(name = form.name.value,
-	alias = form.alias.value.map(Maybe(_).opt),
-	body = form.body.value.map(Maybe(_).opt))
-      _ <- citationSet(vol, form.citation.value)
+      _ <- vol.change(name = form.name.get,
+	alias = form.alias.get.map(Maybe(_).opt),
+	body = form.body.get.map(Maybe(_).opt))
+      _ <- citationSet(vol, form.citation.get)
     } yield (result(vol))
   }
 
   def create(owner : models.Party.Id) = ContributeAction(Some(owner)).async { implicit request =>
     val form = new VolumeController.CreateForm()._bind
     for {
-      vol <- models.Volume.create(form.name.value.get, form.alias.value.flatMap(Maybe(_).opt), form.body.value.flatMap(Maybe(_).opt))
-      _ <- citationSet(vol, form.citation.value)
+      vol <- models.Volume.create(form.name.get.get, form.alias.get.flatMap(Maybe(_).opt), form.body.get.flatMap(Maybe(_).opt))
+      _ <- citationSet(vol, form.citation.get)
       _ <- VolumeAccess.set(vol, owner, Permission.ADMIN, Permission.CONTRIBUTE)
     } yield (result(vol))
   }
@@ -77,10 +77,10 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     for {
       who <- models.Party.get(e).map(_.getOrElse(throw NotFoundException))
       form = new VolumeController.AccessForm(who)._bind
-      _ <- if (form.delete.value)
+      _ <- if (form.delete.get)
 	  VolumeAccess.delete(request.obj, e)
 	else
-	  VolumeAccess.set(request.obj, e, max(form.access.value, form.inherit.value), form.inherit.value)
+	  VolumeAccess.set(request.obj, e, max(form.access.get, form.inherit.get), form.inherit.get)
     } yield (result(request.obj))
   }
 }
@@ -212,7 +212,7 @@ object VolumeHtml extends VolumeController {
 
   def accessSearch(id : models.Volume.Id) = Action(id, Permission.ADMIN).async { implicit request =>
     val form = new AccessSearchForm()._bind
-    models.Party.searchForVolumeAccess(form.name.value, request.obj).flatMap { res =>
+    models.Party.searchForVolumeAccess(form.name.get, request.obj).flatMap { res =>
       viewAdmin(accessSearchForm = Some(form),
 	accessResults = res)
       .map(Ok(_))

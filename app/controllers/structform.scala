@@ -22,8 +22,8 @@ abstract class StructForm {
       _name = name
     }
     /** The value of this field, which will be filled in by binding the form. */
-    protected var _value : T = _
-    def value : T = _value
+    protected var value : T = _
+    def get : T = value
 
     final def apply() = self()(name)
     final def withError(message : String, args : Any*) : self.type = {
@@ -35,18 +35,18 @@ abstract class StructForm {
   /** A field in this form, which should only be used to declare vals. */
   protected final case class Field[T](map : Mapping[T]) extends Member[T] {
     def fill(v : T) : Field[T] = {
-      _value = v
+      value = v
       this
     }
     private[this] lazy val mapping : Mapping[T] = map.withPrefix(name)
     private[StructForm] def mappings : Seq[Mapping[_]] = mapping.mappings
     private[StructForm] def bind(data : Map[String,String]) : Option[Seq[FormError]] =
-      mapping.bind(data).fold(Some(_), v => { _value = v ; None })
+      mapping.bind(data).fold(Some(_), v => { value = v ; None })
     private[StructForm] def unbind : (Map[String, String], Seq[FormError]) =
-      if (_value == null)
+      if (value == null)
 	(Map.empty[String,String], Seq(FormError(name, "error.missing")))
       else
-	mapping.unbind(_value)
+	mapping.unbind(value)
   }
 
   final type FileData = MultipartFormData[Files.TemporaryFile]
@@ -75,15 +75,15 @@ abstract class StructForm {
     def bind(body : FileData) =
       body.file(name)
       .fold(Seq(FormError(name, "error.required"))) { f =>
-	_value = f
+	value = f
 	applyConstraints(f)
       }
   }
 
   protected final case class OptionalFile() extends FileMember[Option[FilePart]] {
     def bind(data : FileData) : Seq[FormError] = {
-      _value = data.file(name)
-      _value.toSeq.flatMap(applyConstraints(_))
+      value = data.file(name)
+      value.toSeq.flatMap(applyConstraints(_))
     }
   }
 

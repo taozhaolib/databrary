@@ -88,7 +88,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   final class AccountEditForm(account : Account)(implicit request : Request[_]) extends EditForm with AccountForm {
     val auth = Field(Forms.text.verifying("password.incorrect",
       s => s.isEmpty || BCrypt.checkpw(s, account.password))).fill("")
-    def accountForm = if (auth.value.isEmpty) None else Some((account, this))
+    def accountForm = if (auth.get.isEmpty) None else Some((account, this))
     val email = Field(OptionMapping(Forms.email)).fill(Some(account.email))
     openid.fill(account.openid)
     _fill
@@ -113,19 +113,19 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     val party = request.obj.party
     for {
       _ <- party.change(
-	name = form.name.value,
-	orcid = form.orcid.value,
-	affiliation = form.affiliation.value.map(Maybe(_).opt),
-	duns = form.duns.value.filter(_ => request.access.direct == Permission.ADMIN)
+	name = form.name.get,
+	orcid = form.orcid.get,
+	affiliation = form.affiliation.get.map(Maybe(_).opt),
+	duns = form.duns.get.filter(_ => request.access.direct == Permission.ADMIN)
       )
       _ <- macros.Async.foreach[(Account, AccountEditForm), Unit](form.accountForm, { case (account, form) =>
 	account.change(
-	  email = form.email.value,
-	  password = form.password.value,
-	  openid = form.openid.value.map(Maybe(_).opt)
+	  email = form.email.get,
+	  password = form.password.get,
+	  openid = form.openid.get.map(Maybe(_).opt)
 	)
       })
-      _ <- macros.Async.foreach(form.avatar.value, { file : form.FilePart =>
+      _ <- macros.Async.foreach(form.avatar.get, { file : form.FilePart =>
 	val fmt = AssetFormat.getFilePart(file).filter(_.isImage) getOrElse
 	  form.avatar.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw
 	request.obj.setAvatar(file.ref, fmt, Maybe(file.filename).opt)
@@ -137,15 +137,15 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     val form = createForm(acct)._bind
     for {
       p <- Party.create(
-	name = form.name.value.get,
-	orcid = form.orcid.value.flatten,
-	affiliation = form.affiliation.value,
-	duns = form.duns.value.flatten)
+	name = form.name.get.get,
+	orcid = form.orcid.get.flatten,
+	affiliation = form.affiliation.get,
+	duns = form.duns.get.flatten)
       a <- macros.Async.map[AccountCreateForm, Account](cast[AccountCreateForm](form), form =>
 	Account.create(p,
-	  email = form.email.value.get,
-	  password = form.password.value,
-	  openid = form.openid.value)
+	  email = form.email.get.get,
+	  password = form.password.get,
+	  openid = form.openid.get)
       )
       s <- p.perSite
     } yield (result(s))
@@ -154,16 +154,16 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   def authorizeChange(id : models.Party.Id, childId : models.Party.Id) = AdminAction(id).async { implicit request =>
     models.Party.get(childId).flatMap(_.fold(ANotFound) { child =>
     val form = new PartyController.AuthorizeChildForm(child)._bind
-    (if (form.delete.value)
+    (if (form.delete.get)
       models.Authorize.delete(childId, id)
     else
       Authorize.set(childId, id,
-	max(form.inherit.value, form.permission.value),
-	max(form.direct.value, form.permission.value),
-	if (form.pending.value) None else Some(new Timestamp),
-	form.expires.value.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT)))
+	max(form.inherit.get, form.permission.get),
+	max(form.direct.get, form.permission.get),
+	if (form.pending.get) None else Some(new Timestamp),
+	form.expires.get.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT)))
       .flatMap { _ =>
-	Authorize.Info.set(childId, id, form.info.value)
+	Authorize.Info.set(childId, id, form.info.get)
       }
     ).map(_ => result(request.obj))
     })
@@ -186,8 +186,8 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     val form = new PartyController.AuthorizeApplyForm(parent)._bind
     for {
       dl <- delegates(parent)
-      _ <- Authorize.set(id, parentId, form.inherit.value, Permission.NONE, None, None)
-      _ <- Authorize.Info.set(id, parentId, form.info.value)
+      _ <- Authorize.set(id, parentId, form.inherit.get, Permission.NONE, None, None)
+      _ <- Authorize.Info.set(id, parentId, form.info.get)
       _ <- Mail.send(
 	to = (dl.map(_.email) :+ Messages("mail.authorize")).mkString(", "),
 	subject = Messages("mail.authorize.subject"),
@@ -211,8 +211,8 @@ object PartyController extends PartyController {
     val inherit = Field(Forms.default(Mappings.enum(Permission), Permission.NONE))
     val info = Field(Forms.optional(Forms.nonEmptyText)).fill(None)
     def copyFrom(f : AuthorizeForm) : this.type = {
-      inherit.fill(f.inherit.value)
-      info.fill(f.info.value)
+      inherit.fill(f.inherit.get)
+      info.fill(f.info.get)
       _fill
     }
   }
@@ -326,18 +326,18 @@ object PartyHtml extends PartyController {
 
   def authorizeSearch(id : models.Party.Id, apply : Boolean) = AdminAction(id).async { implicit request =>
     val form = new AuthorizeSearchForm(apply)._bind
-    if (form.notfound.value)
+    if (form.notfound.get)
       for {
 	_ <- Mail.send(
 	  to = Messages("mail.authorize"),
 	  subject = Messages("mail.authorize.subject"),
 	  body = Messages("mail.authorize.body", routes.PartyHtml.view(id).absoluteURL(true),
 	    request.obj.party.name + request.identity.email.fold("")(" <" + _ + ">") + request.obj.party.affiliation.fold("")(" (" + _ + ")"),
-	    form.name.value + form.info.value.fold("")(" (" + _ + ")")))
+	    form.name.get + form.info.get.fold("")(" (" + _ + ")")))
       } yield (Ok("request sent"))
     else
       for {
-        res <- models.Party.searchForAuthorize(form.name.value, request.obj.party)
+        res <- models.Party.searchForAuthorize(form.name.get, request.obj.party)
         r <- viewAdmin(form +: res.map(e =>
 	    (if (apply) new AuthorizeApplyForm(e) else new AuthorizeChildForm(e)).copyFrom(form)))
       } yield (Ok(r))

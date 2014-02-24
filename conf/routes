@@ -90,8 +90,8 @@ GET     /volume/$vID<[0-9]+>/record/$cID<-?[0-9]+>/create                       
 GET     /record/$rID<[0-9]+>/edit                                                                 controllers.RecordHtml.edit(rID : models.Record.Id)
 POST    /record/$rID<[0-9]+>/edit                                                                 controllers.RecordHtml.update(rID : models.Record.Id)
 
-GET     /volume/$vID<[0-9]+>/ingest/csv                                                           controllers.Ingest.csv(vID : models.Volume.Id)
-POST    /volume/$vID<[0-9]+>/ingest/curated                                                       controllers.Ingest.curated(vID : models.Volume.Id)
+GET     /volume/$vID<[0-9]+>/ingest/csv                                                           controllers.IngestController.csv(vID : models.Volume.Id)
+POST    /volume/$vID<[0-9]+>/ingest/curated                                                       controllers.IngestController.curated(vID : models.Volume.Id)
 
 # ===== API ===== #
 
