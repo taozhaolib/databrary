@@ -154,15 +154,8 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
 }
 
 private[controllers] abstract class FormException(form : Form[_]) extends SiteException {
-  protected final implicit val jsonFormErrors : json.OWrites[Seq[FormError]] =
-    json.OWrites[Seq[FormError]](errs =>
-      json.JsObject(errs
-        .groupBy(e => Maybe(e.key).orElse("error"))
-        .mapValues(e => json.JsArray(
-          e.map { case FormError(_, msg, args) => json.JsString(Messages(msg, args : _*)) }))
-        .toSeq))
   def resultApi : Future[SimpleResult] =
-    macros.Async(BadRequest(json.Json.toJson(form.errors)))
+    macros.Async(BadRequest(form.errorsAsJson))
 }
 
 private[controllers] final class BadFormException[A](view : Form[A] => templates.HtmlFormat.Appendable)(form : Form[A]) extends FormException(form) {

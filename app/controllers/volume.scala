@@ -27,7 +27,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     "head" -> Forms.optional(Forms.nonEmptyText),
     "url" -> Forms.optional(Forms.nonEmptyText),
     "body" -> Forms.optional(Forms.nonEmptyText)
-  ).verifying(Messages("citation.invalid"), _ match {
+  ).verifying("citation.invalid", _ match {
     case (Some(head), url, body) => true // TODO: validate URL
     case (None, None, None) => true
     case _ => false
