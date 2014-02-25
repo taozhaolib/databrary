@@ -22,6 +22,10 @@ ng-click="setItemPlayer(data)">
                     </span>
 
                     <span class="filename" bo-html="data.object.asset.name + '.' + data.object.asset.format.extension"></span>
+
+                    <a class="browser_tool edit"
+                       bo-href="editLink(data)"
+                       ng-if="browser.hasAccess(data, 3)"></a>
                 </h1>
             </header>
         </div>

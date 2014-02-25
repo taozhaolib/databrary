@@ -15,7 +15,13 @@
             </footer>
 
             <header>
-                <h1><a bo-href="router.volume({id: data.object.id})" bo-html="getName(data)"></a></h1>
+                <h1>
+                    <a bo-href="router.volume({id: data.object.id})" bo-html="getName(data)"></a>
+
+                    <a class="browser_tool edit"
+                       bo-href="editLink(data)"
+                       ng-if="browser.hasAccess(data, 3)"></a>
+                </h1>
             </header>
         </div>
 

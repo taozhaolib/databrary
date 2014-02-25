@@ -12,10 +12,6 @@
         ng-click="setItemPlayer(data)"
         ng-if="data.items[0] && data.items[0].group == 'asset'"></a>
 
-        <a class="browser_tool edit"
-        bo-href="editLink(data)"
-        ng-if="browser.hasAccess(data, 3)"></a>
-
         <browser-filter ng-if="data.select"></browser-filter>
 
         <browser-player ng-if="data.player"></browser-player>

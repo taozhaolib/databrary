@@ -2,7 +2,13 @@
     <div class="browser_item_content">
         <div class="cf">
             <header>
-		<h1><a ng-href="{{router.record(data.object)}}"><span bo-html="capitalize(constant.get('category', data.object.category).name)"></span><span bo-if="data.object.id">: <span bo-html="data.object.measures.ident || data.object.id"></span></span></a></h1>
+		        <h1>
+                    <a ng-href="{{router.record(data.object)}}"><span bo-html="capitalize(constant.get('category', data.object.category).name)"></span><span bo-if="data.object.id">: <span bo-html="data.object.measures.ident || data.object.id"></span></span></a>
+
+                    <a class="browser_tool edit"
+                       bo-href="editLink(data)"
+                       ng-if="browser.hasAccess(data, 3)"></a>
+                </h1>
             </header>
         </div>
 

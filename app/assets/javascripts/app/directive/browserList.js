@@ -110,6 +110,9 @@ define(['app/config/module'], function (module) {
 
 					case 'session':
 						return $scope.router.slotEdit(data.object);
+
+					case 'asset':
+						return $scope.router.assetEdit(data.object);
 				}
 			};
 		};

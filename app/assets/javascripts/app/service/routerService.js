@@ -79,6 +79,7 @@ define(['app/config/module'], function (module) {
 
 			return routerService.makeUrl('/record/:id', data);
 		};
+
 		routerService.slot = function (data) {
 			if ($rootScope.browser.isSession(data))
 				data = {
@@ -88,6 +89,7 @@ define(['app/config/module'], function (module) {
 
 			return routerService.makeUrl('/slot/:id', data);
 		};
+
 		routerService.slotAsset = makeRoute('/slot/:sid/asset/:id');
 		routerService.asset = makeRoute('/asset/:id');
 
