@@ -4,10 +4,10 @@ import play.api._
 import          Play.current
 import          mvc._
 import          data._
-import               Forms._
 import          i18n.Messages
 import          libs.json._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import macros._
 import site._
 import dbrary._
 import models._
@@ -19,37 +19,15 @@ private[controllers] sealed class SlotController extends ObjectController[Slot] 
   private[controllers] def Action(i : Container.Id, segment : Segment, p : Permission.Value = Permission.VIEW) =
     SiteAction ~> action(i, segment, p)
 
-  type EditMapping = (Option[(Option[String], Option[Date])], Consent.Value)
-  type EditForm = Form[EditMapping]
-  protected def editForm(container : Boolean) : EditForm = Form(tuple(
-    "" -> MaybeMapping(if (container) Some(tuple(
-      "name" -> optional(nonEmptyText),
-      "date" -> optional(jodaLocalDate)
-    )) else None),
-    "consent" -> Mappings.enum(Consent)
-  ))
-  protected def editFormFill(s : Slot) = {
-    val full = s.isFull
-    val cont = (if (full) Some(s.container) else None)
-    editForm(full).fill((cont.map(c => (c.name, c.date)), s.consent))
-  }
-
-  def formForContainer(form : EditForm, slot : Slot) =
-    form.value.fold(slot.isFull)(_._1.isDefined)
-
-  def update(i : Container.Id, segment : Segment) = Action(i, segment, Permission.EDIT).async { implicit request =>
-    editFormFill(request.obj).bindFromRequest.fold(
-      AbadForm[EditMapping](f => SlotHtml.viewEdit(request.obj)(editForm = f), _),
-      { case (container, consent) =>
-        for {
-          _ <- macros.Async.map[(Option[String], Option[Date]), Boolean](container, {
-            case (name, date) => request.obj.container.change(name = Some(name), date = Some(date))
-          })
-          _ <- request.obj.setConsent(consent)
-        } yield (result(request.obj))
-      }
-    )
-  }
+  def update(i : Container.Id, segment : Segment) =
+    Action(i, segment, Permission.EDIT).async { implicit request =>
+      val form = SlotController.editForm._bind
+      for {
+	_ <- macros.Async.foreach(cast[SlotController.ContainerEditForm](form), (form : SlotController.ContainerEditForm) =>
+	  request.obj.container.change(name = form.name.get.map(Maybe(_).opt), date = form.date.get))
+	_ <- macros.Async.foreach(form.consent.get, (c : Consent.Value) => request.obj.setConsent(c))
+      } yield (result(request.obj))
+    }
 
   def thumb(i : models.Container.Id, segment : Segment) = Action(i, segment, Permission.VIEW).async { implicit request =>
     request.obj.thumb.flatMap(_.fold(
@@ -57,37 +35,64 @@ private[controllers] sealed class SlotController extends ObjectController[Slot] 
       a => SlotAssetHtml.getFrame(Left(0.25f))(request.withObj(a))))
   }
 
-  type CommentMapping = (String, Option[Comment.Id])
-  type CommentForm = Form[CommentMapping]
-  val commentForm : CommentForm = Form(tuple(
-    "text" -> nonEmptyText,
-    "parent" -> OptionMapping(of[Comment.Id])
-  ))
-
-  def comment(i : Container.Id, segment : Segment, parent : Option[Comment.Id] = None) =
-    (SiteAction.access(Permission.VIEW) ~> action(i, segment)).async { implicit request =>
-      commentForm.bindFromRequest.fold(
-        AbadForm[CommentMapping](f => SlotHtml.show(commentForm = f), _),
-        { case (text, parent2) =>
-          for {
-            _ <- request.obj.postComment(text, parent orElse parent2)(request.asInstanceOf[AuthSite])
-          } yield (result(request.obj))
-        }
-      )
-    }
 }
 
-object SlotController extends SlotController
+object SlotController extends SlotController {
+  sealed trait SlotForm extends HtmlFormView {
+    def actionName : String
+    def formName : String = actionName + " Session"
+
+    val consent = Field(OptionMapping(Mappings.enum(Consent)))
+  }
+  sealed trait ContainerForm extends SlotForm {
+    val name = Field(OptionMapping(Forms.text))
+    val date = Field(OptionMapping(Forms.optional(Forms.jodaLocalDate)))
+  }
+
+  sealed abstract class EditForm(implicit request : Request[_])
+    extends AHtmlForm[EditForm](
+      routes.SlotHtml.update(request.obj.containerId, request.obj.segment),
+      f => SlotHtml.viewEdit(Some(f)))
+    with SlotForm {
+    def actionName = "Change"
+    override def formName = "Edit Session"
+    consent.fill(Some(request.obj.consent))
+  }
+  final class SlotEditForm(implicit request : Request[_])
+    extends EditForm {
+    _fill
+  }
+  final class ContainerEditForm(implicit request : Request[_])
+    extends EditForm with ContainerForm {
+    name.fill(Some(request.obj.container.name.getOrElse("")))
+    date.fill(Some(request.obj.container.date))
+    _fill
+  }
+  def editForm(implicit request : Request[_]) : EditForm =
+    if (request.obj.isFull) new ContainerEditForm
+    else new SlotEditForm
+
+  final class ContainerCreateForm(implicit request : VolumeController.Request[_])
+    extends HtmlForm[ContainerCreateForm](
+      routes.SlotHtml.addContainer(request.obj.id),
+      views.html.slot.edit(_, Nil, None)) 
+    with ContainerForm {
+    def actionName = "Create"
+  }
+}
+
 
 object SlotHtml extends SlotController {
-  private[controllers] def show(commentForm : CommentForm = commentForm, tagForm : TagHtml.TagForm = TagHtml.tagForm)(implicit request : Request[_]) = {
+  import SlotController._
+
+  private[controllers] def show(commentForm : Option[CommentController.SlotForm] = None, tagForm : Option[TagController.SlotForm] = None)(implicit request : Request[_]) = {
     val slot = request.obj
     for {
       records <- slot.records
       assets <- slot.assets
       comments <- slot.comments
       tags <- slot.tags
-    } yield (views.html.slot.view(records, assets, comments, commentForm, tags, TagHtml.tagForm))
+    } yield (views.html.slot.view(records, assets, comments, commentForm.getOrElse(new CommentController.SlotForm), tags, tagForm.getOrElse(new TagController.SlotForm)))
   }
 
   def view(i : Container.Id, segment : Segment) = Action(i, segment).async { implicit request =>
@@ -97,35 +102,31 @@ object SlotHtml extends SlotController {
       show().map(Ok(_))
   }
 
-  private[controllers] def viewEdit(slot : Slot)(
-    editForm : EditForm = editFormFill(slot),
-    recordForm : RecordHtml.SelectForm = RecordHtml.selectForm)(
-    implicit request : Request[_]) =
+  private[controllers] def viewEdit(form : Option[EditForm] = None, recordForm : Option[RecordHtml.SelectForm] = None)(implicit request : Request[_]) =
     for {
-      records <- slot.records
-      selectList <- RecordHtml.selectList(slot)
-    } yield (views.html.slot.edit(Right(slot), editForm, records, Some(recordForm), selectList))
+      records <- request.obj.records
+      selectList <- RecordHtml.selectList(request.obj)
+    } yield (views.html.slot.edit(form getOrElse editForm, records, recordForm orElse Some(new RecordHtml.SelectForm), selectList))
 
-  def edit(i : Container.Id, segment : Segment) = Action(i, segment, Permission.EDIT).async { implicit request =>
-    viewEdit(request.obj)().map(Ok(_))
-  }
+  def edit(i : Container.Id, segment : Segment) =
+    Action(i, segment, Permission.EDIT).async { implicit request =>
+      editForm.Ok
+    }
 
-  def createContainer(v : models.Volume.Id) = VolumeController.Action(v, Permission.EDIT) { implicit request =>
-    Ok(views.html.slot.edit(Left(request.obj), editForm(true), Nil, None))
-  }
+  def createContainer(v : models.Volume.Id) =
+    VolumeController.Action(v, Permission.EDIT).async { implicit request =>
+      new ContainerCreateForm().Ok
+    }
 
-  def addContainer(s : models.Volume.Id) = VolumeController.Action(s, Permission.CONTRIBUTE).async { implicit request =>
-    val form = editForm(true).bindFromRequest
-    form.fold(
-      form => ABadRequest(views.html.slot.edit(Left(request.obj), form, Nil, None)),
-    { case (Some((name, date)), consent) =>
-        for {
-          cont <- models.Container.create(request.obj, name = name, date = date)
-          _ <- cont.setConsent(consent)
-        } yield (Redirect(cont.pageURL))
-      case _ => ABadRequest(views.html.slot.edit(Left(request.obj), form, Nil, None))
-    })
-  }
+  def addContainer(s : models.Volume.Id) =
+    VolumeController.Action(s, Permission.CONTRIBUTE).async { implicit request =>
+      val form = new ContainerCreateForm()._bind
+      for {
+	cont <- models.Container.create(request.obj, name = form.name.get, date = form.date.get.flatten)
+	_ <- macros.Async.foreach(form.consent.get, (c : Consent.Value) =>
+	  cont.setConsent(c))
+      } yield (result(cont))
+    }
 }
 
 object SlotApi extends SlotController {

@@ -8,8 +8,8 @@
         @widget.panel.materials(assets)
         @widget.panel.publications(citations)
         @widget.panel.people(access)
-        @widget.panel.tags(top, Some(volume), tags)
-        @widget.panel.comments(Some(top), Some((routes.SlotHtml.comment(top.id), SlotHtml.commentForm)), comments)
+        @widget.panel.tags(top, Some(volume), tags, new TagController.TagForm(top))
+        @widget.panel.comments(Some(top), Some(new CommentController.CommentForm(top)), comments)
     }
 
 }

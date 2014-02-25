@@ -1,4 +1,4 @@
-@(context : Option[Slot], post : Option[(Call, SlotHtml.CommentForm)], comments : Seq[Comment])(implicit request : SiteRequest[_])
+@(context : Option[Slot], post : Option[CommentController.Form], comments : Seq[Comment])(implicit request : SiteRequest[_])
 
 @implicitField = @{
     helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
@@ -6,13 +6,13 @@
 
 @if(post.nonEmpty || comments.nonEmpty) {
 @widget.panel.raw("comments", "")(title = "Comments"){
-    @post.map { case (post, form) =>
+    @post.map { form =>
         @if(request.access.group >= Permission.VIEW) {
             <div class="comment col-full">
                 <div class="row">
                     @widget.portrait.maximal(request.identity, "comment_author")
 
-                    @widget.tag.form(post) {
+                    @widget.tag.form(form._action) {
                         <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
                             <div class="comment_meta row">
                                 <div class="comment_info col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
@@ -22,10 +22,9 @@
                                 </div>
                             </div>
                             <div class="comment_body comment_form">
-                                @widget.formErrors(form)
+                                @widget.tag.textarea(form.text(), 'placeholder -> "Comment")
 
-                                @widget.tag.textarea(form("text"), 'placeholder -> "Comment")
-
+                                @widget.formErrors(form())
                                 <button type="submit" class="button first">Post</button>
                             </div>
                         </div>

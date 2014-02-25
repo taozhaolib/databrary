@@ -1,24 +1,24 @@
-@(c : Either[Volume, Slot], form : SlotHtml.EditForm, records : Seq[Record], recordForm : Option[RecordHtml.SelectForm], selectList : Seq[(String,String)] = Nil)(implicit request : RequestObject[SiteObject]#Site[_])
+@(form : SlotController.SlotForm, records : Seq[Record], recordForm : Option[RecordHtml.SelectForm], selectList : Seq[(String,String)] = Nil)(implicit request : RequestObject[SiteObject]#Site[_])
 
 @implicitField = @{
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@template.form(Some(c.merge), c.fold(_ => "Create Session in Volume", _ => "Edit Session")) {
-            @widget.formErrors(form)
-
-            @widget.tag.form(c.fold(volume => routes.SlotHtml.addContainer(volume.id), slot => routes.SlotHtml.update(slot.containerId, slot.segment)), 'id -> "slot_edit") {
-	        @if(c.fold(_ => true, SlotHtml.formForContainer(form, _))) {
-                    @widget.tag.inputText(form("name"), 'placeholder -> "Name")
-                    @widget.tag.inputDate(form("date"), 'placeholder -> "Date", 'class -> "half")
+@template.form(Some(request.obj), form.formName) {
+            @widget.tag.form(form._action) {
+		@cast[SlotController.ContainerForm](form).map { form =>
+                    @widget.tag.inputText(form.name(), 'placeholder -> "Name")
+                    @widget.tag.inputDate(form.date(), 'placeholder -> "Date", 'class -> "half")
                 }
 
-                @widget.enumSelect(form("consent"), Consent)
-            }
-            <button type='submit' class="button" form="slot_edit">Change</button>
+                @widget.enumSelect(form.consent(), Consent)
 
-            @c match {
-                case Right(slot) => {
+		@widget.formErrors(form())
+		<button type='submit' class="button">@form.actionName</button>
+            }
+
+            @request.obj match {
+                case slot : Slot => {
                     <fieldset>
                         <legend>Records</legend>
 
@@ -27,7 +27,9 @@
                                 <tr>
                                     <th class="main">Record</th>
                                     <th class="meta">Category</th>
-                                    @recordForm.map { f => <th class="meta">Action</th>}
+				    @recordForm.map { _ =>
+				    <th class="meta">Action</th>
+				    }
                                 </tr>
                             </thead>
 
@@ -59,16 +61,17 @@
                                 }
                             </tbody>
 
-                            @recordForm.map { f =>
+                            @recordForm.map { form =>
                                 <tfoot>
                                     <tr>
-                                    @widget.tag.form(routes.RecordHtml.slotAdd(slot.containerId, slot.segment, RecordCategory.PARTICIPANT, true)) {
+                                    @widget.tag.form(form._action) {
                                         <td colspan="2">
-                                        @widget.tag.select(f("record"), selectList, ('_default, "Create new record..."), ('_colspan, 2))(widget.tag.minimalFieldConstructor.f, Lang("en"))
+                                        @widget.tag.select(form.record(), selectList, ('_default, "Create new record..."), ('_colspan, 2))(widget.tag.minimalFieldConstructor.f, Lang("en"))
                                         </td>
 
                                         <td>
-                                            <button type='submit' class="button third">add participant</button>
+					    @widget.formErrors(form())
+                                            <button type='submit' class="button third">add record</button>
                                         </td>
                                     }
                                     </tr>

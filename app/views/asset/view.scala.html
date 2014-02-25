@@ -3,5 +3,5 @@
 @template.crud("Asset: " + asset.asset.name, redirect = true) {
     @widget.panel.asset(asset)
     @widget.panel.materials(Seq(asset))
-    @widget.panel.comments(Some(asset.slot), Some((routes.SlotHtml.comment(asset.slot.containerId, asset.slot.segment), SlotHtml.commentForm)), comments)
+    @widget.panel.comments(Some(asset.slot), Some(new CommentController.SlotForm), comments)
 }

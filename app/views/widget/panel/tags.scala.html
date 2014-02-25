@@ -1,4 +1,4 @@
-@(slot : Slot, volume : Option[Volume] = None, tags : Seq[TagWeight], form : TagHtml.TagForm = TagHtml.tagForm)(implicit request : SiteRequest[_])
+@(slot : Slot, volume : Option[Volume] = None, tags : Seq[TagWeight], form : TagController.Form)(implicit request : SiteRequest[_])
 
 @implicitField = @{
     helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
@@ -29,8 +29,8 @@
         </div>
 
         <div id="tag_add" class="panel_tags_form col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
-            @widget.tag.form(routes.TagHtml.update("", slot.containerId, slot.segment)) {
-                @widget.tag.inputText(form("name"), 'placeholder -> "Add new tag")
+            @widget.tag.form(form._action) {
+                @widget.tag.inputText(form.name(), 'placeholder -> "Add new tag")
                 <button name="vote" value="@true" class="hide">add</button>
             }
         </div>

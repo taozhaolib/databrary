@@ -7,30 +7,34 @@ import dbrary._
 import models._
 
 private[controllers] sealed class TagController extends SiteController {
-  type TagMapping = (Option[String], Option[Boolean])
-  type TagForm = Form[TagMapping]
-  val tagForm : TagForm = Form(Forms.tuple(
-    "name" -> OptionMapping(Forms.nonEmptyText),
-    "vote" -> Forms.optional(Forms.boolean)
-  ))
-
   def update(name : String = "", i : models.Container.Id, segment : Segment) =
     (SiteAction.access(Permission.VIEW) ~> SlotController.action(i, segment)).async { implicit request =>
-      tagForm.bindFromRequest.fold(
-        AbadForm[TagMapping](f => SlotHtml.show(tagForm = f), _),
-        { case (name2, vote) =>
-          for {
-            r <- request.obj.setTag(name2.getOrElse(name), vote)(request.asInstanceOf[AuthSite])
-          } yield {
-	    if (request.isApi) r.fold(BadRequest(""))(r => Ok(r.json.js))
-	    else Redirect(request.obj.pageURL)
-	  }
-        }
-      )
+      val form = new TagController.SlotForm()._bind
+      for {
+	r <- request.obj.setTag(form.name.get getOrElse name, form.vote.get)(request.asInstanceOf[AuthSite])
+      } yield {
+	if (request.isApi) r.fold(BadRequest(""))(r => Ok(r.json.js))
+	else Redirect(request.obj.pageURL)
+      }
     }
 }
 
-object TagController extends TagController
+object TagController extends TagController {
+  trait Form extends StructForm {
+    val name = Field(OptionMapping(Forms.nonEmptyText))
+    val vote = Field(Forms.optional(Forms.boolean))
+  }
+  /* annoying inheritance: */
+  final class TagForm(slot : Slot)
+    extends StructForm(
+      routes.TagHtml.update("", slot.containerId, slot.segment))
+    with Form
+  final class SlotForm(implicit request : SlotController.Request[_])
+    extends AHtmlForm[SlotForm](
+      routes.TagHtml.update("", request.obj.containerId, request.obj.segment),
+      f => SlotHtml.show(tagForm = Some(f)))
+    with Form
+}
 
 object TagHtml extends TagController
 

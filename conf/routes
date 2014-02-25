@@ -75,18 +75,17 @@ GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb                             
 GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>                            controllers.SlotAssetHtml.frame(   sID : models.Container.Id, aID : models.Asset.Id, offset : dbrary.Offset)
 
 # annotations
-POST    /slot/$sID<[0-9]+>/comment/create                                                         controllers.SlotHtml.comment(sID : models.Container.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset], parent : Option[models.Comment.Id] ?= None)
+POST    /slot/$sID<[0-9]+>/comment/create                                                         controllers.CommentHtml.post(sID : models.Container.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset], parent : Option[models.Comment.Id] ?= None)
 
 POST    /slot/$sID<[0-9]+>/tag                                                                    controllers.TagHtml.update(name : String ?= "", sID : models.Container.Id, segment : dbrary.Segment)
 
 # records
 POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                                             controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Container.Id, segment : dbrary.Segment, editRedirect : Boolean = false)
 POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove/return                                      controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Container.Id, segment : dbrary.Segment, editRedirect : Boolean = true)
-POST    /slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create                                           controllers.RecordHtml.slotAdd(sID : models.Container.Id, segment : dbrary.Segment, cID : models.RecordCategory.Id, editRedirect : Boolean = false)
-POST    /slot/$sID<[0-9]+>/record/$cID<-?[0-9]+>/create/return                                    controllers.RecordHtml.slotAdd(sID : models.Container.Id, segment : dbrary.Segment, cID : models.RecordCategory.Id, editRedirect : Boolean = true)
+POST    /slot/$sID<[0-9]+>/record/create                                                          controllers.RecordHtml.slotAdd(sID : models.Container.Id, segment : dbrary.Segment, editRedirect : Boolean = false)
+POST    /slot/$sID<[0-9]+>/record/create/return                                                   controllers.RecordHtml.slotAdd(sID : models.Container.Id, segment : dbrary.Segment, editRedirect : Boolean = true)
 
 GET     /record/$rID<[0-9]+>                                                                      controllers.RecordHtml.view(rID : models.Record.Id)
-GET     /volume/$vID<[0-9]+>/record/$cID<-?[0-9]+>/create                                         controllers.RecordHtml.add(vID : models.Volume.Id, cID : models.RecordCategory.Id)
 GET     /record/$rID<[0-9]+>/edit                                                                 controllers.RecordHtml.edit(rID : models.Record.Id)
 POST    /record/$rID<[0-9]+>/edit                                                                 controllers.RecordHtml.update(rID : models.Record.Id)
 
@@ -194,7 +193,7 @@ GET     /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>                   
 
 # ----- COMMENT ----- #
 # CREATE    ?container=ID;segment=
-POST    /api/comment                                                                              controllers.SlotApi.comment(container : models.Container.Id, segment : dbrary.Segment, parent : Option[models.Comment.Id] ?= None)
+POST    /api/comment                                                                              controllers.CommentApi.post(container : models.Container.Id, segment : dbrary.Segment, parent : Option[models.Comment.Id] ?= None)
 
 # ----- TAG ----- #
 # GET       ?containers

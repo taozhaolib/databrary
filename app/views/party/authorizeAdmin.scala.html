@@ -54,7 +54,7 @@
 
     <tbody>
 	@pending.map { form =>
-	@widget.tag.form(routes.PartyHtml.authorizeChange(form.authorize.parentId, form.authorize.childId)) {
+	@widget.tag.form(form._action) {
 	<tr>
 	    <td>@display(form.authorize.parent)</td>
 	    <td>@display(form.authorize.child)</td>

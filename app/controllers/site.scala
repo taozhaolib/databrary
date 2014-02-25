@@ -179,9 +179,9 @@ class SiteController extends Controller {
 }
 
 class ObjectController[O <: SiteObject] extends SiteController {
-  type Request[A] = RequestObject[O]#Site[A]
+  final type Request[A] = RequestObject[O]#Site[A]
 
-  private[controllers] def result(o : O)(implicit request : SiteRequest[_]) : SimpleResult =
+  private[controllers] final def result(o : O)(implicit request : SiteRequest[_]) : SimpleResult =
     if (request.isApi) Ok(o.json.js)
     else Redirect(o.pageURL)
 }

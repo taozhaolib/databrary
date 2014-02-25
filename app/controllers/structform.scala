@@ -12,7 +12,7 @@ import macros._
 
 /** This is an alternative to play.api.data.Form that provides more structure and safety.
   * The disadvantage of this class is mutability and less efficiency. */
-abstract class StructForm {
+abstract class StructForm(val _action : Call) {
   self =>
 
   protected sealed abstract class Member[T] {
@@ -182,7 +182,7 @@ abstract class StructForm {
   }
 }
 
-abstract class FormView[+F <: FormView[F]](val _action : Call) extends StructForm {
+abstract class FormView(action : Call) extends StructForm(action) {
   self =>
   def _exception : FormException
   final def _throw = throw _exception
@@ -196,24 +196,24 @@ abstract class FormView[+F <: FormView[F]](val _action : Call) extends StructFor
   }
 }
 
-abstract class HtmlFormView[+F <: HtmlFormView[F]](action : Call) extends FormView[F](action) {
+abstract class HtmlFormView(action : Call) extends FormView(action) {
   def _view : Future[HtmlFormat.Appendable]
-  final def Bad : Future[SimpleResult] = _view.map(Results.BadRequest(_))
   final def Ok : Future[SimpleResult] = _view.map(Results.Ok(_))
+  final def Bad : Future[SimpleResult] = _view.map(Results.BadRequest(_))
   final def _exception = new FormException(new form()) {
     def resultHtml(implicit site : SiteRequest[_]) = Bad
   }
 }
 
-class HtmlForm[+F <: HtmlFormView[F]](action : Call, view : F => HtmlFormat.Appendable) extends HtmlFormView[F](action) {
+class HtmlForm[+F <: HtmlForm[F]](action : Call, view : F => HtmlFormat.Appendable) extends HtmlFormView(action) {
   this : F =>
   final def _view = macros.Async(view(this))
 }
-class AHtmlForm[+F <: HtmlFormView[F]](action : Call, view : F => Future[HtmlFormat.Appendable]) extends HtmlFormView[F](action) {
+class AHtmlForm[+F <: AHtmlForm[F]](action : Call, view : F => Future[HtmlFormat.Appendable]) extends HtmlFormView(action) {
   this : F =>
   final def _view = view(this)
 }
 
-class ApiForm[F <: ApiForm[F]](action : Call) extends FormView[F](action) {
+class ApiForm(action : Call) extends FormView(action) {
   final def _exception = new ApiFormException(new form())
 }

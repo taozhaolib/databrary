@@ -272,7 +272,8 @@ object PartyController extends PartyController {
     val notfound = Field(Forms.boolean).fill(false)
   }
   final class AuthorizeAdminForm(val authorize : Authorize)(implicit request : SiteRequest[_])
-    extends AuthorizeFullForm {
+    extends StructForm(routes.PartyHtml.authorizeChange(authorize.parentId, authorize.childId))
+    with AuthorizeFullForm {
     _fill(authorize)
   }
 }

@@ -7,7 +7,6 @@ import          templates.Html
 import          Play.current
 import          mvc._
 import          data._
-import               Forms._
 import play.api.i18n.Messages
 import play.api.libs.json
 import site._
@@ -25,15 +24,15 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
   protected def metricMapping : Mapping[Metric[_]]
 
   protected type MeasureMapping = (Metric[_], Option[String])
-  private[this] def measureMapping = tuple(
+  private[this] def measureMapping = Forms.tuple(
     "metric" -> metricMapping,
-    "datum" -> optional(nonEmptyText)
+    "datum" -> Forms.optional(Forms.nonEmptyText)
   )
   type EditMapping = (Option[Option[RecordCategory]], Seq[MeasureMapping])
   type EditForm = Form[EditMapping]
-  protected lazy val editForm = Form(tuple(
-    "category" -> OptionMapping(optional(categoryMapping)),
-    "measure" -> seq(measureMapping)
+  protected lazy val editForm = Form(Forms.tuple(
+    "category" -> OptionMapping(Forms.optional(categoryMapping)),
+    "measure" -> Forms.seq(measureMapping)
   ))
 
   def update(i : models.Record.Id) = Action(i, Permission.EDIT).async { implicit request =>
@@ -67,11 +66,6 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
       }
     )
   }
-
-  type SelectForm = Form[Option[models.Record.Id]]
-  protected[controllers] val selectForm = Form(
-    "record" -> optional(of[models.Record.Id])
-  )
 
   private[controllers] def selectList(target : Slot)(implicit request : SiteRequest[_]) : Future[Seq[(String, String)]] =
     /* ideally we'd remove already used records here */
@@ -109,12 +103,12 @@ object RecordHtml extends RecordController {
   }
 
   protected val categoryMapping : Mapping[RecordCategory] =
-    of[RecordCategory.Id]
+    Forms.of[RecordCategory.Id]
       .transform[Option[RecordCategory]](RecordCategory.get(_), _.get.id)
       .verifying(Messages("measure.unknown"), _.isDefined)
       .transform(_.get, Some(_))
   protected val metricMapping : Mapping[Metric[_]] =
-    of[Metric.Id]
+    Forms.of[Metric.Id]
       .transform[Option[Metric[_]]](Metric.get(_), _.get.id)
       .verifying(Messages("measure.unknown"), _.isDefined)
       .transform(_.get, Some(_))
@@ -154,29 +148,33 @@ object RecordHtml extends RecordController {
     Ok(viewEdit(m, f))
   }
 
-  def slotAdd(containerId : Container.Id, segment : Segment, catID : models.RecordCategory.Id, editRedirect : Boolean = false) = SlotHtml.Action(containerId, segment, Permission.EDIT).async { implicit request =>
-    def bad(form : SelectForm) =
-      SlotHtml.viewEdit(request.obj)(recordForm = form).map(BadRequest(_))
-    val form = selectForm.bindFromRequest
-    form.fold(bad _,
-      _.fold {
-        val cat = RecordCategory.get(catID)
+  final class SelectForm(implicit request : SlotHtml.Request[_])
+    extends AHtmlForm[SelectForm](
+      routes.RecordHtml.slotAdd(request.obj.containerId, request.obj.segment, true),
+      f => SlotHtml.viewEdit(recordForm = Some(f))) {
+    val record = Field(Forms.optional(Forms.of[models.Record.Id]))
+    val category = Field(Forms.optional(categoryMapping))
+  }
+
+  def slotAdd(containerId : Container.Id, segment : Segment, editRedirect : Boolean = false) =
+    SlotHtml.Action(containerId, segment, Permission.EDIT).async { implicit request =>
+      val form = new SelectForm()._bind
+      form.record.get.fold {
         for {
-          r <- models.Record.create(request.obj.volume, cat)
+          r <- models.Record.create(request.obj.volume, form.category.get)
           _ <- r.addSlot(request.obj)
-        } yield (Created(views.html.record.edit(r, cat.fold[Seq[Metric[_]]](Nil)(_.template), editForm.fill((Some(cat), Seq())), jsonCategories, jsonMetrics)))
+        } yield (Created(views.html.record.edit(r, form.category.get.fold[Seq[Metric[_]]](Nil)(_.template), editForm.fill((Some(form.category.get), Seq())), jsonCategories, jsonMetrics)))
       } (models.Record.get(_).flatMap(_
         .filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId === request.obj.volumeId)
-        .fold(bad(form.withError("record", "record.bad")))(
-          _.addSlot(request.obj).map { _ =>
-          if (editRedirect)
-            Redirect(controllers.routes.SlotHtml.edit(containerId, segment))
-          else
-            SlotHtml.result(request.obj)
-        })
-      ))
-    )
-  }
+        .fold {
+	  form.record.withError("record.bad").Bad
+	} (_.addSlot(request.obj).map { _ =>
+	  if (editRedirect)
+	    Redirect(controllers.routes.SlotHtml.edit(containerId, segment))
+	  else
+	    SlotHtml.result(request.obj)
+	})))
+    }
 
   def add(v : models.Volume.Id, catID : models.RecordCategory.Id) = VolumeController.Action(v, Permission.EDIT).async { implicit request =>
     val cat = RecordCategory.get(catID)
@@ -198,7 +196,7 @@ object RecordApi extends RecordController {
     def unbind(key : String, value : RecordCategory) =
       Map(key -> value.name)
   }
-  protected def categoryMapping : Mapping[RecordCategory] = of[RecordCategory]
+  protected def categoryMapping : Mapping[RecordCategory] = Forms.of[RecordCategory]
 
   private implicit val metricFormatter : format.Formatter[Metric[_]] = new format.Formatter[Metric[_]] {
     def bind(key : String, data : Map[String, String]) =
@@ -207,10 +205,10 @@ object RecordApi extends RecordController {
     def unbind(key : String, value : Metric[_]) =
       Map(key -> value.name)
   }
-  protected def metricMapping : Mapping[Metric[_]] = of[Metric[_]]
+  protected def metricMapping : Mapping[Metric[_]] = Forms.of[Metric[_]]
 
-  private val queryForm = Form(single(
-    "category" -> optional(of[RecordCategory])
+  private val queryForm = Form(Forms.single(
+    "category" -> Forms.optional(categoryMapping)
   ))
 
   def query(volume : models.Volume.Id) = VolumeController.Action(volume).async { implicit request =>

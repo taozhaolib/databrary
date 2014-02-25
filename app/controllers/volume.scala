@@ -94,7 +94,7 @@ object VolumeController extends VolumeController {
     val party = Field(OptionMapping(Forms.of[Party.Id]))
   }
 
-  trait VolumeForm extends FormView[VolumeForm] {
+  trait VolumeForm extends FormView {
     def actionName : String
     def formName : String = actionName + " Volume"
 

@@ -6,7 +6,6 @@ import play.api._
 import          Play.current
 import          mvc._
 import          data._
-import               Forms._
 import          i18n.Messages
 import site._
 import models._
@@ -21,7 +20,7 @@ object IngestController extends SiteController {
       routes.IngestController.curated(request.obj.id),
       views.html.ingest.csv(_)) {
     val file = File()
-    val run = Field(boolean)
+    val run = Field(Forms.boolean)
   }
 
   def csv(v : models.Volume.Id) = Action(v).async { implicit request =>
