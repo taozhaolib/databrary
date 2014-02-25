@@ -63,7 +63,7 @@
 	    @widget.enumSelect(form.direct(), Permission)
 	    @widget.tag.inputDate(form.expires())
 	    <td>
-		<button type='submit' class="button second">@{if(form.pending.get) "Authorize" else "Change"}</button>
+		<button type='submit' class="button second">@{if(form.pending.get) "Authorize" else "Update"}</button>
 		<button class="button first" name='delete' value='true'>@{if(form.pending.get) "Deny" else "Revoke"}</button>
 		@widget.formErrors(form())
 	    </td>

@@ -54,7 +54,7 @@ object SlotController extends SlotController {
       routes.SlotHtml.update(request.obj.containerId, request.obj.segment),
       f => SlotHtml.viewEdit(Some(f)))
     with SlotForm {
-    def actionName = "Change"
+    def actionName = "Update"
     override def formName = "Edit Session"
     consent.fill(Some(request.obj.consent))
   }

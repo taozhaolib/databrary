@@ -109,7 +109,7 @@ object VolumeController extends VolumeController {
     extends HtmlForm[EditForm](
       routes.VolumeHtml.update(request.obj.id),
       views.html.volume.edit(_)) with VolumeForm {
-    def actionName = "Change"
+    def actionName = "Update"
     override def formName = "Edit Volume"
     val name = Field(OptionMapping(Forms.nonEmptyText)).fill(Some(request.obj.name))
     body.fill(Some(request.obj.body.getOrElse("")))
