@@ -89,7 +89,7 @@
 		    <button type='submit' class="button">Request</button>
 		}
 		case form : AuthorizeChildForm => {
-		    <button type='submit' class="button second">@{if(form.pending.get) "Authorize" else "Change"}</button>
+		    <button type='submit' class="button second">@{if(form.pending.get) "Authorize" else "Update"}</button>
 		    <button type='submit' class="button first" name='delete' value='true'>@{if(form.pending.get) "Deny" else "Revoke"}</button>
 		}
 		}
