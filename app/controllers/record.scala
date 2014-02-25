@@ -20,8 +20,16 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
   protected def Action(i : models.Record.Id, p : Permission.Value = Permission.VIEW) =
     SiteAction ~> action(i, p)
 
-  protected def categoryMapping : Mapping[RecordCategory]
-  protected def metricMapping : Mapping[Metric[_]]
+  protected val categoryMapping : Mapping[RecordCategory] =
+    Forms.of[RecordCategory.Id]
+      .transform[Option[RecordCategory]](RecordCategory.get(_), _.get.id)
+      .verifying(Messages("measure.unknown"), _.isDefined)
+      .transform(_.get, Some(_))
+  protected val metricMapping : Mapping[Metric[_]] =
+    Forms.of[Metric.Id]
+      .transform[Option[Metric[_]]](Metric.get(_), _.get.id)
+      .verifying(Messages("measure.unknown"), _.isDefined)
+      .transform(_.get, Some(_))
 
   protected type MeasureMapping = (Metric[_], Option[String])
   private[this] def measureMapping = Forms.tuple(
@@ -67,12 +75,6 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
     )
   }
 
-  private[controllers] def selectList(target : Slot)(implicit request : SiteRequest[_]) : Future[Seq[(String, String)]] =
-    /* ideally we'd remove already used records here */
-    target.volume.records().map(_ map { r : Record =>
-      (r.id.toString, r.category.fold("")(_.name + ':') + r.ident)
-    })
-
   def add(recordId : Record.Id, containerId : Container.Id, segment : Segment) = Action(recordId, Permission.EDIT).async { implicit request =>
     for {
       so <- Slot.get(containerId, segment)
@@ -101,17 +103,6 @@ object RecordHtml extends RecordController {
       assets <- macros.Async.flatMap[Slot, SlotAsset, Seq[SlotAsset]](slots, _.assets)
     } yield (Ok(views.html.record.view(slots, assets)))
   }
-
-  protected val categoryMapping : Mapping[RecordCategory] =
-    Forms.of[RecordCategory.Id]
-      .transform[Option[RecordCategory]](RecordCategory.get(_), _.get.id)
-      .verifying(Messages("measure.unknown"), _.isDefined)
-      .transform(_.get, Some(_))
-  protected val metricMapping : Mapping[Metric[_]] =
-    Forms.of[Metric.Id]
-      .transform[Option[Metric[_]]](Metric.get(_), _.get.id)
-      .verifying(Messages("measure.unknown"), _.isDefined)
-      .transform(_.get, Some(_))
 
   private[controllers] def editFormFill(implicit request : Request[_]) : (Seq[Metric[_]], EditForm) = {
     val r = request.obj
@@ -188,24 +179,6 @@ object RecordApi extends RecordController {
   def get(i : models.Record.Id) = Action(i).async { implicit request =>
     request.obj.json(request.apiOptions).map(Ok(_))
   }
-
-  private implicit val categoryFormatter : format.Formatter[RecordCategory] = new format.Formatter[RecordCategory] {
-    def bind(key : String, data : Map[String, String]) =
-      data.get(key).flatMap(RecordCategory.getName(_))
-        .toRight(Seq(FormError(key, "measure.unknown", Nil)))
-    def unbind(key : String, value : RecordCategory) =
-      Map(key -> value.name)
-  }
-  protected def categoryMapping : Mapping[RecordCategory] = Forms.of[RecordCategory]
-
-  private implicit val metricFormatter : format.Formatter[Metric[_]] = new format.Formatter[Metric[_]] {
-    def bind(key : String, data : Map[String, String]) =
-      data.get(key).flatMap(Metric.getName(_))
-        .toRight(Seq(FormError(key, "measure.unknown", Nil)))
-    def unbind(key : String, value : Metric[_]) =
-      Map(key -> value.name)
-  }
-  protected def metricMapping : Mapping[Metric[_]] = Forms.of[Metric[_]]
 
   private val queryForm = Form(Forms.single(
     "category" -> Forms.optional(categoryMapping)

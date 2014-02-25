@@ -1,4 +1,4 @@
-@(form : SlotController.SlotForm, records : Seq[Record], recordForm : Option[RecordHtml.SelectForm], selectList : Seq[(String,String)] = Nil)(implicit request : RequestObject[SiteObject]#Site[_])
+@(form : SlotController.SlotForm, records : Seq[Record], recordForm : Option[RecordHtml.SelectForm], selectList : Seq[Record] = Nil)(implicit request : RequestObject[SiteObject]#Site[_])
 
 @implicitField = @{
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
@@ -46,9 +46,9 @@
                                             </td>
 
                                             <td class="meta">
-                                            @widget.tag.form(routes.RecordHtml.remove(record.id, slot.containerId, slot.segment, true)) {
                                                 <a href="@routes.RecordHtml.edit(record.id)" class="button">edit</a>
 
+                                            @widget.tag.form(routes.RecordHtml.remove(record.id, slot.containerId, slot.segment, true)) {
                                                 <button type='submit' class="button first">remove</button>
                                             }
                                             </td>
@@ -65,15 +65,16 @@
                                 <tfoot>
                                     <tr>
                                     @widget.tag.form(form._action) {
-                                        <td colspan="2">
-                                        @widget.tag.select(form.record(), selectList, ('_default, "Create new record..."), ('_colspan, 2))(widget.tag.minimalFieldConstructor.f, Lang("en"))
-                                        </td>
+				    @defining(helper.FieldConstructor(widget.tag.tableFieldConstructor.f)) { implicit implicitField =>
+
+					@widget.tag.select(form.record(), selectList.map(r => (r.id.toString, r.category.fold("")(_.name + ':') + r.ident)), ('_default, "Create new record..."), ('_colspan, 2))
 
                                         <td>
 					    @widget.formErrors(form())
                                             <button type='submit' class="button third">add record</button>
                                         </td>
                                     }
+				    }
                                     </tr>
                                 </tfoot>
                             }
