@@ -1,59 +1,62 @@
-@(record : models.Record, meas : Seq[Metric[_]], form : RecordHtml.EditForm, jsonCategories : Html, jsonMetrics : Html)(implicit request : RequestObject[SiteObject]#Site[_])
+@(editForm : RecordController.EditForm, measureForms : Seq[RecordController.MeasureForm], metricForm : RecordHtml.MetricForm)(implicit request : RecordHtml.Request[_])
 
 @implicitField = @{
-    helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
+    helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@template.form(Some(record), "Edit Record") {
-            @widget.formErrors(form)
-
-            <form metrics-repeater class="repeater" ng-init='formAction = "/record/@record.id.toString/edit"; category = @form("Category").value.getOrElse("undefined"); categories = @jsonCategories; metrics = @jsonMetrics; repeats = @form.data.filter(i => i._1.contains("measure")).map(i => (i._1.split("\\.").head, i._1.split("\\.").last, i._2)).groupBy(i => i._1).map(i => i._2.map(i => i._2+": '"+i._3+"'").mkString("{",",","}")).mkString("[",",","]")'>
-
-                <div class="field cf" id="category_field">
-                    <label for="category">Record Category</label>
-
-                    <select id="category" name="category" ng-model="category" ng-options="cat.id as cat.name for cat in categories" ng-change="updateCategory(category)"></select>
-                </div>
+@template.form(Some(request.obj), "Edit Record") {
+    @widget.tag.form(editForm._action) {
+	@widget.tag.select(editForm.category(), RecordCategory.getAll.map(c => (c.id.toString, c.name)), '_default -> "None")
+	@widget.formErrors(editForm())
+	<button type='submit' class="button">Update</button>
+    }
 
                 <fieldset>
                     <legend>Metrics</legend>
 
-                    <div ng-repeat="repeat in repeats" class="repeat">
+                    <div class="repeat">
+		    @measureForms.map { form =>
+		    @widget.tag.form(form._action) {
                         <div class="repeat_repeated">
-                            <div class="field cf" id="measure_{{$index}}__metric_field">
-                                <label for="measure_{{$index}}__metric">{{(thisMetric = getMetric(repeat.metric)).name}} ({{thisMetric.classification}})</label>
-
-                                <input type="hidden" id="measure_{{$index}}__metric" name="measure[{{$index}}].metric" ng-init="" ng-model="repeat.metric">
+                            <div class="field cf">
+				@form.metric.name (@form.metric.classification)
                             </div>
 
-                            <div class="field cf" id="measure_{{$index}}__datum_field" ng-switch="thisMetric.dataType">
-                                <input ng-switch-when="date" type="date" id="measure_{{$index}}__datum" name="measure[{{$index}}].datum" ng-model="repeat.datum">
-
-                                <select ng-switch-when="select" ng-model="repeat.datum" ng-options="value as value for value in thisMetric.values"></select>
-
-                                <input ng-switch-default type="text" id="measure_{{$index}}__datum" name="measure[{{$index}}].datum" ng-model="repeat.datum">
+                            <div class="field cf">
+			    @form.metric.dataType match {
+			    case _ if form.metric.values.nonEmpty => {
+				@widget.tag.select(form.datum(), form.metric.values.map(v => (v,v)), '_default -> "")
+			    }
+			    case DataType.date => {
+				@widget.tag.inputDate(form.datum())
+			    }
+			    case _ => {
+				@widget.tag.inputText(form.datum())
+			    }
+			    }
                             </div>
                         </div>
 
                         <div class="repeat_controls">
-                            <div class="repeat_control repeat_crud repeat_delete" ng-click="deleteRepeat(repeat)">-</div>
-                            <div class="repeat_control repeat_move" ng-if="isMovable()"></div>
-                            <div class="repeat_control repeat_crud repeat_add" ng-click="createRepeat()" ng-if="isAddable()" ng-show="$last">+</div>
+			    @widget.formErrors(form())
+			    <button type='submit' class="button">Update</button>
                         </div>
+		    }
+		    }
                     </div>
 
                     <div class="repeat">
+		    @widget.tag.form(metricForm._action) {
                         <div class="repeat_repeated">
-                            <div class="field cf" id="measure_{{$index}}__datum_field">
-                                <label for="measure_{{$index}}__metric">Add new metric...</label>
-                                <select ng-model="newMetric" ng-options="m.id as m.name for m in metrics | filter:{used: false}" ng-change="createRepeat(newMetric)"></select>
-                            </div>
+			    @widget.tag.select(metricForm.metric(), (Metric.getAll.toSeq diff measureForms.map(_.metric)).map(m => (m.id.toString, m.name)))
                         </div>
 
-                        <div class="repeat_controls"></div>
+			<div class="repeat_controls">
+			    @widget.formErrors(metricForm())
+			    <button type='submit' class="button">Add</button>
+			</div>
+		    }
                     </div>
                 </fieldset>
 
-                <button type='submit' class="button" ng-click="submit()">Update</button>
-            </form>
 }

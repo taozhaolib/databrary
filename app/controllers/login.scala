@@ -112,7 +112,7 @@ object LoginController extends LoginController {
     val openid = Field(Forms.text(0, 256))
     _mapping.verifying("login.bad", self =>
       (self.email.get.isDefined && self.password.get.nonEmpty) || self.openid.get.nonEmpty)
-    def _fill(em : Option[String], op : String = "") : this.type = {
+    private[controllers] def _fill(em : Option[String], op : String = "") : this.type = {
       email.fill(em)
       openid.fill(op)
       _fill

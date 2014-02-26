@@ -17,7 +17,7 @@ object TokenController extends SiteController {
       views.html.token.password(_)) {
     val token = Field(Forms.text)
     val password = Field(PartyHtml.passwordMapping.verifying("error.required", _.isDefined)).fill(None)
-    def _fill(t : LoginToken) : this.type = {
+    private[TokenController] def _fill(t : LoginToken) : this.type = {
       assert(accountId === t.accountId)
       assert(t.password)
       token.fill(t.id)

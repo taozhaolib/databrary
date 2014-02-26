@@ -82,12 +82,14 @@ POST    /slot/$sID<[0-9]+>/tag                                                  
 # records
 POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                                             controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Container.Id, segment : dbrary.Segment, editRedirect : Boolean = false)
 POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove/return                                      controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Container.Id, segment : dbrary.Segment, editRedirect : Boolean = true)
-POST    /slot/$sID<[0-9]+>/record/create                                                          controllers.RecordHtml.slotAdd(sID : models.Container.Id, segment : dbrary.Segment, editRedirect : Boolean = false)
-POST    /slot/$sID<[0-9]+>/record/create/return                                                   controllers.RecordHtml.slotAdd(sID : models.Container.Id, segment : dbrary.Segment, editRedirect : Boolean = true)
+POST    /slot/$sID<[0-9]+>/record/create                                                          controllers.RecordHtml.slotAdd(sID : models.Container.Id, segment : dbrary.Segment, slotRedirect : Boolean = false)
+POST    /slot/$sID<[0-9]+>/record/create/return                                                   controllers.RecordHtml.slotAdd(sID : models.Container.Id, segment : dbrary.Segment, slotRedirect : Boolean = true)
 
 GET     /record/$rID<[0-9]+>                                                                      controllers.RecordHtml.view(rID : models.Record.Id)
 GET     /record/$rID<[0-9]+>/edit                                                                 controllers.RecordHtml.edit(rID : models.Record.Id)
 POST    /record/$rID<[0-9]+>/edit                                                                 controllers.RecordHtml.update(rID : models.Record.Id)
+POST    /record/$rID<[0-9]+>/measure/$mID<-?[0-9]+>                                               controllers.RecordHtml.measureUpdate(rID : models.Record.Id, mID : models.Metric.Id)
+POST    /record/$rID<[0-9]+>/measure                                                              controllers.RecordHtml.measureAdd(rID : models.Record.Id)
 
 GET     /volume/$vID<[0-9]+>/ingest/csv                                                           controllers.IngestController.csv(vID : models.Volume.Id)
 POST    /volume/$vID<[0-9]+>/ingest/curated                                                       controllers.IngestController.curated(vID : models.Volume.Id)
@@ -162,12 +164,12 @@ POST    /api/slot/$containerId<[0-9]+>                                          
 #                                                                                                 TODO: DELETE /api/slot/$containerId<[0-9]+>
 
 # ----- RECORD ----- #
-# QUERY     ?volume=ID;category=NAME;                                                             TODO: container=ID;asset=ID
+# QUERY     ?volume=ID;category=ID                                                                TODO: container=ID;asset=ID
 GET     /api/record                                                                               controllers.RecordApi.query(volume : models.Volume.Id)
 # GET       ?slots;                                                                               TODO: assets
 GET     /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.get(recordId : models.Record.Id)
-# CREATE    ?volume=ID;category=NAME
-POST    /api/record                                                                               controllers.RecordApi.create(volume : models.Volume.Id, category : Option[String] ?= None)
+# CREATE    ?volume=ID;category=ID
+POST    /api/record                                                                               controllers.RecordApi.create(volume : models.Volume.Id, category : Option[models.RecordCategory.Id] ?= None)
 # UPDATE
 POST    /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.update(recordId : models.Record.Id)
 # DELETE

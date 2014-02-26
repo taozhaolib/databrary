@@ -134,7 +134,7 @@ object VolumeController extends VolumeController {
     val access = Field(Mappings.enum(Permission, maxId = Some(if (party.id.unId <= 0) Permission.DOWNLOAD.id else Permission.ADMIN.id)))
     val inherit = Field(Mappings.enum(Permission, maxId = Some(if (party.id.unId <= 0) Permission.DOWNLOAD.id else Permission.EDIT.id)))
     val delete = Field(if (request.identity === party) Forms.boolean.verifying("access.delete.self", !_) else Forms.boolean).fill(false)
-    def _fill(a : VolumeAccess) : this.type = {
+    private[controllers] def _fill(a : VolumeAccess) : this.type = {
       assert(a.party === party)
       access.fill(a.access)
       inherit.fill(a.inherit)

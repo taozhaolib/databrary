@@ -12,7 +12,7 @@ import macros._
 
 /** This is an alternative to play.api.data.Form that provides more structure and safety.
   * The disadvantage of this class is mutability and less efficiency. */
-abstract class StructForm(val _action : Call) {
+private[controllers] abstract class StructForm(val _action : Call) {
   self =>
 
   protected sealed abstract class Member[T] {
@@ -26,10 +26,12 @@ abstract class StructForm(val _action : Call) {
     def get : T = value
 
     final def apply() = self()(name)
-    final def withError(message : String, args : Any*) : self.type = {
-      _errors += FormError(name, message, args)
+    final def withKeyError(key : String, message : String, args : Any*) : self.type = {
+      _errors += FormError(name + Maybe.bracket(".", key), message, args)
       self
     }
+    final def withError(message : String, args : Any*) : self.type =
+      withKeyError("", message, args : _*)
   }
 
   /** A field in this form, which should only be used to declare vals. */
@@ -48,6 +50,9 @@ abstract class StructForm(val _action : Call) {
       else
 	mapping.unbind(value)
   }
+
+  protected def Const[T](x : T) : Field[T] =
+    Field[T](Forms.ignored(x)).fill(x)
 
   final type FileData = MultipartFormData[Files.TemporaryFile]
   final type FilePart = MultipartFormData.FilePart[Files.TemporaryFile]
@@ -175,45 +180,45 @@ abstract class StructForm(val _action : Call) {
     _errors ++= _files.flatMap(_.bind(d))
     self
   }
-  def _bind(implicit request : Request[AnyContent]) : self.type = {
+  private[controllers] def _bind(implicit request : Request[AnyContent]) : self.type = {
     apply().bindFromRequest
     _bindFiles
     self
   }
 }
 
-abstract class FormView(action : Call) extends StructForm(action) {
+private[controllers] abstract class FormView(action : Call) extends StructForm(action) {
   self =>
-  def _exception : FormException
-  final def _throw = throw _exception
-  final def orThrow() : self.type = {
+  private[controllers] def _exception : FormException
+  private[controllers] final def _throw = throw _exception
+  private[controllers] final def orThrow() : self.type = {
     if (hasErrors)
       _throw
     self
   }
-  override def _bind(implicit request : Request[AnyContent]) : self.type = {
+  private[controllers] override def _bind(implicit request : Request[AnyContent]) : self.type = {
     super._bind.orThrow
   }
 }
 
 abstract class HtmlFormView(action : Call) extends FormView(action) {
-  def _view : Future[HtmlFormat.Appendable]
-  final def Ok : Future[SimpleResult] = _view.map(Results.Ok(_))
-  final def Bad : Future[SimpleResult] = _view.map(Results.BadRequest(_))
-  final def _exception = new FormException(new form()) {
+  private[controllers] def _view : Future[HtmlFormat.Appendable]
+  private[controllers] final def Ok : Future[SimpleResult] = _view.map(Results.Ok(_))
+  private[controllers] final def Bad : Future[SimpleResult] = _view.map(Results.BadRequest(_))
+  private[controllers] final def _exception = new FormException(new form()) {
     def resultHtml(implicit site : SiteRequest[_]) = Bad
   }
 }
 
 class HtmlForm[+F <: HtmlForm[F]](action : Call, view : F => HtmlFormat.Appendable) extends HtmlFormView(action) {
   this : F =>
-  final def _view = macros.Async(view(this))
+  private[controllers] final def _view = macros.Async(view(this))
 }
 class AHtmlForm[+F <: AHtmlForm[F]](action : Call, view : F => Future[HtmlFormat.Appendable]) extends HtmlFormView(action) {
   this : F =>
-  final def _view = view(this)
+  private[controllers] final def _view = view(this)
 }
 
 class ApiForm(action : Call) extends FormView(action) {
-  final def _exception = new ApiFormException(new form())
+  private[controllers] final def _exception = new ApiFormException(new form())
 }

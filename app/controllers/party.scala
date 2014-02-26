@@ -221,7 +221,7 @@ object PartyController extends PartyController {
     val pending = Field(Forms.boolean)
     val delete = Field(Forms.boolean).fill(false)
     val expires = Field(Forms.optional(Forms.jodaLocalDate))
-    def _fill(auth : Authorize) : this.type = {
+    private[controllers] def _fill(auth : Authorize) : this.type = {
       inherit.fill(auth.inherit)
       direct.fill(auth.direct)
       pending.fill(auth.authorized.isEmpty)
@@ -253,7 +253,7 @@ object PartyController extends PartyController {
 	  if (d.forall(_.isAfter(maxexp))) validation.Invalid(validation.ValidationError("error.max", maxExpiration))
 	  else validation.Valid
 	}))
-    override def _fill(auth : Authorize) : this.type = {
+    private[controllers] override def _fill(auth : Authorize) : this.type = {
       assert(request.obj === auth.parent)
       assert(child === auth.child)
       permission.fill(auth.permission)
