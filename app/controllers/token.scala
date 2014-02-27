@@ -21,7 +21,7 @@ object TokenController extends SiteController {
       assert(accountId === t.accountId)
       assert(t.password)
       token.fill(t.id)
-      _fill
+      this
     }
   }
 

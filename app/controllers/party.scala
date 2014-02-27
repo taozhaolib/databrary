@@ -37,7 +37,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   private[controllers] def Action(i : Option[models.Party.Id], p : Option[Permission.Value] = Some(Permission.ADMIN)) =
     SiteAction ~> action(i, p)
 
-  protected val passwordInputMapping : Mapping[Option[String]]
+  protected def passwordInputMapping : Mapping[Option[String]] = Forms.optional(Forms.text(7))
   type PasswordMapping = Mapping[Option[String]]
   def passwordMapping : PasswordMapping = 
     passwordInputMapping
@@ -83,7 +83,6 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   }
   final class PartyEditForm(implicit request : Request[_]) extends EditForm {
     def accountForm = None
-    _fill
   }
   final class AccountEditForm(account : Account)(implicit request : Request[_]) extends EditForm with AccountForm {
     val auth = Field(Forms.text.verifying("password.incorrect",
@@ -91,7 +90,6 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     def accountForm = if (auth.get.isEmpty) None else Some((account, this))
     val email = Field(OptionMapping(Forms.email)).fill(Some(account.email))
     openid.fill(account.openid)
-    _fill
   }
   protected def editForm(implicit request : Request[_]) : EditForm =
     adminAccount.fold[EditForm](new PartyEditForm)(new AccountEditForm(_))
@@ -203,8 +201,6 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 }
 
 object PartyController extends PartyController {
-  protected val passwordInputMapping = Forms.optional(Forms.text(7))
-
   private final val maxExpiration = org.joda.time.Years.years(2)
 
   sealed trait AuthorizeBaseForm extends StructForm {
@@ -213,7 +209,7 @@ object PartyController extends PartyController {
     def copyFrom(f : AuthorizeForm) : this.type = {
       inherit.fill(f.inherit.get)
       info.fill(f.info.get)
-      _fill
+      this
     }
   }
   sealed trait AuthorizeFullForm extends AuthorizeBaseForm {
@@ -227,7 +223,7 @@ object PartyController extends PartyController {
       pending.fill(auth.authorized.isEmpty)
       expires.fill(auth.expires.map(_.toLocalDate))
       info.fill(auth.info)
-      super._fill
+      this
     }
   }
   sealed abstract class AuthorizeForm(action : Call)(implicit request : Request[_])
@@ -281,9 +277,9 @@ object PartyController extends PartyController {
 object PartyHtml extends PartyController {
   import PartyController._
 
-  protected val passwordInputMapping =
+  override protected val passwordInputMapping =
     Forms.tuple(
-      "once" -> Forms.optional(Forms.text(7)),
+      "once" -> super.passwordInputMapping,
       "again" -> Forms.text
     ).verifying(Messages("password.again"), pa => pa._1.forall(_ == pa._2))
     .transform[Option[String]](_._1, p => (p, p.getOrElse("")))
@@ -361,7 +357,7 @@ object PartyHtml extends PartyController {
 }
 
 object PartyApi extends PartyController {
-  protected val passwordInputMapping = OptionMapping(Forms.text(7))
+  override protected val passwordInputMapping = OptionMapping(Forms.text(7))
 
   def get(partyId : models.Party.Id) = Action(Some(partyId), Some(Permission.NONE)).async { implicit request =>
     request.obj.json(request.apiOptions).map(Ok(_))

@@ -12,7 +12,7 @@
                 <div class="row">
                     @widget.portrait.maximal(request.identity, "comment_author")
 
-                    @widget.tag.form(form._action) {
+                    @widget.tag.form(form) {
                         <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
                             <div class="comment_meta row">
                                 <div class="comment_info col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
@@ -24,7 +24,7 @@
                             <div class="comment_body comment_form">
                                 @widget.tag.textarea(form.text(), 'placeholder -> "Comment")
 
-                                @widget.formErrors(form())
+                                @widget.formErrors(form)
                                 <button type="submit" class="button first">Post</button>
                             </div>
                         </div>

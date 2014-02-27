@@ -7,7 +7,7 @@
 @template.action("Enter Databrary") {
     @widget.panel.form("Enter Databrary", "Login", controller = "LoginPanelCtrl") {
         <div class="col-full">
-            @widget.tag.form(form._action) {
+            @widget.tag.form(form) {
 
                 <div ng-show="method == 1">
                     @widget.tag.inputText(form.email(), 'placeholder -> "Email")
@@ -18,7 +18,7 @@
                     @widget.tag.inputText(form.openid(), 'placeholder -> "OpenID")
                 </div>
 
-                @widget.formErrors(form())
+                @widget.formErrors(form)
                 <button type="submit" class="button">Login</button>
 
                 <a ng-click="switchMethod(2)" ng-show="method != 2">or login with OpenID.</a>

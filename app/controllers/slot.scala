@@ -49,7 +49,7 @@ object SlotController extends SlotController {
     val date = Field(OptionMapping(Forms.optional(Forms.jodaLocalDate)))
   }
 
-  sealed abstract class EditForm(implicit request : Request[_])
+  sealed class EditForm(implicit request : Request[_])
     extends AHtmlForm[EditForm](
       routes.SlotHtml.update(request.obj.containerId, request.obj.segment),
       f => SlotHtml.viewEdit(Some(f)))
@@ -58,19 +58,14 @@ object SlotController extends SlotController {
     override def formName = "Edit Session"
     consent.fill(Some(request.obj.consent))
   }
-  final class SlotEditForm(implicit request : Request[_])
-    extends EditForm {
-    _fill
-  }
   final class ContainerEditForm(implicit request : Request[_])
     extends EditForm with ContainerForm {
     name.fill(Some(request.obj.container.name.getOrElse("")))
     date.fill(Some(request.obj.container.date))
-    _fill
   }
   def editForm(implicit request : Request[_]) : EditForm =
     if (request.obj.isFull) new ContainerEditForm
-    else new SlotEditForm
+    else new EditForm
 
   final class ContainerCreateForm(implicit request : VolumeController.Request[_])
     extends HtmlForm[ContainerCreateForm](

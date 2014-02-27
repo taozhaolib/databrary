@@ -5,9 +5,9 @@
 }
 
 @template.form(Some(request.obj), "Edit Record") {
-    @widget.tag.form(editForm._action) {
+    @widget.tag.form(editForm) {
 	@widget.tag.select(editForm.category(), RecordCategory.getAll.map(c => (c.id.toString, c.name)), '_default -> "None")
-	@widget.formErrors(editForm())
+	@widget.formErrors(editForm)
 	<button type='submit' class="button">Update</button>
     }
 
@@ -16,7 +16,7 @@
 
                     <div class="repeat">
 		    @measureForms.map { form =>
-		    @widget.tag.form(form._action) {
+		    @widget.tag.form(form) {
                         <div class="repeat_repeated">
                             <div class="field cf">
 				@form.metric.name (@form.metric.classification)
@@ -38,7 +38,7 @@
                         </div>
 
                         <div class="repeat_controls">
-			    @widget.formErrors(form())
+			    @widget.formErrors(form)
 			    <button type='submit' class="button">Update</button>
                         </div>
 		    }
@@ -46,13 +46,13 @@
                     </div>
 
                     <div class="repeat">
-		    @widget.tag.form(metricForm._action) {
+		    @widget.tag.form(metricForm) {
                         <div class="repeat_repeated">
 			    @widget.tag.select(metricForm.metric(), (Metric.getAll.toSeq diff measureForms.map(_.metric)).map(m => (m.id.toString, m.name)))
                         </div>
 
 			<div class="repeat_controls">
-			    @widget.formErrors(metricForm())
+			    @widget.formErrors(metricForm)
 			    <button type='submit' class="button">Add</button>
 			</div>
 		    }

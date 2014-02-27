@@ -83,7 +83,6 @@ object RecordController extends RecordController {
       routes.RecordHtml.update(request.obj.id),
       f => RecordHtml.viewEdit(editForm = Some(f))) {
     val category = Field(OptionMapping(Forms.optional(categoryMapping))).fill(Some(request.obj.category))
-    _fill
   }
 
   final class MeasureForm(val metric : Metric[_])(implicit request : Request[_])
@@ -93,7 +92,7 @@ object RecordController extends RecordController {
     val datum = Field(Forms.text).fill("")
     private[controllers] def _fill(d : String) : this.type = {
       datum.fill(d)
-      _fill
+      this
     }
   }
 }
@@ -176,6 +175,9 @@ object RecordHtml extends RecordController {
 	Redirect(routes.RecordHtml.edit(r.id))
       }
     }
+
+  final class RemoveForm(record : Record, slot : Slot)
+    extends StructForm(routes.RecordHtml.remove(record.id, slot.containerId, slot.segment, true))
 }
 
 object RecordApi extends RecordController {

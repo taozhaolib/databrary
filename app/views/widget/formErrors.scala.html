@@ -1,8 +1,7 @@
-@(form : Form[_])
+@(form : StructForm)
 
 @form.globalErrors.map { error =>
 <div class="inline error">
-    @* FIXME: translate *@
-	@error.message
+	@Messages(error.message, error.args : _*)
 </div>
 }

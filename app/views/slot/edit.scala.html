@@ -5,7 +5,7 @@
 }
 
 @template.form(Some(request.obj), form.formName) {
-            @widget.tag.form(form._action) {
+            @widget.tag.form(form) {
 		@cast[SlotController.ContainerForm](form).map { form =>
                     @widget.tag.inputText(form.name(), 'placeholder -> "Name")
                     @widget.tag.inputDate(form.date(), 'placeholder -> "Date", 'class -> "half")
@@ -13,7 +13,7 @@
 
                 @widget.enumSelect(form.consent(), Consent)
 
-		@widget.formErrors(form())
+		@widget.formErrors(form)
 		<button type='submit' class="button">@form.actionName</button>
             }
 
@@ -48,9 +48,12 @@
                                             <td class="meta">
                                                 <a href="@routes.RecordHtml.edit(record.id)" class="button">edit</a>
 
-                                            @widget.tag.form(routes.RecordHtml.remove(record.id, slot.containerId, slot.segment, true)) {
+					    @defining(new RecordHtml.RemoveForm(record, slot)) { form =>
+                                            @widget.tag.form(form) {
+						@widget.formErrors(form)
                                                 <button type='submit' class="button first">remove</button>
                                             }
+					    }
                                             </td>
                                         </tr>
                                     }
@@ -64,13 +67,13 @@
                             @recordForm.map { form =>
                                 <tfoot>
                                     <tr>
-                                    @widget.tag.form(form._action) {
+                                    @widget.tag.form(form) {
 				    @defining(helper.FieldConstructor(widget.tag.tableFieldConstructor.f)) { implicit implicitField =>
 
 					@widget.tag.select(form.record(), selectList.map(r => (r.id.toString, r.category.fold("")(_.name + ':') + r.ident)), ('_default, "Create new record..."), ('_colspan, 2))
 
                                         <td>
-					    @widget.formErrors(form())
+					    @widget.formErrors(form)
                                             <button type='submit' class="button third">add record</button>
                                         </td>
                                     }

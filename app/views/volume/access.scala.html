@@ -23,12 +23,12 @@
 
             <tbody>
                 @accessForms.map { form =>
-		    @widget.tag.form(form._action) {
+		    @widget.tag.form(form) {
                     <tr>
                         @accessFields(form)
 
                         <td>
-                            @widget.formErrors(form())
+                            @widget.formErrors(form)
                             <button type='submit' class="button second">Update</button>
                             @if(!(request.identity === form.party)) {
                             <button type='submit' class="button first" name='delete' value='true'>Revoke</button>
@@ -40,24 +40,24 @@
             </tbody>
 
             <tfoot>
-                @widget.tag.form(accessSearch._action) {
+                @widget.tag.form(accessSearch) {
                     <tr class="null">
                         @widget.tag.inputText(accessSearch.name(), 'placeholder -> "Search users and institutions...")
                         <td/>
                         <td/>
                         <td>
-                            @widget.formErrors(accessSearch())
+                            @widget.formErrors(accessSearch)
                             <button type='submit' class="button third">Search</button>
                         </td>
                     </tr>
                 }
 
                 @accessResults.map { form =>
-                    @widget.tag.form(form._action) {
+                    @widget.tag.form(form) {
                         <tr>
                             @accessFields(form)
                             <td>
-                                @widget.formErrors(form())
+                                @widget.formErrors(form)
                                 <button type='submit' class="button">Grant</button>
                             </td>
                         </tr>
