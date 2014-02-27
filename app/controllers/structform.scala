@@ -12,7 +12,7 @@ import macros._
 
 /** This is an alternative to play.api.data.Form that provides more structure and safety.
   * The disadvantage of this class is mutability and less efficiency. */
-private[controllers] abstract class StructForm(val _action : Call) {
+abstract class StructForm(val _action : Call) {
   self =>
 
   protected sealed abstract class Member[T] {
@@ -38,9 +38,11 @@ private[controllers] abstract class StructForm(val _action : Call) {
   protected final case class Field[T](map : Mapping[T]) extends Member[T] {
     def fill(v : T) : Field[T] = {
       value = v
+      if (name != null)
+	_data ++= unbind._1
       this
     }
-    private[this] lazy val mapping : Mapping[T] = map.withPrefix(name)
+    private[this] lazy val mapping : Mapping[T] = map.withPrefix(name.ensuring(_ != null))
     private[StructForm] def mappings : Seq[Mapping[_]] = mapping.mappings
     private[StructForm] def bind(data : Map[String,String]) : Option[Seq[FormError]] =
       mapping.bind(data).fold(Some(_), v => { value = v ; None })
@@ -108,11 +110,6 @@ private[controllers] abstract class StructForm(val _action : Call) {
       }
     )
 
-  private[this] var _data : Map[String, String] = Map.empty[String, String]
-  private[this] val _errors : mutable.ListBuffer[FormError] = mutable.ListBuffer.empty[FormError]
-  private[this] val _constraints : mutable.ListBuffer[Constraint[self.type]] = mutable.ListBuffer.empty[Constraint[self.type]]
-  final def hasErrors = _errors.nonEmpty
-
   protected object _mapping extends Mapping[self.type] {
     val key : String = ""
     val constraints : Seq[Constraint[self.type]] = _constraints
@@ -137,23 +134,25 @@ private[controllers] abstract class StructForm(val _action : Call) {
     }
   }
 
-  protected class form(value : Option[self.type] = if (hasErrors) None else Some(self)) extends Form[self.type](_mapping, _data, _errors, value) {
+  protected class form(value : Option[self.type] = if (hasErrors) None else Some(self)) extends Form[self.type](_mapping, _data.toMap, _errors, value) {
     override def bind(data : Map[String, String]) : Form[self.type] = {
-      _data = data
+      _data.clear
+      _data ++= data
       mapping.bind(data).fold(
 	errors => { _errors ++= errors ; new form(None) },
 	value => new form(Some(value))
       )
     }
     override def fill(value : self.type) : Form[self.type] = {
-      val (data, _) = mapping.unbind(value)
-      _data = data
+      _data.clear
+      _data ++= mapping.unbind(value)._1
       new form(Some(value))
     }
     override def fillAndValidate(value : self.type) : Form[self.type] = {
-      val (data, errors) = mapping.unbind(value)
-      _data = data
+      _data.clear
       _errors.clear
+      val (data, errors) = mapping.unbind(value)
+      _data ++= data
       _errors ++= errors
       new form(Some(value))
     }
@@ -165,60 +164,65 @@ private[controllers] abstract class StructForm(val _action : Call) {
       _errors.clear
       this
     }
-    /* We change globalErrors to also include errors attached to missing fields, as this is a common bug. */
-    override def globalErrors : Seq[FormError] =
-      _errors.filter(e => e.key.isEmpty || !_data.contains(e.key))
   }
   def apply() = new form()
-  protected def _fill() : self.type = {
-    _data = _mapping.unbind(self)._1
-    self
-  }
-  private[this] def _bindFiles(implicit request : Request[AnyContent]) : self.type = {
+
+  private[this] lazy val _data : mutable.Map[String, String] = mutable.Map(_mapping.unbind(self)._1.toSeq : _*)
+  private[this] val _errors : mutable.ListBuffer[FormError] = mutable.ListBuffer.empty[FormError]
+  private[this] val _constraints : mutable.ListBuffer[Constraint[self.type]] = mutable.ListBuffer.empty[Constraint[self.type]]
+  final def hasErrors = _errors.nonEmpty
+
+  /** Like this().globalErrors but also includes errors attached to missing fields, as this is a common bug. */
+  def globalErrors : Seq[FormError] =
+    _errors.filter(e => e.key.isEmpty || !_data.contains(e.key))
+  private[this] def bindFiles(implicit request : Request[AnyContent]) : self.type = {
     val d = request.body.asMultipartFormData
       .getOrElse(MultipartFormData[Files.TemporaryFile](Map.empty, Nil, Nil, Nil))
     _errors ++= _files.flatMap(_.bind(d))
     self
   }
-  private[controllers] def _bind(implicit request : Request[AnyContent]) : self.type = {
+  def _bind(implicit request : Request[AnyContent]) : self.type = {
     apply().bindFromRequest
-    _bindFiles
+    bindFiles
     self
   }
+  def _enctype : String =
+    if (_files.nonEmpty) "multipart/form-data"
+    else "application/x-www-form-urlencoded"
 }
 
-private[controllers] abstract class FormView(action : Call) extends StructForm(action) {
+abstract class FormView(action : Call) extends StructForm(action) {
   self =>
-  private[controllers] def _exception : FormException
-  private[controllers] final def _throw = throw _exception
-  private[controllers] final def orThrow() : self.type = {
+  def _exception : FormException
+  final def _throw = throw _exception
+  final def orThrow() : self.type = {
     if (hasErrors)
       _throw
     self
   }
-  private[controllers] override def _bind(implicit request : Request[AnyContent]) : self.type = {
+  override def _bind(implicit request : Request[AnyContent]) : self.type = {
     super._bind.orThrow
   }
 }
 
 abstract class HtmlFormView(action : Call) extends FormView(action) {
-  private[controllers] def _view : Future[HtmlFormat.Appendable]
-  private[controllers] final def Ok : Future[SimpleResult] = _view.map(Results.Ok(_))
-  private[controllers] final def Bad : Future[SimpleResult] = _view.map(Results.BadRequest(_))
-  private[controllers] final def _exception = new FormException(new form()) {
+  def _view : Future[HtmlFormat.Appendable]
+  final def Ok : Future[SimpleResult] = _view.map(Results.Ok(_))
+  final def Bad : Future[SimpleResult] = _view.map(Results.BadRequest(_))
+  final def _exception = new FormException(new form()) {
     def resultHtml(implicit site : SiteRequest[_]) = Bad
   }
 }
 
 class HtmlForm[+F <: HtmlForm[F]](action : Call, view : F => HtmlFormat.Appendable) extends HtmlFormView(action) {
   this : F =>
-  private[controllers] final def _view = macros.Async(view(this))
+  final def _view = macros.Async(view(this))
 }
 class AHtmlForm[+F <: AHtmlForm[F]](action : Call, view : F => Future[HtmlFormat.Appendable]) extends HtmlFormView(action) {
   this : F =>
-  private[controllers] final def _view = view(this)
+  final def _view = view(this)
 }
 
 class ApiForm(action : Call) extends FormView(action) {
-  private[controllers] final def _exception = new ApiFormException(new form())
+  final def _exception = new ApiFormException(new form())
 }

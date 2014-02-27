@@ -5,7 +5,6 @@ import play.api._
 import          Play.current
 import          mvc._
 import          data._
-import               Forms._
 import          i18n.Messages
 import          libs.Files.TemporaryFile
 import          libs.iteratee.Enumerator
@@ -22,56 +21,17 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   protected def Action(i : models.Asset.Id, p : Permission.Value) =
     SiteAction ~> action(i, p)
 
-  type AssetMapping = (
-    Option[String], 
-    Option[Classification.Value], 
-    Option[(
-      Container.Id, 
-      Option[Offset]
-    )], 
-    Option[(
-      Option[AssetFormat.Id], 
-      Boolean, 
-      Option[String], Unit)
-    ]
-  )
-  type AssetForm = Form[AssetMapping]
-  protected def assetForm(file : Boolean) : AssetForm = Form(tuple(
-    "name" -> OptionMapping(text),
-    "classification" -> OptionMapping(Mappings.enum(Classification)),
-    "" -> optional(tuple(
-      "container" -> of[Container.Id],
-      ("position", optional(of[Offset]))
-    )),
-    ("", MaybeMapping(if (file) Some(tuple(
-      "format" -> optional(of[AssetFormat.Id]),
-      "timeseries" -> boolean,
-      "localfile" -> optional(nonEmptyText),
-      "file" -> ignored(()))) else None))
-  ))
-
-  protected def formFill(implicit request : Request[_]) : AssetForm = {
-    /* TODO Under what conditions should FileAsset data be allowed to be changed? */
-    assetForm(false).fill((Some(request.obj.name.getOrElse("")), Some(request.obj.classification), None, None))
-  }
-
-  def formForFile(form : AssetForm, target : Either[Volume,Asset]) =
-    form.value.fold(target.isLeft)(_._4.isDefined)
-
-  def update(o : models.Asset.Id) = Action(o, Permission.EDIT).async { implicit request =>
-    def bad(form : AssetForm) =
-      new BadFormException[AssetMapping](views.html.asset.edit(Right(request.obj), _))(form)
-    val form = formFill.bindFromRequest
-    form.fold(bad(_).result, {
-      case (name, classification, slot, _) => for {
-          container <- macros.Async.map[Container.Id, Container](slot.map(_._1), Container.get(_).map(_.getOrElse(
-            throw bad(form.withError("container", "Invalid container ID")))))
-          _ <- request.obj.change(classification = classification, name = name.map(Maybe(_).opt))
-          _ <- macros.Async.foreach[Container, Unit](container, request.obj.link(_, slot.flatMap(_._2)))
-        } yield (result(request.obj))
-      }
-    )
-  }
+  def update(o : models.Asset.Id) =
+    Action(o, Permission.EDIT).async { implicit request =>
+      val form = new AssetController.ChangeForm()._bind
+      for {
+	container <- macros.Async.map[Container.Id, Container](form.container.get,
+	  Container.get(_).map(_.getOrElse(form.container.withError("Invalid container ID")._throw)))
+	_ <- request.obj.change(classification = form.classification.get, name = form.name.get.map(Maybe(_).opt))
+	_ <- macros.Async.foreach[Container, Unit](container,
+	  request.obj.link(_, form.position.get))
+      } yield (result(request.obj))
+    }
 
   private[controllers] def assetResult(asset : BackedAsset, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[SimpleResult] = {
     val tag = asset.etag
@@ -105,66 +65,97 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   }
 }
 
-object AssetController extends AssetController
+object AssetController extends AssetController {
+  sealed abstract class AssetForm(action : Call)(implicit request : RequestObject.Site[_])
+    extends HtmlForm[AssetForm](action,
+      views.html.asset.edit(_)) {
+    def actionName : String
+    def formName : String = actionName + " Asset"
+
+    val name = Field(OptionMapping(Forms.text))
+    val classification = Field(OptionMapping(Mappings.enum(Classification)))
+    val container = Field(Forms.optional(Forms.of[Container.Id]))
+    val position = Field(Forms.optional(Forms.of[Offset]))
+  }
+
+  final class ChangeForm(implicit request : Request[_])
+    extends AssetForm(routes.AssetHtml.update(request.obj.id)) {
+    def actionName = "Update"
+    override def formName = "Edit Asset"
+    name.fill(Some(request.obj.name.getOrElse("")))
+    classification.fill(Some(request.obj.classification))
+    container.fill(None)
+    position.fill(None)
+  }
+
+  final class UploadForm(implicit request : VolumeController.Request[_])
+    extends AssetForm(routes.AssetHtml.upload(request.obj.id)) {
+    classification.fill(Some(Classification.IDENTIFIED))
+    def actionName = "Upload"
+    val format = Field(Forms.optional(Forms.of[AssetFormat.Id]))
+    val timeseries = Field(Forms.boolean)
+    val localfile = Field(Forms.optional(Forms.nonEmptyText))
+    val file = OptionalFile()
+  }
+}
 
 object AssetHtml extends AssetController {
+  import AssetController._
+
   def view(o : models.Asset.Id) = Action(o, Permission.VIEW).async { implicit request =>
     request.obj.slot.map(_.fold[SimpleResult](
       NotFound /* TODO */)(
       sa => Redirect(sa.in(sa.slot.container).pageURL)))
   }
 
-  def edit(o : models.Asset.Id) = Action(o, Permission.EDIT) { implicit request =>
-    Ok(views.html.asset.edit(Right(request.obj), formFill))
-  }
+  def edit(o : models.Asset.Id) =
+    Action(o, Permission.EDIT).async { implicit request =>
+      new ChangeForm().Ok
+    }
 
-  private[this] val uploadForm = assetForm(true)
+  def create(v : models.Volume.Id, c : Option[Container.Id], pos : Option[Offset]) =
+    VolumeHtml.Action(v, Permission.CONTRIBUTE).async { implicit request =>
+      val form = new UploadForm()
+      form.container.fill(c)
+      form.position.fill(pos)
+      form.Ok
+    }
 
-  def create(v : models.Volume.Id, c : Option[Container.Id], pos : Option[Offset]) = VolumeHtml.Action(v, Permission.CONTRIBUTE) { implicit request =>
-    Ok(views.html.asset.edit(Left(request.obj), uploadForm.fill((Some(""), Some(Classification.IDENTIFIED), c.map((_, pos)), Some((None, false, None, ()))))))
-  }
-
-  def upload(v : models.Volume.Id) = VolumeHtml.Action(v, Permission.CONTRIBUTE).async { implicit request =>
-    val volume = request.obj
-    def Error(form : AssetForm) =
-      throw new BadFormException[AssetMapping](views.html.asset.edit(Left(request.obj), _))(form)
-    val form = uploadForm.bindFromRequest
-    form.fold(Error _, {
-      case (name, classification, slot, Some((format, timeseries, localfile, ()))) =>
-        val adm = request.access.isAdmin
-        val ifmt = format.filter(_ => adm).flatMap(AssetFormat.get(_))
-        val (file, fmt, fname) =
-          request.body.asMultipartFormData.flatMap(_.file("file")).fold {
-            /* local file handling, for admin only: */
-            val file = new java.io.File(localfile.filter(_ => adm) getOrElse
-              Error(form.withError("file", "error.required")))
-            val name = file.getName
-            if (!file.isFile)
-              Error(form.withError("localfile", "File not found"))
-            val ffmt = ifmt orElse AssetFormat.getFilename(name) getOrElse
-              Error(form.withError("format", "Unknown format"))
-            (store.TemporaryFileLinkOrCopy(file) : TemporaryFile, ffmt, name)
-          } { file =>
-            val ffmt = ifmt orElse AssetFormat.getFilePart(file) getOrElse
-              Error(form.withError("file", "file.format.unknown", file.contentType.getOrElse("unknown")))
-            (file.ref, ffmt, file.filename)
-          }
-        val aname = name.flatMap(Maybe(_).opt).orElse(Maybe(fname).opt)
-        for {
-          container <- macros.Async.map[Container.Id, Container](slot.map(_._1), Container.get(_).map(_ getOrElse
-            Error(form.withError("container", "Invalid container ID"))))
-          asset <- fmt match {
-            case fmt : TimeseriesFormat if adm && timeseries =>
-              val probe = media.AV.probe(file.file)
-              models.Asset.create(volume, fmt, classification.getOrElse(Classification(0)), probe.duration, aname, file)
-            case _ =>
-              models.Asset.create(volume, fmt, classification.getOrElse(Classification(0)), aname, file)
-          }
-          sa <- macros.Async.map[Container, SlotAsset](container, asset.link(_, slot.flatMap(_._2)))
-        } yield (Redirect(sa.getOrElse(asset).pageURL))
-      case _ => Error(uploadForm) /* should not happen */
-    })
-  }
+  def upload(v : models.Volume.Id) =
+    VolumeHtml.Action(v, Permission.CONTRIBUTE).async { implicit request =>
+      val form = new UploadForm()._bind
+      val adm = request.access.isAdmin
+      val ifmt = form.format.get.filter(_ => adm).flatMap(AssetFormat.get(_))
+      val (file, fmt, fname) =
+	form.file.get.fold {
+	  /* local file handling, for admin only: */
+	  val file = new java.io.File(form.localfile.get.filter(_ => adm) getOrElse
+	    form.file.withError("error.required")._throw)
+	  val name = file.getName
+	  if (!file.isFile)
+	    form.localfile.withError("File not found")._throw
+	  val ffmt = ifmt orElse AssetFormat.getFilename(name) getOrElse
+	    form.format.withError("file.format.unknown", "unknown")._throw
+	  (store.TemporaryFileLinkOrCopy(file) : TemporaryFile, ffmt, name)
+	} { file =>
+	  val ffmt = ifmt orElse AssetFormat.getFilePart(file) getOrElse
+	    form.file.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw
+	  (file.ref, ffmt, file.filename)
+	}
+      val aname = form.name.get.flatMap(Maybe(_).opt) orElse Maybe(fname).opt
+      for {
+	container <- macros.Async.map[Container.Id, Container](form.container.get, Container.get(_).map(_ getOrElse
+	  form.container.withError("Invalid container ID")._throw))
+	asset <- fmt match {
+	  case fmt : TimeseriesFormat if adm && form.timeseries.get =>
+	    val probe = media.AV.probe(file.file)
+	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), probe.duration, aname, file)
+	  case _ =>
+	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), aname, file)
+	}
+	sa <- macros.Async.map[Container, SlotAsset](container, asset.link(_, form.position.get))
+      } yield (Redirect(sa.getOrElse(asset).pageURL))
+    }
 
   def remove(a : models.Asset.Id) = Action(a, Permission.EDIT).async { implicit request =>
     for {

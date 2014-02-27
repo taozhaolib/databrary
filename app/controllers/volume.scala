@@ -115,7 +115,6 @@ object VolumeController extends VolumeController {
     body.fill(Some(request.obj.body.getOrElse("")))
     alias.fill(Some(request.obj.alias.getOrElse("")))
     citation.fill(cites.map(citationFill(_)) :+ ((Some(""), None, None)))
-    _fill
   }
 
   final class CreateForm(implicit request : PartyController.Request[_])
@@ -138,7 +137,7 @@ object VolumeController extends VolumeController {
       assert(a.party === party)
       access.fill(a.access)
       inherit.fill(a.inherit)
-      _fill()
+      this
     }
   }
 

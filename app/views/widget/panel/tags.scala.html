@@ -10,8 +10,9 @@
                 @if(tags.nonEmpty) {
                     @tags.map { tw =>
                         <li id="tag_@tw.tag.id" class="panel_tags_item col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-6">
-                        @widget.tag.form(routes.TagHtml.update(tw.tag.name, slot.containerId, slot.segment)) {
+                        @widget.tag.form(form) {
 
+			    @widget.tag.inputHidden(form.name.fill(Some(tw.tag.name))())
                             <div class="controls">
                                 <button class="vote down" name="vote" value="false" @if(!tw.user.getOrElse(true)){disabled}>-</button>
                                 <button class="vote null" name="vote" value="" @if(tw.user.isEmpty){disabled}>0</button>
@@ -29,8 +30,9 @@
         </div>
 
         <div id="tag_add" class="panel_tags_form col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
-            @widget.tag.form(form._action) {
-                @widget.tag.inputText(form.name(), 'placeholder -> "Add new tag")
+            @widget.tag.form(form) {
+                @widget.tag.inputText(form.name.fill(None)(), 'placeholder -> "Add new tag")
+		@widget.formErrors(form)
                 <button name="vote" value="@true" class="hide">add</button>
             }
         </div>

@@ -115,7 +115,7 @@ object LoginController extends LoginController {
     private[controllers] def _fill(em : Option[String], op : String = "") : this.type = {
       email.fill(em)
       openid.fill(op)
-      _fill
+      this
     }
   }
 

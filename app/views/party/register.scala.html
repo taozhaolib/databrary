@@ -7,14 +7,14 @@
 @template.action("Register an account") {
     @widget.panel.form("Register an account", "Register") {
         <div class="col-full">
-            @widget.tag.form(form._action) {
+            @widget.tag.form(form) {
 
                 @widget.tag.inputText(form.name(), 'placeholder -> "Full name")
 		@widget.tag.inputText(form.email(), 'placeholder -> "Email")
 		@widget.tag.inputText(form.affiliation(), 'placeholder -> "Affiliation")
 		<!-- @widget.tag.checkbox(form.agreement()) -->
 
-                @widget.formErrors(form())
+                @widget.formErrors(form)
                 <button type="submit" class="button">Register</button>
             }
         </div>

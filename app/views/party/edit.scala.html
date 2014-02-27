@@ -6,7 +6,7 @@
 
 @defining(cast[PartyController#EditForm](form).map(_.party)) { party =>
 @template.form(party, form.formName) {
-            @widget.tag.form(form._action, 'enctype -> "multipart/form-data") {
+            @widget.tag.form(form) {
                 @widget.tag.inputText(form.name(), ('placeholder, "Full name"))
                 @widget.tag.inputText(form.orcid(), ('placeholder, "ORCiD"))
                 @widget.tag.inputText(form.affiliation(), ('placeholder,"Affiliation"))
@@ -26,7 +26,7 @@
 		    @widget.tag.inputFile(form.avatar())
 		}
 
-		@widget.formErrors(form())
+		@widget.formErrors(form)
 		<button type='submit' class="button">@form.actionName</button>
             }
 }
