@@ -12,12 +12,11 @@
 	.box-shadow();
 	top: @b1 + @b2;
 	z-index: 950;
-	background-color: mix(@g4, @g5, 10%);
+	background-color: @g5;
 
 	&.toolbar_databrary {
 		top: 0;
 		z-index: 1000;
-		background: @g1;
 	}
 }
 
@@ -30,15 +29,19 @@
 	display: inline-block;
 
 	a {
-		color: @g5;
+		color: @g1;
 		display: block;
 		background: url('/public/images/logo/databrary-nav.png') no-repeat 0 center;
 		.height(1.5);
 		padding-left: 1.75rem;
 		padding-right: @b1;
 
+		&:link {
+			color: @g1;
+		}
+
 		&:hover {
-			color: @white;
+			color: @g1;
 			text-shadow: @toolbarTextShadow @g4;
 		}
 	}
@@ -125,7 +128,7 @@
 
 		&:before {
 			content: "/";
-			color: @c11;
+			color: @g3;
 		}
 
 		&:hover {
@@ -165,7 +168,7 @@
 
 		&:hover {
 			img {
-				border-color: @g5;
+				border-color: @g1;
 				.box-shadow(0 0 3px @g4);
 			}
 		}
