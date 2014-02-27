@@ -1,5 +1,6 @@
 define([
 	'app/model/party',
+	'app/model/partyAuthorize',
 	'app/model/asset',
 	'app/model/tag',
 	'app/model/comment',

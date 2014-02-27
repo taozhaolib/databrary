@@ -119,6 +119,11 @@ fieldset, .fieldset {
 	> *:last-child {
 		.margin-bottom(0);
 	}
+
+	&.clean {
+		border: 0;
+		.padding-height(0)
+	}
 }
 
 legend, .legend {
@@ -133,6 +138,13 @@ label, .label {
 	font-weight: bold;
 	text-transform: uppercase;
 	.font-size(.75);
+
+	&.option {
+		font-weight: normal;
+		display: inline-block;
+		.font-size(1);
+		text-transform: none;
+	}
 }
 
 //

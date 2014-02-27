@@ -1,7 +1,7 @@
 <panel ng-controller="NetworkPanel" id="panel_network" title="Network" fold>
     <panel-mode name="view" active>
         <div ng-show="parents">
-            <h2>Memberships</h2>
+            <h2>Authorized by</h2>
 
             <div class="row">
                 <div ng-repeat="party in parents" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
@@ -11,13 +11,119 @@
         </div>
 
         <div ng-show="children">
-            <h2>Members</h2>
+            <h2>People I've Authorized</h2>
 
             <div class="row">
                 <div ng-repeat="party in children" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
                     <portrait class="portrait_avatar" hover></portrait>
                 </div>
             </div>
+        </div>
+    </panel-mode>
+<!--
+    <panel-mode name="apply">
+        <div ng-show="parents">
+            <h2>Authorized by</h2>
+
+            <div class="row">
+                <div ng-repeat="party in parents" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
+                    <portrait class="portrait_avatar" hover></portrait>
+                </div>
+            </div>
+        </div>
+    </panel-mode>
+-->
+    <panel-mode name="authorize">
+        <div ng-show="children">
+            <h2>People I've Authorized</h2>
+
+            <article class="network-auth cf" bindonce ng-repeat="child in partyAuth.children">
+                <div class="row">
+                    <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
+                        <figure baseline="square" class="figure_avatar" ng-click="openAuthChild(child, authForm)">
+                            <figmedia><img ng-src="{{router.partyAvatar(child.party, 54)}}"></figmedia>
+                        </figure>
+                    </div>
+
+                    <div ng-hide="currentAuthChild == child">
+                        <div class="col-desktop-4 col-laptop-4 col-tablet-4 col-mobile-4">
+                            <div class="network-auth-username" bo-html="child.party.name"></div>
+                            <div class="network-auth-email" bo-if="child.party.email" bo-html="child.party.email"></div>
+                            <div class="network-auth-expiration" bo-html="child.authorized | date:'longDate'"></div>
+                        </div>
+
+                        <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-4">
+                            <div class="network-auth-heading">Access to Databrary</div>
+                            <div class="network-auth-inherit" bo-html="constant.get('permission', child.inherit).name"></div>
+                        </div>
+
+                        <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-4">
+                            <div class="network-auth-heading">Access to My Data</div>
+                            <div class="network-auth-direct" bo-html="constant.get('permission', child.direct).name"></div>
+                        </div>
+                    </div>
+
+                    <div ng-show="currentAuthChild == child">
+                        <div class="col-desktop-10 col-laptop-10 col-tablet-10 col-mobile-10">
+                            <div class="network-auth-username" bo-html="child.party.name"></div>
+                            <div class="network-auth-email" bo-if="child.party.email" bo-html="child.party.email"></div>
+
+                            <form name="authForm">
+                                <fieldset class="clean">
+                                    <label>Grant <span bo-html="child.party.name"></span> the following capabilities:</label>
+<!--
+                                    <div>
+                                        <input type="radio" name="shortcut" ng-click="shortcutAuthChild()">
+                                        <label class="option"></label>
+                                    </div>
+-->
+                                    <div>
+                                        <input type="radio" name="shortcut" ng-click="shortcutAuthChild('custom')">
+                                        <label class="option">Custom...</label>
+                                    </div>
+                                </fieldset>
+
+                                <div class="row">
+                                    <div class="col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
+                                        <fieldset ng-disabled="authChildShortcut != 'custom'" class="clean">
+                                            <label>Access to Databrary</label>
+
+                                            <div ng-repeat="permission in constant.data.permission">
+                                                <input type="radio" ng-model="authForm.inherit" name="inherit" bo-value="permission.id">
+                                                <label bo-html="permission.name" class="option"></label>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
+                                        <fieldset ng-disabled="authChildShortcut != 'custom'" class="clean">
+                                            <label>Access to My Data</label>
+
+                                            <div ng-repeat="permission in constant.data.permission">
+                                                <input type = "radio" ng-model="authForm.direct" name="direct" bo-value="permission.id">
+                                                <label bo-html="permission.name" class="option"></label>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+
+                                <fieldset class="clean">
+                                    <label>Expiration:</label>
+
+                                    <input type="date" ng-model="authForm.authorized">
+
+                                    <button ng-click="authForm.authorized = ''">Clear expiration</button>
+                                </fieldset>
+
+                                <fieldset class="clean">
+                                    <button ng-click="saveAuthChild()">Update</button>
+                                    <button ng-click="closeAuthChild()">Cancel</button>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </article>
         </div>
     </panel-mode>
 </panel>

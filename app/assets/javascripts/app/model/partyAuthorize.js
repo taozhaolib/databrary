@@ -5,10 +5,9 @@ define(['app/config/module'], function (module) {
 		return $resource('/api/party/:id/authorize/:partyId', {
 			id: function () {
 				return $route.current.params.id || undefined;
-			},
-			partyId: function () {
-				return $route.current.params.partyId || undefined;
 			}
+		}, {
+			'query': {method: 'GET', isArray: false}
 		});
 	}]);
 });
