@@ -50,7 +50,7 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
       (if (form.datum.get.isEmpty)
 	request.obj.removeMeasure(metric)
       else
-	request.obj.setMeasure(metric, form.datum.get).map {
+	request.obj.setMeasure(new Measure(metric, form.datum.get)).map {
 	  case false => form.datum.withError("measure.bad")._throw
 	  case true => true
 	})

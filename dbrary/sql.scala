@@ -5,7 +5,7 @@ import scala.util.control.Exception.catching
 import com.github.mauricio.async.db
 import macros._
 
-class SQLArg[A](value : A)(implicit val sqlType : SQLType[A]) {
+class SQLArg[A](val value : A)(implicit val sqlType : SQLType[A]) {
   def put : Any = sqlType.put(value)
   def placeholder = "?::" + sqlType.name
 }

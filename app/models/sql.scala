@@ -9,6 +9,7 @@ import site._
 class SQLTerm[A](val name : String, value : A)(implicit sqlType : SQLType[A]) extends SQLArg[A](value)(sqlType) {
 }
 object SQLTerm {
+  def apply[A](name : String, arg : SQLArg[A]) = new SQLTerm[A](name, arg.value)(arg.sqlType)
   def apply[A](name : String, value : A)(implicit sqlType : SQLType[A]) = new SQLTerm[A](name, value)(sqlType)
   import scala.language.implicitConversions
   implicit def ofTuple[A : SQLType](x : (Symbol, A)) : SQLTerm[A] = SQLTerm[A](x._1.name, x._2)

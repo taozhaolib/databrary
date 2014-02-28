@@ -46,31 +46,31 @@ object Curated extends Ingest {
     def fields = Seq(id, gender.toString, birthdate.toString, optString(race) + "/" + optString(ethnicity), optString(language))
     def key = id
 
-    private def measures : Seq[(Metric[_],String)] = Seq(
-        Metric.Ident -> id
-      , Metric.Gender -> Gender.valueOf(gender)
-      , Metric.Birthdate -> birthdate.toString) ++
-      race.map(Metric.Race -> Race.valueOf(_)) ++
-      ethnicity.map(Metric.Ethnicity -> Ethnicity.valueOf(_)) ++
-      language.map(Metric.Language -> _)
+    private def measures : Seq[Measure[_]] = Seq(
+        new MeasureV(Metric.Ident, id)
+      , new MeasureV(Metric.Gender, Gender.valueOf(gender))
+      , new MeasureV(Metric.Birthdate, birthdate)) ++
+      race.map(r => new MeasureV(Metric.Race, Race.valueOf(r))) ++
+      ethnicity.map(e => new MeasureV(Metric.Ethnicity, Ethnicity.valueOf(e))) ++
+      language.map(new MeasureV(Metric.Language, _))
     def populate(volume : Volume) : Future[models.Record] =
-      models.Record.findMeasure(volume, Some(RecordCategory.Participant), Metric.Ident, id).flatMap {
+      models.Record.findMeasures(volume, Some(RecordCategory.Participant), measures.head).flatMap {
         case Nil =>
           for {
             rec <- Record.create(volume, Some(RecordCategory.Participant))
-            _ <- Async.foreach[(Metric[_],String), Unit](measures, { case (m,v) =>
-              rec.setMeasure(m,v).flatMap(check(_, 
-                PopulateException("failed to set measure for subject " + id + " " + m.name + ": " + v, rec)))
+            _ <- Async.foreach[Measure[_], Unit](measures, { m =>
+              rec.setMeasure(m).flatMap(check(_, 
+                PopulateException("failed to set measure for subject " + id + ": " + m, rec)))
             })
           } yield (rec)
         case Seq(rec) =>
-          Async.foreach[(Metric[_],String),models.Record](measures, { case (m,v) =>
-            rec.measures(m).fold {
-              rec.setMeasure(m,v).flatMap(check(_,
-                PopulateException("failed to set measure for subject " + id + " " + m.name + ": " + v, rec)))
+          Async.foreach[Measure[_],models.Record](measures, { m =>
+            rec.measures(m.metric).fold {
+              rec.setMeasure(m).flatMap(check(_,
+                PopulateException("failed to set measure for subject " + id + ": " + m, rec)))
             } { c =>
-              check(c.datum.equals(v),
-                PopulateException("inconsistent mesaure for subject " + id + " " + m.name + ": " + v + " <> " + c.datum, rec))
+              check(c === m,
+                PopulateException("inconsistent mesaure for subject " + id + ": " + m + " <> " + c, rec))
             }
           }, rec)
         case _ =>

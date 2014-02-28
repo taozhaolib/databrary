@@ -77,11 +77,8 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   /** Add or change a measure on this record.
     * This is not type safe so may generate SQL exceptions, and may invalidate measures on this object. */
-  def setMeasure[T](metric : Metric[T], value : String) : Future[Boolean] =
-    Measure[T](metric, value).set(this)
-  /** Add or change a measure on this record. */
-  def setMeasureV[T](metric : Metric[T], value : T) : Future[Boolean] =
-    MeasureV[T](metric, value).set(this)
+  def setMeasure[T](measure : Measure[T]) : Future[Boolean] =
+    measure.set(this)
   /** Remove a measure from this record.
     * This may invalidate measures on this object. */
   def removeMeasure(metric : Metric[_]) = Measure.remove(this, metric)
@@ -199,14 +196,18 @@ object Record extends TableId[Record]("record") {
     * @param metric search by metric
     * @param value measure value that must match
     */
-  def findMeasure[T](volume : Volume, category : Option[RecordCategory] = None, metric : Metric[T], value : T) : Future[Seq[Record]] = {
-    val mt = metric.measureType
-    rowVolume(volume)
-    .leftJoin(mt.select.column, "record.id = " + mt.table + ".record AND " + mt.table + ".metric = ?")
-    .pushArgs(SQLArgs(metric.id)).map(_._1)
-    .SELECT("WHERE", metric.measureType.select.toString, "= ?",
-      (if (category.isDefined) "AND record.category = ?" else ""))
-    .apply(SQLArg(value)(mt.sqlType) +: category.fold(SQLArgs())(c => SQLArgs(c.id))).list
+  def findMeasures[T](volume : Volume, category : Option[RecordCategory], measures : Measure[T]*) : Future[Seq[Record]] = {
+    measures.zipWithIndex.foldLeft(rowVolume(volume)) { (s, mi) =>
+      val (m, i) = mi
+      val ma = "m_" + i.toString
+      val mt = m.metric.measureType
+      s.join(mt.select.column.fromAlias(ma),
+	"record.id = " + ma + ".record AND " + ma + ".metric = ? AND " + ma + ".datum = ?")
+      .pushArgs(SQLArgs(m.metric.id) :+ m.sqlArg)
+      .map(_._1)
+    }
+    .SELECT(if (category.isDefined) "WHERE record.category = ?" else "")
+    .apply(category.fold(SQLArgs())(c => SQLArgs(c.id))).list
   }
 
   /** Create a new record, initially unattached. */

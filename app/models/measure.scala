@@ -121,14 +121,17 @@ object Metric extends TableId[Metric[_]]("metric") {
   * One or more measurements of distinct Metrics compose a Record. */
 sealed class Measure[T](val metric : Metric[T], val datum : String) {
   final def metricId = metric.id
+  def ===(that : Measure[_]) : Boolean =
+    metric === that.metric && datum.equals(that.datum)
   def value : T = metric.sqlType.read(datum)
     .getOrElse(throw new SQLTypeMismatch(datum, metric.sqlType))
-  def dataType = metric.dataType
+  private[models] def dataType = metric.dataType
+  private[models] def sqlArg : SQLTerm[_] = SQLTerm("datum", datum)
 
   /** Add or update this measure in the database. */
-  def set(record : Record) : Future[Boolean] = {
+  private[models] def set(record : Record) : Future[Boolean] = {
     val ids = SQLTerms('record -> record.id, 'metric -> metric.id)
-    val args = ('datum -> datum) +: ids
+    val args = sqlArg +: ids
     val tpe = metric.measureType
     DBUtil.updateOrInsert(
       SQL("UPDATE", tpe.table, "SET datum = ?::" + tpe.sqlType.name, "WHERE", ids.where)(_, _).apply(args))(
@@ -137,12 +140,14 @@ sealed class Measure[T](val metric : Metric[T], val datum : String) {
         case e : db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("invalid input syntax for type") => false
       }
   }
+  override def toString = "Measure(" + metric.name + ", " + datum + ")"
 }
 /** A measurement value with a specific (converted) type. */
 final class MeasureV[T](metric : Metric[T], override val value : T) extends Measure[T](metric, metric.sqlType.show(value)) {
-  override def set(record : Record) : Future[Boolean] = {
+  private[models] override def sqlArg : SQLTerm[_] = SQLTerm("datum", value)(metric.sqlType)
+  private[models] override def set(record : Record) : Future[Boolean] = {
     val ids = SQLTerms('record -> record.id, 'metric -> metric.id)
-    val args = SQLTerm.ofTuple('datum -> value)(metric.sqlType) +: ids
+    val args = sqlArg +: ids
     val tpe = metric.measureType
     DBUtil.updateOrInsert(
       SQL("UPDATE", tpe.table, "SET datum = ? WHERE", ids.where)(_, _).apply(args))(

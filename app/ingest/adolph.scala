@@ -1,5 +1,6 @@
 package ingest
 
+import scala.concurrent.Future
 import macros._
 import dbrary._
 import models._
@@ -55,6 +56,20 @@ object Adolph extends Ingest {
     def key : Seq[Measure[_]]
     def measures : Seq[Measure[_]]
     def withMeasure(m : Measure[_]) : Record
+
+    def find(volume : Volume) : Future[Option[models.Record]] =
+      Record.findMeasures(volume, category, key : _*).map { l =>
+	if (l.length > 1)
+	  throw new IngestException("multiple matching " + category.fold("")(_.name + " ") + "records with key: " + key.mkString(", "))
+	l.headOption
+      }
+    /*
+    def populate(volume : Volume) : Future[models.Record] =
+      for {
+	c <- find(volume)
+	r <- Async.getOrElse(c, Record.create(volume, category))
+      }
+    */
   }
 
   private final case class Participant(id : String, set : String, measures : Seq[Measure[_]])
