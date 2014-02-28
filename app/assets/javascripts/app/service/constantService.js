@@ -8,11 +8,43 @@ define(['app/config/module'], function (module) {
 
 		//
 
+		var STATIC_DATA = {
+			preset: [
+				{
+					inherit: 0,
+					direct: 0,
+					name: 'No access.'
+				},
+				{
+					inherit: 2,
+					direct: 0,
+					name: 'Explore Databrary.'
+				},
+				{
+					inherit: 2,
+					direct: 3,
+					name: 'Manage my lab.'
+				},
+				{
+					inherit: 3,
+					direct: 0,
+					name: 'Investigator.'
+				},
+				{
+					inherit: undefined,
+					direct: undefined,
+					name: 'Custom...'
+				}
+			]
+		};
+
+		//
+
 		constantService.update = function () {
 			constantService.$promise = $http.get('/api/constants');
 
 			constantService.$promise.then(function (result) {
-				constantService.data = result.data;
+				angular.extend(constantService.data, STATIC_DATA, result.data);
 			});
 		};
 
@@ -28,13 +60,14 @@ define(['app/config/module'], function (module) {
 
 		constantService.find = function (key, name) {
 			var data = constantService.data[key];
+
 			if (angular.isDefined(data))
 				for (var id in data)
 					if (data.hasOwnProperty(id) && data[id].name == name)
 						return data[id];
 
 			return undefined;
-		}
+		};
 
 		//
 

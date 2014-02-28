@@ -40,27 +40,55 @@ define(['app/config/module'], function (module) {
 
 		//
 
+		$scope.resetAuth = {};
+
 		$scope.currentAuthChild = undefined;
 		$scope.currentAuthForm = undefined;
 
 		$scope.openAuthChild = function (child, form) {
-			if(!$scope.currentAuthForm || !$scope.currentAuthForm.$dirty) {
-				$scope.currentAuthChild = child;
-				$scope.currentAuthForm = form;
-			}
+			if ($scope.currentAuthForm && $scope.currentAuthForm.$dirty)
+				$scope.resetAuthChild(child);
+
+			$scope.currentAuthChild = child;
+			$scope.currentAuthForm = form;
 		};
 
 		$scope.closeAuthChild = function () {
+			$scope.resetAuthChild();
+
 			$scope.currentAuthChild = undefined;
 			$scope.currentAuthForm = undefined;
 		};
 
+		$scope.resetAuthChild = function (child) {
+			angular.extend($scope.currentAuthChild, $scope.resetAuth);
+
+			if (angular.isDefined(child)) {
+				$scope.resetAuth = {
+					direct: child.direct,
+					inherit: child.inherit,
+					authorized: child.authorized,
+					id: child.id
+				};
+			}
+		};
+
 		//
 
-		$scope.authChildShortcut = undefined;
+		$scope.setPreset = function (child, preset) {
+			child.currentPreset = preset;
 
-		$scope.shortcutAuthChild = function (key) {
-			$scope.authChildShortcut = key;
+			child.inherit = preset.inherit;
+			child.direct = preset.direct;
+		};
+
+		$scope.presetSelected = function (child, preset) {
+			if(child.preset = preset)
+				return 'checked';
+		};
+
+		$scope.initializePreset = function (child, presets) {
+
 		};
 	}]);
 });

@@ -71,36 +71,32 @@
                             <form name="authForm">
                                 <fieldset class="clean">
                                     <label>Grant <span bo-html="child.party.name"></span> the following capabilities:</label>
-<!--
-                                    <div>
-                                        <input type="radio" name="shortcut" ng-click="shortcutAuthChild()">
-                                        <label class="option"></label>
-                                    </div>
--->
-                                    <div>
-                                        <input type="radio" name="shortcut" ng-click="shortcutAuthChild('custom')">
-                                        <label class="option">Custom...</label>
+
+                                    <div ng-repeat="preset in constant.data.preset">
+                                        <input type="radio" name="shortcut" ng-checked="presetSelected(child, preset)" ng-click="setPreset(child, preset)">
+                                        <!-- switch to ng-change + ng-model -->
+                                        <label class="option" bo-html="preset.name"></label>
                                     </div>
                                 </fieldset>
 
                                 <div class="row">
                                     <div class="col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
-                                        <fieldset ng-disabled="authChildShortcut != 'custom'" class="clean">
+                                        <fieldset ng-disabled="child.preset.name != 'Custom...'" class="clean">
                                             <label>Access to Databrary</label>
 
                                             <div ng-repeat="permission in constant.data.permission">
-                                                <input type="radio" ng-model="authForm.inherit" name="inherit" bo-value="permission.id">
+                                                <input type="radio" ng-model="child.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == child.inherit">
                                                 <label bo-html="permission.name" class="option"></label>
                                             </div>
                                         </fieldset>
                                     </div>
 
                                     <div class="col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
-                                        <fieldset ng-disabled="authChildShortcut != 'custom'" class="clean">
+                                        <fieldset ng-disabled="child.preset.name != 'Custom...'" class="clean">
                                             <label>Access to My Data</label>
 
                                             <div ng-repeat="permission in constant.data.permission">
-                                                <input type = "radio" ng-model="authForm.direct" name="direct" bo-value="permission.id">
+                                                <input type = "radio" ng-model="child.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == child.direct">
                                                 <label bo-html="permission.name" class="option"></label>
                                             </div>
                                         </fieldset>
@@ -110,12 +106,14 @@
                                 <fieldset class="clean">
                                     <label>Expiration:</label>
 
-                                    <input type="date" ng-model="authForm.authorized">
+                                    <input type="date" ng-model="child.authorized">
 
-                                    <button ng-click="authForm.authorized = ''">Clear expiration</button>
+                                    <button ng-click="newAuth.authorized = ''">Clear expiration</button>
                                 </fieldset>
 
                                 <fieldset class="clean">
+                                    <input type="hidden" name="id" bo-value="child.id">
+
                                     <button ng-click="saveAuthChild()">Update</button>
                                     <button ng-click="closeAuthChild()">Cancel</button>
                                 </fieldset>
