@@ -47,6 +47,9 @@ final case class Maybe[+A](a : A)(implicit t : Truth[A]) {
 object Maybe {
   def bracket(l : String = "", a : String, r : String = "")(implicit t : Truth[String]) : String =
     Maybe(a)(t).map(l + _ + r)
+  def join(l : String, j : String, r : String)(implicit t : Truth[String]) : String =
+    if (t.pass(l) && t.pass(r)) t + j + r
+    else t + r
   def flatOpt[A](o : Option[A])(implicit t : Truth[A]) : Option[A] =
     o.filter(t.pass)
 

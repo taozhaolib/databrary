@@ -9,27 +9,9 @@ import dbrary._
 import site._
 import models._
 
-object Curated {
+object Curated extends Ingest {
   import Parse._
-  implicit val executionContext = site.context.process
 
-  final val ingestDirectory = new File("/databrary/stage")
-
-  /* These are all upper-case to allow case-folding insensitive matches.
-   * They also must match (in order) the option in the various metrics. */
-  private class MetricENUM(metric : Metric[String]) extends ENUM(metric.name) {
-    def valueOf(e : Value) = metric.values(e.id)
-  }
-  private object Gender extends MetricENUM(Metric.Gender) {
-    val FEMALE, MALE = Value
-  }
-  private object Race extends MetricENUM(Metric.Race) {
-    val INDIAN, ASIAN, PACIFIC, BLACK, WHITE, MULTIPLE = Value
-  }
-  private object Ethnicity extends MetricENUM(Metric.Ethnicity) {
-    val NONHISPANIC, HISPANIC = Value
-  }
-  private type RaceEthnicity = (Option[Race.Value], Option[Ethnicity.Value])
   private def parseRaceEthnicity : Parser[RaceEthnicity] = Parser { s =>
     Maybe(s.indexOf('/')).opt.fold {
       (option(Race.parse).map(r => (r, None : Option[Ethnicity.Value])) |
@@ -106,7 +88,7 @@ object Curated {
     } yield (Subject(id, gender, birthday, re._1, re._2, lang))
   }
 
-  case class ModelSession(container : models.Container) {
+  final case class ModelSession(container : models.Container) {
     var last : Option[Offset] = Some(Offset(0))
   }
 

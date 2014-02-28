@@ -3,30 +3,33 @@ package ingest
 import scala.util.control.Exception.catching
 import java.util.regex.{Pattern=>Regex}
 import org.joda.time
+import macros._
 import dbrary._
 import models._
 
-final case class ParseException(message : String, line : Int = 0, column : Int = 0) extends IngestException(message) {
+final case class ParseException(message : String, line : Int = 0, column : Int = 0, context : String = "") extends IngestException(message) {
   override def getMessage =
     if (line > 0 || column > 0)
       "at " + (if (line > 0) line.toString else "?") +
-      ":" + (if (column != 0) column.toString + ":" else "") + 
-      " " + message
+      (if (column != 0) ":" + column.toString else "") + 
+      Maybe.bracket(" (", context, ")") +
+      ": " + message
     else
       message
 }
 object ParseException {
-  def adjPosition[T](line : Int = 0, column : Int = 0)(r : => T) : T =
+  def adjPosition[T](line : Int = 0, column : Int = 0, context : String = "")(r : => T) : T =
     try { r } catch {
-      case ParseException(m, l, c) => throw ParseException(m, l + line, c + column)
+      case ParseException(m, l, c, w) =>
+	throw ParseException(m, l + line, c + column, Maybe.join(w, ":", context))
     }
 }
 
-object Parse {
+private[ingest] object Parse {
   def fail[T](e : String) : T = throw ParseException(e)
 
   sealed abstract class AbstractParser[I,A](parse : I => A) extends (I => A) {
-    type Self <: AbstractParser[I,A]
+    type Self >: this.type <: AbstractParser[I,A]
     protected def copy(parse : I => A) : Self
     final def apply(s : I) : A = parse(s)
 
@@ -64,13 +67,13 @@ object Parse {
 
   def option[T](p : Parser[T]) : Parser[Option[T]] = 
     p.map[Option[T]](Some(_)).onEmpty(None)
-  val empty : Parser[Unit] = Parser {
-    case "" => ()
-    case s => throw ParseException("unexpected: " + s)
+  def const[T](x : T) : Parser[T] = Parser {
+    case "" => x
+    case s => fail("unexpected: " + s)
   }
   def guard[T](b : Boolean, p : Parser[T]) : Parser[Option[T]] = 
     if (b) p.map[Option[T]](Some(_))
-    else empty.map[Option[T]](_ => None)
+    else const[Option[T]](None)
 
   private val dateFormat1 = time.format.DateTimeFormat.forPattern("yyyy-MM-dd")
   private val dateFormat2 = time.format.DateTimeFormat.forPattern("MM/dd/yy").withPivotYear((new time.LocalDate).getYear - 49)
@@ -133,13 +136,22 @@ object Parse {
     }
   }
 
-  def listHead[T](p : Parser[T], name : String) : ListParser[T] = ListParser[T] {
-    case Nil => fail(name + " expected")
-    case x :: l => (ParseException.adjPosition(column = -l.length-1)(p(x)), l)
+  class ColumnParser[A](val name : String, parse : Parser[A]) extends ListParser[A]({
+    case Nil => fail(name + " expected") /* could also inject fake empty field */
+    case x :: l => (ParseException.adjPosition(column = -l.length-1, context = name)(parse(x)), l)
+  })
+
+  def listHead[T](p : Parser[T], name : String) : ListParser[T] = new ColumnParser(name, p)
+
+  def listParse_(ps : Seq[ColumnParser[Unit]]) : ListParser[Unit] = ListParser[Unit] { l =>
+    ((), ps.foldLeft(l) { (l, sp) => sp(l)._2 })
   }
 
-  def listParse_(ps : (String, Parser[Unit])*) : ListParser[Unit] = ListParser[Unit] { l =>
-    ((), ps.foldLeft(l) { (l, sp) => listHead(sp._2, sp._1)(l)._2 })
+  def listAll[A](parse : Parser[A]) : ListParser[Seq[A]] = ListParser[Seq[A]] { l =>
+    val n = l.length
+    (l.zipWithIndex.map { case (s, i) =>
+      ParseException.adjPosition(column = i-n)(parse(s))
+    }, Nil)
   }
   
   trait ListData {
@@ -150,6 +162,33 @@ object Parse {
     val headers : Seq[Regex]
     def parse : ListParser[T]
     def parseHeaders : ListParser[Unit] =
-      listParse_(headers.map(p => "header (" + p + ")" -> regex(p, "header")) : _*)
+      listParse_(headers.map(p => new ColumnParser("header (" + p + ")", regex(p, "header"))))
   }
+
+
+}
+
+private[ingest] class Ingest {
+  protected final implicit val executionContext = site.context.process
+
+  protected final val ingestDirectory = new java.io.File("/databrary/stage")
+
+  /* These are all upper-case to allow case-folding insensitive matches.
+   * They also must match (in order) the option in the various metrics. */
+  protected class MetricENUM(val metric : Metric[String]) extends Parse.ENUM(metric.name) {
+    def valueOf(e : Value) = metric.values(e.id)
+    def valueParse : Parse.Parser[String] = parse.map(valueOf)
+    val measureParse : Parse.Parser[MeasureV[String]] = valueParse.map(new MeasureV(metric, _))
+  }
+
+  protected object Gender extends MetricENUM(Metric.Gender) {
+    val FEMALE, MALE = Value
+  }
+  protected object Race extends MetricENUM(Metric.Race) {
+    val INDIAN, ASIAN, PACIFIC, BLACK, WHITE, MULTIPLE = Value
+  }
+  protected object Ethnicity extends MetricENUM(Metric.Ethnicity) {
+    val NONHISPANIC, HISPANIC = Value
+  }
+  protected type RaceEthnicity = (Option[Race.Value], Option[Ethnicity.Value])
 }
