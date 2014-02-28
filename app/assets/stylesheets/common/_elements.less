@@ -34,6 +34,27 @@
 
 // STYLES
 
+html {
+	overflow-x: hidden !important;
+}
+
+*,
+*:after,
+*:before {
+	.box-sizing();
+
+	&:focus {
+		outline: 0;
+	}
+}
+
+a, a *, h1, h2, h3, h4, h5, h6, p, dl, ol, ul,
+blockquote, pre, img, figure, figure *, table, table *, button {
+	.transition();
+}
+
+//
+
 body {
 	.font-size();
 	.line-height();
