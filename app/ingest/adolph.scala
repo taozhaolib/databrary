@@ -52,36 +52,50 @@ object Adolph extends Ingest {
   private def dateMeasureParser(metric : Metric[Date]) =
     measureParser[Date](metric, date)
 
-  private abstract class Record(category : Option[RecordCategory]) {
+  abstract class Record(category : Option[RecordCategory]) {
     def key : Seq[Measure[_]]
     def measures : Seq[Measure[_]]
     def withMeasure(m : Measure[_]) : Record
 
+    private[this] def desc = category.fold("")(_.name + ":") + key.mkString(", ")
+
     def find(volume : Volume) : Future[Option[models.Record]] =
-      Record.findMeasures(volume, category, key : _*).map { l =>
-	if (l.length > 1)
-	  throw new IngestException("multiple matching " + category.fold("")(_.name + " ") + "records with key: " + key.mkString(", "))
-	l.headOption
-      }
-    /*
-    def populate(volume : Volume) : Future[models.Record] =
       for {
-	c <- find(volume)
-	r <- Async.getOrElse(c, Record.create(volume, category))
-      }
-    */
+	l <- Record.findMeasures(volume, category, key : _*)
+	_ <- check(l.length <= 1,
+	  PopulateException("multiple matching records for " + desc, volume))
+      }	yield (l.headOption)
+    def populate(volume : Volume) : Future[models.Record] =
+      find(volume).flatMap(_.fold {
+	Record.create(volume, category).flatMap { r =>
+	  Async.foreach[Measure[_], models.Record](key ++ measures,
+	    r.setMeasure(_).flatMap(check(_,
+	      PopulateException("failed to set measure for record " + desc, r))),
+	  r)
+	}
+      } { r =>
+	Async.foreach[Measure[_], models.Record](measures, { m =>
+	  r.measures(m.metric).fold {
+	    r.setMeasure(m).flatMap(check(_, 
+	      PopulateException("failed to set measure for record " + desc, r)))
+	  } { c =>
+	    check(c === m,
+	      PopulateException("inconsistent mesaures for record " + desc + ": " + m + " <> " + c, r))
+	  }
+	}, r)
+      })
   }
 
-  private final case class Participant(id : String, set : String, measures : Seq[Measure[_]])
+  final case class Participant(id : String = "", set : String = "", measures : Seq[Measure[_]] = Nil)
     extends Record(Some(RecordCategory.Participant)) {
     def key = ??? // (id, set)
     def withId(i : String) =
-      if (id != null && !id.equals(i))
+      if (id.nonEmpty && !id.equals(i))
 	fail("participant ID already set to '" + id + "' at '" + i + "'")
       else
 	copy(id = i)
     def withSet(s : String) =
-      if (set != null && !set.equals(s))
+      if (set.nonEmpty && !set.equals(s))
 	fail("participant set already set to '" + set + "' at '" + s + "'")
       else
 	copy(set = s)
@@ -89,7 +103,7 @@ object Adolph extends Ingest {
   }
 
   private object participants extends DataParser[Participant] {
-    protected final val empty = Participant(null, null, Nil)
+    protected final val empty = Participant()
     private def measureParser[T](m : Parser[MeasureV[T]]) : Parser[Participant => Participant] =
       m.map[Participant => Participant](x => _.withMeasure(x))
     private def parseHeader(name : String) : Parser[Participant => Participant] =
@@ -108,4 +122,7 @@ object Adolph extends Ingest {
 	case s => new CellParser(s, parseHeader(s))
       }
   }
+
+  def parseParticipants(f : java.io.File) : Seq[Participant] =
+    participants.parseCSV(f)
 }

@@ -34,11 +34,6 @@ object Curated extends Ingest {
       }
     }
 
-  final case class PopulateException(message : String, target : Option[SitePage] = None) extends IngestException(message)
-  object PopulateException {
-    def apply(message : String, target : SitePage) : PopulateException = PopulateException(message, Some(target))
-  }
-
   private[this] def check(b : Boolean, t : => PopulateException) : Future[Unit] =
     if (b) Async(()) else Future.failed(t)
 
