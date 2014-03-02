@@ -174,7 +174,7 @@ private[ingest] class Ingest {
   /* These are all upper-case to allow case-folding insensitive matches.
    * They also must match (in order) the option in the various metrics. */
   protected class MetricENUM(val metric : Metric[String]) extends Parse.ENUM(metric.name) {
-    def valueOf(e : Value) = metric.values(e.id)
+    def valueOf(e : Value) = metric.options(e.id)
     def valueParse : Parse.Parser[String] = parse.map(valueOf)
     val measureParse : Parse.Parser[MeasureV[String]] = valueParse.map(new MeasureV(metric, _))
   }
