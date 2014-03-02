@@ -288,8 +288,8 @@ object Curated extends Ingest {
 
   private def process(l : List[List[String]]) : Data = l.zipWithIndex match {
     case h :: l =>
-      (Row.parseHeaders.run _).tupled(h)
-      val rows = l.map((Row.parse.run _).tupled)
+      Row.parseHeaders.run(h)
+      val rows = l.map(Row.parse.run _)
       val subjs = collect(rows.map(_.subject))
       val sess = collect(rows.map(_.session))
       val assets = collect(rows.flatMap(r => r.asset.map(SessionAsset(r.session.key, _))))

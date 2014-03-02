@@ -71,6 +71,9 @@ private[ingest] object Parse {
     case "" => x
     case s => fail("unexpected: " + s)
   }
+  def only(e : String) : Parser[Unit] = Parser { s =>
+    if (!s.equals(e)) fail("expected: " + e)
+  }
   def guard[T](b : Boolean, p : Parser[T]) : Parser[Option[T]] = 
     if (b) p.map[Option[T]](Some(_))
     else const[Option[T]](None)
@@ -95,7 +98,7 @@ private[ingest] object Parse {
 
   /** Enumeration that allows case-insensitive parsing assuming all values are upper-case. */
   abstract class ENUM(name : String) extends Enumeration {
-    val parse : Parser[Value] = enum(this, name).mapInput(_.toUpperCase)
+    val parse : Parser[Value] = enum(this, name).mapInput(_.toUpperCase.replaceAll("[^A-Z0-9]+", "_"))
   }
 
   val consent : Parser[Consent.Value] =
@@ -131,6 +134,7 @@ private[ingest] object Parse {
         case (_, l) => listFail(l, "unexpected extra fields: " + l.mkString(","))
       }
     }
+    def run(li : (List[String], Int)) : A = run(li._1, li._2)
     def onEmpty(r : => A) = ListParser[A] { l =>
       if (l.isEmpty) (r, l) else parse(l)
     }
