@@ -14,6 +14,7 @@ INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-700, 'reason', '
 INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-180, 'setting', 'text', ARRAY['lab','home','museum','classroom','outdoor','clinic']);
 INSERT INTO "metric" ("id", "name", "type") VALUES (-150, 'country', 'text');
 INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-140, 'state', 'text', ARRAY['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','MD','MA','MI','MN','MS','MO','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']);
+INSERT INTO "metric" ("id", "name", "type") VALUES (-90, 'info', 'text');
 
 INSERT INTO "record_template" ("category", "metric") VALUES (-800, -900);
 INSERT INTO "record_template" ("category", "metric") VALUES (-700, -700);
@@ -27,7 +28,7 @@ COMMENT ON TABLE "measure" IS 'Abstract parent of all measure tables containing 
 
 COMMENT ON TABLE "measure" IS 'Abstract parent of all measure tables containing data values.  Rough prototype.';
 
-DELETE FROM "metric" WHERE "id" IN (-520, -700, -180, -150, -140);
+DELETE FROM "metric" WHERE "id" IN (-520, -700, -180, -150, -140, -90);
 
 COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.  Rough prototype.';
 ALTER TABLE "metric" RENAME "options" TO "values";

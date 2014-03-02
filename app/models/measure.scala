@@ -107,6 +107,7 @@ object Metric extends TableId[Metric[_]]("metric") {
   private final val SETTING   : Id = asId(-180)
   private final val COUNTRY   : Id = asId(-150)
   private final val STATE     : Id = asId(-140)
+  private final val INFO      : Id = asId(-140)
 
   /** Identifiers providing generic labels for records or data, such as participant id, condition name, etc.
     * [[Classification.DEIDENTIFIED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
@@ -125,6 +126,7 @@ object Metric extends TableId[Metric[_]]("metric") {
   final val Setting   = new Metric[String](SETTING, "setting", Classification.DEIDENTIFIED, IndexedSeq("lab","home","museum","classroom","outdoor","clinic"))
   final val Country   = new Metric[String](COUNTRY, "country", Classification.DEIDENTIFIED)
   final val State     = new Metric[String](STATE, "state", Classification.DEIDENTIFIED, IndexedSeq("AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","MD","MA","MI","MN","MS","MO","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"))
+  final val Info      = new Metric[String](INFO, "info", Classification.DEIDENTIFIED)
 }
 
 /** A measurement value with a specific (unconverted) type.
