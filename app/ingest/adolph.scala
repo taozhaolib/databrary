@@ -1,5 +1,6 @@
 package ingest
 
+import java.io.File
 import scala.concurrent.Future
 import macros._
 import dbrary._
@@ -46,7 +47,7 @@ object Adolph extends Ingest {
   private def measureMap(m : Measure[_]*) : Map[Int,Measure[_]] =
     Map(m.map(m => (m.metricId.unId, m)) : _*)
 
-  abstract class Record(val category : RecordCategory) {
+  private abstract class Record(val category : RecordCategory) {
     protected val measures : Map[Int,Measure[_]]
     protected def idents : Iterable[Measure[_]]
     type Key
@@ -86,27 +87,36 @@ object Adolph extends Ingest {
       } yield (r)
   }
 
-  final case class IndicatorRecord(override val category : RecordCategory, measures : Map[Int,Measure[_]] = Map.empty) extends Record(category) {
+  private final case class SingletonRecord(override val category : RecordCategory, measures : Map[Int,Measure[_]] = Map.empty) extends Record(category) {
     def idents = Nil
     type Key = Unit
     def key = ()
     def withMeasure(m : Measure[_]) = copy(measures = addMeasure(m))
   }
 
-  final case class IdentRecord(override val category : RecordCategory, measures : Map[Int,Measure[_]] = Map.empty) extends Record(category) {
+  private final case class IdentRecord(override val category : RecordCategory, measures : Map[Int,Measure[_]] = Map.empty) extends Record(category) {
     def idents = getMeasure(Metric.Ident)
     type Key = String
     def key = getMeasure(Metric.Ident).fold(fail(category.name + " ident missing"))(_.datum)
     def withMeasure(m : Measure[_]) = copy(measures = addMeasure(m))
   }
 
-  final case class Participant(measures : Map[Int,Measure[_]] = Map.empty)
+  private final case class TotalRecord(override val category : RecordCategory, measures : Map[Int,Measure[_]] = Map.empty) extends Record(category) {
+    def idents = measures.values
+    type Key = Map[Int,String]
+    def key = measures.mapValues(_.datum)
+    def withMeasure(m : Measure[_]) = copy(measures = addMeasure(m))
+  }
+
+  private final case class Participant(measures : Map[Int,Measure[_]] = Map.empty)
     extends Record(RecordCategory.Participant) {
     def idents = getMeasure(Metric.Ident) ++ getMeasure(Metric.Info)
     type Key = (String, String)
     def key = (getMeasure(Metric.Ident).fold(fail("participant ID missing"))(_.datum), getMeasure(Metric.Info).fold("")(_.datum))
     def withMeasure(m : Measure[_]) = copy(measures = addMeasure(m))
   }
+
+  private type ParticipantMap = Map[(String, String), Participant]
 
   private object Participants {
     private final val empty = Participant()
@@ -130,24 +140,24 @@ object Adolph extends Ingest {
 	case "" => blankCellParser
 	case s => new CellParser(s, parseHeader(s))
       }
-    private def parseData(l : List[List[String]]) : Map[Participant#Key,Participant] = l.zipWithIndex match {
+    private def parseData(l : List[List[String]]) : ParticipantMap = l.zipWithIndex match {
       case h :: l =>
 	val p = listAll(header).run(h)
 	val line = parseCells(empty, p)
-	l.foldLeft(Map.empty[Participant#Key,Participant]) { (m, l) =>
+	l.foldLeft[ParticipantMap](Map.empty) { (m, l) =>
 	  val p = line.run(l)
 	  val i = p.key
 	  if (m.contains(i))
 	    throw ParseException("duplicate participant key: " + i, line = l._2)
 	  m.updated(i, p)
 	}
-      case Nil => Map.empty[Participant#Key,Participant]
+      case Nil => Map.empty
     }
-    final def parseCSV(f : java.io.File) =
+    final def parseCSV(f : File) =
       parseData(CSV.parseFile(f))
   }
 
-  final case class Exclusion(measures : Map[Int,Measure[_]] = Map.empty) extends Record(RecordCategory.Exclusion) {
+  private final case class Exclusion(measures : Map[Int,Measure[_]] = Map.empty) extends Record(RecordCategory.Exclusion) {
     def idents = getMeasure(Metric.Reason)
     type Key = String
     def key = getMeasure(Metric.Reason).fold(fail("exclusion reason missing"))(_.datum)
@@ -165,10 +175,28 @@ object Adolph extends Ingest {
       Reason.measureParse.map(m => Exclusion(measureMap(m)))
   }
 
+  private object Setting extends MetricENUM(Metric.Setting) {
+    val LAB, HOME, MUSEUM, CLASSROOM, OUTDOOR, CLINIC = Value
+  }
+
+  private final case class Asset(name : Option[String], path : String) {
+    val file : File = {
+      val p = new File(path)
+      val f = if (p.isAbsolute) p else new File(ingestDirectory, path)
+      if (!f.isFile)
+	fail("file not found: " + p)
+      f
+    }
+  }
+  private object Asset {
+    def parse(name : Option[String]) : Parser[Asset] =
+      Parser[Asset](Asset(name, _))
+  }
+
   private def recordMap(r : Record*) : Map[Int,Record] =
     Map(r.map(r => (r.category.id.unId, r)) : _*)
 
-  private final case class Session(name : String = "", date : Option[Date] = None, consent : Option[Consent.Value], records : Map[Int,Record] = recordMap(Participant())) {
+  private final case class Session(name : String = "", date : Option[Date] = None, consent : Option[Consent.Value] = None, assets : Seq[Asset] = Nil, records : Map[Int,Record] = Map.empty) {
     def withName(n : String) =
       if (name.nonEmpty && !name.equals(n))
 	fail("duplicate session name: " + n)
@@ -178,12 +206,25 @@ object Adolph extends Ingest {
 	fail("duplicate session date: " + d)
       else copy(date = Some(d))
     def withConsent(c : Consent.Value) =
-      if (!date.forall(_.equals(c)))
+      if (!consent.forall(_.equals(c)))
 	fail("duplicate session consent: " + c)
       else copy(consent = Some(c))
     def withParticipant(f : Participant => Participant) = {
       val i = RecordCategory.Participant.id.unId
-      copy(records = records.updated(i, f(records(i).asInstanceOf[Participant])))
+      val p = records.get(i).fold(Participant())(_.asInstanceOf[Participant])
+      copy(records = records.updated(i, f(p)))
+    }
+    def fillParticipant(pm : ParticipantMap) = {
+      val i = RecordCategory.Participant.id.unId
+      records.get(i).fold(this) { p =>
+	copy(records = records.updated(i,
+	  pm.getOrElse(p.asInstanceOf[Participant].key, fail("participant not found: " + p))))
+      }
+    }
+    def withLocation(f : Record => Record) = {
+      val i = RecordCategory.Location.id.unId
+      val p = records.getOrElse(i, TotalRecord(RecordCategory.Location))
+      copy(records = records.updated(i, f(p)))
     }
     def withRecord(r : Record) = {
       val i = r.category.id.unId
@@ -191,11 +232,20 @@ object Adolph extends Ingest {
 	fail("duplicate session record: " + r)
       copy(records = records.updated(i, r))
     }
+    def withAsset(a : Asset) =
+      copy(assets = assets :+ a)
   }
 
   private object Sessions {
+    private final val empty = Session()
     private def participant(p : Parser[Participant => Participant]) =
       ObjectParser.map[Session, Participant => Participant](_.withParticipant(_), p)
+    private def location[T](m : Parser[MeasureV[T]], nullif : String = "") =
+      ObjectParser.option[Session, Record => Record](_.withLocation(_),
+	ObjectParser.map[Record, MeasureV[T]](_.withMeasure(_), m), nullif)
+    private def record(c : RecordCategory, m : Parser[String], nullif : String = "") =
+      ObjectParser.option[Session, Record](_.withRecord(_),
+	m.map(v => IdentRecord(c, measureMap(new MeasureV[String](Metric.Ident, v)))))
     private def parseHeader(name : String) : Parser[Session => Session] =
       name match {
 	case "SUBJECT ID" => participant(Participants.parseId)
@@ -204,9 +254,18 @@ object Adolph extends Ingest {
 	case "SESSION ID" => ObjectParser.option[Session, String](_.withName(_), trimmed)
 	case "RELEASE LEVEL" => ObjectParser.option[Session, Consent.Value](_.withConsent(_), consent)
 	case "PILOT" => ObjectParser.option[Session, Unit](
-	  (s, _) => s.withRecord(IndicatorRecord(RecordCategory.Pilot)),
+	  (s, _) => s.withRecord(SingletonRecord(RecordCategory.Pilot)),
 	  only("pilot"), "not pilot")
 	case "EXCLUSION" => ObjectParser.option[Session, Exclusion](_.withRecord(_), Exclusion.parse, "not excluded")
+	case "FILE" => ObjectParser.option[Session, Asset](_.withAsset(_), Asset.parse(None))
+	case f if f.startsWith("FILE: ") => ObjectParser.option[Session, Asset](_.withAsset(_), Asset.parse(Some(f.stripPrefix("FILE: ").trim)))
+	case "SETTING" => location(Setting.measureParse)
+	case "COUNTRY" => location(measureParser(Metric.Country, trimmed), "US")
+	case "STATE" => location(measureParser(Metric.State, trimmed))
+	case "CONDITION" => record(RecordCategory.Condition, trimmed)
+	case "GROUP" => record(RecordCategory.Group, trimmed)
+	case "STUDY LANGUAGE" => location(measureParser(Metric.Language, trimmed), "English")
+	case "PHOTO MEDIA RELEASE" => Parser(_ => identity _)
 	case _ => fail("unknown session header: " + name)
       }
     private def header : Parser[CellParser[Session]] =
@@ -214,8 +273,17 @@ object Adolph extends Ingest {
 	case "" => blankCellParser
 	case s => new CellParser(s, parseHeader(s))
       }
+    private def parseData(l : List[List[String]], pm : ParticipantMap) : Seq[Session] = l.zipWithIndex match {
+      case h :: l =>
+	val p = listAll(header).run(h)
+	val line = parseCells(empty, p).map(_.fillParticipant(pm))
+	l.map(line.run)
+      case Nil => Nil
+    }
+    final def parseCSV(f : File, pm : ParticipantMap) =
+      parseData(CSV.parseFile(f), pm)
   }
 
-  def parseParticipants(f : java.io.File) : Iterable[Participant] =
-    Participants.parseCSV(f).values
+  def parseFiles(s : File, p : File) : Int =
+    Sessions.parseCSV(s, Participants.parseCSV(p)).length
 }

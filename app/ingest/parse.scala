@@ -95,14 +95,16 @@ private[ingest] object Parse {
         case _ => fail("Ambiguous " + name + ": " + s)
       }
     } onEmpty fail("Missing " + name)
+  def ENUM(e : Enumeration, name : String) : Parser[e.Value] =
+    enum(e, name).mapInput(_.toUpperCase.replaceAll("[^A-Z0-9]+", "_"))
 
   /** Enumeration that allows case-insensitive parsing assuming all values are upper-case. */
   abstract class ENUM(name : String) extends Enumeration {
-    val parse : Parser[Value] = enum(this, name).mapInput(_.toUpperCase.replaceAll("[^A-Z0-9]+", "_"))
+    val parse : Parser[Value] = ENUM(this, name)
   }
 
   val consent : Parser[Consent.Value] =
-    enum(Consent, "consent level")
+    ENUM(Consent, "consent level")
 
   val offset : Parser[dbrary.Offset] =
     Parser(dbrary.Offset.fromString(_)).failingOn(classOf[java.lang.NumberFormatException])
