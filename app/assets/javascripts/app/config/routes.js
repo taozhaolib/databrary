@@ -49,6 +49,7 @@ define(['app/config/module'], function (module) {
 					Party.get({
 						volumes: '',
 						comments: '',
+						access: '',
 						parents: '',
 						children: '',
 						funding: ''

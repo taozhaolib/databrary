@@ -39,85 +39,92 @@
 
             <article class="network-auth cf" bindonce ng-repeat="child in partyAuth.children">
                 <div class="row">
-                    <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
+                    <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
                         <figure baseline="square" class="figure_avatar" ng-click="openAuthChild(child, authForm)">
                             <figmedia><img ng-src="{{router.partyAvatar(child.party, 54)}}"></figmedia>
                         </figure>
                     </div>
 
-                    <div ng-hide="currentAuthChild == child">
-                        <div class="col-desktop-4 col-laptop-4 col-tablet-4 col-mobile-4">
-                            <div class="network-auth-username" bo-html="child.party.name"></div>
-                            <div class="network-auth-email" bo-if="child.party.email" bo-html="child.party.email"></div>
-                            <div class="network-auth-expiration" bo-html="child.authorized | date:'longDate'"></div>
-                        </div>
-
-                        <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-4">
-                            <div class="network-auth-heading">Access to Databrary</div>
-                            <div class="network-auth-inherit" bo-html="constant.get('permission', child.inherit).name"></div>
-                        </div>
-
-                        <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-4">
-                            <div class="network-auth-heading">Access to My Data</div>
-                            <div class="network-auth-direct" bo-html="constant.get('permission', child.direct).name"></div>
-                        </div>
-                    </div>
-
-                    <div ng-if="currentAuthChild == child">
-                        <div class="col-desktop-10 col-laptop-10 col-tablet-10 col-mobile-10">
-                            <div class="network-auth-username" bo-html="child.party.name"></div>
-                            <div class="network-auth-email" bo-if="child.party.email" bo-html="child.party.email"></div>
-
-                            <form name="authForm" ng-init="initializePreset(child)">
-                                <fieldset class="clean">
-                                    <legend>Grant <span bo-html="child.party.name"></span> the following capabilities:</legend>
-
-                                    <div ng-repeat="preset in constant.data.preset">
-                                        <input type="radio" name="shortcut" ng-checked="presetSelected(child, preset)" ng-click="setPreset(child, preset)">
-                                        <!-- switch to ng-change + ng-model -->
-                                        <label class="option" bo-html="preset.name"></label>
-                                    </div>
-                                </fieldset>
-
-                                <div class="row">
-                                    <div class="col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
-                                        <fieldset ng-disabled="!child.preset.custom" class="boxed">
-                                            <legend>Access to Databrary</legend>
-
-                                            <div ng-repeat="permission in constant.data.permission">
-                                                <input type="radio" ng-model="child.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == child.inherit">
-                                                <label bo-html="permission.name" class="option"></label>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-
-                                    <div class="col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
-                                        <fieldset ng-disabled="!child.preset.custom" class="boxed">
-                                            <legend>Access to My Data</legend>
-
-                                            <div ng-repeat="permission in constant.data.permission">
-                                                <input type = "radio" ng-model="child.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == child.direct">
-                                                <label bo-html="permission.name" class="option"></label>
-                                            </div>
-                                        </fieldset>
-                                    </div>
+                    <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
+                        <div class="row">
+                            <div ng-hide="currentAuthChild == child">
+                                <div class="col-desktop-12 col-laptop-9 col-tablet-6 col-mobile-5">
+                                    <span class="network-auth-username" bo-html="child.party.name"></span>
+                                    <span class="network-auth-email" bo-if="child.party.email" bo-html="child.party.email"></span>
                                 </div>
 
-                                <fieldset class="clean" ng-init="initializeExpiration(child)">
-                                    <label>Expiration:</label>
+                                <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-5">
+                                    <div class="network-auth-expiration" bo-html="child.authorized | date:'longDate'"></div>
+                                </div>
 
-                                    <input type="date" ng-model="child.expiration">
+                                <div class="col-desktop-4 col-laptop-4 col-tablet-4 col-mobile-5">
+                                    <div class="network-auth-heading">Access to Databrary</div>
+                                    <div class="network-auth-inherit" bo-html="constant.get('permission', child.inherit).name"></div>
+                                </div>
 
-                                    <button ng-click="child.expiration = ''" ng-if="auth.hasAccess('ADMIN', party)" class="third">Clear expiration</button>
-                                </fieldset>
+                                <div class="col-desktop-4 col-laptop-4 col-tablet-4 col-mobile-5">
+                                    <div class="network-auth-heading">Access to My Data</div>
+                                    <div class="network-auth-direct" bo-html="constant.get('permission', child.direct).name"></div>
+                                </div>
+                            </div>
 
-                                <fieldset class="clean">
-                                    <input type="hidden" name="id" bo-value="child.id">
+                            <div ng-if="currentAuthChild == child">
+                                <div class="col-desktop-10 col-laptop-10 col-tablet-10 col-mobile-10">
+                                    <div class="network-auth-username" bo-html="child.party.name"></div>
+                                    <div class="network-auth-email" bo-if="child.party.email" bo-html="child.party.email"></div>
 
-                                    <button ng-click="saveAuthChild()" class="second">Update</button>
-                                    <button ng-click="closeAuthChild()" class="first">Cancel</button>
-                                </fieldset>
-                            </form>
+                                    <form name="authForm" ng-init="initializePreset(child)">
+                                        <fieldset class="clean">
+                                            <legend>Grant <span bo-html="child.party.name"></span> the following capabilities:</legend>
+
+                                            <div ng-repeat="preset in constant.data.preset">
+                                                <input type="radio" name="shortcut" ng-checked="presetSelected(child, preset)" ng-click="setPreset(child, preset)">
+                                                <!-- switch to ng-change + ng-model -->
+                                                <label class="option" bo-html="preset.name"></label>
+                                            </div>
+                                        </fieldset>
+
+                                        <div class="row">
+                                            <div class="col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
+                                                <fieldset ng-disabled="!child.preset.custom" class="boxed">
+                                                    <legend>Access to Databrary</legend>
+
+                                                    <div ng-repeat="permission in constant.data.permission">
+                                                        <input type="radio" ng-model="child.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == child.inherit">
+                                                        <label bo-html="permission.name" class="option"></label>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+
+                                            <div class="col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
+                                                <fieldset ng-disabled="!child.preset.custom" class="boxed">
+                                                    <legend>Access to My Data</legend>
+
+                                                    <div ng-repeat="permission in constant.data.permission">
+                                                        <input type = "radio" ng-model="child.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == child.direct">
+                                                        <label bo-html="permission.name" class="option"></label>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+
+                                        <fieldset class="clean" ng-init="initializeExpiration(child)">
+                                            <label>Expiration:</label>
+
+                                            <input type="date" ng-model="child.expiration">
+
+                                            <button ng-click="child.expiration = ''" ng-if="auth.hasAccess('ADMIN', party)" class="third">Clear expiration</button>
+                                        </fieldset>
+
+                                        <fieldset class="clean">
+                                            <input type="hidden" name="id" bo-value="child.id">
+
+                                            <button ng-click="saveAuthChild()" class="second">Update</button>
+                                            <button ng-click="closeAuthChild()" class="first">Cancel</button>
+                                        </fieldset>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

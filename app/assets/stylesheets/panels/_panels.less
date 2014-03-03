@@ -5,13 +5,10 @@
 // STYLES
 
 .panel {
-	border-bottom: 2px solid @g3;
-	background-color: transparent;
 	.transition();
 
 	.wrap {
-		.border-padding-bottom(1px, @panelpad);
-		.border-padding-top(1px, @panelpad);
+		.padding-height(@panelpad);
 	}
 
 	&:first-of-type {
@@ -48,19 +45,13 @@
 		}
 
 		&.folded {
-			border-bottom-color: mix(@c4, @g3, 25%);
-			background-color: mix(@c4, @g5, 4%);
-
 			.panel_header {
-				.line-height(4);
-
 				&.folder {
 					color: mix(@c4, @g1, 50%);
 				}
 
 				&:before {
 					.transform-rotate(-90deg);
-					top: @b1 + @b2 + @b8;
 				}
 
 
@@ -88,10 +79,22 @@
 	font-weight: bold;
 	letter-spacing: 3px;
 	text-transform: uppercase;
-	.font(3, 6.5);
-	.margin(0);
+	.font(3, 4);
+	.margin(0, 2, @f1, 0);
 	.padding-right(@f1);
 	display: inline-block;
+	background-color: @c4g5m1;
+	position: relative;
+
+	span {
+		background-color: @c4g5m1;
+		position: absolute;
+		width: 1000px;
+		left: -1000px;
+		top: 0;
+		bottom: 0;
+		z-index: -100;
+	}
 
 	&.folder {
 		cursor: pointer;
@@ -102,7 +105,7 @@
 			display: block;
 			float: left;
 			position: relative;
-			top: @b1 + @b1 + @b2 + @b3;
+			top: @b1 + @b2 + @b8;
 			border: @b2 solid transparent;
 			border-top-color: @text;
 			.margin-right(@f2);
