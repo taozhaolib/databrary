@@ -11,12 +11,39 @@ import dbrary._
 import site._
 import models._
 
-private[store] class StoreDir(conf : String) {
+private[store] sealed abstract class StoreDir(conf : String) {
   private[this] def getConfString(path : String) : String = {
     val c = current.configuration
     c.getString(path).getOrElse(throw c.globalError("Missing configuration for " + path))
   }
-  protected lazy val base = new java.io.File(getConfString(conf))
+  protected lazy val base = new File(getConfString(conf))
+}
+
+object Stage extends StoreDir("store.stage") {
+  def file(s : String) : File = {
+    val f = new File(s)
+    if (f.isAbsolute) f else new File(base, f.getPath)
+  }
+  def path(f : File) : String =
+    f.getPath.stripPrefix(base.getPath + '/')
+
+  private val transcodedRegex = "(.*)/transcoded/(.*)-01.mp4".r
+  /** Locate the original and transcoded files. */
+  def findTranscoded(f : File) : Option[(Option[File],File)] = f.getPath match {
+    case transcodedRegex(dir, base) => Some(({
+      val t = new File(dir, base + ".")
+      val l = t.getParentFile.listFiles(new java.io.FilenameFilter {
+	def accept(d : File, name : String) = name.startsWith(t.getName)
+      })
+      if (l == null || l.length != 1) None
+      else Some(l.head)
+    }, f))
+    case _ =>
+      val t = new File(new File(f.getParentFile, "transcoded"),
+	f.getName.replaceFirst("\\.[a-zA-Z0-9_]+$", "") + "-01.mp4")
+      if (t.isFile) Some((Some(f), t))
+      else None
+  }
 }
 
 object FileAsset extends StoreDir("store.master") {

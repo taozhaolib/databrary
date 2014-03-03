@@ -5,6 +5,7 @@ import scala.concurrent.Future
 import macros._
 import dbrary._
 import models._
+import store.Stage
 
 object Adolph extends Ingest {
   import Parse._
@@ -180,17 +181,39 @@ object Adolph extends Ingest {
   }
 
   private final case class Asset(name : Option[String], path : String) {
-    val file : File = {
-      val p = new File(path)
-      val f = if (p.isAbsolute) p else new File(ingestDirectory, path)
+    def classification : Classification.Value = Classification.IDENTIFIED
+    val info = {
+      val f = Stage.file(path)
       if (!f.isFile)
-	fail("file not found: " + p)
-      f
+	fail("file not found: " + path)
+      val (origFile, file) = Stage.findTranscoded(f) match {
+	case Some((Some(o), t)) => (o, t)
+	case _ => fail("untranscoded or no original file: " + f)
+      }
+      val probe = media.AV.probe(file)
+      if (!probe.isVideo)
+	fail("invalid file format for " + file + ": " + probe.format + " " + probe.streams.mkString(","))
+      Asset.TimeseriesInfo(file, AssetFormat.Video, probe.duration, 
+	Asset.FileInfo(origFile, AssetFormat.getFilename(origFile.getPath)
+	  .getOrElse(fail("no file format found for " + origFile))))
+
     }
   }
+
   private object Asset {
     def parse(name : Option[String]) : Parser[Asset] =
       Parser[Asset](Asset(name, _))
+
+    sealed abstract class Info {
+      val file : File
+      val format : AssetFormat
+      final def ingestPath = Stage.path(file)
+      def duration : Offset
+    }
+    final case class FileInfo(val file : File, val format : AssetFormat) extends Info {
+      def duration : Offset = Offset.ZERO
+    }
+    final case class TimeseriesInfo(val file : File, val format : TimeseriesFormat, val duration : Offset, original : FileInfo) extends Info
   }
 
   private def recordMap(r : Record*) : Map[Int,Record] =

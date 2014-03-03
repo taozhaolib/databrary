@@ -175,8 +175,6 @@ private[ingest] object Parse {
 private[ingest] class Ingest {
   protected final implicit val executionContext = site.context.process
 
-  protected final val ingestDirectory = new java.io.File("/databrary/stage")
-
   /* These are all upper-case to allow case-folding insensitive matches.
    * They also must match (in order) the option in the various metrics. */
   protected class MetricENUM(val metric : Metric[String]) extends Parse.ENUM(metric.name) {

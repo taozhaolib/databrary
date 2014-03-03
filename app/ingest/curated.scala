@@ -8,6 +8,7 @@ import macros._
 import dbrary._
 import site._
 import models._
+import store.Stage
 
 object Curated extends Ingest {
   import Parse._
@@ -196,8 +197,7 @@ object Curated extends Ingest {
       pos <- listHead(option(offset), "offset")
       classification <- listHead(enum(Classification, "classification").mapInput(_.toUpperCase), "classification")
       path <- listHead(trimmed.map { p =>
-        val i = new File(p)
-	val f = if (i.isAbsolute) i else new File(ingestDirectory, p)
+	val f = Stage.file(p)
         if (!f.isFile) fail("file not found: " + p)
         f
       }, "file path")
@@ -207,8 +207,7 @@ object Curated extends Ingest {
       pos <- listHead(guard(name.isDefined, option(offset)), "offset")
       classification <- listHead(guard(name.isDefined, enum(Classification, "classification").mapInput(_.toUpperCase)), "classification")
       path <- listHead(guard(name.isDefined, trimmed.map { p =>
-        val i = new File(p)
-	val f = if (i.isAbsolute) i else new File(ingestDirectory, p)
+	val f = Stage.file(p)
         if (!f.isFile) fail("file not found: " + p)
         f
       }), "file path")
@@ -216,8 +215,7 @@ object Curated extends Ingest {
     sealed abstract class Info {
       val file : File
       val format : AssetFormat
-      final def path = file.getPath
-      final def ingestPath = path.stripPrefix(ingestDirectory.getPath + '/')
+      final def ingestPath = Stage.path(file)
       def duration : Offset
     }
     final case class FileInfo(val file : File, val format : AssetFormat) extends Info {
