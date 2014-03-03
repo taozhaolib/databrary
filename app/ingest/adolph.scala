@@ -166,7 +166,7 @@ object Adolph extends Ingest {
   }
   private object Exclusion {
     private object Reason extends MetricENUM(Metric.Reason) {
-      val DID_NOT_MEET_INCLUSION_CRITERIA,
+      val DID_NOT_MEET_INCLUSION_CRITERA /* sic */,
 	PROCEDURAL_EXPERIMENTER_ERROR,
 	FUSSY_TIRED_WITHDREW,
 	OUTLIER = Value
