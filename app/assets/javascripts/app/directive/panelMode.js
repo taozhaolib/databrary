@@ -1,13 +1,14 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.directive('panelMode', ['PanelService', function (panelService) {
+	module.directive('panelMode', ['PanelService', 'AuthService', function (panelService, authService) {
 		var compile = function ($element, $attrs, transclude) {
 			return function ($scope, $element, $attrs) {
 
 				var start = function () {
 					$scope.name = angular.isString($attrs.name) ? $attrs.name : 'view';
-					$scope.level = angular.isString($attrs.level) ? $attrs.level : $scope.name;
+					$scope.access = !angular.isString($attrs.access) ? true :
+						authService.hasAccess($attrs.access, $scope.party ? $scope.party : $scope.volume);
 					$scope.enabled = angular.isDefined($attrs.disabled) ? false : true;
 					$scope.active = angular.isDefined($attrs.active) ? true : false;
 

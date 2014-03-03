@@ -33,7 +33,7 @@
         </div>
     </panel-mode>
 -->
-    <panel-mode name="authorize">
+    <panel-mode name="authorize" access="CONTRIBUTE">
         <div ng-show="children">
             <h2>People I've Authorized</h2>
 
@@ -63,14 +63,14 @@
                         </div>
                     </div>
 
-                    <div ng-show="currentAuthChild == child">
+                    <div ng-if="currentAuthChild == child">
                         <div class="col-desktop-10 col-laptop-10 col-tablet-10 col-mobile-10">
                             <div class="network-auth-username" bo-html="child.party.name"></div>
                             <div class="network-auth-email" bo-if="child.party.email" bo-html="child.party.email"></div>
 
-                            <form name="authForm">
+                            <form name="authForm" ng-init="initializePreset(child)">
                                 <fieldset class="clean">
-                                    <label>Grant <span bo-html="child.party.name"></span> the following capabilities:</label>
+                                    <legend>Grant <span bo-html="child.party.name"></span> the following capabilities:</legend>
 
                                     <div ng-repeat="preset in constant.data.preset">
                                         <input type="radio" name="shortcut" ng-checked="presetSelected(child, preset)" ng-click="setPreset(child, preset)">
@@ -81,8 +81,8 @@
 
                                 <div class="row">
                                     <div class="col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
-                                        <fieldset ng-disabled="child.preset.name != 'Custom...'" class="clean">
-                                            <label>Access to Databrary</label>
+                                        <fieldset ng-disabled="!child.preset.custom" class="boxed">
+                                            <legend>Access to Databrary</legend>
 
                                             <div ng-repeat="permission in constant.data.permission">
                                                 <input type="radio" ng-model="child.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == child.inherit">
@@ -92,8 +92,8 @@
                                     </div>
 
                                     <div class="col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
-                                        <fieldset ng-disabled="child.preset.name != 'Custom...'" class="clean">
-                                            <label>Access to My Data</label>
+                                        <fieldset ng-disabled="!child.preset.custom" class="boxed">
+                                            <legend>Access to My Data</legend>
 
                                             <div ng-repeat="permission in constant.data.permission">
                                                 <input type = "radio" ng-model="child.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == child.direct">
@@ -103,19 +103,19 @@
                                     </div>
                                 </div>
 
-                                <fieldset class="clean">
+                                <fieldset class="clean" ng-init="initializeExpiration(child)">
                                     <label>Expiration:</label>
 
-                                    <input type="date" ng-model="child.authorized">
+                                    <input type="date" ng-model="child.expiration">
 
-                                    <button ng-click="newAuth.authorized = ''">Clear expiration</button>
+                                    <button ng-click="child.expiration = ''" ng-if="auth.hasAccess('ADMIN', party)" class="third">Clear expiration</button>
                                 </fieldset>
 
                                 <fieldset class="clean">
                                     <input type="hidden" name="id" bo-value="child.id">
 
-                                    <button ng-click="saveAuthChild()">Update</button>
-                                    <button ng-click="closeAuthChild()">Cancel</button>
+                                    <button ng-click="saveAuthChild()" class="second">Update</button>
+                                    <button ng-click="closeAuthChild()" class="first">Cancel</button>
                                 </fieldset>
                             </form>
                         </div>

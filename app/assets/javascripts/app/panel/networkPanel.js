@@ -76,19 +76,42 @@ define(['app/config/module'], function (module) {
 		//
 
 		$scope.setPreset = function (child, preset) {
-			child.currentPreset = preset;
+			child.preset = preset;
 
-			child.inherit = preset.inherit;
-			child.direct = preset.direct;
+			if (preset && angular.isDefined(preset.inherit)) {
+				child.inherit = preset.inherit;
+				child.direct = preset.direct;
+			}
 		};
 
 		$scope.presetSelected = function (child, preset) {
-			if(child.preset = preset)
+			if (child.preset == preset)
 				return 'checked';
+
+			return '';
 		};
 
-		$scope.initializePreset = function (child, presets) {
+		$scope.initializePreset = function (child) {
+			var custom = undefined;
 
+			child.preset = undefined;
+
+			angular.forEach($scope.constant.data.preset, function (preset) {
+				if (child.direct == preset.direct && child.inherit == preset.inherit)
+					$scope.setPreset(child, preset);
+
+				if (angular.isUndefined(preset.inherit))
+					custom = preset;
+			});
+
+			if(angular.isUndefined(child.preset))
+				$scope.setPreset(child, custom);
+		};
+
+		//
+
+		$scope.initializeExpiration = function (child) {
+			child.expiration = $filter('date')(new Date(child.authorized), 'yyyy-MM-dd');
 		};
 	}]);
 });
