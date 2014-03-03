@@ -2,7 +2,7 @@ package models
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.json.Json
+import play.api.libs.json.{Json,JsNull}
 import macros._
 import dbrary._
 import site._
@@ -106,6 +106,7 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
 	, 'party -> a.child.json
         )))
       ),
+      "access" -> (opt => if (checkPermission(Permission.ADMIN)) party.access.map(a => Json.toJson(a.group)) else Async(JsNull)),
       "volumes" -> (opt => volumeAccess.map(JsonArray.map(_.json - "party"))),
       "comments" -> (opt => party.account.fold[Future[Seq[Comment]]](Async(Nil))(_.comments)
         .map(JsonArray.map(c => c.json - "who" + ('volume -> c.volume.json)))
