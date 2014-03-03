@@ -33,6 +33,7 @@ define(['app/config/module'], function (module) {
 				{
 					inherit: undefined,
 					direct: undefined,
+					custom: true,
 					name: 'Custom...'
 				}
 			]

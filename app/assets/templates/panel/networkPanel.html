@@ -33,7 +33,7 @@
         </div>
     </panel-mode>
 -->
-    <panel-mode name="authorize" access="ADMIN">
+    <panel-mode name="authorize" access="CONTRIBUTE">
         <div ng-show="children">
             <h2>People I've Authorized</h2>
 
@@ -63,12 +63,12 @@
                         </div>
                     </div>
 
-                    <div ng-show="currentAuthChild == child">
+                    <div ng-if="currentAuthChild == child">
                         <div class="col-desktop-10 col-laptop-10 col-tablet-10 col-mobile-10">
                             <div class="network-auth-username" bo-html="child.party.name"></div>
                             <div class="network-auth-email" bo-if="child.party.email" bo-html="child.party.email"></div>
 
-                            <form name="authForm">
+                            <form name="authForm" ng-init="initializePreset(child)">
                                 <fieldset class="clean">
                                     <label>Grant <span bo-html="child.party.name"></span> the following capabilities:</label>
 
@@ -81,7 +81,7 @@
 
                                 <div class="row">
                                     <div class="col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
-                                        <fieldset ng-disabled="child.preset.name != 'Custom...'" class="clean">
+                                        <fieldset ng-disabled="!child.preset.custom" class="clean">
                                             <label>Access to Databrary</label>
 
                                             <div ng-repeat="permission in constant.data.permission">
@@ -92,7 +92,7 @@
                                     </div>
 
                                     <div class="col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
-                                        <fieldset ng-disabled="child.preset.name != 'Custom...'" class="clean">
+                                        <fieldset ng-disabled="!child.preset.custom" class="clean">
                                             <label>Access to My Data</label>
 
                                             <div ng-repeat="permission in constant.data.permission">
@@ -108,14 +108,14 @@
 
                                     <input type="date" ng-model="child.authorized">
 
-                                    <button ng-click="newAuth.authorized = ''">Clear expiration</button>
+                                    <button ng-click="newAuth.authorized = ''" ng-if="auth.hasAccess('ADMIN', party)" class="third">Clear expiration</button>
                                 </fieldset>
 
                                 <fieldset class="clean">
                                     <input type="hidden" name="id" bo-value="child.id">
 
-                                    <button ng-click="saveAuthChild()">Update</button>
-                                    <button ng-click="closeAuthChild()">Cancel</button>
+                                    <button ng-click="saveAuthChild()" class="second">Update</button>
+                                    <button ng-click="closeAuthChild()" class="first">Cancel</button>
                                 </fieldset>
                             </form>
                         </div>
