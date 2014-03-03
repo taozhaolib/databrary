@@ -70,7 +70,7 @@
 
                             <form name="authForm" ng-init="initializePreset(child)">
                                 <fieldset class="clean">
-                                    <label>Grant <span bo-html="child.party.name"></span> the following capabilities:</label>
+                                    <legend>Grant <span bo-html="child.party.name"></span> the following capabilities:</legend>
 
                                     <div ng-repeat="preset in constant.data.preset">
                                         <input type="radio" name="shortcut" ng-checked="presetSelected(child, preset)" ng-click="setPreset(child, preset)">
@@ -81,8 +81,8 @@
 
                                 <div class="row">
                                     <div class="col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
-                                        <fieldset ng-disabled="!child.preset.custom" class="clean">
-                                            <label>Access to Databrary</label>
+                                        <fieldset ng-disabled="!child.preset.custom" class="boxed">
+                                            <legend>Access to Databrary</legend>
 
                                             <div ng-repeat="permission in constant.data.permission">
                                                 <input type="radio" ng-model="child.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == child.inherit">
@@ -92,8 +92,8 @@
                                     </div>
 
                                     <div class="col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
-                                        <fieldset ng-disabled="!child.preset.custom" class="clean">
-                                            <label>Access to My Data</label>
+                                        <fieldset ng-disabled="!child.preset.custom" class="boxed">
+                                            <legend>Access to My Data</legend>
 
                                             <div ng-repeat="permission in constant.data.permission">
                                                 <input type = "radio" ng-model="child.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == child.direct">
@@ -103,12 +103,12 @@
                                     </div>
                                 </div>
 
-                                <fieldset class="clean">
+                                <fieldset class="clean" ng-init="initializeExpiration(child)">
                                     <label>Expiration:</label>
 
-                                    <input type="date" ng-model="child.authorized">
+                                    <input type="date" ng-model="child.expiration">
 
-                                    <button ng-click="newAuth.authorized = ''" ng-if="auth.hasAccess('ADMIN', party)" class="third">Clear expiration</button>
+                                    <button ng-click="child.expiration = ''" ng-if="auth.hasAccess('ADMIN', party)" class="third">Clear expiration</button>
                                 </fieldset>
 
                                 <fieldset class="clean">

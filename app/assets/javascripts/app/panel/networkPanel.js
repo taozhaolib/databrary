@@ -87,6 +87,8 @@ define(['app/config/module'], function (module) {
 		$scope.presetSelected = function (child, preset) {
 			if (child.preset == preset)
 				return 'checked';
+
+			return '';
 		};
 
 		$scope.initializePreset = function (child) {
@@ -104,6 +106,12 @@ define(['app/config/module'], function (module) {
 
 			if(angular.isUndefined(child.preset))
 				$scope.setPreset(child, custom);
+		};
+
+		//
+
+		$scope.initializeExpiration = function (child) {
+			child.expiration = $filter('date')(new Date(child.authorized), 'yyyy-MM-dd');
 		};
 	}]);
 });

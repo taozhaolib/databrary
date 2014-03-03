@@ -124,6 +124,13 @@ fieldset, .fieldset {
 		border: 0;
 		.padding-height(0)
 	}
+
+	&.boxed {
+		border: 1px solid @g4;
+		.border-radius();
+		.border-padding-height(1px, @f4);
+		.padding-width(@f3);
+	}
 }
 
 legend, .legend {
