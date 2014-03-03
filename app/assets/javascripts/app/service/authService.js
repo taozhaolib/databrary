@@ -59,12 +59,15 @@ define(['app/config/module'], function (module) {
 			return angular.isString(level) ? levels[level] : level;
 		};
 
-		var parseUserAuth = function () {
+		var parseUserAuth = function (object) { // IF OBJECT!!!
 			if (angular.isUndefined(authService.user))
 				return parseAuthLevel('NONE');
 
 			if (angular.isDate(authService.user.superuser) && authService.user.superuser > new Date())
 				return parseAuthLevel('SUPER');
+
+			if(angular.isObject(object) && object.permission)
+				return object.permission;
 
 			return authService.user.access;
 		};
@@ -81,6 +84,20 @@ define(['app/config/module'], function (module) {
 
 		authService.isAuth = function (level) {
 			return parseUserAuth() == parseAuthLevel(level.toUpperCase().split('!').pop());
+		};
+
+		//
+
+		authService.hasAccess = function (level, object) {
+			level = level.toUpperCase().split('!');
+
+			return level.length == 1 ?
+				parseUserAuth(object) >= parseAuthLevel(level.pop()) :
+				parseUserAuth(object) < parseAuthLevel(level.pop());
+		};
+
+		authService.isAccess = function (level, object) {
+			return parseUserAuth(object) == parseAuthLevel(level.toUpperCase().split('!').pop());
 		};
 
 		//

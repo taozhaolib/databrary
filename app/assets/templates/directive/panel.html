@@ -4,7 +4,7 @@
             <div class="col-full">
                 <div class="pr">
                     <ul ng-if="showModeLinks()" class="panel_mode_links">
-                        <li ng-repeat="mode in modes track by $index | filter:{enabled: true}" ng-class="getModeLinkClasses(mode)" ng-show="!mode.active"><a href="#" ng-click="activateMode(mode)">{{mode.name}}</a></li>
+                        <li ng-repeat="mode in modes track by $index | filter:{enabled: true}" ng-class="getModeLinkClasses(mode)" ng-if="mode.access" ng-show="!mode.active" ><a href="#" ng-click="activateMode(mode)">{{mode.name}}</a></li>
                     </ul>
                 </div>
 
