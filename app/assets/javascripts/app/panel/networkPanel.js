@@ -71,7 +71,10 @@ define(['app/config/module'], function (module) {
 
 			//
 
-			child.expiration = $filter('date')(new Date(child.authorized), 'yyyy-MM-dd');
+			if (child.expires)
+				child.expiration = $filter('date')(new Date(child.expires), 'yyyy-MM-dd');
+			else
+				child.expiration = '';
 		};
 
 		$scope.closeAuthChild = function () {
@@ -92,13 +95,13 @@ define(['app/config/module'], function (module) {
 				$scope.resetAuth = {
 					direct: child.direct,
 					inherit: child.inherit,
-					authorized: child.authorized,
+					expires: child.expires,
 					id: child.id
 				};
 
 				if (!$scope.auth.hasAccess('ADMIN', $scope.party))
 					$scope.currentAuthFormWatch = $scope.$watch(function () {
-						return [child.direct, child.inherit];
+						return [child.direct, child.inherit, child.expiration];
 					}, function (newVal, oldVal) {
 						if (newVal[0] != oldVal[0]) {
 							switch (child.inherit) {
@@ -128,7 +131,54 @@ define(['app/config/module'], function (module) {
 							}
 						}
 					}, true);
+
+				$scope.currentAuthExpirationWatch = $scope.$watch(function () {
+					return child.expiration;
+				}, function (newVal, oldVal) {
+					var now = new Date(),
+						limit = new Date(now.setYear(now.getFullYear() + 2)).getTime(),
+						exp = child.expiration.split('-'),
+						trial = new Date(exp[1] + '-' + exp[2] + '-' + exp[0]).getTime();
+
+					if (trial > limit)
+						child.expiration = $filter('date')(limit, 'yyyy-MM-dd');
+				});
 			}
+		};
+
+		$scope.saveAuthChild = function () {
+			if (angular.isUndefined($scope.currentAuthChild))
+				return false;
+
+			var authChild = new PartyAuthorize();
+
+			var exp = $scope.currentAuthChild.expiration.split('-');
+
+			authChild.direct = $scope.currentAuthChild.direct;
+			authChild.inherit = $scope.currentAuthChild.inherit;
+			authChild.expires = $scope.currentAuthChild.expiration;
+
+			if(!authChild.expires.match(/^\d{4}-\d{1,2}-\d{1,2}$/))
+				authChild.expires = '';
+
+			var newVals = [authChild.direct, authChild.inherit, authChild.expires];
+
+			authChild.$save({
+				id: $scope.party.id,
+				partyId: $scope.currentAuthChild.id
+			}, function (data) {
+				var current = $scope.currentAuthChild;
+
+				$scope.closeAuthChild();
+
+				current.direct = newVals[0];
+				current.inherit = newVals[1];
+				current.expires = newVals[2];
+			}, function () {
+				console.log(arguments);
+			});
+
+			return true;
 		};
 
 		//

@@ -55,17 +55,17 @@
                             <div ng-hide="currentAuthChild == child">
                                 <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
                                     <div class="network-auth-heading" bo-html="'{0} Data' | possessive:party"></div>
-                                    <div class="network-auth-direct" bo-html="constant.data.message.authorization.direct[child.direct] | possessive:party"></div>
+                                    <div class="network-auth-direct" ng-bind-html="constant.data.message.authorization.direct[child.direct] | possessive:party"></div>
                                 </div>
 
                                 <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
                                     <div class="network-auth-heading">Databrary</div>
-                                    <div class="network-auth-inherit" bo-html="constant.data.message.authorization.inherit[child.inherit] | possessive:party:'Databrary'"></div>
+                                    <div class="network-auth-inherit" ng-bind-html="constant.data.message.authorization.inherit[child.inherit] | possessive:party:'Databrary'"></div>
                                 </div>
 
                                 <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
                                     <div class="network-auth-heading expiration">Expiration</div>
-                                    <div class="network-auth-expiration" bo-html="child.authorized | date:'longDate'"></div>
+                                    <div class="network-auth-expiration" ng-bind-html="child.expires | date:'longDate'"></div>
                                 </div>
                             </div>
 
@@ -109,9 +109,9 @@
                                         <fieldset class="clean">
                                             <label>Expiration:</label>
 
-                                            <input type="date" ng-model="child.expiration">
+                                            <input type="date" ng-model="child.expiration" class="network-auth-expiration-input">
 
-                                            <button ng-click="child.expiration = ''" ng-if="auth.hasAuth('SUPER')" class="third">Clear expiration</button>
+                                            <button ng-click="child.expiration = ''" ng-if="auth.hasAuth('SUPER')" class="third network-auth-expiration-button">Clear expiration</button>
                                         </fieldset>
 
                                         <fieldset class="clean">
