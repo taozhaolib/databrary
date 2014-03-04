@@ -1,4 +1,4 @@
-@(form : IngestController.CSVForm, text : String = "", target : Option[SitePage] = None)(implicit request : VolumeController.Request[_])
+@(form : IngestController.AdolphForm, text : String = "", target : Option[SitePage] = None)(implicit request : VolumeController.Request[_])
 
 @implicitField = @{
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
@@ -9,7 +9,8 @@
         <div class="col-full">
 
             @widget.tag.form(form) {
-                @widget.tag.inputFile(form.file())
+                @widget.tag.inputFile(form.participants())
+                @widget.tag.inputFile(form.sessions())
 
 		@widget.formErrors(form)
                 <button type='submit' name='run' value='false' class="button third">Preview</button>

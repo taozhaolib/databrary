@@ -345,14 +345,14 @@ object Adolph extends Ingest {
 	l.map(line.run)
       case Nil => Nil
     }
-    final def parseCSV(f : File, p : File) =
-      parseData(CSV.parseFile(f), Participants.parseCSV(p))
+    final def parseCSV(f : File, p : File) : Future[Seq[Session]] =
+      Future(parseData(CSV.parseFile(f), Participants.parseCSV(p)))
   }
 
-  def parse(s : File, p : File) : Int =
-    Sessions.parseCSV(s, p).length
+  def parse(s : File, p : File) : Future[Int] =
+    Sessions.parseCSV(s, p).map(_.length)
 
   def process(volume : Volume, s : File, p : File)(implicit site : Site) : Future[Seq[Container]] =
-    Async.map[Session,Container,Seq[Container]](Sessions.parseCSV(s, p), _.populate(volume))
+    Sessions.parseCSV(s, p).flatMap(Async.map[Session,Container,Seq[Container]](_, _.populate(volume)))
 
 }
