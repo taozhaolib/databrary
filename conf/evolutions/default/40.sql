@@ -28,10 +28,10 @@ COMMENT ON TABLE "measure" IS 'Abstract parent of all measure tables containing 
 
 COMMENT ON TABLE "measure" IS 'Abstract parent of all measure tables containing data values.  Rough prototype.';
 
+DELETE FROM "record_category" WHERE "id" IN (-800, -700, -400, -100);
+UPDATE "record_category" SET "name" = 'visit' WHERE "id" = -200;
+
 DELETE FROM "metric" WHERE "id" IN (-520, -700, -180, -150, -140, -90);
 
 COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.  Rough prototype.';
 ALTER TABLE "metric" RENAME "options" TO "values";
-
-DELETE FROM "record_category" WHERE "id" IN (-800, -700, -400, -100);
-UPDATE "record_category" SET "name" = 'visit' WHERE "id" = -200;
