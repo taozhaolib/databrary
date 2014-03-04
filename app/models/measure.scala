@@ -48,7 +48,7 @@ private[models] object MeasureType {
   * @param classification privacy-determining identification level of measurements of this type.
   * @param values possible values of categorical text data types (nominal/factors), or empty if unrestricted.
   */
-sealed class Metric[T] private[models] (val id : Metric.Id, val name : String, val classification : Classification.Value, val values : IndexedSeq[String] = IndexedSeq.empty[String])(implicit val measureType : MeasureType[T]) extends TableRowId[Metric[_]] {
+sealed class Metric[T] private[models] (val id : Metric.Id, val name : String, val classification : Classification.Value, val options : IndexedSeq[String] = IndexedSeq.empty[String])(implicit val measureType : MeasureType[T]) extends TableRowId[Metric[_]] {
   // val id = id_.coerce[MetricT[T]]
   def dataType = measureType.dataType
   def sqlType : SQLType[T] = measureType.sqlType
@@ -68,9 +68,9 @@ object Metric extends TableId[Metric[_]]("metric") {
     , SelectColumn[String]("name")
     , SelectColumn[Classification.Value]("classification")
     , SelectColumn[DataType.Value]("type")
-    , SelectColumn[Option[IndexedSeq[String]]]("values")
-    ).map { (id, name, classification, dataType, values) =>
-      new Metric(id, name, classification, values.getOrElse(IndexedSeq.empty[String]))(MeasureType(dataType))
+    , SelectColumn[Option[IndexedSeq[String]]]("options")
+    ).map { (id, name, classification, dataType, options) =>
+      new Metric(id, name, classification, options.getOrElse(IndexedSeq.empty[String]))(MeasureType(dataType))
     }
 
   /** Retrieve a single metric by id.
@@ -97,15 +97,22 @@ object Metric extends TableId[Metric[_]]("metric") {
       .apply(category).list
 
   private final val IDENT     : Id = asId(-900)
+  private final val REASON    : Id = asId(-700)
   private final val BIRTHDATE : Id = asId(-590)
   private final val GENDER    : Id = asId(-580)
   private final val RACE      : Id = asId(-550)
   private final val ETHNICITY : Id = asId(-540)
+  private final val DISABILITY: Id = asId(-520)
   private final val LANGUAGE  : Id = asId(-510)
+  private final val SETTING   : Id = asId(-180)
+  private final val COUNTRY   : Id = asId(-150)
+  private final val STATE     : Id = asId(-140)
+  private final val INFO      : Id = asId(-140)
 
   /** Identifiers providing generic labels for records or data, such as participant id, condition name, etc.
     * [[Classification.DEIDENTIFIED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
   final val Ident     = new Metric[String](IDENT, "ident", Classification.DEIDENTIFIED)
+  final val Reason    = new Metric[String](REASON, "reason", Classification.DEIDENTIFIED, IndexedSeq("did not meet critera","procedural/experimenter error","withdrew/fussy/tired","outlier"))
   /** Date of birth for any records representing organisms or other entities with dates of origination.
     * These are treated specially in combination with [[Container.date]] to compute ages.
     * [[Classification.IDENTIFIED]] implies all authorized researchers get full access to these. */
@@ -114,7 +121,12 @@ object Metric extends TableId[Metric[_]]("metric") {
   final val Gender    = new Metric[String](GENDER, "gender", Classification.DEIDENTIFIED, IndexedSeq[String]("Female", "Male"))
   final val Race      = new Metric[String](RACE, "race", Classification.DEIDENTIFIED, IndexedSeq[String]("American Indian or Alaska Native","Asian","Native Hawaiian or Other Pacific Islander","Black or African American","White","Multiple"))
   final val Ethnicity = new Metric[String](ETHNICITY, "ethnicity", Classification.DEIDENTIFIED, IndexedSeq[String]("Not Hispanic or Latino","Hispanic or Latino"))
+  final val Disability= new Metric[String](DISABILITY, "disability", Classification.IDENTIFIED)
   final val Language  = new Metric[String](LANGUAGE, "language", Classification.DEIDENTIFIED)
+  final val Setting   = new Metric[String](SETTING, "setting", Classification.DEIDENTIFIED, IndexedSeq("lab","home","museum","classroom","outdoor","clinic"))
+  final val Country   = new Metric[String](COUNTRY, "country", Classification.DEIDENTIFIED)
+  final val State     = new Metric[String](STATE, "state", Classification.DEIDENTIFIED, IndexedSeq("AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","MD","MA","MI","MN","MS","MO","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"))
+  final val Info      = new Metric[String](INFO, "info", Classification.DEIDENTIFIED)
 }
 
 /** A measurement value with a specific (unconverted) type.
