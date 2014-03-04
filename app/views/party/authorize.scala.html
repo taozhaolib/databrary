@@ -9,6 +9,7 @@
 @authList(which : Boolean)(implicit fieldConstructor : helper.FieldConstructor) = {
     <h3>@{if(which) "Memberships" else "Authorizations"}</h3>
 
+    @defining(if(which) "Their" else if(request.obj === request.identity) "My" else request.obj.party.name + "'s") { whose =>
     <table>
     <thead>
 	<tr>
@@ -19,7 +20,7 @@
 	</tr>
 	<tr>
 	    <th>Databrary data (Investigator status)</th>
-	    <th>@{if(which) "Their" else if(request.obj === request.identity) "My" else request.obj.party.name + "'s"} data</th>
+	    <th>@whose data</th>
 	    <th>Administrative tasks</th>
 	</tr>
     </thead>
@@ -57,13 +58,11 @@
 		}
 		}
 
-		@widget.tag.select(form.inherit(), Permission.values.toSeq.flatMap(p => Permission.message(p, "inherit").map((p.id.toString, _))))
+		@widget.tag.select(form.inherit(), Permission.values.toSeq.flatMap(p => Permission.message(p, "inherit", whose).map((p.id.toString, _))))
 
 		@form match {
 		case form : AuthorizeChildForm => {
-		    @widget.tag.select(form.direct(), Permission.values.toSeq.flatMap(p => Permission.message(p, "direct").map((p.id.toString, _))))
-
-		    @widget.tag.select(form.permission(), Permission.values.toSeq.flatMap(p => Permission.message(p, "permission").map((p.id.toString, _))))
+		    @widget.tag.select(form.direct(), Permission.values.toSeq.flatMap(p => Permission.message(p, "direct", whose).map((p.id.toString, _))))
 
 		    @widget.tag.inputDate(form.expires(), 'placeholder -> "Expiration date", 'class -> "half")
 		}
@@ -97,6 +96,7 @@
 		</td>
 	    </tr>
 	}
+    }
     }
     </tbody>
     </table>

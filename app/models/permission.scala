@@ -20,9 +20,9 @@ object Permission extends PGEnum("permission") {
   /** Alias for DOWNLOAD. DOWNLOAD permissions grant access to shared data, while non-data only requires VIEW. */
   def DATA = DOWNLOAD
 
-  def message(v : Value, kind : String) : Option[String] = {
+  def message(v : Value, kind : String, args : Any*) : Option[String] = {
     val m = "auth." + kind + "." + v.toString
-    if (Messages.isDefinedAt(m)) Some(Messages(m)) else None
+    if (Messages.isDefinedAt(m)) Some(Messages(m, args : _*)) else None
   }
 
   implicit val truth : Truth[Value] = Truth[Value](_ != NONE)

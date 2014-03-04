@@ -156,8 +156,8 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       models.Authorize.delete(childId, id)
     else
       Authorize.set(childId, id,
-	max(form.inherit.get, form.permission.get),
-	max(form.direct.get, form.permission.get),
+	form.inherit.get,
+	form.direct.get,
 	if (form.pending.get) None else Some(new Timestamp),
 	form.expires.get.map(_.toLocalDateTime(new org.joda.time.LocalTime(12, 0))))
       .flatMap { _ =>
@@ -241,7 +241,6 @@ object PartyController extends PartyController {
     with AuthorizeOtherForm {
     def targetParty = child
     def _apply = false
-    val permission = Field(Forms.default(Mappings.enum(Permission), Permission.NONE))
     private[this] val maxexp = (new Date).plus(maxExpiration)
     override val expires = Field(if (request.superuser) Forms.optional(Forms.jodaLocalDate)
       else Mappings.some(Forms.jodaLocalDate, maxexp)
@@ -252,7 +251,6 @@ object PartyController extends PartyController {
     private[controllers] override def _fill(auth : Authorize) : this.type = {
       assert(request.obj === auth.parent)
       assert(child === auth.child)
-      permission.fill(auth.permission)
       super._fill(auth)
     }
   }
