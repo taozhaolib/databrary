@@ -12,15 +12,18 @@
                 <div class="item_meta consent"
                      bo-if="data.object.consent"
                      bo-html="constant.get('consent', data.object.consent).name"></div>
+
+                <div class="item_meta sep"
+                     bo-if="browser.hasAccess(data, 3) && data.object.consent">|</div>
+
+                <a class="browser_tool edit"
+                   bo-href="editLink(data)"
+                   ng-if="browser.hasAccess(data, 3)"></a>
             </footer>
 
             <header>
 		        <h1>
-                    <a ng-href="{{router.slot(data.object)}}">Session<span bo-if="data.object.name">: <span bo-html="data.object.name"></span></span></a>
-
-                    <a class="browser_tool edit"
-                       bo-href="editLink(data)"
-                       ng-if="browser.hasAccess(data, 3)"></a>
+                    <span>Session<span bo-if="data.object.name">: <span bo-html="data.object.name"></span></span></span>
                 </h1>
             </header>
         </div>

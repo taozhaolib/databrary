@@ -12,6 +12,13 @@ ng-click="setItemPlayer(data)">
 
                 <div class="item_meta classification"
                      bo-html="constant.get('classification', data.object.asset.classification).name"></div>
+
+                <div class="item_meta sep"
+                     bo-if="browser.hasAccess(data, 3)">|</div>
+
+                <a class="browser_tool edit"
+                   bo-href="editLink(data)"
+                   ng-if="browser.hasAccess(data, 3)"></a>
             </footer>
 
             <header>
@@ -22,10 +29,6 @@ ng-click="setItemPlayer(data)">
                     </span>
 
                     <span class="filename" bo-html="data.object.asset.name + '.' + data.object.asset.format.extension"></span>
-
-                    <a class="browser_tool edit"
-                       bo-href="editLink(data)"
-                       ng-if="browser.hasAccess(data, 3)"></a>
                 </h1>
             </header>
         </div>
