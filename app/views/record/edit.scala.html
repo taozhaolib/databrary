@@ -24,8 +24,8 @@
 
                             <div class="field cf">
 			    @form.metric.dataType match {
-			    case _ if form.metric.values.nonEmpty => {
-				@widget.tag.select(form.datum(), form.metric.values.map(v => (v,v)), '_default -> "")
+			    case _ if form.metric.options.nonEmpty => {
+				@widget.tag.select(form.datum(), form.metric.options.map(v => (v,v)), '_default -> "")
 			    }
 			    case DataType.date => {
 				@widget.tag.inputDate(form.datum())

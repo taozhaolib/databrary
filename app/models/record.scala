@@ -13,7 +13,7 @@ import site._
   */
 sealed abstract class RecordCategory private (val id : RecordCategory.Id, val name : String) extends TableRowId[RecordCategory] {
   /** The default set of metrics which define records in this category. */
-  def template : Seq[Metric[_]]
+  val template : Seq[Metric[_]]
 
   val json = JsonRecord(id,
       'name -> name
@@ -23,36 +23,51 @@ sealed abstract class RecordCategory private (val id : RecordCategory.Id, val na
 /** Interface to record categories.
   * These are all hard-coded so bypass the database, though they are stored in record_category. */
 object RecordCategory extends TableId[RecordCategory]("record_category") {
-  def get(id : Id) : Option[RecordCategory] = id match {
-    case PARTICIPANT => Some(Participant)
-    case VISIT => Some(Visit)
-    case _ => None
-  }
+  def get(id : Id) : Option[RecordCategory] =
+    byId.get(id.unId)
   
-  def getName(name : String) : Option[RecordCategory] = name match {
-    case "participant" => Some(Participant)
-    case "visit" => Some(Visit)
-    case _ => None
-  }
+  def getName(name : String) : Option[RecordCategory] =
+    byName.get(name)
 
   def getAll : Seq[RecordCategory] =
-    Seq(Participant, Visit)
+    list
 
   def getVolume(volume : Volume) : Future[Seq[RecordCategory]] =
     SQL("SELECT DISTINCT category FROM record WHERE volume = ? AND category IS NOT NULL")
       .apply(volume.id)
       .list(SQLCols[RecordCategory.Id].map(get(_).get))
 
+  final val PILOT       : Id = asId(-800)
+  final val EXCLUSION   : Id = asId(-700)
   final val PARTICIPANT : Id = asId(-500)
-  final val VISIT : Id = asId(-200)
+  final val CONDITION   : Id = asId(-400)
+  final val GROUP       : Id = asId(-200)
+  final val LOCATION    : Id = asId(-100)
+
+  final val Pilot = new RecordCategory(PILOT, "pilot") {
+    val template = Seq(Metric.Ident)
+  }
+  final val Exclusion = new RecordCategory(EXCLUSION, "exclusion") {
+    val template = Seq(Metric.Reason)
+  }
   /** RecordCategory representing participants, individuals whose data is contained in a particular sesion.
     * Participants usually are associated with birthdate, gender, and other demographics. */
   final val Participant = new RecordCategory(PARTICIPANT, "participant") {
     val template = Seq(Metric.Ident, Metric.Birthdate, Metric.Gender, Metric.Race, Metric.Ethnicity)
   }
-  final val Visit = new RecordCategory(VISIT, "visit") {
+  final val Condition = new RecordCategory(CONDITION, "condition") {
     val template = Seq(Metric.Ident)
   }
+  final val Group = new RecordCategory(GROUP, "group") {
+    val template = Seq(Metric.Ident)
+  }
+  final val Location = new RecordCategory(LOCATION, "location") {
+    val template = Seq(Metric.Setting, Metric.State)
+  }
+
+  private val list = Seq(Pilot, Exclusion, Participant, Condition, Group, Location)
+  private val byId = Map[Int, RecordCategory](list.map(c => (c.id.unId, c)) : _*)
+  private val byName = Map[String, RecordCategory](list.map(c => (c.name, c)) : _*)
 }
 
 /** A set of Measures. */

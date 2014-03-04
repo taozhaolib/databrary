@@ -71,6 +71,9 @@ private[ingest] object Parse {
     case "" => x
     case s => fail("unexpected: " + s)
   }
+  def only(e : String) : Parser[Unit] = Parser { s =>
+    if (!s.equals(e)) fail("expected: " + e)
+  }
   def guard[T](b : Boolean, p : Parser[T]) : Parser[Option[T]] = 
     if (b) p.map[Option[T]](Some(_))
     else const[Option[T]](None)
@@ -92,14 +95,16 @@ private[ingest] object Parse {
         case _ => fail("Ambiguous " + name + ": " + s)
       }
     } onEmpty fail("Missing " + name)
+  def ENUM(e : Enumeration, name : String) : Parser[e.Value] =
+    enum(e, name).mapInput(_.toUpperCase.replaceAll("[^A-Z0-9]+", "_"))
 
   /** Enumeration that allows case-insensitive parsing assuming all values are upper-case. */
   abstract class ENUM(name : String) extends Enumeration {
-    val parse : Parser[Value] = enum(this, name).mapInput(_.toUpperCase)
+    val parse : Parser[Value] = ENUM(this, name)
   }
 
   val consent : Parser[Consent.Value] =
-    enum(Consent, "consent level")
+    ENUM(Consent, "consent level")
 
   val offset : Parser[dbrary.Offset] =
     Parser(dbrary.Offset.fromString(_)).failingOn(classOf[java.lang.NumberFormatException])
@@ -131,6 +136,7 @@ private[ingest] object Parse {
         case (_, l) => listFail(l, "unexpected extra fields: " + l.mkString(","))
       }
     }
+    def run(li : (List[String], Int)) : A = run(li._1, li._2)
     def onEmpty(r : => A) = ListParser[A] { l =>
       if (l.isEmpty) (r, l) else parse(l)
     }
@@ -164,19 +170,15 @@ private[ingest] object Parse {
     def parseHeaders : ListParser[Unit] =
       listParse_(headers.map(p => new ColumnParser("header (" + p + ")", regex(p, "header"))))
   }
-
-
 }
 
 private[ingest] class Ingest {
   protected final implicit val executionContext = site.context.process
 
-  protected final val ingestDirectory = new java.io.File("/databrary/stage")
-
   /* These are all upper-case to allow case-folding insensitive matches.
    * They also must match (in order) the option in the various metrics. */
   protected class MetricENUM(val metric : Metric[String]) extends Parse.ENUM(metric.name) {
-    def valueOf(e : Value) = metric.values(e.id)
+    def valueOf(e : Value) = metric.options(e.id)
     def valueParse : Parse.Parser[String] = parse.map(valueOf)
     val measureParse : Parse.Parser[MeasureV[String]] = valueParse.map(new MeasureV(metric, _))
   }

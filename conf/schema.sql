@@ -336,7 +336,6 @@ COMMENT ON TABLE "format" IS 'Possible types for assets, sufficient for producin
 
 -- The privledged formats with special handling (image and video for now) have hard-coded IDs:
 INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-700, 'image/jpeg', 'jpg', 'JPEG');
-INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-800, 'video/mp4', 'mp4', 'MPEG-4 video');
 
 -- The above video format will change to reflect internal storage, these are used for uploaded files:
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/plain', 'txt', 'Plain text');
@@ -358,6 +357,7 @@ SELECT nextval('format_id_seq'); -- placeholder for old video/mp4
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/webm', 'webm', 'WebM video');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mpeg', 'mpg', 'MPEG program stream (MPEG-1/MPEG-2 video)');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/quicktime', 'mov', 'QuickTime video');
+INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-800, 'video/mp4', 'mp4', 'MPEG-4 video');
 
 CREATE TABLE "asset" (
 	"id" serial Primary Key,
@@ -489,7 +489,11 @@ CREATE TABLE "record_category" (
 );
 COMMENT ON TABLE "record_category" IS 'Types of records that are relevant for data organization.';
 INSERT INTO "record_category" ("id", "name") VALUES (-500, 'participant');
-INSERT INTO "record_category" ("id", "name") VALUES (-200, 'visit');
+INSERT INTO "record_category" ("id", "name") VALUES (-200, 'group');
+INSERT INTO "record_category" ("id", "name") VALUES (-800, 'pilot');
+INSERT INTO "record_category" ("id", "name") VALUES (-700, 'exclusion');
+INSERT INTO "record_category" ("id", "name") VALUES (-400, 'condition');
+INSERT INTO "record_category" ("id", "name") VALUES (-100, 'location');
 
 CREATE TABLE "record" (
 	"id" serial NOT NULL Primary Key,
@@ -506,15 +510,21 @@ CREATE TABLE "metric" (
 	"name" varchar(64) NOT NULL Unique,
 	"classification" classification NOT NULL DEFAULT 'DEIDENTIFIED',
 	"type" data_type NOT NULL,
-	"values" text[] -- options for text enumerations, not enforced (could be pulled out to separate kind/table)
+	"options" text[] -- (suggested) options for text enumerations, not enforced
 );
-COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.  Rough prototype.';
+COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.';
 INSERT INTO "metric" ("id", "name", "type") VALUES (-900, 'ident', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-590, 'birthdate', 'IDENTIFIED', 'date');
-INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-580, 'gender', 'text', ARRAY['Female','Male']);
-INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-550, 'race', 'text', ARRAY['American Indian or Alaska Native','Asian','Native Hawaiian or Other Pacific Islander','Black or African American','White','Multiple']);
-INSERT INTO "metric" ("id", "name", "type", "values") VALUES (-540, 'ethnicity', 'text', ARRAY['Not Hispanic or Latino','Hispanic or Latino']);
+INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-550, 'race', 'text', ARRAY['American Indian or Alaska Native','Asian','Native Hawaiian or Other Pacific Islander','Black or African American','White','Multiple']);
+INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-540, 'ethnicity', 'text', ARRAY['Not Hispanic or Latino','Hispanic or Latino']);
 INSERT INTO "metric" ("id", "name", "type") VALUES (-510, 'language', 'text');
+INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-580, 'gender', 'text', ARRAY['Female','Male']);
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-520, 'disability', 'IDENTIFIED', 'text');
+INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-700, 'reason', 'text', ARRAY['did not meet critera','procedural/experimenter error','withdrew/fussy/tired','outlier']); 
+INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-180, 'setting', 'text', ARRAY['lab','home','museum','classroom','outdoor','clinic']);
+INSERT INTO "metric" ("id", "name", "type") VALUES (-150, 'country', 'text');
+INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-140, 'state', 'text', ARRAY['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','MD','MA','MI','MN','MS','MO','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']);
+INSERT INTO "metric" ("id", "name", "type") VALUES (-90, 'info', 'text');
 
 CREATE TABLE "record_template" (
 	"category" smallint References "record_category" ON DELETE CASCADE,
@@ -528,6 +538,11 @@ INSERT INTO "record_template" ("category", "metric") VALUES (-500, -580);
 INSERT INTO "record_template" ("category", "metric") VALUES (-500, -550);
 INSERT INTO "record_template" ("category", "metric") VALUES (-500, -540);
 INSERT INTO "record_template" ("category", "metric") VALUES (-200, -900);
+INSERT INTO "record_template" ("category", "metric") VALUES (-800, -900);
+INSERT INTO "record_template" ("category", "metric") VALUES (-700, -700);
+INSERT INTO "record_template" ("category", "metric") VALUES (-400, -900);
+INSERT INTO "record_template" ("category", "metric") VALUES (-100, -180);
+INSERT INTO "record_template" ("category", "metric") VALUES (-100, -140);
 
 CREATE TABLE "measure" ( -- ABSTRACT
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,
@@ -535,7 +550,7 @@ CREATE TABLE "measure" ( -- ABSTRACT
 	Primary Key ("record", "metric"),
 	Check (false) NO INHERIT
 );
-COMMENT ON TABLE "measure" IS 'Abstract parent of all measure tables containing data values.  Rough prototype.';
+COMMENT ON TABLE "measure" IS 'Abstract parent of all measure tables containing data values.';
 
 CREATE TABLE "measure_text" (
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,
