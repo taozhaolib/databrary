@@ -2,15 +2,18 @@
     <div class="wrap">
         <div class="row">
             <div class="col-full">
-                <div class="pr">
-                    <ul ng-if="showModeLinks()" class="panel_mode_links">
-                        <li ng-repeat="mode in modes track by $index | filter:{enabled: true}" ng-class="getModeLinkClasses(mode)" ng-if="mode.access" ng-show="!mode.active" ><a href="#" ng-click="activateMode(mode)">{{mode.name}}</a></li>
-                    </ul>
-                </div>
 
                 <h2 ng-show="!panel.top" class="panel_header" folder ng-click="toggleFold()"><span></span>{{panel.title}}</h2>
 
                 <div folded>
+                    <div class="panel_modes">
+                        <ul ng-if="showModeLinks()" class="panel_mode_links">
+                            <li ng-repeat="mode in modes track by $index | filter:{enabled: true}" ng-class="getModeLinkClasses(mode)" ng-if="mode.access" ng-show="!mode.active" >
+                                <a href="#" ng-click="activateMode(mode)" class="button mini">{{mode.name}}</a>
+                            </li>
+                        </ul>
+                    </div>
+
                     <div class="row">
                         <div class="col-full" panel-body></div>
                     </div>

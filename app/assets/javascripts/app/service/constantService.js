@@ -11,32 +11,47 @@ define(['app/config/module'], function (module) {
 		var STATIC_DATA = {
 			preset: [
 				{
-					inherit: 0,
-					direct: 0,
-					name: 'No access.'
-				},
-				{
 					inherit: 2,
-					direct: 0,
-					name: 'Explore Databrary.'
-				},
-				{
-					inherit: 2,
-					direct: 3,
-					name: 'Manage my lab.'
+					direct: 2,
+					name: '<strong>Read-only Affiliate</strong>: View shared Databrary data and all my data.'
 				},
 				{
 					inherit: 3,
-					direct: 0,
-					name: 'Investigator.'
+					direct: 3,
+					name: '<strong>Data Editor</strong>: Create and modify datasets and studies.'
+				},
+				{
+					inherit: 4,
+					direct: 4,
+					name: '<strong>Lab Manager</strong>: Delegate authorization and data access.'
 				},
 				{
 					inherit: undefined,
 					direct: undefined,
 					custom: true,
-					name: 'Custom...'
+					name: '<strong>Custom...</strong>'
 				}
-			]
+			],
+
+			message: {
+				authorization: {
+					direct: {
+						0: 'No access.',
+						1: 'Access to {0} unrestricted data.',
+						2: 'Access to {0} restricted data.',
+						3: 'Edit {0} data.',
+						4: 'Share {0} data.'
+					},
+
+					inherit: {
+						0: 'No access.',
+						1: 'Access to {0} unrestricted data.',
+						2: 'Access to {0} restricted data.',
+						3: 'Create datasets and studies on {0} behalf.',
+						4: 'Authorize users on {0} behalf.'
+					}
+				}
+			}
 		};
 
 		//

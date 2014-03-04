@@ -23,19 +23,17 @@ mail.authorized.subject=Databrary authorization approved
 mail.authorized.body={0}
 
 # Authorizations
-auth.inherit.NONE=No access
-auth.inherit.VIEW=Browse only
-auth.inherit.DOWNLOAD=View and download (Affiliate)
-auth.inherit.CONTRIBUTE=Share new data (Principal)
-auth.inherit.ADMIN=Manage authorizations
-auth.direct.NONE=No access
-auth.direct.VIEW=Browse only
-auth.direct.DOWNLOAD=View and download
-auth.direct.CONTRIBUTE=Edit and upload
-auth.direct.ADMIN=Manage sharing
-auth.permission.NONE=
-auth.permission.CONTRIBUTE=Create new data
-auth.permission.ADMIN=Manage profile and authorizations
+auth.inherit.NONE=No access.
+auth.inherit.VIEW=Access to {0} unrestricted data.
+auth.inherit.DOWNLOAD=Access to {0} restricted data.
+auth.inherit.CONTRIBUTE=Create datasets and studies on {0} behalf.
+auth.inherit.ADMIN=Authorize users on {0} behalf.
+
+auth.direct.NONE=No access.
+auth.direct.VIEW=Access to {0} unrestricted data.
+auth.direct.DOWNLOAD=Access to {0} restricted data.
+auth.direct.CONTRIBUTE=Edit {0} data.
+auth.direct.ADMIN=Share {0} data.
 
 # --- Constraints
 constraint.required=This field is required.

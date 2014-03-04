@@ -12,17 +12,21 @@
 
 .network-auth-email {
 	color: @g4;
+	.margin-left(@f4);
 }
 
 .network-auth-expiration {
-	color: @c0;
-	.margin-top(@f2);
+	text-align: right;
 }
 
 .network-auth-heading {
 	font-weight: bold;
 	color: @c4;
 	.padding-top(@f2);
+
+	&.expiration {
+		text-align: right;
+	}
 }
 
 .network-auth-inherit,
