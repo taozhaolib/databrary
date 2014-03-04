@@ -6,6 +6,6 @@ define([
 	'app/filter/cite',
 	'app/filter/format',
 	'app/filter/timecode',
-	'app/filter/ident',
+	'app/filter/possessive',
 	'app/filter/md5'
 ], function () {});

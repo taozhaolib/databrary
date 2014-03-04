@@ -54,13 +54,13 @@
 
                             <div ng-hide="currentAuthChild == child">
                                 <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-                                    <div class="network-auth-heading">Access to My Data</div>
-                                    <div class="network-auth-direct" bo-html="constant.data.message.authorization.direct[child.direct]"></div>
+                                    <div class="network-auth-heading" bo-html="'{0} Data' | possessive:party"></div>
+                                    <div class="network-auth-direct" bo-html="constant.data.message.authorization.direct[child.direct] | possessive:party"></div>
                                 </div>
 
                                 <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-                                    <div class="network-auth-heading">Access to Databrary</div>
-                                    <div class="network-auth-inherit" bo-html="constant.data.message.authorization.inherit[child.inherit]"></div>
+                                    <div class="network-auth-heading">Databrary</div>
+                                    <div class="network-auth-inherit" bo-html="constant.data.message.authorization.inherit[child.inherit] | possessive:party:'Databrary'"></div>
                                 </div>
 
                                 <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
@@ -71,7 +71,7 @@
 
                             <div ng-if="currentAuthChild == child">
                                 <div class="col-desktop-12 col-laptop-10 col-tablet-8 col-mobile-5">
-                                    <form name="authForm" ng-init="initializePreset(child)">
+                                    <form name="authForm">
                                         <fieldset class="clean">
                                             <legend>Grant <span bo-html="child.party.name"></span> the following capabilities:</legend>
 
@@ -85,33 +85,33 @@
                                         <div class="row">
                                             <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
                                                 <fieldset ng-disabled="!child.preset.custom" class="boxed">
-                                                    <legend>Access to My Data</legend>
+                                                    <legend bo-html="'{0} Data' | possessive:party"></legend>
 
                                                     <div ng-repeat="permission in constant.data.permission">
-                                                        <input type = "radio" ng-model="child.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == child.direct">
-                                                        <label bo-html="constant.data.message.authorization.direct[permission.id]" class="option"></label>
+                                                        <input type="radio" ng-model="child.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == child.direct">
+                                                        <label bo-html="constant.data.message.authorization.direct[permission.id] | possessive:party" class="option"></label>
                                                     </div>
                                                 </fieldset>
                                             </div>
 
                                             <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
                                                 <fieldset ng-disabled="!child.preset.custom" class="boxed">
-                                                    <legend>Access to Databrary</legend>
+                                                    <legend>Databrary</legend>
 
                                                     <div ng-repeat="permission in constant.data.permission">
                                                         <input type="radio" ng-model="child.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == child.inherit">
-                                                        <label bo-html="constant.data.message.authorization.inherit[permission.id]" class="option"></label>
+                                                        <label bo-html="constant.data.message.authorization.inherit[permission.id] | possessive:party:'Databrary'" class="option"></label>
                                                     </div>
                                                 </fieldset>
                                             </div>
                                         </div>
 
-                                        <fieldset class="clean" ng-init="initializeExpiration(child)">
+                                        <fieldset class="clean">
                                             <label>Expiration:</label>
 
                                             <input type="date" ng-model="child.expiration">
 
-                                            <button ng-click="child.expiration = ''" ng-if="auth.hasAccess('ADMIN', party)" class="third">Clear expiration</button>
+                                            <button ng-click="child.expiration = ''" ng-if="auth.hasAuth('SUPER')" class="third">Clear expiration</button>
                                         </fieldset>
 
                                         <fieldset class="clean">

@@ -26,14 +26,14 @@ mail.authorized.body={0}
 auth.inherit.NONE=No access.
 auth.inherit.VIEW=Access to {0} unrestricted data.
 auth.inherit.DOWNLOAD=Access to {0} restricted data.
-auth.inherit.CONTRIBUTE=Create datasets and studies on {0} behalf.
-auth.inherit.ADMIN=Authorize users on {0} behalf.
+auth.inherit.CONTRIBUTE=Can create datasets and studies on {0} behalf.
+auth.inherit.ADMIN=Can authorize users on {0} behalf.
 
 auth.direct.NONE=No access.
 auth.direct.VIEW=Access to {0} unrestricted data.
 auth.direct.DOWNLOAD=Access to {0} restricted data.
-auth.direct.CONTRIBUTE=Edit {0} data.
-auth.direct.ADMIN=Share {0} data.
+auth.direct.CONTRIBUTE=Can edit {0} data.
+auth.direct.ADMIN=Can share {0} data.
 
 # --- Constraints
 constraint.required=This field is required.

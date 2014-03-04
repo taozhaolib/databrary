@@ -39,16 +39,16 @@ define(['app/config/module'], function (module) {
 						0: 'No access.',
 						1: 'Access to {0} unrestricted data.',
 						2: 'Access to {0} restricted data.',
-						3: 'Edit {0} data.',
-						4: 'Share {0} data.'
+						3: 'Can edit {0} data.',
+						4: 'Can share {0} data.'
 					},
 
 					inherit: {
 						0: 'No access.',
 						1: 'Access to {0} unrestricted data.',
 						2: 'Access to {0} restricted data.',
-						3: 'Create datasets and studies on {0} behalf.',
-						4: 'Authorize users on {0} behalf.'
+						3: 'Can create datasets and studies on {0} behalf.',
+						4: 'Can authorize users on {0} behalf.'
 					}
 				}
 			}
