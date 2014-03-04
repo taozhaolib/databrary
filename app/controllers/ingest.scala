@@ -44,7 +44,7 @@ object IngestController extends SiteController {
       ingest.Curated.populate(form.file.get.ref.file, volume).map { r =>
 	Ok(views.html.ingest.curated(volume, r))
       }.recover {
-	case e : ingest.Curated.PopulateException =>
+	case e : PopulateException =>
 	  BadRequest(views.html.ingest.csv(form, e.getMessage, e.target))
 	case e : IngestException =>
 	  BadRequest(views.html.ingest.csv(form, e.getMessage))

@@ -124,16 +124,12 @@ object Curated extends Ingest {
       record.addSlot(session.container).map(_ => ())
   }
 
-  private final case class Asset(name : String, position : Option[Offset], classification : Classification.Value, file : File) extends KeyedData {
+  private final case class Asset(name : String, position : Option[Offset], classification : Classification.Value, file : File) extends KeyedData with ingest.Asset {
     def fields = Seq(name, optString(position), classification.toString, file.getPath)
     def key = file.getPath
 
-    private def fileInfo(file : File) : Asset.FileInfo =
-      Asset.FileInfo(file, AssetFormat.getFilename(file.getPath)
-        .getOrElse(throw PopulateException("no file format found for " + file.getPath)))
-
     private val transcodedRegex = "(.*)/transcoded/(.*)-01.mp4".r
-    def info : Asset.Info = {
+    def info : ingest.Asset.Info = {
       val path = file.getPath
       path match {
         case transcodedRegex(dir, base) =>
@@ -146,49 +142,13 @@ object Curated extends Ingest {
           })
           if (l == null || l.length != 1)
             throw PopulateException("missing or ambiguous original " + t.getPath)
-          Asset.TimeseriesInfo(file, AssetFormat.Video, probe.duration, fileInfo(l.head))
+          ingest.Asset.TimeseriesInfo(file, AssetFormat.Video, probe.duration, ingest.Asset.fileInfo(l.head))
         case _ =>
           if (path.endsWith(".mp4"))
             throw PopulateException("untranscoded video: " + path)
-          fileInfo(file)
+          ingest.Asset.fileInfo(file)
       }
     }
-
-    def populate(volume : Volume, info : Asset.Info)(implicit site : Site) : Future[models.Asset] =
-      SQL("SELECT id FROM ingest.asset WHERE file = ?").apply(info.ingestPath).list(SQLCols[models.Asset.Id]).flatMap(_.toSeq match {
-        case Nil =>
-          /* for now copy and don't delete */
-          val infile = store.TemporaryFileLinkOrCopy(info.file)
-          for {
-            asset <- info match {
-              case Asset.TimeseriesInfo(_, fmt, duration, orig) =>
-                for {
-                  o <- populate(volume, orig)
-                  a <- models.Asset.create(volume, fmt, classification, duration, Some(name), infile)
-                  _ <- SQL("INSERT INTO asset_revision VALUES (?, ?)").apply(o.id, a.id).execute
-                } yield (a)
-              case Asset.FileInfo(_, fmt) =>
-                models.Asset.create(volume, fmt, classification, Some(name), infile)
-            }
-            _ <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, info.ingestPath).execute
-          } yield (asset)
-        case Seq(iid) =>
-          for {
-            asset <- models.Asset.get(iid).map(_.get)
-            _ <- check(asset.format == info.format,
-              PopulateException("inconsistent format for asset " + name + ": " + info.format.name + " <> " + asset.format.name))
-            _ <- check(asset.classification == classification,
-              PopulateException("inconsistent classification for asset " + name + ": " + classification + " <> " + asset.classification))
-            _ <- info match {
-              case ts : Asset.TimeseriesInfo =>
-                check(asset.asInstanceOf[Timeseries].duration.equals(ts.duration),
-                  PopulateException("inconsistent duration for asset " + name + ": " + ts.duration + " <> " + asset.asInstanceOf[Timeseries].duration))
-              case _ => Async(())
-            }
-          } yield (asset)
-        case _ =>
-          Future.failed(PopulateException("multiple imported assets for " + name + ": " + file.getPath))
-      })
   }
   private object Asset extends ListDataParser[Asset] {
     val headers = makeHeaders("file ?name", "(file ?)?(offset|onset|pos(ition)?)", "(file ?)?class(ification)?", "(file ?)?path")
@@ -212,16 +172,6 @@ object Curated extends Ingest {
         f
       }), "file path")
     } yield (name.map(Asset(_, pos.get, classification.get, path.get)))
-    sealed abstract class Info {
-      val file : File
-      val format : AssetFormat
-      final def ingestPath = Stage.path(file)
-      def duration : Offset
-    }
-    final case class FileInfo(val file : File, val format : AssetFormat) extends Info {
-      def duration : Offset = Offset.ZERO
-    }
-    final case class TimeseriesInfo(val file : File, val format : TimeseriesFormat, val duration : Offset, original : FileInfo) extends Info
   }
 
   private final case class SessionAsset(sessionKey : String, asset : Asset) extends KeyedData {

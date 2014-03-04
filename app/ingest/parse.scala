@@ -193,12 +193,4 @@ private[ingest] class Ingest {
     val NONHISPANIC, HISPANIC = Value
   }
   protected type RaceEthnicity = (Option[Race.Value], Option[Ethnicity.Value])
-
-  final case class PopulateException(message : String, target : Option[site.SitePage] = None) extends IngestException(message)
-  object PopulateException {
-    def apply(message : String, target : site.SitePage) : PopulateException = PopulateException(message, Some(target))
-  }
-
-  protected def check(b : Boolean, t : => PopulateException) : scala.concurrent.Future[Unit] =
-    if (b) Async(()) else scala.concurrent.Future.failed(t)
 }

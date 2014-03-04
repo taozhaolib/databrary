@@ -6,6 +6,7 @@ import macros._
 import dbrary._
 import models._
 import store.Stage
+import site.Site
 
 object Adolph extends Ingest {
   import Parse._
@@ -72,9 +73,9 @@ object Adolph extends Ingest {
 	_ <- check(l.length <= 1,
 	  PopulateException("multiple matching records for " + this, volume))
       }	yield (l.headOption)
-    def populate(volume : Volume) : Future[models.Record] =
+    def populate(volume : Volume, current : Option[models.Record] = None) : Future[models.Record] =
       for {
-	ro <- find(volume)
+	ro <- Async.orElse(current, find(volume))
 	r <- Async.getOrElse(ro, Record.create(volume, Some(category)))
 	_ <- Async.foreach[Measure[_], Unit](measures.values, { m =>
 	  r.measures(m.metric).fold {
@@ -180,7 +181,7 @@ object Adolph extends Ingest {
     val LAB, HOME, MUSEUM, CLASSROOM, OUTDOOR, CLINIC = Value
   }
 
-  private final case class Asset(name : Option[String], path : String) {
+  private final case class Asset(name : String = "", path : String) extends ingest.Asset {
     def classification : Classification.Value = Classification.IDENTIFIED
     val info = {
       val f = Stage.file(path)
@@ -193,27 +194,17 @@ object Adolph extends Ingest {
       val probe = media.AV.probe(file)
       if (!probe.isVideo)
 	fail("invalid file format for " + file + ": " + probe.format + " " + probe.streams.mkString(","))
-      Asset.TimeseriesInfo(file, AssetFormat.Video, probe.duration, 
-	Asset.FileInfo(origFile, AssetFormat.getFilename(origFile.getPath)
-	  .getOrElse(fail("no file format found for " + origFile))))
-
+      ingest.Asset.TimeseriesInfo(file, AssetFormat.Video, probe.duration, 
+	ingest.Asset.fileInfo(origFile))
     }
   }
 
   private object Asset {
-    def parse(name : Option[String]) : Parser[Asset] =
+    def parse(name : String = "") : Parser[Asset] =
       Parser[Asset](Asset(name, _))
 
-    sealed abstract class Info {
-      val file : File
-      val format : AssetFormat
-      final def ingestPath = Stage.path(file)
-      def duration : Offset
-    }
-    final case class FileInfo(val file : File, val format : AssetFormat) extends Info {
-      def duration : Offset = Offset.ZERO
-    }
-    final case class TimeseriesInfo(val file : File, val format : TimeseriesFormat, val duration : Offset, original : FileInfo) extends Info
+    def positions(assets : Seq[Asset]) : Seq[Offset] =
+      assets.scanLeft(Offset.ZERO)(_ + _.info.duration)
   }
 
   private def recordMap(r : Record*) : Map[Int,Record] =
@@ -239,7 +230,7 @@ object Adolph extends Ingest {
     }
     def fillParticipant(pm : ParticipantMap) = {
       val i = RecordCategory.Participant.id.unId
-      records.get(i).fold(this) { p =>
+      records.get(i).fold(fail("no participant")) { p =>
 	copy(records = records.updated(i,
 	  pm.getOrElse(p.asInstanceOf[Participant].key, fail("participant not found: " + p))))
       }
@@ -257,6 +248,57 @@ object Adolph extends Ingest {
     }
     def withAsset(a : Asset) =
       copy(assets = assets :+ a)
+
+    def populate(volume : Volume)(implicit site : Site) : Future[Container] =
+      for {
+	pr <- records(RecordCategory.Participant.id.unId).populate(volume)
+	ms <- pr.slots
+	_ <- check(ms.length <= 1,
+	  PopulateException("multiple existing sessions for participant", pr))
+	c <- ms.headOption.fold {
+	  for {
+	    c <- Container.create(volume, Maybe(name).opt, date)
+	    _ <- Async.foreach[Consent.Value,Unit](consent, c.setConsent(_))
+	    _ <- pr.addSlot(c)
+	  } yield (c)
+	} { s =>
+	  for {
+	    _ <- check(s.volume === volume,
+	      PopulateException("existing session for " + pr + " with different volume", s))
+	    _ <- check(s.isFull,
+	      PopulateException("existing session for " + pr + " not full container", s))
+	    c = s.container
+	    _ <- check(c.name.equals(Maybe(name).opt),
+	      PopulateException("existing session for " + pr + " with different name", s))
+	    _ <- check(c.date.equals(date),
+	      PopulateException("existing session for " + pr + " with different date", s))
+	    _ <- check(c.consent.equals(consent.getOrElse(Consent.NONE)),
+	      PopulateException("existing session for " + pr + " with different consent", s))
+	  } yield (c)
+	}
+	_ <- Async.foreach[(Asset,Offset),Unit](assets zip Asset.positions(assets), { case (a, o) =>
+	  for {
+	    a <- a.populate(volume)
+	    as <- a.slot
+	    _ <- as.fold[Future[Any]] {
+	      a.link(c, Some(o), a.duration)
+	    } { as =>
+	      check(as.container === c,
+		PopulateException("existing asset in different container", as))
+	    }
+	  } yield (())
+	})
+	cr <- c.records.map(_.groupBy(_.category.map(_.id.unId)))
+	_ <- Async.foreach[Record,Unit]((records - RecordCategory.Participant.id.unId).values, { r =>
+	  val crs = cr.getOrElse(Some(r.category.id.unId), Nil)
+	  for {
+	    _ <- check(crs.length <= 1,
+	      PopulateException("multiple existing records for category " + r.category, c))
+	    r <- r.populate(volume, crs.headOption)
+	    _ <- r.addSlot(c)
+	  } yield (())
+	})
+      } yield (c)
   }
 
   private object Sessions {
@@ -280,8 +322,8 @@ object Adolph extends Ingest {
 	  (s, _) => s.withRecord(SingletonRecord(RecordCategory.Pilot)),
 	  only("pilot"), "not pilot")
 	case "EXCLUSION" => ObjectParser.option[Session, Exclusion](_.withRecord(_), Exclusion.parse, "not excluded")
-	case "FILE" => ObjectParser.option[Session, Asset](_.withAsset(_), Asset.parse(None))
-	case f if f.startsWith("FILE: ") => ObjectParser.option[Session, Asset](_.withAsset(_), Asset.parse(Some(f.stripPrefix("FILE: ").trim)))
+	case "FILE" => ObjectParser.option[Session, Asset](_.withAsset(_), Asset.parse())
+	case f if f.startsWith("FILE: ") => ObjectParser.option[Session, Asset](_.withAsset(_), Asset.parse(f.stripPrefix("FILE: ").trim))
 	case "SETTING" => location(Setting.measureParse)
 	case "COUNTRY" => location(measureParser(Metric.Country, trimmed), "US")
 	case "STATE" => location(measureParser(Metric.State, trimmed))
@@ -303,10 +345,14 @@ object Adolph extends Ingest {
 	l.map(line.run)
       case Nil => Nil
     }
-    final def parseCSV(f : File, pm : ParticipantMap) =
-      parseData(CSV.parseFile(f), pm)
+    final def parseCSV(f : File, p : File) =
+      parseData(CSV.parseFile(f), Participants.parseCSV(p))
   }
 
-  def parseFiles(s : File, p : File) : Int =
-    Sessions.parseCSV(s, Participants.parseCSV(p)).length
+  def parse(s : File, p : File) : Int =
+    Sessions.parseCSV(s, p).length
+
+  def process(volume : Volume, s : File, p : File)(implicit site : Site) : Future[Seq[Container]] =
+    Async.map[Session,Container,Seq[Container]](Sessions.parseCSV(s, p), _.populate(volume))
+
 }
