@@ -160,6 +160,15 @@ define(['app/config/module'], function (module) {
 			return routerService.makeUrl('/slot/:id/edit', data);
 		};
 
+		routerService.assetEdit = function (data) {
+			if ($rootScope.browser.isAsset(data))
+				data = {
+					id: data.asset.id
+				};
+
+			return routerService.makeUrl('/asset/:id/edit', data);
+		};
+
 		routerService.recordEdit = function (data) {
 			if ($rootScope.browser.isRecord(data))
 				data = {
