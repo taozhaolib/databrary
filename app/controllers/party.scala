@@ -159,7 +159,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	max(form.inherit.get, form.permission.get),
 	max(form.direct.get, form.permission.get),
 	if (form.pending.get) None else Some(new Timestamp),
-	form.expires.get.map(_.toLocalDateTime(org.joda.time.LocalTime.MIDNIGHT)))
+	form.expires.get.map(_.toLocalDateTime(new org.joda.time.LocalTime(12, 0))))
       .flatMap { _ =>
 	Authorize.Info.set(childId, id, form.info.get)
       }
