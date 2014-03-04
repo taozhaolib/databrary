@@ -1,27 +1,24 @@
-@(vol : models.Volume, res : (Iterable[Record], Iterable[SlotAsset]))(implicit request : SiteRequest[_])
+@(form : IngestController.CuratedForm, text : String = "", target : Option[SitePage] = None)(implicit request : VolumeController.Request[_])
 
 @implicitField = @{
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@template.action("CSV Ingestion Result") {
-    @widget.panel.ingest("CSV Ingestion Results"){
+@template.action("CSV Ingestion") {
+    @widget.panel.ingest("CSV Ingestion"){
         <div class="col-full">
-            <h2>Participant records:</h2>
 
-            <ul>
-            @res._1.map { rec =>
-                <li>@display(rec)</li>
+            @widget.tag.form(form) {
+                @widget.tag.inputFile(form.file())
+
+		@widget.formErrors(form)
+                <button type='submit' name='run' value='false' class="button third">Preview</button>
+                <button type='submit' name='run' value='true' class="button">Ingest</button>
             }
-            </ul>
 
-            <h2>Assets:</h2>
+            @display.plainText(text)
 
-            <ul>
-            @res._2.map { a =>
-                <li>@display(a)</li>
-            }
-            </ul>
+            @target.map(display(_))
         </div>
     }
 }

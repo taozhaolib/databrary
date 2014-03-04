@@ -15,39 +15,82 @@ object IngestController extends SiteController {
   private def Action(i : models.Volume.Id) =
     SiteAction.rootAccess(Permission.ADMIN) ~> VolumeController.action(i, Permission.EDIT)
 
-  final class CSVForm(implicit request : VolumeController.Request[_])
-    extends HtmlForm[CSVForm](
+  trait CSVForm extends StructForm {
+    protected def CSVFile() : File = File()
+      .verifying(validation.Constraint[FilePart] { (f : FilePart) =>
+	val fmt = AssetFormat.getFilePart(f).map(_.mimetype).orElse(f.contentType)
+	if (!fmt.exists(_.equals("text/csv")))
+	  validation.Invalid(validation.ValidationError("file.format.unknown", fmt.getOrElse("unknown")))
+	else validation.Valid
+      })
+  }
+
+  final class CuratedForm(implicit request : VolumeController.Request[_])
+    extends HtmlForm[CuratedForm](
       routes.IngestController.curated(request.obj.id),
-      views.html.ingest.csv(_)) {
-    val file = File()
+      views.html.ingest.curated(_))
+    with CSVForm {
+    val file = CSVFile()
     val run = Field(Forms.boolean)
   }
 
-  def csv(v : models.Volume.Id) = Action(v).async { implicit request =>
-    new CSVForm().Ok
+  def curatedView(v : models.Volume.Id) = Action(v).async { implicit request =>
+    new CuratedForm().Ok
   }
 
   def curated(v : models.Volume.Id) = Action(v).async { implicit request =>
     val volume = request.obj
-    val form = new CSVForm()._bind
-    val fmt = AssetFormat.getFilePart(form.file.get).map(_.mimetype).orElse(form.file.get.contentType)
-    if (!fmt.exists(_.equals("text/csv")))
-      form.file.withError("file.format.unknown", fmt.getOrElse("unknown"))._throw
+    val form = new CuratedForm()._bind
     if (!form.run.get)
       Future(ingest.Curated.preview(form.file.get.ref.file))(site.context.process).map { r =>
-	Ok(views.html.ingest.csv(form, r))
+	Ok(views.html.ingest.curated(form, r))
       }.recover {
 	case e : IngestException =>
-	  BadRequest(views.html.ingest.csv(form, e.getMessage))
+	  BadRequest(views.html.ingest.curated(form, e.getMessage))
       }
     else 
       ingest.Curated.populate(form.file.get.ref.file, volume).map { r =>
-	Ok(views.html.ingest.curated(volume, r))
+	Ok(views.html.ingest.result(volume, r._1 ++ r._2))
       }.recover {
 	case e : PopulateException =>
-	  BadRequest(views.html.ingest.csv(form, e.getMessage, e.target))
+	  BadRequest(views.html.ingest.curated(form, e.getMessage, e.target))
 	case e : IngestException =>
-	  BadRequest(views.html.ingest.csv(form, e.getMessage))
+	  BadRequest(views.html.ingest.curated(form, e.getMessage))
+      }
+  }
+
+  final class AdolphForm(implicit request : VolumeController.Request[_])
+    extends HtmlForm[AdolphForm](
+      routes.IngestController.curated(request.obj.id),
+      views.html.ingest.adolph(_))
+    with CSVForm {
+    val sessions = CSVFile()
+    val participants = CSVFile()
+    val run = Field(Forms.boolean)
+  }
+
+  def adolphView(v : models.Volume.Id) = Action(v).async { implicit request =>
+    new AdolphForm().Ok
+  }
+
+  def adolph(v : models.Volume.Id) = Action(v).async { implicit request =>
+    val volume = request.obj
+    val form = new AdolphForm()._bind
+    if (!form.run.get)
+      ingest.Adolph.parse(form.sessions.get.ref.file, form.participants.get.ref.file).map { r =>
+	Ok(views.html.ingest.adolph(form, r.toString + " sessions found"))
+      }.recover {
+	case e : IngestException =>
+	  BadRequest(views.html.ingest.adolph(form, e.getMessage))
+      }
+    else 
+      ingest.Adolph.process(volume, form.sessions.get.ref.file, form.participants.get.ref.file).map { r =>
+	Ok(views.html.ingest.result(volume, r))
+      }.recover {
+	case e : PopulateException =>
+	  BadRequest(views.html.ingest.adolph(form, e.getMessage, e.target))
+	case e : IngestException =>
+	  BadRequest(views.html.ingest.adolph(form, e.getMessage))
       }
   }
 

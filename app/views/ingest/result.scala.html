@@ -1,0 +1,14 @@
+@(vol : models.Volume, res : Iterable[SiteObject])(implicit request : SiteRequest[_])
+
+@template.action("Ingestion Result") {
+    @widget.panel.ingest("Ingestion Results"){
+        <div class="col-full">
+            <ul>
+            @res.map { r =>
+                <li>@display(r)</li>
+            }
+            </ul>
+        </div>
+    }
+}
+

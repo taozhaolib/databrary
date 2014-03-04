@@ -56,17 +56,17 @@ abstract class StructForm(val _action : Call) {
   protected def Const[T](x : T) : Field[T] =
     Field[T](Forms.ignored(x)).fill(x)
 
-  final type FileData = MultipartFormData[Files.TemporaryFile]
+  final private type FileData = MultipartFormData[Files.TemporaryFile]
   final type FilePart = MultipartFormData.FilePart[Files.TemporaryFile]
   protected sealed abstract class FileMember[T] extends Member[T] {
     private[this] var constraints : Seq[Constraint[FilePart]] = Nil
-    protected[StructForm] final def verifying(c : Constraint[FilePart]*) : this.type = {
+    final def verifying(c : Constraint[FilePart]*) : this.type = {
       constraints ++= c
       this
     }
-    protected[StructForm] final def verifying(constraint : FilePart => Boolean) : this.type =
+    final def verifying(constraint : FilePart => Boolean) : this.type =
       verifying("error.unknown", constraint)
-    protected[StructForm] final def verifying(error : => String, constraint : FilePart => Boolean) : this.type = {
+    final def verifying(error : => String, constraint : FilePart => Boolean) : this.type = {
       verifying(Constraint { t : FilePart =>
 	if (constraint(t)) Valid else Invalid(Seq(ValidationError(error)))
       })
