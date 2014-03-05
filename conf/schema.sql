@@ -520,7 +520,7 @@ INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-540, 'ethnicity'
 INSERT INTO "metric" ("id", "name", "type") VALUES (-510, 'language', 'text');
 INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-580, 'gender', 'text', ARRAY['Female','Male']);
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-520, 'disability', 'IDENTIFIED', 'text');
-INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-700, 'reason', 'text', ARRAY['did not meet critera','procedural/experimenter error','withdrew/fussy/tired','outlier']); 
+INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-700, 'reason', 'text', ARRAY['did not meet criteria','procedural/experimenter error','withdrew/fussy/tired','outlier']); 
 INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-180, 'setting', 'text', ARRAY['lab','home','museum','classroom','outdoor','clinic']);
 INSERT INTO "metric" ("id", "name", "type") VALUES (-150, 'country', 'text');
 INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-140, 'state', 'text', ARRAY['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','MD','MA','MI','MN','MS','MO','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']);

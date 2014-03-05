@@ -167,7 +167,7 @@ object Adolph extends Ingest {
   }
   private object Exclusion {
     private object Reason extends MetricENUM(Metric.Reason) {
-      val DID_NOT_MEET_INCLUSION_CRITERA /* sic */,
+      val DID_NOT_MEET_CRITERIA,
 	PROCEDURAL_EXPERIMENTER_ERROR,
 	FUSSY_TIRED_WITHDREW,
 	OUTLIER = Value
@@ -272,8 +272,9 @@ object Adolph extends Ingest {
 	      PopulateException("existing session for " + pr + " with different name", s))
 	    _ <- check(c.date.equals(date),
 	      PopulateException("existing session for " + pr + " with different date", s))
-	    _ <- check(c.consent.equals(consent.getOrElse(Consent.NONE)),
-	      PopulateException("existing session for " + pr + " with different consent", s))
+	    _ <- if (c.consent == Consent.NONE) Async.foreach[Consent.Value,Unit](consent, c.setConsent(_))
+	      else check(consent.exists(c.consent == _),
+		PopulateException("existing session for " + pr + " with different consent", s))
 	  } yield (c)
 	}
 	_ <- Async.foreach[(Asset,Offset),Unit](assets zip Asset.positions(assets), { case (a, o) =>

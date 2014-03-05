@@ -30,6 +30,7 @@ private[models] trait TableRowId[+T] extends TableRow {
     case a : TableRowId[T] => ===(a)
     case _ => false
   }
+  override def toString = super.toString + "(" + id + ")"
 }
 
 /** Factory/helper object for a particular table.  Usually these are used to produce TableRows. */
