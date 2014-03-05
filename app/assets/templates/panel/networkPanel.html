@@ -73,30 +73,6 @@
                                         </div>
                                     </fieldset>
 
-                                    <div class="row" ng-hide="true">
-                                        <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
-                                            <fieldset ng-disabled="!parent.preset.custom" class="boxed">
-                                                <legend bo-html="'{0} Data' | possessive:party"></legend>
-
-                                                <div ng-repeat="permission in constant.data.permission">
-                                                    <input type="radio" ng-model="parent.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == parent.direct">
-                                                    <label bo-html="constant.data.permission[permission.id].direct | possessive:party" class="option"></label>
-                                                </div>
-                                            </fieldset>
-                                        </div>
-
-                                        <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
-                                            <fieldset ng-disabled="!parent.preset.custom" class="boxed">
-                                                <legend>Databrary</legend>
-
-                                                <div ng-repeat="permission in constant.data.permission">
-                                                    <input type="radio" ng-model="parent.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == parent.inherit">
-                                                    <label bo-html="constant.data.permission[permission.id].inherit | possessive:party" class="option"></label>
-                                                </div>
-                                            </fieldset>
-                                        </div>
-                                    </div>
-
                                     <fieldset class="clean">
                                         <input type="hidden" name="id" bo-value="parent.id">
 

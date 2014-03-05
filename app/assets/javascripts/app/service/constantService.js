@@ -31,27 +31,7 @@ define(['app/config/module'], function (module) {
 					custom: true,
 					name: '<strong>Custom...</strong>'
 				}
-			],
-
-			message: {
-				authorization: {
-					direct: {
-						0: 'No access.',
-						1: 'Access to {0} unrestricted data.',
-						2: 'Access to {0} restricted data.',
-						3: 'Can edit {0} data.',
-						4: 'Can share {0} data.'
-					},
-
-					inherit: {
-						0: 'No access.',
-						1: 'Access to {0} unrestricted data.',
-						2: 'Access to {0} restricted data.',
-						3: 'Can create datasets and studies on {0} behalf.',
-						4: 'Can authorize users on {0} behalf.'
-					}
-				}
-			}
+			]
 		};
 
 		//
