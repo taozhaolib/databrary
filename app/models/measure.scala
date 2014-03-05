@@ -107,7 +107,7 @@ object Metric extends TableId[Metric[_]]("metric") {
   private final val SETTING   : Id = asId(-180)
   private final val COUNTRY   : Id = asId(-150)
   private final val STATE     : Id = asId(-140)
-  private final val INFO      : Id = asId(-140)
+  private final val INFO      : Id = asId(-90)
 
   /** Identifiers providing generic labels for records or data, such as participant id, condition name, etc.
     * [[Classification.DEIDENTIFIED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
