@@ -46,18 +46,18 @@
                         <div ng-hide="currentAuthParent == parent">
                             <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
                                 <div class="network-auth-heading" bo-html="'{0} Data' | possessive:party"></div>
-                                <div class="network-auth-direct" ng-bind-html="constant.data.message.authorization.direct[parent.direct] | possessive:party"></div>
+                                <div class="network-auth-direct" ng-bind-html="constant.data.permission[parent.direct].direct | possessive:party"></div>
                             </div>
 
                             <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
                                 <div class="network-auth-heading">Databrary</div>
-                                <div class="network-auth-inherit" ng-bind-html="constant.data.message.authorization.inherit[parent.inherit] | possessive:party"></div>
+                                <div class="network-auth-inherit" ng-bind-html="constant.data.permission[parent.inherit].inherit | possessive:party"></div>
                             </div>
 
                             <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
                                 <div class="network-auth-heading expiration">Expiration</div>
                                 <div class="network-auth-expiration" ng-bind-html="parent.expires | date:'longDate'"></div>
-                                <div class="network-auth-expiration" ng-if="!child.expires">No expiration</div>
+                                <div class="network-auth-expiration" ng-if="!child.expires">N/A</div>
                             </div>
                         </div>
 
@@ -80,7 +80,7 @@
 
                                                 <div ng-repeat="permission in constant.data.permission">
                                                     <input type="radio" ng-model="parent.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == parent.direct">
-                                                    <label bo-html="constant.data.message.authorization.direct[permission.id] | possessive:party" class="option"></label>
+                                                    <label bo-html="constant.data.permission[permission.id].direct | possessive:party" class="option"></label>
                                                 </div>
                                             </fieldset>
                                         </div>
@@ -91,7 +91,7 @@
 
                                                 <div ng-repeat="permission in constant.data.permission">
                                                     <input type="radio" ng-model="parent.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == parent.inherit">
-                                                    <label bo-html="constant.data.message.authorization.inherit[permission.id] | possessive:party" class="option"></label>
+                                                    <label bo-html="constant.data.permission[permission.id].inherit | possessive:party" class="option"></label>
                                                 </div>
                                             </fieldset>
                                         </div>
@@ -137,18 +137,18 @@
                         <div ng-hide="currentAuthChild == child">
                             <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
                                 <div class="network-auth-heading" bo-html="'{0} Data' | possessive:party"></div>
-                                <div class="network-auth-direct" ng-bind-html="constant.data.message.authorization.direct[child.direct] | possessive:party"></div>
+                                <div class="network-auth-direct" ng-bind-html="constant.data.permission[child.direct].direct | possessive:party"></div>
                             </div>
 
                             <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
                                 <div class="network-auth-heading">Databrary</div>
-                                <div class="network-auth-inherit" ng-bind-html="constant.data.message.authorization.inherit[child.inherit] | possessive:party"></div>
+                                <div class="network-auth-inherit" ng-bind-html="constant.data.permission[child.inherit].inherit | possessive:party"></div>
                             </div>
 
                             <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
                                 <div class="network-auth-heading expiration">Expiration</div>
                                 <div class="network-auth-expiration" ng-bind-html="child.expires | date:'longDate'"></div>
-                                <div class="network-auth-expiration" ng-if="!child.expires">No expiration</div>
+                                <div class="network-auth-expiration" ng-if="!child.expires">N/A</div>
                             </div>
                         </div>
 
@@ -160,7 +160,6 @@
 
                                         <div ng-repeat="preset in constant.data.preset">
                                             <input type="radio" name="shortcut" ng-checked="presetSelected(child, preset)" ng-click="setPreset(child, preset)">
-                                            <!-- switch to ng-change + ng-model -->
                                             <label class="option" bo-html="preset.name"></label>
                                         </div>
                                     </fieldset>
@@ -172,7 +171,7 @@
 
                                                 <div ng-repeat="permission in constant.data.permission">
                                                     <input type="radio" ng-model="child.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == child.direct">
-                                                    <label bo-html="constant.data.message.authorization.direct[permission.id] | possessive:party" class="option"></label>
+                                                    <label bo-html="constant.data.permission[permission.id].direct | possessive:party" class="option"></label>
                                                 </div>
                                             </fieldset>
                                         </div>
@@ -183,7 +182,7 @@
 
                                                 <div ng-repeat="permission in constant.data.permission">
                                                     <input type="radio" ng-model="child.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == child.inherit">
-                                                    <label bo-html="constant.data.message.authorization.inherit[permission.id] | possessive:party" class="option"></label>
+                                                    <label bo-html="constant.data.permission[permission.id].inherit | possessive:party" class="option"></label>
                                                 </div>
                                             </fieldset>
                                         </div>

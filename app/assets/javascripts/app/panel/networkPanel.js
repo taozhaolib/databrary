@@ -20,11 +20,11 @@ define(['app/config/module'], function (module) {
 			$scope.children = [];
 
 			angular.forEach($scope.party.parents, function (partyAuth) {
-				$scope.parents.push(partyAuth.party);
+				$scope.parents.push(partyAuth);
 			});
 
 			angular.forEach($scope.party.children, function (partyAuth) {
-				$scope.children.push(partyAuth.party);
+				$scope.children.push(partyAuth);
 			});
 		};
 
