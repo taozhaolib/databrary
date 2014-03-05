@@ -20,7 +20,7 @@ mail.register.body=Thank you for registering with Databrary. Please click on the
 mail.authorize.subject=Databrary authorization request
 mail.authorize.body={1} has requested to be authorized by {2}. To approve or reject this authorization request, go to: {0}
 mail.authorized.subject=Databrary authorization approved
-mail.authorized.body={0}
+mail.authorized.body=You have been authorized by {0}.
 
 # Authorizations
 auth.inherit.NONE=No access.

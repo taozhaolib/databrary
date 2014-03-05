@@ -112,7 +112,7 @@ object Metric extends TableId[Metric[_]]("metric") {
   /** Identifiers providing generic labels for records or data, such as participant id, condition name, etc.
     * [[Classification.DEIDENTIFIED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
   final val Ident     = new Metric[String](IDENT, "ident", Classification.DEIDENTIFIED)
-  final val Reason    = new Metric[String](REASON, "reason", Classification.DEIDENTIFIED, IndexedSeq("did not meet critera","procedural/experimenter error","withdrew/fussy/tired","outlier"))
+  final val Reason    = new Metric[String](REASON, "reason", Classification.DEIDENTIFIED, IndexedSeq("did not meet criteria","procedural/experimenter error","withdrew/fussy/tired","outlier"))
   /** Date of birth for any records representing organisms or other entities with dates of origination.
     * These are treated specially in combination with [[Container.date]] to compute ages.
     * [[Classification.IDENTIFIED]] implies all authorized researchers get full access to these. */
@@ -223,6 +223,9 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
 case class Measures(list : Seq[Measure[_]]) {
   private def find(id : Metric.Id) : Option[Measure[_]] =
     list.find(_.metricId.unId >= id.unId).filter(_.metricId === id)
+
+  def datum(metric : Metric[_]) : Option[String] =
+    find(metric.id).map(_.datum)
 
   def apply[T](metric : Metric[T]) : Option[Measure[T]] =
     find(metric.id).asInstanceOf[Option[Measure[T]]]

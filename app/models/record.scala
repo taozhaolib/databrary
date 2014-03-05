@@ -11,9 +11,10 @@ import site._
   * Records that represent data buckets or other kinds of slot groupings (e.g., participants, days, conditions, etc.) can be assigned a particular RecordCategory for the purpose of display and templating.
   * For now, all instances are hard-coded.
   */
-sealed abstract class RecordCategory private (val id : RecordCategory.Id, val name : String) extends TableRowId[RecordCategory] {
+sealed class RecordCategory private (val id : RecordCategory.Id, val name : String) extends TableRowId[RecordCategory] {
   /** The default set of metrics which define records in this category. */
-  val template : Seq[Metric[_]]
+  val ident : Metric[_] = Metric.Ident
+  def template : Seq[Metric[_]] = Seq(ident)
 
   val json = JsonRecord(id,
       'name -> name
@@ -44,25 +45,20 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
   final val GROUP       : Id = asId(-200)
   final val LOCATION    : Id = asId(-100)
 
-  final val Pilot = new RecordCategory(PILOT, "pilot") {
-    val template = Seq(Metric.Ident)
-  }
+  final val Pilot = new RecordCategory(PILOT, "pilot")
   final val Exclusion = new RecordCategory(EXCLUSION, "exclusion") {
-    val template = Seq(Metric.Reason)
+    override val ident = Metric.Reason
   }
   /** RecordCategory representing participants, individuals whose data is contained in a particular sesion.
     * Participants usually are associated with birthdate, gender, and other demographics. */
   final val Participant = new RecordCategory(PARTICIPANT, "participant") {
-    val template = Seq(Metric.Ident, Metric.Birthdate, Metric.Gender, Metric.Race, Metric.Ethnicity)
+    override val template = Seq(Metric.Ident, Metric.Birthdate, Metric.Gender, Metric.Race, Metric.Ethnicity)
   }
-  final val Condition = new RecordCategory(CONDITION, "condition") {
-    val template = Seq(Metric.Ident)
-  }
-  final val Group = new RecordCategory(GROUP, "group") {
-    val template = Seq(Metric.Ident)
-  }
+  final val Condition = new RecordCategory(CONDITION, "condition")
+  final val Group = new RecordCategory(GROUP, "group")
   final val Location = new RecordCategory(LOCATION, "location") {
-    val template = Seq(Metric.Setting, Metric.State)
+    override val ident = Metric.Setting
+    override val template = Seq(Metric.Setting, Metric.State)
   }
 
   private val list = Seq(Pilot, Exclusion, Participant, Condition, Group, Location)
@@ -98,7 +94,9 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
     * This may invalidate measures on this object. */
   def removeMeasure(metric : Metric[_]) = Measure.remove(this, metric)
 
-  def ident : String = measures.value(Metric.Ident).getOrElse("[" + id + "]")
+  def ident : String = measures.datum(Metric.Ident)
+    .orElse(category.flatMap(c => measures.datum(c.ident)))
+    .getOrElse("[" + id + "]")
 
   /** The age at test for a specific date, as defined by `date - birthdate`. */
   def age(date : Date) : Option[Age] =

@@ -9,7 +9,7 @@
 
         <ul class="actions">
 	        <li><a href="@record.pageURL">view</a></li>
-	    @if(record.permission >= Permission.EDIT) {
+	    @if(record.checkPermission(Permission.EDIT)) {
 	        <li><a href="@controllers.routes.RecordHtml.edit(record.id)">edit</a></li>
 	    }
         </ul>

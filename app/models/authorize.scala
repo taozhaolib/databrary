@@ -38,7 +38,8 @@ final class Authorize protected (child : Party, parent : Party, inherit : Permis
     Some('inherit -> inherit),
     Some('direct -> direct),
     authorized.map('authorized -> _),
-    expires.map('expires -> _)
+    expires.map('expires -> _),
+    info.map('info -> _)
   )
 }
 
@@ -57,6 +58,12 @@ object Authorize extends Table[Authorize]("authorize") {
   private[this] val condition = "AND " + valid
   private[this] def conditionIf(all : Boolean) =
     if (all) "" else condition
+
+  def get(child : Party, parent : Party) : Future[Option[Authorize]] =
+    columns
+      .map(_(child, parent))
+      .SELECT("WHERE child = ? AND parent = ?")
+      .apply(child.id, parent.id).singleOpt
 
   /** Get all authorizations granted to a particular child.
     * @param all include inactive authorizations
