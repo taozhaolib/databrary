@@ -2,6 +2,6 @@
 
 @form.globalErrors.map { error =>
 <div class="inline error">
-	@Messages(error.message, error.args : _*)
+	@error.key @Messages(error.message, error.args : _*)
 </div>
 }

@@ -61,7 +61,7 @@ object IngestController extends SiteController {
 
   final class AdolphForm(implicit request : VolumeController.Request[_])
     extends HtmlForm[AdolphForm](
-      routes.IngestController.curated(request.obj.id),
+      routes.IngestController.adolph(request.obj.id),
       views.html.ingest.adolph(_))
     with CSVForm {
     val sessions = CSVFile()
