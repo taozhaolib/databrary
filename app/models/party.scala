@@ -64,6 +64,7 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
       orcid.map('orcid -> _), 
       affiliation.map('affiliation -> _),
       email.map('email -> _),
+      if (duns.isDefined) Some('institution -> true) else None,
       Some('avatar -> views.html.display.avatar(this).url)
     )
 }
@@ -96,15 +97,11 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
-      "parents" -> (opt => party.authorizeParents(opt.contains("all"))
-        .map(JsonRecord.map(a => JsonRecord(a.parentId
-	, 'party -> a.parent.json
-        )))
+      "parents" -> (opt => party.authorizeParents()
+        .map(JsonRecord.map(_.parent.json))
       ),
-      "children" -> (opt => party.authorizeChildren(opt.contains("all"))
-        .map(JsonRecord.map(a => JsonRecord(a.childId
-	, 'party -> a.child.json
-        )))
+      "children" -> (opt => party.authorizeChildren()
+        .map(JsonRecord.map(_.child.json))
       ),
       "access" -> (opt => if (checkPermission(Permission.ADMIN)) party.access.map(a => Json.toJson(a.group)) else Async(JsNull)),
       "volumes" -> (opt => volumeAccess.map(JsonArray.map(_.json - "party"))),
