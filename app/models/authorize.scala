@@ -38,7 +38,8 @@ final class Authorize protected (child : Party, parent : Party, inherit : Permis
     Some('inherit -> inherit),
     Some('direct -> direct),
     authorized.map('authorized -> _),
-    expires.map('expires -> _)
+    expires.map('expires -> _),
+    info.map('info -> _)
   )
 }
 
