@@ -193,7 +193,7 @@ abstract class StructForm(val _action : Call) {
 
 abstract class FormView(action : Call) extends StructForm(action) {
   self =>
-  def _exception : FormException
+  def _exception : SiteException
   final def _throw = throw _exception
   final def orThrow() : self.type = {
     if (hasErrors)

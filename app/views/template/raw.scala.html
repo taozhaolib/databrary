@@ -60,9 +60,8 @@
                     </div>
 
                     <div class="toolbar_user col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
-                    @requestOption.filter(_.user.isDefined).fold {
-                        <a href="@routes.LoginHtml.view">login</a>
-                    } { request =>
+		    @requestOption match {
+		    case Some(request : SiteRequest.Auth[_]) => {
                         <a href="@routes.LoginHtml.logout">logout</a>
 
                         @if(request.access.isAdmin) {
@@ -71,12 +70,23 @@
                             @if(request.superuser) {
                                 <a class="superuser on" href="@routes.LoginHtml.superuserOff">SU</a>
                             } else {
-                                <a class="superuser off" href="@routes.LoginHtml.superuserOn">SU</a>
+			    @defining(new LoginController.SuperuserForm()(request)) { form =>
+				@widget.tag.form(form) {
+				@defining(helper.FieldConstructor(widget.tag.rawFieldConstructor.f)) { implicit fieldConstructor =>
+				    @widget.tag.inputPassword(form.auth())
+				    <button type="submit" class="button">SU</button>
+				}
+				}
+			    }
                             }
                         }
 
                         <a href="@requestOption.get.identity.pageURL" class="img"><img src="@display.avatar(requestOption.get.identity, 16)" alt="@requestOption.get.identity.name"></a>
                     }
+		    case _ => {
+                        <a href="@routes.LoginHtml.view">login</a>
+		    }
+		    }
                     </div>
                 </div>
             </div>
