@@ -12,6 +12,8 @@ object SiteApi extends SiteController {
   private final val constantsJson = JsonObject(
       'permission -> JsonRecord.map[Permission.Value](c => JsonRecord(c.id
 	, 'name -> c.toString
+	, 'inherit -> Permission.message(c, "inherit")
+	, 'direct -> Permission.message(c, "direct")
 	))(Permission.values.toSeq)
     , 'consent -> JsonRecord.map[Consent.Value](c => JsonRecord.flatten(c.id
 	, Some('name -> c.toString)
