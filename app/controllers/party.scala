@@ -74,7 +74,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     def actionName = "Update"
     override def formName = "Edit Profile"
     def party = request.obj.party
-    def accountForm : Option[(Account, AccountEditForm)]
+    def accountForm : Option[AccountEditForm]
     val name = Field(OptionMapping(Forms.nonEmptyText)).fill(Some(party.name))
     val avatar = OptionalFile()
     orcid.fill(Some(party.orcid))
@@ -84,10 +84,8 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   final class PartyEditForm(implicit request : Request[_]) extends EditForm {
     def accountForm = None
   }
-  final class AccountEditForm(account : Account)(implicit request : Request[_]) extends EditForm with AccountForm {
-    val auth = Field(Forms.text.verifying("password.incorrect",
-      s => s.isEmpty || BCrypt.checkpw(s, account.password))).fill("")
-    def accountForm = if (auth.get.isEmpty) None else Some((account, this))
+  final class AccountEditForm(val account : Account)(implicit request : Request[_]) extends EditForm with AccountForm with LoginController.AuthForm {
+    def accountForm = if (_authorized) Some(this) else None
     val email = Field(OptionMapping(Forms.email)).fill(Some(account.email))
     openid.fill(account.openid)
   }
@@ -116,13 +114,13 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	affiliation = form.affiliation.get.map(Maybe(_).opt),
 	duns = form.duns.get.filter(_ => request.access.direct == Permission.ADMIN)
       )
-      _ <- macros.Async.foreach[(Account, AccountEditForm), Unit](form.accountForm, { case (account, form) =>
-	account.change(
+      _ <- macros.Async.foreach[AccountEditForm, Unit](form.accountForm, form =>
+	form.account.change(
 	  email = form.email.get,
 	  password = form.password.get,
 	  openid = form.openid.get.map(Maybe(_).opt)
 	)
-      })
+      )
       _ <- macros.Async.foreach(form.avatar.get, { file : form.FilePart =>
 	val fmt = AssetFormat.getFilePart(file).filter(_.isImage) getOrElse
 	  form.avatar.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw

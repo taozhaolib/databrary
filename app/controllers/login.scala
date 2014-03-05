@@ -68,6 +68,8 @@ private[controllers] sealed class LoginController extends SiteController {
 
   private final val superuserTime : Long = 60*60*1000
   def superuserOn = SiteAction.rootAccess() { implicit request =>
+    if (!new LoginController.SuperuserForm()._bind._authorized)
+      throw ForbiddenException
     val expires = System.currentTimeMillis + superuserTime
     Audit.action(Audit.Action.superuser)
     (if (request.isApi) Ok(json + ('superuser -> superuserTime))
@@ -127,6 +129,20 @@ object LoginController extends LoginController {
     val email = Field(Forms.email)
     val affiliation = Field(Forms.text)
     val agreement = Field(Forms.checked("agreement.required"))
+  }
+
+  trait AuthForm extends StructForm {
+    def account : Account
+    val auth = Field(Forms.text.verifying("password.incorrect",
+      s => s.isEmpty || BCrypt.checkpw(s, account.password))).fill("")
+    def _authorized = !hasErrors && auth.get.nonEmpty
+  }
+
+  final class SuperuserForm(implicit request : SiteRequest.Auth[_])
+    extends FormView(routes.LoginHtml.superuserOn)
+    with AuthForm {
+    def account = request.account
+    def _exception = ForbiddenException
   }
 }
 
