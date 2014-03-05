@@ -189,9 +189,12 @@ object Party extends TableId[Party]("party") {
   /** Search for parties by name for the purpose of authorization.
     * @param name string to match against name/email (case insensitive substring)
     * @param who party doing the authorization, to exclude parties already authorized
+    * @param institute limit to institutions
     */
-  def searchForAuthorize(name : String, who : Party) : Future[Seq[Party]] =
-    row.SELECT("WHERE " + byName + " AND id != ? AND id > 0 AND id NOT IN (SELECT child FROM authorize WHERE parent = ? UNION SELECT parent FROM authorize WHERE child = ?) LIMIT 8")
+  def searchForAuthorize(name : String, who : Party, institute : Boolean = false) : Future[Seq[Party]] =
+    row.SELECT("WHERE", byName, "AND id != ? AND id > 0",
+      if (institute) "AND duns IS NOT NULL" else "",
+      "AND id NOT IN (SELECT child FROM authorize WHERE parent = ? UNION SELECT parent FROM authorize WHERE child = ?) LIMIT 8")
       .apply(byNameArgs(name) ++ SQLArgs(who.id) * 3).list
 
   /** Search for parties by name for the purpose of volume access.

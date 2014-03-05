@@ -83,6 +83,17 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
 	  VolumeAccess.set(request.obj, e, max(form.access.get, form.inherit.get), form.inherit.get)
     } yield (result(request.obj))
   }
+
+  def accessSearch(id : models.Volume.Id) =
+    Action(id, Permission.ADMIN).async { implicit request =>
+      val form = new VolumeController.AccessSearchForm()._bind
+      for {
+	res <- models.Party.searchForVolumeAccess(form.name.get, request.obj)
+	r <- if (request.isApi) macros.Async(Ok(JsonRecord.map[Party](_.json)(res)))
+	  else VolumeHtml.viewAdmin(accessSearchForm = Some(form), accessResults = res)
+	    .map(Ok(_))
+      } yield (r)
+    }
 }
 
 object VolumeController extends VolumeController {
@@ -141,6 +152,13 @@ object VolumeController extends VolumeController {
     }
   }
 
+  final class AccessSearchForm(implicit request : Request[_])
+    extends AHtmlForm[AccessSearchForm](
+      routes.VolumeHtml.accessSearch(request.obj.id),
+      f => VolumeHtml.viewAdmin(accessSearchForm = Some(f))) {
+    val name = Field(Forms.nonEmptyText)
+  }
+
   def thumb(v : models.Volume.Id) = Action(v, Permission.VIEW).async { implicit request =>
     request.obj.thumb.flatMap(_.fold(
       Assets.at("/public", "images/draft.png")(request))(
@@ -149,6 +167,8 @@ object VolumeController extends VolumeController {
 }
 
 object VolumeHtml extends VolumeController {
+  import VolumeController._
+
   def view(i : models.Volume.Id) = Action(i).async { implicit request =>
     val vol = request.obj
     for {
@@ -179,18 +199,11 @@ object VolumeHtml extends VolumeController {
   }
 
   def add(e : Option[models.Party.Id]) = ContributeAction(e).async { implicit request =>
-    (new VolumeController.CreateForm).Ok
-  }
-
-  class AccessSearchForm(implicit request : Request[_])
-    extends AHtmlForm[AccessSearchForm](
-      routes.VolumeHtml.accessSearch(request.obj.id),
-      f => VolumeHtml.viewAdmin(accessSearchForm = Some(f))) {
-    val name = Field(Forms.nonEmptyText)
+    (new CreateForm).Ok
   }
 
   private[controllers] def viewAdmin(
-    accessChangeForm : Option[VolumeController.AccessForm] = None,
+    accessChangeForm : Option[AccessForm] = None,
     accessSearchForm : Option[AccessSearchForm] = None,
     accessResults : Seq[Party] = Nil)(
     implicit request : Request[_]) = {
@@ -201,21 +214,12 @@ object VolumeHtml extends VolumeController {
         .filterNot(a => change.contains(a.partyId.unId))
         .map(accessForm(_)) ++
 	accessChangeForm
-      results = accessResults.map(new VolumeController.AccessForm(_))
+      results = accessResults.map(new AccessForm(_))
     } yield (views.html.volume.access(request.obj, forms, accessSearchForm.getOrElse(new AccessSearchForm), results))
   }
 
   def admin(id : models.Volume.Id) = Action(id, Permission.ADMIN).async { implicit request =>
     viewAdmin().map(Ok(_))
-  }
-
-  def accessSearch(id : models.Volume.Id) = Action(id, Permission.ADMIN).async { implicit request =>
-    val form = new AccessSearchForm()._bind
-    models.Party.searchForVolumeAccess(form.name.get, request.obj).flatMap { res =>
-      viewAdmin(accessSearchForm = Some(form),
-	accessResults = res)
-      .map(Ok(_))
-    }
   }
 }
 
@@ -237,11 +241,6 @@ object VolumeApi extends VolumeController {
       parents <- request.obj.partyAccess()
     } yield (Ok(JsonRecord.map[VolumeAccess](a =>
       JsonRecord(a.partyId) ++ (a.json - "volume"))(parents)))
-  }
-
-  def accessSearch(volumeId : models.Volume.Id, name : String) = Action(volumeId, Permission.ADMIN).async { implicit request =>
-    models.Party.searchForVolumeAccess(name, request.obj)
-      .map(r => Ok(JsonRecord.map[Party](_.json)(r)))
   }
 
   def accessDelete(volumeId : models.Volume.Id, partyId : models.Party.Id) = Action(volumeId, Permission.ADMIN).async { implicit request =>

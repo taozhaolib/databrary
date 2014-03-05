@@ -205,6 +205,27 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     } yield (result(request.obj))
     })
   }
+
+  def authorizeSearch(id : models.Party.Id, apply : Boolean) =
+    AdminAction(id).async { implicit request =>
+      val form = new PartyController.AuthorizeSearchForm(apply)._bind
+      if (form.notfound.get)
+	for {
+	  _ <- Mail.send(
+	    to = Messages("mail.authorize"),
+	    subject = Messages("mail.authorize.subject"),
+	    body = Messages("mail.authorize.body", routes.PartyHtml.view(id).absoluteURL(true),
+	      request.obj.party.name + request.identity.email.fold("")(" <" + _ + ">") + request.obj.party.affiliation.fold("")(" (" + _ + ")"),
+	      form.name.get + form.info.get.fold("")(" (" + _ + ")")))
+	} yield (Ok("request sent"))
+      else for {
+	res <- models.Party.searchForAuthorize(form.name.get, request.obj.party, form.institution.get)
+        r <- if (request.isApi) macros.Async(Ok(JsonRecord.map[Party](_.json)(res)))
+	  else PartyHtml.viewAdmin(form +: res.map(e =>
+	    (if (apply) new PartyController.AuthorizeApplyForm(e) else new PartyController.AuthorizeChildForm(e)).copyFrom(form)))
+	    .map(Ok(_))
+      } yield (r)
+    }
 }
 
 object PartyController extends PartyController {
@@ -270,6 +291,7 @@ object PartyController extends PartyController {
   final class AuthorizeSearchForm(val _apply : Boolean)(implicit request : Request[_])
     extends AuthorizeForm(routes.PartyHtml.authorizeSearch(request.obj.id, _apply)) {
     val name = Field(Forms.nonEmptyText)
+    val institution = Field(Forms.boolean).fill(false)
     val notfound = Field(Forms.boolean).fill(false)
   }
   final class AuthorizeAdminForm(val authorize : Authorize)(implicit request : SiteRequest[_])
@@ -326,25 +348,6 @@ object PartyHtml extends PartyController {
     viewAdmin().map(Ok(_))
   }
 
-  def authorizeSearch(id : models.Party.Id, apply : Boolean) = AdminAction(id).async { implicit request =>
-    val form = new AuthorizeSearchForm(apply)._bind
-    if (form.notfound.get)
-      for {
-	_ <- Mail.send(
-	  to = Messages("mail.authorize"),
-	  subject = Messages("mail.authorize.subject"),
-	  body = Messages("mail.authorize.body", routes.PartyHtml.view(id).absoluteURL(true),
-	    request.obj.party.name + request.identity.email.fold("")(" <" + _ + ">") + request.obj.party.affiliation.fold("")(" (" + _ + ")"),
-	    form.name.get + form.info.get.fold("")(" (" + _ + ")")))
-      } yield (Ok("request sent"))
-    else
-      for {
-        res <- models.Party.searchForAuthorize(form.name.get, request.obj.party)
-        r <- viewAdmin(form +: res.map(e =>
-	    (if (apply) new AuthorizeApplyForm(e) else new AuthorizeChildForm(e)).copyFrom(form)))
-      } yield (Ok(r))
-  }
-
   def authorizeAdmin = SiteAction.rootAccess().async { implicit request =>
     Authorize.getAll.map { all =>
       val (pend, rest) = all.span(_.authorized.isEmpty)
@@ -380,10 +383,5 @@ object PartyApi extends PartyController {
         'party -> a.child.json) ++
         a.json)(children)
       ).obj))
-  }
-
-  def authorizeSearch(partyId : models.Party.Id, name : String) = AdminAction(partyId).async { implicit request =>
-    models.Party.searchForAuthorize(name, request.obj.party)
-      .map(r => Ok(JsonRecord.map[Party](_.json)(r)))
   }
 }

@@ -1,4 +1,4 @@
-@(volume : Volume, accessForms : Seq[VolumeController.AccessForm], accessSearch : VolumeHtml.AccessSearchForm, accessResults : Seq[VolumeController.AccessForm])(implicit request : VolumeHtml.Request[_])
+@(volume : Volume, accessForms : Seq[VolumeController.AccessForm], accessSearch : VolumeController.AccessSearchForm, accessResults : Seq[VolumeController.AccessForm])(implicit request : VolumeHtml.Request[_])
 
 @implicitField = @{
     helper.FieldConstructor(widget.tag.tableFieldConstructor.f)
