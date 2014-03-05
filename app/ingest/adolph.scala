@@ -295,7 +295,7 @@ object Adolph extends Ingest {
 	    _ <- check(crs.length <= 1,
 	      PopulateException("multiple existing records for category " + r.category, c))
 	    r <- r.populate(volume, crs.headOption)
-	    _ <- r.addSlot(c)
+	    _ <- if (crs.isEmpty) r.addSlot(c) else Async(false)
 	  } yield (())
 	})
       } yield (c)
