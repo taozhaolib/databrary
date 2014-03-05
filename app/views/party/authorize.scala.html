@@ -29,8 +29,8 @@
     @authorizeParents.map { t =>
 	<tr>
 	    <td>@display(t.parent)</td>
-	    <td>@Permission.message(t.inherit, "inherit")</td>
-	    <td>@Permission.message(t.direct, "direct")</td>
+	    <td>@Permission.message(t.inherit, "inherit", whose)</td>
+	    <td>@Permission.message(t.direct, "direct", whose)</td>
 	    <td>@t.expires.fold("never")( e => display.dateFmtYMD.print(e) )</td>
 	    <td>@{if(t.authorized.isEmpty) "pending"}</td>
 	</tr>
