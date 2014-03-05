@@ -149,23 +149,30 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     } yield (result(s))
   }
 
-  def authorizeChange(id : models.Party.Id, childId : models.Party.Id) = AdminAction(id).async { implicit request =>
-    models.Party.get(childId).flatMap(_.fold(ANotFound) { child =>
-    val form = new PartyController.AuthorizeChildForm(child)._bind
-    (if (form.delete.get)
-      models.Authorize.delete(childId, id)
-    else
-      Authorize.set(childId, id,
-	form.inherit.get,
-	form.direct.get,
-	if (form.pending.get) None else Some(new Timestamp),
-	form.expires.get.map(_.toLocalDateTime(new org.joda.time.LocalTime(12, 0))))
-      .flatMap { _ =>
-	Authorize.Info.set(childId, id, form.info.get)
-      }
-    ).map(_ => result(request.obj))
-    })
-  }
+  def authorizeChange(id : models.Party.Id, childId : models.Party.Id) =
+    AdminAction(id).async { implicit request =>
+      models.Party.get(childId).flatMap(_.fold(ANotFound) { child =>
+	val form = new PartyController.AuthorizeChildForm(child)._bind
+	if (form.delete.get)
+	  models.Authorize.delete(childId, id)
+	    .map(_ => result(request.obj))
+	else for {
+	  c <- Authorize.get(child, request.obj.party)
+	  _ <- Authorize.set(childId, id,
+	    form.inherit.get,
+	    form.direct.get,
+	    if (form.pending.get) None else Some(new Timestamp),
+	    form.expires.get.map(_.toLocalDateTime(new org.joda.time.LocalTime(12, 0))))
+	  _ <- Authorize.Info.set(childId, id, form.info.get)
+	  _ <- if (Play.isProd && !form.pending.get && !c.exists(_.authorized.isDefined))
+	    macros.Async.foreach[Account,Unit](child.account, ca => Mail.send(
+	      to = ca.email,
+	      subject = Messages("mail.authorized.subject"),
+	      body = Messages("mail.authorized.body", request.obj.party.name)))
+	    else macros.Async.void
+	} yield (result(request.obj))
+      })
+    }
 
   def authorizeDelete(id : models.Party.Id, other : models.Party.Id) = AdminAction(id).async { implicit request =>
     for {
@@ -186,7 +193,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       dl <- delegates(parent)
       _ <- Authorize.set(id, parentId, form.inherit.get, Permission.NONE, None, None)
       _ <- Authorize.Info.set(id, parentId, form.info.get)
-      _ <- Mail.send(
+      _ <- if (Play.isProd) Mail.send(
 	to = (dl.map(_.email) :+ Messages("mail.authorize")).mkString(", "),
 	subject = Messages("mail.authorize.subject"),
 	body = Messages("mail.authorize.body", routes.PartyHtml.admin(parentId).absoluteURL(true),
@@ -194,7 +201,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	  parent.name)
       ).recover {
 	case ServiceUnavailableException => ()
-      }
+      } else macros.Async.void
     } yield (result(request.obj))
     })
   }

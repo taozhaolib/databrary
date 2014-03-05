@@ -59,6 +59,12 @@ object Authorize extends Table[Authorize]("authorize") {
   private[this] def conditionIf(all : Boolean) =
     if (all) "" else condition
 
+  def get(child : Party, parent : Party) : Future[Option[Authorize]] =
+    columns
+      .map(_(child, parent))
+      .SELECT("WHERE child = ? AND parent = ?")
+      .apply(child.id, parent.id).singleOpt
+
   /** Get all authorizations granted to a particular child.
     * @param all include inactive authorizations
     */

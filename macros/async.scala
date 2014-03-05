@@ -28,6 +28,7 @@ object Async {
       case Failure(a) => failed(a)
     }
 
+  val void : Future[Unit] = successful(())
   private[this] def ss[A](a : A) : Future[Option[A]] = successful(Some(a))
   /** Unwrap and map an Option into a Future Option. */
   def flatMap[A,B](a : Option[A], f : A => Future[Option[B]]) : Future[Option[B]] =
@@ -44,7 +45,7 @@ object Async {
 
   /** Evaluate each of the futures, serially. */
   def foreach[A, R](l : TraversableOnce[A], f : A => Future[_], r : => R = ())(implicit context : ExecutionContext) : Future[R] = {
-    l.foldLeft[Future[Any]](successful(())) { (r, a) =>
+    l.foldLeft[Future[Any]](void) { (r, a) =>
       r.flatMap(_ => f(a))
     }.map(_ => r)
   }
@@ -65,7 +66,7 @@ object Async {
       case f : Future[Any] => f
       case (k : K, a : A) => f(a).map(v => b.+=((k, v)))
     }
-    madd(m.fold[AnyRef](successful(())) { (l, r) =>
+    madd(m.fold[AnyRef](void) { (l, r) =>
       madd(l).flatMap(_ => madd(r))
     }).map(_ => b.result)
   }
