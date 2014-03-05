@@ -32,19 +32,47 @@ define(['app/config/module'], function (module) {
 
 		$scope.partyAuth = [];
 
-		$scope.onModeAuthorize = function () {
+		var getPartyAuth = function () {
 			PartyAuthorize.query(function (data) {
 				$scope.partyAuth = data;
 			});
+		};
+
+		$scope.onModeAuthorize = function () {
+			getPartyAuth();
+		};
+
+		$scope.onModeApply = function () {
+			getPartyAuth();
 		};
 
 		//
 
 		$scope.resetAuth = {};
 
+		$scope.currentAuthParent = undefined;
 		$scope.currentAuthChild = undefined;
+
 		$scope.currentAuthForm = undefined;
 		$scope.currentAuthFormWatch = undefined;
+
+		//
+
+		$scope.openAuthParent = function (parent, form) {
+//			$scope.resetAuthParent(parent);
+
+			$scope.currentAuthParent = parent;
+			$scope.currentAuthForm = form;
+		};
+
+		$scope.closeAuthParent = function () {
+//			$scope.resetAuthParent();
+
+			$scope.currentAuthChild = undefined;
+			$scope.currentAuthForm = undefined;
+		};
+
+		//
 
 		$scope.openAuthChild = function (child, form) {
 			$scope.resetAuthChild(child);

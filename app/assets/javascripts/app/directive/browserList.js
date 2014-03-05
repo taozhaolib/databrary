@@ -14,7 +14,7 @@ define(['app/config/module'], function (module) {
 
 			$scope.getInclude = function () {
 				if (!$scope.data.items[0])
-					return;
+					return '';
 
 				switch ($scope.data.items[0].group) {
 					case 'volume':

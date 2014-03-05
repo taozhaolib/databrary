@@ -1,4 +1,4 @@
-<article bindonce class="browser_item browser_volume">
+<article bindonce class="browser_item browser_volume cf">
     <div class="browser_item_content">
         <div class="cf">
             <footer>
@@ -12,15 +12,18 @@
                 <div class="item_meta permission"
                      bo-if="data.object.permission"
                      bo-html="constant.get('permission', data.object.permission).name"></div>
+
+                <div class="item_meta sep"
+                     bo-if="browser.hasAccess(data, 3) && data.object.permission">|</div>
+
+                    <a class="browser_tool edit"
+                       bo-href="editLink(data)"
+                       ng-if="browser.hasAccess(data, 3)"></a>
             </footer>
 
             <header>
                 <h1>
                     <a bo-href="router.volume({id: data.object.id})" bo-html="getName(data)"></a>
-
-                    <a class="browser_tool edit"
-                       bo-href="editLink(data)"
-                       ng-if="browser.hasAccess(data, 3)"></a>
                 </h1>
             </header>
         </div>

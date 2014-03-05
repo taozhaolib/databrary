@@ -24,8 +24,8 @@ mail.authorized.body={0}
 
 # Authorizations
 auth.inherit.NONE=No access.
-auth.inherit.VIEW=Access to Databrary unrestricted data.
-auth.inherit.DOWNLOAD=Access to Databrary restricted data.
+auth.inherit.VIEW=Access to Databrary's unrestricted data.
+auth.inherit.DOWNLOAD=Access to Databrary's restricted data.
 auth.inherit.CONTRIBUTE=Can create datasets and studies on {0} behalf.
 auth.inherit.ADMIN=Can authorize users on {0} behalf.
 

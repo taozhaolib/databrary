@@ -141,21 +141,39 @@
 //
 
 .panel_modes {
-	.margin-bottom(@f1);
+	.margin-bottom(@f4);
 }
 
 .panel_mode_links {
 	.margin(0);
 	.padding(0);
 	display: inline-block;
+	border-bottom: 1px solid @g4;
+	width: 100%;
 }
 
 .panel_mode_link {
 	display: inline-block;
 	.margin-right(@f2);
+	.margin-left(@f6);
+	border: 1px solid @g4;
+	border-bottom-width: 0;
+	.border-radius(@b6 @b6 0 0);
+	position: relative;
+	bottom: -1px;
 
 	&:before {
 		display: none;
+	}
+
+	&.active {
+		background-color: @g5;
+	}
+
+	a {
+		display: block;
+		.padding-width(@f2);
+		.padding-height(@f8);
 	}
 }
 
