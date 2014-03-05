@@ -53,8 +53,10 @@ object IngestController extends SiteController {
 	Ok(views.html.ingest.result(volume, r._1 ++ r._2))
       }.recover {
 	case e : PopulateException =>
+	  Logger.error("curated ingest error", e)
 	  BadRequest(views.html.ingest.curated(form, e.getMessage, e.target))
 	case e : IngestException =>
+	  Logger.error("curated ingest error", e)
 	  BadRequest(views.html.ingest.curated(form, e.getMessage))
       }
   }
@@ -88,8 +90,10 @@ object IngestController extends SiteController {
 	Ok(views.html.ingest.result(volume, r))
       }.recover {
 	case e : PopulateException =>
+	  Logger.error("adolph ingest error", e)
 	  BadRequest(views.html.ingest.adolph(form, e.getMessage, e.target))
 	case e : IngestException =>
+	  Logger.error("adolph ingest error", e)
 	  BadRequest(views.html.ingest.adolph(form, e.getMessage))
       }
   }
