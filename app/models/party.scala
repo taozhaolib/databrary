@@ -61,9 +61,9 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
   def json(implicit site : Site) : JsonRecord =
     JsonRecord.flatten(id,
       Some('name -> name), 
-      orcid.map('orcid -> _), 
-      affiliation.map('affiliation -> _),
-      email.map('email -> _),
+      orcid.map(('orcid, _)),
+      affiliation.map(('affiliation, _)),
+      email.map(('email, _)),
       if (duns.isDefined) Some('institution -> true) else None,
       Some('avatar -> views.html.display.avatar(this).url)
     )
