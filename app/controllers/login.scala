@@ -135,7 +135,7 @@ object LoginController extends LoginController {
     def account : Account
     val auth = Field(Forms.text.verifying("password.incorrect",
       s => s.isEmpty || BCrypt.checkpw(s, account.password))).fill("")
-    def _authorized = !hasErrors && auth.get.nonEmpty
+    def _authorized = !hasErrors && (auth.get.nonEmpty || !Play.isProd)
   }
 
   final class SuperuserForm(implicit request : SiteRequest.Auth[_])

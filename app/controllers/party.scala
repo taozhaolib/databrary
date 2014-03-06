@@ -85,7 +85,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     def accountForm = None
   }
   final class AccountEditForm(val account : Account)(implicit request : Request[_]) extends EditForm with AccountForm with LoginController.AuthForm {
-    def accountForm = if (_authorized) Some(this) else None
+    def accountForm = if (_authorized || request.superuser) Some(this) else None
     val email = Field(OptionMapping(Forms.email)).fill(Some(account.email))
     openid.fill(account.openid)
   }
