@@ -45,7 +45,7 @@
         <nav id="toolbar_databrary" class="toolbar toolbar_databrary">
             <div class="wrap">
                 <div class="row">
-                    <div class="title cf col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-4">
+                    <div class="title cf col-desktop-10 col-laptop-7 col-tablet-4 col-mobile-2">
                         <h1 class="toolbar_h1">
                             <a href="@routes.Site.start" title="Databrary: An Open Data Library"><span>Databrary</span></a>
                         </h1>
@@ -53,16 +53,19 @@
                         <nav class="toolbar_nav cf hide-mobile hide-cell">
                             <ul class="toolbar_nav_ul inline-block flat cf">
                                 <li><a href="@routes.VolumeHtml.search">explore</a></li>
-                                <li><a href="@routes.VolumeHtml.search">share</a></li>
-                                <li><a href="@routes.VolumeHtml.search">discover</a></li>
+                                <li><a href="http://databrary.org/user-guide.html">share</a></li>
+                                <li><a href="https://github.com/databrary">discover</a></li>
                             </ul>
                         </nav>
                     </div>
 
-                    <div class="toolbar_user col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
-		    @requestOption match {
-		    case Some(request : SiteRequest.Auth[_]) => {
-                        <a href="@routes.LoginHtml.logout">logout</a>
+                    <div class="toolbar_user col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
+                @requestOption match {
+                    case Some(request : SiteRequest.Auth[_]) => {
+                        <a href="@requestOption.get.identity.pageURL" class="toolbar_user_link">
+                            <span class="username">@requestOption.get.identity.name</span>
+                            <img src="@display.avatar(requestOption.get.identity, 16)" alt="@requestOption.get.identity.name" class="avatar">
+                        </a>
 
                         @if(request.access.isAdmin) {
                             <span class="sep">|</span>
@@ -70,23 +73,26 @@
                             @if(request.superuser) {
                                 <a class="superuser on" href="@routes.LoginHtml.superuserOff">SU</a>
                             } else {
-			    @defining(new LoginController.SuperuserForm()(request)) { form =>
-				@widget.tag.form(form) {
-				@defining(helper.FieldConstructor(widget.tag.rawFieldConstructor.f)) { implicit fieldConstructor =>
-				    @widget.tag.inputPassword(form.auth())
-				    <button type="submit" class="button">SU</button>
-				}
-				}
-			    }
+                                @defining(new LoginController.SuperuserForm()(request)) { form =>
+                                    @widget.tag.form(form) {
+                                        @defining(helper.FieldConstructor(widget.tag.rawFieldConstructor.f)) { implicit fieldConstructor =>
+                                            @widget.tag.inputPassword(form.auth(), 'class -> "mini password")
+                                            <button type="submit" class="link superuser off">SU</button>
+                                        }
+                                    }
+                                }
                             }
                         }
 
-                        <a href="@requestOption.get.identity.pageURL" class="img"><img src="@display.avatar(requestOption.get.identity, 16)" alt="@requestOption.get.identity.name"></a>
+                        <span class="sep">|</span>
+
+                        <a href="@routes.LoginHtml.logout">logout</a>
                     }
-		    case _ => {
+
+                    case _ => {
                         <a href="@routes.LoginHtml.view">login</a>
-		    }
-		    }
+                    }
+                }
                     </div>
                 </div>
             </div>

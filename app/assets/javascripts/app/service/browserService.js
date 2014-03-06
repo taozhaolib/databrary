@@ -449,20 +449,32 @@ define(['app/config/module'], function (module) {
 				var categoryRecords = session.categories[groups[data.level + 1]];
 
 				if (angular.isDefined(categoryRecords)) {
-					angular.forEach(categoryRecords, function (record, recordID) {
-						recordID = record.id;
+					angular.forEach(categoryRecords, function (record) {
+						if (!tempData[record.id])
+							tempData[record.id] = {};
 
-						if (!tempData[recordID])
-							tempData[recordID] = {};
-
-						tempData[recordID][session.id] = session;
+						tempData[record.id][session.id] = session;
 					});
+				} else {
+					if (!tempData['null'])
+						tempData['null'] = {};
+
+					tempData['null'][session.id] = session;
 				}
 			});
 
 			if (!$.isEmptyObject(tempData)) {
 				angular.forEach(tempData, function (newSessions, recordID) {
-					var newData = callbackItem(data, volume, newSessions, volume.records[recordID], volume.records[recordID].category);
+					var newData;
+
+					if(volume.records[recordID])
+						newData = callbackItem(data, volume, newSessions, volume.records[recordID], groups[data.level + 1]);
+					else
+						newData = callbackItem(data, volume, newSessions, {
+							category: groups[data.level + 1],
+							id: 0,
+							measures: {}
+						}, groups[data.level + 1]);
 
 					callbackRecordChildren(newData, volume, groups);
 
@@ -898,7 +910,7 @@ define(['app/config/module'], function (module) {
 		browserService.setItemPlayer = function (data) {
 			var newPlayer, newPlayed;
 
-			if(data.group == 'asset') {
+			if (data.group == 'asset') {
 				newPlayed = data;
 				newPlayer = data.parent;
 			} else {
@@ -906,7 +918,7 @@ define(['app/config/module'], function (module) {
 				newPlayer = data;
 			}
 
-			if(angular.isUndefined(browserService.player)) {
+			if (angular.isUndefined(browserService.player)) {
 				browserService.player = newPlayer;
 
 				browserService.player.player = true;

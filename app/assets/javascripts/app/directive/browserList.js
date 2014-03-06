@@ -98,6 +98,13 @@ define(['app/config/module'], function (module) {
 				return input.charAt(0).toUpperCase() + input.slice(1);
 			};
 
+			$scope.nameRecord = function (data) {
+				if(data.object.id == 0)
+					return 'No '+$scope.constant.get('category', data.object.category).name;
+
+				return $scope.capitalize($scope.constant.get('category', data.object.category).name);
+			};
+
 			//
 
 			$scope.editLink = function (data) {

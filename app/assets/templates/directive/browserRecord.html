@@ -1,4 +1,4 @@
-<article bindonce class="browser_item browser_record cf">
+<article bindonce class="browser_item browser_record cf" bo-class="{null: data.object.id == 0}">
     <div class="browser_item_content">
         <div class="cf">
             <footer>
@@ -9,7 +9,7 @@
 
             <header>
 		        <h1>
-                    <span><span bo-html="capitalize(constant.get('category', data.object.category).name)"></span><span bo-if="data.object.id">: <span bo-html="data.object.measures.ident || data.object.id"></span></span></span>
+                    <span><span bo-html="nameRecord(data)"></span><span bo-if="data.object.id">: <span bo-html="data.object.measures.ident || data.object.id"></span></span></span>
                 </h1>
             </header>
         </div>
