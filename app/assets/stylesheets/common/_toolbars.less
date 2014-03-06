@@ -148,28 +148,21 @@
 	text-align: right;
 
 	a {
-		color: @g4;
+		color: @g3;
 
-		&:hover {
-			color: @white;
-			text-shadow: 0 0 2px @g4;
-		}
-	}
-
-	a.img {
-		position: relative;
-		top: @b8;
-
-		img {
+		.avatar {
+			position: relative;
+			top: @b8;
 			display: inline-block;
-			border: 1px solid @g4;
+			border: 1px solid @g3;
 			.size(18px);
 		}
 
 		&:hover {
-			img {
-				border-color: @g1;
-				.box-shadow(0 0 3px @g4);
+			color: @g4;
+
+			.avatar {
+				border-color: @g4;
 			}
 		}
 	}
@@ -191,6 +184,16 @@
 				text-shadow: 0 0 2px fadeout(@c8g5m2, 75%);
 			}
 		}
+	}
+
+	form {
+		display: inline;
+	}
+
+	.password {
+		.grid-width(max, 1);
+		position: relative;
+		top: -1px;
 	}
 }
 

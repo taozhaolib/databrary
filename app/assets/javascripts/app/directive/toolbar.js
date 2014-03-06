@@ -3,7 +3,7 @@ define(['app/config/module'], function (module) {
 
 	module.directive('toolbar', ['$location', '$anchorScroll', '$timeout', 'EventService', 'AuthService', 'PanelService', function ($location, $anchorScroll, $timeout, eventService, authService, panelService) {
 		var controller = function ($scope, $element, $attrs) {
-			$scope.authService = authService;
+			$scope.auth = $scope.auth || authService;
 
 			//
 

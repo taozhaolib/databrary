@@ -2,7 +2,7 @@
     <nav id="toolbar_databrary" class="toolbar toolbar_databrary">
         <div class="wrap">
             <div class="row">
-                <div class="title cf col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-4">
+                <div class="title cf col-desktop-10 col-laptop-7 col-tablet-4 col-mobile-2">
                     <h1 class="toolbar_h1">
                         <a href="http://databrary.org" title="Databrary: An Open Data Library"><span>Databrary</span></a>
                     </h1>
@@ -14,21 +14,32 @@
                     </nav>
                 </div>
 
-                <div class="toolbar_user col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 ng-cloak">
-                    <span has-auth="!view">
-                        <a href="#" ng-click="authService.showLogin()">login</a>
+                <div class="toolbar_user col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
+                    <span ng-if="!auth.hasAuth('VIEW')">
+                        <a href="#" ng-click="auth.showLogin()">login</a>
                     </span>
 
-                    <span has-auth="view">
-                        <a href="#" ng-click="authService.logout()">logout</a>
+                    <span ng-if="auth.hasAuth('VIEW')">
+                        <a href="#" ng-click="auth.showProfile()" class="toolbar_user_link">
+                            <span class="username">{{auth.user.name}}</span>
+                            <img ng-src="{{auth.user.avatar || auth.user.email | gravatar:16}}" alt="{{auth.user.name}}" class="avatar">
+                        </a>
 
                         <span has-auth="admin">
                             <span class="sep">|</span>
-                            <a has-auth="!super" class="superuser off" href="#" ng-click="authService.toggleSU(true)">SU</a>
-                            <a has-auth="super" class="superuser on" href="#" ng-click="authService.toggleSU(false)">SU</a>
+
+                            <form name="superuserForm" ng-if="!auth.hasAuth('SUPER')">
+                                <input type="password" class="mini password" ng-model="superuserForm.auth">
+
+                                <button type="submit" class="link superuser off" ng-click="auth.toggleSU(superuserForm)">SU</button>
+                            </form>
+
+                            <a ng-if="auth.hasAuth('SUPER')" class="superuser on" href="#" ng-click="auth.toggleSU()">SU</a>
                         </span>
 
-                        <a href="#" ng-click="authService.showProfile()" class="img"><img ng-src="{{authService.user.avatar || authService.user.email | gravatar:16}}" alt="{{authService.user.username}}"></a>
+                        <span class="sep">|</span>
+
+                        <a href="#" ng-click="auth.logout()">logout</a>
                     </span>
                 </div>
             </div>

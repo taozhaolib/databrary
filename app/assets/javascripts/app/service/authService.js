@@ -154,9 +154,11 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		var enableSU = function () {
+		var enableSU = function (form) {
 			$http
-				.post('/api/user/superuser/on')
+				.post('/api/user/superuser/on', {
+					auth: form.auth
+				})
 				.success(function (data) {
 					updateUser(data);
 				})
@@ -176,11 +178,11 @@ define(['app/config/module'], function (module) {
 				});
 		};
 
-		authService.toggleSU = function (state) {
-			if ((angular.isDefined(state) && !state) || authService.isAuth('SUPER'))
-				disableSU();
+		authService.toggleSU = function (form) {
+			if (angular.isDefined(form))
+				enableSU(form);
 			else
-				enableSU();
+				disableSU();
 		};
 
 		//
