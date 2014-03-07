@@ -155,7 +155,7 @@ object Curated extends Ingest {
     def parse : ListParser[Asset] = for {
       name <- listHead(trimmed, "file name")
       pos <- listHead(option(offset), "offset")
-      classification <- listHead(enum(Classification, "classification").mapInput(_.toUpperCase), "classification")
+      classification <- listHead(classification, "classification")
       path <- listHead(trimmed.map { p =>
 	val f = Stage.file(p)
         if (!f.isFile) fail("file not found: " + p)
@@ -165,7 +165,7 @@ object Curated extends Ingest {
     def parseOpt : ListParser[Option[Asset]] = for {
       name <- listHead(option(trimmed), "file name")
       pos <- listHead(guard(name.isDefined, option(offset)), "offset")
-      classification <- listHead(guard(name.isDefined, enum(Classification, "classification").mapInput(_.toUpperCase)), "classification")
+      classification <- listHead(guard(name.isDefined, classification), "classification")
       path <- listHead(guard(name.isDefined, trimmed.map { p =>
 	val f = Stage.file(p)
         if (!f.isFile) fail("file not found: " + p)

@@ -20,10 +20,10 @@ private[store] sealed abstract class StoreDir(conf : String) {
 }
 
 object Stage extends StoreDir("store.stage") {
-  def file(s : String) : File = {
-    val f = new File(s)
+  def file(f : File) : File =
     if (f.isAbsolute) f else new File(base, f.getPath)
-  }
+  def file(s : String) : File =
+    file(new File(s))
   def path(f : File) : String =
     f.getPath.stripPrefix(base.getPath + '/')
 

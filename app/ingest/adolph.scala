@@ -181,8 +181,7 @@ object Adolph extends Ingest {
     val LAB, HOME, MUSEUM, CLASSROOM, OUTDOOR, CLINIC = Value
   }
 
-  private final case class Asset(name : String = "", path : String) extends ingest.Asset {
-    def classification : Classification.Value = Classification.IDENTIFIED
+  private final case class Asset(name : String = "", path : File, classification : Classification.Value) extends ingest.Asset {
     val info = {
       val f = Stage.file(path)
       if (!f.isFile)
@@ -200,9 +199,6 @@ object Adolph extends Ingest {
   }
 
   private object Asset {
-    def parse(name : String = "") : Parser[Asset] =
-      Parser[Asset](Asset(name, _))
-
     def positions(assets : Seq[Asset]) : Seq[Offset] =
       assets.scanLeft(Offset.ZERO)(_ + _.info.duration)
   }
@@ -210,7 +206,7 @@ object Adolph extends Ingest {
   private def recordMap(r : Record*) : Map[Int,Record] =
     Map(r.map(r => (r.category.id.unId, r)) : _*)
 
-  private final case class Session(name : String = "", date : Option[Date] = None, consent : Option[Consent.Value] = None, assets : Seq[Asset] = Nil, records : Map[Int,Record] = Map.empty) {
+  private final case class Session(name : String = "", date : Option[Date] = None, consent : Option[Consent.Value] = None, assetPath : Option[File] = None, assets : Seq[Asset] = Nil, records : Map[Int,Record] = Map.empty) {
     def withName(n : String) =
       if (name.nonEmpty && !name.equals(n))
 	fail("duplicate session name: " + n)
@@ -246,6 +242,8 @@ object Adolph extends Ingest {
 	fail("duplicate session record: " + r)
       copy(records = records.updated(i, r))
     }
+    def withAssetPath(p : File) =
+      copy(assetPath = Some(p))
     def withAsset(a : Asset) =
       copy(assets = assets :+ a)
 
@@ -312,6 +310,7 @@ object Adolph extends Ingest {
     private def record(c : RecordCategory, m : Parser[String], nullif : String = "") =
       ObjectParser.option[Session, Record](_.withRecord(_),
 	m.map(v => IdentRecord(c, measureMap(new MeasureV[String](Metric.Ident, v)))))
+    private val fileRegex = """FILE(?: \(([^a-zA-Z]*)\))?(?:: .*)?""".r
     private def parseHeader(name : String) : Parser[Session => Session] =
       name match {
 	case "SUBJECT ID" => participant(Participants.parseId)
@@ -323,8 +322,13 @@ object Adolph extends Ingest {
 	  (s, _) => s.withRecord(SingletonRecord(RecordCategory.Pilot)),
 	  only("pilot"), "not pilot")
 	case "EXCLUSION" => ObjectParser.option[Session, Exclusion](_.withRecord(_), Exclusion.parse, "not excluded")
-	case "FILE" => ObjectParser.option[Session, Asset](_.withAsset(_), Asset.parse())
-	case f if f.startsWith("FILE: ") => ObjectParser.option[Session, Asset](_.withAsset(_), Asset.parse(f.stripPrefix("FILE: ").trim))
+	case "PATH" => ObjectParser.map[Session, File](_.withAssetPath(_), file)
+	case fileRegex(cls, name) =>
+	  val c = Option(cls).fold(Classification.IDENTIFIED)(classification(_))
+	  val n = Option(name).map(_.trim)
+	  Parser[Session => Session] { f => s =>
+	    s.withAsset(Asset(n.getOrElse(""), s.assetPath.fold(new File(f))(new File(_, f)), c))
+	  }
 	case "SETTING" => location(Setting.measureParse)
 	case "COUNTRY" => location(measureParser(Metric.Country, trimmed), "US")
 	case "STATE" => location(measureParser(Metric.State, trimmed))
