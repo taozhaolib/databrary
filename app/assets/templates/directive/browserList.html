@@ -1,16 +1,7 @@
 <aside bindonce class="browser_list cf">
     <div class="browser_controller cf">
-        <a class="browser_tool expander"
-        ng-click="toggleExpand()"
-        ng-class="expanderClasses(data)"
-        ng-if="browser.canExpand(data)"></a>
-
         <a class="browser_tool filter"
         ng-click="setItemSelect(data)"></a>
-
-        <a class="browser_tool player"
-        ng-click="setItemPlayer(data)"
-        ng-if="data.items[0] && data.items[0].group == 'asset'"></a>
 
         <browser-filter ng-if="data.select"></browser-filter>
 

@@ -576,7 +576,6 @@ define(['app/config/module'], function (module) {
 				data.played = undefined;
 			}
 
-			console.log(group, browserService.groups, newData, data);
 			browserService.groups[group].push(newData);
 			data.items.push(newData);
 
@@ -929,7 +928,10 @@ define(['app/config/module'], function (module) {
 		browserService.setItemPlayer = function (data) {
 			var newPlayer, newPlayed;
 
-			if (data.group == 'asset') {
+			if (angular.isUndefined(data)) {
+				newPlayed = undefined;
+				newPlayer = undefined;
+			} else if (data.group == 'asset') {
 				newPlayed = data;
 				newPlayer = data.parent;
 			} else {
@@ -948,9 +950,10 @@ define(['app/config/module'], function (module) {
 
 				browserService.player = newPlayer;
 
-				browserService.player.player = true;
-
-				browserService.player.played = newPlayed;
+				if (angular.isDefined(browserService.player)){
+					browserService.player.player = true;
+					browserService.player.played = newPlayed;
+				}
 			} else if (browserService.player.played != newPlayed) {
 				browserService.player.played = newPlayed;
 			} else {

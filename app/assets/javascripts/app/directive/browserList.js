@@ -31,18 +31,6 @@ define(['app/config/module'], function (module) {
 				}
 			};
 
-			$scope.toggleExpand = function () {
-				$scope.data = $scope.browser.setItemExpand($scope.data);
-			};
-
-			$scope.expanderClasses = function (data) {
-				var classes = [];
-
-				classes.push(data.expand ? 'active' : '');
-
-				return classes;
-			};
-
 			$scope.itemClasses = function (data) {
 				var classes = [];
 

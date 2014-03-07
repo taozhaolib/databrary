@@ -14,6 +14,7 @@ define([
 	'app/directive/hasAuth',
 	'app/directive/carousel',
 	'app/directive/browserGroup',
+	'app/directive/browserIcon',
 	'app/directive/browserFilter',
 	'app/directive/browserPlayer',
 	'app/directive/browserList'

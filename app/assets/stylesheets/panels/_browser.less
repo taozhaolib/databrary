@@ -121,14 +121,6 @@
 		background-color: @g4;
 	}
 
-	&.expander {
-		background: url('/public/images/browser/tool-folder-closed.png') no-repeat 3px 4px;
-
-		&.active {
-			background-image: url('/public/images/browser/tool-folder-open.png');
-		}
-	}
-
 	&.filter {
 		background: url('/public/images/browser/tool-filter.png') no-repeat 4px 4px;
 	}
@@ -167,6 +159,14 @@
 		.margin-top(0);
 		.font-line(1.5);
 	}
+}
+
+.browser_player_close {
+	float: right;
+	.size(@b1);
+	.margin-left(@f4);
+	cursor: pointer;
+	background: url('/public/images/browser/tool-close.png') no-repeat 4px 4px;
 }
 
 //
@@ -222,7 +222,6 @@
 	}
 
 	h1 {
-		.padding-left(1.25);
 		.font-size(1.5);
 		.line-height(1.5);
 	}
@@ -232,6 +231,22 @@
 		.line-height(1.5);
 		.margin-left(@f2);
 		float: right;
+	}
+
+	.browser_icon {
+		width: @b1 * 1.25;
+		height: @b1 * 1.5;
+		float: left;
+
+		&:hover {
+			background: url('/public/images/browser/tool-folder-closed.png') no-repeat 4px 10px;
+		}
+
+		&.active {
+			&:hover {
+				background-image: url('/public/images/browser/tool-folder-open.png');
+			}
+		}
 	}
 
 	.item_meta {
@@ -284,7 +299,6 @@
 
 .browser_item_content {
 	.padding(0, @f4);
-	.margin-bottom(@f2);
 }
 
 //
@@ -292,7 +306,7 @@
 .browser_volume {
 	background-color: @c4g5m1;
 
-	h1 {
+	.browser_icon {
 		background: url('/public/images/browser/icon-volume.png') no-repeat 0 6px;
 	}
 }
@@ -302,7 +316,7 @@
 .browser_record {
 	@color: @c10;
 
-	h1 {
+	.browser_icon {
 		background: url('/public/images/browser/icon-record.png') no-repeat 0 6px;
 	}
 
@@ -343,7 +357,7 @@
 .browser_session {
 	background-color: @c0g5m1;
 
-	h1 {
+	.browser_icon {
 		background: url('/public/images/browser/icon-session.png') no-repeat 0 6px;
 	}
 }
@@ -385,7 +399,6 @@
 
 .browser_list {
 	background-color: @g5;
-	.padding-top(@f8);
 	.padding-left(0);
 	.border-radius(@b4 0 0 0);
 	.margin-bottom(2);
@@ -399,6 +412,7 @@
 	ul {
 		.margin(@f8, 0, 0, 0);
 		.padding-left(0);
+		.padding-top(@f8);
 	}
 
 	li {

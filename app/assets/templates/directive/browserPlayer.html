@@ -1,32 +1,34 @@
 <section class="browser_player">
-        <div ng-if="browser.player.played">
-            <h2>
-                <a class="link" ng-href="{{router.assetLink(browser.player.played.object, false)}}">{{browser.player.played.object.asset.name}}.{{browser.player.played.object.asset.format.extension}}</a>
-            </h2>
+    <div class="browser_player_close" ng-click="setItemPlayer(undefined)"></div>
 
-            <div ng-switch="getMimeGroup(browser.player.played.object)">
-                <div ng-switch-when="image">
-                    <img ng-src="{{router.assetLink(browser.player.played.object, true)}}" style="max-width: 100%;">
-                </div>
+    <div ng-if="browser.player.played">
+        <h2>
+            <a class="link" ng-href="{{router.assetLink(browser.player.played.object, false)}}">{{browser.player.played.object.asset.name}}.{{browser.player.played.object.asset.format.extension}}</a>
+        </h2>
 
-                <div ng-switch-when="video">
-                    <video controls style="max-width: 100%;">
-                        <source ng-src="{{router.assetLink(browser.player.played.object, true)}}"
-                                type="{{browser.player.played.object.format.mimetype || browser.player.played.object.asset.format.mimetype}}">
-                    </video>
-                </div>
+        <div ng-switch="getMimeGroup(browser.player.played.object)">
+            <div ng-switch-when="image">
+                <img ng-src="{{router.assetLink(browser.player.played.object, true)}}" style="max-width: 100%;">
+            </div>
 
-                <div ng-switch-when="html">
-                    <iframe ng-src="{{router.assetLink(browser.player.played.object, true)}}" style="max-width: 100%;"></iframe>
-                </div>
+            <div ng-switch-when="video">
+                <video controls style="max-width: 100%;">
+                    <source ng-src="{{router.assetLink(browser.player.played.object, true)}}"
+                            type="{{browser.player.played.object.format.mimetype || browser.player.played.object.asset.format.mimetype}}">
+                </video>
+            </div>
 
-                <div ng-switch-when="plain">
-                    <iframe ng-src="{{router.assetLink(browser.player.played.object, true)}}" style="max-width: 100%;"></iframe>
-                </div>
+            <div ng-switch-when="html">
+                <iframe ng-src="{{router.assetLink(browser.player.played.object, true)}}" style="max-width: 100%;"></iframe>
+            </div>
 
-                <div ng-switch-default>
+            <div ng-switch-when="plain">
+                <iframe ng-src="{{router.assetLink(browser.player.played.object, true)}}" style="max-width: 100%;"></iframe>
+            </div>
 
-                </div>
+            <div ng-switch-default>
+
             </div>
         </div>
+    </div>
 </section>
