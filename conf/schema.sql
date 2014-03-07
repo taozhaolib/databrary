@@ -120,9 +120,6 @@ COMMENT ON COLUMN "authorize"."direct" IS 'Permissions that child is granted dir
 
 SELECT audit.CREATE_TABLE ('authorize');
 
--- To allow normal users to inherit from nobody:
-INSERT INTO "authorize" ("child", "parent", "inherit", "authorized") VALUES (0, -1, 'ADMIN', '2013-1-1');
-
 CREATE MATERIALIZED VIEW "authorize_inherit" AS
 	WITH RECURSIVE aa AS (
 		SELECT * FROM authorize WHERE authorized IS NOT NULL
@@ -134,7 +131,8 @@ CREATE MATERIALIZED VIEW "authorize_inherit" AS
 			     ELSE 'NONE' END), NULL, GREATEST(a.authorized, aa.authorized), LEAST(a.expires, aa.expires)
 	          FROM aa JOIN authorize a ON aa.child = a.parent WHERE a.authorized IS NOT NULL
 	) SELECT * FROM aa
-	UNION ALL SELECT id, id, enum_last(NULL::permission), enum_last(NULL::permission), NULL, NULL FROM party WHERE id >= 0;
+	UNION ALL SELECT id, id, enum_last(NULL::permission), enum_last(NULL::permission), NULL, NULL FROM party WHERE id >= 0
+	UNION ALL SELECT id, -1, enum_last(NULL::permission), NULL, NULL, NULL FROM party WHERE id >= 0;
 COMMENT ON MATERIALIZED VIEW "authorize_inherit" IS 'Transitive inheritance closure of authorize.';
 CREATE INDEX ON "authorize_inherit" ("parent", "child");
 
