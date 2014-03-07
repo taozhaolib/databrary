@@ -29,11 +29,11 @@
         </div>
 
         <div class="item_main">
-            <dl class="flat_list cf" ng-repeat="(categoryID, records) in data.object.categories" ng-if="records[0] && data.volume.records[records[0].id].measures.ident">
-                <dt bo-html="formatSessionCategory(data, categoryID)"></dt>
+            <dl class="flat_list cf" ng-repeat="(categoryID, records) in data.object.categories">
+                <dt bo-html="formatSessionCategory(data, categoryID, records)" ng-class="{solo: !recordIdentifier(data.volume.records[records[0].id])}"></dt>
 
-                <dd ng-repeat="record in records">
-                    <span bo-html="data.volume.records[record.id].measures.ident"></span><span bo-if="record.age"> (</span><span bo-if="record.age" bo-html="formatAge(record.age)"></span><span bo-if="record.age">)</span>
+                <dd ng-repeat="record in records" ng-if="recordIdentifier(data.volume.records[record.id])">
+                    <span bo-html="recordIdentifier(data.volume.records[record.id])"></span><span bo-if="record.age"> (</span><span bo-if="record.age" bo-html="formatAge(record.age)"></span><span bo-if="record.age">)</span>
                 </dd>
             </dl>
         </div>

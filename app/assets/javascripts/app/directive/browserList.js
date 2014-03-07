@@ -82,26 +82,47 @@ define(['app/config/module'], function (module) {
 				return $filter('age')(age);
 			};
 
-			$scope.formatSessionCategory = function (data, categoryID) {
+			$scope.formatSessionCategory = function (data, categoryID, records) {
 				var category = $scope.constant.get('category', categoryID);
 
 				if (!category)
 					return 'Uncategorized';
 
-				switch (category.name) {
-					default:
-						return category.name.charAt(0).toUpperCase() + category.name.slice(1) + 's';
-				}
+				if (!records[1])
+					return category.name.charAt(0).toUpperCase() + category.name.slice(1);
+				else
+					switch (category.name) {
+						default:
+							return category.name.charAt(0).toUpperCase() + category.name.slice(1) + 's';
+					}
 			};
 
 			$scope.capitalize = function (input) {
 				return input.charAt(0).toUpperCase() + input.slice(1);
 			};
 
+			$scope.recordIdentifier = function (record) {
+				if (record.id != 0)
+					switch (record.category) {
+						case -700:
+							return record.measures.reason;
+
+						case -100:
+							return record.measures.setting;
+
+						case -400:
+						case -200:
+						case -500:
+							return record.measures.ident;
+					}
+
+				return undefined;
+			};
+
 			$scope.nameRecord = function (data) {
 				var category = $scope.constant.get('category', data.object.category),
 					name;
-				console.log(category.id);
+
 				if (data.object.id == 0) {
 					switch (category.id) {
 						case -800:
@@ -136,22 +157,10 @@ define(['app/config/module'], function (module) {
 					name = $scope.capitalize($scope.constant.get('category', data.object.category).name);
 				}
 
-				if (data.object.id != 0)
-					switch (category.id) {
-						case -700:
-							name += ': ' + data.object.measures.reason;
-							break;
+				var identifier = $scope.recordIdentifier(data.object);
 
-						case -100:
-							name += ': ' + data.object.measures.setting;
-							break;
-
-						case -400:
-						case -200:
-						case -500:
-							name += ': ' + data.object.measures.ident;
-							break;
-					}
+				if (identifier)
+					name += ': ' + identifier;
 
 				return name;
 			};

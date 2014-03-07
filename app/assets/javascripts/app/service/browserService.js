@@ -576,6 +576,7 @@ define(['app/config/module'], function (module) {
 				data.played = undefined;
 			}
 
+			console.log(group, browserService.groups, newData, data);
 			browserService.groups[group].push(newData);
 			data.items.push(newData);
 
