@@ -22,13 +22,13 @@ ng-click="setItemPlayer(data)">
             </footer>
 
             <header>
-                <h1 bo-if="data.object.asset.name">
-                    <span class="filetype"
-                    bo-if="data.object.format.extension || data.object.asset.format.extension">
-                        <img bo-src="'/public/images/filetypes/16px/' + (data.object.format.extension || data.object.asset.format.extension) + '.png'">
+                <h1>
+                    <span class="filetype">
+                        <img bo-src="'/public/images/filetypes/16px/' + (data.object.format ? data.object.format.extension : data.object.asset.format.extension) + '.png'">
                     </span>
 
-                    <span class="filename" bo-html="data.object.asset.name + '.' + data.object.asset.format.extension"></span>
+                    <span class="filename" bo-html="data.object.asset.name"></span>
+                    <span class="extension" bo-html="'.' + data.object.asset.format.extension"></span>
                 </h1>
             </header>
         </div>

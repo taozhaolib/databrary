@@ -448,6 +448,9 @@ define(['app/config/module'], function (module) {
 			angular.forEach(sessions, function (session) {
 				var categoryRecords = session.categories[groups[data.level + 1]];
 
+				if(session.top)
+					return;
+
 				if (angular.isDefined(categoryRecords)) {
 					angular.forEach(categoryRecords, function (record) {
 						if (!tempData[record.id])
