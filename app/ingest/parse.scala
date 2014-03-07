@@ -78,6 +78,8 @@ private[ingest] object Parse {
     if (b) p.map[Option[T]](Some(_))
     else const[Option[T]](None)
 
+  val file : Parser[java.io.File] = Parser(new java.io.File(_))
+
   private val dateFormat1 = time.format.DateTimeFormat.forPattern("yyyy-MM-dd")
   private val dateFormat2 = time.format.DateTimeFormat.forPattern("MM/dd/yy").withPivotYear((new time.LocalDate).getYear - 49)
   private def dateFormat(fmt : time.format.DateTimeFormatter) : Parser[Date] = Parser(s =>
@@ -105,6 +107,8 @@ private[ingest] object Parse {
 
   val consent : Parser[Consent.Value] =
     ENUM(Consent, "consent level")
+  val classification : Parser[Classification.Value] =
+    ENUM(Classification, "classification")
 
   val offset : Parser[dbrary.Offset] =
     Parser(dbrary.Offset.fromString(_)).failingOn(classOf[java.lang.NumberFormatException])
