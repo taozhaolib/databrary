@@ -135,7 +135,7 @@ define(['app/config/module'], function (module) {
 				} else {
 					name = $scope.capitalize($scope.constant.get('category', data.object.category).name);
 				}
-				
+
 				if (data.object.id != 0)
 					switch (category.id) {
 						case -700:

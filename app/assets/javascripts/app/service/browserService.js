@@ -448,7 +448,7 @@ define(['app/config/module'], function (module) {
 			angular.forEach(sessions, function (session) {
 				var categoryRecords = session.categories[groups[data.level + 1]];
 
-				if(session.top)
+				if (session.top)
 					return;
 
 				if (angular.isDefined(categoryRecords)) {
@@ -470,7 +470,7 @@ define(['app/config/module'], function (module) {
 				angular.forEach(tempData, function (newSessions, recordID) {
 					var newData;
 
-					if(volume.records[recordID])
+					if (volume.records[recordID])
 						newData = callbackItem(data, volume, newSessions, volume.records[recordID], groups[data.level + 1]);
 					else
 						newData = callbackItem(data, volume, newSessions, {
@@ -636,6 +636,22 @@ define(['app/config/module'], function (module) {
 		var recordGroupToggle = undefined;
 
 		browserService.setRecordGroupToggle = function (group) {
+			if (group == 'add') {
+				var c = 0, maybe;
+
+				angular.forEach(browserService.options.record.categories, function (recordGroup) {
+					if (!recordGroup.active) {
+						maybe = recordGroup;
+						c++;
+					}
+				});
+
+				if (c == 1) {
+					browserService.addRecordGroup(maybe);
+					return true;
+				}
+			}
+
 			recordGroupToggle = angular.isUndefined(recordGroupToggle) ? group : undefined;
 		};
 
@@ -670,15 +686,14 @@ define(['app/config/module'], function (module) {
 			return canAdd;
 		};
 
-		browserService.addRecordGroup = function () {
-			var go = true;
+		browserService.addRecordGroup = function (group) {
+			browserService.setRecordGroupToggle(undefined);
 
-			angular.forEach(browserService.options.record.categories, function (recordGroup) {
-				if (go && !recordGroup.active) {
-					recordGroup.active = true;
-					go = false;
-				}
-			});
+			var i = browserService.options.record.categories.index(group);
+
+			group.active = true;
+
+			browserService.options.record.categories.push(browserService.options.record.categories.splice(i, 1)[0]);
 
 			browserService.rebuildData();
 		};
