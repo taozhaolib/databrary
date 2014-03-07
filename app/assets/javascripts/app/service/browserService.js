@@ -364,6 +364,16 @@ define(['app/config/module'], function (module) {
 			return groups;
 		};
 
+		browserService.getActiveGroups = getActiveGroups;
+
+		browserService.getFilterGroups = function () {
+			var groups = getActiveGroups(), output = [];
+
+			angular.forEach(groups, function (group) {
+				output.push(browserService.groups[group]);
+			});
+		};
+
 		var getAllowedGroups = function () {
 			var groups = [];
 
@@ -774,8 +784,24 @@ define(['app/config/module'], function (module) {
 			}
 		};
 
-		browserService.getSorts = function (data) {
-			return getOption(data, true).sort;
+		var getOptionByGroup = function (group) {
+			switch (group) {
+				case 'asset':
+					return browserService.options.asset;
+
+				case 'session':
+					return browserService.options.session;
+
+				case 'volume':
+					return browserService.options.volume;
+
+				default:
+					return browserService.options.record.categories.find({id: group});
+			}
+		};
+
+		browserService.getSorts = function (group) {
+			return getOptionByGroup(group).sort;
 		};
 
 		var sortToggle = undefined;
@@ -788,10 +814,10 @@ define(['app/config/module'], function (module) {
 			return sortToggle == sort;
 		};
 
-		browserService.switchSort = function (data, sort, maybe) {
+		browserService.switchSort = function (group, sort, maybe) {
 			browserService.setSortToggle(undefined);
 
-			var option = getOption(data, true);
+			var option = getOptionByGroup(group);
 
 			var sort_i = option.sort.index(sort),
 				maybe_i = option.sort.index(maybe);
@@ -803,27 +829,27 @@ define(['app/config/module'], function (module) {
 
 			option.sort[sort_i] = option.sort.splice(maybe_i, 1, option.sort[sort_i])[0];
 
-			browserService.filterDataGroup(data.level);
+			browserService.filterDataGroup(getLevelByGroup(group));
 		};
 
 		browserService.canReverseSort = function () {
 			return true;
 		};
 
-		browserService.reverseSort = function (data, sort) {
+		browserService.reverseSort = function (group, sort) {
 			sort.order = !sort.order;
 
-			browserService.filterDataGroup(data.level);
+			browserService.filterDataGroup(getLevelByGroup(group));
 		};
 
 		browserService.canRemoveSort = function () {
 			return true;
 		};
 
-		browserService.removeSort = function (data, sort) {
+		browserService.removeSort = function (group, sort) {
 			sort.active = false;
 
-			var option = getOption(data, true);
+			var option = getOptionByGroup(group);
 
 			// move to end
 			var sort_i = option.sort.index(sort);
@@ -831,13 +857,13 @@ define(['app/config/module'], function (module) {
 			option.sort.splice(sort_i, 1);
 			option.sort.push(sort);
 
-			browserService.filterDataGroup(data.level);
+			browserService.filterDataGroup(getLevelByGroup(group));
 		};
 
-		browserService.canAddSort = function (data) {
+		browserService.canAddSort = function (group) {
 			var canAdd = false;
 
-			var option = getOption(data, true);
+			var option = getOptionByGroup(group);
 
 			angular.forEach(option.sort, function (sort) {
 				if (!canAdd && !sort.active)
@@ -847,10 +873,10 @@ define(['app/config/module'], function (module) {
 			return canAdd;
 		};
 
-		browserService.addSort = function (data) {
+		browserService.addSort = function (group) {
 			var go = true;
 
-			var option = getOption(data, true);
+			var option = getOptionByGroup(group);
 
 			angular.forEach(option.sort, function (sort) {
 				if (go && !sort.active) {
@@ -859,7 +885,11 @@ define(['app/config/module'], function (module) {
 				}
 			});
 
-			browserService.filterDataGroup(data.level);
+			browserService.filterDataGroup(getLevelByGroup(group));
+		};
+
+		var getLevelByGroup = function (group) {
+			return getActiveGroups().indexOf(group);
 		};
 
 		//

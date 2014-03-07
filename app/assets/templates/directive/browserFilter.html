@@ -1,35 +1,35 @@
 <section class="browser_filters">
     <div class="browser_widget browser_sort cf"
-            ng-if="browser.getSorts(data)">
+            ng-if="browser.getSorts(group)">
         <span class="browser_widget_title">
             Sort by
         </span>
 
         <span class="browser_widget_wrap"
-        ng-repeat="sort in browser.getSorts(data)|filter:{active: true}"
+        ng-repeat="sort in browser.getSorts(group)|filter:{active: true}"
         ng-class="sortClasses(sort)">
             <a class="browser_widget_pill left"
             ng-click="browser.setSortToggle(sort)">{{sort.name}}</a>
 
             <ul class="record_pill_options">
-                <li ng-repeat="maybe in browser.getSorts(data)">
-                    <a ng-click="browser.switchSort(data, sort, maybe)">{{maybe.name}}</a>
+                <li ng-repeat="maybe in browser.getSorts(group)">
+                    <a ng-click="browser.switchSort(group, sort, maybe)">{{maybe.name}}</a>
                 </li>
             </ul>
 
             <a class="browser_widget_pill middle reverse"
-            ng-click="browser.reverseSort(data, sort)"
+            ng-click="browser.reverseSort(group, sort)"
             ng-if="browser.canReverseSort()">{{sort.order ? 'ASC' : 'DESC'}}</a>
 
             <a class="browser_widget_pill right remove"
-            ng-click="browser.removeSort(data, sort)"
+            ng-click="browser.removeSort(group, sort)"
             ng-if="browser.canRemoveSort()">x</a>
         </span>
 
         <span class="browser_widget_wrap"
-        ng-if="browser.canAddSort(data)">
+        ng-if="browser.canAddSort(group)">
             <a class="browser_widget_pill add"
-            ng-click="browser.addSort(data)">+ sort</a>
+            ng-click="browser.addSort(group)">+ sort</a>
         </span>
     </div>
 

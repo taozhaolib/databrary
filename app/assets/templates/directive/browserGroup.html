@@ -32,7 +32,7 @@
           ng-class="{expanded: browser.isRecordGroupToggle('add')}"
           ng-if="browser.canAddRecordGroup()">
         <a class="browser_widget_pill add"
-           ng-click="browser.setRecordGroupToggle('add')">+ Group</a>
+           ng-click="browser.setRecordGroupToggle('add')">+ group</a>
 
         <ul class="record_pill_options">
             <li ng-repeat="maybe in browser.options.record.categories|filter:{active: false, allow: true}">

@@ -1,7 +1,7 @@
 <panel ng-controller="BrowserPanel" id="panel_browser" title="Browser" fold>
     <panel-mode name="view" active>
         <browser-group></browser-group>
-        <browser-filter></browser-filter>
+        <!--<browser-filter ng-repeat="group in browser.getActiveGroups()"></browser-filter>-->
 
         <browser-list data="browser.data"></browser-list>
     </panel-mode>
