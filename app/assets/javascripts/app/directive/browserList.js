@@ -99,10 +99,61 @@ define(['app/config/module'], function (module) {
 			};
 
 			$scope.nameRecord = function (data) {
-				if(data.object.id == 0)
-					return 'No '+$scope.constant.get('category', data.object.category).name;
+				var category = $scope.constant.get('category', data.object.category),
+					name;
+				console.log(category.id);
+				if (data.object.id == 0) {
+					switch (category.id) {
+						case -800:
+							name = 'Not pilot';
+							break;
 
-				return $scope.capitalize($scope.constant.get('category', data.object.category).name);
+						case -700:
+							name = 'Included';
+							break;
+
+						case -500:
+							name = 'No participants';
+							break;
+
+						case -400:
+							name = 'No conditions';
+							break;
+
+						case -200:
+							name = 'Not grouped';
+							break;
+
+						case -100:
+							name = 'No location';
+							break;
+
+						default:
+							name = 'No ' + category.name;
+							break;
+					}
+				} else {
+					name = $scope.capitalize($scope.constant.get('category', data.object.category).name);
+				}
+				
+				if (data.object.id != 0)
+					switch (category.id) {
+						case -700:
+							name += ': ' + data.object.measures.reason;
+							break;
+
+						case -100:
+							name += ': ' + data.object.measures.setting;
+							break;
+
+						case -400:
+						case -200:
+						case -500:
+							name += ': ' + data.object.measures.ident;
+							break;
+					}
+
+				return name;
 			};
 
 			//
