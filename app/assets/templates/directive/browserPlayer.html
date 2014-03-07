@@ -3,16 +3,16 @@
 
     <div ng-if="browser.player.played">
         <h2>
-            <a class="link" ng-href="{{router.assetLink(browser.player.played.object, false)}}">{{browser.player.played.object.asset.name}}.{{browser.player.played.object.asset.format.extension}}</a>
+            <a class="link" ng-href="{{router.assetLink(browser.player.played.object, false)}}">{{browser.player.played.object.asset.name || browser.player.played.object.format.name || browser.player.played.object.asset.format.name}}.{{browser.player.played.object.asset.format.extension}}</a>
         </h2>
 
         <div ng-switch="getMimeGroup(browser.player.played.object)">
             <div ng-switch-when="image">
-                <img ng-src="{{router.assetLink(browser.player.played.object, true)}}" style="max-width: 100%;">
+                <img ng-src="{{router.assetLink(browser.player.played.object, true)}}">
             </div>
 
             <div ng-switch-when="video">
-                <video controls style="max-width: 100%;">
+                <video controls>
                     <source ng-src="{{router.assetLink(browser.player.played.object, true)}}"
                             type="{{browser.player.played.object.format.mimetype || browser.player.played.object.asset.format.mimetype}}">
                 </video>

@@ -27,8 +27,7 @@ ng-click="setItemPlayer(data)">
                         <img bo-src="'/public/images/filetypes/16px/' + (data.object.format ? data.object.format.extension : data.object.asset.format.extension) + '.png'">
                     </span>
 
-                    <span class="filename" bo-html="data.object.asset.name"></span>
-                    <span class="extension" bo-html="'.' + data.object.asset.format.extension"></span>
+                    <span class="filename" bo-html="data.object.asset.name || data.object.format.name || data.object.asset.format.name + '.' + (data.object.format.extension || data.object.asset.format.extension)"></span>
                 </h1>
             </header>
         </div>

@@ -157,7 +157,14 @@
 	h2 {
 		font-weight: normal;
 		.margin-top(0);
-		.font-line(1.5);
+		.font-line(1);
+		.font-size(1);
+	}
+
+	img, video {
+		.margin-bottom(0);
+		width: 100%;
+		height: auto;
 	}
 }
 
@@ -383,7 +390,6 @@
 .browser_controller {
 	background-color: @g5;
 	.border-radius(@b4 0 0 @b4);
-	.padding(@f4, @f4, 0, @f4);
 
 	.browser_tool {
 		opacity: .1;
@@ -410,7 +416,6 @@
 	}
 
 	ul {
-		.margin(@f8, 0, 0, 0);
 		.padding-left(0);
 		.padding-top(@f8);
 	}
