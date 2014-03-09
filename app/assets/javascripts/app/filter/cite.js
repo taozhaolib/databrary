@@ -9,7 +9,7 @@ define(['app/config/module'], function (module) {
 			var names = [];
 
 			angular.forEach(volume.access, function (access) {
-				if (access.access < 4)
+				if (angular.isUndefined(access.access) || access.access < 4 /* FIXME: constant.find('permission', 'ADMIN').id */)
 					return;
 
 				var parts = access.party.name.split(' '),
