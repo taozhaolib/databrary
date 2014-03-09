@@ -310,7 +310,7 @@ object Adolph extends Ingest {
     private def record(c : RecordCategory, m : Parser[String], nullif : String = "") =
       ObjectParser.option[Session, Record](_.withRecord(_),
 	m.map(v => IdentRecord(c, measureMap(new MeasureV[String](Metric.Ident, v)))))
-    private val fileRegex = """FILE(?: \(([^a-zA-Z]*)\))?(?:: .*)?""".r
+    private val fileRegex = """FILE(?: \(([a-zA-Z]*)\))?(?:: (.*))?""".r
     private def parseHeader(name : String) : Parser[Session => Session] =
       name match {
 	case "SUBJECT ID" => participant(Participants.parseId)

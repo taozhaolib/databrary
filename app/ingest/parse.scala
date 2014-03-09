@@ -194,7 +194,7 @@ private[ingest] class Ingest {
     val INDIAN, ASIAN, PACIFIC, BLACK, WHITE, MULTIPLE = Value
   }
   protected object Ethnicity extends MetricENUM(Metric.Ethnicity) {
-    val NONHISPANIC, HISPANIC = Value
+    val NOT_HISPANIC_OR_LATINO, HISPANIC_OR_LATINO = Value
   }
   protected type RaceEthnicity = (Option[Race.Value], Option[Ethnicity.Value])
 }
