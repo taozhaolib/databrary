@@ -327,6 +327,7 @@ object Adolph extends Ingest {
 	  val c = Option(cls).fold(Classification.IDENTIFIED)(classification(_))
 	  val n = Option(name).map(_.trim)
 	  Parser[Session => Session] { f => s =>
+	    if (f.isEmpty) s else
 	    s.withAsset(Asset(n.getOrElse(""), s.assetPath.fold(new File(f))(new File(_, f)), c))
 	  }
 	case "SETTING" => location(Setting.measureParse)
