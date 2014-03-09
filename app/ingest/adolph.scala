@@ -125,7 +125,7 @@ object Adolph extends Ingest {
     private def measure[T](m : Parser[MeasureV[T]], nullif : String = "") : Parser[Participant => Participant] =
       ObjectParser.option[Participant,MeasureV[T]](_.withMeasure(_), m, nullif)
     val parseId = measure(measureParser(Metric.Ident, trimmed), null)
-    val parseSet = measure(measureParser(Metric.Info, trimmed), null)
+    val parseSet = measure(measureParser(Metric.Info, trimmed))
     private def parseHeader(name : String) : Parser[Participant => Participant] =
       name match {
 	case "SUBJECT ID" => parseId
