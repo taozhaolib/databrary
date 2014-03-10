@@ -53,9 +53,9 @@ object Audit extends Table[Audit[_]]("audit") {
     SQLTerms('audit_user -> site.identity.id, 'audit_ip -> site.clientIP, 'audit_action -> action)
 
   /** Record an audit event of the specified type to the generic audit table. */
-  def action(action : Action.Value)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult = {
-    val args = aargs(action)
-    SQL("INSERT INTO audit.audit", args.insert)(dbc, exc).apply(args)
+  def action(action : Action.Value, table : String = "audit", args : SQLTerms = SQLTerms())(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult = {
+    val a = aargs(action) ++ args
+    SQL("INSERT INTO audit." + table, a.insert)(dbc, exc).apply(a)
   }
 
   def actionFor(action : Action.Value, user : Party.Id, ip : Inet)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult = {

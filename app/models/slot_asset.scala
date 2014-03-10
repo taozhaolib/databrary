@@ -55,6 +55,9 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
     }
   }
 
+  final def auditDownload(implicit site : Site) : Future[Boolean] =
+    Audit.action(Audit.Action.open, "slot_asset", SQLTerms('container -> containerId, 'segment -> segment, 'asset -> assetId)).execute
+
   override def pageName = asset.pageName
   override def pageParent = Some(slot)
   override def pageURL = controllers.routes.SlotAssetHtml.view(containerId, slot.segment, assetId)
