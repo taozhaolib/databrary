@@ -31,6 +31,7 @@ define(['app/config/module'], function (module) {
 		//
 
 		$scope.partyAuth = [];
+		$scope.parental = undefined;
 
 		var getPartyAuth = function () {
 			PartyAuthorize.query(function (data) {
@@ -40,10 +41,12 @@ define(['app/config/module'], function (module) {
 
 		$scope.onModeAuthorize = function () {
 			getPartyAuth();
+			$scope.parental = true;
 		};
 
 		$scope.onModeApply = function () {
 			getPartyAuth();
+			$scope.parental = false;
 		};
 
 		//
@@ -59,6 +62,9 @@ define(['app/config/module'], function (module) {
 		//
 
 		$scope.openAuthParent = function (parent, form) {
+			if(parent.authorized)
+				return;
+
 //			$scope.resetAuthParent(parent);
 
 			$scope.currentAuthParent = parent;
@@ -82,11 +88,12 @@ define(['app/config/module'], function (module) {
 
 			//
 
-			var custom = undefined;
+			var custom = undefined,
+				presets = $scope.getPresets(child);
 
 			child.preset = undefined;
 
-			angular.forEach($scope.constant.data.preset, function (preset) {
+			angular.forEach(presets, function (preset) {
 				if (child.direct == preset.direct && child.inherit == preset.inherit)
 					$scope.setPreset(child, preset);
 
@@ -210,6 +217,20 @@ define(['app/config/module'], function (module) {
 		};
 
 		//
+
+		$scope.getPresets = function (other) {
+			if ($scope.parental === false) {
+				if (other.institution || other.id == 0)
+					return $scope.constant.data.preset.institution.slice(0, 2);
+				else
+					return $scope.constant.data.preset.individual.slice(0, 3);
+			} else {
+				if ($scope.party.institution || $scope.party.id == 0)
+					return $scope.constant.data.preset.institution;
+				else
+					return $scope.constant.data.preset.individual;
+			}
+		};
 
 		$scope.setPreset = function (child, preset) {
 			child.preset = preset;

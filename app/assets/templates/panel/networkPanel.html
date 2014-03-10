@@ -45,13 +45,17 @@
 
                         <div ng-hide="currentAuthParent == parent">
                             <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
+                                <div class="network-auth-heading">Databrary</div>
+                                <div class="network-auth-inherit" ng-bind-html="constant.data.permission[parent.inherit].inherit | possessive:party"></div>
+                            </div>
+
+                            <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="parent.institution && parent.direct !== 0">
                                 <div class="network-auth-heading" bo-html="'{0} Data' | possessive:party"></div>
                                 <div class="network-auth-direct" ng-bind-html="constant.data.permission[parent.direct].direct | possessive:party"></div>
                             </div>
 
-                            <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-                                <div class="network-auth-heading">Databrary</div>
-                                <div class="network-auth-inherit" ng-bind-html="constant.data.permission[parent.inherit].inherit | possessive:party"></div>
+                            <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="!parent.institution || parent.direct === 0">
+                                &nbsp;
                             </div>
 
                             <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
@@ -67,7 +71,7 @@
                                     <fieldset class="clean">
                                         <legend>Request <span bo-html="parent.party.name"></span> grant the following capabilities:</legend>
 
-                                        <div ng-repeat="preset in constant.data.preset">
+                                        <div ng-repeat="preset in getPresets(parent)">
                                             <input type="radio" name="shortcut" ng-checked="presetSelected(parent, preset)" ng-click="setPreset(parent, preset)">
                                             <label class="option" bo-html="preset.name"></label>
                                         </div>
@@ -134,7 +138,7 @@
                                     <fieldset class="clean">
                                         <legend>Grant <span bo-html="child.party.name"></span> the following capabilities:</legend>
 
-                                        <div ng-repeat="preset in constant.data.preset">
+                                        <div ng-repeat="preset in getPresets(child)">
                                             <input type="radio" name="shortcut" ng-checked="presetSelected(child, preset)" ng-click="setPreset(child, preset)">
                                             <label class="option" bo-html="preset.name"></label>
                                         </div>

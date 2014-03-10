@@ -31,7 +31,7 @@
                             <span class="sep">|</span>
 
                             <form name="superuserForm" ng-if="!auth.hasAuth('SUPER')">
-                                <input type="password" class="mini password" ng-model="superuserForm.auth">
+                                <input type="password" class="mini password" ng-model="superuserForm.auth" placeholder="Password">
 
                                 <button type="submit" class="link superuser off" ng-click="auth.toggleSU(superuserForm)">SU</button>
                             </form>
