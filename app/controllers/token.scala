@@ -16,22 +16,26 @@ object TokenController extends SiteController {
       routes.TokenController.password(accountId),
       views.html.token.password(_)) {
     val token = Field(Forms.text)
+    val auth = Field(Forms.text)
     val password = Field(PartyHtml.passwordMapping.verifying("error.required", _.isDefined)).fill(None)
     private[TokenController] def _fill(t : LoginToken) : this.type = {
       assert(accountId === t.accountId)
       assert(t.password)
       token.fill(t.id)
+      auth.fill(t.auth)
       this
     }
   }
 
-  def token(token : String) = SiteAction.async { implicit request =>
+  def token(token : String, auth : String) = SiteAction.async { implicit request =>
     models.LoginToken.get(token).flatMap(_.fold(
       ANotFound
     ) { token =>
       if (!token.valid) {
         token.remove
         macros.Async(Gone)
+      } else if (!auth.equals(token.auth)) {
+        throw ForbiddenException
       } else if (token.password)
 	new PasswordForm(token.accountId)._fill(token).Ok
       else {
@@ -44,7 +48,7 @@ object TokenController extends SiteController {
   def password(a : models.Account.Id) = SiteAction.async { implicit request =>
     val form = new PasswordForm(a)._bind
     models.LoginToken.get(form.token.get).flatMap(_
-      .filter(t => t.valid && t.password && t.accountId === a)
+      .filter(t => t.valid && form.auth.get.equals(t.auth) && t.password && t.accountId === a)
       .fold[Future[SimpleResult]](ForbiddenException.result) { token =>
 	form.password.get.fold(macros.Async(false))(p => token.account.change(password = Some(p))).flatMap { _ =>
 	  LoginController.login(token.account)

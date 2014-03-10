@@ -19,7 +19,7 @@ GET     /register                                                               
 POST    /register                                                                                 controllers.LoginHtml.register
 GET     /token/password                                                                           controllers.TokenController.getPassword
 POST    /token/password                                                                           controllers.TokenController.issuePassword
-GET     /token/:token                                                                             controllers.TokenController.token(token : String)
+GET     /token/:token                                                                             controllers.TokenController.token(token : String, auth : String)
 
 # parties
 GET     /party/create                                                                             controllers.PartyHtml.createNew()
