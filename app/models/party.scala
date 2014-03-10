@@ -128,14 +128,16 @@ final class Account protected (val party : Party, email_ : String, password_ : S
 
   /** Update the given values in the database and this object in-place. */
   def change(email : Option[String] = None, password : Option[String] = None, openid : Option[Option[String]] = None)(implicit site : Site) : Future[Boolean] = {
-    if (password.exists(!_.equals(_password)))
+    (if (password.exists(!_.equals(_password)))
       clearTokens(cast[AuthSite](site).map(_.token))
+    else Async(false)).flatMap { _ =>
     Audit.change("account", SQLTerms.flatten(email.map('email -> _), password.map('password -> _), openid.map('openid -> _)), SQLTerms('id -> id))
       .execute.andThen { case scala.util.Success(true) =>
         email.foreach(_email = _)
         password.foreach(_password = _)
         openid.foreach(_openid = _)
       }
+    }
   }
 
   /** List of comments by this individual.

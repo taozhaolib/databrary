@@ -9,7 +9,8 @@ import site._
 sealed abstract class Token protected (val id : Token.Id, val expires : Timestamp) extends TableRow {
   private[models] def sqlKey = SQLTerms('token -> id)
   def valid = expires.toDateTime.isAfterNow
-  def redeemURL = controllers.routes.TokenController.token(id)
+  def auth = play.api.libs.Crypto.sign(id)
+  def redeemURL = controllers.routes.TokenController.token(id, auth)
   def remove : Future[Boolean]
 }
 
