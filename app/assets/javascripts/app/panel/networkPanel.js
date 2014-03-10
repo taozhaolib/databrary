@@ -62,7 +62,7 @@ define(['app/config/module'], function (module) {
 		//
 
 		$scope.openAuthParent = function (parent, form) {
-			if(parent.authorized)
+			if (parent.authorized)
 				return;
 
 //			$scope.resetAuthParent(parent);
@@ -193,7 +193,7 @@ define(['app/config/module'], function (module) {
 			authChild.inherit = $scope.currentAuthChild.inherit;
 			authChild.expires = $scope.currentAuthChild.expiration;
 
-			if(!authChild.expires.match(/^\d{4}-\d{1,2}-\d{1,2}$/))
+			if (!authChild.expires.match(/^\d{4}-\d{1,2}-\d{1,2}$/))
 				authChild.expires = '';
 
 			var newVals = [authChild.direct, authChild.inherit, authChild.expires];
@@ -246,6 +246,31 @@ define(['app/config/module'], function (module) {
 				return 'checked';
 
 			return '';
+		};
+
+		//
+
+		$scope.searchParties = function (form) {
+			if (!form.name)
+				return form.found = [];
+
+			PartyAuthorize.search({
+				apply: !$scope.parental,
+				name: form.name
+			}, function (data) {
+				form.found = data;
+			});
+		};
+
+		$scope.selectFound = function (found) {
+			var request = {
+				party: found,
+				force: true,
+				inherit: 0,
+				direct: 0
+			};
+
+			$scope.partyAuth.parents[found.id] = request;
 		};
 	}]);
 });

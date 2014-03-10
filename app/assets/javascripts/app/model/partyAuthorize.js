@@ -7,7 +7,14 @@ define(['app/config/module'], function (module) {
 				return $route.current.params.id || undefined;
 			}
 		}, {
-			'query': {method: 'GET', isArray: false}
+			'query': {
+				method: 'GET',
+				isArray: false
+			},
+			'search': {
+				method: 'GET',
+				url: '/api/party/:id/authorize/search'
+			}
 		});
 	}]);
 });
