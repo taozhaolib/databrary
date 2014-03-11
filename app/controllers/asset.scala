@@ -129,7 +129,7 @@ object AssetHtml extends AssetController {
       val (file, fmt, fname) =
 	form.file.get.fold {
 	  /* local file handling, for admin only: */
-	  val file = new java.io.File(form.localfile.get.filter(_ => adm) getOrElse
+	  val file = store.Stage.file(form.localfile.get.filter(_ => adm) getOrElse
 	    form.file.withError("error.required")._throw)
 	  val name = file.getName
 	  if (!file.isFile)
