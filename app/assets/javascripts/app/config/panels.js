@@ -7,6 +7,7 @@ define([
 	'app/panel/publicationsPanel',
 	'app/panel/peoplePanel',
 	'app/panel/networkPanel',
+	'app/panel/registerPanel',
 	'app/panel/tagsPanel',
 	'app/panel/commentsPanel',
 	'app/panel/playerPanel',

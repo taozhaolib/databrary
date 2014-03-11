@@ -16,6 +16,16 @@ define(['app/config/module'], function (module) {
 
 		//
 
+		var registerView = {
+			controller: 'RegisterView',
+			templateUrl: 'registerView.html',
+			reloadOnSearch: false
+		};
+
+		$routeProvider.when('/register', registerView);
+
+		//
+
 		var searchView = {
 			controller: 'SearchView',
 			templateUrl: 'searchView.html',
