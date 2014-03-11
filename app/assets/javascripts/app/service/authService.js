@@ -60,7 +60,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		var parseUserAuth = function (object) {
-			if (angular.isUndefined(authService.user))
+			if (angular.isUndefined(authService.user) || authService.user.id == -1)
 				return -1;
 
 			if (angular.isDate(authService.user.superuser) && authService.user.superuser > new Date())
