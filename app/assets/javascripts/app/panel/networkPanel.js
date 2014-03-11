@@ -55,29 +55,26 @@ define(['app/config/module'], function (module) {
 
 		$scope.currentAuthParent = undefined;
 		$scope.currentAuthChild = undefined;
-
-		$scope.currentAuthForm = undefined;
 		$scope.currentAuthFormWatch = undefined;
 
 		//
 
-		$scope.openAuthParent = function (parent, form) {
-			if (parent.authorized)
+		$scope.openAuthParent = function (parent) {
+			if (!parent.force)
 				return;
 
 			$scope.currentAuthParent = parent;
-			$scope.currentAuthForm = form;
 		};
 
 		$scope.closeAuthParent = function () {
-			if($scope.currentAuthParent.force)
+			if ($scope.currentAuthParent.force)
 				delete $scope.partyAuth.parents[$scope.currentAuthParent.party.id];
 
 			$scope.currentAuthParent = undefined;
-			$scope.currentAuthForm = undefined;
 		};
 
-		$scope.saveAuthParent = function () { console.log(true);
+		$scope.saveAuthParent = function () {
+			console.log(true);
 			if (angular.isUndefined($scope.currentAuthParent))
 				return false;
 
@@ -90,24 +87,14 @@ define(['app/config/module'], function (module) {
 				id: $scope.party.id,
 				partyId: $scope.currentAuthParent.party.id
 			}, function (data) {
+				delete $scope.currentAuthParent['force'];
 				$scope.closeAuthParent();
-			}, function () {
-				console.log(arguments);
 			});
-
-			return true;
 		};
 
 		//
 
-		$scope.openAuthChild = function (child, form) {
-			$scope.resetAuthChild(child);
-
-			$scope.currentAuthChild = child;
-			$scope.currentAuthForm = form;
-
-			//
-
+		$scope.clarifyPreset = function (child) {
 			var custom = undefined,
 				presets = $scope.getPresets(child);
 
@@ -123,8 +110,16 @@ define(['app/config/module'], function (module) {
 
 			if (angular.isUndefined(child.preset))
 				$scope.setPreset(child, custom);
+		};
+
+		$scope.openAuthChild = function (child) {
+			$scope.resetAuthChild(child);
+
+			$scope.currentAuthChild = child;
 
 			//
+
+			$scope.clarifyPreset(child);
 
 			if (child.expires)
 				child.expiration = $filter('date')(new Date(child.expires), 'yyyy-MM-dd');
@@ -135,8 +130,10 @@ define(['app/config/module'], function (module) {
 		$scope.closeAuthChild = function () {
 			$scope.resetAuthChild();
 
+			if ($scope.currentAuthChild.force)
+				delete $scope.partyAuth.children[$scope.currentAuthChild.party.id];
+
 			$scope.currentAuthChild = undefined;
-			$scope.currentAuthForm = undefined;
 		};
 
 		$scope.resetAuthChild = function (child) {
@@ -282,16 +279,26 @@ define(['app/config/module'], function (module) {
 			});
 		};
 
-		$scope.selectFound = function (found) {
+		$scope.selectFound = function (found, form, child) {
 			var request = {
 				party: found,
 				force: true,
+				id: found.id,
 				inherit: 0,
 				direct: 0
 			};
 
-			$scope.partyAuth.parents[found.id] = request;
-			$scope.currentAuthParent = request;
+			form.name = '';
+			$scope.searchParties(form);
+
+			if (child) {
+				$scope.partyAuth.children[found.id] = request;
+				$scope.openAuthChild(request);
+				$scope.currentAuthChild = request;
+			} else {
+				$scope.partyAuth.parents[found.id] = request;
+				$scope.currentAuthParent = request;
+			}
 		};
 	}]);
 });
