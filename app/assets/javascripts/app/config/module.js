@@ -68,17 +68,18 @@ define([
 		}]);
 	}]);
 
-	module.run(['$window', '$rootScope', '$location', '$log', 'RouterService', 'BrowserService', 'ConstantService', 'AuthService', function ($window, $rootScope, $location, $log, router, browser, constant, auth) {
+	module.run(['$window', '$rootScope', '$location', '$log', 'RouterService', 'BrowserService', 'ConstantService', 'AuthService', 'TypeService', function ($window, $rootScope, $location, $log, router, browser, constant, auth, type) {
 		// $rootScope specials
 		$rootScope.$log = $log;
 		$rootScope.router = router;
 		$rootScope.browser = browser;
 		$rootScope.constant = constant;
 		$rootScope.auth = auth;
+		$rootScope.type = type;
 
 		// play->angular redirects
 		if (angular.isDefined($window.$play) && $window.$play.redirect) {
-			switch (browser.getItemType($window.$play.object)) {
+			switch (type.getType($window.$play.object)) {
 				case 'session':
 					$location.url('/volume/' + $window.$play.object.volume + '?session_limit=' + $window.$play.object.id);
 					break;

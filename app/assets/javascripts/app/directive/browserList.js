@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.directive('browserList', ['BrowserService', '$filter', 'ConstantService', 'RouterService', function (browserService, $filter, constantService, routerService) {
+	module.directive('browserList', ['BrowserService', '$filter', 'ConstantService', 'RouterService', 'TypeService', function (browserService, $filter, constantService, routerService, typeService) {
 		var link = function ($scope, $element, $attrs) {
 			if (!$scope.browser)
 				$scope.browser = browserService;
@@ -11,6 +11,9 @@ define(['app/config/module'], function (module) {
 
 			if (!$scope.constant)
 				$scope.constant = constantService;
+
+			if (!$scope.type)
+				$scope.type = typeService;
 
 			$scope.getInclude = function () {
 				if (!$scope.data.items[0])
@@ -53,7 +56,7 @@ define(['app/config/module'], function (module) {
 			//
 
 			$scope.getName = function (data) {
-				switch ($scope.browser.getItemType(data.object)) {
+				switch ($scope.type.getType(data.object)) {
 					case 'volume':
 						return data.object.name;
 
@@ -156,7 +159,7 @@ define(['app/config/module'], function (module) {
 			//
 
 			$scope.editLink = function (data) {
-				switch ($scope.browser.getItemType(data.object)) {
+				switch ($scope.type.getType(data.object)) {
 					case 'volume':
 						return $scope.router.volumeEdit(data.object);
 

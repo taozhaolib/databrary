@@ -8,7 +8,7 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		routerService.makeUrl = function (url, params) {
+		routerService.makeUrl = function (url, params, stripQuery) {
 			if (!params) return url;
 
 			if (!angular.isObject(params) || angular.isArray(params))
@@ -38,7 +38,7 @@ define(['app/config/module'], function (module) {
 				});
 			});
 
-			if (parts.length > 0)
+			if (stripQuery !== false && parts.length > 0)
 				url += ((url.indexOf('?') == -1) ? '?' : '&');
 
 			return url + parts.join('&');
@@ -47,8 +47,8 @@ define(['app/config/module'], function (module) {
 		//
 
 		var makeRoute = function (route) {
-			return function (params) {
-				return routerService.makeUrl(route, params);
+			return function (params, stripQuery) {
+				return routerService.makeUrl(route, params, stripQuery);
 			};
 		};
 
@@ -66,7 +66,7 @@ define(['app/config/module'], function (module) {
 		//
 
 		routerService.record = function (data) {
-			if (!$rootScope.browser.isRecord(data))
+			if (!$rootScope.type.isRecord(data))
 				throw new Error('routerService.record() requires Record as first parameter');
 
 			data = {
@@ -77,7 +77,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		routerService.slot = function (data) {
-			if (!$rootScope.browser.isSession(data))
+			if (!$rootScope.type.isSession(data))
 				throw new Error('routerService.slot() requires Slot as first parameter');
 
 			data = {
@@ -89,7 +89,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		routerService.volumeThumb = function (data) {
-			if (!$rootScope.browser.isVolume(data))
+			if (!$rootScope.type.isVolume(data))
 				throw new Error('routerService.volumeThumb() requires Volume as first parameter');
 
 			data = {
@@ -100,7 +100,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		routerService.slotThumb = function (data) {
-			if (!$rootScope.browser.isSession(data))
+			if (!$rootScope.type.isSession(data))
 				throw new Error('routerService.slotThumb() requires Slot as first parameter');
 
 			data = {
@@ -112,7 +112,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		routerService.assetLink = function (data, inline) {
-			if (!$rootScope.browser.isAsset(data))
+			if (!$rootScope.type.isAsset(data))
 				throw new Error('routerService.assetLink() requires Asset as first parameter');
 
 			data = {
@@ -127,7 +127,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		routerService.partyAvatar = function (data, size) {
-			if (!$rootScope.browser.isParty(data))
+			if (!$rootScope.type.isParty(data))
 				throw new Error('routerService.partyAvatar() requires Party as first parameter');
 
 			data = {
@@ -148,7 +148,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		routerService.slotEdit = function (data) {
-			if (!$rootScope.browser.isSession(data))
+			if (!$rootScope.type.isSession(data))
 				throw new Error('routerService.slotEdit() requires Slot as first parameter');
 
 			data = {
@@ -160,7 +160,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		routerService.assetEdit = function (data) {
-			if (!$rootScope.browser.isAsset(data))
+			if (!$rootScope.type.isAsset(data))
 				throw new Error('routerService.assetEdit() requires Asset as first parameter');
 
 			data = {
@@ -171,7 +171,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		routerService.recordEdit = function (data) {
-			if (!$rootScope.browser.isRecord(data))
+			if (!$rootScope.type.isRecord(data))
 				throw new Error('routerService.recordEdit() requires Record as first parameter');
 
 			data = {
@@ -182,7 +182,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		routerService.volumeEdit = function (data) {
-			if (!$rootScope.browser.isVolume(data))
+			if (!$rootScope.type.isVolume(data))
 				throw new Error('routerService.volumeEdit() requires Volume as first parameter');
 
 			data = {
@@ -193,7 +193,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		routerService.volumeAccess = function (data) {
-			if (!$rootScope.browser.isVolume(data))
+			if (!$rootScope.type.isVolume(data))
 				throw new Error('routerService.volumeAccess() requires Volume as first parameter');
 
 			data = {
@@ -204,7 +204,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		routerService.partyEdit = function (data) {
-			if (!$rootScope.browser.isParty(data))
+			if (!$rootScope.type.isParty(data))
 				throw new Error('routerService.partyEdit() requires Party as first parameter');
 
 			data = {
@@ -215,7 +215,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		routerService.partyAuthorize = function (data) {
-			if (!$rootScope.browser.isParty(data))
+			if (!$rootScope.type.isParty(data))
 				throw new Error('routerService.partyAuthorize() requires Party as first parameter');
 
 			data = {

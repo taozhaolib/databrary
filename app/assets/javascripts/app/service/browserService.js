@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.factory('BrowserService', ['$rootScope', 'ArrayHelper', 'AuthService', 'Slot', function ($rootScope, arrayHelper, authService, Slot) {
+	module.factory('BrowserService', ['$rootScope', 'ArrayHelper', 'AuthService', 'Slot', 'TypeService', function ($rootScope, arrayHelper, authService, Slot, typeService) {
 		var browserService = {};
 
 		//
@@ -602,45 +602,6 @@ define(['app/config/module'], function (module) {
 			return browserService.options.record.categories.index({id: type + ''}) > -1;
 		};
 
-		browserService.getItemType = function (object) {
-			if (!angular.isObject(object))
-				return undefined;
-
-			if (browserService.isRecord(object))
-				return 'record';
-
-			if (browserService.isVolume(object))
-				return 'volume';
-
-			if (browserService.isAsset(object))
-				return 'asset';
-
-			if (browserService.isParty(object))
-				return 'party';
-
-			return 'session';
-		};
-
-		browserService.isAsset = function (object) {
-			return angular.isObject(object) && object.asset;
-		};
-
-		browserService.isVolume = function (object) {
-			return angular.isObject(object) && object.body;
-		};
-
-		browserService.isRecord = function (object) {
-			return angular.isObject(object) && object.measures;
-		};
-
-		browserService.isParty = function (object) {
-			return angular.isObject(object) && object.avatar;
-		};
-
-		browserService.isSession = function (object) {
-			return angular.isObject(object) && !object.body && !object.measures && !object.avatar;
-		};
-
 		//
 
 		var recordGroupToggle = undefined;
@@ -895,7 +856,7 @@ define(['app/config/module'], function (module) {
 		//
 
 		browserService.getObjectPermission = function (object) {
-			var type = browserService.getItemType(object),
+			var type = typeService.getType(object),
 				permission = undefined;
 
 			angular.forEach(raw, function (volume) {
