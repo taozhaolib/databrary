@@ -100,11 +100,12 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   private sealed abstract class SlotAssetTable(table : String) extends SlotTable(table) {
     protected def isExcerpt : Boolean
+    protected def segmentColumn : String = "segment"
     final def assetRow(slot : Selector[Slot], asset : Selector[Volume => Asset] = Asset.columns) : Selector[SlotAsset] =
-      slot
+      (slot ~ SelectColumn[Segment](segmentColumn))
       .join(asset, table + ".asset = asset.id")
-      .map { case (slot, asset) =>
-	SlotAsset.make(asset(slot.volume), slot.segment, slot, if (isExcerpt) Some(slot.segment) else None)
+      .map { case ((slot, segment), asset) =>
+	SlotAsset.make(asset(slot.volume), segment, slot, if (isExcerpt) Some(slot.segment) else None)
       }
     final def assetRowVolume(volume : Volume, asset : Selector[Volume => Asset] = Asset.columns) =
       assetRow(rowVolume(Volume.fixed(volume)), asset)
@@ -134,9 +135,10 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   private object Excerpt extends SlotAssetTable("excerpt") {
     protected def isExcerpt = true
+    override protected def segmentColumn : String = "asset_segment"
     protected override def columnsContext =
       super.columnsContext from
-	"(SELECT container, excerpt.segment, asset FROM slot_asset JOIN " + table + " USING (asset)) AS " + table
+	"(SELECT container, excerpt.segment, asset, slot_asset.segment AS asset_segment FROM slot_asset JOIN " + table + " USING (asset)) AS " + table
   }
 
   private def row(slot : Selector[Slot], asset : Selector[Volume => Asset] = Asset.columns, slot_table : String = "slot") : Selector[SlotAsset] =
