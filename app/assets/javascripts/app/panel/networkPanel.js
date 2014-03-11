@@ -65,17 +65,37 @@ define(['app/config/module'], function (module) {
 			if (parent.authorized)
 				return;
 
-//			$scope.resetAuthParent(parent);
-
 			$scope.currentAuthParent = parent;
 			$scope.currentAuthForm = form;
 		};
 
 		$scope.closeAuthParent = function () {
-//			$scope.resetAuthParent();
+			if($scope.currentAuthParent.force)
+				delete $scope.partyAuth.parents[$scope.currentAuthParent.party.id];
 
-			$scope.currentAuthChild = undefined;
+			$scope.currentAuthParent = undefined;
 			$scope.currentAuthForm = undefined;
+		};
+
+		$scope.saveAuthParent = function () { console.log(true);
+			if (angular.isUndefined($scope.currentAuthParent))
+				return false;
+
+			var authParent = new PartyAuthorize();
+
+			authParent.direct = $scope.currentAuthParent.direct;
+			authParent.inherit = $scope.currentAuthParent.inherit;
+
+			authParent.$apply({
+				id: $scope.party.id,
+				partyId: $scope.currentAuthParent.party.id
+			}, function (data) {
+				$scope.closeAuthParent();
+			}, function () {
+				console.log(arguments);
+			});
+
+			return true;
 		};
 
 		//
@@ -271,6 +291,7 @@ define(['app/config/module'], function (module) {
 			};
 
 			$scope.partyAuth.parents[found.id] = request;
+			$scope.currentAuthParent = request;
 		};
 	}]);
 });

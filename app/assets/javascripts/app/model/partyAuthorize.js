@@ -14,6 +14,10 @@ define(['app/config/module'], function (module) {
 			'search': {
 				method: 'GET',
 				url: '/api/party/:id/authorize/search'
+			},
+			'apply': {
+				method: 'POST',
+				url: '/api/party/:id/authorize/:partyId/apply'
 			}
 		});
 	}]);
