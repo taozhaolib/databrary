@@ -7,9 +7,30 @@ define(['app/config/module'], function (module) {
 				$scope.steps = [];
 				$scope.stepsList = {};
 
+				$scope.currentStep = undefined;
+
 				$scope.addStep = function (step) {
 					$scope.steps.push(step);
 					$scope.stepsList[step.id] = step;
+
+					$scope.currentStep = step;
+				};
+
+				$scope.activateStep = function (step) {
+					angular.forEach($scope.steps, function (thisStep) {
+						thisStep.active = thisStep == step;
+					});
+				};
+
+				//
+
+				$scope.getListItemClasses = function (step) {
+					var classes = [];
+
+					if(step.active)
+						classes.push('active');
+
+					return classes;
 				};
 
 				//

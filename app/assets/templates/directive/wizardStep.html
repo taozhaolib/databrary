@@ -1,9 +1,11 @@
 <div bindonce="name" class="wizard_step">
-    <header class="wizard_step_header">
-        <h2 bo-html="name"></h2>
-    </header>
+    <div ng-if="active">
+        <header class="wizard_step_header">
+            <h2 bo-html="name"></h2>
+        </header>
 
-    <div wizard-step-body class="wizard_step_body">
+        <div wizard-step-body class="wizard_step_body">
 
+        </div>
     </div>
 </div>

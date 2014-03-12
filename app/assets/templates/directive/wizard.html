@@ -1,9 +1,10 @@
 <div class="wizard" ng-class="getPanelClasses()">
     <div class="row">
         <div class="wizard_list col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-2 col-cell">
-            <ul>
-                <li ng-repeat="step in getSteps()">
-
+            <ul class="flat">
+                <li ng-repeat="step in steps" ng-class="getListItemClasses(step)" ng-click="activateStep(step)">
+                    <strong class="wizard_list_name">{{step.name}}</strong>
+                    <p class="wizard_list_description">{{step.description}}</p>
                 </li>
             </ul>
         </div>
