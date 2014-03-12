@@ -6,35 +6,40 @@
             </hgroup>
 
             <div class="col-full">
-                <wizard retrieve="retrieveWizard">
+                <wizard retrieve="retrieveWizard" linear>
                     <wizard-step id="register_create"
                         name="Create Account"
-                        description="">
+                        description="Register to browse shared data and comment on datasets.">
                     </wizard-step>
 
                     <wizard-step id="register_agreement"
                         name="Sign Agreement"
-                        description="">
+                        description="Learn about the responsibilities of all Databrary members.">
+                    </wizard-step>
+
+                    <wizard-step id="register_email"
+                        name="Confirm Email"
+                        description="Confirm your email address to continue.">
                     </wizard-step>
 
                     <wizard-step id="register_password"
                         name="Set Password"
-                        description="">
+                        description="Confirm your email address and select a password.">
                     </wizard-step>
 
                     <wizard-step id="register_agent"
                         name="Find Authorizing Agent"
-                        description="">
+                        description="Select a party to petition for advanced Databrary use.">
                     </wizard-step>
 
                     <wizard-step id="register_request"
                         name="Request Authorization"
-                        description="">
+                        description="Request authorization from selected party.">
                     </wizard-step>
 
                     <wizard-step id="register_pending"
                         name="Stay Tuned"
-                        description="">
+                        description="Tips for exploring Databrary.">
                     </wizard-step>
                 </wizard>
             </div>

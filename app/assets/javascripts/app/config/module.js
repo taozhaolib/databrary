@@ -103,7 +103,7 @@ define([
 
 	module.run(['$rootScope', function ($rootScope) {
 		$rootScope.$on('$routeChangeError', function ($event, next, current, rejection) {
-			if ($rootScope.auth.user.id == -1 && (!current || current.$$route.controller != 'LoginView'))
+			if ($rootScope.auth.user.id == -1 && (!current || current.$$route.controller != 'LoginView') || current.$$route.controller != 'RegisterView')
 				$rootScope.auth.tryLogin(next, current);
 		});
 	}]);

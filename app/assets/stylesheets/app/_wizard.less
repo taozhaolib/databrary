@@ -1,7 +1,6 @@
 // STYLES
 
 .wizard {
-
 }
 
 //
@@ -25,7 +24,6 @@
 		.border-radius(@b4 0 0 @b4);
 		.margin-bottom(@f8);
 		.margin-left(@f2);
-		.font-size(0.9);
 		cursor: pointer;
 
 		&.active {
@@ -33,23 +31,57 @@
 			.padding-right(@f1);
 			margin-right: -1px;
 		}
+
+		&:hover {
+			.margin-left(0);
+			.padding-right(@f1);
+
+			.wizard_list_name {
+				text-decoration: underline;
+			}
+		}
+
+		&.incomplete {
+			background-color: @c8g5m1;
+		}
+
+		&.blocked {
+			background-color: mix(@g4, @g5, 50%);
+
+			&:hover {
+				.margin-left(@f2);
+				.padding-right(@f2);
+
+				.wizard_list_name {
+					text-decoration: none;
+				}
+			}
+		}
+
+		&.complete {
+			background-color: @c0g5m1;
+		}
 	}
 }
 
+.wizard_list_name {
+	.font-size(0.9);
+}
+
 .wizard_list_description {
-	.margin-bottom(0);
+	.margin-bottom(@f6);
+	text-align: left;
+	.font(.75, .75);
 }
 
 //
 
 .wizard_steps {
-
 }
 
 //
 
 .wizard_step {
-
 }
 
 .wizard_step_header {

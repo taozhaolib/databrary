@@ -18,7 +18,9 @@
 
                 <div class="toolbar_user col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
                     <span ng-if="!auth.hasAuth('NONE')">
-                        <a href="#" ng-click="auth.showLogin()">login</a>
+                        <a ng-href="{{router.login()}}">login</a>
+                            <span class="sep">|</span>
+                        <a ng-href="{{router.register()}}">register</a>
                     </span>
 
                     <span ng-if="auth.hasAuth('NONE')">

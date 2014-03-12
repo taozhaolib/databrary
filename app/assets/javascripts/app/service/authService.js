@@ -102,10 +102,6 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		authService.showLogin = function () {
-			$location.path('/login');
-		};
-
 		authService.login = function (data) {
 			data = angular.extend({
 				email: '',
@@ -133,7 +129,7 @@ define(['app/config/module'], function (module) {
 				.post('/api/user/logout')
 				.success(function (data) {
 					updateUser(data);
-					authService.showLogin();
+					$location.url('/login');
 				})
 				.error(function () {
 					$location.path('/');
@@ -150,6 +146,10 @@ define(['app/config/module'], function (module) {
 			authService.next = $location.url();
 
 			$location.url('/login');
+		};
+
+		authService.isLoggedIn = function () {
+			return angular.isDefined(authService.user) && authService.user.id != -1;
 		};
 
 		//
