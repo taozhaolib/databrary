@@ -14,9 +14,9 @@ define(['app/config/module'], function (module) {
 			affiliation: undefined,
 			agreement: false
 		};
-		$scope.password = true; // TODO: pull this from $http
-		$scope.passwordSubmit = true;
-		$scope.authParty = true;
+		$scope.password = false; // TODO: pull this from $http
+		$scope.passwordSubmit = false;
+		$scope.authParty = undefined;
 		$scope.requestSubmit = false;
 
 		$scope.retrieveWizard = function (wizard) {
