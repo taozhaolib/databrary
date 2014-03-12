@@ -4,18 +4,20 @@ define(['app/config/module'], function (module) {
 	module.directive('wizardStep', [function () {
 		var compile = function ($element, $attrs, transclude) {
 			return function ($scope, $element, $attrs) {
-				transclude($scope, function ($clone) { console.log($element, $clone);
-					$element.append($clone);
+				$scope.name = $attrs.name;
+
+				transclude($scope, function ($clone) {
+					$element.find('[wizard-step-body]').append($clone);
 				});
 
-				$scope.func = function () {};
+				$scope.addStep($scope);
 			};
 		};
 
 		return {
 			restrict: 'E',
 			templateUrl: 'wizardStep.html',
-			scope: false,
+			scope: true,
 			transclude: true,
 			replace: true,
 			compile: compile

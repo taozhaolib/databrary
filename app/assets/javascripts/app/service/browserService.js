@@ -885,8 +885,8 @@ define(['app/config/module'], function (module) {
 			return permission;
 		};
 
-		browserService.hasAccess = function (object, level) {
-			return object >= level || authService.hasAuth('SUPER');
+		browserService.hasAccess = function (data, level) {
+			return data.permission >= level || authService.hasAuth('SUPER');
 		};
 
 		//
