@@ -10,6 +10,19 @@
                     <wizard-step id="register_create"
                         name="Create Account"
                         description="Register to browse shared data and comment on datasets.">
+                        <form name="registerForm">
+                            <label for="field_name">Name</label>
+                            <input id="field_name" type="text" ng-model="registerForm.name">
+
+                            <label for="field_email">Email</label>
+                            <input id="field_email" type="text" ng-model="registerForm.email">
+
+                            <label for="field_affiliation">Affiliation</label>
+                            <input id="field_affiliation" type="text" ng-model="registerForm.affiliation">
+
+                            <button class="third" type="submit">Submit</button>
+                            <button class="first" type="reset">Reset</button>
+                        </form>
                     </wizard-step>
 
                     <wizard-step id="register_agreement"
