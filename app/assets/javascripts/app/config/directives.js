@@ -15,6 +15,8 @@ define([
 	'app/directive/carousel',
 	'app/directive/browserGroup',
 	'app/directive/browserIcon',
+	'app/directive/wizard',
+	'app/directive/wizardStep',
 	'app/directive/browserFilter',
 	'app/directive/browserPlayer',
 	'app/directive/browserList'
