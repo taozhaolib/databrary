@@ -1,6 +1,9 @@
 package controllers
 
+import play.api.i18n.Messages
+import play.api.libs.json
 import play.api.mvc._
+import play.api.Play.current
 import macros._
 import dbrary._
 import site._
@@ -10,14 +13,12 @@ object SiteApi extends SiteController {
   private final val startTime = new Timestamp
 
   private final val constantsJson = JsonObject(
-      'permission -> JsonRecord.map[Permission.Value](c => JsonRecord(c.id
+      'messages -> json.Json.toJson(Messages.messages.get("default"))
+    , 'permission -> JsonRecord.map[Permission.Value](c => JsonRecord(c.id
 	, 'name -> c.toString
-	, 'inherit -> Permission.message(c, "inherit")
-	, 'direct -> Permission.message(c, "direct")
 	))(Permission.values.toSeq)
     , 'consent -> JsonRecord.map[Consent.Value](c => JsonRecord.flatten(c.id
 	, Some('name -> c.toString)
-	, Consent.message(c).map('message -> _)
 	))(Consent.values.toSeq)
     , 'classification -> JsonRecord.map[Classification.Value](c => JsonRecord(c.id
 	, 'name -> c.toString
