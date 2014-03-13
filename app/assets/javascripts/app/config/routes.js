@@ -23,6 +23,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		$routeProvider.when('/register', registerView);
+		$routeProvider.when('/token/:token', registerView);
 
 		//
 

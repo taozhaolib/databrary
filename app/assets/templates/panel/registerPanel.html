@@ -6,6 +6,9 @@
             </hgroup>
 
             <div class="col-full">
+                <div class="temporary">
+                    <input type="checkbox" ng-model="password">
+                </div>
                 <wizard retrieve="retrieveWizard" linear>
                     <wizard-step id="register_create"
                         name="Create Account"
@@ -55,11 +58,22 @@
                     <wizard-step id="register_email"
                         name="Confirm Email"
                         description="Confirm your email address to continue.">
+                        <p>Great! You will be sent an email. Click the link.</p>
                     </wizard-step>
 
                     <wizard-step id="register_password"
                         name="Set Password"
                         description="Confirm your email address and select a password.">
+                        <form name="passwordForm">
+                            <label for="field_password_once">Name</label>
+                            <input id="field_password_once" type="text" ng-model="data.once">
+
+                            <label for="field_password_again">Email</label>
+                            <input id="field_password_again" type="text" ng-model="data.again">
+
+                            <button class="second" type="submit" ng-disabled="!testProceed(passwordForm)" ng-click="proceed(passwordForm)">Continue</button>
+                            <button class="first" type="reset">Reset</button>
+                        </form>
                     </wizard-step>
 
                     <wizard-step id="register_agent"

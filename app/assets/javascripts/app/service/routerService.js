@@ -58,7 +58,6 @@ define(['app/config/module'], function (module) {
 		routerService.login = makeRoute('/login');
 		routerService.register = makeRoute('/register');
 
-		routerService.party = makeRoute('/party/:id');
 		routerService.asset = makeRoute('/asset/:id');
 		routerService.volume = makeRoute('/volume/:id');
 		routerService.slotAsset = makeRoute('/slot/:sid/asset/:id');
@@ -212,6 +211,20 @@ define(['app/config/module'], function (module) {
 			};
 
 			return routerService.makeUrl('/party/:id/edit', data);
+		};
+
+		routerService.party = function (data) {
+			if(angular.isUndefined(data))
+				return console.log(data);
+
+			if (!$rootScope.type.isParty(data))
+				throw new Error('routerService.party() requires Party as first parameter');
+
+			data = {
+				id: data.id
+			};
+
+			return routerService.makeUrl('/party/:id', data);
 		};
 
 		routerService.partyAuthorize = function (data) {

@@ -24,7 +24,7 @@
                     </span>
 
                     <span ng-if="auth.hasAuth('NONE')">
-                        <a href="#" ng-click="auth.showProfile()" class="toolbar_user_link">
+                        <a ng-href="{{router.party(auth.user)}}" class="toolbar_user_link">
                             <span class="username">{{auth.user.name}}</span>
                             <img ng-src="{{auth.user.avatar || auth.user.email | gravatar:16}}" alt="{{auth.user.name}}" class="avatar">
                         </a>
@@ -43,7 +43,7 @@
 
                         <span class="sep">|</span>
 
-                        <a href="#" ng-click="auth.logout()">logout</a>
+                        <a href="" ng-click="auth.logout()">logout</a>
                     </span>
                 </div>
             </div>

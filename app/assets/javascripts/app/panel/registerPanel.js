@@ -21,6 +21,12 @@ define(['app/config/module'], function (module) {
 		};
 
 		$scope.password = false; // TODO: pull this from $http
+		$scope.passwordData = {
+			token: undefined,
+			auth: undefined,
+			once: undefined,
+			again: undefined
+		};
 		$scope.passwordSubmit = false;
 		$scope.authParty = undefined;
 		$scope.requestSubmit = false;
@@ -30,10 +36,23 @@ define(['app/config/module'], function (module) {
 			$scope.wizard.addFn = $scope.updateSteps();
 		};
 
+		var prePasswordComplete = function (step, activate) {
+			if (!$scope.auth.isLoggedIn() && !$scope.password)
+				return false;
+
+			step.complete = true;
+			step.allow = false;
+
+			if (activate !== false)
+				step.active = false;
+
+			return true;
+		};
+
 		$scope.updateStep = {
 			'register_create': function (step, activate) {
-				if ($scope.auth.isLoggedIn() || $scope.password)
-					return step.complete = true;
+				if(prePasswordComplete(step, activate))
+					return;
 
 				step.complete = $scope.registerReady ? true : undefined;
 				step.allow = !$scope.registerSubmit;
@@ -43,19 +62,19 @@ define(['app/config/module'], function (module) {
 			},
 
 			'register_agreement': function (step, activate) {
-				if ($scope.auth.isLoggedIn() || $scope.password)
-					return step.complete = true;
+				if(prePasswordComplete(step, activate))
+					return;
 
 				step.complete = $scope.registerSubmit ? true : undefined;
-				step.allow = !$scope.registerSubmit;
+				step.allow = $scope.registerReady && !$scope.registerSubmit;
 
 				if (activate !== false)
 					step.active = $scope.registerReady && !$scope.registerSubmit;
 			},
 
 			'register_email': function (step, activate) {
-				if ($scope.auth.isLoggedIn() || $scope.password)
-					return step.complete = true;
+				if(prePasswordComplete(step, activate))
+					return;
 
 				if (!$scope.registerReady || !$scope.registerSubmit)
 					return;
@@ -158,6 +177,7 @@ define(['app/config/module'], function (module) {
 					$scope.updateSteps();
 				};
 			}
+
 			if ($scope.wizard.stepsList['register_agreement'] && !$scope.wizard.stepsList['register_agreement'].agreement) {
 				$scope.wizard.stepsList['register_agreement'].agreement = $scope.agreement;
 
@@ -180,6 +200,31 @@ define(['app/config/module'], function (module) {
 							$scope.updateSteps();
 						});
 				}
+			}
+
+			if ($scope.wizard.stepsList['register_password'] && !$scope.wizard.stepsList['register_password'].data) {
+				$scope.wizard.stepsList['register_password'].data = $scope.passwordData;
+
+//				$scope.wizard.stepsList['register_password'].testProceed = function (form) {
+//					var ready = form.$dirty && form.$valid && $scope.registerData.name && $scope.registerData.email && $scope.registerData.affiliation;
+//
+//					$scope.registerReady = ready;
+//					$scope.updateSteps(false);
+//
+//					return ready;
+//				};
+//
+//				$scope.wizard.stepsList['register_password'].proceed = function (form) {
+//					$scope.registerReady = true;
+//					$scope.updateSteps();
+//
+//					$http
+//						.post('/register', $scope.registerData)
+//						.success(function (data) {
+//							$scope.registerSubmit = true;
+//							$scope.updateSteps();
+//						});
+//				};
 			}
 		});
 	}]);
