@@ -13,7 +13,9 @@ object SiteApi extends SiteController {
   private final val startTime = new Timestamp
 
   private final val constantsJson = JsonObject(
-      'messages -> json.Json.toJson(Messages.messages.get("default"))
+      'messages -> json.Json.toJson(Messages.messages.get("default").map(
+	/* hack to fix quoting (consider using https://github.com/SlexAxton/messageformat.js if things get more complicated) */
+	_.mapValues(java.text.MessageFormat.format(_))))
     , 'permission -> JsonRecord.map[Permission.Value](c => JsonRecord(c.id
 	, 'name -> c.toString
 	))(Permission.values.toSeq)
