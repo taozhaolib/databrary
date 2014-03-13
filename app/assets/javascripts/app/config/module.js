@@ -68,7 +68,7 @@ define([
 		}]);
 	}]);
 
-	module.run(['$window', '$rootScope', '$location', '$log', 'RouterService', 'BrowserService', 'ConstantService', 'AuthService', 'TypeService', function ($window, $rootScope, $location, $log, router, browser, constant, auth, type) {
+	module.run(['$rootScope', '$location', '$log', 'RouterService', 'BrowserService', 'ConstantService', 'AuthService', 'TypeService', 'PlayService', function ($rootScope, $location, $log, router, browser, constant, auth, type, playService) {
 		// $rootScope specials
 		$rootScope.$log = $log;
 		$rootScope.router = router;
@@ -77,35 +77,10 @@ define([
 		$rootScope.auth = auth;
 		$rootScope.type = type;
 
-		// play->angular redirects
-		if (angular.isDefined($window.$play) && $window.$play.redirect) {
-			switch (type.getType($window.$play.object)) {
-				case 'session':
-					$location.url('/volume/' + $window.$play.object.volume + '?session_limit=' + $window.$play.object.id);
-					break;
-
-				case 'record':
-					constant.$promise.then(function (data) {
-						$location.url('/volume/' + $window.$play.object.volume + '?' + constant.data.category[$window.$play.object.category].name + '_limit=' + $window.$play.object.id);
-					});
-					break;
-
-				case 'asset':
-					// asset
-					$location.url('/volume/' + $window.$play.object.container.volume + '?session_limit=' + $window.$play.object.container.id + '&asset_limit=' + $window.$play.object.asset.id);
-					break;
-			}
-		}
+		playService.run();
 
 		// TODO: anchor scroll on page load. I think the problem is animated items on load.
 		$location.hash('');
-	}]);
-
-	module.run(['$rootScope', function ($rootScope) {
-		$rootScope.$on('$routeChangeError', function ($event, next, current, rejection) {
-			if ($rootScope.auth.user.id == -1 && (!current || current.$$route.controller != 'LoginView') || current.$$route.controller != 'RegisterView')
-				$rootScope.auth.tryLogin(next, current);
-		});
 	}]);
 
 	return module;

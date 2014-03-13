@@ -17,8 +17,8 @@ GET     /superuser/on                                                           
 GET     /superuser/off                                                                            controllers.LoginHtml.superuserOff
 GET     /register                                                                                 controllers.LoginHtml.registration
 POST    /register                                                                                 controllers.LoginHtml.register
-GET     /token/password                                                                           controllers.TokenHtml.getPassword
-POST    /token/password                                                                           controllers.TokenHtml.issuePassword
+GET     /password                                                                           controllers.TokenHtml.getPassword
+POST    /password                                                                           controllers.TokenHtml.issuePassword
 GET     /token/:token                                                                             controllers.TokenHtml.token(token : String, auth : String)
 
 # parties

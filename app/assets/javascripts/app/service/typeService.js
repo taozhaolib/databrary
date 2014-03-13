@@ -10,6 +10,9 @@ define(['app/config/module'], function (module) {
 			if (!angular.isObject(object))
 				return undefined;
 
+			if (typeService.isParty(object))
+				return 'party';
+
 			if (typeService.isRecord(object))
 				return 'record';
 
@@ -19,8 +22,8 @@ define(['app/config/module'], function (module) {
 			if (typeService.isAsset(object))
 				return 'asset';
 
-			if (typeService.isParty(object))
-				return 'party';
+			if (typeService.isToken(object))
+				return 'token';
 
 			if (typeService.isSession(object))
 				return 'session';
@@ -46,8 +49,12 @@ define(['app/config/module'], function (module) {
 			return angular.isObject(object) && object.avatar;
 		};
 
+		typeService.isToken = function (object) {
+			return angular.isObject(object) && object.token;
+		};
+
 		typeService.isSession = function (object) {
-			return angular.isObject(object) && !object.asset && !object.body && !object.measures && !object.avatar;
+			return angular.isObject(object) && !object.asset && !object.body && !object.measures && !object.avatar && !object.token;
 		};
 
 		//

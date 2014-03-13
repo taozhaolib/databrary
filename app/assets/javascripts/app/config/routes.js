@@ -23,7 +23,6 @@ define(['app/config/module'], function (module) {
 		};
 
 		$routeProvider.when('/register', registerView);
-		$routeProvider.when('/token/:token', registerView);
 
 		//
 
@@ -114,6 +113,8 @@ define(['app/config/module'], function (module) {
 		$routeProvider.when('/volume/:id', volumeView);
 
 		//
+
+		$routeProvider.when('/token/:token', volumeView);
 
 		$routeProvider.otherwise({
 			redirectTo: '/search'
