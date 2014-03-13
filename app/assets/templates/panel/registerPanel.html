@@ -12,15 +12,15 @@
                         description="Register to browse shared data and comment on datasets.">
                         <form name="registerForm">
                             <label for="field_name">Name</label>
-                            <input id="field_name" type="text" ng-model="registerForm.name">
+                            <input id="field_name" type="text" ng-model="data.name" ng-minlength="3">
 
                             <label for="field_email">Email</label>
-                            <input id="field_email" type="text" ng-model="registerForm.email">
+                            <input id="field_email" type="text" ng-model="data.email" ng-pattern="regexEmail">
 
                             <label for="field_affiliation">Affiliation</label>
-                            <input id="field_affiliation" type="text" ng-model="registerForm.affiliation">
+                            <input id="field_affiliation" type="text" ng-model="data.affiliation" ng-minlength="3">
 
-                            <button class="third" type="submit">Submit</button>
+                            <button class="second" type="submit" ng-disabled="!testProceed(registerForm)" ng-click="proceed(registerForm)">Continue</button>
                             <button class="first" type="reset">Reset</button>
                         </form>
                     </wizard-step>
@@ -28,6 +28,28 @@
                     <wizard-step id="register_agreement"
                         name="Sign Agreement"
                         description="Learn about the responsibilities of all Databrary members.">
+                        <div class="register_agreement_pages" ng-switch on="agreement.page">
+                            <div class="register_agreement_page" ng-switch-when="1">
+                                Page 1
+                            </div>
+
+                            <div class="register_agreement_page" ng-switch-when="2">
+                                Page 2
+                            </div>
+
+                            <div class="register_agreement_page" ng-switch-when="3">
+                                Page 3
+                            </div>
+
+                            <div class="register_agreement_page" ng-switch-when="4">
+                                Page 4
+                            </div>
+                        </div>
+
+                        <button class="second" ng-click="proceed()" ng-show="agreement.page >= agreement.pages">Register</button>
+
+                        <button class="second" ng-click="next()" ng-show="agreement.page < agreement.pages">Agree</button>
+                        <button class="third" ng-click="back()" ng-show="agreement.page > 1">Back</button>
                     </wizard-step>
 
                     <wizard-step id="register_email"
