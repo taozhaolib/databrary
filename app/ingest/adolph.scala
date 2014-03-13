@@ -135,6 +135,7 @@ object Adolph extends Ingest {
 	case "RACE" => measure(Race.measureParse)
 	case "ETHNICITY" => measure(Ethnicity.measureParse)
 	case "TYPICAL DEVELOPMENT/DISABILITY" => measure(measureParser(Metric.Disability, trimmed), "typical")
+	case "LANGUAGE" => measure(measureParser(Metric.Language, trimmed))
 	case _ => fail("unknown participant header: " + name)
       }
     private def header : Parser[CellParser[Participant]] =
