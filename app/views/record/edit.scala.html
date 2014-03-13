@@ -14,10 +14,10 @@
                 <fieldset>
                     <legend>Metrics</legend>
 
-                    <div class="repeat">
+                    <div>
 		    @measureForms.map { form =>
 		    @widget.tag.form(form) {
-                        <div class="repeat_repeated">
+                        <div>
                             <div class="field cf">
 				@form.metric.name (@form.metric.classification)
                             </div>
@@ -37,7 +37,7 @@
                             </div>
                         </div>
 
-                        <div class="repeat_controls">
+                        <div>
 			    @widget.formErrors(form)
 			    <button type='submit' class="button">Update</button>
                         </div>
@@ -45,13 +45,13 @@
 		    }
                     </div>
 
-                    <div class="repeat">
+                    <div>
 		    @widget.tag.form(metricForm) {
-                        <div class="repeat_repeated">
+                        <div>
 			    @widget.tag.select(metricForm.metric(), (Metric.getAll.toSeq diff measureForms.map(_.metric)).map(m => (m.id.toString, m.name)))
                         </div>
 
-			<div class="repeat_controls">
+			<div>
 			    @widget.formErrors(metricForm)
 			    <button type='submit' class="button">Add</button>
 			</div>
