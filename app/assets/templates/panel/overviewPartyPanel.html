@@ -21,8 +21,8 @@
         </div>
 
         <div class="temporary">
-	    <a class="button mini" ng-if="auth.hasAccess('CONTRIBUTE', party)" ng-href="{{router.partyEdit(party)}}">edit</a>
-	    <a class="button mini" ng-if="auth.hasAccess('ADMIN', party)" ng-href="{{router.partyAuthorize(party)}}">authorize</a>
+	    <a class="button mini" ng-if="auth.hasAccess('CONTRIBUTE', party)" ng-href="{{router.partyEdit(party)}}" target="_self">edit</a>
+	    <a class="button mini" ng-if="auth.hasAccess('ADMIN', party)" ng-href="{{router.partyAuthorize(party)}}" target="_self">authorize</a>
         </div>
     </panel-mode>
 </panel>
