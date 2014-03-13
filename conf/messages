@@ -16,7 +16,7 @@ mail.password.subject=Databrary password reset
 mail.password.none=No account found.
 mail.password.body={0}
 mail.register.subject=Databrary account created
-mail.register.body=Thank you for registering with Databrary. Please click on the link below to validate your email and set your password.\n{0}\nOnce you've validated your e-mail, you can request authorization by clicking the 'Authorization' link on your profile page.
+mail.register.body=Thank you for registering with Databrary. Please click on the link below to validate your email and set your password.\n{0}\nOnce you''ve validated your e-mail, you can request authorization by clicking the ''Authorization'' link on your profile page.
 mail.authorize.subject=Databrary authorization request
 mail.authorize.body={1} has requested to be authorized by {2}. To approve or reject this authorization request, go to: {0}
 mail.authorized.subject=Databrary authorization approved
@@ -24,8 +24,8 @@ mail.authorized.body=You have been authorized by {0}.
 
 # Authorizations
 auth.inherit.NONE=No access.
-auth.inherit.VIEW=Access to Databrary's unrestricted data.
-auth.inherit.DOWNLOAD=Access to Databrary's restricted data.
+auth.inherit.VIEW=Access to Databrary''s unrestricted data.
+auth.inherit.DOWNLOAD=Access to Databrary''s restricted data.
 auth.inherit.CONTRIBUTE=Can create datasets and studies on {0} behalf.
 auth.inherit.ADMIN=Can authorize users on {0} behalf.
 
@@ -71,7 +71,7 @@ error.missing=Field value has not been filled
 
 # --- Unsorted
 citation.invalid=Invalid citation
-file.format.unknown=File format '{0}' is not supported.
+file.format.unknown=File format ''{0}'' is not supported.
 measure.unknown=Invalid or unknown type of measure.
 measure.bad=Invalid value for measure.
 duns.invalid=Invalid D-U-N-S
