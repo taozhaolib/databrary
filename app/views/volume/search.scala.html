@@ -4,7 +4,7 @@
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@template.action("Search the Databrary", angular = true) {
+@template.action("Search the Databrary", angular = Some(JsonArray(list.map[JsonRecord, Seq[JsonRecord]](_._1.json)))) {
     @widget.panel.search("", "", "SearchViewCtrl") {
         <section ng-controller="SearchFilterCtrl" id="panel_search_filter" class="panel_search_filter col-full">
 	@widget.tag.form(form) {

@@ -1,7 +1,4 @@
-@(title : String = "The Databrary Project", angular : Boolean, redirect : Boolean = false)(requestOption: Option[SiteRequest[_]] = None)(body : Html)
-
-@import play.api._
-@import play.api.Play.current
+@(title : String = "The Databrary Project", angular : Option[play.api.libs.json.JsValue] = None)(requestOption: Option[SiteRequest[_]] = None)(body : Html)
 
 <!DOCTYPE html>
 <html>
@@ -21,28 +18,18 @@
     <!-- css -->
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/app.min.css")">
 
-    @if(angular) {
     <!-- js -->
+    @angular.map { obj =>
     @helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/app/app").url)
-
-    <!-- redirect -->
     <script>
-        window.$play = {};
-
-	@requestOption.flatMap(RequestObject.cast).flatMap(cast[SiteObject](_)).map { obj =>
-        window.$play.object = @format.raw(play.api.libs.json.Json.toJson(obj.json).toString);
-        }
-
-        @if(redirect) {
-        window.$play.redirect = true;
-        }
+        window.$play = {'object':@format.raw(obj.toString)};
     </script>
     }
 
     <!-- more -->
 </head>
 
-<body class="@if(Play.isDev){dev}">
+<body class="@if(play.api.Play.isDev(play.api.Play.current)){dev}">
     <section toolbar id="toolbars" class="cf">
         <nav id="toolbar_databrary" class="toolbar toolbar_databrary">
             <div class="wrap">

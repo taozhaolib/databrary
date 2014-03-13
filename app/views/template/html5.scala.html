@@ -1,5 +1,5 @@
-@(title : String = "The Databrary Project", angular : Boolean = false, redirect : Boolean = false)(body : Html)(implicit request: SiteRequest[_])
+@(title : String = "The Databrary Project", angular : Option[play.api.libs.json.JsValue] = None)(body : Html)(implicit request: SiteRequest[_])
 
-@template.raw(title, angular, redirect)(Some(request)) {
+@template.raw(title, angular = angular)(Some(request)) {
     @body
 }

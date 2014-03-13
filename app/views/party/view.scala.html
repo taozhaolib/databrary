@@ -2,7 +2,7 @@
 
 @defining(request.obj.party) { party =>
 @defining(both[Seq[VolumeAccess], Seq[Volume]](accesses.span(a => a.access >= Permission.ADMIN), _.map(_.volume))) { case (owned, edited) =>
-@template.crud("Profile: " + request.obj.party.name, angular = true) {
+@template.crud("Profile: " + request.obj.party.name, angular = Some(request.obj.json.js)) {
     @widget.panel.party(parents, children)
 
     @widget.panel.volumes(owned, edited, accesses.filter(_.funding.isDefined).map(_.volume))

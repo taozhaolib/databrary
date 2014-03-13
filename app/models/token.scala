@@ -79,6 +79,13 @@ object AccountToken extends Table[AccountToken]("account_token") {
   */
 final class LoginToken protected (id : Token.Id, expires : Timestamp, account : Account, val password : Boolean) extends AccountToken(id, expires, account) {
   def remove = LoginToken.delete(id)
+
+  def json = JsonRecord(id
+    , 'account -> accountId
+    , 'auth -> auth
+    , 'reset -> account.password.nonEmpty
+    )
+
 }
 
 object LoginToken extends TokenTable[LoginToken]("login_token") {
