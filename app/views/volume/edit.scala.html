@@ -4,7 +4,7 @@
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@template.form(Some(request.obj), form.formName, noscript = true) {
+@template.form(Some(request.obj), form.formName) {
         @widget.tag.form(form) {
             @widget.tag.inputText(form.name(), 'placeholder -> "Title", '_class -> "")
             @widget.tag.inputText(form.alias(), 'placeholder -> "Short name", '_class -> "")

@@ -1,6 +1,6 @@
 @(asset : SlotAsset, comments : Seq[Comment])(implicit request : RequestObject[SlotAsset]#Site[_])
 
-@template.crud("Asset: " + asset.asset.name, redirect = true) {
+@template.crud("Asset: " + asset.asset.name, angular = false, redirect = true) {
     @widget.panel.asset(asset)
     @widget.panel.materials(Seq(asset))
     @widget.panel.comments(Some(asset.slot), Some(new CommentController.SlotForm), comments)

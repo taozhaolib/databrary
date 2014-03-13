@@ -5,7 +5,7 @@
 }
 
 @defining(cast[PartyController#EditForm](form).map(_.party)) { party =>
-@template.form(party, form.formName, noscript = true) {
+@template.form(party, form.formName) {
             @widget.tag.form(form) {
                 @widget.tag.inputText(form.name(), ('placeholder, "Full name"))
                 @widget.tag.inputText(form.orcid(), ('placeholder, "ORCiD"))
