@@ -1,4 +1,4 @@
-@(title : String = "The Databrary Project", redirect : Boolean = false)(requestOption: Option[SiteRequest[_]] = None)(body : Html)
+@(title : String = "The Databrary Project", redirect : Boolean = false, noscript : Boolean = false)(requestOption: Option[SiteRequest[_]] = None)(body : Html)
 
 @import play.api._
 @import play.api.Play.current
@@ -22,7 +22,9 @@
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/app.min.css")">
 
     <!-- js -->
+    @if(!noscript) {
     @helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/app/app").url)
+    }
 
     <!-- redirect -->
     <script>
@@ -100,9 +102,13 @@
     </section>
 
     <main ng-view id="main" class="main">
+        @if(!noscript){
         <noscript>
             @body
         </noscript>
+        }else{
+            @body
+        }
     </main>
 
     <div id="messages" class="messages" ng-controller="MessageCtrl" ng-class="{messages_enabled: isEnabled()}">

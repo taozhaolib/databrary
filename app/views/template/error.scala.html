@@ -1,6 +1,6 @@
-@(title : String = "There's been an error!", redirect : Boolean = false)(body : Html)
+@(title : String = "There's been an error!", redirect : Boolean = false, noscript : Boolean = false)(body : Html)
 
-@template.raw(title, redirect)(None) {
+@template.raw(title, redirect, noscript)(None) {
     <article class="article article_error">
         @body
     </article>

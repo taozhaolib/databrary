@@ -112,14 +112,6 @@ define(['app/config/module'], function (module) {
 
 		$routeProvider.when('/volume/:id', volumeView);
 
-		// TODO: implement real editing and remove phonyView
-
-		$routeProvider.when('/:page*', {
-			controller: 'PhonyView',
-			templateUrl: 'phonyView.html',
-			reloadOnSearch: false
-		});
-
 		//
 
 		$routeProvider.otherwise({

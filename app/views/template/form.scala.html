@@ -1,7 +1,7 @@
-@(target: Option[SitePage], context: String, redirect : Boolean = false)(body: Html)(implicit request : SiteRequest[_])
+@(target: Option[SitePage], context: String, redirect : Boolean = false, noscript : Boolean = false)(body: Html)(implicit request : SiteRequest[_])
 
 @defining(target.map(_.pageName)) { title =>
-@template.crud(context + title.fold("")(": " + _), redirect) {
+@template.crud(context + title.fold("")(": " + _), redirect, noscript) {
 	@widget.panel.form(title.getOrElse(""), context) {
 		<div class="col-full">
 			@body

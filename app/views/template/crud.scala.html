@@ -1,6 +1,6 @@
-@(title : String = "", redirect : Boolean = false)(body : Html)(implicit request : SiteRequest[_])
+@(title : String = "", redirect : Boolean = false, noscript : Boolean = false)(body : Html)(implicit request : SiteRequest[_])
 
-@template.html5(title, redirect) {
+@template.html5(title, redirect, noscript) {
     <article class="article article_crud @RequestObject.cast(request).map("article_" + _.getClass.getSimpleName.toLowerCase)">
         @body
     </article>

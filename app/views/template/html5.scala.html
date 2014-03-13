@@ -1,5 +1,5 @@
-@(title : String = "The Databrary Project", redirect : Boolean = false)(body : Html)(implicit request: SiteRequest[_])
+@(title : String = "The Databrary Project", redirect : Boolean = false, noscript : Boolean = false)(body : Html)(implicit request: SiteRequest[_])
 
-@template.raw(title, redirect)(Some(request)) {
+@template.raw(title, redirect, noscript)(Some(request)) {
     @body
 }

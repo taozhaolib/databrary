@@ -4,7 +4,7 @@
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@template.form(Some(request.obj), form.formName) {
+@template.form(Some(request.obj), form.formName, noscript = true) {
             @widget.tag.form(form) {
 		@cast[SlotController.ContainerForm](form).map { form =>
                     @widget.tag.inputText(form.name(), 'placeholder -> "Name")
