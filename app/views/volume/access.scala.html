@@ -10,7 +10,7 @@
 	@widget.tag.select(form.inherit(), Permission.values.to(if (form.partyId.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
 }
 
-@template.form(Some(volume), "Manage Access", noscript = true) {
+@template.form(Some(volume), "Manage Access") {
     <table class="permission">
             <thead>
                 <tr>

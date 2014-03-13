@@ -4,7 +4,7 @@
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@template.form(Some(request.obj), "Edit Record", noscript = true) {
+@template.form(Some(request.obj), "Edit Record") {
     @widget.tag.form(editForm) {
 	@widget.tag.select(editForm.category(), RecordCategory.getAll.map(c => (c.id.toString, c.name)), '_default -> "None")
 	@widget.formErrors(editForm)
