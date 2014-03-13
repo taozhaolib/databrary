@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.controller('RegisterPanel', ['$scope', 'AuthService', '$http', function ($scope, authService, $http) {
+	module.controller('RegisterPanel', ['$scope', 'AuthService', '$http', '$window', function ($scope, authService, $http, $window) {
 		$scope.auth = $scope.auth || authService;
 
 		$scope.wizard = {};
@@ -27,6 +27,12 @@ define(['app/config/module'], function (module) {
 			once: undefined,
 			again: undefined
 		};
+
+		if($scope.type.isToken($window.$play.object)) {
+			$scope.passwordData.token = $window.$play.object.id;
+			$scope.passwordData.auth = $window.$play.object.auth;
+		}
+
 		$scope.passwordSubmit = false;
 		$scope.authParty = undefined;
 		$scope.requestSubmit = false;

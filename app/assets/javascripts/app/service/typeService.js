@@ -50,11 +50,11 @@ define(['app/config/module'], function (module) {
 		};
 
 		typeService.isToken = function (object) {
-			return angular.isObject(object) && object.token;
+			return angular.isObject(object) && object.auth;
 		};
 
 		typeService.isSession = function (object) {
-			return angular.isObject(object) && !object.asset && !object.body && !object.measures && !object.avatar && !object.token;
+			return angular.isObject(object) && !object.asset && !object.body && !object.measures && !object.avatar && !object.auth;
 		};
 
 		//

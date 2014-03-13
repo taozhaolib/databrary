@@ -114,8 +114,6 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		$routeProvider.when('/token/:token', volumeView);
-
 		$routeProvider.otherwise({
 			redirectTo: '/search'
 		});

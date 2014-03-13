@@ -74,7 +74,6 @@ define(['app/config/module'], function (module) {
 		};
 
 		$scope.saveAuthParent = function () {
-			console.log(true);
 			if (angular.isUndefined($scope.currentAuthParent))
 				return false;
 

@@ -6,7 +6,7 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		playService.run = function () { console.log($window.$play);alert('hi');
+		playService.run = function () {
 			switch(typeService.getType($window.$play.object)) {
 //				case 'record':
 //					constantService.$promise.then(function (data) {
@@ -28,10 +28,6 @@ define(['app/config/module'], function (module) {
 					} else {
 						$location.url('/register');
 					}
-					break;
-
-				default:
-					console.log($window, $location);
 					break;
 			}
 		};
