@@ -96,7 +96,7 @@ abstract class StructForm(val _action : Call) {
 
   private[this] def getValMembers : Iterator[Member[_]] =
     getClass.getMethods.toIterator
-      .filter(f => f.getModifiers == 1 && f.getName()(0).isLower && f.getParameterTypes.isEmpty && f.getTypeParameters.isEmpty && classOf[Member[_]].isAssignableFrom(f.getReturnType))
+      .filter(f => f.getModifiers == java.lang.reflect.Modifier.PUBLIC && f.getName()(0).isLower && f.getParameterTypes.isEmpty && f.getTypeParameters.isEmpty && classOf[Member[_]].isAssignableFrom(f.getReturnType))
       .map { f =>
 	val field = f.invoke(self).asInstanceOf[Member[_]]
 	field.name = f.getName
