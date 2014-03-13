@@ -299,7 +299,7 @@ object PartyController extends PartyController {
   }
 }
 
-object PartyHtml extends PartyController {
+object PartyHtml extends PartyController with HtmlController {
   import PartyController._
 
   override protected val passwordInputMapping =
@@ -362,7 +362,7 @@ object PartyHtml extends PartyController {
 
 }
 
-object PartyApi extends PartyController {
+object PartyApi extends PartyController with ApiController {
   override protected val passwordInputMapping = OptionMapping(Forms.text(7))
 
   def get(partyId : models.Party.Id) = Action(Some(partyId), Some(Permission.NONE)).async { implicit request =>

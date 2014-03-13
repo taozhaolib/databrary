@@ -4,7 +4,7 @@
     helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
 }
 
-@template.action("Enter Databrary", angular = true) {
+@template.action("Enter Databrary", angular = Some(play.api.libs.json.JsNull)) {
     @widget.panel.form("Enter Databrary", "Login", controller = "LoginPanelCtrl") {
         <div class="col-full">
             @widget.tag.form(form) {

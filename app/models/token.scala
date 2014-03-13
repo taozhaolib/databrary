@@ -10,7 +10,7 @@ sealed abstract class Token protected (val id : Token.Id, val expires : Timestam
   private[models] def sqlKey = SQLTerms('token -> id)
   def valid = expires.toDateTime.isAfterNow
   def auth = play.api.libs.Crypto.sign(id)
-  def redeemURL = controllers.routes.TokenController.token(id, auth)
+  def redeemURL = controllers.routes.TokenHtml.token(id, auth)
   def remove : Future[Boolean]
 }
 
@@ -79,6 +79,13 @@ object AccountToken extends Table[AccountToken]("account_token") {
   */
 final class LoginToken protected (id : Token.Id, expires : Timestamp, account : Account, val password : Boolean) extends AccountToken(id, expires, account) {
   def remove = LoginToken.delete(id)
+
+  def json = JsonRecord(id
+    , 'account -> accountId
+    , 'auth -> auth
+    , 'reset -> account.password.nonEmpty
+    )
+
 }
 
 object LoginToken extends TokenTable[LoginToken]("login_token") {

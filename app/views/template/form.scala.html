@@ -1,7 +1,7 @@
 @(target: Option[SitePage], context: String)(body: Html)(implicit request : SiteRequest[_])
 
 @defining(target.map(_.pageName)) { title =>
-@template.crud(context + title.fold("")(": " + _), angular = false) {
+@template.crud(context + title.fold("")(": " + _)) {
 	@widget.panel.form(title.getOrElse(""), context) {
 		<div class="col-full">
 			@body

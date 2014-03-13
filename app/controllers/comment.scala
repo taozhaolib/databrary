@@ -33,6 +33,6 @@ object CommentController extends CommentController {
     with Form
 }
 
-object CommentHtml extends CommentController
+object CommentHtml extends CommentController with HtmlController
 
-object CommentApi extends CommentController
+object CommentApi extends CommentController with ApiController

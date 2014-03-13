@@ -2,7 +2,7 @@
 
 @defining(request.obj) { volume =>
 
-    @template.crud("Volume: " + volume.name, angular = true) {
+    @template.crud("Volume: " + volume.name, angular = Some(request.obj.json.js)) {
         @widget.panel.volume(volume, summary, access)
         @widget.panel.browser(sessions, records)
         @widget.panel.materials(assets)

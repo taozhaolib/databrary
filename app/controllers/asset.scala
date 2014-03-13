@@ -99,7 +99,7 @@ object AssetController extends AssetController {
   }
 }
 
-object AssetHtml extends AssetController {
+object AssetHtml extends AssetController with HtmlController {
   import AssetController._
 
   def view(o : models.Asset.Id) = Action(o, Permission.VIEW).async { implicit request =>
@@ -164,7 +164,7 @@ object AssetHtml extends AssetController {
   }
 }
 
-object AssetApi extends AssetController {
+object AssetApi extends AssetController with ApiController {
   def get(i : models.Asset.Id) = Action(i, Permission.VIEW).async { implicit request =>
     request.obj.json(request.apiOptions).map(Ok(_))
   }
