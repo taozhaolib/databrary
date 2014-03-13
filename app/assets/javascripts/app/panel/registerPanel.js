@@ -205,26 +205,22 @@ define(['app/config/module'], function (module) {
 			if ($scope.wizard.stepsList['register_password'] && !$scope.wizard.stepsList['register_password'].data) {
 				$scope.wizard.stepsList['register_password'].data = $scope.passwordData;
 
-//				$scope.wizard.stepsList['register_password'].testProceed = function (form) {
-//					var ready = form.$dirty && form.$valid && $scope.registerData.name && $scope.registerData.email && $scope.registerData.affiliation;
-//
-//					$scope.registerReady = ready;
-//					$scope.updateSteps(false);
-//
-//					return ready;
-//				};
-//
-//				$scope.wizard.stepsList['register_password'].proceed = function (form) {
-//					$scope.registerReady = true;
-//					$scope.updateSteps();
-//
-//					$http
-//						.post('/register', $scope.registerData)
-//						.success(function (data) {
-//							$scope.registerSubmit = true;
-//							$scope.updateSteps();
-//						});
-//				};
+				$scope.wizard.stepsList['register_password'].testProceed = function (form) {
+					var ready = form.$dirty && form.$valid && $scope.passwordData.once && $scope.passwordData.again && $scope.passwordData.once == $scope.passwordData.again;
+
+					$scope.updateSteps(false);
+
+					return ready;
+				};
+
+				$scope.wizard.stepsList['register_password'].proceed = function (form) {
+					$http
+						.post('/api/party/'+$scope.password.party+'/password', $scope.passwordData)
+						.success(function (data) {
+							$scope.passwordSubmit = true;
+							$scope.updateSteps();
+						});
+				};
 			}
 		});
 	}]);

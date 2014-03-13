@@ -65,11 +65,11 @@
                         name="Set Password"
                         description="Confirm your email address and select a password.">
                         <form name="passwordForm">
-                            <label for="field_password_once">Name</label>
-                            <input id="field_password_once" type="text" ng-model="data.once">
+                            <label for="field_password_once">Password</label>
+                            <input id="field_password_once" type="password" ng-model="data.once">
 
-                            <label for="field_password_again">Email</label>
-                            <input id="field_password_again" type="text" ng-model="data.again">
+                            <label for="field_password_again">Password (again)</label>
+                            <input id="field_password_again" type="password" ng-model="data.again">
 
                             <button class="second" type="submit" ng-disabled="!testProceed(passwordForm)" ng-click="proceed(passwordForm)">Continue</button>
                             <button class="first" type="reset">Reset</button>
