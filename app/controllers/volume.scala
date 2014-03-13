@@ -166,7 +166,7 @@ object VolumeController extends VolumeController {
   }
 }
 
-object VolumeHtml extends VolumeController {
+object VolumeHtml extends VolumeController with HtmlController {
   import VolumeController._
 
   def view(i : models.Volume.Id) = Action(i).async { implicit request =>
@@ -223,7 +223,7 @@ object VolumeHtml extends VolumeController {
   }
 }
 
-object VolumeApi extends VolumeController {
+object VolumeApi extends VolumeController with ApiController {
   def get(i : models.Volume.Id) = Action(i).async { implicit request =>
     request.obj.json(request.apiOptions).map(Ok(_))
   }

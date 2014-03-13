@@ -45,7 +45,7 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
 
 object SlotAssetController extends SlotAssetController
 
-object SlotAssetHtml extends SlotAssetController {
+object SlotAssetHtml extends SlotAssetController with HtmlController {
   def view(i : Container.Id, segment : Segment, a : models.Asset.Id) = Action(i, segment, a).async { implicit request =>
     for {
       comments <- request.obj.comments
@@ -53,7 +53,7 @@ object SlotAssetHtml extends SlotAssetController {
   }
 }
 
-object SlotAssetApi extends SlotAssetController {
+object SlotAssetApi extends SlotAssetController with ApiController {
   def get(i : Container.Id, segment : Segment, a : Asset.Id) = Action(i, segment, a).async { implicit request =>
     request.obj.json(request.apiOptions).map(Ok(_))
   }

@@ -146,7 +146,7 @@ object LoginController extends LoginController {
   }
 }
 
-object LoginHtml extends LoginController {
+object LoginHtml extends LoginController with HtmlController {
   import LoginController._
 
   def viewLogin()(implicit request: SiteRequest[_]) : templates.Html =
@@ -179,7 +179,7 @@ object LoginHtml extends LoginController {
   }
 }
 
-object LoginApi extends LoginController {
+object LoginApi extends LoginController with ApiController {
   def get = SiteAction { implicit request =>
     Ok(json)
   }

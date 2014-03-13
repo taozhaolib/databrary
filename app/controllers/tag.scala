@@ -36,9 +36,9 @@ object TagController extends TagController {
     with Form
 }
 
-object TagHtml extends TagController
+object TagHtml extends TagController with HtmlController
 
-object TagApi extends TagController {
+object TagApi extends TagController with ApiController {
   def get(name : String) = SiteAction.async { implicit request =>
     Tag.get(name).flatMap(_.fold(
       ANotFound)(

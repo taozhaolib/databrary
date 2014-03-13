@@ -97,7 +97,7 @@ object RecordController extends RecordController {
   }
 }
 
-object RecordHtml extends RecordController {
+object RecordHtml extends RecordController with HtmlController {
   import RecordController._
 
   def view(i : models.Record.Id) = Action(i).async { implicit request =>
@@ -180,7 +180,7 @@ object RecordHtml extends RecordController {
     extends StructForm(routes.RecordHtml.remove(record.id, slot.containerId, slot.segment, true))
 }
 
-object RecordApi extends RecordController {
+object RecordApi extends RecordController with ApiController {
   def get(i : models.Record.Id) = Action(i).async { implicit request =>
     request.obj.json(request.apiOptions).map(Ok(_))
   }

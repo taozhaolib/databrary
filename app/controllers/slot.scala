@@ -77,7 +77,7 @@ object SlotController extends SlotController {
 }
 
 
-object SlotHtml extends SlotController {
+object SlotHtml extends SlotController with HtmlController {
   import SlotController._
 
   private[controllers] def show(commentForm : Option[CommentController.SlotForm] = None, tagForm : Option[TagController.SlotForm] = None)(implicit request : Request[_]) = {
@@ -125,7 +125,7 @@ object SlotHtml extends SlotController {
     }
 }
 
-object SlotApi extends SlotController {
+object SlotApi extends SlotController with ApiController {
   def get(c : models.Container.Id, segment : Segment) = Action(c, segment).async { request =>
     request.obj.slotJson(request.apiOptions).map(Ok(_))
   }

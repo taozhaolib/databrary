@@ -204,3 +204,6 @@ object Site extends SiteController {
     MovedPermanently("/" + path)
   }
 }
+
+trait ApiController extends SiteController
+trait HtmlController extends SiteController

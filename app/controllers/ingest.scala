@@ -11,7 +11,7 @@ import site._
 import models._
 import ingest._
 
-object IngestController extends SiteController {
+object IngestController extends SiteController with HtmlController {
   private def Action(i : models.Volume.Id) =
     SiteAction.rootAccess(Permission.ADMIN) ~> VolumeController.action(i, Permission.EDIT)
 

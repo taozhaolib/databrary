@@ -10,7 +10,7 @@ sealed abstract class Token protected (val id : Token.Id, val expires : Timestam
   private[models] def sqlKey = SQLTerms('token -> id)
   def valid = expires.toDateTime.isAfterNow
   def auth = play.api.libs.Crypto.sign(id)
-  def redeemURL = controllers.routes.TokenController.token(id, auth)
+  def redeemURL = controllers.routes.TokenHtml.token(id, auth)
   def remove : Future[Boolean]
 }
 
