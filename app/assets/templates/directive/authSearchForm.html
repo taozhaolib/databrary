@@ -1,0 +1,13 @@
+<form name="authSearchForm">
+    <input type="search" class="auth-search" placeholder="Search for authorizing agent..." ng-model="authSearchForm.name" ng-change="authSearchForm.search()">
+
+    <ul ng-if="authSearchForm.found">
+        <li ng-repeat="found in authSearchForm.found">
+            <a href="#" class="auth-found" ng-click="authSearchForm.select(found, searchAuth)">{{found.name}}</a>
+        </li>
+
+        <li>
+            None of these...
+        </li>
+    </ul>
+</form>

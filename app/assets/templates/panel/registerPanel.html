@@ -6,9 +6,6 @@
             </hgroup>
 
             <div class="col-full">
-                <div class="temporary">
-                    <input type="checkbox" ng-model="password">
-                </div>
                 <wizard retrieve="retrieveWizard" linear>
                     <wizard-step id="register_create"
                         name="Create Account"
@@ -66,10 +63,10 @@
                         description="Confirm your email address and select a password.">
                         <form name="passwordForm">
                             <label for="field_password_once">Password</label>
-                            <input id="field_password_once" type="password" ng-model="data.once">
+                            <input id="field_password_once" type="password" ng-model="data.password.once">
 
                             <label for="field_password_again">Password (again)</label>
-                            <input id="field_password_again" type="password" ng-model="data.again">
+                            <input id="field_password_again" type="password" ng-model="data.password.again">
 
                             <button class="second" type="submit" ng-disabled="!testProceed(passwordForm)" ng-click="proceed(passwordForm)">Continue</button>
                             <button class="first" type="reset">Reset</button>
@@ -79,16 +76,19 @@
                     <wizard-step id="register_agent"
                         name="Find Authorizing Agent"
                         description="Select a party to petition for advanced Databrary use.">
+                        <auth-search-form></auth-search-form>
                     </wizard-step>
 
                     <wizard-step id="register_request"
                         name="Request Authorization"
                         description="Request authorization from selected party.">
+
                     </wizard-step>
 
                     <wizard-step id="register_pending"
                         name="Stay Tuned"
                         description="Tips for exploring Databrary.">
+
                     </wizard-step>
                 </wizard>
             </div>

@@ -102,15 +102,7 @@
 
                 <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
                     <div class="row">
-                        <form name="searchAuth" class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-                            <input type="search" class="auth-search" placeholder="Search for authorizing agent..." ng-model="searchAuth.name" ng-change="searchParties(searchAuth)">
-
-                            <ul>
-                                <li ng-repeat="found in searchAuth.found">
-                                    <a href="#" class="auth-found" ng-click="selectFound(found, searchAuth)">{{found.name}}</a>
-                                </li>
-                            </ul>
-                        </form>
+                        <auth-search-form></auth-search-form>
                     </div>
                 </div>
             </div>
@@ -229,15 +221,7 @@
 
                 <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
                     <div class="row">
-                        <form name="searchAuth" class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-                            <input type="search" class="auth-search" placeholder="Search for authorizing agent..." ng-model="searchAuth.name" ng-change="searchParties(searchAuth)">
-
-                            <ul>
-                                <li ng-repeat="found in searchAuth.found">
-                                    <a href="#" class="auth-found" ng-click="selectFound(found, searchAuth, true)">{{found.name}}</a>
-                                </li>
-                            </ul>
-                        </form>
+                        <auth-search-form child></auth-search-form>
                     </div>
                 </div>
             </div>

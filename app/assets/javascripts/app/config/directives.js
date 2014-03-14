@@ -7,6 +7,7 @@ define([
 	'app/directive/baseline',
 	'app/directive/hover',
 	'app/directive/message',
+	'app/directive/authSearchForm',
 	'app/directive/repeater',
 	'app/directive/metricsRepeater',
 	'app/directive/panel',

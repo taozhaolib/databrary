@@ -10,7 +10,7 @@ define(['app/config/module'], function (module) {
 		authService.userUpdated = undefined;
 
 		var updateUser = function (user) {
-			var reload = false;
+			var reload = true;
 
 			authService.userUpdated = new Date();
 
@@ -20,8 +20,11 @@ define(['app/config/module'], function (module) {
 				else
 					user.superuser = false;
 
-				if (authService.user && (!!user.superuser != !!authService.user.superuser || user.id != authService.user.id))
-					reload = true;
+				if(!user || user != authService.user)
+
+				if(authService.user && user && authService.user.id == user.id &&
+					!!authService.user.superuser == !!user.superuser)
+					reload = false;
 			}
 
 			authService.user = user || undefined;
@@ -32,14 +35,24 @@ define(['app/config/module'], function (module) {
 			}
 		};
 
-		$http
-			.get('/api/user')
-			.success(function (data) {
-				updateUser(data);
-			})
-			.error(function () {
-				updateUser(undefined);
-			});
+		authService.updateUser = function (user) {
+			if(user)
+				updateUser(user);
+
+			$http
+				.get('/api/user')
+				.success(function (data) {
+					if(data.id == -1)
+						updateUser(undefined);
+					else
+						updateUser(data);
+				})
+				.error(function () {
+					updateUser(undefined);
+				});
+		};
+
+		authService.updateUser();
 
 		//
 

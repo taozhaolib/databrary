@@ -20,15 +20,16 @@ define(['app/config/module'], function (module) {
 			pages: 4
 		};
 
-		$scope.password = false; // TODO: pull this from $http
 		$scope.passwordData = {
 			token: undefined,
 			auth: undefined,
-			once: undefined,
-			again: undefined
+			password: {
+				once: undefined,
+				again: undefined
+			}
 		};
 
-		if($scope.type.isToken($window.$play.object)) {
+		if ($scope.type.isToken($window.$play.object)) {
 			$scope.passwordData.token = $window.$play.object.id;
 			$scope.passwordData.auth = $window.$play.object.auth;
 		}
@@ -43,7 +44,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		var prePasswordComplete = function (step, activate) {
-			if (!$scope.auth.isLoggedIn() && !$scope.password)
+			if (!$scope.auth.isLoggedIn() && !$scope.passwordData.token)
 				return false;
 
 			step.complete = true;
@@ -55,9 +56,22 @@ define(['app/config/module'], function (module) {
 			return true;
 		};
 
+		var postLoginBlock = function (step, activate) {
+			if ($scope.auth.isLoggedIn() && !$scope.auth.hasAuth('VIEW'))
+				return false;
+
+			step.complete = $scope.auth.hasAuth('VIEW') ? true : undefined;
+			step.allow = false;
+
+			if (activate !== false)
+				step.active = false;
+
+			return true;
+		};
+
 		$scope.updateStep = {
 			'register_create': function (step, activate) {
-				if(prePasswordComplete(step, activate))
+				if (prePasswordComplete(step, activate))
 					return;
 
 				step.complete = $scope.registerReady ? true : undefined;
@@ -68,7 +82,7 @@ define(['app/config/module'], function (module) {
 			},
 
 			'register_agreement': function (step, activate) {
-				if(prePasswordComplete(step, activate))
+				if (prePasswordComplete(step, activate))
 					return;
 
 				step.complete = $scope.registerSubmit ? true : undefined;
@@ -79,7 +93,7 @@ define(['app/config/module'], function (module) {
 			},
 
 			'register_email': function (step, activate) {
-				if(prePasswordComplete(step, activate))
+				if (prePasswordComplete(step, activate))
 					return;
 
 				if (!$scope.registerReady || !$scope.registerSubmit)
@@ -92,10 +106,17 @@ define(['app/config/module'], function (module) {
 			},
 
 			'register_password': function (step, activate) {
-				if ($scope.auth.isLoggedIn())
-					return step.complete = true;
+				if ($scope.auth.isLoggedIn()) {
+					step.complete = true;
+					step.allow = false;
 
-				if (!$scope.password)
+					if (activate !== false)
+						step.active = false;
+
+					return true
+				}
+
+				if (!$scope.passwordData.token)
 					return;
 
 				if ($scope.passwordSubmit)
@@ -109,39 +130,32 @@ define(['app/config/module'], function (module) {
 			},
 
 			'register_agent': function (step, activate) {
-				if ($scope.auth.hasAuth('VIEW'))
-					return step.complete = true;
-
-				if (!$scope.auth.isLoggedIn() || ($scope.password && !$scope.passwordSubmit))
+				if (postLoginBlock(step, activate))
 					return;
 
-				if ($scope.authParty)
-					step.complete = true;
-				else if (activate !== false)
-					step.active = true;
-
 				step.allow = true;
+				step.complete = $scope.authParty ? true : undefined;
+
+				if (activate !== false)
+					step.active = !$scope.authParty;
 			},
 
 			'register_request': function (step, activate) {
-				if ($scope.auth.hasAuth('VIEW'))
-					return step.complete = true;
-
-				if (!$scope.auth.isLoggedIn() || !$scope.authParty)
+				if (postLoginBlock(step, activate))
 					return;
 
-				if ($scope.requestSubmit)
-					step.complete = true;
-				else {
-					if (activate !== false)
-						step.active = true;
+				step.allow = !!$scope.authParty;
+				step.complete = $scope.requestSubmit ? true : undefined;
 
-					step.allow = true;
-				}
+				if (activate !== false)
+					step.active = !!$scope.authParty;
 			},
 
 			'register_pending': function (step, activate) {
-				if (!$scope.auth.isLoggedIn() || ($scope.auth.isAuth('NONE') && !$scope.requestSubmit))
+				if (postLoginBlock(step, activate))
+					return;
+
+				if (!$scope.requestSubmit)
 					return;
 
 				if (activate !== false)
@@ -212,7 +226,7 @@ define(['app/config/module'], function (module) {
 				$scope.wizard.stepsList['register_password'].data = $scope.passwordData;
 
 				$scope.wizard.stepsList['register_password'].testProceed = function (form) {
-					var ready = form.$dirty && form.$valid && $scope.passwordData.once && $scope.passwordData.again && $scope.passwordData.once == $scope.passwordData.again;
+					var ready = form.$dirty && form.$valid && $scope.passwordData.password.once && $scope.passwordData.password.once == $scope.passwordData.password.again;
 
 					$scope.updateSteps(false);
 
@@ -221,11 +235,24 @@ define(['app/config/module'], function (module) {
 
 				$scope.wizard.stepsList['register_password'].proceed = function (form) {
 					$http
-						.post('/api/party/'+$scope.password.party+'/password', $scope.passwordData)
+						.post('/api/party/' + $window.$play.object.party + '/password', $scope.passwordData)
 						.success(function (data) {
+							$window.$play.object = null;
 							$scope.passwordSubmit = true;
+							$scope.auth.updateUser(data);
 							$scope.updateSteps();
+						})
+						.error(function () {
+							$window.$play.object = null;
+							console.log(arguments);
 						});
+				};
+			}
+
+			if ($scope.wizard.stepsList['register_agent'] && !$scope.wizard.stepsList['register_agent'].authSearchForm.selectFn) {
+				$scope.wizard.stepsList['register_agent'].authSearchForm.selectFn = function (found, form) {
+					$scope.authParty = found;
+					$scope.updateSteps();
 				};
 			}
 		});

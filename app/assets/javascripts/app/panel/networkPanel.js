@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.controller('NetworkPanel', ['$scope', 'Party', '$routeParams', '$filter', 'PartyAuthorize', 'ConstantService', function ($scope, Party, $routeParams, $filter, PartyAuthorize, constantService) {
+	module.controller('NetworkPanel', ['$scope', 'Party', '$routeParams', '$filter', 'PartyAuthorize', 'ConstantService', 'EventService', function ($scope, Party, $routeParams, $filter, PartyAuthorize, constantService, eventService) {
 		$scope.constant = $scope.constant || constantService;
 
 		$scope.bootPanel = function () {
@@ -266,19 +266,7 @@ define(['app/config/module'], function (module) {
 
 		//
 
-		$scope.searchParties = function (form) {
-			if (!form.name)
-				return form.found = [];
-
-			PartyAuthorize.search({
-				apply: !$scope.parental,
-				name: form.name
-			}, function (data) {
-				form.found = data;
-			});
-		};
-
-		$scope.selectFound = function (found, form, child) {
+		var selectFn = function (found, form) {
 			var request = {
 				party: found,
 				force: true,
@@ -287,10 +275,7 @@ define(['app/config/module'], function (module) {
 				direct: 0
 			};
 
-			form.name = '';
-			$scope.searchParties(form);
-
-			if (child) {
+			if (form.child) {
 				$scope.partyAuth.children[found.id] = request;
 				$scope.openAuthChild(request);
 				$scope.currentAuthChild = request;
@@ -299,5 +284,10 @@ define(['app/config/module'], function (module) {
 				$scope.currentAuthParent = request;
 			}
 		};
+
+		eventService.listen($scope, 'authSearchForm-init', function (event, form) { console.log(event, form);
+			form.selectFn = selectFn;
+			event.stopPropagation();
+		});
 	}]);
 });
