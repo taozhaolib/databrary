@@ -30,6 +30,9 @@
 			    case DataType.date => {
 				@widget.tag.inputDate(form.datum())
 			    }
+			    case _ if form.metric.long => {
+				@widget.tag.textarea(form.datum())
+			    }
 			    case _ => {
 				@widget.tag.inputText(form.datum())
 			    }
