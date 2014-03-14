@@ -81,7 +81,7 @@ final class LoginToken protected (id : Token.Id, expires : Timestamp, account : 
   def remove = LoginToken.delete(id)
 
   def json = JsonRecord(id
-    , 'account -> accountId
+    , 'party -> accountId
     , 'auth -> auth
     , 'reset -> account.password.nonEmpty
     )
