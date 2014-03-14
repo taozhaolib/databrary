@@ -492,6 +492,7 @@ INSERT INTO "record_category" ("id", "name") VALUES (-800, 'pilot');
 INSERT INTO "record_category" ("id", "name") VALUES (-700, 'exclusion');
 INSERT INTO "record_category" ("id", "name") VALUES (-400, 'condition');
 INSERT INTO "record_category" ("id", "name") VALUES (-100, 'location');
+INSERT INTO "record_category" ("id", "name") VALUES (-300, 'task');
 
 CREATE TABLE "record" (
 	"id" serial NOT NULL Primary Key,
@@ -506,23 +507,25 @@ COMMENT ON TYPE data_type IS 'Types of measurement data corresponding to measure
 CREATE TABLE "metric" (
 	"id" serial Primary Key,
 	"name" varchar(64) NOT NULL Unique,
-	"classification" classification NOT NULL DEFAULT 'DEIDENTIFIED',
+	"classification" classification NOT NULL,
 	"type" data_type NOT NULL,
 	"options" text[] -- (suggested) options for text enumerations, not enforced
 );
 COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.';
-INSERT INTO "metric" ("id", "name", "type") VALUES (-900, 'ident', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-900, 'ident', 'DEIDENTIFIED', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-590, 'birthdate', 'IDENTIFIED', 'date');
-INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-550, 'race', 'text', ARRAY['American Indian or Alaska Native','Asian','Native Hawaiian or Other Pacific Islander','Black or African American','White','Multiple']);
-INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-540, 'ethnicity', 'text', ARRAY['Not Hispanic or Latino','Hispanic or Latino']);
-INSERT INTO "metric" ("id", "name", "type") VALUES (-510, 'language', 'text');
-INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-580, 'gender', 'text', ARRAY['Female','Male']);
+INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-550, 'race', 'DEIDENTIFIED', 'text', ARRAY['American Indian or Alaska Native','Asian','Native Hawaiian or Other Pacific Islander','Black or African American','White','Multiple']);
+INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-540, 'ethnicity', 'DEIDENTIFIED', 'text', ARRAY['Not Hispanic or Latino','Hispanic or Latino']);
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-510, 'language', 'DEIDENTIFIED', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-580, 'gender', 'DEIDENTIFIED', 'text', ARRAY['Female','Male']);
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-520, 'disability', 'IDENTIFIED', 'text');
-INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-700, 'reason', 'text', ARRAY['did not meet criteria','procedural/experimenter error','withdrew/fussy/tired','outlier']); 
-INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-180, 'setting', 'text', ARRAY['lab','home','museum','classroom','outdoor','clinic']);
-INSERT INTO "metric" ("id", "name", "type") VALUES (-150, 'country', 'text');
-INSERT INTO "metric" ("id", "name", "type", "options") VALUES (-140, 'state', 'text', ARRAY['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','MD','MA','MI','MN','MS','MO','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']);
-INSERT INTO "metric" ("id", "name", "type") VALUES (-90, 'info', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-700, 'reason', 'DEIDENTIFIED', 'text', ARRAY['did not meet criteria','procedural/experimenter error','withdrew/fussy/tired','outlier']);
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-150, 'country', 'DEIDENTIFIED', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-140, 'state', 'DEIDENTIFIED', 'text', ARRAY['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','MD','MA','MI','MN','MS','MO','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']);
+INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-180, 'setting', 'MATERIAL', 'text', ARRAY['lab','home','museum','classroom','outdoor','clinic']);
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-90, 'info', 'MATERIAL', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-800, 'title', 'MATERIAL', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-600, 'description', 'MATERIAL', 'text');
 
 CREATE TABLE "record_template" (
 	"category" smallint References "record_category" ON DELETE CASCADE,
@@ -541,6 +544,8 @@ INSERT INTO "record_template" ("category", "metric") VALUES (-700, -700);
 INSERT INTO "record_template" ("category", "metric") VALUES (-400, -900);
 INSERT INTO "record_template" ("category", "metric") VALUES (-100, -180);
 INSERT INTO "record_template" ("category", "metric") VALUES (-100, -140);
+INSERT INTO "record_template" ("category", "metric") VALUES (-300, -800);
+INSERT INTO "record_template" ("category", "metric") VALUES (-300, -600);
 
 CREATE TABLE "measure" ( -- ABSTRACT
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,

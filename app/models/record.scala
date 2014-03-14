@@ -42,6 +42,7 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
   final val EXCLUSION   : Id = asId(-700)
   final val PARTICIPANT : Id = asId(-500)
   final val CONDITION   : Id = asId(-400)
+  final val TASK        : Id = asId(-300)
   final val GROUP       : Id = asId(-200)
   final val LOCATION    : Id = asId(-100)
 
@@ -55,6 +56,9 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
     override val template = Seq(Metric.Ident, Metric.Birthdate, Metric.Gender, Metric.Race, Metric.Ethnicity)
   }
   final val Condition = new RecordCategory(CONDITION, "condition")
+  final val Task = new RecordCategory(TASK, "task") {
+    override val template = Seq(Metric.Ident, Metric.Title, Metric.Description)
+  }
   final val Group = new RecordCategory(GROUP, "group")
   final val Location = new RecordCategory(LOCATION, "location") {
     override val ident = Metric.Setting
