@@ -35,7 +35,7 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">ParseException</span><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="line">line: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>, <span name="column">column: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>)</span><span class="result"> extends <a href="IngestException.html" class="extype" name="ingest.IngestException">IngestException</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">ParseException</span><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="line">line: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>, <span name="column">column: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>, <span name="context">context: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <a href="IngestException.html" class="extype" name="ingest.IngestException">IngestException</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
@@ -80,7 +80,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="ingest.ParseException#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(message:String,line:Int,column:Int):ingest.ParseException"></a>
+      <a id="&lt;init&gt;(message:String,line:Int,column:Int,context:String):ingest.ParseException"></a>
       <a id="&lt;init&gt;:ParseException"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -88,7 +88,7 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ParseException</span><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="line">line: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>, <span name="column">column: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>)</span>
+        <span class="name">ParseException</span><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="line">line: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>, <span name="column">column: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>, <span name="context">context: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span>
       </span>
       </h4>
       
@@ -221,6 +221,19 @@
       </span>
       <span class="symbol">
         <span class="name">column</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="ingest.ParseException#context" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="context:String"></a>
+      <a id="context:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">context</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4>
       

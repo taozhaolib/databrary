@@ -163,19 +163,6 @@
       </span>
       </h4>
       <p class="shortcomment cmt">Equality based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality based on primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId</dd></dl></div>
-    </li><li name="site.SiteObject#Action" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Action(name:String,route:play.api.mvc.Call,permission:models.Permission.Value):site.SiteAction"></a>
-      <a id="Action(String,Call,Permission.Value):SiteAction"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Action</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="route">route: <span class="extype" name="play.api.mvc.Call">Call</span></span>, <span name="permission">permission: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="result">: <a href="../site/SiteAction.html" class="extype" name="site.SiteAction">SiteAction</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></dd></dl></div>
     </li><li name="models.Record#addSlot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="addSlot(s:models.Slot):scala.concurrent.Future[Boolean]"></a>
       <a id="addSlot(Slot):Future[Boolean]"></a>
@@ -228,19 +215,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.Record#assets" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="assets:scala.concurrent.Future[Seq[models.SlotAsset]]"></a>
-      <a id="assets:Future[Seq[SlotAsset]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">assets</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>]]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The set of assets to which this record applies.</p>
     </li><li name="models.Record#category" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="category:Option[models.RecordCategory]"></a>
       <a id="category:Option[RecordCategory]"></a>
@@ -527,19 +501,6 @@ This assumes that two objects representing the same row are the same (even if th
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.Record#pageActions" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="pageActions:Seq[site.SiteAction]"></a>
-      <a id="pageActions:Seq[SiteAction]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">pageActions</span><span class="result">: <span class="extype" name="scala.collection.Seq">Seq</span>[<a href="../site/SiteAction.html" class="extype" name="site.SiteAction">SiteAction</a>]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The actions available for this page.</p><div class="fullcomment"><div class="comment cmt"><p>The actions available for this page.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Record">Record</a> → <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></dd></dl></div>
     </li><li name="site.SitePage#pageCrumbName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageCrumbName:Option[String]"></a>
       <a id="pageCrumbName:Option[String]"></a>
@@ -633,32 +594,19 @@ This may invalidate measures on this object.</p></div></div>
       </h4>
       <p class="shortcomment cmt">Remove this record from a slot.</p>
     </li><li name="models.Record#setMeasure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="setMeasure[T](metric:models.Metric[T],value:String):scala.concurrent.Future[Boolean]"></a>
-      <a id="setMeasure[T](Metric[T],String):Future[Boolean]"></a>
+      <a id="setMeasure[T](measure:models.Measure[T]):scala.concurrent.Future[Boolean]"></a>
+      <a id="setMeasure[T](Measure[T]):Future[Boolean]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">setMeasure</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="metric">metric: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="models.Record.setMeasure.T">T</span>]</span>, <span name="value">value: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+        <span class="name">setMeasure</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="measure">measure: <a href="Measure.html" class="extype" name="models.Measure">Measure</a>[<span class="extype" name="models.Record.setMeasure.T">T</span>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Add or change a measure on this record.</p><div class="fullcomment"><div class="comment cmt"><p>Add or change a measure on this record.
 This is not type safe so may generate SQL exceptions, and may invalidate measures on this object.</p></div></div>
-    </li><li name="models.Record#setMeasureV" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="setMeasureV[T](metric:models.Metric[T],value:T):scala.concurrent.Future[Boolean]"></a>
-      <a id="setMeasureV[T](Metric[T],T):Future[Boolean]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">setMeasureV</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="metric">metric: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="models.Record.setMeasureV.T">T</span>]</span>, <span name="value">value: <span class="extype" name="models.Record.setMeasureV.T">T</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Add or change a measure on this record.</p>
     </li><li name="models.InVolume#site" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="site:site.Site"></a>
       <a id="site:Site"></a>
@@ -698,7 +646,7 @@ This is not type safe so may generate SQL exceptions, and may invalidate measure
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.TableRowId#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
       <h4 class="signature">
@@ -710,7 +658,7 @@ This is not type safe so may generate SQL exceptions, and may invalidate measure
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
     </li><li name="models.Record#volume" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volume:models.Volume"></a>
       <a id="volume:Volume"></a>

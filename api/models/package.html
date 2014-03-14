@@ -149,8 +149,21 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       <p class="comment cmt">Represents an event row in an audit table of a particular type.</p>
+    </li><li name="models.Authorization" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AuthorizationextendsAccesswithTableRow"></a>
+      <a id="Authorization:Authorization"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="Authorization.html"><span class="name">Authorization</span></a><span class="result"> extends <a href="../site/Access.html" class="extype" name="site.Access">Access</a> with <span class="extype" name="models.TableRow">TableRow</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Link between Authorize (rows in table/view) and Access.</p>
     </li><li name="models.Authorize" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="AuthorizeextendsTableRow"></a>
+      <a id="AuthorizeextendsAuthorization"></a>
       <a id="Authorize:Authorize"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -158,7 +171,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Authorize.html"><span class="name">Authorize</span></a><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span></span>
+        <a href="Authorize.html"><span class="name">Authorize</span></a><span class="result"> extends <a href="Authorization.html" class="extype" name="models.Authorization">Authorization</a></span>
       </span>
       </h4>
       <p class="comment cmt">A specific authorization by one party of another.</p>
@@ -201,19 +214,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       <p class="comment cmt">Collection of related assets.</p>
-    </li><li name="models.ContainerWeight" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ContainerWeightextendsWeight"></a>
-      <a id="ContainerWeight:ContainerWeight"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="ContainerWeight.html"><span class="name">ContainerWeight</span></a><span class="result"> extends <span class="extype" name="models.Weight">Weight</span></span>
-      </span>
-      </h4>
-      <p class="comment cmt">Summary representation of tag information for a single tag and current user.</p>
     </li><li name="models.ContextSlot" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="ContextSlotextendsSlot"></a>
       <a id="ContextSlot:ContextSlot"></a>
@@ -383,12 +383,12 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       <p class="comment cmt">A set of Measures.</p>
-    </li><li name="models.RecordCategory" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+    </li><li name="models.RecordCategory" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="RecordCategoryextendsTableRowId[models.RecordCategory]"></a>
       <a id="RecordCategory:RecordCategory"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">sealed abstract </span>
+        <span class="modifier">sealed </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
@@ -501,18 +501,31 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">All tags and their names used anywhere.</p>
     </li><li name="models.TagWeight" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="TagWeightextendsWeight"></a>
+      <a id="TagWeightextendsAnyRef"></a>
       <a id="TagWeight:TagWeight"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="TagWeight.html"><span class="name">TagWeight</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="models.TagWeightContainer" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TagWeightContainerextendsTagWeight"></a>
+      <a id="TagWeightContainer:TagWeightContainer"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="TagWeight.html"><span class="name">TagWeight</span></a><span class="result"> extends <span class="extype" name="models.Weight">Weight</span></span>
+        <a href="TagWeightContainer.html"><span class="name">TagWeightContainer</span></a><span class="result"> extends <a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a></span>
       </span>
       </h4>
-      <p class="comment cmt">Summary representation of tag information for a single slot and current user.</p>
+      <p class="comment cmt">Summary representation of tag information for a single tag and current user.</p>
     </li><li name="models.Timeseries" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="TimeseriesextendsAssetwithTimeseriesData"></a>
       <a id="Timeseries:Timeseries"></a>
@@ -689,6 +702,19 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       <p class="comment cmt">Helper for audit tables.</p>
+    </li><li name="models.Authorization" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Authorization"></a>
+      <a id="Authorization:Authorization"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Authorization$.html"><span class="name">Authorization</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="Authorization.html" class="extype" name="models.Authorization">Authorization</a>]</span>
+      </span>
+      </h4>
+      
     </li><li name="models.Authorize" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Authorize"></a>
       <a id="Authorize:Authorize"></a>
@@ -751,19 +777,6 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       <span class="symbol">
         <a href="Container$.html"><span class="name">Container</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Container.html" class="extype" name="models.Container">Container</a>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="models.ContainerWeight" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ContainerWeight"></a>
-      <a id="ContainerWeight:ContainerWeight"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="ContainerWeight$.html"><span class="name">ContainerWeight</span></a><span class="result"> extends <span class="extype" name="models.WeightView">WeightView</span>[<a href="ContainerWeight.html" class="extype" name="models.ContainerWeight">ContainerWeight</a>]</span>
       </span>
       </h4>
       
@@ -1036,7 +1049,20 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="TagWeight$.html"><span class="name">TagWeight</span></a><span class="result"> extends <span class="extype" name="models.WeightView">WeightView</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]</span>
+        <a href="TagWeight$.html"><span class="name">TagWeight</span></a><span class="result"> extends <span class="extype" name="models.TagWeightView">TagWeightView</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]</span>
+      </span>
+      </h4>
+      
+    </li><li name="models.TagWeightContainer" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TagWeightContainer"></a>
+      <a id="TagWeightContainer:TagWeightContainer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="TagWeightContainer$.html"><span class="name">TagWeightContainer</span></a><span class="result"> extends <span class="extype" name="models.TagWeightView">TagWeightView</span>[<a href="TagWeightContainer.html" class="extype" name="models.TagWeightContainer">TagWeightContainer</a>]</span>
       </span>
       </h4>
       

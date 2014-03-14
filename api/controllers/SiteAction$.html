@@ -82,7 +82,7 @@
         <div id="types" class="types members">
               <h3>Type Members</h3>
               <ol><li name="controllers.SiteAction.Access" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Access[R[_]&lt;:controllers.SiteRequest[_]]extendsActionHandler[R]withProductwithSerializable"></a>
+      <a id="Access[R[_]&lt;:controllers.SiteRequest[_]]extendsSiteAction.AccessCheck[R]withProductwithSerializable"></a>
       <a id="Access[R[_]&lt;:SiteRequest[_]]:Access[R]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -90,7 +90,33 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="SiteAction$$Access.html"><span class="name">Access</span></a><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span> &lt;: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>]</span><span class="params">(<span name="access">access: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>)</span><span class="result"> extends <a href="ActionHandler.html" class="extype" name="controllers.ActionHandler">ActionHandler</a>[<span class="extype" name="controllers.SiteAction.Access.R">R</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="SiteAction$$Access.html"><span class="name">Access</span></a><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span> &lt;: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>]</span><span class="params">(<span name="access">access: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>)</span><span class="result"> extends <a href="SiteAction$$AccessCheck.html" class="extype" name="controllers.SiteAction.AccessCheck">AccessCheck</a>[<span class="extype" name="controllers.SiteAction.Access.R">R</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.SiteAction.AccessCheck" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AccessCheck[R[_]&lt;:controllers.SiteRequest[_]]extendsActionHandler[R]"></a>
+      <a id="AccessCheck[R[_]&lt;:SiteRequest[_]]:AccessCheck[R]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="SiteAction$$AccessCheck.html"><span class="name">AccessCheck</span></a><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span> &lt;: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>]</span><span class="result"> extends <a href="ActionHandler.html" class="extype" name="controllers.ActionHandler">ActionHandler</a>[<span class="extype" name="controllers.SiteAction.AccessCheck.R">R</span>]</span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.SiteAction.RootAccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="RootAccess[R[_]&lt;:controllers.SiteRequest[_]]extendsSiteAction.AccessCheck[R]withProductwithSerializable"></a>
+      <a id="RootAccess[R[_]&lt;:SiteRequest[_]]:RootAccess[R]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="SiteAction$$RootAccess.html"><span class="name">RootAccess</span></a><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span> &lt;: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>]</span><span class="params">(<span name="permission">permission: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a> = <span class="symbol">models.Permission.ADMIN</span></span>)</span><span class="result"> extends <a href="SiteAction$$AccessCheck.html" class="extype" name="controllers.SiteAction.AccessCheck">AccessCheck</a>[<span class="extype" name="controllers.SiteAction.RootAccess.R">R</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
@@ -490,6 +516,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="controllers.SiteAction#rootAccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="rootAccess(permission:models.Permission.Value):controllers.ActionCreator[controllers.SiteRequest.Auth]"></a>
+      <a id="rootAccess(models.Permission.Value):ActionCreator[Auth]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">rootAccess</span><span class="params">(<span name="permission">permission: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a> = <span class="symbol"><span class="name"><a href="../models/package.html">Permission.ADMIN</a></span></span></span>)</span><span class="result">: <a href="ActionCreator.html" class="extype" name="controllers.ActionCreator">ActionCreator</a>[<a href="SiteRequest$$Auth.html" class="extype" name="controllers.SiteRequest.Auth">Auth</a>]</span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

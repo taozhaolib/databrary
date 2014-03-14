@@ -35,13 +35,13 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">Access</span><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span> &lt;: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>]</span><span class="params">(<span name="access">access: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>)</span><span class="result"> extends <a href="ActionHandler.html" class="extype" name="controllers.ActionHandler">ActionHandler</a>[<span class="extype" name="controllers.SiteAction.Access.R">R</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">Access</span><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span> &lt;: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>]</span><span class="params">(<span name="access">access: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>)</span><span class="result"> extends <a href="SiteAction$$AccessCheck.html" class="extype" name="controllers.SiteAction.AccessCheck">AccessCheck</a>[<span class="extype" name="controllers.SiteAction.Access.R">R</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/controllers/site.scala" target="_blank">site.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="ActionHandler.html" class="extype" name="controllers.ActionHandler">ActionHandler</a>[<span class="extype" name="controllers.SiteAction.Access.R">R</span>], <a href="ActionRefiner.html" class="extype" name="controllers.ActionRefiner">ActionRefiner</a>[<span class="extype" name="controllers.SiteAction.Access.R">R</span>, <span class="extype" name="controllers.SiteAction.Access.R">R</span>], <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<span class="extype" name="controllers.SiteAction.Access.R">R</span>, <span class="extype" name="controllers.SiteAction.Access.R">R</span>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="SiteAction$$AccessCheck.html" class="extype" name="controllers.SiteAction.AccessCheck">AccessCheck</a>[<span class="extype" name="controllers.SiteAction.Access.R">R</span>], <a href="ActionHandler.html" class="extype" name="controllers.ActionHandler">ActionHandler</a>[<span class="extype" name="controllers.SiteAction.Access.R">R</span>], <a href="ActionRefiner.html" class="extype" name="controllers.ActionRefiner">ActionRefiner</a>[<span class="extype" name="controllers.SiteAction.Access.R">R</span>, <span class="extype" name="controllers.SiteAction.Access.R">R</span>], <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<span class="extype" name="controllers.SiteAction.Access.R">R</span>, <span class="extype" name="controllers.SiteAction.Access.R">R</span>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="controllers.SiteAction.Access"><span>Access</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="controllers.ActionHandler"><span>ActionHandler</span></li><li class="in" name="controllers.ActionRefiner"><span>ActionRefiner</span></li><li class="in" name="controllers.ActionFunction"><span>ActionFunction</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="controllers.SiteAction.Access"><span>Access</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="controllers.SiteAction.AccessCheck"><span>AccessCheck</span></li><li class="in" name="controllers.ActionHandler"><span>ActionHandler</span></li><li class="in" name="controllers.ActionRefiner"><span>ActionRefiner</span></li><li class="in" name="controllers.ActionFunction"><span>ActionFunction</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -256,7 +256,7 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="controllers.SiteAction.Access#handle" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="controllers.SiteAction.AccessCheck#handle" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="handle[A](request:R[A]):scala.concurrent.Future[Option[play.api.mvc.SimpleResult]]"></a>
       <a id="handle[A](R[A]):Future[Option[SimpleResult]]"></a>
       <h4 class="signature">
@@ -265,10 +265,10 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">handle</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="request">request: <span class="extype" name="controllers.SiteAction.Access.R">R</span>[<span class="extype" name="controllers.SiteAction.Access.handle.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]]</span>
+        <span class="name">handle</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="request">request: <span class="extype" name="controllers.SiteAction.Access.R">R</span>[<span class="extype" name="controllers.SiteAction.AccessCheck.handle.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.SiteAction.Access">Access</a> → <a href="ActionHandler.html" class="extype" name="controllers.ActionHandler">ActionHandler</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SiteAction$$AccessCheck.html" class="extype" name="controllers.SiteAction.AccessCheck">AccessCheck</a> → <a href="ActionHandler.html" class="extype" name="controllers.ActionHandler">ActionHandler</a></dd></dl></div>
     </li><li name="controllers.ActionRefiner#invokeBlock" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="invokeBlock[A](request:R[A],block:P[A]=&gt;scala.concurrent.Future[play.api.mvc.SimpleResult]):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
       <a id="invokeBlock[A](R[A],(R[A])⇒Future[SimpleResult]):Future[SimpleResult]"></a>
@@ -447,6 +447,8 @@
               <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
             </div><div class="parent" name="scala.Equals">
               <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
+            </div><div class="parent" name="controllers.SiteAction.AccessCheck">
+              <h3>Inherited from <a href="SiteAction$$AccessCheck.html" class="extype" name="controllers.SiteAction.AccessCheck">AccessCheck</a>[<span class="extype" name="controllers.SiteAction.Access.R">R</span>]</h3>
             </div><div class="parent" name="controllers.ActionHandler">
               <h3>Inherited from <a href="ActionHandler.html" class="extype" name="controllers.ActionHandler">ActionHandler</a>[<span class="extype" name="controllers.SiteAction.Access.R">R</span>]</h3>
             </div><div class="parent" name="controllers.ActionRefiner">

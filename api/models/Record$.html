@@ -334,33 +334,19 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.Record#findMeasure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="findMeasure[T](volume:models.Volume,category:Option[models.RecordCategory],metric:models.Metric[T],value:T):scala.concurrent.Future[Seq[models.Record]]"></a>
-      <a id="findMeasure[T](Volume,Option[RecordCategory],Metric[T],T):Future[Seq[Record]]"></a>
+    </li><li name="models.Record#findMeasures" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="findMeasures[T](volume:models.Volume,category:Option[models.RecordCategory],measures:models.Measure[T]*):scala.concurrent.Future[Seq[models.Record]]"></a>
+      <a id="findMeasures[T](Volume,Option[RecordCategory],Measure[T]*):Future[Seq[Record]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">findMeasure</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="category">category: <span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>] = <span class="symbol">None</span></span>, <span name="metric">metric: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="models.Record.findMeasure.T">T</span>]</span>, <span name="value">value: <span class="extype" name="models.Record.findMeasure.T">T</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]]</span>
+        <span class="name">findMeasures</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="category">category: <span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>, <span name="measures">measures: <a href="Measure.html" class="extype" name="models.Measure">Measure</a>[<span class="extype" name="models.Record.findMeasures.T">T</span>]*</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Retrieve the records in the given volume with a measure of the given value.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve the records in the given volume with a measure of the given value.</p></div><dl class="paramcmts block"><dt class="param">category</dt><dd class="cmt"><p>restrict to the specified category, or include all categories</p></dd><dt class="param">metric</dt><dd class="cmt"><p>search by metric</p></dd><dt class="param">value</dt><dd class="cmt"><p>measure value that must match
-</p></dd></dl></div>
-    </li><li name="models.TableView#fixed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="fixed(r:TableView.this.Rowwithmodels.TableRow):dbrary.Selector[TableView.this.Rowwithmodels.TableRow]"></a>
-      <a id="fixed(RowwithTableRow):Selector[RowwithTableRow]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">fixed</span><span class="params">(<span name="r">r: <a href="#Row=R" class="extmbr" name="models.Record.Row">Row</a> with <span class="extype" name="models.TableRow">TableRow</span></span>)</span><span class="result">: <span class="extype" name="dbrary.Selector">Selector</span>[<a href="#Row=R" class="extmbr" name="models.Record.Row">Row</a> with <span class="extype" name="models.TableRow">TableRow</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableView</dd></dl></div>
+      <p class="shortcomment cmt">Retrieve the records in the given volume with a measure of the given value.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve the records in the given volume with a measure of the given value.</p></div><dl class="paramcmts block"><dt class="param">category</dt><dd class="cmt"><p>restrict to the specified category, or include all categories</p></dd></dl></div>
     </li><li name="models.HasTable#fromTable" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="fromTable:dbrary.FromTable"></a>
       <a id="fromTable:FromTable"></a>

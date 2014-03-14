@@ -35,13 +35,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">AssetApi</span><span class="result"> extends <span class="extype" name="controllers.AssetController">AssetController</span></span>
+        <span class="name">AssetApi</span><span class="result"> extends <span class="extype" name="controllers.AssetController">AssetController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/controllers/asset.scala" target="_blank">asset.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="controllers.AssetController">AssetController</span>, <a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a>[<a href="../models/Asset.html" class="extype" name="models.Asset">Asset</a>], <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a>, <span class="extype" name="play.api.mvc.Controller">Controller</span>, <span class="extype" name="play.api.mvc.Rendering">Rendering</span>, <span class="extype" name="play.api.mvc.RequestExtractors">RequestExtractors</span>, <span class="extype" name="play.api.mvc.AcceptExtractors">AcceptExtractors</span>, <span class="extype" name="play.api.http.ContentTypes">ContentTypes</span>, <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span>, <span class="extype" name="play.api.http.Status">play.api.http.Status</span>, <span class="extype" name="play.api.http.HttpProtocol">HttpProtocol</span>, <span class="extype" name="play.api.mvc.BodyParsers">BodyParsers</span>, <span class="extype" name="play.api.mvc.Results">Results</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a>, <span class="extype" name="controllers.AssetController">AssetController</span>, <a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a>[<a href="../models/Asset.html" class="extype" name="models.Asset">Asset</a>], <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a>, <span class="extype" name="play.api.mvc.Controller">Controller</span>, <span class="extype" name="play.api.mvc.Rendering">Rendering</span>, <span class="extype" name="play.api.mvc.RequestExtractors">RequestExtractors</span>, <span class="extype" name="play.api.mvc.AcceptExtractors">AcceptExtractors</span>, <span class="extype" name="play.api.http.ContentTypes">ContentTypes</span>, <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span>, <span class="extype" name="play.api.http.Status">play.api.http.Status</span>, <span class="extype" name="play.api.http.HttpProtocol">HttpProtocol</span>, <span class="extype" name="play.api.mvc.BodyParsers">BodyParsers</span>, <span class="extype" name="play.api.mvc.Results">Results</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="controllers.AssetApi"><span>AssetApi</span></li><li class="in" name="controllers.AssetController"><span>AssetController</span></li><li class="in" name="controllers.ObjectController"><span>ObjectController</span></li><li class="in" name="controllers.SiteController"><span>SiteController</span></li><li class="in" name="play.api.mvc.Controller"><span>Controller</span></li><li class="in" name="play.api.mvc.Rendering"><span>Rendering</span></li><li class="in" name="play.api.mvc.RequestExtractors"><span>RequestExtractors</span></li><li class="in" name="play.api.mvc.AcceptExtractors"><span>AcceptExtractors</span></li><li class="in" name="play.api.http.ContentTypes"><span>ContentTypes</span></li><li class="in" name="play.api.http.HeaderNames"><span>HeaderNames</span></li><li class="in" name="play.api.http.Status"><span>Status</span></li><li class="in" name="play.api.http.HttpProtocol"><span>HttpProtocol</span></li><li class="in" name="play.api.mvc.BodyParsers"><span>BodyParsers</span></li><li class="in" name="play.api.mvc.Results"><span>Results</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="controllers.AssetApi"><span>AssetApi</span></li><li class="in" name="controllers.ApiController"><span>ApiController</span></li><li class="in" name="controllers.AssetController"><span>AssetController</span></li><li class="in" name="controllers.ObjectController"><span>ObjectController</span></li><li class="in" name="controllers.SiteController"><span>SiteController</span></li><li class="in" name="play.api.mvc.Controller"><span>Controller</span></li><li class="in" name="play.api.mvc.Rendering"><span>Rendering</span></li><li class="in" name="play.api.mvc.RequestExtractors"><span>RequestExtractors</span></li><li class="in" name="play.api.mvc.AcceptExtractors"><span>AcceptExtractors</span></li><li class="in" name="play.api.http.ContentTypes"><span>ContentTypes</span></li><li class="in" name="play.api.http.HeaderNames"><span>HeaderNames</span></li><li class="in" name="play.api.http.Status"><span>Status</span></li><li class="in" name="play.api.http.HttpProtocol"><span>HttpProtocol</span></li><li class="in" name="play.api.mvc.BodyParsers"><span>BodyParsers</span></li><li class="in" name="play.api.mvc.Results"><span>Results</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -81,38 +81,12 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="controllers.AssetController.AssetForm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="AssetForm=play.api.data.Form[(Option[String],Option[models.Classification.Value],Option[(models.Container.Id,Option[dbrary.Offset])],Option[(Option[models.AssetFormat.Id],Boolean,Option[String],Unit)])]"></a>
-      <a id="AssetForm:AssetForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">AssetForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<a href="../models/Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">models.Classification.Value</a>], <span class="extype" name="scala.Option">Option</span>[(<a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Offset">Offset</span>])], <span class="extype" name="scala.Option">Option</span>[(<span class="extype" name="scala.Option">Option</span>[<a href="../models/AssetFormat$.html#Id=models.IntId[T]" class="extmbr" name="models.AssetFormat.Id">models.AssetFormat.Id</a>], <span class="extype" name="scala.Boolean">Boolean</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Unit">Unit</span>)])]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
-    </li><li name="controllers.AssetController.AssetMapping" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="AssetMapping=(Option[String],Option[models.Classification.Value],Option[(models.Container.Id,Option[dbrary.Offset])],Option[(Option[models.AssetFormat.Id],Boolean,Option[String],Unit)])"></a>
-      <a id="AssetMapping:(Option[String],Option[models.Classification.Value],Option[(models.Container.Id,Option[Offset])],Option[(Option[models.AssetFormat.Id],Boolean,Option[String],Unit)])"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">AssetMapping</span><span class="result"> = (<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<a href="../models/Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">models.Classification.Value</a>], <span class="extype" name="scala.Option">Option</span>[(<a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Offset">Offset</span>])], <span class="extype" name="scala.Option">Option</span>[(<span class="extype" name="scala.Option">Option</span>[<a href="../models/AssetFormat$.html#Id=models.IntId[T]" class="extmbr" name="models.AssetFormat.Id">models.AssetFormat.Id</a>], <span class="extype" name="scala.Boolean">Boolean</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Unit">Unit</span>)])</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
-    </li><li name="controllers.ObjectController.Request" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+              <ol><li name="controllers.ObjectController.Request" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Request[A]=controllers.RequestObject[O]#Site[A]"></a>
       <a id="Request[A]:Request[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">type</span>
       </span>
       <span class="symbol">
@@ -2480,19 +2454,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="controllers.AssetController#assetForm" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="assetForm(file:Boolean):AssetController.this.AssetForm"></a>
-      <a id="assetForm(Boolean):AssetForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">assetForm</span><span class="params">(<span name="file">file: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <a href="#AssetForm=play.api.data.Form[(Option[String],Option[models.Classification.Value],Option[(models.Container.Id,Option[dbrary.Offset])],Option[(Option[models.AssetFormat.Id],Boolean,Option[String],Unit)])]" class="extmbr" name="controllers.AssetApi.AssetForm">AssetForm</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
     </li><li name="play.api.mvc.Results#chunk" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="chunk(trailers:Option[play.api.libs.iteratee.Iteratee[Array[Byte],Seq[(String,String)]]]):play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]"></a>
       <a id="chunk(Option[Iteratee[Array[Byte],Seq[(String,String)]]]):Enumeratee[Array[Byte],Array[Byte]]"></a>
@@ -2609,32 +2570,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
-    </li><li name="controllers.AssetController#formFill" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="formFill(implicitrequest:AssetController.this.Request[_]):AssetController.this.AssetForm"></a>
-      <a id="formFill(Request[_]):AssetForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">formFill</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.AssetApi.Request">Request</a>[_]</span>)</span><span class="result">: <a href="#AssetForm=play.api.data.Form[(Option[String],Option[models.Classification.Value],Option[(models.Container.Id,Option[dbrary.Offset])],Option[(Option[models.AssetFormat.Id],Boolean,Option[String],Unit)])]" class="extmbr" name="controllers.AssetApi.AssetForm">AssetForm</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
-    </li><li name="controllers.AssetController#formForFile" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="formForFile(form:AssetController.this.AssetForm,target:Either[models.Volume,models.Asset]):Boolean"></a>
-      <a id="formForFile(AssetForm,Either[Volume,Asset]):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">formForFile</span><span class="params">(<span name="form">form: <a href="#AssetForm=play.api.data.Form[(Option[String],Option[models.Classification.Value],Option[(models.Container.Id,Option[dbrary.Offset])],Option[(Option[models.AssetFormat.Id],Boolean,Option[String],Unit)])]" class="extmbr" name="controllers.AssetApi.AssetForm">AssetForm</a></span>, <span name="target">target: <span class="extype" name="scala.Either">Either</span>[<a href="../models/Volume.html" class="extype" name="models.Volume">Volume</a>, <a href="../models/Asset.html" class="extype" name="models.Asset">Asset</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
     </li><li name="controllers.AssetApi#get" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="get(i:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
       <a id="get(models.Asset.Id):Action[AnyContent]"></a>
@@ -2889,7 +2824,9 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="controllers.AssetController">
+        <div class="parent" name="controllers.ApiController">
+              <h3>Inherited from <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></h3>
+            </div><div class="parent" name="controllers.AssetController">
               <h3>Inherited from <span class="extype" name="controllers.AssetController">AssetController</span></h3>
             </div><div class="parent" name="controllers.ObjectController">
               <h3>Inherited from <a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a>[<a href="../models/Asset.html" class="extype" name="models.Asset">Asset</a>]</h3>

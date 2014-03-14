@@ -35,13 +35,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">SlotApi</span><span class="result"> extends <span class="extype" name="controllers.SlotController">SlotController</span></span>
+        <span class="name">SlotApi</span><span class="result"> extends <span class="extype" name="controllers.SlotController">SlotController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/controllers/slot.scala" target="_blank">slot.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="controllers.SlotController">SlotController</span>, <a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a>[<a href="../models/Slot.html" class="extype" name="models.Slot">Slot</a>], <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a>, <span class="extype" name="play.api.mvc.Controller">Controller</span>, <span class="extype" name="play.api.mvc.Rendering">Rendering</span>, <span class="extype" name="play.api.mvc.RequestExtractors">RequestExtractors</span>, <span class="extype" name="play.api.mvc.AcceptExtractors">AcceptExtractors</span>, <span class="extype" name="play.api.http.ContentTypes">ContentTypes</span>, <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span>, <span class="extype" name="play.api.http.Status">play.api.http.Status</span>, <span class="extype" name="play.api.http.HttpProtocol">HttpProtocol</span>, <span class="extype" name="play.api.mvc.BodyParsers">BodyParsers</span>, <span class="extype" name="play.api.mvc.Results">Results</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a>, <span class="extype" name="controllers.SlotController">SlotController</span>, <a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a>[<a href="../models/Slot.html" class="extype" name="models.Slot">Slot</a>], <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a>, <span class="extype" name="play.api.mvc.Controller">Controller</span>, <span class="extype" name="play.api.mvc.Rendering">Rendering</span>, <span class="extype" name="play.api.mvc.RequestExtractors">RequestExtractors</span>, <span class="extype" name="play.api.mvc.AcceptExtractors">AcceptExtractors</span>, <span class="extype" name="play.api.http.ContentTypes">ContentTypes</span>, <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span>, <span class="extype" name="play.api.http.Status">play.api.http.Status</span>, <span class="extype" name="play.api.http.HttpProtocol">HttpProtocol</span>, <span class="extype" name="play.api.mvc.BodyParsers">BodyParsers</span>, <span class="extype" name="play.api.mvc.Results">Results</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="controllers.SlotApi"><span>SlotApi</span></li><li class="in" name="controllers.SlotController"><span>SlotController</span></li><li class="in" name="controllers.ObjectController"><span>ObjectController</span></li><li class="in" name="controllers.SiteController"><span>SiteController</span></li><li class="in" name="play.api.mvc.Controller"><span>Controller</span></li><li class="in" name="play.api.mvc.Rendering"><span>Rendering</span></li><li class="in" name="play.api.mvc.RequestExtractors"><span>RequestExtractors</span></li><li class="in" name="play.api.mvc.AcceptExtractors"><span>AcceptExtractors</span></li><li class="in" name="play.api.http.ContentTypes"><span>ContentTypes</span></li><li class="in" name="play.api.http.HeaderNames"><span>HeaderNames</span></li><li class="in" name="play.api.http.Status"><span>Status</span></li><li class="in" name="play.api.http.HttpProtocol"><span>HttpProtocol</span></li><li class="in" name="play.api.mvc.BodyParsers"><span>BodyParsers</span></li><li class="in" name="play.api.mvc.Results"><span>Results</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="controllers.SlotApi"><span>SlotApi</span></li><li class="in" name="controllers.ApiController"><span>ApiController</span></li><li class="in" name="controllers.SlotController"><span>SlotController</span></li><li class="in" name="controllers.ObjectController"><span>ObjectController</span></li><li class="in" name="controllers.SiteController"><span>SiteController</span></li><li class="in" name="play.api.mvc.Controller"><span>Controller</span></li><li class="in" name="play.api.mvc.Rendering"><span>Rendering</span></li><li class="in" name="play.api.mvc.RequestExtractors"><span>RequestExtractors</span></li><li class="in" name="play.api.mvc.AcceptExtractors"><span>AcceptExtractors</span></li><li class="in" name="play.api.http.ContentTypes"><span>ContentTypes</span></li><li class="in" name="play.api.http.HeaderNames"><span>HeaderNames</span></li><li class="in" name="play.api.http.Status"><span>Status</span></li><li class="in" name="play.api.http.HttpProtocol"><span>HttpProtocol</span></li><li class="in" name="play.api.mvc.BodyParsers"><span>BodyParsers</span></li><li class="in" name="play.api.mvc.Results"><span>Results</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -81,64 +81,12 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="controllers.SlotController.CommentForm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="CommentForm=play.api.data.Form[(String,Option[models.Comment.Id])]"></a>
-      <a id="CommentForm:CommentForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">CommentForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Option">Option</span>[<a href="../models/Comment$.html#Id=models.IntId[T]" class="extmbr" name="models.Comment.Id">models.Comment.Id</a>])]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>SlotController</dd></dl></div>
-    </li><li name="controllers.SlotController.CommentMapping" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="CommentMapping=(String,Option[models.Comment.Id])"></a>
-      <a id="CommentMapping:(String,Option[models.Comment.Id])"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">CommentMapping</span><span class="result"> = (<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Option">Option</span>[<a href="../models/Comment$.html#Id=models.IntId[T]" class="extmbr" name="models.Comment.Id">models.Comment.Id</a>])</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>SlotController</dd></dl></div>
-    </li><li name="controllers.SlotController.EditForm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="EditForm=play.api.data.Form[(Option[(Option[String],Option[dbrary.Date])],models.Consent.Value)]"></a>
-      <a id="EditForm:EditForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">EditForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Option">Option</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Date">Date</span>])], <a href="../models/Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">models.Consent.Value</a>)]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>SlotController</dd></dl></div>
-    </li><li name="controllers.SlotController.EditMapping" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="EditMapping=(Option[(Option[String],Option[dbrary.Date])],models.Consent.Value)"></a>
-      <a id="EditMapping:(Option[(Option[String],Option[Date])],models.Consent.Value)"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">EditMapping</span><span class="result"> = (<span class="extype" name="scala.Option">Option</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Date">Date</span>])], <a href="../models/Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">models.Consent.Value</a>)</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>SlotController</dd></dl></div>
-    </li><li name="controllers.ObjectController.Request" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+              <ol><li name="controllers.ObjectController.Request" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Request[A]=controllers.RequestObject[O]#Site[A]"></a>
       <a id="Request[A]:Request[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">type</span>
       </span>
       <span class="symbol">
@@ -2525,32 +2473,6 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="controllers.SlotController#comment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="comment(i:models.Container.Id,segment:dbrary.Segment,parent:Option[models.Comment.Id]):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="comment(models.Container.Id,Segment,Option[models.Comment.Id]):Action[AnyContent]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">comment</span><span class="params">(<span name="i">i: <a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Segment">Segment</span></span>, <span name="parent">parent: <span class="extype" name="scala.Option">Option</span>[<a href="../models/Comment$.html#Id=models.IntId[T]" class="extmbr" name="models.Comment.Id">models.Comment.Id</a>] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>SlotController</dd></dl></div>
-    </li><li name="controllers.SlotController#commentForm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="commentForm:SlotController.this.CommentForm"></a>
-      <a id="commentForm:CommentForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">commentForm</span><span class="result">: <a href="#CommentForm=play.api.data.Form[(String,Option[models.Comment.Id])]" class="extmbr" name="controllers.SlotApi.CommentForm">CommentForm</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>SlotController</dd></dl></div>
     </li><li name="play.api.mvc.Results#dechunk" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="dechunk:play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]"></a>
       <a id="dechunk:Enumeratee[Array[Byte],Array[Byte]]"></a>
@@ -2564,32 +2486,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
-    </li><li name="controllers.SlotController#editForm" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="editForm(container:Boolean):SlotController.this.EditForm"></a>
-      <a id="editForm(Boolean):EditForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">editForm</span><span class="params">(<span name="container">container: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <a href="#EditForm=play.api.data.Form[(Option[(Option[String],Option[dbrary.Date])],models.Consent.Value)]" class="extmbr" name="controllers.SlotApi.EditForm">EditForm</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>SlotController</dd></dl></div>
-    </li><li name="controllers.SlotController#editFormFill" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="editFormFill(s:models.Slot):play.api.data.Form[(Option[(Option[String],Option[dbrary.Date])],models.Consent.Value)]"></a>
-      <a id="editFormFill(Slot):Form[(Option[(Option[String],Option[Date])],models.Consent.Value)]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">editFormFill</span><span class="params">(<span name="s">s: <a href="../models/Slot.html" class="extype" name="models.Slot">Slot</a></span>)</span><span class="result">: <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Option">Option</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Date">Date</span>])], <a href="../models/Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">models.Consent.Value</a>)]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>SlotController</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -2648,19 +2544,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
-    </li><li name="controllers.SlotController#formForContainer" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="formForContainer(form:SlotController.this.EditForm,slot:models.Slot):Boolean"></a>
-      <a id="formForContainer(EditForm,Slot):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">formForContainer</span><span class="params">(<span name="form">form: <a href="#EditForm=play.api.data.Form[(Option[(Option[String],Option[dbrary.Date])],models.Consent.Value)]" class="extmbr" name="controllers.SlotApi.EditForm">EditForm</a></span>, <span name="slot">slot: <a href="../models/Slot.html" class="extype" name="models.Slot">Slot</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>SlotController</dd></dl></div>
     </li><li name="controllers.SlotApi#get" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="get(c:models.Container.Id,segment:dbrary.Segment):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
       <a id="get(models.Container.Id,Segment):Action[AnyContent]"></a>
@@ -2928,7 +2811,9 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="controllers.SlotController">
+        <div class="parent" name="controllers.ApiController">
+              <h3>Inherited from <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></h3>
+            </div><div class="parent" name="controllers.SlotController">
               <h3>Inherited from <span class="extype" name="controllers.SlotController">SlotController</span></h3>
             </div><div class="parent" name="controllers.ObjectController">
               <h3>Inherited from <a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a>[<a href="../models/Slot.html" class="extype" name="models.Slot">Slot</a>]</h3>

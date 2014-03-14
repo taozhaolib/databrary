@@ -79,7 +79,23 @@
         <div id="allMembers">
         
 
-        
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="controllers.RequestObject.Site" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Site[A]=controllers.RequestObject[site.SiteObject]#Site[A]"></a>
+      <a id="Site[A]:Site[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Site</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> = <a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">RequestObject.Site</a>[<span class="extype" name="controllers.RequestObject.Site.A">A</span>]</span>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
 
         
 
@@ -163,29 +179,42 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="controllers.RequestObject#check" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="check[O&lt;:models.InVolume](v:models.Volume.Id,get:controllers.SiteRequest[_]=&gt;scala.concurrent.Future[Option[O]],perm:models.Permission.Value):controllers.ActionFunction[controllers.SiteRequest.Base,controllers.RequestObject[O]#Site]"></a>
-      <a id="check[O&lt;:InVolume](models.Volume.Id,(SiteRequest[_])⇒Future[Option[O]],models.Permission.Value):ActionFunction[Base,Site]"></a>
+    </li><li name="controllers.RequestObject#cast" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="cast(request:controllers.SiteRequest[_]):Option[Any]"></a>
+      <a id="cast(SiteRequest[_]):Option[Any]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">check</span><span class="tparams">[<span name="O">O &lt;: <a href="../models/InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>]</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="get">get: (<a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="controllers.RequestObject.check.O">O</span>]]</span>, <span name="perm">perm: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a> = <span class="symbol"><span class="name"><a href="../models/package.html">Permission.VIEW</a></span></span></span>)</span><span class="result">: <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>, <a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">Site</a>]</span>
+        <span class="name">cast</span><span class="params">(<span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Any">Any</span>]</span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.RequestObject#check" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="check[O&lt;:models.InVolume](v:models.Volume.Id,get:controllers.SiteRequest[_]=&gt;scala.concurrent.Future[Option[O]],perm:models.Permission.Value):controllers.ActionFunction[controllers.SiteRequest.Base,controllers.RequestObject[O]#Site]"></a>
+      <a id="check[O&lt;:InVolume](models.Volume.Id,(SiteRequest[_])⇒Future[Option[O]],models.Permission.Value):ActionFunction[Base,RequestObject.Site]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">check</span><span class="tparams">[<span name="O">O &lt;: <a href="../models/InVolume.html" class="extype" name="models.InVolume">InVolume</a></span>]</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="get">get: (<a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="controllers.RequestObject.check.O">O</span>]]</span>, <span name="perm">perm: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a> = <span class="symbol"><span class="name"><a href="../models/package.html">Permission.VIEW</a></span></span></span>)</span><span class="result">: <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>, <a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">RequestObject.Site</a>]</span>
       </span>
       </h4>
       
     </li><li name="controllers.RequestObject#check" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="check[O&lt;:models.HasPermission](get:controllers.SiteRequest[_]=&gt;scala.concurrent.Future[Option[O]],perm:models.Permission.Value):controllers.ActionFunction[controllers.SiteRequest.Base,controllers.RequestObject[O]#Site]"></a>
-      <a id="check[O&lt;:HasPermission]((SiteRequest[_])⇒Future[Option[O]],models.Permission.Value):ActionFunction[Base,Site]"></a>
+      <a id="check[O&lt;:HasPermission]((SiteRequest[_])⇒Future[Option[O]],models.Permission.Value):ActionFunction[Base,RequestObject.Site]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">check</span><span class="tparams">[<span name="O">O &lt;: <a href="../models/HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></span>]</span><span class="params">(<span name="get">get: (<a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="controllers.RequestObject.check.O">O</span>]]</span>, <span name="perm">perm: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a> = <span class="symbol"><span class="name"><a href="../models/package.html">Permission.VIEW</a></span></span></span>)</span><span class="result">: <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>, <a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">Site</a>]</span>
+        <span class="name">check</span><span class="tparams">[<span name="O">O &lt;: <a href="../models/HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></span>]</span><span class="params">(<span name="get">get: (<a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="controllers.RequestObject.check.O">O</span>]]</span>, <span name="perm">perm: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a> = <span class="symbol"><span class="name"><a href="../models/package.html">Permission.VIEW</a></span></span></span>)</span><span class="result">: <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>, <a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">RequestObject.Site</a>]</span>
       </span>
       </h4>
       
@@ -268,14 +297,14 @@
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="controllers.RequestObject#getter" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="getter[O](get:controllers.SiteRequest[_]=&gt;scala.concurrent.Future[Option[O]]):controllers.ActionTransformer[controllers.SiteRequest.Base,controllers.RequestObject[O]#Site]"></a>
-      <a id="getter[O]((SiteRequest[_])⇒Future[Option[O]]):ActionTransformer[Base,Site]"></a>
+      <a id="getter[O]((SiteRequest[_])⇒Future[Option[O]]):ActionTransformer[Base,RequestObject.Site]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getter</span><span class="tparams">[<span name="O">O</span>]</span><span class="params">(<span name="get">get: (<a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="controllers.RequestObject.getter.O">O</span>]]</span>)</span><span class="result">: <a href="ActionTransformer.html" class="extype" name="controllers.ActionTransformer">ActionTransformer</a>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>, <a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">Site</a>]</span>
+        <span class="name">getter</span><span class="tparams">[<span name="O">O</span>]</span><span class="params">(<span name="get">get: (<a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="controllers.RequestObject.getter.O">O</span>]]</span>)</span><span class="result">: <a href="ActionTransformer.html" class="extype" name="controllers.ActionTransformer">ActionTransformer</a>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>, <a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">RequestObject.Site</a>]</span>
       </span>
       </h4>
       
@@ -346,14 +375,14 @@
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="controllers.RequestObject#permission" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="permission[O&lt;:models.HasPermission](perm:models.Permission.Value):controllers.ActionChecker[controllers.RequestObject[O]#Site]"></a>
-      <a id="permission[O&lt;:HasPermission](models.Permission.Value):ActionChecker[Site]"></a>
+      <a id="permission[O&lt;:HasPermission](models.Permission.Value):ActionChecker[RequestObject.Site]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">permission</span><span class="tparams">[<span name="O">O &lt;: <a href="../models/HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></span>]</span><span class="params">(<span name="perm">perm: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a> = <span class="symbol"><span class="name"><a href="../models/package.html">Permission.VIEW</a></span></span></span>)</span><span class="result">: <a href="ActionChecker.html" class="extype" name="controllers.ActionChecker">ActionChecker</a>[<a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">Site</a>]</span>
+        <span class="name">permission</span><span class="tparams">[<span name="O">O &lt;: <a href="../models/HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></span>]</span><span class="params">(<span name="perm">perm: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a> = <span class="symbol"><span class="name"><a href="../models/package.html">Permission.VIEW</a></span></span></span>)</span><span class="result">: <a href="ActionChecker.html" class="extype" name="controllers.ActionChecker">ActionChecker</a>[<a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">RequestObject.Site</a>]</span>
       </span>
       </h4>
       

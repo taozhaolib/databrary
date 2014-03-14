@@ -206,20 +206,18 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="site.AnonSite#access" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="access:models.Permission.Value"></a>
-      <a id="access:models.Permission.Value"></a>
+      <a id="access:models.Authorization.Nobody.type"></a>
+      <a id="access:Nobody.type"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">access</span><span class="result">: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>
+        <span class="name">access</span><span class="result">: <a href="../models/Authorization$$Nobody$.html" class="extype" name="models.Authorization.Nobody">Nobody</a>.type</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Level of site access <a href="../models/Permission$.html" class="extype" name="models.Permission">models.Permission</a> current user has.</p><div class="fullcomment"><div class="comment cmt"><p>Level of site access <a href="../models/Permission$.html" class="extype" name="models.Permission">models.Permission</a> current user has.
-VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for admins.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/AnonSite.html" class="extype" name="site.AnonSite">AnonSite</a> → <a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/AnonSite.html" class="extype" name="site.AnonSite">AnonSite</a> → <a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
     </li><li name="controllers.SiteRequest#apiOptions" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="apiOptions:site.JsonOptions.Options"></a>
       <a id="apiOptions:Options"></a>
@@ -278,7 +276,7 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">clientIP</span><span class="result">: <span class="extype" name="dbrary.Inet">Inet</span></span>
@@ -492,19 +490,19 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
-    </li><li name="site.AnonSite#identity" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="site.Site#identity" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="identity:models.Party"></a>
       <a id="identity:Party"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">identity</span><span class="result">: <a href="../models/Party.html" class="extype" name="models.Party">Party</a></span>
       </span>
       </h4>
-      <p class="shortcomment cmt"><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p><div class="fullcomment"><div class="comment cmt"><p><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/AnonSite.html" class="extype" name="site.AnonSite">AnonSite</a> → <a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
+      <p class="shortcomment cmt"><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p><div class="fullcomment"><div class="comment cmt"><p><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
     </li><li name="controllers.SiteRequest#isApi" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isApi:Boolean"></a>
       <a id="isApi:Boolean"></a>
@@ -688,15 +686,15 @@ VIEW for anonymous, DOWNLOAD for affiliate, CONTRIBUTE for authorized, ADMIN for
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="site.AnonSite#superuser" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="superuser:Boolean"></a>
-      <a id="superuser:Boolean"></a>
+      <a id="superuser:Boolean(false)"></a>
+      <a id="superuser:Boolean(false)"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">superuser</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">superuser</span><span class="result">: Boolean(false)</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/AnonSite.html" class="extype" name="site.AnonSite">AnonSite</a> → <a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>

@@ -35,13 +35,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">LoginApi</span><span class="result"> extends <span class="extype" name="controllers.LoginController">LoginController</span></span>
+        <span class="name">LoginApi</span><span class="result"> extends <span class="extype" name="controllers.LoginController">LoginController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/controllers/login.scala" target="_blank">login.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="controllers.LoginController">LoginController</span>, <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a>, <span class="extype" name="play.api.mvc.Controller">Controller</span>, <span class="extype" name="play.api.mvc.Rendering">Rendering</span>, <span class="extype" name="play.api.mvc.RequestExtractors">RequestExtractors</span>, <span class="extype" name="play.api.mvc.AcceptExtractors">AcceptExtractors</span>, <span class="extype" name="play.api.http.ContentTypes">ContentTypes</span>, <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span>, <span class="extype" name="play.api.http.Status">play.api.http.Status</span>, <span class="extype" name="play.api.http.HttpProtocol">HttpProtocol</span>, <span class="extype" name="play.api.mvc.BodyParsers">BodyParsers</span>, <span class="extype" name="play.api.mvc.Results">Results</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a>, <span class="extype" name="controllers.LoginController">LoginController</span>, <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a>, <span class="extype" name="play.api.mvc.Controller">Controller</span>, <span class="extype" name="play.api.mvc.Rendering">Rendering</span>, <span class="extype" name="play.api.mvc.RequestExtractors">RequestExtractors</span>, <span class="extype" name="play.api.mvc.AcceptExtractors">AcceptExtractors</span>, <span class="extype" name="play.api.http.ContentTypes">ContentTypes</span>, <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span>, <span class="extype" name="play.api.http.Status">play.api.http.Status</span>, <span class="extype" name="play.api.http.HttpProtocol">HttpProtocol</span>, <span class="extype" name="play.api.mvc.BodyParsers">BodyParsers</span>, <span class="extype" name="play.api.mvc.Results">Results</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="controllers.LoginApi"><span>LoginApi</span></li><li class="in" name="controllers.LoginController"><span>LoginController</span></li><li class="in" name="controllers.SiteController"><span>SiteController</span></li><li class="in" name="play.api.mvc.Controller"><span>Controller</span></li><li class="in" name="play.api.mvc.Rendering"><span>Rendering</span></li><li class="in" name="play.api.mvc.RequestExtractors"><span>RequestExtractors</span></li><li class="in" name="play.api.mvc.AcceptExtractors"><span>AcceptExtractors</span></li><li class="in" name="play.api.http.ContentTypes"><span>ContentTypes</span></li><li class="in" name="play.api.http.HeaderNames"><span>HeaderNames</span></li><li class="in" name="play.api.http.Status"><span>Status</span></li><li class="in" name="play.api.http.HttpProtocol"><span>HttpProtocol</span></li><li class="in" name="play.api.mvc.BodyParsers"><span>BodyParsers</span></li><li class="in" name="play.api.mvc.Results"><span>Results</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="controllers.LoginApi"><span>LoginApi</span></li><li class="in" name="controllers.ApiController"><span>ApiController</span></li><li class="in" name="controllers.LoginController"><span>LoginController</span></li><li class="in" name="controllers.SiteController"><span>SiteController</span></li><li class="in" name="play.api.mvc.Controller"><span>Controller</span></li><li class="in" name="play.api.mvc.Rendering"><span>Rendering</span></li><li class="in" name="play.api.mvc.RequestExtractors"><span>RequestExtractors</span></li><li class="in" name="play.api.mvc.AcceptExtractors"><span>AcceptExtractors</span></li><li class="in" name="play.api.http.ContentTypes"><span>ContentTypes</span></li><li class="in" name="play.api.http.HeaderNames"><span>HeaderNames</span></li><li class="in" name="play.api.http.Status"><span>Status</span></li><li class="in" name="play.api.http.HttpProtocol"><span>HttpProtocol</span></li><li class="in" name="play.api.mvc.BodyParsers"><span>BodyParsers</span></li><li class="in" name="play.api.mvc.Results"><span>Results</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -81,46 +81,7 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="controllers.LoginController.LoginForm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="LoginForm=play.api.data.Form[(Option[String],String,String)]"></a>
-      <a id="LoginForm:LoginForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">LoginForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LoginController</dd></dl></div>
-    </li><li name="controllers.LoginController.RegistrationForm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="RegistrationForm=play.api.data.Form[(String,String,String,Boolean)]"></a>
-      <a id="RegistrationForm:RegistrationForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">RegistrationForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Boolean">Boolean</span>)]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LoginController</dd></dl></div>
-    </li><li name="controllers.LoginController.RegistrationMapping" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="RegistrationMapping=(String,String,String,Boolean)"></a>
-      <a id="RegistrationMapping:(String,String,String,Boolean)"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">RegistrationMapping</span><span class="result"> = (<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Boolean">Boolean</span>)</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LoginController</dd></dl></div>
-    </li><li name="play.api.mvc.Results.Status" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+              <ol><li name="play.api.mvc.Results.Status" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="StatusextendsSimpleResult"></a>
       <a id="Status:Status"></a>
       <h4 class="signature">
@@ -2648,19 +2609,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
-    </li><li name="controllers.LoginController#loginForm" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="loginForm:LoginController.this.LoginForm"></a>
-      <a id="loginForm:LoginForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">loginForm</span><span class="result">: <a href="#LoginForm=play.api.data.Form[(Option[String],String,String)]" class="extmbr" name="controllers.LoginApi.LoginForm">LoginForm</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>LoginController</dd></dl></div>
     </li><li name="controllers.LoginController#logout" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="logout:play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
       <a id="logout:Action[AnyContent]"></a>
@@ -2739,19 +2687,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LoginController</dd></dl></div>
-    </li><li name="controllers.LoginController#registrationForm" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="registrationForm:LoginController.this.RegistrationForm"></a>
-      <a id="registrationForm:RegistrationForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">registrationForm</span><span class="result">: <a href="#RegistrationForm=play.api.data.Form[(String,String,String,Boolean)]" class="extmbr" name="controllers.LoginApi.RegistrationForm">RegistrationForm</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>LoginController</dd></dl></div>
     </li><li name="play.api.mvc.Controller#session" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="session(implicitrequest:play.api.mvc.RequestHeader):play.api.mvc.Session"></a>
       <a id="session(RequestHeader):Session"></a>
@@ -2915,7 +2850,9 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="controllers.LoginController">
+        <div class="parent" name="controllers.ApiController">
+              <h3>Inherited from <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></h3>
+            </div><div class="parent" name="controllers.LoginController">
               <h3>Inherited from <span class="extype" name="controllers.LoginController">LoginController</span></h3>
             </div><div class="parent" name="controllers.SiteController">
               <h3>Inherited from <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></h3>

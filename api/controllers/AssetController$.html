@@ -81,38 +81,38 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="controllers.AssetController.AssetForm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="AssetForm=play.api.data.Form[(Option[String],Option[models.Classification.Value],Option[(models.Container.Id,Option[dbrary.Offset])],Option[(Option[models.AssetFormat.Id],Boolean,Option[String],Unit)])]"></a>
+              <ol><li name="controllers.AssetController.AssetForm" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="AssetFormextendsHtmlForm[controllers.AssetController.AssetForm]"></a>
       <a id="AssetForm:AssetForm"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
+        <span class="modifier">sealed abstract </span>
+        <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">AssetForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<a href="../models/Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">models.Classification.Value</a>], <span class="extype" name="scala.Option">Option</span>[(<a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Offset">Offset</span>])], <span class="extype" name="scala.Option">Option</span>[(<span class="extype" name="scala.Option">Option</span>[<a href="../models/AssetFormat$.html#Id=models.IntId[T]" class="extmbr" name="models.AssetFormat.Id">models.AssetFormat.Id</a>], <span class="extype" name="scala.Boolean">Boolean</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Unit">Unit</span>)])]</span>
+        <a href="AssetController$$AssetForm.html"><span class="name">AssetForm</span></a><span class="result"> extends <a href="HtmlForm.html" class="extype" name="controllers.HtmlForm">HtmlForm</a>[<a href="AssetController$$AssetForm.html" class="extype" name="controllers.AssetController.AssetForm">AssetForm</a>]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
-    </li><li name="controllers.AssetController.AssetMapping" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="AssetMapping=(Option[String],Option[models.Classification.Value],Option[(models.Container.Id,Option[dbrary.Offset])],Option[(Option[models.AssetFormat.Id],Boolean,Option[String],Unit)])"></a>
-      <a id="AssetMapping:(Option[String],Option[models.Classification.Value],Option[(models.Container.Id,Option[Offset])],Option[(Option[models.AssetFormat.Id],Boolean,Option[String],Unit)])"></a>
+      
+    </li><li name="controllers.AssetController.ChangeForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ChangeFormextendsAssetController.AssetForm"></a>
+      <a id="ChangeForm:ChangeForm"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">AssetMapping</span><span class="result"> = (<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<a href="../models/Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">models.Classification.Value</a>], <span class="extype" name="scala.Option">Option</span>[(<a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Offset">Offset</span>])], <span class="extype" name="scala.Option">Option</span>[(<span class="extype" name="scala.Option">Option</span>[<a href="../models/AssetFormat$.html#Id=models.IntId[T]" class="extmbr" name="models.AssetFormat.Id">models.AssetFormat.Id</a>], <span class="extype" name="scala.Boolean">Boolean</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Unit">Unit</span>)])</span>
+        <a href="AssetController$$ChangeForm.html"><span class="name">ChangeForm</span></a><span class="result"> extends <a href="AssetController$$AssetForm.html" class="extype" name="controllers.AssetController.AssetForm">AssetForm</a></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
+      
     </li><li name="controllers.ObjectController.Request" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Request[A]=controllers.RequestObject[O]#Site[A]"></a>
       <a id="Request[A]:Request[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">type</span>
       </span>
       <span class="symbol">
@@ -133,6 +133,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
+    </li><li name="controllers.AssetController.UploadForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="UploadFormextendsAssetController.AssetForm"></a>
+      <a id="UploadForm:UploadForm"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="AssetController$$UploadForm.html"><span class="name">UploadForm</span></a><span class="result"> extends <a href="AssetController$$AssetForm.html" class="extype" name="controllers.AssetController.AssetForm">AssetForm</a></span>
+      </span>
+      </h4>
+      
     </li></ol>
             </div>
 
@@ -2480,19 +2493,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="controllers.AssetController#assetForm" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="assetForm(file:Boolean):AssetController.this.AssetForm"></a>
-      <a id="assetForm(Boolean):AssetForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">assetForm</span><span class="params">(<span name="file">file: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <a href="#AssetForm=play.api.data.Form[(Option[String],Option[models.Classification.Value],Option[(models.Container.Id,Option[dbrary.Offset])],Option[(Option[models.AssetFormat.Id],Boolean,Option[String],Unit)])]" class="extmbr" name="controllers.AssetController.AssetForm">AssetForm</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
     </li><li name="play.api.mvc.Results#chunk" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="chunk(trailers:Option[play.api.libs.iteratee.Iteratee[Array[Byte],Seq[(String,String)]]]):play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]"></a>
       <a id="chunk(Option[Iteratee[Array[Byte],Seq[(String,String)]]]):Enumeratee[Array[Byte],Array[Byte]]"></a>
@@ -2609,32 +2609,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
-    </li><li name="controllers.AssetController#formFill" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="formFill(implicitrequest:AssetController.this.Request[_]):AssetController.this.AssetForm"></a>
-      <a id="formFill(Request[_]):AssetForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">formFill</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.AssetController.Request">Request</a>[_]</span>)</span><span class="result">: <a href="#AssetForm=play.api.data.Form[(Option[String],Option[models.Classification.Value],Option[(models.Container.Id,Option[dbrary.Offset])],Option[(Option[models.AssetFormat.Id],Boolean,Option[String],Unit)])]" class="extmbr" name="controllers.AssetController.AssetForm">AssetForm</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
-    </li><li name="controllers.AssetController#formForFile" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="formForFile(form:AssetController.this.AssetForm,target:Either[models.Volume,models.Asset]):Boolean"></a>
-      <a id="formForFile(AssetForm,Either[Volume,Asset]):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">formForFile</span><span class="params">(<span name="form">form: <a href="#AssetForm=play.api.data.Form[(Option[String],Option[models.Classification.Value],Option[(models.Container.Id,Option[dbrary.Offset])],Option[(Option[models.AssetFormat.Id],Boolean,Option[String],Unit)])]" class="extmbr" name="controllers.AssetController.AssetForm">AssetForm</a></span>, <span name="target">target: <span class="extype" name="scala.Either">Either</span>[<a href="../models/Volume.html" class="extype" name="models.Volume">Volume</a>, <a href="../models/Asset.html" class="extype" name="models.Asset">Asset</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>

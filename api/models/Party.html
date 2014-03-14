@@ -181,19 +181,19 @@ Instances are generally obtained from <a href="Party$.html#get(i:models.Party.Id
       </h4>
       <p class="shortcomment cmt">Equality based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality based on primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId</dd></dl></div>
     </li><li name="models.Party#access" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="access:scala.concurrent.Future[models.Permission.Value]"></a>
-      <a id="access:Future[Permission.Value]"></a>
+      <a id="access:scala.concurrent.Future[site.Access]"></a>
+      <a id="access:Future[Access]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">access</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a>]</span>
+        <span class="name">access</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../site/Access.html" class="extype" name="site.Access">Access</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Level of access user has to the site.</p><div class="fullcomment"><div class="comment cmt"><p>Level of access user has to the site.
-Computed by [Authorize.access_check] and usually accessed through <a href="../site/Site.html#access:models.Permission.Value" class="extmbr" name="site.Site#access">site.Site.access</a>.</p></div></div>
+Usually accessed through <a href="../site/Site.html#access:site.Access" class="extmbr" name="site.Site#access">site.Site.access</a> or <a href="SiteParty.html" class="extype" name="models.SiteParty">SiteParty</a>.</p></div></div>
     </li><li name="models.Party#account" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="account:Option[models.Account]"></a>
       <a id="account:Option[Account]"></a>
@@ -233,6 +233,32 @@ Computed by [Authorize.access_check] and usually accessed through <a href="../si
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.Party#authorizeChildren" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="authorizeChildren(all:Boolean):scala.concurrent.Future[Seq[models.Authorize]]"></a>
+      <a id="authorizeChildren(Boolean):Future[Seq[Authorize]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">authorizeChildren</span><span class="params">(<span name="all">all: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Authorize.html" class="extype" name="models.Authorize">Authorize</a>]]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">List of authorizations granted by this user.</p><div class="fullcomment"><div class="comment cmt"><p>List of authorizations granted by this user.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include inactive authorizations</p></dd></dl></div>
+    </li><li name="models.Party#authorizeParents" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="authorizeParents(all:Boolean):scala.concurrent.Future[Seq[models.Authorize]]"></a>
+      <a id="authorizeParents(Boolean):Future[Seq[Authorize]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">authorizeParents</span><span class="params">(<span name="all">all: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Authorize.html" class="extype" name="models.Authorize">Authorize</a>]]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">List of authorizations granted to this user.</p><div class="fullcomment"><div class="comment cmt"><p>List of authorizations granted to this user.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include inactive authorizations</p></dd></dl></div>
     </li><li name="models.Party#change" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="change(name:Option[String],orcid:Option[Option[models.Orcid]],affiliation:Option[Option[String]],duns:Option[Option[models.DUNS]])(implicitsite:site.Site):scala.concurrent.Future[Boolean]"></a>
       <a id="change(Option[String],Option[Option[Orcid]],Option[Option[String]],Option[Option[DUNS]])(Site):Future[Boolean]"></a>
@@ -278,6 +304,19 @@ Computed by [Authorize.access_check] and usually accessed through <a href="../si
       </span>
       </h4>
       
+    </li><li name="models.Party#email" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="email(implicitsite:site.Site):Option[String]"></a>
+      <a id="email(Site):Option[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">email</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Email, if accessible, for convenience.</p>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -532,7 +571,7 @@ This assumes that two objects representing the same row are the same (even if th
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.TableRowId#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
       <h4 class="signature">
@@ -544,7 +583,7 @@ This assumes that two objects representing the same row are the same (even if th
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>

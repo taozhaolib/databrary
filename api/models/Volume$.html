@@ -107,6 +107,19 @@
       </span>
       </h4>
       <p class="shortcomment cmt">Type of TableRow this object can generate.</p><div class="fullcomment"><div class="comment cmt"><p>Type of TableRow this object can generate.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>Table → TableView</dd></dl></div>
+    </li><li name="models.Volume.Session" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Session=(models.ContextSlot,Option[(dbrary.Segment,models.Record)])"></a>
+      <a id="Session:(ContextSlot,Option[(Segment,Record)])"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Session</span><span class="result"> = (<a href="ContextSlot.html" class="extype" name="models.ContextSlot">ContextSlot</a>, <span class="extype" name="scala.Option">Option</span>[(<span class="extype" name="dbrary.Segment">Segment</span>, <a href="Record.html" class="extype" name="models.Record">Record</a>)])</span>
+      </span>
+      </h4>
+      
     </li><li name="models.Volume.Summary" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SummaryextendsProductwithSerializable"></a>
       <a id="Summary:Summary"></a>
@@ -258,6 +271,19 @@ We ignore any access rules here and grant everyone DOWNLOAD.</p></div></div>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
+    </li><li name="models.Volume.Session" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Session"></a>
+      <a id="Session:Session"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Volume$$Session$.html"><span class="name">Session</span></a>
+      </span>
+      </h4>
+      
     </li><li name="models.HasId#asId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asId(i:Int):HasId.this.Id"></a>
       <a id="asId(Int):Id"></a>
@@ -304,15 +330,15 @@ We ignore any access rules here and grant everyone DOWNLOAD.</p></div></div>
               
         </dd></dl></div>
     </li><li name="models.Volume#create" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="create(name:String,body:Option[String])(implicitsite:site.Site):scala.concurrent.Future[models.Volume]"></a>
-      <a id="create(String,Option[String])(Site):Future[Volume]"></a>
+      <a id="create(name:String,alias:Option[String],body:Option[String])(implicitsite:site.Site):scala.concurrent.Future[models.Volume]"></a>
+      <a id="create(String,Option[String],Option[String])(Site):Future[Volume]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">create</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="body">body: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>]</span>
+        <span class="name">create</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="alias">alias: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="body">body: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Create a new, empty volume with no permissions.</p><div class="fullcomment"><div class="comment cmt"><p>Create a new, empty volume with no permissions.
@@ -362,19 +388,6 @@ The caller should probably add a <a href="VolumeAccess.html" class="extype" name
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.TableView#fixed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="fixed(r:TableView.this.Rowwithmodels.TableRow):dbrary.Selector[TableView.this.Rowwithmodels.TableRow]"></a>
-      <a id="fixed(RowwithTableRow):Selector[RowwithTableRow]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">fixed</span><span class="params">(<span name="r">r: <a href="#Row=R" class="extmbr" name="models.Volume.Row">Row</a> with <span class="extype" name="models.TableRow">TableRow</span></span>)</span><span class="result">: <span class="extype" name="dbrary.Selector">Selector</span>[<a href="#Row=R" class="extmbr" name="models.Volume.Row">Row</a> with <span class="extype" name="models.TableRow">TableRow</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.HasTable#fromTable" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="fromTable:dbrary.FromTable"></a>
       <a id="fromTable:FromTable"></a>
@@ -495,15 +508,15 @@ This only returns volumes for which the current user has <a href="Permission$.ht
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.Volume#search" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="search(query:String)(implicitsite:site.Site):scala.concurrent.Future[Seq[models.Volume]]"></a>
-      <a id="search(String)(Site):Future[Seq[Volume]]"></a>
+      <a id="search(query:Option[String],party:Option[models.Party.Id])(implicitsite:site.Site):scala.concurrent.Future[Seq[models.Volume]]"></a>
+      <a id="search(Option[String],Option[Party.Id])(Site):Future[Seq[Volume]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">search</span><span class="params">(<span name="query">query: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>]]</span>
+        <span class="name">search</span><span class="params">(<span name="query">query: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="party">party: <span class="extype" name="scala.Option">Option</span>[<a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>]]</span>
       </span>
       </h4>
       

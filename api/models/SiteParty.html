@@ -80,7 +80,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.SiteParty#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(party:models.Party,access:models.Permission.Value,delegated:models.Permission.Value)(implicitsite:site.Site):models.SiteParty"></a>
+      <a id="&lt;init&gt;(access:site.Access)(implicitsite:site.Site):models.SiteParty"></a>
       <a id="&lt;init&gt;:SiteParty"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -88,7 +88,7 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">SiteParty</span><span class="params">(<span name="party">party: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="delegated">delegated: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span>
+        <span class="name">SiteParty</span><span class="params">(<span name="access">access: <a href="../site/Access.html" class="extype" name="site.Access">Access</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span>
       </span>
       </h4>
       
@@ -192,32 +192,6 @@
       </span>
       </h4>
       
-    </li><li name="site.SiteObject#Action" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Action(name:String,route:play.api.mvc.Call,permission:models.Permission.Value):site.SiteAction"></a>
-      <a id="Action(String,Call,Permission.Value):SiteAction"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Action</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="route">route: <span class="extype" name="play.api.mvc.Call">Call</span></span>, <span name="permission">permission: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="result">: <a href="../site/SiteAction.html" class="extype" name="site.SiteAction">SiteAction</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></dd></dl></div>
-    </li><li name="models.SiteParty#access" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="access:models.Permission.Value"></a>
-      <a id="access:Permission.Value"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">access</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
-      </span>
-      </h4>
-      
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -231,32 +205,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.SiteParty#authorizeChildren" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="authorizeChildren(all:Boolean):scala.concurrent.Future[Seq[models.Authorize]]"></a>
-      <a id="authorizeChildren(Boolean):Future[Seq[Authorize]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">authorizeChildren</span><span class="params">(<span name="all">all: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Authorize.html" class="extype" name="models.Authorize">Authorize</a>]]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">List of authorizations granted by this user.</p><div class="fullcomment"><div class="comment cmt"><p>List of authorizations granted by this user.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include inactive authorizations</p></dd></dl></div>
-    </li><li name="models.SiteParty#authorizeParents" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="authorizeParents(all:Boolean):scala.concurrent.Future[Seq[models.Authorize]]"></a>
-      <a id="authorizeParents(Boolean):Future[Seq[Authorize]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">authorizeParents</span><span class="params">(<span name="all">all: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Authorize.html" class="extype" name="models.Authorize">Authorize</a>]]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">List of authorizations granted to this user.</p><div class="fullcomment"><div class="comment cmt"><p>List of authorizations granted to this user.</p></div><dl class="paramcmts block"><dt class="param">all</dt><dd class="cmt"><p>include inactive authorizations</p></dd></dl></div>
     </li><li name="models.SiteParty#avatar" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="avatar:scala.concurrent.Future[Option[models.Asset]]"></a>
       <a id="avatar:Future[Option[Asset]]"></a>
@@ -302,19 +250,6 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.SiteParty#delegated" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="delegated:models.Permission.Value"></a>
-      <a id="delegated:Permission.Value"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">delegated</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -386,6 +321,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.SiteParty#id" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="id:models.Party.Id"></a>
+      <a id="id:Party.Id"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">id</span><span class="result">: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -464,19 +412,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.SiteParty#pageActions" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="pageActions:Seq[site.SiteAction]"></a>
-      <a id="pageActions:Seq[SiteAction]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">pageActions</span><span class="result">: <span class="extype" name="scala.collection.Seq">Seq</span>[<a href="../site/SiteAction.html" class="extype" name="site.SiteAction">SiteAction</a>]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The actions available for this page.</p><div class="fullcomment"><div class="comment cmt"><p>The actions available for this page.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SiteParty">SiteParty</a> → <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></dd></dl></div>
     </li><li name="site.SitePage#pageCrumbName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageCrumbName:Option[String]"></a>
       <a id="pageCrumbName:Option[String]"></a>
@@ -535,7 +470,7 @@
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">val</span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">party</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>

@@ -35,13 +35,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">RecordHtml</span><span class="result"> extends <span class="extype" name="controllers.RecordController">RecordController</span></span>
+        <span class="name">RecordHtml</span><span class="result"> extends <span class="extype" name="controllers.RecordController">RecordController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/controllers/record.scala" target="_blank">record.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="controllers.RecordController">RecordController</span>, <a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a>[<a href="../models/Record.html" class="extype" name="models.Record">Record</a>], <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a>, <span class="extype" name="play.api.mvc.Controller">Controller</span>, <span class="extype" name="play.api.mvc.Rendering">Rendering</span>, <span class="extype" name="play.api.mvc.RequestExtractors">RequestExtractors</span>, <span class="extype" name="play.api.mvc.AcceptExtractors">AcceptExtractors</span>, <span class="extype" name="play.api.http.ContentTypes">ContentTypes</span>, <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span>, <span class="extype" name="play.api.http.Status">play.api.http.Status</span>, <span class="extype" name="play.api.http.HttpProtocol">HttpProtocol</span>, <span class="extype" name="play.api.mvc.BodyParsers">BodyParsers</span>, <span class="extype" name="play.api.mvc.Results">Results</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a>, <span class="extype" name="controllers.RecordController">RecordController</span>, <a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a>[<a href="../models/Record.html" class="extype" name="models.Record">Record</a>], <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a>, <span class="extype" name="play.api.mvc.Controller">Controller</span>, <span class="extype" name="play.api.mvc.Rendering">Rendering</span>, <span class="extype" name="play.api.mvc.RequestExtractors">RequestExtractors</span>, <span class="extype" name="play.api.mvc.AcceptExtractors">AcceptExtractors</span>, <span class="extype" name="play.api.http.ContentTypes">ContentTypes</span>, <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span>, <span class="extype" name="play.api.http.Status">play.api.http.Status</span>, <span class="extype" name="play.api.http.HttpProtocol">HttpProtocol</span>, <span class="extype" name="play.api.mvc.BodyParsers">BodyParsers</span>, <span class="extype" name="play.api.mvc.Results">Results</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="controllers.RecordHtml"><span>RecordHtml</span></li><li class="in" name="controllers.RecordController"><span>RecordController</span></li><li class="in" name="controllers.ObjectController"><span>ObjectController</span></li><li class="in" name="controllers.SiteController"><span>SiteController</span></li><li class="in" name="play.api.mvc.Controller"><span>Controller</span></li><li class="in" name="play.api.mvc.Rendering"><span>Rendering</span></li><li class="in" name="play.api.mvc.RequestExtractors"><span>RequestExtractors</span></li><li class="in" name="play.api.mvc.AcceptExtractors"><span>AcceptExtractors</span></li><li class="in" name="play.api.http.ContentTypes"><span>ContentTypes</span></li><li class="in" name="play.api.http.HeaderNames"><span>HeaderNames</span></li><li class="in" name="play.api.http.Status"><span>Status</span></li><li class="in" name="play.api.http.HttpProtocol"><span>HttpProtocol</span></li><li class="in" name="play.api.mvc.BodyParsers"><span>BodyParsers</span></li><li class="in" name="play.api.mvc.Results"><span>Results</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="controllers.RecordHtml"><span>RecordHtml</span></li><li class="in" name="controllers.HtmlController"><span>HtmlController</span></li><li class="in" name="controllers.RecordController"><span>RecordController</span></li><li class="in" name="controllers.ObjectController"><span>ObjectController</span></li><li class="in" name="controllers.SiteController"><span>SiteController</span></li><li class="in" name="play.api.mvc.Controller"><span>Controller</span></li><li class="in" name="play.api.mvc.Rendering"><span>Rendering</span></li><li class="in" name="play.api.mvc.RequestExtractors"><span>RequestExtractors</span></li><li class="in" name="play.api.mvc.AcceptExtractors"><span>AcceptExtractors</span></li><li class="in" name="play.api.http.ContentTypes"><span>ContentTypes</span></li><li class="in" name="play.api.http.HeaderNames"><span>HeaderNames</span></li><li class="in" name="play.api.http.Status"><span>Status</span></li><li class="in" name="play.api.http.HttpProtocol"><span>HttpProtocol</span></li><li class="in" name="play.api.mvc.BodyParsers"><span>BodyParsers</span></li><li class="in" name="play.api.mvc.Results"><span>Results</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -81,51 +81,38 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="controllers.RecordController.EditForm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="EditForm=play.api.data.Form[(Option[Option[models.RecordCategory]],Seq[(models.Metric[_],Option[String])])]"></a>
-      <a id="EditForm:EditForm"></a>
+              <ol><li name="controllers.RecordHtml.MetricForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MetricFormextendsHtmlForm[controllers.RecordHtml.MetricForm]"></a>
+      <a id="MetricForm:MetricForm"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">EditForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<a href="../models/RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]], <span class="extype" name="scala.Seq">Seq</span>[(<a href="../models/Metric.html" class="extype" name="models.Metric">Metric</a>[_], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>])])]</span>
+        <a href="RecordHtml$$MetricForm.html"><span class="name">MetricForm</span></a><span class="result"> extends <a href="HtmlForm.html" class="extype" name="controllers.HtmlForm">HtmlForm</a>[<a href="RecordHtml$$MetricForm.html" class="extype" name="controllers.RecordHtml.MetricForm">MetricForm</a>]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RecordController</dd></dl></div>
-    </li><li name="controllers.RecordController.EditMapping" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="EditMapping=(Option[Option[models.RecordCategory]],Seq[(models.Metric[_],Option[String])])"></a>
-      <a id="EditMapping:(Option[Option[RecordCategory]],Seq[(Metric[_],Option[String])])"></a>
+      
+    </li><li name="controllers.RecordHtml.RemoveForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="RemoveFormextendsStructForm"></a>
+      <a id="RemoveForm:RemoveForm"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">EditMapping</span><span class="result"> = (<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<a href="../models/RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]], <span class="extype" name="scala.Seq">Seq</span>[(<a href="../models/Metric.html" class="extype" name="models.Metric">Metric</a>[_], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>])])</span>
+        <a href="RecordHtml$$RemoveForm.html"><span class="name">RemoveForm</span></a><span class="result"> extends <a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RecordController</dd></dl></div>
-    </li><li name="controllers.RecordController.MeasureMapping" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="MeasureMapping=(models.Metric[_],Option[String])"></a>
-      <a id="MeasureMapping:(Metric[_],Option[String])"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">MeasureMapping</span><span class="result"> = (<a href="../models/Metric.html" class="extype" name="models.Metric">Metric</a>[_], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>])</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>RecordController</dd></dl></div>
+      
     </li><li name="controllers.ObjectController.Request" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Request[A]=controllers.RequestObject[O]#Site[A]"></a>
       <a id="Request[A]:Request[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">type</span>
       </span>
       <span class="symbol">
@@ -133,19 +120,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a></dd></dl></div>
-    </li><li name="controllers.RecordController.SelectForm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="SelectForm=play.api.data.Form[Option[models.Record.Id]]"></a>
+    </li><li name="controllers.RecordHtml.SelectForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SelectFormextendsAHtmlForm[controllers.RecordHtml.SelectForm]"></a>
       <a id="SelectForm:SelectForm"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">SelectForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="scala.Option">Option</span>[<a href="../models/Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">models.Record.Id</a>]]</span>
+        <a href="RecordHtml$$SelectForm.html"><span class="name">SelectForm</span></a><span class="result"> extends <a href="AHtmlForm.html" class="extype" name="controllers.AHtmlForm">AHtmlForm</a>[<a href="RecordHtml$$SelectForm.html" class="extype" name="controllers.RecordHtml.SelectForm">SelectForm</a>]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RecordController</dd></dl></div>
+      
     </li><li name="play.api.mvc.Results.Status" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="StatusextendsSimpleResult"></a>
       <a id="Status:Status"></a>
@@ -2532,19 +2519,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="controllers.RecordHtml#categoryMapping" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="controllers.RecordController#categoryMapping" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="categoryMapping:play.api.data.Mapping[models.RecordCategory]"></a>
       <a id="categoryMapping:Mapping[RecordCategory]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">categoryMapping</span><span class="result">: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<a href="../models/RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.RecordHtml">RecordHtml</a> → RecordController</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>RecordController</dd></dl></div>
     </li><li name="play.api.mvc.Results#chunk" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="chunk(trailers:Option[play.api.libs.iteratee.Iteratee[Array[Byte],Seq[(String,String)]]]):play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]"></a>
       <a id="chunk(Option[Iteratee[Array[Byte],Seq[(String,String)]]]):Enumeratee[Array[Byte],Array[Byte]]"></a>
@@ -2616,19 +2603,6 @@
       </span>
       </h4>
       
-    </li><li name="controllers.RecordController#editForm" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="editForm:play.api.data.Form[(Option[Option[models.RecordCategory]],Seq[(models.Metric[_],Option[String])])]"></a>
-      <a id="editForm:Form[(Option[Option[RecordCategory]],Seq[(Metric[_],Option[String])])]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">lazy val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">editForm</span><span class="result">: <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<a href="../models/RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]], <span class="extype" name="scala.Seq">Seq</span>[(<a href="../models/Metric.html" class="extype" name="models.Metric">Metric</a>[_], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>])])]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>RecordController</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -2739,19 +2713,45 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
-    </li><li name="controllers.RecordHtml#metricMapping" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="controllers.RecordHtml#measureAdd" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="measureAdd(recordId:models.Record.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="measureAdd(models.Record.Id):Action[AnyContent]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">measureAdd</span><span class="params">(<span name="recordId">recordId: <a href="../models/Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">models.Record.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.RecordController#measureUpdate" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="measureUpdate(recordId:models.Record.Id,metricId:models.Metric.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="measureUpdate(models.Record.Id,models.Metric.Id):Action[AnyContent]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">measureUpdate</span><span class="params">(<span name="recordId">recordId: <a href="../models/Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">models.Record.Id</a></span>, <span name="metricId">metricId: <a href="../models/Metric$.html#Id=models.IntId[T]" class="extmbr" name="models.Metric.Id">models.Metric.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RecordController</dd></dl></div>
+    </li><li name="controllers.RecordController#metricMapping" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="metricMapping:play.api.data.Mapping[models.Metric[_]]"></a>
       <a id="metricMapping:Mapping[Metric[_]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">metricMapping</span><span class="result">: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<a href="../models/Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.RecordHtml">RecordHtml</a> → RecordController</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>RecordController</dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -2804,19 +2804,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RecordController</dd></dl></div>
-    </li><li name="controllers.RecordController#selectForm" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="selectForm:play.api.data.Form[Option[models.Record.Id]]"></a>
-      <a id="selectForm:Form[Option[models.Record.Id]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">selectForm</span><span class="result">: <span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="scala.Option">Option</span>[<a href="../models/Record$.html#Id=models.IntId[T]" class="extmbr" name="models.Record.Id">models.Record.Id</a>]]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="package.html" class="extype" name="controllers">controllers</a>] </dd><dt>Definition Classes</dt><dd>RecordController</dd></dl></div>
     </li><li name="play.api.mvc.Controller#session" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="session(implicitrequest:play.api.mvc.RequestHeader):play.api.mvc.Session"></a>
       <a id="session(RequestHeader):Session"></a>
@@ -2831,15 +2818,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
     </li><li name="controllers.RecordHtml#slotAdd" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="slotAdd(containerId:models.Container.Id,segment:dbrary.Segment,catID:models.RecordCategory.Id,editRedirect:Boolean):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="slotAdd(models.Container.Id,Segment,models.RecordCategory.Id,Boolean):Action[AnyContent]"></a>
+      <a id="slotAdd(containerId:models.Container.Id,segment:dbrary.Segment,slotRedirect:Boolean):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="slotAdd(models.Container.Id,Segment,Boolean):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">slotAdd</span><span class="params">(<span name="containerId">containerId: <a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Segment">Segment</span></span>, <span name="catID">catID: <a href="../models/RecordCategory$.html#Id=models.IntId[T]" class="extmbr" name="models.RecordCategory.Id">models.RecordCategory.Id</a></span>, <span name="editRedirect">editRedirect: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">slotAdd</span><span class="params">(<span name="containerId">containerId: <a href="../models/Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">models.Container.Id</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Segment">Segment</span></span>, <span name="slotRedirect">slotRedirect: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       
@@ -2896,15 +2883,15 @@
       </h4>
       
     </li><li name="controllers.RecordHtml#viewEdit" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="viewEdit(meas:Seq[models.Metric[_]],form:controllers.RecordHtml.EditForm)(implicitrequest:controllers.RecordHtml.Request[_]):play.api.templates.HtmlFormat.Appendable"></a>
-      <a id="viewEdit(Seq[Metric[_]],EditForm)(Request[_]):play.api.templates.HtmlFormat.Appendable"></a>
+      <a id="viewEdit(editForm:Option[controllers.RecordController.EditForm],measureForm:Option[controllers.RecordController.MeasureForm],addForm:Option[controllers.RecordHtml.MetricForm])(implicitrequest:controllers.RecordHtml.Request[_]):play.api.templates.HtmlFormat.Appendable"></a>
+      <a id="viewEdit(Option[EditForm],Option[MeasureForm],Option[MetricForm])(Request[_]):play.api.templates.HtmlFormat.Appendable"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">viewEdit</span><span class="params">(<span name="meas">meas: <span class="extype" name="scala.Seq">Seq</span>[<a href="../models/Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</span>, <span name="form">form: <a href="#EditForm=play.api.data.Form[(Option[Option[models.RecordCategory]],Seq[(models.Metric[_],Option[String])])]" class="extmbr" name="controllers.RecordHtml.EditForm">EditForm</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.RecordHtml.Request">Request</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span></span>
+        <span class="name">viewEdit</span><span class="params">(<span name="editForm">editForm: <span class="extype" name="scala.Option">Option</span>[<a href="RecordController$$EditForm.html" class="extype" name="controllers.RecordController.EditForm">EditForm</a>] = <span class="symbol">None</span></span>, <span name="measureForm">measureForm: <span class="extype" name="scala.Option">Option</span>[<a href="RecordController$$MeasureForm.html" class="extype" name="controllers.RecordController.MeasureForm">MeasureForm</a>] = <span class="symbol">None</span></span>, <span name="addForm">addForm: <span class="extype" name="scala.Option">Option</span>[<a href="RecordHtml$$MetricForm.html" class="extype" name="controllers.RecordHtml.MetricForm">MetricForm</a>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.RecordHtml.Request">Request</a>[_]</span>)</span><span class="result">: <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span></span>
       </span>
       </h4>
       
@@ -3006,7 +2993,9 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="controllers.RecordController">
+        <div class="parent" name="controllers.HtmlController">
+              <h3>Inherited from <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></h3>
+            </div><div class="parent" name="controllers.RecordController">
               <h3>Inherited from <span class="extype" name="controllers.RecordController">RecordController</span></h3>
             </div><div class="parent" name="controllers.ObjectController">
               <h3>Inherited from <a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a>[<a href="../models/Record.html" class="extype" name="models.Record">Record</a>]</h3>

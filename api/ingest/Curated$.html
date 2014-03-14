@@ -35,13 +35,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Curated</span>
+        <span class="name">Curated</span><span class="result"> extends <span class="extype" name="ingest.Ingest">Ingest</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/ingest/curated.scala" target="_blank">curated.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="ingest.Ingest">Ingest</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="ingest.Curated"><span>Curated</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="ingest.Curated"><span>Curated</span></li><li class="in" name="ingest.Ingest"><span>Ingest</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -81,12 +81,25 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="ingest.Curated.ModelSession" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="ingest.Ingest.MetricENUM" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="MetricENUMextendsParse.ENUM"></a>
+      <a id="MetricENUM:MetricENUM"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <span class="name">MetricENUM</span><span class="result"> extends <span class="extype" name="ingest.Parse.ENUM">ENUM</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Ingest</dd></dl></div>
+    </li><li name="ingest.Curated.ModelSession" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ModelSessionextendsProductwithSerializable"></a>
       <a id="ModelSession:ModelSession"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
@@ -94,19 +107,19 @@
       </span>
       </h4>
       
-    </li><li name="ingest.Curated.PopulateException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="PopulateExceptionextendsIngestExceptionwithProductwithSerializable"></a>
-      <a id="PopulateException:PopulateException"></a>
+    </li><li name="ingest.Ingest.RaceEthnicity" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="RaceEthnicity=(Option[Ingest.this.Race.Value],Option[Ingest.this.Ethnicity.Value])"></a>
+      <a id="RaceEthnicity:(Option[Ingest.Race.Value],Option[Ingest.Ethnicity.Value])"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">case class</span>
+        <span class="modifier"></span>
+        <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <a href="Curated$$PopulateException.html"><span class="name">PopulateException</span></a><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="target">target: <span class="extype" name="scala.Option">Option</span>[<a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>] = <span class="symbol">scala.None</span></span>)</span><span class="result"> extends <a href="IngestException.html" class="extype" name="ingest.IngestException">IngestException</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">RaceEthnicity</span><span class="result"> = (<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Enumeration.Value">Ingest.Race.Value</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Enumeration.Value">Ingest.Ethnicity.Value</span>])</span>
       </span>
       </h4>
-      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Ingest</dd></dl></div>
     </li></ol>
             </div>
 
@@ -179,19 +192,45 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="ingest.Curated.PopulateException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="PopulateException"></a>
-      <a id="PopulateException:PopulateException"></a>
+    </li><li name="ingest.Ingest.Ethnicity" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Ethnicity"></a>
+      <a id="Ethnicity:Ethnicity"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Curated$$PopulateException$.html"><span class="name">PopulateException</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">Ethnicity</span><span class="result"> extends <span class="extype" name="ingest.Ingest.MetricENUM">MetricENUM</span></span>
       </span>
       </h4>
-      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Ingest</dd></dl></div>
+    </li><li name="ingest.Ingest.Gender" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Gender"></a>
+      <a id="Gender:Gender"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Gender</span><span class="result"> extends <span class="extype" name="ingest.Ingest.MetricENUM">MetricENUM</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Ingest</dd></dl></div>
+    </li><li name="ingest.Ingest.Race" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Race"></a>
+      <a id="Race:Race"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Race</span><span class="result"> extends <span class="extype" name="ingest.Ingest.MetricENUM">MetricENUM</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Ingest</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -250,19 +289,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="ingest.Curated#executionContext" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="ingest.Ingest#executionContext" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="executionContext:scala.concurrent.ExecutionContext"></a>
       <a id="executionContext:ExecutionContext"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">implicit </span>
+        <span class="modifier">implicit final </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">executionContext</span><span class="result">: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>
       </span>
       </h4>
-      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Ingest</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -308,19 +347,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="ingest.Curated#ingestDirectory" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ingestDirectory:java.io.File"></a>
-      <a id="ingestDirectory:File"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">ingestDirectory</span><span class="result">: <span class="extype" name="java.io.File">File</span></span>
-      </span>
-      </h4>
-      
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -491,7 +517,9 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.AnyRef">
+        <div class="parent" name="ingest.Ingest">
+              <h3>Inherited from <span class="extype" name="ingest.Ingest">Ingest</span></h3>
+            </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>

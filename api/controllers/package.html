@@ -58,7 +58,20 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="controllers.ActionChecker" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+              <ol><li name="controllers.AHtmlForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AHtmlForm[+F&lt;:controllers.AHtmlForm[F]]extendsHtmlFormView"></a>
+      <a id="AHtmlForm[+F&lt;:AHtmlForm[F]]:AHtmlForm[F]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="AHtmlForm.html"><span class="name">AHtmlForm</span></a><span class="tparams">[<span name="F">+F &lt;: <a href="AHtmlForm.html" class="extype" name="controllers.AHtmlForm">AHtmlForm</a>[<span class="extype" name="controllers.AHtmlForm.F">F</span>]</span>]</span><span class="result"> extends <a href="HtmlFormView.html" class="extype" name="controllers.HtmlFormView">HtmlFormView</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.ActionChecker" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="ActionChecker[R[_]]extendsActionHandler[R]"></a>
       <a id="ActionChecker[R[_]]:ActionChecker[R]"></a>
       <h4 class="signature">
@@ -136,6 +149,19 @@
       </span>
       </h4>
       
+    </li><li name="controllers.ApiController" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ApiControllerextendsSiteController"></a>
+      <a id="ApiController:ApiController"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="ApiController.html"><span class="name">ApiController</span></a><span class="result"> extends <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></span>
+      </span>
+      </h4>
+      
     </li><li name="controllers.ApiException" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="ApiExceptionextendsSiteException"></a>
       <a id="ApiException:ApiException"></a>
@@ -149,6 +175,58 @@
       </span>
       </h4>
       
+    </li><li name="controllers.ApiForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ApiFormextendsFormView"></a>
+      <a id="ApiForm:ApiForm"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ApiForm.html"><span class="name">ApiForm</span></a><span class="result"> extends <a href="FormView.html" class="extype" name="controllers.FormView">FormView</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.EitherMapping" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EitherMapping[L,R]extendsMapping[Either[L,R]]withProductwithSerializable"></a>
+      <a id="EitherMapping[L,R]:EitherMapping[L,R]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="EitherMapping.html"><span class="name">EitherMapping</span></a><span class="tparams">[<span name="L">L</span>, <span name="R">R</span>]</span><span class="params">(<span name="leftMapping">leftMapping: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="controllers.EitherMapping.L">L</span>]</span>, <span name="rightMapping">rightMapping: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="controllers.EitherMapping.R">R</span>]</span>, <span name="key">key: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>, <span name="constraints">constraints: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.data.validation.Constraint">Constraint</span>[<span class="extype" name="scala.Either">Either</span>[<span class="extype" name="controllers.EitherMapping.L">L</span>, <span class="extype" name="controllers.EitherMapping.R">R</span>]]] = <span class="symbol">immutable.this.Nil</span></span>)</span><span class="result"> extends <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="scala.Either">Either</span>[<span class="extype" name="controllers.EitherMapping.L">L</span>, <span class="extype" name="controllers.EitherMapping.R">R</span>]] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.FormView" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="FormViewextendsStructForm"></a>
+      <a id="FormView:FormView"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="FormView.html"><span class="name">FormView</span></a><span class="result"> extends <a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.HtmlController" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="HtmlControllerextendsSiteController"></a>
+      <a id="HtmlController:HtmlController"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="HtmlController.html"><span class="name">HtmlController</span></a><span class="result"> extends <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></span>
+      </span>
+      </h4>
+      
     </li><li name="controllers.HtmlException" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="HtmlExceptionextendsSiteException"></a>
       <a id="HtmlException:HtmlException"></a>
@@ -159,6 +237,32 @@
       </span>
       <span class="symbol">
         <a href="HtmlException.html"><span class="name">HtmlException</span></a><span class="result"> extends <a href="SiteException.html" class="extype" name="controllers.SiteException">SiteException</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.HtmlForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="HtmlForm[+F&lt;:controllers.HtmlForm[F]]extendsHtmlFormView"></a>
+      <a id="HtmlForm[+F&lt;:HtmlForm[F]]:HtmlForm[F]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="HtmlForm.html"><span class="name">HtmlForm</span></a><span class="tparams">[<span name="F">+F &lt;: <a href="HtmlForm.html" class="extype" name="controllers.HtmlForm">HtmlForm</a>[<span class="extype" name="controllers.HtmlForm.F">F</span>]</span>]</span><span class="result"> extends <a href="HtmlFormView.html" class="extype" name="controllers.HtmlFormView">HtmlFormView</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.HtmlFormView" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="HtmlFormViewextendsFormView"></a>
+      <a id="HtmlFormView:HtmlFormView"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="HtmlFormView.html"><span class="name">HtmlFormView</span></a><span class="result"> extends <a href="FormView.html" class="extype" name="controllers.FormView">FormView</a></span>
       </span>
       </h4>
       
@@ -214,6 +318,19 @@
       </span>
       </h4>
       <p class="comment cmt">Identical to OptionalMapping except that empty fields are not treated as missing.</p>
+    </li><li name="controllers.PartyController" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="PartyControllerextendsObjectController[models.SiteParty]"></a>
+      <a id="PartyController:PartyController"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="PartyController.html"><span class="name">PartyController</span></a><span class="result"> extends <a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a>[<a href="../models/SiteParty.html" class="extype" name="models.SiteParty">SiteParty</a>]</span>
+      </span>
+      </h4>
+      
     </li><li name="controllers.RequestObject" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="RequestObject[+O]extendsAnyRef"></a>
       <a id="RequestObject[+O]:RequestObject[O]"></a>
@@ -266,16 +383,42 @@
       </span>
       </h4>
       
-    </li><li name="controllers.ReverseIngest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReverseIngestextendsAnyRef"></a>
-      <a id="ReverseIngest:ReverseIngest"></a>
+    </li><li name="controllers.ReverseCommentApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReverseCommentApiextendsAnyRef"></a>
+      <a id="ReverseCommentApi:ReverseCommentApi"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="ReverseIngest.html"><span class="name">ReverseIngest</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <a href="ReverseCommentApi.html"><span class="name">ReverseCommentApi</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.ReverseCommentHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReverseCommentHtmlextendsAnyRef"></a>
+      <a id="ReverseCommentHtml:ReverseCommentHtml"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ReverseCommentHtml.html"><span class="name">ReverseCommentHtml</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.ReverseIngestController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReverseIngestControllerextendsAnyRef"></a>
+      <a id="ReverseIngestController:ReverseIngestController"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ReverseIngestController.html"><span class="name">ReverseIngestController</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
       
@@ -461,16 +604,29 @@
       </span>
       </h4>
       
-    </li><li name="controllers.ReverseToken" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReverseTokenextendsAnyRef"></a>
-      <a id="ReverseToken:ReverseToken"></a>
+    </li><li name="controllers.ReverseTokenApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReverseTokenApiextendsAnyRef"></a>
+      <a id="ReverseTokenApi:ReverseTokenApi"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="ReverseToken.html"><span class="name">ReverseToken</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <a href="ReverseTokenApi.html"><span class="name">ReverseTokenApi</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.ReverseTokenHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReverseTokenHtmlextendsAnyRef"></a>
+      <a id="ReverseTokenHtml:ReverseTokenHtml"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ReverseTokenHtml.html"><span class="name">ReverseTokenHtml</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
       
@@ -577,7 +733,7 @@
         <a href="StructForm.html"><span class="name">StructForm</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">This is an alternative to play.</p>
     </li><li name="controllers.routes" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="routesextendsObject"></a>
       <a id="routes:routes"></a>
@@ -607,7 +763,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="AssetApi$.html"><span class="name">AssetApi</span></a><span class="result"> extends <span class="extype" name="controllers.AssetController">AssetController</span></span>
+        <a href="AssetApi$.html"><span class="name">AssetApi</span></a><span class="result"> extends <span class="extype" name="controllers.AssetController">AssetController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
       </h4>
       
@@ -633,7 +789,46 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="AssetHtml$.html"><span class="name">AssetHtml</span></a><span class="result"> extends <span class="extype" name="controllers.AssetController">AssetController</span></span>
+        <a href="AssetHtml$.html"><span class="name">AssetHtml</span></a><span class="result"> extends <span class="extype" name="controllers.AssetController">AssetController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.CommentApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CommentApi"></a>
+      <a id="CommentApi:CommentApi"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="CommentApi$.html"><span class="name">CommentApi</span></a><span class="result"> extends <span class="extype" name="controllers.CommentController">CommentController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.CommentController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CommentController"></a>
+      <a id="CommentController:CommentController"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="CommentController$.html"><span class="name">CommentController</span></a><span class="result"> extends <span class="extype" name="controllers.CommentController">CommentController</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.CommentHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CommentHtml"></a>
+      <a id="CommentHtml:CommentHtml"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="CommentHtml$.html"><span class="name">CommentHtml</span></a><span class="result"> extends <span class="extype" name="controllers.CommentController">CommentController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
       </h4>
       
@@ -650,19 +845,6 @@
       </span>
       </h4>
       
-    </li><li name="controllers.Field" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Field"></a>
-      <a id="Field:Field"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="Field$.html"><span class="name">Field</span></a>
-      </span>
-      </h4>
-      
     </li><li name="controllers.HTTP" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="HTTP"></a>
       <a id="HTTP:HTTP"></a>
@@ -676,16 +858,16 @@
       </span>
       </h4>
       
-    </li><li name="controllers.Ingest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Ingest"></a>
-      <a id="Ingest:Ingest"></a>
+    </li><li name="controllers.IngestController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="IngestController"></a>
+      <a id="IngestController:IngestController"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Ingest$.html"><span class="name">Ingest</span></a><span class="result"> extends <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></span>
+        <a href="IngestController$.html"><span class="name">IngestController</span></a><span class="result"> extends <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
       </h4>
       
@@ -698,7 +880,20 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="LoginApi$.html"><span class="name">LoginApi</span></a><span class="result"> extends <span class="extype" name="controllers.LoginController">LoginController</span></span>
+        <a href="LoginApi$.html"><span class="name">LoginApi</span></a><span class="result"> extends <span class="extype" name="controllers.LoginController">LoginController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.LoginController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LoginController"></a>
+      <a id="LoginController:LoginController"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="LoginController$.html"><span class="name">LoginController</span></a><span class="result"> extends <span class="extype" name="controllers.LoginController">LoginController</span></span>
       </span>
       </h4>
       
@@ -711,7 +906,20 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="LoginHtml$.html"><span class="name">LoginHtml</span></a><span class="result"> extends <span class="extype" name="controllers.LoginController">LoginController</span></span>
+        <a href="LoginHtml$.html"><span class="name">LoginHtml</span></a><span class="result"> extends <span class="extype" name="controllers.LoginController">LoginController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.Mappings" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Mappings"></a>
+      <a id="Mappings:Mappings"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Mappings$.html"><span class="name">Mappings</span></a>
       </span>
       </h4>
       
@@ -737,7 +945,20 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="PartyApi$.html"><span class="name">PartyApi</span></a><span class="result"> extends <span class="extype" name="controllers.PartyController">PartyController</span></span>
+        <a href="PartyApi$.html"><span class="name">PartyApi</span></a><span class="result"> extends <a href="PartyController.html" class="extype" name="controllers.PartyController">PartyController</a> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.PartyController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="PartyController"></a>
+      <a id="PartyController:PartyController"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="PartyController$.html"><span class="name">PartyController</span></a><span class="result"> extends <a href="PartyController.html" class="extype" name="controllers.PartyController">PartyController</a></span>
       </span>
       </h4>
       
@@ -750,7 +971,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="PartyHtml$.html"><span class="name">PartyHtml</span></a><span class="result"> extends <span class="extype" name="controllers.PartyController">PartyController</span></span>
+        <a href="PartyHtml$.html"><span class="name">PartyHtml</span></a><span class="result"> extends <a href="PartyController.html" class="extype" name="controllers.PartyController">PartyController</a> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
       </h4>
       
@@ -763,7 +984,20 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="RecordApi$.html"><span class="name">RecordApi</span></a><span class="result"> extends <span class="extype" name="controllers.RecordController">RecordController</span></span>
+        <a href="RecordApi$.html"><span class="name">RecordApi</span></a><span class="result"> extends <span class="extype" name="controllers.RecordController">RecordController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.RecordController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="RecordController"></a>
+      <a id="RecordController:RecordController"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="RecordController$.html"><span class="name">RecordController</span></a><span class="result"> extends <span class="extype" name="controllers.RecordController">RecordController</span></span>
       </span>
       </h4>
       
@@ -776,7 +1010,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="RecordHtml$.html"><span class="name">RecordHtml</span></a><span class="result"> extends <span class="extype" name="controllers.RecordController">RecordController</span></span>
+        <a href="RecordHtml$.html"><span class="name">RecordHtml</span></a><span class="result"> extends <span class="extype" name="controllers.RecordController">RecordController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
       </h4>
       
@@ -790,6 +1024,19 @@
       </span>
       <span class="symbol">
         <a href="RequestObject$.html"><span class="name">RequestObject</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.ServiceUnavailableException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ServiceUnavailableException"></a>
+      <a id="ServiceUnavailableException:ServiceUnavailableException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ServiceUnavailableException$.html"><span class="name">ServiceUnavailableException</span></a><span class="result"> extends <a href="SiteException.html" class="extype" name="controllers.SiteException">SiteException</a></span>
       </span>
       </h4>
       
@@ -854,7 +1101,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="SlotApi$.html"><span class="name">SlotApi</span></a><span class="result"> extends <span class="extype" name="controllers.SlotController">SlotController</span></span>
+        <a href="SlotApi$.html"><span class="name">SlotApi</span></a><span class="result"> extends <span class="extype" name="controllers.SlotController">SlotController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
       </h4>
       
@@ -867,7 +1114,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="SlotAssetApi$.html"><span class="name">SlotAssetApi</span></a><span class="result"> extends <span class="extype" name="controllers.SlotAssetController">SlotAssetController</span></span>
+        <a href="SlotAssetApi$.html"><span class="name">SlotAssetApi</span></a><span class="result"> extends <span class="extype" name="controllers.SlotAssetController">SlotAssetController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
       </h4>
       
@@ -893,7 +1140,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="SlotAssetHtml$.html"><span class="name">SlotAssetHtml</span></a><span class="result"> extends <span class="extype" name="controllers.SlotAssetController">SlotAssetController</span></span>
+        <a href="SlotAssetHtml$.html"><span class="name">SlotAssetHtml</span></a><span class="result"> extends <span class="extype" name="controllers.SlotAssetController">SlotAssetController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
       </h4>
       
@@ -919,7 +1166,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="SlotHtml$.html"><span class="name">SlotHtml</span></a><span class="result"> extends <span class="extype" name="controllers.SlotController">SlotController</span></span>
+        <a href="SlotHtml$.html"><span class="name">SlotHtml</span></a><span class="result"> extends <span class="extype" name="controllers.SlotController">SlotController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
       </h4>
       
@@ -932,7 +1179,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="TagApi$.html"><span class="name">TagApi</span></a><span class="result"> extends <span class="extype" name="controllers.TagController">TagController</span></span>
+        <a href="TagApi$.html"><span class="name">TagApi</span></a><span class="result"> extends <span class="extype" name="controllers.TagController">TagController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
       </h4>
       
@@ -958,20 +1205,46 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="TagHtml$.html"><span class="name">TagHtml</span></a><span class="result"> extends <span class="extype" name="controllers.TagController">TagController</span></span>
+        <a href="TagHtml$.html"><span class="name">TagHtml</span></a><span class="result"> extends <span class="extype" name="controllers.TagController">TagController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
       </h4>
       
-    </li><li name="controllers.Token" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Token"></a>
-      <a id="Token:Token"></a>
+    </li><li name="controllers.TokenApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TokenApi"></a>
+      <a id="TokenApi:TokenApi"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Token$.html"><span class="name">Token</span></a><span class="result"> extends <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></span>
+        <a href="TokenApi$.html"><span class="name">TokenApi</span></a><span class="result"> extends <span class="extype" name="controllers.TokenController">TokenController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.TokenController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TokenController"></a>
+      <a id="TokenController:TokenController"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="TokenController$.html"><span class="name">TokenController</span></a><span class="result"> extends <span class="extype" name="controllers.TokenController">TokenController</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.TokenHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TokenHtml"></a>
+      <a id="TokenHtml:TokenHtml"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="TokenHtml$.html"><span class="name">TokenHtml</span></a><span class="result"> extends <span class="extype" name="controllers.TokenController">TokenController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
       </h4>
       
@@ -984,7 +1257,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="VolumeApi$.html"><span class="name">VolumeApi</span></a><span class="result"> extends <span class="extype" name="controllers.VolumeController">VolumeController</span></span>
+        <a href="VolumeApi$.html"><span class="name">VolumeApi</span></a><span class="result"> extends <span class="extype" name="controllers.VolumeController">VolumeController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
       </h4>
       
@@ -1010,7 +1283,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="VolumeHtml$.html"><span class="name">VolumeHtml</span></a><span class="result"> extends <span class="extype" name="controllers.VolumeController">VolumeController</span></span>
+        <a href="VolumeHtml$.html"><span class="name">VolumeHtml</span></a><span class="result"> extends <span class="extype" name="controllers.VolumeController">VolumeController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
       </h4>
       

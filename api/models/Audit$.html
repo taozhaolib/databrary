@@ -232,15 +232,15 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.Audit#action" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="action(action:models.Audit.Action.Value)(implicitsite:site.Site,implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
-      <a id="action(Audit.Action.Value)(Site,DB,ExecutionContext):SQLResult"></a>
+      <a id="action(action:models.Audit.Action.Value,table:String,args:models.SQLTerms)(implicitsite:site.Site,implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
+      <a id="action(Audit.Action.Value,String,SQLTerms)(Site,DB,ExecutionContext):SQLResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">action</span><span class="params">(<span name="action">action: <a href="Audit$$Action$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Audit.Action.Value</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>, <span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
+        <span class="name">action</span><span class="params">(<span name="action">action: <a href="Audit$$Action$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Audit.Action.Value</a></span>, <span name="table">table: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;audit&quot;</span></span>, <span name="args">args: <span class="extype" name="models.SQLTerms">SQLTerms</span> = <span class="symbol">SQLTerms()</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>, <span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Record an audit event of the specified type to the generic audit table.</p>
@@ -334,19 +334,6 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.TableView#fixed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="fixed(r:TableView.this.Rowwithmodels.TableRow):dbrary.Selector[TableView.this.Rowwithmodels.TableRow]"></a>
-      <a id="fixed(RowwithTableRow):Selector[RowwithTableRow]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">fixed</span><span class="params">(<span name="r">r: <a href="#Row=R" class="extmbr" name="models.Audit.Row">Row</a> with <span class="extype" name="models.TableRow">TableRow</span></span>)</span><span class="result">: <span class="extype" name="dbrary.Selector">Selector</span>[<a href="#Row=R" class="extmbr" name="models.Audit.Row">Row</a> with <span class="extype" name="models.TableRow">TableRow</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.HasTable#fromTable" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="fromTable:dbrary.FromTable"></a>
       <a id="fromTable:FromTable"></a>

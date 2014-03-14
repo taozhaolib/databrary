@@ -81,7 +81,20 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="ingest.IngestException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="ingest.Asset" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="AssetextendsAnyRef"></a>
+      <a id="Asset:Asset"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="Asset.html"><span class="name">Asset</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="ingest.IngestException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="IngestExceptionextendsRuntimeException"></a>
       <a id="IngestException:IngestException"></a>
       <h4 class="signature">
@@ -103,7 +116,20 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ParseException.html"><span class="name">ParseException</span></a><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="line">line: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>, <span name="column">column: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>)</span><span class="result"> extends <a href="IngestException.html" class="extype" name="ingest.IngestException">IngestException</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ParseException.html"><span class="name">ParseException</span></a><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="line">line: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>, <span name="column">column: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>, <span name="context">context: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <a href="IngestException.html" class="extype" name="ingest.IngestException">IngestException</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="ingest.PopulateException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="PopulateExceptionextendsIngestExceptionwithProductwithSerializable"></a>
+      <a id="PopulateException:PopulateException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="PopulateException.html"><span class="name">PopulateException</span></a><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="target">target: <span class="extype" name="scala.Option">Option</span>[<a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>] = <span class="symbol">scala.None</span></span>)</span><span class="result"> extends <a href="IngestException.html" class="extype" name="ingest.IngestException">IngestException</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
@@ -114,7 +140,20 @@
 
         <div id="values" class="values members">
               <h3>Value Members</h3>
-              <ol><li name="ingest.CSV" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="ingest.Adolph" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Adolph"></a>
+      <a id="Adolph:Adolph"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Adolph$.html"><span class="name">Adolph</span></a><span class="result"> extends <span class="extype" name="ingest.Ingest">Ingest</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="ingest.CSV" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="CSV"></a>
       <a id="CSV:CSV"></a>
       <h4 class="signature">
@@ -136,20 +175,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Curated$.html"><span class="name">Curated</span></a>
-      </span>
-      </h4>
-      
-    </li><li name="ingest.Parse" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Parse"></a>
-      <a id="Parse:Parse"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="Parse$.html"><span class="name">Parse</span></a>
+        <a href="Curated$.html"><span class="name">Curated</span></a><span class="result"> extends <span class="extype" name="ingest.Ingest">Ingest</span></span>
       </span>
       </h4>
       
@@ -166,16 +192,16 @@
       </span>
       </h4>
       
-    </li><li name="ingest.package#optString" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="optString[A](v:Option[A]):String"></a>
-      <a id="optString[A](Option[A]):String"></a>
+    </li><li name="ingest.PopulateException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="PopulateException"></a>
+      <a id="PopulateException:PopulateException"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">optString</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="v">v: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="ingest.optString.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <a href="PopulateException$.html"><span class="name">PopulateException</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       

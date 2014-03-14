@@ -218,6 +218,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
+    </li><li name="models.Authorize.Info" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Info"></a>
+      <a id="Info:Info"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Authorize$$Info$.html"><span class="name">Info</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -309,19 +322,6 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.TableView#fixed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="fixed(r:TableView.this.Rowwithmodels.TableRow):dbrary.Selector[TableView.this.Rowwithmodels.TableRow]"></a>
-      <a id="fixed(RowwithTableRow):Selector[RowwithTableRow]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">fixed</span><span class="params">(<span name="r">r: <a href="#Row=R" class="extmbr" name="models.Authorize.Row">Row</a> with <span class="extype" name="models.TableRow">TableRow</span></span>)</span><span class="result">: <span class="extype" name="dbrary.Selector">Selector</span>[<a href="#Row=R" class="extmbr" name="models.Authorize.Row">Row</a> with <span class="extype" name="models.TableRow">TableRow</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.HasTable#fromTable" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="fromTable:dbrary.FromTable"></a>
       <a id="fromTable:FromTable"></a>
@@ -335,6 +335,32 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>HasTable</dd></dl></div>
+    </li><li name="models.Authorize#get" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="get(child:models.Party,parent:models.Party):scala.concurrent.Future[Option[models.Authorize]]"></a>
+      <a id="get(Party,Party):Future[Option[Authorize]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">get</span><span class="params">(<span name="child">child: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="parent">parent: <a href="Party.html" class="extype" name="models.Party">Party</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="Authorize.html" class="extype" name="models.Authorize">Authorize</a>]]</span>
+      </span>
+      </h4>
+      
+    </li><li name="models.Authorize#getAll" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getAll():scala.concurrent.Future[Seq[models.Authorize]]"></a>
+      <a id="getAll():Future[Seq[Authorize]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Authorize.html" class="extype" name="models.Authorize">Authorize</a>]]</span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -414,7 +440,7 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.Authorize#set" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="set(child:models.Party.Id,parent:models.Party.Id,access:models.Permission.Value,delegate:models.Permission.Value,authorized:Option[dbrary.Timestamp],expires:Option[dbrary.Timestamp])(implicitsite:site.Site):scala.concurrent.Future[Boolean]"></a>
+      <a id="set(child:models.Party.Id,parent:models.Party.Id,inherit:models.Permission.Value,direct:models.Permission.Value,authorized:Option[dbrary.Timestamp],expires:Option[dbrary.Timestamp])(implicitsite:site.Site):scala.concurrent.Future[Boolean]"></a>
       <a id="set(Party.Id,Party.Id,Permission.Value,Permission.Value,Option[Timestamp],Option[Timestamp])(Site):Future[Boolean]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -422,7 +448,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">set</span><span class="params">(<span name="child">child: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="parent">parent: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="delegate">delegate: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a> = <span class="symbol"><span class="name"><a href="Permission$.html">Permission.NONE</a></span></span></span>, <span name="authorized">authorized: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Timestamp">Timestamp</span>] = <span class="symbol">Some(new Timestamp)</span></span>, <span name="expires">expires: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Timestamp">Timestamp</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+        <span class="name">set</span><span class="params">(<span name="child">child: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="parent">parent: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="inherit">inherit: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="direct">direct: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="authorized">authorized: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Timestamp">Timestamp</span>] = <span class="symbol">Some(new Timestamp)</span></span>, <span name="expires">expires: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Timestamp">Timestamp</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Update or add a specific authorization in the database.</p><div class="fullcomment"><div class="comment cmt"><p>Update or add a specific authorization in the database.

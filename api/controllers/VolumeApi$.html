@@ -35,13 +35,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">VolumeApi</span><span class="result"> extends <span class="extype" name="controllers.VolumeController">VolumeController</span></span>
+        <span class="name">VolumeApi</span><span class="result"> extends <span class="extype" name="controllers.VolumeController">VolumeController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/controllers/volume.scala" target="_blank">volume.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="controllers.VolumeController">VolumeController</span>, <a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a>[<a href="../models/Volume.html" class="extype" name="models.Volume">Volume</a>], <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a>, <span class="extype" name="play.api.mvc.Controller">Controller</span>, <span class="extype" name="play.api.mvc.Rendering">Rendering</span>, <span class="extype" name="play.api.mvc.RequestExtractors">RequestExtractors</span>, <span class="extype" name="play.api.mvc.AcceptExtractors">AcceptExtractors</span>, <span class="extype" name="play.api.http.ContentTypes">ContentTypes</span>, <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span>, <span class="extype" name="play.api.http.Status">play.api.http.Status</span>, <span class="extype" name="play.api.http.HttpProtocol">HttpProtocol</span>, <span class="extype" name="play.api.mvc.BodyParsers">BodyParsers</span>, <span class="extype" name="play.api.mvc.Results">Results</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a>, <span class="extype" name="controllers.VolumeController">VolumeController</span>, <a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a>[<a href="../models/Volume.html" class="extype" name="models.Volume">Volume</a>], <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a>, <span class="extype" name="play.api.mvc.Controller">Controller</span>, <span class="extype" name="play.api.mvc.Rendering">Rendering</span>, <span class="extype" name="play.api.mvc.RequestExtractors">RequestExtractors</span>, <span class="extype" name="play.api.mvc.AcceptExtractors">AcceptExtractors</span>, <span class="extype" name="play.api.http.ContentTypes">ContentTypes</span>, <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span>, <span class="extype" name="play.api.http.Status">play.api.http.Status</span>, <span class="extype" name="play.api.http.HttpProtocol">HttpProtocol</span>, <span class="extype" name="play.api.mvc.BodyParsers">BodyParsers</span>, <span class="extype" name="play.api.mvc.Results">Results</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="controllers.VolumeApi"><span>VolumeApi</span></li><li class="in" name="controllers.VolumeController"><span>VolumeController</span></li><li class="in" name="controllers.ObjectController"><span>ObjectController</span></li><li class="in" name="controllers.SiteController"><span>SiteController</span></li><li class="in" name="play.api.mvc.Controller"><span>Controller</span></li><li class="in" name="play.api.mvc.Rendering"><span>Rendering</span></li><li class="in" name="play.api.mvc.RequestExtractors"><span>RequestExtractors</span></li><li class="in" name="play.api.mvc.AcceptExtractors"><span>AcceptExtractors</span></li><li class="in" name="play.api.http.ContentTypes"><span>ContentTypes</span></li><li class="in" name="play.api.http.HeaderNames"><span>HeaderNames</span></li><li class="in" name="play.api.http.Status"><span>Status</span></li><li class="in" name="play.api.http.HttpProtocol"><span>HttpProtocol</span></li><li class="in" name="play.api.mvc.BodyParsers"><span>BodyParsers</span></li><li class="in" name="play.api.mvc.Results"><span>Results</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="controllers.VolumeApi"><span>VolumeApi</span></li><li class="in" name="controllers.ApiController"><span>ApiController</span></li><li class="in" name="controllers.VolumeController"><span>VolumeController</span></li><li class="in" name="controllers.ObjectController"><span>ObjectController</span></li><li class="in" name="controllers.SiteController"><span>SiteController</span></li><li class="in" name="play.api.mvc.Controller"><span>Controller</span></li><li class="in" name="play.api.mvc.Rendering"><span>Rendering</span></li><li class="in" name="play.api.mvc.RequestExtractors"><span>RequestExtractors</span></li><li class="in" name="play.api.mvc.AcceptExtractors"><span>AcceptExtractors</span></li><li class="in" name="play.api.http.ContentTypes"><span>ContentTypes</span></li><li class="in" name="play.api.http.HeaderNames"><span>HeaderNames</span></li><li class="in" name="play.api.http.Status"><span>Status</span></li><li class="in" name="play.api.http.HttpProtocol"><span>HttpProtocol</span></li><li class="in" name="play.api.mvc.BodyParsers"><span>BodyParsers</span></li><li class="in" name="play.api.mvc.Results"><span>Results</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -81,33 +81,7 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="controllers.VolumeController.AccessForm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="AccessForm=play.api.data.Form[(models.Permission.Value,models.Permission.Value)]"></a>
-      <a id="AccessForm:AccessForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">AccessForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a>, <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a>)]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>VolumeController</dd></dl></div>
-    </li><li name="controllers.VolumeController.AccessMapping" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="AccessMapping=(models.Permission.Value,models.Permission.Value)"></a>
-      <a id="AccessMapping:(models.Permission.Value,models.Permission.Value)"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">AccessMapping</span><span class="result"> = (<a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a>, <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a>)</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>VolumeController</dd></dl></div>
-    </li><li name="controllers.VolumeController.CitationMapping" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+              <ol><li name="controllers.VolumeController.CitationMapping" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CitationMapping=(Option[String],Option[String],Option[String])"></a>
       <a id="CitationMapping:(Option[String],Option[String],Option[String])"></a>
       <h4 class="signature">
@@ -125,7 +99,7 @@
       <a id="Request[A]:Request[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">type</span>
       </span>
       <span class="symbol">
@@ -146,32 +120,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
-    </li><li name="controllers.VolumeController.VolumeForm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="VolumeForm=play.api.data.Form[(Option[String],Option[String],Seq[(Option[String],Option[String],Option[String])])]"></a>
-      <a id="VolumeForm:VolumeForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">VolumeForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>])])]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>VolumeController</dd></dl></div>
-    </li><li name="controllers.VolumeController.VolumeMapping" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="VolumeMapping=(Option[String],Option[String],Seq[(Option[String],Option[String],Option[String])])"></a>
-      <a id="VolumeMapping:(Option[String],Option[String],Seq[(Option[String],Option[String],Option[String])])"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">VolumeMapping</span><span class="result"> = (<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>])])</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>VolumeController</dd></dl></div>
     </li></ol>
             </div>
 
@@ -864,7 +812,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">ContributeAction</span><span class="params">(<span name="e">e: <span class="extype" name="scala.Option">Option</span>[<a href="../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a>]</span>)</span><span class="result">: <a href="ActionCreator.html" class="extype" name="controllers.ActionCreator">ActionCreator</a>[<span class="extype" name="controllers.ObjectController.Request">PartyController.Request</span>]</span>
+        <span class="name">ContributeAction</span><span class="params">(<span name="e">e: <span class="extype" name="scala.Option">Option</span>[<a href="../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a>]</span>)</span><span class="result">: <a href="ActionCreator.html" class="extype" name="controllers.ActionCreator">ActionCreator</a>[<a href="PartyController$.html#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.PartyController.Request">PartyController.Request</a>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>VolumeController</dd></dl></div>
@@ -2506,8 +2454,8 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>VolumeController</dd></dl></div>
-    </li><li name="controllers.VolumeController#accessDelete" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="accessDelete(id:models.Volume.Id,e:models.Party.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+    </li><li name="controllers.VolumeApi#accessDelete" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="accessDelete(volumeId:models.Volume.Id,partyId:models.Party.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
       <a id="accessDelete(models.Volume.Id,models.Party.Id):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -2515,33 +2463,20 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">accessDelete</span><span class="params">(<span name="id">id: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="e">e: <a href="../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">accessDelete</span><span class="params">(<span name="volumeId">volumeId: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="partyId">partyId: <a href="../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>VolumeController</dd></dl></div>
+      
     </li><li name="controllers.VolumeController#accessForm" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="accessForm:VolumeController.this.AccessForm"></a>
-      <a id="accessForm:AccessForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">accessForm</span><span class="result">: <a href="#AccessForm=play.api.data.Form[(models.Permission.Value,models.Permission.Value)]" class="extmbr" name="controllers.VolumeApi.AccessForm">AccessForm</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>VolumeController</dd></dl></div>
-    </li><li name="controllers.VolumeController#accessFormFill" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="accessFormFill(access:models.VolumeAccess):VolumeController.this.AccessForm"></a>
-      <a id="accessFormFill(VolumeAccess):AccessForm"></a>
+      <a id="accessForm(access:models.VolumeAccess)(implicitrequest:VolumeController.this.Request[_]):controllers.VolumeController.AccessForm"></a>
+      <a id="accessForm(VolumeAccess)(Request[_]):AccessForm"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">accessFormFill</span><span class="params">(<span name="access">access: <a href="../models/VolumeAccess.html" class="extype" name="models.VolumeAccess">VolumeAccess</a></span>)</span><span class="result">: <a href="#AccessForm=play.api.data.Form[(models.Permission.Value,models.Permission.Value)]" class="extmbr" name="controllers.VolumeApi.AccessForm">AccessForm</a></span>
+        <span class="name">accessForm</span><span class="params">(<span name="access">access: <a href="../models/VolumeAccess.html" class="extype" name="models.VolumeAccess">VolumeAccess</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.VolumeApi.Request">Request</a>[_]</span>)</span><span class="result">: <a href="VolumeController$$AccessForm.html" class="extype" name="controllers.VolumeController.AccessForm">AccessForm</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>VolumeController</dd></dl></div>
@@ -2558,19 +2493,19 @@
       </span>
       </h4>
       
-    </li><li name="controllers.VolumeApi#accessSearch" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="accessSearch(volumeId:models.Volume.Id,name:String):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="accessSearch(models.Volume.Id,String):Action[AnyContent]"></a>
+    </li><li name="controllers.VolumeController#accessSearch" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="accessSearch(id:models.Volume.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="accessSearch(models.Volume.Id):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">accessSearch</span><span class="params">(<span name="volumeId">volumeId: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">accessSearch</span><span class="params">(<span name="id">id: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
-      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>VolumeController</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -2655,29 +2590,16 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
-    </li><li name="controllers.VolumeController#editForm" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="editForm:play.api.data.Form[(Option[String],Option[String],Seq[(Option[String],Option[String],Option[String])])]"></a>
-      <a id="editForm:Form[(Option[String],Option[String],Seq[(Option[String],Option[String],Option[String])])]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">editForm</span><span class="result">: <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>])])]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>VolumeController</dd></dl></div>
     </li><li name="controllers.VolumeController#editFormFill" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="editFormFill(v:models.Volume)(implicitsite:site.Site):scala.concurrent.Future[play.api.data.Form[(Option[String],Option[String],Seq[(Option[String],Option[String],Option[String])])]]"></a>
-      <a id="editFormFill(Volume)(Site):Future[Form[(Option[String],Option[String],Seq[(Option[String],Option[String],Option[String])])]]"></a>
+      <a id="editFormFill(implicitrequest:VolumeController.this.Request[_]):scala.concurrent.Future[controllers.VolumeController.EditForm]"></a>
+      <a id="editFormFill(Request[_]):Future[EditForm]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">editFormFill</span><span class="params">(<span name="v">v: <a href="../models/Volume.html" class="extype" name="models.Volume">Volume</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>])])]]</span>
+        <span class="name">editFormFill</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.VolumeApi.Request">Request</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="VolumeController$$EditForm.html" class="extype" name="controllers.VolumeController.EditForm">EditForm</a>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>VolumeController</dd></dl></div>
@@ -2844,18 +2766,31 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="controllers.VolumeApi#query" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="query(query:String):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="query(String):Action[AnyContent]"></a>
+      <a id="query:play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="query:Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">query</span><span class="params">(<span name="query">query: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">query</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
       </h4>
       
+    </li><li name="controllers.VolumeController#searchResults" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="searchResults(implicitrequest:controllers.SiteRequest[play.api.mvc.AnyContent]):(controllers.VolumeController.SearchForm,scala.concurrent.Future[Seq[models.Volume]])"></a>
+      <a id="searchResults(SiteRequest[AnyContent]):(SearchForm,Future[Seq[Volume]])"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">searchResults</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>)</span><span class="result">: (<a href="VolumeController$$SearchForm.html" class="extype" name="controllers.VolumeController.SearchForm">SearchForm</a>, <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../models/Volume.html" class="extype" name="models.Volume">Volume</a>]])</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>VolumeController</dd></dl></div>
     </li><li name="play.api.mvc.Controller#session" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="session(implicitrequest:play.api.mvc.RequestHeader):play.api.mvc.Session"></a>
       <a id="session(RequestHeader):Session"></a>
@@ -3006,7 +2941,9 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="controllers.VolumeController">
+        <div class="parent" name="controllers.ApiController">
+              <h3>Inherited from <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></h3>
+            </div><div class="parent" name="controllers.VolumeController">
               <h3>Inherited from <span class="extype" name="controllers.VolumeController">VolumeController</span></h3>
             </div><div class="parent" name="controllers.ObjectController">
               <h3>Inherited from <a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a>[<a href="../models/Volume.html" class="extype" name="models.Volume">Volume</a>]</h3>

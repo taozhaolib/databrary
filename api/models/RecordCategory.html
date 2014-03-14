@@ -31,7 +31,7 @@
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier">sealed abstract </span>
+        <span class="modifier">sealed </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
@@ -84,26 +84,10 @@ For now, all instances are hard-coded.
 
         
 
-        <div id="values" class="values members">
-              <h3>Abstract Value Members</h3>
-              <ol><li name="models.RecordCategory#template" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="template:Seq[models.Metric[_]]"></a>
-      <a id="template:Seq[Metric[_]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">template</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The default set of metrics which define records in this category.</p>
-    </li></ol>
-            </div>
+        
 
         <div id="values" class="values members">
-              <h3>Concrete Value Members</h3>
+              <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:AnyRef):Boolean"></a>
       <a id="!=(AnyRef):Boolean"></a>
@@ -299,6 +283,19 @@ This assumes that two objects representing the same row are the same (even if th
       </span>
       </h4>
       <p class="shortcomment cmt">Primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.RecordCategory">RecordCategory</a> → TableRowId</dd></dl></div>
+    </li><li name="models.RecordCategory#ident" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ident:models.Metric[_]"></a>
+      <a id="ident:Metric[_]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ident</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The default set of metrics which define records in this category.</p>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -390,7 +387,20 @@ This assumes that two objects representing the same row are the same (even if th
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.RecordCategory#template" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="template:Seq[models.Metric[_]]"></a>
+      <a id="template:Seq[Metric[_]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">template</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</span>
+      </span>
+      </h4>
+      
+    </li><li name="models.TableRowId#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
       <h4 class="signature">
@@ -402,7 +412,7 @@ This assumes that two objects representing the same row are the same (even if th
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>

@@ -388,19 +388,6 @@ This is also in the database, but is cached here for special handling.</p></div>
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.TableView#fixed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="fixed(r:TableView.this.Rowwithmodels.TableRow):dbrary.Selector[TableView.this.Rowwithmodels.TableRow]"></a>
-      <a id="fixed(RowwithTableRow):Selector[RowwithTableRow]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">fixed</span><span class="params">(<span name="r">r: <a href="#Row=R" class="extmbr" name="models.Party.Row">Row</a> with <span class="extype" name="models.TableRow">TableRow</span></span>)</span><span class="result">: <span class="extype" name="dbrary.Selector">Selector</span>[<a href="#Row=R" class="extmbr" name="models.Party.Row">Row</a> with <span class="extype" name="models.TableRow">TableRow</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.HasTable#fromTable" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="fromTable:dbrary.FromTable"></a>
       <a id="fromTable:FromTable"></a>
@@ -506,18 +493,18 @@ This is also in the database, but is cached here for special handling.</p></div>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.Party#searchForAuthorize" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="searchForAuthorize(name:String,who:models.Party):scala.concurrent.Future[Seq[models.Party]]"></a>
-      <a id="searchForAuthorize(String,Party):Future[Seq[Party]]"></a>
+      <a id="searchForAuthorize(name:String,who:models.Party,institute:Boolean):scala.concurrent.Future[Seq[models.Party]]"></a>
+      <a id="searchForAuthorize(String,Party,Boolean):Future[Seq[Party]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">searchForAuthorize</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="who">who: <a href="Party.html" class="extype" name="models.Party">Party</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]]</span>
+        <span class="name">searchForAuthorize</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="who">who: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="institute">institute: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Search for parties by name for the purpose of authorization.</p><div class="fullcomment"><div class="comment cmt"><p>Search for parties by name for the purpose of authorization.</p></div><dl class="paramcmts block"><dt class="param">name</dt><dd class="cmt"><p>string to match against name/email (case insensitive substring)</p></dd><dt class="param">who</dt><dd class="cmt"><p>party doing the authorization, to exclude parties already authorized
+      <p class="shortcomment cmt">Search for parties by name for the purpose of authorization.</p><div class="fullcomment"><div class="comment cmt"><p>Search for parties by name for the purpose of authorization.</p></div><dl class="paramcmts block"><dt class="param">name</dt><dd class="cmt"><p>string to match against name/email (case insensitive substring)</p></dd><dt class="param">who</dt><dd class="cmt"><p>party doing the authorization, to exclude parties already authorized</p></dd><dt class="param">institute</dt><dd class="cmt"><p>limit to institutions
 </p></dd></dl></div>
     </li><li name="models.Party#searchForVolumeAccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="searchForVolumeAccess(name:String,volume:models.Volume):scala.concurrent.Future[Seq[models.Party]]"></a>

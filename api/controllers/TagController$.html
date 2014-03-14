@@ -81,7 +81,33 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="play.api.mvc.Results.Status" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+              <ol><li name="controllers.TagController.Form" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="FormextendsStructForm"></a>
+      <a id="Form:Form"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="TagController$$Form.html"><span class="name">Form</span></a><span class="result"> extends <a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="controllers.TagController.SlotForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SlotFormextendsAHtmlForm[controllers.TagController.SlotForm]withTagController.Form"></a>
+      <a id="SlotForm:SlotForm"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="TagController$$SlotForm.html"><span class="name">SlotForm</span></a><span class="result"> extends <a href="AHtmlForm.html" class="extype" name="controllers.AHtmlForm">AHtmlForm</a>[<a href="TagController$$SlotForm.html" class="extype" name="controllers.TagController.SlotForm">SlotForm</a>] with <a href="TagController$$Form.html" class="extype" name="controllers.TagController.Form">Form</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="play.api.mvc.Results.Status" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="StatusextendsSimpleResult"></a>
       <a id="Status:Status"></a>
       <h4 class="signature">
@@ -94,32 +120,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
-    </li><li name="controllers.TagController.TagForm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="TagForm=play.api.data.Form[(Option[String],Option[Boolean])]"></a>
+    </li><li name="controllers.TagController.TagForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TagFormextendsStructFormwithTagController.Form"></a>
       <a id="TagForm:TagForm"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">TagForm</span><span class="result"> = <span class="extype" name="play.api.data.Form">Form</span>[(<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>])]</span>
+        <a href="TagController$$TagForm.html"><span class="name">TagForm</span></a><span class="result"> extends <a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a> with <a href="TagController$$Form.html" class="extype" name="controllers.TagController.Form">Form</a></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TagController</dd></dl></div>
-    </li><li name="controllers.TagController.TagMapping" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="TagMapping=(Option[String],Option[Boolean])"></a>
-      <a id="TagMapping:(Option[String],Option[Boolean])"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">TagMapping</span><span class="result"> = (<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>])</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TagController</dd></dl></div>
+      
     </li></ol>
             </div>
 
@@ -194,14 +207,14 @@
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="controllers.SiteController#ABadForm" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ABadForm[A](view:play.api.data.Form[A]=&gt;play.api.templates.HtmlFormat.Appendable,form:play.api.data.Form[A])(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="ABadForm[A]((Form[A])⇒play.api.templates.HtmlFormat.Appendable,Form[A])(SiteRequest[_]):Future[SimpleResult]"></a>
+      <a id="ABadForm[A]((play.api.data.Form[A])⇒play.api.templates.HtmlFormat.Appendable,play.api.data.Form[A])(SiteRequest[_]):Future[SimpleResult]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">ABadForm</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="view">view: (<span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="controllers.SiteController.ABadForm.A">A</span>]) ⇒ <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span></span>, <span name="form">form: <span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="controllers.SiteController.ABadForm.A">A</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+        <span class="name">ABadForm</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="view">view: (<span class="extype" name="play.api.data.Form">play.api.data.Form</span>[<span class="extype" name="controllers.SiteController.ABadForm.A">A</span>]) ⇒ <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span></span>, <span name="form">form: <span class="extype" name="play.api.data.Form">play.api.data.Form</span>[<span class="extype" name="controllers.SiteController.ABadForm.A">A</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></dd></dl></div>
@@ -480,14 +493,14 @@
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="controllers.SiteController#AbadForm" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="AbadForm[A](view:play.api.data.Form[A]=&gt;scala.concurrent.Future[play.api.templates.HtmlFormat.Appendable],form:play.api.data.Form[A])(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="AbadForm[A]((Form[A])⇒Future[play.api.templates.HtmlFormat.Appendable],Form[A])(SiteRequest[_]):Future[SimpleResult]"></a>
+      <a id="AbadForm[A]((play.api.data.Form[A])⇒Future[play.api.templates.HtmlFormat.Appendable],play.api.data.Form[A])(SiteRequest[_]):Future[SimpleResult]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">AbadForm</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="view">view: (<span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="controllers.SiteController.AbadForm.A">A</span>]) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>, <span name="form">form: <span class="extype" name="play.api.data.Form">Form</span>[<span class="extype" name="controllers.SiteController.AbadForm.A">A</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+        <span class="name">AbadForm</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="view">view: (<span class="extype" name="play.api.data.Form">play.api.data.Form</span>[<span class="extype" name="controllers.SiteController.AbadForm.A">A</span>]) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>, <span name="form">form: <span class="extype" name="play.api.data.Form">play.api.data.Form</span>[<span class="extype" name="controllers.SiteController.AbadForm.A">A</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></dd></dl></div>
@@ -2674,19 +2687,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="controllers.TagController#tagForm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="tagForm:TagController.this.TagForm"></a>
-      <a id="tagForm:TagForm"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">tagForm</span><span class="result">: <a href="#TagForm=play.api.data.Form[(Option[String],Option[Boolean])]" class="extmbr" name="controllers.TagController.TagForm">TagForm</a></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TagController</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
