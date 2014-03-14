@@ -11,6 +11,8 @@ define(['app/config/module'], function (module) {
 				$scope.currentStep = undefined;
 
 				$scope.addFn = undefined;
+				$scope.onFn = {};
+				$scope.offFn = {};
 
 				$scope.addStep = function (step) {
 					$scope.steps.push(step);
@@ -26,7 +28,13 @@ define(['app/config/module'], function (module) {
 						return;
 
 					angular.forEach($scope.steps, function (thisStep) {
+						if(thisStep.active && $scope.offFn[step.id] && angular.isFunction($scope.offFn[step.id]))
+							$scope.offFn[step.id](thisStep, step);
+
 						thisStep.active = thisStep == step;
+
+						if(thisStep.active && $scope.onFn[step.id] && angular.isFunction($scope.onFn[step.id]))
+							$scope.onFn[step.id](thisStep, step);
 					});
 				};
 

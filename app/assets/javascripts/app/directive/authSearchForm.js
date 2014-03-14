@@ -6,8 +6,9 @@ define(['app/config/module'], function (module) {
 			$scope.authSearchForm.name = '';
 			$scope.authSearchForm.found = [];
 			$scope.authSearchForm.id = $attrs.party || undefined;
-			$scope.authSearchForm.apply = $attrs.apply || false;
 			$scope.authSearchForm.apply = angular.isDefined($attrs.child);
+
+			//
 
 			$scope.authSearchForm.search = function () {
 				if (!$scope.authSearchForm.name)
@@ -22,6 +23,8 @@ define(['app/config/module'], function (module) {
 					});
 			};
 
+			//
+
 			$scope.authSearchForm.selectFn = undefined;
 
 			$scope.authSearchForm.select = function (found) {
@@ -32,8 +35,12 @@ define(['app/config/module'], function (module) {
 					$scope.authSearchForm.selectFn(found, $scope.authSearchForm);
 			};
 
+			//
+
 			eventService.talk('authSearchForm-init', $scope.authSearchForm);
 		};
+
+		//
 
 		return {
 			restrict: 'E',

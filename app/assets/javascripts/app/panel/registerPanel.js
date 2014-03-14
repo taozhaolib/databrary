@@ -1,7 +1,7 @@
 define(['app/config/module'], function (module) {
 	'use strict';
 
-	module.controller('RegisterPanel', ['$scope', 'AuthService', '$http', '$window', function ($scope, authService, $http, $window) {
+	module.controller('RegisterPanel', ['$scope', 'AuthService', '$http', '$window', 'EventService', function ($scope, authService, $http, $window, eventService) {
 		$scope.auth = $scope.auth || authService;
 
 		$scope.wizard = {};
@@ -41,6 +41,7 @@ define(['app/config/module'], function (module) {
 		$scope.retrieveWizard = function (wizard) {
 			$scope.wizard = wizard;
 			$scope.wizard.addFn = $scope.updateSteps();
+//			$scope.wizard.onFn['register_request'] = onRegisterRequest;
 		};
 
 		var prePasswordComplete = function (step, activate) {
@@ -256,5 +257,33 @@ define(['app/config/module'], function (module) {
 				};
 			}
 		});
+
+		//
+
+		// TODO: hook with authApplyForm properly
+		// TODO: replace authApplyForm in network panel
+		// TODO: do messages for lisa
+		// TODO: update network apply for proper requests
+
+//		var onRegisterRequest = function (oldStep, newStep) {
+//			newStep.authApplyForm.party = $scope.auth.user;
+//			newStep.authApplyForm.other = $scope.authParty;
+//			console.log(true)
+//		};
+//
+//		eventService.listen($scope, 'authApplyForm-init', function (event, form) {
+//			form.party = $scope.auth.user;
+//			form.other = $scope.authParty;
+//
+//			form.saveFn = function (form) {
+//
+//			};
+//
+//			form.cancelFn = function (form) {
+//
+//			};
+//
+//			event.stopPropagation();
+//		});
 	}]);
 });

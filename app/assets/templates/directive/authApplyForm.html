@@ -1,0 +1,17 @@
+<form name="authApplyForm">
+    <fieldset class="clean" ng-if="authApplyForm.party && authApplyForm.other">
+        <legend>Request {{other.party.name}} grant the following capabilities:</legend>
+
+        <div ng-repeat="preset in authApplyForm.presets.get(party, other, true)">
+            <input type="radio" name="shortcut" ng-checked="other.preset === preset" ng-click="authApplyForm.presets.set(other, preset)">
+            <label class="option" bo-html="preset.name"></label>
+        </div>
+    </fieldset>
+
+    <fieldset class="clean">
+        <input type="hidden" name="id" ng-value="other.id">
+
+        <button ng-click="authApplyForm.save()" class="second">Request</button>
+        <button ng-click="authApplyForm.cancel()" class="first">Cancel</button>
+    </fieldset>
+</form>
