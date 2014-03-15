@@ -80,7 +80,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       _ <- if (form.delete.get)
 	  VolumeAccess.delete(request.obj, e)
 	else
-	  VolumeAccess.set(request.obj, e, max(form.access.get, form.inherit.get), form.inherit.get)
+	  VolumeAccess.set(request.obj, e, access = max(form.access.get, form.inherit.get), inherit = form.inherit.get, funding = Maybe(form.funding.get).opt)
     } yield (result(request.obj))
   }
 
@@ -143,11 +143,13 @@ object VolumeController extends VolumeController {
     def partyId = party.id
     val access = Field(Mappings.enum(Permission, maxId = Some(if (party.id.unId <= 0) Permission.DOWNLOAD.id else Permission.ADMIN.id)))
     val inherit = Field(Mappings.enum(Permission, maxId = Some(if (party.id.unId <= 0) Permission.DOWNLOAD.id else Permission.EDIT.id)))
+    val funding = Field(Forms.text)
     val delete = Field(if (request.identity === party) Forms.boolean.verifying("access.delete.self", !_) else Forms.boolean).fill(false)
     private[controllers] def _fill(a : VolumeAccess) : this.type = {
       assert(a.party === party)
       access.fill(a.access)
       inherit.fill(a.inherit)
+      funding.fill(a.funding.getOrElse(""))
       this
     }
   }
