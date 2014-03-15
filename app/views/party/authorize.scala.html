@@ -7,7 +7,7 @@
 @import PartyController._
 
 @authList(which : Boolean)(implicit fieldConstructor : helper.FieldConstructor) = {
-    <h3>@{if(which) "Memberships" else "Authorizations"}</h3>
+    <h3>@Messages("auth." + (if (which) "parents" else "children"))</h3>
 
     @defining(if(which) "Their" else if(request.obj === request.identity) "My" else request.obj.party.name + "'s") { whose =>
     <table>
@@ -19,8 +19,8 @@
 	    <th rowspan=2>Action</th>
 	</tr>
 	<tr>
-	    <th>Databrary data (Investigator status)</th>
-	    <th>@whose data</th>
+	    <th>@Messages("auth.inherit", whose)</th>
+	    <th>@Messages("auth.direct", whose)</th>
 	</tr>
     </thead>
 

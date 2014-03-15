@@ -22,10 +22,17 @@ mail.authorize.body={1} has requested to be authorized by {2}. To approve or rej
 mail.authorized.subject=Databrary authorization approved
 mail.authorized.body=You have been authorized by {0}.
 
+# Headers, labels
+auth.parents=Authorized by
+auth.children=Granted authorization to
+auth.inherit=Databrary Status
+auth.direct={0} Data
+volume.creation=Uploaded
+
 # Authorizations
 auth.inherit.NONE=No access.
-auth.inherit.VIEW=Access to Databrary''s unrestricted data.
-auth.inherit.DOWNLOAD=Access to Databrary''s restricted data.
+auth.inherit.VIEW=Access to unrestricted Databrary data.
+auth.inherit.DOWNLOAD=Access to restricted Databrary data.
 auth.inherit.CONTRIBUTE=Can create datasets and studies on {0} behalf.
 auth.inherit.ADMIN=Can authorize users on {0} behalf.
 
@@ -34,9 +41,6 @@ auth.direct.VIEW=Access to {0} unrestricted data.
 auth.direct.DOWNLOAD=Access to {0} restricted data.
 auth.direct.CONTRIBUTE=Can edit {0} data.
 auth.direct.ADMIN=Can share {0} data.
-
-# Headers, labels
-volume.creation=Uploaded
 
 # --- Constraints
 constraint.required=This field is required.

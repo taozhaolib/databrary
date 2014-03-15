@@ -1,7 +1,7 @@
 <panel ng-controller="NetworkPanel" id="panel_network" title="Network" fold>
     <panel-mode name="view" active>
         <div ng-show="parents">
-            <h2>Authorized by</h2>
+	    <h2>{{'auth.parents' | message}}</h2>
 
             <div class="row">
                 <div ng-repeat="party in parents" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
@@ -11,7 +11,7 @@
         </div>
 
         <div ng-show="children">
-            <h2>People I've Authorized</h2>
+	    <h2>{{'auth.children' | message}}</h2>
 
             <div class="row">
                 <div ng-repeat="party in children" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
@@ -22,11 +22,7 @@
     </panel-mode>
 
     <panel-mode name="apply" access="CONTRIBUTE">
-        <h2>Authorized by</h2>
-
-        <article ng-if="!parents">
-            <p>You are not authorized by anyone yet.</p>
-        </article>
+	<h2>{{'auth.parents' | message}}</h2>
 
         <article class="network-auth cf" bindonce ng-repeat="parent in partyAuth.parents">
             <div class="row">
@@ -45,16 +41,16 @@
 
                         <div ng-hide="currentAuthParent == parent">
                             <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-                                <div class="network-auth-heading">Databrary</div>
-                                <div class="network-auth-inherit" ng-bind-html="constant.data.messages['auth.inherit.'+constant.data.permission[parent.inherit].name] | possessive:party"></div>
+				<div class="network-auth-heading" bo-html="'auth.inherit' | message:'Their'"/>
+				    <div class="network-auth-inherit" ng-bind-html="'auth.inherit.'+constant.data.permission[parent.inherit].name | message:'their'"/>
                             </div>
 
-                            <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="parent.institution && parent.direct !== 0">
-                                <div class="network-auth-heading" bo-html="'{0} Data' | possessive:party"></div>
-                                <div class="network-auth-direct" ng-bind-html="constant.data.messages['auth.direct.'+constant.data.permission[parent.direct].name] | possessive:party"></div>
+                            <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="parent.institution || parent.direct !== 0">
+				<div class="network-auth-heading" bo-html="'auth.direct' | message:'Their'"/>
+				<div class="network-auth-direct" ng-bind-html="'auth.direct.'+constant.data.permission[parent.direct].name | message:'their'"/>
                             </div>
 
-                            <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="!parent.institution || parent.direct === 0">
+                            <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="!parent.institution && parent.direct === 0">
                                 &nbsp;
                             </div>
 
@@ -110,11 +106,7 @@
     </panel-mode>
 
     <panel-mode name="authorize" access="CONTRIBUTE">
-        <h2>People I've Authorized</h2>
-
-        <article ng-if="!children">
-            <p>You have not authorized anyone yet.</p>
-        </article>
+	<h2>{{'auth.children' | message}}</h2>
 
         <article class="network-auth cf" bindonce ng-repeat="child in partyAuth.children">
             <div class="row">
@@ -133,13 +125,13 @@
 
                         <div ng-hide="currentAuthChild == child">
                             <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-                                <div class="network-auth-heading" bo-html="'{0} Data' | possessive:party"></div>
-                                <div class="network-auth-direct" ng-bind-html="constant.data.messages['auth.direct.'+constant.data.permission[child.direct].name] | possessive:party"></div>
+				<div class="network-auth-heading" bo-html="'auth.direct' | possessive:party"/>
+				<div class="network-auth-direct" ng-bind-html="'auth.direct.'+constant.data.permission[child.direct].name | possessive:party"/>
                             </div>
 
                             <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-                                <div class="network-auth-heading">Databrary</div>
-                                <div class="network-auth-inherit" ng-bind-html="constant.data.messages['auth.inherit.'+constant.data.permission[child.inherit].name] | possessive:party"></div>
+				<div class="network-auth-heading" bo-html="'auth.inherit' | possessive:party"/>
+				<div class="network-auth-inherit" ng-bind-html="'auth.inherit.'+constant.data.permission[child.inherit].name | possessive:party"/>
                             </div>
 
                             <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
@@ -164,22 +156,22 @@
                                     <div class="row">
                                         <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
                                             <fieldset ng-disabled="!child.preset.custom" class="boxed">
-                                                <legend bo-html="'{0} Data' | possessive:party"></legend>
+						<legend bo-html="'auth.direct' | possessive:party"/>
 
                                                 <div ng-repeat="permission in constant.data.permission">
                                                     <input type="radio" ng-model="child.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == child.direct">
-                                                    <label bo-html="constant.data.messages['auth.direct.'+constant.data.permission[permission.id].name] | possessive:party" class="option"></label>
+                                                    <label bo-html="'auth.direct.'+constant.data.permission[permission.id].name | possessive:party" class="option"></label>
                                                 </div>
                                             </fieldset>
                                         </div>
 
                                         <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
                                             <fieldset ng-disabled="!child.preset.custom" class="boxed">
-                                                <legend>Databrary</legend>
+						<legend bo-html="'auth.inherit' | possessive:party"/>
 
                                                 <div ng-repeat="permission in constant.data.permission">
                                                     <input type="radio" ng-model="child.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == child.inherit">
-                                                    <label bo-html="constant.data.messages['auth.inherit.'+constant.data.permission[permission.id].name] | possessive:party" class="option"></label>
+                                                    <label bo-html="'auth.inherit.'+constant.data.permission[permission.id].name | possessive:party" class="option"></label>
                                                 </div>
                                             </fieldset>
                                         </div>

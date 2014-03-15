@@ -7,5 +7,6 @@ define([
 	'app/filter/format',
 	'app/filter/timecode',
 	'app/filter/possessive',
+	'app/filter/message',
 	'app/filter/md5'
 ], function () {});

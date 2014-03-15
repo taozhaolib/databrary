@@ -85,6 +85,18 @@ define(['app/config/module'], function (module) {
 			return undefined;
 		};
 
+		constantService.message = function (key /*, args...*/) {
+			var msg = constantService.data.messages[key];
+
+			if (angular.isUndefined(msg))
+				// warning? error? placeholder.
+				return '[' + key + ']';
+
+			for (var i = 1; i < arguments.length; i++)
+				msg = msg.replace('{' + (i-1) + '}', arguments[i], 'g');
+
+			return msg;
+		}
 		//
 
 		constantService.update();
