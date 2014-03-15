@@ -65,7 +65,7 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
     override val template = Seq(Metric.Setting, Metric.State)
   }
 
-  private val list = Seq(Pilot, Exclusion, Participant, Condition, Group, Location)
+  private val list = Seq(Pilot, Exclusion, Participant, Condition, Task, Group, Location)
   private val byId = Map[Int, RecordCategory](list.map(c => (c.id.unId, c)) : _*)
   private val byName = Map[String, RecordCategory](list.map(c => (c.name, c)) : _*)
 }
