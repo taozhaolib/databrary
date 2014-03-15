@@ -253,6 +253,10 @@ CREATE FUNCTION "segment_shift" (segment, interval) RETURNS segment LANGUAGE sql
 $$;
 COMMENT ON FUNCTION "segment_shift" (segment, interval) IS 'Shift both end points of a segment by the specified interval.';
 
+-- this probably needs an order by segment for most uses:
+CREATE AGGREGATE "segment_union" (segment) (SFUNC = range_union, STYPE = segment, INITCOND = 'empty');
+CREATE AGGREGATE "segment_intersect" (segment) (SFUNC = range_intersect, STYPE = segment, INITCOND = '(,)');
+
 
 ----------------------------------------------------------- containers
 
