@@ -35,6 +35,9 @@ auth.direct.DOWNLOAD=Access to {0} restricted data.
 auth.direct.CONTRIBUTE=Can edit {0} data.
 auth.direct.ADMIN=Can share {0} data.
 
+# Headers, labels
+volume.creation=Uploaded
+
 # --- Constraints
 constraint.required=This field is required.
 constraint.min=Minimum value: {0}
