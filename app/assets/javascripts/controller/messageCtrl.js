@@ -3,7 +3,6 @@ define(['config/module'], function (module) {
 
 	module.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', function ($scope, $timeout, messageService) {
 		$scope.messages = messageService;
-
 		$scope.enabled = true;
 
 		//
@@ -24,7 +23,7 @@ define(['config/module'], function (module) {
 
 			classes.push('message');
 			classes.push('message_animate');
-			classes.push('message_'+message.type);
+			classes.push('message_' + message.type);
 
 			if (message.enabled)
 				classes.push('message_enabled');
@@ -50,28 +49,21 @@ define(['config/module'], function (module) {
 
 		$scope.updateHeight = function () {
 			var $window = $(window),
-				scroll = $window.scrollTop(),
-				contentArea = $('#main'),
-				padding = 0,
-				currentPadding = parseInt(contentArea.css('padding-top'));
+				$main = $('#main');
 
-			var len = $scope.messages.length;
+			var padding = 0;
 
-			for (var i = 0; i < len; i++) {
-				if ($scope.messages[i].enabled)
-					padding += $('#' + $scope.messages[i].id).outerHeight();
-			}
+			angular.forEach($scope.messages, function (message) {
+				if (message.enabled)
+					padding += $('#' + message.id).outerHeight();
+			});
 
-			console.log('MessageCtrl.updateHeight() still thinks ' + padding + 'px makes any sense whatsoever.');
-
-			contentArea.css('padding-top', padding);
-			$window.scrollTop(scroll + padding - currentPadding);
+			$window.scrollTop($window.scrollTop() + padding - parseInt($main.css('padding-top')));
+			$main.css('padding-top', padding);
 		};
 
-		$timeout(function () {
-			$scope.$watch('messages', function (messages) {
-				$scope.updateHeight();
-			}, true);
-		}, 250);
+		$scope.$watch('messages', function (messages) {
+			$scope.updateHeight();
+		});
 	}]);
 });

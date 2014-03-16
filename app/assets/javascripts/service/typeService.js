@@ -38,7 +38,7 @@ define(['config/module'], function (module) {
 		};
 
 		typeService.isVolume = function (object) {
-			return angular.isObject(object) && object.body;
+			return angular.isObject(object) && (object.body || object.summary);
 		};
 
 		typeService.isRecord = function (object) {
