@@ -20,7 +20,7 @@
 
     <!-- js -->
     @angular.map { obj =>
-    @helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/app/app").url)
+    @helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/app").url)
     <script>
         window.$play = {'object':@format.raw(obj.toString)};
     </script>

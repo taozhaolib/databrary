@@ -1,0 +1,3 @@
+define([
+	'helper/arrayHelper'
+], function () {});
