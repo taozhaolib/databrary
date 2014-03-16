@@ -174,7 +174,7 @@ define(['app/config/module'], function (module) {
 
 			angular.forEach(raw, function (volume) {
 				angular.forEach(volume.categories, function (sessions, category) {
-					if (!browserService.options.record.categories.get({id: category}))
+					if (!browserService.options.record.categories.find({id: category}))
 						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {
 							id: category,
 							name: $rootScope.constant.get('category', category).name,
@@ -599,7 +599,7 @@ define(['app/config/module'], function (module) {
 		};
 
 		browserService.isItemCategory = function (type) {
-			return browserService.options.record.categories.index({id: type + ''}) > -1;
+			return !!browserService.options.record.categories.find({id: type + ''});
 		};
 
 		//

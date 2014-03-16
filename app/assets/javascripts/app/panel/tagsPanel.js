@@ -11,11 +11,11 @@ define(['app/config/module'], function (module) {
 
 		var createMessage = function (message) {
 			if (typeof(message) == 'string')
-				messageService.createMessage(angular.extend({}, DEFAULT_MESSAGE, {
-					message: message
+				messageService.add(angular.extend({}, DEFAULT_MESSAGE, {
+					body: message
 				}));
 			else
-				messageService.createMessage(angular.extend({}, DEFAULT_MESSAGE, message));
+				messageService.add(angular.extend({}, DEFAULT_MESSAGE, message));
 		};
 
 		//
@@ -157,25 +157,25 @@ define(['app/config/module'], function (module) {
 
 		var enableNewNameError = function () {
 			if ($scope.tagNewFormMessage) {
-				$scope.tagNewFormMessage = messageService.updateMessage($scope.tagNewFormMessage, {enabled: true});
+				messageService.enable($scope.tagNewFormMessage);
 			} else {
 				var message = {
 					enabled: true,
 					type: 'error',
-					message: '<dl>' +
+					body: '<dl>' +
 						'<dt>Tag Name</dt>' +
 						'<dd>Must be between 3 and 32 characters.</dd>' +
 						'<dd>Only letters, spaces, and dashes (-) allowed.</dd>' +
 						'</dl>'
 				};
 
-				$scope.tagNewFormMessage = messageService.createMessage(message);
+				$scope.tagNewFormMessage = messageService.add(message);
 			}
 		};
 
 		var disableNewNameError = function () {
 			if ($scope.tagNewFormMessage)
-				$scope.tagNewFormMessage = messageService.updateMessage($scope.tagNewFormMessage, {enabled: false});
+				messageService.disable($scope.tagNewFormMessage);
 		};
 
 

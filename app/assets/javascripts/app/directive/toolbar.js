@@ -7,11 +7,7 @@ define(['app/config/module'], function (module) {
 
 			//
 
-			$scope.panels = [];
-
-			$scope.updatePanels = function () {
-				$scope.panels = panelService.all();
-			};
+			$scope.panels = panelService;
 
 			$scope.focusPanel = function (panel) {
 				panelService.focus(panel);
@@ -57,12 +53,6 @@ define(['app/config/module'], function (module) {
 			//
 
 			$scope.links = [];
-
-			//
-
-			eventService.listen($scope, 'toolbarCtrl-updatePanels', function () {
-				$scope.updatePanels();
-			});
 		};
 
 		return {

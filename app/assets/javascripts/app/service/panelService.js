@@ -69,13 +69,6 @@ define(['app/config/module'], function (module) {
 			panelService.reset();
 		});
 
-		$rootScope.$watch(function () {
-			return panelService.join('-');
-		}, function () {
-			if (panelService.length > 0)
-				eventService.talk('toolbarCtrl-updatePanels', true);
-		});
-
 		//
 
 		return panelService;

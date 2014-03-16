@@ -44,6 +44,31 @@
 			.transition();
 		}
 
+		.panel_header {
+			cursor: pointer;
+
+			&:before {
+				content: "";
+				.size(0);
+				display: block;
+				float: left;
+				position: relative;
+				top: @b1 + @b2 + @b8;
+				border: @b2 solid transparent;
+				border-top-color: @text;
+				.margin-right(@f2);
+				.transition();
+			}
+
+			&:hover {
+				color: mix(@c4, @g1, 25%);
+
+				&:before {
+					.transform-rotate(-45deg);
+				}
+			}
+		}
+
 		&.folded {
 			.panel_header {
 				&.folder {
@@ -53,7 +78,6 @@
 				&:before {
 					.transform-rotate(-90deg);
 				}
-
 
 				&:hover {
 					&:before {
@@ -94,31 +118,6 @@
 		top: 0;
 		bottom: 0;
 		z-index: -100;
-	}
-
-	&.folder {
-		cursor: pointer;
-
-		&:before {
-			content: "";
-			.size(0);
-			display: block;
-			float: left;
-			position: relative;
-			top: @b1 + @b2 + @b8;
-			border: @b2 solid transparent;
-			border-top-color: @text;
-			.margin-right(@f2);
-			.transition();
-		}
-
-		&:hover {
-			color: mix(@c4, @g1, 25%);
-
-			&:before {
-				.transform-rotate(-45deg);
-			}
-		}
 	}
 }
 

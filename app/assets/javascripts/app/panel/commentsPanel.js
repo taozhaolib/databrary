@@ -11,11 +11,11 @@ define(['app/config/module'], function (module) {
 
 		var createMessage = function (message) {
 			if (typeof(message) == 'string')
-				messageService.createMessage(angular.extend({}, DEFAULT_MESSAGE, {
-					message: message
+				messageService.add(angular.extend({}, DEFAULT_MESSAGE, {
+					body: message
 				}));
 			else
-				messageService.createMessage(angular.extend({}, DEFAULT_MESSAGE, message));
+				messageService.add(angular.extend({}, DEFAULT_MESSAGE, message));
 		};
 
 		//
