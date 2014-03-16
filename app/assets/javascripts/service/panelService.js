@@ -24,34 +24,32 @@ define(['config/module'], function (module) {
 		//
 
 		panelService.focus = function (item) {
-			return panelService.echo(item, function (item) {
-				if (angular.isFunction(item.toggleFold))
-					item.toggleFold(false);
+			if (angular.isFunction(item.toggleFold))
+				item.toggleFold(false);
 
-				var $document = $(document),
-					oldHeight = 0,
-					newHeight = 0,
-					rate = 100,
-					timeout;
+			var $window = $(window),
+				$document = $(document),
+				oldHeight = 0,
+				newHeight = 0,
+				rate = 150,
+				timeout;
 
-				var checkHeight = function () {
-					newHeight = $document.innerHeight();
+			var checkHeight = function () {
+				newHeight = $document.innerHeight();
 
-					if (oldHeight == newHeight) {
-						$location.hash(item.id);
-						$anchorScroll();
-					} else {
-						timeout = $timeout(function () {
-							checkHeight();
-						}, rate++);
-						oldHeight = newHeight;
-					}
-				};
+				if (oldHeight == newHeight) {
+					$location.hash(item.id);
+				} else {
+					$timeout(function () {
+						checkHeight();
+					}, rate++);
+					oldHeight = newHeight;
+				}
+			};
 
-				checkHeight();
+			checkHeight();
 
-				return item;
-			});
+			return item;
 		};
 
 		//
