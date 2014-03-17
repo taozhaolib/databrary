@@ -15,8 +15,8 @@ GitDescribe.gitDescribeOptions in ThisBuild := Seq("--tags", "--dirty")
 
 version in ThisBuild <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown"))
 
-requireJs += "app/app.js"
+requireJs += "app.js"
 
-requireJsShim += "app/app.js"
+requireJsShim += "app.js"
 
 resourceGenerators in Compile <+= AngularTemplate.Compiler
