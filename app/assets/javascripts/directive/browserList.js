@@ -104,8 +104,34 @@ define(['config/module'], function (module) {
 						default:
 							return record.measures.ident;
 					}
+			};
 
-				return undefined;
+			$scope.getMeasures = function (data) { // TODO: something with better performance!
+				var out = {};
+
+				angular.forEach(data.object.measures, function (value, key) {
+					if (key == 'description')
+						return;
+
+					switch (data.object.category) {
+						case -700:
+							if (key != 'reason')
+								out[key] = value;
+							break;
+
+						case -100:
+							if (key != 'setting')
+								out[key] = value;
+							break;
+
+						default:
+							if (key != 'ident')
+								out[key] = value;
+							break;
+					}
+				});
+
+				return out;
 			};
 
 			$scope.nameRecord = function (data) {

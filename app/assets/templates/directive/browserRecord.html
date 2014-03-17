@@ -17,10 +17,15 @@
         </div>
 
         <div class="item_main">
-            <dl class="flat_list cf" ng-repeat="(metric, value) in data.object.measures">
+            <dl class="flat_list cf" ng-repeat="(metric, value) in getMeasures(data)">
                 <dt bo-html="capitalize(metric)"></dt>
                 <dd bo-html="value"></dd>
             </dl>
+
+            <div class="browser_description" bo-if="data.object.measures.description">
+                <div class="browser_description_title">Description:</div>
+                <div>{{data.object.measures.description}}</div>
+            </div>
         </div>
     </div>
 

@@ -8,7 +8,8 @@ define(['config/module'], function (module) {
 
 			var output = [];
 
-			angular.forEach(input, function (item) {
+			angular.forEach(input, function (item, key) {
+				item['key'] = key;
 				output.push(item);
 			});
 
