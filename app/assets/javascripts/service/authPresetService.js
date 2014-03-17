@@ -8,13 +8,13 @@ define(['config/module'], function (module) {
 
 		authPresetService.get = function (party, other, request) {
 			if(!angular.isObject(party) || !angular.isObject(other))
-				return;
+				return [];
 
-			if (request) {
+			if (request) { console.log();
 				if (other.institution || other.id == 0)
 					return constantService.data.preset.institution.slice(0, 2);
 				else
-					return constantService.data.preset.individual.slice(0, 3);
+					return constantService.data.preset.institution.slice(0, 1);
 			} else {
 				if (party.institution || party.id == 0)
 					return constantService.data.preset.institution;

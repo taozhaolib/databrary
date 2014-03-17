@@ -92,11 +92,12 @@ define(['config/module'], function (module) {
 				// warning? error? placeholder.
 				return '[' + key + ']';
 
-			for (var i = 1; i < arguments.length; i++)
+			for (var i = 1, length = arguments.length; i < length; i++)
 				msg = msg.replace('{' + (i-1) + '}', arguments[i], 'g');
 
 			return msg;
-		}
+		};
+
 		//
 
 		constantService.update();

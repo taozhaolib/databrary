@@ -4,30 +4,34 @@ define(['config/module'], function (module) {
 	module.directive('authApplyForm', ['PartyAuthorize', 'AuthService', 'EventService', 'AuthPresetService', function (PartyAuthorize, authService, eventService, authPresetService) {
 		var link = function ($scope, $element, $attrs) {
 			$scope.authApplyForm.presets = authPresetService;
-
-//			$scope.authSearchForm.name = '';
-//			$scope.authSearchForm.found = [];
-//
-//			$scope.authSearchForm.search = function () {
-//				if (!$scope.authSearchForm.name)
-//					$scope.authSearchForm.found = [];
-//				else
-//					PartyAuthorize.search({
-//						id: $scope.authSearchForm.id || authService.user.id,
-//						apply: $scope.authSearchForm.apply,
-//						name: $scope.authSearchForm.name
-//					}, function (data) {
-//						$scope.authSearchForm.found = data;
-//					});
-//			};
+			$scope.authApplyForm.party = authService.user;
+			$scope.authApplyForm.other = undefined;
 
 			//
 
 			$scope.authApplyForm.saveFn = undefined;
+			$scope.authApplyForm.successFn = undefined;
+			$scope.authApplyForm.errorFn = undefined;
 
 			$scope.authApplyForm.save = function () {
 				if (angular.isFunction($scope.authApplyForm.saveFn))
 					$scope.authApplyForm.saveFn($scope.authApplyForm);
+
+				$scope.authApplyForm.partyAuthorize = new PartyAuthorize();
+
+				$scope.authApplyForm.partyAuthorize.direct = $scope.authApplyForm.other.direct;
+				$scope.authApplyForm.partyAuthorize.inherit = $scope.authApplyForm.other.inherit;
+
+				$scope.authApplyForm.partyAuthorize.$apply({
+					id: $scope.authApplyForm.party.id,
+					partyId: $scope.authApplyForm.other.party.id
+				}, function () {
+					if (angular.isFunction($scope.authApplyForm.successFn))
+						$scope.authApplyForm.successFn($scope.authApplyForm, arguments);
+				}, function () {
+					if (angular.isFunction($scope.authApplyForm.errorFn))
+						$scope.authApplyForm.errorFn($scope.authApplyForm, arguments);
+				});
 			};
 
 			//
@@ -37,6 +41,10 @@ define(['config/module'], function (module) {
 			$scope.authApplyForm.cancel = function () {
 				if (angular.isFunction($scope.authApplyForm.cancelFn))
 					$scope.authApplyForm.cancelFn($scope.authApplyForm);
+
+				$scope.authApplyForm.other.inherit = 0;
+				$scope.authApplyForm.other.direct = 0;
+				$scope.authApplyForm.other.preset = undefined;
 			};
 
 			//

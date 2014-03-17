@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('RegisterPanel', ['$scope', 'AuthService', '$http', '$window', 'EventService', function ($scope, authService, $http, $window, eventService) {
+	module.controller('RegisterPanel', ['$scope', 'AuthService', '$http', '$window', 'EventService', 'PartyAuthorize', function ($scope, authService, $http, $window, eventService, PartyAuthorize) {
 		$scope.auth = $scope.auth || authService;
 
 		$scope.wizard = {};
@@ -37,6 +37,8 @@ define(['config/module'], function (module) {
 		$scope.passwordSubmit = false;
 		$scope.authParty = undefined;
 		$scope.requestSubmit = false;
+
+		$scope.partyAuth = {};
 
 		$scope.retrieveWizard = function (wizard) {
 			$scope.wizard = wizard;
@@ -134,11 +136,11 @@ define(['config/module'], function (module) {
 				if (postLoginBlock(step, activate))
 					return;
 
-				step.allow = true;
-				step.complete = $scope.authParty ? true : undefined;
+				step.allow = !$scope.requestSubmit;
+				step.complete = $scope.authParty || $scope.requestSubmit ? true : undefined;
 
 				if (activate !== false)
-					step.active = !$scope.authParty;
+					step.active = !$scope.authParty && !$scope.requestSubmit;
 			},
 
 			'register_request': function (step, activate) {
@@ -149,42 +151,54 @@ define(['config/module'], function (module) {
 				step.complete = $scope.requestSubmit ? true : undefined;
 
 				if (activate !== false)
-					step.active = !!$scope.authParty;
+					step.active = !!$scope.authParty && !$scope.requestSubmit;
 			},
 
 			'register_pending': function (step, activate) {
-				if (postLoginBlock(step, activate))
-					return;
+				if (!$scope.auth.isLoggedIn()) {
+					step.allow = false;
+					step.complete = undefined;
 
-				if (!$scope.requestSubmit)
+					if (activate !== false)
+						step.active = false;
+
 					return;
+				} else if ($scope.auth.hasAuth('VIEW')) {
+					step.allow = false;
+					step.complete = true;
+
+					if (activate !== false)
+						step.active = false;
+
+					return;
+				} else if (!$scope.requestSubmit) {
+					step.allow = false;
+					step.complete = undefined;
+
+					if (activate !== false)
+						step.active = false;
+
+					return;
+				}
+
+				step.allow = true;
+				step.complete = undefined;
 
 				if (activate !== false)
 					step.active = true;
-
-				step.allow = true;
 			}
 		};
 
-		$scope.updateSteps = function (activate) {
-			angular.forEach($scope.wizard.steps, function (step) {
-				$scope.updateStep[step.id](step, activate);
-			});
-		};
+		$scope.prepareStep = {
+			'register_create': function (step, activate) {
+				if (step.regexEmail)
+					return;
 
-		//
+				step.regexEmail = regexEmail;
 
-		var regexEmail = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+				step.data = $scope.registerData;
 
-		$scope.$watch('auth.user', function () {
-			$scope.updateSteps();
-
-			if ($scope.wizard.stepsList['register_create'] && !$scope.wizard.stepsList['register_create'].regexEmail) {
-				$scope.wizard.stepsList['register_create'].regexEmail = regexEmail;
-
-				$scope.wizard.stepsList['register_create'].data = $scope.registerData;
-
-				$scope.wizard.stepsList['register_create'].testProceed = function (form) {
+				step.testProceed = function (form) {
 					var ready = form.$dirty && form.$valid && $scope.registerData.name && $scope.registerData.email && $scope.registerData.affiliation;
 
 					$scope.registerReady = ready;
@@ -193,25 +207,28 @@ define(['config/module'], function (module) {
 					return ready;
 				};
 
-				$scope.wizard.stepsList['register_create'].proceed = function (form) {
+				step.proceed = function (form) {
 					$scope.registerReady = true;
 					$scope.updateSteps();
 				};
-			}
+			},
 
-			if ($scope.wizard.stepsList['register_agreement'] && !$scope.wizard.stepsList['register_agreement'].agreement) {
-				$scope.wizard.stepsList['register_agreement'].agreement = $scope.agreement;
+			'register_agreement': function (step, activate) {
+				if (step.agreement)
+					return;
 
-				$scope.wizard.stepsList['register_agreement'].back = function () {
+				step.agreement = $scope.agreement;
+
+				step.back = function () {
 					$scope.agreement.page--;
 					$scope.registerData.agreement = false;
 				};
 
-				$scope.wizard.stepsList['register_agreement'].next = function () {
+				step.next = function () {
 					$scope.agreement.page++;
 				};
 
-				$scope.wizard.stepsList['register_agreement'].proceed = function () {
+				step.proceed = function () {
 					$scope.registerData.agreement = true;
 
 					$http
@@ -220,13 +237,19 @@ define(['config/module'], function (module) {
 							$scope.registerSubmit = true;
 							$scope.updateSteps();
 						});
-				}
-			}
+				};
+			},
 
-			if ($scope.wizard.stepsList['register_password'] && !$scope.wizard.stepsList['register_password'].data) {
-				$scope.wizard.stepsList['register_password'].data = $scope.passwordData;
+			'register_email': function (step, activate) {
+			},
 
-				$scope.wizard.stepsList['register_password'].testProceed = function (form) {
+			'register_password': function (step, activate) {
+				if (step.data)
+					return;
+
+				step.data = $scope.passwordData;
+
+				step.testProceed = function (form) {
 					var ready = form.$dirty && form.$valid && $scope.passwordData.password.once && $scope.passwordData.password.once == $scope.passwordData.password.again;
 
 					$scope.updateSteps(false);
@@ -234,7 +257,7 @@ define(['config/module'], function (module) {
 					return ready;
 				};
 
-				$scope.wizard.stepsList['register_password'].proceed = function (form) {
+				step.proceed = function (form) {
 					$http
 						.post('/api/party/' + $window.$play.object.party + '/password', $scope.passwordData)
 						.success(function (data) {
@@ -248,14 +271,72 @@ define(['config/module'], function (module) {
 							console.log(arguments);
 						});
 				};
-			}
+			},
 
-			if ($scope.wizard.stepsList['register_agent'] && !$scope.wizard.stepsList['register_agent'].authSearchForm.selectFn) {
-				$scope.wizard.stepsList['register_agent'].authSearchForm.selectFn = function (found, form) {
+			'register_agent': function (step, activate) {
+				if (step.authSearchForm.selectFn)
+					return;
+
+				step.authSearchForm.selectFn = function (found, form) {
 					$scope.authParty = found;
 					$scope.updateSteps();
 				};
+			},
+
+			'register_request': function (step, activate) {
+				step.authApplyForm.party = $scope.auth.user;
+
+				if ($scope.authParty && !step.authApplyForm.other)
+					step.authApplyForm.other = {
+						id: $scope.authParty.id,
+						party: $scope.authParty,
+						inherit: 0,
+						direct: 0
+					};
+
+				if (step.authApplyForm.successFn)
+					return;
+
+				step.authApplyForm.successFn = function (form) {
+					$scope.requestSubmit = true;
+				};
+
+				step.authApplyForm.cancelFn = function (form) {
+					$scope.authParty = undefined;
+					$scope.updateSteps();
+				};
+			},
+
+			'register_pending': function (step, activate) {
 			}
+		};
+
+		$scope.updateSteps = function (activate) {
+			angular.forEach($scope.wizard.steps, function (step) {
+				$scope.updateStep[step.id](step, activate);
+				$scope.prepareStep[step.id](step, activate);
+			});
+		};
+
+		//
+
+		var regexEmail = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+		$scope.$watch('auth.user', function () {
+			$scope.updateSteps();
+
+			if ($scope.auth.user)
+				PartyAuthorize.query({
+					id: $scope.auth.user.id
+				}, function (data) {
+					$scope.partyAuth = data;
+
+					angular.forEach($scope.partyAuth.parents, function (parent) {
+						$scope.requestSubmit = true;
+					});
+
+					$scope.updateSteps();
+				});
 		});
 
 		//
@@ -264,26 +345,5 @@ define(['config/module'], function (module) {
 		// TODO: replace authApplyForm in network panel
 		// TODO: do messages for lisa
 		// TODO: update network apply for proper requests
-
-//		var onRegisterRequest = function (oldStep, newStep) {
-//			newStep.authApplyForm.party = $scope.auth.user;
-//			newStep.authApplyForm.other = $scope.authParty;
-//			console.log(true)
-//		};
-//
-//		eventService.listen($scope, 'authApplyForm-init', function (event, form) {
-//			form.party = $scope.auth.user;
-//			form.other = $scope.authParty;
-//
-//			form.saveFn = function (form) {
-//
-//			};
-//
-//			form.cancelFn = function (form) {
-//
-//			};
-//
-//			event.stopPropagation();
-//		});
 	}]);
 });
