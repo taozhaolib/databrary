@@ -6,6 +6,7 @@ define([
 	'filter/cite',
 	'filter/format',
 	'filter/timecode',
+	'filter/toArray',
 	'filter/possessive',
 	'filter/message',
 	'filter/md5'

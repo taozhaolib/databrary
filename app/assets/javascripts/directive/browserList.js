@@ -101,9 +101,7 @@ define(['config/module'], function (module) {
 						case -100:
 							return record.measures.setting;
 
-						case -400:
-						case -200:
-						case -500:
+						default:
 							return record.measures.ident;
 					}
 
