@@ -2,8 +2,8 @@ define(['config/module'], function (module) {
 	'use strict';
 
 	module.filter('timecode', [function () {
-		return function (input) {
-			if(!angular.isNumber(input))
+		return function (input, showMilli) {
+			if (!angular.isNumber(input))
 				return input;
 
 			var time = [], tmp;
@@ -15,31 +15,33 @@ define(['config/module'], function (module) {
 				seconds: 1000
 			};
 
-			if(input > millTo.days) {
+			if (input > millTo.days) {
 				time.push(Math.floor(input / millTo.days));
 				input = input % millTo.days;
 			}
 
-			if(input > millTo.hours) {
+			if (input > millTo.hours) {
 				time.push(Math.floor(input / millTo.hours));
 				input = input % millTo.hours;
 			}
 
-			if(input > millTo.minutes) {
+			if (input > millTo.minutes) {
 				time.push(Math.floor(input / millTo.minutes));
 				input = input % millTo.minutes;
 			}
 
-			if(input > millTo.seconds) {
+			if (input > millTo.seconds) {
 				time.push(Math.floor(input / millTo.seconds));
 				input = input % millTo.seconds;
 			}
 
 			angular.forEach(time, function (input, k) {
-				time[k] = new Array(3 - input.toString().length).join('0')+input;
+				if (k != 0)
+					time[k] = new Array(3 - input.toString().length).join('0') + input;
 			});
 
-			time.push(new Array(4 - input.toString().length).join('0')+input);
+			if (showMilli)
+				time.push(new Array(4 - input.toString().length).join('0') + input);
 
 			return time.join(':');
 		};
