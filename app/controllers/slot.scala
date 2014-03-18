@@ -118,7 +118,7 @@ object SlotHtml extends SlotController with HtmlController {
     VolumeController.Action(s, Permission.CONTRIBUTE).async { implicit request =>
       val form = new ContainerCreateForm()._bind
       for {
-	cont <- models.Container.create(request.obj, name = form.name.get, date = form.date.get.flatten)
+	cont <- models.Container.create(request.obj, name = form.name.get.filter(_.nonEmpty), date = form.date.get.flatten)
 	_ <- macros.Async.foreach(form.consent.get, (c : Consent.Value) =>
 	  cont.setConsent(c))
       } yield (result(cont))
