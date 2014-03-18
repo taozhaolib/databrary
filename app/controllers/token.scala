@@ -26,7 +26,7 @@ private[controllers] sealed class TokenController extends SiteController {
     for {
       token <- macros.Async.map[Account,LoginToken](targ.right.toOption, LoginToken.create(_, true))
       _ <- Mail.send(
-	to = targ.fold(identity, _.email),
+	to = Seq(targ.fold(identity, _.email)),
 	subject = Messages("mail." + msg + ".subject"),
 	body = token.fold {
 	  Messages("mail." + msg + ".none")

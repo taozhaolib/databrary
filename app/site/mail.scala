@@ -10,10 +10,10 @@ object Mail {
   def available : Boolean = mailer.isDefined
   def check() { getMailer }
 
-  def send(from : String = Messages("mail.from"), to : String, subject : String, body : String) : Future[Unit] = Future {
+  def send(from : String = Messages("mail.from"), to : Seq[String], subject : String, body : String) : Future[Unit] = Future {
     val mail = getMailer.email
     mail.setFrom(from)
-    mail.setRecipient(to)
+    mail.setRecipient(to : _*)
     mail.setSubject(subject)
     mail.send(body)
   }(context.process)
