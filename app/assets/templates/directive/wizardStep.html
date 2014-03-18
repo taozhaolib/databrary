@@ -1,8 +1,12 @@
 <div bindonce="name" class="wizard_step">
     <div ng-show="active">
         <header class="wizard_step_header">
-            <h2 bo-html="name"></h2>
+            <h2>{{'wizard.'+id+'.name' | message}}</h2>
         </header>
+
+        <div class="wizard_step_instructions" ng-bind-html="'wizard.'+id+'.instructions' | message | format">
+
+        </div>
 
         <div wizard-step-body class="wizard_step_body">
 

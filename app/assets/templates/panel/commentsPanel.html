@@ -4,14 +4,14 @@
             <div class="row">
                 <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
                     <footer class="comment_meta" ng-init="party = authService.user">
-                        <portrait class="portrait_vertical portrait_small portrait_more" extra="Post a comment..."></portrait>
+                        <portrait class="portrait_vertical portrait_small portrait_more" extra="Post a comment..." hover></portrait>
                     </footer>
 
                     <div class="comment_body comment_form">
                         <form name="commentForm" novalidate>
                             <textarea ng-model="newComment.body"></textarea>
 
-                            <button type="submit" class="button first" ng-click="addComment(commentForm)">Post</button>
+                            <button type="submit" class="button second" ng-click="addComment(commentForm)">Post</button>
                         </form>
                     </div>
                 </div>
@@ -22,7 +22,7 @@
             <div class="row">
                 <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
                     <footer class="comment_meta" ng-init="party = commentParty(comment)">
-                        <portrait class="portrait_vertical portrait_small portrait_more" extra="{{commentMeta(comment)}}"></portrait>
+                        <portrait class="portrait_vertical portrait_small portrait_more" extra="{{commentMeta(comment)}}" hover></portrait>
                     </footer>
 
                     <div class="comment_body" ng-bind-html="comment.text | format"></div>

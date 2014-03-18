@@ -7,9 +7,7 @@
 
             <div class="col-full">
                 <wizard retrieve="retrieveWizard" linear>
-                    <wizard-step id="register_create"
-                        name="Create Account"
-                        description="Register to browse shared data and comment on datasets.">
+                    <wizard-step id="register_create">
                         <form name="registerForm">
                             <label for="field_name">Name</label>
                             <input id="field_name" type="text" ng-model="data.name" ng-minlength="3">
@@ -25,25 +23,26 @@
                         </form>
                     </wizard-step>
 
-                    <wizard-step id="register_agreement"
-                        name="Sign Agreement"
-                        description="Learn about the responsibilities of all Databrary members.">
+                    <wizard-step id="register_agreement">
                         <div class="register_agreement_pages" ng-switch on="agreement.page">
-                            <div class="register_agreement_page" ng-switch-when="1">
-                                Page 1
-                            </div>
-
-                            <div class="register_agreement_page" ng-switch-when="2">
-                                Page 2
-                            </div>
-
-                            <div class="register_agreement_page" ng-switch-when="3">
-                                Page 3
-                            </div>
-
-                            <div class="register_agreement_page" ng-switch-when="4">
-                                Page 4
-                            </div>
+                            <div class="register_agreement_page" ng-switch-when="1"
+                                 ng-bind-html="'agreement.page_1' | message"></div>
+                            <div class="register_agreement_page" ng-switch-when="2"
+                                 ng-bind-html="'agreement.page_2' | message"></div>
+                            <div class="register_agreement_page" ng-switch-when="3"
+                                 ng-bind-html="'agreement.page_3' | message"></div>
+                            <div class="register_agreement_page" ng-switch-when="4"
+                                 ng-bind-html="'agreement.page_4' | message"></div>
+                            <div class="register_agreement_page" ng-switch-when="5"
+                                 ng-bind-html="'agreement.page_5' | message"></div>
+                            <div class="register_agreement_page" ng-switch-when="6"
+                                 ng-bind-html="'agreement.page_6' | message"></div>
+                            <div class="register_agreement_page" ng-switch-when="7"
+                                 ng-bind-html="'agreement.page_7' | message"></div>
+                            <div class="register_agreement_page" ng-switch-when="8"
+                                 ng-bind-html="'agreement.page_8' | message"></div>
+                            <div class="register_agreement_page" ng-switch-when="9"
+                                 ng-bind-html="'agreement.page_9' | message"></div>
                         </div>
 
                         <button class="second" ng-click="proceed()" ng-show="agreement.page >= agreement.pages">Register</button>
@@ -52,15 +51,11 @@
                         <button class="third" ng-click="back()" ng-show="agreement.page > 1">Back</button>
                     </wizard-step>
 
-                    <wizard-step id="register_email"
-                        name="Confirm Email"
-                        description="Confirm your email address to continue.">
-                        <p>Great! You will be sent an email. Click the link.</p>
+                    <wizard-step id="register_email">
+                        <p>You will be sent an email. Click the link.</p>
                     </wizard-step>
 
-                    <wizard-step id="register_password"
-                        name="Set Password"
-                        description="Confirm your email address and select a password.">
+                    <wizard-step id="register_password">
                         <form name="passwordForm">
                             <label for="field_password_once">Password</label>
                             <input id="field_password_once" type="password" ng-model="data.password.once">
@@ -73,21 +68,15 @@
                         </form>
                     </wizard-step>
 
-                    <wizard-step id="register_agent"
-                        name="Find Authorizing Agent"
-                        description="Select a party to petition for advanced Databrary use.">
+                    <wizard-step id="register_agent">
                         <auth-search-form></auth-search-form>
                     </wizard-step>
 
-                    <wizard-step id="register_request"
-                        name="Request Authorization"
-                        description="Request authorization from selected party.">
+                    <wizard-step id="register_request">
                         <auth-apply-form></auth-apply-form>
                     </wizard-step>
 
-                    <wizard-step id="register_pending"
-                        name="Stay Tuned"
-                        description="Tips for exploring Databrary.">
+                    <wizard-step id="register_pending">
                         <p>Stay tuned!</p>
                     </wizard-step>
                 </wizard>

@@ -86,11 +86,11 @@ define(['config/module'], function (module) {
 		};
 
 		constantService.message = function (key /*, args...*/) {
-			var msg = constantService.data.messages[key];
-
-			if (angular.isUndefined(msg))
+			if(!constantService.data || !constantService.data.messages[key])
 				// warning? error? placeholder.
 				return '[' + key + ']';
+
+			var msg = constantService.data.messages[key];
 
 			for (var i = 1, length = arguments.length; i < length; i++)
 				msg = msg.replace('{' + (i-1) + '}', arguments[i], 'g');
