@@ -129,7 +129,7 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
     JsonRecord.flatten(id,
       Some('name -> name),
       alias.map('alias -> _),
-      body.map('body -> _),
+      Some('body -> body),
       Some('creation -> creation),
       Some('permission -> permission)
     )
