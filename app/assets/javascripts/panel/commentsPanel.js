@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('CommentsPanel', ['$scope', 'AuthService', '$route', 'Comment', 'MessageService', 'Volume', function ($scope, authService, $route, Comment, messageService, Volume) {
+	module.controller('CommentsPanel', ['$scope', 'AuthService', '$route', 'Comment', 'MessageService', 'Volume', '$filter', function ($scope, authService, $route, Comment, messageService, Volume, $filter) {
 		var DEFAULT_MESSAGE = {
 			type: 'alert',
 			countdown: 3000
@@ -49,7 +49,7 @@ define(['config/module'], function (module) {
 		//
 
 		$scope.pullComments = function () {
-			switch($route.current.controller) {
+			switch ($route.current.controller) {
 				case 'VolumeView':
 					Volume.get({
 						id: $scope.volume.id,
@@ -79,6 +79,26 @@ define(['config/module'], function (module) {
 				default:
 					return comment.who;
 			}
+		};
+
+		$scope.commentMeta = function (comment) {
+			var meta = '<time datetime="' + $filter('date')(comment.time, 'yyyy-MM-dd HH:mm:ss Z') + '" pubdate>' + $filter('date')(comment.time, 'MMMM d, yyyy') + '</time>';
+
+			if (comment.container.top && $route.current.controller != 'PartyView')
+				return meta;
+
+			meta += ' <span class="sep">|</span>';
+
+			if ($route.current.controller == 'PartyView')
+				meta += ' <a href="' + $scope.router.volume({id: comment.volume.id}) + '">' + $filter('truncate')(comment.volume.name, 20) + '</a>';
+
+			if ($route.current.controller == 'PartyView' && !comment.container.top)
+				meta += ' <span class="sep">/</span>';
+
+			if (!comment.container.top)
+				meta += ' <img class="line" src="'+$scope.router.slotThumb(comment.container)+'"> <a href="' + $scope.router.slot(comment.container) + '">' + comment.container.name + '</a>';
+
+			return meta;
 		};
 
 		//
