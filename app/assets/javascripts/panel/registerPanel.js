@@ -286,6 +286,7 @@ define(['config/module'], function (module) {
 			},
 
 			'register_email': function (step, activate) {
+				step.registerData = $scope.registerData;
 			},
 
 			'register_password': function (step, activate) {

@@ -62,7 +62,9 @@
                         <button class="third" ng-click="back()" ng-show="agreement.page > 1">Back</button>
                     </wizard-step>
 
-                    <wizard-step id="register_email"></wizard-step>
+                    <wizard-step id="register_email">
+                        <p>Your confirmation email has been sent to <strong>{{registerData.email}}</strong>.</p>
+                    </wizard-step>
 
                     <wizard-step id="register_password">
                         <form name="passwordForm">

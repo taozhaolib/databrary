@@ -41,17 +41,9 @@
         </ul>
     </span>
 
-    <span class="browser_widget_wrap"
+    <span class="browser_widget_wrap last"
     ng-if="browser.options.session.allow"
     ng-class="groupClasses('session')">
-        <a class="browser_widget_pill"
-        ng-click="browser.setGroupActive('session')">Session</a>
-    </span>
-
-    <span class="browser_widget_wrap"
-    ng-if="browser.options.asset.allow"
-    ng-class="groupClasses('asset')">
-        <a class="browser_widget_pill"
-        ng-click="browser.setGroupActive('asset')">Asset</a>
+        <a class="browser_widget_pill">Session</a>
     </span>
 </div>
