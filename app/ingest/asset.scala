@@ -34,15 +34,18 @@ trait Asset {
 	for {
 	  asset <- models.Asset.get(iid).map(_.get)
 	  _ <- check(asset.format == info.format,
-	    PopulateException("inconsistent format for asset " + name + ": " + info.format.name + " <> " + asset.format.name))
+	    PopulateException("inconsistent format for asset " + name + ": " + info.format.name + " <> " + asset.format.name, asset))
 	  _ <- check(asset.classification == classification,
-	    PopulateException("inconsistent classification for asset " + name + ": " + classification + " <> " + asset.classification))
+	    PopulateException("inconsistent classification for asset " + name + ": " + classification + " <> " + asset.classification, asset))
 	  _ <- info match {
 	    case ts : Asset.TimeseriesInfo =>
 	      check(asset.asInstanceOf[Timeseries].duration.equals(ts.duration),
-		PopulateException("inconsistent duration for asset " + name + ": " + ts.duration + " <> " + asset.asInstanceOf[Timeseries].duration))
-	    case _ => Async(())
+		PopulateException("inconsistent duration for asset " + name + ": " + ts.duration + " <> " + asset.asInstanceOf[Timeseries].duration, asset))
+	    case _ => Async.void
 	  }
+	  _ <- if (asset.name.isEmpty) asset.change(name = Some(Maybe(name).opt))
+	    else check(asset.name.equals(Maybe(name).opt),
+	      PopulateException("inconsistent name for asset " + asset.name + ": " + name, asset))
 	} yield (asset)
       case _ =>
 	Future.failed(PopulateException("multiple imported assets for " + name + ": " + info.file.getPath))
