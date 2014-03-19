@@ -10,13 +10,13 @@
                     <wizard-step id="register_create">
                         <form name="registerForm">
                             <label for="field_name">Name</label>
-                            <input id="field_name" type="text" ng-model="data.name" ng-minlength="3">
+                            <input id="field_name" name="fieldName" type="text" ng-model="data.name" ng-minlength="3">
 
                             <label for="field_email">Email</label>
-                            <input id="field_email" type="text" ng-model="data.email" ng-pattern="regexEmail">
+                            <input id="field_email" name="fieldEmail" type="email" ng-model="data.email">
 
                             <label for="field_affiliation">Affiliation</label>
-                            <input id="field_affiliation" type="text" ng-model="data.affiliation" ng-minlength="3">
+                            <input id="field_affiliation" name="fieldAffiliation" type="text" ng-model="data.affiliation" ng-minlength="3">
 
                             <button class="second" type="submit" ng-disabled="!testProceed(registerForm)" ng-click="proceed(registerForm)">Continue</button>
                             <button class="first" type="reset">Reset</button>
@@ -26,28 +26,39 @@
                     <wizard-step id="register_agreement">
                         <div class="register_agreement_pages" ng-switch on="agreement.page">
                             <div class="register_agreement_page" ng-switch-when="1"
-                                 ng-bind-html="'agreement.page_1' | message"></div>
+                                 ng-bind-html="'agreement.page_1' | message"
+                                 scroll="scroll($scroll)"></div>
                             <div class="register_agreement_page" ng-switch-when="2"
-                                 ng-bind-html="'agreement.page_2' | message"></div>
+                                 ng-bind-html="'agreement.page_2' | message"
+                                 scroll="scroll($scroll)"></div>
                             <div class="register_agreement_page" ng-switch-when="3"
-                                 ng-bind-html="'agreement.page_3' | message"></div>
+                                 ng-bind-html="'agreement.page_3' | message"
+                                 scroll="scroll($scroll)"></div>
                             <div class="register_agreement_page" ng-switch-when="4"
-                                 ng-bind-html="'agreement.page_4' | message"></div>
+                                 ng-bind-html="'agreement.page_4' | message"
+                                 scroll="scroll($scroll)"></div>
                             <div class="register_agreement_page" ng-switch-when="5"
-                                 ng-bind-html="'agreement.page_5' | message"></div>
+                                 ng-bind-html="'agreement.page_5' | message"
+                                 scroll="scroll($scroll)"></div>
                             <div class="register_agreement_page" ng-switch-when="6"
-                                 ng-bind-html="'agreement.page_6' | message"></div>
+                                 ng-bind-html="'agreement.page_6' | message"
+                                 scroll="scroll($scroll)"></div>
                             <div class="register_agreement_page" ng-switch-when="7"
-                                 ng-bind-html="'agreement.page_7' | message"></div>
+                                 ng-bind-html="'agreement.page_7' | message"
+                                 scroll="scroll($scroll)"></div>
                             <div class="register_agreement_page" ng-switch-when="8"
-                                 ng-bind-html="'agreement.page_8' | message"></div>
+                                 ng-bind-html="'agreement.page_8' | message"
+                                 scroll="scroll($scroll)"></div>
                             <div class="register_agreement_page" ng-switch-when="9"
-                                 ng-bind-html="'agreement.page_9' | message"></div>
+                                 ng-bind-html="'agreement.page_9' | message"
+                                 scroll="scroll($scroll)"></div>
                         </div>
 
-                        <button class="second" ng-click="proceed()" ng-show="agreement.page >= agreement.pages">Register</button>
+                        <p>Download the <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">pdf version</a> for easy reading.</p>
 
-                        <button class="second" ng-click="next()" ng-show="agreement.page < agreement.pages">Agree</button>
+                        <button class="second" ng-click="proceed()" ng-show="agreement.page >= agreement.pages" ng-disabled="!canProceed()">Register</button>
+
+                        <button class="second" ng-click="next()" ng-show="agreement.page < agreement.pages" ng-disabled="!canProceed()">Agree</button>
                         <button class="third" ng-click="back()" ng-show="agreement.page > 1">Back</button>
                     </wizard-step>
 

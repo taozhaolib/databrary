@@ -182,7 +182,7 @@ define(['config/module'], function (module) {
 
 				step.allow = true;
 				step.complete = undefined;
-console.log(activate);
+
 				if (activate !== false)
 					step.active = true;
 			}
@@ -190,20 +190,15 @@ console.log(activate);
 
 		$scope.prepareStep = {
 			'register_create': function (step, activate) {
-				if (step.regexEmail)
+				if (step.testProceed)
 					return;
 
-				step.regexEmail = regexEmail;
+//				step.regexEmail = regexEmail;
 
 				step.data = $scope.registerData;
 
 				step.testProceed = function (form) {
-					var ready = form.$dirty && form.$valid && $scope.registerData.name && $scope.registerData.email && $scope.registerData.affiliation;
-
-					$scope.registerReady = ready;
-//					$scope.updateSteps(false);
-
-					return ready;
+					return form.$dirty && form.$valid && $scope.registerData.name && $scope.registerData.email && $scope.registerData.affiliation;
 				};
 
 				step.proceed = function (form) {
@@ -230,6 +225,21 @@ console.log(activate);
 					target: '#field_affiliation',
 					body: constants.message('wizard.register_form.affiliation.help')
 				});
+
+				//
+
+				var emailError = messages.add({
+					type: 'error',
+					enabled: false,
+					body: constants.message('wizard.register_form.email.error')
+				});
+
+				step.$watch('registerForm.fieldEmail.$valid', function () {
+					if (step.registerForm.fieldEmail.$valid || !step.registerForm.fieldEmail.$dirty)
+						messages.disable(emailError);
+					else
+						messages.enable(emailError);
+				});
 			},
 
 			'register_agreement': function (step, activate) {
@@ -243,12 +253,28 @@ console.log(activate);
 					$scope.registerData.agreement = false;
 				};
 
+				step.scrolled = false;
+
+				step.scroll = function ($scroll) {
+					var $el = $scroll.$element;
+
+					if ($el.height() + $el.scrollTop() >= $el.prop('scrollHeight')) {
+						step.scrolled = true;
+					}
+				};
+
+				step.canProceed = function () {
+					return step.scrolled;
+				};
+
 				step.next = function () {
 					$scope.agreement.page++;
+					step.scrolled = false;
 				};
 
 				step.proceed = function () {
 					$scope.registerData.agreement = true;
+					step.scrolled = false;
 
 					$http
 						.post('/register', $scope.registerData)

@@ -83,7 +83,7 @@ wizard.register_create.instructions=Creating an account on Databrary is easy and
 
 wizard.register_agreement.name=Sign Agreement
 wizard.register_agreement.description=Learn about the responsibilities of all Databrary members.
-wizard.register_agreement.instructions=Signing our investigator agreement is easy and fun!
+wizard.register_agreement.instructions=We can't force you to read it, but we can make you scroll through it!
 
 wizard.register_email.name=Confirm Email
 wizard.register_email.description=Confirm your email address to continue.
@@ -107,6 +107,7 @@ wizard.register_pending.instructions=Staying tuned for a response to your reques
 
 wizard.register_form.name.help=<strong>Name</strong>: Provide your full name. It''s important!
 wizard.register_form.email.help=<strong>Email</strong>: We recommend using your institutional email address. You can change it later.
+wizard.register_form.email.error=<strong>Email</strong>: This email address is impossible!
 wizard.register_form.affiliation.help=<strong>Affiliation</strong>: Enter the full name of your institution in case we need to verify your identity.
 
 # --- Agreement

@@ -12,6 +12,7 @@ define([
 	'directive/repeater',
 	'directive/metricsRepeater',
 	'directive/panel',
+	'directive/scroll',
 	'directive/panelMode',
 	'directive/hasAuth',
 	'directive/carousel',

@@ -125,8 +125,8 @@ define(['config/module'], function (module) {
 				if(!next.resolve)
 					next.resolve = {};
 
-				next.resolve['constants'] = function () {
-					return constants;
+				next.resolve['promiseConstants'] = function () {
+					return constants.$promise;
 				};
 			}
 		});
