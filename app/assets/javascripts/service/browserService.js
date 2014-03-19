@@ -45,8 +45,8 @@ define(['config/module'], function (module) {
 			name: null,
 
 			allow: true,
-			active: true,
-			expand: false,
+			active: false,
+			expand: true,
 
 //			filter: {},
 			sort: null // see updateCategories
@@ -566,6 +566,8 @@ define(['config/module'], function (module) {
 		};
 
 		var callbackItem = function (data, volume, sessions, object, group) {
+			var option = getOptionByGroup(group);
+
 			var newData = {
 				parent: data,
 				volume: volume,
@@ -578,7 +580,7 @@ define(['config/module'], function (module) {
 				items: [],
 
 				select: false,
-				expand: false
+				expand: option.expand
 			};
 
 			if (group == 'asset') {
