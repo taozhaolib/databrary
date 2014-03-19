@@ -304,6 +304,19 @@ COMMENT ON TABLE "slot_consent" IS 'Sharing/release permissions granted by parti
 SELECT audit.CREATE_TABLE ('slot_consent');
 
 
+----------------------------------------------------------- studies
+
+CREATE TABLE "volume_inclusion" (
+	"volume" integer NOT NULL References "volume",
+	"container" integer NOT NULL References "container",
+	"segment" segment NOT NULL,
+	Primary Key ("volume", "container") -- this may be too strong but seems reasonable
+) INHERITS ("slot");
+COMMENT ON TABLE "volume_inclusion" IS 'Inclusions of slots (sessions) from "dataset" (provider) volumes in "study" (consumer/reuse) volumes.';
+
+SELECT audit.CREATE_TABLE ('volume_inclusion');
+
+
 ----------------------------------------------------------- assets
 
 CREATE TYPE classification AS ENUM (
@@ -501,7 +514,7 @@ INSERT INTO "record_category" ("id", "name") VALUES (-300, 'task');
 CREATE TABLE "record" (
 	"id" serial NOT NULL Primary Key,
 	"volume" integer NOT NULL References "volume",
-	"category" smallint References "record_category" ON DELETE SET NULL
+	"category" smallint References "record_category" ON UPDATE CASCADE ON DELETE SET NULL
 );
 COMMENT ON TABLE "record" IS 'Sets of metadata measurements organized into or applying to a single cohesive unit.  These belong to the object(s) they''re attached to, which are expected to be within a single volume.';
 
@@ -532,8 +545,8 @@ INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-800, 'tit
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-600, 'description', 'MATERIAL', 'text');
 
 CREATE TABLE "record_template" (
-	"category" smallint References "record_category" ON DELETE CASCADE,
-	"metric" integer References "metric",
+	"category" smallint References "record_category" ON UPDATE CASCADE ON DELETE CASCADE,
+	"metric" integer References "metric" ON UPDATE CASCADE ON DELETE CASCADE,
 	Primary Key ("category", "metric")
 );
 COMMENT ON TABLE "record_template" IS 'Default set of measures defining a given record category.';
@@ -553,7 +566,7 @@ INSERT INTO "record_template" ("category", "metric") VALUES (-300, -600);
 
 CREATE TABLE "measure" ( -- ABSTRACT
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,
-	"metric" integer NOT NULL References "metric", -- WHERE kind = table_name
+	"metric" integer NOT NULL References "metric" ON UPDATE CASCADE, -- WHERE kind = table_name
 	Primary Key ("record", "metric"),
 	Check (false) NO INHERIT
 );
@@ -561,21 +574,21 @@ COMMENT ON TABLE "measure" IS 'Abstract parent of all measure tables containing 
 
 CREATE TABLE "measure_text" (
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,
-	"metric" integer NOT NULL References "metric", -- WHERE kind = "text"
+	"metric" integer NOT NULL References "metric" ON UPDATE CASCADE, -- WHERE kind = "text"
 	"datum" text NOT NULL,
 	Primary Key ("record", "metric")
 ) INHERITS ("measure");
 
 CREATE TABLE "measure_number" (
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,
-	"metric" integer NOT NULL References "metric", -- WHERE kind = "number"
+	"metric" integer NOT NULL References "metric" ON UPDATE CASCADE, -- WHERE kind = "number"
 	"datum" numeric NOT NULL,
 	Primary Key ("record", "metric")
 ) INHERITS ("measure");
 
 CREATE TABLE "measure_date" (
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,
-	"metric" integer NOT NULL References "metric", -- WHERE kind = "date"
+	"metric" integer NOT NULL References "metric" ON UPDATE CASCADE, -- WHERE kind = "date"
 	"datum" date NOT NULL,
 	Primary Key ("record", "metric")
 ) INHERITS ("measure");
