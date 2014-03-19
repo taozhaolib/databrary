@@ -1,7 +1,6 @@
 define([
 	'angular',
 
-	'ngAnimate',
 	'ngCookies',
 	'ngRoute',
 	'ngSanitize',
@@ -13,7 +12,6 @@ define([
 	'use strict';
 
 	var module = angular.module('databraryModule', [
-		'ngAnimate',
 		'ngCookies',
 		'ngRoute',
 		'ngSanitize',

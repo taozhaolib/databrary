@@ -86,7 +86,7 @@ define(['config/module'], function (module) {
 		};
 
 		constantService.message = function (key /*, args...*/) {
-			if(!constantService.data || !constantService.data.messages[key])
+			if(!constantService.data || !constantService.data.messages || !constantService.data.messages[key])
 				// warning? error? placeholder.
 				return '[' + key + ']';
 

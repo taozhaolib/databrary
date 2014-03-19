@@ -119,5 +119,18 @@ define(['config/module'], function (module) {
 		});
 	}]);
 
+	module.run(['$rootScope', 'RouterService', 'ConstantService', 'AuthService', 'TypeService', function ($rootScope, router, constants, auth, type) {
+		$rootScope.$on('$routeChangeStart', function (event, next, current) {
+			if(angular.isUndefined(current)) {
+				if(!next.resolve)
+					next.resolve = {};
+
+				next.resolve['constants'] = function () {
+					return constants;
+				};
+			}
+		});
+	}]);
+
 	return module;
 });

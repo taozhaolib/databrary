@@ -9,7 +9,7 @@
 .register_agreement_pages {
 	border-top: 3px solid @g3;
 	border-bottom: 3px solid @g3;
-	.padding-height(@f2);
+	.padding-height(@f4);
 	.margin-bottom(@f1);
 }
 
@@ -17,4 +17,21 @@
 	height: 350px;
 	overflow-y: scroll;
 	overflow-x: none;
+	.padding-right(@f2);
+
+	h2 {
+		.font-line(1.75);
+
+		&:first-child {
+			.margin-top(0);
+		}
+	}
+
+	h3 {
+		.font-line(1.5);
+	}
+
+	h4 {
+		.font-line(1.25);
+	}
 }

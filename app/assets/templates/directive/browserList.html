@@ -6,7 +6,11 @@
     <ul ng-if="browser.getItemExpand(data) || browser.data == data" class="cf">
         <li ng-if="!data.items[0]">This group is empty.</li>
 
-        <li ng-repeat="data in data.items | filter:queryFilter" ng-class="itemClasses(data)">
+        <li ng-if="data.group == 'volume'" ng-repeat="data in data.items | filter:queryFilter" ng-class="itemClasses(data)">
+            <ng-include src="getInclude()"></ng-include>
+        </li>
+
+        <li ng-if="data.group != 'volume'" ng-repeat="data in data.items" ng-class="itemClasses(data)">
             <ng-include src="getInclude()"></ng-include>
         </li>
     </ul>

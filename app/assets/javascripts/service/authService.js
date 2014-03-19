@@ -166,7 +166,14 @@ define(['config/module'], function (module) {
 		};
 
 		authService.hasToken = function () {
-			return typeService.isToken($window.$play.object);
+			return $window.$play && $window.$play.object && typeService.isToken($window.$play.object);
+		};
+
+		authService.getToken = function () {
+			if(!authService.hasToken())
+				return;
+
+			return $window.$play.object;
 		};
 
 		authService.isPasswordReset = function () {
@@ -179,10 +186,6 @@ define(['config/module'], function (module) {
 
 		authService.isUnauthorized = function () {
 			return authService.isAuth('NONE');
-		};
-
-		authService.isAuthPending = function () {
-			return ;
 		};
 
 		//

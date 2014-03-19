@@ -4,7 +4,7 @@
 
         <div ng-repeat="preset in authApplyForm.presets.get(authApplyForm.party, authApplyForm.other.party, true)">
             <input type="radio" name="shortcut" ng-checked="authApplyForm.other.preset === preset" ng-click="authApplyForm.presets.set(authApplyForm.other, preset)">
-            <label class="option" bo-html="preset.name"></label>
+            <label class="option" ng-bind-html="preset.name"></label>
         </div>
     </fieldset>
 

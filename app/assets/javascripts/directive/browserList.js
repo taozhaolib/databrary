@@ -106,29 +106,27 @@ define(['config/module'], function (module) {
 					}
 			};
 
-			$scope.getMeasures = function (data) { // TODO: something with better performance!
-				var out = {};
+			$scope.getMeasures = function (data) {
+				// TODO: something with better performance!
+				var out = {}, skip = ['description'];
+
+				switch (data.object.category) {
+					case -700:
+						skip.push('reason');
+						break;
+
+					case -100:
+						skip.push('setting');
+						break;
+
+					default:
+						skip.push('ident');
+						break;
+				}
 
 				angular.forEach(data.object.measures, function (value, key) {
-					if (key == 'description')
-						return;
-
-					switch (data.object.category) {
-						case -700:
-							if (key != 'reason')
-								out[key] = value;
-							break;
-
-						case -100:
-							if (key != 'setting')
-								out[key] = value;
-							break;
-
-						default:
-							if (key != 'ident')
-								out[key] = value;
-							break;
-					}
+					if (skip.indexOf(key) == -1)
+						out[key] = value;
 				});
 
 				return out;

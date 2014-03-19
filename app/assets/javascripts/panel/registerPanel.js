@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('RegisterPanel', ['$scope', 'AuthService', '$http', '$window', 'EventService', 'PartyAuthorize', function ($scope, authService, $http, $window, eventService, PartyAuthorize) {
+	module.controller('RegisterPanel', ['$scope', 'AuthService', '$http', '$window', 'EventService', 'PartyAuthorize', 'MessageService', 'ConstantService', function ($scope, authService, $http, $window, eventService, PartyAuthorize, messages, constants) {
 		$scope.auth = $scope.auth || authService;
 
 		$scope.wizard = {};
@@ -43,7 +43,6 @@ define(['config/module'], function (module) {
 		$scope.retrieveWizard = function (wizard) {
 			$scope.wizard = wizard;
 			$scope.wizard.addFn = $scope.updateSteps();
-//			$scope.wizard.onFn['register_request'] = onRegisterRequest;
 		};
 
 		var prePasswordComplete = function (step, activate) {
@@ -147,7 +146,7 @@ define(['config/module'], function (module) {
 				if (postLoginBlock(step, activate))
 					return;
 
-				step.allow = !!$scope.authParty;
+				step.allow = !!$scope.authParty && !$scope.requestSubmit;
 				step.complete = $scope.requestSubmit ? true : undefined;
 
 				if (activate !== false)
@@ -183,7 +182,7 @@ define(['config/module'], function (module) {
 
 				step.allow = true;
 				step.complete = undefined;
-
+console.log(activate);
 				if (activate !== false)
 					step.active = true;
 			}
@@ -202,7 +201,7 @@ define(['config/module'], function (module) {
 					var ready = form.$dirty && form.$valid && $scope.registerData.name && $scope.registerData.email && $scope.registerData.affiliation;
 
 					$scope.registerReady = ready;
-					$scope.updateSteps(false);
+//					$scope.updateSteps(false);
 
 					return ready;
 				};
@@ -211,6 +210,26 @@ define(['config/module'], function (module) {
 					$scope.registerReady = true;
 					$scope.updateSteps();
 				};
+
+				//
+
+				messages.add({
+					type: 'alert',
+					target: '#field_name',
+					body: constants.message('wizard.register_form.name.help')
+				});
+
+				messages.add({
+					type: 'alert',
+					target: '#field_email',
+					body: constants.message('wizard.register_form.email.help')
+				});
+
+				messages.add({
+					type: 'alert',
+					target: '#field_affiliation',
+					body: constants.message('wizard.register_form.affiliation.help')
+				});
 			},
 
 			'register_agreement': function (step, activate) {
@@ -312,6 +331,8 @@ define(['config/module'], function (module) {
 		};
 
 		$scope.updateSteps = function (activate) {
+			activate = angular.isUndefined(activate) ? true : activate;
+
 			angular.forEach($scope.wizard.steps, function (step) {
 				$scope.updateStep[step.id](step, activate);
 				$scope.prepareStep[step.id](step, activate);
@@ -341,7 +362,6 @@ define(['config/module'], function (module) {
 
 		//
 
-		// TODO: hook with authApplyForm properly
 		// TODO: replace authApplyForm in network panel
 		// TODO: do messages for lisa
 		// TODO: update network apply for proper requests
