@@ -240,10 +240,15 @@ object Volume extends TableId[Volume]("volume") {
       SlotConsent.row.from(
       """(SELECT id AS container, COALESCE(segment, '(,)'::segment) AS segment, consent
            FROM container LEFT JOIN slot_consent ON id = container
-	  WHERE volume = ?) AS """ + _)
-      // TODO: UNION ALL volume_slot study inclusion
+	  WHERE volume = ?
+	UNION ALL
+	  SELECT s.container, COALESCE(c.segment, '(,)'::segment) * s.segment AS segment, c.consent
+	    FROM volume_inclusion s LEFT JOIN slot_consent c
+	      ON s.container = c.container AND s.segment && c.segment
+	   WHERE volume = ?
+	) AS """ + _)
     private def baseVolume(vol : Volume) =
-      base.pushArgs(SQLArgs(vol.id))
+      base.pushArgs(SQLArgs(vol.id, vol.id))
     private def columnsVolume(vol : Volume) =
       baseVolume(vol)
       .join(Container.columns.map(_(vol)), "slot_consent.container = container.id")
