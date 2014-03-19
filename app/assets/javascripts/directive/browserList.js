@@ -180,6 +180,24 @@ define(['config/module'], function (module) {
 				return name;
 			};
 
+			$scope.queryFilter = function (data) {
+				if (!browserService.query)
+					return true;
+
+				var regex = new RegExp(browserService.query.toLowerCase().split(' ').join("|"));
+
+				if (!typeService.isVolume(data.object))
+					return true;
+
+				if (data.object.name && regex.test(data.object.name.toLowerCase()))
+					return true;
+
+				if (data.object.body && regex.test(data.object.body.toLowerCase()))
+					return true;
+
+				return false;
+			};
+
 			//
 
 			$scope.editLink = function (data) {

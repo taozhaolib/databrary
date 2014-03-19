@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('AuthService', ['$rootScope', '$location', '$cookieStore', '$http', '$route', '$cacheFactory', function ($rootScope, $location, $cookieStore, $http, $route, $cacheFactory) {
+	module.factory('AuthService', ['$rootScope', '$location', '$cookieStore', '$http', '$route', '$cacheFactory', 'TypeService', '$window', function ($rootScope, $location, $cookieStore, $http, $route, $cacheFactory, typeService, $window) {
 		var authService = {};
 
 		//
@@ -137,6 +137,12 @@ define(['config/module'], function (module) {
 				});
 		};
 
+		authService.tryLogin = function (next, current) {
+			authService.next = $location.url();
+
+			$location.url('/login');
+		};
+
 		authService.logout = function () {
 			$http
 				.post('/api/user/logout')
@@ -155,14 +161,28 @@ define(['config/module'], function (module) {
 
 		//
 
-		authService.tryLogin = function (next, current) {
-			authService.next = $location.url();
-
-			$location.url('/login');
-		};
-
 		authService.isLoggedIn = function () {
 			return angular.isDefined(authService.user) && authService.user.id != -1;
+		};
+
+		authService.hasToken = function () {
+			return typeService.isToken($window.$play.object);
+		};
+
+		authService.isPasswordReset = function () {
+			return authService.hasToken() && $window.$play.object.reset;
+		};
+
+		authService.isPasswordPending = function () {
+			return authService.hasToken() && !$window.$play.object.reset;
+		};
+
+		authService.isUnauthorized = function () {
+			return authService.isAuth('NONE');
+		};
+
+		authService.isAuthPending = function () {
+			return ;
 		};
 
 		//

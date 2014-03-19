@@ -7,6 +7,9 @@ define(['config/module'], function (module) {
 		//
 
 		playService.run = function () {
+			if(!$window.$play || !$window.$play.object)
+				return;
+
 			switch(typeService.getType($window.$play.object)) {
 //				case 'record':
 //					constantService.$promise.then(function (data) {

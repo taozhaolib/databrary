@@ -17,7 +17,7 @@ define(['config/module'], function (module) {
 
 		$scope.agreement = {
 			page: 1,
-			pages: 9
+			pages: 5
 		};
 
 		$scope.passwordData = {
