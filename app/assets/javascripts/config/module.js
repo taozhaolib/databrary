@@ -37,7 +37,7 @@ define([
 			var loadAllTemplates = function (url) {
 				if (!promise) {
 					promise = $http.get(allTemplatesUrl).then(function (response) {
-						$injector.get("$compile")(response.data);
+						$injector.get('$compile')(response.data);
 						return response;
 					});
 				}

@@ -8,5 +8,6 @@ define([
 	'model/slot',
 	'model/slotAsset',
 	'model/volumeAccess',
+	'model/scraper',
 	'model/volume'
 ], function () {});

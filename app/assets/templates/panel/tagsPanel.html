@@ -2,7 +2,7 @@
     <panel-mode name="view" active>
         <div class="panel_tags_list col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3 col-cell">
             <form name="tagForm" novalidate>
-                <ol class="panel_tags_items row">
+                <ul class="panel_tags_items row">
                     <li ng-repeat="tag in tags" class="panel_tags_item col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3 col-cell">
                         <div class="controls">
                             <button class="vote down" name="vote" ng-click="vote(tag, -1);" ng-disabled="tag.vote == -1">-</button>
@@ -14,7 +14,7 @@
 
                         <span class="weight">{{tag.weight}}</span>
                     </li>
-                </ol>
+                </ul>
             </form>
         </div>
 

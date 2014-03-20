@@ -33,20 +33,24 @@ define(['config/module'], function (module) {
 					$scope.target.container = $scope.volume.top.id;
 					$scope.target.segment = ',';
 					$scope.enabled = true;
+
+					$scope.enabled = $scope.tags.length > 0 || $scope.auth.isLoggedIn();
 					break;
 
 				case 'SlotView':
 					$scope.prepareTags($scope.slot.tags);
 //					$scope.target.container = null;
 //					$scope.target.segment = null;
-					$scope.enabled = true;
+
+					$scope.enabled = $scope.tags.length > 0 || $scope.auth.isLoggedIn();
 					break;
 
 				case 'PartyView':
 					$scope.prepareTags($scope.party.tags);
 //					$scope.target.container = null;
 //					$scope.target.segment = null;
-					$scope.enabled = angular.isArray($scope.tags) && $scope.tags.length > 0;
+
+					$scope.enabled = $scope.tags.length > 0;
 					break;
 			}
 		};
@@ -94,27 +98,30 @@ define(['config/module'], function (module) {
 				container: $scope.target.container,
 				segment: $scope.target.segment
 			}, function (newTag, status, headers, config) {
-//				$scope.tags.splice($scope.tags.indexOf(tag), 1, newTag); // currently returns slot
+				if(newTag.weight != 0)
+					$scope.tags.splice($scope.tags.indexOf(tag), 1, newTag);
+				else
+					$scope.tags.splice($scope.tags.indexOf(tag), 1);
 
 				switch(vote) {
 					case -1:
 						createMessage('Tag <strong>' + tag.id + '</strong> voted down successfully!');
-						tag.weight = tag.vote ? tag.weight -2 : tag.weight - 1;
-						tag.vote = -1;
 						break;
 
 					case 0:
 						createMessage('Tag <strong>' + tag.id + '</strong> vote cancelled successfully!');
-						tag.weight = tag.weight - tag.vote;
-						delete tag.vote;
 						break;
 
 					case 1:
 						createMessage('Tag <strong>' + tag.id + '</strong> voted up successfully!');
-						tag.weight = tag.vote ? tag.weight + 2 : tag.weight + 1;
-						tag.vote = 1;
 						break;
 				}
+			}, function () {
+				messageService.add({
+					type: 'error',
+					countdown: 5000,
+					body: 'Vote for tag <strong>' + tag.id + '</strong> unsuccessful! Please refresh and try again.'
+				})
 			});
 		};
 
@@ -177,7 +184,5 @@ define(['config/module'], function (module) {
 			if ($scope.tagNewFormMessage)
 				messageService.disable($scope.tagNewFormMessage);
 		};
-
-
 	}]);
 });

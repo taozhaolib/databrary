@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('RegisterPanel', ['$scope', 'AuthService', '$http', '$window', 'EventService', 'PartyAuthorize', 'MessageService', 'ConstantService', function ($scope, authService, $http, $window, eventService, PartyAuthorize, messages, constants) {
+	module.controller('RegisterPanel', ['$scope', 'AuthService', '$http', '$window', 'EventService', 'PartyAuthorize', 'MessageService', 'ConstantService', 'Scraper', function ($scope, authService, $http, $window, eventService, PartyAuthorize, messages, constants, Scraper) {
 		$scope.auth = $scope.auth || authService;
 
 		$scope.wizard = {};
@@ -17,8 +17,23 @@ define(['config/module'], function (module) {
 
 		$scope.agreement = {
 			page: 1,
-			pages: 5
+			pages: undefined,
+			data: []
 		};
+
+		Scraper('http://databrary.org/policies/investigator-agreement.html')
+			.then(function (pages) {
+				pages = $('<response>'+pages+'</response>');
+				pages.find('a').each(function () {
+					$(this).attr('target', '_blank');
+				});
+				pages = pages.html();
+
+				pages = pages.split(/<!--page_.*-->/).slice(1, -1);
+
+				$scope.agreement.pages = pages.length;
+				$scope.agreement.data = pages;
+			});
 
 		$scope.passwordData = {
 			token: undefined,

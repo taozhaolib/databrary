@@ -3,7 +3,7 @@ define(['config/module'], function (module) {
 
 	module.filter('format', [function () {
 		return function (input, lineMode) {
-			if(angular.isUndefined(input))
+			if(!angular.isString(input))
 				return '';
 
 			if (lineMode)
