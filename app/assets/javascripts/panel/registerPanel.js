@@ -17,7 +17,7 @@ define(['config/module'], function (module) {
 
 		$scope.agreement = {
 			page: 1,
-			pages: undefined,
+			pages: 0,
 			data: []
 		};
 
@@ -270,10 +270,12 @@ define(['config/module'], function (module) {
 
 				step.scrolled = false;
 
-				step.scroll = function ($scroll) {
-					var $el = $scroll.$element;
+				step.$el = undefined;
 
-					if ($el.height() + $el.scrollTop() >= $el.prop('scrollHeight')) {
+				step.scroll = function ($scroll) {
+					step.$el = step.$el || $scroll.$element;
+
+					if (step.$el.height() + step.$el.scrollTop() >= step.$el.prop('scrollHeight')) {
 						step.scrolled = true;
 					}
 				};
@@ -284,6 +286,7 @@ define(['config/module'], function (module) {
 
 				step.next = function () {
 					$scope.agreement.page++;
+					step.$el.scrollTop(0);
 					step.scrolled = false;
 				};
 
