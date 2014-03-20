@@ -443,10 +443,11 @@ CREATE TABLE "comment" (
 	"parent" integer References "comment"
 ) INHERITS ("slot");
 CREATE INDEX "comment_slot_idx" ON "comment" ("container", "segment");
+CREATE INDEX ON "comment" ("who");
 CREATE INDEX ON "comment" ("parent");
 COMMENT ON TABLE "comment" IS 'Free-text comments on objects (unaudited, immutable).';
 
-CREATE VIEW "comment_thread" AS
+CREATE MATERIALIZED VIEW "comment_thread" AS
 	WITH RECURSIVE t AS (
 		SELECT *, ARRAY[id]::integer[] AS thread
 		  FROM comment WHERE parent IS NULL
@@ -454,7 +455,15 @@ CREATE VIEW "comment_thread" AS
 		SELECT c.*, t.thread || c.id
 		  FROM comment c JOIN t ON c.parent = t.id
 	) SELECT * FROM t;
-COMMENT ON VIEW "comment_thread" IS 'Comments along with their parent-defined path (top-down).  Parents must never form a cycle or this will not terminate.';
+CREATE INDEX "comment_thread_slot_idx" ON "comment_thread" ("container", "segment");
+CREATE INDEX ON "comment_thread" ("who");
+COMMENT ON MATERIALIZED VIEW "comment_thread" IS 'Comments along with their parent-defined path (top-down).  Parents must never form a cycle or this will not terminate.';
+
+CREATE FUNCTION "comment_refresh" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+	REFRESH MATERIALIZED VIEW "comment_thread";
+	RETURN null;
+END; $$;
+CREATE TRIGGER "comment_changed" AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON "comment" FOR EACH STATEMENT EXECUTE PROCEDURE "comment_refresh" ();
 
 ----------------------------------------------------------- tags
 
