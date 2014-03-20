@@ -197,7 +197,16 @@ define(['config/module'], function (module) {
 				raw = newData;
 		};
 
-		browserService.rebuildData = function () {
+		var focus, focusInvert, focusPosition;
+
+		browserService.rebuildData = function (focusGroup) {
+			if (focusGroup) {
+				focusInvert = (focus == focusGroup && getLevelByGroup(focusGroup.id) == focusPosition) ? !focusInvert : undefined;
+				focusPosition = getLevelByGroup(focusGroup.id);
+			}
+
+			focus = focusGroup;
+
 			var groups = getActiveGroups(),
 				data = {
 					items: [],
@@ -580,7 +589,9 @@ define(['config/module'], function (module) {
 				items: [],
 
 				select: false,
-				expand: option.expand
+				expand: (focus && focus.id == group) ? (
+					(angular.isDefined(focusInvert)) ? focusInvert : false
+					) : option.expand
 			};
 
 			if (group == 'asset') {
@@ -668,7 +679,7 @@ define(['config/module'], function (module) {
 
 			browserService.options.record.categories.push(browserService.options.record.categories.splice(i, 1)[0]);
 
-			browserService.rebuildData();
+			browserService.rebuildData(group);
 		};
 
 		browserService.canRemoveRecordGroup = function () {
@@ -700,7 +711,7 @@ define(['config/module'], function (module) {
 
 			browserService.options.record.categories[group_i] = browserService.options.record.categories.splice(maybe_i, 1, browserService.options.record.categories[group_i])[0];
 
-			browserService.rebuildData();
+			browserService.rebuildData(maybe);
 		};
 
 		//
@@ -943,7 +954,7 @@ define(['config/module'], function (module) {
 
 				browserService.player = newPlayer;
 
-				if (angular.isDefined(browserService.player)){
+				if (angular.isDefined(browserService.player)) {
 					browserService.player.player = true;
 					browserService.player.played = newPlayed;
 				}
