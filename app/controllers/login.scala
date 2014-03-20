@@ -83,19 +83,20 @@ private[controllers] sealed class LoginController extends SiteController {
       .withSession(session - "superuser")
   }
 
-  def register = SiteAction.async { implicit request =>
-    val form = new LoginController.RegistrationForm()._bind
-    for {
-      e <- Account.getEmail(form.email.get)
-      a <- macros.Async.getOrElse(e, {
-	Party.create(
-	  name = form.name.get,
-	  affiliation = Maybe(form.affiliation.get).opt)
-	.flatMap(Account.create(_, email = form.email.get))
-      })
-      _ <- controllers.TokenController.newPassword(Right(a), "register")
-    } yield (Ok("sent"))
-  }
+  def register =
+    SiteAction.async { implicit request =>
+      val form = new LoginController.RegistrationForm()._bind
+      for {
+	e <- Account.getEmail(form.email.get)
+	a <- macros.Async.getOrElse(e, {
+	  Party.create(
+	    name = form.name.get,
+	    affiliation = Maybe(form.affiliation.get).opt)
+	  .flatMap(Account.create(_, email = form.email.get))
+	})
+	_ <- controllers.TokenController.newPassword(Right(a), "register")
+      } yield (Ok("sent"))
+    }
 }
 
 object LoginController extends LoginController {
@@ -174,9 +175,17 @@ object LoginHtml extends LoginController with HtmlController {
     .recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
   }
 
-  def registration = SiteAction.async { implicit request =>
-    new RegistrationForm().Ok
-  }
+  def registration =
+    SiteAction.async { implicit request =>
+      if (request.isInstanceOf[AuthSite])
+	ARedirect(
+	  if (request.access.group == Permission.NONE)
+	    routes.PartyHtml.view(request.identity.id)
+	  else
+	    routes.Site.start)
+      else
+	new RegistrationForm().Ok
+    }
 }
 
 object LoginApi extends LoginController with ApiController {
