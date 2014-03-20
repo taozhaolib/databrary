@@ -83,7 +83,7 @@ wizard.register_create.instructions=Creating an account on Databrary is easy and
 
 wizard.register_agreement.name=Sign Agreement
 wizard.register_agreement.description=Learn about the responsibilities of all Databrary members.
-wizard.register_agreement.instructions=We can't force you to read it, but we can make you scroll through it!
+wizard.register_agreement.instructions=Read through each section of the agreement.
 
 wizard.register_email.name=Confirm Email
 wizard.register_email.description=Confirm your email address to continue.
