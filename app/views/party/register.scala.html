@@ -12,7 +12,8 @@
                 @widget.tag.inputText(form.name(), 'placeholder -> "Full name")
 		@widget.tag.inputText(form.email(), 'placeholder -> "Email")
 		@widget.tag.inputText(form.affiliation(), 'placeholder -> "Affiliation")
-		<!-- @widget.tag.checkbox(form.agreement()) -->
+		<iframe src="http://databrary.org/policies/investigator-agreement.html" width="100%" height="500"></iframe>
+		@widget.tag.checkbox(form.agreement(), '_text -> "I agree")
 
                 @widget.formErrors(form)
                 <button type="submit" class="button">Register</button>
