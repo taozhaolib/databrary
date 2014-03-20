@@ -104,6 +104,8 @@ define(['config/module'], function (module) {
 
 				if(angular.isDefined($attrs.fold) && (!$attrs.fold || $scope.$eval($attrs.fold)))
 					$scope.enableFold();
+				else
+					$scope.disableFold();
 			};
 
 			start();
