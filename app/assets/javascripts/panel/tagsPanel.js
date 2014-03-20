@@ -1,11 +1,13 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('TagsPanel', ['$scope', 'Tag', '$route', 'MessageService', 'Volume', function ($scope, Tag, $route, messageService, Volume) {
+	module.controller('TagsPanel', ['$scope', 'Tag', '$route', 'MessageService', 'Volume', '$cacheFactory', function ($scope, Tag, $route, messageService, Volume, $cacheFactory) {
 		var DEFAULT_MESSAGE = {
 			type: 'alert',
 			countdown: 3000
 		};
+
+		var $httpCache = $cacheFactory.get('$http');
 
 		//
 
@@ -33,14 +35,6 @@ define(['config/module'], function (module) {
 					$scope.target.container = $scope.volume.top.id;
 					$scope.target.segment = ',';
 					$scope.enabled = true;
-
-					$scope.enabled = $scope.tags.length > 0 || $scope.auth.isLoggedIn();
-					break;
-
-				case 'SlotView':
-					$scope.prepareTags($scope.slot.tags);
-//					$scope.target.container = null;
-//					$scope.target.segment = null;
 
 					$scope.enabled = $scope.tags.length > 0 || $scope.auth.isLoggedIn();
 					break;
@@ -76,13 +70,16 @@ define(['config/module'], function (module) {
 		$scope.retrieveTags = function () {
 			switch ($route.current.controller) {
 				case 'VolumeView':
+					$httpCache.removeAll();
+
 					Volume.get({
 						id: $scope.volume.id,
 						tags: ''
-					}, function (data) {
+					}, function (data) { console.log(data.tags);
 						$scope.volume.tags = data.tags;
 						$scope.refreshPanel();
 					});
+
 					break;
 			}
 		};
@@ -117,11 +114,10 @@ define(['config/module'], function (module) {
 						break;
 				}
 			}, function () {
-				messageService.add({
+				createMessage({
 					type: 'error',
-					countdown: 5000,
 					body: 'Vote for tag <strong>' + tag.id + '</strong> unsuccessful! Please refresh and try again.'
-				})
+				});
 			});
 		};
 
@@ -129,25 +125,28 @@ define(['config/module'], function (module) {
 			if (form.$invalid)
 				return;
 
-			var tagModel = new Tag({id: $scope.newName});
+			var tagModel = new Tag({id: form.newNameVal});
 
 			tagModel.$save({
-				id: $scope.newName,
+				id: form.newNameVal,
 				vote: "true",
 				container: $scope.target.container,
 				segment: $scope.target.segment
 			}, function (newTag, status, headers, config) {
-				createMessage('Tag <strong>' + $scope.newName + '</strong> added successfully!');
+				createMessage('Tag <strong>' + form.newNameVal + '</strong> added successfully!');
 
-				$scope.newName = '';
+				form.newNameVal = '';
 
 				$scope.retrieveTags();
+			}, function () {
+				createMessage({
+					type: 'error',
+					body: 'Could not add tag <strong>' + tag.id + '</strong>! Please refresh and try again.'
+				});
 			});
 		};
 
 		//
-
-		$scope.newName = '';
 
 		$scope.newNameChange = function (form) {
 			if (form.newName.$pristine || form.newName.$valid)

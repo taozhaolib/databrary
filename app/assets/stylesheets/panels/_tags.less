@@ -7,16 +7,28 @@
 //
 
 .panel_tags_list {
-
+	form {
+		display: inline;
+	}
 }
 
 .panel_tags_items {
 	.padding(0);
+	display: inline;
 }
 
 .panel_tags_item {
 	.font(1, 1.5);
 	.height(1.5);
+	float: left;
+	.margin-height(@f8);
+
+	.inner {
+		.border-radius(@b1);
+		border: 1px solid @g4;
+		.padding-width(@f3);
+		.line-height(1.25);
+	}
 
 	&:before {
 		display: none;
@@ -24,7 +36,7 @@
 
 	.weight, .controls {
 		position: relative;
-		top: 6px;
+		top: @b8;
 		overflow: hidden;
 		text-align: center;
 		min-width: @b1;
@@ -34,16 +46,16 @@
 	.weight {
 		font-weight: bold;
 		display: block;
-		float: right;
+		float: left;
 		background: @c0g5m1;
-		.border-radius(@b4);
+		.border-radius(@b3);
 		.margin-height(@f6);
-		.margin-left(@f4);
+		.margin-right(@f4);
 	}
 
 	.controls {
-		float: left;
-		.margin-right(@f4);
+		float: right;
+		.margin-left(@f4);
 		.margin-height(@f4);
 	}
 

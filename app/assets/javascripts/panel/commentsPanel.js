@@ -1,11 +1,13 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('CommentsPanel', ['$scope', 'AuthService', '$route', 'Comment', 'MessageService', 'Volume', '$filter', function ($scope, authService, $route, Comment, messageService, Volume, $filter) {
+	module.controller('CommentsPanel', ['$scope', 'AuthService', '$route', 'Comment', 'MessageService', 'Volume', '$filter', '$cacheFactory', function ($scope, authService, $route, Comment, messageService, Volume, $filter, $cacheFactory) {
 		var DEFAULT_MESSAGE = {
 			type: 'alert',
 			countdown: 3000
 		};
+
+		var $httpCache = $cacheFactory.get('$http');
 
 		//
 
@@ -31,17 +33,14 @@ define(['config/module'], function (module) {
 					$scope.comments = $scope.volume.comments;
 					$scope.target.container = $scope.volume.top.id;
 					$scope.target.segment = ',';
-					$scope.enabled = !!authService.user || (angular.isArray($scope.comments) && $scope.comments.length > 0);
-					break;
 
-				case 'SlotView':
-					$scope.comments = $scope.slot.comments;
-					$scope.enabled = !!authService.user || (angular.isArray($scope.comments) && $scope.comments.length > 0);
+					$scope.enabled = authService.isLoggedIn() || !$.isEmptyObject($scope.comments);
 					break;
 
 				case 'PartyView':
 					$scope.comments = $scope.party.comments;
-					$scope.enabled = angular.isArray($scope.comments) && $scope.comments.length > 0;
+
+					$scope.enabled = !$.isEmptyObject($scope.comments);
 					break;
 			}
 		};
@@ -51,6 +50,8 @@ define(['config/module'], function (module) {
 		$scope.pullComments = function () {
 			switch ($route.current.controller) {
 				case 'VolumeView':
+					$httpCache.removeAll();
+
 					Volume.get({
 						id: $scope.volume.id,
 						comments: ''
@@ -58,6 +59,7 @@ define(['config/module'], function (module) {
 						$scope.volume.comments = data.comments;
 						$scope.refreshPanel();
 					});
+
 					break;
 			}
 		};
