@@ -104,8 +104,7 @@ object RecordHtml extends RecordController with HtmlController {
     for {
       slots <- request.obj.slots
       _ <- macros.Async.foreach[Slot, Unit](slots, _.records)
-      assets <- macros.Async.flatMap[Slot, SlotAsset, Seq[SlotAsset]](slots, _.assets)
-    } yield (Ok(views.html.record.view(slots, assets)))
+    } yield (Ok(views.html.record.view(slots)))
   }
 
   def viewEdit(editForm : Option[EditForm] = None, measureForm : Option[MeasureForm] = None, addForm : Option[MetricForm] = None)(implicit request : Request[_]) = {
