@@ -1,7 +1,7 @@
-<panel ng-controller="NetworkPanel" id="panel_network" title="Network" fold>
+<panel ng-controller="NetworkPanel" id="panel_network" title="{{'network.title' | message}}" fold>
     <panel-mode name="view" active>
         <div ng-show="parents">
-	    <h2>{{'auth.parents' | message}}</h2>
+	    <h2>{{'auth.parents.title' | message}}</h2>
 
             <div class="row">
                 <div ng-repeat="party in parents" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
@@ -11,7 +11,7 @@
         </div>
 
         <div ng-show="children">
-	    <h2>{{'auth.children' | message}}</h2>
+	    <h2>{{'auth.children.title' | message}}</h2>
 
             <div class="row">
                 <div ng-repeat="party in children" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
@@ -22,7 +22,7 @@
     </panel-mode>
 
     <panel-mode name="apply" access="CONTRIBUTE">
-	<h2>{{'auth.parents' | message}}</h2>
+	<h2>{{'auth.parents.title' | message}}</h2>
 
         <article class="network-auth cf" bindonce ng-repeat="parent in partyAuth.parents">
             <div class="row">
@@ -55,10 +55,10 @@
                             </div>
 
                             <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
-                                <div class="network-auth-heading expiration">Expiration</div>
+				<div class="network-auth-heading expiration" bo-html="'auth.expiration' | message"/>
                                 <div class="network-auth-expiration" ng-bind-html="parent.expires | date:'longDate'"></div>
-                                <div class="network-auth-expiration" ng-if="!parent.expires && parent.authorized">N/A</div>
-                                <div class="network-auth-expiration" ng-if="!parent.authorized">Request pending.</div>
+                                <div class="network-auth-expiration" ng-if="!parent.expires && parent.authorized" ng-bind-html="'auth.expiration.none' | message"/>
+				<div class="network-auth-expiration" ng-if="!parent.authorized" ng-bind-html="'auth.pending' | message"/>
                             </div>
                         </div>
 
@@ -77,8 +77,8 @@
                                     <fieldset class="clean">
                                         <input type="hidden" name="id" bo-value="parent.id">
 
-                                        <button ng-click="saveAuthParent()" class="second">Request</button>
-                                        <button ng-click="closeAuthParent()" class="first">Cancel</button>
+					<button ng-click="saveAuthParent()" class="second">{{"auth.request" | message}}</button>
+					<button ng-click="closeAuthParent()" class="first">{{"cancel" | message}}</button>
                                     </fieldset>
                                 </form>
                             </div>
@@ -106,7 +106,7 @@
     </panel-mode>
 
     <panel-mode name="authorize" access="CONTRIBUTE">
-	<h2>{{'auth.children' | message}}</h2>
+	<h2>{{'auth.children.title' | message}}</h2>
 
         <article class="network-auth cf" bindonce ng-repeat="child in partyAuth.children">
             <div class="row">
@@ -135,9 +135,10 @@
                             </div>
 
                             <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
-                                <div class="network-auth-heading expiration">Expiration</div>
+				<div class="network-auth-heading expiration" bo-html="'auth.expiration' | message"/>
                                 <div class="network-auth-expiration" ng-bind-html="child.expires | date:'longDate'"></div>
-                                <div class="network-auth-expiration" ng-if="!child.expires">N/A</div>
+                                <div class="network-auth-expiration" ng-if="!child.expires && child.authorized" ng-bind-html="'auth.expiration.none' | message"/>
+				<div class="network-auth-expiration" ng-if="!child.authorized" ng-bind-html="'auth.pending' | message"/>
                             </div>
                         </div>
 
@@ -178,7 +179,7 @@
                                     </div>
 
                                     <fieldset class="clean">
-                                        <label>Expiration:</label>
+					<label>{{"auth.expiration" | messages}}:</label>
 
                                         <input type="date" ng-model="child.expiration" class="network-auth-expiration-input">
 
@@ -188,12 +189,12 @@
                                     <fieldset class="clean">
                                         <input type="hidden" name="id" bo-value="child.id">
 
-                                        <button ng-click="saveAuthChild()" class="second" ng-if="!child.authorized">Authorize</button>
-                                        <button ng-click="denyAuthChild()" class="third" ng-if="!child.authorized && !child.force">Revoke</button>
+					<button ng-click="saveAuthChild()" class="second" ng-if="!child.authorized">{{"auth.authorize" | message}}</button>
+					<button ng-click="denyAuthChild()" class="third" ng-if="!child.authorized && !child.force">{{"auth.deny" | message}}</button>
 
-                                        <button ng-click="saveAuthChild()" class="second" ng-if="child.authorized">Update</button>
+					<button ng-click="saveAuthChild()" class="second" ng-if="child.authorized">{{"auth.update" | message}}</button>
 
-                                        <button ng-click="closeAuthChild()" class="first">Cancel</button>
+					<button ng-click="closeAuthChild()" class="first">{{"cancel" | message}}</button>
                                     </fieldset>
                                 </form>
                             </div>

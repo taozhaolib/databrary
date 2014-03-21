@@ -1,4 +1,4 @@
-<panel ng-controller="MaterialsPanel" id="panel_materials" title="Materials" fold>
+<panel ng-controller="MaterialsPanel" id="panel_materials" title="{{'materials.title' | message}}" fold>
     <panel-mode name="view" active>
         <div class="panel_materials_list col-full">
             <ul class="flat panel_materials_items">
@@ -12,7 +12,7 @@
                     <span ng-if="slotAsset.asset.duration" class="duration">{{slotAsset.asset.duration | timecode}}</span>
                 </li>
 
-                <li ng-if="!volume.assets" class="empty">There are no assets here.</li>
+		<li ng-if="!volume.assets" class="empty">{{"materials.empty" | message}}</li>
             </ul>
         </div>
 
@@ -49,9 +49,3 @@
         </div>
     </panel-mode>
 </panel>
-
-
-
-
-
-
