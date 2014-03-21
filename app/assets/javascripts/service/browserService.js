@@ -639,6 +639,11 @@ define(['config/module'], function (module) {
 			recordGroupToggle = angular.isUndefined(recordGroupToggle) ? group : undefined;
 		};
 
+		browserService.clearRecordGroupToggle = function () {
+			if (angular.isDefined(recordGroupToggle))
+				recordGroupToggle = undefined;
+		};
+
 		browserService.isRecordGroupToggle = function (group) {
 			return recordGroupToggle == group;
 		};
@@ -724,6 +729,9 @@ define(['config/module'], function (module) {
 					browserService.updateData(data);
 			} else if (data.expand && expand !== true) {
 				data.expand = false;
+
+				if (data == browserService.player)
+					browserService.setItemPlayer(undefined);
 			}
 
 			return data;
