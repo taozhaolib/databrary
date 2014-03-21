@@ -33,7 +33,7 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
 
   private[this] def editResult(implicit request : Request[_]) : SimpleResult =
     if (request.isApi) result(request.obj)
-    else Ok(RecordHtml.viewEdit())
+    else Redirect(routes.RecordHtml.edit(request.obj.id))
 
   def update(i : models.Record.Id) =
     Action(i, Permission.EDIT).async { implicit request =>
