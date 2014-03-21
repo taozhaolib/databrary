@@ -1,17 +1,17 @@
-<panel ng-controller="CommentsPanel" id="panel_comments" title="Comments" fold>
+<panel ng-controller="CommentsPanel" id="panel_comments" title="{{'comments.title' | message}}" fold>
     <panel-mode name="view" active>
         <aside ng-if="authService.isLoggedIn() && routeController != 'PartyView'" class="comment">
             <div class="row">
                 <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
                     <footer class="comment_meta" ng-init="party = authService.user">
-                        <portrait class="portrait_vertical portrait_small portrait_more" extra="Post a comment..."></portrait>
+			<portrait class="portrait_vertical portrait_small portrait_more" extra="{{'comments.prompt' | message}}"></portrait>
                     </footer>
 
                     <div class="comment_body comment_form">
                         <form name="commentForm" novalidate>
                             <textarea ng-model="newComment.body"></textarea>
 
-                            <button type="submit" class="button second" ng-click="addComment(commentForm)">Post</button>
+			    <button type="submit" class="button second" ng-click="addComment(commentForm)">{{'comments.post' | message}}</button>
                         </form>
                     </div>
                 </div>

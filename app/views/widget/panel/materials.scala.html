@@ -3,7 +3,7 @@
 @import play.api.templates.HtmlFormat._
 
 @if(assets.nonEmpty) {
-    @widget.panel.raw("materials", "")(title = "Materials") {
+    @widget.panel.raw("materials", "")(title = Messages("materials.title")) {
         <div class="panel_materials_list col-full">
             <ul class="flat panel_materials_items">
             @if(assets.nonEmpty) {
@@ -38,7 +38,7 @@
                     }
                 }
             } else {
-                <li class="empty">There are no assets here.</li>
+		<li class="empty">@Messages("materials.empty")</li>
             }
             </ul>
         </div>

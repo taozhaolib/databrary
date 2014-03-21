@@ -5,7 +5,7 @@
 }
 
 @if(post.nonEmpty || comments.nonEmpty) {
-@widget.panel.raw("comments", "")(title = "Comments"){
+@widget.panel.raw("comments", "")(title = Messages("comments.title")){
     @post.map { form =>
         @if(request.access.group >= Permission.VIEW) {
             <div class="comment col-full">
@@ -17,7 +17,7 @@
                             <div class="comment_meta row">
                                 <div class="comment_info col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
                                     <div class="inner">
-                                        Post a comment...
+					@Messages("comments.prompt")
                                     </div>
                                 </div>
                             </div>
@@ -25,7 +25,7 @@
                                 @widget.tag.textarea(form.text(), 'placeholder -> "Comment")
 
                                 @widget.formErrors(form)
-                                <button type="submit" class="button first">Post</button>
+                                <button type="submit" class="button first">@Messages("comments.post")</button>
                             </div>
                         </div>
                     }

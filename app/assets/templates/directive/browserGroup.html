@@ -1,13 +1,13 @@
 <div class="browser_widget browser_group cf">
     <span class="browser_widget_title">
-        Group by
+	{{"browser.group.by" | message}}
     </span>
 
     <span class="browser_widget_wrap"
     ng-if="browser.options.volume.allow"
     ng-class="groupClasses('volume')">
         <a class="browser_widget_pill"
-        ng-click="browser.setGroupActive('volume')">Volume</a>
+	    ng-click="browser.setGroupActive('volume')">{{"volume" | message}}</a>
     </span>
 
     <span class="browser_widget_wrap"
@@ -32,7 +32,7 @@
           ng-class="{expanded: browser.isRecordGroupToggle('add')}"
           ng-if="browser.canAddRecordGroup()">
         <a class="browser_widget_pill add"
-           ng-click="browser.setRecordGroupToggle('add')" click-elsewhere="browser.clearRecordGroupToggle()">+ group</a>
+           ng-click="browser.setRecordGroupToggle('add')" click-elsewhere="browser.clearRecordGroupToggle()">{{"browser.group" | message}}</a>
 
         <ul class="record_pill_options">
             <li ng-repeat="maybe in browser.options.record.categories|filter:{active: false, allow: true}">
@@ -44,6 +44,6 @@
     <span class="browser_widget_wrap last"
     ng-if="browser.options.session.allow"
     ng-class="groupClasses('session')">
-        <a class="browser_widget_pill">Session</a>
+	<a class="browser_widget_pill">{{"session" | message}}</a>
     </span>
 </div>

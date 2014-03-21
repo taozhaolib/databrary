@@ -1,7 +1,7 @@
 @(parents : Seq[Authorize], children : Seq[Authorize])(implicit request : PartyHtml.Request[_])
 
 @defining(request.obj.party) { party =>
-@widget.panel.raw("overview", "panel_party")(){
+@widget.panel.raw("overview", "panel_party")(Messages("network.title")){
     <div class="col-full panel_overview_actions">
         <ul class="actions">
 	        <li><a href="@request.obj.pageURL">view</a></li>
@@ -21,11 +21,11 @@
     @widget.frame.contact(party)
 
     @defining(parents.map(p => p.parent)) { parties =>
-        @widget.frame.parties(parties, "memberships", "Memberships")
+        @widget.frame.parties(parties, "memberships", Messages("auth.parents.title"))
     }
 
     @defining(children.map(c => c.child)) { parties =>
-        @widget.frame.parties(parties, "members", "Members")
+        @widget.frame.parties(parties, "members", Messages("auth.children.title"))
     }
 }
 }

@@ -4,25 +4,17 @@
     helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
 }
 
-@template.action("Enter Databrary", angular = Some(play.api.libs.json.JsNull)) {
-    @widget.panel.form("Enter Databrary", "Login", controller = "LoginPanelCtrl") {
+@template.action(Messages("login.title"), angular = Some(play.api.libs.json.JsNull)) {
+    @widget.panel.form(Messages("login.title.sub"), Messages("login.title")) {
         <div class="col-full">
             @widget.tag.form(form) {
 
-                <div ng-show="method == 1">
-                    @widget.tag.inputText(form.email(), 'placeholder -> "Email")
-                    @widget.tag.inputPassword(form.password(), 'placeholder -> "Password")
-                </div>
-
-                <div ng-show="method == 2">
-                    @widget.tag.inputText(form.openid(), 'placeholder -> "OpenID")
-                </div>
+		@widget.tag.inputText(form.email(), 'placeholder -> Messages("email.prompt"))
+		@widget.tag.inputPassword(form.password(), 'placeholder -> Messages("password.prompt"))
+		@widget.tag.inputText(form.openid(), 'placeholder -> Messages("openid.prompt"))
 
                 @widget.formErrors(form)
-                <button type="submit" class="button">Login</button>
-
-                <a ng-click="switchMethod(2)" ng-show="method != 2">or login with OpenID.</a>
-                <a ng-click="switchMethod(1)" ng-show="method != 1">or login with Databrary.</a>
+                <button type="submit" class="button">@Messages("login.login")</button>
             }
         </div>
     }

@@ -2,7 +2,7 @@
     <div class="browser_widget browser_sort cf"
             ng-if="browser.getSorts(group)">
         <span class="browser_widget_title">
-            Sort by
+	    {{"browser.sort.by" | message}}
         </span>
 
         <span class="browser_widget_wrap"
@@ -29,13 +29,13 @@
         <span class="browser_widget_wrap"
         ng-if="browser.canAddSort(group)">
             <a class="browser_widget_pill add"
-            ng-click="browser.addSort(group)">+ sort</a>
+		ng-click="browser.addSort(group)">+ {{"browser.sort" | message}}</a>
         </span>
     </div>
 
     <div class="browser_widget browser_sort cf">
         <span class="browser_widget_title">
-            Filter by
+	    {{"browser.filter.by" | message}}
         </span>
     </div>
 </section>
