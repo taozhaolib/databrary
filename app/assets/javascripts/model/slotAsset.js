@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('SlotAsset', ['$rootScope', '$resource', '$route', function ($rootScope, $resource, $route) {
+	module.factory('SlotAsset', ['$resource', '$route', function ($resource, $route) {
 		return $resource('/api/slot/:slotId/asset/:id', {
 			slotId: function () {
 				return $route.current.params.slotId || undefined;

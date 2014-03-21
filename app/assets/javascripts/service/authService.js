@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('AuthService', ['$rootScope', '$location', '$cookieStore', '$http', '$route', '$cacheFactory', 'TypeService', '$window', function ($rootScope, $location, $cookieStore, $http, $route, $cacheFactory, typeService, $window) {
+	module.factory('AuthService', ['$rootScope', '$location', '$http', '$route', '$cacheFactory', 'TypeService', '$window', function ($rootScope, $location, $http, $route, $cacheFactory, typeService, $window) {
 		var authService = {};
 
 		//

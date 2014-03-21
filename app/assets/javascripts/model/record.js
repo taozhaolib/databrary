@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('Record', ['$rootScope', '$resource', '$route', function ($rootScope, $resource, $route) {
+	module.factory('Record', ['$resource', '$route', function ($resource, $route) {
 		return $resource('/api/record/:id', {
 			id: function () {
 				return $route.current.params.id || undefined;

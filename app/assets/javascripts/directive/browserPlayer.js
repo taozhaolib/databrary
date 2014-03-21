@@ -1,8 +1,8 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('browserPlayer', ['BrowserService', '$compile', function (browserService, $compile) {
-		var link = function ($scope, $element, $attrs) {
+	module.directive('browserPlayer', ['BrowserService', function (browserService) {
+		var link = function ($scope, $element) {
 			$scope.browser = $scope.browser || browserService;
 
 			var $content = $element.find('.browser_player_content').first();

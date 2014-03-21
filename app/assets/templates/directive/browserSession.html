@@ -18,14 +18,20 @@
 
                 <a class="browser_tool edit"
                    bo-href="editLink(data)" target="_self"
-                   ng-if="browser.hasAccess(data, 3)"></a>
+                   bo-if="browser.hasAccess(data, 3)"></a>
             </footer>
 
             <header>
                 <browser-icon data="data"></browser-icon>
 
 		        <h1>
-                    <span>Session<span bo-if="data.object.name">: <span bo-html="data.object.name"></span></span></span>
+                    Session<span bo-if="data.object.name">: <span bo-html="data.object.name"></span></span>
+
+                    <span bo-id="'session_'+data.object.id+'_pilot'" class="session_pilot" bo-if="data.object.categories[-800]">P</span>
+                    <span bo-id="'session_'+data.object.id+'_excluded'" class="session_excluded" bo-if="data.object.categories[-700]">E</span>
+
+                    <message bo-if="data.object.categories[-800]" type="info" target="#session_{{data.object.id}}_pilot">Pilot</message>
+                    <message bo-if="data.object.categories[-700]" type="info" target="#session_{{data.object.id}}_excluded">Excluded</message>
                 </h1>
             </header>
         </div>

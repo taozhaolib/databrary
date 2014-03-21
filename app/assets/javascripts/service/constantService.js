@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('ConstantService', ['$rootScope', '$http', function ($rootScope, $http) {
+	module.factory('ConstantService', ['$http', function ($http) {
 		var constantService = {
 			data: {}
 		};

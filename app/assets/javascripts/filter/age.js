@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.filter('age', ['$filter', function ($filter) {
+	module.filter('age', [function () {
 		var daysTo = {
 			months: 30.436849,
 			years: 365.24219

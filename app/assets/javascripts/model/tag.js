@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('Tag', ['$rootScope', '$resource', '$route', function ($rootScope, $resource, $route) {
+	module.factory('Tag', ['$resource', function ($resource) {
 		return $resource('/api/tag/:id', {});
 	}]);
 });

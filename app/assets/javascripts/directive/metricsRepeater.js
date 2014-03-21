@@ -2,7 +2,7 @@ define(['config/module'], function (module) {
 	'use strict';
 
 	module.directive('metricsRepeater', ['$http', function ($http) {
-		var link = function ($scope, $element, $attrs) {
+		var link = function ($scope) {
 			$scope.repeats = $scope.repeats || [];
 
 			$scope.categories = $scope.categories || [];

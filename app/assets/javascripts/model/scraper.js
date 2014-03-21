@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('Scraper', ['$rootScope', '$q', '$http', function ($rootScope, $q, $http) {
+	module.factory('Scraper', ['$q', '$http', function ($q, $http) {
 		return function (url) {
 			var deferred = $q.defer();
 

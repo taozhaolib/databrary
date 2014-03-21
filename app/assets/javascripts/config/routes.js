@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.config(['$locationProvider', '$routeProvider', '$httpProvider', function ($locationProvider, $routeProvider, $httpProvider) {
+	module.config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
 		$locationProvider.html5Mode(true);
 
 		//

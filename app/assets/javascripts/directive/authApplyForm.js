@@ -2,7 +2,7 @@ define(['config/module'], function (module) {
 	'use strict';
 
 	module.directive('authApplyForm', ['PartyAuthorize', 'AuthService', 'EventService', 'AuthPresetService', function (PartyAuthorize, authService, eventService, authPresetService) {
-		var link = function ($scope, $element, $attrs) {
+		var link = function ($scope) {
 			$scope.authApplyForm.presets = authPresetService;
 			$scope.authApplyForm.party = authService.user;
 			$scope.authApplyForm.other = undefined;

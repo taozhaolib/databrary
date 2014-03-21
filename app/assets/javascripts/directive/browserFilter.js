@@ -1,8 +1,8 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('browserFilter', ['BrowserService', '$filter', function (browserService, $filter) {
-		var link = function ($scope, $element, $attrs) {
+	module.directive('browserFilter', ['BrowserService', function (browserService) {
+		var link = function ($scope) {
 			$scope.browser = $scope.browser || browserService;
 
 			//

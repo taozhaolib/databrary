@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('MaterialsPanel', ['$scope', 'Volume', '$routeParams', function ($scope, Volume, $routeParams) {
+	module.controller('MaterialsPanel', ['$scope', function ($scope) {
 		$scope.bootPanel = function () {
 			$scope.currentAsset = $scope.volume.assets[0] || undefined;
 		};

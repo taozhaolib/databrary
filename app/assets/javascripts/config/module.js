@@ -1,18 +1,15 @@
 define([
 	'angular',
 
-	'ngCookies',
 	'ngRoute',
 	'ngSanitize',
 	'ngStorage',
-
 	'ngResource',
 	'bindonce'
 ], function (angular) {
 	'use strict';
 
 	var module = angular.module('databraryModule', [
-		'ngCookies',
 		'ngRoute',
 		'ngSanitize',
 		'ngStorage',
@@ -66,9 +63,8 @@ define([
 		}]);
 	}]);
 
-	module.run(['$rootScope', '$location', '$log', 'RouterService', 'BrowserService', 'ConstantService', 'AuthService', 'TypeService', 'PlayService', function ($rootScope, $location, $log, router, browser, constant, auth, type, playService) {
-		// $rootScope specials
-		$rootScope.$log = $log;
+	module.run(['$rootScope', '$location', 'RouterService', 'BrowserService', 'ConstantService', 'AuthService', 'TypeService', 'PlayService', function ($rootScope, $location, router, browser, constant, auth, type, playService) {
+		// $rootScope specials -- TODO: cut out some of these
 		$rootScope.router = router;
 		$rootScope.browser = browser;
 		$rootScope.constant = constant;
@@ -78,7 +74,7 @@ define([
 		playService.run();
 
 		// TODO: anchor scroll on page load. I think the problem is animated items on load.
-		$location.hash('');
+//		$location.hash('');
 	}]);
 
 	return module;

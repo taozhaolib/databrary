@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('DataPanel', ['$scope', 'Party', '$routeParams', '$filter', function ($scope, Party, $routeParams, $filter) {
+	module.controller('DataPanel', ['$scope', function ($scope) {
 		$scope.bootPanel = function () {
 			$scope.updateVolumes();
 		};

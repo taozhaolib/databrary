@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('TypeService', ['$rootScope', function ($rootScope) {
+	module.factory('TypeService', [function () {
 		var typeService = {};
 
 		//

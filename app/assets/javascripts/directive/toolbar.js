@@ -2,7 +2,7 @@ define(['config/module'], function (module) {
 	'use strict';
 
 	module.directive('toolbar', ['$location', '$timeout', 'EventService', 'AuthService', 'PanelService', function ($location, $timeout, eventService, authService, panelService) {
-		var controller = function ($scope, $element, $attrs) {
+		var controller = function ($scope) {
 			$scope.auth = $scope.auth || authService;
 
 			//
