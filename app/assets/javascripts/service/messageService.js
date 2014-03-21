@@ -121,7 +121,7 @@ define(['config/module'], function (module) {
 			var $target = $(message.target);
 
 			if ($target.length === 0) {
-				messages.enable(message);
+				messages.disable(message);
 				return message.target = false;
 			}
 

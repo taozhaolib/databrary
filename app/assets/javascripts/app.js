@@ -1,6 +1,5 @@
 require.config({
 	baseUrl: '/public/javascripts',
-	optimize: 'none',
 
 	paths: {
 		domReady: 'vendors/domReady-2.0.1/domReady',

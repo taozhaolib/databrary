@@ -9,7 +9,7 @@ login.logout=You have been logged out.
 password.incorrect=Incorrect password.
 password.again=Passwords do not match.
 
-# Emails
+# --- Emails
 mail.from=Databrary <help@databrary.org>
 mail.authorize=authorize@databrary.org
 mail.password.subject=Databrary password reset
@@ -22,14 +22,18 @@ mail.authorize.body={1} has requested to be authorized by {2}.\n\nTo approve or 
 mail.authorized.subject=Databrary authorization approved
 mail.authorized.body=You have been authorized by {0}.
 
-# Headers, labels
+# --- Headers, labels
 auth.parents=Authorized by
 auth.children=Granted authorization to
 auth.inherit=Databrary Status
 auth.direct={0} Data
 volume.creation=Uploaded
 
-# Authorizations
+# --- Notices
+notice.help.pilot=<strong>Pilot</strong>: This session was a pilot for the current dataset.
+notice.help.exclusion=<strong>Exclusion</strong>: This session was excluded for reason: <em>{0}</em>.
+
+# --- Authorizations
 auth.inherit.NONE=No access.
 auth.inherit.VIEW=Access to unrestricted Databrary data.
 auth.inherit.DOWNLOAD=Access to restricted Databrary data.

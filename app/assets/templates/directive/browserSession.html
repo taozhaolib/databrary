@@ -27,22 +27,17 @@
 		        <h1>
                     Session<span bo-if="data.object.name">: <span bo-html="data.object.name"></span></span>
 
-                    <span bo-id="'session_'+data.object.id+'_pilot'" class="session_pilot" bo-if="data.object.categories[-800]">P</span>
-                    <span bo-id="'session_'+data.object.id+'_excluded'" class="session_excluded" bo-if="data.object.categories[-700]">E</span>
-
-                    <message bo-if="data.object.categories[-800]" type="info" target="#session_{{data.object.id}}_pilot">Pilot</message>
-                    <message bo-if="data.object.categories[-700]" type="info" target="#session_{{data.object.id}}_excluded">Excluded</message>
+                    <session-mark data="data" mark="pilot" bo-if="data.object.categories[-800]"></session-mark>
+                    <session-mark data="data" mark="excluded" bo-if="data.object.categories[-700]"></session-mark>
                 </h1>
             </header>
         </div>
 
         <div class="item_main">
-            <dl class="flat_list cf" ng-repeat="(categoryID, records) in data.object.categories">
+            <dl class="flat_list cf" ng-repeat="(categoryID, records) in getSessionRecords(data)">
                 <dt bo-html="formatSessionCategory(data, categoryID, records)" ng-class="{solo: !recordIdentifier(data.volume.records[records[0].id])}"></dt>
 
-                <dd ng-repeat="record in records" ng-if="recordIdentifier(data.volume.records[record.id])">
-                    <span bo-html="recordIdentifier(data.volume.records[record.id])"></span><span bo-if="record.age"> (</span><span bo-if="record.age" bo-html="formatAge(record.age)"></span><span bo-if="record.age">)</span>
-                </dd>
+                <dd ng-repeat="record in records" ng-if="recordIdentifier(data.volume.records[record.id])"><span bo-html="recordIdentifier(data.volume.records[record.id])"></span><span bo-if="record.age"> (</span><span bo-if="record.age" bo-html="formatAge(record.age)"></span><span bo-if="record.age">)</span></dd>
             </dl>
         </div>
     </div>

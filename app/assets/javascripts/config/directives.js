@@ -12,6 +12,7 @@ define([
 	'directive/repeater',
 	'directive/metricsRepeater',
 	'directive/panel',
+	'directive/sessionMark',
 	'directive/scroll',
 	'directive/clickElsewhere',
 	'directive/panelMode',

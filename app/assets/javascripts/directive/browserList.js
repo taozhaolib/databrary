@@ -108,7 +108,7 @@ define(['config/module'], function (module) {
 
 			$scope.getMeasures = function (data) {
 				// TODO: something with better performance!
-				var out = {}, skip = ['description'];
+				var out = {}, skip = ['description', 'pilot', 'exclusion'];
 
 				switch (data.object.category) {
 					case -700:
@@ -125,6 +125,18 @@ define(['config/module'], function (module) {
 				}
 
 				angular.forEach(data.object.measures, function (value, key) {
+					if (skip.indexOf(key) == -1)
+						out[key] = value;
+				});
+
+				return out;
+			};
+
+			$scope.getSessionRecords = function (data) {
+				// TODO: something with better performance!
+				var out = {}, skip = ['-700', '-800'];
+
+				angular.forEach(data.object.categories, function (value, key) {
 					if (skip.indexOf(key) == -1)
 						out[key] = value;
 				});
