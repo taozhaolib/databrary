@@ -1,7 +1,6 @@
 define([
 	'panel/overviewPartyPanel',
 	'panel/overviewVolumePanel',
-	'panel/dataPanel',
 	'panel/browserPanel',
 	'panel/materialsPanel',
 	'panel/publicationsPanel',
