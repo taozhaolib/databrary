@@ -26,7 +26,7 @@
                     <span ng-if="auth.hasAuth('NONE')">
                         <a ng-href="{{router.party(auth.user)}}" class="toolbar_user_link">
                             <span class="username">{{auth.user.name}}</span>
-                            <img ng-src="{{auth.user.avatar || auth.user.email | gravatar:16}}" alt="{{auth.user.name}}" class="avatar">
+                            <img ng-src="{{auth.user.avatar}}" alt="{{auth.user.name}}" class="avatar">
                         </a>
 
                         <span has-auth="admin">

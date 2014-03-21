@@ -1,6 +1,5 @@
 define([
 	'filter/age',
-	'filter/gravatar',
 	'filter/uri',
 	'filter/truncate',
 	'filter/cite',
@@ -8,6 +7,5 @@ define([
 	'filter/timecode',
 	'filter/toArray',
 	'filter/possessive',
-	'filter/message',
-	'filter/md5'
+	'filter/message'
 ], function () {});
