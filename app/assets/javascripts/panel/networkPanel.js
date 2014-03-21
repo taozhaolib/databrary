@@ -285,7 +285,7 @@ define(['config/module'], function (module) {
 			}
 		};
 
-		eventService.listen($scope, 'authSearchForm-init', function (event, form) { console.log(event, form);
+		eventService.listen($scope, 'authSearchForm-init', function (event, form) {
 			form.selectFn = selectFn;
 			event.stopPropagation();
 		});
