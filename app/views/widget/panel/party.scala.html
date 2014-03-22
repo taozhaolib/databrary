@@ -18,7 +18,30 @@
 
     <h1 class="col-full panel_title">@display.formatTitle(party.pageName)</h1>
 
-    @widget.frame.contact(party)
+@party.account.map { account =>
+    @widget.frame.raw("contact", "")(Messages("party.contact.title")) {
+        <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+            <div class="metadata">
+                <dl class="flat">
+		    @party.email.map { e =>
+                            <dt>Email</dt>
+                            <dd><a href="mailto:@e">@e</a></dd>
+                    }
+
+                    @party.orcid.map { o =>
+                        <dt>ORCiD</dt>
+                        <dd><a href="@o.uri">@o.toString</a></dd>
+                    }
+
+                    @party.duns.map { d =>
+                        <dt>DUNS</dt>
+                        <dd>@d.toString</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+    }
+}
 
     @defining(parents.map(p => p.parent)) { parties =>
         @widget.frame.parties(parties, "memberships", Messages("auth.parents.title"))

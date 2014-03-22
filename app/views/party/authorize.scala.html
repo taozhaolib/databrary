@@ -80,7 +80,7 @@
 		    <input type='hidden' name='pending' value='true'/>
 		    <button type='submit' class="button third">Search</button>
 		@if(form.inherit.get == Permission.CONTRIBUTE && form.name.get.nonEmpty) {
-		    <button type='submit' class="button first" name='notfound' value='true'>Not found</button>
+		    <button type='submit' class="button first" name='notfound' value='true'>@Messages("auth.notfound")</button>
 		}
 		}
 		case form : AuthorizeApplyForm => {

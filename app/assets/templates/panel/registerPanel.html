@@ -1,25 +1,25 @@
-<panel ng-controller="RegisterPanel" top id="panel_register" title="Register">
+<panel ng-controller="RegisterPanel" top id="panel_register" title="{{'register.title' | message}}">
         <div class="row">
             <hgroup class="col-full">
-                <h1 class="panel_context">Register</h1>
-                <h2 class="panel_title with_context">Get Databrary Access</h2>
+		<h1 class="panel_context">{{'register.title' | message}}</h1>
+		<h2 class="panel_title with_context">{{'register.title.sub' | message }}</h2>
             </hgroup>
 
             <div class="col-full">
                 <wizard retrieve="retrieveWizard" linear>
                     <wizard-step id="register_create">
                         <form name="registerForm">
-                            <label for="field_name">Name</label>
+			    <label for="field_name">{{'register.name.prompt' | message}}</label>
                             <input id="field_name" name="fieldName" type="text" ng-model="data.name" ng-minlength="3">
 
-                            <label for="field_email">Email</label>
+			    <label for="field_email">{{'email' | message}}</label>
                             <input id="field_email" name="fieldEmail" type="email" ng-model="data.email">
 
-                            <label for="field_affiliation">Affiliation</label>
+			    <label for="field_affiliation">{{'affiliation' | message}}</label>
                             <input id="field_affiliation" name="fieldAffiliation" type="text" ng-model="data.affiliation" ng-minlength="3">
 
-                            <button class="second" type="submit" ng-disabled="!testProceed(registerForm)" ng-click="proceed(registerForm)">Continue</button>
-                            <button class="first" type="reset">Reset</button>
+			    <button class="second" type="submit" ng-disabled="!testProceed(registerForm)" ng-click="proceed(registerForm)">{{'register.continue' | message}}</button>
+			    <button class="first" type="reset">{{'reset' | message}}</button>
                         </form>
                     </wizard-step>
 
@@ -29,28 +29,28 @@
                                  scroll="scroll($scroll)"></div>
                         </div>
 
-                        <p>Download the <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">pdf version</a> for easy reading. Refer to our <a href="http://databrary.org/user-guide/policies/definitions.html" target="_blank">term definitions</a>.</p>
+			<p ng-bind-html="'register.agreement.instructions' | message"/>
 
-                        <button class="second" ng-click="proceed()" ng-show="agreement.page >= agreement.pages" ng-disabled="!canProceed()">Register</button>
+			<button class="second" ng-click="proceed()" ng-show="agreement.page >= agreement.pages" ng-disabled="!canProceed()">{{'register.register' | message}}</button>
 
-                        <button class="second" ng-click="next()" ng-show="agreement.page < agreement.pages" ng-disabled="!canProceed()">Agree</button>
+			<button class="second" ng-click="next()" ng-show="agreement.page < agreement.pages" ng-disabled="!canProceed()">{{'register.agree' | message}}</button>
                         <button class="third" ng-click="back()" ng-show="agreement.page > 1">Back</button>
                     </wizard-step>
 
                     <wizard-step id="register_email">
-                        <p>Your confirmation email has been sent to <strong>{{registerData.email}}</strong>.</p>
+			<p ng-bind-html="'register.sent.instructions' | message:'<strong>'+registerData.email+'</strong>'"/>
                     </wizard-step>
 
                     <wizard-step id="register_password">
                         <form name="passwordForm">
-                            <label for="field_password_once">Password</label>
+			    <label for="field_password_once">{{'password' | message}}</label>
                             <input id="field_password_once" type="password" ng-model="data.password.once">
 
-                            <label for="field_password_again">Password (again)</label>
+			    <label for="field_password_again">{{'password' | message}} (again)</label>
                             <input id="field_password_again" type="password" ng-model="data.password.again">
 
-                            <button class="second" type="submit" ng-disabled="!testProceed(passwordForm)" ng-click="proceed(passwordForm)">Continue</button>
-                            <button class="first" type="reset">Reset</button>
+			    <button class="second" type="submit" ng-disabled="!testProceed(passwordForm)" ng-click="proceed(passwordForm)">{{'register.continue' | message}}</button>
+			    <button class="first" type="reset">{{'reset' | message}}</button>
                         </form>
                     </wizard-step>
 

@@ -33,6 +33,7 @@ mail.authorized.body=You have been authorized by {0}.
 
 # Generic UI
 cancel=Cancel
+reset=Reset
 
 # Login, party, auth pages
 login.title=Login
@@ -40,17 +41,21 @@ login.title.sub=Enter Databrary
 login.login=Login
 login.method.password=or login with Databrary.
 login.method.openid=or login with OpenID.
-email.prompt=Email
-password.prompt=Password
+email=Email
+password=Password
 password.incorrect=Incorrect password.
 password.again=Passwords do not match.
-openid.prompt=OpenID
+openid=OpenID
+orcid=ORCiD
+affiliation=Affiliation
 login.bad=Incorrect login.
 login.openID.notFound=No account is associated with that OpenID.
 login.noCookie=You must be logged in to perform that action. Please make sure you have cookies enabled.
 login.expired=Your session has expired. Please login again.
 login.logout=You have been logged out.
 
+party.overview.title=Overview
+party.contact.title=Contact
 network.title=Network
 auth.parents.title=Authorized by
 auth.children.title=Granted authorization to
@@ -59,14 +64,17 @@ auth.direct={0} Data
 auth.expiration=Expiration
 auth.expiration.none=N/A
 auth.pending=Request pending.
+auth.request.title=Request the following status from {0}:
+auth.grant.title=Grant {0} the following capabilities:
 auth.request=Request
 auth.authorize=Authorize
 auth.update=Update
 auth.deny=Deny
 auth.revoke=Revoke
+auth.notfound=None of these
 auth.info.prompt=Contact info for your institution's authorizing official (OSP)
 
-# Authorizations
+# Authorization levels
 auth.inherit.NONE=No access.
 auth.inherit.VIEW=Access to unrestricted Databrary data.
 auth.inherit.DOWNLOAD=Access to restricted Databrary data.
@@ -81,7 +89,17 @@ auth.direct.ADMIN=Can share {0} data.
 
 # Volume page
 volume=Volume
-volume.creation=Uploaded
+volume.overview.title=Overview
+volume.admins.title=Investigators
+volume.funding.title=Funding
+volume.metadata.title=Description
+volume.creation.title=Uploaded
+volume.sessions.title=Sessions
+volume.sessions={0} sessions ({1} shared)
+volume.ages.title=Ages
+volume.ages={0} (M = {1})
+volume.citation.title=Citation
+volume.access.title=People
 
 browser.title=Browser
 browser.group=group
@@ -95,9 +113,18 @@ session=Session
 materials.title=Materials
 materials.empty=There are no assets here.
 
+player.title=Player
+
+citations.title=Publications
+
 comments.title=Comments
 comments.post=Post
 comments.prompt=Post a comment...
+
+tags.title=Tags
+
+search.title=Search
+search.prompt=Start your search...
 
 # --- Notices
 notice.help.pilot=<strong>Pilot</strong>: This session was a pilot for the current dataset.
@@ -109,6 +136,15 @@ consent.EXCERPTS=The identifying data in this session has been released for shar
 consent.PUBLIC=The identifying data in this session has been released publicly.
 
 # --- Registration
+register.title=Register
+register.title.sub=Get Databrary Access
+register.name.prompt=Full name
+register.continue=Continue
+register.agree=Agree
+register.register=Register
+register.agreement.instructions=Download the <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">pdf version</a> for easy reading. Refer to our <a href="http://databrary.org/user-guide/policies/definitions.html" target="_blank">term definitions</a>.
+register.sent.instructions=Your confirmation email has been sent to {0}.
+
 wizard.register_create.name=Create Account
 wizard.register_create.description=Register to browse shared data and comment on datasets.
 wizard.register_create.instructions=Creating an account on Databrary is easy and fun!

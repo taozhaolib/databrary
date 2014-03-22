@@ -4,19 +4,19 @@
     helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
 }
 
-@template.action("Register an account", angular = Some(play.api.libs.json.JsNull)) {
-    @widget.panel.form("Register an account", "Register") {
+@template.action(Messages("register.title"), angular = Some(play.api.libs.json.JsNull)) {
+    @widget.panel.form(Messages("register.title.sub"), Messages("register.title")) {
         <div class="col-full">
             @widget.tag.form(form) {
 
-                @widget.tag.inputText(form.name(), 'placeholder -> "Full name")
-		@widget.tag.inputText(form.email(), 'placeholder -> "Email")
-		@widget.tag.inputText(form.affiliation(), 'placeholder -> "Affiliation")
+                @widget.tag.inputText(form.name(), 'placeholder -> Messages("register.name.prompt"))
+		@widget.tag.inputText(form.email(), 'placeholder -> Messages("email"))
+		@widget.tag.inputText(form.affiliation(), 'placeholder -> Messages("affiliation"))
 		<iframe src="http://databrary.org/policies/investigator-agreement.html" width="100%" height="500"></iframe>
-		@widget.tag.checkbox(form.agreement(), '_text -> "I agree")
+		@widget.tag.checkbox(form.agreement(), '_text -> Messages("register.agree"))
 
                 @widget.formErrors(form)
-                <button type="submit" class="button">Register</button>
+                <button type="submit" class="button">@Messages("register.register")</button>
             }
         </div>
     }

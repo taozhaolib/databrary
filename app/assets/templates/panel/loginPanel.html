@@ -10,12 +10,12 @@
                 <form name="loginForm">
                     <div ng-switch="panel.getMethod()">
                         <div ng-switch-default>
-			    <input id="loginEmail" type="email" ng-model="loginData.email" placeholder="{{'email.prompt' | message}}">
-			    <input id="loginPassword" type="password" ng-model="loginData.password" placeholder="{{'password.prompt' | message}}" ng-required>
+			    <input id="loginEmail" type="email" ng-model="loginData.email" placeholder="{{'email' | message}}">
+			    <input id="loginPassword" type="password" ng-model="loginData.password" placeholder="{{'password' | message}}" ng-required>
                         </div>
 
                         <div ng-switch-when="openid">
-			    <input id="loginOpenid" type="text" ng-model="loginData.openid" placeholder="{{'openid.prompt' | message}}" ng-required>
+			    <input id="loginOpenid" type="text" ng-model="loginData.openid" placeholder="{{'openid' | message}}" ng-required>
                         </div>
                     </div>
 

@@ -1,6 +1,6 @@
 <form name="authApplyForm">
     <fieldset class="clean" ng-if="authApplyForm.other">
-        <legend>Request {{authApplyForm.other.party.name}} grant the following capabilities:</legend>
+	<legend>{{"auth.request.title" | message:authApplyForm.other.party.name}}</legend>
 
         <div ng-repeat="preset in authApplyForm.presets.get(authApplyForm.party, authApplyForm.other.party, true)">
             <input type="radio" name="shortcut" ng-checked="authApplyForm.other.preset === preset" ng-click="authApplyForm.presets.set(authApplyForm.other, preset)">
@@ -11,7 +11,7 @@
     <fieldset class="clean">
         <input type="hidden" name="id" ng-value="other.id">
 
-        <button ng-click="authApplyForm.save()" class="second" ng-disabled="authApplyForm.other.inherit == 0 && authApplyForm.other.direct == 0">Request</button>
-        <button ng-click="authApplyForm.cancel()" class="first">Cancel</button>
+	<button ng-click="authApplyForm.save()" class="second" ng-disabled="authApplyForm.other.inherit == 0 && authApplyForm.other.direct == 0">{{"auth.request" | message}}</button>
+	<button ng-click="authApplyForm.cancel()" class="first">{{"cancel" | message}}</button>
     </fieldset>
 </form>

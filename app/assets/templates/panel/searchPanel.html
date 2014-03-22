@@ -1,4 +1,4 @@
-<panel ng-controller="BrowserPanel" top id="panel_search" title="Search">
+<panel ng-controller="BrowserPanel" top id="panel_search" title="{{'search.title' | message}}">
     <panel-mode name="view" active>
         <section id="static_header" class="body_header static_header">
             <div class="row">
@@ -9,7 +9,7 @@
 
                     <form class="body_header_search" method="get">
                         <div class="w">
-                            <input type="search" class="searchbox" ng-model="browser.query" placeholder="Start your search..." value="">
+			    <input type="search" class="searchbox" ng-model="browser.query" placeholder="{{'search.prompt' | message}}" value="">
                         </div>
                     </form>
                 </div>

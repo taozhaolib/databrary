@@ -4,7 +4,7 @@
     helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
 }
 
-    @widget.panel.raw("tags", "")(title = "Tags"){
+    @widget.panel.raw("tags", "")(Messages("tags.title")){
         <div class="panel_tags_list col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-3">
                 <ol class="panel_tags_items row">
                 @if(tags.nonEmpty) {

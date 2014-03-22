@@ -1,5 +1,6 @@
 define([
 	'filter/age',
+	'filter/ageSummary',
 	'filter/uri',
 	'filter/truncate',
 	'filter/cite',

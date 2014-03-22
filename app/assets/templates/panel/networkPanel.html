@@ -66,7 +66,7 @@
                             <div class="col-desktop-12 col-laptop-10 col-tablet-8 col-mobile-5">
                                 <form name="authForm">
                                     <fieldset class="clean">
-                                        <legend>Request <span bo-html="parent.party.name"></span> grant the following capabilities:</legend>
+					<legend bo-html="'auth.request.title' | message:parent.party.name"/>
 
                                         <div ng-repeat="preset in getPresets(parent)">
                                             <input type="radio" name="shortcut" ng-checked="presetSelected(parent, preset)" ng-click="setPreset(parent, preset)">
@@ -146,7 +146,7 @@
                             <div class="col-desktop-12 col-laptop-10 col-tablet-8 col-mobile-5">
                                 <form name="authForm">
                                     <fieldset class="clean">
-                                        <legend>Grant <span bo-html="child.party.name"></span> the following capabilities:</legend>
+					<legend bo-html="'auth.grant.title' | message:child.party.name"/>
 
                                         <div ng-repeat="preset in getPresets(child)">
                                             <input type="radio" name="shortcut" ng-checked="presetSelected(child, preset)" ng-click="setPreset(child, preset)">
@@ -179,7 +179,7 @@
                                     </div>
 
                                     <fieldset class="clean">
-					<label>{{"auth.expiration" | messages}}:</label>
+					<label>{{"auth.expiration" | message}}:</label>
 
                                         <input type="date" ng-model="child.expiration" class="network-auth-expiration-input">
 

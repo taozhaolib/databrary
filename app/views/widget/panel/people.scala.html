@@ -2,7 +2,7 @@
 
 @import play.api.templates.HtmlFormat._
 
-@widget.panel.raw("people", "")(title = "People"){
+@widget.panel.raw("people", "")(Messages("volume.access.title")){
     <div class="col-full">
         <div class="row">
 	@groupBy(access, (va : VolumeAccess) => va.access).map { case (permission, volumeAccesses) =>

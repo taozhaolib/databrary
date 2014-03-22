@@ -1,6 +1,6 @@
 @(volume : Volume, summary : Volume.Summary, access : Seq[VolumeAccess])(implicit request : SiteRequest[_])
 
-@widget.panel.raw("overview", "panel_volume")(){
+@widget.panel.raw("overview", "panel_volume")(Messages("volume.overview.title")){
     <div class="col-full panel_overview_actions">
         <ul class="breadcrumbs">
         @Path(volume).toHtml
@@ -26,8 +26,52 @@
     <h2 class="col-full">@a</h2>
     }
 
-    @widget.frame.people(access)
-    @widget.frame.funding(access.filter(_.funding.isDefined))
-    @widget.frame.volume(volume, summary)
-    @widget.frame.citation(volume, access)
+    @widget.frame.raw("people", "")(Messages("volume.admins.title")) {
+	@access.takeWhile(_.access >= Permission.ADMIN).map { a =>
+	    @widget.portrait.verticalSmall(a.party)
+	}
+    }
+
+@defining(access.filter(_.funding.isDefined)) { funding =>
+@if(funding.nonEmpty) {
+    @widget.frame.raw("funding", "")(Messages("volume.funding.title")) {
+        @funding.map { f =>
+            @widget.portrait.verticalSmallExtra(f.party, Html(f.funding.getOrElse("")))
+        }
+    }
+}
+}
+
+@widget.frame.raw("volume", "")(Messages("volume.metadata.title")) {
+    <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+        <div class="description">
+            @volume.body.map(display.plainText _)
+        </div>
+
+        <div class="metadata">
+            <dl class="flat">
+                <dt>@Messages("volume.creation.title")</dt>
+                <dd><time datetime="@volume.creation" pubdate>@display.dateFmtYM.print(volume.creation)</time></dd>
+
+                <dt>@Messages("volume.sessions.title")</dt>
+                <dd>@Messages("volume.sessions", summary.sessions, summary.shared)</dd>
+
+                <dt>@Messages("volume.ages.title")</dt>
+                <dd>@Messages("volume.ages", display.agerange(summary.agerange), display.age(summary.agemean))</dd>
+            </dl>
+        </div>
+    </div>
+}
+
+    @widget.frame.raw("citation", "")(Messages("volume.citation.title")) {
+	<div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+	    <p>
+	    @access.takeWhile(_.access >= Permission.ADMIN).map(a => display.citeName(a.party.name) + ", ")
+	    @display.dateFmtY.print(volume.creation).
+	    @volume.name.
+	    <em>Databrary</em>.
+	    Retrieved @display.dateFmtCite.print(new dbrary.Date) from <a href="@volume.pageURL.absoluteURL(true)" title="@volume.name on Databrary.org">http://databrary.org/volume/@volume.id</a>.
+	    </p>
+	</div>
+    }
 }

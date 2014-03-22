@@ -4,16 +4,16 @@
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@template.action("Search the Databrary", angular = Some(JsonArray(list.map[JsonRecord, Seq[JsonRecord]](_._1.json)))) {
-    @widget.panel.search("", "", "SearchViewCtrl") {
-        <section ng-controller="SearchFilterCtrl" id="panel_search_filter" class="panel_search_filter col-full">
+@template.action(Messages("search.title"), angular = Some(JsonArray(list.map[JsonRecord, Seq[JsonRecord]](_._1.json)))) {
+    @widget.panel.search("", "") {
+        <section id="panel_search_filter" class="panel_search_filter col-full">
 	@widget.tag.form(form) {
-	    @widget.tag.inputText(form.query(), 'placeholder -> "Search the databrary...")
+	    @widget.tag.inputText(form.query(), 'placeholder -> Messages("search.prompt"))
 	    @widget.formErrors(form)
 	}
         </section>
 
-        <div ng-controller="SearchListCtrl" class="col-full">
+        <div class="col-full">
         @list.map { case (volume, access) =>
             @widget.frame.compactVolume(volume, access)
         }
