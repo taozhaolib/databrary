@@ -201,10 +201,17 @@ final class SQLCols7[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 
   * @param query SQL statement */
 protected sealed abstract class SQLBuilder[+A] protected (val query : String)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLArgsView[A] {
   protected def send(args : Seq[SQLArg[_]]) : Future[db.QueryResult] = {
-    if (args.isEmpty)
+    val r = if (args.isEmpty)
       dbconn.sendQuery(query)
     else
       dbconn.sendPreparedStatement(query, args.map(_.put))
+    if (SQL.logger.isTraceEnabled) {
+      val t0 = System.nanoTime
+      r.foreach { r =>
+	SQL.logger.trace(((System.nanoTime - t0) / 1e9).formatted("%8.5f: ") + query)
+      }
+    }
+    r
   }
 }
 
@@ -217,6 +224,7 @@ final class SQL private (override val query : String)(implicit dbconn : db.Conne
 object SQL {
   def apply(q : String*)(implicit dbc : db.Connection, context : ExecutionContext) : SQL =
     new SQL(unwords(q : _*))(dbc, context)
+  val logger : play.api.Logger = play.api.Logger("sql")
 }
 
 /** A query which may be applied to arguments, producing rows to be parsed to a particular type.
