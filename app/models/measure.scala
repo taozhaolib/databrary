@@ -227,7 +227,7 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
     row.SELECT("WHERE record = ? ORDER BY metric.id").apply(record).list
 }
 
-case class Measures(list : Seq[Measure[_]]) {
+case class Measures(list : IndexedSeq[Measure[_]]) {
   private def find(id : Metric.Id) : Option[Measure[_]] =
     list.find(_.metricId.unId >= id.unId).filter(_.metricId === id)
 
@@ -245,19 +245,23 @@ case class Measures(list : Seq[Measure[_]]) {
 }
 
 object Measures extends Table[Measures]("measures") {
-  object empty extends Measures(Nil)
+  val empty = Measures(IndexedSeq.empty[Measure[_]])
   def apply(m : Option[Measures]) : Measures =
     m.getOrElse(empty)
 
-  private implicit val sqlType : SQLType[Measure[_]] = SQLType("measure", classOf[Measure[_]])(s =>
+  private implicit val sqlMeasure : SQLType[Measure[_]] = SQLType("measure", classOf[Measure[_]])(s =>
     Maybe(s.indexOf(':')).opt.flatMap { i =>
       Metric.get(Metric.asId(s.substring(0,i).toInt)).map(new Measure(_, s.substring(i+1)))
     },
     m => m.metricId.toString + ":" + m.datum)
 
-  private[models] val row : Selector[Measures] =
-    Columns(SelectColumn[IndexedSeq[Measure[_]]]("measures"))
-    .map(new Measures(_))
+  implicit val sqlType : SQLType[Measures] =
+    SQLType.transform[IndexedSeq[Measure[_]], Measures]("measures", classOf[Measures])(
+      l => Some(new Measures(l)), _.list)
+
+  private[models] val row : Selector[Measures] = Columns(
+      SelectColumn[Measures]("measures")
+    )
 
   private[models] def getRecord(record : Record.Id) : Future[Measures] =
     row.SELECT("WHERE record = ?").apply(record).singleOpt.map(apply _)

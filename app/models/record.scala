@@ -164,19 +164,18 @@ object Record extends TableId[Record]("record") {
   private[models] val columns = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[Option[RecordCategory.Id]]("category")
-    )
+    , SelectColumn[Measures]("measures")
+    ).from("record_measures AS " + _)
   private[models] def sessionRow(vol : Volume) = columns
-    .leftJoin(Measures.row, "record.id = measures.record")
-    .map { case ((id, cat), meas) =>
+    .map { case (id, cat, meas) =>
       (consent : Consent.Value) =>
-	new Record(id, vol, cat.flatMap(RecordCategory.get(_)), consent, Measures(meas))
+	new Record(id, vol, cat.flatMap(RecordCategory.get(_)), consent, meas)
     }
   private def rowVolume(volume : Selector[Volume]) : Selector[Record] = columns
-    .~+(SelectAs[Consent.Value]("record_consent(record.id)", "record_consent"))
-    .leftJoin(Measures.row, "record.id = measures.record")
+    .~(SelectAs[Consent.Value]("record_consent(record.id)", "record_consent"))
     .join(volume, "record.volume = volume.id")
-    .map { case (((id, cat, cons), meas), vol) =>
-      new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cons, Measures(meas))
+    .map { case (((id, cat, meas), cons), vol) =>
+      new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cons, meas)
     }
   private def rowVolume(vol : Volume) : Selector[Record] =
     rowVolume(Volume.fixed(vol))
