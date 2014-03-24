@@ -22,11 +22,41 @@ sealed trait SiteRequest[A] extends Request[A] with Site {
   def apiOptions : JsonOptions.Options = queryString
 }
 
+object SiteRequest {
+  sealed abstract class Base[A](request : Request[A]) extends WrappedRequest[A](request) with SiteRequest[A]
+  sealed class Anon[A](request : Request[A]) extends Base[A](request) with AnonSite {
+    def withObj[O](obj : O) : RequestObject[O]#Anon[A] = {
+      object ro extends RequestObject[O]
+      new ro.Anon(request, obj)
+    }
+  }
+  sealed class Auth[A](request : Request[A], val token : SessionToken) extends Base[A](request) with AuthSite {
+    val superuser = token.superuser(request)
+    def withObj[O](obj : O) : RequestObject[O]#Auth[A] = {
+      object ro extends RequestObject[O]
+      new ro.Auth(request, token, obj)
+    }
+  }
+  def apply[A](request : Request[A], session : Option[SessionToken]) : Base[A] =
+    session.filter(_.valid).fold[Base[A]](
+      new Anon[A](request))(
+      new Auth[A](request, _))
+}
+
 abstract class SiteException extends Exception with Results {
   def resultHtml(implicit request : SiteRequest[_]) : Future[SimpleResult]
   def resultApi : Future[SimpleResult]
   def result(implicit request : SiteRequest[_]) : Future[SimpleResult] =
     if (request.isApi) resultApi else resultHtml
+}
+
+object SiteException extends ActionFunction[SiteRequest.Base, SiteRequest.Base] {
+  def invokeBlock[A](request : SiteRequest.Base[A], block : SiteRequest.Base[A] => Future[SimpleResult]) =
+    /* we have to catch immediate exceptions, too */
+    macros.Async.catching(classOf[SiteException])(block(request))
+      .recoverWith {
+	case e : SiteException => e.result(request)
+      }
 }
 
 abstract trait HtmlException extends SiteException {
@@ -54,27 +84,6 @@ private[controllers] object ForbiddenException extends SiteException {
 object ServiceUnavailableException extends SiteException {
   def resultHtml(implicit request : SiteRequest[_]) = macros.Async(ServiceUnavailable) // TODO page content
   def resultApi = macros.Async(ServiceUnavailable)
-}
-
-object SiteRequest {
-  sealed abstract class Base[A](request : Request[A]) extends WrappedRequest[A](request) with SiteRequest[A]
-  sealed class Anon[A](request : Request[A]) extends Base[A](request) with AnonSite {
-    def withObj[O](obj : O) : RequestObject[O]#Anon[A] = {
-      object ro extends RequestObject[O]
-      new ro.Anon(request, obj)
-    }
-  }
-  sealed class Auth[A](request : Request[A], val token : SessionToken) extends Base[A](request) with AuthSite {
-    val superuser = token.superuser(request)
-    def withObj[O](obj : O) : RequestObject[O]#Auth[A] = {
-      object ro extends RequestObject[O]
-      new ro.Auth(request, token, obj)
-    }
-  }
-  def apply[A](request : Request[A], session : Option[SessionToken]) : Base[A] =
-    session.filter(_.valid).fold[Base[A]](
-      new Anon[A](request))(
-      new Auth[A](request, _))
 }
 
 trait RequestObject[+O] {
@@ -112,22 +121,29 @@ object RequestObject {
 }
 
 object SiteAction extends ActionCreator[SiteRequest.Base] {
-  def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) = {
-    val now = new Timestamp
-    macros.Async.flatMap(request.session.get("session"), models.SessionToken.get _).flatMap { session =>
-      implicit val site = SiteRequest[A](request, session)
-      if (session.exists(!_.valid))
-        Async.foreach[SessionToken, Unit](session, _.remove).map { _ =>
-          LoginController.needed("login.expired")
-        }
-      else
-        /* we have to catch immediate exceptions, too */
-        macros.Async.catching(classOf[SiteException])(block(site))
-          .recoverWith {
-            case e : SiteException => e.result
-          }
-          .map(_.withHeaders(HeaderNames.DATE -> HTTP.date(now)))
+  object Unlocked extends ActionCreator[SiteRequest.Base] {
+    def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) = {
+      val now = new Timestamp
+      macros.Async.flatMap(request.session.get("session"), models.SessionToken.get _).flatMap { session =>
+	val site = SiteRequest[A](request, session)
+	SiteException.invokeBlock(site, 
+	  if (session.exists(!_.valid)) { request : SiteRequest.Base[A] =>
+	    Async.foreach[SessionToken, Unit](session, _.remove).map { _ =>
+	      LoginController.needed("login.expired")(request)
+	    }
+	  } else block)
+	  .map(_.withHeaders(HeaderNames.DATE -> HTTP.date(now)))
+      }
     }
+  }
+
+  def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) = {
+    val action : SiteRequest.Base[A] => Future[SimpleResult] =
+      if (Site.locked) { request =>
+	if (request.access.group == Permission.NONE) NotFoundException.result(request)
+	else block(request)
+      } else block
+    Unlocked.invokeBlock(request, action)
   }
 
   object Auth extends ActionRefiner[SiteRequest,SiteRequest.Auth] {
@@ -190,7 +206,9 @@ object Site extends SiteController {
   assert(current.configuration.getString("application.secret").exists(_ != "databrary"),
     "Application is insecure. You must set application.secret appropriately (see README).")
 
-  def start = VolumeHtml.search
+  val locked = current.configuration.getBoolean("site.locked").getOrElse(false)
+
+  def start = if (locked) LoginHtml.view else VolumeHtml.search
 
   def test = Action { request =>
     Ok(request.queryString.toString)

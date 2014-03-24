@@ -33,7 +33,7 @@ private[controllers] sealed class LoginController extends SiteController {
     }
   }
 
-  def post = SiteAction.async { implicit request =>
+  def post = SiteAction.Unlocked.async { implicit request =>
     val form = new LoginController.LoginForm()._bind
     macros.Async.flatMap(form.email.get, Account.getEmail _).flatMap { acct =>
       def bad =
@@ -159,8 +159,8 @@ object LoginHtml extends LoginController with HtmlController {
       form
     }
 
-  def view = SiteAction { implicit request =>
-    request.user.fold(Ok(viewLogin()))(u => Redirect(u.party.pageURL))
+  def view = SiteAction.Unlocked { implicit request =>
+    request.user.fold(Ok(viewLogin()))(u => Redirect(routes.PartyHtml.profile))
   }
 
   def openID(email : String) = SiteAction.async { implicit request =>

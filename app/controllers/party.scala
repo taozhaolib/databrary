@@ -309,14 +309,19 @@ object PartyHtml extends PartyController with HtmlController {
     ).verifying(Messages("password.again"), pa => pa._1.forall(_ == pa._2))
     .transform[Option[String]](_._1, p => (p, p.getOrElse("")))
 
-  def view(i : models.Party.Id) = Action(Some(i), Some(Permission.NONE)).async { implicit request =>
+  def viewParty(implicit request : Request[_]) = 
     for {
       parents <- request.obj.party.authorizeParents()
       children <- request.obj.party.authorizeChildren()
       vols <- request.obj.volumeAccess
       comments <- request.obj.party.account.fold[Future[Seq[Comment]]](macros.Async(Nil))(_.comments)
     } yield (Ok(views.html.party.view(parents, children, vols, comments)))
-  }
+
+  def profile =
+    (SiteAction.Unlocked ~> action(None, Some(Permission.NONE))).async(viewParty(_))
+
+  def view(i : models.Party.Id) =
+    Action(Some(i), Some(Permission.NONE)).async(viewParty(_))
 
   private[controllers] def viewAdmin(
     authorizeForms : Seq[AuthorizeForm] = Nil)(

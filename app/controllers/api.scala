@@ -30,9 +30,9 @@ object SiteApi extends SiteController {
   private final val constantsETag = "constants:" + constantsJson.hashCode
   private final val constantsResult = Ok(constantsJson)
     .withHeaders(
-      LAST_MODIFIED -> HTTP.date(startTime)
-    , ETAG -> HTTP.quote(constantsETag)
-    , CACHE_CONTROL -> "max-age=86400"
+      (LAST_MODIFIED, HTTP.date(startTime))
+    , (ETAG, HTTP.quote(constantsETag))
+    , (CACHE_CONTROL, "max-age=86400")
     )
   def constants = Action { implicit request =>
     if (HTTP.notModified(constantsETag, startTime)) NotModified
