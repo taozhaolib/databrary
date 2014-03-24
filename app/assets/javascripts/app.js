@@ -7,16 +7,16 @@ require.config({
 
 		jquery: 'vendors/jquery-1.11.0/jquery-1.11.0.min',
 
-		angular: 'vendors/angular-1.2.12/angular.min',
-		ngAnimate: 'vendors/angular-1.2.12/angular-animate.min',
-		ngCookies: 'vendors/angular-1.2.12/angular-cookies.min',
-		ngLoader: 'vendors/angular-1.2.12/angular-loader.min',
-		ngResource: 'vendors/angular-1.2.12/angular-resource.min',
-		ngRoute: 'vendors/angular-1.2.12/angular-route.min',
-		ngSanitize: 'vendors/angular-1.2.12/angular-sanitize.min',
-		ngTouch: 'vendors/angular-1.2.12/angular-touch.min',
-		ngMocks: 'vendors/angular-1.2.12/angular-mocks',
-		ngScenario: 'vendors/angular-1.2.12/angular-scenario',
+		angular: 'vendors/angular-1.2.15/angular.min',
+		ngAnimate: 'vendors/angular-1.2.15/angular-animate.min',
+		ngCookies: 'vendors/angular-1.2.15/angular-cookies.min',
+		ngLoader: 'vendors/angular-1.2.15/angular-loader.min',
+		ngResource: 'vendors/angular-1.2.15/angular-resource.min',
+		ngRoute: 'vendors/angular-1.2.15/angular-route.min',
+		ngSanitize: 'vendors/angular-1.2.15/angular-sanitize.min',
+		ngTouch: 'vendors/angular-1.2.15/angular-touch.min',
+		ngMocks: 'vendors/angular-1.2.15/angular-mocks',
+		ngScenario: 'vendors/angular-1.2.15/angular-scenario',
 
 		ngStorage: 'vendors/ngStorage/ngStorage.min',
 

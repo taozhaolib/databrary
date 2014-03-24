@@ -29,7 +29,7 @@
                             <img ng-src="{{auth.user.avatar}}" alt="{{auth.user.name}}" class="avatar">
                         </a>
 
-                        <span has-auth="admin">
+                        <span ng-if="auth.hasAuth('ADMIN')">
                             <span class="sep">|</span>
 
                             <form name="superuserForm" ng-if="!auth.hasAuth('SUPER')">

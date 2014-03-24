@@ -93,6 +93,7 @@ define(['config/module'], function (module) {
 
 			//
 
+			// TODO: REMOVE THIS WATCH!
 			$scope.$watch('folded', function () {
 				$scope.setFolding();
 			});

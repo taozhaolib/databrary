@@ -80,13 +80,15 @@ define(['config/module'], function (module) {
 
 		var levels = {};
 
-		$rootScope.$watch('constant', function () {
+		var watchReset = $rootScope.$watch('constant', function () {
 			$rootScope.constant.$promise.then(function () {
 				angular.forEach($rootScope.constant.data.permission, function (permission) {
 					levels[permission.name] = permission.id;
 				});
 
 				levels['SUPER'] = 5;
+
+				watchReset();
 			});
 		});
 

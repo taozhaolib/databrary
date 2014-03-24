@@ -16,7 +16,6 @@ define([
 	'directive/scroll',
 	'directive/clickElsewhere',
 	'directive/panelMode',
-	'directive/hasAuth',
 	'directive/carousel',
 	'directive/browserGroup',
 	'directive/browserIcon',
