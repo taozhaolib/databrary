@@ -78,11 +78,25 @@ define(['config/module'], function (module) {
 		//
 
 		browserService.initialize = function (newContext, newData) {
+			if(newContext == 'party') {
+				var volumes = [];
+
+				angular.forEach(newData, function (access) {
+					volumes.push(access.volume);
+				});
+
+				return initialize(newContext, volumes);
+			}
+
 			newData.$promise.then(function (newData) {
-				browserService.initializeData(newData);
-				browserService.initializeOptions(newContext);
-				browserService.rebuildData();
+				initialize(newContext, newData);
 			});
+		};
+
+		var initialize = function (newContext, newData) {
+			browserService.initializeData(newData);
+			browserService.initializeOptions(newContext);
+			browserService.rebuildData();
 		};
 
 		//

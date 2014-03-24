@@ -1,77 +1,55 @@
-<panel ng-controller="OverviewVolumePanel" top id="panel_overview" title="{{'volume.overview.title' | message}}" ng-mouseover="hoverPanel()">
+<panel ng-controller="OverviewVolumePanel" top id="panel_overview" title="{{'volume.overview.title' | message}}" ng-mouseover="hoverPanel()" bindonce>
     <panel-mode name="view" active>
         <figure class="panel_overview_thumbnail" baseline="square" absolute watch="{{volume.id}}">
             <figmedia><img ng-src="/volume/{{volume.id}}/thumb"></figmedia>
         </figure>
 
-        <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
+        <hgroup>
+            <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
+            <h2 ng-if="auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-html="volume.alias"></h2>
+        </hgroup>
 
-	<div frame id="frame_people" title="{{'volume.admins.title' | message}}" fold>
+
+	    <div frame id="frame_people" title="{{'volume.admins.title' | message}}" fold>
             <div ng-repeat="volumeAccess in volume.access | filter:{access: 4}" class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-3 col-cell" ng-init="party = volumeAccess.party">
-                <portrait hover class="portrait_vertical portrait_small"></portrait>
+                <portrait class="portrait_vertical portrait_small"></portrait>
             </div>
         </div>
 
-	<div frame id="frame_funding" title="{{'volume.funding.title' | message}}" fold>
+	    <div frame id="frame_funding" title="{{'volume.funding.title' | message}}" fold>
             <div ng-repeat="funding in volume.access | filter:isFunding" class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell" ng-init="party = funding.party">
-                <portrait hover class="portrait_vertical portrait_small portrait_more" extra="{{funding.funding}}"></portrait>
+                <portrait class="portrait_vertical portrait_small portrait_more" extra="{{funding.funding}}"></portrait>
             </div>
         </div>
 
-	<div frame id="frame_metadata" title="{{'volume.metadata.title' | message}}" fold>
+	    <div frame id="frame_metadata" title="{{'volume.metadata.title' | message}}" fold>
             <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell">
                 <div class="description" ng-bind-html="volume.body | format"></div>
 
                 <div class="metadata">
                     <dl class="flat">
-			<dt>{{'volume.creation.title' | message}}</dt>
+                        <dt>{{'volume.creation.title' | message}}</dt>
                         <dd><time datetime="{{volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>{{volume.creation | date:'MMMM yyyy'}}</time></dd>
 
-			<dt>{{'volume.sessions.title' | message}}</dt>
+                        <dt>{{'volume.sessions.title' | message}}</dt>
                         <dd>{{'volume.sessions' | message:volume.summary.sessions:volume.summary.shared}}</dd>
 
-			<dt ng-if="volume.summary.agemean > 0">{{'volume.ages.title' | message}}</dt>
-			<dd ng-if="volume.summary.agemean > 0">{{volume.summary | ageSummary}}</dd>
+                        <dt ng-if="volume.summary.agemean > 0">{{'volume.ages.title' | message}}</dt>
+                        <dd ng-if="volume.summary.agemean > 0">{{volume.summary | ageSummary}}</dd>
                     </dl>
                 </div>
             </div>
         </div>
 
-	<div frame id="frame_citation" title="{{'volume.citation.title' | message}}" fold>
+	    <div frame id="frame_citation" title="{{'volume.citation.title' | message}}" fold>
             <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
                 <p ng-bind-html="volume | cite"></p>
             </div>
         </div>
 
         <div class="temporary">
-	    <a class="button mini" ng-if="volume.permission >= constant.find('permission', 'CONTRIBUTE').id" ng-href="{{router.volumeEdit(volume)}}" target="_self">edit</a>
-	    <a class="button mini" ng-if="volume.permission >= constant.find('permission', 'ADMIN').id" ng-href="{{router.volumeAccess(volume)}}" target="_self">access</a>
+            <a class="button mini" ng-if="volume.permission >= constant.find('permission', 'CONTRIBUTE').id" ng-href="{{router.volumeEdit(volume)}}" target="_self">edit</a>
+            <a class="button mini" ng-if="volume.permission >= constant.find('permission', 'ADMIN').id" ng-href="{{router.volumeAccess(volume)}}" target="_self">access</a>
         </div>
     </panel-mode>
-    <!--
-    <panel-mode name="edit">
-        <hgroup>
-            <h1 class="panel_context">Edit Volume</h1>
-            <h2 class="panel_title with_context" ng-bind-html="volume.name | format:true"></h2>
-        </hgroup>
-
-        <form name="overviewVolumeForm" class="row">
-            <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell">
-                <div class="field">
-                    <label for="overviewVolumeForm_name">Title</label>
-                    <input type="text" id="overviewVolumeForm_name" ng-model="volumeForm.name">
-                </div>
-
-                <div class="field">
-                    <label for="overviewVolumeForm_name">Description</label>
-                    <textarea id="overviewVolumeForm_body" ng-model="volumeForm.body"></textarea>
-                </div>
-
-
-                <button type="submit" class="button second" ng-click="formSave()">Save</button>
-                <button type="submit" class="button first" ng-click="formReset()">Reset</button>
-            </div>
-        </form>
-    </panel-mode>
-    -->
 </panel>

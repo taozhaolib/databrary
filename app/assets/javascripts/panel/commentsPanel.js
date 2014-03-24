@@ -91,14 +91,17 @@ define(['config/module'], function (module) {
 
 			meta += ' <span class="sep">|</span>';
 
+			var volumeID = $route.current.controller == 'PartyView' ? (comment.volume ? comment.volume.id : 0) : ($scope.volume ? $scope.volume.id : 0);
+
 			if ($route.current.controller == 'PartyView')
-				meta += ' <a href="' + $scope.router.volume({id: comment.volume.id}) + '">' + $filter('truncate')(comment.volume.name, 20) + '</a>';
+				meta += ' <a href="' + $scope.router.volume({id: volumeID}) + '">' + $filter('truncate')(comment.volume.name, 20) + '</a>';
 
 			if ($route.current.controller == 'PartyView' && !comment.container.top)
 				meta += ' <span class="sep">/</span>';
 
 			if (!comment.container.top)
-				meta += ' <img class="line" src="'+$scope.router.slotThumb(comment.container)+'"> <a href="' + $scope.router.slot(comment.container) + '">' + comment.container.name + '</a>';
+				// TODO: specify slot someday
+				meta += ' <a href="' + $scope.router.volume({id: volumeID}) + '"><img class="line" src="'+$scope.router.slotThumb(comment.container)+'"> ' + comment.container.name + '</a>';
 
 			return meta;
 		};

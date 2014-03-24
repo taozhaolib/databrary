@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('browserList', ['BrowserService', '$filter', 'ConstantService', 'RouterService', 'TypeService', function (browserService, $filter, constantService, routerService, typeService) {
+	module.directive('browserList', ['BrowserService', '$filter', 'ConstantService', 'RouterService', 'TypeService', 'AuthService', function (browserService, $filter, constantService, routerService, typeService, auth) {
 		var link = function ($scope) {
 			if (!$scope.browser)
 				$scope.browser = browserService;
@@ -58,7 +58,7 @@ define(['config/module'], function (module) {
 			$scope.getName = function (data) {
 				switch ($scope.type.getType(data.object)) {
 					case 'volume':
-						return data.object.name;
+						return (auth.hasAccess('CONTRIBUTE', data) && data.object.alias) ? data.object.alias : data.object.name;
 
 					case 'record':
 						var category = $scope.constant.data.category[data.object.category].name;

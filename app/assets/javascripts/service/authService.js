@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('AuthService', ['$rootScope', '$location', '$http', '$route', '$cacheFactory', 'TypeService', '$window', '$q', function ($rootScope, $location, $http, $route, $cacheFactory, typeService, $window, $q) {
+	module.factory('AuthService', ['$rootScope', '$location', '$http', '$route', '$cacheFactory', 'TypeService', '$window', '$q', '$sessionStorage', function ($rootScope, $location, $http, $route, $cacheFactory, typeService, $window, $q, $sessionStorage) {
 		var authService = {};
 
 		//
@@ -20,14 +20,16 @@ define(['config/module'], function (module) {
 				else
 					user.superuser = false;
 
-				if(!user || user != authService.user)
+				if (!user || user != authService.user)
 
-				if(authService.user && user && authService.user.id == user.id &&
-					!!authService.user.superuser == !!user.superuser)
-					reload = false;
+					if (authService.user && user && authService.user.id == user.id &&
+						!!authService.user.superuser == !!user.superuser)
+						reload = false;
 			}
 
 			authService.user = user || undefined;
+
+			authService.storeUser();
 
 			if (reload) {
 				$cacheFactory.get('$http').removeAll();
@@ -39,13 +41,15 @@ define(['config/module'], function (module) {
 		authService.$promise = deferred.promise;
 
 		authService.updateUser = function (user) {
-			if(user)
-				return updateUser(user);
+			if (user) {
+				updateUser(user);
+				return deferred.resolve();
+			}
 
 			$http
 				.get('/api/user')
 				.success(function (data) {
-					if(data.id == -1)
+					if (data.id == -1)
 						updateUser(undefined);
 					else
 						updateUser(data);
@@ -59,7 +63,18 @@ define(['config/module'], function (module) {
 				});
 		};
 
-		authService.updateUser();
+		authService.restoreUser = function () {
+			authService.updateUser($sessionStorage['user']);
+		};
+
+		authService.storeUser = function () {
+			$sessionStorage['user'] = authService.user;
+		};
+
+		if ($sessionStorage['user'])
+			authService.restoreUser();
+		else
+			authService.updateUser();
 
 		//
 
@@ -86,7 +101,7 @@ define(['config/module'], function (module) {
 			if (angular.isDate(authService.user.superuser) && authService.user.superuser > new Date())
 				return parseAuthLevel('SUPER');
 
-			if(angular.isObject(object) && object.permission)
+			if (angular.isObject(object) && object.permission)
 				return object.permission;
 
 			return authService.user.access;
@@ -177,7 +192,7 @@ define(['config/module'], function (module) {
 		};
 
 		authService.getToken = function () {
-			if(!authService.hasToken())
+			if (!authService.hasToken())
 				return;
 
 			return $window.$play.object;

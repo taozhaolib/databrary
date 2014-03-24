@@ -118,7 +118,7 @@ define(['config/module'], function (module) {
 	}]);
 
 	module.run(['$rootScope', 'RouterService', 'ConstantService', 'AuthService', '$location', function ($rootScope, router, constants, auth, $location) {
-		$rootScope.$on('$routeChangeStart', function (event, next, current) { console.log(next);
+		$rootScope.$on('$routeChangeStart', function (event, next, current) {
 			if(auth.isUnauthorized() && next.$$route.controller != 'RegisterView') {
 				$location.url(router.register());
 			} else if(!auth.isLoggedIn()) {
