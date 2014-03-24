@@ -1,9 +1,13 @@
-<panel ng-controller="MaterialsPanel" id="panel_materials" title="{{'materials.title' | message}}" fold>
+<panel ng-controller="MaterialsPanel" id="panel_materials" title="{{'materials.title' | message}}" fold bindonce>
     <panel-mode name="view" active>
         <div class="panel_materials_list col-full">
             <ul class="flat panel_materials_items">
                 <li ng-repeat="slotAsset in volume.assets" class="panel_materials_item" ng-click="selectAsset(slotAsset)" ng-class="getAssetClasses(slotAsset)">
                     <span class="filetype"><img ng-src="/public/images/filetypes/16px/{{slotAsset.format.extension || slotAsset.asset.format.extension}}.png"></span>
+
+                    <a class="browser_tool edit"
+                       bo-href="router.assetEdit(slotAsset)" target="_self"
+                       ng-if="auth.hasAccess('CONTRIBUTE', slotAsset)"></a>
 
                     <span class="filename">{{slotAsset.asset.name}}.{{slotAsset.asset.format.extension}}</span>
 
