@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('AuthService', ['$rootScope', '$location', '$http', '$route', '$cacheFactory', 'TypeService', '$window', function ($rootScope, $location, $http, $route, $cacheFactory, typeService, $window) {
+	module.factory('AuthService', ['$rootScope', '$location', '$http', '$route', '$cacheFactory', 'TypeService', '$window', '$q', function ($rootScope, $location, $http, $route, $cacheFactory, typeService, $window, $q) {
 		var authService = {};
 
 		//
@@ -35,9 +35,12 @@ define(['config/module'], function (module) {
 			}
 		};
 
+		var deferred = $q.defer();
+		authService.$promise = deferred.promise;
+
 		authService.updateUser = function (user) {
 			if(user)
-				updateUser(user);
+				return updateUser(user);
 
 			$http
 				.get('/api/user')
@@ -46,9 +49,13 @@ define(['config/module'], function (module) {
 						updateUser(undefined);
 					else
 						updateUser(data);
+
+					deferred.resolve();
 				})
 				.error(function () {
 					updateUser(undefined);
+
+					deferred.resolve();
 				});
 		};
 
