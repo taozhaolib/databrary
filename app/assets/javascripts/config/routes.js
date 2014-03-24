@@ -6,27 +6,31 @@ define(['config/module'], function (module) {
 
 		//
 
-		var loginView = {
+		$routeProvider.when('/', {
+			controller: 'WelcomeView',
+			templateUrl: 'welcomeView.html',
+			reloadOnSearch: false
+		});
+
+		//
+
+		$routeProvider.when('/login', {
 			controller: 'LoginView',
 			templateUrl: 'loginView.html',
 			reloadOnSearch: false
-		};
-
-		$routeProvider.when('/login', loginView);
+		});
 
 		//
 
-		var registerView = {
+		$routeProvider.when('/register', {
 			controller: 'RegisterView',
 			templateUrl: 'registerView.html',
 			reloadOnSearch: false
-		};
-
-		$routeProvider.when('/register', registerView);
+		});
 
 		//
 
-		var searchView = {
+		$routeProvider.when('/search', {
 			controller: 'SearchView',
 			templateUrl: 'searchView.html',
 			resolve: {
@@ -43,13 +47,11 @@ define(['config/module'], function (module) {
 				}]
 			},
 			reloadOnSearch: false
-		};
-
-		$routeProvider.when('/search', searchView);
+		});
 
 		//
 
-		var partyView = {
+		$routeProvider.when('/party/:id', {
 			controller: 'PartyView',
 			templateUrl: 'partyView.html',
 			resolve: {
@@ -73,13 +75,11 @@ define(['config/module'], function (module) {
 				}]
 			},
 			reloadOnSearch: false
-		};
-
-		$routeProvider.when('/party/:id', partyView);
+		});
 
 		//
 
-		var volumeView = {
+		$routeProvider.when('/volume/:id', {
 			controller: 'VolumeView',
 			templateUrl: 'volumeView.html',
 			resolve: {
@@ -108,9 +108,7 @@ define(['config/module'], function (module) {
 				}]
 			},
 			reloadOnSearch: false
-		};
-
-		$routeProvider.when('/volume/:id', volumeView);
+		});
 
 		//
 
@@ -119,9 +117,21 @@ define(['config/module'], function (module) {
 		});
 	}]);
 
-	module.run(['$rootScope', 'RouterService', 'ConstantService', 'AuthService', 'TypeService', function ($rootScope, router, constants, auth, type) {
+	module.run(['$rootScope', 'RouterService', 'ConstantService', 'AuthService', '$location', function ($rootScope, router, constants, auth, $location) {
 		$rootScope.$on('$routeChangeStart', function (event, next, current) {
-			if(angular.isUndefined(current)) {
+			if(auth.isUnauthorized() && next.$$route.controller != 'RegisterView') {
+					$location.url(router.register());
+			} else if(!auth.isLoggedIn()) {
+				if(auth.isPasswordPending() && next.$$route.controller != 'RegisterView') {
+					$location.url(router.register());
+				} else if (['WelcomeView', 'LoginView', 'RegisterView'].indexOf(next.$$route.controller) == -1) {
+					$location.url(router.index());
+				}
+			} else if (next.$$route.controller == 'WelcomeView') {
+				$location.url(router.search());
+			}
+
+			if(angular.isUndefined(current) || $location.url() != next.$$route) {
 				if(!next.resolve)
 					next.resolve = {};
 

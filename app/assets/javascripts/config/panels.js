@@ -9,6 +9,7 @@ define([
 	'panel/registerPanel',
 	'panel/tagsPanel',
 	'panel/commentsPanel',
+	'panel/welcomePanel',
 	'panel/playerPanel',
 	'panel/searchPanel',
 	'panel/loginPanel'

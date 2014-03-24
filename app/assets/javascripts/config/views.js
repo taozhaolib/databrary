@@ -3,5 +3,6 @@ define([
 	'view/volumeView',
 	'view/registerView',
 	'view/searchView',
+	'view/welcomeView',
 	'view/loginView'
 ], function () {});
