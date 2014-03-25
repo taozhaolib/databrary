@@ -56,7 +56,7 @@ login.logout=You have been logged out.
 
 welcome.title=Welcome
 welcome.title.sub=Databrary''s in Beta. :)
-welcome.body=Due to Databrary''s rapid development, we're actively testing the site in private beta. If you've received an invitation, please use the link found in that email to register.\n\nFor more information, please visit <a href="http://databrary.org">databrary.org</a>.
+welcome.body=Due to Databrary''s rapid development, we''re actively testing the site in private beta. If you''ve received an invitation, please use the link found in that email to register.\n\nFor more information, please visit <a href="http://databrary.org">databrary.org</a>.
 
 party.overview.title=Overview
 party.contact.title=Contact

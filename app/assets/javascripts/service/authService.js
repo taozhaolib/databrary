@@ -68,7 +68,10 @@ define(['config/module'], function (module) {
 		};
 
 		authService.storeUser = function () {
-			$sessionStorage['user'] = authService.user;
+			if (!authService.user)
+				delete $sessionStorage['user'];
+			else
+				$sessionStorage['user'] = authService.user;
 		};
 
 		if ($sessionStorage['user'])
@@ -151,10 +154,12 @@ define(['config/module'], function (module) {
 				.success(function (data) {
 					updateUser(data);
 
-					if (authService.next)
+					if (authService.next) {
 						$location.path(authService.next);
-					else
+						authService.next = undefined;
+					} else {
 						$location.path('/');
+					}
 				})
 				.error(function () {
 					updateUser(undefined);
@@ -209,7 +214,11 @@ define(['config/module'], function (module) {
 		};
 
 		authService.isUnauthorized = function () {
-			return authService.isAuth('NONE');
+			return authService.isLoggedIn() && authService.isAuth('NONE');
+		};
+
+		authService.isAuthorized = function () {
+			return authService.isLoggedIn() && authService.hasAuth('VIEW');
 		};
 
 		//

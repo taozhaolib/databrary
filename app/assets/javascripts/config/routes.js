@@ -119,26 +119,32 @@ define(['config/module'], function (module) {
 
 	module.run(['$rootScope', 'RouterService', 'ConstantService', 'AuthService', '$location', function ($rootScope, router, constants, auth, $location) {
 		$rootScope.$on('$routeChangeStart', function (event, next, current) {
-			if(auth.isUnauthorized() && next.$$route.controller != 'RegisterView') {
-				$location.url(router.register());
-			} else if(!auth.isLoggedIn()) {
-				if(auth.isPasswordPending() && next.$$route.controller != 'RegisterView') {
+			if (auth.isLoggedIn()) {
+				if (auth.isUnauthorized() && next.$$route.controller != 'RegisterView') {
+					$location.url(router.register());
+				} else if (next.$$route.controller == 'WelcomeView') {
+					$location.url(router.search());
+				}
+			} else {
+				if (auth.isPasswordPending() && next.$$route.controller != 'RegisterView') {
 					$location.url(router.register());
 				} else if (['WelcomeView', 'LoginView', 'RegisterView'].indexOf(next.$$route.controller) == -1) {
 					auth.next = $location.url();
 					auth.$promise.then(function () {
-						$location.url(auth.next);
-						auth.next = undefined;
+						if (auth.isAuthorized()) {
+							$location.url(auth.next);
+							auth.next = undefined;
+						} else {
+							$location.url(router.index());
+						}
 					});
 
 					$location.url(router.index());
 				}
-			} else if (next.$$route.controller == 'WelcomeView') {
-				$location.url(router.search());
 			}
 
-			if(angular.isUndefined(current) || $location.url() != next.$$route) {
-				if(!next.resolve)
+			if (angular.isUndefined(current) || $location.url() != next.$$route) {
+				if (!next.resolve)
 					next.resolve = {};
 
 				next.resolve['promiseConstants'] = function () {
