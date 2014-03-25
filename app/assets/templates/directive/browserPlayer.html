@@ -3,7 +3,7 @@
 
     <div ng-if="browser.player.played">
         <h2>
-            <a class="link" ng-href="{{router.assetLink(browser.player.played.object, false)}}">{{browser.player.played.object.asset.name || browser.player.played.object.format.name || browser.player.played.object.asset.format.name}}.{{browser.player.played.object.asset.format.extension}}</a>
+            <a class="link" target="_self" ng-href="{{router.assetLink(browser.player.played.object, false)}}">{{browser.player.played.object.asset.name || browser.player.played.object.format.name || browser.player.played.object.asset.format.name}}.{{browser.player.played.object.asset.format.extension}}</a>
         </h2>
 
         <div ng-switch="getMimeGroup(browser.player.played.object)">
