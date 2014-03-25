@@ -336,7 +336,7 @@ object Adolph extends Ingest {
 	case "STATE" => location(measureParser(Metric.State, trimmed))
 	case "CONDITION" => record(RecordCategory.Condition, trimmed)
 	case "GROUP" => record(RecordCategory.Group, trimmed)
-	case "STUDY LANGUAGE" => location(measureParser(Metric.Language, trimmed), "English")
+	case "STUDY LANGUAGE" => location(measureParser(Metric.Language, trimmed))
 	case "PHOTO MEDIA RELEASE" => Parser(_ => identity _)
 	case _ => fail("unknown session header: " + name)
       }
