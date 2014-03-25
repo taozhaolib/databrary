@@ -29,5 +29,8 @@
 		@widget.formErrors(form)
 		<button type='submit' class="button">@form.actionName</button>
             }
+	    @party.map { party =>
+		<a href="@party.pageURL">@Messages("cancel")</a>
+	    }
 }
 }
