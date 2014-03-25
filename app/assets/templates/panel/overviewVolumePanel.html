@@ -9,10 +9,15 @@
             <h2 ng-if="auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-html="volume.alias"></h2>
         </hgroup>
 
-
 	    <div frame id="frame_people" title="{{'volume.admins.title' | message}}" fold>
             <div ng-repeat="volumeAccess in volume.access | filter:{access: 4}" class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-3 col-cell" ng-init="party = volumeAccess.party">
                 <portrait class="portrait_vertical portrait_small"></portrait>
+            </div>
+        </div>
+
+        <div frame id="frame_access" title="{{'volume.access.title' | message}}" fold>
+            <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell">
+                <p>Access information goes here.</p>
             </div>
         </div>
 
