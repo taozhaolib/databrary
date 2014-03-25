@@ -22,9 +22,7 @@ define(['config/module'], function (module) {
 
 		return {
 			restrict: 'E',
-			scope: {
-				'data': '='
-			},
+			scope: false,
 			templateUrl: 'browserIcon.html',
 			replace: true,
 			priority: 100,

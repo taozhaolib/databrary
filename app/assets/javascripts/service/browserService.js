@@ -258,7 +258,7 @@ define(['config/module'], function (module) {
 					break;
 			}
 
-			browserService.data = data;
+			angular.extend(browserService.data, data);
 
 			return data;
 		};

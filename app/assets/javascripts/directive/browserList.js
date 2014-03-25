@@ -2,7 +2,7 @@ define(['config/module'], function (module) {
 	'use strict';
 
 	module.directive('browserList', ['BrowserService', '$filter', 'ConstantService', 'RouterService', 'TypeService', 'AuthService', function (browserService, $filter, constantService, routerService, typeService, auth) {
-		var link = function ($scope) {
+		var link = function ($scope, $el, $attrs) {
 			if (!$scope.browser)
 				$scope.browser = browserService;
 
@@ -14,6 +14,8 @@ define(['config/module'], function (module) {
 
 			if (!$scope.type)
 				$scope.type = typeService;
+
+			$scope.data = $scope.data || browserService.data;
 
 			$scope.getInclude = function () {
 				if (!$scope.data.items[0])
@@ -229,9 +231,7 @@ define(['config/module'], function (module) {
 
 		return {
 			restrict: 'E',
-			scope: {
-				'data': '='
-			},
+			scope: false,
 			templateUrl: 'browserList.html',
 			replace: true,
 			priority: 100,

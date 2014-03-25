@@ -61,9 +61,7 @@ define(['config/module'], function (module) {
 		return {
 			restrict: 'E',
 			templateUrl: 'sessionMark.html',
-			scope: {
-				'data': '='
-			},
+			scope: false,
 			replace: true,
 			link: link
 		};
