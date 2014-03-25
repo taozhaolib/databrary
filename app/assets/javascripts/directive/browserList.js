@@ -52,7 +52,8 @@ define(['config/module'], function (module) {
 			//
 
 			$scope.setItemPlayer = function (data) {
-				$scope.browser.setItemPlayer(data);
+				if (auth.hasAccess('DOWNLOAD', data))
+					$scope.browser.setItemPlayer(data);
 			};
 
 			//
