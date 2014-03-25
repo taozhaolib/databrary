@@ -140,7 +140,8 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
   def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) = {
     val action : SiteRequest.Base[A] => Future[SimpleResult] =
       if (Site.locked) { request =>
-	if (request.access.group == Permission.NONE) NotFoundException.result(request)
+	if (request.access.group == Permission.NONE)
+	  macros.Async(Results.TemporaryRedirect(routes.Site.start.url))
 	else block(request)
       } else block
     Unlocked.invokeBlock(request, action)
