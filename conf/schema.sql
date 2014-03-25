@@ -718,7 +718,7 @@ COMMENT ON TABLE "token" IS 'Generic tokens issued to automatically perform acti
 CREATE TABLE "account_token" (
 	"token" char(64) Primary Key,
 	"expires" timestamp NOT NULL,
-	"account" integer NOT NULL References "account",
+	"account" integer NOT NULL References "account" ON DELETE CASCADE,
 	Check (false) NO INHERIT
 ) INHERITS ("token");
 COMMENT ON TABLE "account_token" IS 'Generic tokens associated with particular accounts.';
@@ -726,7 +726,7 @@ COMMENT ON TABLE "account_token" IS 'Generic tokens associated with particular a
 CREATE TABLE "login_token" (
 	"token" char(64) Primary Key,
 	"expires" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '1 week',
-	"account" integer NOT NULL References "account",
+	"account" integer NOT NULL References "account" ON DELETE CASCADE,
 	"password" boolean NOT NULL DEFAULT false
 ) INHERITS ("account_token");
 CREATE UNIQUE INDEX "login_token_account_idx" ON "login_token" ("account") WHERE "password";
@@ -735,14 +735,14 @@ COMMENT ON TABLE "login_token" IS 'Tokens issued to automatically login/register
 CREATE TABLE "session" (
 	"token" char(64) Primary Key,
 	"expires" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '4 weeks',
-	"account" integer NOT NULL References "account"
+	"account" integer NOT NULL References "account" ON DELETE CASCADE
 ) INHERITS ("account_token");
 COMMENT ON TABLE "session" IS 'Tokens associated with currently logged-in sessions.';
 
 ----------------------------------------------------------- avatars
 
 CREATE TABLE "avatar" (
-	"party" integer NOT NULL Primary Key References "party",
+	"party" integer NOT NULL Primary Key References "party" ON DELETE CASCADE,
 	"asset" integer NOT NULL References "asset"
 );
 COMMENT ON TABLE "avatar" IS 'Image assets used to represent parties on the site.  These assets are expected to be in the CORE volume.';

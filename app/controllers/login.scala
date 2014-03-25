@@ -84,7 +84,7 @@ private[controllers] sealed class LoginController extends SiteController {
   }
 
   def register =
-    SiteAction.async { implicit request =>
+    SiteAction.Unlocked.async { implicit request =>
       val form = new LoginController.RegistrationForm()._bind
       for {
 	e <- Account.getEmail(form.email.get)
@@ -163,7 +163,7 @@ object LoginHtml extends LoginController with HtmlController {
     request.user.fold(Ok(viewLogin()))(u => Redirect(routes.PartyHtml.profile))
   }
 
-  def openID(email : String) = SiteAction.async { implicit request =>
+  def openID(email : String) = SiteAction.Unlocked.async { implicit request =>
     val em = Maybe(email).opt
     (for {
       info <- OpenID.verifiedId
@@ -176,7 +176,7 @@ object LoginHtml extends LoginController with HtmlController {
   }
 
   def registration =
-    SiteAction.async { implicit request =>
+    SiteAction.Unlocked.async { implicit request =>
       if (request.isInstanceOf[AuthSite])
 	ARedirect(
 	  if (request.access.group == Permission.NONE)

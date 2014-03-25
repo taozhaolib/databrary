@@ -10,7 +10,7 @@ import site._
 import models._
 
 private[controllers] sealed class TokenController extends SiteController {
-  def password(a : models.Account.Id) = SiteAction.async { implicit request =>
+  def password(a : models.Account.Id) = SiteAction.Unlocked.async { implicit request =>
     val form = new TokenController.PasswordForm(a)._bind
     models.LoginToken.get(form.token.get).flatMap(_
       .filter(t => t.valid && form.auth.get.equals(t.auth) && t.password && t.accountId === a)
@@ -56,7 +56,7 @@ object TokenController extends TokenController {
 }
 
 object TokenHtml extends TokenController with HtmlController {
-  def token(token : String, auth : String) = SiteAction.async { implicit request =>
+  def token(token : String, auth : String) = SiteAction.Unlocked.async { implicit request =>
     models.LoginToken.get(token).flatMap(_.fold(
       ANotFound
     ) { token =>
@@ -81,12 +81,12 @@ object TokenHtml extends TokenController with HtmlController {
     val email = Field(Forms.email)
   }
 
-  def getPassword = SiteAction.async { implicit request =>
+  def getPassword = SiteAction.Unlocked.async { implicit request =>
     Mail.check
     new IssuePasswordForm().Ok
   }
 
-  def issuePassword = SiteAction.async { implicit request =>
+  def issuePassword = SiteAction.Unlocked.async { implicit request =>
     val form = new IssuePasswordForm()._bind
     for {
       acct <- Account.getEmail(form.email.get)
