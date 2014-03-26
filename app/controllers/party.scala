@@ -47,7 +47,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     )
 
   protected def AdminAction(i : models.Party.Id, delegate : Boolean = true) =
-    Action(Some(i), if (delegate) Some(Permission.ADMIN) else None)
+    SiteAction.Unlocked ~> action(Some(i), if (delegate) Some(Permission.ADMIN) else None)
 
   protected def adminAccount(implicit request : Request[_]) : Option[Account] =
     request.obj.party.account.filter(_ === request.identity || request.superuser)
