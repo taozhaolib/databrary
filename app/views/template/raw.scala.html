@@ -75,7 +75,9 @@
 
                         <span class="sep">|</span>
 
-                        <a href="@routes.LoginHtml.logout">logout</a>
+			@widget.tag.form(LoginController.LogoutForm) {
+			    <button type="submit" class="link">logout</button>
+			}
                     }
 
                     case _ => {

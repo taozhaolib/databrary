@@ -122,6 +122,8 @@ object LoginController extends LoginController {
     }
   }
 
+  object LogoutForm extends StructForm(routes.LoginHtml.logout)
+
   final class RegistrationForm(implicit request : SiteRequest[_])
     extends HtmlForm[RegistrationForm](
       routes.LoginHtml.register,

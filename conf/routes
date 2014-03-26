@@ -11,10 +11,9 @@ GET     /login                                                                  
 POST    /login                                                                                    controllers.LoginHtml.post
 GET     /OpenID                                                                                   controllers.LoginHtml.openID(email = "")
 GET     /OpenID/$email<.+\@.+\..+>                                                                controllers.LoginHtml.openID(email : String)
-# TODO: should be POST:
-GET     /logout                                                                                   controllers.LoginHtml.logout
-GET     /superuser/on                                                                             controllers.LoginHtml.superuserOn
-GET     /superuser/off                                                                            controllers.LoginHtml.superuserOff
+POST    /logout                                                                                   controllers.LoginHtml.logout
+POST    /superuser/on                                                                             controllers.LoginHtml.superuserOn
+POST    /superuser/off                                                                            controllers.LoginHtml.superuserOff
 GET     /register                                                                                 controllers.LoginHtml.registration
 POST    /register                                                                                 controllers.LoginHtml.register
 GET     /password                                                                                 controllers.TokenHtml.getPassword
