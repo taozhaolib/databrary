@@ -54,22 +54,22 @@ for file in "$@" ; do
 	fi
 	base=`basename "$file"`
 	base=${base%.*}
-	out=$tdir/$base-01.mp4
+	out="$tdir/$base-01.mp4"
 	if [[ -s $out && $force -lt 1 ]] ; then
 		echo "$file: Transcoding already done. Skipping. Use -f to force."
 		continue
 	fi
-	lock=$tdir/.$base.lock
+	lock="$tdir/.$base.lock"
 	if [[ -e $lock && $force -lt 2 ]] ; then
 		echo "$file: Transcoding already in progress. Skipping. Use -ff to force."
 		continue
 	fi
-	mkdir -p $tdir
+	mkdir -p "$tdir"
 	if [[ ! $optn ]] ; then
 		touch $lock
 	fi
 	name=`echo $base | tr -cd '[:alnum:]' | cut -c-15`
-	sec=$[60+`stat -c %s $file`/$rate]
+	sec=$[60+`stat -c %s "$file"`/$rate]
 	echo -n "$file: "
 	$cmd -d $PWD -q ser2 -N $name -v "IN=$file,OUT=$out,LOCK=$lock", -l walltime=$sec $pbs
 done
