@@ -55,7 +55,7 @@ login.expired=Your session has expired. Please login again.
 login.logout=You have been logged out.
 
 welcome.title=Welcome
-welcome.title.sub=Databrary''s in Beta. :)
+welcome.title.sub=Databrary''s in Beta. 
 welcome.body=Due to Databrary''s rapid development, we''re actively testing the site in private beta. If you''ve received an invitation, please use the link found in that email to register.\n\nFor more information, please visit <a href="http://databrary.org">databrary.org</a>.
 
 party.overview.title=Overview
@@ -76,7 +76,7 @@ auth.update=Update
 auth.deny=Deny
 auth.revoke=Revoke
 auth.notfound=None of these
-auth.info.prompt=Contact info for your institution's authorizing official (OSP)
+auth.info.prompt=Contact info for your institution''s authorizing official (OSP)
 
 # Authorization levels
 auth.inherit.NONE=No access.
@@ -155,7 +155,7 @@ wizard.register_create.instructions=Creating an account on Databrary is easy and
 
 wizard.register_agreement.name=Sign Agreement
 wizard.register_agreement.description=Learn about the responsibilities of all Databrary members.
-wizard.register_agreement.instructions=Read each section of the agreement. You must scroll to the bottom of each page to click 'Agree'.
+wizard.register_agreement.instructions=Read each section of the agreement. You must scroll to the bottom of each page to click ''Agree''.
 
 wizard.register_email.name=Confirm Email
 wizard.register_email.description=Confirm your email address to continue.
