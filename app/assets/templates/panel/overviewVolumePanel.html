@@ -1,8 +1,12 @@
 <panel ng-controller="OverviewVolumePanel" top id="panel_overview" title="{{'volume.overview.title' | message}}" ng-mouseover="hoverPanel()" bindonce>
     <panel-mode name="view" active>
-        <figure class="panel_overview_thumbnail" baseline="square" absolute watch="{{volume.id}}">
-            <figmedia><img ng-src="/volume/{{volume.id}}/thumb"></figmedia>
-        </figure>
+        <div class="row row_relative">
+            <div class="col-full">
+                <figure class="panel_overview_thumbnail" baseline="square" absolute watch="{{volume.id}}">
+                    <figmedia><img ng-src="/volume/{{volume.id}}/thumb"></figmedia>
+                </figure>
+            </div>
+        </div>
 
         <hgroup>
             <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
@@ -17,14 +21,13 @@
 
         <div frame id="frame_access" title="{{'volume.access.title' | message}}" fold>
             <div ng-repeat="volumeAccess in volume.access | filter:isShared" class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-3 col-cell" ng-init="party = volumeAccess.party">
-                <aside class="portrait portrait_vertical portrait_small ng-cloak" ng-class="{portrait_more: volumeAccess.access == 1}">
+                <aside class="portrait portrait_vertical portrait_small ng-cloak" tooltip-message="'' | messageVolumeAccess(party.name)">
                     <figure baseline="square" class="figure_avatar" ng-href="{{router.party(party)}}">
                         <figmedia><img ng-src="{{router.partyAvatar(party, 216)}}"></figmedia>
                     </figure>
 
                     <div class="portrait_info">
-                        <a class="portrait_name" ng-href="{{router.party(party)}}">{{party.name}}</a>
-                        <div ng-if="volumeAccess.access == 1" class="portrait_extra">LIMITED!</div>
+                        <a class="portrait_name" ng-href="{{router.party(party)}}">{{party.name}}<span ng-if="volumeAccess.access == 1" class="SOME">!!!</span></a>
                     </div>
                 </aside>
             </div>

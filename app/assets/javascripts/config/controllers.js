@@ -1,3 +1,4 @@
 define([
-	'controller/messageCtrl'
+	'controller/messageCtrl',
+	'controller/tooltipCtrl'
 ], function () {});

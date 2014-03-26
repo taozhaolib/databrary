@@ -14,6 +14,7 @@ define([
 	'directive/panel',
 	'directive/sessionMark',
 	'directive/scroll',
+	'directive/tooltip',
 	'directive/clickElsewhere',
 	'directive/panelMode',
 	'directive/carousel',

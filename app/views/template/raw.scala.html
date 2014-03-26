@@ -81,7 +81,7 @@
                     }
 
                     case _ => {
-			<a href="@routes.LoginHtml.view">login</a> 
+			<a href="@routes.LoginHtml.view">login</a>
                         <span class="sep">|</span>
 			<a href="@routes.LoginHtml.register">register</a>
                     }
@@ -157,6 +157,14 @@
             </div>
         </div>
     </footer>
+
+    @if(angular){
+    <div id="tooltips" class="tooltips" ng-controller="TooltipCtrl" ng-class="getControllerClasses()">
+        <div ng-repeat="tooltip in tooltips | filter:{enabled: true}" id="{{tooltip.id}}" ng-class="getTooltipClasses(tooltip)" ng-style="tooltip.style">
+            <div class="tooltip_content" ng-bind-html="tooltip.message"></div>
+        </div>
+    </div>
+    }
 </body>
 </html>
 

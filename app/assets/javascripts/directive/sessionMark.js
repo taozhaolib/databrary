@@ -1,25 +1,24 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('sessionMark', ['MessageService', 'ConstantService', function (messages, constant) {
+	module.directive('sessionMark', ['ConstantService', 'TooltipService', function (constant, tooltips) {
 		var link = function ($scope, $el, $attrs) {
-			var body;
-
 			$scope.mark = $attrs.mark;
+			var message = '';
 
 			switch ($scope.mark) {
 				case 'excluded':
 					if(!$scope.data.object.categories[-700])
 						return $el.remove();
 
-					body = constant.message('notice.help.exclusion', $scope.data.volume.records[$scope.data.object.categories[-700][0].id].measures.reason);
+					message = constant.message('notice.help.exclusion', $scope.data.volume.records[$scope.data.object.categories[-700][0].id].measures.reason);
 					break;
 
 				case 'pilot':
 					if(!$scope.data.object.categories[-800])
 						return $el.remove();
 
-					body = constant.message('notice.help.pilot');
+					message = constant.message('notice.help.pilot');
 					break;
 
 				default:
@@ -27,24 +26,16 @@ define(['config/module'], function (module) {
 					break;
 			}
 
-			var message = messages.add({
+			var tooltip = tooltips.add({
+				message: message,
 				type: 'trace',
-				enabled: false,
-				body: body
+				$target: $el
 			});
 
 			//
 
-			$scope.markEnter = function () {
-				messages.enable(message);
-			};
-
-			$scope.markLeave = function () {
-				messages.disable(message);
-			};
-
 			$scope.$on('$destroy', function () {
-				messages.remove(message);
+				tooltips.remove(tooltip);
 			});
 
 			//

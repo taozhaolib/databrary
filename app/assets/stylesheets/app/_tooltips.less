@@ -1,0 +1,85 @@
+// VARS
+
+@round: 15px;
+@point: 0;
+
+// STYLES
+
+.tooltips {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 0;
+	overflow: visible;
+	z-index: 2000;
+	pointer-events: none;
+}
+
+//
+
+.tooltip {
+	.font(.75, .75);
+	background-color: mix(@g4, @g5, 90%);
+	border: 1px solid @g4;
+	.border-radius(15px);
+	.grid-width(max, 3);
+	float: left;
+	position: absolute;
+	opacity: 0;
+	.transition(opacity .15s linear);
+	pointer-events: none;
+	.padding(@f4, @f3);
+
+	&.tooltip_visible {
+		opacity: .9;
+	}
+}
+
+//
+
+.tooltip_alert {
+	background-color: @c4g5m1;
+	color: @c4g2m1;
+	border-color: @c4;
+}
+
+.tooltip_info {
+	background-color: @c0g5m1;
+	color: @c0g2m1;
+	border-color: @c0;
+}
+
+.tooltip_error {
+	background-color: @c8g5m1;
+	color: @c8g2m1;
+	border-color: @c8;
+}
+
+.tooltip_trace {
+	background-color: @c10g5m1;
+	color: @c10g2m1;
+	border-color: @c10;
+}
+
+//
+
+.tooltip_left {
+	&.tooltip_top {
+		.border-radius(@round @round @point @round);
+	}
+
+	&.tooltip_bottom {
+		.border-radius(@round @point @round @round);
+	}
+}
+
+.tooltip_right {
+	&.tooltip_top {
+		.border-radius(@round @round @round @point);
+	}
+
+	&.tooltip_bottom {
+		.border-radius(@point @round @round @round);
+	}
+}

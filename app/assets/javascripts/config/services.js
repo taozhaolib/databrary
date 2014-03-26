@@ -7,6 +7,7 @@ define([
 	'service/playService',
 	'service/authPresetService',
 	'service/typeService',
+	'service/tooltipService',
 	'service/constantService',
 	'service/routerService'
 ], function () {});
