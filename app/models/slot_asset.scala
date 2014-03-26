@@ -32,9 +32,9 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
     * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
   final override val permission : Permission.Value =
-    Permission.data(asset.permission, consent, classification).permission
+    Permission.data(asset.permission, consent, classification, top = container.top).permission
 
-  final def in(s : Slot) =
+  final private def in(s : Slot) =
     if (slot === s)
       this
     else
@@ -47,13 +47,14 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
     if (c.permission < permission)
       this
     else {
-      val a = c.in(slot.container)
+      val a = c.in(container)
       if (a.permission < c.permission)
         c
       else
         a
     }
   }
+  final def inContainer : SlotAsset = in(container)
 
   final def auditDownload(implicit site : Site) : Future[Boolean] =
     Audit.action(Audit.Action.open, "slot_asset", SQLTerms('container -> containerId, 'segment -> segment, 'asset -> assetId)).execute
@@ -65,6 +66,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
   override lazy val json : JsonObject = JsonObject.flatten(
     Some('permission -> permission),
     if (format === asset.format) None else Some('format -> format.json),
+    if (excerpt) Some('excerpt -> excerpt) else None,
     Some('asset -> (asset.json ++
       JsonObject.flatten(if (asset_segment.isFull) None else Some('segment -> asset_segment))))
   ) ++ slotJson
@@ -115,7 +117,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
       .SELECT("JOIN format ON asset.format = format.id",
 	"WHERE container.volume = ? AND asset.volume = container.volume",
 	  "AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')",
-	  "AND data_permission(?::permission,", table + "_consent.consent, asset.classification, ?::permission,", isExcerpt.toString, ") >= 'DOWNLOAD'",
+	  "AND data_permission(?::permission,", table + "_consent.consent, asset.classification, ?::permission,", isExcerpt.toString, ", container.top) >= 'DOWNLOAD'",
 	"ORDER BY container.top DESC,", table + "_consent.consent DESC NULLS LAST LIMIT 1")
       .apply(volume.id, volume.permission, volume.site.access.group).singleOpt
     final def getThumb(slot : Slot) : Future[Option[SlotAsset]] =

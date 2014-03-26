@@ -80,12 +80,12 @@ object Container extends TableId[Container]("container") {
 
   /** Retrieve all the (non-top) containers in a given volume. */
   private[models] def getVolume(v : Volume) : Future[Seq[Container]] =
-    rowVolume(v).SELECT("WHERE NOT top ORDER BY date NULLS FIRST")
+    rowVolume(v).SELECT("WHERE NOT container.top ORDER BY container.date NULLS FIRST")
     .apply().list
 
   /** Retrieve the top container in a given volume. */
   private[models] def getTop(v : Volume) : Future[Container] =
-    rowVolume(v).SELECT("WHERE top")
+    rowVolume(v).SELECT("WHERE container.top ORDER BY container.id LIMIT 1")
     .apply().single
 
   /** Find the containers in a given volume with the given name. */

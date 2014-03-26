@@ -105,7 +105,7 @@ object AssetHtml extends AssetController with HtmlController {
   def view(o : models.Asset.Id) = Action(o, Permission.VIEW).async { implicit request =>
     request.obj.slot.map(_.fold[SimpleResult](
       NotFound /* TODO */)(
-      sa => Redirect(sa.in(sa.slot.container).pageURL)))
+      sa => Redirect(sa.inContainer.pageURL)))
   }
 
   def edit(o : models.Asset.Id) =

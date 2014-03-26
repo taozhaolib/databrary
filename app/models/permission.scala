@@ -36,13 +36,13 @@ object Permission extends PGEnum("permission") {
 
   /** The effective permission for data objects with the given attributes.
     * Note that this is also implemented (and used) in the SQL function data_permission, which must be kept consistent. */
-  def data(p : Value, consent : Consent.Value, classification : Classification.Value)(implicit site_ : Site) : HasPermission = new HasPermission {
+  def data(p : Value, consent : Consent.Value, classification : Classification.Value, top : Boolean = false)(implicit site_ : Site) : HasPermission = new HasPermission {
     val site = site_
     val permission =
       if (p >= FULL)
         p
       else if (p >= VIEW)
-        if (Classification.download(p, consent).exists(classification >= _))
+        if (Classification.download(p, consent, top).exists(classification >= _))
           DOWNLOAD
         else
           VIEW
@@ -84,25 +84,25 @@ object Classification extends PGEnum("classification") {
 
   /** The most restricted data classification level that the current user may access under the given consent level.
     * Actual access to data will additionally depend on volume permissions not checked here. */
-  def access(consent : Consent.Value, excerpt : Boolean = false)(implicit site : Site) : Value = {
+  def access(consent : Consent.Value, top : Boolean = false)(implicit site : Site) : Value = {
     val c = consent
     val a = site.access.group
     if (c >= Consent.PUBLIC ||
         c >= Consent.SHARED && a >= Permission.DOWNLOAD)
       IDENTIFIED
-    else if (c >= Consent.EXCERPTS)
-      if (excerpt) IDENTIFIED
-      else EXCERPT
+    else if (c == Consent.NONE && top)
+      // "unassigned" excerpts are unrestricted, by assertion of PIs
+      EXCERPT
     else
       DEIDENTIFIED
   }
 
   /** The most restricted data classification level that the current user may access under the given permission and consent level. */
-  def download(p : Permission.Value, consent : Consent.Value, excerpt : Boolean = false)(implicit site : Site) : Option[Value] = {
+  def download(p : Permission.Value, consent : Consent.Value, top : Boolean = false)(implicit site : Site) : Option[Value] = {
     if (p >= Permission.FULL || site.superuser)
       Some(Classification.values.min)
     else if (p >= Permission.DOWNLOAD)
-      Some(Classification.access(consent, excerpt))
+      Some(Classification.access(consent, top))
     else if (p >= Permission.VIEW)
       Some(Classification.UNRESTRICTED)
     else
