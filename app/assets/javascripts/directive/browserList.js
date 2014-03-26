@@ -109,9 +109,14 @@ define(['config/module'], function (module) {
 					}
 			};
 
+			var measures = undefined;
+
 			$scope.getMeasures = function (data) {
+				if(measures)
+					return measures;
+
 				// TODO: something with better performance!
-				var out = {}, skip = ['description', 'pilot', 'exclusion'];
+				var measures = {}, skip = ['description', 'pilot', 'exclusion'];
 
 				switch (data.object.category) {
 					case -700:
@@ -129,22 +134,27 @@ define(['config/module'], function (module) {
 
 				angular.forEach(data.object.measures, function (value, key) {
 					if (skip.indexOf(key) == -1)
-						out[key] = value;
+						measures[key] = value;
 				});
 
-				return out;
+				return measures;
 			};
 
+			var sessionRecords = undefined;
+
 			$scope.getSessionRecords = function (data) {
+				if(sessionRecords)
+					return sessionRecords;
+
 				// TODO: something with better performance!
-				var out = {}, skip = ['-700', '-800'];
+				var sessionRecords = {}, skip = ['-700', '-800'];
 
 				angular.forEach(data.object.categories, function (value, key) {
 					if (skip.indexOf(key) == -1)
-						out[key] = value;
+						sessionRecords[key] = value;
 				});
 
-				return out;
+				return sessionRecords;
 			};
 
 			$scope.nameRecord = function (data) {

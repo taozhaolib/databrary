@@ -18,14 +18,14 @@
             </div>
         </aside>
 
-        <article ng-repeat="comment in comments" class="comment">
+        <article bindonce ng-repeat="comment in comments" class="comment">
             <div class="row">
                 <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
                     <footer class="comment_meta" ng-init="party = commentParty(comment)">
                         <portrait class="portrait_vertical portrait_small portrait_more" extra="{{commentMeta(comment)}}"></portrait>
                     </footer>
 
-                    <div class="comment_body" ng-bind-html="comment.text | format"></div>
+                    <div class="comment_body" bo-html="comment.text | format"></div>
                 </div>
             </div>
         </article>

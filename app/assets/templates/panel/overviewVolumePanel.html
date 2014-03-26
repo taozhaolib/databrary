@@ -21,7 +21,7 @@
 
         <div frame id="frame_access" title="{{'volume.access.title' | message}}" fold>
             <div ng-repeat="volumeAccess in volume.access | filter:isShared" class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-3 col-cell" ng-init="party = volumeAccess.party">
-                <aside class="portrait portrait_vertical portrait_small ng-cloak" tooltip-message="'' | messageVolumeAccess(party.name)">
+                <aside class="portrait portrait_vertical portrait_small ng-cloak" tooltip tooltip-message="'' | message:party.name">
                     <figure baseline="square" class="figure_avatar" ng-href="{{router.party(party)}}">
                         <figmedia><img ng-src="{{router.partyAvatar(party, 216)}}"></figmedia>
                     </figure>
