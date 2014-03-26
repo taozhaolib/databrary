@@ -91,10 +91,7 @@ object SlotHtml extends SlotController with HtmlController {
   }
 
   def view(i : Container.Id, segment : Segment) = Action(i, segment).async { implicit request =>
-    if (request.obj.top)
-      ARedirect(controllers.routes.VolumeHtml.view(request.obj.volumeId))
-    else
-      show().map(Ok(_))
+    show().map(Ok(_))
   }
 
   private[controllers] def viewEdit(form : Option[EditForm] = None, recordForm : Option[RecordHtml.SelectForm] = None)(implicit request : Request[_]) =
