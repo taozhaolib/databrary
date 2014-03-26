@@ -162,7 +162,7 @@ object LoginHtml extends LoginController with HtmlController {
     }
 
   def view = SiteAction.Unlocked { implicit request =>
-    request.user.fold(Ok(viewLogin()))(u => Redirect(routes.PartyHtml.profile))
+    request.user.fold(Ok(viewLogin()))(u => Found(routes.PartyHtml.profile.url))
   }
 
   def openID(email : String) = SiteAction.Unlocked.async { implicit request =>
@@ -180,11 +180,11 @@ object LoginHtml extends LoginController with HtmlController {
   def registration =
     SiteAction.Unlocked.async { implicit request =>
       if (request.isInstanceOf[AuthSite])
-	ARedirect(
+	macros.Async(Found((
 	  if (request.access.group == Permission.NONE)
 	    routes.PartyHtml.view(request.identity.id)
 	  else
-	    routes.Site.start)
+	    routes.Site.start).url))
       else
 	new RegistrationForm().Ok
     }
