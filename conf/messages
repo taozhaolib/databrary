@@ -55,7 +55,7 @@ login.expired=Your session has expired. Please login again.
 login.logout=You have been logged out.
 
 welcome.title=Welcome
-welcome.title.sub=Databrary''s in Beta. 
+welcome.title.sub=Databrary''s in Beta.
 welcome.body=Due to Databrary''s rapid development, we''re actively testing the site in private beta. If you''ve received an invitation, please use the link found in that email to register.\n\nFor more information, please visit <a href="http://databrary.org">databrary.org</a>.
 
 party.overview.title=Overview
@@ -97,7 +97,7 @@ volume.overview.title=Overview
 volume.admins.title=Investigators
 volume.funding.title=Funding
 volume.metadata.title=Description
-volume.creation.title=Created on Databrary
+volume.creation.title=Shared on
 volume.sessions.title=Sessions
 volume.sessions={0} sessions ({1} shared)
 volume.ages.title=Ages
@@ -113,6 +113,8 @@ browser.sort=sort
 browser.sort.by=Group by
 browser.filter.by=Filter by
 session=Session
+
+excerpts.title=Excerpts
 
 materials.title=Materials
 materials.empty=There are no assets here.

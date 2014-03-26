@@ -93,10 +93,8 @@ define(['config/module'], function (module) {
 				var start = function () {
 					$scope.panel = $scope;
 					$scope.id = (angular.isDefined($attrs.id)) ? $attrs.id : '';
-					$scope.title = (angular.isDefined($attrs.title)) ? $attrs.title : '';
+					$scope.title = $attrs.panelTitle || '';
 					$scope.top = (angular.isDefined($attrs.top) && $attrs.top != 'false') ? true : false;
-
-					$element.attr('title', '');
 
 					$scope.container = $scope;
 

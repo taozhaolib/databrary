@@ -1,4 +1,4 @@
-<panel ng-controller="CommentsPanel" id="panel_comments" title="{{'comments.title' | message}}" fold>
+<panel ng-controller="CommentsPanel" id="panel_comments" panel-title="{{'comments.title' | message}}" fold>
     <panel-mode name="view" active>
         <aside ng-if="authService.isLoggedIn() && routeController != 'PartyView'" class="comment">
             <div class="row">

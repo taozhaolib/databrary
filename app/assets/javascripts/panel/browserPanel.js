@@ -14,6 +14,10 @@ define(['config/module'], function (module) {
 
 					$scope.enabled = enabled;
 					break;
+
+				case 'VolumeView':
+					$scope.enabled = $scope.volume.sessions;
+					break;
 			}
 		};
 	}]);

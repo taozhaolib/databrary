@@ -111,6 +111,32 @@ define(['config/module'], function (module) {
 			return routerService.makeUrl('/slot/:id/thumb', data);
 		};
 
+		routerService.assetThumb = function (data) {
+			if (!$rootScope.type.isAsset(data))
+				throw new Error('routerService.assetThumb() requires Asset as first parameter');
+
+			data = {
+				sid: data.container.id,
+				id: data.asset.id,
+				segment: data.segment ? data.segment.join(',') : ','
+			};
+
+			return routerService.makeUrl('/slot/:sid/asset/:id/thumb', data);
+		};
+
+		routerService.assetHead = function (data) {
+			if (!$rootScope.type.isAsset(data))
+				throw new Error('routerService.assetHead() requires Asset as first parameter');
+
+			data = {
+				sid: data.container.id,
+				id: data.asset.id,
+				segment: data.segment ? data.segment.join(',') : ','
+			};
+
+			return routerService.makeUrl('/slot/:sid/asset/:id/head', data);
+		};
+
 		routerService.assetLink = function (data, inline) {
 			if (!$rootScope.type.isAsset(data))
 				throw new Error('routerService.assetLink() requires Asset as first parameter');

@@ -11,6 +11,7 @@ define([
 	'panel/commentsPanel',
 	'panel/welcomePanel',
 	'panel/playerPanel',
+	'panel/excerptsPanel',
 	'panel/searchPanel',
 	'panel/loginPanel'
 ], function () {});

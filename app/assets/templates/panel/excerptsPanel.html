@@ -1,0 +1,42 @@
+<panel ng-controller="ExcerptsPanel" id="panel_excerpts" panel-title="{{'excerpts.title' | message}}" fold bindonce>
+    <panel-mode name="view" active>
+        <div class="row">
+            <div class="excerpts_player col-desktop-7 col-laptop-6 col-tablet-5 col-mobile-6 col-cell">
+                <section ng-if="current" class="excerpts_player_frame">
+                    <header>
+                        <h2><a ng-href="{{router.assetLink(current, false)}}" class="link" target="_self">{{current.asset.name}}.{{current.asset.format.extension}}</a></h2>
+                    </header>
+
+
+                    <div ng-switch="getMimeGroup(current)">
+                        <div ng-switch-when="image">
+                            <img ng-src="{{router.assetLink(current, true)}}" style="max-width: 100%;">
+                        </div>
+
+                        <div ng-switch-when="video">
+                            <video controls style="max-width: 100%;">
+                                <source ng-src="{{router.assetLink(current, true)}}" type="{{current.format.mimetype || current.asset.format.mimetype}}">
+                            </video>
+                        </div>
+
+                        <div ng-switch-default>
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="excerpts_list col-desktop-6 col-laptop-6 col-tablet-4 col-mobile-6 col-cell">
+                <div class="row">
+                    <!-- TODO: change volume.assets to volume.excerpts -->
+                    <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 col-cell"
+                        ng-repeat="excerpt in volume.assets" bindonce>
+                        <figure baseline="square" absolute ng-click="setCurrent(excerpt)">
+                            <figmedia><img bo-src="router.assetThumb(excerpt)"></figmedia>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </panel-mode>
+</panel>
