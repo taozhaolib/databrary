@@ -116,7 +116,7 @@ object Metric extends TableId[Metric[_]]("metric") {
     * [[Classification.DEIDENTIFIED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
   final val Ident       = new Metric[String](IDENT, "ident", Classification.DEIDENTIFIED)
   final val Title       = new Metric[String](TITLE, "title", Classification.MATERIAL)
-  final val Reason      = new Metric[String](REASON, "reason", Classification.DEIDENTIFIED, IndexedSeq("did not meet criteria","procedural/experimenter error","withdrew/fussy/tired","outlier"))
+  final val Reason      = new Metric[String](REASON, "reason", Classification.DEIDENTIFIED, IndexedSeq("Did not meet inclusion criteria","Procedural/experimenter error","Withdrew/fussy/tired","Outlier"))
   final val Description = new Metric[String](DESCRIPTION, "description", Classification.MATERIAL) {
     override val long = true
   }
@@ -130,7 +130,7 @@ object Metric extends TableId[Metric[_]]("metric") {
   final val Ethnicity   = new Metric[String](ETHNICITY, "ethnicity", Classification.DEIDENTIFIED, IndexedSeq[String]("Not Hispanic or Latino","Hispanic or Latino"))
   final val Disability  = new Metric[String](DISABILITY, "disability", Classification.IDENTIFIED)
   final val Language    = new Metric[String](LANGUAGE, "language", Classification.DEIDENTIFIED)
-  final val Setting     = new Metric[String](SETTING, "setting", Classification.MATERIAL, IndexedSeq("lab","home","museum","classroom","outdoor","clinic"))
+  final val Setting     = new Metric[String](SETTING, "setting", Classification.MATERIAL, IndexedSeq("Lab","Home","Classroom","Outdoor","Clinic"))
   final val Country     = new Metric[String](COUNTRY, "country", Classification.DEIDENTIFIED)
   final val State       = new Metric[String](STATE, "state", Classification.DEIDENTIFIED, IndexedSeq("AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","MD","MA","MI","MN","MS","MO","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"))
   final val Info        = new Metric[String](INFO, "info", Classification.MATERIAL)
