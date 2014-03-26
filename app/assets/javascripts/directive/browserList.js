@@ -102,7 +102,15 @@ define(['config/module'], function (module) {
 							return record.measures.reason;
 
 						case -100:
-							return record.measures.setting;
+							var out = record.measures.setting;
+
+							if(record.measures.state)
+								out += ', '+record.measures.state;
+
+							if(record.measures.country)
+								out += ', '+record.measures.country;
+
+							return out;
 
 						default:
 							return record.measures.ident;
@@ -125,6 +133,8 @@ define(['config/module'], function (module) {
 
 					case -100:
 						skip.push('setting');
+						skip.push('state');
+						skip.push('country');
 						break;
 
 					default:

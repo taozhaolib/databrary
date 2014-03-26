@@ -78,7 +78,7 @@ define(['config/module'], function (module) {
 		//
 
 		browserService.initialize = function (newContext, newData) {
-			if(newContext == 'party') {
+			if (newContext == 'party') {
 				var volumes = [];
 
 				angular.forEach(newData, function (access) {
@@ -481,9 +481,6 @@ define(['config/module'], function (module) {
 			angular.forEach(sessions, function (session) {
 				var categoryRecords = session.categories[groups[data.level + 1]];
 
-				if (session.top)
-					return;
-
 				if (angular.isDefined(categoryRecords)) {
 					angular.forEach(categoryRecords, function (record) {
 						if (!tempData[record.id])
@@ -526,6 +523,8 @@ define(['config/module'], function (module) {
 							browserService.setItemExpand(newData, true);
 					}
 				});
+
+				data.items.reverse();
 			}
 
 			return data;
@@ -549,9 +548,6 @@ define(['config/module'], function (module) {
 			var sessions = data.sessions || volume.sessions;
 
 			angular.forEach(sessions, function (session) {
-				if (session.top)
-					return;
-
 				var newData = callbackItem(data, volume, undefined, session, 'session');
 
 				callbackSessionChildren(newData, volume, groups);
@@ -614,7 +610,11 @@ define(['config/module'], function (module) {
 			}
 
 			browserService.groups[group].push(newData);
-			data.items.push(newData);
+
+			if (group == 'session' && object.top)
+				data.items.unshift(newData);
+			else
+				data.items.push(newData);
 
 			return newData;
 		};

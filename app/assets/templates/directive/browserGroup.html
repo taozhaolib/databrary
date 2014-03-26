@@ -11,7 +11,7 @@
     </span>
 
     <span class="browser_widget_wrap"
-    ng-class="recordGroupClasses(group)"
+    ng-class="recordGroupClasses(group, $last)"
     ng-repeat="group in browser.options.record.categories|filter:{active: true, allow: true}"
     ng-if="browser.options.record.allow">
         <a class="browser_widget_pill left"
@@ -28,7 +28,7 @@
         ng-if="browser.canRemoveRecordGroup()">x</a>
     </span>
 
-    <span class="browser_widget_wrap"
+    <span class="browser_widget_wrap last"
           ng-class="{expanded: browser.isRecordGroupToggle('add')}"
           ng-if="browser.canAddRecordGroup()">
         <a class="browser_widget_pill add"
@@ -39,11 +39,5 @@
                 <a ng-click="browser.addRecordGroup(maybe)">{{maybe.name}}</a>
             </li>
         </ul>
-    </span>
-
-    <span class="browser_widget_wrap last"
-    ng-if="browser.options.session.allow"
-    ng-class="groupClasses('session')">
-	    <a class="browser_widget_pill">{{"session" | message}}</a>
     </span>
 </div>

@@ -105,9 +105,9 @@ volume.ages={0} (M = {1})
 volume.citation.title=Citation
 volume.access.title=Shared with
 
-browser.title=View data
-browser.group=group
-browser.group.by=Group by
+browser.title=Data
+browser.group=+
+browser.group.by=Categorize by
 browser.group.empty=This group is empty.
 browser.sort=sort
 browser.sort.by=Group by

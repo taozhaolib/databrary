@@ -21,11 +21,14 @@ define(['config/module'], function (module) {
 				return classes;
 			};
 
-			$scope.recordGroupClasses = function (group) {
+			$scope.recordGroupClasses = function (group, $last) {
 				var classes = [];
 
 				classes.push('on');
 				classes.push($scope.browser.isRecordGroupToggle(group) ? 'expanded' : '');
+
+				if($last && !$scope.browser.canAddRecordGroup())
+					classes.push('last');
 
 				return classes;
 			};
