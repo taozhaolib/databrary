@@ -191,7 +191,7 @@ object LoginHtml extends LoginController with HtmlController {
 }
 
 object LoginApi extends LoginController with ApiController {
-  def get = SiteAction { implicit request =>
+  def get = SiteAction.Unlocked { implicit request =>
     Ok(json)
   }
 }
