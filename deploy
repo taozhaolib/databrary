@@ -1,4 +1,6 @@
 #!/bin/bash -e
+PATH=$PATH:/usr/local/bin
+
 if [[ ! -r prod.conf ]] ; then
 	echo "prod.conf does not exist."
 	if [[ ! -f prod.conf.example ]] ; then
