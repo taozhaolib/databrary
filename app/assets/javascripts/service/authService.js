@@ -170,7 +170,7 @@ define(['config/module'], function (module) {
 					$location.url('/login');
 				})
 				.error(function () {
-					$location.path('/');
+					$location.url('/');
 				});
 		};
 

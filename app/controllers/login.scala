@@ -52,7 +52,7 @@ private[controllers] sealed class LoginController extends SiteController {
     }
   }
 
-  def logout = SiteAction { implicit request =>
+  def logout = SiteAction.Unlocked { implicit request =>
     request match {
       case auth : SiteRequest.Auth[_] =>
         for {

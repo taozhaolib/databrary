@@ -4,26 +4,62 @@ define(['config/module'], function (module) {
 	module.controller('RegisterPanel', ['$scope', 'AuthService', '$http', '$window', 'EventService', 'PartyAuthorize', 'MessageService', 'ConstantService', 'Scraper', function ($scope, authService, $http, $window, eventService, PartyAuthorize, messages, constants, Scraper) {
 		$scope.auth = $scope.auth || authService;
 
+		var mess = [];
+		$scope.$on('$destroy', function () {
+			angular.forEach(mess, function (message) {
+				messages.remove(message);
+			})
+		});
+
+		//
+
 		$scope.wizard = {};
 
-		$scope.registerReady = false;
-		$scope.registerSubmit = false;
-		$scope.registerData = {
-			name: undefined,
-			email: undefined,
-			affiliation: undefined,
-			agreement: false
+		var user = {
+			anon: true,
+			password: false,
+			pending: false,
+			auth: false
 		};
 
+		$scope.retrieveWizard = function (wizard) {
+			$scope.wizard = wizard;
+		};
+
+		$scope.updateWizard = function (activate) {
+			activate = angular.isUndefined(activate) ? true : activate;
+
+			if ($scope.wizard.newStep) {
+				$scope.prepareStep[$scope.wizard.newStep.id]($scope.wizard.newStep);
+			}
+
+			user.anon = !authService.isLoggedIn();
+			user.password = authService.isPasswordPending();
+			user.auth = authService.isAuthorized();
+
+			angular.forEach($scope.wizard.steps, function (step) {
+				$scope.updateStep[step.id](step, activate);
+			});
+		};
+
+		//
+
+		$scope.registerForm = {};
+		$scope.passwordForm = {};
+		$scope.authSearchForm = {};
+		$scope.authApplyForm = {};
+
+		//
+
 		$scope.agreement = {
-			page: 1,
-			pages: 0,
-			data: []
+			current: 1,
+			total: 1,
+			pages: []
 		};
 
 		Scraper('http://databrary.org/policies/investigator-agreement.html')
 			.then(function (pages) {
-				pages = $('<response>'+pages+'</response>');
+				pages = $('<response>' + pages + '</response>');
 				pages.find('a').each(function () {
 					$(this).attr('target', '_blank');
 				});
@@ -31,215 +67,70 @@ define(['config/module'], function (module) {
 
 				pages = pages.split(/<!--page_.*-->/).slice(1, -1);
 
-				$scope.agreement.pages = pages.length;
-				$scope.agreement.data = pages;
+				$scope.agreement.total = pages.length;
+				$scope.agreement.pages = pages;
 			});
 
-		$scope.passwordData = {
-			token: undefined,
-			auth: undefined,
-			password: {
-				once: undefined,
-				again: undefined
-			}
+		//
+
+		var updateUserAuth = function () {
+			PartyAuthorize.query({
+				id: $scope.auth.user.id
+			}, function (data) {
+				angular.forEach(data.parents, function (parent) {
+					user.pending = true;
+				});
+
+				$scope.updateWizard();
+			});
 		};
 
-		if ($scope.type.isToken($window.$play.object)) {
-			$scope.passwordData.token = $window.$play.object.id;
-			$scope.passwordData.auth = $window.$play.object.auth;
-		}
+		$scope.$watch('auth.user', function () {
+			$scope.updateWizard();
 
-		$scope.passwordSubmit = false;
-		$scope.authParty = undefined;
-		$scope.requestSubmit = false;
+			if (authService.isLoggedIn())
+				updateUserAuth();
+		});
 
-		$scope.partyAuth = {};
-
-		$scope.retrieveWizard = function (wizard) {
-			$scope.wizard = wizard;
-			$scope.wizard.addFn = $scope.updateSteps();
-		};
-
-		var prePasswordComplete = function (step, activate) {
-			if (!$scope.auth.isLoggedIn() && !$scope.passwordData.token)
-				return false;
-
-			step.complete = true;
-			step.allow = false;
-
-			if (activate !== false)
-				step.active = false;
-
-			return true;
-		};
-
-		var postLoginBlock = function (step, activate) {
-			if ($scope.auth.isLoggedIn() && !$scope.auth.hasAuth('VIEW'))
-				return false;
-
-			step.complete = $scope.auth.hasAuth('VIEW') ? true : undefined;
-			step.allow = false;
-
-			if (activate !== false)
-				step.active = false;
-
-			return true;
-		};
-
-		$scope.updateStep = {
-			'register_create': function (step, activate) {
-				if (prePasswordComplete(step, activate))
-					return;
-
-				step.complete = $scope.registerReady ? true : undefined;
-				step.allow = !$scope.registerSubmit;
-
-				if (activate !== false)
-					step.active = !$scope.registerReady;
-			},
-
-			'register_agreement': function (step, activate) {
-				if (prePasswordComplete(step, activate))
-					return;
-
-				step.complete = $scope.registerSubmit ? true : undefined;
-				step.allow = $scope.registerReady && !$scope.registerSubmit;
-
-				if (activate !== false)
-					step.active = $scope.registerReady && !$scope.registerSubmit;
-			},
-
-			'register_email': function (step, activate) {
-				if (prePasswordComplete(step, activate))
-					return;
-
-				if (!$scope.registerReady || !$scope.registerSubmit)
-					return;
-
-				if (activate !== false)
-					step.active = true;
-
-				step.allow = true;
-			},
-
-			'register_password': function (step, activate) {
-				if ($scope.auth.isLoggedIn()) {
-					step.complete = true;
-					step.allow = false;
-
-					if (activate !== false)
-						step.active = false;
-
-					return true
-				}
-
-				if (!$scope.passwordData.token)
-					return;
-
-				if ($scope.passwordSubmit)
-					step.complete = true;
-				else {
-					if (activate !== false)
-						step.active = true;
-
-					step.allow = true;
-				}
-			},
-
-			'register_agent': function (step, activate) {
-				if (postLoginBlock(step, activate))
-					return;
-
-				step.allow = !$scope.requestSubmit;
-				step.complete = $scope.authParty || $scope.requestSubmit ? true : undefined;
-
-				if (activate !== false)
-					step.active = !$scope.authParty && !$scope.requestSubmit;
-			},
-
-			'register_request': function (step, activate) {
-				if (postLoginBlock(step, activate))
-					return;
-
-				step.allow = !!$scope.authParty && !$scope.requestSubmit;
-				step.complete = $scope.requestSubmit ? true : undefined;
-
-				if (activate !== false)
-					step.active = !!$scope.authParty && !$scope.requestSubmit;
-			},
-
-			'register_pending': function (step, activate) {
-				if (!$scope.auth.isLoggedIn()) {
-					step.allow = false;
-					step.complete = undefined;
-
-					if (activate !== false)
-						step.active = false;
-
-					return;
-				} else if ($scope.auth.hasAuth('VIEW')) {
-					step.allow = false;
-					step.complete = true;
-
-					if (activate !== false)
-						step.active = false;
-
-					return;
-				} else if (!$scope.requestSubmit) {
-					step.allow = false;
-					step.complete = undefined;
-
-					if (activate !== false)
-						step.active = false;
-
-					return;
-				}
-
-				step.allow = true;
-				step.complete = undefined;
-
-				if (activate !== false)
-					step.active = true;
-			}
-		};
+		//
 
 		$scope.prepareStep = {
-			'register_create': function (step, activate) {
-				if (step.testProceed)
-					return;
+			'register_create': function (step) {
+				$scope.registerForm = step.registerForm;
+				$scope.registerForm.data = {};
+				$scope.registerForm.sent = false;
 
-//				step.regexEmail = regexEmail;
-
-				step.data = $scope.registerData;
-
-				step.testProceed = function (form) {
-					return form.$dirty && form.$valid && $scope.registerData.name && $scope.registerData.email && $scope.registerData.affiliation;
+				$scope.registerForm.ready = function (form) {
+					return $scope.registerForm.$dirty &&
+						$scope.registerForm.$valid &&
+						$scope.registerForm.data.name &&
+						$scope.registerForm.data.email &&
+						$scope.registerForm.data.affiliation;
 				};
 
-				step.proceed = function (form) {
-					$scope.registerReady = true;
-					$scope.updateSteps();
+				$scope.registerForm.proceed = function () {
+					$scope.updateWizard();
 				};
 
 				//
 
-				messages.add({
+				mess.push(messages.add({
 					type: 'alert',
 					target: '#field_name',
 					body: constants.message('wizard.register_form.name.help')
-				});
+				}));
 
-				messages.add({
+				mess.push(messages.add({
 					type: 'alert',
 					target: '#field_email',
 					body: constants.message('wizard.register_form.email.help')
-				});
+				}));
 
-				messages.add({
+				mess.push(messages.add({
 					type: 'alert',
 					target: '#field_affiliation',
 					body: constants.message('wizard.register_form.affiliation.help')
-				});
+				}));
 
 				//
 
@@ -249,28 +140,25 @@ define(['config/module'], function (module) {
 					body: constants.message('wizard.register_form.email.error')
 				});
 
+				mess.push(emailError);
+
 				step.$watch('registerForm.fieldEmail.$valid', function () {
-					if (step.registerForm.fieldEmail.$valid || !step.registerForm.fieldEmail.$dirty)
+					if ($scope.registerForm.fieldEmail.$valid || !$scope.registerForm.fieldEmail.$dirty)
 						messages.disable(emailError);
 					else
 						messages.enable(emailError);
 				});
 			},
 
-			'register_agreement': function (step, activate) {
-				if (step.agreement)
-					return;
-
+			'register_agreement': function (step) {
 				step.agreement = $scope.agreement;
+				step.scrolled = false;
+				step.$el = undefined;
 
 				step.back = function () {
-					$scope.agreement.page--;
-					$scope.registerData.agreement = false;
+					$scope.agreement.current--;
+					$scope.registerForm.data.agreement = false;
 				};
-
-				step.scrolled = false;
-
-				step.$el = undefined;
 
 				step.scroll = function ($scroll) {
 					step.$el = step.$el || $scroll.$element;
@@ -280,135 +168,185 @@ define(['config/module'], function (module) {
 					}
 				};
 
-				step.canProceed = function () {
+				step.ready = function () {
 					return step.scrolled;
 				};
 
 				step.next = function () {
-					$scope.agreement.page++;
-					step.$el.scrollTop(0);
+					$scope.agreement.current++;
+
+					if (step.$el)
+						step.$el.scrollTop(0);
+
 					step.scrolled = false;
 				};
 
 				step.proceed = function () {
-					$scope.registerData.agreement = true;
+					$scope.registerForm.data.agreement = true;
 					step.scrolled = false;
 
 					$http
-						.post('/register', $scope.registerData)
+						.post('/register', $scope.registerForm.data)
 						.success(function (data) {
-							$scope.registerSubmit = true;
-							$scope.updateSteps();
+							$scope.registerForm.sent = true;
+							$scope.updateWizard();
 						});
 				};
 			},
 
-			'register_email': function (step, activate) {
-				step.registerData = $scope.registerData;
+			'register_email': function (step) {
+				step.registerForm = $scope.registerForm;
 			},
 
-			'register_password': function (step, activate) {
-				if (step.data)
-					return;
+			'register_password': function (step) {
+				$scope.passwordForm = step.passwordForm;
+				$scope.passwordForm.data = {
+					token: undefined,
+					auth: undefined,
+					password: {
+						once: undefined,
+						again: undefined
+					}
+				};
+				$scope.passwordForm.sent = false;
 
-				step.data = $scope.passwordData;
+				if (user.password) {
+					$scope.passwordForm.data.token = $window.$play.object.id;
+					$scope.passwordForm.data.auth = $window.$play.object.auth;
+				}
 
-				step.testProceed = function (form) {
-					var ready = form.$dirty && form.$valid && $scope.passwordData.password.once && $scope.passwordData.password.once == $scope.passwordData.password.again;
-
-					$scope.updateSteps(false);
-
-					return ready;
+				$scope.passwordForm.ready = function () {
+					return $scope.passwordForm.$dirty &&
+						$scope.passwordForm.$valid &&
+						$scope.passwordForm.data.password.once &&
+						$scope.passwordForm.data.password.once ==
+						$scope.passwordForm.data.password.again;
 				};
 
-				step.proceed = function (form) {
+				$scope.passwordForm.proceed = function () {
 					$http
-						.post('/api/party/' + $window.$play.object.party + '/password', $scope.passwordData)
+						.post('/api/party/' + $window.$play.object.party + '/password', $scope.passwordForm.data)
 						.success(function (data) {
 							$window.$play.object = null;
-							$scope.passwordSubmit = true;
-							$scope.auth.updateUser(data);
-							$scope.updateSteps();
+
+							$scope.passwordForm.sent = true;
+							authService.updateUser(data);
+
+							$scope.updateWizard();
 						})
 						.error(function () {
 							$window.$play.object = null;
-							console.log(arguments);
 						});
 				};
 			},
 
-			'register_agent': function (step, activate) {
-				if (step.authSearchForm.selectFn)
-					return;
+			'register_agent': function (step) {
+				$scope.authSearchForm = step.authSearchForm;
+				$scope.authSearchForm.data = {};
 
-				step.authSearchForm.selectFn = function (found, form) {
-					$scope.authParty = found;
-					$scope.updateSteps();
+				$scope.authSearchForm.selectFn = function (found) {
+					$scope.authSearchForm.data.party = found;
+					$scope.updateWizard();
 				};
 			},
 
-			'register_request': function (step, activate) {
-				step.authApplyForm.party = $scope.auth.user;
+			'register_request': function (step) {
+				$scope.authApplyForm = step.authApplyForm;
+				$scope.authApplyForm.sent = false;
 
-				if ($scope.authParty && !step.authApplyForm.other)
-					step.authApplyForm.other = {
-						id: $scope.authParty.id,
-						party: $scope.authParty,
-						inherit: 0,
-						direct: 0
-					};
-
-				if (step.authApplyForm.successFn)
-					return;
-
-				step.authApplyForm.successFn = function (form) {
-					$scope.requestSubmit = true;
+				$scope.authApplyForm.successFn = function (form) {
+					$scope.authApplyForm.sent = true;
+					updateUserAuth();
+					$scope.updateWizard();
 				};
 
-				step.authApplyForm.cancelFn = function (form) {
-					$scope.authParty = undefined;
-					$scope.updateSteps();
+				$scope.authApplyForm.cancelFn = function (form) {
+					$scope.authSearchForm.data.party = undefined;
+					$scope.updateWizard();
 				};
 			},
 
-			'register_pending': function (step, activate) {
+			'register_pending': function (step) {
 			}
 		};
 
-		$scope.updateSteps = function (activate) {
-			activate = angular.isUndefined(activate) ? true : activate;
+		//
 
-			angular.forEach($scope.wizard.steps, function (step) {
-				$scope.updateStep[step.id](step, activate);
-				$scope.prepareStep[step.id](step, activate);
-			});
+		$scope.updateStep = {
+			'register_create': function (step, activate) {
+				step.allow = user.anon && !user.password && !$scope.registerForm.sent;
+
+				if (activate)
+					step.active = user.anon && !user.password && !$scope.registerForm.ready();
+
+				step.complete = !user.anon || user.password || !!$scope.registerForm.ready();
+			},
+
+			'register_agreement': function (step, activate) {
+				step.allow = user.anon && !user.password && $scope.registerForm.ready() && !$scope.registerForm.sent;
+
+				if (activate)
+					step.active = user.anon && !user.password && $scope.registerForm.ready() && !$scope.registerForm.sent;
+
+				step.complete = !user.anon || user.password || !!$scope.registerForm.sent;
+			},
+
+			'register_email': function (step, activate) {
+				step.allow = user.anon && !user.password && $scope.registerForm.sent;
+
+				if (activate)
+					step.active = user.anon && !user.password && $scope.registerForm.sent;
+
+				step.complete = !user.anon || user.password;
+			},
+
+			'register_password': function (step, activate) {
+				step.allow = user.anon && user.password && !$scope.passwordForm.sent;
+
+				if (activate)
+					step.active = user.anon && user.password && !$scope.passwordForm.sent;
+
+				step.complete = !user.anon;
+			},
+
+			'register_agent': function (step, activate) {
+				step.allow = !user.anon && !user.pending && !$scope.authApplyForm.sent;
+
+				if (activate)
+					step.active = !user.anon && !user.pending && !$scope.authSearchForm.data.party;
+
+				step.complete = user.pending || !!$scope.authSearchForm.data.party;
+			},
+
+			'register_request': function (step, activate) {
+				step.allow = !user.anon && !user.pending && $scope.authSearchForm.data.party && !$scope.authApplyForm.sent;
+
+				if (activate)
+					step.active = !user.anon && !user.pending && $scope.authSearchForm.data.party && !$scope.authApplyForm.sent;
+
+				step.complete = !user.anon && (user.pending || user.auth || !!$scope.authApplyForm.sent);
+
+				//
+
+				$scope.authApplyForm.party = $scope.auth.user;
+
+				if ($scope.authSearchForm.data.party && !$scope.authApplyForm.other)
+					$scope.authApplyForm.other = {
+						id: $scope.authSearchForm.data.party.id,
+						party: $scope.authSearchForm.data.party,
+						inherit: 0,
+						direct: 0
+					};
+			},
+
+			'register_pending': function (step, activate) {
+				step.allow = !user.anon && !user.auth && (user.pending || !!$scope.authApplyForm.sent);
+
+				if (activate)
+					step.active = !user.anon && !user.auth && (user.pending || !!$scope.authApplyForm.sent);
+
+				step.complete = user.auth;
+			}
 		};
-
-		//
-
-		var regexEmail = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-		$scope.$watch('auth.user', function () {
-			$scope.updateSteps();
-
-			if ($scope.auth.user)
-				PartyAuthorize.query({
-					id: $scope.auth.user.id
-				}, function (data) {
-					$scope.partyAuth = data;
-
-					angular.forEach($scope.partyAuth.parents, function (parent) {
-						$scope.requestSubmit = true;
-					});
-
-					$scope.updateSteps();
-				});
-		});
-
-		//
-
-		// TODO: replace authApplyForm in network panel
-		// TODO: do messages for lisa
-		// TODO: update network apply for proper requests
 	}]);
 });

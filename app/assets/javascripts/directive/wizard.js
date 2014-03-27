@@ -4,23 +4,25 @@ define(['config/module'], function (module) {
 	module.directive('wizard', [function () {
 		var compile = function ($element, $attrs, transclude) {
 			return function ($scope, $element, $attrs) {
+				$scope.retrieve()($scope);
+
+				//
+
 				$scope.linear = $attrs.hasOwnProperty('linear');
 
 				$scope.steps = [];
 				$scope.stepsList = {};
-				$scope.currentStep = undefined;
+				$scope.newStep = undefined;
 
-				$scope.addFn = undefined;
 				$scope.onFn = {};
 				$scope.offFn = {};
 
 				$scope.addStep = function (step) {
 					$scope.steps.push(step);
 					$scope.stepsList[step.id] = step;
-					$scope.currentStep = step;
+					$scope.newStep = step;
 
-					if(angular.isFunction($scope.addFn))
-						$scope.addFn();
+					$scope.update()();
 				};
 
 				$scope.activateStep = function (step) {
@@ -53,7 +55,7 @@ define(['config/module'], function (module) {
 					if(step.complete === true)
 						classes.push('complete');
 
-					if(step.complete === false)
+					if(angular.isUndefined(step.complete))
 						classes.push('incomplete');
 
 					if($scope.isStepBlocked(step))
@@ -67,8 +69,6 @@ define(['config/module'], function (module) {
 				transclude($scope, function ($clone) {
 					$element.find('[wizard-steps]').append($clone);
 				});
-
-				$scope.retrieve()($scope);
 			};
 		};
 
@@ -76,7 +76,8 @@ define(['config/module'], function (module) {
 			restrict: 'E',
 			templateUrl: 'wizard.html',
 			scope: {
-				retrieve: '&'
+				retrieve: '&',
+				update: '&'
 			},
 			transclude: true,
 			replace: true,
