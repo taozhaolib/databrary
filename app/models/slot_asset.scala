@@ -178,18 +178,22 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
     .SELECT("WHERE slot_asset.asset = ? AND container.volume = ?")
     .apply(asset.id, asset.volumeId).singleOpt
 
-  private[models] def getExcerpt(volume : Volume) : Future[Seq[SlotAsset]] =
+  private[this] def excerpts(volume : Volume) : Future[Seq[SlotAsset]] =
     Excerpt.assetRowVolume(volume)
-    .SELECT("WHERE container.volume = ? AND asset.volume = container.volume")
-    .apply(volume.id).list
+    .SELECT("WHERE asset.volume = container.volume")
+    .apply().list
 
-  /** Retrieve the list of all top-level assets. */
-  private[models] def getToplevel(volume : Volume) : Future[Seq[SlotAsset]] =
+  private[this] def slotExcerpts(volume : Volume) : Future[Seq[SlotAsset]] =
+    SlotAssetSlot.assetRowVolume(volume)
+    .SELECT("WHERE asset.volume = container.volume AND asset.classification = 'EXCERPT' AND (slot_asset_consent.consent >= 'EXCERPTS' OR container.top)")
+    .apply().list
+
+  /** Retrieve the list of all excerpts. */
+  private[models] def getExcerpts(volume : Volume) : Future[Seq[SlotAsset]] =
     for {
-      e <- getExcerpt(volume)
-      s <- volume.top
-      t <- getSlot(s)
-    } yield (e ++ t)
+      e <- excerpts(volume)
+      s <- slotExcerpts(volume)
+    } yield (e ++ s)
 
   /** Find an asset suitable for use as a volume thumbnail. */
   private[models] def getThumb(volume : Volume) : Future[Option[SlotAsset]] =

@@ -40,7 +40,7 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
   def top : Future[Container] = Container.getTop(this)
 
   /** List of toplevel assets within this volume. */
-  def toplevelAssets = SlotAsset.getToplevel(this)
+  def excerpts = SlotAsset.getExcerpts(this)
 
   /** List of records defined in this volume.
     * @param category restrict to the specified category
@@ -157,7 +157,7 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
 	  }(rs))
 	}))
       })),
-      ("assets", opt => toplevelAssets.map(JsonArray.map(_.json))),
+      ("excerpts", opt => excerpts.map(JsonArray.map(_.json))),
       ("top", opt => top.map(t => (t.json - "volume" - "top").obj))
     )
 }

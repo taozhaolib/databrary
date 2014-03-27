@@ -179,11 +179,11 @@ object VolumeHtml extends VolumeController with HtmlController {
       top <- vol.top
       sessions <- vol.sessions
       records <- vol.recordCategorySlots
-      assets <- vol.toplevelAssets
+      excerpts <- vol.excerpts
       citations <- vol.citations
       comments <- vol.comments
       tags <- vol.tags
-    } yield (Ok(views.html.volume.view(summary, access, top, sessions, records, assets, citations, comments, tags)))
+    } yield (Ok(views.html.volume.view(summary, access, top, sessions, records, excerpts, citations, comments, tags)))
   }
 
   def search = SiteAction.async { implicit request =>
