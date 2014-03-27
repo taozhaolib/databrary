@@ -11,14 +11,15 @@
 		right: -(@b1 * 4);
 		.size(400px);
 		.border-radius(400px);
-		opacity: .25;
+		opacity: 1;
 		z-index: 0;
 		.transition();
+	}
 
-		&:hover {
-			opacity: 1;
-			z-index: 100;
-			.transform-scale(~"1.1, 1.1");
+	.portrait {
+		.icon {
+			position: relative;
+			top: @b4;
 		}
 	}
 }

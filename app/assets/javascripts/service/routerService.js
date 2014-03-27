@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('RouterService', ['$rootScope', '$route', '$filter', function ($rootScope, $route, $filter) {
+	module.factory('RouterService', ['$rootScope', '$route', '$filter', 'TypeService', function ($rootScope, $route, $filter, type) {
 		var routerService = {};
 
 		routerService.$route = $route;
@@ -66,7 +66,7 @@ define(['config/module'], function (module) {
 		//
 
 		routerService.record = function (data) {
-			if (!$rootScope.type.isRecord(data))
+			if (!type.isRecord(data))
 				throw new Error('routerService.record() requires Record as first parameter');
 
 			data = {
@@ -77,19 +77,19 @@ define(['config/module'], function (module) {
 		};
 
 		routerService.slot = function (data) {
-			if (!$rootScope.type.isSession(data))
+			if (!type.isSession(data))
 				throw new Error('routerService.slot() requires Slot as first parameter');
 
 			data = {
 				id: data.id,
-				segment: data.segment || ','
+				segment: type.segmentString(data)
 			};
 
 			return routerService.makeUrl('/slot/:id', data);
 		};
 
 		routerService.volumeThumb = function (data) {
-			if (!$rootScope.type.isVolume(data))
+			if (!type.isVolume(data))
 				throw new Error('routerService.volumeThumb() requires Volume as first parameter');
 
 			data = {
@@ -100,55 +100,51 @@ define(['config/module'], function (module) {
 		};
 
 		routerService.slotThumb = function (data) {
-			if (!$rootScope.type.isSession(data))
+			if (!type.isSession(data))
 				throw new Error('routerService.slotThumb() requires Slot as first parameter');
 
 			data = {
 				id: data.id,
-				segment: data.segment || ','
+				segment: type.segmentString(data)
 			};
 
 			return routerService.makeUrl('/slot/:id/thumb', data);
 		};
 
 		routerService.assetThumb = function (data) {
-			if (!$rootScope.type.isAsset(data))
+			if (!type.isAsset(data))
 				throw new Error('routerService.assetThumb() requires Asset as first parameter');
 
 			data = {
 				sid: data.container.id,
 				id: data.asset.id,
-				segment: data.segment ? (
-					angular.isArray(data.segment) ? data.segment.join(',') : data.segment
-					) : ','
+				segment: type.segmentString(data)
 			};
 
 			return routerService.makeUrl('/slot/:sid/asset/:id/thumb', data);
 		};
 
 		routerService.assetHead = function (data) {
-			if (!$rootScope.type.isAsset(data))
+			if (!type.isAsset(data))
 				throw new Error('routerService.assetHead() requires Asset as first parameter');
 
 			data = {
 				sid: data.container.id,
 				id: data.asset.id,
-				segment: data.segment ? (
-					angular.isArray(data.segment) ? data.segment.join(',') : data.segment
-					) : ','
+				segment: type.segmentString(data)
 			};
 
 			return routerService.makeUrl('/slot/:sid/asset/:id/head', data);
 		};
 
 		routerService.assetLink = function (data, inline) {
-			if (!$rootScope.type.isAsset(data))
+			if (!type.isAsset(data))
 				throw new Error('routerService.assetLink() requires Asset as first parameter');
 
 			data = {
 				sid: data.container.id,
 				id: data.asset.id,
-				segment: data.segment || ','
+				segment: type.segmentString(data)
 			};
 
 			data.inline = data.inline || inline || false;
@@ -157,7 +153,7 @@ define(['config/module'], function (module) {
 		};
 
 		routerService.partyAvatar = function (data, size) {
-			if (!$rootScope.type.isParty(data))
+			if (!type.isParty(data))
 				throw new Error('routerService.partyAvatar() requires Party as first parameter');
 
 			data = {
@@ -178,19 +174,19 @@ define(['config/module'], function (module) {
 		};
 
 		routerService.slotEdit = function (data) {
-			if (!$rootScope.type.isSession(data))
+			if (!type.isSession(data))
 				throw new Error('routerService.slotEdit() requires Slot as first parameter');
 
 			data = {
 				id: data.id,
-				segment: data.segment || ','
+				segment: type.segmentString(data)
 			};
 
 			return routerService.makeUrl('/slot/:id/edit', data);
 		};
 
 		routerService.assetEdit = function (data) {
-			if (!$rootScope.type.isAsset(data))
+			if (!type.isAsset(data))
 				throw new Error('routerService.assetEdit() requires Asset as first parameter');
 
 			data = {
@@ -201,7 +197,7 @@ define(['config/module'], function (module) {
 		};
 
 		routerService.recordEdit = function (data) {
-			if (!$rootScope.type.isRecord(data))
+			if (!type.isRecord(data))
 				throw new Error('routerService.recordEdit() requires Record as first parameter');
 
 			data = {
@@ -212,7 +208,7 @@ define(['config/module'], function (module) {
 		};
 
 		routerService.volumeEdit = function (data) {
-			if (!$rootScope.type.isVolume(data))
+			if (!type.isVolume(data))
 				throw new Error('routerService.volumeEdit() requires Volume as first parameter');
 
 			data = {
@@ -223,7 +219,7 @@ define(['config/module'], function (module) {
 		};
 
 		routerService.volumeAccess = function (data) {
-			if (!$rootScope.type.isVolume(data))
+			if (!type.isVolume(data))
 				throw new Error('routerService.volumeAccess() requires Volume as first parameter');
 
 			data = {
@@ -234,7 +230,7 @@ define(['config/module'], function (module) {
 		};
 
 		routerService.partyEdit = function (data) {
-			if (!$rootScope.type.isParty(data))
+			if (!type.isParty(data))
 				throw new Error('routerService.partyEdit() requires Party as first parameter');
 
 			data = {
@@ -248,7 +244,7 @@ define(['config/module'], function (module) {
 			if (angular.isUndefined(data))
 				return console.log(data);
 
-			if (!$rootScope.type.isParty(data))
+			if (!type.isParty(data))
 				throw new Error('routerService.party() requires Party as first parameter');
 
 			data = {
@@ -259,7 +255,7 @@ define(['config/module'], function (module) {
 		};
 
 		routerService.partyAuthorize = function (data) {
-			if (!$rootScope.type.isParty(data))
+			if (!type.isParty(data))
 				throw new Error('routerService.partyAuthorize() requires Party as first parameter');
 
 			data = {

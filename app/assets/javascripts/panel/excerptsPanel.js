@@ -2,24 +2,22 @@ define(['config/module'], function (module) {
 	'use strict';
 
 	module.controller('ExcerptsPanel', ['$scope', function ($scope) {
+		// TODO: REMOVE!
+		$scope.volume.excerpts = $scope.volume.excerpts || $scope.volume.assets;
+
 		$scope.bootPanel = function () {
-			$scope.current = $scope.volume.assets[0] || undefined;
+			if (angular.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0)
+				$scope.current = $scope.volume.excerpts[0] || undefined;
 		};
 
-//		$scope.refreshPanel = function () {
-//			$scope.enabled = angular.isArray($scope.volume.assets) && $scope.volume.assets.length > 0;
-//		};
+		$scope.refreshPanel = function () {
+			$scope.enabled = angular.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0;
+		};
 
 		//
 
 		$scope.setCurrent = function (asset) {
 			$scope.current = asset;
-		};
-
-		$scope.getAssetClasses = function (asset) {
-			return {
-				'active': $scope.currentAsset == asset
-			};
 		};
 
 		$scope.getMimeGroup = function (asset) {

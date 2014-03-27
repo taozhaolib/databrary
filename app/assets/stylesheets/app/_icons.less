@@ -1,0 +1,38 @@
+// STYLES
+
+.icon {
+	display: inline-block;
+	position: relative;
+	background: transparent no-repeat 0 0;
+	.size(@b3 * 2);
+
+	&.excerpt,
+	&.identified,
+	&.deidentified {
+		width: 20px;
+	}
+
+	&.admin { background-image: url('/public/images/constant/permission-admin.png'); }
+	&.contribute { background-image: url('/public/images/constant/permission-contribute.png'); }
+	&.download { background-image: url('/public/images/constant/permission-download.png'); }
+	&.view { background-image: url('/public/images/constant/permission-view.png'); }
+
+	&.public { background-image: url('/public/images/constant/consent-public.png'); }
+	&.excerpt { background-image: url('/public/images/constant/consent-excerpt.png'); }
+	&.shared { background-image: url('/public/images/constant/consent-shared.png'); }
+	&.private { background-image: url('/public/images/constant/consent-private.png'); }
+
+	&.indentified { background-image: url('/public/images/constant/material-indentified.png'); }
+	&.deidentified { background-image: url('/public/images/constant/material-deidentified.png'); }
+
+	&.line {
+		.size(@b1);
+		background-position: 4px 4px;
+
+		&.excerpt,
+		&.identified,
+		&.deidentified {
+			background-position: 2px 4px;
+		}
+	}
+}

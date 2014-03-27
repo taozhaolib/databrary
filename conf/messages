@@ -34,7 +34,6 @@ mail.authorized.body=You have been authorized by {0}.
 # Generic UI
 cancel=Cancel
 reset=Reset
-loading=loading
 
 # Login, party, auth pages
 login.title=Login
@@ -91,6 +90,10 @@ auth.direct.VIEW=Access to {0} unrestricted data.
 auth.direct.DOWNLOAD=Access to {0} restricted data.
 auth.direct.CONTRIBUTE=Can edit {0} data.
 auth.direct.ADMIN=Can share {0} data.
+
+# Authorization sharing
+share.VIEW={0} can access only unrestricted data.
+share.DOWNLOAD={0} can access all data.
 
 # Volume page
 volume=Volume

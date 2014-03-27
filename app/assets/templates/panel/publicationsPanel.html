@@ -1,9 +1,11 @@
 <panel ng-controller="PublicationsPanel" id="panel_publications" panel-title="{{'citations.title' | message}}" fold>
     <panel-mode name="view" active>
-        <div bindonce ng-repeat="citation in volume.citations" class="publication">
-            <h3 class="publication_header">{{citation.head}} <a bo-if="citation.url" bo-href="citation.url" bo-title="citation.head" class="cit_link">link</a></h3>
+        <div class="row">
+            <div bindonce ng-repeat="citation in volume.citations" class="publication col-desktop-8 col-laptop-8 col-tablet-8 col-mobile-6 col-cell">
+                <h3 class="publication_header">{{citation.head}} <a bo-if="citation.url" bo-href="citation.url" bo-title="citation.head" class="cit_link">link</a></h3>
 
-            <div class="publication_description" bo-html="citation.body | format"></div>
+                <div class="publication_description" bo-html="citation.body | format"></div>
+            </div>
         </div>
     </panel-mode>
 </panel>

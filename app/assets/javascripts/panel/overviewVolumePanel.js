@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('OverviewVolumePanel', ['$scope', function ($scope) {
+	module.controller('OverviewVolumePanel', ['$scope', 'ConstantService', function ($scope, constants) {
 		$scope.refreshPanel = function () {
 			$scope.enabled = angular.isObject($scope.volume);
 		};
@@ -12,6 +12,10 @@ define(['config/module'], function (module) {
 
 		$scope.isFunding = function (volumeAccess) {
 			return !!volumeAccess.funding;
+		};
+
+		$scope.shareMessage = function (volumeAccess) {
+			return volumeAccess.access == 1 ? constants.message('share.VIEW', volumeAccess.party.name) : constants.message('share.DOWNLOAD', volumeAccess.party.name);
 		};
 	}]);
 });

@@ -8,8 +8,8 @@
             </div>
         </div>
 
-        <hgroup>
-            <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
+        <hgroup class="row">
+            <h1 class="panel_title col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell" ng-bind-html="volume.name | format:true"></h1>
             <h2 ng-if="auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-html="volume.alias"></h2>
         </hgroup>
 
@@ -21,13 +21,13 @@
 
         <div frame id="frame_access" title="{{'volume.access.title' | message}}" fold>
             <div ng-repeat="volumeAccess in volume.access | filter:isShared" class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-3 col-cell" ng-init="party = volumeAccess.party">
-                <aside class="portrait portrait_vertical portrait_small ng-cloak" tooltip tooltip-message="'' | message:party.name">
+                <aside class="portrait portrait_vertical portrait_small ng-cloak" tooltip tooltip-message="{{shareMessage(volumeAccess)}}">
                     <figure baseline="square" class="figure_avatar" ng-href="{{router.party(party)}}">
                         <figmedia><img ng-src="{{router.partyAvatar(party, 216)}}"></figmedia>
                     </figure>
 
                     <div class="portrait_info">
-                        <a class="portrait_name" ng-href="{{router.party(party)}}">{{party.name}}<span ng-if="volumeAccess.access == 1" class="SOME">!!!</span></a>
+                        <a class="portrait_name" ng-href="{{router.party(party)}}">{{party.name}}<span ng-if="volumeAccess.access == 1" class="icon line view"></span></a>
                     </div>
                 </aside>
             </div>
@@ -40,7 +40,7 @@
         </div>
 
 	    <div frame id="frame_metadata" title="{{'volume.metadata.title' | message}}" fold>
-            <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell">
+            <div class="col-desktop-8 col-laptop-8 col-tablet-8 col-mobile-6 col-cell">
                 <div class="description" ng-bind-html="volume.body | format"></div>
 
                 <div class="metadata">

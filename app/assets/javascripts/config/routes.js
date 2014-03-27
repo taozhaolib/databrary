@@ -92,6 +92,7 @@ define(['config/module'], function (module) {
 						top: '',
 						tags: '',
 						assets: '',
+						excerpts: '',
 						comments: '',
 						records: '',
 						summary: '',
