@@ -62,18 +62,15 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
       so <- Slot.get(containerId, segment)
       s = so.getOrElse(throw NotFoundException)
       _ <- request.obj.addSlot(s)
-    } yield (result(request.obj))
+    } yield (SlotController.result(s))
   }
 
-  def remove(recordId : Record.Id, containerId : Container.Id, segment : Segment, editRedirect : Boolean = false) = Action(recordId, Permission.EDIT).async { implicit request =>
+  def remove(recordId : Record.Id, containerId : Container.Id, segment : Segment) = Action(recordId, Permission.EDIT).async { implicit request =>
     for {
       so <- Slot.get(containerId, segment)
       s = so.getOrElse(throw NotFoundException)
       _ <- request.obj.removeSlot(s)
-    } yield (
-      if (editRedirect) Redirect(controllers.routes.SlotHtml.edit(containerId, segment))
-      else result(request.obj)
-    )
+    } yield (SlotController.result(s))
   }
 }
 
@@ -141,13 +138,13 @@ object RecordHtml extends RecordController with HtmlController {
 
   final class SelectForm(implicit request : SlotHtml.Request[_])
     extends AHtmlForm[SelectForm](
-      routes.RecordHtml.slotAdd(request.obj.containerId, request.obj.segment, true),
+      routes.RecordHtml.slotAdd(request.obj.containerId, request.obj.segment),
       f => SlotHtml.viewEdit(recordForm = Some(f))) {
     val record = Field(Forms.optional(Forms.of[models.Record.Id]))
     val category = Field(Forms.optional(categoryMapping))
   }
 
-  def slotAdd(containerId : Container.Id, segment : Segment, slotRedirect : Boolean = false) =
+  def slotAdd(containerId : Container.Id, segment : Segment) =
     SlotHtml.Action(containerId, segment, Permission.EDIT).async { implicit request =>
       val form = new SelectForm()._bind
       form.record.get.fold {
@@ -160,10 +157,7 @@ object RecordHtml extends RecordController with HtmlController {
         .fold {
 	  form.record.withError("record.bad").Bad
 	} (_.addSlot(request.obj).map { _ =>
-	  if (slotRedirect)
-	    Redirect(routes.SlotHtml.edit(containerId, segment))
-	  else
-	    SlotHtml.result(request.obj)
+	  SlotHtml.result(request.obj)
 	})))
     }
 
@@ -176,7 +170,7 @@ object RecordHtml extends RecordController with HtmlController {
     }
 
   final class RemoveForm(record : Record, slot : Slot)
-    extends StructForm(routes.RecordHtml.remove(record.id, slot.containerId, slot.segment, true))
+    extends StructForm(routes.RecordHtml.remove(record.id, slot.containerId, slot.segment))
 }
 
 object RecordApi extends RecordController with ApiController {
