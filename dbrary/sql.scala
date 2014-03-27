@@ -207,7 +207,7 @@ protected sealed abstract class SQLBuilder[+A] protected (val query : String)(im
       dbconn.sendPreparedStatement(query, args.map(_.put))
     if (SQL.logger.isTraceEnabled) {
       val t0 = System.nanoTime
-      r.foreach { r =>
+      r.onComplete { r =>
 	SQL.logger.trace(((System.nanoTime - t0) / 1e9).formatted("%8.5f: ") + query)
       }
     }
