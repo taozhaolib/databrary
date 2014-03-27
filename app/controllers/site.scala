@@ -141,7 +141,8 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
     val action : SiteRequest.Base[A] => Future[SimpleResult] =
       if (Site.locked) { request =>
 	if (request.access.group == Permission.NONE)
-	  macros.Async(Results.TemporaryRedirect(routes.Site.start.url))
+	  macros.Async(if (request.isApi) Results.Forbidden
+	    else Results.TemporaryRedirect(routes.Site.start.url))
 	else block(request)
       } else block
     Unlocked.invokeBlock(request, action)
