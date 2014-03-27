@@ -8,4 +8,4 @@
 trap 'rm -f "$LOCK"' EXIT
 echo "Transcoding $IN -> $OUT"
 ls -l "$IN"
-time ffmpeg -loglevel warning -threads 1 -i "$IN" -threads 1 -c:v libx264 -c:a libfdk_aac -y "$OUT" || rm -f "$OUT"
+time ffmpeg -loglevel warning -threads 1 -i "$IN" -vf pad='iw+mod(iw\,2):ih+mod(ih\,2)' -threads 1 -c:v libx264 -c:a libfdk_aac -y "$OUT" || rm -f "$OUT"
