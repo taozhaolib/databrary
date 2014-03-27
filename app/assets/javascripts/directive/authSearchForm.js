@@ -37,6 +37,20 @@ define(['config/module'], function (module) {
 
 			//
 
+			$scope.authSearchForm.notFoundFn = undefined;
+
+			$scope.authSearchForm.notFound = function () {
+				var query = $scope.authSearchForm.name;
+
+				$scope.authSearchForm.name = '';
+				$scope.authSearchForm.search();
+
+				if (angular.isFunction($scope.authSearchForm.notFoundFn))
+					$scope.authSearchForm.notFoundFn(query, $scope.authSearchForm);
+			};
+
+			//
+
 			eventService.talk('authSearchForm-init', $scope.authSearchForm);
 		};
 

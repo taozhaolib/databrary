@@ -3,11 +3,11 @@
 
     <ul ng-if="authSearchForm.found">
         <li ng-repeat="found in authSearchForm.found">
-            <a href="#" class="auth-found" ng-click="authSearchForm.select(found, searchAuth)">{{found.name}}</a>
+            <a href="#" class="auth-found" ng-click="authSearchForm.select(found)">{{found.name}}</a>
         </li>
 
         <li>
-	    {{"auth.notfound" | message}}
+	        <a href="#" class="auth-found" ng-click="authSearchForm.notFound()">{{"auth.notfound" | message}}</a>
         </li>
     </ul>
 </form>

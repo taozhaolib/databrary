@@ -8,6 +8,7 @@
 // STYLES
 
 .loading {
+	display: none;
 	position: fixed;
 	z-index: 999;
 	top: 0;
@@ -15,6 +16,10 @@
 	right: 0;
 	bottom: 0;
 	background-color: @g5;
+
+	&.loaded {
+		display: block;
+	}
 }
 
 //

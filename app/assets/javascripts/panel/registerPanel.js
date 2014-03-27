@@ -48,6 +48,7 @@ define(['config/module'], function (module) {
 		$scope.passwordForm = {};
 		$scope.authSearchForm = {};
 		$scope.authApplyForm = {};
+		$scope.infoForm = {};
 
 		//
 
@@ -248,11 +249,26 @@ define(['config/module'], function (module) {
 					$scope.authSearchForm.data.party = found;
 					$scope.updateWizard();
 				};
+
+				$scope.authSearchForm.notFoundFn = function (query) {
+					$scope.authSearchForm.data.party = true;
+					$scope.infoForm.data.query = query;
+					$scope.updateWizard();
+				};
 			},
 
 			'register_request': function (step) {
 				$scope.authApplyForm = step.authApplyForm;
 				$scope.authApplyForm.sent = false;
+
+				$scope.infoForm = step.infoForm;
+				$scope.infoForm.data = {};
+
+				step.ifInfo = function () {
+					return angular.isString($scope.infoForm.data.query);
+				}
+
+				//
 
 				$scope.authApplyForm.successFn = function (form) {
 					$scope.authApplyForm.sent = true;
@@ -262,6 +278,37 @@ define(['config/module'], function (module) {
 
 				$scope.authApplyForm.cancelFn = function (form) {
 					$scope.authSearchForm.data.party = undefined;
+					$scope.updateWizard();
+				};
+
+				//
+
+				$scope.infoForm.ready = function () {
+					return $scope.infoForm.$dirty &&
+						$scope.infoForm.$valid &&
+						$scope.infoForm.data.info;
+				};
+
+				$scope.infoForm.proceed = function () {
+					$http
+						.get('/api/party/' + authService.user.id + '/authorize/search', {
+							params: {
+								apply: true,
+								notfound: true,
+								name: $scope.infoForm.data.query,
+								target: $scope.infoForm.data.info
+							}
+
+						})
+						.success(function (data) {
+							$scope.authApplyForm.successFn();
+						});
+				};
+
+				$scope.infoForm.cancel = function () {
+					$scope.infoForm.data.info = '';
+					$scope.authSearchForm.data.party = undefined;
+					$scope.infoForm.data.query = undefined;
 					$scope.updateWizard();
 				};
 			},
@@ -315,7 +362,7 @@ define(['config/module'], function (module) {
 				if (activate)
 					step.active = !user.anon && !user.pending && !$scope.authSearchForm.data.party;
 
-				step.complete = user.pending || !!$scope.authSearchForm.data.party;
+				step.complete = !user.anon && (user.pending || user.auth || !!$scope.authSearchForm.data.party);
 			},
 
 			'register_request': function (step, activate) {
