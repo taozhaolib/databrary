@@ -8,6 +8,7 @@ define([
 	'service/authPresetService',
 	'service/typeService',
 	'service/tooltipService',
+	'service/pageService',
 	'service/constantService',
 	'service/routerService'
 ], function () {});

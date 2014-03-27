@@ -100,7 +100,6 @@ define(['config/module'], function (module) {
 				meta += ' <span class="sep">/</span>';
 
 			if (!comment.container.top)
-				// TODO: specify slot someday
 				meta += ' <a href="' + $scope.router.volume({id: volumeID}) + '"><img class="line" src="'+$scope.router.slotThumb(comment.container)+'"> ' + (comment.container.name || '') + '</a>';
 
 			return meta;

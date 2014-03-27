@@ -1,8 +1,10 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('AuthService', ['$rootScope', '$location', '$http', '$route', '$cacheFactory', 'TypeService', '$window', '$q', '$sessionStorage', function ($rootScope, $location, $http, $route, $cacheFactory, typeService, $window, $q, $sessionStorage) {
+	module.factory('AuthService', ['$rootScope', '$location', '$http', '$route', '$cacheFactory', 'TypeService', '$window', '$q', '$sessionStorage', '$timeout', function ($rootScope, $location, $http, $route, $cacheFactory, typeService, $window, $q, $sessionStorage, $timeout) {
 		var authService = {};
+
+		$rootScope.$sessionStorage = $sessionStorage;
 
 		//
 
@@ -10,7 +12,7 @@ define(['config/module'], function (module) {
 		authService.userUpdated = undefined;
 
 		var updateUser = function (user) {
-			var reload = true;
+			var reload = true, preload = authService.next && !authService.userUpdated;
 
 			authService.userUpdated = new Date();
 
@@ -29,8 +31,10 @@ define(['config/module'], function (module) {
 
 			authService.user = user || undefined;
 
-			authService.storeUser();
-
+//			if (preload) {
+//				$location.url(authService.next);
+//				authService.next = undefined;
+//			} else
 			if (reload) {
 				$cacheFactory.get('$http').removeAll();
 				$route.reload();
@@ -49,7 +53,7 @@ define(['config/module'], function (module) {
 			$http
 				.get('/api/user')
 				.success(function (data) {
-					if (data.id == -1)
+					if (data.id == -1 || angular.isString(data))
 						updateUser(undefined);
 					else
 						updateUser(data);
@@ -63,21 +67,7 @@ define(['config/module'], function (module) {
 				});
 		};
 
-		authService.restoreUser = function () {
-			authService.updateUser($sessionStorage['user']);
-		};
-
-		authService.storeUser = function () {
-			if (!authService.user)
-				delete $sessionStorage['user'];
-			else
-				$sessionStorage['user'] = authService.user;
-		};
-
-		if ($sessionStorage['user'])
-			authService.restoreUser();
-		else
-			authService.updateUser();
+		authService.updateUser();
 
 		//
 

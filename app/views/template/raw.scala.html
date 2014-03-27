@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>@title || Databrary: The Open Data Library for Developmental Science</title>
+    <title>@if(angular){{{page.title}}}else{@title} || Databrary: The Open Data Library for Developmental Science</title>
 
     <!-- icons -->
     <link rel="shortcut icon" href="@routes.Assets.at("icons/favicon.png")">
@@ -161,6 +161,18 @@
     <div id="tooltips" class="tooltips" ng-controller="TooltipCtrl" ng-class="getControllerClasses()">
         <div ng-repeat="tooltip in tooltips | filter:{enabled: true}" id="{{tooltip.id}}" ng-class="getTooltipClasses(tooltip)" ng-style="tooltip.style">
             <div class="tooltip_content" ng-bind-html="tooltip.message"></div>
+        </div>
+    </div>
+
+    <div id="loading" class="loading" ng-show="page.loading">
+        <div class="loading_spinner">
+            <div class="spinner">
+                <div class="mask">
+                    <div class="circle"></div>
+                </div>
+            </div>
+
+            <div class="loading_text">[<span ng-bind-html="'loading' | message">loading</span>]</div>
         </div>
     </div>
     }

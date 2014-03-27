@@ -34,6 +34,7 @@ mail.authorized.body=You have been authorized by {0}.
 # Generic UI
 cancel=Cancel
 reset=Reset
+loading=loading
 
 # Login, party, auth pages
 login.title=Login

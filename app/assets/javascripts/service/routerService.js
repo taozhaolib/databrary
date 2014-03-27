@@ -118,7 +118,9 @@ define(['config/module'], function (module) {
 			data = {
 				sid: data.container.id,
 				id: data.asset.id,
-				segment: data.segment ? data.segment.join(',') : ','
+				segment: data.segment ? (
+					angular.isArray(data.segment) ? data.segment.join(',') : data.segment
+					) : ','
 			};
 
 			return routerService.makeUrl('/slot/:sid/asset/:id/thumb', data);
@@ -131,7 +133,9 @@ define(['config/module'], function (module) {
 			data = {
 				sid: data.container.id,
 				id: data.asset.id,
-				segment: data.segment ? data.segment.join(',') : ','
+				segment: data.segment ? (
+					angular.isArray(data.segment) ? data.segment.join(',') : data.segment
+					) : ','
 			};
 
 			return routerService.makeUrl('/slot/:sid/asset/:id/head', data);
@@ -241,7 +245,7 @@ define(['config/module'], function (module) {
 		};
 
 		routerService.party = function (data) {
-			if(angular.isUndefined(data))
+			if (angular.isUndefined(data))
 				return console.log(data);
 
 			if (!$rootScope.type.isParty(data))
@@ -270,3 +274,4 @@ define(['config/module'], function (module) {
 		return routerService;
 	}]);
 });
+

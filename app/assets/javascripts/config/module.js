@@ -63,13 +63,14 @@ define([
 		}]);
 	}]);
 
-	module.run(['$rootScope', '$location', 'RouterService', 'BrowserService', 'ConstantService', 'AuthService', 'TypeService', 'PlayService', function ($rootScope, $location, router, browser, constant, auth, type, playService) {
+	module.run(['$rootScope', '$location', 'RouterService', 'BrowserService', 'ConstantService', 'AuthService', 'TypeService', 'PlayService', 'PageService', function ($rootScope, $location, router, browser, constant, auth, type, playService, page) {
 		// $rootScope specials -- TODO: cut out some of these
 		$rootScope.router = router;
 		$rootScope.browser = browser;
 		$rootScope.constant = constant;
 		$rootScope.auth = auth;
 		$rootScope.type = type;
+		$rootScope.page = page;
 
 		playService.run();
 

@@ -112,44 +112,57 @@ define(['config/module'], function (module) {
 
 		//
 
+		$routeProvider.when('/loading', {
+			controller: 'LoadingView',
+			templateUrl: 'loadingView.html',
+			resolve: {
+				authService: ['AuthService', function (auth) {
+					return auth.$promise;
+				}],
+				constantService: ['ConstantService', function (constants) {
+					return constants.$promise;
+				}]
+			},
+			reloadOnSearch: false
+		});
+
+		//
+
 		$routeProvider.otherwise({
 			redirectTo: '/search'
 		});
 	}]);
 
 	module.run(['$rootScope', 'RouterService', 'ConstantService', 'AuthService', '$location', function ($rootScope, router, constants, auth, $location) {
+		var loaded = false;
+
 		$rootScope.$on('$routeChangeStart', function (event, next, current) {
+			if (!loaded) {
+				if (current)
+					loaded = true;
+				else
+					auth.next = $location.url();
+
+				$location.url('/loading');
+				return;
+			}
+
 			if (auth.isLoggedIn()) {
 				if (auth.isUnauthorized() && next.$$route.controller != 'RegisterView') {
 					$location.url(router.register());
 				} else if (next.$$route.controller == 'WelcomeView') {
 					$location.url(router.search());
+				} else if (auth.next) {
+					$location.url(auth.next).replace();
+					auth.next = undefined;
 				}
 			} else {
 				if (auth.isPasswordPending() && next.$$route.controller != 'RegisterView') {
 					$location.url(router.register());
-				} else if (['WelcomeView', 'LoginView', 'RegisterView'].indexOf(next.$$route.controller) == -1) {
+				} else if (next.$$route && ['LoadingView', 'WelcomeView', 'LoginView', 'RegisterView'].indexOf(next.$$route.controller) == -1) {
 					auth.next = $location.url();
-					auth.$promise.then(function () {
-						if (auth.isAuthorized()) {
-							$location.url(auth.next);
-							auth.next = undefined;
-						} else {
-							$location.url(router.index());
-						}
-					});
-
 					$location.url(router.index());
 				}
-			}
-
-			if (angular.isUndefined(current) || $location.url() != next.$$route) {
-				if (!next.resolve)
-					next.resolve = {};
-
-				next.resolve['promiseConstants'] = function () {
-					return constants.$promise;
-				};
 			}
 		});
 	}]);
