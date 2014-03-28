@@ -53,7 +53,7 @@
                     <div class="toolbar_user col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
                 @requestOption match {
                     case Some(request : SiteRequest.Auth[_]) => {
-                        <a href="@requestOption.get.identity.pageURL" class="toolbar_user_link">
+                        <a href="@routes.PartyHtml.profile" class="toolbar_user_link">
                             <span class="username">@requestOption.get.identity.name</span>
                             <img src="@display.avatar(requestOption.get.identity, 16)" alt="@requestOption.get.identity.name" class="avatar">
                         </a>
