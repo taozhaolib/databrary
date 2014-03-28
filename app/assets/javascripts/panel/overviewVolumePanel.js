@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('OverviewVolumePanel', ['$scope', 'ConstantService', function ($scope, constants) {
+	module.controller('OverviewVolumePanel', ['$scope', 'ConstantService', '$filter', function ($scope, constants, $filter) {
 		$scope.refreshPanel = function () {
 			$scope.enabled = angular.isObject($scope.volume);
 		};
@@ -16,6 +16,16 @@ define(['config/module'], function (module) {
 
 		$scope.shareMessage = function (volumeAccess) {
 			return volumeAccess.access == 1 ? constants.message('auth.permission.VIEW', volumeAccess.party.name) : constants.message('auth.permission.DOWNLOAD', volumeAccess.party.name);
+		};
+
+		$scope.ageSummary = function (summary) {
+			var age = $filter('age');
+			var range = age(summary.agerange[0]);
+
+			if (summary.agerange[0] != summary.agerange[1])
+				range += ' - ' + age(summary.agerange[1]);
+
+			return constants.message('volume.ages', range, age(summary.agemean));
 		};
 	}]);
 });

@@ -9,6 +9,7 @@ define([
 	'service/typeService',
 	'service/tooltipService',
 	'service/pageService',
+	'service/displayService',
 	'service/constantService',
 	'service/routerService'
 ], function () {});

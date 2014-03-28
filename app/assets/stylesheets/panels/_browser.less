@@ -485,3 +485,21 @@
 	background: @c6g5m1;
 	border-color: @c6g3m2;
 }
+
+.display_age {
+	.transition();
+	background-color: fadeout(@g5, 100%);
+	cursor: pointer;
+
+	&:hover {
+		background-color: @g5;
+	}
+
+	&:before {
+		content: '(';
+	}
+
+	&:after {
+		content: ')';
+	}
+}

@@ -30,7 +30,7 @@
             <dl class="flat_list cf" ng-repeat="(categoryID, records) in getSessionRecords(data)">
                 <dt bo-html="formatSessionCategory(data, categoryID, records)" ng-class="{solo: !recordIdentifier(data.volume.records[records[0].id])}"></dt>
 
-                <dd ng-repeat="record in records" ng-if="recordIdentifier(data.volume.records[record.id])"><span bo-html="recordIdentifier(data.volume.records[record.id])"></span><span bo-if="record.age"> (</span><span bo-if="record.age" bo-html="formatAge(record.age)"></span><span bo-if="record.age">)</span></dd>
+                <dd ng-repeat="record in records" ng-if="recordIdentifier(data.volume.records[record.id])"><span bo-html="recordIdentifier(data.volume.records[record.id])"></span><span bo-if="record.age"> <display-age value="{{record.age}}"></display-age></span></dd>
             </dl>
 
             <dl class="flat_list cf" bo-if="data.object.date">

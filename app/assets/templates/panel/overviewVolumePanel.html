@@ -52,7 +52,7 @@
                         <dd>{{'volume.sessions' | message:volume.summary.sessions:volume.summary.shared}}</dd>
 
                         <dt ng-if="volume.summary.agemean > 0">{{'volume.ages.title' | message}}</dt>
-                        <dd ng-if="volume.summary.agemean > 0">{{volume.summary | ageSummary}}</dd>
+                        <dd ng-if="volume.summary.agemean > 0">{{ageSummary(volume.summary)}}</dd>
                     </dl>
                 </div>
             </div>
