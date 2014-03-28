@@ -78,7 +78,7 @@ object AssetFormat extends TableId[AssetFormat]("format") {
   }
   /** Get a list of all file formats in the database. */
   def getAll : Iterable[AssetFormat] =
-    // XXX incomplete but assymptotically correct
+    // XXX incomplete but asymptotically correct
     cache.values
 
   def getFilename(filename : String) : Option[AssetFormat] =
