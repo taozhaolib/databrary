@@ -35,6 +35,13 @@ mail.authorized.body=You have been authorized by {0}.
 cancel=Cancel
 reset=Reset
 
+# HTML page attributes
+page.title.welcome=Welcome
+page.title.login=Login
+page.title.register=Register
+page.title.loading=Loading...
+page.title.search=Search
+
 # Login, party, auth pages
 login.title=Login
 login.title.sub=Enter Databrary

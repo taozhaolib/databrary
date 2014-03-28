@@ -1,8 +1,9 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('PartyView', ['$scope', 'party', 'PanelService', function ($scope, party, panelService) {
+	module.controller('PartyView', ['$scope', 'party', 'PanelService', 'PageService', function ($scope, party, panelService, page) {
 		$scope.party = party;
+		page.title = party.name;
 
 		var volumes = [];
 
