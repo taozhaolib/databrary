@@ -5,7 +5,7 @@ define(['config/module'], function (module) {
 		var link = function ($scope, $element, $attrs) {
 			$scope.change = display.toggleAge;
 
-			var formatAge = function () { console.log($scope.age);
+			var formatAge = function () {
 				$scope.age = display.formatAge($scope.value);
 			};
 

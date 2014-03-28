@@ -10,7 +10,7 @@ define(['config/module'], function (module) {
 			if(!angular.isObject(party) || !angular.isObject(other))
 				return [];
 
-			if (request) { console.log();
+			if (request) {
 				if (other.institution || other.id == 0)
 					return constantService.data.preset.institution.slice(0, 2);
 				else

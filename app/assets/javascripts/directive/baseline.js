@@ -88,13 +88,6 @@ define(['config/module'], function (module) {
 
 			//
 
-			$attrs.$observe('baseline', function () {
-				$scope.updateBaseline();
-				$scope.triggerBaseline();
-			});
-
-			//
-
 			$(window).on('resize', function () {
 				$scope.timeoutBaseline();
 			});

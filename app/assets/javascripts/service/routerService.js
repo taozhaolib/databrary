@@ -242,9 +242,6 @@ define(['config/module'], function (module) {
 		};
 
 		routerService.party = function (data) {
-			if (angular.isUndefined(data))
-				return console.log(data);
-
 			if (!type.isParty(data))
 				throw new Error('routerService.party() requires Party as first parameter');
 

@@ -40,12 +40,6 @@ define(['config/module'], function (module) {
 
 			//
 
-			$scope.$watch(function () {
-				return $w.scrollTop() + ' ' + $w.scrollLeft() + ' ' + $w.height() + ' ' + $w.width();
-			}, function () {
-				$scope.updateCurrentPanel();
-			});
-
 			$w.on('scroll resize', function () {
 				$scope.$apply(function () { $scope.updateCurrentPanel(); });
 			});

@@ -75,7 +75,7 @@ define(['config/module'], function (module) {
 					Volume.get({
 						id: $scope.volume.id,
 						tags: ''
-					}, function (data) { console.log(data.tags);
+					}, function (data) {
 						$scope.volume.tags = data.tags;
 						$scope.refreshPanel();
 					});
