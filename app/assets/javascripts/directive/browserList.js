@@ -228,6 +228,9 @@ define(['config/module'], function (module) {
 				if (data.object.body && regex.test(data.object.body.toLowerCase()))
 					return true;
 
+				if (data.object.more && regex.test(data.object.more.toLowerCase()))
+					return true;
+
 				return false;
 			};
 
