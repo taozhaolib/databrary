@@ -1,6 +1,7 @@
 package controllers
 
 import play.api._
+import play.api.Play.current
 import play.api.mvc._
 import play.api.data._
 import play.api.i18n.Messages
@@ -90,7 +91,8 @@ object TokenHtml extends TokenController with HtmlController {
     val form = new IssuePasswordForm()._bind
     for {
       acct <- Account.getEmail(form.email.get)
-      acct <- macros.Async.filter[Account](acct, _.party.access.map(_.direct < Permission.ADMIN))
+      acct <- if (Play.isProd) macros.Async.filter[Account](acct, _.party.access.map(_.direct < Permission.ADMIN))
+	else macros.Async(acct)
       _ <- newPassword(acct.toRight(form.email.get))
     } yield (Ok("sent"))
   }
