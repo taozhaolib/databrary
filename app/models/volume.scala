@@ -266,7 +266,7 @@ object Volume extends TableId[Volume]("volume") {
 
     private[Volume] def get(vol : Volume) : Future[Seq[Session]] =
       row(vol)
-      .SELECT("ORDER BY container.id, record.category NULLS LAST, record.id")
+      .SELECT("ORDER BY container.top DESC, container.id, record.category NULLS LAST, record.id")
       .apply().list
 
     type Group = (Container, Seq[(Option[RecordCategory.Id], Seq[(Segment, Record)])])
