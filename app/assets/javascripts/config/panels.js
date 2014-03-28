@@ -5,6 +5,7 @@ define([
 	'panel/publicationsPanel',
 	'panel/networkPanel',
 	'panel/registerPanel',
+	'panel/resetPanel',
 	'panel/tagsPanel',
 	'panel/commentsPanel',
 	'panel/welcomePanel',

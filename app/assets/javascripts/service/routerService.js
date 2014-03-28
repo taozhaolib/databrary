@@ -57,6 +57,7 @@ define(['config/module'], function (module) {
 		routerService.index = makeRoute('/');
 		routerService.login = makeRoute('/login');
 		routerService.register = makeRoute('/register');
+		routerService.password = makeRoute('/password');
 
 		routerService.search = makeRoute('/search');
 		routerService.asset = makeRoute('/asset/:id');

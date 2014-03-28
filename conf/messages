@@ -38,6 +38,7 @@ reset=Reset
 # HTML page attributes
 page.title.welcome=Welcome
 page.title.login=Login
+page.title.reset=Password Reset
 page.title.register=Register
 page.title.loading=Loading...
 page.title.search=Search
@@ -48,6 +49,7 @@ login.title.sub=Enter Databrary
 login.login=Login
 login.method.password=or login with Databrary.
 login.method.openid=or login with OpenID.
+login.forgot=Forgot your password?
 email=Email
 password=Password
 password.incorrect=Incorrect password.
@@ -60,6 +62,13 @@ login.openID.notFound=No account is associated with that OpenID.
 login.noCookie=You must be logged in to perform that action. Please make sure you have cookies enabled.
 login.expired=Your session has expired. Please login again.
 login.logout=You have been logged out.
+
+reset.title=Shucks!
+reset.title.sub=Reset Password
+reset.request=Reset
+reset.save=Save
+reset.request.complete=Password reset email sent to {0}. Please follow the instructions in that message.
+reset.save.complete=Your password has been reset! Enjoy your Databrary experience.
 
 welcome.title=Welcome
 welcome.title.sub=Databrary''s in Beta.

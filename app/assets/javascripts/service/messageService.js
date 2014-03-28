@@ -42,8 +42,11 @@ define(['config/module'], function (module) {
 			var newMessage = addFn(message);
 
 			if (newMessage) {
-				messages.target(newMessage);
-				messages.countdown(newMessage);
+				if (newMessage.target)
+					messages.target(newMessage);
+
+				if (newMessage.countdown)
+					messages.countdown(newMessage);
 			}
 
 			return newMessage;
@@ -97,13 +100,13 @@ define(['config/module'], function (module) {
 
 			if (focusElements.indexOf(message.targetElement.prop('tagName')) >= 0)
 				return [
-					'focusin' + namespace + '_' + message.id,
-					'focusout' + namespace + '_' + message.id
+						'focusin' + namespace + '_' + message.id,
+						'focusout' + namespace + '_' + message.id
 				];
 
 			return [
-				'mouseenter' + namespace + '_' + message.id,
-				'mouseleave' + namespace + '_' + message.id
+					'mouseenter' + namespace + '_' + message.id,
+					'mouseleave' + namespace + '_' + message.id
 			];
 		};
 

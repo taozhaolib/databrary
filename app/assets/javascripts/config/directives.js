@@ -9,6 +9,7 @@ define([
 	'directive/message',
 	'directive/authSearchForm',
 	'directive/authGrantForm',
+	'directive/userPasswordForm',
 	'directive/authApplyForm',
 	'directive/repeater',
 	'directive/metricsRepeater',

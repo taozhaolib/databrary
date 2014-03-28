@@ -45,7 +45,7 @@ define(['config/module'], function (module) {
 		//
 
 		$scope.registerForm = {};
-		$scope.passwordForm = {};
+		$scope.userPasswordForm = {};
 		$scope.authSearchForm = {};
 		$scope.authApplyForm = {};
 		$scope.infoForm = {};
@@ -200,44 +200,12 @@ define(['config/module'], function (module) {
 			},
 
 			'register_password': function (step) {
-				$scope.passwordForm = step.passwordForm;
-				$scope.passwordForm.data = {
-					token: undefined,
-					auth: undefined,
-					password: {
-						once: undefined,
-						again: undefined
-					}
-				};
-				$scope.passwordForm.sent = false;
+				$scope.userPasswordForm = step.userPasswordForm;
+				$scope.userPasswordForm.sent = false;
 
-				if (user.password) {
-					$scope.passwordForm.data.token = $window.$play.object.id;
-					$scope.passwordForm.data.auth = $window.$play.object.auth;
-				}
-
-				$scope.passwordForm.ready = function () {
-					return $scope.passwordForm.$dirty &&
-						$scope.passwordForm.$valid &&
-						$scope.passwordForm.data.password.once &&
-						$scope.passwordForm.data.password.once ==
-						$scope.passwordForm.data.password.again;
-				};
-
-				$scope.passwordForm.proceed = function () {
-					$http
-						.post('/api/party/' + $window.$play.object.party + '/password', $scope.passwordForm.data)
-						.success(function (data) {
-							$window.$play.object = null;
-
-							$scope.passwordForm.sent = true;
-							authService.updateUser(data);
-
-							$scope.updateWizard();
-						})
-						.error(function () {
-							$window.$play.object = null;
-						});
+				$scope.userPasswordForm.saveSuccessFn = function (form) {
+					$scope.userPasswordForm.sent = true;
+					$scope.updateWizard();
 				};
 			},
 
@@ -348,10 +316,10 @@ define(['config/module'], function (module) {
 			},
 
 			'register_password': function (step, activate) {
-				step.allow = user.anon && user.password && !$scope.passwordForm.sent;
+				step.allow = user.anon && user.password && !$scope.userPasswordForm.sent;
 
 				if (activate)
-					step.active = user.anon && user.password && !$scope.passwordForm.sent;
+					step.active = user.anon && user.password && !$scope.userPasswordForm.sent;
 
 				step.complete = !user.anon;
 			},

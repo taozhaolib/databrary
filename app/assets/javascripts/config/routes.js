@@ -30,6 +30,14 @@ define(['config/module'], function (module) {
 
 		//
 
+		$routeProvider.when('/password', {
+			controller: 'ResetView',
+			templateUrl: 'resetView.html',
+			reloadOnSearch: false
+		});
+
+		//
+
 		$routeProvider.when('/search', {
 			controller: 'SearchView',
 			templateUrl: 'searchView.html',
@@ -151,7 +159,7 @@ define(['config/module'], function (module) {
 			if (auth.isLoggedIn()) {
 				if (auth.isUnauthorized() && next.$$route && next.$$route.controller != 'RegisterView') {
 					$location.url(router.register());
-				} else if (next.$$route && ['WelcomeView', 'LoginView', 'RegisterView'].indexOf(next.$$route.controller) != -1) {
+				} else if (next.$$route && ['ResetView', 'WelcomeView', 'LoginView', 'RegisterView'].indexOf(next.$$route.controller) != -1) {
 					$location.url(router.search());
 				} else if (auth.next) {
 					$location.url(auth.next).replace();
@@ -160,7 +168,7 @@ define(['config/module'], function (module) {
 			} else {
 				if (auth.isPasswordPending() && next.$$route && next.$$route.controller != 'RegisterView') {
 					$location.url(router.register());
-				} else if (next.$$route && ['LoadingView', 'WelcomeView', 'LoginView', 'RegisterView'].indexOf(next.$$route.controller) == -1) {
+				} else if (next.$$route && ['ResetView', 'LoadingView', 'WelcomeView', 'LoginView', 'RegisterView'].indexOf(next.$$route.controller) == -1) {
 					auth.next = $location.url();
 					$location.url(router.index());
 				}

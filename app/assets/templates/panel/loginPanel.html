@@ -10,19 +10,21 @@
                 <form name="loginForm">
                     <div ng-switch="panel.getMethod()">
                         <div ng-switch-default>
-			    <input id="loginEmail" type="email" ng-model="loginData.email" placeholder="{{'email' | message}}">
-			    <input id="loginPassword" type="password" ng-model="loginData.password" placeholder="{{'password' | message}}" ng-required>
+                            <input id="loginEmail" type="email" ng-model="loginData.email" placeholder="{{'email' | message}}">
+                            <input id="loginPassword" type="password" ng-model="loginData.password" placeholder="{{'password' | message}}" ng-required>
                         </div>
 
                         <div ng-switch-when="openid">
-			    <input id="loginOpenid" type="text" ng-model="loginData.openid" placeholder="{{'openid' | message}}" ng-required>
+			                <input id="loginOpenid" type="text" ng-model="loginData.openid" placeholder="{{'openid' | message}}" ng-required>
                         </div>
                     </div>
 
-		    <button id="loginSubmit" type="submit" class="button" ng-click="submitForm()" ng-disabled="!loginForm.$dirty || loginForm.$invalid">{{"login.login" | message}}</button>
+                    <button id="loginSubmit" type="submit" class="button" ng-click="submitForm()" ng-disabled="!loginForm.$dirty || loginForm.$invalid">{{"login.login" | message}}</button>
 
-		    <a ng-click="panel.switchMethod('openid')" ng-show="panel.showMethodLink('openid')">{{"login.method.openid" | message}}</a>
-		    <a ng-click="panel.switchMethod('databrary')" ng-show="panel.showMethodLink('databrary')">{{"login.method.password" | message}}</a>
+                    <a ng-click="panel.switchMethod('openid')" ng-show="panel.showMethodLink('openid')">{{"login.method.openid" | message}}</a>
+                    <a ng-click="panel.switchMethod('databrary')" ng-show="panel.showMethodLink('databrary')">{{"login.method.password" | message}}</a>
+
+                    <a ng-href="{{router.password()}}">{{"login.forgot" | message}}</a>
                 </form>
             </div>
         </div>
