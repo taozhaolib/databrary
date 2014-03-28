@@ -157,13 +157,15 @@ define(['config/module'], function (module) {
 			}
 
 			if (auth.isLoggedIn()) {
-				if (auth.isUnauthorized() && (!next.$$route || next.$$route.controller != 'RegisterView')) {
-					$location.url(router.register());
-				} else if (next.$$route && ['ResetView', 'WelcomeView', 'LoginView', 'RegisterView'].indexOf(next.$$route.controller) == -1) {
+				if (auth.isUnauthorized()) {
+					if (!next.$$route || next.$$route.controller != 'RegisterView')
+						$location.url(router.register());
+					return;
+				} else if (next.$$route && ['ResetView', 'WelcomeView', 'LoginView', 'RegisterView'].indexOf(next.$$route.controller) != -1) {
 					$location.url(router.search());
 				} else if (auth.next) {
-					auth.next = undefined;
 					$location.url(auth.next).replace();
+					auth.next = undefined;
 				}
 			} else {
 				if (auth.isPasswordPending() && next.$$route && next.$$route.controller != 'RegisterView') {
