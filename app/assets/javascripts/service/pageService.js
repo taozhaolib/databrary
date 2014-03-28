@@ -26,4 +26,8 @@ define(['config/module'], function (module) {
 
 		return pageService;
 	}]);
+
+	module.run(function () {
+		$('#loading').addClass('loaded');
+	});
 });
