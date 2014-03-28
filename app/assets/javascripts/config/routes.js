@@ -151,7 +151,7 @@ define(['config/module'], function (module) {
 			if (auth.isLoggedIn()) {
 				if (auth.isUnauthorized() && next.$$route && next.$$route.controller != 'RegisterView') {
 					$location.url(router.register());
-				} else if (next.$$route && next.$$route.controller == 'WelcomeView') {
+				} else if (next.$$route && ['WelcomeView', 'LoginView', 'RegisterView'].indexOf(next.$$route.controller) != -1) {
 					$location.url(router.search());
 				} else if (auth.next) {
 					$location.url(auth.next).replace();

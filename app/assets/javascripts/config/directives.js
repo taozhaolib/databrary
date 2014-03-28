@@ -8,6 +8,7 @@ define([
 	'directive/hover',
 	'directive/message',
 	'directive/authSearchForm',
+	'directive/authGrantForm',
 	'directive/authApplyForm',
 	'directive/repeater',
 	'directive/metricsRepeater',

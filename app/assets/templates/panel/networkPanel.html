@@ -1,7 +1,7 @@
 <panel ng-controller="NetworkPanel" id="panel_network" panel-title="{{'network.title' | message}}" fold>
     <panel-mode name="view" active>
         <div ng-show="parents">
-	    <h2>{{'auth.parents.title' | message}}</h2>
+	        <h2>{{'auth.parents.title' | message}}</h2>
 
             <div class="row">
                 <div ng-repeat="party in parents" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
@@ -11,7 +11,7 @@
         </div>
 
         <div ng-show="children">
-	    <h2>{{'auth.children.title' | message}}</h2>
+	        <h2>{{'auth.children.title' | message}}</h2>
 
             <div class="row">
                 <div ng-repeat="party in children" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
@@ -22,7 +22,7 @@
     </panel-mode>
 
     <panel-mode name="apply" access="CONTRIBUTE">
-	<h2>{{'auth.parents.title' | message}}</h2>
+	    <h2>{{'auth.parents.title' | message}}</h2>
 
         <article class="network-auth cf" bindonce ng-repeat="parent in partyAuth.parents">
             <div class="row">
@@ -41,13 +41,13 @@
 
                         <div ng-hide="currentAuthParent == parent">
                             <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-				<div class="network-auth-heading" bo-html="'auth.inherit' | message:'Their'"/>
-				    <div class="network-auth-inherit" ng-bind-html="'auth.inherit.'+constant.data.permission[parent.inherit].name | message:'their'"/>
+				                <div class="network-auth-heading" bo-html="'auth.inherit' | message:'Their'"></div>
+				                <div class="network-auth-inherit" ng-bind-html="'auth.inherit.'+constant.data.permission[parent.inherit].name | message:'their'"></div>
                             </div>
 
                             <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="parent.institution || parent.direct !== 0">
-				<div class="network-auth-heading" bo-html="'auth.direct' | message:'Their'"/>
-				<div class="network-auth-direct" ng-bind-html="'auth.direct.'+constant.data.permission[parent.direct].name | message:'their'"/>
+                                <div class="network-auth-heading" bo-html="'auth.direct' | message:'Their'"></div>
+                                <div class="network-auth-direct" ng-bind-html="'auth.direct.'+constant.data.permission[parent.direct].name | message:'their'"></div>
                             </div>
 
                             <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="!parent.institution && parent.direct === 0">
@@ -55,32 +55,16 @@
                             </div>
 
                             <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
-				<div class="network-auth-heading expiration" bo-html="'auth.expiration' | message"/>
+				                <div class="network-auth-heading expiration" bo-html="'auth.expiration' | message"></div>
                                 <div class="network-auth-expiration" ng-bind-html="parent.expires | date:'longDate'"></div>
-                                <div class="network-auth-expiration" ng-if="!parent.expires && parent.authorized" ng-bind-html="'auth.expiration.none' | message"/>
-				<div class="network-auth-expiration" ng-if="!parent.authorized" ng-bind-html="'auth.pending' | message"/>
+                                <div class="network-auth-expiration" ng-if="!parent.expires && parent.authorized" ng-bind-html="'auth.expiration.none' | message"></div>
+				                <div class="network-auth-expiration" ng-if="!parent.authorized" ng-bind-html="'auth.pending' | message"></div>
                             </div>
                         </div>
 
                         <div ng-if="currentAuthParent == parent">
                             <div class="col-desktop-12 col-laptop-10 col-tablet-8 col-mobile-5">
-                                <form name="authForm">
-                                    <fieldset class="clean">
-					<legend bo-html="'auth.request.title' | message:parent.party.name"/>
-
-                                        <div ng-repeat="preset in getPresets(parent)">
-                                            <input type="radio" name="shortcut" ng-checked="presetSelected(parent, preset)" ng-click="setPreset(parent, preset)">
-                                            <label class="option" bo-html="preset.name"></label>
-                                        </div>
-                                    </fieldset>
-
-                                    <fieldset class="clean">
-                                        <input type="hidden" name="id" bo-value="parent.id">
-
-					<button ng-click="saveAuthParent()" class="second">{{"auth.request" | message}}</button>
-					<button ng-click="closeAuthParent()" class="first">{{"cancel" | message}}</button>
-                                    </fieldset>
-                                </form>
+                                <auth-apply-form></auth-apply-form>
                             </div>
                         </div>
                     </div>
@@ -98,7 +82,7 @@
 
                 <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
                     <div class="row">
-                        <auth-search-form></auth-search-form>
+                        <auth-search-form party="{{party.id}}"></auth-search-form>
                     </div>
                 </div>
             </div>
@@ -123,80 +107,28 @@
                             <span class="network-auth-email" bo-if="child.party.email" bo-html="child.party.email"></span>
                         </div>
 
-                        <div ng-hide="currentAuthChild == child">
+                        <div ng-if="currentAuthChild != child">
                             <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-				<div class="network-auth-heading" bo-html="'auth.direct' | possessive:party"/>
-				<div class="network-auth-direct" ng-bind-html="'auth.direct.'+constant.data.permission[child.direct].name | possessive:party"/>
+                                <div class="network-auth-heading" bo-html="'auth.direct' | possessive:party"></div>
+                                <div class="network-auth-direct" ng-bind-html="'auth.direct.'+constant.data.permission[child.direct].name | possessive:party"></div>
                             </div>
 
                             <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-				<div class="network-auth-heading" bo-html="'auth.inherit' | possessive:party"/>
-				<div class="network-auth-inherit" ng-bind-html="'auth.inherit.'+constant.data.permission[child.inherit].name | possessive:party"/>
+                                <div class="network-auth-heading" bo-html="'auth.inherit' | possessive:party"></div>
+                                <div class="network-auth-inherit" ng-bind-html="'auth.inherit.'+constant.data.permission[child.inherit].name | possessive:party"></div>
                             </div>
 
                             <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
-				<div class="network-auth-heading expiration" bo-html="'auth.expiration' | message"/>
+				                <div class="network-auth-heading expiration" bo-html="'auth.expiration' | message"></div>
                                 <div class="network-auth-expiration" ng-bind-html="child.expires | date:'longDate'"></div>
-                                <div class="network-auth-expiration" ng-if="!child.expires && child.authorized" ng-bind-html="'auth.expiration.none' | message"/>
-				<div class="network-auth-expiration" ng-if="!child.authorized" ng-bind-html="'auth.pending' | message"/>
+                                <div class="network-auth-expiration" ng-if="!child.expires && child.authorized" ng-bind-html="'auth.expiration.none' | message"></div>
+				                <div class="network-auth-expiration" ng-if="!child.authorized" ng-bind-html="'auth.pending' | message"></div>
                             </div>
                         </div>
 
                         <div ng-if="currentAuthChild == child">
                             <div class="col-desktop-12 col-laptop-10 col-tablet-8 col-mobile-5">
-                                <form name="authForm">
-                                    <fieldset class="clean">
-					<legend bo-html="'auth.grant.title' | message:child.party.name"/>
-
-                                        <div ng-repeat="preset in getPresets(child)">
-                                            <input type="radio" name="shortcut" ng-checked="presetSelected(child, preset)" ng-click="setPreset(child, preset)">
-                                            <label class="option" bo-html="preset.name"></label>
-                                        </div>
-                                    </fieldset>
-
-                                    <div class="row" ng-show="child.preset.custom">
-                                        <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
-                                            <fieldset ng-disabled="!child.preset.custom" class="boxed">
-						<legend bo-html="'auth.direct' | possessive:party"/>
-
-                                                <div ng-repeat="permission in constant.data.permission">
-                                                    <input type="radio" ng-model="child.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == child.direct">
-                                                    <label bo-html="'auth.direct.'+constant.data.permission[permission.id].name | possessive:party" class="option"></label>
-                                                </div>
-                                            </fieldset>
-                                        </div>
-
-                                        <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
-                                            <fieldset ng-disabled="!child.preset.custom" class="boxed">
-						<legend bo-html="'auth.inherit' | possessive:party"/>
-
-                                                <div ng-repeat="permission in constant.data.permission">
-                                                    <input type="radio" ng-model="child.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == child.inherit">
-                                                    <label bo-html="'auth.inherit.'+constant.data.permission[permission.id].name | possessive:party" class="option"></label>
-                                                </div>
-                                            </fieldset>
-                                        </div>
-                                    </div>
-
-                                    <fieldset class="clean">
-					<label>{{"auth.expiration" | message}}:</label>
-
-                                        <input type="date" ng-model="child.expiration" class="network-auth-expiration-input">
-
-                                        <button ng-click="child.expiration = ''" ng-if="auth.hasAuth('SUPER')" class="third network-auth-expiration-button">Clear expiration</button>
-                                    </fieldset>
-
-                                    <fieldset class="clean">
-                                        <input type="hidden" name="id" bo-value="child.id">
-
-					<button ng-click="saveAuthChild()" class="second" ng-if="!child.authorized">{{"auth.authorize" | message}}</button>
-					<button ng-click="denyAuthChild()" class="third" ng-if="!child.authorized && !child.force">{{"auth.deny" | message}}</button>
-
-					<button ng-click="saveAuthChild()" class="second" ng-if="child.authorized">{{"auth.update" | message}}</button>
-
-					<button ng-click="closeAuthChild()" class="first">{{"cancel" | message}}</button>
-                                    </fieldset>
-                                </form>
+                                <auth-grant-form></auth-grant-form>
                             </div>
                         </div>
                     </div>

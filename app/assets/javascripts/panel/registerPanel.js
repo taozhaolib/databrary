@@ -266,7 +266,7 @@ define(['config/module'], function (module) {
 
 				step.ifInfo = function () {
 					return angular.isString($scope.infoForm.data.query);
-				}
+				};
 
 				//
 

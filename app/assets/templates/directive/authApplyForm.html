@@ -9,9 +9,10 @@
         </fieldset>
 
         <fieldset class="clean">
-            <input type="hidden" name="id" ng-value="other.id">
+            <input type="hidden" name="id" ng-value="authApplyForm.other.id">
 
         <button ng-click="authApplyForm.save()" class="second" ng-disabled="authApplyForm.other.inherit == 0 && authApplyForm.other.direct == 0">{{"auth.request" | message}}</button>
         <button ng-click="authApplyForm.cancel()" class="first">{{"cancel" | message}}</button>
     </fieldset>
 </form>
+
