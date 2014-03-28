@@ -151,7 +151,7 @@ private[models] object SlotRecord extends SlotTable("slot_record") {
 
   def slots(record : Record) =
     row(record)
-    .SELECT("WHERE slot_record.record = ? AND container.volume = ? ORDER BY slot_record.container, slot_record.segment")
+    .SELECT("WHERE slot_record.record = ? AND container.volume = ? ORDER BY container.top DESC, slot_record.container, slot_record.segment")
     .apply(record.id, record.volumeId).list
 
   def add(record : Record, slot : Slot) =
