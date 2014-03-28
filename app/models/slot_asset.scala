@@ -118,7 +118,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 	"WHERE container.volume = ? AND asset.volume = container.volume",
 	  "AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')",
 	  "AND data_permission(?::permission,", table + "_consent.consent, asset.classification, ?::permission,", isExcerpt.toString, ", container.top) >= 'DOWNLOAD'",
-	"ORDER BY container.top DESC, asset.format DESC LIMIT 1")
+	"ORDER BY asset.format DESC, container.top DESC,", table + "_consent.consent DESC NULLS LAST LIMIT 1")
       .apply(volume.id, volume.permission, volume.site.access.group).singleOpt
     final def getThumb(slot : Slot) : Future[Option[SlotAsset]] =
       assetRow(rowContainer(slot.container))
