@@ -47,8 +47,8 @@ object AV {
     /* XXX this rounds outwards to keyframes and does other strange things with timing */
     val r = new ProcessBuilder("ffmpeg", "-loglevel", "error", "-threads", "1", "-accurate_seek", 
       "-ss", section.lower.seconds.toString, 
-      "-to", section.upper.seconds.toString, 
       "-i", infile.getPath, 
+      "-t", (section.upper - section.lower).seconds.toString,
       "-codec", "copy", 
       outfile.getPath).
       inheritIO.redirectInput(new File("/dev/null")).start.waitFor
