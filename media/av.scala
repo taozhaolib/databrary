@@ -45,11 +45,12 @@ object AV {
     _frame(infile.getPath, offset.seconds, outfile.getPath)
   def segment(infile : File, section : Section, outfile : File) : Unit = {
     /* XXX this rounds outwards to keyframes and does other strange things with timing */
-    val r = new ProcessBuilder("ffmpeg", "-loglevel", "error", "-threads", "1", "-accurate_seek", 
+    val r = new ProcessBuilder("ffmpeg", "-y", "-loglevel", "error", "-threads", "1", "-accurate_seek", 
       "-ss", section.lower.seconds.toString, 
       "-i", infile.getPath, 
       "-t", (section.upper - section.lower).seconds.toString,
-      "-codec", "copy", 
+      "-codec", "copy",
+      "-f", "mp4",
       outfile.getPath).
       inheritIO.redirectInput(new File("/dev/null")).start.waitFor
     if (r != 0)
