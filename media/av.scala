@@ -49,7 +49,8 @@ object AV {
       "-ss", section.lower.seconds.toString, 
       "-i", infile.getPath, 
       "-t", (section.upper - section.lower).seconds.toString,
-      "-codec", "copy", 
+      "-codec", "copy",
+      "-f", "mp4",
       outfile.getPath).
       inheritIO.redirectInput(new File("/dev/null")).start.waitFor
     if (r != 0)
