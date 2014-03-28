@@ -8,11 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     @defining("Databrary: The Open Data Library for Developmental Science"){ tail =>
-        @if(angular){
-            <title>{{page.title}} || @tail</title>
-        }else{
-            <title>@title || @tail</title>
-        }
+        <title @if(angular){ng-bind="page.title + ' || @tail'"}>@title || @tail</title>
     }
 
     <!-- icons -->
