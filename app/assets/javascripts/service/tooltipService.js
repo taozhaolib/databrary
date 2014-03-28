@@ -200,6 +200,17 @@ define(['config/module'], function (module) {
 
 		//
 
+		$rootScope.$watch(function () {
+			angular.forEach(tooltips, function (tooltip) {
+				if(tooltip.$target.closest(document.documentElement).length == 0) {
+					removeEvents(tooltip);
+					tooltips.remove(tooltip);
+				}
+			});
+		});
+
+		//
+
 		return tooltips;
 	}]);
 });

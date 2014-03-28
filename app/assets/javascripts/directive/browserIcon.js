@@ -1,8 +1,8 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('browserIcon', ['BrowserService', function (browserService) {
-		var link = function ($scope) {
+	module.directive('browserIcon', ['BrowserService', 'TypeService', 'ConstantService', 'TooltipService', function (browserService, type, constants, tooltips) {
+		var link = function ($scope, $element) {
 			$scope.browser = $scope.browser || browserService;
 
 			//
@@ -13,6 +13,9 @@ define(['config/module'], function (module) {
 
 			$scope.expanderClasses = function (data) {
 				var classes = [];
+
+				if (browserService.canExpand(data))
+					classes.push('enabled');
 
 				classes.push(data.expand ? 'active' : '');
 
@@ -25,7 +28,6 @@ define(['config/module'], function (module) {
 			scope: false,
 			templateUrl: 'browserIcon.html',
 			replace: true,
-			priority: 100,
 			link: link
 		};
 	}]);

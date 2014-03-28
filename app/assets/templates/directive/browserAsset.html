@@ -10,15 +10,12 @@ ng-click="setItemPlayer(data)">
                 <div class="item_meta sep"
                      bo-if="data.object.asset.duration">|</div>
 
-                <div class="item_meta classification"
-                     bo-html="constant.get('classification', data.object.asset.classification).name"></div>
+                <div tooltip class="item_meta icon" bo-class="constant.get('classification', data.object.asset.classification).name.toLowerCase()" tooltip-message="{{'auth.classification.'+constant.get('classification', data.object.asset.classification).name | message:'You'}}"></div>
 
                 <div class="item_meta sep"
                      bo-if="browser.hasAccess(data, 3)">|</div>
 
-                <a class="browser_tool edit"
-                   bo-href="editLink(data)" target="_self"
-                   ng-if="browser.hasAccess(data, 3)"></a>
+                <a bo-href="editLink(data)" target="_self" ng-if="browser.hasAccess(data, 3)">edit</a>
             </footer>
 
             <header>

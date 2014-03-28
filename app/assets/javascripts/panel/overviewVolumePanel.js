@@ -15,7 +15,7 @@ define(['config/module'], function (module) {
 		};
 
 		$scope.shareMessage = function (volumeAccess) {
-			return volumeAccess.access == 1 ? constants.message('share.VIEW', volumeAccess.party.name) : constants.message('share.DOWNLOAD', volumeAccess.party.name);
+			return volumeAccess.access == 1 ? constants.message('auth.permission.VIEW', volumeAccess.party.name) : constants.message('auth.permission.DOWNLOAD', volumeAccess.party.name);
 		};
 	}]);
 });

@@ -244,13 +244,15 @@
 		height: @b1 * 1.5;
 		float: left;
 
-		&:hover {
-			background: url('/public/images/browser/tool-folder-closed.png') no-repeat 4px 10px;
-		}
-
-		&.active {
+		&.enabled {
 			&:hover {
-				background-image: url('/public/images/browser/tool-folder-open.png');
+				background: url('/public/images/browser/tool-folder-closed.png') no-repeat 4px 10px;
+			}
+
+			&.active {
+				&:hover {
+					background-image: url('/public/images/browser/tool-folder-open.png');
+				}
 			}
 		}
 	}
