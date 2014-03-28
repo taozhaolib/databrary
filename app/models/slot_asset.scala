@@ -118,7 +118,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 	"WHERE container.volume = ? AND asset.volume = container.volume",
 	  "AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')",
 	  "AND data_permission(?::permission,", table + "_consent.consent, asset.classification, ?::permission,", isExcerpt.toString, ", container.top) >= 'DOWNLOAD'",
-	"ORDER BY container.top DESC,", table + "_consent.consent DESC NULLS LAST LIMIT 1")
+	"ORDER BY container.top DESC, asset.format DESC LIMIT 1")
       .apply(volume.id, volume.permission, volume.site.access.group).singleOpt
     final def getThumb(slot : Slot) : Future[Option[SlotAsset]] =
       assetRow(rowContainer(slot.container))
@@ -180,13 +180,13 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   private[this] def excerpts(volume : Volume) : Future[Seq[SlotAsset]] =
     Excerpt.assetRowVolume(volume)
-    .SELECT("WHERE asset.volume = container.volume")
-    .apply().list
+    .SELECT("WHERE asset.volume = container.volume AND data_permission(?::permission, excerpt_consent.consent, asset.classification, ?::permission, true, container.top) >= 'DOWNLOAD'")
+    .apply(volume.permission, volume.site.access.group).list
 
   private[this] def slotExcerpts(volume : Volume) : Future[Seq[SlotAsset]] =
     SlotAssetSlot.assetRowVolume(volume)
-    .SELECT("WHERE asset.volume = container.volume AND asset.classification = 'EXCERPT' AND (slot_asset_consent.consent >= 'EXCERPTS' OR container.top)")
-    .apply().list
+    .SELECT("WHERE asset.volume = container.volume AND asset.classification = 'EXCERPT' AND data_permission(?::permission, slot_asset_consent.consent, asset.classification, ?::permission, false, container.top) >= 'DOWNLOAD'")
+    .apply(volume.permission, volume.site.access.group).list
 
   /** Retrieve the list of all excerpts. */
   private[models] def getExcerpts(volume : Volume) : Future[Seq[SlotAsset]] =
