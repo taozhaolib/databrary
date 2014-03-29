@@ -258,7 +258,8 @@ object Volume extends TableId[Volume]("volume") {
       columnsVolume(vol)
       .leftJoin(SlotRecord.columns
 	.join(Record.sessionRow(vol), "slot_record.record = record.id"),
-	"container.id = slot_record.container AND slot_consent.segment && slot_record.segment AND container.volume = record.volume")
+	"container.id = slot_record.container AND slot_consent.segment && slot_record.segment AND (record.volume = container.volume OR record.volume = ?)")
+      .pushArgs(SQLArgs(vol.id))
       .map {
 	case (slot, None) => (slot, None)
 	case (slot, Some((seg, rec))) => (slot, Some((seg, rec(slot.consent))))
