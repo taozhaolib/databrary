@@ -119,14 +119,14 @@ auth.consent.EXCERPTS=Portions of this session can be shared outside Databrary.
 auth.consent.SHARED=This session is only shared with authorized Databrary users.
 auth.consent.PRIVATE=This session is only accessible by those given explicit permission.
 
-auth.classification.IDENTIFIED=This asset contains identifying information.
-auth.classification.DEIDENTIFIED=This asset is completely deidentified.
-auth.classification.MATERIAL=This asset contains no participant data.
+auth.classification.IDENTIFIED=This file contains identifying information.
+auth.classification.DEIDENTIFIED=This file is completely deidentified.
+auth.classification.MATERIAL=This file contains no participant data.
 
 # objects
-object.tip.volume=Datasets and Studies are collections of records, sessions, and files.
-object.tip.record=Records categorize sessions by certain criteria.
-object.tip.session=Sessions groups files and data collected at the same time.
+object.tip.volume=Datasets and Studies are collections of sessions and files.
+object.tip.record=A metadata label applied to set of related seessions.
+object.tip.session=Sessions group files and data collected at the same time.
 object.tip.asset=Files can potentially contain a lot of valuable data.
 
 # Volume page
@@ -155,7 +155,7 @@ session=Session
 excerpts.title=Excerpts
 
 materials.title=Materials
-materials.empty=There are no assets here.
+materials.empty=There are no files here.
 
 player.title=Player
 
