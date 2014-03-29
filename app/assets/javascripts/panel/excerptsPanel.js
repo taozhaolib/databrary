@@ -2,9 +2,6 @@ define(['config/module'], function (module) {
 	'use strict';
 
 	module.controller('ExcerptsPanel', ['$scope', function ($scope) {
-		// TODO: REMOVE!
-		$scope.volume.excerpts = $scope.volume.excerpts || $scope.volume.assets;
-
 		$scope.bootPanel = function () {
 			if (angular.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0)
 				$scope.current = $scope.volume.excerpts[0] || undefined;

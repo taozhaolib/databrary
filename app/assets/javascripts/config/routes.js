@@ -99,7 +99,6 @@ define(['config/module'], function (module) {
 						citations: '',
 						top: '',
 						tags: '',
-						assets: '',
 						excerpts: '',
 						comments: '',
 						records: '',
