@@ -82,6 +82,11 @@ object Classification extends PGEnum("classification") {
   /** ANALYSIS and above are non-data and so unrestricted. */
   def UNRESTRICTED = ANALYSIS
 
+  def message(v : Value) : Option[String] = {
+    val m = "classification." + v.toString
+    if (Messages.isDefinedAt(m)) Some(Messages(m)) else None
+  }
+
   /** The most restricted data classification level that the current user may access under the given consent level.
     * Actual access to data will additionally depend on volume permissions not checked here. */
   def access(consent : Consent.Value, top : Boolean = false)(implicit site : Site) : Value = {
