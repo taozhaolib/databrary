@@ -184,18 +184,23 @@ object Adolph extends Ingest {
 
   private final case class Asset(name : String = "", path : File, classification : Classification.Value) extends ingest.Asset {
     val info = {
-      val f = Stage.file(path)
-      if (!f.isFile)
+      val file = Stage.file(path)
+      if (!file.isFile)
 	fail("file not found: " + path)
-      val (origFile, file) = Stage.findTranscoded(f) match {
-	case Some((Some(o), t)) => (o, t)
-	case _ => fail("untranscoded or no original file: " + f)
+      Stage.findTranscoded(file) match {
+	case Some((Some(origFile), file)) =>
+	  val probe = media.AV.probe(file)
+	  if (!probe.isVideo)
+	    fail("invalid file format for " + file + ": " + probe.format + " " + probe.streams.mkString(","))
+	  ingest.Asset.TimeseriesInfo(file, AssetFormat.Video, probe.duration, 
+	    ingest.Asset.fileInfo(origFile))
+	case None =>
+	  val info = ingest.Asset.fileInfo(file)
+	  if (info.format.mimetype.startsWith("video/"))
+	    fail("untranscoded file: " + file)
+	  info
+	case _ => fail("no original file: " + file)
       }
-      val probe = media.AV.probe(file)
-      if (!probe.isVideo)
-	fail("invalid file format for " + file + ": " + probe.format + " " + probe.streams.mkString(","))
-      ingest.Asset.TimeseriesInfo(file, AssetFormat.Video, probe.duration, 
-	ingest.Asset.fileInfo(origFile))
     }
   }
 
