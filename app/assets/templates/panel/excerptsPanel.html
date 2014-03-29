@@ -39,7 +39,7 @@
                 <div class="row">
                     <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 col-cell"
                          ng-repeat="excerpt in volume.excerpts" bindonce>
-                        <figure baseline="square" absolute ng-click="setCurrent(excerpt)">
+                        <figure baseline="square" ng-click="setCurrent(excerpt)">
                             <figmedia><img bo-src="router.assetThumb(excerpt)"></figmedia>
                         </figure>
                     </div>
