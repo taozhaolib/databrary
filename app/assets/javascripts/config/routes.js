@@ -59,21 +59,29 @@ define(['config/module'], function (module) {
 
 		//
 
-		$routeProvider.when('/party/:id', {
+		var partyView = {
 			controller: 'PartyView',
 			templateUrl: 'partyView.html',
 			resolve: {
-				party: ['$route', 'Party', '$q', function ($route, Party, $q) {
+				party: ['$route', 'Party', '$q', '$window', 'TypeService', 'AuthService', function ($route, Party, $q, $window, type, auth) {
 					var deferred = $q.defer();
 
-					Party.get({
+					var req = {
 						volumes: '',
 						comments: '',
 						access: '',
 						parents: '',
 						children: '',
 						funding: ''
-					}, function (data) {
+					};
+
+					if (!$route.current.params.id)
+						if (auth.isLoggedIn())
+							req.id = auth.user.id;
+						else if (type.isParty($window.$play.object))
+							req.id = $window.$play.object.id;
+
+					Party.get(req, function (data) {
 						deferred.resolve(data);
 					}, function (error) {
 						deferred.reject();
@@ -83,7 +91,10 @@ define(['config/module'], function (module) {
 				}]
 			},
 			reloadOnSearch: false
-		});
+		};
+
+		$routeProvider.when('/party/:id', partyView);
+		$routeProvider.when('/profile', partyView);
 
 		//
 
