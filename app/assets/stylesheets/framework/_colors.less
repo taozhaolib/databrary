@@ -1,298 +1,154 @@
 // VARIABLES
 
-@g0: #000;
-@g1: #333;
-@g2: #666;
-@g3: #999;
-@g4: #ccc;
-@g5: #fff;
+@pitch: #000;
+@black: #333;
+@dark: #666;
+@gray: #999;
+@pale: #ccc;
+@white: #fff;
 
 //
 
-@c0: #70A960; // #83A440;
-@c1: #40AC66;
-@c2: #00B097;
-@c3: #00AFC7;
-@c4: #60A99B; // #00AAEB;
-@c5: #279EF8;
-@c6: #9A8CEC;
-@c7: #D378C9;
-@c8: #F594A1; // #EE6D9A;
-@c9: #EE736B;
-@c10: #CE763B; // #D88445;
-@c11: #B39632;
+@green: #70A960;
+@blue: #60A99B;
+@purple: #9A8CEC;
+@red: #F594A1;
+@orange: #CE763B;
+@yellow: #F3EB16;
 
 //
 
-@c0g1m1: mix(@c0, @g1, 25%);
-@c0g1m2: mix(@c0, @g1, 50%);
-@c0g1m3: mix(@c0, @g1, 75%);
+@green11: mix(@green, @black, 25%);
+@green12: mix(@green, @black, 50%);
+@green13: mix(@green, @black, 75%);
 
-@c0g2m1: mix(@c0, @g2, 25%);
-@c0g2m2: mix(@c0, @g2, 50%);
-@c0g2m3: mix(@c0, @g2, 75%);
+@green21: mix(@green, @dark, 25%);
+@green22: mix(@green, @dark, 50%);
+@green23: mix(@green, @dark, 75%);
 
-@c0g3m1: mix(@c0, @g3, 25%);
-@c0g3m2: mix(@c0, @g3, 50%);
-@c0g3m3: mix(@c0, @g3, 75%);
+@green31: mix(@green, @gray, 25%);
+@green32: mix(@green, @gray, 50%);
+@green33: mix(@green, @gray, 75%);
 
-@c0g4m1: mix(@c0, @g4, 25%);
-@c0g4m2: mix(@c0, @g4, 50%);
-@c0g4m3: mix(@c0, @g4, 75%);
+@green41: mix(@green, @pale, 25%);
+@green42: mix(@green, @pale, 50%);
+@green43: mix(@green, @pale, 75%);
 
-@c0g5m1: mix(@c0, @g5, 25%);
-@c0g5m2: mix(@c0, @g5, 50%);
-@c0g5m3: mix(@c0, @g5, 75%);
-
-//
-
-@c1g1m1: mix(@c1, @g1, 25%);
-@c1g1m2: mix(@c1, @g1, 50%);
-@c1g1m3: mix(@c1, @g1, 75%);
-
-@c1g2m1: mix(@c1, @g2, 25%);
-@c1g2m2: mix(@c1, @g2, 50%);
-@c1g2m3: mix(@c1, @g2, 75%);
-
-@c1g3m1: mix(@c1, @g3, 25%);
-@c1g3m2: mix(@c1, @g3, 50%);
-@c1g3m3: mix(@c1, @g3, 75%);
-
-@c1g4m1: mix(@c1, @g4, 25%);
-@c1g4m2: mix(@c1, @g4, 50%);
-@c1g4m3: mix(@c1, @g4, 75%);
-
-@c1g5m1: mix(@c1, @g5, 25%);
-@c1g5m2: mix(@c1, @g5, 50%);
-@c1g5m3: mix(@c1, @g5, 75%);
+@green51: mix(@green, @white, 25%);
+@green52: mix(@green, @white, 50%);
+@green53: mix(@green, @white, 75%);
 
 //
 
-@c2g1m1: mix(@c2, @g1, 25%);
-@c2g1m2: mix(@c2, @g1, 50%);
-@c2g1m3: mix(@c2, @g1, 75%);
+@blue11: mix(@blue, @black, 25%);
+@blue12: mix(@blue, @black, 50%);
+@blue13: mix(@blue, @black, 75%);
 
-@c2g2m1: mix(@c2, @g2, 25%);
-@c2g2m2: mix(@c2, @g2, 50%);
-@c2g2m3: mix(@c2, @g2, 75%);
+@blue21: mix(@blue, @dark, 25%);
+@blue22: mix(@blue, @dark, 50%);
+@blue23: mix(@blue, @dark, 75%);
 
-@c2g3m1: mix(@c2, @g3, 25%);
-@c2g3m2: mix(@c2, @g3, 50%);
-@c2g3m3: mix(@c2, @g3, 75%);
+@blue31: mix(@blue, @gray, 25%);
+@blue32: mix(@blue, @gray, 50%);
+@blue33: mix(@blue, @gray, 75%);
 
-@c2g4m1: mix(@c2, @g4, 25%);
-@c2g4m2: mix(@c2, @g4, 50%);
-@c2g4m3: mix(@c2, @g4, 75%);
+@blue41: mix(@blue, @pale, 25%);
+@blue42: mix(@blue, @pale, 50%);
+@blue43: mix(@blue, @pale, 75%);
 
-@c2g5m1: mix(@c2, @g5, 25%);
-@c2g5m2: mix(@c2, @g5, 50%);
-@c2g5m3: mix(@c2, @g5, 75%);
-
-//
-
-@c3g1m1: mix(@c3, @g1, 25%);
-@c3g1m2: mix(@c3, @g1, 50%);
-@c3g1m3: mix(@c3, @g1, 75%);
-
-@c3g2m1: mix(@c3, @g2, 25%);
-@c3g2m2: mix(@c3, @g2, 50%);
-@c3g2m3: mix(@c3, @g2, 75%);
-
-@c3g3m1: mix(@c3, @g3, 25%);
-@c3g3m2: mix(@c3, @g3, 50%);
-@c3g3m3: mix(@c3, @g3, 75%);
-
-@c3g4m1: mix(@c3, @g4, 25%);
-@c3g4m2: mix(@c3, @g4, 50%);
-@c3g4m3: mix(@c3, @g4, 75%);
-
-@c3g5m1: mix(@c3, @g5, 25%);
-@c3g5m2: mix(@c3, @g5, 50%);
-@c3g5m3: mix(@c3, @g5, 75%);
+@blue51: mix(@blue, @white, 25%);
+@blue52: mix(@blue, @white, 50%);
+@blue53: mix(@blue, @white, 75%);
 
 //
 
-@c4g1m1: mix(@c4, @g1, 25%);
-@c4g1m2: mix(@c4, @g1, 50%);
-@c4g1m3: mix(@c4, @g1, 75%);
+@purple11: mix(@purple, @black, 25%);
+@purple12: mix(@purple, @black, 50%);
+@purple13: mix(@purple, @black, 75%);
 
-@c4g2m1: mix(@c4, @g2, 25%);
-@c4g2m2: mix(@c4, @g2, 50%);
-@c4g2m3: mix(@c4, @g2, 75%);
+@purple21: mix(@purple, @dark, 25%);
+@purple22: mix(@purple, @dark, 50%);
+@purple23: mix(@purple, @dark, 75%);
 
-@c4g3m1: mix(@c4, @g3, 25%);
-@c4g3m2: mix(@c4, @g3, 50%);
-@c4g3m3: mix(@c4, @g3, 75%);
+@purple31: mix(@purple, @gray, 25%);
+@purple32: mix(@purple, @gray, 50%);
+@purple33: mix(@purple, @gray, 75%);
 
-@c4g4m1: mix(@c4, @g4, 25%);
-@c4g4m2: mix(@c4, @g4, 50%);
-@c4g4m3: mix(@c4, @g4, 75%);
+@purple41: mix(@purple, @pale, 25%);
+@purple42: mix(@purple, @pale, 50%);
+@purple43: mix(@purple, @pale, 75%);
 
-@c4g5m1: mix(@c4, @g5, 25%);
-@c4g5m2: mix(@c4, @g5, 50%);
-@c4g5m3: mix(@c4, @g5, 75%);
-
-//
-
-@c5g1m1: mix(@c5, @g1, 25%);
-@c5g1m2: mix(@c5, @g1, 50%);
-@c5g1m3: mix(@c5, @g1, 75%);
-
-@c5g2m1: mix(@c5, @g2, 25%);
-@c5g2m2: mix(@c5, @g2, 50%);
-@c5g2m3: mix(@c5, @g2, 75%);
-
-@c5g3m1: mix(@c5, @g3, 25%);
-@c5g3m2: mix(@c5, @g3, 50%);
-@c5g3m3: mix(@c5, @g3, 75%);
-
-@c5g4m1: mix(@c5, @g4, 25%);
-@c5g4m2: mix(@c5, @g4, 50%);
-@c5g4m3: mix(@c5, @g4, 75%);
-
-@c5g5m1: mix(@c5, @g5, 25%);
-@c5g5m2: mix(@c5, @g5, 50%);
-@c5g5m3: mix(@c5, @g5, 75%);
+@purple51: mix(@purple, @white, 25%);
+@purple52: mix(@purple, @white, 50%);
+@purple53: mix(@purple, @white, 75%);
 
 //
 
-@c6g1m1: mix(@c6, @g1, 25%);
-@c6g1m2: mix(@c6, @g1, 50%);
-@c6g1m3: mix(@c6, @g1, 75%);
+@red11: mix(@red, @black, 25%);
+@red12: mix(@red, @black, 50%);
+@red13: mix(@red, @black, 75%);
 
-@c6g2m1: mix(@c6, @g2, 25%);
-@c6g2m2: mix(@c6, @g2, 50%);
-@c6g2m3: mix(@c6, @g2, 75%);
+@red21: mix(@red, @dark, 25%);
+@red22: mix(@red, @dark, 50%);
+@red23: mix(@red, @dark, 75%);
 
-@c6g3m1: mix(@c6, @g3, 25%);
-@c6g3m2: mix(@c6, @g3, 50%);
-@c6g3m3: mix(@c6, @g3, 75%);
+@red31: mix(@red, @gray, 25%);
+@red32: mix(@red, @gray, 50%);
+@red33: mix(@red, @gray, 75%);
 
-@c6g4m1: mix(@c6, @g4, 25%);
-@c6g4m2: mix(@c6, @g4, 50%);
-@c6g4m3: mix(@c6, @g4, 75%);
+@red41: mix(@red, @pale, 25%);
+@red42: mix(@red, @pale, 50%);
+@red43: mix(@red, @pale, 75%);
 
-@c6g5m1: mix(@c6, @g5, 25%);
-@c6g5m2: mix(@c6, @g5, 50%);
-@c6g5m3: mix(@c6, @g5, 75%);
-
-//
-
-@c7g1m1: mix(@c7, @g1, 25%);
-@c7g1m2: mix(@c7, @g1, 50%);
-@c7g1m3: mix(@c7, @g1, 75%);
-
-@c7g2m1: mix(@c7, @g2, 25%);
-@c7g2m2: mix(@c7, @g2, 50%);
-@c7g2m3: mix(@c7, @g2, 75%);
-
-@c7g3m1: mix(@c7, @g3, 25%);
-@c7g3m2: mix(@c7, @g3, 50%);
-@c7g3m3: mix(@c7, @g3, 75%);
-
-@c7g4m1: mix(@c7, @g4, 25%);
-@c7g4m2: mix(@c7, @g4, 50%);
-@c7g4m3: mix(@c7, @g4, 75%);
-
-@c7g5m1: mix(@c7, @g5, 25%);
-@c7g5m2: mix(@c7, @g5, 50%);
-@c7g5m3: mix(@c7, @g5, 75%);
+@red51: mix(@red, @white, 25%);
+@red52: mix(@red, @white, 50%);
+@red53: mix(@red, @white, 75%);
 
 //
 
-@c8g1m1: mix(@c8, @g1, 25%);
-@c8g1m2: mix(@c8, @g1, 50%);
-@c8g1m3: mix(@c8, @g1, 75%);
+@orange11: mix(@orange, @black, 25%);
+@orange12: mix(@orange, @black, 50%);
+@orange13: mix(@orange, @black, 75%);
 
-@c8g2m1: mix(@c8, @g2, 25%);
-@c8g2m2: mix(@c8, @g2, 50%);
-@c8g2m3: mix(@c8, @g2, 75%);
+@orange21: mix(@orange, @dark, 25%);
+@orange22: mix(@orange, @dark, 50%);
+@orange23: mix(@orange, @dark, 75%);
 
-@c8g3m1: mix(@c8, @g3, 25%);
-@c8g3m2: mix(@c8, @g3, 50%);
-@c8g3m3: mix(@c8, @g3, 75%);
+@orange31: mix(@orange, @gray, 25%);
+@orange32: mix(@orange, @gray, 50%);
+@orange33: mix(@orange, @gray, 75%);
 
-@c8g4m1: mix(@c8, @g4, 25%);
-@c8g4m2: mix(@c8, @g4, 50%);
-@c8g4m3: mix(@c8, @g4, 75%);
+@orange41: mix(@orange, @pale, 25%);
+@orange42: mix(@orange, @pale, 50%);
+@orange43: mix(@orange, @pale, 75%);
 
-@c8g5m1: mix(@c8, @g5, 25%);
-@c8g5m2: mix(@c8, @g5, 50%);
-@c8g5m3: mix(@c8, @g5, 75%);
-
-//
-
-@c9g1m1: mix(@c9, @g1, 25%);
-@c9g1m2: mix(@c9, @g1, 50%);
-@c9g1m3: mix(@c9, @g1, 75%);
-
-@c9g2m1: mix(@c9, @g2, 25%);
-@c9g2m2: mix(@c9, @g2, 50%);
-@c9g2m3: mix(@c9, @g2, 75%);
-
-@c9g3m1: mix(@c9, @g3, 25%);
-@c9g3m2: mix(@c9, @g3, 50%);
-@c9g3m3: mix(@c9, @g3, 75%);
-
-@c9g4m1: mix(@c9, @g4, 25%);
-@c9g4m2: mix(@c9, @g4, 50%);
-@c9g4m3: mix(@c9, @g4, 75%);
-
-@c9g5m1: mix(@c9, @g5, 25%);
-@c9g5m2: mix(@c9, @g5, 50%);
-@c9g5m3: mix(@c9, @g5, 75%);
+@orange51: mix(@orange, @white, 25%);
+@orange52: mix(@orange, @white, 50%);
+@orange53: mix(@orange, @white, 75%);
 
 //
 
-@c10g1m1: mix(@c10, @g1, 25%);
-@c10g1m2: mix(@c10, @g1, 50%);
-@c10g1m3: mix(@c10, @g1, 75%);
+@yellow11: mix(@yellow, @black, 25%);
+@yellow12: mix(@yellow, @black, 50%);
+@yellow13: mix(@yellow, @black, 75%);
 
-@c10g2m1: mix(@c10, @g2, 25%);
-@c10g2m2: mix(@c10, @g2, 50%);
-@c10g2m3: mix(@c10, @g2, 75%);
+@yellow21: mix(@yellow, @dark, 25%);
+@yellow22: mix(@yellow, @dark, 50%);
+@yellow23: mix(@yellow, @dark, 75%);
 
-@c10g3m1: mix(@c10, @g3, 25%);
-@c10g3m2: mix(@c10, @g3, 50%);
-@c10g3m3: mix(@c10, @g3, 75%);
+@yellow31: mix(@yellow, @gray, 25%);
+@yellow32: mix(@yellow, @gray, 50%);
+@yellow33: mix(@yellow, @gray, 75%);
 
-@c10g4m1: mix(@c10, @g4, 25%);
-@c10g4m2: mix(@c10, @g4, 50%);
-@c10g4m3: mix(@c10, @g4, 75%);
+@yellow41: mix(@yellow, @pale, 25%);
+@yellow42: mix(@yellow, @pale, 50%);
+@yellow43: mix(@yellow, @pale, 75%);
 
-@c10g5m1: mix(@c10, @g5, 25%);
-@c10g5m2: mix(@c10, @g5, 50%);
-@c10g5m3: mix(@c10, @g5, 75%);
-
-//
-
-@c11g1m1: mix(@c11, @g1, 25%);
-@c11g1m2: mix(@c11, @g1, 50%);
-@c11g1m3: mix(@c11, @g1, 75%);
-
-@c11g2m1: mix(@c11, @g2, 25%);
-@c11g2m2: mix(@c11, @g2, 50%);
-@c11g2m3: mix(@c11, @g2, 75%);
-
-@c11g3m1: mix(@c11, @g3, 25%);
-@c11g3m2: mix(@c11, @g3, 50%);
-@c11g3m3: mix(@c11, @g3, 75%);
-
-@c11g4m1: mix(@c11, @g4, 25%);
-@c11g4m2: mix(@c11, @g4, 50%);
-@c11g4m3: mix(@c11, @g4, 75%);
-
-@c11g5m1: mix(@c11, @g5, 25%);
-@c11g5m2: mix(@c11, @g5, 50%);
-@c11g5m3: mix(@c11, @g5, 75%);
+@yellow51: mix(@yellow, @white, 25%);
+@yellow52: mix(@yellow, @white, 50%);
+@yellow53: mix(@yellow, @white, 75%);
 
 //
 
-@text: @g1;
-@back: @g5;
-
-//
-
-@black: @g1;
-@gray: @g3;
-@white: @g5;
+@text: @black;
+@back: @white;

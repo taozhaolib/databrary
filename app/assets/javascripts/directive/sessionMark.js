@@ -28,7 +28,7 @@ define(['config/module'], function (module) {
 
 			var tooltip = tooltips.add({
 				message: message,
-				type: 'trace',
+				type: 'orange',
 				$target: $el
 			});
 

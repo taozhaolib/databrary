@@ -37,17 +37,17 @@
 
         <input type="date" ng-model="child.expiration" class="network-auth-expiration-input">
 
-        <button ng-click="authGrantForm.other.expiration = ''" ng-if="auth.hasAuth('SUPER')" class="third network-auth-expiration-button">Clear expiration</button>
+        <button ng-click="authGrantForm.other.expiration = ''" ng-if="auth.hasAuth('SUPER')" class="orange network-auth-expiration-button">Clear expiration</button>
     </fieldset>
 
     <fieldset class="clean">
         <input type="hidden" name="id" ng-value="authGrantForm.other.id">
 
-        <button ng-click="authGrantForm.save()" class="second" ng-if="!authGrantForm.other.authorized">{{"auth.authorize" | message}}</button>
-        <button ng-click="authGrantForm.deny()" class="third" ng-if="!authGrantForm.other.authorized && !authGrantForm.other.force">{{"auth.deny" | message}}</button>
+        <button ng-click="authGrantForm.save()" class="green" ng-if="!authGrantForm.other.authorized">{{"auth.authorize" | message}}</button>
+        <button ng-click="authGrantForm.deny()" class="orange" ng-if="!authGrantForm.other.authorized && !authGrantForm.other.force">{{"auth.deny" | message}}</button>
 
-        <button ng-click="authGrantForm.save()" class="second" ng-if="authGrantForm.other.authorized">{{"auth.update" | message}}</button>
+        <button ng-click="authGrantForm.save()" class="green" ng-if="authGrantForm.other.authorized">{{"auth.update" | message}}</button>
 
-        <button ng-click="authGrantForm.cancel()" class="first">{{"cancel" | message}}</button>
+        <button ng-click="authGrantForm.cancel()" class="red">{{"cancel" | message}}</button>
     </fieldset>
 </form>

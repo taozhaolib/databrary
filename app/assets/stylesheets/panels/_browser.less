@@ -16,7 +16,7 @@
 .browser_widget_title {
 	text-transform: uppercase;
 	font-weight: bold;
-	color: @g2;
+	color: @dark;
 	.margin-height(@f4);
 	.margin-width(@f4);
 }
@@ -28,7 +28,7 @@
 	&:after {
 		content: "";
 		border: @b4 solid transparent;
-		border-left-color: @g2;
+		border-left-color: @dark;
 		.size(0);
 		float: left;
 		display: block;
@@ -44,10 +44,10 @@
 
 	&.off {
 		.browser_widget_pill {
-			background-color: @g4;
+			background-color: @pale;
 
 			&:hover {
-				background-color: @c4g4m1;
+				background-color: @blue41;
 			}
 		}
 	}
@@ -57,11 +57,11 @@
 	.transition(@transition);
 	cursor: pointer;
 	position: relative;
-	border: 1px solid @g3;
+	border: 1px solid @gray;
 	.border-radius(@b1);
 	.padding-width(@f2);
 	.border-margin-height(1px, @f4);
-	background-color: @c4g5m1;
+	background-color: @blue51;
 
 	&.left {
 		.border-radius(@b1 0 0 @b1);
@@ -70,7 +70,7 @@
 		&:after {
 			content: "";
 			border: @b6 solid transparent;
-			border-top-color: @g2;
+			border-top-color: @dark;
 			.size(0);
 			display: inline-block;
 			position: relative;
@@ -91,20 +91,20 @@
 	}
 
 	&.add {
-		background-color: @c11g5m2;
+		background-color: @yellow52;
 	}
 
 	&.expanded {
-		background-color: mix(@c4, @g5, 10%);
+		background-color: mix(@blue, @white, 10%);
 
 		&:hover {
-			background-color: mix(@c4, @g5, 10%);
+			background-color: mix(@blue, @white, 10%);
 		}
 	}
 
 	&:hover {
 		color: inherit;
-		background-color: @c4g4m1;
+		background-color: @blue41;
 	}
 }
 
@@ -114,11 +114,11 @@
 	height: 24px;
 	display: inline-block;
 	.border-radius(@border-radius);
-	background-color: @g5;
+	background-color: @white;
 	.padding-left(@f1);
 
 	&:hover {
-		background-color: @g4;
+		background-color: @pale;
 	}
 
 	&.filter {
@@ -144,7 +144,7 @@
 //
 
 .browser_filters {
-	border-top: 1px solid fade(@g1, 25%);
+	border-top: 1px solid fade(@black, 25%);
 }
 
 //
@@ -179,7 +179,7 @@
 
 .record_pill_remove {
 	&:hover {
-		background-color: @c8g4m1;
+		background-color: @red41;
 	}
 }
 
@@ -191,7 +191,7 @@
 	.margin(0);
 	.padding(0);
 	.border-radius(0 @b4 @b4 @b4);
-	background-color: @g5;
+	background-color: @white;
 	.box-shadow(@box-shadow);
 	overflow: hidden;
 	min-width: @b1 * 6;
@@ -209,7 +209,7 @@
 
 		&:hover {
 			color: inherit;
-			background-color: mix(@c4, @g5, 10%);
+			background-color: mix(@blue, @white, 10%);
 		}
 	}
 }
@@ -230,6 +230,15 @@
 	h1 {
 		.font-size(1.5);
 		.line-height(1.5);
+		.margin-left(@f1 + @f4);
+
+		a {
+			color: @black;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
 	}
 
 	footer {
@@ -237,6 +246,14 @@
 		.line-height(1.5);
 		.margin-left(@f2);
 		float: right;
+
+		a {
+			color: @black;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
 	}
 
 	.browser_icon {
@@ -312,7 +329,7 @@
 //
 
 .browser_volume {
-	background-color: @c4g5m1;
+	background-color: @blue51;
 
 	.browser_icon {
 		background: url('/public/images/browser/icon-volume.png') no-repeat 0 6px;
@@ -322,28 +339,28 @@
 //
 
 .browser_record {
-	@color: @c10;
+	@color: @orange;
 
 	.browser_icon {
 		background: url('/public/images/browser/icon-record.png') no-repeat 0 6px;
 	}
 
-	background-color: mix(@color, @g5, 15%);
+	background-color: mix(@color, @white, 15%);
 
 	.browser_record {
-		background-color: mix(@color, @g5, 30%);
+		background-color: mix(@color, @white, 30%);
 
 		.browser_record {
-			background-color: mix(@color, @g5, 45%);
+			background-color: mix(@color, @white, 45%);
 
 			.browser_record {
-				background-color: mix(@color, @g5, 15%);
+				background-color: mix(@color, @white, 15%);
 
 				.browser_record {
-					background-color: mix(@color, @g5, 30%);
+					background-color: mix(@color, @white, 30%);
 
 					.browser_record {
-						background-color: mix(@color, @g5, 45%);
+						background-color: mix(@color, @white, 45%);
 					}
 				}
 			}
@@ -356,33 +373,34 @@
 	}
 
 	&.null {
-		background-color: @g4 !important;
+		background-color: @pale !important;
 	}
 }
 
 //
 
 .browser_session {
-	background-color: @c0g5m1;
+	background-color: @green51;
 
 	.browser_icon {
 		background: url('/public/images/browser/icon-session.png') no-repeat 0 6px;
 	}
 
 	&.materials {
-		background-color: @c0g5m2 !important;
+		background-color: @green52 !important;
 	}
 }
 
 //
 
 .browser_asset {
-	background-color: @c8g5m1;
+	background-color: @red51;
 	cursor: pointer;
 
 	h1 {
 		.padding-left(@f8);
 		background: transparent;
+		.margin-left(0);
 	}
 
 	.browser_item_content {
@@ -393,7 +411,7 @@
 //
 
 .browser_controller {
-	background-color: @g5;
+	background-color: @white;
 	.border-radius(@b4 0 0 @b4);
 
 	.browser_tool {
@@ -409,7 +427,7 @@
 }
 
 .browser_list {
-	background-color: @g5;
+	background-color: @white;
 	.padding-left(0);
 	.border-radius(@b4 0 0 0);
 	.margin-bottom(2);
@@ -465,8 +483,8 @@
 	.font-line(.75);
 	.padding-width(@f4);
 	.padding-height(@f12);
-	border: 1px solid @g4;
-	background: @g5;
+	border: 1px solid @pale;
+	background: @white;
 	.border-radius(@b1);
 	position: relative;
 	top: -@b6;
@@ -475,24 +493,24 @@
 }
 
 .session_mark_pilot {
-	color: @c8;
-	background: @c8g5m1;
-	border-color: @c8g3m2;
+	color: @red;
+	background: @red51;
+	border-color: @red32;
 }
 
 .session_mark_excluded {
-	color: @c6;
-	background: @c6g5m1;
-	border-color: @c6g3m2;
+	color: @purple;
+	background: @purple51;
+	border-color: @purple32;
 }
 
 .display_age {
 	.transition();
-	background-color: fadeout(@g5, 100%);
+	background-color: fadeout(@white, 100%);
 	cursor: pointer;
 
 	&:hover {
-		background-color: @g5;
+		background-color: @white;
 	}
 
 	&:before {

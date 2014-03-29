@@ -12,7 +12,7 @@
 	.box-shadow();
 	top: @b1 + @b2;
 	z-index: 950;
-	background-color: @g5;
+	background-color: @white;
 
 	&.toolbar_databrary {
 		top: 0;
@@ -29,7 +29,7 @@
 	display: inline-block;
 
 	a {
-		color: @g1;
+		color: @black;
 		display: block;
 		background: url('/public/images/logo/databrary-nav.png') no-repeat 0 center;
 		.height(1.5);
@@ -37,12 +37,11 @@
 		padding-right: @b1;
 
 		&:link {
-			color: @g1;
+			color: @black;
 		}
 
 		&:hover {
-			color: @g1;
-			text-shadow: @toolbarTextShadow @g4;
+			color: @blue52;
 		}
 	}
 }
@@ -65,18 +64,18 @@
 
 		&.current {
 			a {
-				text-shadow: @toolbarTextShadow mix(@c4, @g5, 50%);
+				color: @blue;
 			}
 		}
 	}
 
 	a {
 		display: inline-block;
-		color: @g1;
+		color: @black;
 
 		&:hover {
 			img {
-				.box-shadow(0 0 5px @g5);
+				.box-shadow(0 0 5px @white);
 			}
 		}
 	}
@@ -92,8 +91,8 @@
 			left: -(@b12 * 15);
 			width: (@b12 * 10);
 			height: (@b8 * 5);
-			border-bottom: (@b8 * 3) double @g1;
-			border-top: @b8 solid @g1;
+			border-bottom: (@b8 * 3) double @black;
+			border-top: @b8 solid @black;
 		}
 
 		li {
@@ -123,17 +122,16 @@
 	display: inline-block;
 
 	a {
-		color: @c10;
+		color: @orange;
 		text-transform: lowercase;
 
 		&:before {
 			content: "/";
-			color: @g3;
+			color: @gray;
 		}
 
 		&:hover {
-			color: @c11g5m1;
-			text-shadow: 0 0 2px fadeout(@c11g5m2, 75%);
+			color: @orange52;
 		}
 	}
 }
@@ -148,40 +146,38 @@
 	text-align: right;
 
 	a {
-		color: @g3;
+		color: @gray;
 
 		.avatar {
 			position: relative;
 			top: @b8;
 			display: inline-block;
-			border: 1px solid @g3;
+			border: 1px solid @gray;
 			.size(18px);
 		}
 
 		&:hover {
-			color: @g4;
+			color: @pale;
 
 			.avatar {
-				border-color: @g4;
+				border-color: @pale;
 			}
 		}
 	}
 
 	a.superuser {
 		&.on {
-			color: @c0g5m3;
+			color: @green53;
 
 			&:hover {
-				color: @c0g5m1;
-				text-shadow: 0 0 2px fadeout(@c0g5m2, 75%);
+				color: @green51;
 			}
 		}
 		&.off {
-			color: @c8g5m3;
+			color: @red53;
 
 			&:hover {
-				color: @c8g5m1;
-				text-shadow: 0 0 2px fadeout(@c8g5m2, 75%);
+				color: @red51;
 			}
 		}
 	}

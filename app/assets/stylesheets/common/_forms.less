@@ -1,11 +1,11 @@
 // VARIABLES
 
-@inset: inset 0 1px 1px @g4;
-@outset: 0 0 @b4 @c0;
+@inset: inset 0 1px 1px @pale;
+@outset: 0 0 @b4 @green;
 
 // MIXINS
 
-.placeholder(@x: @g3) {
+.placeholder(@x: @gray) {
 	&:-moz-placeholder,
 	&::-moz-placeholder,
 	&:-ms-input-placeholder,
@@ -44,7 +44,7 @@ select {
 	.padding-width(@f3);
 	.border-radius(@b8);
 	width: 100%;
-	border: 1px solid @g3;
+	border: 1px solid @gray;
 	.margin-bottom(@f2);
 
 	.transition(~"border, outline, color, background, padding, margin, box-shadow .15s linear");
@@ -60,7 +60,7 @@ select {
 	}
 
 	&:focus {
-		border-color: @c0;
+		border-color: @green;
 		.box-shadow(~"@{inset}, @{outset}");
 	}
 }
@@ -107,8 +107,8 @@ textarea,
 option,
 fieldset {
 	&:disabled {
-		border-color: @g4;
-		color: @g4;
+		border-color: @pale;
+		color: @pale;
 		cursor: not-allowed;
 	}
 }
@@ -117,7 +117,7 @@ fieldset {
 
 fieldset, .fieldset {
 	border-width: 1px 0;
-	border-color: @g4;
+	border-color: @pale;
 	.border-padding-top(0, @f2);
 	.border-padding-bottom(1px, @f2);
 	.padding-width(0);
@@ -133,7 +133,7 @@ fieldset, .fieldset {
 	}
 
 	&.boxed {
-		border: 1px solid @g4;
+		border: 1px solid @pale;
 		.border-radius();
 		.border-padding-height(1px, @f4);
 		.padding-width(@f3);
@@ -144,7 +144,7 @@ legend, .legend {
 	font-weight: normal;
 	.padding(0, @f4, 0, 0);
 	.font-size(1.5);
-	color: @g3;
+	color: @gray;
 }
 
 label, .label {

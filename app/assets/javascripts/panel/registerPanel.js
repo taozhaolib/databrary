@@ -116,19 +116,19 @@ define(['config/module'], function (module) {
 				//
 
 				mess.push(messages.add({
-					type: 'alert',
+					type: 'blue',
 					target: '#field_name',
 					body: constants.message('wizard.register_form.name.help')
 				}));
 
 				mess.push(messages.add({
-					type: 'alert',
+					type: 'blue',
 					target: '#field_email',
 					body: constants.message('wizard.register_form.email.help')
 				}));
 
 				mess.push(messages.add({
-					type: 'alert',
+					type: 'blue',
 					target: '#field_affiliation',
 					body: constants.message('wizard.register_form.affiliation.help')
 				}));
@@ -136,7 +136,7 @@ define(['config/module'], function (module) {
 				//
 
 				var emailError = messages.add({
-					type: 'error',
+					type: 'red',
 					enabled: false,
 					body: constants.message('wizard.register_form.email.error')
 				});

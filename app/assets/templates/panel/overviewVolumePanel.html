@@ -9,17 +9,19 @@
         </div>
 
         <hgroup class="row">
-            <h1 class="panel_title col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell" ng-bind-html="volume.name | format:true"></h1>
-            <h2 ng-if="auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-html="volume.alias"></h2>
+            <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell">
+                <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
+                <h2 ng-if="auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-html="volume.alias"></h2>
+            </div>
         </hgroup>
 
-	    <div frame id="frame_people" title="{{'volume.admins.title' | message}}" fold>
+	    <div frame id="frame_people" frame-title="{{'volume.admins.title' | message}}" fold>
             <div ng-repeat="volumeAccess in volume.access | filter:{access: 4}" class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-3 col-cell" ng-init="party = volumeAccess.party">
                 <portrait class="portrait_vertical portrait_small"></portrait>
             </div>
         </div>
 
-        <div frame id="frame_access" title="{{'volume.access.title' | message}}" fold>
+        <div frame id="frame_access" frame-title="{{'volume.access.title' | message}}" fold>
             <div ng-repeat="volumeAccess in volume.access | filter:isShared" class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-3 col-cell" ng-init="party = volumeAccess.party">
                 <aside class="portrait portrait_vertical portrait_small ng-cloak" tooltip tooltip-message="{{shareMessage(volumeAccess)}}">
                     <figure baseline="square" class="figure_avatar" ng-href="{{router.party(party)}}">
@@ -33,13 +35,13 @@
             </div>
         </div>
 
-	    <div frame id="frame_funding" title="{{'volume.funding.title' | message}}" fold>
+	    <div frame id="frame_funding" frame-title="{{'volume.funding.title' | message}}" fold>
             <div ng-repeat="funding in volume.access | filter:isFunding" class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell" ng-init="party = funding.party">
                 <portrait class="portrait_vertical portrait_small portrait_more" extra="{{funding.funding}}"></portrait>
             </div>
         </div>
 
-	    <div frame id="frame_metadata" title="{{'volume.metadata.title' | message}}" fold>
+	    <div frame id="frame_metadata" frame-title="{{'volume.metadata.title' | message}}" fold>
             <div class="col-desktop-8 col-laptop-8 col-tablet-8 col-mobile-6 col-cell">
                 <div class="description" ng-bind-html="volume.body | format"></div>
 
@@ -58,7 +60,7 @@
             </div>
         </div>
 
-	    <div frame id="frame_citation" title="{{'volume.citation.title' | message}}" fold>
+	    <div frame id="frame_citation" frame-title="{{'volume.citation.title' | message}}" fold>
             <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
                 <p ng-bind-html="volume | cite"></p>
             </div>

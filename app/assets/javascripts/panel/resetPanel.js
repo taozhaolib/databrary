@@ -6,7 +6,7 @@ define(['config/module'], function (module) {
 			form.resetSuccessFn = function () {
 				messages.add({
 					closeable: true,
-					type: 'info',
+					type: 'green',
 					body: constants.message('reset.request.complete', form.data.email)
 				});
 
@@ -17,7 +17,7 @@ define(['config/module'], function (module) {
 				messages.add({
 					closeable: true,
 					countdown: 3000,
-					type: 'info',
+					type: 'green',
 					body: constants.message('reset.save.complete', form.data.email)
 				});
 

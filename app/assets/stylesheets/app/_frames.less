@@ -8,25 +8,25 @@
 	.frame_header {
 		&.folder {
 			&:hover {
-				color: mix(@c, @g1, 75%);
+				color: mix(@c, @black, 75%);
 			}
 		}
 	}
 
 	&.folded {
-		border-bottom-color: mix(@c, @g4, 75%);
-		background-color: mix(@c, @g5, 10%);
+		border-bottom-color: mix(@c, @pale, 75%);
+		background-color: mix(@c, @white, 10%);
 
 		.frame_header {
 			&.folder {
-				color: mix(@c, @g1, 50%);
+				color: mix(@c, @black, 50%);
 			}
 		}
 	}
 
 	&:hover {
-		border-bottom-color: mix(@c, @g4, 25%);
-		background-color: mix(@c, @g5, 1%);
+		border-bottom-color: mix(@c, @pale, 25%);
+		background-color: mix(@c, @white, 1%);
 	}
 }
 
@@ -54,6 +54,14 @@
 				&:before {
 					.transform-rotate(-90deg);
 				}
+
+				&:hover {
+					color: @gray;
+
+					&:before {
+						.transform-rotate(-45deg);
+					}
+				}
 			}
 
 			.fold {
@@ -76,6 +84,7 @@
 	text-transform: uppercase;
 	letter-spacing: 1px;
 	.margin(0);
+	display: inline-block;
 
 	&.folder {
 		cursor: pointer;
@@ -94,7 +103,7 @@
 		}
 
 		&:hover {
-			color: @g3;
+			color: @gray;
 
 			&:before {
 				.transform-rotate(-45deg);

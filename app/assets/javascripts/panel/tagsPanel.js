@@ -3,7 +3,7 @@ define(['config/module'], function (module) {
 
 	module.controller('TagsPanel', ['$scope', 'Tag', '$route', 'MessageService', 'Volume', '$cacheFactory', function ($scope, Tag, $route, messageService, Volume, $cacheFactory) {
 		var DEFAULT_MESSAGE = {
-			type: 'alert',
+			type: 'blue',
 			countdown: 3000
 		};
 
@@ -11,7 +11,7 @@ define(['config/module'], function (module) {
 
 		//
 
-		var createMessage = function (message) {
+		var createMessage = function (message) { console.log(message);
 			if (typeof(message) == 'string')
 				messageService.add(angular.extend({}, DEFAULT_MESSAGE, {
 					body: message
@@ -41,8 +41,6 @@ define(['config/module'], function (module) {
 
 				case 'PartyView':
 					$scope.prepareTags($scope.party.tags);
-//					$scope.target.container = null;
-//					$scope.target.segment = null;
 
 					$scope.enabled = $scope.tags.length > 0;
 					break;
@@ -115,7 +113,7 @@ define(['config/module'], function (module) {
 				}
 			}, function () {
 				createMessage({
-					type: 'error',
+					type: 'red',
 					body: 'Vote for tag <strong>' + tag.id + '</strong> unsuccessful! Please refresh and try again.'
 				});
 			});
@@ -140,7 +138,7 @@ define(['config/module'], function (module) {
 				$scope.retrieveTags();
 			}, function () {
 				createMessage({
-					type: 'error',
+					type: 'red',
 					body: 'Could not add tag <strong>' + tag.id + '</strong>! Please refresh and try again.'
 				});
 			});
@@ -167,7 +165,7 @@ define(['config/module'], function (module) {
 			} else {
 				var message = {
 					enabled: true,
-					type: 'error',
+					type: 'red',
 					body: '<dl>' +
 						'<dt>Tag Name</dt>' +
 						'<dd>Must be between 3 and 32 characters.</dd>' +

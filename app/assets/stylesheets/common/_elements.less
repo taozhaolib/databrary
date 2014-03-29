@@ -100,8 +100,8 @@ figcaption, .figcaption {
 	.font-size(.75);
 	.line-height(2/3);
 	font-style: italic;
-	border-top: 1px solid @g3;
-	color: @g3;
+	border-top: 1px solid @gray;
+	color: @gray;
 }
 
 img {
@@ -141,15 +141,15 @@ a, .a {
 
 	&:link, &.link,
 	&:visited, &.visited {
-		color: @c8;
+		color: @blue;
 	}
 
 	&:hover, &.hover {
-		color: @c8g4m1;
+		color: @blue41;
 	}
 
 	&:active, &.active {
-		color: @c8g5m1;
+		color: @blue51;
 	}
 
 	&:focus, &.focus {
@@ -210,8 +210,8 @@ h6, .h6 {
 //
 
 hr {
-	@color: @g4;
-	@color_diamond: @g4;
+	@color: @pale;
+	@color_diamond: @pale;
 	@size: @b8;
 	@shift: @size * 2;
 	border-width: 0;
@@ -254,7 +254,7 @@ code, .code,
 kbd, .kbd,
 samp, .samp,
 pre, .pre {
-	@color: @c10;
+	@color: @orange;
 
 	font-family: 'Lucida Console', monospace;
 	.font-size(.9);
@@ -317,7 +317,7 @@ ol {
 			.font-size(.75);
 			font-style: italic;
 			text-align: right;
-			color: @c4;
+			color: @blue;
 			width: @b1;
 			top: @b12;
 			left: -@b4;
@@ -332,7 +332,7 @@ ul {
 			content: "";
 			border-color: transparent;
 			border-style: solid;
-			border-left-color: @c4;
+			border-left-color: @blue;
 			border-width: @b6;
 			width: 0;
 			height: 0;
@@ -378,7 +378,7 @@ q, .q {
 
 cite, .cite, q[cite] {
 	font-style: italic;
-	color: @c6;
+	color: @purple;
 
 	&.u {
 		text-decoration: underline;
@@ -387,7 +387,7 @@ cite, .cite, q[cite] {
 }
 
 blockquote, .blockquote {
-	@color: @c6;
+	@color: @purple;
 
 	.margin(2, 2.5, 1.5);
 
@@ -484,12 +484,12 @@ del, .del {
 // TODO: ins/del cite/datetime tooltip.
 
 ins, .ins {
-	color: @c0;
+	color: @green;
 	text-decoration: underline;
 }
 
 del, .del {
-	color: @c8;
+	color: @red;
 	text-decoration: line-through;
 }
 
@@ -512,14 +512,14 @@ s, .s {
 }
 
 mark, .mark {
-	@color: @c0;
+	@color: @green;
 
 	background-color: mix(@color, @white, 15%);
 	border-color: @color;
 }
 
 s, .s {
-	@color: @c8;
+	@color: @red;
 
 	background-color: mix(@color, @white, 15%);
 	border-color: @color;
@@ -545,7 +545,7 @@ abbr[title] {
 	text-decoration: none;
 	font-style: normal;
 
-	@color: @c2;
+	@color: @yellow;
 
 	background-color: mix(@color, @white, 15%);
 	border-color: @color;

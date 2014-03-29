@@ -7,7 +7,7 @@
 
 .wizard_list {
 	ul {
-		border-right: 1px solid @g4;
+		border-right: 1px solid @pale;
 		.margin(0);
 		.padding-left(0);
 		.padding-top(@f4);
@@ -17,10 +17,10 @@
 	li {
 		.transition();
 		.padding(@f4, @f2, @f4, @f2);
-		border: 1px solid @g4;
+		border: 1px solid @pale;
 		border-right-width: 0;
 		position: relative;
-		background-color: @g5;
+		background-color: @white;
 		.border-radius(@b4 0 0 @b4);
 		.margin-bottom(@f8);
 		.margin-left(@f2);
@@ -42,11 +42,11 @@
 		}
 
 		&.incomplete {
-			background-color: @c8g5m1;
+			background-color: @red51;
 		}
 
 		&.blocked {
-			background-color: mix(@g4, @g5, 50%);
+			background-color: mix(@pale, @white, 50%);
 
 			&:hover {
 				.margin-left(@f2);
@@ -59,7 +59,7 @@
 		}
 
 		&.complete {
-			background-color: @c0g5m1;
+			background-color: @green51;
 		}
 	}
 }

@@ -61,7 +61,7 @@
 			}
 
 			&:hover {
-				color: mix(@c4, @g1, 25%);
+				color: mix(@blue, @black, 25%);
 
 				&:before {
 					.transform-rotate(-45deg);
@@ -72,7 +72,7 @@
 		&.folded {
 			.panel_header {
 				&.folder {
-					color: mix(@c4, @g1, 50%);
+					color: mix(@blue, @black, 50%);
 				}
 
 				&:before {
@@ -107,11 +107,12 @@
 	.margin(0, 2, @f1, 0);
 	.padding-right(@f1);
 	display: inline-block;
-	background-color: @c4g5m1;
+	background-color: @blue52;
 	position: relative;
+	text-shadow: -1px 0 2px @blue51;
 
 	span {
-		background-color: @c4g5m1;
+		background-color: @blue52;
 		position: absolute;
 		width: 1000px;
 		left: -1000px;
@@ -134,7 +135,7 @@
 .panel_context {
 	.font(2, 1.5);
 	.margin-top(1);
-	color: @c8g3m2;
+	color: @red32;
 }
 
 //
@@ -147,7 +148,7 @@
 	.margin(0);
 	.padding(0);
 	display: inline-block;
-	border-bottom: 1px solid @g4;
+	border-bottom: 1px solid @pale;
 	width: 100%;
 }
 
@@ -155,7 +156,7 @@
 	display: inline-block;
 	.margin-right(@f2);
 	.margin-left(@f6);
-	border: 1px solid @g4;
+	border: 1px solid @pale;
 	border-bottom-width: 0;
 	.border-radius(@b6 @b6 0 0);
 	position: relative;
@@ -166,7 +167,7 @@
 	}
 
 	&.active {
-		background-color: @g5;
+		background-color: @white;
 	}
 
 	a {

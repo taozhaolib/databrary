@@ -18,8 +18,8 @@
                             <label for="field_affiliation">{{'affiliation' | message}}</label>
                             <input id="field_affiliation" name="fieldAffiliation" type="text" ng-model="registerForm.data.affiliation" ng-minlength="3">
 
-                            <button class="second" type="submit" ng-disabled="!registerForm.ready()" ng-click="registerForm.proceed(registerForm)">{{'register.continue' | message}}</button>
-                            <button class="first" type="reset">{{'reset' | message}}</button>
+                            <button class="green" type="submit" ng-disabled="!registerForm.ready()" ng-click="registerForm.proceed(registerForm)">{{'register.continue' | message}}</button>
+                            <button class="red" type="reset">{{'reset' | message}}</button>
                         </form>
                     </wizard-step>
 
@@ -30,10 +30,10 @@
 
                         <p ng-bind-html="'register.agreement.instructions' | message"></p>
 
-                        <button class="second" ng-click="proceed()" ng-show="agreement.current >= agreement.total" ng-disabled="!ready()">{{'register.register' | message}}</button>
+                        <button class="green" ng-click="proceed()" ng-show="agreement.current >= agreement.total" ng-disabled="!ready()">{{'register.register' | message}}</button>
 
-                        <button class="second" ng-click="next()" ng-show="agreement.current < agreement.total" ng-disabled="!ready()">{{'register.agree' | message}}</button>
-                        <button class="third" ng-click="back()" ng-show="agreement.current > 1">Back</button>
+                        <button class="green" ng-click="next()" ng-show="agreement.current < agreement.total" ng-disabled="!ready()">{{'register.agree' | message}}</button>
+                        <button class="orange" ng-click="back()" ng-show="agreement.current > 1">Back</button>
                     </wizard-step>
 
                     <wizard-step id="register_email">
@@ -59,8 +59,8 @@
                             <form name="infoForm">
                                 <textarea id="field_info" ng-model="infoForm.data.info"></textarea>
 
-                                <button class="second" type="submit" ng-disabled="!infoForm.ready()" ng-click="infoForm.proceed()">{{'register.continue' | message}}</button>
-                                <button ng-click="infoForm.cancel()" class="first">{{"cancel" | message}}</button>
+                                <button class="green" type="submit" ng-disabled="!infoForm.ready()" ng-click="infoForm.proceed()">{{'register.continue' | message}}</button>
+                                <button ng-click="infoForm.cancel()" class="red">{{"cancel" | message}}</button>
                             </form>
                         </div>
                     </wizard-step>

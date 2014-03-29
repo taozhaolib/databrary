@@ -4,7 +4,7 @@ define(['config/module'], function (module) {
 	module.factory('TooltipService', ['$rootScope', 'ArrayHelper', '$timeout', function ($rootScope, arrayHelper, $timeout) {
 		var tooltips = arrayHelper([]);
 
-		tooltips.types = ['alert', 'error', 'info', 'trace'];
+		tooltips.types = ['blue', 'green', 'red', 'orange', 'yellow', 'purple'];
 
 		var pad = 10;
 
@@ -16,7 +16,7 @@ define(['config/module'], function (module) {
 			tooltip.id = tooltip.id || 'tooltip_' + Math.random().toString(36).substring(2);
 			tooltip.cls = tooltip.cls || '';
 			tooltip.style = angular.isObject(tooltip.style) ? tooltip.style : {};
-			tooltip.type = tooltips.types.indexOf(tooltip.type) != -1 ? tooltip.type : 'trace';
+			tooltip.type = tooltips.types.indexOf(tooltip.type) != -1 ? tooltip.type : 'blue';
 			tooltip.enabled = angular.isUndefined(tooltip.enabled) || tooltip.enabled != false;
 			tooltip.visible = !!tooltip.visible || false;
 			tooltip.$target = tooltip.$target.length != 0 ? tooltip.$target : undefined;

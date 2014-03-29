@@ -20,8 +20,8 @@
 
 .tooltip {
 	.font(.75, .75);
-	background-color: mix(@g4, @g5, 90%);
-	border: 1px solid @g4;
+	background-color: mix(@pale, @white, 90%);
+	border: 1px solid @pale;
 	.border-radius(15px);
 	.grid-width(max, 3);
 	float: left;
@@ -30,36 +30,43 @@
 	.transition(opacity .15s linear);
 	pointer-events: none;
 	.padding(@f4, @f3);
+	text-shadow: 0 0 2px fadeout(@white, 25%);
 
 	&.tooltip_visible {
-		opacity: .9;
+		opacity: 1;
 	}
 }
 
 //
 
-.tooltip_alert {
-	background-color: @c4g5m1;
-	color: @c4g2m1;
-	border-color: @c4;
+.tooltip_blue {
+	background-color: @blue51;
+	border-color: @blue33;
 }
 
-.tooltip_info {
-	background-color: @c0g5m1;
-	color: @c0g2m1;
-	border-color: @c0;
+.tooltip_green {
+	background-color: @green51;
+	border-color: @green33;
 }
 
-.tooltip_error {
-	background-color: @c8g5m1;
-	color: @c8g2m1;
-	border-color: @c8;
+.tooltip_red {
+	background-color: @red51;
+	border-color: @red33;
 }
 
-.tooltip_trace {
-	background-color: @c10g5m1;
-	color: @c10g2m1;
-	border-color: @c10;
+.tooltip_orange {
+	background-color: @orange51;
+	border-color: @orange33;
+}
+
+.tooltip_yellow {
+	background-color: @yellow51;
+	border-color: @yellow33;
+}
+
+.tooltip_purple {
+	background-color: @purple51;
+	border-color: @purple33;
 }
 
 //

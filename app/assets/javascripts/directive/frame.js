@@ -6,9 +6,7 @@ define(['config/module'], function (module) {
 			return function ($scope, $element, $attrs) {
 				var start = function () {
 					$scope.id = (angular.isDefined($attrs.id)) ? $attrs.id : '';
-					$scope.title = (angular.isDefined($attrs.title)) ? $attrs.title : '';
-
-					$element.removeAttr('title');
+					$scope.title = (angular.isDefined($attrs.frameTitle)) ? $attrs.frameTitle : '';
 
 					transclude($scope, function ($clone) {
 						$element.find('[frame-body]').append($clone);

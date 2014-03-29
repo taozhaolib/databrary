@@ -3,7 +3,7 @@ define(['config/module'], function (module) {
 
 	module.controller('CommentsPanel', ['$scope', 'AuthService', '$route', 'Comment', 'MessageService', 'Volume', '$filter', '$cacheFactory', function ($scope, authService, $route, Comment, messageService, Volume, $filter, $cacheFactory) {
 		var DEFAULT_MESSAGE = {
-			type: 'alert',
+			type: 'blue',
 			countdown: 3000
 		};
 

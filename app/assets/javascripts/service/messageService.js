@@ -4,7 +4,7 @@ define(['config/module'], function (module) {
 	module.factory('MessageService', ['$rootScope', 'ArrayHelper', '$timeout', function ($rootScope, arrayHelper, $timeout) {
 		var messages = arrayHelper([]);
 
-		messages.types = ['alert', 'error', 'info', 'trace'];
+		messages.types = ['blue', 'green', 'red', 'orange', 'yellow', 'purple'];
 
 		//
 
@@ -12,7 +12,7 @@ define(['config/module'], function (module) {
 
 		messages.newTransform(function (message) {
 			message.id = message.id || 'message_' + Math.random().toString(36).substring(2);
-			message.type = messages.types.indexOf(message.type) != -1 ? message.type : 'alert';
+			message.type = messages.types.indexOf(message.type) != -1 ? message.type : 'blue';
 			message.target = angular.isString(message.target) ? message.target : undefined;
 			message.closeable = angular.isDefined(message.closeable) && message.closeable != false;
 			message.countdown = parseInt(message.countdown) || false;
