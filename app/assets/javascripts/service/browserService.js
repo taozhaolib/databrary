@@ -65,7 +65,7 @@ define(['config/module'], function (module) {
 		var raw = [];
 
 		var contexts = ['search', 'party', 'volume'];
-		var context = undefined;
+		browserService.context = undefined;
 
 		//
 
@@ -105,7 +105,7 @@ define(['config/module'], function (module) {
 			if (contexts.indexOf(newContext) == -1)
 				return false;
 
-			context = newContext;
+			browserService.context = newContext;
 
 			angular.extend(browserService.options, DEFAULT_OPTIONS);
 
@@ -116,7 +116,7 @@ define(['config/module'], function (module) {
 				return a.id - b.id;
 			});
 
-			switch (context) {
+			switch (browserService.context) {
 				case 'party':
 				case 'search':
 					browserService.options.volume.allow = true;
@@ -133,7 +133,7 @@ define(['config/module'], function (module) {
 					break;
 			}
 
-			return context;
+			return browserService.context;
 		};
 
 		browserService.updateSorts = function () {
@@ -198,10 +198,6 @@ define(['config/module'], function (module) {
 			});
 		};
 
-		browserService.getContext = function () {
-			return context;
-		};
-
 		//
 
 		browserService.initializeData = function (newData) {
@@ -225,7 +221,9 @@ define(['config/module'], function (module) {
 				data = {
 					items: [],
 					level: -1,
-					group: 'browser'
+					group: 'browser',
+
+					limit: 20
 				};
 
 			browserService.groups = {};
@@ -601,7 +599,8 @@ define(['config/module'], function (module) {
 				select: false,
 				expand: (focus && focus.id == group) ? (
 					(angular.isDefined(focusInvert)) ? focusInvert : false
-					) : option.expand
+					) : option.expand,
+				limit: 20
 			};
 
 			if (group == 'asset') {

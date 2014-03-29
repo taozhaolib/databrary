@@ -3,15 +3,23 @@
         <browser-player ng-if="data.player"></browser-player>
     </div>
 
-    <ul ng-if="browser.getItemExpand(data) || browser.data == data" class="cf">
-	    <li ng-if="!data.items[0]">{{"browser.group.empty" | message}}</li>
+    <div ng-if="browser.context == 'search'">
+        <ul ng-if="browser.getItemExpand(data) || browser.data == data" class="cf">
+            <li ng-if="!data.items[0]">{{"browser.group.empty" | message}}</li>
 
-        <li ng-if="data.group == 'volume'" ng-repeat="data in data.items | filter:queryFilter" ng-class="itemClasses(data)">
-            <ng-include src="getInclude()"></ng-include>
-        </li>
+            <li ng-repeat="data in data.items | filter:queryFilter" ng-class="itemClasses(data)">
+                <ng-include src="getInclude()"></ng-include>
+            </li>
+        </ul>
+    </div>
 
-        <li ng-if="data.group != 'volume'" ng-repeat="data in data.items" ng-class="itemClasses(data)">
-            <ng-include src="getInclude()"></ng-include>
-        </li>
-    </ul>
+    <div ng-if="browser.context != 'search'">
+        <ul ng-if="browser.getItemExpand(data) || browser.data == data" class="cf">
+            <li ng-if="!data.items[0]">{{"browser.group.empty" | message}}</li>
+
+            <li ng-repeat="data in data.items | limitTo:data.limit" ng-class="itemClasses(data)">
+                <ng-include src="getInclude()"></ng-include>
+            </li>
+        </ul>
+    </div>
 </aside>
