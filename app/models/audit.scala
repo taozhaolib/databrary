@@ -33,10 +33,10 @@ object Audit extends Table[Audit[_]]("audit") {
   private[models] def row[T](tableName : String = "audit", row : T = ()) = {
     implicit val fromTable : FromTable = FromTable(tableName)
     Columns(
-      SelectColumn[Timestamp]("when"),
-      SelectColumn[Party.Id]("who"),
-      SelectColumn[Inet]("ip"),
-      SelectColumn[Action.Value]("action"))
+      SelectColumn[Timestamp]("audit_time"),
+      SelectColumn[Party.Id]("audit_user"),
+      SelectColumn[Inet]("audit_ip"),
+      SelectColumn[Action.Value]("audit_action"))
       .map { (when, who, ip, action) =>
         new Audit[T](when, who, ip, action, row)
       }

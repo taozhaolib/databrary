@@ -193,12 +193,6 @@ object Record extends TableId[Record]("record") {
     .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ? AND slot_record.segment && ?::segment ORDER BY record.category NULLS LAST, record.id")
     .apply(slot.containerId, slot.segment).list
 
-  /** Retrieve the list of all foreign records (from a different volume) that apply to the given slot. */
-  private[models] def getSlotForeign(slot : Slot)(implicit site : Site) : Future[Seq[Record]] =
-    row
-      .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ? AND slot_record.segment && ?::segment AND record.volume <> ? AND", Volume.condition)
-      .apply(slot.containerId, slot.segment, slot.volumeId).list
-
   /** Retrieve all the categorized records associated with the given volume.
     * @param category restrict to the specified category, or include all categories
     * @return records sorted by category, ident */

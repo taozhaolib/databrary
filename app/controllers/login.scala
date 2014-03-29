@@ -38,11 +38,15 @@ private[controllers] sealed class LoginController extends SiteController {
     macros.Async.flatMap(form.email.get, Account.getEmail _).flatMap { acct =>
       def bad =
 	macros.Async.foreach[Account, Unit](acct, a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)).execute).flatMap { _ =>
-	  form().withGlobalError("login.bad")
-	  form.Bad
+	  form.withGlobalError("login.bad").Bad
 	}
       if (form.password.get.nonEmpty) {
-	acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(form.password.get, a.password)).fold(bad)(login)
+	macros.Async.map[Account, Long](acct, _.recentAttempts).flatMap { attempts =>
+	  if (attempts.exists(_ > 4))
+	    form.withGlobalError("login.throttled").Bad
+	  else
+	    acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(form.password.get, a.password)).fold(bad)(login)
+	}
       } else if (!form.openid.get.isEmpty)
 	OpenID.redirectURL(form.openid.get, routes.LoginHtml.openID(form.email.get.getOrElse("")).absoluteURL(true), realm = Some("http://" + request.host))
 	  .map(Redirect(_))
@@ -157,8 +161,7 @@ object LoginHtml extends LoginController with HtmlController {
   def viewLogin(err : String, args : Any*)(implicit request: SiteRequest[_]) : templates.Html =
     views.html.party.login {
       val form = new LoginForm
-      form().withGlobalError(err, args)
-      form
+      form.withGlobalError(err, args)
     }
 
   def view = SiteAction.Unlocked { implicit request =>

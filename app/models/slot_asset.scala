@@ -166,12 +166,6 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
     .SELECT("WHERE asset.volume = ?")
     .apply(slot.volumeId).list
 
-  /** Retrieve the list of all foreign assets (from a different volume) within the given slot. */
-  private[models] def getSlotForeign(slot : Slot) : Future[Seq[SlotAsset]] =
-    row(Slot.fixed(slot), Asset.row(slot.site).map(const _))
-    .SELECT("WHERE asset.volume <> ? AND", Volume.condition)
-    .apply(slot.volumeId).list
-
   /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */
   private[models] def getAsset(asset : Asset) : Future[Option[SlotAsset]] =
     SlotAssetSlot.assetRowVolume(asset.volume, Asset.fixed(asset).map(const _))

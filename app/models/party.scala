@@ -146,6 +146,10 @@ final class Account protected (val party : Party, email_ : String, password_ : S
 
   /** Remove any issued login tokens for this user. */
   def clearTokens(except : Option[Token] = None) = AccountToken.clearAccount(id, except)
+
+  def recentAttempts : Future[Long] =
+    SQL("SELECT count(*) FROM ONLY audit.audit WHERE audit_action = 'attempt' AND audit_user = ? AND audit_time > CURRENT_TIMESTAMP - interval '30 minutes'")
+    .apply(id).single(SQLCols[Long])
 }
 
 object Party extends TableId[Party]("party") {

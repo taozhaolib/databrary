@@ -26,10 +26,8 @@ abstract class StructForm(val _action : Call) {
     def get : T = value
 
     final def apply() = self()(name)
-    final def withKeyError(key : String, message : String, args : Any*) : self.type = {
-      _errors += FormError(name + Maybe.bracket(".", key), message, args)
-      self
-    }
+    final def withKeyError(key : String, message : String, args : Any*) : self.type =
+      self.withError(FormError(name + Maybe.bracket(".", key), message, args))
     final def withError(message : String, args : Any*) : self.type =
       withKeyError("", message, args : _*)
   }
@@ -175,6 +173,13 @@ abstract class StructForm(val _action : Call) {
   /** Like this().globalErrors but also includes errors attached to missing fields, as this is a common bug. */
   def globalErrors : Seq[FormError] =
     _errors.filter(e => e.key.isEmpty || !_data.contains(e.key))
+  def withError(error : FormError) : self.type = {
+    _errors += error
+    self
+  }
+  def withGlobalError(message : String, args : Any*) : self.type =
+    withError(FormError("", message, args))
+    
   private[this] def bindFiles(implicit request : Request[AnyContent]) : self.type = {
     val d = request.body.asMultipartFormData
       .getOrElse(MultipartFormData[Files.TemporaryFile](Map.empty, Nil, Nil, Nil))
