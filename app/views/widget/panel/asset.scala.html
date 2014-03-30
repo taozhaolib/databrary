@@ -17,5 +17,25 @@
 
     <h1 class="col-full panel_title">@display.formatTitle(asset.pageName)</h1>
 
-    @widget.frame.asset(asset)
+    @widget.frame.raw("asset", "")("Metadata") {
+	<div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+	    <div class="metadata">
+		<dl class="flat">
+		    <dt>Classification</dt>
+		    <dd>@Classification.message(asset.classification)</dd>
+
+		    <dt>Format</dt>
+		    <dd>@asset.format.name</dd>
+
+		    <dt>Position</dt>
+		    <dd>@asset.relativeSegment</dd>
+
+		    @cast[SlotTimeseries](asset).map { ts =>
+			<dt>Duration</dt>
+			<dd>@ts.duration</dd>
+		    }
+		</dl>
+	    </div>
+	</div>
+    }
 }
