@@ -86,16 +86,11 @@ trait Slot extends TableRow with InVolume with SiteObject {
 
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */
-  private[this] def idents : Seq[String] =
-    _records.peek.fold[Seq[String]](Nil) {
-      groupBy(_, (ri : Record) => ri.category)
-      .map { case (c,l) =>
-        c.fold("")(_.name.capitalize + " ") + l.map(_.ident).mkString(", ")
-      }
-    }
+  def idents : Future[Seq[String]] =
+    records.map(_.map(_.ident))
 
   protected def ident : Option[String] =
-    Maybe(idents).opt.map(_.mkString(", "))
+    _records.peek.map(_.map(_.ident).mkString(" - "))
 
   def pageName = container.name orElse ident getOrElse {
     if (container.top)

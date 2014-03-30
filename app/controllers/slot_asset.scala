@@ -29,9 +29,8 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
 
   def download(s : Container.Id, segment : Segment, o : models.Asset.Id, inline : Boolean) =
     Action(s, segment, o, Permission.DOWNLOAD).async { implicit request =>
-      (if (!inline) request.obj.auditDownload else macros.Async(false)).flatMap { _ =>
-	AssetController.assetResult(request.obj, if (inline) None else Some(request.obj.asset.name.getOrElse("file")))
-      }
+      (if (inline) macros.Async(None) else request.obj.fileName.map(Some(_)))
+      .flatMap(AssetController.assetResult(request.obj, _))
     }
 
   def frame(i : Container.Id, o : Asset.Id, eo : Offset) = head(i, Range.singleton(eo), o)

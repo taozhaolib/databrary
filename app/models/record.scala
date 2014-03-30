@@ -13,8 +13,8 @@ import site._
   */
 sealed class RecordCategory private (val id : RecordCategory.Id, val name : String) extends TableRowId[RecordCategory] {
   /** The default set of metrics which define records in this category. */
-  val ident : Metric[_] = Metric.Ident
-  def template : Seq[Metric[_]] = Seq(ident)
+  val ident : Seq[Metric[_]] = Seq(Metric.Ident)
+  def template : Seq[Metric[_]] = ident
 
   val json = JsonRecord(id,
       'name -> name
@@ -48,7 +48,7 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
 
   final val Pilot = new RecordCategory(PILOT, "pilot")
   final val Exclusion = new RecordCategory(EXCLUSION, "exclusion") {
-    override val ident = Metric.Reason
+    override val ident = Seq(Metric.Reason)
   }
   /** RecordCategory representing participants, individuals whose data is contained in a particular sesion.
     * Participants usually are associated with birthdate, gender, and other demographics. */
@@ -61,7 +61,7 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
   }
   final val Group = new RecordCategory(GROUP, "group")
   final val Location = new RecordCategory(LOCATION, "location") {
-    override val ident = Metric.Setting
+    override val ident = Seq(Metric.Setting, Metric.State, Metric.Country)
     override val template = Seq(Metric.Setting, Metric.State)
   }
 
@@ -98,9 +98,10 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
     * This may invalidate measures on this object. */
   def removeMeasure(metric : Metric[_]) = Measure.remove(this, metric)
 
-  def ident : String = measures.datum(Metric.Ident)
-    .orElse(category.flatMap(c => measures.datum(c.ident)))
-    .getOrElse("[" + id + "]")
+  def ident : String =
+    Maybe(category.fold[Seq[Metric[_]]](Seq(Metric.Ident))(_.ident)
+      .flatMap(measures.datum(_)))
+    .fold(category.fold("[" + id + "]")(_.name))(_.mkString(", "))
 
   /** The age at test for a specific date, as defined by `date - birthdate`. */
   def age(date : Date) : Option[Age] =

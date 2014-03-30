@@ -63,6 +63,12 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
   override def pageParent = Some(slot)
   override def pageURL = controllers.routes.SlotAssetHtml.view(containerId, slot.segment, assetId)
 
+  def fileName : Future[String] =
+    idents.map { i =>
+      (volume.alias.getOrElse(volume.name).take(16) +: (i ++ asset.name))
+      .mkString("-")
+    }
+
   override lazy val json : JsonObject = JsonObject.flatten(
     Some('permission -> permission),
     if (format === asset.format) None else Some('format -> format.json),

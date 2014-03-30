@@ -40,8 +40,10 @@ final case class Maybe[+A](a : A)(implicit t : Truth[A]) {
   /** Conditionally map only true values. */
   final def map[B >: A](f : A => B) : B =
     if (pass) f(a) else a
-  final def orElse[B >: A](b : B) : B =
+  final def orElse[B >: A](b : => B) : B =
     if (pass) a else b
+  final def fold[B](b : => B)(f : A => B) : B =
+    if (pass) f(a) else b
 }
 
 object Maybe {

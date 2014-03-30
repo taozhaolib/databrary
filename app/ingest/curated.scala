@@ -14,7 +14,7 @@ object Curated extends Ingest {
   import Parse._
 
   private def parseRaceEthnicity : Parser[RaceEthnicity] = Parser { s =>
-    Maybe(s.indexOf('/')).opt.fold {
+    Maybe(s.indexOf('/')).fold {
       (option(Race.parse).map(r => (r, None : Option[Ethnicity.Value])) |
         Ethnicity.parse.map(e => (None, Some(e))))(s)
     } { i =>
