@@ -68,7 +68,7 @@ define(['config/module'], function (module) {
 
 		routerService.record = function (data) {
 			if (!type.isRecord(data))
-				throw new Error('routerService.record() requires Record as first parameter');
+				throw new Error('routerService.record() requires Record as first argument');
 
 			data = {
 				id: data.id
@@ -79,7 +79,7 @@ define(['config/module'], function (module) {
 
 		routerService.slot = function (data) {
 			if (!type.isSession(data))
-				throw new Error('routerService.slot() requires Slot as first parameter');
+				throw new Error('routerService.slot() requires Slot as first argument');
 
 			data = {
 				id: data.id,
@@ -91,7 +91,7 @@ define(['config/module'], function (module) {
 
 		routerService.volumeThumb = function (data) {
 			if (!type.isVolume(data))
-				throw new Error('routerService.volumeThumb() requires Volume as first parameter');
+				throw new Error('routerService.volumeThumb() requires Volume as first argument');
 
 			data = {
 				id: data.id
@@ -102,7 +102,7 @@ define(['config/module'], function (module) {
 
 		routerService.slotThumb = function (data) {
 			if (!type.isSession(data))
-				throw new Error('routerService.slotThumb() requires Slot as first parameter');
+				throw new Error('routerService.slotThumb() requires Slot as first argument');
 
 			data = {
 				id: data.id,
@@ -114,7 +114,7 @@ define(['config/module'], function (module) {
 
 		routerService.assetThumb = function (data) {
 			if (!type.isAsset(data))
-				throw new Error('routerService.assetThumb() requires Asset as first parameter');
+				throw new Error('routerService.assetThumb() requires Asset as first argument');
 
 			data = {
 				sid: data.container.id,
@@ -127,7 +127,7 @@ define(['config/module'], function (module) {
 
 		routerService.assetHead = function (data) {
 			if (!type.isAsset(data))
-				throw new Error('routerService.assetHead() requires Asset as first parameter');
+				throw new Error('routerService.assetHead() requires Asset as first argument');
 
 			data = {
 				sid: data.container.id,
@@ -139,14 +139,15 @@ define(['config/module'], function (module) {
 		};
 
 		routerService.assetLink = function (data, inline) {
-			if (!type.isAsset(data))
-				throw new Error('routerService.assetLink() requires Asset as first parameter');
-
-			data = {
-				sid: data.container.id,
-				id: data.asset.id,
-				segment: type.segmentString(data)
-			};
+			if (type.isAsset(data)) {
+				data = {
+					sid: data.container.id,
+					id: data.asset.id,
+					segment: type.segmentString(data)
+				};
+			} else if (!data || !data.sid || !data.id) {
+				throw new Error('routerService.assetLink() requires Asset or object.id/.sid/.segment as first argument');
+			}
 
 			data.inline = data.inline || inline || false;
 
@@ -155,7 +156,7 @@ define(['config/module'], function (module) {
 
 		routerService.partyAvatar = function (data, size) {
 			if (!type.isParty(data))
-				throw new Error('routerService.partyAvatar() requires Party as first parameter');
+				throw new Error('routerService.partyAvatar() requires Party as first argument');
 
 			data = {
 				id: data.id
@@ -176,7 +177,7 @@ define(['config/module'], function (module) {
 
 		routerService.slotEdit = function (data) {
 			if (!type.isSession(data))
-				throw new Error('routerService.slotEdit() requires Slot as first parameter');
+				throw new Error('routerService.slotEdit() requires Slot as first argument');
 
 			data = {
 				id: data.id,
@@ -188,7 +189,7 @@ define(['config/module'], function (module) {
 
 		routerService.assetEdit = function (data) {
 			if (!type.isAsset(data))
-				throw new Error('routerService.assetEdit() requires Asset as first parameter');
+				throw new Error('routerService.assetEdit() requires Asset as first argument');
 
 			data = {
 				id: data.asset.id
@@ -199,7 +200,7 @@ define(['config/module'], function (module) {
 
 		routerService.recordEdit = function (data) {
 			if (!type.isRecord(data))
-				throw new Error('routerService.recordEdit() requires Record as first parameter');
+				throw new Error('routerService.recordEdit() requires Record as first argument');
 
 			data = {
 				id: data.id
@@ -210,7 +211,7 @@ define(['config/module'], function (module) {
 
 		routerService.volumeEdit = function (data) {
 			if (!type.isVolume(data))
-				throw new Error('routerService.volumeEdit() requires Volume as first parameter');
+				throw new Error('routerService.volumeEdit() requires Volume as first argument');
 
 			data = {
 				id: data.id
@@ -221,7 +222,7 @@ define(['config/module'], function (module) {
 
 		routerService.volumeAccess = function (data) {
 			if (!type.isVolume(data))
-				throw new Error('routerService.volumeAccess() requires Volume as first parameter');
+				throw new Error('routerService.volumeAccess() requires Volume as first argument');
 
 			data = {
 				id: data.id
@@ -232,7 +233,7 @@ define(['config/module'], function (module) {
 
 		routerService.partyEdit = function (data) {
 			if (!type.isParty(data))
-				throw new Error('routerService.partyEdit() requires Party as first parameter');
+				throw new Error('routerService.partyEdit() requires Party as first argument');
 
 			data = {
 				id: data.id
@@ -243,7 +244,7 @@ define(['config/module'], function (module) {
 
 		routerService.party = function (data) {
 			if (!type.isParty(data))
-				throw new Error('routerService.party() requires Party as first parameter');
+				throw new Error('routerService.party() requires Party as first argument');
 
 			data = {
 				id: data.id
@@ -254,7 +255,7 @@ define(['config/module'], function (module) {
 
 		routerService.partyAuthorize = function (data) {
 			if (!type.isParty(data))
-				throw new Error('routerService.partyAuthorize() requires Party as first parameter');
+				throw new Error('routerService.partyAuthorize() requires Party as first argument');
 
 			data = {
 				id: data.id

@@ -12,16 +12,14 @@
                             </h1>
                         </header>
 
-
                         <div ng-switch="getMimeGroup(current)">
                             <div ng-switch-when="image">
                                 <img ng-src="{{router.assetLink(current, true)}}" style="max-width: 100%;">
                             </div>
 
                             <div ng-switch-when="video">
-                                <video controls>
-                                    <source ng-src="{{router.assetLink(current, true)}}"
-                                            type="{{current.format.mimetype || current.asset.format.mimetype}}">
+                                <video controls excerpt="current">
+                                    <source ng-src="{{srcRoute}}" type="{{current.format.mimetype || current.asset.format.mimetype}}">
                                 </video>
                             </div>
 

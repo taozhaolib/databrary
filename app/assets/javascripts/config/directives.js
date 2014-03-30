@@ -14,6 +14,7 @@ define([
 	'directive/repeater',
 	'directive/metricsRepeater',
 	'directive/panel',
+	'directive/excerpt',
 	'directive/displayAge',
 	'directive/sessionMark',
 	'directive/scroll',
