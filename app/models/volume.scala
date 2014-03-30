@@ -140,7 +140,7 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
       ("access", opt => partyAccess(opt.headOption.flatMap(Permission.fromString(_)).getOrElse(Permission.NONE))
 	.map(JsonArray.map(_.json - "volume"))),
       ("citations", opt => citations.map(JsonArray.map(_.json))),
-      ("comments", opt => comments.map(JsonRecord.map(_.json))),
+      ("comments", opt => comments.map(JsonArray.map(_.json))),
       ("tags", opt => tags.map(JsonRecord.map(_.json))),
       ("categories", opt => recordCategorySlots.map(l =>
 	JsObject(l.map { case (c, rl) => (c.id.toString, Json.toJson(rl.map(_._1.id))) }))),

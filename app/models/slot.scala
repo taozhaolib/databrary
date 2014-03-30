@@ -117,7 +117,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
         r.json ++ JsonObject.flatten(r.age(this).map('age -> _))
       })),
       "tags" -> (opt => tags.map(JsonRecord.map(_.json))),
-      "comments" -> (opt => comments.map(JsonRecord.map(_.json - "container")))
+      "comments" -> (opt => comments.map(JsonArray.map(_.json - "container")))
     )
 }
 
