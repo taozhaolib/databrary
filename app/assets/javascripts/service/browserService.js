@@ -221,9 +221,7 @@ define(['config/module'], function (module) {
 				data = {
 					items: [],
 					level: -1,
-					group: 'browser',
-
-					limit: 20
+					group: 'browser'
 				};
 
 			browserService.groups = {};
@@ -585,22 +583,25 @@ define(['config/module'], function (module) {
 		var callbackItem = function (data, volume, sessions, object, group) {
 			var option = getOptionByGroup(group);
 
+			var id = 'data-' + group + '-' + (angular.isNumber(object.id) ? object.id : object.asset.id);
+
+			if (object.segment || (object.asset && object.asset.segment))
+				id += '-' + typeService.segmentString(object).replace(',', '-');
+
 			var newData = {
 				parent: data,
 				volume: volume,
 				sessions: sessions,
 				level: data.level + 1,
 
+				id: id,
 				object: object,
 				permission: object.permission || volume.permission,
 				group: group,
 				items: [],
 
 				select: false,
-				expand: (focus && focus.id == group) ? (
-					(angular.isDefined(focusInvert)) ? focusInvert : false
-					) : option.expand,
-				limit: 20
+				expand: (focus && focus.id == group) ? ((angular.isDefined(focusInvert)) ? focusInvert : false) : option.expand
 			};
 
 			if (group == 'asset') {
@@ -707,7 +708,6 @@ define(['config/module'], function (module) {
 		browserService.removeRecordGroup = function (group) {
 			group.active = false;
 
-			// move to end
 			var group_i = browserService.options.record.categories.index(group);
 
 			browserService.options.record.categories.splice(group_i, 1);

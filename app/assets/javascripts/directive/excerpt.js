@@ -8,22 +8,26 @@ define(['config/module'], function (module) {
 				sid: $scope[$attr.excerpt].container.id
 			});
 
-			var excerpt = type.assetProperty($scope[$attr.excerpt], 'segment', false).map(function (old) {
-				return old / 1000
+			var excerpt = type.assetProperty($scope[$attr.excerpt], 'segment', false) || [null, null];
+			excerpt = excerpt.map(function (old) {
+				return isNaN(old / 1000) ? null : old / 1000;
 			});
 
-			$el.on('loadedmetadata', function () {
-				this.currentTime = excerpt[0];
-				$el.off('loadedmetadata');
-			});
+			if (angular.isNumber(excerpt[0]))
+				$el.on('loadedmetadata', function () {
+					this.currentTime = excerpt[0];
 
-			$el.on('timeupdate', function () {
-				if (this.currentTime < excerpt[1])
-					return;
+					$el.off('loadedmetadata');
+				});
 
-				this.pause();
-				$el.off('timeupdate');
-			});
+			if (angular.isNumber(excerpt[1]))
+				$el.on('timeupdate', function () {
+					if (this.currentTime < excerpt[1])
+						return;
+
+					this.pause();
+					$el.off('timeupdate');
+				});
 		};
 
 		return {

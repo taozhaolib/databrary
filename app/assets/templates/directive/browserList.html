@@ -7,7 +7,7 @@
         <ul ng-if="browser.getItemExpand(data) || browser.data == data" class="cf">
             <li ng-if="!data.items[0]">{{"browser.group.empty" | message}}</li>
 
-            <li ng-repeat="data in data.items | filter:queryFilter" ng-class="itemClasses(data)">
+            <li ng-repeat="data in data.items | filter:queryFilter" ng-class="itemClasses(data)" id="{{data.id}}">
                 <ng-include src="getInclude()"></ng-include>
             </li>
         </ul>
@@ -17,7 +17,7 @@
         <ul ng-if="browser.getItemExpand(data) || browser.data == data" class="cf">
             <li ng-if="!data.items[0]">{{"browser.group.empty" | message}}</li>
 
-            <li ng-repeat="data in data.items | limitTo:data.limit" ng-class="itemClasses(data)">
+            <li ng-repeat="data in data.items" ng-class="itemClasses(data)" id="{{data.id}}">
                 <ng-include src="getInclude()"></ng-include>
             </li>
         </ul>
