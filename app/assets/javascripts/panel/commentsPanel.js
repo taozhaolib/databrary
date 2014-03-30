@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('CommentsPanel', ['$scope', 'AuthService', '$route', 'Comment', 'MessageService', 'Volume', '$filter', '$cacheFactory', function ($scope, authService, $route, Comment, messageService, Volume, $filter, $cacheFactory) {
+	module.controller('CommentsPanel', ['$scope', 'AuthService', '$route', 'Comment', 'MessageService', 'Volume', '$filter', '$cacheFactory', 'EventService', function ($scope, authService, $route, Comment, messageService, Volume, $filter, $cacheFactory, events) {
 		var DEFAULT_MESSAGE = {
 			type: 'blue',
 			countdown: 3000
@@ -22,17 +22,10 @@ define(['config/module'], function (module) {
 
 		//
 
-		$scope.target = {
-			container: null,
-			segment: ','
-		};
-
 		$scope.refreshPanel = function () {
 			switch ($route.current.controller) {
 				case 'VolumeView':
 					$scope.comments = $scope.volume.comments;
-					$scope.target.container = $scope.volume.top.id;
-					$scope.target.segment = ',';
 
 					$scope.enabled = authService.isLoggedIn() || !$.isEmptyObject($scope.comments);
 					break;
@@ -100,33 +93,79 @@ define(['config/module'], function (module) {
 				meta += ' <span class="sep">/</span>';
 
 			if (!comment.container.top)
-				meta += ' <a href="' + $scope.router.volume({id: volumeID}) + '"><img class="line" src="'+$scope.router.slotThumb(comment.container)+'"> ' + (comment.container.name || '') + '</a>';
+				meta += ' <a href="' + $scope.router.volume({id: volumeID}) + '"><img class="line" src="' + $scope.router.slotThumb(comment.container) + '"> ' + (comment.container.name || '') + '</a>';
 
 			return meta;
 		};
 
 		//
 
-		$scope.newComment = {
-			body: ''
+		var commentReplyForm = undefined;
+		var replyTo = undefined;
+
+		$scope.getReply = function (comment) {
+			return authService.isLoggedIn() &&
+				$route.current.controller != 'PartyView' &&
+				replyTo == comment;
 		};
 
-		$scope.addComment = function (form) {
-			if (form.$invalid)
-				return;
+		$scope.setReply = function (comment, volume) {
+			replyTo = comment;
+		};
 
-			var commentModel = new Comment({});
+		//
 
-			commentModel.$save({
-				text: $scope.newComment.body,
-				container: $scope.target.container,
-				segment: $scope.target.segment
-			}, function (newComment, status, headers, config) {
-				createMessage('Comment added successfully!');
-				$scope.newComment.body = '';
+		var successFn = function () {
+			createMessage('Comment added successfully!');
+			$scope.pullComments();
+		};
 
-				$scope.pullComments();
+		var errorFn = function () {
+			createMessage({
+				body: 'This comment is unacceptable!',
+				type: 'red'
 			});
 		};
+
+		var cancelFn = function () {
+			$scope.setReply(undefined);
+		};
+
+		events.listen($scope, 'commentReplyForm-init', function (event, form) {
+			commentReplyForm = form;
+			form.successFn = successFn;
+			form.cancelFn = cancelFn;
+			form.target(replyTo);
+			event.stopPropagation();
+		});
+
+		//
+
+		var parents = [0];
+
+		$scope.getCommentClasses = function (comment) {
+			var classes = [];
+
+			if ($route.current.controller != 'PartyView') {
+				if (!comment.parent)
+					comment.parent = 0;
+
+				var index = parents.indexOf(comment.parent);
+
+				if (index > -1)
+					parents = parents.slice(0, index + 1);
+				else
+					parents.push(comment.parent);
+
+				if (parents.length >= 5)
+					comment.stop = true;
+
+				classes.push('depth-' + (parents.length - 1));
+			}else{
+				comment.stop = true;
+			}
+
+			return classes;
+		}
 	}]);
 });

@@ -25,6 +25,9 @@ define(['config/module'], function (module) {
 			if (typeService.isToken(object))
 				return 'token';
 
+			if (typeService.isComment(object))
+				return 'comment';
+
 			if (typeService.isSession(object))
 				return 'session';
 
@@ -53,8 +56,12 @@ define(['config/module'], function (module) {
 			return angular.isObject(object) && object.auth;
 		};
 
+		typeService.isComment = function (object) {
+			return angular.isObject(object) && object.text && object.time;
+		};
+
 		typeService.isSession = function (object) {
-			return angular.isObject(object) && !object.asset && !object.body && !object.measures && !object.avatar && !object.auth;
+			return angular.isObject(object) && !object.asset && !object.body && !object.measures && !object.avatar && !object.auth && !object.text;
 		};
 
 		//
@@ -76,7 +83,7 @@ define(['config/module'], function (module) {
 
 			if(typeService.isAsset(object))
 				segment = typeService.assetProperty(object, 'segment', dig);
-			else if (typeService.isSession(object))
+			else if (typeService.isSession(object) || typeService.isComment(object))
 				segment = object.segment;
 			else
 				throw new Error('typeService.segmentString() requires Asset or Session as first argument');

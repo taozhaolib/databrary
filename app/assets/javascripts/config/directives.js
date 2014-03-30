@@ -15,6 +15,7 @@ define([
 	'directive/metricsRepeater',
 	'directive/panel',
 	'directive/excerpt',
+	'directive/commentReplyForm',
 	'directive/displayAge',
 	'directive/sessionMark',
 	'directive/scroll',

@@ -1,0 +1,16 @@
+<form name="commentReplyForm" class="comment">
+    <div class="row" ng-if="commentReplyForm.getParty()">
+        <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
+            <footer class="comment_meta" ng-init="party = commentReplyForm.getParty()">
+                <portrait class="portrait_vertical portrait_small portrait_more" extra="{{'comments.prompt' | message}}"></portrait>
+            </footer>
+
+            <div class="comment_body comment_form">
+                <textarea ng-model="commentReplyForm.data.text" ng-minlength="3"></textarea>
+
+                <button type="submit" class="green" ng-click="commentReplyForm.save()" ng-disabled="!commentReplyForm.ready()">{{'comments.post' | message}}</button>
+                <button class="orange" ng-click="commentReplyForm.cancel()">{{'comments.cancel' | message}}</button>
+            </div>
+        </div>
+    </div>
+</form>

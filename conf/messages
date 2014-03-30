@@ -167,6 +167,8 @@ citations.title=Publications
 
 comments.title=Comments
 comments.post=Post
+comments.reply=Reply
+comments.cancel=Cancel
 comments.prompt=Post a comment...
 
 tags.title=Tags
