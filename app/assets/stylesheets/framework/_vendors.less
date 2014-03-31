@@ -216,7 +216,6 @@
 		background-image: -moz-linear-gradient(left, @start-color @start-percent, @end-color @end-percent);
 		background-image: linear-gradient(to right, @start-color @start-percent, @end-color @end-percent);
 		background-repeat: repeat-x;
-		filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=1)",argb(@start-color), argb(@end-color)));
 	}
 
 	.vertical(@start-color, @end-color, @start-percent: 0%, @end-percent: 100%) {
@@ -225,7 +224,6 @@
 		background-image: -moz-linear-gradient(top, @start-color @start-percent, @end-color @end-percent);
 		background-image: linear-gradient(to bottom, @start-color @start-percent, @end-color @end-percent);
 		background-repeat: repeat-x;
-		filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",argb(@start-color), argb(@end-color)));
 	}
 
 	.directional(@start-color, @end-color, @deg: 45deg) {
@@ -240,7 +238,6 @@
 		background-image: -moz-linear-gradient(left, @start-color, @mid-color @color-stop, @end-color);
 		background-image: linear-gradient(to right, @start-color, @mid-color @color-stop, @end-color);
 		background-repeat: no-repeat;
-		filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=1)",argb(@start-color), argb(@end-color)));
 	}
 	.vertical-three-colors(@start-color, @mid-color, @end-color, @color-stop: 50%) {
 		background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@start-color), color-stop(@color-stop, @mid-color), to(@end-color));
@@ -248,7 +245,6 @@
 		background-image: -moz-linear-gradient(top, @start-color, @mid-color @color-stop, @end-color);
 		background-image: linear-gradient(@start-color, @mid-color @color-stop, @end-color);
 		background-repeat: no-repeat;
-		filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",argb(@start-color), argb(@end-color)));
 	}
 	.radial(@inner-color, @outer-color) {
 		background-image: -webkit-gradient(radial, center center, 0, center center, 460, from(@inner-color), to(@outer-color));
@@ -263,10 +259,6 @@
 		background-image: -moz-linear-gradient(@angle, @color 25%, transparent 25%, transparent 50%, @color 50%, @color 75%, transparent 75%, transparent);
 		background-image: linear-gradient(@angle, @color 25%, transparent 25%, transparent 50%, @color 50%, @color 75%, transparent 75%, transparent);
 	}
-}
-
-.reset-filter() {
-	filter: e(%("progid:DXImageTransform.Microsoft.gradient(enabled = false)"));
 }
 
 //
