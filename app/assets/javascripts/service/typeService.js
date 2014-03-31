@@ -103,13 +103,8 @@ define(['config/module'], function (module) {
 			return segment.join(',');
 		};
 
-		typeService.assetMimetypeGroup = function (object, dig) {
-			var mimetype = typeService.assetProperty(object, 'format', dig).mimetype.split('/');
-			return mimetype[0] == 'text' ? mimetype[1] : mimetype[0];
-		};
-
 		typeService.assetDisplayName = function (object, dig) {
-			return typeService.assetProperty(object, 'name', dig) || typeService.assetMimetypeGroup(object, dig);
+			return typeService.assetProperty(object, 'name', dig) || typeService.assetProperty(object, 'format', dig).name;
 		};
 
 		//

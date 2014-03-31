@@ -95,7 +95,7 @@ object AssetFormat extends TableId[AssetFormat]("format") {
   /** File type for internal image data (jpeg).
     * Images of this type may be produced and handled specially internally.
     */
-  final val Image = new AssetFormat(IMAGE, "image/jpeg", Some("jpg"), "JPEG") {
+  final val Image = new AssetFormat(IMAGE, "image/jpeg", Some("jpg"), "Image") {
     override def isImage = true
   }
   /** The designated internal video format. */
