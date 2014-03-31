@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('BrowserService', ['$rootScope', 'ArrayHelper', 'AuthService', 'Slot', 'TypeService', 'PageService', function ($rootScope, arrayHelper, authService, Slot, typeService, page) {
+	module.factory('BrowserService', ['$rootScope', 'ArrayHelper', 'AuthService', 'Slot', 'TypeService', 'PageService', 'TooltipService', 'ConstantService', function ($rootScope, arrayHelper, authService, Slot, typeService, page, tooltips, constant) {
 		var browserService = {};
 
 		//
@@ -78,6 +78,11 @@ define(['config/module'], function (module) {
 		//
 
 		browserService.initialize = function (newContext, newData) {
+			if(angular.isUndefined(browserService.context))
+				constant.$promise.success(function () {
+					bindTooltips(tips);
+				});
+
 			if (newContext == 'party') {
 				var volumes = [];
 
@@ -1012,6 +1017,38 @@ define(['config/module'], function (module) {
 		}, function () {
 			browserService.updateCategories();
 		});
+
+		//
+
+		var tips = {};
+
+		var bindTooltips = function (tips) {
+			tips = {
+				'.icon.public': constant.message('consent.PUBLIC'),
+				'.icon.excerpts': constant.message('consent.EXCERPTS'),
+				'.icon.shared': constant.message('consent.SHARED'),
+				'.icon.private': constant.message('consent.PRIVATE'),
+
+				'.icon.admin': constant.message('access.ADMIN', 'You'),
+				'.icon.contribute': constant.message('access.CONTRIBUTE', 'You'),
+				'.icon.download': constant.message('access.DOWNLOAD', 'You'),
+				'.icon.view': constant.message('access.VIEW', 'You'),
+				'.icon.none': constant.message('access.NONE', 'You'),
+
+				'.icon.excerpt': constant.message('classification.EXCERPT'),
+				'.icon.identified': constant.message('classification.IDENTIFIED'),
+				'.icon.deidentified': constant.message('classification.DEIDENTIFIED'),
+				'.icon.material': constant.message('classification.MATERIAL')
+			};
+
+			angular.forEach(tips, function (message, target) {
+				tips[target] = tooltips.add({
+					live : true,
+					$target: target,
+					message: message
+				});
+			});
+		};
 
 		//
 

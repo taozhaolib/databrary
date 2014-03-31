@@ -3,6 +3,7 @@ define(['config/module'], function (module) {
 
 	module.factory('TooltipService', ['$rootScope', 'ArrayHelper', '$timeout', function ($rootScope, arrayHelper, $timeout) {
 		var tooltips = arrayHelper([]);
+		var $doc = $(document);
 
 		tooltips.types = ['blue', 'green', 'red', 'orange', 'yellow', 'purple'];
 
@@ -19,7 +20,8 @@ define(['config/module'], function (module) {
 			tooltip.type = tooltips.types.indexOf(tooltip.type) != -1 ? tooltip.type : 'blue';
 			tooltip.enabled = angular.isUndefined(tooltip.enabled) || tooltip.enabled != false;
 			tooltip.visible = !!tooltip.visible || false;
-			tooltip.$target = tooltip.$target.length != 0 ? tooltip.$target : undefined;
+			tooltip.$target = tooltip.$target ? tooltip.$target : undefined;
+			tooltip.live = tooltip.live || false;
 
 			tooltip.message = tooltip.message || undefined;
 
@@ -147,7 +149,7 @@ define(['config/module'], function (module) {
 			var focusElements = ['INPUT', 'SELECT', 'TEXTAREA'],
 				namespace = '.tooltipTarget';
 
-			if (focusElements.indexOf(tooltip.$target.prop('tagName')) >= 0)
+			if (!angular.isString(tooltip.$target) && focusElements.indexOf(tooltip.$target.prop('tagName')) >= 0)
 				return [
 						'focusin' + namespace + '_' + tooltip.id,
 						'focusout' + namespace + '_' + tooltip.id
@@ -161,7 +163,10 @@ define(['config/module'], function (module) {
 
 		var removeEvents = function (tooltip) {
 			if (tooltip.$target)
-				tooltip.$target.unbind(getTargetEvents(tooltip).join(' '));
+				if (tooltip.live)
+					$doc.off(getTargetEvents(tooltip).join(' '), tooltip.$target);
+				else
+					tooltip.$target.unbind(getTargetEvents(tooltip).join(' '));
 		};
 
 		tooltips.target = function (tooltip, $newTarget) {
@@ -174,24 +179,38 @@ define(['config/module'], function (module) {
 
 			var $target = tooltip.$target;
 
-			if ($target.length === 0) {
+			if (!tooltip.live && $target.length === 0) {
 				tooltips.disable(tooltip);
 				return tooltip.$target = false;
 			}
 
 			var events = getTargetEvents(tooltip);
 
-			$target.bind(events[0], function (event) {
-				$rootScope.$apply(function () {
-					tooltips.show(tooltip, event);
+			if (tooltip.live) {
+				$doc.on(events[0], tooltip.$target, function (event) {
+					$rootScope.$apply(function () {
+						tooltips.show(tooltip, event);
+					});
 				});
-			});
 
-			$target.bind(events[1], function (event) {
-				$rootScope.$apply(function () {
-					tooltips.hide(tooltip, event);
+				$doc.on(events[1], tooltip.$target, function (event) {
+					$rootScope.$apply(function () {
+						tooltips.hide(tooltip, event);
+					});
 				});
-			});
+			} else {
+				$target.bind(events[0], function (event) {
+					$rootScope.$apply(function () {
+						tooltips.show(tooltip, event);
+					});
+				});
+
+				$target.bind(events[1], function (event) {
+					$rootScope.$apply(function () {
+						tooltips.hide(tooltip, event);
+					});
+				});
+			}
 
 			tooltips.hide(tooltip);
 
@@ -202,7 +221,7 @@ define(['config/module'], function (module) {
 
 		$rootScope.$watch(function () {
 			angular.forEach(tooltips, function (tooltip) {
-				if(tooltip.$target.closest(document.documentElement).length == 0) {
+				if (!angular.isString(tooltip.$target) && tooltip.$target.closest(document.documentElement).length == 0) {
 					removeEvents(tooltip);
 					tooltips.remove(tooltip);
 				}

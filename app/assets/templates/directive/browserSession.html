@@ -3,7 +3,7 @@
         <div class="cf">
             <footer>
                 <span bo-if="data.object.consent">
-                    <div tooltip class="item_meta icon" bo-class="constant.data.consent[data.object.consent].name.toLowerCase()" tooltip-message="{{'consent.'+constant.data.consent[data.object.consent].name | message}}"></div>
+                    <div class="item_meta icon" bo-class="constant.data.consent[data.object.consent].name.toLowerCase()" tooltip-message="{{'consent.'+constant.data.consent[data.object.consent].name | message}}"></div>
 
                     <div class="item_meta sep"
                          bo-if="browser.hasAccess(data, 3)">|</div>
