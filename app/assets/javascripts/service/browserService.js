@@ -1014,21 +1014,21 @@ define(['config/module'], function (module) {
 
 		var bindTooltips = function (tips) {
 			tips = {
-				'.icon.public': constant.message('consent.PUBLIC'),
-				'.icon.excerpts': constant.message('consent.EXCERPTS'),
-				'.icon.shared': constant.message('consent.SHARED'),
-				'.icon.private': constant.message('consent.PRIVATE'),
+				'.bb.icon.public': constant.message('consent.PUBLIC'),
+				'.bb.icon.excerpts': constant.message('consent.EXCERPTS'),
+				'.bb.icon.shared': constant.message('consent.SHARED'),
+				'.bb.icon.private': constant.message('consent.PRIVATE'),
 
-				'.icon.admin': constant.message('access.ADMIN', 'You'),
-				'.icon.contribute': constant.message('access.CONTRIBUTE', 'You'),
-				'.icon.download': constant.message('access.DOWNLOAD', 'You'),
-				'.icon.view': constant.message('access.VIEW', 'You'),
-				'.icon.none': constant.message('access.NONE', 'You'),
+				'.bb.icon.admin': constant.message('access.ADMIN', 'You'),
+				'.bb.icon.contribute': constant.message('access.CONTRIBUTE', 'You'),
+				'.bb.icon.download': constant.message('access.DOWNLOAD', 'You'),
+				'.bb.icon.view': constant.message('access.VIEW', 'You'),
+				'.bb.icon.none': constant.message('access.NONE', 'You'),
 
-				'.icon.excerpt': constant.message('classification.EXCERPT'),
-				'.icon.identified': constant.message('classification.IDENTIFIED'),
-				'.icon.deidentified': constant.message('classification.DEIDENTIFIED'),
-				'.icon.material': constant.message('classification.MATERIAL')
+				'.bb.icon.excerpt': constant.message('classification.EXCERPT'),
+				'.bb.icon.identified': constant.message('classification.IDENTIFIED'),
+				'.bb.icon.deidentified': constant.message('classification.DEIDENTIFIED'),
+				'.bb.icon.material': constant.message('classification.MATERIAL')
 			};
 
 			angular.forEach(tips, function (message, target) {

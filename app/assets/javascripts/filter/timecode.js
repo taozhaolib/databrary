@@ -6,7 +6,7 @@ define(['config/module'], function (module) {
 			if (!angular.isNumber(input))
 				return input;
 
-			var time = [], tmp;
+			var time = [];
 
 			var millTo = {
 				days: 86400000,
@@ -25,18 +25,14 @@ define(['config/module'], function (module) {
 				input = input % millTo.hours;
 			}
 
-			if (input > millTo.minutes) {
-				time.push(Math.floor(input / millTo.minutes));
-				input = input % millTo.minutes;
-			}
+			time.push(Math.floor(input / millTo.minutes));
+			input = input % millTo.minutes;
 
-			if (input > millTo.seconds) {
-				time.push(Math.floor(input / millTo.seconds));
-				input = input % millTo.seconds;
-			}
+			time.push(Math.floor(input / millTo.seconds));
+			input = input % millTo.seconds;
 
 			angular.forEach(time, function (input, k) {
-				if (k != 0)
+				if (k != 0 && time.length > 1)
 					time[k] = new Array(3 - input.toString().length).join('0') + input;
 			});
 

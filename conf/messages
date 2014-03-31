@@ -157,6 +157,8 @@ browser.filter.by=Filter by
 session=Session
 
 excerpts.title=Excerpts
+excerpts.download=Download this excerpt.
+excerpts.jump=Jump to the session from which this excerpt originates.
 
 materials.title=Materials
 materials.empty=There are no files here.

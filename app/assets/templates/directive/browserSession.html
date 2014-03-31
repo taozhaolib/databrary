@@ -3,10 +3,9 @@
         <div class="cf">
             <footer>
                 <span bo-if="data.object.consent">
-                    <div class="item_meta icon" bo-class="constant.data.consent[data.object.consent].name.toLowerCase()"></div>
+                    <div class="item_meta icon bb" bo-class="constant.data.consent[data.object.consent].name.toLowerCase()"></div>
 
-                    <div class="item_meta sep"
-                         bo-if="browser.hasAccess(data, 3)">|</div>
+                    <div class="item_meta sep" bo-if="browser.hasAccess(data, 3)">|</div>
                 </span>
 
                 <a bo-href="editLink(data)" target="_self" bo-if="browser.hasAccess(data, 3)">edit</a>
