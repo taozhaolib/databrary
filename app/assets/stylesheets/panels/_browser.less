@@ -534,3 +534,41 @@
 		}
 	}
 }
+
+//
+
+.item_investigators {
+	.margin-top(0);
+
+	li {
+		display: inline-block;
+		.margin-right(@f8);
+
+		&:after {
+			content: ', ';
+		}
+
+		&:last-child {
+			&:after {
+				content: none;
+			}
+		}
+	}
+
+	img {
+		.size(16px);
+		position: relative;
+		top: 1px;
+		.border-radius(@b1);
+	}
+
+	a {
+		color: @black;
+
+		&:hover {
+			span {
+				text-decoration: underline;
+			}
+		}
+	}
+}
