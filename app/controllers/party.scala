@@ -195,7 +195,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	to = dl.map(_.email) :+ Messages("mail.authorize"),
 	subject = Messages("mail.authorize.subject"),
 	body = Messages("mail.authorize.body", routes.PartyHtml.admin(parentId).absoluteURL(true),
-	  request.obj.party.name + request.identity.email.fold("")(" <" + _ + ">"),
+	  request.obj.party.name + request.user.fold("")(" <" + _.email + ">"),
 	  parent.name)
       ).recover {
 	case ServiceUnavailableException => ()
@@ -213,7 +213,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	    to = Seq(Messages("mail.authorize")),
 	    subject = Messages("mail.authorize.subject"),
 	    body = Messages("mail.authorize.body", routes.PartyHtml.view(id).absoluteURL(true),
-	      request.obj.party.name + request.identity.email.fold("")(" <" + _ + ">") + request.obj.party.affiliation.fold("")(" (" + _ + ")"),
+	      request.obj.party.name + request.user.fold("")(" <" + _.email + ">") + request.obj.party.affiliation.fold("")(" (" + _ + ")"),
 	      form.name.get + form.info.get.fold("")(" (" + _ + ")")))
 	} yield (Ok("request sent"))
       else for {
