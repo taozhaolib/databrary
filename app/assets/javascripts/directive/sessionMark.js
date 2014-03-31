@@ -4,7 +4,7 @@ define(['config/module'], function (module) {
 	module.directive('sessionMark', ['ConstantService', 'TooltipService', function (constant, tooltips) {
 		var link = function ($scope, $el, $attrs) {
 			$scope.mark = $attrs.mark;
-			var message = '';
+			var message = '', type = 'orange';
 
 			switch ($scope.mark) {
 				case 'excluded':
@@ -12,6 +12,7 @@ define(['config/module'], function (module) {
 						return $el.remove();
 
 					message = constant.message('notice.help.exclusion', $scope.data.volume.records[$scope.data.object.categories[-700][0].id].measures.reason);
+					type = 'purple';
 					break;
 
 				case 'pilot':
@@ -19,6 +20,7 @@ define(['config/module'], function (module) {
 						return $el.remove();
 
 					message = constant.message('notice.help.pilot');
+					type = 'red';
 					break;
 
 				default:
@@ -28,7 +30,7 @@ define(['config/module'], function (module) {
 
 			var tooltip = tooltips.add({
 				message: message,
-				type: 'orange',
+				type: type,
 				$target: $el
 			});
 
