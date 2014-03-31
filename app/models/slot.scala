@@ -89,10 +89,10 @@ trait Slot extends TableRow with InVolume with SiteObject {
   def idents : Future[Seq[String]] =
     records.map(_.map(_.ident))
 
-  protected def ident : Option[String] =
+  private[this] def _ident : Option[String] =
     _records.peek.map(_.map(_.ident).mkString(" - "))
 
-  def pageName = container.name orElse ident getOrElse {
+  def pageName = container.name orElse _ident.flatMap(Maybe(_).opt) getOrElse {
     if (container.top)
       volume.name
     else
@@ -105,8 +105,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
   lazy val slotJson : JsonObject = JsonObject.flatten(
     Some('container -> container.json),
     if (segment.isFull) None else Some('segment -> segment),
-    Maybe(consent).opt.map('consent -> _),
-    ident.map('name -> _)
+    Maybe(consent).opt.map('consent -> _)
   )
   def json : JsonValue = slotJson
 
