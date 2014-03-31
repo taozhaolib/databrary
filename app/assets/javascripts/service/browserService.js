@@ -226,7 +226,8 @@ define(['config/module'], function (module) {
 				data = {
 					items: [],
 					level: -1,
-					group: 'browser'
+					group: 'browser',
+					limit: 20
 				};
 
 			browserService.groups = {};
@@ -511,18 +512,6 @@ define(['config/module'], function (module) {
 						}, groups[data.level + 1]);
 
 					callbackRecordChildren(newData, volume, groups);
-
-					if (groups[newData.level + 1] == 'session') {
-						var c = 0;
-
-						for (var key in newData.sessions) {
-							if (newData.sessions.hasOwnProperty(key) && c++ == 1)
-								break;
-						}
-
-						if (c <= 1)
-							browserService.setItemExpand(newData, true);
-					}
 				});
 
 				data.items.reverse();
@@ -606,7 +595,8 @@ define(['config/module'], function (module) {
 				items: [],
 
 				select: false,
-				expand: (focus && focus.id == group) ? ((angular.isDefined(focusInvert)) ? focusInvert : false) : option.expand
+				expand: (focus && focus.id == group) ? ((angular.isDefined(focusInvert)) ? focusInvert : false) : option.expand,
+				limit: 10
 			};
 
 			if (group == 'asset') {

@@ -150,20 +150,21 @@ define(['config/module'], function (module) {
 				return measures;
 			};
 
-			var sessionRecords = undefined;
+			var sessionRecords = {};
 
 			$scope.getSessionRecords = function (data) {
-				if(sessionRecords)
-					return sessionRecords;
+				if(sessionRecords[data.object.id])
+					return sessionRecords[data.object.id];
 
-				var sessionRecords = {}, skip = ['-700', '-800'];
+				sessionRecords[data.object.id] = {};
+				var skip = ['-700', '-800'];
 
 				angular.forEach(data.object.categories, function (records, key) {
 					if (skip.indexOf(key) == -1)
-						sessionRecords[key] = records.reverse();
+						sessionRecords[data.object.id][key] = records.reverse();
 				});
 
-				return sessionRecords;
+				return sessionRecords[data.object.id];
 			};
 
 			$scope.nameRecord = function (data) {
