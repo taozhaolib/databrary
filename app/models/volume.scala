@@ -121,6 +121,22 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
       agemean = Age(if (ages == 0) 0 else agesum / ages))
   }
 
+  /** Volumes ("datasets") which provide data included in this volume. */
+  def providers : Future[Seq[Volume]] =
+    Volume.row.SQL("SELECT DISTINCT ON (volume.id) " + _ + " FROM " + _ + """
+      JOIN container ON volume.id = container.volume
+      JOIN volume_inclusion ON container.id = volume_inclusion.container
+      WHERE volume_inclusion.volume = ?""")
+    .apply(id).list
+
+  /** Volumes ("studies") which include data provided by this volume. */
+  def consumers : Future[Seq[Volume]] =
+    Volume.row.SQL("SELECT DISTINCT ON (volume.id) " + _ + " FROM " + _ + """
+      JOIN volume_inclusion ON volume.id = volume_inclusion.volume
+      JOIN container ON volume_inclusion.container = container.id
+      WHERE container.volume = ?""")
+    .apply(id).list
+
   def pageName = alias.getOrElse(name)
   def pageParent = None
   def pageURL = controllers.routes.VolumeHtml.view(id)
@@ -158,7 +174,9 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
 	}))
       })),
       ("excerpts", opt => excerpts.map(JsonArray.map(_.json))),
-      ("top", opt => top.map(t => (t.json - "volume" - "top").obj))
+      ("top", opt => top.map(t => (t.json - "volume" - "top").obj)),
+      ("consumers", opt => consumers.map(JsonRecord.map(_.json))),
+      ("providers", opt => providers.map(JsonRecord.map(_.json)))
     )
 }
 
@@ -191,12 +209,6 @@ object Volume extends TableId[Volume]("volume") {
   def get(i : Id)(implicit site : Site) : Future[Option[Volume]] =
     row.SELECT("WHERE id = ? AND", condition)
       .apply(i).singleOpt
-
-  /** Retrieve the set of all volumes in the system.
-    * This only returns volumes for which the current user has [[Permission.VIEW]] access. */
-  def getAll(implicit site : Site) : Future[Seq[Volume]] =
-    row.SELECT("WHERE volume.id > 0 AND", condition)
-      .apply().list
 
   def search(query : Option[String], party : Option[Party.Id])(implicit site : Site) : Future[Seq[Volume]] =
     /* XXX ts indexes! */
