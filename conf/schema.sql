@@ -358,7 +358,7 @@ CREATE TABLE "format" (
 COMMENT ON TABLE "format" IS 'Possible types for assets, sufficient for producing download headers.';
 
 -- The privledged formats with special handling (image and video for now) have hard-coded IDs:
-INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-700, 'image/jpeg', 'jpg', 'JPEG');
+INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-700, 'image/jpeg', 'jpg', 'JPEG'); -- name should be 'JPEG image'
 
 -- The above video format will change to reflect internal storage, these are used for uploaded files:
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/plain', 'txt', 'Plain text');
