@@ -16,19 +16,16 @@
 
                 <div ng-switch-when="video">
                     <video controls>
-                        <source ng-src="{{router.assetLink(played.object, true)}}"
-                                type="{{played.object.format.mimetype || played.object.asset.format.mimetype}}">
+                        <source ng-src="{{router.assetLink(played.object, true)}}" type="{{played.object.format.mimetype || played.object.asset.format.mimetype}}">
                     </video>
                 </div>
 
                 <div ng-switch-when="html">
-                    <iframe ng-src="{{router.assetLink(played.object, true)}}"
-                            style="max-width: 100%;"></iframe>
+                    <iframe ng-src="{{router.assetLink(played.object, true)}}" style="max-width: 100%;"></iframe>
                 </div>
 
                 <div ng-switch-when="plain">
-                    <iframe ng-src="{{router.assetLink(played.object, true)}}"
-                            style="max-width: 100%;"></iframe>
+                    <iframe ng-src="{{router.assetLink(played.object, true)}}" style="max-width: 100%;"></iframe>
                 </div>
 
                 <div ng-switch-default>

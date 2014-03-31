@@ -61,7 +61,7 @@ define(['config/module'], function (module) {
 					return;
 				}
 
-				form.data.container = $scope.volume.top.id;
+				form.data.container = $scope.volume && $scope.volume.top.id;
 				form.data.segment = ',';
 				form.data.parent = undefined;
 			};

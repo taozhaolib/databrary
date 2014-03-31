@@ -1,5 +1,4 @@
-<article bindonce class="browser_item browser_asset cf"
-ng-click="setItemPlayer(data)">
+<article bindonce class="browser_item browser_asset cf" ng-click="setItemPlayer(data)">
     <div class="browser_item_content">
         <div class="cf">
             <footer>
@@ -10,7 +9,7 @@ ng-click="setItemPlayer(data)">
                 <div class="item_meta sep"
                      bo-if="data.object.asset.duration">|</div>
 
-                <div class="item_meta icon" bo-class="constant.data.classification[data.object.asset.classification].name.toLowerCase()" tooltip-message="{{'classification.'+constant.data.classification[data.object.asset.classification].name | message}}"></div>
+                <div class="item_meta icon" bo-class="constant.data.classification[data.object.asset.classification].name.toLowerCase()"></div>
 
                 <div class="item_meta sep"
                      bo-if="browser.hasAccess(data, 3)">|</div>
