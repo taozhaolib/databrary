@@ -157,10 +157,10 @@ define(['config/module'], function (module) {
 
 		$rootScope.$on('$routeChangeStart', function (event, next, current) {
 			if (!loaded) {
-				if (current)
-					loaded = true;
-				else
+				if (!current)
 					auth.next = $location.url();
+				else if (current.$$route.controller == 'LoadingView')
+					loaded = true;
 
 				$location.url('/loading');
 				return;
