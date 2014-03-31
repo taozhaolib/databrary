@@ -201,6 +201,8 @@ POST    /api/comment                                                            
 # ----- TAG ----- #
 # GET       ?containers
 GET     /api/tag/:name                                                                            controllers.TagApi.get(name : String)
+# QUERY     ?query=TERM
+GET     /api/tag                                                                                  controllers.TagApi.search(query : String)
 # UPDATE    ?container=ID;segment=
 POST    /api/tag/:name                                                                            controllers.TagApi.update(name : String, container : models.Container.Id, segment : dbrary.Segment)
 

@@ -45,4 +45,8 @@ object TagApi extends TagController with ApiController {
       _.json(request.apiOptions).map(Ok(_)))
     )
   }
+
+  def search(name : String) = SiteAction.async { implicit request =>
+    Tag.search(name).map(l => Ok(JsonArray.map[Tag, String](_.name)(l)))
+  }
 }

@@ -54,10 +54,10 @@ object Tag extends TableId[Tag]("tag") {
   def get(name : String) : Future[Option[Tag]] =
     valid(name).fold[Future[Option[Tag]]](Async(None))(_get(_))
 
-  /** Search for all tags containing the given string within their name. */
+  /** Search for all tags names starting with the given string. */
   def search(name : String) : Future[Seq[Tag]] =
     valid(name).fold[Future[Seq[Tag]]](Async(Nil)) { name =>
-      row.SELECT("WHERE name LIKE ?").apply("%" + name + "%").list
+      row.SELECT("WHERE name LIKE ?").apply(name + "%").list
     }
 
   /** Retrieve or, if none exists, create an individual tag by name. */
