@@ -156,12 +156,11 @@ define(['config/module'], function (module) {
 				if(sessionRecords)
 					return sessionRecords;
 
-				// TODO: something with better performance!
 				var sessionRecords = {}, skip = ['-700', '-800'];
 
-				angular.forEach(data.object.categories, function (value, key) {
+				angular.forEach(data.object.categories, function (records, key) {
 					if (skip.indexOf(key) == -1)
-						sessionRecords[key] = value;
+						sessionRecords[key] = records.reverse();
 				});
 
 				return sessionRecords;
