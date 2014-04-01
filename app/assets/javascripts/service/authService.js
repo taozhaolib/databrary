@@ -31,10 +31,6 @@ define(['config/module'], function (module) {
 
 			authService.user = user || undefined;
 
-//			if (preload) {
-//				$location.url(authService.next);
-//				authService.next = undefined;
-//			} else
 			if (reload) {
 				$cacheFactory.get('$http').removeAll();
 				$route.reload();

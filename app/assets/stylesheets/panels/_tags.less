@@ -148,6 +148,36 @@
 
 //
 
-.panel_tags_form {
+.tag_new_form {
+	position: relative;
 
+	input {
+		z-index: 100;
+		position: relative;
+	}
+}
+
+.new_auto_list {
+	.margin(0);
+	.padding(0);
+	position: absolute;
+	top: (@b1 * 1.5) - 3px;
+	left: 0;
+	right: 0;
+	background-color: @white;
+	border: 1px solid @pale;
+	.border-radius(0 0 @b8 @b8);
+	z-index: 90;
+
+	li {
+		.padding-width(@f4);
+
+		&.active {
+			background-color: mix(@yellow51, @white, 50%);
+		}
+
+		&:before {
+			display: none;
+		}
+	}
 }
