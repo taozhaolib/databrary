@@ -1,7 +1,7 @@
 <panel ng-controller="NetworkPanel" id="panel_network" panel-title="{{'network.title' | message}}" fold>
-    <panel-mode name="view" active>
+    <panel-mode name="{{'network.view' | message}}" active>
         <div ng-show="parents">
-	        <h2>{{'auth.parents.title' | message}}</h2>
+	    <h2>{{'auth.parents.title' | message}}</h2>
 
             <div class="row">
                 <div ng-repeat="party in parents" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
@@ -11,7 +11,7 @@
         </div>
 
         <div ng-show="children">
-	        <h2>{{'auth.children.title' | message}}</h2>
+	    <h2>{{'auth.children.title' | message}}</h2>
 
             <div class="row">
                 <div ng-repeat="party in children" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
@@ -21,8 +21,8 @@
         </div>
     </panel-mode>
 
-    <panel-mode name="apply" access="CONTRIBUTE">
-	    <h2>{{'auth.parents.title' | message}}</h2>
+    <panel-mode name="{{'network.edit' | message}}" access="ADMIN">
+	<h2>{{'auth.parents.title' | message}}</h2>
 
         <article class="network-auth cf" bindonce ng-repeat="parent in partyAuth.parents">
             <div class="row">
@@ -87,9 +87,7 @@
                 </div>
             </div>
         </article>
-    </panel-mode>
 
-    <panel-mode name="authorize" access="CONTRIBUTE">
 	<h2>{{'auth.children.title' | message}}</h2>
 
         <article class="network-auth cf" bindonce ng-repeat="child in partyAuth.children">
