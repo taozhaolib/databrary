@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('TagsPanel', ['$scope', 'Tag', '$route', 'MessageService', 'Volume', '$cacheFactory', '$http', '$timeout', function ($scope, Tag, $route, messageService, Volume, $cacheFactory, $http, $timeout) {
+	module.controller('TagsPanel', ['$scope', 'Tag', '$route', 'MessageService', 'Volume', '$cacheFactory', '$http', '$timeout', 'TooltipService', 'ConstantService', function ($scope, Tag, $route, messageService, Volume, $cacheFactory, $http, $timeout, tooltips, constant) {
 		var DEFAULT_MESSAGE = {
 			type: 'blue',
 			countdown: 3000
@@ -92,11 +92,11 @@ define(['config/module'], function (module) {
 				vote: vote == -1 ? 'false' : vote == 1 ? "true" : "",
 				container: $scope.target.container,
 				segment: $scope.target.segment
-			}, function (newTag, status, headers, config) {
-				if (newTag.weight != 0)
-					$scope.tags.splice($scope.tags.indexOf(tag), 1, newTag);
-				else
+			}, function (newTag) {
+				if (newTag.weight == 0 && !newTag.vote)
 					$scope.tags.splice($scope.tags.indexOf(tag), 1);
+				else
+					$scope.tags.splice($scope.tags.indexOf(tag), 1, newTag);
 
 				switch (vote) {
 					case -1:
@@ -111,11 +111,15 @@ define(['config/module'], function (module) {
 						createMessage('Tag <strong>' + tag.id + '</strong> voted up successfully!');
 						break;
 				}
+
+				hideTooltips();
 			}, function () {
 				createMessage({
 					type: 'red',
 					body: 'Vote for tag <strong>' + tag.id + '</strong> unsuccessful! Please refresh and try again.'
 				});
+				
+				hideTooltips();
 			});
 		};
 
@@ -139,6 +143,7 @@ define(['config/module'], function (module) {
 				emptyAuto();
 
 				$scope.retrieveTags();
+				hideTooltips();
 			}, function () {
 				createMessage({
 					type: 'red',
@@ -146,6 +151,7 @@ define(['config/module'], function (module) {
 				});
 
 				emptyAuto();
+				hideTooltips();
 			});
 		};
 
@@ -219,6 +225,8 @@ define(['config/module'], function (module) {
 						query: form.newNameVal
 					}
 				}).success(function (data) {
+					emptyAuto();
+
 					if (form.newNameVal)
 						$scope.autoList = data;
 				}).error(function () {
@@ -239,21 +247,14 @@ define(['config/module'], function (module) {
 
 		$scope.fillAuto = function (form, autoTag) {
 			form.newNameVal = autoTag;
-			$scope.autoSelect = undefined;
-			$scope.autoList = [];
-
-			$timeout(function () {
-				$('#newName').focus();
-			}, 1);
-
-			$scope.newNameChange(form);
+			emptyAuto();
+			$scope.voteNew(form);
 		};
 
 		//
 
 		var enableNewNameError = function () {
-			$scope.autoList = [];
-			$scope.autoSelect = undefined;
+			emptyAuto();
 
 			if ($scope.tagNewFormMessage) {
 				messageService.enable($scope.tagNewFormMessage);
@@ -276,5 +277,41 @@ define(['config/module'], function (module) {
 			if ($scope.tagNewFormMessage)
 				messageService.disable($scope.tagNewFormMessage);
 		};
+
+		//
+
+		var tips = [];
+
+		var bindTooltips = function () {
+			var unsetTips = {
+				'.panel_tags_list .vote.available.up': constant.message('tags.vote.up'),
+				'.panel_tags_list .vote.available.null': constant.message('tags.vote.null'),
+				'.panel_tags_list .vote.available.down': constant.message('tags.vote.down')
+			};
+
+			angular.forEach(unsetTips, function (message, target) {
+				tips.push(tooltips.add({
+					live : true,
+					$target: target,
+					message: message
+				}));
+			});
+		};
+
+		bindTooltips();
+
+		var hideTooltips = function () {
+			angular.forEach(tips, function (tip) {
+				tooltips.hide(tip);
+			});
+		};
+
+		$scope.$on('$destroy', function () {
+			angular.forEach(tips, function (tip) {
+				tooltips.remove(tip);
+			});
+
+			tips = [];
+		});
 	}]);
 });
