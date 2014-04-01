@@ -7,7 +7,7 @@
                 </figure>
             </div>
 
-            <div class="col-desktop-7 col-laptop-7 col-tablet-7 col-mobile-6 col-cell">
+            <div class="col-desktop-8 col-laptop-8 col-tablet-7 col-mobile-6 col-cell">
                 <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
                 <h2 ng-if="auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-html="volume.alias"></h2>
             </div>
@@ -54,6 +54,30 @@
                         <dt ng-if="volume.summary.agemean > 0">{{'volume.ages.title' | message}}</dt>
                         <dd ng-if="volume.summary.agemean > 0">{{ageSummary(volume.summary)}}</dd>
                     </dl>
+                </div>
+            </div>
+        </div>
+
+        <div frame id="frame_reuse" frame-title="{{'volume.reuse.title' | message}}" fold>
+            <div class="col-desktop-8 col-laptop-8 col-tablet-8 col-mobile-6 col-cell">
+                <div bo-if="hasProps(volume, 'consumers')">
+                    <div bo-html="'volume.reuse.provides' | message"></div>
+
+                    <ul class="reuse_list">
+                        <li ng-repeat="ext in volume.consumers">
+                            <a bo-href="router.volume(ext)"><img src="/public/images/browser/icon-study.png"> <span bo-html="ext.name"></span></a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div bo-if="hasProps(volume, 'providers')">
+                    <div bo-html="'volume.reuse.consumes' | message"></div>
+
+                    <ul class="reuse_list">
+                        <li ng-repeat="ext in volume.providers">
+                            <a bo-href="router.volume(ext)"><img src="/public/images/browser/icon-dataset.png"> <span bo-html="ext.name"></span></a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>

@@ -58,6 +58,26 @@ define(['config/module'], function (module) {
 
 			//
 
+			$scope.volumeClasses = function (data) {
+				var cls = [], study = false;
+
+				for(var prop in data.object.providers) {
+					if(data.object.providers.hasOwnProperty(prop)) {
+						study = true;
+						break;
+					}
+				}
+
+				if(study)
+					cls.push('browser_study');
+				else
+					cls.push('browser_dataset');
+
+				return cls;
+			};
+
+			//
+
 			$scope.getName = function (data) {
 				switch ($scope.type.getType(data.object)) {
 					case 'volume':

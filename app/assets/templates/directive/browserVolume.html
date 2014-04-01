@@ -1,4 +1,4 @@
-<article bindonce class="browser_item browser_volume cf">
+<article bindonce class="browser_item browser_volume cf" bo-class="volumeClasses(data)">
     <div class="browser_item_content">
         <div class="cf">
             <footer>
@@ -19,7 +19,7 @@
             </header>
         </div>
 
-        <div class="item_main" bo-if="data.object.body">
+        <div class="item_main" bo-if="data.object.body || data.object.access">
             <ul class="item_investigators">
                 <li ng-repeat="access in data.object.access | filter:{access: 4}"><a bo-href="router.party(access.party)"><img bo-src="router.partyAvatar(access.party, 16)"> <span bo-html="access.party.name"></span></a></li>
             </ul>

@@ -67,7 +67,6 @@ define(['config/module'], function (module) {
 					var deferred = $q.defer();
 
 					var req = {
-						volumes: '',
 						comments: '',
 						access: '',
 						parents: '',
@@ -75,15 +74,38 @@ define(['config/module'], function (module) {
 						funding: ''
 					};
 
-					if (!$route.current.params.id)
-						if (auth.isLoggedIn())
-							req.id = auth.user.id;
-						else if (type.isParty($window.$play.object))
-							req.id = $window.$play.object.id;
+					if ($route.current.params.id)
+						req.id = $route.current.params.id;
+					else if (auth.isLoggedIn())
+						req.id = auth.user.id;
+					else if (type.isParty($window.$play.object))
+						req.id = $window.$play.object.id;
 
 					Party.get(req, function (data) {
 						deferred.resolve(data);
 					}, function (error) {
+						deferred.reject();
+					});
+
+					return deferred.promise;
+				}],
+				volumes: ['$route', 'Volume', '$q', 'AuthService', 'TypeService', function ($route, Volume, $q, auth, type) {
+					var deferred = $q.defer();
+
+					var req = {
+						id: null
+					};
+
+					if ($route.current.params.id)
+						req.party = $route.current.params.id;
+					else if (auth.isLoggedIn())
+						req.party = auth.user.id;
+					else if (type.isParty($window.$play.object))
+						req.party = $window.$play.object.id;
+
+					Volume.query(req, function (data) {
+						deferred.resolve(data);
+					}, function (data) {
 						deferred.reject();
 					});
 
@@ -108,6 +130,8 @@ define(['config/module'], function (module) {
 					Volume.get({
 						access: '',
 						citations: '',
+						providers: '',
+						consumers: '',
 						top: '',
 						tags: '',
 						excerpts: '',

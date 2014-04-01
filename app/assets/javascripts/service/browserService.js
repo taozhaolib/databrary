@@ -83,16 +83,6 @@ define(['config/module'], function (module) {
 					bindTooltips(tips);
 				});
 
-			if (newContext == 'party') {
-				var volumes = [];
-
-				angular.forEach(newData, function (access) {
-					volumes.push(access.volume);
-				});
-
-				return initialize(newContext, volumes);
-			}
-
 			newData.$promise.then(function (newData) {
 				initialize(newContext, newData);
 			});

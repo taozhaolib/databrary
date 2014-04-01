@@ -27,5 +27,18 @@ define(['config/module'], function (module) {
 
 			return constants.message('volume.ages', range, age(summary.agemean));
 		};
+
+		$scope.hasProps = function (volume, property) {
+			if(!volume[property])
+				return false;
+
+			var has = false;
+
+			for(var prop in volume[property])
+				if(volume[property].hasOwnProperty(prop))
+					return true;
+
+			return false;
+		};
 	}]);
 });

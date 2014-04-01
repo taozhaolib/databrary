@@ -4,17 +4,6 @@ define(['config/module'], function (module) {
 	module.controller('BrowserPanel', ['$scope', '$route', function ($scope, $route) {
 		$scope.refreshPanel = function () {
 			switch($route.current.controller) {
-				case 'PartyView':
-					var enabled = false;
-
-					angular.forEach($scope.party.volumes, function (access) {
-						if(access.access > 3)
-							enabled = true;
-					});
-
-					$scope.enabled = enabled;
-					break;
-
 				case 'VolumeView':
 					$scope.enabled = $scope.volume.sessions;
 					break;

@@ -146,6 +146,9 @@ volume.ages.title=Ages
 volume.ages={0} (M = {1})
 volume.citation.title=Citation
 volume.access.title=Shared with
+volume.reuse.title=Reuse
+volume.reuse.provides=These data are also used in...
+volume.reuse.consumes=These data were originally collected as part of...
 
 browser.title=Data
 browser.group=+
