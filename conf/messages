@@ -177,6 +177,9 @@ comments.cancel=Cancel
 comments.prompt=Post a comment...
 
 tags.title=Tags
+tags.vote.up=Vote this tag up.
+tags.vote.null=Remove your vote on this tag.
+tags.vote.down=Vote this tag down.
 
 search.title=Search
 search.prompt=Start your search...

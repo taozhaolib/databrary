@@ -11,9 +11,9 @@
                                 <span class="name">{{tag.id}}</span>
 
                                 <div class="controls" ng-if="auth.isLoggedIn()">
-                                    <button class="vote down" name="vote" ng-click="vote(tag, -1);" ng-disabled="tag.vote == -1">-</button>
-                                    <button class="vote null" name="vote" ng-click="vote(tag, 0)" ng-disabled="!tag.vote">0</button>
-                                    <button class="vote up" name="vote" ng-click="vote(tag, 1)" ng-disabled="tag.vote == 1">+</button>
+                                    <button class="vote down" name="vote" ng-click="vote(tag, -1);" ng-disabled="tag.vote == -1" ng-class="{available: tag.vote != -1}">-</button>
+                                    <button class="vote null" name="vote" ng-click="vote(tag, 0)" ng-disabled="!tag.vote" ng-class="{available: tag.vote != 0}">0</button>
+                                    <button class="vote up" name="vote" ng-click="vote(tag, 1)" ng-disabled="tag.vote == 1" ng-class="{available: tag.vote != 1}">+</button>
                                 </div>
                             </div>
                         </li>
