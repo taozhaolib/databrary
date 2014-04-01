@@ -65,7 +65,7 @@
 
                     <ul class="reuse_list">
                         <li ng-repeat="ext in volume.consumers">
-                            <a bo-href="router.volume(ext)"><img src="/public/images/browser/icon-study.png"> <span bo-html="ext.name"></span></a>
+                            <a bo-href="router.volume({id: ext.id})"><img src="/public/images/browser/icon-study.png"> <span bo-html="ext.name"></span></a>
                         </li>
                     </ul>
                 </div>
@@ -75,7 +75,7 @@
 
                     <ul class="reuse_list">
                         <li ng-repeat="ext in volume.providers">
-                            <a bo-href="router.volume(ext)"><img src="/public/images/browser/icon-dataset.png"> <span bo-html="ext.name"></span></a>
+                            <a bo-href="router.volume({id: ext.id})"><img src="/public/images/browser/icon-dataset.png"> <span bo-html="ext.name"></span></a>
                         </li>
                     </ul>
                 </div>
