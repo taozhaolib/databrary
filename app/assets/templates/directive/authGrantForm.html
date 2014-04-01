@@ -47,6 +47,7 @@
         <button ng-click="authGrantForm.deny()" class="orange" ng-if="!authGrantForm.other.authorized && !authGrantForm.other.force">{{"auth.deny" | message}}</button>
 
         <button ng-click="authGrantForm.save()" class="green" ng-if="authGrantForm.other.authorized">{{"auth.update" | message}}</button>
+        <button ng-click="authGrantForm.deny()" class="orange" ng-if="authGrantForm.other.authorized">{{"auth.revoke" | message}}</button>
 
         <button ng-click="authGrantForm.cancel()" class="red">{{"cancel" | message}}</button>
     </fieldset>
