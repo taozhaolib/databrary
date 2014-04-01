@@ -21,7 +21,7 @@
         </div>
     </panel-mode>
 
-    <panel-mode name="{{'network.edit' | message}}" access="ADMIN">
+    <panel-mode name="apply" access="ADMIN">
 	<h2>{{'auth.parents.title' | message}}</h2>
 
         <article class="network-auth cf" bindonce ng-repeat="parent in partyAuth.parents">
@@ -87,7 +87,9 @@
                 </div>
             </div>
         </article>
+    </panel-mode>
 
+    <panel-mode name="authorize" access="ADMIN">
 	<h2>{{'auth.children.title' | message}}</h2>
 
         <article class="network-auth cf" bindonce ng-repeat="child in partyAuth.children">
