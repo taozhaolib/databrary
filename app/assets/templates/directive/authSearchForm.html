@@ -1,5 +1,5 @@
 <form name="authSearchForm">
-    <input type="search" class="auth-search" placeholder="Search..." ng-model="authSearchForm.name" ng-change="authSearchForm.search()">
+    <input type="search" class="auth-search" placeholder="{{'auth.search' | message}}" ng-model="authSearchForm.name" ng-change="authSearchForm.search()">
 
     <ul ng-if="authSearchForm.found">
         <li ng-repeat="found in authSearchForm.found">

@@ -22,10 +22,10 @@ access.delete.self=You cannot remove your own access to a volume.
 mail.from=Databrary <help@databrary.org>
 mail.authorize=authorize@databrary.org
 mail.password.subject=Databrary password reset
-mail.password.none=Someone (hopefully you) has requested to reset the password for the Databrary account associated with this email address. If you did not request this, let us know (by replying to this message) or simply ignore it.\n\nUnfortunately, no databrary account found for this email address. You can try again with a different email address, or reply to this email for assistance.
+mail.password.none=Someone (hopefully you) has requested to reset the password for the Databrary account associated with this email address. If you did not request this, let us know (by replying to this message) or simply ignore it.\n\nUnfortunately, no Databrary account found for this email address. You can try again with a different email address, or reply to this email for assistance.
 mail.password.body=Someone (hopefully you) has requested to reset the password for the Databrary account associated with this email address. If you did not request this, let us know (by replying to this message) or simply ignore it. Otherwise, you may use this link to reset your Databrary password:\n\n{0}
 mail.register.subject=Databrary account created
-mail.register.body=Thank you for registering with Databrary. Please use this link to validate your email and set your password:\n\n{0}\n\nOnce you''ve validated your e-mail, you will be able to request authorization. Once you've done this, and your authorization has been approved, you will be granted full access to Databrary.
+mail.register.body=Thank you for registering with Databrary. Please use this link to validate your email and set your password:\n\n{0}\n\nOnce you''ve validated your e-mail, you will be able to request authorization. Once you've done that, and your authorization has been approved, you will be granted full access to Databrary.
 mail.authorize.subject=Databrary authorization request
 mail.authorize.body={1} has requested to be authorized by {2}.\n\nTo approve or reject this authorization request, go to: {0}
 mail.authorized.subject=Databrary authorization approved
@@ -76,16 +76,19 @@ welcome.body=Due to Databrary''s rapid development, we''re actively testing the 
 
 party.overview.title=Overview
 party.contact.title=Contact
-network.title=Network
+network.title=Authorizations
+network.view=view
+network.edit=edit
 auth.parents.title=Authorized by
 auth.children.title=Granted authorization to
-auth.inherit=Databrary Status
-auth.direct={0} Data
+auth.inherit=Access to Databrary
+auth.direct=Access to {0} data
 auth.expiration=Expiration
 auth.expiration.none=N/A
 auth.pending=Request pending.
 auth.request.title=Request the following status from {0}:
 auth.grant.title=Grant {0} the following capabilities:
+auth.search=Search for a user or institution...
 auth.request=Request
 auth.authorize=Authorize
 auth.update=Update
@@ -96,14 +99,14 @@ auth.info.prompt=Contact info for your institution''s authorizing official (OSP)
 
 # Permission levels
 auth.inherit.NONE=No access.
-auth.inherit.VIEW=Access to unrestricted Databrary data.
-auth.inherit.DOWNLOAD=Access to restricted Databrary data.
+auth.inherit.VIEW=Access to deidentified Databrary data.
+auth.inherit.DOWNLOAD=Access to identifiable Databrary data.
 auth.inherit.CONTRIBUTE=Can create datasets and studies on {0} behalf.
 auth.inherit.ADMIN=Can authorize users on {0} behalf.
 
 auth.direct.NONE=No access.
-auth.direct.VIEW=Access to {0} unrestricted data.
-auth.direct.DOWNLOAD=Access to {0} restricted data.
+auth.direct.VIEW=Access to {0} deidentified data.
+auth.direct.DOWNLOAD=Access to {0} identifiable data.
 auth.direct.CONTRIBUTE=Can edit {0} data.
 auth.direct.ADMIN=Can share {0} data.
 
