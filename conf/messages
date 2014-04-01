@@ -118,8 +118,8 @@ access.CONTRIBUTE={0} can access and edit all released and unreleased data.
 access.ADMIN={0}, as the owner of these data, can fully edit and share them.
 
 consent.PRIVATE=The identifying data in this session have not been released for sharing.
-consent.SHARED=The identifying data in this session have been released for sharing with authorized Databrary users.
-consent.EXCERPTS=The identifying data in this session have been released for sharing with authorized Databrary users, and selected excerpts may be used in public settings.
+consent.SHARED=The identifying data in this session have been released for sharing with authorized Databrary users, but excerpts may not be used in public settings.
+consent.EXCERPTS=The identifying data in this session have been released for sharing with authorized Databrary users, and excerpts may be used in public settings.
 consent.PUBLIC=The identifying data in this session have been released publicly.
 
 classification.IDENTIFIED=This file contains identifying information.
@@ -150,7 +150,7 @@ volume.ages={0} (M = {1})
 volume.citation.title=Citation
 volume.access.title=Shared with
 volume.reuse.title=Reuse
-volume.reuse.provides=These data are also used in...
+volume.reuse.provides=These data are used in...
 volume.reuse.consumes=These data were originally collected as part of...
 
 browser.title=Data
