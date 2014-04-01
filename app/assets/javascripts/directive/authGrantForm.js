@@ -25,6 +25,9 @@ define(['config/module'], function (module) {
 				if (!form.partyAuthorize.expires.match(/^\d{4}-\d{1,2}-\d{1,2}$/))
 					form.partyAuthorize.expires = '';
 
+				if(form.partyAuthorize.expires == '')
+					delete form.partyAuthorize.expires;
+
 				if (angular.isFunction(form.saveFn))
 					form.saveFn(form);
 
