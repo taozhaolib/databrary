@@ -22,14 +22,14 @@ access.delete.self=You cannot remove your own access to a volume.
 mail.from=Databrary <help@databrary.org>
 mail.authorize=authorize@databrary.org
 mail.password.subject=Databrary password reset
-mail.password.none=No account found.
-mail.password.body={0}
+mail.password.none=Someone (hopefully you) has requested to reset the password for the Databrary account associated with this email address. If you did not request this, let us know (by replying to this message) or simply ignore it.\n\nUnfortunately, no databrary account found for this email address. You can try again with a different email address, or reply to this email for assistance.
+mail.password.body=Someone (hopefully you) has requested to reset the password for the Databrary account associated with this email address. If you did not request this, let us know (by replying to this message) or simply ignore it. Otherwise, you may use this link to reset your Databrary password:\n\n{0}
 mail.register.subject=Databrary account created
-mail.register.body=Thank you for registering with Databrary. Please click on the link below to validate your email and set your password.\n\n{0}\n\nOnce you''ve validated your e-mail, you can request authorization by clicking the ''Authorization'' link on your profile page.
+mail.register.body=Thank you for registering with Databrary. Please use this link to validate your email and set your password:\n\n{0}\n\nOnce you''ve validated your e-mail, you will be able to request authorization. Once you've done this, and your authorization has been approved, you will be granted full access to Databrary.
 mail.authorize.subject=Databrary authorization request
 mail.authorize.body={1} has requested to be authorized by {2}.\n\nTo approve or reject this authorization request, go to: {0}
 mail.authorized.subject=Databrary authorization approved
-mail.authorized.body=You have been authorized by {0}.
+mail.authorized.body=You have been authorized for Databrary access by {0}.
 
 # Generic UI
 cancel=Cancel
@@ -64,15 +64,14 @@ login.noCookie=You must be logged in to perform that action. Please make sure yo
 login.expired=Your session has expired. Please login again.
 login.logout=You have been logged out.
 
-reset.title=Shucks!
-reset.title.sub=Reset Password
+reset.title=Password Reset
 reset.request=Reset
 reset.save=Save
 reset.request.complete=Password reset email sent to {0}. Please follow the instructions in that message.
-reset.save.complete=Your password has been reset! Enjoy your Databrary experience.
+reset.save.complete=Your password has been reset.
 
 welcome.title=Welcome
-welcome.title.sub=Databrary''s in Beta.
+welcome.title.sub=Databrary Private Beta
 welcome.body=Due to Databrary''s rapid development, we''re actively testing the site in private beta. If you''ve received an invitation, please use the link found in that email to register.\n\nFor more information, please visit <a href="http://databrary.org">databrary.org</a>.
 
 party.overview.title=Overview
@@ -182,8 +181,8 @@ search.title=Search
 search.prompt=Start your search...
 
 # --- Notices
-notice.help.pilot=<strong>Pilot</strong>: This session was a pilot for the current dataset.
-notice.help.exclusion=<strong>Exclusion</strong>: This session was excluded for reason: <em>{0}</em>.
+notice.help.pilot=<strong>Pilot</strong>: This session contains pilot data.
+notice.help.exclusion=<strong>Exclusion</strong>: This session was excluded due to: <em>{0}</em>.
 
 # --- Registration
 register.title=Register
