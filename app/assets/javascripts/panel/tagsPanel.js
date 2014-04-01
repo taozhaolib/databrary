@@ -144,7 +144,7 @@ define(['config/module'], function (module) {
 					type: 'red',
 					body: 'Could not add tag <strong>' + tag.id + '</strong>! Please refresh and try again.'
 				});
-				
+
 				emptyAuto();
 			});
 		};

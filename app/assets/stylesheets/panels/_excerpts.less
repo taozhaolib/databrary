@@ -10,6 +10,7 @@
 	figure {
 		background-color: @orange51;
 		.margin-bottom(0);
+		cursor: pointer;
 	}
 
 	.binder {
@@ -17,6 +18,23 @@
 		.padding(@f8, @f1, @f8, @f8);
 		.margin-bottom(@f1);
 		.border-radius(@b12);
+		position: relative;
+
+		&.video {
+			.text {
+				background: url('/public/images/overlay-video.png') no-repeat 0 0;
+				background-size: 100%;
+				opacity: .666;
+			}
+		}
+
+		.actions {
+			float: right;
+			position: absolute;
+			width: 16px;
+			top: 0;
+			right: @b3;
+		}
 	}
 }
 

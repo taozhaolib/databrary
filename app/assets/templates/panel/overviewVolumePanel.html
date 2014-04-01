@@ -58,7 +58,7 @@
             </div>
         </div>
 
-        <div frame id="frame_reuse" frame-title="{{'volume.reuse.title' | message}}" fold>
+        <div frame id="frame_reuse" frame-title="{{'volume.reuse.title' | message}}" fold ng-if="hasProps(volume, 'consumers') || hasProps(volume, 'providers')">
             <div class="col-desktop-8 col-laptop-8 col-tablet-8 col-mobile-6 col-cell">
                 <div bo-if="hasProps(volume, 'consumers')">
                     <div bo-html="'volume.reuse.provides' | message"></div>

@@ -24,9 +24,7 @@
                                 </video>
                             </div>
 
-                            <div ng-switch-default>
-
-                            </div>
+                            <div ng-switch-default></div>
                         </div>
                     </div>
                 </section>
@@ -38,7 +36,11 @@
                 <div class="row">
                     <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2 col-cell"
                          ng-repeat="excerpt in volume.excerpts" bindonce>
-                        <div class="binder">
+                        <div class="binder" bo-class="{video: (excerpt.format && excerpt.format.name == 'Video') || excerpt.asset.format.name == 'Video'}">
+                            <div class="actions">
+                                <a ng-href="" ng-click="jump(excerpt)" class="icon line jump tool" target="_self" tooltip tooltip-message="{{'excerpts.jump' | message}}"></a>
+                            </div>
+
                             <figure baseline="square" ng-click="setCurrent(excerpt)">
                                 <figmedia><img bo-src="router.assetThumb(excerpt)"></figmedia>
                             </figure>

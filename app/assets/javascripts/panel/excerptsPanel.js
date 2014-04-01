@@ -35,13 +35,18 @@ define(['config/module'], function (module) {
 			}
 
 			if (!found)
-				return expandTo(browser.data.items[0].volume.sessions[asset.container.id], asset, false);
+				return expandTo(browser.data.items[0].volume.sessions[asset.container.id], asset);
 
-			$(window).scrollTop($('#' + found.id).offset().top - 76);
+			var $item = $('#' + found.id);
+
+			if($item.length == 0)
+				return addTo(found, asset);
+
+			$(window).scrollTop($item.offset().top - 76);
 			browser.setItemExpand(found, true);
 		};
 
-		var expandTo = function (session, asset, jump) {
+		var expandTo = function (session, asset) {
 			var dirty;
 
 			angular.forEach(browser.groups, function (objects, group) {
@@ -70,6 +75,25 @@ define(['config/module'], function (module) {
 				$timeout(function () {
 					$scope.jump(asset);
 				}, 1);
+		};
+
+		var addTo = function (session, asset) {
+			var data = session.parent, index;
+
+			for(var i = 0, l = data.items.length; i < l; i++) {
+				if(data.items[i] == session) {
+					index = i;
+					break;
+				}
+			}
+
+			if(index) {
+				data.items.splice(9, 0, data.items.splice(index, 1)[0]);
+
+				$timeout(function () {
+					$scope.jump(asset);
+				}, 1);
+			}
 		};
 	}]);
 });

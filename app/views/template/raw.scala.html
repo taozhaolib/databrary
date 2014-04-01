@@ -36,7 +36,7 @@
         <nav id="toolbar_databrary" class="toolbar toolbar_databrary">
             <div class="wrap">
                 <div class="row">
-                    <div class="title cf col-desktop-10 col-laptop-7 col-tablet-4 col-mobile-2">
+                    <div class="title cf col-desktop-10 col-laptop-7 col-tablet-6 col-mobile-2 col-cell">
                         <h1 class="toolbar_h1">
                             <a href="@routes.Site.start" title="Databrary: An Open Data Library"><span>Databrary</span></a>
                         </h1>
@@ -50,11 +50,11 @@
                         </nav>
                     </div>
 
-                    <div class="toolbar_user col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-4">
+                    <div class="toolbar_user col-desktop-5 col-laptop-5 col-tablet-3 col-mobile-4 col-cell">
                 @requestOption match {
                     case Some(request : SiteRequest.Auth[_]) => {
                         <a href="@routes.PartyHtml.profile" class="toolbar_user_link">
-                            <span class="username">@requestOption.get.identity.name</span>
+                            <span class="username hide-mobile hide-cell hide-tablet">@requestOption.get.identity.name</span>
                             <img src="@display.avatar(requestOption.get.identity, 16)" alt="@requestOption.get.identity.name" class="avatar">
                         </a>
 
