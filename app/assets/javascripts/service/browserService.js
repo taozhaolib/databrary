@@ -1018,7 +1018,13 @@ define(['config/module'], function (module) {
 				'.bb.icon.excerpt': constant.message('classification.EXCERPT'),
 				'.bb.icon.identified': constant.message('classification.IDENTIFIED'),
 				'.bb.icon.deidentified': constant.message('classification.DEIDENTIFIED'),
-				'.bb.icon.material': constant.message('classification.MATERIAL')
+				'.bb.icon.material': constant.message('classification.MATERIAL'),
+
+				'.browser_dataset .browser_icon': constant.message('object.tip.dataset'),
+				'.browser_study .browser_icon': constant.message('object.tip.study'),
+				'.browser_record .browser_icon': constant.message('object.tip.record'),
+				'.browser_session .browser_icon': constant.message('object.tip.session'),
+				'.browser_asset .browser_icon': constant.message('object.tip.asset')
 			};
 
 			angular.forEach(tips, function (message, target) {
