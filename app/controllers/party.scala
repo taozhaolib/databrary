@@ -85,7 +85,10 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     def accountForm = None
   }
   final class AccountEditForm(val account : Account)(implicit request : Request[_]) extends EditForm with AccountForm with LoginController.AuthForm {
-    def accountForm = if (_authorized || request.superuser) Some(this) else None
+    def accountForm = if (_authorized || request.superuser) Some(this)
+      else if (email.get.exists(!_.equals(account.email)) || password.get.nonEmpty || openid.get.exists(!_.equals(account.openid.getOrElse(""))))
+	Some(this.auth.withError("error.required"))
+      else None
     val email = Field(OptionMapping(Forms.email)).fill(Some(account.email))
     openid.fill(account.openid)
   }
@@ -115,12 +118,10 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	duns = form.duns.get.filter(_ => request.access.direct == Permission.ADMIN)
       )
       _ <- macros.Async.foreach[AccountEditForm, Unit](form.accountForm, form =>
-	form.account.change(
+	form.orThrow.account.change(
 	  email = form.email.get,
 	  password = form.password.get,
-	  openid = form.openid.get.map(Maybe(_).opt)
-	)
-      )
+	  openid = form.openid.get.map(Maybe(_).opt)))
       _ <- macros.Async.foreach(form.avatar.get, { file : form.FilePart =>
 	val fmt = AssetFormat.getFilePart(file).filter(_.isImage) getOrElse
 	  form.avatar.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw
