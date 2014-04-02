@@ -211,9 +211,6 @@ POST    /api/tag/:name                                                          
 # static resources
 GET     /public/*file                                                                             controllers.Assets.at(path="/public", file)
 
-# test
-GET     /test                                                                                     controllers.Site.test
-
 # redirects
 GET     /p/*path                                                                                  controllers.Site.tinyUrl(prefix : String = "party", path : String)
 GET     /v/*path                                                                                  controllers.Site.tinyUrl(prefix : String = "volume", path : String)
