@@ -561,8 +561,9 @@ define(['config/module'], function (module) {
 					asset.container = object.container;
 					asset.segment = object.segment;
 					var newData = callbackItem(data, volume, undefined, asset, 'asset');
-					browserService.loading = false;
 				});
+
+				browserService.loading = false;
 			});
 
 			return data;
