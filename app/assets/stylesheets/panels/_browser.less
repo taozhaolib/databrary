@@ -547,10 +547,11 @@
 
 .item_investigators {
 	.margin-top(0);
+	display: inline-block;
 
 	li {
 		display: inline-block;
-		.margin-right(@f8);
+		.margin-right(@f6);
 
 		&:after {
 			content: ', ';
@@ -574,9 +575,7 @@
 		color: @black;
 
 		&:hover {
-			span {
-				text-decoration: underline;
-			}
+			text-decoration: underline;
 		}
 	}
 }
