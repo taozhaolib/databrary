@@ -1,6 +1,6 @@
 <div class="wizard" ng-class="getPanelClasses()">
     <div class="row">
-        <div class="wizard_list col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-2 col-cell">
+        <div class="wizard_list col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-2">
             <ul class="flat">
                 <li ng-repeat="step in steps" ng-class="getListItemClasses(step)" ng-click="activateStep(step)">
                     <strong class="wizard_list_name">{{step.name || 'wizard.'+step.id+'.name' | message}}</strong>
@@ -9,6 +9,6 @@
             </ul>
         </div>
 
-        <div wizard-steps class="wizard_steps col-desktop-12 col-laptop-9 col-tablet-6 col-mobile-4 col-cell"></div>
+        <div wizard-steps class="wizard_steps col-desktop-12 col-laptop-9 col-tablet-6 col-mobile-4"></div>
     </div>
 </div>

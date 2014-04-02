@@ -35,6 +35,8 @@ mail.authorized.body=You have been authorized for Databrary access by {0}.
 cancel=Cancel
 reset=Reset
 
+toolbar.contact=Send us your comments, questions, and suggestions!
+
 # HTML page attributes
 page.title.welcome=Welcome
 page.title.login=Login
@@ -157,6 +159,7 @@ browser.title=Data
 browser.group=+
 browser.group.by=Categorize by
 browser.group.empty=This group is empty.
+browser.group.loading=Loading...
 browser.sort=sort
 browser.sort.by=Group by
 browser.filter.by=Filter by

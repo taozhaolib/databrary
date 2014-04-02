@@ -2,12 +2,12 @@
     <nav id="toolbar_databrary" class="toolbar toolbar_databrary">
         <div class="wrap">
             <div class="row">
-                <div class="title cf col-desktop-10 col-laptop-7 col-tablet-6 col-mobile-2 col-cell">
+                <div class="title cf col-desktop-10 col-laptop-7 col-tablet-6 col-mobile-2">
                     <h1 class="toolbar_h1">
                         <a href="http://databrary.org" title="Databrary: An Open Data Library"><span>Databrary</span></a>
                     </h1>
 
-                    <nav class="toolbar_nav cf hide-mobile hide-cell">
+                    <nav class="toolbar_nav cf hide-mobile">
                         <ul class="toolbar_nav_ul inline-block flat cf">
                             <li><a ng-href="/search">explore</a></li>
                             <li><a href="http://databrary.org/user-guide/getting-started/release-instructions.html">share</a></li>
@@ -16,14 +16,14 @@
                     </nav>
                 </div>
 
-                <div class="toolbar_user col-desktop-5 col-laptop-5 col-tablet-3 col-mobile-4 col-cell">
+                <div class="toolbar_user col-desktop-5 col-laptop-5 col-tablet-3 col-mobile-4">
                     <span ng-if="!auth.hasAuth('NONE')">
                         <a ng-href="{{router.login()}}">login</a>
                     </span>
 
                     <span ng-if="auth.hasAuth('NONE')">
                         <a ng-href="{{router.party(auth.user)}}" class="toolbar_user_link">
-                            <span class="username hide-cell hide-mobile hide-tablet">{{auth.user.name}}</span>
+                            <span class="username hide-mobile hide-tablet">{{auth.user.name}}</span>
                             <img ng-src="{{auth.user.avatar}}" alt="{{auth.user.name}}" class="avatar">
                         </a>
 
@@ -51,7 +51,9 @@
     <nav id="toolbar_context" class="toolbar toolbar_context hide-print ng-cloak">
         <div class="wrap">
             <div class="row">
-                <div class="col-desktop-15 col-laptop-12 col-tablet-9 col-mobile-6 hide-cell">
+                <div class="col-desktop-15 col-laptop-12 col-tablet-9 col-mobile-6">
+                    <a href="mailto:contact@databrary.com" class="icon line contact" tooltip tooltip-type="green" tooltip-message="{{'toolbar.contact' | message}}" target="_self"></a>
+
                     <ul class="toolbar_menu toolbar_menu_left">
                         <li ng-repeat="panel in panels | filter:{enabled: true}" class="link_{{panel.panel.id}}" ng-class="getPanelClasses(panel)"><a ng-click="focusPanel(panel)">{{panel.panel.title}}</a></li>
                         <li ng-if="panels.length == 0"></li>

@@ -1,29 +1,12 @@
 // MEDIA
 
-@media screen and (max-width: (@mobile - 1)) {
-	@gridspread: 0;
-	@gridcolumn: 3.5rem;
-	@gridgutter: 1.5rem;
-
-	.grid(cell, @gridspread, @gridcolumn, @gridgutter);
-
-	.hide-cell { .hide(); }
-	.show-mobile { .hide(); }
-	.show-tablet { .hide(); }
-	.show-laptop { .hide(); }
-	.show-desktop { .hide(); }
-}
-
-//
-
-@media screen and (min-width: @mobile) and (max-width: (@tablet - 1)) {
+@media screen and (max-width: (@tablet - 1)) {
 	@gridspread: 6;
 	@gridcolumn: 3.5rem;
 	@gridgutter: 1.5rem;
 
 	.grid(mobile, @gridspread, @gridcolumn, @gridgutter);
 
-	.show-cell { .hide(); }
 	.hide-mobile { .hide(); }
 	.show-tablet { .hide(); }
 	.show-laptop { .hide(); }
@@ -39,7 +22,6 @@
 
 	.grid(tablet, @gridspread, @gridcolumn, @gridgutter);
 
-	.show-cell { .hide(); }
 	.show-mobile { .hide(); }
 	.hide-tablet { .hide(); }
 	.show-laptop { .hide(); }
@@ -55,7 +37,6 @@
 
 	.grid(laptop, @gridspread, @gridcolumn, @gridgutter);
 
-	.show-cell { .hide(); }
 	.show-mobile { .hide(); }
 	.show-tablet { .hide(); }
 	.hide-laptop { .hide(); }
@@ -71,7 +52,6 @@
 
 	.grid(desktop, @gridspread, @gridcolumn, @gridgutter);
 
-	.show-cell { .hide(); }
 	.show-mobile { .hide(); }
 	.show-tablet { .hide(); }
 	.show-laptop { .hide(); }

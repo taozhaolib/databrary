@@ -15,7 +15,8 @@
 
     <div ng-if="browser.context != 'search'">
         <ul ng-if="browser.getItemExpand(data) || browser.data == data" class="cf">
-            <li ng-if="!data.items[0]">{{"browser.group.empty" | message}}</li>
+            <li ng-if="!data.items[0] && (data.group != 'session' || !browser.loading)">{{"browser.group.empty" | message}}</li>
+            <li ng-if="!data.items[0] && (data.group == 'session' && browser.loading)">{{"browser.group.loading" | message}}</li>
 
             <li ng-repeat="data in data.items | limitTo:data.limit" ng-class="itemClasses(data)" id="{{data.id}}">
                 <ng-include src="getInclude()"></ng-include>

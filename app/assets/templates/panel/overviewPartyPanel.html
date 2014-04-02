@@ -1,13 +1,13 @@
 <panel ng-controller="OverviewPartyPanel" top id="panel_overview" panel-title="{{'party.overview.title' | message}}" bindonce>
     <panel-mode name="view" active>
         <hgroup class="row">
-            <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-6 col-cell">
+            <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-6">
                 <figure class="panel_overview_thumbnail" baseline="square">
                     <figmedia><img ng-src="{{router.partyAvatar(party, 400)}}"></figmedia>
                 </figure>
             </div>
 
-            <h1 class="panel_title col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell">{{party.name}}</h1>
+            <h1 class="panel_title col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-6">{{party.name}}</h1>
         </hgroup>
 
 	    <div frame id="frame_contact" frame-title="{{'party.contact.title' | message}}" fold ng-if="party.email || party.orcid">

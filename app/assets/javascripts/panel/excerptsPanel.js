@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('ExcerptsPanel', ['$scope', 'BrowserService', '$location', '$timeout', '$rootScope', function ($scope, browser, $location, $timeout, $rootScope) {
+	module.controller('ExcerptsPanel', ['$scope', 'BrowserService', '$location', '$timeout', 'TypeService', function ($scope, browser, $location, $timeout, type) {
 		$scope.bootPanel = function () {
 			if (angular.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0)
 				$scope.current = $scope.volume.excerpts[0] || undefined;
@@ -22,6 +22,15 @@ define(['config/module'], function (module) {
 				type = mimetype.split('/')[0];
 
 			return type == 'text' ? mimetype[1] : type;
+		};
+
+		$scope.listClass = function (excerpt) {
+			var cls = [];
+
+			if(angular.isArray(excerpt.segment))
+				cls.push('video');
+
+			return cls;
 		};
 
 		$scope.jump = function (asset) {

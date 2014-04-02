@@ -1,26 +1,26 @@
 <panel ng-controller="OverviewVolumePanel" top id="panel_overview" panel-title="{{'volume.overview.title' | message}}" ng-mouseover="hoverPanel()" bindonce>
     <panel-mode name="view" active>
         <hgroup class="row">
-            <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-6 col-cell">
+            <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-6">
                 <figure class="panel_overview_thumbnail" baseline="square">
                     <figmedia><img ng-src="/volume/{{volume.id}}/thumb"></figmedia>
                 </figure>
             </div>
 
-            <div class="col-desktop-8 col-laptop-8 col-tablet-7 col-mobile-6 col-cell">
+            <div class="col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-6">
                 <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
                 <h2 ng-if="auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-html="volume.alias"></h2>
             </div>
         </hgroup>
 
 	    <div frame id="frame_people" frame-title="{{'volume.admins.title' | message}}" fold>
-            <div ng-repeat="volumeAccess in volume.access | filter:{access: 4}" class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-3 col-cell" ng-init="party = volumeAccess.party">
+            <div ng-repeat="volumeAccess in volume.access | filter:{access: 4}" class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">
                 <portrait class="portrait_vertical portrait_small"></portrait>
             </div>
         </div>
 
         <div frame id="frame_access" frame-title="{{'volume.access.title' | message}}" fold>
-            <div ng-repeat="volumeAccess in volume.access | filter:isShared" class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-3 col-cell" ng-init="party = volumeAccess.party">
+            <div ng-repeat="volumeAccess in volume.access | filter:isShared" class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">
                 <aside class="portrait portrait_vertical portrait_small ng-cloak" tooltip tooltip-message="{{shareMessage(volumeAccess)}}">
                     <figure baseline="square" class="figure_avatar" ng-href="{{router.party(party)}}">
                         <figmedia><img ng-src="{{router.partyAvatar(party, 216)}}"></figmedia>
@@ -34,13 +34,13 @@
         </div>
 
 	    <div frame id="frame_funding" frame-title="{{'volume.funding.title' | message}}" fold>
-            <div ng-repeat="funding in volume.access | filter:isFunding" class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6 col-cell" ng-init="party = funding.party">
+            <div ng-repeat="funding in volume.access | filter:isFunding" class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6" ng-init="party = funding.party">
                 <portrait class="portrait_vertical portrait_small portrait_more" extra="{{funding.funding}}"></portrait>
             </div>
         </div>
 
 	    <div frame id="frame_metadata" frame-title="{{'volume.metadata.title' | message}}" fold>
-            <div class="col-desktop-8 col-laptop-8 col-tablet-8 col-mobile-6 col-cell">
+            <div class="col-desktop-8 col-laptop-8 col-tablet-8 col-mobile-6">
                 <div class="description" ng-bind-html="volume.body | format"></div>
 
                 <div class="metadata">
@@ -59,7 +59,7 @@
         </div>
 
         <div frame id="frame_reuse" frame-title="{{'volume.reuse.title' | message}}" fold ng-if="hasProps(volume, 'consumers') || hasProps(volume, 'providers')">
-            <div class="col-desktop-8 col-laptop-8 col-tablet-8 col-mobile-6 col-cell">
+            <div class="col-desktop-8 col-laptop-8 col-tablet-8 col-mobile-6">
                 <div bo-if="hasProps(volume, 'consumers')">
                     <div bo-html="'volume.reuse.provides' | message"></div>
 
@@ -84,7 +84,7 @@
 
 	    <div frame id="frame_citation" frame-title="{{'volume.citation.title' | message}}" fold>
             <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
-                <p ng-bind-html="volume | cite"></p>
+                <p ng-bind-html="volume | cite" class="citation"></p>
             </div>
         </div>
 

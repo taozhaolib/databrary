@@ -546,8 +546,11 @@ define(['config/module'], function (module) {
 			return data;
 		};
 
+		browserService.loading = false;
+
 		var callbackAssets = function (data, volume) {
 			var sessions = data.sessions || volume.sessions;
+			browserService.loading = true;
 
 			Slot.get({
 				id: data.object.id,
@@ -558,6 +561,7 @@ define(['config/module'], function (module) {
 					asset.container = object.container;
 					asset.segment = object.segment;
 					var newData = callbackItem(data, volume, undefined, asset, 'asset');
+					browserService.loading = false;
 				});
 			});
 

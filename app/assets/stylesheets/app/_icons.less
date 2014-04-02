@@ -7,9 +7,12 @@
 	.size(@b3 * 2);
 
 	&.public,
-	&.excerpt,
-	&.excerpts {
+	&.excerpt {
 		width: 20px;
+	}
+
+	&.excerpts {
+		width: 24px;
 	}
 
 	&.identified,
@@ -17,13 +20,15 @@
 		width: 22px;
 	}
 
+	&.contact { background-image: url('/public/images/icon/contact.png'); }
+
 	&.admin { background-image: url('/public/images/icon/admin.png'); }
 	&.contribute { background-image: url('/public/images/icon/contribute.png'); }
 	&.download { background-image: url('/public/images/icon/download.png'); }
 	&.view { background-image: url('/public/images/icon/view.png'); }
 
 	&.public { background-image: url('/public/images/icon/public.png'); }
-	&.excerpts { background-image: url('/public/images/icon/excerpt.png'); }
+	&.excerpts { background-image: url('/public/images/icon/excerpts.png'); }
 	&.shared { background-image: url('/public/images/icon/shared.png'); }
 	&.private { background-image: url('/public/images/icon/private.png'); }
 
@@ -31,7 +36,7 @@
 	&.identified { background-image: url('/public/images/icon/identified.png'); }
 	&.deidentified { background-image: url('/public/images/icon/deidentified.png'); }
 	&.material { background-image: url('/public/images/icon/material.png'); }
-	
+
 	&.jump { background-image: url('/public/images/icon/jump.png'); }
 
 	&.line {
@@ -39,9 +44,13 @@
 		background-position: 4px 4px;
 
 		&.public,
-		&.excerpt,
-		&.excerpts {
+		&.excerpt {
 			background-position: 2px 4px;
+		}
+
+		&.excerpts {
+			width: @b1 + 2px;
+			background-position: 1px 4px;
 		}
 
 		&.identified,

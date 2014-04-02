@@ -4,7 +4,7 @@
 
         <article bindonce ng-repeat="comment in comments" class="comment" ng-class="getCommentClasses(comment)">
             <div class="row">
-                <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
+                <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
                     <footer class="comment_meta" ng-init="party = commentParty(comment)">
                         <portrait class="portrait_vertical portrait_small portrait_more" extra="{{commentMeta(comment)}}"></portrait>
                     </footer>
