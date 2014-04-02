@@ -21,7 +21,7 @@
 
         <div class="item_main" bo-if="data.object.body || data.object.access">
             <ul class="item_investigators">
-                <li ng-repeat="access in data.object.access | filter:{access: 4}"><a bo-href="router.party(access.party)"><img bo-src="router.partyAvatar(access.party, 16)"> <span bo-html="access.party.name"></span></a></li>
+		<li ng-repeat="access in data.object.access | filter:{access: 4}"><a bo-href="router.party(access.party)">{{access.party.name}}</a></li>
             </ul>
 
             <div class="item_body body" bo-html="data.object.body | format"></div>
