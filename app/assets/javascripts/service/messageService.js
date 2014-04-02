@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('MessageService', ['$rootScope', 'ArrayHelper', '$timeout', function ($rootScope, arrayHelper, $timeout) {
+	module.factory('MessageService', ['$rootScope', 'ArrayHelper', '$timeout', 'ConstantService', function ($rootScope, arrayHelper, $timeout, constants) {
 		var messages = arrayHelper([]);
 
 		messages.types = ['blue', 'green', 'red', 'orange', 'yellow', 'purple'];
@@ -38,16 +38,35 @@ define(['config/module'], function (module) {
 
 		var addFn = messages.add;
 
+		var register = function (message) {
+			if (message) {
+				if (message.target)
+					messages.target(message);
+
+				if (message.countdown)
+					messages.countdown(message);
+			}
+
+			return message;
+		};
+
 		messages.add = function (message) {
 			var newMessage = addFn(message);
 
-			if (newMessage) {
-				if (newMessage.target)
-					messages.target(newMessage);
+			register(newMessage);
 
-				if (newMessage.countdown)
-					messages.countdown(newMessage);
+			return newMessage;
+		};
+
+		messages.addError = function (message) {
+			var newMessage = addFn(message);
+
+			if (newMessage) {
+				newMessage.type = 'red';
+				newMessage.body = constants.message('error.prefix') + ' ' + newMessage.body + ' ' + constants.message('error.suffix');
 			}
+
+			register(newMessage);
 
 			return newMessage;
 		};

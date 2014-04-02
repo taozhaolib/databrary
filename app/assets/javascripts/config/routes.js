@@ -70,8 +70,7 @@ define(['config/module'], function (module) {
 						comments: '',
 						access: '',
 						parents: '',
-						children: '',
-						funding: ''
+						children: ''
 					};
 
 					if ($route.current.params.id)
@@ -89,7 +88,7 @@ define(['config/module'], function (module) {
 
 					return deferred.promise;
 				}],
-				volumes: ['$route', 'Volume', '$q', 'AuthService', 'TypeService', function ($route, Volume, $q, auth, type) {
+				volumes: ['$route', 'Volume', '$q', 'AuthService', 'TypeService', '$window', function ($route, Volume, $q, auth, type, $window) {
 					var deferred = $q.defer();
 
 					var req = {

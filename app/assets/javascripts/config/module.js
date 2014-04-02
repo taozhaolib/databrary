@@ -33,10 +33,14 @@ define([
 
 			var loadAllTemplates = function (url) {
 				if (!promise) {
-					promise = $http.get(allTemplatesUrl).then(function (response) {
-						$injector.get('$compile')(response.data);
-						return response;
-					});
+					promise = $http
+						.get(allTemplatesUrl)
+						.then(function (response) {
+							$injector.get('$compile')(response.data);
+							return response;
+						}, function (response) {
+							$location.url('http://databrary.org');
+						});
 				}
 
 				return promise.then(function (response) {
@@ -63,7 +67,7 @@ define([
 		}]);
 	}]);
 
-	module.run(['$rootScope', '$location', 'RouterService', 'BrowserService', 'ConstantService', 'AuthService', 'TypeService', 'PlayService', 'PageService', function ($rootScope, $location, router, browser, constant, auth, type, playService, page) {
+	module.run(['$rootScope', '$location', 'RouterService', 'BrowserService', 'ConstantService', 'AuthService', 'TypeService', 'PlayService', 'Page', function ($rootScope, $location, router, browser, constant, auth, type, playService, page) {
 		// $rootScope specials -- TODO: cut out some of these
 		$rootScope.router = router;
 		$rootScope.browser = browser;

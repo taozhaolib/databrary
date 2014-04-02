@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('userPasswordForm', ['AuthService', 'EventService', '$http', '$window', 'MessageService', 'ConstantService', '$location', 'RouterService', function (auth, events, $http, $window, messages, constants, $location, router) {
+	module.directive('userPasswordForm', ['AuthService', 'EventService', '$http', '$window', 'MessageService', 'ConstantService', function (auth, events, $http, $window, messages, constants) {
 		var link = function ($scope) {
 			var form = $scope.userPasswordForm;
 			var token;
@@ -35,10 +35,21 @@ define(['config/module'], function (module) {
 				$http
 					.post('/password', $scope.userPasswordForm.data)
 					.success(function (data) {
+						messages.add({
+							type: 'green',
+							countdown: 3000,
+							body: constants.message('reset.request.success', form.data.email)
+						});
+
 						if (angular.isFunction(form.resetSuccessFn))
 							form.resetSuccessFn(form, arguments);
 					})
-					.error(function () {
+					.error(function (data, status, headers, config) {
+						messages.addError({
+							closeable: true,
+							body: constants.message('reset.request.error')
+						});
+
 						if (angular.isFunction(form.resetErrorFn))
 							form.resetErrorFn(form, arguments);
 					});
@@ -57,6 +68,12 @@ define(['config/module'], function (module) {
 				$http
 					.post('/api/party/' + token.party + '/password', $scope.userPasswordForm.data)
 					.success(function (data) {
+						messages.add({
+							type: 'green',
+							countdown: 3000,
+							body: constants.message('reset.save.success', form.data.email)
+						});
+
 						if (angular.isFunction(form.saveSuccessFn))
 							form.saveSuccessFn(form, arguments);
 
@@ -64,6 +81,11 @@ define(['config/module'], function (module) {
 						auth.updateUser(data);
 					})
 					.error(function () {
+						messages.addError({
+							closeable: true,
+							body: constants.message('reset.save.error')
+						});
+
 						if (angular.isFunction(form.saveErrorFn))
 							form.saveErrorFn(form, arguments);
 

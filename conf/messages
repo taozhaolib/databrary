@@ -69,8 +69,10 @@ login.logout=You have been logged out.
 reset.title=Password Reset
 reset.request=Reset
 reset.save=Save
-reset.request.complete=Password reset email sent to {0}. Please follow the instructions in that message.
-reset.save.complete=Your password has been reset.
+reset.request.success=Password reset email sent to {0}. Please follow the instructions in that message.
+reset.save.success=Your password has been reset.
+reset.request.error=Password reset unsuccessful.
+reset.save.error=Could not save new password.
 
 welcome.title=Welcome
 welcome.title.sub=Databrary Private Beta
@@ -193,6 +195,14 @@ search.prompt=Start your search...
 # --- Notices
 notice.help.pilot=<strong>Pilot</strong>: This session contains pilot data.
 notice.help.exclusion=<strong>Exclusion</strong>: This session was excluded due to: <em>{0}</em>.
+
+# Errors
+error.prefix=<strong>Error!</strong>
+error.suffix= Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
+
+error.generic=Something''s gone terribly wrong.
+
+scraper.error=Could not retrieve required document "{0}."
 
 # --- Registration
 register.title=Register
