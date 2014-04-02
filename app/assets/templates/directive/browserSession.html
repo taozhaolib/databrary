@@ -15,7 +15,7 @@
                 <browser-icon data="data"></browser-icon>
 
 		        <h1 bo-if="!data.object.top">
-                    Session<span bo-if="data.object.name">: <span bo-html="data.object.name"></span></span>
+                    Session<span bo-if="data.object.name">: <span bo-html="data.object.name | format:true"></span></span>
 
                     <session-mark data="data" mark="pilot" bo-if="data.object.categories[-800]"></session-mark>
                     <session-mark data="data" mark="excluded" bo-if="data.object.categories[-700]"></session-mark>

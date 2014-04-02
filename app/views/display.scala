@@ -64,13 +64,16 @@ object display {
     s.getDate.map(fuzzyDate _)
 
   def formatTitle(text: String = "") =
-    raw(text.replaceAll(": ", ": <br>"))
+    raw(escape(text).body.replaceAll(": ", ": <br>"))
+
+  def rawFormat(text : String) =
+    raw("<p>"+text.replaceAll("\\n\\n", "</p><p>")+"</p>")
 
   def plainText(text: String = "") =
-    raw("<p>"+text.replaceAll("\\r?\\n\\r?\\n", "</p><p>")+"</p>")
+    rawFormat(escape(text).body)
 
   def plainTextSummary(text: String = "", length: Int = 3) =
-    raw("<p>"+text.split("\\r?\\n\\r?\\n").take(length).mkString("</p><p>")+"</p>")
+    raw("<p>"+escape(text).body.split("\\r?\\n\\r?\\n").take(length).mkString("</p><p>")+"</p>")
 
   def avatar(party : Party, size : Int = 64) =
     routes.PartyHtml.avatar(party.id, size)

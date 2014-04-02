@@ -9,7 +9,7 @@
                             <a ng-href="{{router.assetLink(current, false)}}" class="icon line download tool" target="_self" tooltip tooltip-message="{{'excerpts.download' | message}}"></a>
 
                             <h1>
-                                <span bo-html="type.assetDisplayName(current)"></span>
+                                <span bo-html="type.assetDisplayName(current) | format:true"></span>
                             </h1>
                         </header>
 

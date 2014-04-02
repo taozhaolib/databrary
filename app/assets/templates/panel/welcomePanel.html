@@ -6,8 +6,7 @@
         </hgroup>
 
         <div class="col-full">
-            <div bo-html="'welcome.body' | message | format"></div>
-            <p>Would you like to <a ng-href="{{router.login()}}">login</a>?</p>
+            <div bo-html="'welcome.body' | message | format:false:true"></div>
         </div>
     </panel-mode>
 </panel>

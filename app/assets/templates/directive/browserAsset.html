@@ -23,7 +23,7 @@
                         <img bo-src="'/public/images/filetypes/16px/' + (data.object.format ? data.object.format.extension : data.object.asset.format.extension) + '.png'">
                     </span>
 
-                    <span class="filename" bo-html="type.assetDisplayName(data.object)"></span>
+                    <span class="filename" bo-html="type.assetDisplayName(data.object) | format:true"></span>
                 </h1>
             </header>
         </div>
