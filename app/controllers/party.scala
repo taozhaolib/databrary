@@ -375,6 +375,11 @@ object PartyApi extends PartyController with ApiController {
     request.obj.json(request.apiOptions).map(Ok(_))
   }
 
+  def profile =
+    (SiteAction.Unlocked ~> action(None, Some(Permission.NONE))).async { implicit request =>
+      request.obj.json(request.apiOptions).map(Ok(_))
+    }
+
   def authorizeGet(partyId : models.Party.Id) = AdminAction(partyId).async { implicit request =>
     for {
       parents <- request.obj.party.authorizeParents(true)

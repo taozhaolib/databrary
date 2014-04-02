@@ -113,8 +113,10 @@ POST    /api/user/superuser/on                                                  
 POST    /api/user/superuser/off                                                                   controllers.LoginApi.superuserOff
 
 # ----- PARTY ----- #
-# GET       ?volumes;comments;parents[=all];children[=all];funding                                TODO: tags;network
+# GET       ?volumes;comments;parents[=all];children[=all]                                        TODO: tags;network
 GET     /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.get(partyId : models.Party.Id)
+# equivalent to /api/party/<currentUser>:
+GET     /api/profile                                                                              controllers.PartyApi.profile
 # UPDATE
 POST    /api/party/$partyId<[0-9]+>                                                               controllers.PartyApi.update(partyId : models.Party.Id)
 # CREATE
