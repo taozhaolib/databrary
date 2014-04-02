@@ -195,7 +195,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       _ <- if (Play.isProd) Mail.send(
 	to = dl.map(_.email) :+ Messages("mail.authorize"),
 	subject = Messages("mail.authorize.subject"),
-	body = Messages("mail.authorize.body", routes.PartyHtml.admin(parentId).absoluteURL(true),
+	body = Messages("mail.authorize.body", routes.PartyHtml.view(parentId).absoluteURL(true),
 	  request.obj.party.name + request.user.fold("")(" <" + _.email + ">"),
 	  parent.name)
       ).recover {
@@ -374,6 +374,11 @@ object PartyApi extends PartyController with ApiController {
   def get(partyId : models.Party.Id) = Action(Some(partyId), Some(Permission.NONE)).async { implicit request =>
     request.obj.json(request.apiOptions).map(Ok(_))
   }
+
+  def profile =
+    (SiteAction.Unlocked ~> action(None, Some(Permission.NONE))).async { implicit request =>
+      request.obj.json(request.apiOptions).map(Ok(_))
+    }
 
   def authorizeGet(partyId : models.Party.Id) = AdminAction(partyId).async { implicit request =>
     for {

@@ -142,7 +142,7 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
       if (Site.locked) { request =>
 	if (request.access.group == Permission.NONE)
 	  macros.Async(if (request.isApi) Results.Forbidden
-	    else Results.TemporaryRedirect(routes.LoginHtml.view.url))
+	    else Results.TemporaryRedirect(routes.Site.start.url))
 	else block(request)
       } else block
     Unlocked.invokeBlock(request, action)
@@ -210,10 +210,11 @@ object Site extends SiteController {
 
   val locked = current.configuration.getBoolean("site.locked").getOrElse(false)
 
-  def start = VolumeHtml.search
-
-  def test = Action { request =>
-    Ok(request.queryString.toString)
+  def start = SiteAction.Unlocked { implicit request =>
+    if (locked && request.access.group == Permission.NONE)
+      Ok(views.html.welcome(request))
+    else
+      TemporaryRedirect(routes.VolumeHtml.search.url)
   }
 
   def tinyUrl(prefix : String, path : String) = Action {
