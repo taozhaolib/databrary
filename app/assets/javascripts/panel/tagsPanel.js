@@ -76,6 +76,12 @@ define(['config/module'], function (module) {
 					}, function (data) {
 						$scope.volume.tags = data.tags;
 						$scope.refreshPanel();
+					}, function (res) {
+						page.messages.addError({
+							body: page.constants.message('tags.update.error'),
+							errors: res[0],
+							status: res[1]
+						})
 					});
 
 					break;

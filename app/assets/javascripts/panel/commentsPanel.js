@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('CommentsPanel', ['$scope', 'AuthService', '$route', 'Comment', 'MessageService', 'Volume', '$filter', '$cacheFactory', 'EventService', function ($scope, authService, $route, Comment, messageService, Volume, $filter, $cacheFactory, events) {
+	module.controller('CommentsPanel', ['$scope', 'AuthService', '$route', 'Comment', 'MessageService', 'Volume', '$filter', '$cacheFactory', 'EventService', 'Page', function ($scope, authService, $route, Comment, messageService, Volume, $filter, $cacheFactory, events, page) {
 		var DEFAULT_MESSAGE = {
 			type: 'blue',
 			countdown: 3000
@@ -51,6 +51,12 @@ define(['config/module'], function (module) {
 					}, function (data) {
 						$scope.volume.comments = data.comments;
 						$scope.refreshPanel();
+					}, function (res) {
+						page.messages.addError({
+							body: page.constants.message('comments.update.error'),
+							errors: res[0],
+							status: res[1]
+						})
 					});
 
 					break;

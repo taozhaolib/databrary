@@ -147,9 +147,9 @@ define(['config/module'], function (module) {
 						sessions: '',
 						categories: '',
 						funding: ''
-					}, function (data) {
-						deferred.resolve(data);
-					}, function (error) {
+					}, function (res) {
+						deferred.resolve(res);
+					}, function (res) {
 						deferred.reject();
 					});
 

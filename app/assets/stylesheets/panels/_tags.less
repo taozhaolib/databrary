@@ -18,16 +18,16 @@
 }
 
 .panel_tags_item {
-	.font(1, 1.5);
-	.height(1.5);
-	float: left;
-	.margin-height(@f8);
+	.font(1, 1.25);
+	height: @b1 * 1.25;
+	display: inline-block;
+	.margin-right(@f2);
+	.border-radius(@b1);
+	border: 1px solid @pale;
+	.padding-width(@f3);
+	.margin-bottom(@f2);
 
 	.inner {
-		.border-radius(@b1);
-		border: 1px solid @pale;
-		.padding-width(@f3);
-		.line-height(1.25);
 	}
 
 	&:before {
@@ -36,27 +36,29 @@
 
 	.weight, .controls {
 		position: relative;
-		top: @b8;
-		overflow: hidden;
-		text-align: center;
-		min-width: @b1;
-		.font(.75, 2/3);
 	}
 
 	.weight {
 		font-weight: bold;
-		display: block;
-		float: left;
+		display: inline-block;
 		background: @green51;
 		.border-radius(@b3);
 		.margin-height(@f6);
 		.margin-right(@f4);
+		min-width: @b1;
+		.font(.75, 2/3);
+		text-align: center;
 	}
 
 	.controls {
-		float: right;
+		display: inline-block;
 		.margin-left(@f4);
-		.margin-height(@f4);
+		top: @b8;
+	}
+
+	.name {
+		display: inline-block;
+		height: @b1;
 	}
 
 	.vote {
@@ -144,6 +146,10 @@
 			outline: 0;
 		}
 	}
+}
+
+.panel_tags_form {
+	.grid-width(max, 3);
 }
 
 //

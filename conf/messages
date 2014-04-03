@@ -193,12 +193,14 @@ comments.post=Post
 comments.reply=Reply
 comments.cancel=Cancel
 comments.prompt=Post a comment...
+comments.update.error=Could not update comments list.
 
 tags.title=Tags
 tags.vote.up=Vote this tag up.
 tags.vote.null=Remove your vote on this tag.
 tags.vote.down=Vote this tag down.
 tags.auto.error=The auto-suggestion list out-of-order.
+tags.update.error=Could not update tag list.
 
 search.title=Search
 search.prompt=Start your search...
