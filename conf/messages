@@ -18,6 +18,15 @@ range.invalid=Invalid time range
 agreement.required=You must consent to the user agreement.
 access.delete.self=You cannot remove your own access to a volume.
 
+error.forbidden.title=Access denied
+error.forbidden.body=
+error.notfound.title=There's nothing here
+error.notfound.body=The resource you requested may no longer be available.
+error.badrequest.title=Bad request
+error.badrequest.body=Sorry, something went wrong with that request.  More information is below, or <a href='mailto:feedback@databrary.org'>contact us</a> for asssistance.
+error.internal.title=Internal error
+error.internal.body=Sorry, something is broken.  More information is below, or <a href='mailto:feedback@databrary.org'>contact us</a> for asssistance.
+
 # --- Emails
 mail.from=Databrary <help@databrary.org>
 mail.authorize=authorize@databrary.org

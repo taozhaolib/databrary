@@ -1,7 +1,8 @@
 @(request: RequestHeader)
 
-@template.error("404! There's nothing here.") {
-    @widget.panel.error("404! There's nothing here.") {
+@template.error(Messages("error.notfound.title")) {
+    @widget.panel.error(Messages("error.notfound.title")) {
+	@HtmlFormat.raw(Messages("error.notfound.body"))
         <div class="col-full panel_error_error">@request.path</div>
     }
 }

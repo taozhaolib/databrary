@@ -1,8 +1,8 @@
 @(implicit request: SiteRequest[_])
 
-@template.html5("There's nothing here") {
-    @widget.panel.error("There's nothing here.") {
-        The resource you requested may no longer be available.
+@template.html5(Messages("error.notfound.title")) {
+    @widget.panel.error(Messages("error.notfound.title")) {
+	@HtmlFormat.raw(Messages("error.notfound.body"))
 	@if(request.user.isEmpty) {
 	    You might try <a href="@routes.LoginHtml.view">logging in</a>.
 	}
