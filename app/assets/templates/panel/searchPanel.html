@@ -1,22 +1,22 @@
 <panel ng-controller="BrowserPanel" top id="panel_search" panel-title="{{'search.title' | message}}">
-    <panel-mode name="view" active>
-        <section id="static_header" class="body_header static_header">
-            <div class="row">
-                <div class="col-full">
-                    <h1 class="body_header_h1">
-                        <a ng-href="{{router.index()}}" title="Databrary: An Open Data Library"><strong>Data</strong>brary</a>
-                    </h1>
+  <panel-mode name="view" active>
+    <section id="static_header" class="body_header static_header">
+      <div class="row">
+        <div class="col-full">
+          <h1 class="body_header_h1">
+            <a ng-href="{{router.index()}}" title="Databrary: An Open Data Library"><strong>Data</strong>brary</a>
+          </h1>
 
-                    <form class="body_header_search" method="get">
-                        <div class="w">
-			    <input type="search" class="searchbox" ng-model="browser.query" placeholder="{{'search.prompt' | message}}" value="">
-                        </div>
-                    </form>
-                </div>
+          <form class="body_header_search" method="get">
+            <div class="w">
+              <input type="search" class="searchbox" ng-model="browser.query" placeholder="{{'search.prompt' | message}}" value="">
             </div>
-        </section>
+          </form>
+        </div>
+      </div>
+    </section>
 
-        <browser-list data="browser.data"></browser-list>
-    </panel-mode>
+    <browser-list data="browser.data"></browser-list>
+  </panel-mode>
 </panel>
 

@@ -1,31 +1,33 @@
 <article bindonce class="browser_item browser_asset cf" ng-click="setItemPlayer(data)">
-    <div class="browser_item_content">
-        <div class="cf">
-            <footer>
-                <div class="item_meta permission"
-                     bo-if="data.object.asset.duration"
-                     bo-html="data.object.asset.duration | timecode"></div>
+  <div class="browser_item_content">
+    <div class="cf">
+      <footer>
+        <div class="item_meta permission"
+             bo-if="data.object.asset.duration"
+             bo-html="data.object.asset.duration | timecode"></div>
 
-                <div class="item_meta sep"
-                     bo-if="data.object.asset.duration">|</div>
+        <div class="item_meta sep"
+             bo-if="data.object.asset.duration">|
+        </div>
 
-                <div class="item_meta icon bb" bo-class="constant.data.classification[data.object.asset.classification].name.toLowerCase()"></div>
+        <div class="item_meta icon bb" bo-class="constant.data.classification[data.object.asset.classification].name.toLowerCase()"></div>
 
-                <div class="item_meta sep"
-                     bo-if="browser.hasAccess(data, 3)">|</div>
+        <div class="item_meta sep"
+             bo-if="browser.hasAccess(data, 3)">|
+        </div>
 
-                <a bo-href="editLink(data)" target="_self" ng-if="browser.hasAccess(data, 3)">edit</a>
-            </footer>
+        <a bo-href="editLink(data)" target="_self" ng-if="browser.hasAccess(data, 3)">edit</a>
+      </footer>
 
-            <header>
-                <h1>
+      <header>
+        <h1>
                     <span class="filetype">
                         <img bo-src="'/public/images/filetypes/16px/' + (data.object.format ? data.object.format.extension : data.object.asset.format.extension) + '.png'">
                     </span>
 
-                    <span class="filename" bo-html="type.assetDisplayName(data.object) | format:true"></span>
-                </h1>
-            </header>
-        </div>
+          <span class="filename" bo-html="type.assetDisplayName(data.object) | format:true"></span>
+        </h1>
+      </header>
     </div>
+  </div>
 </article>

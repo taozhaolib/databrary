@@ -1,15 +1,16 @@
 <panel ng-controller="PublicationsPanel" id="panel_publications" panel-title="{{'citations.title' | message}}" fold>
-    <panel-mode name="view" active>
-        <div class="row">
-            <div bindonce ng-repeat="citation in volume.citations" class="publication">
-                <div class="col-full">
-                    <h3 class="publication_header">{{citation.head}} <a bo-if="citation.url" bo-href="citation.url" bo-title="citation.head" class="cit_link">link</a></h3>
-                </div>
-
-                <div class="col-desktop-9 push-desktop-3 col-laptop-8 push-laptop-2 col-tablet-9 col-mobile-6">
-                    <div class="publication_description" bo-html="citation.body | format"></div>
-                </div>
-            </div>
+  <panel-mode name="view" active>
+    <div class="row">
+      <div bindonce ng-repeat="citation in volume.citations" class="publication">
+        <div class="col-full">
+          <h3 class="publication_header">{{citation.head}}
+            <a bo-if="citation.url" bo-href="citation.url" bo-title="citation.head" class="cit_link">link</a></h3>
         </div>
-    </panel-mode>
+
+        <div class="col-desktop-9 push-desktop-3 col-laptop-8 push-laptop-2 col-tablet-9 col-mobile-6">
+          <div class="publication_description" bo-html="citation.body | format"></div>
+        </div>
+      </div>
+    </div>
+  </panel-mode>
 </panel>

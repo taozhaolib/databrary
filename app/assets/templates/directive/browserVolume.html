@@ -1,33 +1,35 @@
 <article bindonce class="browser_item browser_volume cf" bo-class="volumeClasses(data)">
-    <div class="browser_item_content">
-        <div class="cf">
-            <footer>
-                <div class="item_meta icon bb" bo-class="constant.data.permission[data.object.permission].name.toLowerCase()" bo-if="data.object.permission"></div>
+  <div class="browser_item_content">
+    <div class="cf">
+      <footer>
+        <div class="item_meta icon bb" bo-class="constant.data.permission[data.object.permission].name.toLowerCase()" bo-if="data.object.permission"></div>
 
-                <div class="item_meta sep"
-                     bo-if="browser.hasAccess(data, 3) && data.object.permission">|</div>
-
-                <a target="_self" bo-if="browser.hasAccess(data, 3)" bo-href="editLink(data)">edit</a>
-            </footer>
-
-            <header>
-                <browser-icon data="data"></browser-icon>
-
-                <h1>
-                    <a bo-href="router.volume({id: data.object.id})" bo-html="getName(data) | format:true"></a>
-                </h1>
-            </header>
+        <div class="item_meta sep"
+             bo-if="browser.hasAccess(data, 3) && data.object.permission">|
         </div>
 
-        <div class="item_main" bo-if="data.object.body || data.object.access">
-            <strong>Investigators:</strong>
-            <ul class="item_investigators">
-		        <li ng-repeat="access in data.object.access | filter:{access: 4}"><a bo-href="router.party(access.party)">{{access.party.name}}</a></li>
-            </ul>
+        <a target="_self" bo-if="browser.hasAccess(data, 3)" bo-href="editLink(data)">edit</a>
+      </footer>
 
-            <div class="item_body body" bo-html="data.object.body | format"></div>
-        </div>
+      <header>
+        <browser-icon data="data"></browser-icon>
+
+        <h1>
+          <a bo-href="router.volume({id: data.object.id})" bo-html="getName(data) | format:true"></a>
+        </h1>
+      </header>
     </div>
 
-    <browser-list ng-if="browser.showList(data)" data="data"></browser-list>
+    <div class="item_main" bo-if="data.object.body || data.object.access">
+      <strong>Investigators:</strong>
+      <ul class="item_investigators">
+        <li ng-repeat="access in data.object.access | filter:{access: 4}">
+          <a bo-href="router.party(access.party)">{{access.party.name}}</a></li>
+      </ul>
+
+      <div class="item_body body" bo-html="data.object.body | format"></div>
+    </div>
+  </div>
+
+  <browser-list ng-if="browser.showList(data)" data="data"></browser-list>
 </article>

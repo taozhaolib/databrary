@@ -1,43 +1,45 @@
 <article bindonce class="browser_item browser_session cf" bo-class="{materials: data.object.top}">
-    <div class="browser_item_content">
-        <div class="cf">
-            <footer>
+  <div class="browser_item_content">
+    <div class="cf">
+      <footer>
                 <span bo-if="data.object.consent">
                     <div class="item_meta icon bb" bo-class="constant.data.consent[data.object.consent].name.toLowerCase()"></div>
 
                     <div class="item_meta sep" bo-if="browser.hasAccess(data, 3)">|</div>
                 </span>
 
-                <a bo-href="editLink(data)" target="_self" bo-if="browser.hasAccess(data, 3)">edit</a>
-            </footer>
+        <a bo-href="editLink(data)" target="_self" bo-if="browser.hasAccess(data, 3)">edit</a>
+      </footer>
 
-            <header>
-                <browser-icon data="data"></browser-icon>
+      <header>
+        <browser-icon data="data"></browser-icon>
 
-		        <h1 bo-if="!data.object.top">
-                    Session<span bo-if="data.object.name">: <span bo-html="data.object.name | format:true"></span></span>
+        <h1 bo-if="!data.object.top">
+          Session<span bo-if="data.object.name">: <span bo-html="data.object.name | format:true"></span></span>
 
-                    <session-mark data="data" mark="pilot" bo-if="data.object.categories[-800]"></session-mark>
-                    <session-mark data="data" mark="excluded" bo-if="data.object.categories[-700]"></session-mark>
-                </h1>
+          <session-mark data="data" mark="pilot" bo-if="data.object.categories[-800]"></session-mark>
+          <session-mark data="data" mark="excluded" bo-if="data.object.categories[-700]"></session-mark>
+        </h1>
 
-                <h1 bo-if="data.object.top">Materials</h1>
-            </header>
-        </div>
-
-        <div class="item_main">
-            <dl class="flat_list cf" bindonce ng-repeat="(categoryID, records) in getSessionRecords(data)">
-                <dt bo-html="formatSessionCategory(data, categoryID, records)" ng-class="{solo: record.id == 0}"></dt>
-
-                <dd ng-repeat="record in records" ng-if="record.id != 0"><span bo-html="recordIdentifier(data.volume.records[record.id])"></span><span bo-if="record.age"> <display-age value="{{record.age}}"></display-age></span></dd>
-            </dl>
-
-            <dl class="flat_list cf" bo-if="data.object.date">
-                <dt>Date</dt>
-                <dd bo-html="data.object.date"></dd>
-            </dl>
-        </div>
+        <h1 bo-if="data.object.top">Materials</h1>
+      </header>
     </div>
 
-    <browser-list ng-if="browser.showList(data)" data="data"></browser-list>
+    <div class="item_main">
+      <dl class="flat_list cf" bindonce ng-repeat="(categoryID, records) in getSessionRecords(data)">
+        <dt bo-html="formatSessionCategory(data, categoryID, records)" ng-class="{solo: record.id == 0}"></dt>
+
+        <dd ng-repeat="record in records" ng-if="record.id != 0">
+          <span bo-html="recordIdentifier(data.volume.records[record.id])"></span><span bo-if="record.age"> <display-age value="{{record.age}}"></display-age></span>
+        </dd>
+      </dl>
+
+      <dl class="flat_list cf" bo-if="data.object.date">
+        <dt>Date</dt>
+        <dd bo-html="data.object.date"></dd>
+      </dl>
+    </div>
+  </div>
+
+  <browser-list ng-if="browser.showList(data)" data="data"></browser-list>
 </article>

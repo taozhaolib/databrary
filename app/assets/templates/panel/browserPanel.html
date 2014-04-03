@@ -1,7 +1,7 @@
 <panel ng-controller="BrowserPanel" id="panel_browser" panel-title="{{'browser.title' | message}}" fold>
-    <panel-mode name="view" active>
-        <browser-group ng-if="browser.context != 'search'"></browser-group>
-        <!--<browser-filter ng-repeat="group in browser.getActiveGroups()"></browser-filter>-->
-        <browser-list data="browser.data"></browser-list>
-    </panel-mode>
+  <panel-mode name="view" active>
+    <browser-group ng-if="browser.context != 'search'"></browser-group>
+    <!--<browser-filter ng-repeat="group in browser.getActiveGroups()"></browser-filter>-->
+    <browser-list data="browser.data"></browser-list>
+  </panel-mode>
 </panel>

@@ -1,28 +1,28 @@
 <section class="browser_player">
-    <section ng-if="browser.player.played" class="excerpts_player_frame">
-        <div ng-repeat="played in [browser.player.played]" bindonce>
-            <header>
-                <a href="" ng-click="setItemPlayer(undefined)" class="icon line close tool" target="_self" tooltip tooltip-message="{{'player.close' | message}}"></a>
-                <a ng-href="{{router.assetLink(played.object, false)}}" class="icon line download tool" target="_self" tooltip tooltip-message="{{'player.download' | message}}"></a>
+  <section ng-if="browser.player.played" class="excerpts_player_frame">
+    <div ng-repeat="played in [browser.player.played]" bindonce>
+      <header>
+        <a href="" ng-click="setItemPlayer(undefined)" class="icon line close tool" target="_self" tooltip tooltip-message="{{'player.close' | message}}"></a>
+        <a ng-href="{{router.assetLink(played.object, false)}}" class="icon line download tool" target="_self" tooltip tooltip-message="{{'player.download' | message}}"></a>
 
-                <h1>
-                    <span bo-html="type.assetDisplayName(played.object) | format:true"></span>
-                </h1>
-            </header>
+        <h1>
+          <span bo-html="type.assetDisplayName(played.object) | format:true"></span>
+        </h1>
+      </header>
 
-            <div ng-switch="getMimeGroup(played.object)">
-                <div ng-switch-when="image">
-                    <img ng-src="{{router.assetLink(played.object, true)}}" style="max-width: 100%;">
-                </div>
-
-                <div ng-switch-when="video">
-                    <video controls poster="data:image/gif,AAAA" style="background: transparent url('{{router.assetThumb(played.object, false)}}') no-repeat; background-size: 100%">
-                        <source ng-src="{{router.assetLink(played.object, true)}}" type="{{played.object.format.mimetype || played.object.asset.format.mimetype}}">
-                    </video>
-                </div>
-
-                <div ng-switch-default></div>
-            </div>
+      <div ng-switch="getMimeGroup(played.object)">
+        <div ng-switch-when="image">
+          <img ng-src="{{router.assetLink(played.object, true)}}" style="max-width: 100%;">
         </div>
-    </section>
+
+        <div ng-switch-when="video">
+          <video controls poster="data:image/gif,AAAA" style="background: transparent url('{{router.assetThumb(played.object, false)}}') no-repeat; background-size: 100%">
+            <source ng-src="{{router.assetLink(played.object, true)}}" type="{{played.object.format.mimetype || played.object.asset.format.mimetype}}">
+          </video>
+        </div>
+
+        <div ng-switch-default></div>
+      </div>
+    </div>
+  </section>
 </section>

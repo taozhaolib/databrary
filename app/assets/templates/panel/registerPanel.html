@@ -1,73 +1,74 @@
 <panel ng-controller="RegisterPanel" top id="panel_register" panel-title="{{'register.title' | message}}">
-        <div class="row">
-            <hgroup class="col-full">
-		<h1 class="panel_context">{{'register.title' | message}}</h1>
-		<h2 class="panel_title with_context">{{'register.title.sub' | message }}</h2>
-            </hgroup>
+  <div class="row">
+    <hgroup class="col-full">
+      <h1 class="panel_context">{{'register.title' | message}}</h1>
 
-            <div class="col-full">
-                <wizard retrieve="retrieveWizard" update="updateWizard" linear>
-                    <wizard-step id="register_create">
-                        <form name="registerForm">
-                            <label for="field_name">{{'register.name.prompt' | message}}</label>
-                            <input id="field_name" name="fieldName" type="text" ng-model="registerForm.data.name" ng-minlength="3">
+      <h2 class="panel_title with_context">{{'register.title.sub' | message }}</h2>
+    </hgroup>
 
-                            <label for="field_email">{{'email' | message}}</label>
-                            <input id="field_email" name="fieldEmail" type="email" ng-model="registerForm.data.email">
+    <div class="col-full">
+      <wizard retrieve="retrieveWizard" update="updateWizard" linear>
+        <wizard-step id="register_create">
+          <form name="registerForm">
+            <label for="field_name">{{'register.name.prompt' | message}}</label>
+            <input id="field_name" name="fieldName" type="text" ng-model="registerForm.data.name" ng-minlength="3">
 
-                            <label for="field_affiliation">{{'affiliation' | message}}</label>
-                            <input id="field_affiliation" name="fieldAffiliation" type="text" ng-model="registerForm.data.affiliation">
+            <label for="field_email">{{'email' | message}}</label>
+            <input id="field_email" name="fieldEmail" type="email" ng-model="registerForm.data.email">
 
-                            <button class="green" type="submit" ng-disabled="!registerForm.ready()" ng-click="registerForm.proceed(registerForm)">{{'register.continue' | message}}</button>
-                            <button class="red" type="reset">{{'reset' | message}}</button>
-                        </form>
-                    </wizard-step>
+            <label for="field_affiliation">{{'affiliation' | message}}</label>
+            <input id="field_affiliation" name="fieldAffiliation" type="text" ng-model="registerForm.data.affiliation">
 
-                    <wizard-step id="register_agreement">
-                        <div class="register_agreement_pages">
-                            <div class="register_agreement_page" ng-bind-html="agreement.pages[agreement.current - 1]" scroll="scroll($scroll)"></div>
-                        </div>
+            <button class="green" type="submit" ng-disabled="!registerForm.ready()" ng-click="registerForm.proceed(registerForm)">{{'register.continue' | message}}</button>
+            <button class="red" type="reset">{{'reset' | message}}</button>
+          </form>
+        </wizard-step>
 
-                        <p ng-bind-html="'register.agreement.instructions' | message"></p>
+        <wizard-step id="register_agreement">
+          <div class="register_agreement_pages">
+            <div class="register_agreement_page" ng-bind-html="agreement.pages[agreement.current - 1]" scroll="scroll($scroll)"></div>
+          </div>
 
-                        <button class="green" ng-click="proceed()" ng-show="agreement.current >= agreement.total" ng-disabled="!ready()">{{'register.register' | message}}</button>
+          <p ng-bind-html="'register.agreement.instructions' | message"></p>
 
-                        <button class="green" ng-click="next()" ng-show="agreement.current < agreement.total" ng-disabled="!ready()">{{'register.agree' | message}}</button>
-                        <button class="orange" ng-click="back()" ng-show="agreement.current > 1">Back</button>
-                    </wizard-step>
+          <button class="green" ng-click="proceed()" ng-show="agreement.current >= agreement.total" ng-disabled="!ready()">{{'register.register' | message}}</button>
 
-                    <wizard-step id="register_email">
-			            <p ng-bind-html="'register.sent.instructions' | message:'<strong>'+registerForm.data.email+'</strong>'"></p>
-                    </wizard-step>
+          <button class="green" ng-click="next()" ng-show="agreement.current < agreement.total" ng-disabled="!ready()">{{'register.agree' | message}}</button>
+          <button class="orange" ng-click="back()" ng-show="agreement.current > 1">Back</button>
+        </wizard-step>
 
-                    <wizard-step id="register_password">
-                        <user-password-form></user-password-form>
-                    </wizard-step>
+        <wizard-step id="register_email">
+          <p ng-bind-html="'register.sent.instructions' | message:'<strong>'+registerForm.data.email+'</strong>'"></p>
+        </wizard-step>
 
-                    <wizard-step id="register_agent">
-                        <auth-search-form></auth-search-form>
-                    </wizard-step>
+        <wizard-step id="register_password">
+          <user-password-form></user-password-form>
+        </wizard-step>
 
-                    <wizard-step id="register_request">
-                        <div ng-hide="ifInfo()">
-                            <auth-apply-form></auth-apply-form>
-                        </div>
+        <wizard-step id="register_agent">
+          <auth-search-form></auth-search-form>
+        </wizard-step>
 
-                        <div ng-show="ifInfo()">
-                            <p ng-bind-html="'register.notfound.instructions' | message"></p>
+        <wizard-step id="register_request">
+          <div ng-hide="ifInfo()">
+            <auth-apply-form></auth-apply-form>
+          </div>
 
-                            <form name="infoForm">
-                                <textarea id="field_info" ng-model="infoForm.data.info"></textarea>
+          <div ng-show="ifInfo()">
+            <p ng-bind-html="'register.notfound.instructions' | message"></p>
 
-                                <button class="green" type="submit" ng-disabled="!infoForm.ready()" ng-click="infoForm.proceed()">{{'register.continue' | message}}</button>
-                                <button ng-click="infoForm.cancel()" class="red">{{"cancel" | message}}</button>
-                            </form>
-                        </div>
-                    </wizard-step>
+            <form name="infoForm">
+              <textarea id="field_info" ng-model="infoForm.data.info"></textarea>
 
-                    <wizard-step id="register_pending"></wizard-step>
-                </wizard>
-            </div>
-        </div>
+              <button class="green" type="submit" ng-disabled="!infoForm.ready()" ng-click="infoForm.proceed()">{{'register.continue' | message}}</button>
+              <button ng-click="infoForm.cancel()" class="red">{{"cancel" | message}}</button>
+            </form>
+          </div>
+        </wizard-step>
+
+        <wizard-step id="register_pending"></wizard-step>
+      </wizard>
+    </div>
+  </div>
 </panel>
 

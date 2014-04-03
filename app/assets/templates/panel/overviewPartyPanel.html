@@ -1,31 +1,31 @@
 <panel ng-controller="OverviewPartyPanel" top id="panel_overview" panel-title="{{'party.overview.title' | message}}" bindonce>
-    <panel-mode name="view" active>
-        <hgroup class="row">
-            <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-6">
-                <figure class="panel_overview_thumbnail" baseline="square">
-                    <figmedia><img ng-src="{{router.partyAvatar(party, 400)}}"></figmedia>
-                </figure>
-            </div>
+  <panel-mode name="view" active>
+    <hgroup class="row">
+      <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-6">
+        <figure class="panel_overview_thumbnail" baseline="square">
+          <figmedia><img ng-src="{{router.partyAvatar(party, 400)}}"></figmedia>
+        </figure>
+      </div>
 
-            <h1 class="panel_title col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-6">{{party.name}}</h1>
-        </hgroup>
+      <h1 class="panel_title col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-6">{{party.name}}</h1>
+    </hgroup>
 
-	    <div frame id="frame_contact" frame-title="{{'party.contact.title' | message}}" fold ng-if="party.email || party.orcid">
-            <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
-                <div class="metadata">
-                    <dl class="flat">
-			<dt bo-if="party.email" bo-html="'email' | message"/>
-			<dd bo-if="party.email"><a bo-href="'mailto:'+party.email">{{party.email}}</a></dd>
+    <div frame id="frame_contact" frame-title="{{'party.contact.title' | message}}" fold ng-if="party.email || party.orcid">
+      <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+        <div class="metadata">
+          <dl class="flat">
+            <dt bo-if="party.email" bo-html="'email' | message"/>
+            <dd bo-if="party.email"><a bo-href="'mailto:'+party.email">{{party.email}}</a></dd>
 
-                        <dt bo-if="party.orcid" bo-html="'orcid' | message"/>
-			<dd bo-if="party.orcid"><a bo-href="party.orcid" bo-html="party.orcid"></a></dd>
-                    </dl>
-                </div>
-            </div>
+            <dt bo-if="party.orcid" bo-html="'orcid' | message"/>
+            <dd bo-if="party.orcid"><a bo-href="party.orcid" bo-html="party.orcid"></a></dd>
+          </dl>
         </div>
+      </div>
+    </div>
 
-        <div class="temporary">
-            <a class="button mini" ng-if="auth.hasAccess('CONTRIBUTE', party)" bo-href="router.partyEdit(party)" target="_self">edit</a>
-        </div>
-    </panel-mode>
+    <div class="temporary">
+      <a class="button mini" ng-if="auth.hasAccess('CONTRIBUTE', party)" bo-href="router.partyEdit(party)" target="_self">edit</a>
+    </div>
+  </panel-mode>
 </panel>

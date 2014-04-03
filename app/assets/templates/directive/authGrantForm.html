@@ -1,58 +1,56 @@
 <form name="authGrantForm">
-    <fieldset class="clean" ng-if="authGrantForm.other">
-        <legend>{{"auth.grant.title" | message:authGrantForm.other.party.name}}</legend>
+  <fieldset class="clean" ng-if="authGrantForm.other">
+    <legend>{{"auth.grant.title" | message:authGrantForm.other.party.name}}</legend>
 
-        <div ng-repeat="preset in authGrantForm.presets.get(authGrantForm.party, authGrantForm.other.party)">
-            <input type="radio" name="shortcut" ng-checked="authGrantForm.other.preset === preset" ng-click="authGrantForm.presets.set(authGrantForm.other, preset)">
-	    <label class="option" ng-if="!preset.custom">
-		<strong>{{'auth.preset.'+constant.data.permission[preset.inherit].name+'.'+constant.data.permission[preset.direct].name+'.title' | message}}</strong>:
-		{{'auth.preset.'+constant.data.permission[preset.inherit].name+'.'+constant.data.permission[preset.direct].name | possessive:authGrantForm.party}}
-	    </label>
-	    <label class="option" ng-if="preset.custom"><strong>Custom...</strong></label>
+    <div ng-repeat="preset in authGrantForm.presets.get(authGrantForm.party, authGrantForm.other.party)">
+      <input type="radio" name="shortcut" ng-checked="authGrantForm.other.preset === preset" ng-click="authGrantForm.presets.set(authGrantForm.other, preset)">
+      <label class="option" ng-if="!preset.custom">
+        <strong>{{'auth.preset.'+constant.data.permission[preset.inherit].name+'.'+constant.data.permission[preset.direct].name+'.title' | message}}</strong>: {{'auth.preset.'+constant.data.permission[preset.inherit].name+'.'+constant.data.permission[preset.direct].name | possessive:authGrantForm.party}}
+      </label> <label class="option" ng-if="preset.custom"><strong>Custom...</strong></label>
+    </div>
+  </fieldset>
+
+  <div class="row" ng-show="authGrantForm.other.preset.custom">
+    <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
+      <fieldset ng-disabled="!authGrantForm.other.preset.custom" class="boxed">
+        <legend bo-html="'auth.direct' | possessive:party"></legend>
+
+        <div ng-repeat="permission in constant.data.permission">
+          <input type="radio" ng-model="child.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == authGrantForm.other.direct">
+          <label bo-html="'auth.direct.'+constant.data.permission[permission.id].name | possessive:party" class="option"></label>
         </div>
-    </fieldset>
-
-    <div class="row" ng-show="authGrantForm.other.preset.custom">
-        <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
-            <fieldset ng-disabled="!authGrantForm.other.preset.custom" class="boxed">
-                <legend bo-html="'auth.direct' | possessive:party"></legend>
-
-                <div ng-repeat="permission in constant.data.permission">
-                    <input type="radio" ng-model="child.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == authGrantForm.other.direct">
-                    <label bo-html="'auth.direct.'+constant.data.permission[permission.id].name | possessive:party" class="option"></label>
-                </div>
-            </fieldset>
-        </div>
-
-        <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
-            <fieldset ng-disabled="!authGrantForm.other.preset.custom" class="boxed">
-                <legend bo-html="'auth.inherit' | possessive:party"></legend>
-
-                <div ng-repeat="permission in constant.data.permission">
-                    <input type="radio" ng-model="child.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == authGrantForm.other.inherit">
-                    <label bo-html="'auth.inherit.'+constant.data.permission[permission.id].name | possessive:party" class="option"></label>
-                </div>
-            </fieldset>
-        </div>
+      </fieldset>
     </div>
 
-    <fieldset class="clean">
-        <label>{{"auth.expiration" | message}}:</label>
+    <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
+      <fieldset ng-disabled="!authGrantForm.other.preset.custom" class="boxed">
+        <legend bo-html="'auth.inherit' | possessive:party"></legend>
 
-        <input type="date" ng-model="child.expiration" class="network-auth-expiration-input">
+        <div ng-repeat="permission in constant.data.permission">
+          <input type="radio" ng-model="child.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == authGrantForm.other.inherit">
+          <label bo-html="'auth.inherit.'+constant.data.permission[permission.id].name | possessive:party" class="option"></label>
+        </div>
+      </fieldset>
+    </div>
+  </div>
 
-        <button ng-click="authGrantForm.other.expiration = ''" ng-if="auth.hasAuth('SUPER')" class="orange network-auth-expiration-button">Clear expiration</button>
-    </fieldset>
+  <fieldset class="clean">
+    <label>{{"auth.expiration" | message}}:</label>
 
-    <fieldset class="clean">
-        <input type="hidden" name="id" ng-value="authGrantForm.other.id">
+    <input type="date" ng-model="child.expiration" class="network-auth-expiration-input">
 
-        <button ng-click="authGrantForm.save()" class="green" ng-if="!authGrantForm.other.authorized">{{"auth.authorize" | message}}</button>
-        <button ng-click="authGrantForm.deny()" class="orange" ng-if="!authGrantForm.other.authorized && !authGrantForm.other.force">{{"auth.deny" | message}}</button>
+    <button ng-click="authGrantForm.other.expiration = ''" ng-if="auth.hasAuth('SUPER')" class="orange network-auth-expiration-button">Clear expiration</button>
+  </fieldset>
 
-        <button ng-click="authGrantForm.save()" class="green" ng-if="authGrantForm.other.authorized">{{"auth.update" | message}}</button>
-        <button ng-click="authGrantForm.deny()" class="orange" ng-if="authGrantForm.other.authorized">{{"auth.revoke" | message}}</button>
+  <fieldset class="clean">
+    <input type="hidden" name="id" ng-value="authGrantForm.other.id">
 
-        <button ng-click="authGrantForm.cancel()" class="red">{{"cancel" | message}}</button>
-    </fieldset>
+    <button ng-click="authGrantForm.save()" class="green" ng-if="!authGrantForm.other.authorized">{{"auth.authorize" | message}}</button>
+    <button ng-click="authGrantForm.deny()" class="orange" ng-if="!authGrantForm.other.authorized && !authGrantForm.other.force">{{"auth.deny" | message}}</button>
+
+    <button ng-click="authGrantForm.save()" class="green" ng-if="authGrantForm.other.authorized">{{"auth.update" | message}}</button>
+    <button ng-click="authGrantForm.deny()" class="orange" ng-if="authGrantForm.other.authorized">{{"auth.revoke" | message}}</button>
+
+    <button ng-click="authGrantForm.cancel()" class="red">{{"cancel" | message}}</button>
+  </fieldset>
 </form>
