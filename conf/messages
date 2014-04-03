@@ -168,7 +168,10 @@ session=Session
 excerpts.title=Excerpts
 excerpts.download=Download this excerpt.
 excerpts.jump=Jump to the session from which this excerpt originates.
-excerpts.close=Close the media player.
+
+player.download=Download this file.
+player.close=Close the media player.
+
 materials.title=Materials
 materials.empty=There are no files here.
 
