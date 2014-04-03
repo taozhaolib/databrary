@@ -13,42 +13,34 @@ define(['config/module'], function (module) {
 				institution: [
 					{
 						inherit: 2,
-						direct: 0,
-						name: '<strong>Affiliate</strong>: View shared Databrary data.'
+						direct: 0
 					}, {
 						inherit: 3,
-						direct: 0,
-						name: '<strong>Investigator</strong>: Create and modify datasets and studies.'
+						direct: 0
 					}, {
 						inherit: 4,
-						direct: 0,
-						name: '<strong>Admin</strong>: Delegate authorization and data access.'
+						direct: 0
 					}, {
 						inherit: undefined,
 						direct: undefined,
-						custom: true,
-						name: '<strong>Custom...</strong>'
+						custom: true
 					}
 				],
 
 				individual: [
 					{
 						inherit: 2,
-						direct: 2,
-						name: '<strong>Read-only Affiliate</strong>: View shared Databrary data and all my data.'
+						direct: 2
 					}, {
 						inherit: 3,
-						direct: 3,
-						name: '<strong>Data Editor</strong>: Create and modify datasets and studies.'
+						direct: 3
 					}, {
 						inherit: 4,
-						direct: 4,
-						name: '<strong>Lab Manager</strong>: Delegate authorization and data access.'
+						direct: 4
 					}, {
 						inherit: undefined,
 						direct: undefined,
-						custom: true,
-						name: '<strong>Custom...</strong>'
+						custom: true
 					}
 				]
 			}

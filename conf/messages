@@ -132,6 +132,23 @@ auth.direct.DOWNLOAD=Access to {0} identifiable data.
 auth.direct.CONTRIBUTE=Can edit {0} data.
 auth.direct.ADMIN=Can share {0} data.
 
+# presents: auth.preset.<inherit>.<direct>
+# for ADMIN parents:
+auth.preset.DOWNLOAD.NONE.title=Affiliate Investigator
+auth.preset.DOWNLOAD.NONE=Access to shared Databrary data.
+auth.preset.CONTRIBUTE.NONE.title=Principal Investigator
+auth.preset.CONTRIBUTE.NONE=Access and share Databrary data, and authorize affiliates.
+auth.preset.ADMIN.NONE.title=Administrator
+auth.preset.ADMIN.NONE=Authorize Principal Investigators on {0} behalf.
+
+# for CONTRIBUTE parents:
+auth.preset.DOWNLOAD.DOWNLOAD.title=Restricted Affiliate
+auth.preset.DOWNLOAD.DOWNLOAD=View-only access to shared Databrary data and all {0} private data.
+auth.preset.CONTRIBUTE.CONTRIBUTE.title=Affiliate Investigator
+auth.preset.CONTRIBUTE.CONTRIBUTE=Access to create and modify {0} datasets and studies, as well as above privileges.
+auth.preset.ADMIN.ADMIN.title=Delegated Proxy
+auth.preset.ADMIN.ADMIN=Full access to all {0} authorization and data sharing controls, as well as above privileges.
+
 # note: {0} may be name or "You"
 access.NONE={0} cannot access this data.
 access.VIEW={0} can access only unrestricted data.

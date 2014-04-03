@@ -6,7 +6,7 @@ define(['config/module'], function (module) {
 			var replace;
 
 			if($rootScope.auth.user.id == party.id)
-				replace = 'My';
+				replace = 'my';
 			else
 				replace = (name ? name : party.name)+"'s";
 
