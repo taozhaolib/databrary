@@ -7,50 +7,34 @@ define(['config/module'], function (module) {
 		var $httpCache = $cacheFactory.get('$http');
 
 		$scope.bootPanel = function () {
-			$scope.updateNetwork();
+			getPartyAuth();
 		};
 
 		$scope.refreshPanel = function () {
-			$scope.updateNetwork();
-			$scope.enabled = $scope.parents.length > 0 || $scope.children.length > 0;
-		};
-
-		//
-
-		$scope.updateNetwork = function () {
-			$scope.parents = [];
-			$scope.children = [];
-
-			angular.forEach($scope.party.parents, function (partyAuth) {
-				$scope.parents.push(partyAuth);
-			});
-
-			angular.forEach($scope.party.children, function (partyAuth) {
-				$scope.children.push(partyAuth);
-			});
+			getPartyAuth();
 		};
 
 		//
 
 		$scope.partyAuth = [];
-		$scope.parental = undefined;
 
 		var getPartyAuth = function () {
 			$httpCache.removeAll();
 
 			PartyAuthorize.query(function (data) {
 				$scope.partyAuth = data;
+
+				$scope.parents = [];
+				$scope.children = [];
+
+				angular.forEach(data.parents, function (partyAuth) {
+					$scope.parents.push(partyAuth.party);
+				});
+
+				angular.forEach(data.children, function (partyAuth) {
+					$scope.children.push(partyAuth.party);
+				});
 			});
-		};
-
-		$scope.onModeAuthorize = function () {
-			getPartyAuth();
-			$scope.parental = true;
-		};
-
-		$scope.onModeApply = function () {
-			getPartyAuth();
-			$scope.parental = false;
 		};
 
 		//
