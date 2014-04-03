@@ -65,8 +65,10 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
 
   def fileName : Future[String] =
     idents.map { i =>
-      (volume.alias.getOrElse(volume.name).take(16) +: (i ++ asset.name))
-      .mkString("-")
+      SlotAsset.fileNamePad.replaceAllIn(
+	(volume.alias.getOrElse(volume.name).take(16) +: (i ++ asset.name))
+	.mkString("-"),
+	"_")
     }
 
   override lazy val json : JsonObject = JsonObject.flatten(
@@ -204,4 +206,6 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   private[models] def getThumb(slot : Slot) : Future[Option[SlotAsset]] =
     Excerpt.getThumb(slot).flatMap(Async.orElse[SlotAsset](_,
       SlotAssetSlot.getThumb(slot)))
+
+  private final val fileNamePad = "[\0-,/?\\\\]+".r
 }
