@@ -22,19 +22,19 @@ define(['config/module'], function (module) {
 			$httpCache.removeAll();
 
 			PartyAuthorize.query(function (data) {
-				$scope.partyAuth = data;
+					$scope.partyAuth = data;
 
-				$scope.parents = [];
-				$scope.children = [];
+					$scope.parents = [];
+					$scope.children = [];
 
-				angular.forEach(data.parents, function (partyAuth) {
-					$scope.parents.push(partyAuth.party);
+					angular.forEach(data.parents, function (partyAuth) {
+						$scope.parents.push(partyAuth.party);
+					});
+
+					angular.forEach(data.children, function (partyAuth) {
+						$scope.children.push(partyAuth.party);
+					});
 				});
-
-				angular.forEach(data.children, function (partyAuth) {
-					$scope.children.push(partyAuth.party);
-				});
-			});
 		};
 
 		//
