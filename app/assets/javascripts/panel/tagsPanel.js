@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('TagsPanel', ['$scope', 'Tag', '$route', 'MessageService', 'Volume', '$cacheFactory', '$http', '$timeout', 'TooltipService', 'ConstantService', function ($scope, Tag, $route, messageService, Volume, $cacheFactory, $http, $timeout, tooltips, constant) {
+	module.controller('TagsPanel', ['$scope', 'Tag', '$route', 'Page', 'Volume', '$cacheFactory', '$http', '$timeout', function ($scope, Tag, $route, page, Volume, $cacheFactory, $http, $timeout) {
 		var DEFAULT_MESSAGE = {
 			type: 'blue',
 			countdown: 3000
@@ -13,11 +13,11 @@ define(['config/module'], function (module) {
 
 		var createMessage = function (message) {
 			if (typeof(message) == 'string')
-				messageService.add(angular.extend({}, DEFAULT_MESSAGE, {
+				page.messages.add(angular.extend({}, DEFAULT_MESSAGE, {
 					body: message
 				}));
 			else
-				messageService.add(angular.extend({}, DEFAULT_MESSAGE, message));
+				page.messages.add(angular.extend({}, DEFAULT_MESSAGE, message));
 		};
 
 		//
@@ -76,6 +76,12 @@ define(['config/module'], function (module) {
 					}, function (data) {
 						$scope.volume.tags = data.tags;
 						$scope.refreshPanel();
+					}, function (res) {
+						page.messages.addError({
+							body: page.constants.message('tags.update.error'),
+							errors: res[0],
+							status: res[1]
+						})
 					});
 
 					break;
@@ -229,7 +235,13 @@ define(['config/module'], function (module) {
 
 					if (form.newNameVal)
 						$scope.autoList = data;
-				}).error(function () {
+				}).error(function (errors, status) {
+					page.messages.addError({
+						body: page.constants.message('tags.auto.error'),
+						errors: errors,
+						status: status
+					});
+
 					emptyAuto();
 				});
 		};
@@ -257,7 +269,7 @@ define(['config/module'], function (module) {
 			emptyAuto();
 
 			if ($scope.tagNewFormMessage) {
-				messageService.enable($scope.tagNewFormMessage);
+				page.messages.enable($scope.tagNewFormMessage);
 			} else {
 				var message = {
 					enabled: true,
@@ -269,13 +281,13 @@ define(['config/module'], function (module) {
 						'</dl>'
 				};
 
-				$scope.tagNewFormMessage = messageService.add(message);
+				$scope.tagNewFormMessage = page.messages.add(message);
 			}
 		};
 
 		var disableNewNameError = function () {
 			if ($scope.tagNewFormMessage)
-				messageService.disable($scope.tagNewFormMessage);
+				page.messages.disable($scope.tagNewFormMessage);
 		};
 
 		//
@@ -284,13 +296,13 @@ define(['config/module'], function (module) {
 
 		var bindTooltips = function () {
 			var unsetTips = {
-				'.panel_tags_list .vote.available.up': constant.message('tags.vote.up'),
-				'.panel_tags_list .vote.available.null': constant.message('tags.vote.null'),
-				'.panel_tags_list .vote.available.down': constant.message('tags.vote.down')
+				'.panel_tags_list .vote.available.up': page.constants.message('tags.vote.up'),
+				'.panel_tags_list .vote.available.null': page.constants.message('tags.vote.null'),
+				'.panel_tags_list .vote.available.down': page.constants.message('tags.vote.down')
 			};
 
 			angular.forEach(unsetTips, function (message, target) {
-				tips.push(tooltips.add({
+				tips.push(page.tooltips.add({
 					live : true,
 					$target: target,
 					message: message
@@ -302,13 +314,13 @@ define(['config/module'], function (module) {
 
 		var hideTooltips = function () {
 			angular.forEach(tips, function (tip) {
-				tooltips.hide(tip);
+				page.tooltips.hide(tip);
 			});
 		};
 
 		$scope.$on('$destroy', function () {
 			angular.forEach(tips, function (tip) {
-				tooltips.remove(tip);
+				page.tooltips.remove(tip);
 			});
 
 			tips = [];

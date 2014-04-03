@@ -1,13 +1,13 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('RegisterPanel', ['$scope', 'AuthService', '$http', '$window', 'EventService', 'PartyAuthorize', 'MessageService', 'ConstantService', 'Scraper', function ($scope, authService, $http, $window, eventService, PartyAuthorize, messages, constants, Scraper) {
+	module.controller('RegisterPanel', ['$scope', 'AuthService', '$http', '$window', 'PartyAuthorize', 'Scraper', 'Page', function ($scope, authService, $http, $window, PartyAuthorize, Scraper, page) {
 		$scope.auth = $scope.auth || authService;
 
 		var mess = [];
 		$scope.$on('$destroy', function () {
 			angular.forEach(mess, function (message) {
-				messages.remove(message);
+				page.messages.remove(message);
 			})
 		});
 
@@ -115,39 +115,39 @@ define(['config/module'], function (module) {
 
 				//
 
-				mess.push(messages.add({
+				mess.push(page.messages.add({
 					type: 'blue',
 					target: '#field_name',
-					body: constants.message('wizard.register_form.name.help')
+					body: page.constants.message('wizard.register_form.name.help')
 				}));
 
-				mess.push(messages.add({
+				mess.push(page.messages.add({
 					type: 'blue',
 					target: '#field_email',
-					body: constants.message('wizard.register_form.email.help')
+					body: page.constants.message('wizard.register_form.email.help')
 				}));
 
-				mess.push(messages.add({
+				mess.push(page.messages.add({
 					type: 'blue',
 					target: '#field_affiliation',
-					body: constants.message('wizard.register_form.affiliation.help')
+					body: page.constants.message('wizard.register_form.affiliation.help')
 				}));
 
 				//
 
-				var emailError = messages.add({
+				var emailError = page.messages.add({
 					type: 'red',
 					enabled: false,
-					body: constants.message('wizard.register_form.email.error')
+					body: page.constants.message('wizard.register_form.email.error')
 				});
 
 				mess.push(emailError);
 
 				step.$watch('registerForm.fieldEmail.$valid', function () {
 					if ($scope.registerForm.fieldEmail.$valid || !$scope.registerForm.fieldEmail.$dirty)
-						messages.disable(emailError);
+						page.messages.disable(emailError);
 					else
-						messages.enable(emailError);
+						page.messages.enable(emailError);
 				});
 			},
 
@@ -188,9 +188,16 @@ define(['config/module'], function (module) {
 
 					$http
 						.post('/register', $scope.registerForm.data)
-						.success(function (data) {
+						.success(function (res) {
 							$scope.registerForm.sent = true;
 							$scope.updateWizard();
+						})
+						.error(function (errors, status) {
+							page.messages.addError({
+								body: page.constants.message('error.generic'),
+								errors: errors,
+								status: status
+							});
 						});
 				};
 			},
@@ -270,6 +277,13 @@ define(['config/module'], function (module) {
 						})
 						.success(function (data) {
 							$scope.authApplyForm.successFn();
+						})
+						.error(function (errors, status) {
+							page.messages.addError({
+								body: page.constants.message('error.generic'),
+								errors: errors,
+								status: status
+							});
 						});
 				};
 

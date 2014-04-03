@@ -1,36 +1,32 @@
 <panel ng-controller="TagsPanel" id="panel_tags" panel-title="{{'tags.title' | message}}" fold>
     <panel-mode name="view" active>
-        <div class="row">
-            <div class="panel_tags_list">
-                <form name="tagForm" novalidate>
-                    <ul class="panel_tags_items">
-                        <li ng-repeat="tag in tags" class="panel_tags_item col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
-                            <div class="inner">
-                                <span class="weight">{{tag.weight}}</span>
+        <div class="panel_tags_list">
+            <form name="tagForm" novalidate>
+                <ul class="panel_tags_items">
+                    <li ng-repeat="tag in tags" class="panel_tags_item">
+                        <div class="weight">{{tag.weight}}</div>
 
-                                <span class="name">{{tag.id}}</span>
+                        <div class="name">{{tag.id}}</div>
 
-                                <div class="controls" ng-if="auth.isLoggedIn()">
-                                    <button class="vote down" name="vote" ng-click="vote(tag, -1);" ng-disabled="tag.vote == -1" ng-class="{available: tag.vote != -1}">-</button>
-                                    <button class="vote null" name="vote" ng-click="vote(tag, 0)" ng-disabled="!tag.vote" ng-class="{available: tag.vote != 0}">0</button>
-                                    <button class="vote up" name="vote" ng-click="vote(tag, 1)" ng-disabled="tag.vote == 1" ng-class="{available: tag.vote != 1}">+</button>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </form>
-            </div>
+                        <div class="controls" ng-if="auth.isLoggedIn()">
+                            <button class="vote down" name="vote" ng-click="vote(tag, -1);" ng-disabled="tag.vote == -1" ng-class="{available: tag.vote != -1}">-</button>
+                            <button class="vote null" name="vote" ng-click="vote(tag, 0)" ng-disabled="!tag.vote" ng-class="{available: tag.vote != 0}">0</button>
+                            <button class="vote up" name="vote" ng-click="vote(tag, 1)" ng-disabled="tag.vote == 1" ng-class="{available: tag.vote != 1}">+</button>
+                        </div>
+                    </li>
+                </ul>
+            </form>
+        </div>
 
-            <div id="tag_add" class="panel_tags_form col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3" ng-if="auth.isLoggedIn()">
-                <form name="tagNewForm" novalidate ng-submit="voteNew(tagNewForm)" class="tag_new_form">
-                    <input type="text" id="newName" name="newName" ng-model="tagNewForm.newNameVal" placeholder="Add new tag..." ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/" required ng-change="newNameChange(tagNewForm)" ng-focus="newNameFocus(tagNewForm)" ng-blur="newNameBlur(tagNewForm)">
-                    <button name="vote" ng-click="voteNew(tagNewForm)" class="hide">add</button>
+        <div id="tag_add" class="panel_tags_form" ng-if="auth.isLoggedIn()">
+            <form name="tagNewForm" novalidate ng-submit="voteNew(tagNewForm)" class="tag_new_form">
+                <input type="text" id="newName" name="newName" ng-model="tagNewForm.newNameVal" placeholder="Add new tag..." ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/" required ng-change="newNameChange(tagNewForm)" ng-focus="newNameFocus(tagNewForm)" ng-blur="newNameBlur(tagNewForm)">
+                <button name="vote" ng-click="voteNew(tagNewForm)" class="hide">add</button>
 
-                    <ul class="new_auto_list">
-                        <li ng-repeat="autoTag in autoList" ng-class="{active: autoSelect == $index}"><a href="" ng-click="fillAuto(tagNewForm, autoTag)">{{autoTag}}</a></li>
-                    </ul>
-                </form>
-            </div>
+                <ul class="new_auto_list">
+                    <li ng-repeat="autoTag in autoList" ng-class="{active: autoSelect == $index}"><a href="" ng-click="fillAuto(tagNewForm, autoTag)">{{autoTag}}</a></li>
+                </ul>
+            </form>
         </div>
     </panel-mode>
 </panel>

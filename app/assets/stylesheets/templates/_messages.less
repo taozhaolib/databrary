@@ -60,26 +60,39 @@
 .message_content {
 	.padding-height(@f4);
 
+	p {
+		.margin-bottom(@f4);
+	}
+
 	dl {
 		.margin-bottom(0);
-		.clearfix();
-	}
 
-	dt {
-		float: left;
-		.padding-right(@f2);
-		width: 15%;
+		dt {
+			display: inline-block;
+			float: left;
+			clear: left;
+			.margin-right(@f8);
 
-		&:after {
-			content: ":";
+			&:after {
+				content: ":";
+			}
+
+			& + dd {
+				&:before {
+					content: none;
+				}
+			}
 		}
-	}
 
-	dd {
-		float: right;
-		.padding-left(@f2);
-		.margin-left(0);
-		width: 85%;
+		dd {
+			.margin-left(0);
+			display: inline-block;
+			float: left;
+
+			&:before {
+				content: ', ';
+			}
+		}
 	}
 }
 

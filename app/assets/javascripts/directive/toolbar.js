@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('toolbar', ['$location', '$timeout', 'EventService', 'AuthService', 'PanelService', function ($location, $timeout, eventService, authService, panelService) {
+	module.directive('toolbar', ['$location', '$timeout', 'EventService', 'AuthService', 'PanelService', 'ConstantService', 'TooltipService', function ($location, $timeout, eventService, authService, panelService, constant, tooltips) {
 		var controller = function ($scope) {
 			$scope.auth = $scope.auth || authService;
 
@@ -47,6 +47,16 @@ define(['config/module'], function (module) {
 			//
 
 			$scope.links = [];
+
+			//
+
+			constant.$promise.then(function () {
+				tooltips.add({
+					type: 'green',
+					$target: $('#toolbar_contact'),
+					message: constant.message('toolbar.contact')
+				})
+			});
 		};
 
 		return {

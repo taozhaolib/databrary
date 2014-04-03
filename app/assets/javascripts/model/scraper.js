@@ -1,14 +1,23 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('Scraper', ['$q', '$http', function ($q, $http) {
+	module.factory('Scraper', ['$q', '$http', 'Page', function ($q, $http, page) {
 		return function (url) {
 			var deferred = $q.defer();
 
 			$http
 				.get(url)
-				.success(function (response) {
-					deferred.resolve(response);
+				.success(function (res) {
+					deferred.resolve(res);
+				})
+				.error(function (errors, status) {
+					page.messages.addError({
+						body: page.constants.message('scraper.error', config.url.split('/').pop()),
+						errors: errors,
+						status: status
+					});
+
+					deferred.reject();
 				});
 
 			return deferred.promise;

@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('AuthService', ['$rootScope', '$location', '$http', '$route', '$cacheFactory', 'TypeService', '$window', '$q', '$sessionStorage', '$timeout', function ($rootScope, $location, $http, $route, $cacheFactory, typeService, $window, $q, $sessionStorage, $timeout) {
+	module.factory('AuthService', ['$rootScope', '$location', '$http', '$route', '$cacheFactory', 'TypeService', '$window', '$q', '$sessionStorage', 'Page', function ($rootScope, $location, $http, $route, $cacheFactory, typeService, $window, $q, $sessionStorage, page) {
 		var authService = {};
 
 		$rootScope.$sessionStorage = $sessionStorage;
@@ -147,8 +147,14 @@ define(['config/module'], function (module) {
 						$location.path('/');
 					}
 				})
-				.error(function () {
+				.error(function (errors, status) {
 					updateUser(undefined);
+
+					page.messages.add({
+						body: page.constants.message('login.error'),
+						type: 'red',
+						countdown: 3000
+					});
 				});
 		};
 
@@ -164,9 +170,21 @@ define(['config/module'], function (module) {
 				.success(function (data) {
 					updateUser(data);
 					$location.url('/login');
+
+					page.messages.add({
+						body: page.constants.message('logout.success'),
+						type: 'yellow',
+						countdown: 3000
+					});
 				})
 				.error(function () {
 					$location.url('/');
+
+					page.messages.add({
+						body: page.constants.message('logout.error'),
+						type: 'red',
+						countdown: 3000
+					});
 				});
 		};
 
@@ -216,9 +234,19 @@ define(['config/module'], function (module) {
 				})
 				.success(function (data) {
 					updateUser(data);
+
+					page.messages.add({
+						body: page.constants.message('superuser.on.success'),
+						type: 'green',
+						countdown: 2000
+					});
 				})
-				.error(function () {
-					console.log('bad!');
+				.error(function (errors, status) {
+					page.messages.addError({
+						body: page.constants.message('superuser.on.error'),
+						errors: errors,
+						status: status
+					});
 				});
 		};
 
@@ -227,9 +255,19 @@ define(['config/module'], function (module) {
 				.post('/api/user/superuser/off')
 				.success(function (data) {
 					updateUser(data);
+
+					page.messages.add({
+						body: page.constants.message('superuser.off.success'),
+						type: 'green',
+						countdown: 2000
+					});
 				})
-				.error(function () {
-					console.log('bad!');
+				.error(function (errors, status) {
+					page.messages.addError({
+						body: page.constants.message('superuser.off.error'),
+						errors: errors,
+						status: status
+					});
 				});
 		};
 

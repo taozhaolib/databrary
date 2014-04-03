@@ -70,8 +70,7 @@ define(['config/module'], function (module) {
 						comments: '',
 						access: '',
 						parents: '',
-						children: '',
-						funding: ''
+						children: ''
 					};
 
 					if ($route.current.params.id)
@@ -81,15 +80,22 @@ define(['config/module'], function (module) {
 					else if (type.isParty($window.$play.object))
 						req.id = $window.$play.object.id;
 
-					Party.get(req, function (data) {
-						deferred.resolve(data);
-					}, function (error) {
-						deferred.reject();
-					});
+					if ($route.current.params.id)
+						Party.get(req, function (data) {
+							deferred.resolve(data);
+						}, function (error) {
+							deferred.reject();
+						});
+					else
+						Party.profile(req, function (data) {
+							deferred.resolve(data);
+						}, function (error) {
+							deferred.reject();
+						});
 
 					return deferred.promise;
 				}],
-				volumes: ['$route', 'Volume', '$q', 'AuthService', 'TypeService', function ($route, Volume, $q, auth, type) {
+				volumes: ['$route', 'Volume', '$q', 'AuthService', 'TypeService', '$window', function ($route, Volume, $q, auth, type, $window) {
 					var deferred = $q.defer();
 
 					var req = {
@@ -141,9 +147,9 @@ define(['config/module'], function (module) {
 						sessions: '',
 						categories: '',
 						funding: ''
-					}, function (data) {
-						deferred.resolve(data);
-					}, function (error) {
+					}, function (res) {
+						deferred.resolve(res);
+					}, function (res) {
 						deferred.reject();
 					});
 

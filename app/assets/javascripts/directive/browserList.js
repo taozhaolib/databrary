@@ -1,8 +1,8 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('browserList', ['BrowserService', '$filter', 'ConstantService', 'RouterService', 'TypeService', 'AuthService', function (browserService, $filter, constantService, routerService, typeService, auth) {
-		var link = function ($scope, $el, $attrs) {
+	module.directive('browserList', ['BrowserService', '$filter', 'ConstantService', 'RouterService', 'TypeService', 'AuthService', 'Page', function (browserService, $filter, constantService, routerService, typeService, auth, page) {
+		var link = function ($scope) {
 			if (!$scope.browser)
 				$scope.browser = browserService;
 
@@ -54,6 +54,12 @@ define(['config/module'], function (module) {
 			$scope.setItemPlayer = function (data) {
 				if (auth.hasAccess('DOWNLOAD', data))
 					$scope.browser.setItemPlayer(data);
+				else
+					page.messages.add({
+						type: 'yellow',
+						countdown: 2000,
+						body: page.constants.message('browser.noaccess')
+					});
 			};
 
 			//

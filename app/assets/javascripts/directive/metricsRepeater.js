@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('metricsRepeater', ['$http', function ($http) {
+	module.directive('metricsRepeater', ['$http', 'MessageService', function ($http, messages) {
 		var link = function ($scope) {
 			$scope.repeats = $scope.repeats || [];
 
@@ -14,12 +14,14 @@ define(['config/module'], function (module) {
 			//
 
 			var initialize = function () {
-				for(var i = 0; i < $scope.metrics.length; i++) {
+				for (var i = 0; i < $scope.metrics.length; i++) {
 					var id = $scope.metrics[i].id;
 
-					$scope.metrics[i].used = !!($.grep($scope.repeats, function (i) { return i.metric == id; }).length > 0);
+					$scope.metrics[i].used = !!($.grep($scope.repeats, function (i) {
+						return i.metric == id;
+					}).length > 0);
 
-					if($scope.metrics[i].values.length > 0)
+					if ($scope.metrics[i].values.length > 0)
 						$scope.metrics[i].dataType = 'select';
 				}
 			};
@@ -31,11 +33,13 @@ define(['config/module'], function (module) {
 			};
 
 			$scope.getRepeat = function (id) {
-				return $.grep($scope.repeats, function (i) { return i.metric == id; }).shift();
+				return $.grep($scope.repeats, function (i) {
+					return i.metric == id;
+				}).shift();
 			};
 
 			$scope.createRepeat = function (id) {
-				if($scope.getRepeat(id))
+				if ($scope.getRepeat(id))
 					return false;
 
 				$scope.repeats.push({
@@ -90,7 +94,9 @@ define(['config/module'], function (module) {
 			//
 
 			$scope.getMetric = function (id) {
-				return $.grep($scope.metrics, function (i) { return i.id == id; }).shift();
+				return $.grep($scope.metrics, function (i) {
+					return i.id == id;
+				}).shift();
 			};
 
 			$scope.useMetric = function (id, used) {
@@ -100,13 +106,15 @@ define(['config/module'], function (module) {
 			//
 
 			$scope.getCategory = function (id) {
-				return $.grep($scope.categories, function (i) { return i.id == id; }).shift();
+				return $.grep($scope.categories, function (i) {
+					return i.id == id;
+				}).shift();
 			};
 
 			$scope.updateCategory = function (id) {
 				var cat = $scope.getCategory(id);
 
-				for(var i = 0; i < cat.template.length; i++) {
+				for (var i = 0; i < cat.template.length; i++) {
 					$scope.createRepeat(cat.template[i]);
 				}
 			};
@@ -119,10 +127,19 @@ define(['config/module'], function (module) {
 					measure: $scope.repeats
 				};
 
-				$http.post($scope.formAction, data).success(function (data, status, headers, config) {
-					$scope.category = config.data.category;
-					$scope.repeats = config.data.measure;
-				});
+				$http
+					.post($scope.formAction, data)
+					.then(function (response) {
+						$scope.category = response.data.category;
+						$scope.repeats = response.data.measure;
+					}, function (res) {
+						// TODO: test this!
+						messages.add({
+							type: 'red',
+							closeable: true,
+							body: res.status
+						})
+					});
 			};
 
 			//

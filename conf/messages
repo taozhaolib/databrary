@@ -74,12 +74,23 @@ login.openID.notFound=No account is associated with that OpenID.
 login.noCookie=You must be logged in to perform that action. Please make sure you have cookies enabled.
 login.expired=Your session has expired. Please login again.
 login.logout=You have been logged out.
+login.error=Unable to log in with those credentials.
+
+logout.success=You are logged out.
+logout.error=That's weird. We couldn't log you out.
+
+superuser.on.success=Superuser mode activated!
+superuser.on.error=Could not activate superuser mode!
+superuser.off.success=Superuser mode deactivated!
+superuser.off.error=Could not deactivate superuser mode!
 
 reset.title=Password Reset
 reset.request=Reset
 reset.save=Save
-reset.request.complete=Password reset email sent to {0}. Please follow the instructions in that message.
-reset.save.complete=Your password has been reset.
+reset.request.success=Password reset email sent to {0}. Please follow the instructions in that message.
+reset.save.success=Your password has been reset.
+reset.request.error=Password reset unsuccessful.
+reset.save.error=Could not save new password.
 
 welcome.title=Welcome
 welcome.title.sub=Databrary Private Beta
@@ -172,6 +183,7 @@ browser.group.loading=Loading...
 browser.sort=sort
 browser.sort.by=Group by
 browser.filter.by=Filter by
+browser.noaccess=You do not have access to view this file.
 session=Session
 
 excerpts.title=Excerpts
@@ -193,11 +205,14 @@ comments.post=Post
 comments.reply=Reply
 comments.cancel=Cancel
 comments.prompt=Post a comment...
+comments.update.error=Could not update comments list.
 
 tags.title=Tags
 tags.vote.up=Vote this tag up.
 tags.vote.null=Remove your vote on this tag.
 tags.vote.down=Vote this tag down.
+tags.auto.error=The auto-suggestion list out-of-order.
+tags.update.error=Could not update tag list.
 
 search.title=Search
 search.prompt=Start your search...
@@ -205,6 +220,14 @@ search.prompt=Start your search...
 # --- Notices
 notice.help.pilot=<strong>Pilot</strong>: This session contains pilot data.
 notice.help.exclusion=<strong>Exclusion</strong>: This session was excluded due to: <em>{0}</em>.
+
+# Errors
+error.prefix=<strong>Error!</strong>
+error.suffix= Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
+
+error.generic=Something''s gone terribly wrong.
+
+scraper.error=Could not retrieve required document "{0}."
 
 # --- Registration
 register.title=Register

@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('MessageService', ['$rootScope', 'ArrayHelper', '$timeout', function ($rootScope, arrayHelper, $timeout) {
+	module.factory('MessageService', ['$rootScope', 'ArrayHelper', '$timeout', 'ConstantService', function ($rootScope, arrayHelper, $timeout, constants) {
 		var messages = arrayHelper([]);
 
 		messages.types = ['blue', 'green', 'red', 'orange', 'yellow', 'purple'];
@@ -38,16 +38,58 @@ define(['config/module'], function (module) {
 
 		var addFn = messages.add;
 
+		var register = function (message) {
+			if (message) {
+				if (message.target)
+					messages.target(message);
+
+				if (message.countdown)
+					messages.countdown(message);
+			}
+
+			return message;
+		};
+
 		messages.add = function (message) {
 			var newMessage = addFn(message);
 
-			if (newMessage) {
-				if (newMessage.target)
-					messages.target(newMessage);
+			register(newMessage);
 
-				if (newMessage.countdown)
-					messages.countdown(newMessage);
+			return newMessage;
+		};
+
+		messages.addError = function (message) {
+			message.countdown = undefined;
+			message.closeable = true;
+			message.type = 'red';
+
+			var newMessage = addFn(message);
+
+			if (!newMessage)
+				return false;
+
+			newMessage.body = constants.message('error.prefix') + ' ' + newMessage.body + ' ' + constants.message('error.suffix');
+
+			if (message.errors && angular.isObject(message.errors)) {
+				var moreBody = '';
+
+				angular.forEach(message.errors, function (errorArray, field) {
+					moreBody += '<dt>Field "' + field + '"</dt><dd>' + errorArray.join('</dd><dd>') + '</dd>';
+				});
+
+				if(message.status)
+					moreBody = '<dt>Status</dt><dd>'+message.status+'</dd>' + moreBody;
+
+				moreBody = '<dl class="message_form_errors">' + moreBody + '</dl>';
+
+				delete message.errors;
+				delete message.status;
 			}
+
+			if (moreBody)
+				newMessage.body = '<p>' + newMessage.body + '</p>' + moreBody;
+
+			register(newMessage);
 
 			return newMessage;
 		};

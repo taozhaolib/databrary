@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('BrowserService', ['$rootScope', 'ArrayHelper', 'AuthService', 'Slot', 'TypeService', 'PageService', 'TooltipService', 'ConstantService', function ($rootScope, arrayHelper, authService, Slot, typeService, page, tooltips, constant) {
+	module.factory('BrowserService', ['$rootScope', 'ArrayHelper', 'AuthService', 'Slot', 'TypeService', 'Page', 'TooltipService', 'ConstantService', function ($rootScope, arrayHelper, authService, Slot, typeService, page, tooltips, constant) {
 		var browserService = {};
 
 		//

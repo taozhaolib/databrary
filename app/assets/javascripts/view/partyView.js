@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('PartyView', ['$scope', 'party', 'volumes', 'PanelService', 'PageService', function ($scope, party, volumes, panelService, page) {
+	module.controller('PartyView', ['$scope', 'party', 'volumes', 'PanelService', 'Page', function ($scope, party, volumes, panelService, page) {
 		$scope.party = party;
 		$scope.volumes = volumes;
 
