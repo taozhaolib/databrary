@@ -3,12 +3,14 @@ define(['config/module'], function (module) {
 
 	module.directive('excerpt', ['TypeService', 'RouterService', function (type, router) {
 		var link = function ($scope, $el, $attr) {
+			var obj = $scope[$attr.excerpt].object ? $scope[$attr.excerpt].object : $scope[$attr.excerpt];
+
 			$scope.srcRoute = router.assetLink({
-				id: $scope[$attr.excerpt].asset.id,
-				sid: $scope[$attr.excerpt].container.id
+				id: obj.asset.id,
+				sid: obj.container.id
 			});
 
-			var excerpt = type.assetProperty($scope[$attr.excerpt], 'segment', false) || [null, null];
+			var excerpt = type.assetProperty(obj, 'segment', false) || [null, null];
 			excerpt = excerpt.map(function (old) {
 				return isNaN(old / 1000) ? null : old / 1000;
 			});
