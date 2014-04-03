@@ -212,7 +212,7 @@ register.title.sub=Get Databrary Access
 register.name.prompt=Full name
 register.continue=Continue
 register.agree=Agree
-register.register=Register
+register.register=Agree and register
 register.agreement.instructions=Download the <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">pdf version</a> for the full agreement. Terms in italics are defined in our <a href="http://databrary.org/user-guide/policies/definitions.html" target="_blank">term definitions</a>.
 register.sent.instructions=Your confirmation email has been sent to {0}.
 register.notfound.instructions=Please offer your best guess as to who to speak to about granting you authorization.
