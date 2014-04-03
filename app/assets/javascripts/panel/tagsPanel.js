@@ -106,25 +106,26 @@ define(['config/module'], function (module) {
 
 				switch (vote) {
 					case -1:
-						createMessage('Tag <strong>' + tag.id + '</strong> voted down successfully!');
+						createMessage(page.constants.message('tags.vote.down.success', tag.id));
 						break;
 
 					case 0:
-						createMessage('Tag <strong>' + tag.id + '</strong> vote cancelled successfully!');
+						createMessage(page.constants.message('tags.vote.null.success', tag.id));
 						break;
 
 					case 1:
-						createMessage('Tag <strong>' + tag.id + '</strong> voted up successfully!');
+						createMessage(page.constants.message('tags.vote.up.success', tag.id));
 						break;
 				}
 
 				hideTooltips();
-			}, function () {
-				createMessage({
-					type: 'red',
-					body: 'Vote for tag <strong>' + tag.id + '</strong> unsuccessful! Please refresh and try again.'
+			}, function (res) {
+				page.messages.addError({
+					body: page.constants.message('tags.vote.error', tag.id),
+					errors: res[0],
+					status: res[1]
 				});
-				
+
 				hideTooltips();
 			});
 		};
@@ -143,17 +144,18 @@ define(['config/module'], function (module) {
 				container: $scope.target.container,
 				segment: $scope.target.segment
 			}, function (newTag, status, headers, config) {
-				createMessage('Tag <strong>' + form.newNameVal + '</strong> added successfully!');
+				createMessage(page.constants.message('tags.new.success', form.newNameVal));
 
 				form.newNameVal = '';
 				emptyAuto();
 
 				$scope.retrieveTags();
 				hideTooltips();
-			}, function () {
-				createMessage({
-					type: 'red',
-					body: 'Could not add tag <strong>' + tag.id + '</strong>! Please refresh and try again.'
+			}, function (res) {
+				page.messages.addError({
+					body: page.constants.message('tags.new.error', form.newNameVal),
+					errors: res[0],
+					status: res[1]
 				});
 
 				emptyAuto();

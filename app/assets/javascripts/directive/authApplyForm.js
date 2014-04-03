@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('authApplyForm', ['PartyAuthorize', 'AuthService', 'EventService', 'AuthPresetService', 'ConstantService', function (PartyAuthorize, authService, eventService, authPresetService, constant) {
+	module.directive('authApplyForm', ['PartyAuthorize', 'AuthService', 'EventService', 'AuthPresetService', 'ConstantService', 'Page', function (PartyAuthorize, authService, eventService, authPresetService, constant, page) {
 		var link = function ($scope) {
 			var form = $scope.authApplyForm;
 
@@ -32,7 +32,13 @@ define(['config/module'], function (module) {
 				}, function () {
 					if (angular.isFunction(form.successFn))
 						form.successFn(form, arguments);
-				}, function () {
+				}, function (res) {
+					page.messages.addError({
+						body: page.constants.message('auth.apply.error'),
+						errors: res[0],
+						status: res[1]
+					});
+
 					if (angular.isFunction(form.errorFn))
 						form.errorFn(form, arguments);
 				});

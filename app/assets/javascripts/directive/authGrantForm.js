@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('authGrantForm', ['PartyAuthorize', 'AuthService', 'EventService', 'AuthPresetService', '$filter', function (PartyAuthorize, authService, eventService, authPresetService, $filter) {
+	module.directive('authGrantForm', ['PartyAuthorize', 'AuthService', 'EventService', 'AuthPresetService', '$filter', 'Page', function (PartyAuthorize, authService, eventService, authPresetService, $filter, page) {
 		var link = function ($scope) {
 			var form = $scope.authGrantForm;
 
@@ -37,7 +37,13 @@ define(['config/module'], function (module) {
 				}, function () {
 					if (angular.isFunction(form.successFn))
 						form.successFn(form, arguments);
-				}, function () {
+				}, function (res) {
+					page.messages.addError({
+						body: page.constants.message('auth.grant.save.error'),
+						errors: res[0],
+						status: res[1]
+					});
+
 					if (angular.isFunction(form.errorFn))
 						form.errorFn(form, arguments);
 				});
@@ -61,7 +67,13 @@ define(['config/module'], function (module) {
 				}, function () {
 					if (angular.isFunction(form.denySuccessFn))
 						form.denySuccessFn(form, arguments);
-				}, function () {
+				}, function (res) {
+					page.messages.addError({
+						body: page.constants.message('auth.grant.deny.error'),
+						errors: res[0],
+						status: res[1]
+					});
+
 					if (angular.isFunction(form.denyErrorFn))
 						form.denyErrorFn(form, arguments);
 				});

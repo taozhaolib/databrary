@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('commentReplyForm', ['Comment', 'AuthService', 'EventService', 'TypeService', function (Comment, authService, eventService, type) {
+	module.directive('commentReplyForm', ['Comment', 'AuthService', 'EventService', 'TypeService', 'Page', function (Comment, authService, eventService, type, page) {
 		var link = function ($scope) {
 			var form = $scope.commentReplyForm;
 
@@ -29,11 +29,22 @@ define(['config/module'], function (module) {
 				form.comment = new Comment();
 
 				form.comment.$save(form.data, function () {
+					page.messages.add({
+						body: page.constants.message('comments.add.success'),
+						type: 'green'
+					});
+
 					if (angular.isFunction(form.successFn))
 						form.successFn(form, arguments);
 
 					form.cancel();
-				}, function () {
+				}, function (res) {
+					page.messages.addError({
+						body: page.constants.message('comments.add.error'),
+						errors: res[0],
+						status: res[1]
+					});
+
 					if (angular.isFunction(form.errorFn))
 						form.errorFn(form, arguments);
 				});

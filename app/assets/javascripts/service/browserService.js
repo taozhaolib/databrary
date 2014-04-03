@@ -78,7 +78,7 @@ define(['config/module'], function (module) {
 		//
 
 		browserService.initialize = function (newContext, newData) {
-			if(angular.isUndefined(browserService.context))
+			if (angular.isUndefined(browserService.context))
 				constant.$promise.success(function () {
 					bindTooltips(tips);
 				});
@@ -564,6 +564,12 @@ define(['config/module'], function (module) {
 				});
 
 				browserService.loading = false;
+			}, function (res) {
+				page.messages.addError({
+					body: page.constants.message('browser.assets.error'),
+					errors: res[0],
+					status: res[1]
+				});
 			});
 
 			return data;
@@ -1034,7 +1040,7 @@ define(['config/module'], function (module) {
 
 			angular.forEach(tips, function (message, target) {
 				tips[target] = tooltips.add({
-					live : true,
+					live: true,
 					$target: target,
 					message: message
 				});

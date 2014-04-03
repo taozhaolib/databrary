@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('NetworkPanel', ['$scope', 'Party', '$routeParams', '$filter', 'PartyAuthorize', 'ConstantService', 'EventService', '$cacheFactory', function ($scope, Party, $routeParams, $filter, PartyAuthorize, constantService, eventService, $cacheFactory) {
+	module.controller('NetworkPanel', ['$scope', '$routeParams', '$filter', 'PartyAuthorize', 'ConstantService', 'EventService', '$cacheFactory', 'Page', function ($scope, $routeParams, $filter, PartyAuthorize, constantService, eventService, $cacheFactory, page) {
 		$scope.constant = $scope.constant || constantService;
 
 		var $httpCache = $cacheFactory.get('$http');
@@ -22,19 +22,25 @@ define(['config/module'], function (module) {
 			$httpCache.removeAll();
 
 			PartyAuthorize.query(function (data) {
-					$scope.partyAuth = data;
+				$scope.partyAuth = data;
 
-					$scope.parents = [];
-					$scope.children = [];
+				$scope.parents = [];
+				$scope.children = [];
 
-					angular.forEach(data.parents, function (partyAuth) {
-						$scope.parents.push(partyAuth.party);
-					});
-
-					angular.forEach(data.children, function (partyAuth) {
-						$scope.children.push(partyAuth.party);
-					});
+				angular.forEach(data.parents, function (partyAuth) {
+					$scope.parents.push(partyAuth.party);
 				});
+
+				angular.forEach(data.children, function (partyAuth) {
+					$scope.children.push(partyAuth.party);
+				});
+			}, function (res) {
+				page.messages.addError({
+					body: page.constants.message('network.authquery.error'),
+					errors: res[0],
+					status: res[1]
+				})
+			});
 		};
 
 		//

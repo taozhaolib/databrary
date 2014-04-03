@@ -98,9 +98,12 @@ welcome.body=Due to Databrary''s rapid development, we''re actively testing the 
 
 party.overview.title=Overview
 party.contact.title=Contact
+
 network.title=Authorizations
 network.view=view
 network.edit=edit
+network.authquery.error=Could not retrieve your authorizing agents and affiliates.
+
 auth.parents.title=Authorized by
 auth.children.title=Granted authorization to
 auth.inherit=Access to Databrary
@@ -109,8 +112,12 @@ auth.expiration=Expiration
 auth.expiration.none=N/A
 auth.pending=Request pending.
 auth.request.title=Request the following status from {0}:
+auth.apply.error=Could not submit your request.
 auth.grant.title=Grant {0} the following capabilities:
+auth.grant.save.error=Could not save this authorization.
+auth.grant.deny.error=Could not deny this authorization.
 auth.search=Search for a user or institution...
+auth.search.error=Could not retrieve any users or institutions.
 auth.request=Request
 auth.authorize=Authorize
 auth.update=Update
@@ -201,6 +208,7 @@ browser.sort=sort
 browser.sort.by=Group by
 browser.filter.by=Filter by
 browser.noaccess=You do not have access to view this file.
+browser.assets.error=Could not retrieve assets for this session.
 session=Session
 
 excerpts.title=Excerpts
@@ -223,6 +231,8 @@ comments.reply=Reply
 comments.cancel=Cancel
 comments.prompt=Post a comment...
 comments.update.error=Could not update comments list.
+comments.add.success=Comment added successfully!
+comments.add.error=Commenting unsuccessful!
 
 tags.title=Tags
 tags.vote.up=Vote this tag up.
@@ -230,6 +240,12 @@ tags.vote.null=Remove your vote on this tag.
 tags.vote.down=Vote this tag down.
 tags.auto.error=The auto-suggestion list is out-of-order.
 tags.update.error=Could not update tag list.
+tags.vote.up.success=Tag <strong>{0}</strong> voted up successfully!
+tags.vote.null.success=Tag <strong>{0}</strong> vote cancelled successfully!
+tags.vote.down.success=Tag <strong>{0}</strong> voted down successfully!
+tags.vote.error=Vote for tag <strong>{0}</strong> unsuccessful!
+tags.new.success=Tag <strong>{0}</strong> added successfully!
+tags.new.error=Could not add tag <strong>{0}</strong>!
 
 search.title=Search
 search.prompt=Start your search...
@@ -256,6 +272,7 @@ register.register=Agree and register
 register.agreement.instructions=Download the <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">pdf version</a> for the full agreement. Terms in italics are defined in our <a href="http://databrary.org/user-guide/policies/definitions.html" target="_blank">definitions</a>.
 register.sent.instructions=Your confirmation email has been sent to {0}.
 register.notfound.instructions=Please offer your best guess as to whom to speak to about granting you authorization.
+register.authquery.error=Could not retrieve potential authorizing agents.
 
 wizard.register_create.name=Create Account
 wizard.register_create.description=Register to browse shared data and comment on datasets.

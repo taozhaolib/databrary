@@ -122,15 +122,7 @@ define(['config/module'], function (module) {
 		//
 
 		var successFn = function () {
-			createMessage('Comment added successfully!');
 			$scope.pullComments();
-		};
-
-		var errorFn = function () {
-			createMessage({
-				body: 'This comment is unacceptable!',
-				type: 'red'
-			});
 		};
 
 		var cancelFn = function () {
