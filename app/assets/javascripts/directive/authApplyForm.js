@@ -1,9 +1,11 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('authApplyForm', ['PartyAuthorize', 'AuthService', 'EventService', 'AuthPresetService', function (PartyAuthorize, authService, eventService, authPresetService) {
+	module.directive('authApplyForm', ['PartyAuthorize', 'AuthService', 'EventService', 'AuthPresetService', 'ConstantService', function (PartyAuthorize, authService, eventService, authPresetService, constant) {
 		var link = function ($scope) {
 			var form = $scope.authApplyForm;
+
+			$scope.constant = constant;
 
 			form.presets = authPresetService;
 			form.party = $scope.party || authService.user;

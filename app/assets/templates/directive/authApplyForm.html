@@ -6,7 +6,7 @@
                 <input type="radio" name="shortcut" ng-checked="authApplyForm.other.preset === preset" ng-click="authApplyForm.presets.set(authApplyForm.other, preset)">
 		<label class="option" ng-if="!preset.custom">
 		    <strong>{{'auth.preset.'+constant.data.permission[preset.inherit].name+'.'+constant.data.permission[preset.direct].name+'.title' | message}}</strong>:
-		    {{'auth.preset.'+constant.data.permission[preset.inherit].name+'.'+constant.data.permission[preset.direct].name | possessive:other}}
+		    {{'auth.preset.'+constant.data.permission[preset.inherit].name+'.'+constant.data.permission[preset.direct].name | possessive:authApplyForm.other}}
 		</label>
 		<label class="option" ng-if="preset.custom"><strong>Custom...</strong></label>
             </div>
