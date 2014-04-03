@@ -124,11 +124,14 @@ define(['config/module'], function (module) {
 						case -100:
 							var out = record.measures.setting;
 
-							if(record.measures.state)
-								out += ', '+record.measures.state;
-
-							if(record.measures.country)
-								out += ', '+record.measures.country;
+							if(record.measures.state) {
+								out += ' (' + record.measures.state;
+								if (record.measures.country)
+									out += ', ' + record.measures.country;
+								out += ')';
+							}
+							else if (record.measures.country) 
+								out += ' (' + record.measures.country + ')';
 
 							return out;
 
