@@ -5,6 +5,8 @@ define(['config/module'], function (module) {
 		var tooltips = arrayHelper([]);
 		var $doc = $(document);
 
+		var HOVER_DELAY = 500;
+
 		tooltips.types = ['blue', 'green', 'red', 'orange', 'yellow', 'purple'];
 
 		var pad = 10;
@@ -186,27 +188,31 @@ define(['config/module'], function (module) {
 
 			var events = getTargetEvents(tooltip);
 
+			var timeout;
+
 			if (tooltip.live) {
 				$doc.on(events[0], tooltip.$target, function (event) {
-					$rootScope.$apply(function () {
+					timeout = $timeout(function () {
 						tooltips.show(tooltip, event);
-					});
+					}, angular.isNumber(tooltip.delay) ? tooltip.delay : HOVER_DELAY);
 				});
 
 				$doc.on(events[1], tooltip.$target, function (event) {
 					$rootScope.$apply(function () {
+						$timeout.cancel(timeout);
 						tooltips.hide(tooltip, event);
 					});
 				});
 			} else {
 				$target.bind(events[0], function (event) {
-					$rootScope.$apply(function () {
+					timeout = $timeout(function () {
 						tooltips.show(tooltip, event);
-					});
+					}, angular.isNumber(tooltip.delay) ? tooltip.delay : HOVER_DELAY);
 				});
 
 				$target.bind(events[1], function (event) {
 					$rootScope.$apply(function () {
+						$timeout.cancel(timeout);
 						tooltips.hide(tooltip, event);
 					});
 				});
