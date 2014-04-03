@@ -10,10 +10,11 @@ define(['config/module'], function (module) {
 				.success(function (res) {
 					deferred.resolve(res);
 				})
-				.error(function (data, status, headers, config) {
+				.error(function (errors, status) {
 					page.messages.addError({
-						countdown: 5000,
-						body: page.constants.message('scraper.error', config.url.split('/').pop())
+						body: page.constants.message('scraper.error', config.url.split('/').pop()),
+						errors: errors,
+						status: status
 					});
 
 					deferred.reject();

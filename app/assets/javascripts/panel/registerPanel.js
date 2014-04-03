@@ -192,10 +192,11 @@ define(['config/module'], function (module) {
 							$scope.registerForm.sent = true;
 							$scope.updateWizard();
 						})
-						.error(function () {
+						.error(function (errors, status) {
 							page.messages.addError({
-								countdown: 3000,
-								body: page.constants.message('error.generic')
+								body: page.constants.message('error.generic'),
+								errors: errors,
+								status: status
 							});
 						});
 				};
@@ -282,7 +283,7 @@ define(['config/module'], function (module) {
 								body: page.constants.message('error.generic'),
 								errors: errors,
 								status: status
-							})
+							});
 						});
 				};
 
