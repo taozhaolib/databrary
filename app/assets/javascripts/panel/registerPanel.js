@@ -252,6 +252,7 @@ define(['config/module'], function (module) {
 
 				$scope.authApplyForm.cancelFn = function (form) {
 					$scope.authSearchForm.data.party = undefined;
+					$scope.authApplyForm.other = undefined;
 					$scope.updateWizard();
 				};
 
@@ -289,6 +290,7 @@ define(['config/module'], function (module) {
 				$scope.infoForm.cancel = function () {
 					$scope.infoForm.data.info = '';
 					$scope.authSearchForm.data.party = undefined;
+					$scope.authApplyForm.other = undefined;
 					$scope.infoForm.data.query = undefined;
 					$scope.updateWizard();
 				};

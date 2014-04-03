@@ -239,7 +239,7 @@ notice.help.pilot=<strong>Pilot</strong>: This session contains pilot data.
 notice.help.exclusion=<strong>Exclusion</strong>: This session was excluded due to <em>{0}</em>.
 
 # Errors
-error.prefix=<strong>Error</strong>
+error.prefix=<strong>Error</strong>:
 error.suffix=Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
 
 error.generic=Something''s gone terribly wrong.

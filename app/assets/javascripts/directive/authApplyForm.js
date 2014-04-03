@@ -46,9 +46,11 @@ define(['config/module'], function (module) {
 				if (angular.isFunction(form.cancelFn))
 					form.cancelFn(form);
 
-				form.other.inherit = 0;
-				form.other.direct = 0;
-				form.other.preset = undefined;
+				if (form.other) {
+					form.other.inherit = 0;
+					form.other.direct = 0;
+					form.other.preset = undefined;
+				}
 			};
 
 			//
