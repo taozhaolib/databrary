@@ -228,7 +228,7 @@ tags.title=Tags
 tags.vote.up=Vote this tag up.
 tags.vote.null=Remove your vote on this tag.
 tags.vote.down=Vote this tag down.
-tags.auto.error=The auto-suggestion list out-of-order.
+tags.auto.error=The auto-suggestion list is out-of-order.
 tags.update.error=Could not update tag list.
 
 search.title=Search
@@ -236,11 +236,11 @@ search.prompt=Start your search...
 
 # --- Notices
 notice.help.pilot=<strong>Pilot</strong>: This session contains pilot data.
-notice.help.exclusion=<strong>Exclusion</strong>: This session was excluded due to: <em>{0}</em>.
+notice.help.exclusion=<strong>Exclusion</strong>: This session was excluded due to <em>{0}</em>.
 
 # Errors
 error.prefix=<strong>Error!</strong>
-error.suffix= Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
+error.suffix=Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
 
 error.generic=Something''s gone terribly wrong.
 
@@ -255,11 +255,11 @@ register.agree=Agree
 register.register=Agree and register
 register.agreement.instructions=Download the <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">pdf version</a> for the full agreement. Terms in italics are defined in our <a href="http://databrary.org/user-guide/policies/definitions.html" target="_blank">definitions</a>.
 register.sent.instructions=Your confirmation email has been sent to {0}.
-register.notfound.instructions=Please offer your best guess as to who to speak to about granting you authorization.
+register.notfound.instructions=Please offer your best guess as to whom to speak to about granting you authorization.
 
 wizard.register_create.name=Create Account
 wizard.register_create.description=Register to browse shared data and comment on datasets.
-wizard.register_create.instructions=
+wizard.register_create.instructions=Please provide information about yourself.
 
 wizard.register_agreement.name=Sign Agreement
 wizard.register_agreement.description=Learn about the responsibilities of all Databrary members.
@@ -279,13 +279,13 @@ wizard.register_agent.instructions=Please search for the user or institution tha
 
 wizard.register_request.name=Request Authorization
 wizard.register_request.description=Select role and submit request.
-wizard.register_request.instructions=If you are eligible for Databrary Principal Investigator status, please select . If you would like to be authorize by a Databrary Principal Investigator, please select ''Affiliate''.
+wizard.register_request.instructions=If you are eligible for Databrary Principal Investigator status, please select ''Principal Investigator''. If you would like to be authorized by a Databrary Principal Investigator, please select ''Affiliate Investigator''.
 
 wizard.register_pending.name=Stay Tuned
 wizard.register_pending.description=Tips for exploring Databrary.
 wizard.register_pending.instructions=Your request for authorization is now pending. Once your request for authorization is approved, you will be authorized to access the shared data in Databrary. In the meantime, you can learn more about how to share data with Databrary <a href="http://databrary.org/user-guide.html" target="_blank">here</a>.
 
-wizard.register_form.name.help=<strong>Name</strong>: Provide your full name. It''s important!
+wizard.register_form.name.help=<strong>Name</strong>: Provide your full name.
 wizard.register_form.email.help=<strong>Email</strong>: We recommend using your institutional email address. You can change it later.
-wizard.register_form.email.error=<strong>Email</strong>: This email address is impossible!
-wizard.register_form.affiliation.help=<strong>Affiliation</strong>: Enter the full name of your institution in case we need to verify your identity.
+wizard.register_form.email.error=<strong>Email</strong>: This email address is invalid.
+wizard.register_form.affiliation.help=<strong>Affiliation</strong>: Enter your affiliation as you wish it to display on your profile.
