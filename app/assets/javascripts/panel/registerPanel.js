@@ -105,8 +105,7 @@ define(['config/module'], function (module) {
 					return $scope.registerForm.$dirty &&
 						$scope.registerForm.$valid &&
 						$scope.registerForm.data.name &&
-						$scope.registerForm.data.email &&
-						$scope.registerForm.data.affiliation;
+						$scope.registerForm.data.email;
 				};
 
 				$scope.registerForm.proceed = function () {

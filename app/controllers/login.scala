@@ -95,7 +95,7 @@ private[controllers] sealed class LoginController extends SiteController {
 	a <- macros.Async.getOrElse(e, {
 	  Party.create(
 	    name = form.name.get,
-	    affiliation = Maybe(form.affiliation.get).opt)
+	    affiliation = form.affiliation.get)
 	  .flatMap(Account.create(_, email = form.email.get))
 	})
 	_ <- controllers.TokenController.newPassword(Right(a), "register")
@@ -134,7 +134,7 @@ object LoginController extends LoginController {
       views.html.party.register(_)) {
     val name = Field(Forms.nonEmptyText)
     val email = Field(Forms.email)
-    val affiliation = Field(Forms.text)
+    val affiliation = Field(Forms.optional(Forms.nonEmptyText))
     val agreement = Field(Forms.checked("agreement.required"))
   }
 
