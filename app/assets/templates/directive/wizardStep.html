@@ -4,7 +4,7 @@
             <h2>{{'wizard.'+id+'.name' | message}}</h2>
         </header>
 
-        <div class="wizard_step_instructions" ng-bind-html="'wizard.'+id+'.instructions' | message | format">
+        <div class="wizard_step_instructions" ng-bind-html="'wizard.'+id+'.instructions' | message | format:false:true">
 
         </div>
 
