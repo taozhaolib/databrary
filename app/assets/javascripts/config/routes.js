@@ -80,11 +80,18 @@ define(['config/module'], function (module) {
 					else if (type.isParty($window.$play.object))
 						req.id = $window.$play.object.id;
 
-					Party.get(req, function (data) {
-						deferred.resolve(data);
-					}, function (error) {
-						deferred.reject();
-					});
+					if ($route.current.params.id)
+						Party.get(req, function (data) {
+							deferred.resolve(data);
+						}, function (error) {
+							deferred.reject();
+						});
+					else
+						Party.profile(req, function (data) {
+							deferred.resolve(data);
+						}, function (error) {
+							deferred.reject();
+						});
 
 					return deferred.promise;
 				}],

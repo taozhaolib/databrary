@@ -277,10 +277,11 @@ define(['config/module'], function (module) {
 						.success(function (data) {
 							$scope.authApplyForm.successFn();
 						})
-						.error(function () { console.log('!', arguments);
+						.error(function (errors, status) {
 							page.messages.addError({
-								countdown: 3000,
-								body: page.constants.message('error.generic')
+								body: page.constants.message('error.generic'),
+								errors: errors,
+								status: status
 							})
 						});
 				};

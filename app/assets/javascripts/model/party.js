@@ -10,6 +10,10 @@ define(['config/module'], function (module) {
 			password: {
 				method: 'POST',
 				url: '/api/party/:id/password'
+			},
+			profile: {
+				method: 'GET',
+				url: '/api/profile'
 			}
 		});
 	}]);

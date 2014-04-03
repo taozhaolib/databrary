@@ -22,7 +22,7 @@
                     </span>
 
                     <span ng-if="auth.hasAuth('NONE')">
-                        <a ng-href="{{router.party(auth.user)}}" class="toolbar_user_link">
+                        <a ng-href="{{router.profile()}}" class="toolbar_user_link">
                             <span class="username hide-mobile hide-tablet">{{auth.user.name}}</span>
                             <img ng-src="{{auth.user.avatar}}" alt="{{auth.user.name}}" class="avatar">
                         </a>

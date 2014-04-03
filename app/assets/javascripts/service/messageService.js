@@ -59,12 +59,35 @@ define(['config/module'], function (module) {
 		};
 
 		messages.addError = function (message) {
+			message.countdown = undefined;
+			message.closeable = true;
+			message.type = 'red';
+
 			var newMessage = addFn(message);
 
-			if (newMessage) {
-				newMessage.type = 'red';
-				newMessage.body = constants.message('error.prefix') + ' ' + newMessage.body + ' ' + constants.message('error.suffix');
+			if (!newMessage)
+				return false;
+
+			newMessage.body = constants.message('error.prefix') + ' ' + newMessage.body + ' ' + constants.message('error.suffix');
+
+			if (message.errors && angular.isObject(message.errors)) {
+				var moreBody = '';
+
+				angular.forEach(message.errors, function (errorArray, field) {
+					moreBody += '<dt>Field "' + field + '"</dt><dd>' + errorArray.join('</dd><dd>') + '</dd>';
+				});
+
+				if(message.status)
+					moreBody = '<dt>Status</dt><dd>'+message.status+'</dd>' + moreBody;
+
+				moreBody = '<dl class="message_form_errors">' + moreBody + '</dl>';
+
+				delete message.errors;
+				delete message.status;
 			}
+
+			if (moreBody)
+				newMessage.body = '<p>' + newMessage.body + '</p>' + moreBody;
 
 			register(newMessage);
 
