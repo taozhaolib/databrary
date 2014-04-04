@@ -130,7 +130,7 @@ auth.info.prompt=Contact info for your institution''s authorizing official (OSP)
 auth.inherit.NONE=No access.
 auth.inherit.VIEW=Access to deidentified Databrary data.
 auth.inherit.DOWNLOAD=Access to identifiable Databrary data.
-auth.inherit.CONTRIBUTE=Can create datasets and studies on {0} behalf.
+auth.inherit.CONTRIBUTE=Can create and share Databrary data.
 auth.inherit.ADMIN=Can authorize users on {0} behalf.
 
 auth.direct.NONE=No access.
