@@ -34,7 +34,7 @@ define(['config/module'], function (module) {
 		};
 
 		$scope.supported = function () {
-			return $window.navigator.userAgent.toLowerCase().indexOf('firefox') == -1 && $window.navigator.platform.toLowerCase().indexOf('mac') == -1;
+			return $window.navigator.userAgent.toLowerCase().indexOf('firefox') == -1 || $window.navigator.platform.toLowerCase().indexOf('mac') == -1;
 		};
 
 		$scope.jump = function (asset) {
