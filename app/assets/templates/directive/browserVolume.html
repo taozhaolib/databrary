@@ -15,7 +15,7 @@
         <browser-icon data="data"></browser-icon>
 
         <h1>
-          <a bo-href="page.router.volume({id: data.object.id})" bo-html="getName(data) | format:true"></a>
+          <a bo-href="page.router.volume({id: data.object.id})" bo-html="getName(data) | escape"></a>
         </h1>
       </header>
     </div>

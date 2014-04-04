@@ -1,23 +1,12 @@
 define(['config/module'], function (module) {
 	'use strict';
-
-	var ent = {
-		"&": "&amp;",
-		"<": "&lt;",
-		">": "&gt;",
-		'"': "&quot;",
-		"'": "&apos;"
-	};
-
-	module.filter('format', [function () {
+	module.filter('format', ['$filter', function ($filter) {
 		return function (input, lineMode, raw) {
 			if (!angular.isString(input))
 				return '';
 
 			if (!raw)
-				input = input.replace(/[&<>"']/g, function (c) {
-					return ent[c];
-				});
+				input = $filter('escape')(input);
 
 			if (lineMode)
 				return input.replace(/: /g, ': <br>');
