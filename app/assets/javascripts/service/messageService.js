@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('MessageService', ['$rootScope', 'ArrayHelper', '$timeout', 'ConstantService', function ($rootScope, arrayHelper, $timeout, constants) {
+	module.factory('messageService', ['$rootScope', 'arrayHelper', '$timeout', 'constantService', function ($rootScope, arrayHelper, $timeout, constants) {
 		var messages = arrayHelper([]);
 
 		messages.types = ['blue', 'green', 'red', 'orange', 'yellow', 'purple'];

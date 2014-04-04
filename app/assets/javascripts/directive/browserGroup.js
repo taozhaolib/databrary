@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('browserGroup', ['BrowserService', function (browserService) {
+	module.directive('browserGroup', ['browserService', function (browserService) {
 		var link = function ($scope) {
 			$scope.browser = $scope.browser || browserService;
 

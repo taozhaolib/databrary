@@ -2,7 +2,7 @@
   <div class="browser_item_content">
     <div class="cf">
       <footer>
-        <div class="item_meta icon bb" bo-class="constant.data.permission[data.object.permission].name.toLowerCase()" bo-if="data.object.permission"></div>
+        <div class="item_meta icon bb" bo-class="page.constants.data.permission[data.object.permission].name.toLowerCase()" bo-if="data.object.permission"></div>
 
         <div class="item_meta sep"
              bo-if="browser.hasAccess(data, 3) && data.object.permission">|
@@ -15,7 +15,7 @@
         <browser-icon data="data"></browser-icon>
 
         <h1>
-          <a bo-href="router.volume({id: data.object.id})" bo-html="getName(data) | format:true"></a>
+          <a bo-href="page.router.volume({id: data.object.id})" bo-html="getName(data) | format:true"></a>
         </h1>
       </header>
     </div>
@@ -24,7 +24,7 @@
       <strong>Investigators:</strong>
       <ul class="item_investigators">
         <li ng-repeat="access in data.object.access | filter:{access: 4}">
-          <a bo-href="router.party(access.party)">{{access.party.name}}</a></li>
+          <a bo-href="page.router.party(access.party)">{{access.party.name}}</a></li>
       </ul>
 
       <div class="item_body body" bo-html="data.object.body | format"></div>

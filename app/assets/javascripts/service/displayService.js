@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('DisplayService', ['$sessionStorage', 'EventService', '$filter', function ($sessionStorage, events, $filter) {
+	module.factory('displayService', ['$sessionStorage', 'pageService', '$filter', function ($sessionStorage, page, $filter) {
 		var display = {};
 
 		//
@@ -11,7 +11,7 @@ define(['config/module'], function (module) {
 
 		display.toggleAge = function () {
 			ageKey = ageKeys[(ageKeys.indexOf(ageKey) + 1) % ageKeys.length];
-			events.talk('DisplayService-toggleAge', ageKey);
+			page.events.talk('displayService-toggleAge', ageKey);
 			$sessionStorage['displayAge'] = ageKey;
 		};
 

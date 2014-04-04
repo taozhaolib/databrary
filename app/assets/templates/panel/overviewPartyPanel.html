@@ -3,7 +3,7 @@
     <hgroup class="row">
       <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-6">
         <figure class="panel_overview_thumbnail" baseline="square">
-          <figmedia><img ng-src="{{router.partyAvatar(party, 400)}}"></figmedia>
+          <figmedia><img ng-src="{{page.router.partyAvatar(party, 400)}}"></figmedia>
         </figure>
       </div>
 
@@ -25,7 +25,7 @@
     </div>
 
     <div class="temporary">
-      <a class="button mini" ng-if="auth.hasAccess('CONTRIBUTE', party)" bo-href="router.partyEdit(party)" target="_self">edit</a>
+      <a class="button mini" ng-if="auth.hasAccess('CONTRIBUTE', party)" bo-href="page.router.partyEdit(party)" target="_self">edit</a>
     </div>
   </panel-mode>
 </panel>

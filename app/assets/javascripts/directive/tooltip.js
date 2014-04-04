@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('tooltip', ['TooltipService', function (tooltips) {
+	module.directive('tooltip', ['pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
 			var tooltip = {};
 
@@ -12,7 +12,7 @@ define(['config/module'], function (module) {
 			tooltip.$target = $element;
 
 			if (tooltip.message)
-				tooltips.add(tooltip);
+				page.tooltips.add(tooltip);
 		};
 
 		return {

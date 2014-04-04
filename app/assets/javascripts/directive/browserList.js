@@ -1,16 +1,16 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('browserList', ['BrowserService', '$filter', 'ConstantService', 'RouterService', 'TypeService', 'AuthService', 'Page', function (browserService, $filter, constantService, routerService, typeService, auth, page) {
+	module.directive('browserList', ['browserService', '$filter', 'typeService', 'authService', 'pageService', function (browserService, $filter, typeService, auth, page) {
 		var link = function ($scope) {
 			if (!$scope.browser)
 				$scope.browser = browserService;
 
 			if (!$scope.router)
-				$scope.router = routerService;
+				$scope.router = page.router;
 
 			if (!$scope.constant)
-				$scope.constant = constantService;
+				$scope.constant = page.constants;
 
 			if (!$scope.type)
 				$scope.type = typeService;
@@ -90,7 +90,7 @@ define(['config/module'], function (module) {
 						return (auth.hasAccess('CONTRIBUTE', data) && data.object.alias) ? data.object.alias : data.object.name;
 
 					case 'record':
-						var category = $scope.constant.data.category[data.object.category].name;
+						var category = page.constants.data.category[data.object.category].name;
 						return category.charAt(0).toUpperCase() + category.slice(1) + ': ' + (data.object.measures.ident || data.object.id);
 
 					case 'session':
@@ -103,7 +103,7 @@ define(['config/module'], function (module) {
 			};
 
 			$scope.formatSessionCategory = function (data, categoryID, records) {
-				var category = $scope.constant.get('category', categoryID);
+				var category = page.constants.get('category', categoryID);
 
 				if (!category)
 					return 'Uncategorized';
@@ -197,7 +197,7 @@ define(['config/module'], function (module) {
 			};
 
 			$scope.nameRecord = function (data) {
-				var category = $scope.constant.get('category', data.object.category),
+				var category = page.constants.get('category', data.object.category),
 					name;
 
 				if (data.object.id == 0) {
@@ -231,7 +231,7 @@ define(['config/module'], function (module) {
 							break;
 					}
 				} else {
-					name = $scope.capitalize($scope.constant.get('category', data.object.category).name);
+					name = $scope.capitalize(page.constants.get('category', data.object.category).name);
 				}
 
 				var identifier = $scope.recordIdentifier(data.object);
@@ -268,16 +268,16 @@ define(['config/module'], function (module) {
 			$scope.editLink = function (data) {
 				switch ($scope.type.getType(data.object)) {
 					case 'volume':
-						return $scope.router.volumeEdit(data.object);
+						return page.router.volumeEdit(data.object);
 
 					case 'record':
-						return $scope.router.recordEdit(data.object);
+						return page.router.recordEdit(data.object);
 
 					case 'session':
-						return $scope.router.slotEdit(data.object);
+						return page.router.slotEdit(data.object);
 
 					case 'asset':
-						return $scope.router.assetEdit(data.object);
+						return page.router.assetEdit(data.object);
 				}
 			};
 		};

@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('AuthService', ['$rootScope', '$location', '$http', '$route', '$cacheFactory', 'TypeService', '$window', '$q', '$sessionStorage', 'Page', function ($rootScope, $location, $http, $route, $cacheFactory, typeService, $window, $q, $sessionStorage, page) {
+	module.factory('authService', ['$rootScope', '$location', '$http', '$route', '$cacheFactory', 'typeService', '$window', '$q', '$sessionStorage', 'pageService', function ($rootScope, $location, $http, $route, $cacheFactory, typeService, $window, $q, $sessionStorage, page) {
 		var authService = {};
 
 		$rootScope.$sessionStorage = $sessionStorage;
@@ -70,8 +70,8 @@ define(['config/module'], function (module) {
 		var levels = {};
 
 		var watchReset = $rootScope.$watch('constant', function () {
-			$rootScope.constant.$promise.then(function () {
-				angular.forEach($rootScope.constant.data.permission, function (permission) {
+			page.constants.$promise.then(function () {
+				angular.forEach(page.constants.data.permission, function (permission) {
 					levels[permission.name] = permission.id;
 				});
 

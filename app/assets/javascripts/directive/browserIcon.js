@@ -1,8 +1,8 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('browserIcon', ['BrowserService', 'TypeService', 'ConstantService', 'TooltipService', function (browserService, type, constants, tooltips) {
-		var link = function ($scope, $element) {
+	module.directive('browserIcon', ['browserService', function (browserService) {
+		var link = function ($scope) {
 			$scope.browser = $scope.browser || browserService;
 
 			//

@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('userPasswordForm', ['AuthService', 'EventService', '$http', '$window', 'MessageService', 'ConstantService', function (auth, events, $http, $window, messages, constants) {
+	module.directive('userPasswordForm', ['authService', 'pageService', '$http', '$window', function (auth, page, $http, $window) {
 		var link = function ($scope) {
 			var form = $scope.userPasswordForm;
 			var token;
@@ -35,19 +35,19 @@ define(['config/module'], function (module) {
 				$http
 					.post('/password', $scope.userPasswordForm.data)
 					.success(function (data) {
-						messages.add({
+						page.messages.add({
 							type: 'green',
 							countdown: 3000,
-							body: constants.message('reset.request.success', form.data.email)
+							body: page.constants.message('reset.request.success', form.data.email)
 						});
 
 						if (angular.isFunction(form.resetSuccessFn))
 							form.resetSuccessFn(form, arguments);
 					})
 					.error(function (data, status, headers, config) {
-						messages.addError({
+						page.messages.addError({
 							closeable: true,
-							body: constants.message('reset.request.error')
+							body: page.constants.message('reset.request.error')
 						});
 
 						if (angular.isFunction(form.resetErrorFn))
@@ -68,10 +68,10 @@ define(['config/module'], function (module) {
 				$http
 					.post('/api/party/' + token.party + '/password', $scope.userPasswordForm.data)
 					.success(function (data) {
-						messages.add({
+						page.messages.add({
 							type: 'green',
 							countdown: 3000,
-							body: constants.message('reset.save.success', form.data.email)
+							body: page.constants.message('reset.save.success', form.data.email)
 						});
 
 						if (angular.isFunction(form.saveSuccessFn))
@@ -81,9 +81,9 @@ define(['config/module'], function (module) {
 						auth.updateUser(data);
 					})
 					.error(function () {
-						messages.addError({
+						page.messages.addError({
 							closeable: true,
-							body: constants.message('reset.save.error')
+							body: page.constants.message('reset.save.error')
 						});
 
 						if (angular.isFunction(form.saveErrorFn))
@@ -105,7 +105,7 @@ define(['config/module'], function (module) {
 
 			//
 
-			events.talk('userPasswordForm-init', form, $scope);
+			page.events.talk('userPasswordForm-init', form, $scope);
 		};
 
 		//

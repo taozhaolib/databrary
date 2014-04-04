@@ -1,9 +1,9 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('SearchView', ['$scope', 'volumes', 'Page', 'ConstantService', function ($scope, volumes, page, constants) {
+	module.controller('SearchView', ['$scope', 'volumes', 'pageService', function ($scope, volumes, page) {
 		$scope.volumes = volumes;
-		page.title = constants.message('page.title.search');
+		page.title = page.constants.message('page.title.search');
 
 		angular.forEach($scope.volumes, function (volume) {
 			volume.more = '';

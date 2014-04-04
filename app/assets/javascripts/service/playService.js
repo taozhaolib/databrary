@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('PlayService', ['$rootScope', '$window', '$location', 'ConstantService', 'TypeService', function ($rootScope, $window, $location, constantService, typeService) {
+	module.factory('playService', ['$rootScope', '$window', '$location', 'pageService', 'typeService', function ($rootScope, $window, $location, page, typeService) {
 		var playService = {};
 
 		//
@@ -12,7 +12,7 @@ define(['config/module'], function (module) {
 
 			switch(typeService.getType($window.$play.object)) {
 //				case 'record':
-//					constantService.$promise.then(function (data) {
+//					page.constants.$promise.then(function (data) {
 //						$location.url('/volume/' + $window.$play.object.volume + '?' + constant.data.category[$window.$play.object.category].name + '_limit=' + $window.$play.object.id);
 //					});
 //					break;

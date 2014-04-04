@@ -1,8 +1,8 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('TooltipCtrl', ['$scope', '$timeout', 'TooltipService', function ($scope, $timeout, tooltips) {
-		$scope.tooltips = tooltips;
+	module.controller('TooltipCtrl', ['$scope', '$timeout', 'pageService', function ($scope, $timeout, page) {
+		$scope.tooltips = page.tooltips;
 		$scope.enabled = true;
 
 		//
@@ -52,7 +52,7 @@ define(['config/module'], function (module) {
 			$main.css('padding-top', padding);
 		};
 
-		$scope.$watch('tooltips', function (tooltips) {
+		$scope.$watch('tooltips', function () {
 			$scope.updateHeight();
 		});
 	}]);

@@ -63,7 +63,7 @@ define(['config/module'], function (module) {
 			controller: 'PartyView',
 			templateUrl: 'partyView.html',
 			resolve: {
-				party: ['$route', 'Party', '$q', '$window', 'TypeService', 'AuthService', function ($route, Party, $q, $window, type, auth) {
+				party: ['$route', 'Party', '$q', '$window', 'typeService', 'authService', function ($route, Party, $q, $window, type, auth) {
 					var deferred = $q.defer();
 
 					var req = {
@@ -95,7 +95,7 @@ define(['config/module'], function (module) {
 
 					return deferred.promise;
 				}],
-				volumes: ['$route', 'Volume', '$q', 'AuthService', 'TypeService', '$window', function ($route, Volume, $q, auth, type, $window) {
+				volumes: ['$route', 'Volume', '$q', 'authService', 'typeService', '$window', function ($route, Volume, $q, auth, type, $window) {
 					var deferred = $q.defer();
 
 					var req = {
@@ -165,10 +165,10 @@ define(['config/module'], function (module) {
 			controller: 'LoadingView',
 			templateUrl: 'loadingView.html',
 			resolve: {
-				authService: ['AuthService', function (auth) {
+				authPromise: ['authService', function (auth) {
 					return auth.$promise;
 				}],
-				constantService: ['ConstantService', function (constants) {
+				constantPromise: ['constantService', function (constants) {
 					return constants.$promise;
 				}]
 			},
@@ -182,7 +182,7 @@ define(['config/module'], function (module) {
 		});
 	}]);
 
-	module.run(['$rootScope', 'RouterService', 'ConstantService', 'AuthService', '$location', function ($rootScope, router, constants, auth, $location) {
+	module.run(['$rootScope', 'routerService', 'constantService', 'authService', '$location', function ($rootScope, router, constants, auth, $location) {
 		var loaded = false;
 
 		$rootScope.$on('$routeChangeStart', function (event, next, current) {

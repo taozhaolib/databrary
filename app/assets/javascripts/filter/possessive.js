@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.filter('possessive', ['$rootScope', 'ConstantService', function ($rootScope, constantService) {
+	module.filter('possessive', ['$rootScope', 'pageService', function ($rootScope, page) {
 		return function (key, party, name) {
 			var replace;
 
@@ -10,7 +10,7 @@ define(['config/module'], function (module) {
 			else
 				replace = (name ? name : party.name)+"'s";
 
-			return constantService.message(key, replace);
+			return page.constants.message(key, replace);
 		};
 	}]);
 });

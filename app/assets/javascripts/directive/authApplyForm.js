@@ -1,11 +1,11 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('authApplyForm', ['PartyAuthorize', 'AuthService', 'EventService', 'AuthPresetService', 'ConstantService', 'Page', function (PartyAuthorize, authService, eventService, authPresetService, constant, page) {
+	module.directive('authApplyForm', ['PartyAuthorize', 'authService', 'authPresetService', 'pageService', function (PartyAuthorize, authService, authPresetService, page) {
 		var link = function ($scope) {
 			var form = $scope.authApplyForm;
 
-			$scope.constant = constant;
+			$scope.constant = page.constants;
 
 			form.presets = authPresetService;
 			form.party = $scope.party || authService.user;
@@ -61,7 +61,7 @@ define(['config/module'], function (module) {
 
 			//
 
-			eventService.talk('authApplyForm-init', form, $scope);
+			page.events.talk('authApplyForm-init', form, $scope);
 		};
 
 		//

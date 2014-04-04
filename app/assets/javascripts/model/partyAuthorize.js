@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('PartyAuthorize', ['$resource', '$route', 'AuthService', function ($resource, $route, auth) {
+	module.factory('PartyAuthorize', ['$resource', '$route', 'authService', function ($resource, $route, auth) {
 		return $resource('/api/party/:id/authorize/:partyId', {
 			id: function () {
 				return $route.current.params.id ? $route.current.params.id : auth.user.id || undefined;

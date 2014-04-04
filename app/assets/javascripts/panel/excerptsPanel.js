@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('ExcerptsPanel', ['$scope', 'BrowserService', '$location', '$timeout', 'TypeService', function ($scope, browser, $location, $timeout, type) {
+	module.controller('ExcerptsPanel', ['$scope', 'browserService', '$location', '$timeout', 'typeService', function ($scope, browser, $location, $timeout, type) {
 		$scope.bootPanel = function () {
 			if (angular.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0)
 				$scope.current = $scope.volume.excerpts[0] || undefined;

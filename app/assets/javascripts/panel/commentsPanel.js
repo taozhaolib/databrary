@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('CommentsPanel', ['$scope', 'AuthService', '$route', 'Comment', 'MessageService', 'Volume', '$filter', '$cacheFactory', 'EventService', 'Page', function ($scope, authService, $route, Comment, messageService, Volume, $filter, $cacheFactory, events, page) {
+	module.controller('CommentsPanel', ['$scope', 'authService', '$route', 'Comment', 'Volume', '$filter', '$cacheFactory', 'pageService', function ($scope, authService, $route, Comment, Volume, $filter, $cacheFactory, page) {
 		var DEFAULT_MESSAGE = {
 			type: 'blue',
 			countdown: 3000
@@ -13,11 +13,11 @@ define(['config/module'], function (module) {
 
 		var createMessage = function (message) {
 			if (typeof(message) == 'string')
-				messageService.add(angular.extend({}, DEFAULT_MESSAGE, {
+				page.messages.add(angular.extend({}, DEFAULT_MESSAGE, {
 					body: message
 				}));
 			else
-				messageService.add(angular.extend({}, DEFAULT_MESSAGE, message));
+				page.messages.add(angular.extend({}, DEFAULT_MESSAGE, message));
 		};
 
 		//
@@ -115,7 +115,7 @@ define(['config/module'], function (module) {
 				replyTo == comment;
 		};
 
-		$scope.setReply = function (comment, volume) {
+		$scope.setReply = function (comment) {
 			replyTo = comment;
 		};
 
@@ -129,7 +129,7 @@ define(['config/module'], function (module) {
 			$scope.setReply(undefined);
 		};
 
-		events.listen($scope, 'commentReplyForm-init', function (event, form) {
+		page.events.listen($scope, 'commentReplyForm-init', function (event, form) {
 			commentReplyForm = form;
 			form.successFn = successFn;
 			form.cancelFn = cancelFn;

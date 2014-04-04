@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('sessionMark', ['ConstantService', 'TooltipService', function (constant, tooltips) {
+	module.directive('sessionMark', ['pageService', function (page) {
 		var link = function ($scope, $el, $attrs) {
 			$scope.mark = $attrs.mark;
 			var message = '', type = 'orange';
@@ -11,7 +11,7 @@ define(['config/module'], function (module) {
 					if(!$scope.data.object.categories[-700])
 						return $el.remove();
 
-					message = constant.message('notice.help.exclusion', $scope.data.volume.records[$scope.data.object.categories[-700][0].id].measures.reason);
+					message = page.constants.message('notice.help.exclusion', $scope.data.volume.records[$scope.data.object.categories[-700][0].id].measures.reason);
 					type = 'purple';
 					break;
 
@@ -19,7 +19,7 @@ define(['config/module'], function (module) {
 					if(!$scope.data.object.categories[-800])
 						return $el.remove();
 
-					message = constant.message('notice.help.pilot');
+					message = page.constants.message('notice.help.pilot');
 					type = 'red';
 					break;
 
@@ -28,7 +28,7 @@ define(['config/module'], function (module) {
 					break;
 			}
 
-			var tooltip = tooltips.add({
+			var tooltip = page.tooltips.add({
 				message: message,
 				type: type,
 				$target: $el
@@ -37,7 +37,7 @@ define(['config/module'], function (module) {
 			//
 
 			$scope.$on('$destroy', function () {
-				tooltips.remove(tooltip);
+				page.tooltips.remove(tooltip);
 			});
 
 			//

@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('panel', ['PanelService', 'ArrayHelper', function (panelService, arrayHelper) {
+	module.directive('panel', ['panelService', 'arrayHelper', function (panelService, arrayHelper) {
 		var compile = function ($element, $attrs, transclude) {
 			return function ($scope, $element, $attrs) {
 				$scope.modes = arrayHelper([]);

@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.filter('message', ['ConstantService', function (constantService) {
-		return constantService.message;
+	module.filter('message', ['pageService', function (page) {
+		return page.constants.message;
 	}]);
 });

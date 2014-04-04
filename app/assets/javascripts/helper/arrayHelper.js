@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('ArrayHelper', ['$filter', function ($filter) {
+	module.factory('arrayHelper', ['$filter', function ($filter) {
 		return function (array) {
 			var _transformFn, /* return formatted item */
 				_validateFn, /* return item or false */

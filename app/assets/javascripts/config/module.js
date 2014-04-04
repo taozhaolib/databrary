@@ -67,19 +67,15 @@ define([
 		}]);
 	}]);
 
-	module.run(['$rootScope', '$location', 'RouterService', 'BrowserService', 'ConstantService', 'AuthService', 'TypeService', 'PlayService', 'Page', function ($rootScope, $location, router, browser, constant, auth, type, playService, page) {
-		// $rootScope specials -- TODO: cut out some of these
-		$rootScope.router = router;
-		$rootScope.browser = browser;
-		$rootScope.constant = constant;
-		$rootScope.auth = auth;
-		$rootScope.type = type;
+	module.run(['$rootScope', 'browserService', 'authService', 'typeService', 'playService', 'pageService', function ($rootScope, browser, auth, type, playService, page) {
 		$rootScope.page = page;
 
-		playService.run();
+		// TODO: move these
+		$rootScope.browser = browser;
+		$rootScope.auth = auth;
+		$rootScope.type = type;
 
-		// TODO: anchor scroll on page load. I think the problem is animated items on load.
-//		$location.hash('');
+		playService.run();
 	}]);
 
 	return module;

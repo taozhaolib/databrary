@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('OverviewVolumePanel', ['$scope', 'ConstantService', '$filter', function ($scope, constants, $filter) {
+	module.controller('OverviewVolumePanel', ['$scope', 'pageService', '$filter', function ($scope, page, $filter) {
 		$scope.refreshPanel = function () {
 			$scope.enabled = angular.isObject($scope.volume);
 		};
@@ -15,7 +15,7 @@ define(['config/module'], function (module) {
 		};
 
 		$scope.shareMessage = function (volumeAccess) {
-			return constants.message('access.' + constants.data.permission[volumeAccess.access].name, volumeAccess.party.name);
+			return page.constants.message('access.' + page.constants.data.permission[volumeAccess.access].name, volumeAccess.party.name);
 		};
 
 		$scope.ageSummary = function (summary) {
@@ -25,7 +25,7 @@ define(['config/module'], function (module) {
 			if (summary.agerange[0] != summary.agerange[1])
 				range += ' - ' + age(summary.agerange[1]);
 
-			return constants.message('volume.ages', range, age(summary.agemean));
+			return page.constants.message('volume.ages', range, age(summary.agemean));
 		};
 
 		$scope.hasProps = function (volume, property) {

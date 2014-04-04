@@ -1,16 +1,16 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('EventService', ['$rootScope', function ($rootScope) {
-		var eventService = {};
+	module.factory('eventService', ['$rootScope', function ($rootScope) {
+		var events = {};
 
 		//
 
-		eventService.talk = function (eventName) {
+		events.talk = function (eventName) {
 			return $rootScope.$emit.apply($rootScope, arguments);
 		};
 
-		eventService.listen = function ($scope, eventName, callback) {
+		events.listen = function ($scope, eventName, callback) {
 			var listener = $rootScope.$on(eventName, callback);
 
 			$scope.$on('$destroy', function () {
@@ -22,6 +22,6 @@ define(['config/module'], function (module) {
 
 		//
 
-		return eventService;
+		return events;
 	}]);
 });

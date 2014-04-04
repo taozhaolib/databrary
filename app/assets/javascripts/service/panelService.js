@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('PanelService', ['$rootScope', '$location', '$anchorScroll', 'EventService', '$timeout', 'ArrayHelper', function ($rootScope, $location, $anchorScroll, eventService, $timeout, arrayHelper) {
+	module.factory('panelService', ['$rootScope', '$location', '$anchorScroll', 'eventService', '$timeout', 'arrayHelper', function ($rootScope, $location, $anchorScroll, eventService, $timeout, arrayHelper) {
 		var panelService = arrayHelper([]);
 
 		//

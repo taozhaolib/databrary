@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('authSearchForm', ['PartyAuthorize', 'AuthService', 'EventService', 'Page', function (PartyAuthorize, authService, eventService, page) {
+	module.directive('authSearchForm', ['PartyAuthorize', 'authService', 'pageService', function (PartyAuthorize, authService, page) {
 		var link = function ($scope, $element, $attrs) {
 			$scope.authSearchForm.name = '';
 			$scope.authSearchForm.found = [];
@@ -57,7 +57,7 @@ define(['config/module'], function (module) {
 
 			//
 
-			eventService.talk('authSearchForm-init', $scope.authSearchForm);
+			page.events.talk('authSearchForm-init', $scope.authSearchForm);
 		};
 
 		//

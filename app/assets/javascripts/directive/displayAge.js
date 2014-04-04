@@ -1,8 +1,8 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('displayAge', ['EventService', 'DisplayService', function (events, display) {
-		var link = function ($scope, $element, $attrs) {
+	module.directive('displayAge', ['pageService', 'displayService', function (page, display) {
+		var link = function ($scope) {
 			$scope.change = display.toggleAge;
 
 			var formatAge = function () {
@@ -11,9 +11,9 @@ define(['config/module'], function (module) {
 
 			formatAge();
 
-			events.listen($scope, 'DisplayService-toggleAge', function (event, format) {
+			page.events.listen($scope, 'displayService-toggleAge', function () {
 				formatAge();
-			})
+			});
 		};
 
 		return {

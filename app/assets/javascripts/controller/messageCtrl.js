@@ -1,8 +1,8 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('MessageCtrl', ['$scope', '$timeout', 'MessageService', function ($scope, $timeout, messageService) {
-		$scope.messages = messageService;
+	module.controller('MessageCtrl', ['$scope', '$timeout', 'pageService', function ($scope, $timeout, page) {
+		$scope.messages = page.messages;
 		$scope.enabled = true;
 
 		//

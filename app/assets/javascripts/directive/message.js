@@ -1,9 +1,9 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('message', ['MessageService', function (messages) {
+	module.directive('message', ['pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
-			messages.add({
+			page.messages.add({
 				id: $attrs.id,
 				type: $attrs.type,
 				target: $attrs.target,

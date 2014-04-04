@@ -1,11 +1,11 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('excerpt', ['TypeService', 'RouterService', function (type, router) {
+	module.directive('excerpt', ['typeService', 'pageService', function (type, page) {
 		var link = function ($scope, $el, $attr) {
 			var obj = $scope[$attr.excerpt].object ? $scope[$attr.excerpt].object : $scope[$attr.excerpt];
 
-			$scope.srcRoute = router.assetLink({
+			$scope.srcRoute = page.router.assetLink({
 				id: obj.asset.id,
 				sid: obj.container.id
 			});

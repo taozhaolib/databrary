@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('AuthPresetService', ['ConstantService', function (constantService) {
+	module.factory('authPresetService', ['pageService', function (page) {
 		var authPresetService = {};
 
 		//
@@ -12,14 +12,14 @@ define(['config/module'], function (module) {
 
 			if (request) {
 				if (other.institution || other.id == 0)
-					return constantService.data.preset.institution.slice(0, 2);
+					return page.constants.data.preset.institution.slice(0, 2);
 				else
-					return constantService.data.preset.institution.slice(0, 1);
+					return page.constants.data.preset.institution.slice(0, 1);
 			} else {
 				if (party.institution || party.id == 0)
-					return constantService.data.preset.institution;
+					return page.constants.data.preset.institution;
 				else
-					return constantService.data.preset.individual;
+					return page.constants.data.preset.individual;
 			}
 		};
 

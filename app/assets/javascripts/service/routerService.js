@@ -1,18 +1,18 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('RouterService', ['$rootScope', '$route', '$filter', 'TypeService', function ($rootScope, $route, $filter, type) {
-		var routerService = {};
+	module.factory('routerService', ['$rootScope', '$route', '$filter', 'typeService', function ($rootScope, $route, $filter, type) {
+		var router = {};
 
-		routerService.$route = $route;
+		router.$route = $route;
 
 		//
 
-		routerService.makeUrl = function (url, params, stripQuery) {
+		router.makeUrl = function (url, params, stripQuery) {
 			if (!params) return url;
 
 			if (!angular.isObject(params) || angular.isArray(params))
-				throw new Error('RouterService.makeUrl passed non-object "params" for ' + url);
+				throw new Error('routerService.makeUrl passed non-object "params" for ' + url);
 
 			var parts = [];
 
@@ -48,26 +48,26 @@ define(['config/module'], function (module) {
 
 		var makeRoute = function (route) {
 			return function (params, stripQuery) {
-				return routerService.makeUrl(route, params, stripQuery);
+				return router.makeUrl(route, params, stripQuery);
 			};
 		};
 
 		//
 
-		routerService.index = makeRoute('/');
-		routerService.login = makeRoute('/login');
-		routerService.register = makeRoute('/register');
-		routerService.password = makeRoute('/password');
-		routerService.profile = makeRoute('/profile');
+		router.index = makeRoute('/');
+		router.login = makeRoute('/login');
+		router.register = makeRoute('/register');
+		router.password = makeRoute('/password');
+		router.profile = makeRoute('/profile');
 
-		routerService.search = makeRoute('/search');
-		routerService.asset = makeRoute('/asset/:id');
-		routerService.volume = makeRoute('/volume/:id');
-		routerService.slotAsset = makeRoute('/slot/:sid/asset/:id');
+		router.search = makeRoute('/search');
+		router.asset = makeRoute('/asset/:id');
+		router.volume = makeRoute('/volume/:id');
+		router.slotAsset = makeRoute('/slot/:sid/asset/:id');
 
 		//
 
-		routerService.record = function (data) {
+		router.record = function (data) {
 			if (!type.isRecord(data))
 				throw new Error('routerService.record() requires Record as first argument');
 
@@ -75,10 +75,10 @@ define(['config/module'], function (module) {
 				id: data.id
 			};
 
-			return routerService.makeUrl('/record/:id', data);
+			return router.makeUrl('/record/:id', data);
 		};
 
-		routerService.slot = function (data) {
+		router.slot = function (data) {
 			if (!type.isSession(data))
 				throw new Error('routerService.slot() requires Slot as first argument');
 
@@ -87,10 +87,10 @@ define(['config/module'], function (module) {
 				segment: type.segmentString(data)
 			};
 
-			return routerService.makeUrl('/slot/:id', data);
+			return router.makeUrl('/slot/:id', data);
 		};
 
-		routerService.volumeThumb = function (data) {
+		router.volumeThumb = function (data) {
 			if (!type.isVolume(data))
 				throw new Error('routerService.volumeThumb() requires Volume as first argument');
 
@@ -98,10 +98,10 @@ define(['config/module'], function (module) {
 				id: data.id
 			};
 
-			return routerService.makeUrl('/volume/:id/thumb', data);
+			return router.makeUrl('/volume/:id/thumb', data);
 		};
 
-		routerService.slotThumb = function (data) {
+		router.slotThumb = function (data) {
 			if (!type.isSession(data))
 				throw new Error('routerService.slotThumb() requires Slot as first argument');
 
@@ -110,10 +110,10 @@ define(['config/module'], function (module) {
 				segment: type.segmentString(data)
 			};
 
-			return routerService.makeUrl('/slot/:id/thumb', data);
+			return router.makeUrl('/slot/:id/thumb', data);
 		};
 
-		routerService.assetThumb = function (data) {
+		router.assetThumb = function (data) {
 			if (!type.isAsset(data))
 				throw new Error('routerService.assetThumb() requires Asset as first argument');
 
@@ -123,10 +123,10 @@ define(['config/module'], function (module) {
 				segment: type.segmentString(data)
 			};
 
-			return routerService.makeUrl('/slot/:sid/asset/:id/thumb', data);
+			return router.makeUrl('/slot/:sid/asset/:id/thumb', data);
 		};
 
-		routerService.assetHead = function (data) {
+		router.assetHead = function (data) {
 			if (!type.isAsset(data))
 				throw new Error('routerService.assetHead() requires Asset as first argument');
 
@@ -136,10 +136,10 @@ define(['config/module'], function (module) {
 				segment: type.segmentString(data)
 			};
 
-			return routerService.makeUrl('/slot/:sid/asset/:id/head', data);
+			return router.makeUrl('/slot/:sid/asset/:id/head', data);
 		};
 
-		routerService.assetLink = function (data, inline) {
+		router.assetLink = function (data, inline) {
 			if (type.isAsset(data)) {
 				data = {
 					sid: data.container.id,
@@ -152,10 +152,10 @@ define(['config/module'], function (module) {
 
 			data.inline = data.inline || inline || false;
 
-			return routerService.makeUrl('/slot/:sid/asset/:id/download', data);
+			return router.makeUrl('/slot/:sid/asset/:id/download', data);
 		};
 
-		routerService.partyAvatar = function (data, size) {
+		router.partyAvatar = function (data, size) {
 			if (!type.isParty(data))
 				throw new Error('routerService.partyAvatar() requires Party as first argument');
 
@@ -173,10 +173,10 @@ define(['config/module'], function (module) {
 				else
 					data = '';
 
-			return routerService.makeUrl('/party/:id/avatar', data);
+			return router.makeUrl('/party/:id/avatar', data);
 		};
 
-		routerService.slotEdit = function (data) {
+		router.slotEdit = function (data) {
 			if (!type.isSession(data))
 				throw new Error('routerService.slotEdit() requires Slot as first argument');
 
@@ -185,10 +185,10 @@ define(['config/module'], function (module) {
 				segment: type.segmentString(data)
 			};
 
-			return routerService.makeUrl('/slot/:id/edit', data);
+			return router.makeUrl('/slot/:id/edit', data);
 		};
 
-		routerService.assetEdit = function (data) {
+		router.assetEdit = function (data) {
 			if (!type.isAsset(data))
 				throw new Error('routerService.assetEdit() requires Asset as first argument');
 
@@ -196,10 +196,10 @@ define(['config/module'], function (module) {
 				id: data.asset.id
 			};
 
-			return routerService.makeUrl('/asset/:id/edit', data);
+			return router.makeUrl('/asset/:id/edit', data);
 		};
 
-		routerService.recordEdit = function (data) {
+		router.recordEdit = function (data) {
 			if (!type.isRecord(data))
 				throw new Error('routerService.recordEdit() requires Record as first argument');
 
@@ -207,10 +207,10 @@ define(['config/module'], function (module) {
 				id: data.id
 			};
 
-			return routerService.makeUrl('/record/:id/edit', data);
+			return router.makeUrl('/record/:id/edit', data);
 		};
 
-		routerService.volumeEdit = function (data) {
+		router.volumeEdit = function (data) {
 			if (!type.isVolume(data))
 				throw new Error('routerService.volumeEdit() requires Volume as first argument');
 
@@ -218,10 +218,10 @@ define(['config/module'], function (module) {
 				id: data.id
 			};
 
-			return routerService.makeUrl('/volume/:id/edit', data);
+			return router.makeUrl('/volume/:id/edit', data);
 		};
 
-		routerService.volumeAccess = function (data) {
+		router.volumeAccess = function (data) {
 			if (!type.isVolume(data))
 				throw new Error('routerService.volumeAccess() requires Volume as first argument');
 
@@ -229,10 +229,10 @@ define(['config/module'], function (module) {
 				id: data.id
 			};
 
-			return routerService.makeUrl('/volume/:id/access', data);
+			return router.makeUrl('/volume/:id/access', data);
 		};
 
-		routerService.partyEdit = function (data) {
+		router.partyEdit = function (data) {
 			if (!type.isParty(data))
 				throw new Error('routerService.partyEdit() requires Party as first argument');
 
@@ -240,10 +240,10 @@ define(['config/module'], function (module) {
 				id: data.id
 			};
 
-			return routerService.makeUrl('/party/:id/edit', data);
+			return router.makeUrl('/party/:id/edit', data);
 		};
 
-		routerService.party = function (data) {
+		router.party = function (data) {
 			if (!type.isParty(data))
 				throw new Error('routerService.party() requires Party as first argument');
 
@@ -251,10 +251,10 @@ define(['config/module'], function (module) {
 				id: data.id
 			};
 
-			return routerService.makeUrl('/party/:id', data);
+			return router.makeUrl('/party/:id', data);
 		};
 
-		routerService.partyAuthorize = function (data) {
+		router.partyAuthorize = function (data) {
 			if (!type.isParty(data))
 				throw new Error('routerService.partyAuthorize() requires Party as first argument');
 
@@ -262,12 +262,12 @@ define(['config/module'], function (module) {
 				id: data.id
 			};
 
-			return routerService.makeUrl('/party/:id/authorize', data);
+			return router.makeUrl('/party/:id/authorize', data);
 		};
 
 		//
 
-		return routerService;
+		return router;
 	}]);
 });
 

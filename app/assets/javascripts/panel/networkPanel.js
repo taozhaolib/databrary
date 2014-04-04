@@ -1,8 +1,8 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('NetworkPanel', ['$scope', '$routeParams', '$filter', 'PartyAuthorize', 'ConstantService', 'EventService', '$cacheFactory', 'Page', 'Party', 'AuthService', function ($scope, $routeParams, $filter, PartyAuthorize, constantService, eventService, $cacheFactory, page, Party, auth) {
-		$scope.constant = $scope.constant || constantService;
+	module.controller('NetworkPanel', ['$scope', '$routeParams', '$filter', 'PartyAuthorize', '$cacheFactory', 'pageService', 'Party', 'authService', function ($scope, $routeParams, $filter, PartyAuthorize, $cacheFactory, page, Party, auth) {
+		$scope.constant = $scope.constant || page.constants;
 
 		var $httpCache = $cacheFactory.get('$http');
 
@@ -36,15 +36,16 @@ define(['config/module'], function (module) {
 				})
 			});
 
-			PartyAuthorize.query(function (data) {
-				$scope.partyAuth = data;
-			}, function (res) {
-				page.messages.addError({
-					body: page.constants.message('network.authquery.error'),
-					errors: res[0],
-					status: res[1]
-				})
-			});
+			if (auth.hasAccess('ADMIN', $scope.party))
+				PartyAuthorize.query(function (data) {
+					$scope.partyAuth = data;
+				}, function (res) {
+					page.messages.addError({
+						body: page.constants.message('network.authquery.error'),
+						errors: res[0],
+						status: res[1]
+					})
+				});
 		};
 
 		//
@@ -126,7 +127,7 @@ define(['config/module'], function (module) {
 			$scope.currentAuthChild = undefined;
 		};
 
-		eventService.listen($scope, 'authGrantForm-init', function (event, form, $scope) {
+		page.events.listen($scope, 'authGrantForm-init', function (event, form, $scope) {
 			form.other = $scope.child;
 			form.successFn = grantCancelFn;
 			form.cancelFn = grantCancelFn;
@@ -157,7 +158,7 @@ define(['config/module'], function (module) {
 			$scope.currentAuthParent = undefined;
 		};
 
-		eventService.listen($scope, 'authApplyForm-init', function (event, form, $scope) {
+		page.events.listen($scope, 'authApplyForm-init', function (event, form, $scope) {
 			form.other = $scope.parent;
 			form.successFn = applySuccessFn;
 			form.cancelFn = applyCancelFn;
@@ -185,7 +186,7 @@ define(['config/module'], function (module) {
 			}
 		};
 
-		eventService.listen($scope, 'authSearchForm-init', function (event, form) {
+		page.events.listen($scope, 'authSearchForm-init', function (event, form) {
 			form.selectFn = selectFn;
 			event.stopPropagation();
 		});

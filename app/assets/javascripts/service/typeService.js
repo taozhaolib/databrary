@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('TypeService', ['$exceptionHandler', function ($exception) {
+	module.factory('typeService', [function () {
 		var typeService = {};
 
 		//

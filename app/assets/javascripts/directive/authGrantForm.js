@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('authGrantForm', ['PartyAuthorize', 'AuthService', 'EventService', 'AuthPresetService', '$filter', 'Page', function (PartyAuthorize, authService, eventService, authPresetService, $filter, page) {
+	module.directive('authGrantForm', ['PartyAuthorize', 'authService', 'authPresetService', '$filter', 'pageService', function (PartyAuthorize, authService, authPresetService, $filter, page) {
 		var link = function ($scope) {
 			var form = $scope.authGrantForm;
 
@@ -114,9 +114,9 @@ define(['config/module'], function (module) {
 
 			//
 
-			eventService.talk('authGrantForm-init', form, $scope);
+			page.events.talk('authGrantForm-init', form, $scope);
 
-			$scope.$watch('authGrantForm.other', function (newVal, oldVal) {
+			$scope.$watch('authGrantForm.other', function () {
 				parsePresets();
 
 				if (form.other.expires)

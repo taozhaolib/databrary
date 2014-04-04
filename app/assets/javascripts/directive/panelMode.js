@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('panelMode', ['PanelService', 'AuthService', function (panelService, authService) {
+	module.directive('panelMode', ['panelService', 'authService', function (panelService, authService) {
 		var compile = function ($element, $attrs, transclude) {
 			return function ($scope, $element, $attrs) {
 

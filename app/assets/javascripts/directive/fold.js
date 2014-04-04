@@ -107,6 +107,9 @@ define(['config/module'], function (module) {
 					$scope.enableFold();
 				else
 					$scope.disableFold();
+
+				if(angular.isDefined($attrs.closed))
+					$scope.fold();
 			};
 
 			start();

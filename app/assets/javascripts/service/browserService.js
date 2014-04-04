@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('BrowserService', ['$rootScope', 'ArrayHelper', 'AuthService', 'Slot', 'TypeService', 'Page', 'TooltipService', 'ConstantService', function ($rootScope, arrayHelper, authService, Slot, typeService, page, tooltips, constant) {
+	module.factory('browserService', ['$rootScope', 'arrayHelper', 'authService', 'Slot', 'typeService', 'pageService', function ($rootScope, arrayHelper, authService, Slot, typeService, page) {
 		var browserService = {};
 
 		//
@@ -79,7 +79,7 @@ define(['config/module'], function (module) {
 
 		browserService.initialize = function (newContext, newData) {
 			if (angular.isUndefined(browserService.context))
-				constant.$promise.success(function () {
+				page.constants.$promise.success(function () {
 					bindTooltips(tips);
 				});
 
@@ -186,7 +186,7 @@ define(['config/module'], function (module) {
 					if (!browserService.options.record.categories.find({id: category}))
 						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {
 							id: category,
-							name: $rootScope.constant.get('category', category).name,
+							name: page.constants.get('category', category).name,
 							sort: arrayHelper([])
 						}));
 				});
@@ -549,7 +549,6 @@ define(['config/module'], function (module) {
 		browserService.loading = false;
 
 		var callbackAssets = function (data, volume) {
-			var sessions = data.sessions || volume.sessions;
 			browserService.loading = true;
 
 			Slot.get({
@@ -1015,31 +1014,31 @@ define(['config/module'], function (module) {
 
 		var bindTooltips = function (tips) {
 			tips = {
-				'.bb.icon.public': constant.message('consent.PUBLIC'),
-				'.bb.icon.excerpts': constant.message('consent.EXCERPTS'),
-				'.bb.icon.shared': constant.message('consent.SHARED'),
-				'.bb.icon.private': constant.message('consent.PRIVATE'),
+				'.bb.icon.public': page.constants.message('consent.PUBLIC'),
+				'.bb.icon.excerpts': page.constants.message('consent.EXCERPTS'),
+				'.bb.icon.shared': page.constants.message('consent.SHARED'),
+				'.bb.icon.private': page.constants.message('consent.PRIVATE'),
 
-				'.bb.icon.admin': constant.message('access.ADMIN', 'You'),
-				'.bb.icon.contribute': constant.message('access.CONTRIBUTE', 'You'),
-				'.bb.icon.download': constant.message('access.DOWNLOAD', 'You'),
-				'.bb.icon.view': constant.message('access.VIEW', 'You'),
-				'.bb.icon.none': constant.message('access.NONE', 'You'),
+				'.bb.icon.admin': page.constants.message('access.ADMIN', 'You'),
+				'.bb.icon.contribute': page.constants.message('access.CONTRIBUTE', 'You'),
+				'.bb.icon.download': page.constants.message('access.DOWNLOAD', 'You'),
+				'.bb.icon.view': page.constants.message('access.VIEW', 'You'),
+				'.bb.icon.none': page.constants.message('access.NONE', 'You'),
 
-				'.bb.icon.excerpt': constant.message('classification.EXCERPT'),
-				'.bb.icon.identified': constant.message('classification.IDENTIFIED'),
-				'.bb.icon.deidentified': constant.message('classification.DEIDENTIFIED'),
-				'.bb.icon.material': constant.message('classification.MATERIAL'),
+				'.bb.icon.excerpt': page.constants.message('classification.EXCERPT'),
+				'.bb.icon.identified': page.constants.message('classification.IDENTIFIED'),
+				'.bb.icon.deidentified': page.constants.message('classification.DEIDENTIFIED'),
+				'.bb.icon.material': page.constants.message('classification.MATERIAL'),
 
-				'.browser_dataset .browser_icon': constant.message('object.tip.dataset'),
-				'.browser_study .browser_icon': constant.message('object.tip.study'),
-				'.browser_record .browser_icon': constant.message('object.tip.record'),
-				'.browser_session .browser_icon': constant.message('object.tip.session'),
-				'.browser_asset .browser_icon': constant.message('object.tip.asset')
+				'.browser_dataset .browser_icon': page.constants.message('object.tip.dataset'),
+				'.browser_study .browser_icon': page.constants.message('object.tip.study'),
+				'.browser_record .browser_icon': page.constants.message('object.tip.record'),
+				'.browser_session .browser_icon': page.constants.message('object.tip.session'),
+				'.browser_asset .browser_icon': page.constants.message('object.tip.asset')
 			};
 
 			angular.forEach(tips, function (message, target) {
-				tips[target] = tooltips.add({
+				tips[target] = page.tooltips.add({
 					live: true,
 					$target: target,
 					message: message

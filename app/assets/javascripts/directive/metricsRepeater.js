@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('metricsRepeater', ['$http', 'MessageService', function ($http, messages) {
+	module.directive('metricsRepeater', ['$http', 'pageService', function ($http, page) {
 		var link = function ($scope) {
 			$scope.repeats = $scope.repeats || [];
 
@@ -133,8 +133,7 @@ define(['config/module'], function (module) {
 						$scope.category = response.data.category;
 						$scope.repeats = response.data.measure;
 					}, function (res) {
-						// TODO: test this!
-						messages.add({
+						page.messages.add({
 							type: 'red',
 							closeable: true,
 							body: res.status

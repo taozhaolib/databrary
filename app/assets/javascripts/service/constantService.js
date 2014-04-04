@@ -1,8 +1,8 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('ConstantService', ['$http', function ($http) {
-		var constantService = {
+	module.factory('constantService', ['$http', function ($http) {
+		var constants = {
 			data: {}
 		};
 
@@ -48,26 +48,26 @@ define(['config/module'], function (module) {
 
 		//
 
-		constantService.update = function () {
-			constantService.$promise = $http.get('/api/constants');
+		constants.update = function () {
+			constants.$promise = $http.get('/api/constants');
 
-			constantService.$promise.then(function (result) {
-				angular.extend(constantService.data, STATIC_DATA, result.data);
+			constants.$promise.then(function (result) {
+				angular.extend(constants.data, STATIC_DATA, result.data);
 			});
 		};
 
-		constantService.get = function (key, id) {
-			if (angular.isUndefined(constantService.data[key]))
+		constants.get = function (key, id) {
+			if (angular.isUndefined(constants.data[key]))
 				return undefined;
 
 			if (angular.isDefined(id))
-				return constantService.data[key][id] || undefined;
+				return constants.data[key][id] || undefined;
 
-			return constantService.data[key];
+			return constants.data[key];
 		};
 
-		constantService.find = function (key, name) {
-			var data = constantService.data[key];
+		constants.find = function (key, name) {
+			var data = constants.data[key];
 
 			if (angular.isDefined(data))
 				for (var id in data)
@@ -77,12 +77,12 @@ define(['config/module'], function (module) {
 			return undefined;
 		};
 
-		constantService.message = function (key /*, args...*/) {
-			if(!constantService.data || !constantService.data.messages || !constantService.data.messages[key])
+		constants.message = function (key /*, args...*/) {
+			if(!constants.data || !constants.data.messages || !constants.data.messages[key])
 				// warning? error? placeholder.
 				return '[' + key + ']';
 
-			var msg = constantService.data.messages[key];
+			var msg = constants.data.messages[key];
 
 			for (var i = 1, length = arguments.length; i < length; i++)
 				msg = msg.replace('{' + (i-1) + '}', arguments[i], 'g');
@@ -92,8 +92,8 @@ define(['config/module'], function (module) {
 
 		//
 
-		constantService.update();
+		constants.update();
 
-		return constantService;
+		return constants;
 	}]);
 });

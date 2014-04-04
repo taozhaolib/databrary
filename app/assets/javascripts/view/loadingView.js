@@ -1,9 +1,9 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('LoadingView', ['$scope', 'Page', '$location', 'AuthService', 'ConstantService', function ($scope, page, $location, auth, constants) {
+	module.controller('LoadingView', ['$scope', 'authPromise', 'constantPromise', 'authService', 'pageService', '$location', function ($scope, authPromise, constantPromise, auth, page, $location) {
 		page.loading = true;
-		page.title = constants.message('page.title.loading');
+		page.title = page.constants.message('page.title.loading');
 
 		if (auth.next) {
 			$location.url(auth.next).replace();

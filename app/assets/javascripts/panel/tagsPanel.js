@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('TagsPanel', ['$scope', 'Tag', '$route', 'Page', 'Volume', '$cacheFactory', '$http', '$timeout', function ($scope, Tag, $route, page, Volume, $cacheFactory, $http, $timeout) {
+	module.controller('TagsPanel', ['$scope', 'Tag', '$route', 'pageService', 'Volume', '$cacheFactory', '$http', '$timeout', function ($scope, Tag, $route, page, Volume, $cacheFactory, $http, $timeout) {
 		var DEFAULT_MESSAGE = {
 			type: 'blue',
 			countdown: 3000
