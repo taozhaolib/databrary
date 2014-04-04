@@ -98,8 +98,8 @@ object Metric extends TableId[Metric[_]]("metric") {
       .apply(category).list
 
   private final val IDENT       : Id = asId(-900)
-  private final val TITLE       : Id = asId(-800)
   private final val REASON      : Id = asId(-700)
+  private final val SUMMARY     : Id = asId(-650)
   private final val DESCRIPTION : Id = asId(-600)
   private final val BIRTHDATE   : Id = asId(-590)
   private final val GENDER      : Id = asId(-580)
@@ -115,8 +115,8 @@ object Metric extends TableId[Metric[_]]("metric") {
   /** Identifiers providing generic labels for records or data, such as participant id, condition name, etc.
     * [[Classification.DEIDENTIFIED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
   final val Ident       = new Metric[String](IDENT, "ident", Classification.DEIDENTIFIED)
-  final val Title       = new Metric[String](TITLE, "title", Classification.MATERIAL)
   final val Reason      = new Metric[String](REASON, "reason", Classification.DEIDENTIFIED, IndexedSeq("Did not meet inclusion criteria","Procedural/experimenter error","Withdrew/fussy/tired","Outlier"))
+  final val Summary     = new Metric[String](SUMMARY, "summary", Classification.MATERIAL)
   final val Description = new Metric[String](DESCRIPTION, "description", Classification.MATERIAL) {
     override val long = true
   }

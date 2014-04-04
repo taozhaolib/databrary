@@ -57,7 +57,7 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
   }
   final val Condition = new RecordCategory(CONDITION, "condition")
   final val Task = new RecordCategory(TASK, "task") {
-    override val template = Seq(Metric.Ident, Metric.Title, Metric.Description)
+    override val template = Seq(Metric.Ident, Metric.Description)
   }
   final val Group = new RecordCategory(GROUP, "group")
   final val Location = new RecordCategory(LOCATION, "location") {
