@@ -54,7 +54,7 @@ define(['config/module'], function (module) {
 			$scope.setItemPlayer = function (data) {
 				if (auth.hasAccess('DOWNLOAD', data))
 					$scope.browser.setItemPlayer(data);
-				else
+				else if (data)
 					page.messages.add({
 						type: 'yellow',
 						countdown: 2000,
