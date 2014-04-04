@@ -261,6 +261,7 @@ error.suffix=Please <a href="mailto:feedback@databrary.org">contact us</a> and t
 error.generic=Something''s gone terribly wrong.
 
 scraper.error=Could not retrieve required document "{0}."
+video.unsupported=Your browser does not support modern video formats. Please upgrade or try <a href="http://www.google.com/chrome/" target="_blank">Chrome</a>.
 
 # --- Registration
 register.title=Register

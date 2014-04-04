@@ -16,9 +16,11 @@
         </div>
 
         <div ng-switch-when="video">
-          <video controls poster="data:image/gif,AAAA" style="background: transparent url('{{page.router.assetThumb(played.object, false)}}') no-repeat; background-size: 100%">
+          <video bo-if="supported()" controls poster="data:image/gif,AAAA" style="background: transparent url('{{page.router.assetThumb(played.object, false)}}') no-repeat; background-size: 100%">
             <source ng-src="{{page.router.assetLink(played.object, true)}}" type="{{played.object.format.mimetype || played.object.asset.format.mimetype}}">
           </video>
+
+          <div bo-if="!supported()" bo-html="'video.unsupported' | message"></div>
         </div>
 
         <div ng-switch-default></div>
