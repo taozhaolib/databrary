@@ -358,7 +358,7 @@ CREATE TABLE "format" (
 COMMENT ON TABLE "format" IS 'Possible types for assets, sufficient for producing download headers.';
 
 -- The privledged formats with special handling (image and video for now) have hard-coded IDs:
-INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-700, 'image/jpeg', 'jpg', 'JPEG'); -- name should be 'JPEG image'
+INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-700, 'image/jpeg', 'jpg', 'JPEG image');
 
 -- The above video format will change to reflect internal storage, these are used for uploaded files:
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/plain', 'txt', 'Plain text');
@@ -557,7 +557,7 @@ INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-520, 'dis
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-150, 'country', 'DEIDENTIFIED', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-140, 'state', 'DEIDENTIFIED', 'text', ARRAY['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','MD','MA','MI','MN','MS','MO','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']);
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-90, 'info', 'MATERIAL', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-800, 'title', 'MATERIAL', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-650, 'summary', 'MATERIAL', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-600, 'description', 'MATERIAL', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-700, 'reason', 'DEIDENTIFIED', 'text', ARRAY['Did not meet inclusion criteria','Procedural/experimenter error','Withdrew/fussy/tired','Outlier']);
 INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-180, 'setting', 'MATERIAL', 'text', ARRAY['Lab','Home','Classroom','Outdoor','Clinic']);
@@ -579,7 +579,6 @@ INSERT INTO "record_template" ("category", "metric") VALUES (-700, -700);
 INSERT INTO "record_template" ("category", "metric") VALUES (-400, -900);
 INSERT INTO "record_template" ("category", "metric") VALUES (-100, -180);
 INSERT INTO "record_template" ("category", "metric") VALUES (-100, -140);
-INSERT INTO "record_template" ("category", "metric") VALUES (-300, -800);
 INSERT INTO "record_template" ("category", "metric") VALUES (-300, -600);
 
 CREATE TABLE "measure" ( -- ABSTRACT
