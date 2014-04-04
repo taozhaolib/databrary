@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.controller('NetworkPanel', ['$scope', '$routeParams', '$filter', 'PartyAuthorize', 'ConstantService', 'EventService', '$cacheFactory', 'Page', function ($scope, $routeParams, $filter, PartyAuthorize, constantService, eventService, $cacheFactory, page) {
+	module.controller('NetworkPanel', ['$scope', '$routeParams', '$filter', 'PartyAuthorize', 'ConstantService', 'EventService', '$cacheFactory', 'Page', 'Party', 'AuthService', function ($scope, $routeParams, $filter, PartyAuthorize, constantService, eventService, $cacheFactory, page, Party, auth) {
 		$scope.constant = $scope.constant || constantService;
 
 		var $httpCache = $cacheFactory.get('$http');
@@ -21,19 +21,23 @@ define(['config/module'], function (module) {
 		var getPartyAuth = function () {
 			$httpCache.removeAll();
 
+			Party.get({
+				id: $routeParams.id || auth.user.id,
+				parents: '',
+				children: ''
+			}, function (data) {
+				$scope.parents = data.parents;
+				$scope.children = data.children;
+			}, function (res) {
+				page.messages.addError({
+					body: page.constants.message('network.authquery.error'),
+					errors: res[0],
+					status: res[1]
+				})
+			});
+
 			PartyAuthorize.query(function (data) {
 				$scope.partyAuth = data;
-
-				$scope.parents = [];
-				$scope.children = [];
-
-				angular.forEach(data.parents, function (partyAuth) {
-					$scope.parents.push(partyAuth.party);
-				});
-
-				angular.forEach(data.children, function (partyAuth) {
-					$scope.children.push(partyAuth.party);
-				});
 			}, function (res) {
 				page.messages.addError({
 					body: page.constants.message('network.authquery.error'),
