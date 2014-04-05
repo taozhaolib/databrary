@@ -23,9 +23,9 @@ error.forbidden.body=
 error.notfound.title=There''s nothing here
 error.notfound.body=The resource you requested may no longer be available.
 error.badrequest.title=Bad request
-error.badrequest.body=Sorry, something went wrong with that request.  More information is below, or <a href='mailto:feedback@databrary.org'>contact us</a> for asssistance.
+error.badrequest.body=Sorry, something went wrong with that request.  More information is below, or <a href=''mailto:feedback@databrary.org''>contact us</a> for asssistance.
 error.internal.title=Internal error
-error.internal.body=Sorry, something is broken.  More information is below, or <a href='mailto:feedback@databrary.org'>contact us</a> for asssistance.
+error.internal.body=Sorry, something is broken.  More information is below, or <a href=''mailto:feedback@databrary.org''>contact us</a> for asssistance.
 
 # --- Emails
 mail.from=Databrary <help@databrary.org>
@@ -261,7 +261,7 @@ error.suffix=Please <a href="mailto:feedback@databrary.org">contact us</a> and t
 error.generic=Something''s gone terribly wrong.
 
 scraper.error=Could not retrieve required document "{0}."
-video.unsupported=Your browser does not support modern video formats. Please upgrade or try <a href="http://www.google.com/chrome/" target="_blank">Chrome</a>.
+video.unsupported=Unfortunately, we do not currently support playing videos in Firefox on OS X. Please try Safari or Chrome.
 
 # --- Registration
 register.title=Register
