@@ -5,6 +5,7 @@ define(['config/module'], function (module) {
 		var link = function ($scope) {
 			var form = $scope.authApplyForm;
 
+			$scope.page = page;
 			$scope.constant = page.constants;
 
 			form.presets = authPresetService;
