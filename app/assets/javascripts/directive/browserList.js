@@ -67,14 +67,14 @@ define(['config/module'], function (module) {
 			$scope.volumeClasses = function (data) {
 				var cls = [], study = false;
 
-				for(var prop in data.object.providers) {
-					if(data.object.providers.hasOwnProperty(prop)) {
+				for (var prop in data.object.providers) {
+					if (data.object.providers.hasOwnProperty(prop)) {
 						study = true;
 						break;
 					}
 				}
 
-				if(study)
+				if (study)
 					cls.push('browser_study');
 				else
 					cls.push('browser_dataset');
@@ -130,13 +130,13 @@ define(['config/module'], function (module) {
 						case -100:
 							var out = record.measures.setting;
 
-							if(record.measures.state) {
+							if (record.measures.state) {
 								out += ' (' + record.measures.state;
 								if (record.measures.country)
 									out += ', ' + record.measures.country;
 								out += ')';
 							}
-							else if (record.measures.country) 
+							else if (record.measures.country)
 								out += ' (' + record.measures.country + ')';
 
 							return out;
@@ -149,7 +149,7 @@ define(['config/module'], function (module) {
 			var measures = undefined;
 
 			$scope.getMeasures = function (data) {
-				if(measures)
+				if (measures)
 					return measures;
 
 				// TODO: something with better performance!
@@ -182,15 +182,22 @@ define(['config/module'], function (module) {
 			var sessionRecords = {};
 
 			$scope.getSessionRecords = function (data) {
-				if(sessionRecords[data.object.id])
+				if (sessionRecords[data.object.id])
 					return sessionRecords[data.object.id];
 
-				sessionRecords[data.object.id] = {};
+				sessionRecords[data.object.id] = [];
 				var skip = ['-700', '-800'];
 
 				angular.forEach(data.object.categories, function (records, key) {
-					if (skip.indexOf(key) == -1)
-						sessionRecords[data.object.id][key] = records.reverse();
+					if (data.object.categories.hasOwnProperty(key) && skip.indexOf(key) == -1)
+						sessionRecords[data.object.id].push({
+							id: parseInt(key),
+							records: records
+						});
+				});
+
+				sessionRecords[data.object.id].sort(function (a, b) {
+					return a.id > b.id;
 				});
 
 				return sessionRecords[data.object.id];
