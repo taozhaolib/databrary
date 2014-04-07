@@ -2,6 +2,6 @@
 
 @template.action(Messages("welcome.title"), angular = Some(play.api.libs.json.JsNull)) {
     @widget.panel.form(Messages("welcome.title.sub"), Messages("welcome.title")) {
-	@display.rawFormat("welcome.body")
+	@display.rawFormat(Messages("welcome.body"))
     }
 }
