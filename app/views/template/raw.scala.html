@@ -62,7 +62,9 @@
                             <span class="sep">|</span>
 
                             @if(request.superuser) {
-                                <a class="superuser on" href="@routes.LoginHtml.superuserOff">SU</a>
+				@helper.form(routes.LoginHtml.superuserOff) {
+				    <button type="submit" class="link superuser on">SU</button>
+				}
                             } else {
                                 @defining(new LoginController.SuperuserForm()(request)) { form =>
                                     @widget.tag.form(form) {

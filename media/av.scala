@@ -1,28 +1,14 @@
 package media
 
 import java.lang.{ProcessBuilder}
-import java.io.{InputStream,File,FileOutputStream}
+import java.io.File
 import dbrary.{Offset,Section}
 
 object AV {
-  loadLibrary("av")
+  init
 
-  private def loadLibrary(name : String) = {
-    val lib = System.mapLibraryName(name)
-    val dot = lib.lastIndexOf('.')
-    val file = File.createTempFile(lib.substring(0, dot), lib.substring(dot, lib.length))
-    val loader = this.getClass.getClassLoader
-    val in = loader.getResourceAsStream(lib)
-    val out = new FileOutputStream(file)
-    org.apache.commons.io.IOUtils.copy(in, out)
-    in.close
-    out.close
-    System.load(file.getPath)
-    file.delete/*OnExit -- may be necessary on some platforms? */
-  }
-
-  val videoFormat = "mov,mp4,m4a,3gp,3g2,mj2"
-  val videoCodecs = Iterable("h264", "aac")
+  private val videoFormat = "mov,mp4,m4a,3gp,3g2,mj2"
+  private val videoCodecs = Seq("h264", "aac")
 
   /* These are referenced by native code so must match their use there */
   final class Error(msg : String, val err : Int) extends RuntimeException(msg)

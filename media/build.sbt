@@ -1,7 +1,8 @@
 resourceGenerators in Compile <+= (streams, baseDirectory in Compile, resourceManaged in Compile) map { (str, srcDir, outDir) =>
-	val src = srcDir / "av.c"
-	val out = outDir / System.mapLibraryName("av")
-	if (FileInfo.lastModified(src).lastModified >= FileInfo.lastModified(out).lastModified) {
+	val src = (PathFinder(srcDir) * "*.c").get
+	val out = outDir / System.mapLibraryName("media")
+	val outmod = FileInfo.lastModified(out).lastModified
+	if (src.exists(FileInfo.lastModified(_).lastModified >= outmod)) {
 		val slash = java.io.File.separator
 		val pkg = try {
 			"pkg-config --cflags --libs libavformat libswscale".!!
@@ -10,11 +11,11 @@ resourceGenerators in Compile <+= (streams, baseDirectory in Compile, resourceMa
 		}
 		val jh = Option(System.getenv("JAVA_HOME")).getOrElse(System.getProperty("java.home") + slash + "..") + slash + "include"
 		// This does not handle spaces in paths properly:
-		val cmd = "gcc -Wall -fPIC -shared -o " + out + " -I" + jh + " -I" + jh + "/linux " + src + " " + pkg.trim
+		val cmd = "gcc -Wall -fPIC -shared -o " + out + " -I" + jh + " -I" + jh + "/linux " + src.mkString(" ") + " " + pkg.trim + " -lcrack"
 		str.log.info(cmd)
 		outDir.mkdirs
 		if (cmd.! != 0)
-			throw (new MessageOnlyException(src + ": Error"))
+			throw (new MessageOnlyException(src.mkString(" ") + ": Error"))
 	}
 	Seq(out)
 }
