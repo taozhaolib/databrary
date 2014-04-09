@@ -353,11 +353,12 @@ object PartyHtml extends PartyController with HtmlController {
   }
 
   def authorizeAdmin = SiteAction.rootAccess().async { implicit request =>
-    Authorize.getAll.map { all =>
-      val (pend, rest) = all.span(_.authorized.isEmpty)
-      val (exp, act) = rest.span(!_.valid)
-      Ok(views.html.party.authorizeAdmin(pend.map(new AuthorizeAdminForm(_)), act, exp))
-    }
+    for {
+      all <- Authorize.getAll
+      (pend, rest) = all.span(_.authorized.isEmpty)
+      (exp, act) = rest.span(!_.valid)
+      part <- Party.getAll
+    } yield (Ok(views.html.party.authorizeAdmin(part, pend.map(new AuthorizeAdminForm(_)), act, exp)))
   }
 
   def avatar(i : models.Party.Id, size : Int = 64) = Action(Some(i), Some(Permission.NONE)).async { implicit request =>

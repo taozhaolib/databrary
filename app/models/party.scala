@@ -183,6 +183,9 @@ object Party extends TableId[Party]("party") {
       Async(Some(p))
     }
 
+  def getAll(implicit site : Site) : Future[Seq[Party]] =
+    row.SELECT("ORDER BY id").apply().list
+
   /** Create a new party. */
   def create(name : String, orcid : Option[Orcid] = None, affiliation : Option[String] = None, duns : Option[DUNS] = None)(implicit site : Site) : Future[Party] =
     Audit.add("party", SQLTerms('name -> name, 'orcid -> orcid, 'affiliation -> affiliation, 'duns -> duns), "id").single(SQLCols[Id])
