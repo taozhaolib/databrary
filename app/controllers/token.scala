@@ -16,7 +16,9 @@ private[controllers] sealed class TokenController extends SiteController {
     models.LoginToken.get(form.token.get).flatMap(_
       .filter(t => t.valid && form.auth.get.equals(t.auth) && t.password && t.accountId === a)
       .fold[Future[SimpleResult]](ForbiddenException.result) { token =>
-	form.password.get.fold(macros.Async(false))(p => token.account.change(password = Some(p))).flatMap { _ =>
+	form.checkPassword(token.account)
+	form.orThrow
+	token.account.change(password = form.cryptPassword).flatMap { _ =>
 	  LoginController.login(token.account)
 	}
       }
@@ -42,10 +44,12 @@ object TokenController extends TokenController {
   sealed class PasswordForm(accountId : Account.Id)(implicit request : SiteRequest[_])
     extends HtmlForm[PasswordForm](
       routes.TokenHtml.password(accountId),
-      views.html.token.password(_)) {
+      views.html.token.password(_))
+    with LoginController.PasswordChangeForm {
     val token = Field(Forms.text)
     val auth = Field(Forms.text)
-    val password = Field(PartyHtml.passwordMapping.verifying("error.required", _.isDefined)).fill(None)
+    override protected val passwordRequired = true
+    val password = passwordField
   }
 
   final class PasswordTokenForm(val _token : LoginToken)(implicit request : SiteRequest[_])

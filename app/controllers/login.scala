@@ -145,6 +145,36 @@ object LoginController extends LoginController {
     def _authorized = !hasErrors && (auth.get.nonEmpty || !Play.isProd)
   }
 
+  trait PasswordChangeForm extends StructForm {
+    protected val passwordRequired = false
+    private[this] final def passwordBaseMapping : Mapping[String] =
+      Forms.text(7)
+    protected def passwordOnceMapping : Mapping[Option[String]] =
+      if (passwordRequired) SomeMapping(passwordBaseMapping)
+      else Forms.optional(passwordBaseMapping)
+    protected def passwordInputMapping : Mapping[Option[String]] =
+      Forms.tuple(
+	"once" -> passwordOnceMapping,
+	"again" -> Forms.text
+      ).verifying(Messages("password.again"), pa => pa._1.forall(_ == pa._2))
+      .transform[Option[String]](_._1, p => (p, p.getOrElse("")))
+    protected final def passwordMapping : Mapping[Option[String]] =
+      passwordInputMapping
+      .transform[Option[String]](identity, _.map(_ => ""))
+    protected final def passwordField = Field(passwordMapping)
+    val password : Field[Option[String]]
+
+    def cryptPassword : Option[String] =
+      password.get.map(BCrypt.hashpw(_, BCrypt.gensalt))
+    def checkPassword(account : Account) {
+      password.get.flatMap(
+	media.Passwd.check(_, account.email, account.party.name))
+      .foreach { e =>
+	password.withError("password.check", e)
+      }
+    }
+  }
+
   final class SuperuserForm(implicit request : SiteRequest.Auth[_])
     extends FormView(routes.LoginHtml.superuserOn)
     with AuthForm {

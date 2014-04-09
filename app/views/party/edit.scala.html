@@ -1,10 +1,10 @@
-@(form : PartyController#PartyForm)(implicit request : SiteRequest[_])
+@(form : PartyController.PartyForm)(implicit request : SiteRequest[_])
 
 @implicitField = @{
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@defining(cast[PartyController#EditForm](form).map(_.party)) { party =>
+@defining(cast[PartyController.EditForm](form).map(_.party)) { party =>
 @template.form(party, form.formName) {
             @widget.tag.form(form) {
                 @widget.tag.inputText(form.name(), ('placeholder, "Full name"))
@@ -14,7 +14,7 @@
                     @widget.tag.inputText(form.duns(), ('placeholder, "DUNS"))
 		}
 
-		@cast[PartyController#AccountEditForm](form).map { form =>
+		@cast[PartyController.AccountEditForm](form).map { form =>
                     @widget.tag.inputPassword(form.auth(), ('placeholder, "Current Password"))
                     @widget.tag.inputText(form.email(), ('placeholder, "Email"))
                     @widget.tag.inputPassword(form.password()("once"), ('placeholder, "New Password"))
@@ -22,7 +22,7 @@
                     @widget.tag.inputText(form.openid(), ('placeholder, "OpenID"))
                 }
 
-		@cast[PartyController#EditForm](form).map { form =>
+		@cast[PartyController.EditForm](form).map { form =>
 		    @widget.tag.inputFile(form.avatar())
 		}
 

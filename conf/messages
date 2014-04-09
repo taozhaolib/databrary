@@ -65,6 +65,7 @@ email=Email
 password=Password
 password.incorrect=Incorrect password.
 password.again=Passwords do not match.
+password.check=Insecure password: {0}
 openid=OpenID
 orcid=ORCiD
 affiliation=Affiliation

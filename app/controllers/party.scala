@@ -37,75 +37,17 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   private[controllers] def Action(i : Option[models.Party.Id], p : Option[Permission.Value] = Some(Permission.ADMIN)) =
     SiteAction ~> action(i, p)
 
-  protected def passwordInputMapping : Mapping[Option[String]] = Forms.optional(Forms.text(7))
-  type PasswordMapping = Mapping[Option[String]]
-  def passwordMapping : PasswordMapping = 
-    passwordInputMapping
-    .transform[Option[String]](
-      _.map(BCrypt.hashpw(_, BCrypt.gensalt)),
-      _.map(_ => "")
-    )
-
   protected def AdminAction(i : models.Party.Id, delegate : Boolean = true) =
     SiteAction.Unlocked ~> action(Some(i), if (delegate) Some(Permission.ADMIN) else None)
 
   protected def adminAccount(implicit request : Request[_]) : Option[Account] =
     request.obj.party.account.filter(_ === request.identity || request.superuser)
 
-  abstract sealed class PartyForm(action : Call)(implicit request : SiteRequest[_])
-    extends HtmlForm[PartyForm](action,
-      views.html.party.edit(_)) {
-    def actionName : String
-    def formName : String = actionName + " Party"
-    val name : Field[Option[String]]
-    val orcid = Field(OptionMapping(Forms.optional(Forms.of[Orcid])))
-    val affiliation = Field(OptionMapping(Forms.text))
-    val duns = Field(OptionMapping(Forms.optional(Forms.of[DUNS])))
-  }
-  sealed trait AccountForm extends PartyForm {
-    override def formName : String = actionName + " Account"
-    val email : Field[Option[String]]
-    val password = Field(passwordMapping).fill(None)
-    val openid = Field(OptionMapping(Forms.text(0,256)))
-  }
+  protected def editForm(implicit request : Request[_]) : PartyController.EditForm =
+    adminAccount.fold[PartyController.EditForm](new PartyController.PartyEditForm)(new PartyController.AccountEditForm(_))
 
-  abstract sealed class EditForm(implicit request : Request[_])
-    extends PartyForm(routes.PartyHtml.update(request.obj.id)) {
-    def actionName = "Update"
-    override def formName = "Edit Profile"
-    def party = request.obj.party
-    def accountForm : Option[AccountEditForm]
-    val name = Field(OptionMapping(Forms.nonEmptyText)).fill(Some(party.name))
-    val avatar = OptionalFile()
-    orcid.fill(Some(party.orcid))
-    affiliation.fill(Some(party.affiliation.getOrElse("")))
-    duns.fill(Some(party.duns))
-  }
-  final class PartyEditForm(implicit request : Request[_]) extends EditForm {
-    def accountForm = None
-  }
-  final class AccountEditForm(val account : Account)(implicit request : Request[_]) extends EditForm with AccountForm with LoginController.AuthForm {
-    def accountForm = if (_authorized || request.superuser) Some(this)
-      else if (email.get.exists(!_.equals(account.email)) || password.get.nonEmpty || openid.get.exists(!_.equals(account.openid.getOrElse(""))))
-	Some(this.auth.withError("error.required"))
-      else None
-    val email = Field(OptionMapping(Forms.email)).fill(Some(account.email))
-    openid.fill(account.openid)
-  }
-  protected def editForm(implicit request : Request[_]) : EditForm =
-    adminAccount.fold[EditForm](new PartyEditForm)(new AccountEditForm(_))
-
-  abstract sealed class CreateForm(implicit request : SiteRequest[_])
-    extends PartyForm(routes.PartyHtml.create()) {
-    def actionName = "Create"
-    val name = Field(Mappings.some(Forms.nonEmptyText))
-  }
-  final class PartyCreateForm(implicit request : SiteRequest[_]) extends CreateForm
-  final class AccountCreateForm(implicit request : SiteRequest[_]) extends CreateForm with AccountForm {
-    val email = Field(Mappings.some(Forms.email))
-  }
-  protected def createForm(acct : Boolean)(implicit request : SiteRequest[_]) : CreateForm =
-    if (acct) new AccountCreateForm else new PartyCreateForm
+  protected def createForm(acct : Boolean)(implicit request : SiteRequest[_]) : PartyController.CreateForm =
+    if (acct) new PartyController.AccountCreateForm else new PartyController.PartyCreateForm
 
   def update(i : models.Party.Id) = AdminAction(i).async { implicit request =>
     val form = editForm._bind
@@ -117,11 +59,13 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	affiliation = form.affiliation.get.map(Maybe(_).opt),
 	duns = form.duns.get.filter(_ => request.access.direct == Permission.ADMIN)
       )
-      _ <- macros.Async.foreach[AccountEditForm, Unit](form.accountForm, form =>
+      _ <- macros.Async.foreach[PartyController.AccountEditForm, Unit](form.accountForm, { form =>
+	form.checkPassword(form.account)
 	form.orThrow.account.change(
 	  email = form.email.get,
-	  password = form.password.get,
-	  openid = form.openid.get.map(Maybe(_).opt)))
+	  password = form.cryptPassword,
+	  openid = form.openid.get.map(Maybe(_).opt))
+      })
       _ <- macros.Async.foreach(form.avatar.get, { file : form.FilePart =>
 	val fmt = AssetFormat.getFilePart(file).filter(_.isImage) getOrElse
 	  form.avatar.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw
@@ -138,10 +82,10 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	orcid = form.orcid.get.flatten,
 	affiliation = form.affiliation.get,
 	duns = form.duns.get.flatten)
-      a <- macros.Async.map[AccountCreateForm, Account](cast[AccountCreateForm](form), form =>
+      a <- macros.Async.map[PartyController.AccountCreateForm, Account](cast[PartyController.AccountCreateForm](form), form =>
 	Account.create(p,
 	  email = form.email.get.get,
-	  password = form.password.get,
+	  password = form.cryptPassword,
 	  openid = form.openid.get)
       )
       s <- p.perSite
@@ -230,6 +174,56 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 object PartyController extends PartyController {
   private final val maxExpiration = org.joda.time.Years.years(2)
 
+  abstract sealed class PartyForm(action : Call)(implicit request : SiteRequest[_])
+    extends HtmlForm[PartyForm](action,
+      views.html.party.edit(_)) {
+    def actionName : String
+    def formName : String = actionName + " Party"
+    val name : Field[Option[String]]
+    val orcid = Field(OptionMapping(Forms.optional(Forms.of[Orcid])))
+    val affiliation = Field(OptionMapping(Forms.text))
+    val duns = Field(OptionMapping(Forms.optional(Forms.of[DUNS])))
+  }
+  sealed trait AccountForm extends PartyForm with LoginController.PasswordChangeForm {
+    override def formName : String = actionName + " Account"
+    val email : Field[Option[String]]
+    val password = passwordField.fill(None)
+    val openid = Field(OptionMapping(Forms.text(0,256)))
+  }
+
+  abstract sealed class EditForm(implicit request : Request[_])
+    extends PartyForm(routes.PartyHtml.update(request.obj.id)) {
+    def actionName = "Update"
+    override def formName = "Edit Profile"
+    def party = request.obj.party
+    def accountForm : Option[AccountEditForm]
+    val name = Field(OptionMapping(Forms.nonEmptyText)).fill(Some(party.name))
+    val avatar = OptionalFile()
+    orcid.fill(Some(party.orcid))
+    affiliation.fill(Some(party.affiliation.getOrElse("")))
+    duns.fill(Some(party.duns))
+  }
+  final class PartyEditForm(implicit request : Request[_]) extends EditForm {
+    def accountForm = None
+  }
+  final class AccountEditForm(val account : Account)(implicit request : Request[_]) extends EditForm with AccountForm with LoginController.AuthForm {
+    def accountForm = if (_authorized || request.superuser) Some(this)
+      else if (email.get.exists(!_.equals(account.email)) || password.get.nonEmpty || openid.get.exists(!_.equals(account.openid.getOrElse(""))))
+	Some(this.auth.withError("error.required"))
+      else None
+    val email = Field(OptionMapping(Forms.email)).fill(Some(account.email))
+    openid.fill(account.openid)
+  }
+
+  abstract sealed class CreateForm(implicit request : SiteRequest[_])
+    extends PartyForm(routes.PartyHtml.create()) {
+    def actionName = "Create"
+    val name = Field(Mappings.some(Forms.nonEmptyText))
+  }
+  final class PartyCreateForm(implicit request : SiteRequest[_]) extends CreateForm
+  final class AccountCreateForm(implicit request : SiteRequest[_]) extends CreateForm with AccountForm {
+    val email = Field(Mappings.some(Forms.email))
+  }
   sealed trait AuthorizeBaseForm extends StructForm {
     val inherit = Field(Forms.default(Mappings.enum(Permission), Permission.NONE))
     val info = Field(Forms.optional(Forms.nonEmptyText)).fill(None)
@@ -239,6 +233,7 @@ object PartyController extends PartyController {
       this
     }
   }
+
   sealed trait AuthorizeFullForm extends AuthorizeBaseForm {
     val direct = Field(Forms.default(Mappings.enum(Permission), Permission.NONE))
     val pending = Field(Forms.boolean)
@@ -303,13 +298,6 @@ object PartyController extends PartyController {
 object PartyHtml extends PartyController with HtmlController {
   import PartyController._
 
-  override protected val passwordInputMapping =
-    Forms.tuple(
-      "once" -> super.passwordInputMapping,
-      "again" -> Forms.text
-    ).verifying(Messages("password.again"), pa => pa._1.forall(_ == pa._2))
-    .transform[Option[String]](_._1, p => (p, p.getOrElse("")))
-
   def viewParty(implicit request : Request[_]) = 
     for {
       parents <- request.obj.party.authorizeParents()
@@ -370,8 +358,6 @@ object PartyHtml extends PartyController with HtmlController {
 }
 
 object PartyApi extends PartyController with ApiController {
-  override protected val passwordInputMapping = OptionMapping(Forms.text(7))
-
   def get(partyId : models.Party.Id) = Action(Some(partyId), Some(Permission.NONE)).async { implicit request =>
     request.obj.json(request.apiOptions).map(Ok(_))
   }
