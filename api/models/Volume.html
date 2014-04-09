@@ -274,6 +274,19 @@ Usually represents a single project or dataset with a single set of procedures.<
       </span>
       </h4>
       <p class="shortcomment cmt">The list of comments in this volume.</p>
+    </li><li name="models.Volume#consumers" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="consumers:scala.concurrent.Future[Seq[models.Volume]]"></a>
+      <a id="consumers:Future[Seq[Volume]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">consumers</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="" class="extype" name="models.Volume">Volume</a>]]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Volumes (&quot;studies&quot;) which include data provided by this volume.</p>
     </li><li name="models.Volume#containers" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="containers:scala.concurrent.Future[Seq[models.Container]]"></a>
       <a id="containers:Future[Seq[Container]]"></a>
@@ -327,6 +340,19 @@ Usually represents a single project or dataset with a single set of procedures.<
       </h4>
       <p class="shortcomment cmt">Equality is based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality is based on primary key.
 This assumes that two objects representing the same row are the same (even if they aren't), and also doesn't properly check types due to erasure, so === should be preferred.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
+    </li><li name="models.Volume#excerpts" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="excerpts:scala.concurrent.Future[Seq[models.SlotAsset]]"></a>
+      <a id="excerpts:Future[Seq[SlotAsset]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">excerpts</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>]]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">List of toplevel assets within this volume.</p>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -554,6 +580,19 @@ This assumes that two objects representing the same row are the same (even if th
       </span>
       </h4>
       <p class="shortcomment cmt">the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request.</p><div class="fullcomment"><div class="comment cmt"><p>the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than <a href="Permission$.html#VIEW:models.Permission.Value" class="extmbr" name="models.Permission#VIEW">Permission.VIEW</a> except possibly for transient objects, as unavailable volumes should never be returned in the first place.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Volume">Volume</a> → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
+    </li><li name="models.Volume#providers" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="providers:scala.concurrent.Future[Seq[models.Volume]]"></a>
+      <a id="providers:Future[Seq[Volume]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">providers</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="" class="extype" name="models.Volume">Volume</a>]]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Volumes (&quot;datasets&quot;) which provide data included in this volume.</p>
     </li><li name="models.Volume#recordCategorySlots" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="recordCategorySlots:scala.concurrent.Future[Seq[(models.RecordCategory,Seq[(models.Record,Seq[models.Slot])])]]"></a>
       <a id="recordCategorySlots:Future[Seq[(RecordCategory,Seq[(Record,Seq[Slot])])]]"></a>
@@ -698,19 +737,6 @@ For now this only includes session (cross participant) information.</p></div></d
       </span>
       </h4>
       <p class="shortcomment cmt">The master container corresponding to this volume, which serves as a proxy target for many annotations.</p>
-    </li><li name="models.Volume#toplevelAssets" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="toplevelAssets:scala.concurrent.Future[Seq[models.SlotAsset]]"></a>
-      <a id="toplevelAssets:Future[Seq[SlotAsset]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">toplevelAssets</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>]]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">List of toplevel assets within this volume.</p>
     </li><li name="models.Volume#volume" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volume:models.Volume"></a>
       <a id="volume:Volume"></a>

@@ -362,7 +362,7 @@ Must match the corresponding postgres &quot;consent&quot; type.</p></div><dl cla
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Enumeration</dd></dl></div>
     </li><li name="models.Classification#access" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="access(consent:models.Consent.Value,excerpt:Boolean)(implicitsite:site.Site):models.Classification.Value"></a>
+      <a id="access(consent:models.Consent.Value,top:Boolean)(implicitsite:site.Site):models.Classification.Value"></a>
       <a id="access(Consent.Value,Boolean)(Site):Value"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -370,7 +370,7 @@ Must match the corresponding postgres &quot;consent&quot; type.</p></div><dl cla
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">access</span><span class="params">(<span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>, <span name="excerpt">excerpt: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Value</a></span>
+        <span class="name">access</span><span class="params">(<span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>, <span name="top">top: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Value</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">The most restricted data classification level that the current user may access under the given consent level.</p><div class="fullcomment"><div class="comment cmt"><p>The most restricted data classification level that the current user may access under the given consent level.
@@ -421,7 +421,7 @@ Actual access to data will additionally depend on volume permissions not checked
               
         </dd></dl></div>
     </li><li name="models.Classification#download" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="download(p:models.Permission.Value,consent:models.Consent.Value,excerpt:Boolean)(implicitsite:site.Site):Option[models.Classification.Value]"></a>
+      <a id="download(p:models.Permission.Value,consent:models.Consent.Value,top:Boolean)(implicitsite:site.Site):Option[models.Classification.Value]"></a>
       <a id="download(Permission.Value,Consent.Value,Boolean)(Site):Option[Value]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -429,7 +429,7 @@ Actual access to data will additionally depend on volume permissions not checked
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">download</span><span class="params">(<span name="p">p: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>, <span name="excerpt">excerpt: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Value</a>]</span>
+        <span class="name">download</span><span class="params">(<span name="p">p: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>, <span name="top">top: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Value</a>]</span>
       </span>
       </h4>
       <p class="shortcomment cmt">The most restricted data classification level that the current user may access under the given permission and consent level.</p>
@@ -556,6 +556,19 @@ Actual access to data will additionally depend on volume permissions not checked
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Enumeration</dd></dl></div>
+    </li><li name="models.Classification#message" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="message(v:models.Classification.Value):Option[String]"></a>
+      <a id="message(Value):Option[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">message</span><span class="params">(<span name="v">v: <a href="#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Value</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
