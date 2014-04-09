@@ -25,7 +25,7 @@
                     <span ng-if="auth.hasAuth('NONE')">
                         <a ng-href="{{page.router.profile()}}" class="toolbar_user_link">
                             <span class="username hide-mobile hide-tablet">{{auth.user.name}}</span>
-                            <img ng-src="{{auth.user.avatar}}" alt="{{auth.user.name}}" class="avatar"> </a>
+                            <img ng-src="{{auth.user.avatar}}" class="avatar"> </a>
 
                         <span ng-if="auth.hasAuth('ADMIN')">
                             <span class="sep">|</span>

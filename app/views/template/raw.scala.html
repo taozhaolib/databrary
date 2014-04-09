@@ -55,7 +55,7 @@
                     case Some(request : SiteRequest.Auth[_]) => {
                         <a href="@routes.PartyHtml.profile" class="toolbar_user_link">
                             <span class="username hide-mobile hide-tablet">@requestOption.get.identity.name</span>
-                            <img src="@display.avatar(requestOption.get.identity, 16)" alt="@requestOption.get.identity.name" class="avatar">
+                            <img src="@display.avatar(requestOption.get.identity, 16)" class="avatar">
                         </a>
 
                         @if(request.access.isAdmin) {
