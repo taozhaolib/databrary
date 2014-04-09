@@ -58,7 +58,7 @@ define(['config/module'], function (module) {
 			pages: []
 		};
 
-		Scraper('http://databrary.org/policies/investigator-agreement.html')
+		Scraper('//databrary.org/policies/investigator-agreement.html')
 			.then(function (pages) {
 				pages = $('<response>' + pages + '</response>');
 				pages.find('a').each(function () {
