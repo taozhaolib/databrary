@@ -44,10 +44,12 @@ define(['config/module'], function (module) {
 						if (angular.isFunction(form.resetSuccessFn))
 							form.resetSuccessFn(form, arguments);
 					})
-					.error(function (data, status, headers, config) {
+					.error(function (errors, status) {
 						page.messages.addError({
 							closeable: true,
-							body: page.constants.message('reset.request.error')
+							body: page.constants.message('reset.request.error'),
+							errors: errors,
+							status: status
 						});
 
 						if (angular.isFunction(form.resetErrorFn))
@@ -80,10 +82,11 @@ define(['config/module'], function (module) {
 						$window.$play.object = null;
 						auth.updateUser(data);
 					})
-					.error(function () {
-						page.messages.addError({
-							closeable: true,
-							body: page.constants.message('reset.save.error')
+					.error(function (errors, status) {
+						page.messages.add({
+							countdown: 3000,
+							type: 'red',
+							body: (errors['password.once'] || errors['password']).join('. ') + '.'
 						});
 
 						if (angular.isFunction(form.saveErrorFn))
