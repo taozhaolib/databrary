@@ -132,7 +132,9 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
 	      LoginController.needed("login.expired")(request)
 	    }
 	  } else block)
-	  .map(_.withHeaders(HeaderNames.DATE -> HTTP.date(now)))
+	  .map(_.withHeaders(
+	    HeaderNames.DATE -> HTTP.date(now),
+	    HeaderNames.SERVER -> _root_.site.Site.appVersion))
       }
     }
   }

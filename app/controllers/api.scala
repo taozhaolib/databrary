@@ -26,6 +26,8 @@ object SiteApi extends SiteController {
 	, 'name -> c.toString
 	))(Classification.values.toSeq)
     , 'category -> JsonRecord.map[RecordCategory](_.json)(RecordCategory.getAll)
+    , 'mode -> json.JsString(current.mode.toString)
+    , 'version -> json.JsString(site.Site.version)
     ).js
   private final val constantsETag = "constants:" + constantsJson.hashCode
   private final val constantsResult = Ok(constantsJson)

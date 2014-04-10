@@ -17,4 +17,6 @@ package object dbrary {
       case _ => json.JsError("error.expected.jsnumber")
     }
   }
+
+  def init() {}
 }

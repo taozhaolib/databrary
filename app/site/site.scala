@@ -1,12 +1,21 @@
 package site
 
 import play.api.mvc._
+import play.api.Play
 import macros._
 import dbrary._
 import models._
 import scala._
 
 object Site {
+  dbrary.init
+
+  private val properties = new java.util.Properties
+  Option(getClass.getResourceAsStream("/properties")).foreach(properties.load)
+  def appName = properties.getProperty("name", "unknown")
+  val version = properties.getProperty("version", "unknown") + (if (!Play.isProd(Play.current)) "-" + Play.current.mode else "")
+  val appVersion = appName + "/" + version
+
   type DB = com.github.mauricio.async.db.Connection
   private def getDBPool(implicit app : play.api.Application) : DB =
     app.plugin[PostgresAsyncPlugin].fold(throw new Exception("PostgresAsyncPlugin not registered"))(_.pool)

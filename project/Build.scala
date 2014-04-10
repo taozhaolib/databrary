@@ -36,8 +36,14 @@ object ApplicationBuild extends Build {
     "com.typesafe" %% "play-plugins-mailer" % "2.2.0"
   )
 
-  val main = play.Project(appName, "unknown", appDependencies).
-    dependsOn(macros, dbrary, media).settings(
-      version <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown"))
-    )
+  val main = play.Project(appName, "unknown", appDependencies)
+    .dependsOn(macros, dbrary, media).settings(
+      version <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown")),
+      resourceGenerators in Compile <+= (resourceManaged in Compile, version) map { (dir, ver) =>
+	val f = dir / "properties"
+	val content = "name=" + appName + "\nversion=" + ver + "\n"
+	if (!f.exists || !IO.read(f).equals(content))
+	  IO.write(f, content)
+	Seq(f)
+      })
 }
