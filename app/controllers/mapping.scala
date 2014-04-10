@@ -13,7 +13,7 @@ object Mappings {
   val text : Mapping[String] = Forms.text.transform[String](_.trim, identity)
   val nonEmptyText : Mapping[String] = text verifying Constraints.nonEmpty
   val maybeText : Mapping[Option[String]] =
-    Forms.text.transform[Option[String]](s => Maybe(s.trim).opt, _.getOrElse(""))
+    Forms.optional(Forms.text).transform[Option[String]](_.flatMap(s => Maybe(s.trim).opt), identity)
   val tag : Mapping[String] =
     Forms.text.transform[String](_.trim.toLowerCase, identity)
     .verifying("tag.invalid", models.Tag.isValid _)
