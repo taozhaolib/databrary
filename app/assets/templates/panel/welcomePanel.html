@@ -1,5 +1,4 @@
 <panel bindonce ng-controller="WelcomePanel" top id="panel_welcome" panel-title="{{'welcome.title' | message}}" fold>
-  <panel-mode name="view" active>
     <hgroup class="col-full">
       <h1 class="panel_context">{{'welcome.title' | message}}</h1>
 
@@ -9,5 +8,4 @@
     <div class="col-full">
       <div bo-html="'welcome.body' | message | format:false:true"></div>
     </div>
-  </panel-mode>
 </panel>

@@ -1,5 +1,4 @@
 <panel ng-controller="CommentsPanel" id="panel_comments" panel-title="{{'comments.title' | message}}" fold>
-  <panel-mode name="view" active>
     <comment-reply-form ng-if="getReply(undefined)"></comment-reply-form>
 
     <article bindonce ng-repeat="comment in comments" class="comment" ng-class="getCommentClasses(comment)">
@@ -19,5 +18,4 @@
 
       <comment-reply-form ng-if="getReply(comment)"></comment-reply-form>
     </article>
-  </panel-mode>
 </panel>

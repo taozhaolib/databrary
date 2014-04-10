@@ -22,7 +22,6 @@ define([
 	'directive/scroll',
 	'directive/tooltip',
 	'directive/clickElsewhere',
-	'directive/panelMode',
 	'directive/carousel',
 	'directive/browserGroup',
 	'directive/browserIcon',

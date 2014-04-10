@@ -1,5 +1,4 @@
 <panel ng-controller="OverviewVolumePanel" top id="panel_overview" panel-title="{{'volume.overview.title' | message}}" ng-mouseover="hoverPanel()" bindonce>
-  <panel-mode name="view" active>
     <hgroup class="row">
       <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-6">
         <figure class="panel_overview_thumbnail" baseline="square">
@@ -107,6 +106,5 @@
       <a class="button mini" ng-if="volume.permission >= page.constants.find('permission', 'CONTRIBUTE').id" ng-href="{{page.router.volumeEdit(volume)}}" target="_self">edit</a>
       <a class="button mini" ng-if="volume.permission >= page.constants.find('permission', 'ADMIN').id" ng-href="{{page.router.volumeAccess(volume)}}" target="_self">access</a>
     </div>
-  </panel-mode>
 </panel>
 

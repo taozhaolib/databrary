@@ -1,5 +1,4 @@
 <panel ng-controller="PublicationsPanel" id="panel_publications" panel-title="{{'citations.title' | message}}" fold>
-  <panel-mode name="view" active>
     <div class="row">
       <div bindonce ng-repeat="citation in volume.citations" class="publication" fold closed forget>
         <div class="col-full">
@@ -11,5 +10,4 @@
         </div>
       </div>
     </div>
-  </panel-mode>
 </panel>

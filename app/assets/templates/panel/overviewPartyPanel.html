@@ -1,5 +1,4 @@
 <panel ng-controller="OverviewPartyPanel" top id="panel_overview" panel-title="{{'party.overview.title' | message}}" bindonce>
-  <panel-mode name="view" active>
     <hgroup class="row">
       <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-6">
         <figure class="panel_overview_thumbnail" baseline="square">
@@ -27,5 +26,4 @@
     <div class="temporary">
       <a class="button mini" ng-if="auth.hasAccess('CONTRIBUTE', party)" bo-href="page.router.partyEdit(party)" target="_self">edit</a>
     </div>
-  </panel-mode>
 </panel>
