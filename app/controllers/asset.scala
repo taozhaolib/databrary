@@ -27,7 +27,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       for {
 	container <- macros.Async.map[Container.Id, Container](form.container.get,
 	  Container.get(_).map(_.getOrElse(form.container.withError("Invalid container ID")._throw)))
-	_ <- request.obj.change(classification = form.classification.get, name = form.name.get.map(Maybe(_).opt))
+	_ <- request.obj.change(classification = form.classification.get, name = form.name.get)
 	_ <- macros.Async.foreach[Container, Unit](container,
 	  request.obj.link(_, form.position.get))
       } yield (result(request.obj))
@@ -72,7 +72,7 @@ object AssetController extends AssetController {
     def actionName : String
     def formName : String = actionName + " Asset"
 
-    val name = Field(OptionMapping(Forms.text))
+    val name = Field(OptionMapping(Mappings.maybeText))
     val classification = Field(OptionMapping(Mappings.enum(Classification)))
     val container = Field(Forms.optional(Forms.of[Container.Id]))
     val position = Field(Forms.optional(Forms.of[Offset]))
@@ -82,7 +82,7 @@ object AssetController extends AssetController {
     extends AssetForm(routes.AssetHtml.update(request.obj.id)) {
     def actionName = "Update"
     override def formName = "Edit Asset"
-    name.fill(Some(request.obj.name.getOrElse("")))
+    name.fill(Some(request.obj.name))
     classification.fill(Some(request.obj.classification))
     container.fill(None)
     position.fill(None)
@@ -142,7 +142,7 @@ object AssetHtml extends AssetController with HtmlController {
 	    form.file.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw
 	  (file.ref, ffmt, file.filename)
 	}
-      val aname = form.name.get.flatMap(Maybe(_).opt) orElse Maybe(fname).opt
+      val aname = form.name.get.flatten orElse Maybe(fname).opt
       for {
 	container <- macros.Async.map[Container.Id, Container](form.container.get, Container.get(_).map(_ getOrElse
 	  form.container.withError("Invalid container ID")._throw))

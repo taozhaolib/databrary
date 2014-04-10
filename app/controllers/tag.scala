@@ -21,7 +21,7 @@ private[controllers] sealed class TagController extends SiteController {
 
 object TagController extends TagController {
   trait Form extends StructForm {
-    val name = Field(OptionMapping(Forms.nonEmptyText))
+    val name = Field(OptionMapping(Mappings.tag))
     val vote = Field(Forms.optional(Forms.boolean))
   }
   /* annoying inheritance: */

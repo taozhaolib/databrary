@@ -3,12 +3,20 @@ package controllers
 import play.api.data._
 import play.api.data.Forms._
 import play.api.data.validation._
+import macros._
 
 object Mappings {
   def some[A](map : Mapping[A], default : A = "") : Mapping[Option[A]] =
     map.transform[Option[A]](Some(_), _.getOrElse(default))
   def enum(enum : Enumeration, maxId : Option[Int] = None) =
     number(min=0, max=maxId.getOrElse(enum.maxId-1)).transform[enum.Value](enum(_), _.id)
+  val text : Mapping[String] = Forms.text.transform[String](_.trim, identity)
+  val nonEmptyText : Mapping[String] = text verifying Constraints.nonEmpty
+  val maybeText : Mapping[Option[String]] =
+    Forms.text.transform[Option[String]](s => Maybe(s.trim).opt, _.getOrElse(""))
+  val tag : Mapping[String] =
+    Forms.text.transform[String](_.trim.toLowerCase, identity)
+    .verifying("tag.invalid", models.Tag.isValid _)
 }
 
 object EmptyMapping extends Mapping[Unit] {

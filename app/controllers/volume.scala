@@ -24,9 +24,9 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
 
   type CitationMapping = (Option[String], Option[String], Option[String])
   private val citationMapping = Forms.tuple(
-    "head" -> Forms.optional(Forms.nonEmptyText),
-    "url" -> Forms.optional(Forms.nonEmptyText),
-    "body" -> Forms.optional(Forms.nonEmptyText)
+    "head" -> Mappings.maybeText,
+    "url" -> Mappings.maybeText,
+    "body" -> Mappings.maybeText
   ).verifying("citation.invalid", _ match {
     case (Some(head), url, body) => true // TODO: validate URL
     case (None, None, None) => true
@@ -49,7 +49,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       _ = form._bind
       _ <- vol.change(name = form.name.get,
 	alias = form.alias.get.map(Maybe(_).opt),
-	body = form.body.get.map(Maybe(_).opt))
+	body = form.body.get)
       _ <- citationSet(vol, form.citation.get)
     } yield (result(vol))
   }
@@ -57,7 +57,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
   def create(owner : models.Party.Id) = ContributeAction(Some(owner)).async { implicit request =>
     val form = new VolumeController.CreateForm()._bind
     for {
-      vol <- models.Volume.create(form.name.get.get, form.alias.get.flatMap(Maybe(_).opt), form.body.get.flatMap(Maybe(_).opt))
+      vol <- models.Volume.create(form.name.get.get, form.alias.get.flatMap(Maybe(_).opt), form.body.get.flatten)
       _ <- citationSet(vol, form.citation.get)
       _ <- VolumeAccess.set(vol, owner, Permission.ADMIN, Permission.CONTRIBUTE)
     } yield (result(vol))
@@ -80,7 +80,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       _ <- if (form.delete.get)
 	  VolumeAccess.delete(request.obj, e)
 	else
-	  VolumeAccess.set(request.obj, e, access = max(form.access.get, form.inherit.get), inherit = form.inherit.get, funding = Maybe(form.funding.get).opt)
+	  VolumeAccess.set(request.obj, e, access = max(form.access.get, form.inherit.get), inherit = form.inherit.get, funding = form.funding.get)
     } yield (result(request.obj))
   }
 
@@ -101,7 +101,7 @@ object VolumeController extends VolumeController {
     extends HtmlForm[SearchForm](
       routes.VolumeHtml.search,
       views.html.volume.search(Nil, _)) {
-    val query = Field(Forms.optional(Forms.nonEmptyText))
+    val query = Field(Mappings.maybeText)
     val party = Field(OptionMapping(Forms.of[Party.Id]))
   }
 
@@ -111,7 +111,7 @@ object VolumeController extends VolumeController {
 
     val name : Field[Option[String]]
     val alias = Field(OptionMapping(Forms.text(maxLength = 64)))
-    val body = Field(OptionMapping(Forms.text))
+    val body = Field(OptionMapping(Mappings.maybeText))
     val citation = Field(Forms.seq(citationMapping))
   }
 
@@ -122,8 +122,8 @@ object VolumeController extends VolumeController {
       views.html.volume.edit(_)) with VolumeForm {
     def actionName = "Update"
     override def formName = "Edit Volume"
-    val name = Field(OptionMapping(Forms.nonEmptyText)).fill(Some(request.obj.name))
-    body.fill(Some(request.obj.body.getOrElse("")))
+    val name = Field(OptionMapping(Mappings.nonEmptyText)).fill(Some(request.obj.name))
+    body.fill(Some(request.obj.body))
     alias.fill(Some(request.obj.alias.getOrElse("")))
     citation.fill(cites.map(citationFill(_)) :+ ((Some(""), None, None)))
   }
@@ -133,7 +133,7 @@ object VolumeController extends VolumeController {
       routes.VolumeHtml.create(request.obj.party.id),
       views.html.volume.edit(_)) with VolumeForm {
     def actionName = "Create"
-    val name = Field(Mappings.some(Forms.nonEmptyText))
+    val name = Field(Mappings.some(Mappings.nonEmptyText))
   }
 
   final class AccessForm(val party : Party)(implicit request : Request[_])
@@ -143,13 +143,13 @@ object VolumeController extends VolumeController {
     def partyId = party.id
     val access = Field(Mappings.enum(Permission, maxId = Some(if (party.id.unId <= 0) Permission.DOWNLOAD.id else Permission.ADMIN.id)))
     val inherit = Field(Mappings.enum(Permission, maxId = Some(if (party.id.unId <= 0) Permission.DOWNLOAD.id else Permission.EDIT.id)))
-    val funding = Field(Forms.text)
+    val funding = Field(Mappings.maybeText)
     val delete = Field(if (request.identity === party) Forms.boolean.verifying("access.delete.self", !_) else Forms.boolean).fill(false)
     private[controllers] def _fill(a : VolumeAccess) : this.type = {
       assert(a.party === party)
       access.fill(a.access)
       inherit.fill(a.inherit)
-      funding.fill(a.funding.getOrElse(""))
+      funding.fill(a.funding)
       this
     }
   }
@@ -158,7 +158,7 @@ object VolumeController extends VolumeController {
     extends AHtmlForm[AccessSearchForm](
       routes.VolumeHtml.accessSearch(request.obj.id),
       f => VolumeHtml.viewAdmin(accessSearchForm = Some(f))) {
-    val name = Field(Forms.nonEmptyText)
+    val name = Field(Mappings.nonEmptyText)
   }
 
   def thumb(v : models.Volume.Id) = Action(v, Permission.VIEW).async { implicit request =>

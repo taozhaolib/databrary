@@ -18,7 +18,7 @@ private[controllers] sealed class CommentController extends SiteController {
 
 object CommentController extends CommentController {
   trait Form extends StructForm {
-    val text = Field(Forms.nonEmptyText)
+    val text = Field(Mappings.nonEmptyText)
     val parent = Field(OptionMapping(Forms.of[Comment.Id]))
   }
   /* annoying inheritance: */

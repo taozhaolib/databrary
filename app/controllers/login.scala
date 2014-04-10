@@ -132,9 +132,9 @@ object LoginController extends LoginController {
     extends HtmlForm[RegistrationForm](
       routes.LoginHtml.register,
       views.html.party.register(_)) {
-    val name = Field(Forms.nonEmptyText)
+    val name = Field(Mappings.nonEmptyText)
     val email = Field(Forms.email)
-    val affiliation = Field(Forms.optional(Forms.nonEmptyText))
+    val affiliation = Field(Mappings.maybeText)
     val agreement = Field(Forms.checked("agreement.required"))
   }
 
@@ -150,13 +150,13 @@ object LoginController extends LoginController {
     private[this] final def passwordBaseMapping : Mapping[String] =
       Forms.text(7)
     protected def passwordOnceMapping : Mapping[Option[String]] =
-      if (passwordRequired) SomeMapping(passwordBaseMapping)
+      if (passwordRequired) Mappings.some(passwordBaseMapping)
       else Forms.optional(passwordBaseMapping)
     protected def passwordInputMapping : Mapping[Option[String]] =
       Forms.tuple(
 	"once" -> passwordOnceMapping,
 	"again" -> Forms.text
-      ).verifying(Messages("password.again"), pa => pa._1.forall(_ == pa._2))
+      ).verifying("password.again", pa => pa._1.forall(_ == pa._2))
       .transform[Option[String]](_._1, p => (p, p.getOrElse("")))
     protected final def passwordMapping : Mapping[Option[String]] =
       passwordInputMapping

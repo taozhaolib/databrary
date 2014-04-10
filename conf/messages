@@ -17,6 +17,7 @@ orcid.invalid=Invalid ORCID iD
 range.invalid=Invalid time range
 agreement.required=You must consent to the user agreement.
 access.delete.self=You cannot remove your own access to a volume.
+tag.invalid=Invalid tag name (must be 3-32 letters)
 
 error.forbidden.title=Access denied
 error.forbidden.body=

@@ -41,12 +41,14 @@ object Tag extends TableId[Tag]("tag") {
   private def _get(name : String)(implicit dbc : Site.DB, exc : ExecutionContext) : Future[Option[Tag]] =
     row.SELECT("WHERE name = ?")(dbc, exc).apply(name).singleOpt
 
-  private val validRegex = """ *\p{Alpha}[-\p{Alpha} ]{1,30}\p{Alpha} *""".r
+  private val validPattern = """\p{Lower}[-\p{Lower} ]{1,30}\p{Lower}""".r.pattern
+  def isValid(name : String) : Boolean = validPattern.matcher(name).matches
 
+  private val validRegex = """ *(\p{Alpha}[-\p{Alpha} ]{1,30}\p{Alpha}) *""".r
   /** Determine if the given tag name is valid.
     * @return the normalized name if valid */
   private[models] def valid(name : String) : Option[String] = name match
-    { case validRegex() => Some(name.trim.toLowerCase)
+    { case validRegex(tag) => Some(tag.toLowerCase)
       case _ => None
     }
 

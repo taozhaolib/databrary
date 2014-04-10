@@ -24,7 +24,7 @@ private[controllers] sealed class SlotController extends ObjectController[Slot] 
       val form = SlotController.editForm._bind
       for {
 	_ <- macros.Async.foreach(cast[SlotController.ContainerEditForm](form), (form : SlotController.ContainerEditForm) =>
-	  request.obj.container.change(name = form.name.get.map(Maybe(_).opt), date = form.date.get))
+	  request.obj.container.change(name = form.name.get, date = form.date.get))
 	_ <- macros.Async.foreach(form.consent.get, (c : Consent.Value) => request.obj.setConsent(c))
       } yield (result(request.obj))
     }
@@ -45,7 +45,7 @@ object SlotController extends SlotController {
     val consent = Field(OptionMapping(Mappings.enum(Consent)))
   }
   sealed trait ContainerForm extends SlotForm {
-    val name = Field(OptionMapping(Forms.text))
+    val name = Field(OptionMapping(Mappings.maybeText))
     val date = Field(OptionMapping(Forms.optional(Forms.jodaLocalDate)))
   }
 
@@ -60,7 +60,7 @@ object SlotController extends SlotController {
   }
   final class ContainerEditForm(implicit request : Request[_])
     extends EditForm with ContainerForm {
-    name.fill(Some(request.obj.container.name.getOrElse("")))
+    name.fill(Some(request.obj.container.name))
     date.fill(Some(request.obj.container.date))
   }
   def editForm(implicit request : Request[_]) : EditForm =
@@ -115,7 +115,7 @@ object SlotHtml extends SlotController with HtmlController {
     VolumeController.Action(s, Permission.CONTRIBUTE).async { implicit request =>
       val form = new ContainerCreateForm()._bind
       for {
-	cont <- models.Container.create(request.obj, name = form.name.get.filter(_.nonEmpty), date = form.date.get.flatten)
+	cont <- models.Container.create(request.obj, name = form.name.get.flatten, date = form.date.get.flatten)
 	_ <- macros.Async.foreach(form.consent.get, (c : Consent.Value) =>
 	  cont.setConsent(c))
       } yield (result(cont))

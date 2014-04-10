@@ -47,10 +47,9 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
     Action(recordId, Permission.EDIT).async { implicit request =>
       val metric = Metric.get(metricId).getOrElse(throw NotFoundException)
       val form = new RecordController.MeasureForm(metric)._bind
-      (if (form.datum.get.isEmpty)
-	request.obj.removeMeasure(metric)
-      else
-	request.obj.setMeasure(new Measure(metric, form.datum.get)).map {
+      form.datum.get.fold(
+	request.obj.removeMeasure(metric))(d =>
+	request.obj.setMeasure(new Measure(metric, d)).map {
 	  case false => form.datum.withError("measure.bad")._throw
 	  case true => true
 	})
@@ -86,9 +85,9 @@ object RecordController extends RecordController {
     extends HtmlForm[MeasureForm](
       routes.RecordHtml.measureUpdate(request.obj.id, metric.id),
       f => RecordHtml.viewEdit(measureForm = Some(f))) {
-    val datum = Field(Forms.text).fill("")
+    val datum = Field(Mappings.maybeText).fill(None)
     private[controllers] def _fill(d : String) : this.type = {
-      datum.fill(d)
+      datum.fill(Some(d))
       this
     }
   }
