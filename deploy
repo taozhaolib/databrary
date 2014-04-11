@@ -1,26 +1,8 @@
 #!/bin/bash -e
 PATH=$PATH:/usr/local/bin
 
-if [[ ! -r prod.conf ]] ; then
-	echo "prod.conf does not exist."
-	if [[ ! -f prod.conf.example ]] ; then
-		umask 077
-		cat <<EOF >>prod.conf.example
-include "/application.conf"
-application.secret="`openssl rand -base64 48`"
-db.default.user=$USER
-db.default.password="database password"
-store.master="./store"
-store.cache="./cache"
-http.port=8000
-EOF
-		echo "An example has been put in prod.conf.example."
-	fi
-	exit 1
-fi
-
 die () {
-	echo "Usage: $0 [/path/to/databrary-VER.zip|[databrary-]VER]"
+	echo "Usage: $0 [/path/to/databrary-VER.zip|[databrary-]VER] MODE ..."
 	exit 2
 }
 
@@ -29,18 +11,41 @@ if [[ $1 = */databrary-*.zip && -r $1 ]] ; then
 	base=${src%.zip}
 	ver=${base##*/databrary-}
 	unzip $src
+	shift
 elif [[ -n $1 && -d databrary-$1 ]] ; then
 	ver=$1
+	shift
 elif [[ $1 = databrary-* && -d $1 ]] ; then
 	ver=${1#databrary-}
-elif [[ $# -ne 0 ]] ; then
-	die
+	shift
 fi
-
-port=`sed -n '/^http\.port=\([0-9]*\)$/{s//\1/;p;q}' prod.conf`
 
 if [[ -n $ver ]] ; then
 	ln -sfT databrary-$ver databrary
+fi
+
+mode=prod
+if [[ $1 = prod || -f ${1}.conf ]] ; then
+	mode=$1
+	shift
+fi
+
+if [[ ! -r ${mode}.conf ]] ; then
+	echo "${mode}.conf does not exist."
+	if [[ ! -f ${mode}.conf.example ]] ; then
+		umask 077
+		cat <<EOF >>${mode}.conf.example
+include "/application.conf"
+application.secret="`openssl rand -base64 48`"
+db.default.user=$USER
+db.default.password="database password"
+store.master="./store"
+store.cache="./cache"
+http.port=8000
+EOF
+		echo "An example has been put in ${mode}.conf.example."
+	fi
+	exit 1
 fi
 
 if [[ ! -d databrary ]] ; then
@@ -48,4 +53,18 @@ if [[ ! -d databrary ]] ; then
 	die
 fi
 
-exec databrary/bin/databrary ${port:+-Dhttp.port=$port} -Dconfig.file=prod.conf
+declare -a args
+addargs() {
+	args=("${args[@]}" "$@")
+}
+addargs "-Dapplication.mode=$mode" "-Dconfig.file=${mode}.conf" "-Dpidfile.path=$HOME/${mode}.pid"
+while read l ; do
+	if [[ $l = http*=* ]] ; then
+		addargs "-D$l"
+	fi
+done < ${mode}.conf
+if [[ -f ${mode}-logger.xml ]] ; then
+	addargs "-Dlogger.file=${mode}-logger.xml"
+fi
+
+exec databrary/bin/databrary "${args[@]}" "$@"
