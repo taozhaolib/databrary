@@ -10,18 +10,15 @@ define(['config/module'], function (module) {
 			foldAttr = '[folded]';
 
 		var link = function ($scope, $element, $attrs) {
+			$scope.id = $attrs.id;
 			$scope.$storage = $sessionStorage;
 
 			//
 
-			var enabled;
-
-			$scope.isFoldable = function () {
-				return enabled;
-			};
+			$scope.foldable = true;
 
 			$scope.enableFold = function () {
-				enabled = true;
+				$scope.foldable = true;
 
 				$element.addClass(foldableClass);
 				$element.find(folderAttr).addClass(folderClass);
@@ -31,31 +28,31 @@ define(['config/module'], function (module) {
 			};
 
 			$scope.disableFold = function () {
-				enabled = false;
+				$scope.foldable = false;
 
 				$element.removeClass(foldableClass + ' ' + foldedClass);
 				$element.find(folderAttr).removeClass(folderClass);
 				$element.find(folderAttr).removeClass(foldClass);
 			};
 
-			$scope.isEnabled = function () {
-				return enabled;
-			};
-
 			//
 
+			var folded = false;
+
 			$scope.fold = function () {
-				$scope.folded = true;
+				folded = true;
 				$element.addClass(foldedClass);
+				$scope.setFolding();
 			};
 
 			$scope.unfold = function () {
-				$scope.folded = false;
+				folded = false;
 				$element.removeClass(foldedClass);
+				$scope.setFolding();
 			};
 
 			$scope.toggleFold = function (state) {
-				if ((angular.isDefined(state) && !state) || $scope.folded)
+				if ((angular.isDefined(state) && !state) || folded)
 					$scope.unfold();
 				else
 					$scope.fold();
@@ -69,7 +66,7 @@ define(['config/module'], function (module) {
 
 			$scope.setFolding = function () {
 				if (!isForgetful())
-					$scope.$storage['folding_' + $scope.id] = $scope.folded;
+					$scope.$storage['folding_' + $scope.id] = folded;
 			};
 
 			$scope.getFolding = function () {
@@ -80,12 +77,12 @@ define(['config/module'], function (module) {
 			};
 
 			$scope.restoreFolding = function () {
-				var folded = $scope.getFolding();
+				var gotFolded = $scope.getFolding();
 
-				if(angular.isUndefined(folded))
-					folded = (angular.isString($attrs.foldDefault)) ? $attrs.foldDefault != 'false' : false;
+				if (angular.isUndefined(gotFolded))
+					gotFolded = angular.isDefined($attrs.closed) ? true : false;
 
-				if (folded)
+				if (gotFolded)
 					$scope.fold();
 				else
 					$scope.unfold();
@@ -93,32 +90,17 @@ define(['config/module'], function (module) {
 
 			//
 
-			// TODO: REMOVE THIS WATCH!
-			$scope.$watch('folded', function () {
-				$scope.setFolding();
-			});
+			if (angular.isDefined($attrs.fold) && (!$attrs.fold || $scope.$eval($attrs.fold)))
+				$scope.enableFold();
+			else
+				$scope.disableFold();
 
-			//
-
-			var start = function () {
-				$scope.id = $attrs.id;
-
-				if(angular.isDefined($attrs.fold) && (!$attrs.fold || $scope.$eval($attrs.fold)))
-					$scope.enableFold();
-				else
-					$scope.disableFold();
-
-				if(angular.isDefined($attrs.closed))
-					$scope.fold();
-			};
-
-			start();
+			$scope.restoreFolding();
 		};
 
 		return {
 			restrict: 'A',
 			priority: 0,
-			scope: true,
 			link: link
 		}
 	}]);

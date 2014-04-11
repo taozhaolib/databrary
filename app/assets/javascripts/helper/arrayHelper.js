@@ -159,15 +159,6 @@ define(['config/module'], function (module) {
 				return update(item, obj);
 			};
 
-			var echo = function (item, callback) {
-				var i = index(item);
-
-				if (!~i || !angular.isFunction(callback))
-					return undefined;
-
-				return callback(array[i]);
-			};
-
 			var remove = function (item) {
 				var i = index(item);
 
@@ -190,7 +181,6 @@ define(['config/module'], function (module) {
 				index: index,
 				validate: validate,
 				has: has,
-				echo: echo,
 				add: add,
 				update: update,
 				replace: replace,

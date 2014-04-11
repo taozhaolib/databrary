@@ -1,70 +1,42 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('panel', ['panelService', function (panelService) {
-		var compile = function ($element, $attrs, transclude) {
-			return function ($scope, $element, $attrs) {
-				$scope.enabled = true;
+	module.directive('panel', ['panelService', function (panels) {
+		var link = function ($scope, $element, $attrs, ctrl, transclude) {
+			$scope.id = (angular.isDefined($attrs.id)) ? $attrs.id : '';
+			$scope.title = $attrs.panelTitle || '';
+			$scope.top = (angular.isDefined($attrs.top) && $attrs.top != 'false') ? true : false;
+			$scope.enabled = true;
 
-				//
+			//
 
-				$scope.foldPanel = function () {
-					if (typeof($scope.fold) != 'undefined')
-						$scope.fold();
-				};
+			$scope.isCurrent = function () {
+				var $w = $(window),
+					$m = $('#main');
 
-				$scope.unfoldPanel = function () {
-					if (typeof($scope.unfold) != 'undefined')
-						$scope.unfold();
-				};
+				var eTop = $element.offset().top,
+					eBottom = eTop + $element.outerHeight(),
+					pTop = $w.scrollTop() + parseFloat($m.css('margin-top'));
 
-				//
-
-				$scope.isCurrent = function () {
-					var $w = $(window),
-						$m = $('#main');
-
-					var eTop = $element.offset().top,
-						eBottom = eTop + $element.outerHeight(),
-						pTop = $w.scrollTop() + parseFloat($m.css('margin-top'));
-
-					return eTop - pTop <= 0 && eBottom - pTop >= 0;
-				};
-
-				$scope.getPanelClasses = function () {
-					var classes = {};
-
-					classes['panel'] = true;
-					classes[$scope.panel.id] = true;
-
-					return classes;
-				};
-
-				//
-
-				var start = function () {
-					$scope.panel = $scope;
-					$scope.id = (angular.isDefined($attrs.id)) ? $attrs.id : '';
-					$scope.title = $attrs.panelTitle || '';
-					$scope.top = (angular.isDefined($attrs.top) && $attrs.top != 'false') ? true : false;
-
-					$scope.container = $scope;
-
-					transclude($scope, function ($clone) {
-						$element.find('[panel-body]').append($clone);
-					});
-
-					if (angular.isFunction($scope.bootPanel))
-						$scope.bootPanel();
-
-					if (angular.isFunction($scope.refreshPanel))
-						$scope.refreshPanel();
-
-					panelService.add($scope);
-				};
-
-				start();
+				return eTop - pTop <= 0 && eBottom - pTop >= 0;
 			};
+
+			$scope.getPanelClasses = function () {
+				var classes = {};
+
+				classes['panel'] = true;
+				classes[$scope.id] = true;
+
+				return classes;
+			};
+
+			//
+
+			transclude($scope, function ($clone) {
+				$element.find('[panel-body]').append($clone);
+			});
+
+			panels.add($scope);
 		};
 
 		return {
@@ -74,7 +46,7 @@ define(['config/module'], function (module) {
 			transclude: true,
 			replace: true,
 			priority: 100,
-			compile: compile
+			link: link
 		};
 	}]);
 });

@@ -2,7 +2,7 @@ define(['config/module'], function (module) {
 	'use strict';
 
 	module.directive('tab', ['authService', function (auth) {
-		var link = function ($scope, $el, $attr, tabset, transclude) {
+		var link = function ($scope, $el, $attr, tabset) {
 			$scope.id = $attr.id;
 			$scope.name = $attr.name;
 			$scope.active = false;
@@ -24,12 +24,6 @@ define(['config/module'], function (module) {
 
 				return cls;
 			};
-
-			//
-
-			transclude($scope, function ($clone) {
-				$el.find('[tab-body]').append($clone);
-			});
 		};
 
 		return {

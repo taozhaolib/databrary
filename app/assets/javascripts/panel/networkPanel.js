@@ -11,6 +11,7 @@ define(['config/module'], function (module) {
 		};
 
 		$scope.refreshPanel = function () {
+			$scope.enabled = $scope.showRegion('parents') || $scope.showRegion('children');
 			getPartyAuth();
 		};
 
@@ -46,6 +47,15 @@ define(['config/module'], function (module) {
 						status: res[1]
 					})
 				});
+		};
+
+		//
+
+		$scope.showRegion = function (region) {
+			if(region == 'parents')
+				return !$.isEmptyObject($scope.parents) || auth.hasAccess('ADMIN', $scope.party);
+			else
+				return !$.isEmptyObject($scope.children) || auth.hasAccess('ADMIN', $scope.party);
 		};
 
 		//

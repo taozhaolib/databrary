@@ -1,12 +1,10 @@
-<section class="ng-cloak" ng-class="getPanelClasses()" ng-show="enabled">
+<section class="ng-cloak" ng-class="getPanelClasses()" ng-show="enabled" fold>
   <div class="wrap">
     <div class="row">
       <div class="col-full">
+        <h2 ng-if="!top" class="panel_header" folder ng-click="toggleFold()"><span></span>{{title}}</h2>
 
-        <h2 ng-if="!panel.top" class="panel_header" folder ng-click="toggleFold()"><span></span>{{panel.title}}</h2>
-
-        <div folded panel-body>
-        </div>
+        <div folded panel-body></div>
       </div>
     </div>
   </div>

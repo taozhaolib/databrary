@@ -1,74 +1,94 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('panelService', ['$rootScope', '$location', '$anchorScroll', 'eventService', '$timeout', 'arrayHelper', function ($rootScope, $location, $anchorScroll, eventService, $timeout, arrayHelper) {
-		var panelService = arrayHelper([]);
+	module.factory('panelService', ['$rootScope', '$location', '$anchorScroll', 'eventService', '$timeout', 'arrayHelper', function ($rootScope, $location, $anchorScroll, events, $timeout, arrayHelper) {
+		var panels = arrayHelper([]);
 
 		//
 
-		panelService.toggleEnabled = function (item, state) {
-			return panelService.toggle(item, 'enabled', state);
+		var addFn = panels.add;
+
+		panels.add = function (panel) {
+			var newPanel = addFn(panel);
+
+			if (angular.isFunction(newPanel.bootPanel))
+				newPanel.bootPanel();
+
+			if (angular.isFunction(newPanel.refreshPanel))
+				newPanel.refreshPanel();
+
+			return newPanel;
 		};
 
 		//
 
-		panelService.toggleFold = function (item, state) {
-			return panelService.echo(item, function (item) {
-				if (!item.isFoldable())
-					return undefined;
+		panels.enable = function (panel) {
+			return panels.toggle(panel, 'enabled', true);
+		};
 
-				return item.toggleFold(state);
-			});
+		panels.disable = function (panel) {
+			return panels.toggle(panel, 'enabled', false);
 		};
 
 		//
 
-		panelService.focus = function (item) {
-			if (angular.isFunction(item.toggleFold))
-				item.toggleFold(false);
+		panels.toggleFold = function (panel, state) {
+			if (!panel.foldable)
+				return undefined;
+
+			return panel.toggleFold(state);
+		};
+
+		//
+
+		panels.focus = function (panel) {
+			if (angular.isFunction(panel.toggleFold))
+				panel.toggleFold(false);
 
 			var $window = $(window),
 				$document = $(document),
 				oldHeight = 0,
-				newHeight = 0,
-				rate = 150,
-				timeout;
+				newHeight = 0;
 
 			var checkHeight = function () {
 				newHeight = $document.innerHeight();
 
 				if (oldHeight == newHeight) {
-					$location.hash(item.id);
+					$window.scrollTop($('#'+panel.id).offset().top - 72);
 				} else {
 					$timeout(function () {
 						checkHeight();
-					}, rate++);
+					}, 150);
 					oldHeight = newHeight;
 				}
 			};
 
 			checkHeight();
 
-			return item;
+			return panel;
 		};
 
 		//
 
-		panelService.refreshPanels = function () {
-			angular.forEach(panelService, function (panel) {
-				if (angular.isFunction(panel.refreshPanel))
+		panels.refresh = function () {
+			angular.forEach(panels, function (panel) {
+				if (angular.isFunction(panel.refresh))
 					panel.refreshPanel();
 			});
 		};
 
 		//
 
+		events.listen($rootScope, 'panelService-refresh', function () {
+			panels.refresh();
+		});
+
 		$rootScope.$on('$routeChangeSuccess', function () {
-			panelService.reset();
+			panels.reset();
 		});
 
 		//
 
-		return panelService;
+		return panels;
 	}]);
 });

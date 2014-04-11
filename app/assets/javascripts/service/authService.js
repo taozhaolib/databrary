@@ -12,7 +12,7 @@ define(['config/module'], function (module) {
 		authService.userUpdated = undefined;
 
 		var updateUser = function (user) {
-			var reload = true, preload = authService.next && !authService.userUpdated;
+			var reload = true;
 
 			authService.userUpdated = new Date();
 

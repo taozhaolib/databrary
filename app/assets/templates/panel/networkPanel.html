@@ -1,4 +1,5 @@
 <panel ng-controller="NetworkPanel" id="panel_network" panel-title="{{'network.title' | message}}" fold>
+  <div class="network_parents_region" ng-show="showRegion('parents')">
     <h2>{{'auth.parents.title' | message}}</h2>
 
     <tabset>
@@ -76,7 +77,9 @@
         </article>
       </tab>
     </tabset>
+  </div>
 
+  <div class="network_children_region" ng-show="showRegion('children')">
     <h2>{{'auth.children.title' | message}}</h2>
 
     <tabset>
@@ -150,5 +153,6 @@
         </article>
       </tab>
     </tabset>
+  </div>
 </panel>
 

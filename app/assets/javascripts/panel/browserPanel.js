@@ -7,6 +7,9 @@ define(['config/module'], function (module) {
 				case 'VolumeView':
 					$scope.enabled = $scope.volume.sessions;
 					break;
+				case 'PartyView':
+					$scope.enabled = $scope.volumes[0];
+					break;
 			}
 		};
 	}]);

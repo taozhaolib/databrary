@@ -1,16 +1,16 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.directive('toolbar', ['$location', '$timeout', 'authService', 'panelService', 'pageService', function ($location, $timeout, authService, panelService, page) {
+	module.directive('toolbar', ['$location', '$timeout', 'authService', 'panelService', 'pageService', function ($location, $timeout, authService, panels, page) {
 		var controller = function ($scope) {
 			$scope.auth = $scope.auth || authService;
 
 			//
 
-			$scope.panels = panelService;
+			$scope.panels = panels;
 
 			$scope.focusPanel = function (panel) {
-				panelService.focus(panel);
+				panels.focus(panel);
 			};
 
 			$scope.getPanelClasses = function (panel) {
