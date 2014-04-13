@@ -108,10 +108,10 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	    form.expires.get.map(_.toLocalDateTime(new org.joda.time.LocalTime(12, 0))))
 	  _ <- Authorize.Info.set(childId, id, form.info.get)
 	  _ <- if (Play.isProd && !form.pending.get && !c.exists(_.authorized.isDefined))
-	    macros.Async.foreach[Account,Unit](child.account, ca => Mail.send(
-	      to = Seq(ca.email),
+	    Mail.send(
+	      to = child.account.map(_.email).toSeq :+ Messages("mail.authorize"),
 	      subject = Messages("mail.authorized.subject"),
-	      body = Messages("mail.authorized.body", request.obj.party.name)))
+	      body = Messages("mail.authorized.body", request.obj.party.name))
 	    else macros.Async.void
 	} yield (result(request.obj))
       })
