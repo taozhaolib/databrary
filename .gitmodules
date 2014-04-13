@@ -3,4 +3,4 @@
 	url = https://github.com/databrary/databrary-private.git
 [submodule "logback-access"]
 	path = logback-access
-	url = http://github.com/databrary/play-logback-access
+	url = https://github.com/databrary/play-logback-access.git
