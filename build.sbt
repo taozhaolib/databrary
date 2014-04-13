@@ -21,4 +21,6 @@ javascriptEntryPoints := PathFinder.empty // disable play's standard js compiler
 
 resourceGenerators in Compile <+= AngularTemplate.Compiler
 
+JSConcatCompiler.externs := Seq(url("http://code.jquery.com/jquery-1.11.0.min.js"))
+
 resourceGenerators in Compile <+= JSConcatCompiler.Compiler
