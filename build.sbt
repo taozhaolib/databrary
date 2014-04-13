@@ -17,8 +17,8 @@ GitDescribe.gitDescribeOptions in ThisBuild := Seq("--tags", "--dirty")
 
 version in ThisBuild <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown"))
 
-requireJs += "app.js"
-
-requireJsShim += "app.js"
+javascriptEntryPoints := PathFinder.empty // disable play's standard js compiler
 
 resourceGenerators in Compile <+= AngularTemplate.Compiler
+
+resourceGenerators in Compile <+= JSConcatCompiler.Compiler
