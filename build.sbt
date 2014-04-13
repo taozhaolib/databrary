@@ -1,3 +1,5 @@
+scalaVersion := "2.10.4"
+
 scalacOptions in ThisBuild ++= Seq("-target:jvm-1.7","-optimise","-feature","-deprecation","-Xlint","-Yinline-warnings")
 
 // scalacOptions += "-Ymacro-debug-lite"

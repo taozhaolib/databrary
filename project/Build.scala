@@ -31,14 +31,15 @@ object ApplicationBuild extends Build {
     libraryDependencies ++= avDependencies
   )
 
+  val logbackAccess = Project("logback-access", file("logback-access"))
+
   val appDependencies = dbDependencies ++ avDependencies ++ Seq(
     "org.mindrot" % "jbcrypt" % "0.3m",
-    "com.typesafe" %% "play-plugins-mailer" % "2.2.0",
-    "play.logback.access" %% "play-logback-access" % "0.1"
+    "com.typesafe" %% "play-plugins-mailer" % "2.2.0"
   )
 
   val main = play.Project(appName, "unknown", appDependencies)
-    .dependsOn(macros, dbrary, media).settings(
+    .dependsOn(macros, dbrary, media, logbackAccess).settings(
       version <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown")),
       resourceGenerators in Compile <+= (resourceManaged in Compile, version) map { (dir, ver) =>
 	val f = dir / "properties"
