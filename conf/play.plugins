@@ -1,2 +1,3 @@
+800:play.logback.access.LogbackAccessPlugin
 5432:dbrary.PostgresAsyncPlugin
 25000:com.typesafe.plugin.CommonsMailerPlugin

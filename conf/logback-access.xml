@@ -1,0 +1,8 @@
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%t %D %s %h %b %A "%r" "%i{Referer}" "%i{User-Agent}"</pattern>
+    </encoder>
+  </appender>
+  <appender-ref ref="STDOUT" />
+</configuration>

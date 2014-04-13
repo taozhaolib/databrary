@@ -123,7 +123,7 @@ object RequestObject {
 object SiteAction extends ActionCreator[SiteRequest.Base] {
   object Unlocked extends ActionCreator[SiteRequest.Base] {
     def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) = {
-      val now = new Timestamp
+      val now = System.currentTimeMillis
       macros.Async.flatMap(request.session.get("session"), models.SessionToken.get _).flatMap { session =>
 	val site = SiteRequest[A](request, session)
 	SiteException.invokeBlock(site, 
@@ -131,10 +131,12 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
 	    Async.foreach[SessionToken, Unit](session, _.remove).map { _ =>
 	      LoginController.needed("login.expired")(request)
 	    }
-	  } else block)
-	  .map(_.withHeaders(
-	    HeaderNames.DATE -> HTTP.date(now),
-	    HeaderNames.SERVER -> _root_.site.Site.appVersion))
+	  } else block).map { res =>
+	    _root_.site.Site.accessLog.log(now, request, res)
+	    res.withHeaders(
+	      HeaderNames.DATE -> HTTP.date(new Timestamp(now)),
+	      HeaderNames.SERVER -> _root_.site.Site.appVersion)
+	  }
       }
     }
   }
