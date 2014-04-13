@@ -1,8 +1,9 @@
 <configuration>
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>logs/access.log</file>
     <encoder>
-      <pattern>%t %D %s %h %b %A "%r" "%i{Referer}" "%i{User-Agent}"</pattern>
+      <pattern>%t{yyyy-MM-dd HH:mm:ss} %s %4D %-15a %b "%r" "%responseHeader{Location}" "%i{Referer}" "%i{User-Agent}"</pattern>
     </encoder>
   </appender>
-  <appender-ref ref="STDOUT" />
+  <appender-ref ref="FILE" />
 </configuration>
