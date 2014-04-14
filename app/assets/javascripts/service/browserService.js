@@ -78,6 +78,8 @@ define(['config/module'], function (module) {
 		//
 
 		browserService.initialize = function (newContext, newData) {
+			browserService.query = '';
+
 			if (angular.isUndefined(browserService.context))
 				page.constants.$promise.success(function () {
 					bindTooltips(tips);
