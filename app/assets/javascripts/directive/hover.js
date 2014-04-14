@@ -1,76 +1,72 @@
-define(['config/module'], function (module) {
-	'use strict';
+module.directive('hover', ['$timeout', function ($timeout) {
+	var hoverableClass = 'hoverable',
+		currentlyClass = 'hovered',
+		hoverWrap = $('<div class="hover_wrap" style="position: relative;"></div>'),
+		pauseTime = 0,
+		fadeTime = 150;
 
-	module.directive('hover', ['$timeout', function ($timeout) {
-		var hoverableClass = 'hoverable',
-			currentlyClass = 'hovered',
-			hoverWrap = $('<div class="hover_wrap" style="position: relative;"></div>'),
-			pauseTime = 0,
-			fadeTime = 150;
+	var link = function ($scope, $element) {
+		var timeout, clone;
 
-		var link = function ($scope, $element) {
-			var timeout, clone;
+		$element.wrap(hoverWrap.clone());
 
-			$element.wrap(hoverWrap.clone());
+		$scope.show = function () {
+			var position = $element.position();
 
-			$scope.show = function () {
-				var position = $element.position();
+			clone = $element.clone();
 
-				clone = $element.clone();
+			clone.hide().addClass(currentlyClass).css({
+				'z-index': 750,
+				'position': 'absolute',
+				'left': position.left,
+				'top': position.top,
+				'width': '100%'
+			});
 
-				clone.hide().addClass(currentlyClass).css({
-					'z-index': 750,
-					'position': 'absolute',
-					'left': position.left,
-					'top': position.top,
-					'width': '100%'
-				});
+			$element.after(clone);
+			clone.fadeIn(fadeTime);
+		};
 
-				$element.after(clone);
-				clone.fadeIn(fadeTime);
-			};
+		$scope.hide = function () {
+			clone.fadeOut(fadeTime, function () {
+				clone.off('mouseleave');
 
-			$scope.hide = function () {
-				clone.fadeOut(fadeTime, function () {
-					clone.off('mouseleave');
+				clone.remove();
 
-					clone.remove();
+				clone = undefined;
+			});
+		};
 
-					clone = undefined;
-				});
-			};
+		$element.on('mouseenter', function () {
+			clearTimeout(timeout);
 
-			$element.on('mouseenter', function () {
+			$scope.show();
+
+			clone.on('mouseleave', function () {
 				clearTimeout(timeout);
 
-				$scope.show();
-
-				clone.on('mouseleave', function () {
-					clearTimeout(timeout);
-
-					timeout = setTimeout(function () {
-						$scope.hide();
-					}, pauseTime);
-				});
-			});
-
-			$(window).on('resize scroll', function () {
-				if (typeof(clone) != 'undefined')
+				timeout = setTimeout(function () {
 					$scope.hide();
+				}, pauseTime);
 			});
+		});
 
-			$element.on('$destroy', function () {
-				$timeout.cancel(timeout);
-				$element.removeClass(hoverableClass);
-			});
+		$(window).on('resize scroll', function () {
+			if (typeof(clone) != 'undefined')
+				$scope.hide();
+		});
 
-			$element.addClass(hoverableClass);
-		};
+		$element.on('$destroy', function () {
+			$timeout.cancel(timeout);
+			$element.removeClass(hoverableClass);
+		});
 
-		return {
-			restrict: 'A',
-			scope: true,
-			link: link
-		};
-	}]);
-});
+		$element.addClass(hoverableClass);
+	};
+
+	return {
+		restrict: 'A',
+		scope: true,
+		link: link
+	};
+}]);

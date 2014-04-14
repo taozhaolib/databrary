@@ -1,114 +1,110 @@
-define(['config/module'], function (module) {
-	'use strict';
+module.factory('typeService', [function () {
+	var typeService = {};
 
-	module.factory('typeService', [function () {
-		var typeService = {};
+	//
 
-		//
-
-		typeService.getType = function (object) {
-			if (!angular.isObject(object))
-				return undefined;
-
-			if (typeService.isParty(object))
-				return 'party';
-
-			if (typeService.isRecord(object))
-				return 'record';
-
-			if (typeService.isVolume(object))
-				return 'volume';
-
-			if (typeService.isAsset(object))
-				return 'asset';
-
-			if (typeService.isToken(object))
-				return 'token';
-
-			if (typeService.isComment(object))
-				return 'comment';
-
-			if (typeService.isSession(object))
-				return 'session';
-
+	typeService.getType = function (object) {
+		if (!angular.isObject(object))
 			return undefined;
-		};
 
-		//
+		if (typeService.isParty(object))
+			return 'party';
 
-		typeService.isAsset = function (object) {
-			return angular.isObject(object) && object.asset;
-		};
+		if (typeService.isRecord(object))
+			return 'record';
 
-		typeService.isVolume = function (object) {
-			return angular.isObject(object) && object.hasOwnProperty('body');
-		};
+		if (typeService.isVolume(object))
+			return 'volume';
 
-		typeService.isRecord = function (object) {
-			return angular.isObject(object) && object.measures;
-		};
+		if (typeService.isAsset(object))
+			return 'asset';
 
-		typeService.isParty = function (object) {
-			return angular.isObject(object) && object.avatar;
-		};
+		if (typeService.isToken(object))
+			return 'token';
 
-		typeService.isToken = function (object) {
-			return angular.isObject(object) && object.auth;
-		};
+		if (typeService.isComment(object))
+			return 'comment';
 
-		typeService.isComment = function (object) {
-			return angular.isObject(object) && object.text && object.time;
-		};
+		if (typeService.isSession(object))
+			return 'session';
 
-		typeService.isSession = function (object) {
-			return angular.isObject(object) && !object.asset && !object.body && !object.measures && !object.avatar && !object.auth && !object.text;
-		};
+		return undefined;
+	};
 
-		//
+	//
 
-		typeService.assetProperty = function (object, property, dig) {
-			if (!typeService.isAsset(object))
-				throw new Error('typeService.assetFormat() requires Asset as first argument');
+	typeService.isAsset = function (object) {
+		return angular.isObject(object) && object.asset;
+	};
 
-			if (dig === true)
-				return object.asset[property];
-			else if (dig === false)
-				return object[property];
-			else
-				return object[property] || object.asset[property];
-		};
+	typeService.isVolume = function (object) {
+		return angular.isObject(object) && object.hasOwnProperty('body');
+	};
 
-		typeService.segmentString = function (object, dig) {
-			var segment;
+	typeService.isRecord = function (object) {
+		return angular.isObject(object) && object.measures;
+	};
 
-			if(typeService.isAsset(object))
-				segment = typeService.assetProperty(object, 'segment', dig);
-			else if (typeService.isSession(object) || typeService.isComment(object))
-				segment = object.segment;
-			else
-				throw new Error('typeService.segmentString() requires Asset or Session as first argument');
+	typeService.isParty = function (object) {
+		return angular.isObject(object) && object.avatar;
+	};
 
-			if (!segment)
-				return ',';
+	typeService.isToken = function (object) {
+		return angular.isObject(object) && object.auth;
+	};
 
-			if (!angular.isArray(segment))
-				return segment;
+	typeService.isComment = function (object) {
+		return angular.isObject(object) && object.text && object.time;
+	};
 
-			if (segment[0] === null)
-				return ',' + segment[1];
+	typeService.isSession = function (object) {
+		return angular.isObject(object) && !object.asset && !object.body && !object.measures && !object.avatar && !object.auth && !object.text;
+	};
 
-			if (segment[1] === null)
-				return segment[0] + ',';
+	//
 
-			return segment.join(',');
-		};
+	typeService.assetProperty = function (object, property, dig) {
+		if (!typeService.isAsset(object))
+			throw new Error('typeService.assetFormat() requires Asset as first argument');
 
-		typeService.assetDisplayName = function (object, dig) {
-			return typeService.assetProperty(object, 'name', dig) || typeService.assetProperty(object, 'format', dig).name;
-		};
+		if (dig === true)
+			return object.asset[property];
+		else if (dig === false)
+			return object[property];
+		else
+			return object[property] || object.asset[property];
+	};
 
-		//
+	typeService.segmentString = function (object, dig) {
+		var segment;
 
-		return typeService;
-	}]);
-});
+		if (typeService.isAsset(object))
+			segment = typeService.assetProperty(object, 'segment', dig);
+		else if (typeService.isSession(object) || typeService.isComment(object))
+			segment = object.segment;
+		else
+			throw new Error('typeService.segmentString() requires Asset or Session as first argument');
+
+		if (!segment)
+			return ',';
+
+		if (!angular.isArray(segment))
+			return segment;
+
+		if (segment[0] === null)
+			return ',' + segment[1];
+
+		if (segment[1] === null)
+			return segment[0] + ',';
+
+		return segment.join(',');
+	};
+
+	typeService.assetDisplayName = function (object, dig) {
+		return typeService.assetProperty(object, 'name', dig) || typeService.assetProperty(object, 'format', dig).name;
+	};
+
+	//
+
+	return typeService;
+}]);

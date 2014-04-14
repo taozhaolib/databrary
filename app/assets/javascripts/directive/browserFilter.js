@@ -1,29 +1,25 @@
-define(['config/module'], function (module) {
-	'use strict';
+module.directive('browserFilter', ['browserService', function (browserService) {
+	var link = function ($scope) {
+		$scope.browser = $scope.browser || browserService;
 
-	module.directive('browserFilter', ['browserService', function (browserService) {
-		var link = function ($scope) {
-			$scope.browser = $scope.browser || browserService;
+		//
 
-			//
+		$scope.sortClasses = function (sort) {
+			var classes = [];
 
-			$scope.sortClasses = function (sort) {
-				var classes = [];
+			classes.push('on');
+			classes.push($scope.browser.isSortToggle(sort) ? 'expanded' : '');
 
-				classes.push('on');
-				classes.push($scope.browser.isSortToggle(sort) ? 'expanded' : '');
-
-				return classes;
-			};
+			return classes;
 		};
+	};
 
-		return {
-			restrict: 'E',
-			scope: true,
-			templateUrl: 'browserFilter.html',
-			replace: true,
-			priority: 100,
-			link: link
-		};
-	}]);
-});
+	return {
+		restrict: 'E',
+		scope: true,
+		templateUrl: 'browserFilter.html',
+		replace: true,
+		priority: 100,
+		link: link
+	};
+}]);

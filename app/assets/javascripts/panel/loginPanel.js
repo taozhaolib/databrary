@@ -1,29 +1,25 @@
-define(['config/module'], function (module) {
-	'use strict';
+module.controller('LoginPanel', ['$scope', 'authService', function ($scope, authService) {
+	$scope.method = 'databrary';
 
-	module.controller('LoginPanel', ['$scope', 'authService', function ($scope, authService) {
-		$scope.method = 'databrary';
+	$scope.loginData = {};
 
-		$scope.loginData = {};
+	//
 
-		//
+	$scope.switchMethod = function (method) {
+		$scope.method = method;
+	};
 
-		$scope.switchMethod = function (method) {
-			$scope.method = method;
-		};
+	$scope.showMethodLink = function (method) {
+		return $scope.method != method;
+	};
 
-		$scope.showMethodLink = function (method) {
-			return $scope.method != method;
-		};
+	$scope.getMethod = function () {
+		return $scope.method;
+	};
 
-		$scope.getMethod = function () {
-			return $scope.method;
-		};
+	//
 
-		//
-
-		$scope.submitForm = function () {
-			authService.login($scope.loginData);
-		};
-	}]);
-});
+	$scope.submitForm = function () {
+		authService.login($scope.loginData);
+	};
+}]);
