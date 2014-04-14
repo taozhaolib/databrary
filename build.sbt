@@ -21,6 +21,6 @@ javascriptEntryPoints := PathFinder.empty // disable play's standard js compiler
 
 resourceGenerators in Compile <+= AngularTemplate.Compiler
 
-JSConcatCompiler.externs := Seq(url("http://code.jquery.com/jquery-1.11.0.min.js"))
+JSConcatCompiler.externs := Seq(url("http://code.jquery.com/jquery-1.11.0.min.js"), url("https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"), url("https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-route.min.js"), url("https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-sanitize.min.js"), url("https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.min.js"), url("https://raw.githubusercontent.com/Pasvaz/bindonce/0.3.1/bindonce.min.js"), url("https://raw.githubusercontent.com/gsklee/ngStorage/0.3.0/ngStorage.min.js"))
 
 resourceGenerators in Compile <+= JSConcatCompiler.Compiler
