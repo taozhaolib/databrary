@@ -6,16 +6,18 @@ object JSConcatCompiler extends play.PlayAssetsCompiler with Plugin {
   val directory = SettingKey[String]("js-concat-directory")
   val entryPoints = SettingKey[PathFinder]("js-concat-file")
   val externs = SettingKey[Seq[URL]]("js-concat-externs")
-  private val cachedExterns = SettingKey[Seq[File]]("js-concat-extern-cache")
+
+  // needed for "broken" https on github
+  System.setProperty("jsse.enableSNIExtension", "false")
 
   import com.google.javascript.jscomp.{Compiler,CompilerOptions,JSSourceFile,CompilationLevel}
 
   private def concat(src : Seq[JSSourceFile]) =
     src.flatMap { s =>
-      Seq("/* " + s.getName + " */", s.getCode)
+      Seq("/* " + file(s.getName).getName + " */", s.getCode)
     }.mkString("\n")
 
-  private def compile(externs : Seq[File])(file : File, options : Seq[String]) : (String, Option[String], Seq[File]) = {
+  private def compile(externs : Seq[URL], cacheDir : File)(file : File, options : Seq[String]) : (String, Option[String], Seq[File]) = {
     val opts = {
       val o = new CompilerOptions()
       o.closurePass = true
@@ -32,13 +34,27 @@ object JSConcatCompiler extends play.PlayAssetsCompiler with Plugin {
       o
     }
 
-    val rest = PathFinder(file.getParentFile).descendantsExcept("*.js", "_*").get diff Seq(file)
-    val all = (file +: rest).map(JSSourceFile.fromFile(_))
-    val ext = externs.map(JSSourceFile.fromFile(_))
+    val ext = externs.map { ext =>
+      val cache = new File(cacheDir, new File(ext.getPath).getName)
+      if (!cache.exists) {
+	cache.getParentFile.mkdirs
+	try {
+	  val out = new java.io.FileOutputStream(cache)
+	  sbt.BasicIO.transferFully(ext.openStream, out)
+	  out.close
+	} catch { case e : Exception =>
+	  cache.delete
+	  throw e
+	}
+      }
+      JSSourceFile.fromFile(cache)
+    }
     val extsrc = concat(ext)
 
-    val compiler = new Compiler()
+    val rest = PathFinder(file.getParentFile).descendantsExcept("*.js", "_*").get diff Seq(file)
+    val all = (file +: rest).map(JSSourceFile.fromFile(_))
 
+    val compiler = new Compiler()
     try {
       if (!compiler.compile(Array[JSSourceFile](), all.toArray, opts).success) {
         val e = compiler.getErrors().head
@@ -52,31 +68,20 @@ object JSConcatCompiler extends play.PlayAssetsCompiler with Plugin {
     }
   }
 
-  val Compiler = Def.bind(cachedExterns) { case (externs) =>
+  val Compiler = Def.bind(cacheDirectory zip externs) { case (cacheDir, ext) =>
     AssetsCompiler("javascripts",
       (_ / "assets" ** "*.js"),
       entryPoints,
       { (name, min) => if (min) name.replace(".js", ".min.js") else name },
-      compile(externs),
+      compile(ext, cacheDir),
       play.Keys.closureCompilerOptions)
-    }
+  }
 
   override val projectSettings = Seq(
     directory := "javascripts",
     entryPoints <<= (sourceDirectory in Compile, directory){ (base, dir) =>
       base / "assets" / dir / "app.js"
     },
-    externs := Nil,
-    cachedExterns <<= (streams, cacheDirectory, externs) { (str, dir, ext) =>
-      ext.map { ext =>
-	val cache = new File(dir, new File(ext.getPath).getName)
-	if (!cache.exists) {
-	  cache.getParentFile.mkdirs
-	  if ((ext #> cache !) != 0)
-	    throw new MessageOnlyException(ext + ": Could not retrieve")
-	}
-	cache
-      }
-    }
+    externs := Nil
   )
 }
