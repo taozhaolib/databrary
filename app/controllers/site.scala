@@ -132,7 +132,7 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
 	      LoginController.needed("login.expired")(request)
 	    }
 	  } else block).map { res =>
-	    _root_.site.Site.accessLog.log(now, request, res)
+	    _root_.site.Site.accessLog.log(now, request, res, Some(site.identity.id.toString))
 	    res.withHeaders(
 	      HeaderNames.DATE -> HTTP.date(new Timestamp(now)),
 	      HeaderNames.SERVER -> _root_.site.Site.appVersion)
@@ -229,9 +229,8 @@ object Site extends SiteController {
     MovedPermanently("/" + path)
   }
 
-  def favicon = {
+  def favicon =
     Assets.at("/public/icons", "favicon.ico")
-  }
 }
 
 trait ApiController extends SiteController

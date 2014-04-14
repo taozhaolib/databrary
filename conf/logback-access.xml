@@ -2,7 +2,7 @@
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
     <file>logs/access.log</file>
     <encoder>
-      <pattern>%t{yyyy-MM-dd HH:mm:ss} %s %4D %-15a %b "%r" "%responseHeader{Location}" "%i{Referer}" "%i{User-Agent}"</pattern>
+      <pattern>%t{yyyy-MM-dd HH:mm:ss} %-15a %s %3u %4D %b "%r" "%responseHeader{Location}" "%i{Referer}" "%i{User-Agent}"</pattern>
     </encoder>
   </appender>
   <appender-ref ref="FILE" />
