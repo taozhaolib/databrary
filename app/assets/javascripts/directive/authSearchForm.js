@@ -6,7 +6,7 @@ define(['config/module'], function (module) {
 			$scope.authSearchForm.name = '';
 			$scope.authSearchForm.found = [];
 			$scope.authSearchForm.id = $attrs.party || undefined;
-			$scope.authSearchForm.apply = angular.isDefined($attrs.child);
+			$scope.authSearchForm.apply = !angular.isDefined($attrs.child);
 
 			//
 
