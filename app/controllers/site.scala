@@ -228,6 +228,10 @@ object Site extends SiteController {
   def untrail(path : String) = Action {
     MovedPermanently("/" + path)
   }
+
+  def favicon = {
+    Assets.at("/public/icons", "favicon.ico")
+  }
 }
 
 trait ApiController extends SiteController
