@@ -1,9 +1,9 @@
 <panel ng-controller="OverviewPartyPanel" top id="panel_overview" panel-title="{{'party.overview.title' | message}}" bindonce>
     <hgroup class="row">
       <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-6">
-        <figure class="panel_overview_thumbnail" baseline="square">
-          <figmedia><img ng-src="{{page.router.partyAvatar(party, 400)}}"></figmedia>
-        </figure>
+        <div class="panel_overview_thumbnail_wrap">
+          <div class="panel_overview_thumbnail" ng-style="{'background-image': 'url(\''+page.router.partyAvatar(party, 400)+'\')'}"></div>
+        </div>
       </div>
 
       <h1 class="panel_title col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-6">{{party.name}}</h1>

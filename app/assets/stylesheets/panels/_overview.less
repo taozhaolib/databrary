@@ -5,11 +5,19 @@
 		position: relative;
 	}
 
-	.panel_overview_thumbnail {
+	.panel_overview_thumbnail_wrap {
 		position: relative;
-		.border-radius(@b3);
-		opacity: 1;
-		z-index: 0;
+		.grid-height(fix, 2);
+	}
+
+	.panel_overview_thumbnail {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-repeat: no-repeat;
+		background-size: contain;
 		.transition();
 	}
 
