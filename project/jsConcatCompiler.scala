@@ -70,9 +70,11 @@ object JSConcatCompiler extends play.PlayAssetsCompiler with Plugin {
     cachedExterns <<= (streams, cacheDirectory, externs) { (str, dir, ext) =>
       ext.map { ext =>
 	val cache = new File(dir, new File(ext.getPath).getName)
-	if (!cache.exists)
+	if (!cache.exists) {
+	  cache.getParentFile.mkdirs
 	  if ((ext #> cache !) != 0)
 	    throw new MessageOnlyException(ext + ": Could not retrieve")
+	}
 	cache
       }
     }
