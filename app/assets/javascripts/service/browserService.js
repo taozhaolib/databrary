@@ -1,7 +1,7 @@
 define(['config/module'], function (module) {
 	'use strict';
 
-	module.factory('browserService', ['$rootScope', 'arrayHelper', 'authService', 'Slot', 'typeService', 'pageService', function ($rootScope, arrayHelper, authService, Slot, typeService, page) {
+	module.factory('browserService', ['$rootScope', 'arrayHelper', 'authService', 'Slot', 'typeService', 'pageService', '$timeout', function ($rootScope, arrayHelper, authService, Slot, typeService, page, $timeout) {
 		var browserService = {};
 
 		//
@@ -944,6 +944,7 @@ define(['config/module'], function (module) {
 		//
 
 		browserService.player = undefined;
+		var $w = $(window);
 
 		browserService.setItemPlayer = function (data) {
 			var newPlayer, newPlayed;
@@ -961,13 +962,10 @@ define(['config/module'], function (module) {
 
 			if (angular.isUndefined(browserService.player)) {
 				browserService.player = newPlayer;
-
 				browserService.player.player = true;
-
 				browserService.player.played = newPlayed;
 			} else if (browserService.player != newPlayer) {
 				browserService.player.player = false;
-
 				browserService.player = newPlayer;
 
 				if (angular.isDefined(browserService.player)) {
@@ -978,9 +976,14 @@ define(['config/module'], function (module) {
 				browserService.player.played = newPlayed;
 			} else {
 				browserService.player.player = false;
-
 				browserService.player = undefined;
 			}
+
+			$timeout(function () {
+				$('html,body').animate({
+					scrollTop: $('#'+data.parent.id).find('.browser_controller').offset().top - 72
+				}, 250);
+			}, 1);
 
 			return browserService.player;
 		};
