@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('tabset', [function () {
+module.directive('tabset', [
+	function () {
 		var controller = function ($scope, $element) {
 			var ctrl = {};
 
@@ -103,5 +101,5 @@ define(['config/module'], function (module) {
 			controller: controller,
 			controllerAs: 'tabset'
 		};
-	}]);
-});
+	}
+]);

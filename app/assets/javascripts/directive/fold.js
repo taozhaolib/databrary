@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('fold', ['$sessionStorage', function ($sessionStorage) {
+module.directive('fold', [
+	'$sessionStorage', function ($sessionStorage) {
 		var foldableClass = 'foldable',
 			folderClass = 'folder',
 			foldClass = 'fold',
@@ -103,5 +101,5 @@ define(['config/module'], function (module) {
 			priority: 0,
 			link: link
 		}
-	}]);
-});
+	}
+]);

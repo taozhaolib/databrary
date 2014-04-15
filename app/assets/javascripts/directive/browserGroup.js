@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('browserGroup', ['browserService', function (browserService) {
+module.directive('browserGroup', [
+	'browserService', function (browserService) {
 		var link = function ($scope) {
 			$scope.browser = $scope.browser || browserService;
 
@@ -15,7 +13,7 @@ define(['config/module'], function (module) {
 				else
 					classes.push('off');
 
-				if($scope.browser.isLastGroup(group))
+				if ($scope.browser.isLastGroup(group))
 					classes.push('last');
 
 				return classes;
@@ -27,7 +25,7 @@ define(['config/module'], function (module) {
 				classes.push('on');
 				classes.push($scope.browser.isRecordGroupToggle(group) ? 'expanded' : '');
 
-				if($last && !$scope.browser.canAddRecordGroup())
+				if ($last && !$scope.browser.canAddRecordGroup())
 					classes.push('last');
 
 				return classes;
@@ -42,5 +40,5 @@ define(['config/module'], function (module) {
 			priority: 100,
 			link: link
 		};
-	}]);
-});
+	}
+]);

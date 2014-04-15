@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('carousel', ['$timeout', function ($timeout) {
+module.directive('carousel', [
+	'$timeout', function ($timeout) {
 		var link = function ($scope, $element) {
 			var pauseTime = 5000,
 				fadeTime = 1000,
@@ -37,5 +35,5 @@ define(['config/module'], function (module) {
 			restrict: 'A',
 			link: link
 		};
-	}]);
-});
+	}
+]);

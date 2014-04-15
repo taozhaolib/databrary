@@ -1,7 +1,11 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('browserService', ['$rootScope', 'arrayHelper', 'authService', 'Slot', 'typeService', 'pageService', '$timeout', function ($rootScope, arrayHelper, authService, Slot, typeService, page, $timeout) {
+module.factory('browserService', [
+	'$rootScope',
+	'arrayHelper',
+	'authService',
+	'Slot',
+	'typeService',
+	'pageService',
+	function ($rootScope, arrayHelper, authService, Slot, typeService, page) {
 		var browserService = {};
 
 		//
@@ -11,8 +15,7 @@ define(['config/module'], function (module) {
 				allow: false,
 				active: true,
 				expand: false,
-
-//				filter: {},
+				//filter: {},
 				sort: arrayHelper([])
 			},
 
@@ -25,8 +28,7 @@ define(['config/module'], function (module) {
 				allow: true,
 				active: true,
 				expand: false,
-
-//				filter: {},
+				//filter: {},
 				sort: arrayHelper([])
 			},
 
@@ -34,8 +36,7 @@ define(['config/module'], function (module) {
 				allow: true,
 				active: false,
 				expand: false,
-
-//				filter: {},
+				//filter: {},
 				sort: arrayHelper([])
 			}
 		};
@@ -43,19 +44,16 @@ define(['config/module'], function (module) {
 		var DEFAULT_CATEGORY = {
 			id: null,
 			name: null,
-
 			allow: true,
 			active: false,
 			expand: true,
-
-//			filter: {},
+			//	filter: {},
 			sort: null // see updateCategories
 		};
 
 		var DEFAULT_SORT = {
 			name: null,
 			property: null,
-
 			active: false,
 			order: true
 		};
@@ -545,10 +543,8 @@ define(['config/module'], function (module) {
 			if (groups[data.level + 1] == 'asset')
 				callbackAssets(data, volume);
 
-			return data;
+			browserService.loading = false;
 		};
-
-		browserService.loading = false;
 
 		var callbackAssets = function (data, volume) {
 			browserService.loading = true;
@@ -964,10 +960,13 @@ define(['config/module'], function (module) {
 
 			if (angular.isUndefined(browserService.player)) {
 				browserService.player = newPlayer;
+
 				browserService.player.player = true;
+
 				browserService.player.played = newPlayed;
 			} else if (browserService.player != newPlayer) {
 				browserService.player.player = false;
+
 				browserService.player = newPlayer;
 
 				if (angular.isDefined(browserService.player)) {
@@ -978,12 +977,13 @@ define(['config/module'], function (module) {
 				browserService.player.played = newPlayed;
 			} else {
 				browserService.player.player = false;
+
 				browserService.player = undefined;
 			}
 
 			$timeout(function () {
 				$('html,body').animate({
-					scrollTop: $('#'+data.parent.id).find('.browser_controller').offset().top - 72
+					scrollTop: $('#' + data.parent.id).find('.browser_controller').offset().top - 72
 				}, 250);
 			}, 1);
 
@@ -1054,5 +1054,5 @@ define(['config/module'], function (module) {
 		//
 
 		return browserService;
-	}]);
-});
+	}
+]);

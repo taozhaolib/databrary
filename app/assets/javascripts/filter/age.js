@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.filter('age', [function () {
+module.filter('age', [
+	function () {
 		var daysTo = {
 			months: 30.436849,
 			years: 365.24219
@@ -21,7 +19,7 @@ define(['config/module'], function (module) {
 			//
 
 			var fix = function (value) {
-				return new Number(value+'').toFixed(decimals);
+				return new Number(value + '').toFixed(decimals);
 			};
 
 			//
@@ -80,5 +78,5 @@ define(['config/module'], function (module) {
 
 			return output;
 		};
-	}]);
-});
+	}
+]);

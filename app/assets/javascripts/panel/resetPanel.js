@@ -1,7 +1,9 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.controller('ResetPanel', ['$scope', 'authService', 'pageService', '$location', function ($scope, authService, page, $location) {
+module.controller('ResetPanel', [
+	'$scope',
+	'authService',
+	'pageService',
+	'$location',
+	function ($scope, authService, page, $location) {
 		page.events.listen($scope, 'userPasswordForm-init', function (event, form) {
 			form.resetSuccessFn = function () {
 				$location.url(page.router.index());
@@ -13,5 +15,5 @@ define(['config/module'], function (module) {
 
 			event.stopPropagation();
 		});
-	}]);
-});
+	}
+]);

@@ -1,7 +1,11 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('panelService', ['$rootScope', '$location', '$anchorScroll', 'eventService', '$timeout', 'arrayHelper', function ($rootScope, $location, $anchorScroll, events, $timeout, arrayHelper) {
+module.factory('panelService', [
+	'$rootScope',
+	'$location',
+	'$anchorScroll',
+	'eventService',
+	'$timeout',
+	'arrayHelper',
+	function ($rootScope, $location, $anchorScroll, events, $timeout, arrayHelper) {
 		var panels = arrayHelper([]);
 
 		//
@@ -54,7 +58,7 @@ define(['config/module'], function (module) {
 				newHeight = $document.innerHeight();
 
 				if (oldHeight == newHeight) {
-					$window.scrollTop($('#'+panel.id).offset().top - 72);
+					$window.scrollTop($('#' + panel.id).offset().top - 72);
 				} else {
 					$timeout(function () {
 						checkHeight();
@@ -90,5 +94,5 @@ define(['config/module'], function (module) {
 		//
 
 		return panels;
-	}]);
-});
+	}
+]);

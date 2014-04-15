@@ -1,73 +1,84 @@
-require.config({
-	baseUrl: '/public/javascripts',
-	optimize: 'none',
+'use strict';
 
-	paths: {
-		domReady: 'vendors/domReady-2.0.1/domReady',
+var module = angular.module('databraryModule', [
+	'ngRoute',
+	'ngSanitize',
+	'ngStorage',
+	'ngResource',
+	'pasvaz.bindonce'
+]);
 
-		jquery: 'vendors/jquery-1.11.0/jquery-1.11.0.min',
+module.config([
+	'$httpProvider', '$logProvider', function ($httpProvider, $logProvider) {
+		$httpProvider.defaults.cache = true;
+		$httpProvider.defaults.headers.common['X-Requested-With'] = 'DatabraryClient';
 
-		angular: 'vendors/angular-1.2.15/angular.min',
-		ngAnimate: 'vendors/angular-1.2.15/angular-animate.min',
-		ngCookies: 'vendors/angular-1.2.15/angular-cookies.min',
-		ngLoader: 'vendors/angular-1.2.15/angular-loader.min',
-		ngResource: 'vendors/angular-1.2.15/angular-resource.min',
-		ngRoute: 'vendors/angular-1.2.15/angular-route.min',
-		ngSanitize: 'vendors/angular-1.2.15/angular-sanitize.min',
-		ngTouch: 'vendors/angular-1.2.15/angular-touch.min',
-		ngMocks: 'vendors/angular-1.2.15/angular-mocks',
-		ngScenario: 'vendors/angular-1.2.15/angular-scenario',
+		$logProvider.debugEnabled(true);
+	}
+]);
 
-		ngStorage: 'vendors/ngStorage/ngStorage.min',
+module.config([
+	'$provide', function ($provide) {
+		$provide.decorator('$templateCache', [
+			'$delegate', '$http', '$injector', function ($delegate, $http, $injector) {
 
-		bindonce: 'vendors/bindonce/bindonce.min'
-	},
+				var promise,
+					returned = false,
+					allTemplatesUrl = '/public/templates/_all.html';
 
-	shim: {
-		jquery: {
-			exports: 'jQuery'
-		},
+				var loadAllTemplates = function (url) {
+					if (!promise) {
+						promise = $http
+							.get(allTemplatesUrl)
+							.then(function (response) {
+								$injector.get('$compile')(response.data);
+								return response;
+							}, function (response) {
+								$location.url('http://databrary.org');
+							});
+					}
 
-		angular: {
-			exports: 'angular',
-			deps: ['jquery']
-		},
-		ngAnimate: {
-			deps: ['angular']
-		},
-		ngCookies: {
-			deps: ['angular']
-		},
-		ngLoader: {
-			deps: ['angular']
-		},
-		ngResource: {
-			deps: ['angular']
-		},
-		ngRoute: {
-			deps: ['angular']
-		},
-		ngSanitize: {
-			deps: ['angular']
-		},
-		ngTouch: {
-			deps: ['angular']
-		},
-		ngMocks: {
-			deps: ['angular']
-		},
-		ngScenario: {
-			deps: ['angular']
-		},
+					return promise.then(function (response) {
+						returned = true;
 
-		ngStorage: {
-			deps: ['angular']
-		},
+						return {
+							status: response.status,
+							data: get(url)
+						};
+					});
+				};
 
-		bindonce: {
-			deps: ['angular']
-		}
-	},
+				var get = $delegate.get;
 
-	deps: ['config/bootstrap']
-});
+				$delegate.get = function (url) {
+					if (!returned) {
+						return loadAllTemplates(url);
+					}
+
+					return get(url);
+				};
+
+				return $delegate;
+			}
+		]);
+	}
+]);
+
+module.run([
+	'$rootScope',
+	'browserService',
+	'authService',
+	'typeService',
+	'playService',
+	'pageService',
+	function ($rootScope, browser, auth, type, playService, page) {
+		$rootScope.page = page;
+
+		// TODO: move these
+		$rootScope.browser = browser;
+		$rootScope.auth = auth;
+		$rootScope.type = type;
+
+		playService.run();
+	}
+]);

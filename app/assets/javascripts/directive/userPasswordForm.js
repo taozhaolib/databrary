@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('userPasswordForm', ['authService', 'pageService', '$http', '$window', function (auth, page, $http, $window) {
+module.directive('userPasswordForm', [
+	'authService', 'pageService', '$http', '$window', function (auth, page, $http, $window) {
 		var link = function ($scope) {
 			var form = $scope.userPasswordForm;
 			var token;
@@ -120,5 +118,5 @@ define(['config/module'], function (module) {
 			replace: true,
 			link: link
 		};
-	}]);
-});
+	}
+]);

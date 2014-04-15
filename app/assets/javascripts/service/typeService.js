@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('typeService', [function () {
+module.factory('typeService', [
+	function () {
 		var typeService = {};
 
 		//
@@ -81,7 +79,7 @@ define(['config/module'], function (module) {
 		typeService.segmentString = function (object, dig) {
 			var segment;
 
-			if(typeService.isAsset(object))
+			if (typeService.isAsset(object))
 				segment = typeService.assetProperty(object, 'segment', dig);
 			else if (typeService.isSession(object) || typeService.isComment(object))
 				segment = object.segment;
@@ -110,5 +108,5 @@ define(['config/module'], function (module) {
 		//
 
 		return typeService;
-	}]);
-});
+	}
+]);

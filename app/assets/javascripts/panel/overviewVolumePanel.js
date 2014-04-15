@@ -1,13 +1,11 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.controller('OverviewVolumePanel', ['$scope', 'pageService', '$filter', function ($scope, page, $filter) {
+module.controller('OverviewVolumePanel', [
+	'$scope', 'pageService', '$filter', function ($scope, page, $filter) {
 		$scope.refreshPanel = function () {
 			$scope.enabled = angular.isObject($scope.volume);
 		};
 
 		$scope.isShared = function (volumeAccess) {
-			return [1,2].indexOf(volumeAccess.access) > -1;
+			return [1, 2].indexOf(volumeAccess.access) > -1;
 		};
 
 		$scope.isFunding = function (volumeAccess) {
@@ -29,16 +27,16 @@ define(['config/module'], function (module) {
 		};
 
 		$scope.hasProps = function (volume, property) {
-			if(!volume[property])
+			if (!volume[property])
 				return false;
 
 			var has = false;
 
-			for(var prop in volume[property])
-				if(volume[property].hasOwnProperty(prop))
+			for (var prop in volume[property])
+				if (volume[property].hasOwnProperty(prop))
 					return true;
 
 			return false;
 		};
-	}]);
-});
+	}
+]);

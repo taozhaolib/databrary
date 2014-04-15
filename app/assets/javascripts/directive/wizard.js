@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('wizard', [function () {
+module.directive('wizard', [
+	function () {
 		var compile = function ($element, $attrs, transclude) {
 			return function ($scope, $element, $attrs) {
 				$scope.retrieve()($scope);
@@ -30,12 +28,12 @@ define(['config/module'], function (module) {
 						return;
 
 					angular.forEach($scope.steps, function (thisStep) {
-						if(thisStep.active && $scope.offFn[step.id] && angular.isFunction($scope.offFn[step.id]))
+						if (thisStep.active && $scope.offFn[step.id] && angular.isFunction($scope.offFn[step.id]))
 							$scope.offFn[step.id](thisStep, step);
 
 						thisStep.active = thisStep == step;
 
-						if(thisStep.active && $scope.onFn[step.id] && angular.isFunction($scope.onFn[step.id]))
+						if (thisStep.active && $scope.onFn[step.id] && angular.isFunction($scope.onFn[step.id]))
 							$scope.onFn[step.id](thisStep, step);
 					});
 				};
@@ -49,16 +47,16 @@ define(['config/module'], function (module) {
 				$scope.getListItemClasses = function (step) {
 					var classes = [];
 
-					if(step.active)
+					if (step.active)
 						classes.push('active');
 
-					if(step.complete === true)
+					if (step.complete === true)
 						classes.push('complete');
 
-					if(angular.isUndefined(step.complete))
+					if (angular.isUndefined(step.complete))
 						classes.push('incomplete');
 
-					if($scope.isStepBlocked(step))
+					if ($scope.isStepBlocked(step))
 						classes.push('blocked');
 
 					return classes;
@@ -83,5 +81,5 @@ define(['config/module'], function (module) {
 			replace: true,
 			compile: compile
 		};
-	}]);
-});
+	}
+]);

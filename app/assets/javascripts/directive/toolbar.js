@@ -1,7 +1,10 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('toolbar', ['$location', '$timeout', 'authService', 'panelService', 'pageService', function ($location, $timeout, authService, panels, page) {
+module.directive('toolbar', [
+	'$location',
+	'$timeout',
+	'authService',
+	'panelService',
+	'pageService',
+	function ($location, $timeout, authService, panels, page) {
 		var controller = function ($scope) {
 			$scope.auth = $scope.auth || authService;
 
@@ -41,7 +44,9 @@ define(['config/module'], function (module) {
 			//
 
 			$w.on('scroll resize', function () {
-				$scope.$apply(function () { $scope.updateCurrentPanel(); });
+				$scope.$apply(function () {
+					$scope.updateCurrentPanel();
+				});
 			});
 
 			//
@@ -65,5 +70,5 @@ define(['config/module'], function (module) {
 			replace: true,
 			controller: controller
 		};
-	}]);
-});
+	}
+]);

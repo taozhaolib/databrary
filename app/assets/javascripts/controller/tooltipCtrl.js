@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.controller('TooltipCtrl', ['$scope', '$timeout', 'pageService', function ($scope, $timeout, page) {
+module.controller('TooltipCtrl', [
+	'$scope', '$timeout', 'pageService', function ($scope, $timeout, page) {
 		$scope.tooltips = page.tooltips;
 		$scope.enabled = true;
 
@@ -24,12 +22,12 @@ define(['config/module'], function (module) {
 			classes.push('tooltip');
 			classes.push('tooltip_' + tooltip.type);
 
-			if(tooltip.position) {
+			if (tooltip.position) {
 				classes.push('tooltip_' + tooltip.position[0]);
 				classes.push('tooltip_' + tooltip.position[1]);
 			}
 
-			if(tooltip.visible)
+			if (tooltip.visible)
 				classes.push('tooltip_visible');
 
 			return classes;
@@ -55,5 +53,5 @@ define(['config/module'], function (module) {
 		$scope.$watch('tooltips', function () {
 			$scope.updateHeight();
 		});
-	}]);
-});
+	}
+]);

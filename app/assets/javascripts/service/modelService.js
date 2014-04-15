@@ -1,7 +1,17 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('modelService', ['$rootScope', 'Asset', 'Comment', 'Party', 'PartyAuthorize', 'Record', 'Scraper', 'Slot', 'SlotAsset', 'Tag', 'Volume', 'VolumeAccess', function ($rootScope, Asset, Comment, Party, PartyAuthorize, Record, Scraper, Slot, SlotAsset, Tag, Volume, VolumeAccess) {
+module.factory('modelService', [
+	'$rootScope',
+	'Asset',
+	'Comment',
+	'Party',
+	'PartyAuthorize',
+	'Record',
+	'Scraper',
+	'Slot',
+	'SlotAsset',
+	'Tag',
+	'Volume',
+	'VolumeAccess',
+	function ($rootScope, Asset, Comment, Party, PartyAuthorize, Record, Scraper, Slot, SlotAsset, Tag, Volume, VolumeAccess) {
 		var models = {
 			Asset: Asset,
 			Comment: Comment,
@@ -17,5 +27,5 @@ define(['config/module'], function (module) {
 		};
 
 		return models;
-	}]);
-});
+	}
+]);

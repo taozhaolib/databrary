@@ -1,12 +1,10 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('authSearchForm', ['PartyAuthorize', 'authService', 'pageService', function (PartyAuthorize, authService, page) {
+module.directive('authSearchForm', [
+	'PartyAuthorize', 'authService', 'pageService', function (PartyAuthorize, authService, page) {
 		var link = function ($scope, $element, $attrs) {
 			$scope.authSearchForm.name = '';
 			$scope.authSearchForm.found = [];
 			$scope.authSearchForm.id = $attrs.party || undefined;
-			$scope.authSearchForm.apply = angular.isUndefined($attrs.child);
+			$scope.authSearchForm.apply = angular.isDefined($attrs.child);
 
 			//
 
@@ -69,5 +67,5 @@ define(['config/module'], function (module) {
 			replace: true,
 			link: link
 		};
-	}]);
-});
+	}
+]);

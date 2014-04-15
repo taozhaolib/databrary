@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('displayAge', ['pageService', 'displayService', function (page, display) {
+module.directive('displayAge', [
+	'pageService', 'displayService', function (page, display) {
 		var link = function ($scope) {
 			$scope.change = display.toggleAge;
 
@@ -25,5 +23,5 @@ define(['config/module'], function (module) {
 			},
 			link: link
 		};
-	}]);
-});
+	}
+]);

@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('tooltipService', ['$rootScope', 'arrayHelper', '$timeout', function ($rootScope, arrayHelper, $timeout) {
+module.factory('tooltipService', [
+	'$rootScope', 'arrayHelper', '$timeout', function ($rootScope, arrayHelper, $timeout) {
 		var tooltips = arrayHelper([]);
 		var $doc = $(document);
 
@@ -237,5 +235,5 @@ define(['config/module'], function (module) {
 		//
 
 		return tooltips;
-	}]);
-});
+	}
+]);

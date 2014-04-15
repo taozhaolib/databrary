@@ -1,7 +1,9 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('commentReplyForm', ['Comment', 'authService', 'typeService', 'pageService', function (Comment, authService, type, page) {
+module.directive('commentReplyForm', [
+	'Comment',
+	'authService',
+	'typeService',
+	'pageService',
+	function (Comment, authService, type, page) {
 		var link = function ($scope) {
 			var form = $scope.commentReplyForm;
 
@@ -96,5 +98,5 @@ define(['config/module'], function (module) {
 			replace: true,
 			link: link
 		};
-	}]);
-});
+	}
+]);

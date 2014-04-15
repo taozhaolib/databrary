@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('baseline', ['$timeout', function ($timeout) {
+module.directive('baseline', [
+	'$timeout', function ($timeout) {
 		var pauseTime = 500;
 
 		var link = function ($scope, $element, $attrs) {
@@ -98,5 +96,5 @@ define(['config/module'], function (module) {
 			priority: 150,
 			link: link
 		};
-	}]);
-});
+	}
+]);

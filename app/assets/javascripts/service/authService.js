@@ -1,7 +1,15 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('authService', ['$rootScope', '$location', '$http', '$route', '$cacheFactory', 'typeService', '$window', '$q', '$sessionStorage', 'pageService', function ($rootScope, $location, $http, $route, $cacheFactory, typeService, $window, $q, $sessionStorage, page) {
+module.factory('authService', [
+	'$rootScope',
+	'$location',
+	'$http',
+	'$route',
+	'$cacheFactory',
+	'typeService',
+	'$window',
+	'$q',
+	'$sessionStorage',
+	'pageService',
+	function ($rootScope, $location, $http, $route, $cacheFactory, typeService, $window, $q, $sessionStorage, page) {
 		var authService = {};
 
 		$rootScope.$sessionStorage = $sessionStorage;
@@ -281,5 +289,5 @@ define(['config/module'], function (module) {
 		//
 
 		return authService;
-	}]);
-});
+	}
+]);

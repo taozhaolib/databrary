@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('message', ['pageService', function (page) {
+module.directive('message', [
+	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
 			page.messages.add({
 				id: $attrs.id,
@@ -20,5 +18,5 @@ define(['config/module'], function (module) {
 			restrict: 'EA',
 			link: link
 		}
-	}]);
-});
+	}
+]);

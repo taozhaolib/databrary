@@ -1,7 +1,13 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.controller('NetworkPanel', ['$scope', '$routeParams', '$filter', 'PartyAuthorize', '$cacheFactory', 'pageService', 'Party', 'authService', function ($scope, $routeParams, $filter, PartyAuthorize, $cacheFactory, page, Party, auth) {
+module.controller('NetworkPanel', [
+	'$scope',
+	'$routeParams',
+	'$filter',
+	'PartyAuthorize',
+	'$cacheFactory',
+	'pageService',
+	'Party',
+	'authService',
+	function ($scope, $routeParams, $filter, PartyAuthorize, $cacheFactory, page, Party, auth) {
 		$scope.constant = $scope.constant || page.constants;
 
 		var $httpCache = $cacheFactory.get('$http');
@@ -52,7 +58,7 @@ define(['config/module'], function (module) {
 		//
 
 		$scope.showRegion = function (region) {
-			if(region == 'parents')
+			if (region == 'parents')
 				return !$.isEmptyObject($scope.parents) || auth.hasAccess('ADMIN', $scope.party);
 			else
 				return !$.isEmptyObject($scope.children) || auth.hasAccess('ADMIN', $scope.party);
@@ -200,5 +206,5 @@ define(['config/module'], function (module) {
 			form.selectFn = selectFn;
 			event.stopPropagation();
 		});
-	}]);
-});
+	}
+]);

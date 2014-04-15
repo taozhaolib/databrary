@@ -1,7 +1,7 @@
 @(title : String = "The Databrary Project", angular : Option[play.api.libs.json.JsValue] = None)(requestOption: Option[SiteRequest[_]] = None)(body : Html)
 
 <!DOCTYPE html>
-<html>
+<html ng-app="databraryModule">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,7 +22,8 @@
 
     <!-- js -->
     @angular.map { obj =>
-    @helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/app").url)
+    <script src="@routes.Assets.at("javascripts/app"+(if(play.api.Play.isDev(play.api.Play.current)){""}else{".min"})+".js")"></script>
+
     <script>
         window.$play = {'object':@format.raw(obj.toString)};
     </script>
@@ -62,9 +63,9 @@
                             <span class="sep">|</span>
 
                             @if(request.superuser) {
-				@helper.form(routes.LoginHtml.superuserOff) {
-				    <button type="submit" class="link superuser on">SU</button>
-				}
+                                @helper.form(routes.LoginHtml.superuserOff) {
+                                    <button type="submit" class="link superuser on">SU</button>
+                                }
                             } else {
                                 @defining(new LoginController.SuperuserForm()(request)) { form =>
                                     @widget.tag.form(form) {

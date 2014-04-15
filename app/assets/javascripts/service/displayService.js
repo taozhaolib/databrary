@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('displayService', ['$sessionStorage', 'pageService', '$filter', function ($sessionStorage, page, $filter) {
+module.factory('displayService', [
+	'$sessionStorage', 'pageService', '$filter', function ($sessionStorage, page, $filter) {
 		var display = {};
 
 		//
@@ -22,5 +20,5 @@ define(['config/module'], function (module) {
 		//
 
 		return display;
-	}]);
-});
+	}
+]);

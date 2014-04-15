@@ -1,7 +1,12 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.controller('RegisterPanel', ['$scope', 'authService', '$http', '$window', 'PartyAuthorize', 'Scraper', 'pageService', function ($scope, authService, $http, $window, PartyAuthorize, Scraper, page) {
+module.controller('RegisterPanel', [
+	'$scope',
+	'authService',
+	'$http',
+	'$window',
+	'PartyAuthorize',
+	'Scraper',
+	'pageService',
+	function ($scope, authService, $http, $window, PartyAuthorize, Scraper, page) {
 		$scope.auth = $scope.auth || authService;
 
 		var mess = [];
@@ -384,5 +389,5 @@ define(['config/module'], function (module) {
 				step.complete = user.auth;
 			}
 		};
-	}]);
-});
+	}
+]);

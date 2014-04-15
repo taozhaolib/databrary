@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('arrayHelper', ['$filter', function ($filter) {
+module.factory('arrayHelper', [
+	'$filter', function ($filter) {
 		return function (array) {
 			var _transformFn, /* return formatted item */
 				_validateFn, /* return item or false */
@@ -118,7 +116,6 @@ define(['config/module'], function (module) {
 				if (!angular.isObject(obj))
 					return false;
 
-
 				catalogRemove(item);
 				angular.extend(item, obj);
 				catalogAdd(item);
@@ -198,5 +195,5 @@ define(['config/module'], function (module) {
 
 			return array;
 		};
-	}]);
-});
+	}
+]);

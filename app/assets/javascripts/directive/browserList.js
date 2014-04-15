@@ -1,7 +1,10 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('browserList', ['browserService', '$filter', 'typeService', 'authService', 'pageService', function (browserService, $filter, typeService, auth, page) {
+module.directive('browserList', [
+	'browserService',
+	'$filter',
+	'typeService',
+	'authService',
+	'pageService',
+	function (browserService, $filter, typeService, auth, page) {
 		var link = function ($scope) {
 			if (!$scope.browser)
 				$scope.browser = browserService;
@@ -297,5 +300,5 @@ define(['config/module'], function (module) {
 			priority: 100,
 			link: link
 		};
-	}]);
-});
+	}
+]);

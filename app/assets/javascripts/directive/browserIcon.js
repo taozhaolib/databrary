@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('browserIcon', ['browserService', function (browserService) {
+module.directive('browserIcon', [
+	'browserService', function (browserService) {
 		var link = function ($scope) {
 			$scope.browser = $scope.browser || browserService;
 
@@ -30,5 +28,5 @@ define(['config/module'], function (module) {
 			replace: true,
 			link: link
 		};
-	}]);
-});
+	}
+]);

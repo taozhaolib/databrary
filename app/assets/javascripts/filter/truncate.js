@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.filter('truncate', [function () {
+module.filter('truncate', [
+	function () {
 		return function (text, length, type, end) {
 			length = angular.isNumber(parseInt(length)) ? parseInt(length) : 10;
 			type = ['characters', 'words'].indexOf(type) ? type : 'characters';
@@ -24,7 +22,6 @@ define(['config/module'], function (module) {
 						return String(text).substring(0, length - end.length) + end;
 			}
 
-
 		};
-	}]);
-});
+	}
+]);

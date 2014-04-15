@@ -1,7 +1,13 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.controller('CommentsPanel', ['$scope', 'authService', '$route', 'Comment', 'Volume', '$filter', '$cacheFactory', 'pageService', function ($scope, authService, $route, Comment, Volume, $filter, $cacheFactory, page) {
+module.controller('CommentsPanel', [
+	'$scope',
+	'authService',
+	'$route',
+	'Comment',
+	'Volume',
+	'$filter',
+	'$cacheFactory',
+	'pageService',
+	function ($scope, authService, $route, Comment, Volume, $filter, $cacheFactory, page) {
 		var DEFAULT_MESSAGE = {
 			type: 'blue',
 			countdown: 3000
@@ -159,11 +165,11 @@ define(['config/module'], function (module) {
 					comment.stop = true;
 
 				classes.push('depth-' + (parents.length - 1));
-			}else{
+			} else {
 				comment.stop = true;
 			}
 
 			return classes;
 		}
-	}]);
-});
+	}
+]);

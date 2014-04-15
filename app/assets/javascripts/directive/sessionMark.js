@@ -1,14 +1,12 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('sessionMark', ['pageService', function (page) {
+module.directive('sessionMark', [
+	'pageService', function (page) {
 		var link = function ($scope, $el, $attrs) {
 			$scope.mark = $attrs.mark;
 			var message = '', type = 'orange';
 
 			switch ($scope.mark) {
 				case 'excluded':
-					if(!$scope.data.object.categories[-700])
+					if (!$scope.data.object.categories[-700])
 						return $el.remove();
 
 					message = page.constants.message('notice.help.exclusion', $scope.data.volume.records[$scope.data.object.categories[-700][0].id].measures.reason);
@@ -16,7 +14,7 @@ define(['config/module'], function (module) {
 					break;
 
 				case 'pilot':
-					if(!$scope.data.object.categories[-800])
+					if (!$scope.data.object.categories[-800])
 						return $el.remove();
 
 					message = page.constants.message('notice.help.pilot');
@@ -45,7 +43,7 @@ define(['config/module'], function (module) {
 			$scope.getMarkClasses = function () {
 				var classes = [];
 
-				classes.push('session_mark_'+$scope.mark);
+				classes.push('session_mark_' + $scope.mark);
 
 				return classes;
 			};
@@ -58,5 +56,5 @@ define(['config/module'], function (module) {
 			replace: true,
 			link: link
 		};
-	}]);
-});
+	}
+]);

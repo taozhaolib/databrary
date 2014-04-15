@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('eventService', ['$rootScope', function ($rootScope) {
+module.factory('eventService', [
+	'$rootScope', function ($rootScope) {
 		var events = {};
 
 		//
@@ -23,5 +21,5 @@ define(['config/module'], function (module) {
 		//
 
 		return events;
-	}]);
-});
+	}
+]);

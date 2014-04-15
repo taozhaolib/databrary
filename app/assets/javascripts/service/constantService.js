@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('constantService', ['$http', function ($http) {
+module.factory('constantService', [
+	'$http', function ($http) {
 		var constants = {
 			data: {}
 		};
@@ -14,13 +12,16 @@ define(['config/module'], function (module) {
 					{
 						inherit: 2,
 						direct: 0
-					}, {
+					},
+					{
 						inherit: 3,
 						direct: 0
-					}, {
+					},
+					{
 						inherit: 4,
 						direct: 0
-					}, {
+					},
+					{
 						inherit: undefined,
 						direct: undefined,
 						custom: true
@@ -31,13 +32,16 @@ define(['config/module'], function (module) {
 					{
 						inherit: 2,
 						direct: 2
-					}, {
+					},
+					{
 						inherit: 3,
 						direct: 3
-					}, {
+					},
+					{
 						inherit: 4,
 						direct: 4
-					}, {
+					},
+					{
 						inherit: undefined,
 						direct: undefined,
 						custom: true
@@ -78,14 +82,14 @@ define(['config/module'], function (module) {
 		};
 
 		constants.message = function (key /*, args...*/) {
-			if(!constants.data || !constants.data.messages || !constants.data.messages[key])
-				// warning? error? placeholder.
+			if (!constants.data || !constants.data.messages || !constants.data.messages[key])
+			// warning? error? placeholder.
 				return '[' + key + ']';
 
 			var msg = constants.data.messages[key];
 
 			for (var i = 1, length = arguments.length; i < length; i++)
-				msg = msg.replace('{' + (i-1) + '}', arguments[i], 'g');
+				msg = msg.replace('{' + (i - 1) + '}', arguments[i], 'g');
 
 			return msg;
 		};
@@ -95,5 +99,5 @@ define(['config/module'], function (module) {
 		constants.update();
 
 		return constants;
-	}]);
-});
+	}
+]);

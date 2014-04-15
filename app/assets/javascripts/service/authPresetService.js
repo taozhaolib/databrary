@@ -1,13 +1,11 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('authPresetService', ['pageService', function (page) {
+module.factory('authPresetService', [
+	'pageService', function (page) {
 		var authPresetService = {};
 
 		//
 
 		authPresetService.get = function (party, other, request) {
-			if(!angular.isObject(party) || !angular.isObject(other))
+			if (!angular.isObject(party) || !angular.isObject(other))
 				return [];
 
 			if (request) {
@@ -35,5 +33,5 @@ define(['config/module'], function (module) {
 		//
 
 		return authPresetService;
-	}]);
-});
+	}
+]);

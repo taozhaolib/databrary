@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('SlotAsset', ['$resource', '$route', function ($resource, $route) {
+module.factory('SlotAsset', [
+	'$resource', '$route', function ($resource, $route) {
 		return $resource('/api/slot/:slotId/asset/:id', {
 			slotId: function () {
 				return $route.current.params.slotId || undefined;
@@ -13,5 +11,5 @@ define(['config/module'], function (module) {
 				return $route.current.params.segment || ',';
 			}
 		});
-	}]);
-});
+	}
+]);

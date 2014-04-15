@@ -1,6 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-	module.filter('format', ['$filter', function ($filter) {
+module.filter('format', [
+	'$filter', function ($filter) {
 		return function (input, lineMode, raw) {
 			if (!angular.isString(input))
 				return '';
@@ -13,5 +12,5 @@ define(['config/module'], function (module) {
 
 			return '<p>' + input.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
 		};
-	}]);
-});
+	}
+]);

@@ -1,7 +1,11 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.controller('LoadingView', ['$scope', 'authPromise', 'constantPromise', 'authService', 'pageService', '$location', function ($scope, authPromise, constantPromise, auth, page, $location) {
+module.controller('LoadingView', [
+	'$scope',
+	'authPromise',
+	'constantPromise',
+	'authService',
+	'pageService',
+	'$location',
+	function ($scope, authPromise, constantPromise, auth, page, $location) {
 		page.loading = true;
 		page.title = page.constants.message('page.title.loading');
 
@@ -9,5 +13,5 @@ define(['config/module'], function (module) {
 			$location.url(auth.next).replace();
 			auth.next = undefined;
 		}
-	}]);
-});
+	}
+]);

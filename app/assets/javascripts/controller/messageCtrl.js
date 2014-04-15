@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.controller('MessageCtrl', ['$scope', '$timeout', 'pageService', function ($scope, $timeout, page) {
+module.controller('MessageCtrl', [
+	'$scope', '$timeout', 'pageService', function ($scope, $timeout, page) {
 		$scope.messages = page.messages;
 		$scope.enabled = true;
 
@@ -65,5 +63,5 @@ define(['config/module'], function (module) {
 		$scope.$watch('messages', function (messages) {
 			$scope.updateHeight();
 		});
-	}]);
-});
+	}
+]);

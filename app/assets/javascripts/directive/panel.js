@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('panel', ['panelService', function (panels) {
+module.directive('panel', [
+	'panelService', function (panels) {
 		var link = function ($scope, $element, $attrs, ctrl, transclude) {
 			$scope.id = (angular.isDefined($attrs.id)) ? $attrs.id : '';
 			$scope.title = $attrs.panelTitle || '';
@@ -48,5 +46,5 @@ define(['config/module'], function (module) {
 			priority: 100,
 			link: link
 		};
-	}]);
-});
+	}
+]);

@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('wizardStep', [function () {
+module.directive('wizardStep', [
+	function () {
 		var compile = function ($element, $attrs, transclude) {
 			return function ($scope, $element, $attrs) {
 				$scope.id = $attrs.id;
@@ -26,5 +24,5 @@ define(['config/module'], function (module) {
 			replace: true,
 			compile: compile
 		};
-	}]);
-});
+	}
+]);

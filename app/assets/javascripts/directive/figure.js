@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('figure', [function () {
+module.directive('figure', [
+	function () {
 		var compile = function ($element, $attrs) {
 			$element.addClass('figure');
 
@@ -45,5 +43,5 @@ define(['config/module'], function (module) {
 			priority: 100,
 			compile: compile
 		};
-	}]);
-});
+	}
+]);

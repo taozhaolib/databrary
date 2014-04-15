@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('metricsRepeater', ['$http', 'pageService', function ($http, page) {
+module.directive('metricsRepeater', [
+	'$http', 'pageService', function ($http, page) {
 		var link = function ($scope) {
 			$scope.repeats = $scope.repeats || [];
 
@@ -151,5 +149,5 @@ define(['config/module'], function (module) {
 			scope: true,
 			link: link
 		}
-	}]);
-});
+	}
+]);

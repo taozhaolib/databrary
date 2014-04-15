@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.filter('uri', [function () {
+module.filter('uri', [
+	function () {
 		var encodeURIQuery = function (val, pctEncodeSpaces) {
 			return encodeURIComponent(val).
 				replace(/%40/gi, '@').
@@ -12,10 +10,10 @@ define(['config/module'], function (module) {
 		};
 
 		return function (input, component, withSpaces) {
-			if(component)
+			if (component)
 				return encodeURIQuery(input, withSpaces);
 
 			return encodeURI(input);
 		};
-	}]);
-});
+	}
+]);

@@ -1,7 +1,10 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('authGrantForm', ['PartyAuthorize', 'authService', 'authPresetService', '$filter', 'pageService', function (PartyAuthorize, authService, authPresetService, $filter, page) {
+module.directive('authGrantForm', [
+	'PartyAuthorize',
+	'authService',
+	'authPresetService',
+	'$filter',
+	'pageService',
+	function (PartyAuthorize, authService, authPresetService, $filter, page) {
 		var link = function ($scope) {
 			var form = $scope.authGrantForm;
 
@@ -25,7 +28,7 @@ define(['config/module'], function (module) {
 				if (!form.partyAuthorize.expires.match(/^\d{4}-\d{1,2}-\d{1,2}$/))
 					form.partyAuthorize.expires = '';
 
-				if(form.partyAuthorize.expires == '')
+				if (form.partyAuthorize.expires == '')
 					delete form.partyAuthorize.expires;
 
 				if (angular.isFunction(form.saveFn))
@@ -147,5 +150,5 @@ define(['config/module'], function (module) {
 			replace: true,
 			link: link
 		};
-	}]);
-});
+	}
+]);

@@ -1,9 +1,7 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.controller('BrowserPanel', ['$scope', '$route', function ($scope, $route) {
+module.controller('BrowserPanel', [
+	'$scope', '$route', function ($scope, $route) {
 		$scope.refreshPanel = function () {
-			switch($route.current.controller) {
+			switch ($route.current.controller) {
 				case 'VolumeView':
 					$scope.enabled = $scope.volume.sessions;
 					break;
@@ -12,5 +10,5 @@ define(['config/module'], function (module) {
 					break;
 			}
 		};
-	}]);
-});
+	}
+]);

@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('browserPlayer', ['browserService', '$window', function (browserService, $window) {
+module.directive('browserPlayer', [
+	'browserService', '$window', function (browserService, $window) {
 		var link = function ($scope, $element) {
 			$scope.browser = $scope.browser || browserService;
 
@@ -35,5 +33,5 @@ define(['config/module'], function (module) {
 			priority: 100,
 			link: link
 		};
-	}]);
-});
+	}
+]);

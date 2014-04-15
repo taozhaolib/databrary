@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('tab', ['authService', function (auth) {
+module.directive('tab', [
+	'authService', function (auth) {
 		var link = function ($scope, $el, $attr, tabset) {
 			$scope.id = $attr.id;
 			$scope.name = $attr.name;
@@ -35,5 +33,5 @@ define(['config/module'], function (module) {
 			require: '^tabset',
 			link: link
 		};
-	}]);
-});
+	}
+]);

@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('Party', ['$resource', '$route', function ($resource, $route) {
+module.factory('Party', [
+	'$resource', '$route', function ($resource, $route) {
 		return $resource('/api/party/:id', {
 			id: function () {
 				return $route.current.params.id || undefined;
@@ -16,5 +14,5 @@ define(['config/module'], function (module) {
 				url: '/api/profile'
 			}
 		});
-	}]);
-});
+	}
+]);

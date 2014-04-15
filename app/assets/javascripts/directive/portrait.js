@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('portrait', [function () {
+module.directive('portrait', [
+	function () {
 		var compile = function ($element, $attrs, transclude) {
 			return function ($scope, $element, $attrs) {
 				$scope.avatar = $attrs.avatar !== false;
@@ -22,5 +20,5 @@ define(['config/module'], function (module) {
 			replace: true,
 			compile: compile
 		};
-	}]);
-});
+	}
+]);

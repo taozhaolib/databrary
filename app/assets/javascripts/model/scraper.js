@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('Scraper', ['$q', '$http', 'pageService', function ($q, $http, page) {
+module.factory('Scraper', [
+	'$q', '$http', 'pageService', function ($q, $http, page) {
 		return function (url) {
 			var deferred = $q.defer();
 
@@ -22,5 +20,5 @@ define(['config/module'], function (module) {
 
 			return deferred.promise;
 		};
-	}]);
-});
+	}
+]);

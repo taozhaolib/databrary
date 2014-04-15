@@ -1,9 +1,7 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.filter('toArray', ['$filter', function ($filter) {
+module.filter('toArray', [
+	'$filter', function ($filter) {
 		return function (input, expression, reverse) {
-			if(!angular.isObject(input))
+			if (!angular.isObject(input))
 				return [input];
 
 			var output = [];
@@ -13,10 +11,10 @@ define(['config/module'], function (module) {
 				output.push(item);
 			});
 
-			if(angular.isDefined(expression))
+			if (angular.isDefined(expression))
 				output = $filter('orderBy')(output, expression, reverse);
 
 			return output;
 		};
-	}]);
-});
+	}
+]);

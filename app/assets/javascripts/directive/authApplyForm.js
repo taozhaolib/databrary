@@ -1,7 +1,9 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('authApplyForm', ['PartyAuthorize', 'authService', 'authPresetService', 'pageService', function (PartyAuthorize, authService, authPresetService, page) {
+module.directive('authApplyForm', [
+	'PartyAuthorize',
+	'authService',
+	'authPresetService',
+	'pageService',
+	function (PartyAuthorize, authService, authPresetService, page) {
 		var link = function ($scope) {
 			var form = $scope.authApplyForm;
 
@@ -74,5 +76,5 @@ define(['config/module'], function (module) {
 			replace: true,
 			link: link
 		};
-	}]);
-});
+	}
+]);

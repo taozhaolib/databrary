@@ -1,7 +1,13 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.controller('TagsPanel', ['$scope', 'Tag', '$route', 'pageService', 'Volume', '$cacheFactory', '$http', '$timeout', function ($scope, Tag, $route, page, Volume, $cacheFactory, $http, $timeout) {
+module.controller('TagsPanel', [
+	'$scope',
+	'Tag',
+	'$route',
+	'pageService',
+	'Volume',
+	'$cacheFactory',
+	'$http',
+	'$timeout',
+	function ($scope, Tag, $route, page, Volume, $cacheFactory, $http, $timeout) {
 		var DEFAULT_MESSAGE = {
 			type: 'blue',
 			countdown: 3000
@@ -305,7 +311,7 @@ define(['config/module'], function (module) {
 
 			angular.forEach(unsetTips, function (message, target) {
 				tips.push(page.tooltips.add({
-					live : true,
+					live: true,
 					$target: target,
 					message: message
 				}));
@@ -327,5 +333,5 @@ define(['config/module'], function (module) {
 
 			tips = [];
 		});
-	}]);
-});
+	}
+]);

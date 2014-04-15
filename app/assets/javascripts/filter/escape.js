@@ -1,15 +1,13 @@
-define(['config/module'], function (module) {
-	'use strict';
+var ent = {
+	"&": "&amp;",
+	"<": "&lt;",
+	">": "&gt;",
+	'"': "&quot;",
+	"'": "&apos;"
+};
 
-	var ent = {
-		"&": "&amp;",
-		"<": "&lt;",
-		">": "&gt;",
-		'"': "&quot;",
-		"'": "&apos;"
-	};
-
-	module.filter('escape', [function () {
+module.filter('escape', [
+	function () {
 		return function (input) {
 			if (!angular.isString(input))
 				return '';
@@ -18,5 +16,5 @@ define(['config/module'], function (module) {
 				return ent[c];
 			});
 		};
-	}]);
-});
+	}
+]);

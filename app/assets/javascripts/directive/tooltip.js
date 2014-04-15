@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('tooltip', ['pageService', function (page) {
+module.directive('tooltip', [
+	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
 			var tooltip = {};
 
@@ -19,5 +17,5 @@ define(['config/module'], function (module) {
 			restrict: 'EA',
 			link: link
 		}
-	}]);
-});
+	}
+]);

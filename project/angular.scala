@@ -1,20 +1,14 @@
 import sbt._
 import Keys._
 import scala.util.matching.Regex
-import com.googlecode.htmlcompressor.compressor.HtmlCompressor
 
 object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
   val directory = SettingKey[String]("angular-template-directory")
   val entryPoints = SettingKey[PathFinder]("angular-template-entry-points")
   val options = SettingKey[Seq[String]]("angular-template-options")
 
-  private def read(file : File) : String = {
-    val i = new java.io.FileInputStream(file)
-    val buf = new Array[Byte](i.available)
-    i.read(buf)
-    i.close
-    new String(buf)
-  }
+  private def read(file : File) : String =
+    scalax.file.Path(file).string
 
   private final case class Replacer(source : String, regex : Regex) {
     val matches = regex.findAllMatchIn(source).toSeq
@@ -60,7 +54,7 @@ object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
       }
   }
 
-  private val compressor = new HtmlCompressor
+  private val compressor = new com.googlecode.htmlcompressor.compressor.HtmlCompressor
   compressor.setRemoveIntertagSpaces(true)
 
   private def compile(file : File, options : Seq[String]) : (String, Option[String], Seq[File]) = {

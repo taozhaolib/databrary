@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('scroll', ['$timeout', function ($timeout) {
+module.directive('scroll', [
+	'$timeout', function ($timeout) {
 		var link = function ($scope, $element, $attrs) {
 			var timer = $timeout(angular.noop);
 			var timeout = $.isNumeric($attrs.scrollTimeout) ? parseInt($attrs.scrollTimeout) : 100;
@@ -25,5 +23,5 @@ define(['config/module'], function (module) {
 			restrict: 'A',
 			link: link
 		};
-	}]);
-});
+	}
+]);

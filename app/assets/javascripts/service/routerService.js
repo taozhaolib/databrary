@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('routerService', ['$rootScope', '$route', '$filter', 'typeService', function ($rootScope, $route, $filter, type) {
+module.factory('routerService', [
+	'$rootScope', '$route', '$filter', 'typeService', function ($rootScope, $route, $filter, type) {
 		var router = {};
 
 		router.$route = $route;
@@ -268,6 +266,5 @@ define(['config/module'], function (module) {
 		//
 
 		return router;
-	}]);
-});
-
+	}
+]);

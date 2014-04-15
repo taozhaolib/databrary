@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('hover', ['$timeout', function ($timeout) {
+module.directive('hover', [
+	'$timeout', function ($timeout) {
 		var hoverableClass = 'hoverable',
 			currentlyClass = 'hovered',
 			hoverWrap = $('<div class="hover_wrap" style="position: relative;"></div>'),
@@ -72,5 +70,5 @@ define(['config/module'], function (module) {
 			scope: true,
 			link: link
 		};
-	}]);
-});
+	}
+]);

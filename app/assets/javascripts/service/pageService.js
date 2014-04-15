@@ -1,7 +1,11 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('pageService', ['$rootScope', 'messageService', 'tooltipService', 'constantService', 'routerService', 'eventService', function ($rootScope, messages, tooltips, constants, router, events) {
+module.factory('pageService', [
+	'$rootScope',
+	'messageService',
+	'tooltipService',
+	'constantService',
+	'routerService',
+	'eventService',
+	function ($rootScope, messages, tooltips, constants, router, events) {
 		var pageService = {
 			messages: messages,
 			tooltips: tooltips,
@@ -31,5 +35,5 @@ define(['config/module'], function (module) {
 		//
 
 		return pageService;
-	}]);
-});
+	}
+]);

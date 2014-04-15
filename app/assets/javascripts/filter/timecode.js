@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.filter('timecode', [function () {
+module.filter('timecode', [
+	function () {
 		return function (input, showMilli) {
 			if (!angular.isNumber(input))
 				return input;
@@ -41,5 +39,5 @@ define(['config/module'], function (module) {
 
 			return time.join(':');
 		};
-	}]);
-});
+	}
+]);

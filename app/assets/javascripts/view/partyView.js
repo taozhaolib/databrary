@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.controller('PartyView', ['$scope', 'party', 'volumes', 'pageService', function ($scope, party, volumes, page) {
+module.controller('PartyView', [
+	'$scope', 'party', 'volumes', 'pageService', function ($scope, party, volumes, page) {
 		$scope.party = party;
 		$scope.volumes = volumes;
 
@@ -16,5 +14,5 @@ define(['config/module'], function (module) {
 		$scope.$watchCollection('volumes', function () {
 			page.events.talk('panelService-refresh');
 		});
-	}]);
-});
+	}
+]);

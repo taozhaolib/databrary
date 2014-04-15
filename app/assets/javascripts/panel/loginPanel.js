@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.controller('LoginPanel', ['$scope', 'authService', function ($scope, authService) {
+module.controller('LoginPanel', [
+	'$scope', 'authService', function ($scope, authService) {
 		$scope.method = 'databrary';
 
 		$scope.loginData = {};
@@ -25,5 +23,5 @@ define(['config/module'], function (module) {
 		$scope.submitForm = function () {
 			authService.login($scope.loginData);
 		};
-	}]);
-});
+	}
+]);

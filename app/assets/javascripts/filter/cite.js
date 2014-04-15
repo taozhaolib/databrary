@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.filter('cite', ['$filter', function ($filter) {
+module.filter('cite', [
+	'$filter', function ($filter) {
 		return function (volume) {
 			if (!angular.isObject(volume) || angular.isUndefined(volume.access) || angular.isUndefined(volume.name) || angular.isUndefined(volume.id))
 				return '';
@@ -33,7 +31,7 @@ define(['config/module'], function (module) {
 
 			//
 
-			return $filter('escape')(names) + ', ' + created + '. '+ $filter('escape')(volume.name) + '. <em>Databrary</em>. Retrieved ' + retrieved + ' from <a href="http://databrary.org/volume/'+volume.id+'" title="'+ $filter('escape')(volume.name) + '">http://databrary.org/volume/'+volume.id+'</a>.';
+			return $filter('escape')(names) + ', ' + created + '. ' + $filter('escape')(volume.name) + '. <em>Databrary</em>. Retrieved ' + retrieved + ' from <a href="http://databrary.org/volume/' + volume.id + '" title="' + $filter('escape')(volume.name) + '">http://databrary.org/volume/' + volume.id + '</a>.';
 		};
-	}]);
-});
+	}
+]);

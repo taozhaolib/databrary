@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('repeater', [function () {
+module.directive('repeater', [
+	function () {
 		var link = function ($scope) {
 			$scope.repeats = $scope.repeats || [
 				{}
@@ -53,7 +51,7 @@ define(['config/module'], function (module) {
 			//
 
 			var initialize = function () {
-				if($scope.repeats.length == 0) {
+				if ($scope.repeats.length == 0) {
 					$scope.createRepeat();
 				}
 			};
@@ -67,5 +65,5 @@ define(['config/module'], function (module) {
 			scope: true,
 			link: link
 		}
-	}]);
-});
+	}
+]);

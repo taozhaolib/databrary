@@ -1,7 +1,9 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.factory('messageService', ['$rootScope', 'arrayHelper', '$timeout', 'constantService', function ($rootScope, arrayHelper, $timeout, constants) {
+module.factory('messageService', [
+	'$rootScope',
+	'arrayHelper',
+	'$timeout',
+	'constantService',
+	function ($rootScope, arrayHelper, $timeout, constants) {
 		var messages = arrayHelper([]);
 
 		messages.types = ['blue', 'green', 'red', 'orange', 'yellow', 'purple'];
@@ -77,8 +79,8 @@ define(['config/module'], function (module) {
 					moreBody += '<dt>Field "' + field + '"</dt><dd>' + errorArray.join('</dd><dd>') + '</dd>';
 				});
 
-				if(message.status)
-					moreBody = '<dt>Status</dt><dd>'+message.status+'</dd>' + moreBody;
+				if (message.status)
+					moreBody = '<dt>Status</dt><dd>' + message.status + '</dd>' + moreBody;
 
 				moreBody = '<dl class="message_form_errors">' + moreBody + '</dl>';
 
@@ -219,5 +221,5 @@ define(['config/module'], function (module) {
 		//
 
 		return messages;
-	}]);
-});
+	}
+]);

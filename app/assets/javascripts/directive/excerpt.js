@@ -1,7 +1,5 @@
-define(['config/module'], function (module) {
-	'use strict';
-
-	module.directive('excerpt', ['typeService', 'pageService', function (type, page) {
+module.directive('excerpt', [
+	'typeService', 'pageService', function (type, page) {
 		var link = function ($scope, $el, $attr) {
 			var obj = $scope[$attr.excerpt].object ? $scope[$attr.excerpt].object : $scope[$attr.excerpt];
 
@@ -36,5 +34,5 @@ define(['config/module'], function (module) {
 			restrict: 'A',
 			link: link
 		};
-	}]);
-});
+	}
+]);
