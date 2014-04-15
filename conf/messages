@@ -105,6 +105,8 @@ network.title=Authorizations
 network.view=view
 network.edit=edit
 network.authquery.error=Could not retrieve your authorizing agents and affiliates.
+network.remote.grant=Grant authorization to {0}
+network.remote.apply=Apply for authorization from {0}
 
 auth.parents.title=Authorized by
 auth.children.title=Granted authorization to

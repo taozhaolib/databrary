@@ -15,6 +15,15 @@
 
 .network-auth-username {
 	.font-line(1.5);
+
+	&:link,
+	&:visited {
+		color: inherit;
+	}
+
+	&:hover {
+		color: @gray;
+	}
 }
 
 .network-auth-email {
@@ -50,4 +59,8 @@
 
 .auth-search {
 	.margin-top(@f3);
+}
+
+.remote-action {
+	.line-height(2.25);
 }

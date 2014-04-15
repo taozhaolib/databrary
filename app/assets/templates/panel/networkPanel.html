@@ -1,5 +1,5 @@
 <panel ng-controller="NetworkPanel" id="panel_network" panel-title="{{'network.title' | message}}" fold>
-  <div class="network_parents_region" ng-show="showRegion('parents')">
+  <div class="network_parents_region">
     <h2>{{'auth.parents.title' | message}}</h2>
 
     <article class="network-auth cf" bindonce ng-repeat="parent in partyAuth.parents">
@@ -13,7 +13,7 @@
         <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
           <div class="row">
             <div class="network-heading col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-              <span class="network-auth-username">{{parent.party.name}}</span>
+              <a bo-href="page.router.party(parent.party)" class="network-auth-username">{{parent.party.name}}</a>
               <span class="network-auth-email" bo-if="parent.party.email">{{parent.party.email}}</span>
               <span class="icon edit line" ng-click="openAuthParent(parent)" ng-if="auth.hasAccess('ADMIN', party) && parent.force && currentAuthParent != parent"></span>
             </div>
@@ -43,7 +43,13 @@
 
             <div ng-if="currentAuthParent == parent">
               <div class="col-desktop-12 col-laptop-10 col-tablet-8 col-mobile-5">
-                <auth-apply-form></auth-apply-form>
+                <div ng-if="currentAuthParent.remote">
+                    <auth-grant-form></auth-grant-form>
+                </div>
+
+                <div ng-if="!currentAuthParent.remote">
+                    <auth-apply-form></auth-apply-form>
+                </div>
               </div>
             </div>
           </div>
@@ -51,7 +57,7 @@
       </div>
     </article>
 
-    <article ng-if="auth.hasAccess('ADMIN', party)" class="network-auth network-auth-add cf" bindonce>
+    <article ng-if="auth.hasAccess('ADMIN', party) || (!party.institution && !partyAuth.children[auth.user.id])" class="network-auth network-auth-add cf" bindonce>
       <div class="row">
         <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
           <figure baseline="square" class="figure_avatar">
@@ -60,15 +66,19 @@
         </div>
 
         <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-          <div class="row">
-            <auth-search-form party="{{party.id}}"></auth-search-form>
-          </div>
+            <div ng-if="auth.hasAccess('ADMIN', party)">
+              <auth-search-form party="{{party.id}}"></auth-search-form>
+            </div>
+
+            <div ng-if="!auth.hasAccess('ADMIN', party) && !partyAuth.children[auth.user.id]">
+              <a href="" class="remote-action" ng-click="remoteAction(false)" bo-html="'network.remote.grant' | message:party.name"></a>
+            </div>
         </div>
       </div>
     </article>
   </div>
 
-  <div class="network_children_region" ng-show="showRegion('children')">
+  <div class="network_children_region">
     <h2>{{'auth.children.title' | message}}</h2>
 
     <article class="network-auth cf" bindonce ng-repeat="child in partyAuth.children">
@@ -82,7 +92,7 @@
         <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
           <div class="row">
             <div class="network-heading col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-              <span class="network-auth-username" bo-html="child.party.name"></span>
+              <a bo-href="page.router.party(child.party)" class="network-auth-username" bo-html="child.party.name"></a>
               <span class="network-auth-email" bo-if="child.party.email" bo-html="child.party.email"></span>
               <span class="icon edit line" ng-click="openAuthChild(child)" ng-if="auth.hasAccess('ADMIN', party) && currentAuthChild != child"></span>
             </div>
@@ -108,7 +118,13 @@
 
             <div ng-if="currentAuthChild == child">
               <div class="col-desktop-12 col-laptop-10 col-tablet-8 col-mobile-5">
-                <auth-grant-form></auth-grant-form>
+                <div ng-if="currentAuthChild.remote">
+                    <auth-apply-form></auth-apply-form>
+                </div>
+
+                <div ng-if="!currentAuthChild.remote">
+                    <auth-grant-form></auth-grant-form>
+                </div>
               </div>
             </div>
           </div>
@@ -116,7 +132,7 @@
       </div>
     </article>
 
-    <article ng-if="auth.hasAccess('ADMIN', party)" class="network-auth network-auth-add cf" bindonce>
+    <article ng-if="auth.hasAccess('ADMIN', party) || !partyAuth.parents[auth.user.id]" class="network-auth network-auth-add cf" bindonce>
       <div class="row">
         <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
           <figure baseline="square" class="figure_avatar">
@@ -125,9 +141,13 @@
         </div>
 
         <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-          <div class="row">
-            <auth-search-form child party="{{party.id}}"></auth-search-form>
-          </div>
+            <div ng-if="auth.hasAccess('ADMIN', party)">
+              <auth-search-form child party="{{party.id}}"></auth-search-form>
+            </div>
+
+            <div ng-if="!auth.hasAccess('ADMIN', party)">
+              <a href="" class="remote-action" ng-click="remoteAction(true)" bo-html="'network.remote.apply' | message:party.name"></a>
+            </div>
         </div>
       </div>
     </article>

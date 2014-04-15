@@ -20,10 +20,6 @@ module.controller('NetworkPanel', [
 			getPartyAuth();
 		};
 
-		var panelEnabler = function () {
-			$scope.enabled = $scope.showRegion('parents') || $scope.showRegion('children');
-		};
-
 		//
 
 		$scope.partyAuth = {};
@@ -34,7 +30,6 @@ module.controller('NetworkPanel', [
 			if (auth.hasAccess('ADMIN', $scope.party))
 				PartyAuthorize.query(function (data) {
 					$scope.partyAuth = data;
-					panelEnabler();
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('network.authquery.error'),
@@ -66,8 +61,6 @@ module.controller('NetworkPanel', [
 							party: party
 						};
 					});
-
-					panelEnabler();
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('network.authquery.error'),
@@ -75,15 +68,6 @@ module.controller('NetworkPanel', [
 						status: res[1]
 					});
 				});
-		};
-
-		//
-
-		$scope.showRegion = function (region) {
-			if (region == 'parents')
-				return !$.isEmptyObject($scope.partyAuth.parents) || auth.hasAccess('ADMIN', $scope.party);
-			else
-				return !$.isEmptyObject($scope.partyAuth.children) || auth.hasAccess('ADMIN', $scope.party);
 		};
 
 		//
@@ -98,7 +82,7 @@ module.controller('NetworkPanel', [
 		//
 
 		$scope.openAuthChild = function (child) {
-			if(!auth.hasAccess('ADMIN', $scope.party))
+			if (!auth.hasAccess('ADMIN', $scope.party))
 				return;
 
 			$scope.resetAuthChild(child);
@@ -162,14 +146,30 @@ module.controller('NetworkPanel', [
 			getPartyAuth();
 			$scope.resetAuthChild();
 
-			if ($scope.currentAuthChild.force)
-				delete $scope.partyAuth.children[$scope.currentAuthChild.party.id];
+			if ($scope.currentAuthParent && $scope.currentAuthParent.remote) {
+				if ($scope.currentAuthParent.force)
+					delete $scope.partyAuth.parents[$scope.currentAuthParent.party.id];
 
-			$scope.currentAuthChild = undefined;
+				$scope.currentAuthParent = undefined;
+			} else {
+				if ($scope.currentAuthChild.force)
+					delete $scope.partyAuth.children[$scope.currentAuthChild.party.id];
+
+				$scope.currentAuthChild = undefined;
+			}
 		};
 
 		page.events.listen($scope, 'authGrantForm-init', function (event, form, $scope) {
-			form.other = $scope.currentAuthChild;
+			if ($scope.currentAuthParent && $scope.currentAuthParent.remote)
+				form.party = auth.user;
+
+			form.other = $scope.currentAuthParent && $scope.currentAuthParent.remote ? {
+				party: $scope.party,
+				id: $scope.party.id,
+				inherit: 2,
+				direct: 2
+			} : $scope.currentAuthChild;
+
 			form.successFn = grantCancelFn;
 			form.cancelFn = grantCancelFn;
 			form.denySuccessFn = grantCancelFn;
@@ -179,7 +179,7 @@ module.controller('NetworkPanel', [
 		//
 
 		$scope.openAuthParent = function (parent) {
-			if(!auth.hasAccess('ADMIN', $scope.party) || !parent.force)
+			if (!auth.hasAccess('ADMIN', $scope.party) || !parent.force)
 				return;
 
 			$scope.currentAuthParent = parent;
@@ -188,19 +188,39 @@ module.controller('NetworkPanel', [
 		//
 
 		var applySuccessFn = function () {
-			delete $scope.currentAuthParent['force'];
+			if ($scope.currentAuthChild && $scope.currentAuthChild.remote)
+				delete $scope.currentAuthChild['force'];
+			else
+				delete $scope.currentAuthParent['force'];
+
 			applyCancelFn();
 		};
 
 		var applyCancelFn = function () {
-			if ($scope.currentAuthParent.force)
-				delete $scope.partyAuth.parents[$scope.currentAuthParent.party.id];
+			if ($scope.currentAuthChild && $scope.currentAuthChild.remote) {
+				if ($scope.currentAuthChild.force)
+					delete $scope.partyAuth.children[$scope.currentAuthChild.party.id];
 
-			$scope.currentAuthParent = undefined;
+				$scope.currentAuthChild = undefined;
+			} else {
+				if ($scope.currentAuthParent.force)
+					delete $scope.partyAuth.parents[$scope.currentAuthParent.party.id];
+
+				$scope.currentAuthParent = undefined;
+			}
 		};
 
 		page.events.listen($scope, 'authApplyForm-init', function (event, form, $scope) {
-			form.other = $scope.currentAuthParent;
+			if ($scope.currentAuthChild && $scope.currentAuthChild.remote)
+				form.party = auth.user;
+
+			form.other = $scope.currentAuthChild && $scope.currentAuthChild.remote ? {
+				party: $scope.party,
+				id: $scope.party.id,
+				inherit: 2,
+				direct: 2
+			} : $scope.currentAuthParent;
+
 			form.successFn = applySuccessFn;
 			form.cancelFn = applyCancelFn;
 			event.stopPropagation();
@@ -213,8 +233,8 @@ module.controller('NetworkPanel', [
 				party: found,
 				force: true,
 				id: found.id,
-				inherit: 0,
-				direct: 0
+				inherit: 2,
+				direct: 2
 			};
 
 			if (form.apply) {
@@ -231,5 +251,27 @@ module.controller('NetworkPanel', [
 			form.selectFn = selectFn;
 			event.stopPropagation();
 		});
+
+		//
+
+		$scope.remoteAction = function (apply) {
+			var request = {
+				party: auth.user,
+				force: true,
+				remote: true,
+				id: auth.user.id,
+				direct: 2,
+				inherit: 2
+			};
+
+			if (apply) {
+				$scope.partyAuth.children[auth.user.id] = request;
+				$scope.openAuthChild(request);
+				$scope.currentAuthChild = request;
+			} else {
+				$scope.partyAuth.parents[auth.user.id] = request;
+				$scope.currentAuthParent = request;
+			}
+		};
 	}
 ]);
