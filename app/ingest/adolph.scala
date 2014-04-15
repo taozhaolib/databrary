@@ -232,7 +232,7 @@ object Adolph extends Ingest {
     }
     def fillParticipant(pm : ParticipantMap) = {
       val i = RecordCategory.Participant.id.unId
-      records.get(i).fold(this) { p =>
+      records.get(i).fold(fail("no participant")) { p =>
 	copy(records = records.updated(i,
 	  pm.getOrElse(p.asInstanceOf[Participant].key, fail("participant not found: " + p))))
       }
