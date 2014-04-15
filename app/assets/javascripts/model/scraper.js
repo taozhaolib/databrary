@@ -3,20 +3,43 @@ module.factory('Scraper', [
 		return function (url) {
 			var deferred = $q.defer();
 
-			$http
-				.get(url)
-				.success(function (res) {
-					deferred.resolve(res);
-				})
-				.error(function (errors, status, headers, config) {
-					page.messages.addError({
-						body: page.constants.message('scraper.error', config.url.split('/').pop()),
-						errors: errors,
-						status: status
-					});
+			var browser = navigator.userAgent;
+			var ie = 99;
 
-					deferred.reject();
-				});
+			if (browser.indexOf("MSIE") > 1) {
+				ie = parseInt(browser.substr(browser.indexOf("MSIE") + 5, 5));
+			}
+
+			if (ie < 10) {
+				var xdr = new XDomainRequest();
+				xdr.open("GET", url);
+				xdr.send();
+				xdr.onload = function () {
+					deferred.resolve(res);
+				};
+				xdr.onerror = function () {
+					page.messages.addError({
+							body: page.constants.message('scraper.error', url.split('/').pop())
+						});
+
+						deferred.reject();
+				};
+			} else {
+				$http
+					.get(url)
+					.success(function (res) {
+						deferred.resolve(res);
+					})
+					.error(function (errors, status, headers, config) {
+						page.messages.addError({
+							body: page.constants.message('scraper.error', config.url.split('/').pop()),
+							errors: errors,
+							status: status
+						});
+
+						deferred.reject();
+					});
+			}
 
 			return deferred.promise;
 		};

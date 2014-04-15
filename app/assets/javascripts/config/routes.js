@@ -219,7 +219,6 @@ module.run([
 				if (auth.isUnauthorized()) {
 					if (!next.$$route || next.$$route.controller != 'RegisterView')
 						$location.url(router.register());
-					return;
 				} else if (next.$$route && [
 					'ResetView',
 					'WelcomeView',
