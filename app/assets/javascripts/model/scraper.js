@@ -13,17 +13,28 @@ module.factory('Scraper', [
 			if (ie < 10) {
 				var xdr = new XDomainRequest();
 				xdr.open("GET", url);
-				xdr.send();
+
 				xdr.onload = function () {
 					deferred.resolve(res);
 				};
+
 				xdr.onerror = function () {
 					page.messages.addError({
-							body: page.constants.message('scraper.error', url.split('/').pop())
-						});
+						body: page.constants.message('scraper.error', url.split('/').pop())
+					});
 
-						deferred.reject();
+					deferred.reject();
 				};
+
+				xdr.onprogress = function () {
+				};
+				
+				xdr.ontimeout = function () {
+				};
+
+				setTimeout(function () {
+					xdr.send();
+				}, 0);
 			} else {
 				$http
 					.get(url)

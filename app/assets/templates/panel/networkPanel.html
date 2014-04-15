@@ -1,5 +1,5 @@
 <panel ng-controller="NetworkPanel" id="panel_network" panel-title="{{'network.title' | message}}" fold>
-  <div class="network_parents_region">
+  <div class="network_parents_region" ng-show="!$.isEmptyObject(partyAuth.parents) || auth.hasAccess('ADMIN', party) || !partyAuth.parents[auth.user.id] || !partyAuth.children[auth.user.id]">
     <h2>{{'auth.parents.title' | message}}</h2>
 
     <article class="network-auth cf" bindonce ng-repeat="parent in partyAuth.parents">
@@ -70,7 +70,7 @@
               <auth-search-form party="{{party.id}}"></auth-search-form>
             </div>
 
-            <div ng-if="!auth.hasAccess('ADMIN', party) && !partyAuth.children[auth.user.id]">
+            <div ng-if="!auth.hasAccess('ADMIN', party) && !partyAuth.children[auth.user.id] && !partyAuth.parents[auth.user.id]">
               <a href="" class="remote-action" ng-click="remoteAction(false)" bo-html="'network.remote.grant' | message:party.name"></a>
             </div>
         </div>
@@ -78,7 +78,7 @@
     </article>
   </div>
 
-  <div class="network_children_region">
+  <div class="network_children_region" ng-show="!$.isEmptyObject(partyAuth.children) || auth.hasAccess('ADMIN', party) || !partyAuth.parents[auth.user.id] || !partyAuth.children[auth.user.id]">
     <h2>{{'auth.children.title' | message}}</h2>
 
     <article class="network-auth cf" bindonce ng-repeat="child in partyAuth.children">
@@ -132,7 +132,7 @@
       </div>
     </article>
 
-    <article ng-if="auth.hasAccess('ADMIN', party) || !partyAuth.parents[auth.user.id]" class="network-auth network-auth-add cf" bindonce>
+    <article ng-if="auth.hasAccess('ADMIN', party) || !partyAuth.parents[auth.user.id] || !partyAuth.children[auth.user.id]" class="network-auth network-auth-add cf" bindonce>
       <div class="row">
         <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
           <figure baseline="square" class="figure_avatar">
