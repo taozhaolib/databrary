@@ -240,7 +240,6 @@ module.run([
 					'LoginView',
 					'RegisterView'
 				].indexOf(next.$$route.controller) == -1) {
-					auth.next = $location.url();
 					$location.url(router.index());
 				}
 			}
