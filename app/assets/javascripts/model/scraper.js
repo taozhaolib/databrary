@@ -15,7 +15,7 @@ module.factory('Scraper', [
 				xdr.open("GET", url);
 
 				xdr.onload = function () {
-					deferred.resolve(res);
+					deferred.resolve(xdr.responseText);
 				};
 
 				xdr.onerror = function () {
