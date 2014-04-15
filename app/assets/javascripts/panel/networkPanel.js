@@ -169,7 +169,7 @@ module.controller('NetworkPanel', [
 		};
 
 		page.events.listen($scope, 'authGrantForm-init', function (event, form, $scope) {
-			form.other = $scope.child;
+			form.other = $scope.currentAuthChild;
 			form.successFn = grantCancelFn;
 			form.cancelFn = grantCancelFn;
 			form.denySuccessFn = grantCancelFn;
@@ -200,7 +200,7 @@ module.controller('NetworkPanel', [
 		};
 
 		page.events.listen($scope, 'authApplyForm-init', function (event, form, $scope) {
-			form.other = $scope.parent;
+			form.other = $scope.currentAuthParent;
 			form.successFn = applySuccessFn;
 			form.cancelFn = applyCancelFn;
 			event.stopPropagation();

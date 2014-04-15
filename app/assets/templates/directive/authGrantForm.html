@@ -16,7 +16,7 @@
         <legend bo-html="'auth.direct' | possessive:party"></legend>
 
         <div ng-repeat="permission in page.constants.data.permission">
-          <input type="radio" ng-model="child.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == authGrantForm.other.direct">
+          <input type="radio" ng-model="authGrantForm.other.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == authGrantForm.other.direct">
           <label bo-html="'auth.direct.'+page.constants.data.permission[permission.id].name | possessive:party" class="option"></label>
         </div>
       </fieldset>
@@ -27,7 +27,7 @@
         <legend bo-html="'auth.inherit' | possessive:party"></legend>
 
         <div ng-repeat="permission in page.constants.data.permission">
-          <input type="radio" ng-model="child.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == authGrantForm.other.inherit">
+          <input type="radio" ng-model="authGrantForm.other.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == authGrantForm.other.inherit">
           <label bo-html="'auth.inherit.'+page.constants.data.permission[permission.id].name | possessive:party" class="option"></label>
         </div>
       </fieldset>
@@ -37,7 +37,7 @@
   <fieldset class="clean">
     <label>{{"auth.expiration" | message}}:</label>
 
-    <input type="date" ng-model="child.expiration" class="network-auth-expiration-input">
+    <input type="date" ng-model="authGrantForm.other.expiration" class="network-auth-expiration-input" ng-blur="authGrantForm.transformExpiration()">
 
     <button ng-click="authGrantForm.other.expiration = ''" ng-if="auth.hasAuth('SUPER')" class="orange network-auth-expiration-button">Clear expiration</button>
   </fieldset>

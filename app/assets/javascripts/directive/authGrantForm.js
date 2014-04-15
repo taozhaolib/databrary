@@ -14,6 +14,21 @@ module.directive('authGrantForm', [
 
 			//
 
+			form.transformExpiration = function () {
+				var now = new Date(),
+					limit = new Date((new Date()).setYear(now.getFullYear() + 2)).getTime(),
+					exp = form.other.expiration.split('-'),
+					trial = new Date(exp[1] + '-' + exp[2] + '-' + exp[0]).getTime();
+
+				if (trial > limit || isNaN(trial))
+					form.other.expiration = $filter('date')(limit, 'yyyy-MM-dd');
+
+				if (trial < now.getTime())
+					form.other.expiration = $filter('date')(now, 'yyyy-MM-dd');
+			};
+
+			//
+
 			form.saveFn = undefined;
 			form.successFn = undefined;
 			form.errorFn = undefined;
@@ -126,18 +141,6 @@ module.directive('authGrantForm', [
 					form.other.expiration = $filter('date')(new Date(form.other.expires), 'yyyy-MM-dd');
 				else
 					form.other.expiration = '';
-
-				$scope.$watch(function () {
-					return form.other.expiration;
-				}, function (newVal, oldVal) {
-					var now = new Date(),
-						limit = new Date(now.setYear(now.getFullYear() + 2)).getTime(),
-						exp = form.other.expiration.split('-'),
-						trial = new Date(exp[1] + '-' + exp[2] + '-' + exp[0]).getTime();
-
-					if (trial > limit)
-						form.other.expiration = $filter('date')(limit, 'yyyy-MM-dd');
-				});
 			});
 		};
 
