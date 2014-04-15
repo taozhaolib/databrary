@@ -28,7 +28,7 @@ module.factory('Scraper', [
 
 				xdr.onprogress = function () {
 				};
-				
+
 				xdr.ontimeout = function () {
 				};
 
