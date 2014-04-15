@@ -57,8 +57,8 @@
                     <a href="mailto:feedback@databrary.org" class="icon line contact" id="toolbar_contact" target="_self"></a>
 
                     <ul class="toolbar_menu toolbar_menu_left">
-                        <li ng-repeat="panel in panels | filter:{enabled: true}" class="link_{{panel.panel.id}}" ng-class="getPanelClasses(panel)">
-                            <a ng-click="focusPanel(panel)">{{panel.panel.title}}</a></li>
+                        <li ng-repeat="panel in panels | filter:{enabled: true}" class="link_{{panel.id}}" ng-class="getPanelClasses(panel)">
+                            <a ng-click="focusPanel(panel)">{{panel.title}}</a></li>
                         <li ng-if="panels.length == 0"></li>
                     </ul>
                 </div>
