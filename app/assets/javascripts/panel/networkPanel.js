@@ -17,41 +17,63 @@ module.controller('NetworkPanel', [
 		};
 
 		$scope.refreshPanel = function () {
-			$scope.enabled = $scope.showRegion('parents') || $scope.showRegion('children');
 			getPartyAuth();
+		};
+
+		var panelEnabler = function () {
+			$scope.enabled = $scope.showRegion('parents') || $scope.showRegion('children');
 		};
 
 		//
 
-		$scope.partyAuth = [];
+		$scope.partyAuth = {};
 
 		var getPartyAuth = function () {
 			$httpCache.removeAll();
 
-			Party.get({
-				id: $routeParams.id || auth.user.id,
-				parents: '',
-				children: ''
-			}, function (data) {
-				$scope.parents = data.parents;
-				$scope.children = data.children;
-			}, function (res) {
-				page.messages.addError({
-					body: page.constants.message('network.authquery.error'),
-					errors: res[0],
-					status: res[1]
-				})
-			});
-
 			if (auth.hasAccess('ADMIN', $scope.party))
 				PartyAuthorize.query(function (data) {
 					$scope.partyAuth = data;
+					panelEnabler();
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('network.authquery.error'),
 						errors: res[0],
 						status: res[1]
-					})
+					});
+				});
+			else
+				Party.get({
+					id: $routeParams.id || auth.user.id,
+					parents: '',
+					children: ''
+				}, function (data) {
+					$scope.partyAuth = {
+						parents: {},
+						children: {}
+					};
+
+					angular.forEach(data.parents, function (party) {
+						$scope.partyAuth.parents[party.id] = {
+							id: party.id,
+							party: party
+						};
+					});
+
+					angular.forEach(data.children, function (party) {
+						$scope.partyAuth.children[party.id] = {
+							id: party.id,
+							party: party
+						};
+					});
+
+					panelEnabler();
+				}, function (res) {
+					page.messages.addError({
+						body: page.constants.message('network.authquery.error'),
+						errors: res[0],
+						status: res[1]
+					});
 				});
 		};
 
@@ -59,9 +81,9 @@ module.controller('NetworkPanel', [
 
 		$scope.showRegion = function (region) {
 			if (region == 'parents')
-				return !$.isEmptyObject($scope.parents) || auth.hasAccess('ADMIN', $scope.party);
+				return !$.isEmptyObject($scope.partyAuth.parents) || auth.hasAccess('ADMIN', $scope.party);
 			else
-				return !$.isEmptyObject($scope.children) || auth.hasAccess('ADMIN', $scope.party);
+				return !$.isEmptyObject($scope.partyAuth.children) || auth.hasAccess('ADMIN', $scope.party);
 		};
 
 		//
@@ -76,6 +98,9 @@ module.controller('NetworkPanel', [
 		//
 
 		$scope.openAuthChild = function (child) {
+			if(!auth.hasAccess('ADMIN', $scope.party))
+				return;
+
 			$scope.resetAuthChild(child);
 			$scope.currentAuthChild = child;
 		};
@@ -154,7 +179,7 @@ module.controller('NetworkPanel', [
 		//
 
 		$scope.openAuthParent = function (parent) {
-			if (!parent.force)
+			if(!auth.hasAccess('ADMIN', $scope.party) || !parent.force)
 				return;
 
 			$scope.currentAuthParent = parent;

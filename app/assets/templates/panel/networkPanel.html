@@ -2,157 +2,133 @@
   <div class="network_parents_region" ng-show="showRegion('parents')">
     <h2>{{'auth.parents.title' | message}}</h2>
 
-    <tabset>
-      <tab id="auth_parents_view" name="view">
-        <div class="row">
-          <div ng-repeat="party in parents" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
-            <portrait class="portrait_avatar"></portrait>
+    <article class="network-auth cf" bindonce ng-repeat="parent in partyAuth.parents">
+      <div class="row">
+        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+          <figure baseline="square" class="figure_avatar" ng-click="openAuthParent(parent, authForm)">
+            <figmedia><img ng-src="{{page.router.partyAvatar(parent.party, 54)}}"></figmedia>
+          </figure>
+        </div>
+
+        <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
+          <div class="row">
+            <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
+              <span class="network-auth-username">{{parent.party.name}}</span>
+              <span class="network-auth-email" bo-if="parent.party.email">{{parent.party.email}}</span>
+            </div>
+
+            <div ng-if="auth.hasAccess('ADMIN', party)" ng-hide="currentAuthParent == parent">
+              <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
+                <div class="network-auth-heading" bo-html="'auth.inherit' | message:'Their'"></div>
+                <div class="network-auth-inherit" ng-bind-html="'auth.inherit.'+page.constants.data.permission[parent.inherit].name | message:'their'"></div>
+              </div>
+
+              <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="parent.institution || parent.direct !== 0">
+                <div class="network-auth-heading" bo-html="'auth.direct' | message:'Their'"></div>
+                <div class="network-auth-direct" ng-bind-html="'auth.direct.'+page.constants.data.permission[parent.direct].name | message:'their'"></div>
+              </div>
+
+              <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="!parent.institution && parent.direct === 0">
+                &nbsp;
+              </div>
+
+              <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
+                <div class="network-auth-heading expiration" bo-html="'auth.expiration' | message"></div>
+                <div class="network-auth-expiration" ng-bind-html="parent.expires | date:'longDate'"></div>
+                <div class="network-auth-expiration" ng-if="!parent.expires && parent.authorized" ng-bind-html="'auth.expiration.none' | message"></div>
+                <div class="network-auth-expiration" ng-if="!parent.authorized" ng-bind-html="'auth.pending' | message"></div>
+              </div>
+            </div>
+
+            <div ng-if="currentAuthParent == parent">
+              <div class="col-desktop-12 col-laptop-10 col-tablet-8 col-mobile-5">
+                <auth-apply-form></auth-apply-form>
+              </div>
+            </div>
           </div>
         </div>
-      </tab>
+      </div>
+    </article>
 
-      <tab id="auth_parents_edit" name="edit" access="ADMIN">
-        <article class="network-auth cf" bindonce ng-repeat="parent in partyAuth.parents">
+    <article ng-if="auth.hasAccess('ADMIN', party)" class="network-auth network-auth-add cf" bindonce>
+      <div class="row">
+        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+          <figure baseline="square" class="figure_avatar">
+            <figmedia><img src="/public/images/network/auth-add.png"></figmedia>
+          </figure>
+        </div>
+
+        <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
           <div class="row">
-            <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-              <figure baseline="square" class="figure_avatar" ng-click="openAuthParent(parent, authForm)">
-                <figmedia><img ng-src="{{page.router.partyAvatar(parent.party, 54)}}"></figmedia>
-              </figure>
-            </div>
-
-            <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-              <div class="row">
-                <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-                  <span class="network-auth-username">{{parent.party.name}}</span>
-                  <span class="network-auth-email" bo-if="parent.party.email">{{parent.party.email}}</span>
-                </div>
-
-                <div ng-hide="currentAuthParent == parent">
-                  <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-                    <div class="network-auth-heading" bo-html="'auth.inherit' | message:'Their'"></div>
-                    <div class="network-auth-inherit" ng-bind-html="'auth.inherit.'+page.constants.data.permission[parent.inherit].name | message:'their'"></div>
-                  </div>
-
-                  <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="parent.institution || parent.direct !== 0">
-                    <div class="network-auth-heading" bo-html="'auth.direct' | message:'Their'"></div>
-                    <div class="network-auth-direct" ng-bind-html="'auth.direct.'+page.constants.data.permission[parent.direct].name | message:'their'"></div>
-                  </div>
-
-                  <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="!parent.institution && parent.direct === 0">
-                    &nbsp;
-                  </div>
-
-                  <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
-                    <div class="network-auth-heading expiration" bo-html="'auth.expiration' | message"></div>
-                    <div class="network-auth-expiration" ng-bind-html="parent.expires | date:'longDate'"></div>
-                    <div class="network-auth-expiration" ng-if="!parent.expires && parent.authorized" ng-bind-html="'auth.expiration.none' | message"></div>
-                    <div class="network-auth-expiration" ng-if="!parent.authorized" ng-bind-html="'auth.pending' | message"></div>
-                  </div>
-                </div>
-
-                <div ng-if="currentAuthParent == parent">
-                  <div class="col-desktop-12 col-laptop-10 col-tablet-8 col-mobile-5">
-                    <auth-apply-form></auth-apply-form>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <auth-search-form party="{{party.id}}"></auth-search-form>
           </div>
-        </article>
-
-        <article class="network-auth network-auth-add cf" bindonce>
-          <div class="row">
-            <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-              <figure baseline="square" class="figure_avatar">
-                <figmedia><img src="/public/images/network/auth-add.png"></figmedia>
-              </figure>
-            </div>
-
-            <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-              <div class="row">
-                <auth-search-form party="{{party.id}}"></auth-search-form>
-              </div>
-            </div>
-          </div>
-        </article>
-      </tab>
-    </tabset>
+        </div>
+      </div>
+    </article>
   </div>
 
   <div class="network_children_region" ng-show="showRegion('children')">
     <h2>{{'auth.children.title' | message}}</h2>
 
-    <tabset>
-      <tab id="auth_children_view" name="view">
-        <div class="row">
-          <div ng-repeat="party in children" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
-            <portrait class="portrait_avatar"></portrait>
+    <article class="network-auth cf" bindonce ng-repeat="child in partyAuth.children">
+      <div class="row">
+        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+          <figure baseline="square" class="figure_avatar" ng-click="openAuthChild(child, authForm)">
+            <figmedia><img ng-src="{{page.router.partyAvatar(child.party, 54)}}"></figmedia>
+          </figure>
+        </div>
+
+        <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
+          <div class="row">
+            <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
+              <span class="network-auth-username" bo-html="child.party.name"></span>
+              <span class="network-auth-email" bo-if="child.party.email" bo-html="child.party.email"></span>
+            </div>
+
+            <div ng-if="currentAuthChild != child && auth.hasAccess('ADMIN', party)">
+              <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
+                <div class="network-auth-heading" bo-html="'auth.direct' | possessive:party"></div>
+                <div class="network-auth-direct" ng-bind-html="'auth.direct.'+page.constants.data.permission[child.direct].name | possessive:party"></div>
+              </div>
+
+              <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
+                <div class="network-auth-heading" bo-html="'auth.inherit' | possessive:party"></div>
+                <div class="network-auth-inherit" ng-bind-html="'auth.inherit.'+page.constants.data.permission[child.inherit].name | possessive:party"></div>
+              </div>
+
+              <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
+                <div class="network-auth-heading expiration" bo-html="'auth.expiration' | message"></div>
+                <div class="network-auth-expiration" ng-bind-html="child.expires | date:'longDate'"></div>
+                <div class="network-auth-expiration" ng-if="!child.expires && child.authorized" ng-bind-html="'auth.expiration.none' | message"></div>
+                <div class="network-auth-expiration" ng-if="!child.authorized" ng-bind-html="'auth.pending' | message"></div>
+              </div>
+            </div>
+
+            <div ng-if="currentAuthChild == child">
+              <div class="col-desktop-12 col-laptop-10 col-tablet-8 col-mobile-5">
+                <auth-grant-form></auth-grant-form>
+              </div>
+            </div>
           </div>
         </div>
-      </tab>
+      </div>
+    </article>
 
-      <tab id="auth_children_edit" name="edit" access="ADMIN">
-        <article class="network-auth cf" bindonce ng-repeat="child in partyAuth.children">
+    <article ng-if="auth.hasAccess('ADMIN', party)" class="network-auth network-auth-add cf" bindonce>
+      <div class="row">
+        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+          <figure baseline="square" class="figure_avatar">
+            <figmedia><img src="/public/images/network/auth-add.png"></figmedia>
+          </figure>
+        </div>
+
+        <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
           <div class="row">
-            <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-              <figure baseline="square" class="figure_avatar" ng-click="openAuthChild(child, authForm)">
-                <figmedia><img ng-src="{{page.router.partyAvatar(child.party, 54)}}"></figmedia>
-              </figure>
-            </div>
-
-            <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-              <div class="row">
-                <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-                  <span class="network-auth-username" bo-html="child.party.name"></span>
-                  <span class="network-auth-email" bo-if="child.party.email" bo-html="child.party.email"></span>
-                </div>
-
-                <div ng-if="currentAuthChild != child">
-                  <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-                    <div class="network-auth-heading" bo-html="'auth.direct' | possessive:party"></div>
-                    <div class="network-auth-direct" ng-bind-html="'auth.direct.'+page.constants.data.permission[child.direct].name | possessive:party"></div>
-                  </div>
-
-                  <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-                    <div class="network-auth-heading" bo-html="'auth.inherit' | possessive:party"></div>
-                    <div class="network-auth-inherit" ng-bind-html="'auth.inherit.'+page.constants.data.permission[child.inherit].name | possessive:party"></div>
-                  </div>
-
-                  <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
-                    <div class="network-auth-heading expiration" bo-html="'auth.expiration' | message"></div>
-                    <div class="network-auth-expiration" ng-bind-html="child.expires | date:'longDate'"></div>
-                    <div class="network-auth-expiration" ng-if="!child.expires && child.authorized" ng-bind-html="'auth.expiration.none' | message"></div>
-                    <div class="network-auth-expiration" ng-if="!child.authorized" ng-bind-html="'auth.pending' | message"></div>
-                  </div>
-                </div>
-
-                <div ng-if="currentAuthChild == child">
-                  <div class="col-desktop-12 col-laptop-10 col-tablet-8 col-mobile-5">
-                    <auth-grant-form></auth-grant-form>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <auth-search-form child party="{{party.id}}"></auth-search-form>
           </div>
-        </article>
-
-        <article class="network-auth network-auth-add cf" bindonce>
-          <div class="row">
-            <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-              <figure baseline="square" class="figure_avatar">
-                <figmedia><img src="/public/images/network/auth-add.png"></figmedia>
-              </figure>
-            </div>
-
-            <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-              <div class="row">
-                <auth-search-form child party="{{party.id}}"></auth-search-form>
-              </div>
-            </div>
-          </div>
-        </article>
-      </tab>
-    </tabset>
+        </div>
+      </div>
+    </article>
   </div>
 </panel>
 
