@@ -215,6 +215,13 @@ module.run([
 	'$location',
 	function ($rootScope, router, constants, auth, $location) {
 		$rootScope.$on('$routeChangeStart', function (event, next, current) {
+			console.log($location.url());
+			console.log('is logged in: ', !!auth.isLoggedIn());
+			console.log('is password pending: ', !!auth.isPasswordPending());
+			console.log(next.$$route && next.$$route.controller);
+			console.log(window.$play.object && window.$play.object.id);
+			console.log('---');
+
 			if (auth.isLoggedIn()) {
 				if (auth.isUnauthorized()) {
 					if (!next.$$route || next.$$route.controller != 'RegisterView')
@@ -226,9 +233,6 @@ module.run([
 					'RegisterView'
 				].indexOf(next.$$route.controller) != -1) {
 					$location.url(router.search());
-				} else if (auth.next) {
-					$location.url(auth.next).replace();
-					auth.next = undefined;
 				}
 			} else {
 				if (auth.isPasswordPending() && next.$$route && next.$$route.controller != 'RegisterView') {
