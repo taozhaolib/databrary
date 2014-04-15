@@ -8,19 +8,20 @@
 
 	&.public,
 	&.excerpt {
-		width: 20px;
+		padding-left: 20px;
 	}
 
 	&.excerpts {
-		width: 24px;
+		padding-left: 24px;
 	}
 
 	&.identified,
 	&.deidentified {
-		width: 22px;
+		padding-left: 22px;
 	}
 
 	&.contact { background-image: url('/public/images/icon/contact.png'); }
+	&.edit { background-image: url('/public/images/icon/contribute.png'); }
 	&.close { background-image: url('/public/images/icon/close.png'); }
 
 	&.admin { background-image: url('/public/images/icon/admin.png'); }
@@ -50,7 +51,7 @@
 		}
 
 		&.excerpts {
-			width: @b1 + 2px;
+			padding-left: @b1 + 2px;
 			background-position: 1px 4px;
 		}
 
