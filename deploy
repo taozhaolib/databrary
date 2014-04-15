@@ -57,6 +57,9 @@ declare -a args
 addargs() {
 	args=("${args[@]}" "$@")
 }
+if [[ $USER = databrary && $mode = prod ]] ; then
+	addargs -mem 2048
+fi
 addargs "-Dapplication.mode=$mode" "-Dconfig.file=${mode}.conf" "-Dpidfile.path=$HOME/${mode}.pid"
 while read l ; do
 	if [[ $l = http*=* ]] ; then
