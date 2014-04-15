@@ -352,7 +352,7 @@ object PartyHtml extends PartyController with HtmlController {
   def avatar(i : models.Party.Id, size : Int = 64) =
     (SiteAction.Unlocked ~> action(Some(i), Some(Permission.NONE))).async { implicit request =>
       request.obj.avatar.flatMap(_.fold(
-	macros.Async(Found("http://gravatar.com/avatar/"+request.obj.party.account.fold("none")(a => store.MD5.hex(a.email.toLowerCase))+"?s="+size+"&d=mm")))(
+	macros.Async(Found("//gravatar.com/avatar/"+request.obj.party.account.fold("none")(a => store.MD5.hex(a.email.toLowerCase))+"?s="+size+"&d=mm")))(
 	AssetController.assetResult(_)))
     }
 
