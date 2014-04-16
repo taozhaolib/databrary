@@ -84,7 +84,7 @@ module.directive('userPasswordForm', [
 						page.messages.add({
 							countdown: 3000,
 							type: 'red',
-							body: (errors['password.once'] || errors['password']).join('. ') + '.'
+							body: angular.isArray(errors) ? (errors['password.once'] || errors['password']).join('. ') + '.' : page.constants.message('error.generic')
 						});
 
 						if (angular.isFunction(form.saveErrorFn))

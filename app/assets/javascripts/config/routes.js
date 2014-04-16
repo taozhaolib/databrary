@@ -58,6 +58,39 @@ module.config([
 
 		//
 
+		$routeProvider.when('/token/:id', appResolve({
+			controller: function () {
+				return window.$play.object && window.$play.object.reset ? 'ResetView' : 'RegisterView';
+			},
+			templateUrl: function () {
+				return window.$play.object && window.$play.object.reset ? 'resetView.html' : 'registerView.html';
+			},
+			resolve: {
+				token: ['$q', '$http', '$route', '$window', function ($q, $http, $route, $window) {
+					var deferred = $q.defer();
+
+					if($window.$play.object && $window.$play.object.auth)
+						deferred.resolve($window.$play.object);
+					else
+						$http
+							.get('/api/token/'+$route.current.params.id+'?auth='+$route.current.params.auth)
+							.success(function (data) {
+								$window.$play.object = data;
+								deferred.resolve(data);
+							})
+							.error(function () {
+								deferred.reject();
+								$location('/');
+							});
+
+					return deferred.promise;
+				}]
+			},
+			reloadOnSearch: false
+		}));
+
+		//
+
 		$routeProvider.when('/search', appResolve({
 			controller: 'SearchView',
 			templateUrl: 'searchView.html',
@@ -221,13 +254,13 @@ module.run([
 			auth.$promise.then(function () {
 				if (auth.isLoggedIn()) {
 					if (auth.isUnauthorized()) {
-						if (!next.$$route || next.$$route.controller != 'RegisterView')
+						if (!next.$$route || next.$$route.controller != 'RegisterView' || (angular.isFunction(next.$$route.controller) && next.$$route.controller() != 'RegisterView'))
 							$location.url(router.register());
 					} else if (!next.authenticate) {
 						$location.url(router.search());
 					}
 				} else {
-					if (auth.isPasswordPending() && next.$$route && next.$$route.controller != 'RegisterView') {
+					if (auth.isPasswordPending() && next.$$route && next.$$route.controller != 'RegisterView' && (!angular.isFunction(next.$$route.controller) || next.$$route.controller() != 'RegisterView')) {
 						$location.url(router.register());
 					} else if (next.authenticate) {
 						$location.url(router.index());

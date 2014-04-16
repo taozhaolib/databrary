@@ -79,7 +79,9 @@ module.run([
 		$rootScope.auth = auth;
 		$rootScope.type = type;
 
-		playService.run();
+		// TODO: someday...
+//		playService.run();
 	}
 ]);
+
 

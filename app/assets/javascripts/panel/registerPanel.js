@@ -6,8 +6,8 @@ module.controller('RegisterPanel', [
 	'PartyAuthorize',
 	'Scraper',
 	'pageService',
-	function ($scope, authService, $http, $window, PartyAuthorize, Scraper, page) {
-		$scope.auth = $scope.auth || authService;
+	function ($scope, auth, $http, $window, PartyAuthorize, Scraper, page) {
+		$scope.auth = $scope.auth || auth;
 
 		var mess = [];
 		$scope.$on('$destroy', function () {
@@ -38,9 +38,9 @@ module.controller('RegisterPanel', [
 				$scope.prepareStep[$scope.wizard.newStep.id]($scope.wizard.newStep);
 			}
 
-			user.anon = !authService.isLoggedIn();
-			user.password = authService.isPasswordPending();
-			user.auth = authService.isAuthorized();
+			user.anon = !auth.isLoggedIn();
+			user.password = auth.isPasswordPending();
+			user.auth = auth.isAuthorized();
 
 			angular.forEach($scope.wizard.steps, function (step) {
 				$scope.updateStep[step.id](step, activate);
@@ -100,7 +100,7 @@ module.controller('RegisterPanel', [
 		$scope.$watch('auth.user', function () {
 			$scope.updateWizard();
 
-			if (authService.isLoggedIn())
+			if (auth.isLoggedIn())
 				updateUserAuth();
 		});
 
@@ -277,7 +277,7 @@ module.controller('RegisterPanel', [
 
 				$scope.infoForm.proceed = function () {
 					$http
-						.get('/api/party/' + authService.user.id + '/authorize/search', {
+						.get('/api/party/' + auth.user.id + '/authorize/search', {
 							params: {
 								apply: true,
 								notfound: true,
