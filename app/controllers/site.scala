@@ -214,11 +214,11 @@ object Site extends SiteController {
 
   val locked = current.configuration.getBoolean("site.locked").getOrElse(false)
 
-  def start = SiteAction.Unlocked { implicit request =>
+  def start = SiteAction.Unlocked.async { implicit request =>
     if (locked && request.access.group == Permission.NONE)
-      Ok(views.html.welcome(request))
+      AOk(views.html.welcome(request))
     else
-      TemporaryRedirect(routes.VolumeHtml.search.url)
+      VolumeHtml.viewSearch(request)
   }
 
   def tinyUrl(prefix : String, path : String) = Action {
