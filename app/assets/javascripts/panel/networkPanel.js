@@ -22,7 +22,10 @@ module.controller('NetworkPanel', [
 
 		//
 
-		$scope.partyAuth = {};
+		$scope.partyAuth = {
+			parents: {},
+			children: {}
+		};
 
 		var getPartyAuth = function () {
 			$httpCache.removeAll();
@@ -85,7 +88,9 @@ module.controller('NetworkPanel', [
 			if (!auth.hasAccess('ADMIN', $scope.party))
 				return;
 
-			$scope.resetAuthChild(child);
+			if (!child.force)
+				$scope.resetAuthChild(child);
+
 			$scope.currentAuthChild = child;
 		};
 
@@ -182,6 +187,9 @@ module.controller('NetworkPanel', [
 			if (!auth.hasAccess('ADMIN', $scope.party) || !parent.force)
 				return;
 
+			if (parent.force)
+				$scope.resetAuthChild(parent);
+
 			$scope.currentAuthParent = parent;
 		};
 
@@ -240,10 +248,9 @@ module.controller('NetworkPanel', [
 			if (form.apply) {
 				$scope.partyAuth.children[found.id] = request;
 				$scope.openAuthChild(request);
-				$scope.currentAuthChild = request;
 			} else {
 				$scope.partyAuth.parents[found.id] = request;
-				$scope.currentAuthParent = request;
+				$scope.openAuthParent(request);
 			}
 		};
 
@@ -267,11 +274,49 @@ module.controller('NetworkPanel', [
 			if (apply) {
 				$scope.partyAuth.children[auth.user.id] = request;
 				$scope.openAuthChild(request);
-				$scope.currentAuthChild = request;
 			} else {
 				$scope.partyAuth.parents[auth.user.id] = request;
-				$scope.currentAuthParent = request;
+				$scope.openAuthParent(request);
 			}
+		};
+
+		//
+
+		var isAdmin = function () {
+			return auth.hasAccess('ADMIN', $scope.party);
+		};
+
+		var isForeign = function () {
+			return (!$scope.partyAuth.parents[auth.user.id] && !$scope.partyAuth.children[auth.user.id]);
+		};
+
+		$scope.showRegion = function (parents) {
+			if (parents)
+				return !$.isEmptyObject($scope.partyAuth.parents) || isAdmin() || isForeign();
+			else
+				return !$.isEmptyObject($scope.partyAuth.children) || isAdmin() || isForeign();
+		};
+
+		$scope.showRemote = function (parents) {
+			if (parents)
+				return $scope.currentAuthParent.remote;
+			else
+				return $scope.currentAuthChild.remote;
+		};
+
+		$scope.showExtended = function (parents, party) {
+			if (parents)
+				return isAdmin() && $scope.currentAuthParent != party;
+			else
+				return isAdmin() && $scope.currentAuthChild != party;
+		};
+
+		$scope.showAdd = function () {
+			return isAdmin() || isForeign();
+		};
+
+		$scope.showSearch = function () {
+			return isAdmin();
 		};
 	}
 ]);
