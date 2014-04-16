@@ -186,7 +186,7 @@ object VolumeHtml extends VolumeController with HtmlController {
     } yield (Ok(views.html.volume.view(summary, access, top, sessions, records, excerpts, citations, comments, tags)))
   }
 
-  def search = SiteAction.async { implicit request =>
+  def viewSearch(implicit request : SiteRequest[AnyContent]) = {
     val (form, res) = searchResults
     for {
       vl <- res
@@ -195,6 +195,8 @@ object VolumeHtml extends VolumeController with HtmlController {
       } yield ((vol, access.map(_.party))))
     } yield (Ok(views.html.volume.search(vols, form)))
   }
+
+  def search = SiteAction.async(viewSearch(_))
 
   def edit(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
     editFormFill.flatMap(_.Ok)
