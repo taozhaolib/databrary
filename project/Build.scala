@@ -38,16 +38,6 @@ object ApplicationBuild extends Build {
     "com.typesafe" %% "play-plugins-mailer" % "2.2.0"
   )
 
-  val jsExterns = Seq(
-    url("http://code.jquery.com/jquery-1.11.0.min.js"),
-    url("https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"),
-    url("https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-route.min.js"),
-    url("https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-sanitize.min.js"),
-    url("https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.min.js"),
-    url("https://github.com/Pasvaz/bindonce/raw/0.3.1/bindonce.min.js"),
-    url("https://github.com/gsklee/ngStorage/raw/0.3.0/ngStorage.min.js")
-  )
-
   val main = play.Project(appName, "unknown", appDependencies)
     .dependsOn(macros, dbrary, media, logbackAccess).settings(
       version <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown")),
@@ -63,7 +53,6 @@ object ApplicationBuild extends Build {
       },
       resourceGenerators in Compile <+= play.Project.LessCompiler,
       resourceGenerators in Compile <+= AngularTemplate.Compiler,
-      JSConcatCompiler.externs := jsExterns,
       resourceGenerators in Compile <+= JSConcatCompiler.Compiler
     )
 }

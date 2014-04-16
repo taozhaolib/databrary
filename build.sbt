@@ -14,3 +14,13 @@ scalacOptions in (Compile, doc) <++= baseDirectory.map { bd => Seq(
 GitDescribe.gitDescribeOptions in ThisBuild := Seq("--tags", "--dirty")
 
 version in ThisBuild <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown"))
+
+JSConcatCompiler.externs := Seq(
+  url("http://code.jquery.com/jquery-1.11.0.min.js"),
+  url("https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"),
+  url("https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-route.min.js"),
+  url("https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-sanitize.min.js"),
+  url("https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.min.js"),
+  url("https://github.com/Pasvaz/bindonce/raw/0.3.1/bindonce.min.js"),
+  url("https://github.com/gsklee/ngStorage/raw/0.3.0/ngStorage.min.js")
+)
