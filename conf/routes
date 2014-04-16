@@ -112,6 +112,9 @@ POST    /api/user/superuser/on                                                  
 # SUPERUSER OFF
 POST    /api/user/superuser/off                                                                   controllers.LoginApi.superuserOff
 
+# ----- TOKEN ----- #
+GET     /api/token/:token                                                                         controllers.TokenApi.token(token : String, auth : String)
+
 # ----- PARTY ----- #
 # GET       ?volumes;comments;parents[=all];children[=all]                                        TODO: tags;network
 GET     /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.get(partyId : models.Party.Id)

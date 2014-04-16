@@ -11,6 +11,27 @@ import site._
 import models._
 
 private[controllers] sealed class TokenController extends SiteController {
+  def token(token : String, auth : String) = SiteAction.Unlocked.async { implicit request =>
+    models.LoginToken.get(token).flatMap(_.fold(
+      ANotFound
+    ) { token =>
+      if (!token.valid) {
+        token.remove
+        macros.Async(Gone)
+      } else if (!auth.equals(token.auth)) {
+        throw ForbiddenException
+      } else if (token.password)
+	if (request.isApi)
+	  macros.Async(Ok(token.json))
+	else
+	  new TokenController.PasswordTokenForm(token).Ok
+      else {
+        token.remove
+        LoginController.login(token.account)
+      }
+    })
+  }
+
   def password(a : models.Account.Id) = SiteAction.Unlocked.async { implicit request =>
     val form = new TokenController.PasswordForm(a)._bind
     models.LoginToken.get(form.token.get).flatMap(_
@@ -61,24 +82,6 @@ object TokenController extends TokenController {
 }
 
 object TokenHtml extends TokenController with HtmlController {
-  def token(token : String, auth : String) = SiteAction.Unlocked.async { implicit request =>
-    models.LoginToken.get(token).flatMap(_.fold(
-      ANotFound
-    ) { token =>
-      if (!token.valid) {
-        token.remove
-        macros.Async(Gone)
-      } else if (!auth.equals(token.auth)) {
-        throw ForbiddenException
-      } else if (token.password)
-	new TokenController.PasswordTokenForm(token).Ok
-      else {
-        token.remove
-        LoginController.login(token.account)
-      }
-    })
-  }
-
   final class IssuePasswordForm(implicit request : SiteRequest[_])
     extends HtmlForm[IssuePasswordForm](
       routes.TokenHtml.issuePassword,
