@@ -76,7 +76,8 @@ module.config([
 					}
 				]
 			},
-			reloadOnSearch: false
+			reloadOnSearch: false,
+			authenticate: true
 		}));
 
 		//
@@ -156,7 +157,8 @@ module.config([
 					}
 				]
 			},
-			reloadOnSearch: false
+			reloadOnSearch: false,
+			authenticate: true
 		});
 
 		$routeProvider.when('/party/:id', partyView);
@@ -196,7 +198,8 @@ module.config([
 					}
 				]
 			},
-			reloadOnSearch: false
+			reloadOnSearch: false,
+			authenticate: true
 		}));
 
 		//
@@ -214,38 +217,23 @@ module.run([
 	'authService',
 	'$location',
 	function ($rootScope, router, constants, auth, $location) {
-		$rootScope.$on('$routeChangeStart', function (event, next, current) {
-			console.log($location.url());
-			console.log('is logged in: ', !!auth.isLoggedIn());
-			console.log('is password pending: ', !!auth.isPasswordPending());
-			console.log(next.$$route && next.$$route.controller);
-			console.log(window.$play.object && window.$play.object.id);
-			console.log('---');
-
-			if (auth.isLoggedIn()) {
-				if (auth.isUnauthorized()) {
-					if (!next.$$route || next.$$route.controller != 'RegisterView')
+		$rootScope.$on('$routeChangeStart', function (event, next) {
+			auth.$promise.then(function () {
+				if (auth.isLoggedIn()) {
+					if (auth.isUnauthorized()) {
+						if (!next.$$route || next.$$route.controller != 'RegisterView')
+							$location.url(router.register());
+					} else if (!next.authenticate) {
+						$location.url(router.search());
+					}
+				} else {
+					if (auth.isPasswordPending() && next.$$route && next.$$route.controller != 'RegisterView') {
 						$location.url(router.register());
-				} else if (next.$$route && [
-					'ResetView',
-					'WelcomeView',
-					'LoginView',
-					'RegisterView'
-				].indexOf(next.$$route.controller) != -1) {
-					$location.url(router.search());
+					} else if (next.authenticate) {
+						$location.url(router.index());
+					}
 				}
-			} else {
-				if (auth.isPasswordPending() && next.$$route && next.$$route.controller != 'RegisterView') {
-					$location.url(router.register());
-				} else if (next.$$route && [
-					'ResetView',
-					'WelcomeView',
-					'LoginView',
-					'RegisterView'
-				].indexOf(next.$$route.controller) == -1) {
-					$location.url(router.index());
-				}
-			}
+			});
 		});
 	}
 ]);
