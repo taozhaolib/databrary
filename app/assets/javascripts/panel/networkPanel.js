@@ -7,7 +7,8 @@ module.controller('NetworkPanel', [
 	'pageService',
 	'Party',
 	'authService',
-	function ($scope, $routeParams, $filter, PartyAuthorize, $cacheFactory, page, Party, auth) {
+	'$compile',
+	function ($scope, $routeParams, $filter, PartyAuthorize, $cacheFactory, page, Party, auth, $compile) {
 		$scope.constant = $scope.constant || page.constants;
 
 		var $httpCache = $cacheFactory.get('$http');
@@ -27,12 +28,29 @@ module.controller('NetworkPanel', [
 			children: {}
 		};
 
+		var actionMessages = {};
+
 		var getPartyAuth = function () {
 			$httpCache.removeAll();
 
 			if (auth.hasAccess('ADMIN', $scope.party))
 				PartyAuthorize.query(function (data) {
 					$scope.partyAuth = data;
+
+					angular.forEach($scope.partyAuth.children, function (party) {
+						if (!party.authorized)
+							if(!actionMessages[party.id])
+								actionMessages[party.id] = {
+									party: party,
+									message: page.messages.add({
+										type: 'yellow',
+										closeable: true,
+										body: $compile('<span>' + party.party.name + ' has a pending authorization request. <a href="" ng-click="openMessageChild(' + party.id + ')">Manage</a>.</span>')($scope)
+									})
+								};
+							else
+								actionMessages[party.id].party = party;
+					});
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('network.authquery.error'),
@@ -73,6 +91,17 @@ module.controller('NetworkPanel', [
 				});
 		};
 
+		$scope.openMessageChild = function (id) {
+			page.messages.remove(actionMessages[id].message);
+			$scope.openAuthChild(actionMessages[id].party);
+		};
+
+		$scope.$on('$destroy', function () {
+			angular.forEach(actionMessages, function (bundle) {
+				page.messages.remove(bundle.message);
+			});
+		});
+
 		//
 
 		$scope.resetAuth = {};
@@ -92,6 +121,7 @@ module.controller('NetworkPanel', [
 				$scope.resetAuthChild(child);
 
 			$scope.currentAuthChild = child;
+			page.gui.scrollTo('network-child-'+child.id);
 		};
 
 		$scope.resetAuthChild = function (child) {
@@ -191,6 +221,7 @@ module.controller('NetworkPanel', [
 				$scope.resetAuthChild(parent);
 
 			$scope.currentAuthParent = parent;
+			page.gui.scrollTo('network-parent-'+parent.id);
 		};
 
 		//

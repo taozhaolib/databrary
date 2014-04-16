@@ -28,7 +28,7 @@ module.factory('messageService', [
 		messages.newValidate(function (message) {
 			return angular.isObject(message) &&
 				message.id && message.type &&
-				angular.isString(message.body) &&
+				angular.isDefined(message.body) &&
 				message.body.length > 0 ? message : false;
 		});
 

@@ -80,7 +80,6 @@ module.controller('ExcerptsPanel', [
 					recordIDs = [0];
 
 				angular.forEach(objects, function (data) {
-					console.log(recordIDs, data.object.id);
 					if (recordIDs.indexOf(data.object.id) > -1) {
 						browser.setItemExpand(data, true);
 						dirty = true;

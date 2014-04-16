@@ -2,7 +2,7 @@
   <div class="network_parents_region" ng-show="showRegion(true)">
     <h2>{{'auth.parents.title' | message}}</h2>
 
-    <article class="network-auth cf" bindonce ng-repeat="parent in partyAuth.parents">
+    <article bo-id="'network-parent-'+parent.id" class="network-auth cf" bindonce ng-repeat="parent in partyAuth.parents">
       <div class="row">
         <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
           <figure baseline="square" class="figure_avatar" ng-click="openAuthParent(parent)">
@@ -81,7 +81,7 @@
   <div class="network_children_region" ng-show="showRegion()">
     <h2>{{'auth.children.title' | message}}</h2>
 
-    <article class="network-auth cf" bindonce ng-repeat="child in partyAuth.children">
+    <article bo-id="'network-child-'+child.id" class="network-auth cf" bindonce ng-repeat="child in partyAuth.children">
       <div class="row">
         <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
           <figure baseline="square" class="figure_avatar" ng-click="openAuthChild(child)">

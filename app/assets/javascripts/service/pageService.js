@@ -5,35 +5,40 @@ module.factory('pageService', [
 	'constantService',
 	'routerService',
 	'eventService',
-	function ($rootScope, messages, tooltips, constants, router, events) {
-		var pageService = {
+	'guiService',
+	function ($rootScope, messages, tooltips, constants, router, events, gui) {
+		var page = {
 			messages: messages,
 			tooltips: tooltips,
 			constants: constants,
 			router: router,
+			gui: gui,
 			events: events
 		};
 
 		//
 
-		pageService.title = 'Welcome!';
+		page.title = 'Welcome!';
 
 		//
 
-		pageService.loading = false;
-
-		//
+		page.loading = false;
 
 		$rootScope.$on('$routeChangeStart', function () {
-			pageService.loading = true;
+			page.loading = true;
 		});
 
 		$rootScope.$on('$routeChangeSuccess', function () {
-			pageService.loading = false;
+			page.loading = false;
 		});
 
 		//
 
-		return pageService;
+		page.$window = $(window);
+		page.$document = $(document);
+
+		//
+
+		return page;
 	}
 ]);
