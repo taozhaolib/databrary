@@ -31,7 +31,6 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
       (context : ContextSlot) => (who : Account) =>
 	new Comment(id, who, segment, context, time, text, parent)
     }
-  /* XXX use here of comment_thread is inefficient, as it always threads the whole comment table, even if we only need a subset. */
   private val threads = columns from "comment_thread AS comment";
 
   private def row(who : Selector[Account], container : Selector[Container]) =
