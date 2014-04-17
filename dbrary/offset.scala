@@ -21,6 +21,7 @@ final case class Offset(millis : Long) extends scala.math.Ordered[Offset] {
   def min(other : Offset) = Offset(millis.min(other.millis))
   def max(other : Offset) = Offset(millis.max(other.millis))
   def duration : time.Duration = new time.Duration(millis)
+  def abs = Offset(millis.abs)
 
   /* This is unfortunate but I can't find any other reasonable formatting options without the postgres server or converting to a joda Period */
   override def toString = {
