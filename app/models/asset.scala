@@ -171,6 +171,9 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   def unlink : Future[Boolean] =
     Audit.remove("slot_asset", SQLTerms('asset -> id)).execute
 
+  def supersede(asset : Asset) : Future[Boolean] =
+    SQL("SELECT asset_supersede(?, ?)").apply(asset.id, id).execute
+
   def pageName = name.getOrElse("file")
   def pageParent = Some(volume)
   def pageURL = controllers.routes.AssetHtml.view(id)

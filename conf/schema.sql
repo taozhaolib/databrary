@@ -426,6 +426,16 @@ CREATE VIEW "asset_revisions" AS
 	) SELECT * FROM r;
 COMMENT ON VIEW "asset_revisions" IS 'Transitive closure of asset_revision.  Revisions must never form a cycle or this will not terminate.';
 
+CREATE FUNCTION "asset_supersede" ("asset_old" integer, "asset_new" integer) RETURNS void STRICT LANGUAGE plpgsql AS $$
+BEGIN
+	PERFORM next FROM asset_revision WHERE prev = asset_new;
+	IF FOUND THEN
+		RAISE 'Asset % already superseded', asset_new;
+	END IF;
+	UPDATE slot_asset SET asset = asset_new WHERE asset = asset_old;
+	INSERT INTO asset_revision VALUES (asset_old, asset_new);
+END; $$;
+
 
 CREATE TABLE "excerpt" (
 	"asset" integer NOT NULL References "slot_asset" ON DELETE CASCADE,

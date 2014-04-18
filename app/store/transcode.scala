@@ -14,6 +14,8 @@ object Transcode {
   private def videoCmd(in : File, out : File) =
     Seq("ffmpeg", "-loglevel", "-warning", "-threads", "1", "-i", in.getName, "-vf", "pad='iw+mod(iw\\,2):ih+mod(ih\\,2)'", "-threads", "1", "-f", "mp4", "-c:v", "libx264", "-c:a", "libfdk_aac", "-y", out.getName)
 
+  private def await[A](a : Future[A]) = Await.result(a, duration.Duration.Inf)
+
   def transcode(asset : models.Asset) : Unit = {
     val f = FileAsset.file(asset)
     val t = TemporaryFile(new File(f.getName + ".tc"))
@@ -30,9 +32,8 @@ object Transcode {
 	val tp = media.AV.probe(t.file)
 	if (!tp.isVideo || (sp.duration - tp.duration).abs > Offset.ofSeconds(0.5))
 	  throw new RuntimeException("check failed: " + sp.duration + "," + tp.duration)
-	val a = Await.result(
-	  models.Asset.create(asset.volume, models.AssetFormat.Video, asset.classification, tp.duration, asset.name, t),
-	  duration.Duration.Inf)
+	val a = await(models.Asset.create(asset.volume, models.AssetFormat.Video, asset.classification, tp.duration, asset.name, t))
+	await(a.supersede(asset))
       } else
 	throw new RuntimeException("unknown source type: " + asset.format.name)
     }.onFailure { case e : Throwable =>
