@@ -2,7 +2,7 @@
   <div class="browser_item_content">
     <div class="cf">
       <footer>
-        <a bo-href="editLink(data)" target="_self" ng-if="browser.hasAccess(data, 3)">edit</a>
+        <a bo-href="editLink(data)" target="_self" ng-if="auth.hasAccess('CONTRIBUTE', data)">edit</a>
       </footer>
 
       <header>

@@ -1,5 +1,5 @@
 module.config([
-	'$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
+	'$locationProvider', '$routeProvider', '$httpProvider', function ($locationProvider, $routeProvider, $httpProvider) {
 		$locationProvider.html5Mode(true);
 
 		//
@@ -69,11 +69,11 @@ module.config([
 				token: ['$q', '$http', '$route', '$window', function ($q, $http, $route, $window) {
 					var deferred = $q.defer();
 
-					if($window.$play.object && $window.$play.object.auth)
+					if ($window.$play.object && $window.$play.object.auth)
 						deferred.resolve($window.$play.object);
 					else
 						$http
-							.get('/api/token/'+$route.current.params.id+'?auth='+$route.current.params.auth)
+							.get('/api/token/' + $route.current.params.id + '?auth=' + $route.current.params.auth)
 							.success(function (data) {
 								$window.$play.object = data;
 								deferred.resolve(data);
@@ -240,6 +240,24 @@ module.config([
 		$routeProvider.otherwise({
 			redirectTo: '/search'
 		});
+
+		//
+
+		// TODO: circular dependency from authService
+//		$httpProvider.interceptors.push([
+//			'$q', '$location', 'authService',
+//			function ($q, $location, auth) {
+//				return {
+//					'responseError': function (response) {
+//						if (response.status == 403) {
+//							auth.tryLogin();
+//						}
+//
+//						return $q.reject(response);
+//					}
+//				};
+//			}
+//		]);
 	}
 ]);
 

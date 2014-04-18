@@ -1,28 +1,22 @@
 module.factory('authService', [
 	'$rootScope',
 	'$location',
-	'$http',
 	'$route',
 	'$cacheFactory',
 	'typeService',
 	'$window',
 	'$q',
-	'$sessionStorage',
 	'pageService',
-	function ($rootScope, $location, $http, $route, $cacheFactory, typeService, $window, $q, $sessionStorage, page) {
-		var authService = {};
-
-		$rootScope.$sessionStorage = $sessionStorage;
+	'Party',
+	function ($rootScope, $location, $route, $cacheFactory, typeService, $window, $q, page, Party) {
+		var auth = {};
 
 		//
 
-		authService.user = undefined;
-		authService.userUpdated = undefined;
+		auth.user = undefined;
 
-		var updateUser = function (user) {
+		var parseUser = function (user) {
 			var reload = true;
-
-			authService.userUpdated = new Date();
 
 			if (user) {
 				if (angular.isDefined(user.superuser) && user.superuser > 0)
@@ -30,14 +24,11 @@ module.factory('authService', [
 				else
 					user.superuser = false;
 
-				if (!user || user != authService.user)
-
-					if (authService.user && user && authService.user.id == user.id &&
-						!!authService.user.superuser == !!user.superuser)
-						reload = false;
+				if (auth.user && auth.user.id === user.id && !!auth.user.superuser === !!user.superuser)
+					reload = false;
 			}
 
-			authService.user = user || undefined;
+			auth.user = user || undefined;
 
 			if (reload) {
 				$cacheFactory.get('$http').removeAll();
@@ -46,240 +37,212 @@ module.factory('authService', [
 		};
 
 		var deferred = $q.defer();
-		authService.$promise = deferred.promise;
+		auth.$promise = deferred.promise;
 
-		authService.updateUser = function (user) {
+		auth.updateUser = function (user) {
 			if (user) {
-				updateUser(user);
+				parseUser(user);
 				return deferred.resolve();
 			}
 
-			$http
-				.get('/api/user')
-				.success(function (data) {
-					if (data.id == -1 || angular.isString(data))
-						updateUser(undefined);
-					else
-						updateUser(data);
+			Party.user(function (data) {
+				if (data.id == -1 || angular.isString(data))
+					parseUser(undefined);
+				else
+					parseUser(data);
 
-					deferred.resolve();
-				})
-				.error(function () {
-					updateUser(undefined);
+				deferred.resolve();
+			}, function (res) {
+				parseUser(undefined);
 
-					deferred.resolve();
-				});
+				deferred.resolve();
+			});
 		};
 
-		authService.updateUser();
+		auth.updateUser();
 
 		//
 
 		var levels = {};
 
-		var watchReset = $rootScope.$watch('constant', function () {
-			page.constants.$promise.then(function () {
-				angular.forEach(page.constants.data.permission, function (permission) {
-					levels[permission.name] = permission.id;
-				});
-
-				levels['SUPER'] = 5;
-
-				watchReset();
+		page.constants.$promise.then(function () {
+			angular.forEach(page.constants.data.permission, function (permission) {
+				levels[permission.name] = permission.id;
 			});
+
+			levels['SUPER'] = 5;
 		});
 
 		var parseAuthLevel = function (level) {
-			return angular.isString(level) ? levels[level] : level;
+			return $.isNumeric(level) ? parseInt(level) :
+				angular.isString(level) ? levels[level.toUpperCase()] : -1;
 		};
 
 		var parseUserAuth = function (object) {
-			if (angular.isUndefined(authService.user) || authService.user.id == -1)
+			if (!auth.user || !auth.user.id || auth.user.id == -1)
 				return -1;
 
-			if (angular.isDate(authService.user.superuser) && authService.user.superuser > new Date())
+			if (angular.isDate(auth.user.superuser) && auth.user.superuser > new Date())
 				return parseAuthLevel('SUPER');
 
 			if (angular.isObject(object) && object.permission)
 				return object.permission;
 
-			return authService.user.access;
+			return auth.user.access;
 		};
 
 		//
 
-		authService.hasAuth = function (level) {
-			level = level.toUpperCase().split('!');
-
-			return level.length == 1 ?
-				parseUserAuth() >= parseAuthLevel(level.pop()) :
-				parseUserAuth() < parseAuthLevel(level.pop());
+		auth.hasAuth = function (level) {
+			return parseUserAuth() >= parseAuthLevel(level);
 		};
 
-		authService.isAuth = function (level) {
-			return parseUserAuth() == parseAuthLevel(level.toUpperCase().split('!').pop());
+		auth.isAuth = function (level) {
+			return parseUserAuth() == parseAuthLevel(level);
 		};
 
 		//
 
-		authService.hasAccess = function (level, object) {
-			level = level.toUpperCase().split('!');
-
-			return level.length == 1 ?
-				parseUserAuth(object) >= parseAuthLevel(level.pop()) :
-				parseUserAuth(object) < parseAuthLevel(level.pop());
+		auth.hasAccess = function (level, object) {
+			return parseUserAuth(object) >= parseAuthLevel(level);
 		};
 
-		authService.isAccess = function (level, object) {
-			return parseUserAuth(object) == parseAuthLevel(level.toUpperCase().split('!').pop());
+		auth.isAccess = function (level, object) {
+			return parseUserAuth(object) == parseAuthLevel(level);
 		};
 
 		//
 
-		authService.login = function (data) {
-			data = angular.extend({
+		auth.login = function (data) {
+			Party.login(angular.extend({
 				email: '',
 				password: '',
 				openid: ''
-			}, data);
+			}, data), function (data) {
+				parseUser(data);
 
-			$http
-				.post('/api/user/login', data)
-				.success(function (data) {
-					updateUser(data);
+				if (auth.next) {
+					$location.path(auth.next);
+					auth.next = undefined;
+				} else {
+					$location.path('/');
+				}
+			}, function (res) {
+				parseUser(undefined);
 
-					if (authService.next) {
-						$location.path(authService.next);
-						authService.next = undefined;
-					} else {
-						$location.path('/');
-					}
-				})
-				.error(function (errors, status) {
-					updateUser(undefined);
-
-					page.messages.add({
-						body: page.constants.message('login.error'),
-						type: 'red',
-						countdown: 3000
-					});
+				page.messages.add({
+					body: page.constants.message('login.error'),
+					type: 'red',
+					countdown: 3000
 				});
+			});
 		};
 
-		authService.tryLogin = function (next, current) {
-			authService.next = $location.url();
-
-			$location.url('/login');
+		auth.tryLogin = function () {
+			auth.next = $location.url();
+			$location.url(page.router.login());
 		};
 
-		authService.logout = function () {
-			$http
-				.post('/api/user/logout')
-				.success(function (data) {
-					updateUser(data);
-					$location.url('/login');
+		auth.logout = function () {
+			Party.logout(function (data) {
+				parseUser(data);
+				$location.url('/login');
 
-					page.messages.add({
-						body: page.constants.message('logout.success'),
-						type: 'yellow',
-						countdown: 3000
-					});
-				})
-				.error(function () {
-					$location.url('/');
-
-					page.messages.add({
-						body: page.constants.message('logout.error'),
-						type: 'red',
-						countdown: 3000
-					});
+				page.messages.add({
+					body: page.constants.message('logout.success'),
+					type: 'yellow',
+					countdown: 3000
 				});
+			}, function (res) {
+				$location.url('/');
+
+				page.messages.add({
+					body: page.constants.message('logout.error'),
+					type: 'red',
+					countdown: 3000
+				});
+			});
 		};
 
-		authService.showProfile = function () {
-			$location.path('/party/' + authService.user.id);
+		auth.showProfile = function () {
+			$location.path(page.router.profile());
 		};
 
 		//
 
-		authService.isLoggedIn = function () {
-			return angular.isDefined(authService.user) && authService.user.id != -1;
+		auth.isLoggedIn = function () {
+			return auth.user && auth.user.id && auth.user.id != -1;
 		};
 
-		authService.hasToken = function () {
+		auth.hasToken = function () {
 			return $window.$play && $window.$play.object && typeService.isToken($window.$play.object);
 		};
 
-		authService.getToken = function () {
-			if (!authService.hasToken())
+		auth.getToken = function () {
+			if (!auth.hasToken())
 				return;
 
 			return $window.$play.object;
 		};
 
-		authService.isPasswordReset = function () {
-			return authService.hasToken() && $window.$play.object.reset;
+		auth.isPasswordReset = function () {
+			return auth.hasToken() && $window.$play.object.reset;
 		};
 
-		authService.isPasswordPending = function () {
-			return authService.hasToken() && !$window.$play.object.reset;
+		auth.isPasswordPending = function () {
+			return auth.hasToken() && !$window.$play.object.reset;
 		};
 
-		authService.isUnauthorized = function () {
-			return authService.isLoggedIn() && authService.isAuth('NONE');
+		auth.isUnauthorized = function () {
+			return auth.isLoggedIn() && auth.isAuth('NONE');
 		};
 
-		authService.isAuthorized = function () {
-			return authService.isLoggedIn() && authService.hasAuth('VIEW');
+		auth.isAuthorized = function () {
+			return auth.isLoggedIn() && auth.hasAuth('VIEW');
 		};
 
 		//
 
 		var enableSU = function (form) {
-			$http
-				.post('/api/user/superuser/on', {
+			Party.superuserOn({
 					auth: form.auth
-				})
-				.success(function (data) {
-					updateUser(data);
+				},
+				function (data) {
+					parseUser(data);
 
 					page.messages.add({
 						body: page.constants.message('superuser.on.success'),
 						type: 'green',
 						countdown: 2000
 					});
-				})
-				.error(function (errors, status) {
+				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('superuser.on.error'),
-						errors: errors,
-						status: status
+						errors: res.errors,
+						status: res.status
 					});
 				});
 		};
 
 		var disableSU = function () {
-			$http
-				.post('/api/user/superuser/off')
-				.success(function (data) {
-					updateUser(data);
+			Party.superuserOn(function (data) {
+				parseUser(data);
 
-					page.messages.add({
-						body: page.constants.message('superuser.off.success'),
-						type: 'green',
-						countdown: 2000
-					});
-				})
-				.error(function (errors, status) {
-					page.messages.addError({
-						body: page.constants.message('superuser.off.error'),
-						errors: errors,
-						status: status
-					});
+				page.messages.add({
+					body: page.constants.message('superuser.off.success'),
+					type: 'green',
+					countdown: 2000
 				});
+			}, function (res) {
+				page.messages.addError({
+					body: page.constants.message('superuser.off.error'),
+					errors: res.data,
+					status: res.status
+				});
+			});
 		};
 
-		authService.toggleSU = function (form) {
+		auth.toggleSU = function (form) {
 			if (angular.isDefined(form))
 				enableSU(form);
 			else
@@ -288,6 +251,6 @@ module.factory('authService', [
 
 		//
 
-		return authService;
+		return auth;
 	}
 ]);

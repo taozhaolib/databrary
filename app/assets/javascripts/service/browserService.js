@@ -1,11 +1,10 @@
 module.factory('browserService', [
 	'$rootScope',
 	'arrayHelper',
-	'authService',
 	'Slot',
 	'typeService',
 	'pageService',
-	function ($rootScope, arrayHelper, authService, Slot, typeService, page) {
+	function ($rootScope, arrayHelper, Slot, typeService, page) {
 		var browserService = {};
 
 		//
@@ -910,10 +909,6 @@ module.factory('browserService', [
 			});
 
 			return permission;
-		};
-
-		browserService.hasAccess = function (data, level) {
-			return data.permission >= level || authService.hasAuth('SUPER');
 		};
 
 		//
