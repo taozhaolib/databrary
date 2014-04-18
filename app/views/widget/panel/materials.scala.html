@@ -1,4 +1,4 @@
-@(assets : Seq[SlotAsset], path : Boolean = false)(implicit request : SiteRequest[_])
+@(assets : Seq[SlotAsset])(implicit request : SiteRequest[_])
 
 @import play.api.templates.HtmlFormat._
 
@@ -17,17 +17,6 @@
                     }) { message =>
                         <li class="panel_materials_item @link.classification" ng-click="selectAsset(@link.sourceId)" ng-class="{active: currentAsset == @link.sourceId}">
                             <span class="filetype @link.format.extension"><img src="@routes.Assets.at("images/filetypes/16px/" + link.format.extension.getOrElse("_blank") + ".png")"></span>
-
-                            @if(path) {
-                                <span class="session">@display(link.slot)</span>
-
-                                @defining(Async.wait(link.slot.records).filter(r => r.category.exists(_ == RecordCategory.Participant))) { parts =>
-                                    @if(parts.nonEmpty) {
-                                        with <span class="participant">@parts.map(r => raw("<a href='"+r.pageURL+"'>"+r.pageName+"</a>"))</span>
-                                    }
-                                }
-                                /
-                            }
 
                             <a href="@link.pageURL" class="filename">@link.pageName.@link.format.extension</a>
 
