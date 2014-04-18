@@ -154,7 +154,15 @@ object AssetHtml extends AssetController with HtmlController {
 	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), aname, file)
 	}
 	sa <- macros.Async.map[Container, SlotAsset](container, asset.link(_, form.position.get))
+	_ = if (fmt.mimetype.startsWith("video/") && !form.timeseries.get)
+	  store.Transcode.transcode(asset)
       } yield (Redirect(sa.getOrElse(asset).pageURL))
+    }
+
+  def transcode(a : models.Asset.Id) =
+    (SiteAction.rootAccess(Permission.ADMIN) ~> action(a, Permission.EDIT)) { implicit request =>
+      store.Transcode.transcode(request.obj)
+      Ok("transcoding")
     }
 
   def remove(a : models.Asset.Id) = Action(a, Permission.EDIT).async { implicit request =>

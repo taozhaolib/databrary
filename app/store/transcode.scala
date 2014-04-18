@@ -11,14 +11,21 @@ object Transcode {
   implicit val context : ExecutionContext = play.api.libs.concurrent.Akka.system.dispatchers.lookup("transcode")
   private val logger = play.api.Logger("transcode")
 
-  private def videoCmd(in : File, out : File) =
-    Seq("ffmpeg", "-loglevel", "-warning", "-threads", "1", "-i", in.getName, "-vf", "pad='iw+mod(iw\\,2):ih+mod(ih\\,2)'", "-threads", "1", "-f", "mp4", "-c:v", "libx264", "-c:a", "libfdk_aac", "-y", out.getName)
+  private def videoCmd(in : File, out : File) = {
+    val level =
+      if (logger.isTraceEnabled) "verbose"
+      else if (logger.isDebugEnabled) "info"
+      else if (logger.isInfoEnabled) "warning"
+      else if (logger.isWarnEnabled) "error"
+      else "fatal"
+    Seq("ffmpeg", "-loglevel", level, "-threads", "1", "-i", in.getPath, "-vf", "pad='iw+mod(iw\\,2):ih+mod(ih\\,2)'", "-threads", "1", "-f", "mp4", "-c:v", "libx264", "-c:a", "libfdk_aac", "-y", out.getPath)
+  }
 
   private def await[A](a : Future[A]) = Await.result(a, duration.Duration.Inf)
 
   def transcode(asset : models.Asset) : Unit = {
     val f = FileAsset.file(asset)
-    val t = TemporaryFile(new File(f.getName + ".tc"))
+    val t = TemporaryFile(new File(f.getPath + ".tc"))
     Future {
       val logPrefix = asset.id.toString + ": "
       val log = scala.sys.process.ProcessLogger(
@@ -26,7 +33,9 @@ object Transcode {
 	s => logger.warn(logPrefix + s))
       if (asset.format.mimetype.startsWith("video/")) {
 	val sp = media.AV.probe(f)
-	val r = Process(videoCmd(f, t.file)).!(log)
+	val cmd = videoCmd(f, t.file)
+	logger.debug(cmd.mkString(" "))
+	val r = Process(cmd).!(log)
 	if (r != 0)
 	  throw new RuntimeException("failed: " + r)
 	val tp = media.AV.probe(t.file)
