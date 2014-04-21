@@ -6,18 +6,14 @@ module.factory('pageService', [
 	'routerService',
 	'eventService',
 	'guiService',
-	'modelService',
-	'authService',
-	function ($rootScope, messages, tooltips, constants, router, events, gui, models, auth) {
+	function ($rootScope, messages, tooltips, constants, router, events, gui) {
 		var page = {
 			messages: messages,
 			tooltips: tooltips,
 			constants: constants,
 			router: router,
 			gui: gui,
-			events: events,
-			models: models,
-			auth: auth
+			events: events
 		};
 
 		//
