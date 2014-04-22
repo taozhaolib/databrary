@@ -17,29 +17,8 @@ module.config([
 
 		var version = undefined;
 
-		$httpProvider.interceptors.push(['$rootScope', function ($rootScope) {
-			return {
-				response: function (res) {
-					if (!res.headers)
-						return res;
-
-					var newVersion = res.headers().server;
-
-					if (!newVersion)
-						return res;
-
-					newVersion = newVersion.split('/').pop();
-
-					if (typeof version !== 'undefined' && newVersion !== version) {
-						$rootScope.$broadcast('pageService-updateApp');
-					}
-
-					version = newVersion;
-
-					return res;
-				}
-			}
-		}]);
+		$httpProvider.interceptors.push('updateInterceptor');
+		$httpProvider.interceptors.push('analyticInterceptor');
 	}
 ]);
 

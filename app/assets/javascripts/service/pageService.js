@@ -8,7 +8,8 @@ module.factory('pageService', [
 	'guiService',
 	'modelService',
 	'authService',
-	function ($rootScope, messages, tooltips, constants, router, events, gui, models, auth) {
+	'analyticService',
+	function ($rootScope, messages, tooltips, constants, router, events, gui, models, auth, analytics) {
 		var page = {
 			messages: messages,
 			tooltips: tooltips,
@@ -17,7 +18,8 @@ module.factory('pageService', [
 			gui: gui,
 			events: events,
 			models: models,
-			auth: auth
+			auth: auth,
+			analytics: analytics
 		};
 
 		//
