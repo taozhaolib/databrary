@@ -1,6 +1,3 @@
-[submodule "private"]
-	path = public/private
-	url = https://github.com/databrary/databrary-private.git
 [submodule "logback-access"]
 	path = logback-access
 	url = https://github.com/databrary/play-logback-access.git
