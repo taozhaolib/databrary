@@ -1,3 +1,6 @@
+# --- App
+app.update=The Databrary app can be updated. Save your work and reload your browser tab.
+
 # --- Formats
 format.date=Select a valid date (in ''{0}'' format).
 format.duns=9-digit D-U-N-S
@@ -26,7 +29,7 @@ error.notfound.body=The resource you requested may no longer be available.
 error.badrequest.title=Bad request
 error.badrequest.body=Sorry, something went wrong with that request.  More information is below, or <a href=''mailto:feedback@databrary.org''>contact us</a> for asssistance.
 error.internal.title=Internal error
-error.internal.body=Sorry, something is broken.  More information is below, or <a href=''mailto:feedback@databrary.org''>contact us</a> for asssistance.
+error.internal.body=Sorry, something is broken.  More information is below, or <a href=''mailto:feedback@databrary.org''>contact us</a> for assistance.
 
 # --- Emails
 mail.from=Databrary <help@databrary.org>

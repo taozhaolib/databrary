@@ -39,6 +39,15 @@ module.factory('pageService', [
 
 		//
 
+		events.listen($rootScope, 'pageService-updateApp', function () {
+			messages.add({
+				type: 'yellow',
+				body: constants.message('app.update')
+			});
+		});
+
+		//
+
 		return page;
 	}
 ]);
