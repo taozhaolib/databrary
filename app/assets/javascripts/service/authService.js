@@ -6,9 +6,11 @@ module.factory('authService', [
 	'typeService',
 	'$window',
 	'$q',
-	'pageService',
+	'messageService',
+	'constantService',
+	'routerService',
 	'Party',
-	function ($rootScope, $location, $route, $cacheFactory, typeService, $window, $q, page, Party) {
+	function ($rootScope, $location, $route, $cacheFactory, typeService, $window, $q, messages, constants, router, Party) {
 		var auth = {};
 
 		//
@@ -52,7 +54,7 @@ module.factory('authService', [
 					parseUser(data);
 
 				deferred.resolve();
-			}, function (res) {
+			}, function () {
 				parseUser(undefined);
 
 				deferred.resolve();
@@ -65,8 +67,8 @@ module.factory('authService', [
 
 		var levels = {};
 
-		page.constants.$promise.then(function () {
-			angular.forEach(page.constants.data.permission, function (permission) {
+		constants.$promise.then(function () {
+			angular.forEach(constants.data.permission, function (permission) {
 				levels[permission.name] = permission.id;
 			});
 
@@ -127,11 +129,11 @@ module.factory('authService', [
 				} else {
 					$location.path('/');
 				}
-			}, function (res) {
+			}, function () {
 				parseUser(undefined);
 
-				page.messages.add({
-					body: page.constants.message('login.error'),
+				messages.add({
+					body: constants.message('login.error'),
 					type: 'red',
 					countdown: 3000
 				});
@@ -140,7 +142,7 @@ module.factory('authService', [
 
 		auth.tryLogin = function () {
 			auth.next = $location.url();
-			$location.url(page.router.login());
+			$location.url(router.login());
 		};
 
 		auth.logout = function () {
@@ -148,16 +150,16 @@ module.factory('authService', [
 				parseUser(data);
 				$location.url('/login');
 
-				page.messages.add({
-					body: page.constants.message('logout.success'),
+				messages.add({
+					body: constants.message('logout.success'),
 					type: 'yellow',
 					countdown: 3000
 				});
-			}, function (res) {
+			}, function () {
 				$location.url('/');
 
-				page.messages.add({
-					body: page.constants.message('logout.error'),
+				messages.add({
+					body: constants.message('logout.error'),
 					type: 'red',
 					countdown: 3000
 				});
@@ -165,7 +167,7 @@ module.factory('authService', [
 		};
 
 		auth.showProfile = function () {
-			$location.path(page.router.profile());
+			$location.path(router.profile());
 		};
 
 		//
@@ -210,14 +212,14 @@ module.factory('authService', [
 				function (data) {
 					parseUser(data);
 
-					page.messages.add({
-						body: page.constants.message('superuser.on.success'),
+					messages.add({
+						body: constants.message('superuser.on.success'),
 						type: 'green',
 						countdown: 2000
 					});
 				}, function (res) {
-					page.messages.addError({
-						body: page.constants.message('superuser.on.error'),
+					messages.addError({
+						body: constants.message('superuser.on.error'),
 						errors: res.errors,
 						status: res.status
 					});
@@ -228,14 +230,14 @@ module.factory('authService', [
 			Party.superuserOn(function (data) {
 				parseUser(data);
 
-				page.messages.add({
-					body: page.constants.message('superuser.off.success'),
+				messages.add({
+					body: constants.message('superuser.off.success'),
 					type: 'green',
 					countdown: 2000
 				});
 			}, function (res) {
-				page.messages.addError({
-					body: page.constants.message('superuser.off.error'),
+				messages.addError({
+					body: constants.message('superuser.off.error'),
 					errors: res.data,
 					status: res.status
 				});
