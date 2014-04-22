@@ -8,8 +8,9 @@ import play.api.libs.Files.TemporaryFile
 import dbrary._
 
 object Transcode {
-  implicit val context : ExecutionContext = play.api.libs.concurrent.Akka.system.dispatchers.lookup("transcode")
+  private val context : ExecutionContext = play.api.libs.concurrent.Akka.system.dispatchers.lookup("transcode")
   private val logger = play.api.Logger("transcode")
+  private val host = current.configuration.getString("transcode.host").flatMap(Maybe(_).opt)
 
   private def videoCmd(in : File, out : File) = {
     val level =
@@ -18,6 +19,7 @@ object Transcode {
       else if (logger.isInfoEnabled) "warning"
       else if (logger.isWarnEnabled) "error"
       else "fatal"
+    /* When changing this, you must also change tools/hpc/transcode.pbs */
     Seq("ffmpeg", "-loglevel", level, "-threads", "1", "-i", in.getPath, "-vf", "pad='iw+mod(iw\\,2):ih+mod(ih\\,2)'", "-threads", "1", "-f", "mp4", "-c:v", "libx264", "-c:a", "libfdk_aac", "-y", out.getPath)
   }
 
@@ -47,6 +49,14 @@ object Transcode {
 	throw new RuntimeException("unknown source type: " + asset.format.name)
     }.onFailure { case e : Throwable =>
       logger.error("transcoding " + asset.id, e)
+    }
+  }
+
+  def stop(id : models.Asset.Id) : Unit = {
+    SQL("SELECT process FROM transcode WHERE asset = ? AND process IS NOT NULL AND result IS NULL")
+    .apply(id).singleOpt(SQLCols[Int])
+    .onSuccess {
+      case Some(pid) =>
     }
   }
 }

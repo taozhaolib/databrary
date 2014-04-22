@@ -105,7 +105,7 @@ CREATE TYPE consent AS ENUM (
 COMMENT ON TYPE consent IS 'Levels of sharing that participants may consent to.';
 
 CREATE TABLE "authorize" (
-	"child" integer NOT NULL References "party" ON DELETE Cascade,
+	"child" integer NOT NULL References "party" ON DELETE CASCADE,
 	"parent" integer NOT NULL References "party",
 	"inherit" permission NOT NULL DEFAULT 'NONE',
 	"direct" permission NOT NULL DEFAULT 'NONE',
@@ -158,7 +158,7 @@ COMMENT ON VIEW "authorize_view" IS 'Expanded list of effective, active authoriz
 
 
 CREATE TABLE "authorize_info" (
-	"child" integer NOT NULL References "party" ON DELETE Cascade,
+	"child" integer NOT NULL References "party" ON DELETE CASCADE,
 	"parent" integer NOT NULL References "party",
 	"info" text NOT NULL,
 	Primary Key ("parent", "child"),
@@ -448,6 +448,13 @@ COMMENT ON COLUMN "excerpt"."segment" IS 'Segment within slot_asset.container sp
 
 SELECT audit.CREATE_TABLE ('excerpt');
 
+
+CREATE TABLE "transcode" (
+	"asset" integer NOT NULL Primary Key References "asset" ON DELETE CASCADE,
+	"start" timestamp Default now(),
+	"process" integer,
+	"result" text
+);
 
 ----------------------------------------------------------- comments
 
