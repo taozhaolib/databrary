@@ -773,6 +773,15 @@ COMMENT ON TABLE "avatar" IS 'Image assets used to represent parties on the site
 
 SELECT audit.CREATE_TABLE ('avatar');
 
+----------------------------------------------------------- analytics
+
+CREATE TABLE audit."analytic" (
+	"route" text NOT NULL,
+	"data" json NOT NULL
+) INHERITS (audit."audit");
+COMMENT ON TABLE audit."analytic" IS 'Analytics data collected and reported by the browser.';
+
+
 ----------------------------------------------------------- bootstrap/test data
 
 INSERT INTO party (id, name, orcid, affiliation) VALUES (1, 'Dylan Simon', '0000000227931679', 'Databrary');

@@ -6,14 +6,20 @@ module.factory('pageService', [
 	'routerService',
 	'eventService',
 	'guiService',
-	function ($rootScope, messages, tooltips, constants, router, events, gui) {
+	'modelService',
+	'authService',
+	'analyticService',
+	function ($rootScope, messages, tooltips, constants, router, events, gui, models, auth, analytics) {
 		var page = {
 			messages: messages,
 			tooltips: tooltips,
 			constants: constants,
 			router: router,
 			gui: gui,
-			events: events
+			events: events,
+			models: models,
+			auth: auth,
+			analytics: analytics
 		};
 
 		//
@@ -36,6 +42,15 @@ module.factory('pageService', [
 
 		page.$window = $(window);
 		page.$document = $(document);
+
+		//
+
+		events.listen($rootScope, 'pageService-updateApp', function () {
+			messages.add({
+				type: 'yellow',
+				body: constants.message('app.update')
+			});
+		});
 
 		//
 

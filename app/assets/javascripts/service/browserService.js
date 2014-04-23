@@ -1,11 +1,12 @@
 module.factory('browserService', [
 	'$rootScope',
 	'arrayHelper',
-	'authService',
 	'Slot',
 	'typeService',
-	'pageService',
-	function ($rootScope, arrayHelper, authService, Slot, typeService, page) {
+	'messageService',
+	'constantService',
+	'tooltipService',
+	function ($rootScope, arrayHelper, Slot, typeService, messages, constants, tooltips) {
 		var browserService = {};
 
 		//
@@ -79,7 +80,7 @@ module.factory('browserService', [
 			browserService.query = '';
 
 			if (angular.isUndefined(browserService.context))
-				page.constants.$promise.success(function () {
+				constants.$promise.success(function () {
 					bindTooltips(tips);
 				});
 
@@ -186,7 +187,7 @@ module.factory('browserService', [
 					if (!browserService.options.record.categories.find({id: category}))
 						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {
 							id: category,
-							name: page.constants.get('category', category).name,
+							name: constants.get('category', category).name,
 							sort: arrayHelper([])
 						}));
 				});
@@ -562,8 +563,8 @@ module.factory('browserService', [
 
 				browserService.loading = false;
 			}, function (res) {
-				page.messages.addError({
-					body: page.constants.message('browser.assets.error'),
+				messages.addError({
+					body: constants.message('browser.assets.error'),
 					errors: res[0],
 					status: res[1]
 				});
@@ -912,10 +913,6 @@ module.factory('browserService', [
 			return permission;
 		};
 
-		browserService.hasAccess = function (data, level) {
-			return data.permission >= level || authService.hasAuth('SUPER');
-		};
-
 		//
 
 		var itemSelect = undefined;
@@ -1019,31 +1016,31 @@ module.factory('browserService', [
 
 		var bindTooltips = function (tips) {
 			tips = {
-				'.bb.icon.public': page.constants.message('consent.PUBLIC'),
-				'.bb.icon.excerpts': page.constants.message('consent.EXCERPTS'),
-				'.bb.icon.shared': page.constants.message('consent.SHARED'),
-				'.bb.icon.private': page.constants.message('consent.PRIVATE'),
+				'.bb.icon.public': constants.message('consent.PUBLIC'),
+				'.bb.icon.excerpts': constants.message('consent.EXCERPTS'),
+				'.bb.icon.shared': constants.message('consent.SHARED'),
+				'.bb.icon.private': constants.message('consent.PRIVATE'),
 
-				'.bb.icon.admin': page.constants.message('access.ADMIN', 'You'),
-				'.bb.icon.contribute': page.constants.message('access.CONTRIBUTE', 'You'),
-				'.bb.icon.download': page.constants.message('access.DOWNLOAD', 'You'),
-				'.bb.icon.view': page.constants.message('access.VIEW', 'You'),
-				'.bb.icon.none': page.constants.message('access.NONE', 'You'),
+				'.bb.icon.admin': constants.message('access.ADMIN', 'You'),
+				'.bb.icon.contribute': constants.message('access.CONTRIBUTE', 'You'),
+				'.bb.icon.download': constants.message('access.DOWNLOAD', 'You'),
+				'.bb.icon.view': constants.message('access.VIEW', 'You'),
+				'.bb.icon.none': constants.message('access.NONE', 'You'),
 
-				'.bb.icon.excerpt': page.constants.message('classification.EXCERPT'),
-				'.bb.icon.identified': page.constants.message('classification.IDENTIFIED'),
-				'.bb.icon.deidentified': page.constants.message('classification.DEIDENTIFIED'),
-				'.bb.icon.material': page.constants.message('classification.MATERIAL'),
+				'.bb.icon.excerpt': constants.message('classification.EXCERPT'),
+				'.bb.icon.identified': constants.message('classification.IDENTIFIED'),
+				'.bb.icon.deidentified': constants.message('classification.DEIDENTIFIED'),
+				'.bb.icon.material': constants.message('classification.MATERIAL'),
 
-				'.browser_dataset .browser_icon': page.constants.message('object.tip.dataset'),
-				'.browser_study .browser_icon': page.constants.message('object.tip.study'),
-				'.browser_record .browser_icon': page.constants.message('object.tip.record'),
-				'.browser_session .browser_icon': page.constants.message('object.tip.session'),
-				'.browser_asset .browser_icon': page.constants.message('object.tip.asset')
+				'.browser_dataset .browser_icon': constants.message('object.tip.dataset'),
+				'.browser_study .browser_icon': constants.message('object.tip.study'),
+				'.browser_record .browser_icon': constants.message('object.tip.record'),
+				'.browser_session .browser_icon': constants.message('object.tip.session'),
+				'.browser_asset .browser_icon': constants.message('object.tip.asset')
 			};
 
 			angular.forEach(tips, function (message, target) {
-				tips[target] = page.tooltips.add({
+				tips[target] = tooltips.add({
 					live: true,
 					$target: target,
 					message: message

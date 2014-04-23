@@ -126,17 +126,19 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
       val now = System.currentTimeMillis
       macros.Async.flatMap(request.session.get("session"), models.SessionToken.get _).flatMap { session =>
 	val site = SiteRequest[A](request, session)
+	SiteApi.analytics(site).flatMap(_ =>
 	SiteException.invokeBlock(site, 
 	  if (session.exists(!_.valid)) { request : SiteRequest.Base[A] =>
 	    Async.foreach[SessionToken, Unit](session, _.remove).map { _ =>
 	      LoginController.needed("login.expired")(request)
 	    }
-	  } else block).map { res =>
-	    _root_.site.Site.accessLog.log(now, request, res, Some(site.identity.id.toString))
-	    res.withHeaders(
-	      HeaderNames.DATE -> HTTP.date(new Timestamp(now)),
-	      HeaderNames.SERVER -> _root_.site.Site.appVersion)
-	  }
+	  } else block)
+	.map { res =>
+	  _root_.site.Site.accessLog.log(now, request, res, Some(site.identity.id.toString))
+	  res.withHeaders(
+	    HeaderNames.DATE -> HTTP.date(new Timestamp(now)),
+	    HeaderNames.SERVER -> _root_.site.Site.appVersion)
+	})
       }
     }
   }

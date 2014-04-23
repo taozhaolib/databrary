@@ -1,5 +1,5 @@
 module.factory('Scraper', [
-	'$q', '$http', 'pageService', function ($q, $http, page) {
+	'$q', '$http', 'messageService', 'constantService', function ($q, $http, messages, constants) {
 		return function (url) {
 			var deferred = $q.defer();
 

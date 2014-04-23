@@ -89,23 +89,28 @@ module.controller('CommentsPanel', [
 		};
 
 		$scope.commentMeta = function (comment) {
+			var isParty = $route.current.controller == 'PartyView' && !$scope.volume;
+			var isTop = comment.container.top;
+
 			var meta = '<time datetime="' + $filter('date')(comment.time, 'yyyy-MM-dd HH:mm:ss Z') + '" pubdate>' + $filter('date')(comment.time, 'MMMM d, yyyy') + '</time>';
 
-			if (comment.container.top && $route.current.controller != 'PartyView')
+			if (isTop && !isParty)
 				return meta;
 
 			meta += ' <span class="sep">|</span>';
 
-			var volumeID = $route.current.controller == 'PartyView' ? (comment.volume ? comment.volume.id : 0) : ($scope.volume ? $scope.volume.id : 0);
+			var volumeID = isParty ?
+				(comment.volume ? comment.volume.id : 0) :
+				($scope.volume ? $scope.volume.id : 0);
 
-			if ($route.current.controller == 'PartyView')
-				meta += ' <a href="' + $scope.router.volume({id: volumeID}) + '">' + $filter('truncate')(comment.volume.name, 20) + '</a>';
+			if (isParty)
+				meta += ' <a href="' + page.router.volume({id: volumeID}) + '">' + $filter('truncate')(comment.volume.name || $scope.volume.name, 20) + '</a>';
 
-			if ($route.current.controller == 'PartyView' && !comment.container.top)
+			if (isParty && !isTop)
 				meta += ' <span class="sep">/</span>';
 
-			if (!comment.container.top)
-				meta += ' <a href="' + $scope.router.volume({id: volumeID}) + '"><img class="line" src="' + $scope.router.slotThumb(comment.container) + '"> ' + (comment.container.name || '') + '</a>';
+			if (!isTop)
+				meta += ' <a href="' + page.router.volume({id: volumeID}) + '"><img class="line" src="' + page.router.slotThumb(comment.container) + '"> ' + (comment.container.name || '') + '</a>';
 
 			return meta;
 		};

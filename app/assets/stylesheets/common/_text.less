@@ -1,46 +1,17 @@
 // MIXINS
 
-.sofia-light() {
-	font-family: 'SofiaProLight', 'SofiaProLight Fallback', sans-serif;
-	font-weight: 300;
-
-	b, .b,
-	strong, .strong {
-		font-weight: bold;
-	}
-
-	i, .i,
-	em, .em {
-		font-style: italic;
-	}
+.body-family() {
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
 
-.sofia-medium() {
-	font-family: 'SofiaProMedium', 'SofiaProMedium Fallback', sans-serif;
-	font-weight: 400;
-
-	b, .b,
-	strong, .strong {
-		font-weight: bold;
-	}
-
-	i, .i,
-	em, .em {
-		font-style: italic;
-	}
+.heading-family() {
+	font-family: Verdana, Geneva, sans-serif;
 }
 
 // STYLES
 
-.font-face('SofiaProLight', '/public/private/fonts/SofiaProLight', normal, normal, true);
-.font-face('SofiaProLight Fallback', '//databrary.org/fonts/SofiaProLight', normal, normal, true);
-.font-face('SofiaProMedium', '/public/private/fonts/SofiaProMedium', normal, normal, true);
-.font-face('SofiaProMedium Fallback', '//databrary.org/fonts/SofiaProMedium', normal, normal, true);
-
-//
-
 body {
-	.sofia-light();
+	.body-family();
 }
 
 //

@@ -5,10 +5,10 @@
         <div class="item_meta icon bb" bo-class="page.constants.data.permission[data.object.permission].name.toLowerCase()" bo-if="data.object.permission"></div>
 
         <div class="item_meta sep"
-             bo-if="browser.hasAccess(data, 3) && data.object.permission">|
+             bo-if="auth.hasAccess('CONTRIBUTE', data) && data.object.permission">|
         </div>
 
-        <a target="_self" bo-if="browser.hasAccess(data, 3)" bo-href="editLink(data)">edit</a>
+        <a target="_self" bo-if="auth.hasAccess('CONTRIBUTE', data)" bo-href="editLink(data)">edit</a>
       </footer>
 
       <header>

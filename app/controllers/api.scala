@@ -1,9 +1,11 @@
 package controllers
 
+import scala.concurrent.Future
+import play.api.Play.current
 import play.api.i18n.Messages
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json
 import play.api.mvc._
-import play.api.Play.current
 import macros._
 import dbrary._
 import site._
@@ -40,4 +42,31 @@ object SiteApi extends SiteController {
     if (HTTP.notModified(constantsETag, startTime)) NotModified
     else constantsResult
   }
+
+  private def analytic(data : json.JsValue)(implicit site : Site) : Future[Unit] = data match {
+    case json.JsObject(f) =>
+      var action : Option[Audit.Action.Value] = None
+      var route : Option[String] = None
+      val lb = f.genericBuilder[(String,json.JsValue)]
+      f.foreach {
+	case ("action", json.JsString(v)) => action = Audit.Action.withNameOpt(v)
+	case ("route", json.JsString(v)) => route = Some(v)
+	case kv => lb += kv
+      }
+      macros.Async.foreach[Audit.Action.Value, Unit](action, action =>
+	macros.Async.foreach[String, Unit](route, route =>
+	  Analytic.add(action, route, json.JsObject(lb.result))))
+    case _ => macros.Async.void
+  }
+
+  def analytics(implicit request : SiteRequest[_]) : Future[Unit] =
+    if (request.isApi && request.headers.get("X-Requested-With").exists(_.equals("DatabraryClient")))
+      macros.Async.foreach[String, Unit](request.headers.getAll("Analytics"), a =>
+	scala.util.control.Exception.failAsValue[json.JsValue](classOf[com.fasterxml.jackson.core.JsonProcessingException])(json.JsUndefined("parse error"))(
+	  json.Json.parse(a)) match {
+	  case json.JsArray(l) => macros.Async.foreach[json.JsValue, Unit](l, analytic _)
+	  case j => analytic(j)
+	})
+    else
+      macros.Async.void
 }

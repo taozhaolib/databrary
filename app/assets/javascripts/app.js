@@ -14,6 +14,9 @@ module.config([
 		$httpProvider.defaults.headers.common['X-Requested-With'] = 'DatabraryClient';
 
 		$logProvider.debugEnabled(true);
+
+		$httpProvider.interceptors.push('updateInterceptor');
+		$httpProvider.interceptors.push('analyticInterceptor');
 	}
 ]);
 
@@ -83,5 +86,4 @@ module.run([
 //		playService.run();
 	}
 ]);
-
 

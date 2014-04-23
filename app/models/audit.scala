@@ -5,6 +5,13 @@ import macros._
 import dbrary._
 import site._
 
+abstract class AuditBase(when : Timestamp, who : Party.Id, ip : Inet, action : Audit.Action.Value) extends TableRow {
+  private[models] def sqlKey = SQLTerms()
+
+  /** Look up the party who generated this event, if still valid. */
+  def party(implicit site : Site) = Party.get(who)(site)
+}
+
 /** Represents an event row in an audit table of a particular type.  Currently unused as there is intentionally no read/modify access to audit tables.
   * @constructor Create a new unpersisted audit record. There is no reason to do this.
   * @tparam T the type of data attached to this record. Usually this is a TableRow instance for a corresponding audit_t table.
@@ -14,17 +21,12 @@ import site._
   * @param action the type of event
   * @param row the remaining data columns
   */
-final case class Audit[T](when : Timestamp, who : Party.Id, ip : Inet, action : Audit.Action.Value, row : T) extends TableRow {
-  private[models] def sqlKey = SQLTerms()
-
-  /** Look up the party who generated this event, if still valid. */
-  def party(implicit site : Site) = Party.get(who)(site)
-
+final case class Audit[T](when : Timestamp, who : Party.Id, ip : Inet, action : Audit.Action.Value, row : T) extends AuditBase(when, who, ip, action) {
   def withRow[A](row : A) = copy[A](row = row)
 }
 
 /** Helper for audit tables. */
-object Audit extends Table[Audit[_]]("audit") {
+object Audit extends Table[Audit[_]]("audit.audit") {
   /** The possible events or actions on the site that can be put into audit tables. */
   object Action extends PGEnum("audit_action") {
     val attempt, open, close, add, change, remove, superuser = Value
@@ -49,7 +51,7 @@ object Audit extends Table[Audit[_]]("audit") {
     case Action.remove => "DELETE FROM"
   }
 
-  private[this] def aargs(action : Action.Value)(implicit site : Site) : SQLTerms =
+  private[models] def aargs(action : Action.Value)(implicit site : Site) : SQLTerms =
     SQLTerms('audit_user -> site.identity.id, 'audit_ip -> site.clientIP, 'audit_action -> action)
 
   /** Record an audit event of the specified type to the generic audit table. */
