@@ -1,16 +1,15 @@
 module.factory('analyticInterceptor', ['$rootScope', 'analyticService', function ($rootScope, analytics) {
 	return {
 		request: function (config) {
-			var queue = analytics.next();
+			if(config.cache)
+				return config;
 
-			if (queue)
-				config.headers['Analytics'] = queue;
+			var json = analytics.dump();
+
+			if (json)
+				config.headers['Analytics'] = json;
 
 			return config;
-		},
-
-		requestError: function (rej) {
-			console.log(rej);
 		}
 	}
 }]);

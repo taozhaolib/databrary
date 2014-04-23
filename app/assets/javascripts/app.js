@@ -15,8 +15,6 @@ module.config([
 
 		$logProvider.debugEnabled(true);
 
-		var version = undefined;
-
 		$httpProvider.interceptors.push('updateInterceptor');
 		$httpProvider.interceptors.push('analyticInterceptor');
 	}
@@ -88,5 +86,4 @@ module.run([
 //		playService.run();
 	}
 ]);
-
 
