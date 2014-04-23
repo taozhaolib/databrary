@@ -2,7 +2,7 @@ module.factory('authService', [
 	'$rootScope',
 	'$location',
 	'$route',
-	'$cacheFactory',
+	'cacheService',
 	'typeService',
 	'$window',
 	'$q',
@@ -10,7 +10,7 @@ module.factory('authService', [
 	'constantService',
 	'routerService',
 	'Party',
-	function ($rootScope, $location, $route, $cacheFactory, typeService, $window, $q, messages, constants, router, Party) {
+	function ($rootScope, $location, $route, cache, typeService, $window, $q, messages, constants, router, Party) {
 		var auth = {};
 
 		//
@@ -33,7 +33,7 @@ module.factory('authService', [
 			auth.user = user || undefined;
 
 			if (reload) {
-				$cacheFactory.get('$http').removeAll();
+				cache().reload();
 				$route.reload();
 			}
 		};
@@ -227,7 +227,7 @@ module.factory('authService', [
 		};
 
 		var disableSU = function () {
-			Party.superuserOn(function (data) {
+			Party.superuserOff(function (data) {
 				parseUser(data);
 
 				messages.add({

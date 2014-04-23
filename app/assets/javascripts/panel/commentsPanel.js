@@ -5,15 +5,12 @@ module.controller('CommentsPanel', [
 	'Comment',
 	'Volume',
 	'$filter',
-	'$cacheFactory',
 	'pageService',
-	function ($scope, authService, $route, Comment, Volume, $filter, $cacheFactory, page) {
+	function ($scope, authService, $route, Comment, Volume, $filter, page) {
 		var DEFAULT_MESSAGE = {
 			type: 'blue',
 			countdown: 3000
 		};
-
-		var $httpCache = $cacheFactory.get('$http');
 
 		//
 
@@ -49,7 +46,7 @@ module.controller('CommentsPanel', [
 		$scope.pullComments = function () {
 			switch ($route.current.controller) {
 				case 'VolumeView':
-					$httpCache.removeAll();
+					Volume.cache.remove($scope.volume.id);
 
 					Volume.get({
 						id: $scope.volume.id,

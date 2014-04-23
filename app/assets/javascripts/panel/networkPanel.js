@@ -3,15 +3,12 @@ module.controller('NetworkPanel', [
 	'$routeParams',
 	'$filter',
 	'PartyAuthorize',
-	'$cacheFactory',
 	'pageService',
 	'Party',
 	'authService',
 	'$compile',
-	function ($scope, $routeParams, $filter, PartyAuthorize, $cacheFactory, page, Party, auth, $compile) {
+	function ($scope, $routeParams, $filter, PartyAuthorize, page, Party, auth, $compile) {
 		$scope.constant = $scope.constant || page.constants;
-
-		var $httpCache = $cacheFactory.get('$http');
 
 		$scope.bootPanel = function () {
 			getPartyAuth();
@@ -31,7 +28,7 @@ module.controller('NetworkPanel', [
 		var actionMessages = {};
 
 		var getPartyAuth = function () {
-			$httpCache.removeAll();
+			PartyAuthorize.cache.reload();
 
 			if (auth.hasAccess('ADMIN', $scope.party))
 				PartyAuthorize.query(function (data) {
