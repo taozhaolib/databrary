@@ -112,7 +112,7 @@ CREATE TABLE "authorize" (
 	"authorized" timestamp DEFAULT CURRENT_TIMESTAMP,
 	"expires" timestamp,
 	Primary Key ("parent", "child"),
-	Check ("child" <> "parent" AND ("child" > 0 OR "parent" = -1))
+	Check ("child" <> "parent" AND "child" > 0)
 );
 COMMENT ON TABLE "authorize" IS 'Relationships and permissions granted between parties';
 COMMENT ON COLUMN "authorize"."child" IS 'Party granted permissions';
@@ -755,6 +755,15 @@ CREATE TABLE "avatar" (
 COMMENT ON TABLE "avatar" IS 'Image assets used to represent parties on the site.  These assets are expected to be in the CORE volume.';
 
 SELECT audit.CREATE_TABLE ('avatar');
+
+----------------------------------------------------------- analytics
+
+CREATE TABLE audit."analytic" (
+	"route" text NOT NULL,
+	"data" json NOT NULL
+) INHERITS (audit."audit");
+COMMENT ON TABLE audit."analytic" IS 'Analytics data collected and reported by the browser.';
+
 
 ----------------------------------------------------------- bootstrap/test data
 

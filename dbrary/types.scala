@@ -2,6 +2,7 @@ package dbrary
 
 import scala.util.control.Exception.catching
 import com.github.mauricio.async.db
+import play.api.libs.json.{JsValue,Json}
 import macros._
 
 class SQLTypeMismatch(value : Any, sqltype : SQLType[_], where : String = "")
@@ -25,7 +26,7 @@ abstract class SQLType[A](val name : String, val aClass : Class[A]) {
     case _ => throw new SQLTypeMismatch(x, this, where)
   }
 
-  def transform[B](n : String, bc : Class[B])(f : A => Option[B], g : B => A) : SQLType[B] =
+  final def transform[B](n : String, bc : Class[B])(f : A => Option[B], g : B => A) : SQLType[B] =
     new SQLType[B](n, bc) {
       override def show(b : B) : String = parent.show(g(b))
       override def put(b : B) : Any = parent.put(g(b))
@@ -129,6 +130,12 @@ object SQLType {
       override def get(x : Any, where : String = "") : Option[A] = Option(x).map(t.get(_, where))
       override def put(a : Option[A]) = a.map(t.put(_))//.orNull
     }
+
+  implicit object jsonValue extends SQLType[JsValue]("json", classOf[JsValue]) {
+    override def put(j : JsValue) : Any = j.toString
+    def read(s : String) : Option[JsValue] =
+      catching(classOf[com.fasterxml.jackson.core.JsonProcessingException]).opt(Json.parse(s))
+  }
 
   def put[A](a : A)(implicit t : SQLType[A]) : Any = t.put(a)
 
