@@ -1,6 +1,7 @@
 module.factory('cacheService', [
 	'$rootScope', function ($rootScope) {
 		var hash = {};
+		var routes = {};
 
 		var globalController = {
 			reload: function () {
@@ -51,12 +52,16 @@ module.factory('cacheService', [
 				unmarked: [],
 
 				controller: {
-					get: function (id, params) {
-						if (thisCache.halt || !id || !thisCache.cache[id]) {
+					get: function (id, config) {
+						if (thisCache.halt) {
+							return false;
+						} else if (routes[config.url] && routes[config.url].length > 1) {
+							return routes[config.url];
+						} else if (!thisCache.cache[id]) {
 							return false;
 						}
 
-						params = parseParams(params);
+						var params = parseParams(config.params);
 
 						for (var i = 0, l = params.length; i < l; i++) {
 							if (thisCache.cache[id].params.indexOf(params[i]) == -1) {
@@ -67,12 +72,12 @@ module.factory('cacheService', [
 						return thisCache.cache[id].object;
 					},
 
-					set: function (object, params) {
+					set: function (object, config) {
 						if (thisCache.halt || $.isEmptyObject(object) || !object.id) {
 							return false;
 						}
 
-						params = parseParams(params);
+						var params = parseParams(config.params);
 
 						if (thisCache.cache[object.id]) {
 							angular.forEach(object, function (val, key) {
@@ -109,6 +114,13 @@ module.factory('cacheService', [
 								params: params,
 								object: object
 							};
+						}
+
+						if (!routes[config.url])
+							routes[config.url] = [];
+
+						if (routes[config.url].indexOf(thisCache.cache[object.id].object) == -1) {
+							routes[config.url].push(thisCache.cache[object.id].object);
 						}
 
 						return true;

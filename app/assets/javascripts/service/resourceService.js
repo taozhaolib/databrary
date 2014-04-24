@@ -215,12 +215,11 @@ module.factory('resourceService', [
 					if (hasBody) {
 						httpConfig.data = data;
 					}
-					route.setUrlParams(httpConfig,
-						extend({}, extractParams(data, action.params || {}), params),
-						action.url);
+					var extracted = extend({}, extractParams(data, action.params || {}), params);
+					route.setUrlParams(httpConfig, extracted, action.url);
 
 					var promise;
-					var cached = cache.get(extend({}, extractParams(data, action.params || {}), params).id, params);
+					var cached = cache.get(extracted.id, httpConfig);
 
 					if (cached) {
 						shallowClearAndCopy(cached, value);
@@ -243,12 +242,12 @@ module.factory('resourceService', [
 									value.length = 0;
 									forEach(data, function (item) {
 										value.push(new Resource(item));
-										cache.set(item, params);
+										cache.set(item, httpConfig);
 									});
 								} else {
 									shallowClearAndCopy(data, value);
 									value.$promise = promise;
-									cache.set(data, params);
+									cache.set(data, httpConfig);
 								}
 							}
 
