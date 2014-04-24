@@ -10,7 +10,16 @@ import dbrary._
 object Transcode {
   private val context : ExecutionContext = play.api.libs.concurrent.Akka.system.dispatchers.lookup("transcode")
   private val logger = play.api.Logger("transcode")
+  private val enabled = current.configuration.getBoolean("transcode.enabled").getOrElse(false)
   private val host = current.configuration.getString("transcode.host").flatMap(Maybe(_).opt)
+  private val dir = current.configuration.getString("transcode.dir").flatMap(Maybe(_).opt)
+
+  private def procLogger(prefix : String) = {
+    val pfx = if (prefix.nonEmpty) prefix + ": " else prefix
+    scala.sys.process.ProcessLogger(
+      s => logger.info(pfx + s), 
+      s => logger.warn(pfx + s))
+  }
 
   private def videoCmd(in : File, out : File) = {
     val level =
@@ -25,14 +34,11 @@ object Transcode {
 
   private def await[A](a : Future[A]) = Await.result(a, duration.Duration.Inf)
 
-  def transcode(asset : models.Asset) : Unit = {
+  private def local(asset : models.Asset) : Unit = {
     val f = FileAsset.file(asset)
     val t = TemporaryFile(new File(f.getPath + ".tc"))
     Future {
-      val logPrefix = asset.id.toString + ": "
-      val log = scala.sys.process.ProcessLogger(
-	s => logger.info(logPrefix + s), 
-	s => logger.warn(logPrefix + s))
+      val log = procLogger(asset.id.toString)
       if (asset.format.mimetype.startsWith("video/")) {
 	val sp = media.AV.probe(f)
 	val cmd = videoCmd(f, t.file)
@@ -51,6 +57,17 @@ object Transcode {
       logger.error("transcoding " + asset.id, e)
     }
   }
+
+  private lazy val ctl : File =
+    current.resource("transctl.sh")
+      .flatMap(urlFile(_))
+      .getOrElse(throw new Exception("transctl.sh not found"))
+
+  private def run(args : String*) : Unit =
+    Process(ctl.getPath +: args).!(procLogger(
+
+  def start(asset : models.Asset) : Unit =
+
 
   def stop(id : models.Asset.Id) : Unit = {
     SQL("SELECT process FROM transcode WHERE asset = ? AND process IS NOT NULL AND result IS NULL")

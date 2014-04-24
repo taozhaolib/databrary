@@ -2,7 +2,10 @@
 # Transcode job management.
 # This is run on transcode.host, called from conf/transctl.sh
 
-base=$(realpath `dirname $0`)
+#PBS -j oe
+#PBS -o log/${PBS_JOBNAME}_${PBS_JOBID}.log
+#PBS -q ser2
+#PBS -l nodes=1:ppn=1,mem=1024mb
 
 while getopts 'a:d:hk:r:' opt ; do case "$opt" in
 	a) aid=$OPTARG ;;
@@ -38,11 +41,11 @@ fi
 if [[ -n $hpc ]] ; then
 	rate=50000
 	sec=$[60+`stat -c %s "$IN"`/$rate]
-	exec qsub -d "$PWD" -q ser2 -N "$aid" -v "aid=$aid,url=$url" -l walltime=$sec "$base/transcode.pbs"
+	exec qsub -d "$PWD" -q ser2 -N "$aid" -v "aid=$aid,url=$url" -l walltime=$sec "$0"
 fi
 
 sleep 5 # hope server knows job has started by now
-time ffmpeg -loglevel warning -threads 1 -i "$IN" -vf pad='iw+mod(iw\,2):ih+mod(ih\,2)' -threads 1 -c:v libx264 -c:a libfdk_aac -y "$OUT"
+time ffmpeg -loglevel warning -threads 1 -i "$IN" -vf pad='iw+mod(iw\,2):ih+mod(ih\,2)' -threads 1 -f mp4 -c:v libx264 -c:a libfdk_aac -y "$OUT"
 r=$?
 if [[ $r -ne 0 ]] ; then
 	rm "$OUT"
