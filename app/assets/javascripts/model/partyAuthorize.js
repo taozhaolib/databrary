@@ -1,6 +1,6 @@
 module.factory('PartyAuthorize', [
 	'resourceService', '$route', 'authService', function (resource, $route, auth) {
-		return resource('PartyAuthorize', '/api/party/:id/authorize/:partyId', {
+		return resource('partyAuthorize', '/api/party/:id/authorize/:partyId', {
 			id: function () {
 				return $route.current.params.id ? $route.current.params.id : auth.user.id || undefined;
 			}

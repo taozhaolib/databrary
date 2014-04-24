@@ -1,7 +1,14 @@
 module.factory('cacheService', [
 	'$rootScope', function ($rootScope) {
 		var hash = {};
-		var routes = {};
+		var arrays = {};
+
+		var props = {
+			'records': 'record',
+			'access': 'party',
+			'volumes': 'volume',
+			'sessions': 'slot'
+		};
 
 		var globalController = {
 			reload: function () {
@@ -39,6 +46,23 @@ module.factory('cacheService', [
 			return params;
 		};
 
+		var parseProps = function (object) {
+			for (var prop in object) {
+				if (!object.hasOwnProperty(prop) || !angular.isObject(object[prop]) || !hash[props[prop]])
+					continue;
+
+				var subCache = cacheFactory(props[prop]);
+
+				angular.forEach(object[prop], function (subObject) {
+					console.log(prop, props[prop], subObject);
+					if (prop === 'access')
+						subCache.set(subObject.party, undefined, false);
+					else
+						subCache.set(subObject, undefined, false);
+				});
+			}
+		};
+
 		var cacheFactory = function (cacheID) {
 			if (hash[cacheID]) {
 				return hash[cacheID].controller;
@@ -55,8 +79,8 @@ module.factory('cacheService', [
 					get: function (id, config) {
 						if (thisCache.halt) {
 							return false;
-						} else if (routes[config.url] && routes[config.url].length > 1) {
-							return routes[config.url];
+						} else if (arrays[config.url] && arrays[config.url].length > 1) {
+							return arrays[config.url];
 						} else if (!thisCache.cache[id]) {
 							return false;
 						}
@@ -72,11 +96,12 @@ module.factory('cacheService', [
 						return thisCache.cache[id].object;
 					},
 
-					set: function (object, config) {
+					set: function (object, config, crawl) {
 						if (thisCache.halt || $.isEmptyObject(object) || !object.id) {
 							return false;
 						}
 
+						config = config || {};
 						var params = parseParams(config.params);
 
 						if (thisCache.cache[object.id]) {
@@ -116,11 +141,22 @@ module.factory('cacheService', [
 							};
 						}
 
-						if (!routes[config.url])
-							routes[config.url] = [];
+						if (crawl !== false)
+							parseProps(object);
 
-						if (routes[config.url].indexOf(thisCache.cache[object.id].object) == -1) {
-							routes[config.url].push(thisCache.cache[object.id].object);
+						return true;
+					},
+
+					setArray: function (array, config) {
+						if (!arrays[config.url])
+							arrays[config.url] = [];
+
+						for (var i = 0, l = array.length; i < l; i++) {
+							thisCache.controller.set(array[i], config);
+
+							if (arrays[config.url].indexOf(thisCache.cache[array[i].id].object) == -1) {
+								arrays[config.url].push(thisCache.cache[array[i].id].object);
+							}
 						}
 
 						return true;
@@ -146,6 +182,12 @@ module.factory('cacheService', [
 
 			return thisCache.controller;
 		};
+
+		for (var prop in props) {
+			if (props.hasOwnProperty(prop) && !hash[props[prop]]) {
+				cacheFactory(props[prop]);
+			}
+		}
 
 		return cacheFactory;
 	}

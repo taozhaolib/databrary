@@ -1,6 +1,6 @@
 module.factory('Party', [
 	'resourceService', '$route', function (resource, $route) {
-		return resource('Party', '/api/party/:id', {
+		return resource('party', '/api/party/:id', {
 			id: function () {
 				return ($route.current && $route.current.params.id) || undefined;
 			}

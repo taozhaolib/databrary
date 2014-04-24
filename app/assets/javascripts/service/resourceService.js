@@ -242,8 +242,8 @@ module.factory('resourceService', [
 									value.length = 0;
 									forEach(data, function (item) {
 										value.push(new Resource(item));
-										cache.set(item, httpConfig);
 									});
+									cache.setArray(data, httpConfig);
 								} else {
 									shallowClearAndCopy(data, value);
 									value.$promise = promise;
