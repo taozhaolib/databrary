@@ -28,15 +28,13 @@ module.controller('NetworkPanel', [
 		var actionMessages = {};
 
 		var getPartyAuth = function () {
-			PartyAuthorize.cache.reload();
-
 			if (auth.hasAccess('ADMIN', $scope.party))
 				PartyAuthorize.query(function (data) {
 					$scope.partyAuth = data;
 
 					angular.forEach($scope.partyAuth.children, function (party) {
 						if (!party.authorized)
-							if(!actionMessages[party.id])
+							if (!actionMessages[party.id])
 								actionMessages[party.id] = {
 									party: party,
 									message: page.messages.add({
@@ -55,7 +53,8 @@ module.controller('NetworkPanel', [
 						status: res[1]
 					});
 				});
-			else
+			else {
+				Party.cache.remove($scope.party.id);
 				Party.get({
 					id: $routeParams.id || auth.user.id,
 					parents: '',
@@ -86,6 +85,7 @@ module.controller('NetworkPanel', [
 						status: res[1]
 					});
 				});
+			}
 		};
 
 		$scope.openMessageChild = function (id) {
@@ -118,7 +118,7 @@ module.controller('NetworkPanel', [
 				$scope.resetAuthChild(child);
 
 			$scope.currentAuthChild = child;
-			page.gui.scrollTo('network-child-'+child.id);
+			page.gui.scrollTo('network-child-' + child.id);
 		};
 
 		$scope.resetAuthChild = function (child) {
@@ -218,7 +218,7 @@ module.controller('NetworkPanel', [
 				$scope.resetAuthChild(parent);
 
 			$scope.currentAuthParent = parent;
-			page.gui.scrollTo('network-parent-'+parent.id);
+			page.gui.scrollTo('network-parent-' + parent.id);
 		};
 
 		//

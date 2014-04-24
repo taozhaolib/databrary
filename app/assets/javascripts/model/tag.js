@@ -1,5 +1,5 @@
 module.factory('Tag', [
-	'$resource', function ($resource) {
-		return $resource('/api/tag/:id', {});
+	'resourceService', function (resource) {
+		return resource('tag', '/api/tag/:id', {});
 	}
 ]);

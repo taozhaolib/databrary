@@ -1,6 +1,6 @@
 module.factory('Comment', [
-	'$resource', '$route', function ($resource, $route) {
-		return $resource('/api/comment/:id', {
+	'resourceService', '$route', function (resource, $route) {
+		return resource('comment', '/api/comment/:id', {
 			segment: function () {
 				return $route.current.params.segment || ',';
 			},

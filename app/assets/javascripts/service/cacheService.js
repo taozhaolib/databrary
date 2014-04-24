@@ -6,8 +6,12 @@ module.factory('cacheService', [
 		var props = {
 			'records': 'record',
 			'access': 'party',
+			'parents': 'party',
+			'children': 'party',
 			'volumes': 'volume',
-			'sessions': 'slot'
+			'sessions': 'slot',
+			'assets': 'asset',
+			'comments': 'comment'
 		};
 
 		var globalController = {
@@ -54,13 +58,12 @@ module.factory('cacheService', [
 				var subCache = cacheFactory(props[prop]);
 
 				angular.forEach(object[prop], function (subObject) {
-					console.log(prop, props[prop], subObject);
-					if (prop === 'access')
+					if (props[prop] === 'party')
 						subCache.set(subObject.party, undefined, false);
 					else
 						subCache.set(subObject, undefined, false);
 				});
-			}
+			}console.log(hash);
 		};
 
 		var cacheFactory = function (cacheID) {
@@ -97,7 +100,7 @@ module.factory('cacheService', [
 					},
 
 					set: function (object, config, crawl) {
-						if (thisCache.halt || $.isEmptyObject(object) || !object.id) {
+						if (thisCache.halt || !angular.isObject(object) || !object.id) {
 							return false;
 						}
 
