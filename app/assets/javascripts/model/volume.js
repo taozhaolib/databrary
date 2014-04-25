@@ -1,9 +1,9 @@
 module.factory('Volume', [
-	'resourceService', '$route', function (resource, $route) {
-		return resource('volume', '/api/volume/:id', {
+	'resourceFactory', '$route', function (resource, $route) {
+		return resource('/api/volume/:id', {
 			id: function () {
 				return $route.current.params.id || undefined;
 			}
-		});
+		}, 'volume');
 	}
 ]);

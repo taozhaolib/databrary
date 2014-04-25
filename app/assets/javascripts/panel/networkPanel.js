@@ -54,7 +54,7 @@ module.controller('NetworkPanel', [
 					});
 				});
 			else {
-				Party.cache.remove($scope.party.id);
+				Party.$cache.removeAll();
 				Party.get({
 					id: $routeParams.id || auth.user.id,
 					parents: '',

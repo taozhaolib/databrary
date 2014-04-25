@@ -1,6 +1,6 @@
 module.factory('SlotAsset', [
-	'resourceService', '$route', function (resource, $route) {
-		return resource('slotAsset', '/api/slot/:slotId/asset/:id', {
+	'$resource', '$route', function ($resource, $route) {
+		return $resource('/api/slot/:slotId/asset/:id', {
 			slotId: function () {
 				return $route.current.params.slotId || undefined;
 			},

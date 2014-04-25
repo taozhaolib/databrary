@@ -46,7 +46,7 @@ module.controller('CommentsPanel', [
 		$scope.pullComments = function () {
 			switch ($route.current.controller) {
 				case 'VolumeView':
-					Volume.cache.remove($scope.volume.id);
+					Volume.$cache.removeAll();
 
 					Volume.get({
 						id: $scope.volume.id,

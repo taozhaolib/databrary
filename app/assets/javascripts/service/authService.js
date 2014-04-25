@@ -2,7 +2,7 @@ module.factory('authService', [
 	'$rootScope',
 	'$location',
 	'$route',
-	'cacheService',
+	'$cacheFactory',
 	'typeService',
 	'$window',
 	'$q',
@@ -10,7 +10,7 @@ module.factory('authService', [
 	'constantService',
 	'routerService',
 	'Party',
-	function ($rootScope, $location, $route, cache, typeService, $window, $q, messages, constants, router, Party) {
+	function ($rootScope, $location, $route, $cacheFactory, typeService, $window, $q, messages, constants, router, Party) {
 		var auth = {};
 
 		//
@@ -33,7 +33,7 @@ module.factory('authService', [
 			auth.user = user || undefined;
 
 			if (reload) {
-				cache().reload();
+				$cacheFactory.removeAll();
 				$route.reload();
 			}
 		};

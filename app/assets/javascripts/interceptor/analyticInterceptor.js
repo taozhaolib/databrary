@@ -2,11 +2,7 @@ module.factory('analyticInterceptor', [
 	'$rootScope', 'analyticService', function ($rootScope, analytics) {
 		return {
 			request: function (config) {
-				if (config.cache) {
-					return config;
-				}
-
-				var json = analytics.dump();
+				var json = analytics.dump(config);
 
 				if (json) {
 					config.headers['Analytics'] = json;
