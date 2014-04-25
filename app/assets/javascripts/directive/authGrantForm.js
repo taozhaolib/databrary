@@ -8,15 +8,22 @@ module.directive('authGrantForm', [
 		var link = function ($scope) {
 			var form = $scope.authGrantForm;
 
+			var supportsDate = document.createElement('input');
+			supportsDate.setAttribute('type', 'date');
+			supportsDate = supportsDate.type === 'date';
+
 			form.presets = authPresetService;
 			form.party = $scope.party || authService.user;
 			form.other = undefined;
 
 			//
 
-			form.transformExpiration = function () {
-				var now = new Date(),
-					limit = new Date((new Date()).setYear(now.getFullYear() + 2)).getTime(),
+			var dateNow = new Date(),
+				dateLimit = new Date((new Date()).setYear(dateNow.getFullYear() + 2));
+
+			var transformInputDate = function () {
+				var now = dateNow,
+					limit = dateLimit.getTime(),
 					exp = form.other.expiration.split('-'),
 					trial = new Date(exp[1] + '-' + exp[2] + '-' + exp[0]).getTime();
 
@@ -25,6 +32,17 @@ module.directive('authGrantForm', [
 
 				if (trial < now.getTime())
 					form.other.expiration = $filter('date')(now, 'yyyy-MM-dd');
+			};
+
+			var transformInputText = function () {
+
+			};
+
+			form.transformExpiration = function () {
+				if (supportsDate)
+					transformInputDate();
+				else
+					transformInputText();
 			};
 
 			//
@@ -139,6 +157,8 @@ module.directive('authGrantForm', [
 
 				if (form.other.expires)
 					form.other.expiration = $filter('date')(new Date(form.other.expires), 'yyyy-MM-dd');
+				else if (angular.isUndefined(form.other.authorized))
+					form.other.expiration = $filter('date')(dateLimit, 'yyyy-MM-dd');
 				else
 					form.other.expiration = '';
 			});
