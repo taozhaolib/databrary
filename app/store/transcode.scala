@@ -5,14 +5,15 @@ import scala.concurrent.{Future,ExecutionContext,Await,duration}
 import scala.sys.process.Process
 import play.api.Play.current
 import play.api.libs.Files.TemporaryFile
+import macros._
 import dbrary._
+import site._
 
 object Transcode {
-  private val context : ExecutionContext = play.api.libs.concurrent.Akka.system.dispatchers.lookup("transcode")
+  private implicit val context : ExecutionContext = play.api.libs.concurrent.Akka.system.dispatchers.lookup("transcode")
   private val logger = play.api.Logger("transcode")
-  private val enabled = current.configuration.getBoolean("transcode.enabled").getOrElse(false)
-  private val host = current.configuration.getString("transcode.host").flatMap(Maybe(_).opt)
-  private val dir = current.configuration.getString("transcode.dir").flatMap(Maybe(_).opt)
+  private val host : Option[String] = current.configuration.getString("transcode.host").flatMap(Maybe(_).opt)
+  private val dir : Option[String] = current.configuration.getString("transcode.dir").flatMap(Maybe(_).opt)
 
   private def procLogger(prefix : String) = {
     val pfx = if (prefix.nonEmpty) prefix + ": " else prefix
@@ -58,22 +59,38 @@ object Transcode {
     }
   }
 
-  private lazy val ctl : File =
+  private lazy val ctlCmd : Seq[String] =
     current.resource("transctl.sh")
-      .flatMap(urlFile(_))
-      .getOrElse(throw new Exception("transctl.sh not found"))
+    .flatMap(urlFile(_))
+    .getOrElse(throw new Exception("transctl.sh not found"))
+    .getPath +:
+    (dir.toSeq.flatMap(Seq("-d", _)) ++ host.toSeq.flatMap(Seq("-h", _)))
 
-  private def run(args : String*) : Unit =
-    Process(ctl.getPath +: args).!(procLogger(
+  private def ctl(aid : models.Asset.Id, args : String*) : String =
+    Process(ctlCmd ++ Seq("-a", aid.toString) ++ args)
+    .!!(procLogger(aid.toString))
 
-  def start(asset : models.Asset) : Unit =
+  def start(asset : models.Asset)(implicit request : controllers.SiteRequest[_]) : Future[Unit] =
+    for {
+      _ <- stop(asset.id)
+      _ <- SQL("INSERT INTO transcode (asset) VALUES (?)")
+	.apply(asset.id).execute
+      src = FileAsset.file(asset)
+      pid = scala.util.control.Exception.catching(classOf[RuntimeException]) either {
+	ctl(asset.id,
+	  "-f", src.getPath,
+	  "-r", controllers.routes.AssetApi.transcoded(asset.id, play.api.libs.Crypto.sign(src.getName)).absoluteURL())
+      }
+      true <- SQL("UPDATE transcode SET process = ?::integer, result = ? WHERE asset = ?")
+	.apply(pid.right.toOption, pid.left.toOption.map(_.toString), asset.id).execute
+    } ()
 
-
-  def stop(id : models.Asset.Id) : Unit = {
-    SQL("SELECT process FROM transcode WHERE asset = ? AND process IS NOT NULL AND result IS NULL")
-    .apply(id).singleOpt(SQLCols[Int])
-    .onSuccess {
-      case Some(pid) =>
-    }
-  }
+  def stop(id : models.Asset.Id) : Future[Unit] =
+    for {
+      pid <- SQL("SELECT process FROM transcode WHERE asset = ?")
+	.apply(id).singleOpt(SQLCols[Option[Int]])
+      _ = pid.foreach(pid => ctl(id, "-k", pid.toString))
+      _ <- SQL("DELETE FROM transcode WHERE asset = ? AND process = ?")
+	.apply(id, pid).execute
+    } ()
 }

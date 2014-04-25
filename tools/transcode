@@ -16,7 +16,7 @@ while getopts 'a:d:hk:r:' opt ; do case "$opt" in
 esac ; done
 
 if [[ $# -ge $OPTIND || -z $aid || -z $kill && -z $url ]] ; then
-	echo "$0: usage error: $*"
+	echo "$0: usage error: $*" >&2
 	exit 1
 fi
 
@@ -34,7 +34,7 @@ if [[ -n $kill ]] ; then
 fi
 
 if [[ ! -f $IN ]] ; then
-	echo "$IN: file not found"
+	echo "$IN: file not found" >&2
 	exit 1
 fi
 

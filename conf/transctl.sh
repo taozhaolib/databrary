@@ -16,7 +16,7 @@ while getopts 'a:c:d:f:h:k:r:' opt ; do case "$opt" in
 esac ; done
 
 if [[ $# -ge $OPTIND || -z $aid || -z $dir || -z $collect$kill && ( -z $src || -z $url ) ]] ; then
-	echo "$0: usage error: $*"
+	echo "$0: usage error: $*" >&2
 	exit 1
 fi
 
