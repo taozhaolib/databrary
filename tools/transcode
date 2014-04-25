@@ -22,6 +22,7 @@ fi
 
 IN=$aid
 OUT=${aid}.mp4
+LOG=${aid}.log
 
 if [[ -n $kill ]] ; then
 	if [[ -n $hpc ]] ; then
@@ -44,10 +45,13 @@ if [[ -n $hpc ]] ; then
 	exec qsub -d "$PWD" -q ser2 -N "$aid" -v "aid=$aid,url=$url" -l walltime=$sec "$0"
 fi
 
+PID=${PBS_JOBID:-$$}
+PID=${PID%%.*}
+
 sleep 5 # hope server knows job has started by now
-time ffmpeg -loglevel warning -threads 1 -i "$IN" -vf pad='iw+mod(iw\,2):ih+mod(ih\,2)' -threads 1 -f mp4 -c:v libx264 -c:a libfdk_aac -y "$OUT"
+time ffmpeg -loglevel warning -threads 1 -i "$IN" -vf pad='iw+mod(iw\,2):ih+mod(ih\,2)' -threads 1 -f mp4 -c:v libx264 -c:a libfdk_aac -y "$OUT" > $LOG 2>&1
 r=$?
 if [[ $r -ne 0 ]] ; then
 	rm "$OUT"
 fi
-curl -k -d "r=$r" "$url"
+curl -k --data-urlencode "pid=$PID" --data-urlencode "r=$r" --data-urlencode "log@$LOG" "$url"

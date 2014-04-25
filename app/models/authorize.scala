@@ -125,6 +125,7 @@ object Authorization extends Table[Authorization]("authorize_view") {
     access.getOrElse((Permission.NONE, Permission.NONE))
 
   object Nobody extends Authorization(Party.Nobody, Party.Root, Permission.NONE, Permission.NONE)
+  object Root extends Authorization(Party.Root, Party.Root, Permission.ADMIN, Permission.ADMIN)
 
   private final class Self (party : Party) extends Authorization(party, party,
     if (party.id === Party.NOBODY) Permission.NONE else Permission.ADMIN,

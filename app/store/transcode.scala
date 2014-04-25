@@ -73,24 +73,31 @@ object Transcode {
   def start(asset : models.Asset)(implicit request : controllers.SiteRequest[_]) : Future[Unit] =
     for {
       _ <- stop(asset.id)
-      _ <- SQL("INSERT INTO transcode (asset) VALUES (?)")
-	.apply(asset.id).execute
+      _ <- SQL("INSERT INTO transcode (asset, user) VALUES (?, ?)")
+	.apply(asset.id, request.identity.id).execute
       src = FileAsset.file(asset)
       pid = scala.util.control.Exception.catching(classOf[RuntimeException]) either {
 	ctl(asset.id,
 	  "-f", src.getPath,
-	  "-r", controllers.routes.AssetApi.transcoded(asset.id, play.api.libs.Crypto.sign(src.getName)).absoluteURL())
+	  "-r", controllers.AssetApi.TranscodedForm(asset.id).absoluteURL())
       }
       true <- SQL("UPDATE transcode SET process = ?::integer, result = ? WHERE asset = ?")
 	.apply(pid.right.toOption, pid.left.toOption.map(_.toString), asset.id).execute
-    } ()
+    } yield ()
 
   def stop(id : models.Asset.Id) : Future[Unit] =
     for {
       pid <- SQL("SELECT process FROM transcode WHERE asset = ?")
 	.apply(id).singleOpt(SQLCols[Option[Int]])
-      _ = pid.foreach(pid => ctl(id, "-k", pid.toString))
+      _ = pid.flatten.foreach((pid : Int) => ctl(id, "-k", pid.toString))
       _ <- SQL("DELETE FROM transcode WHERE asset = ? AND process = ?")
 	.apply(id, pid).execute
-    } ()
+    } yield ()
+
+  def collect(id : models.Asset.Id, pid : Int, error : Option[String]) : Future[Unit] =
+    for {
+      p <- SQL("SELECT user FROM transcode WHERE asset = ? AND process = ?")
+	
+      a <- models.Asset.get(id)(Site.Root)
+    } yield ()
 }
