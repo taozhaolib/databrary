@@ -285,8 +285,31 @@ module.controller('NetworkPanel', [
 			}
 		};
 
+		var notFoundFn = function (query, form) { // Minimum fake info?
+			var request = {
+				party: {
+					id: -1,
+					name: page.constants.message('auth.request.notfound.name'),
+					avatar: '/party/-1/avatar'
+				},
+				force: true,
+				id: -1,
+				inherit: 0,
+				direct: 0
+			};
+
+			if (form.apply) {
+				$scope.partyAuth.children[-1] = request;
+				$scope.openAuthChild(request);
+			} else {
+				$scope.partyAuth.parents[-1] = request;
+				$scope.openAuthParent(request);
+			}
+		};
+
 		page.events.listen($scope, 'authSearchForm-init', function (event, form) {
 			form.selectFn = selectFn;
+			form.notFoundFn = notFoundFn;
 			event.stopPropagation();
 		});
 

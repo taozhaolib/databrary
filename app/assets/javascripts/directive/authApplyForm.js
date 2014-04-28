@@ -13,6 +13,10 @@ module.directive('authApplyForm', [
 			form.presets = authPresetService;
 			form.party = $scope.party || authService.user;
 			form.other = undefined;
+			form.notFound = {
+				query: undefined,
+				info: undefined
+			};
 
 			//
 

@@ -32,11 +32,6 @@ module.directive('authGrantForm', [
 
 				if (trial < now.getTime())
 					form.other.expiration = $filter('date')(now, 'yyyy-MM-dd');
-
-				if (supportsDate)
-					transformInputDate();
-				else
-					transformInputText();
 			};
 
 			//

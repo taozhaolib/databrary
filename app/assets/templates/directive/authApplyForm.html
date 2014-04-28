@@ -10,6 +10,14 @@
     </div>
   </fieldset>
 
+  <fieldset class="clean" ng-if="!authApplyForm.other">
+    <legend>{{"auth.request.notfound.title" | message}}</legend>
+
+    <p ng-bind-html="'register.notfound.instructions' | message"></p>
+
+    <textarea id="field_info" ng-model="authApplyForm.info"></textarea>
+  </fieldset>
+
   <fieldset class="clean">
     <input type="hidden" name="id" ng-value="authApplyForm.other.id">
 
