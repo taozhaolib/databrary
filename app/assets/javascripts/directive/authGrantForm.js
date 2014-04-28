@@ -21,24 +21,18 @@ module.directive('authGrantForm', [
 			var dateNow = new Date(),
 				dateLimit = new Date((new Date()).setYear(dateNow.getFullYear() + 2));
 
-			var transformInputDate = function () {
+			form.transformExpiration = function () {
 				var now = dateNow,
 					limit = dateLimit.getTime(),
 					exp = form.other.expiration.split('-'),
-					trial = new Date(exp[1] + '-' + exp[2] + '-' + exp[0]).getTime();
+					trial = new Date(supportsDate ? exp[1] + '-' + exp[2] + '-' + exp[0] : form.other.expiration).getTime();
 
 				if (trial > limit || isNaN(trial))
 					form.other.expiration = $filter('date')(limit, 'yyyy-MM-dd');
 
 				if (trial < now.getTime())
 					form.other.expiration = $filter('date')(now, 'yyyy-MM-dd');
-			};
 
-			var transformInputText = function () {
-
-			};
-
-			form.transformExpiration = function () {
 				if (supportsDate)
 					transformInputDate();
 				else
