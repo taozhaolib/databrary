@@ -28,7 +28,8 @@ module.controller('NetworkPanel', [
 		var actionMessages = {};
 
 		var getPartyAuth = function () {
-			if (auth.hasAccess('ADMIN', $scope.party))
+			if (auth.hasAccess('ADMIN', $scope.party)) {
+				PartyAuthorize.$cache.removeAll();
 				PartyAuthorize.query(function (data) {
 					$scope.partyAuth = data;
 
@@ -53,7 +54,7 @@ module.controller('NetworkPanel', [
 						status: res[1]
 					});
 				});
-			else {
+			} else {
 				Party.$cache.removeAll();
 				Party.get({
 					id: $routeParams.id || auth.user.id,
@@ -233,6 +234,8 @@ module.controller('NetworkPanel', [
 		};
 
 		var applyCancelFn = function () {
+			getPartyAuth();
+
 			if ($scope.currentAuthChild && $scope.currentAuthChild.remote) {
 				if ($scope.currentAuthChild.force)
 					delete $scope.partyAuth.children[$scope.currentAuthChild.party.id];
