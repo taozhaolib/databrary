@@ -282,9 +282,8 @@ module.controller('RegisterPanel', [
 								apply: true,
 								notfound: true,
 								name: $scope.infoForm.data.query,
-								target: $scope.infoForm.data.info
+								info: $scope.infoForm.data.info
 							}
-
 						})
 						.success(function (data) {
 							$scope.authApplyForm.successFn();

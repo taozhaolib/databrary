@@ -8,14 +8,20 @@
         <strong>{{'auth.preset.'+page.constants.data.permission[preset.inherit].name+'.'+page.constants.data.permission[preset.direct].name+'.title' | message}}</strong>: {{'auth.preset.'+page.constants.data.permission[preset.inherit].name+'.'+page.constants.data.permission[preset.direct].name | possessive:authApplyForm.other}}
       </label> <label class="option" ng-if="preset.custom"><strong>Custom...</strong></label>
     </div>
+
+    <div ng-if="authApplyForm.other.party.institution">
+      <div class="cut_p" ng-bind-html="'auth.info.prompt' | message | format"></div>
+
+      <textarea id="field_guess" ng-model="authApplyForm.notFound.info"></textarea>
+    </div>
   </fieldset>
 
   <fieldset class="clean" ng-if="authApplyForm.notFound.query">
     <legend>{{"auth.request.notfound.title" | message}}</legend>
 
-    <p ng-bind-html="'auth.request.notfound.instructions' | message | format"></p>
+    <div class="cut_p" ng-bind-html="'auth.request.notfound.instructions' | message | format"></div>
 
-    <textarea id="field_info" ng-model="authApplyForm.info"></textarea>
+    <textarea id="field_info" ng-model="authApplyForm.notFound.info"></textarea>
   </fieldset>
 
   <fieldset class="clean">

@@ -30,6 +30,9 @@ module.directive('authApplyForm', [
 				form.partyAuthorize.direct = form.other.direct;
 				form.partyAuthorize.inherit = form.other.inherit;
 
+				if (form.notFound.info)
+					form.partyAuthorize.info = form.notFound.info;
+
 				form.partyAuthorize.$apply({
 					id: form.party.id,
 					partyId: form.other.party.id
@@ -56,7 +59,7 @@ module.directive('authApplyForm', [
 					apply: true,
 					notfound: true,
 					name: form.notFound.query,
-					target: form.notFound.info
+					info: form.notFound.info
 				}, function (res) {
 					page.messages.add({
 						type: 'green',
