@@ -1,6 +1,6 @@
 module.factory('Party', [
-	'$resource', '$route', function ($resource, $route) {
-		return $resource('/api/party/:id', {
+	'resourceFactory', '$route', function (resource, $route) {
+		return resource('/api/party/:id', {
 			id: function () {
 				return ($route.current && $route.current.params.id) || undefined;
 			}
@@ -33,6 +33,6 @@ module.factory('Party', [
 				method: 'POST',
 				url: '/api/user/superuser/off'
 			}
-		});
+		}, 'party');
 	}
 ]);

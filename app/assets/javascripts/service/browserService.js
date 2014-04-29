@@ -6,7 +6,8 @@ module.factory('browserService', [
 	'messageService',
 	'constantService',
 	'tooltipService',
-	function ($rootScope, arrayHelper, Slot, typeService, messages, constants, tooltips) {
+	'$timeout',
+	function ($rootScope, arrayHelper, Slot, typeService, messages, constants, tooltips, $timeout) {
 		var browserService = {};
 
 		//

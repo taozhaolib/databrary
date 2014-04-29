@@ -33,7 +33,7 @@ module.factory('authService', [
 			auth.user = user || undefined;
 
 			if (reload) {
-				$cacheFactory.get('$http').removeAll();
+				$cacheFactory.removeAll();
 				$route.reload();
 			}
 		};
@@ -227,7 +227,7 @@ module.factory('authService', [
 		};
 
 		var disableSU = function () {
-			Party.superuserOn(function (data) {
+			Party.superuserOff(function (data) {
 				parseUser(data);
 
 				messages.add({

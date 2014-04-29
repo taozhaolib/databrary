@@ -3,15 +3,12 @@ module.controller('NetworkPanel', [
 	'$routeParams',
 	'$filter',
 	'PartyAuthorize',
-	'$cacheFactory',
 	'pageService',
 	'Party',
 	'authService',
 	'$compile',
-	function ($scope, $routeParams, $filter, PartyAuthorize, $cacheFactory, page, Party, auth, $compile) {
+	function ($scope, $routeParams, $filter, PartyAuthorize, page, Party, auth, $compile) {
 		$scope.constant = $scope.constant || page.constants;
-
-		var $httpCache = $cacheFactory.get('$http');
 
 		$scope.bootPanel = function () {
 			getPartyAuth();
@@ -31,15 +28,14 @@ module.controller('NetworkPanel', [
 		var actionMessages = {};
 
 		var getPartyAuth = function () {
-			$httpCache.removeAll();
-
-			if (auth.hasAccess('ADMIN', $scope.party))
+			if (auth.hasAccess('ADMIN', $scope.party)) {
+				PartyAuthorize.$cache.removeAll();
 				PartyAuthorize.query(function (data) {
 					$scope.partyAuth = data;
 
 					angular.forEach($scope.partyAuth.children, function (party) {
 						if (!party.authorized)
-							if(!actionMessages[party.id])
+							if (!actionMessages[party.id])
 								actionMessages[party.id] = {
 									party: party,
 									message: page.messages.add({
@@ -58,7 +54,8 @@ module.controller('NetworkPanel', [
 						status: res[1]
 					});
 				});
-			else
+			} else {
+				Party.$cache.removeAll();
 				Party.get({
 					id: $routeParams.id || auth.user.id,
 					parents: '',
@@ -89,6 +86,7 @@ module.controller('NetworkPanel', [
 						status: res[1]
 					});
 				});
+			}
 		};
 
 		$scope.openMessageChild = function (id) {
@@ -121,7 +119,7 @@ module.controller('NetworkPanel', [
 				$scope.resetAuthChild(child);
 
 			$scope.currentAuthChild = child;
-			page.gui.scrollTo('network-child-'+child.id);
+			page.gui.scrollTo('network-child-' + child.id);
 		};
 
 		$scope.resetAuthChild = function (child) {
@@ -221,7 +219,7 @@ module.controller('NetworkPanel', [
 				$scope.resetAuthChild(parent);
 
 			$scope.currentAuthParent = parent;
-			page.gui.scrollTo('network-parent-'+parent.id);
+			page.gui.scrollTo('network-parent-' + parent.id);
 		};
 
 		//
@@ -236,6 +234,8 @@ module.controller('NetworkPanel', [
 		};
 
 		var applyCancelFn = function () {
+			getPartyAuth();
+
 			if ($scope.currentAuthChild && $scope.currentAuthChild.remote) {
 				if ($scope.currentAuthChild.force)
 					delete $scope.partyAuth.children[$scope.currentAuthChild.party.id];
@@ -252,6 +252,8 @@ module.controller('NetworkPanel', [
 		page.events.listen($scope, 'authApplyForm-init', function (event, form, $scope) {
 			if ($scope.currentAuthChild && $scope.currentAuthChild.remote)
 				form.party = auth.user;
+
+			form.notFound.query = $scope.currentAuthChild && $scope.currentAuthChild.remote ? $scope.currentAuthChild.query : $scope.currentAuthParent.query;
 
 			form.other = $scope.currentAuthChild && $scope.currentAuthChild.remote ? {
 				party: $scope.party,
@@ -285,8 +287,33 @@ module.controller('NetworkPanel', [
 			}
 		};
 
+		var notFoundFn = function (query, form) {
+			var request = {
+				party: {
+					id: -1,
+					name: page.constants.message('auth.request.notfound.user'),
+					avatar: '/party/-1/avatar'
+				},
+				force: true,
+				id: -1,
+				query: query
+			};
+
+			if (form.apply) {
+				page.messages.add({
+					type: 'yellow',
+					countdown: 3000,
+					body: page.constants.message('auth.grant.notfound.message')
+				})
+			} else {
+				$scope.partyAuth.parents[-1] = request;
+				$scope.openAuthParent(request);
+			}
+		};
+
 		page.events.listen($scope, 'authSearchForm-init', function (event, form) {
 			form.selectFn = selectFn;
+			form.notFoundFn = notFoundFn;
 			event.stopPropagation();
 		});
 

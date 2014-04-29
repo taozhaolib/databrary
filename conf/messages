@@ -119,10 +119,15 @@ auth.expiration=Expiration
 auth.expiration.none=N/A
 auth.pending=Request pending.
 auth.request.title=Request the following status from {0}:
+auth.request.notfound.user=User Not Found
+auth.request.notfound.title=More information required
+auth.request.notfound.instructions=If you're seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.\n\nOtherwise, offer your best guess as to whom to speak to about granting you authorization in the space provided.
+auth.request.notfound.success=Stay tuned! We''ll contact your institution and get back to you as soon we can.
 auth.apply.error=Could not submit your request.
 auth.grant.title=Grant {0} the following capabilities:
 auth.grant.save.error=Could not save this authorization.
 auth.grant.deny.error=Could not deny this authorization.
+auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register directly.
 auth.search=Search for a user or institution...
 auth.search.error=Could not retrieve any users or institutions.
 auth.request=Request
@@ -267,7 +272,7 @@ error.suffix=Please <a href="mailto:feedback@databrary.org">contact us</a> and t
 
 error.generic=Something''s gone terribly wrong.
 
-scraper.error=Could not retrieve required document "{0}."
+scraper.error=Could not retrieve required document "{0}".
 video.unsupported=Unfortunately, we do not currently support playing videos in Firefox on OS X. Please try Safari or Chrome.
 
 # --- Registration

@@ -4,16 +4,13 @@ module.controller('TagsPanel', [
 	'$route',
 	'pageService',
 	'Volume',
-	'$cacheFactory',
 	'$http',
 	'$timeout',
-	function ($scope, Tag, $route, page, Volume, $cacheFactory, $http, $timeout) {
+	function ($scope, Tag, $route, page, Volume, $http, $timeout) {
 		var DEFAULT_MESSAGE = {
 			type: 'blue',
 			countdown: 3000
 		};
-
-		var $httpCache = $cacheFactory.get('$http');
 
 		//
 
@@ -74,7 +71,7 @@ module.controller('TagsPanel', [
 		$scope.retrieveTags = function () {
 			switch ($route.current.controller) {
 				case 'VolumeView':
-					$httpCache.removeAll();
+					Volume.$cache.removeAll();
 
 					Volume.get({
 						id: $scope.volume.id,

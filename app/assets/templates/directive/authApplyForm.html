@@ -1,5 +1,5 @@
 <form name="authApplyForm">
-  <fieldset class="clean" ng-if="authApplyForm.other">
+  <fieldset class="clean" ng-if="!authApplyForm.notFound.query">
     <legend>{{"auth.request.title" | message:authApplyForm.other.party.name}}</legend>
 
     <div ng-repeat="preset in authApplyForm.presets.get(authApplyForm.party, authApplyForm.other.party, true)">
@@ -8,6 +8,14 @@
         <strong>{{'auth.preset.'+page.constants.data.permission[preset.inherit].name+'.'+page.constants.data.permission[preset.direct].name+'.title' | message}}</strong>: {{'auth.preset.'+page.constants.data.permission[preset.inherit].name+'.'+page.constants.data.permission[preset.direct].name | possessive:authApplyForm.other}}
       </label> <label class="option" ng-if="preset.custom"><strong>Custom...</strong></label>
     </div>
+  </fieldset>
+
+  <fieldset class="clean" ng-if="authApplyForm.notFound.query">
+    <legend>{{"auth.request.notfound.title" | message}}</legend>
+
+    <p ng-bind-html="'auth.request.notfound.instructions' | message | format"></p>
+
+    <textarea id="field_info" ng-model="authApplyForm.info"></textarea>
   </fieldset>
 
   <fieldset class="clean">

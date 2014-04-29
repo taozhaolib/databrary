@@ -1,6 +1,6 @@
 module.factory('PartyAuthorize', [
-	'$resource', '$route', 'authService', function ($resource, $route, auth) {
-		return $resource('/api/party/:id/authorize/:partyId', {
+	'resourceFactory', '$route', 'authService', function (resource, $route, auth) {
+		return resource('/api/party/:id/authorize/:partyId', {
 			id: function () {
 				return $route.current.params.id ? $route.current.params.id : auth.user.id || undefined;
 			}
@@ -17,6 +17,6 @@ module.factory('PartyAuthorize', [
 				method: 'POST',
 				url: '/api/party/:id/authorize/:partyId/apply'
 			}
-		});
+		}, 'partyAuthorize');
 	}
 ]);

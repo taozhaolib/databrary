@@ -23,3 +23,9 @@ module.factory('updateInterceptor', ['$rootScope', function ($rootScope) {
 		}
 	}
 }]);
+
+module.config([
+	'$httpProvider', function ($httpProvider) {
+		$httpProvider.interceptors.push('updateInterceptor');
+	}
+]);
