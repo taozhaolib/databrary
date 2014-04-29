@@ -272,7 +272,7 @@ error.suffix=Please <a href="mailto:feedback@databrary.org">contact us</a> and t
 
 error.generic=Something''s gone terribly wrong.
 
-scraper.error=Could not retrieve required document "{0}."
+scraper.error=Could not retrieve required document "{0}".
 video.unsupported=Unfortunately, we do not currently support playing videos in Firefox on OS X. Please try Safari or Chrome.
 
 # --- Registration
