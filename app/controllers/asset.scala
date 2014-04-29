@@ -178,21 +178,22 @@ object AssetApi extends AssetController with ApiController {
     request.obj.json(request.apiOptions).map(Ok(_))
   }
 
-  case class TranscodedForm(aid : Asset.Id)
-    extends StructForm(routes.AssetApi.transcoded(aid, auth)) {
-    val auth = play.api.libs.Crypto.sign(aid.toString)
-    val pid = Field(number)
-    val log = Field(text)
+  case class TranscodedForm(aid : Asset.Id) extends {
+      val auth = play.api.libs.Crypto.sign(aid.toString)
+    } with StructForm(routes.AssetApi.transcoded(aid, auth)) {
+    val pid = Field(Forms.number)
+    val res = Field(Forms.number)
+    val log = Field(Forms.text)
   }
 
   /** Called from remote transcoding process only. */
   def transcoded(i : models.Asset.Id, auth : String) =
-    Action {
-      val form = TranscodedForm(aid)._bind
+    play.api.mvc.Action { implicit request =>
+      val form = TranscodedForm(i)._bind
       if (!auth.equals(form.auth) || form.hasErrors)
 	BadRequest("")
       else {
-	store.Transcode.colect(i, form.pid.get, form.error.get)
+	store.Transcode.collect(i, form.pid.get, form.res.get, form.log.get)
 	Ok("")
       }
     }

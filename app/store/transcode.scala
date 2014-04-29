@@ -79,7 +79,7 @@ object Transcode {
       pid = scala.util.control.Exception.catching(classOf[RuntimeException]) either {
 	ctl(asset.id,
 	  "-f", src.getPath,
-	  "-r", controllers.AssetApi.TranscodedForm(asset.id).absoluteURL())
+	  "-r", controllers.AssetApi.TranscodedForm(asset.id)._action.absoluteURL())
       }
       true <- SQL("UPDATE transcode SET process = ?::integer, result = ? WHERE asset = ?")
 	.apply(pid.right.toOption, pid.left.toOption.map(_.toString), asset.id).execute
@@ -94,10 +94,10 @@ object Transcode {
 	.apply(id, pid).execute
     } yield ()
 
-  def collect(id : models.Asset.Id, pid : Int, error : Option[String]) : Future[Unit] =
-    for {
-      p <- SQL("SELECT user FROM transcode WHERE asset = ? AND process = ?")
-	
-      a <- models.Asset.get(id)(Site.Root)
-    } yield ()
+  def collect(id : models.Asset.Id, pid : Int, res : Int, log : String) : Future[Unit] =
+    models.Transcode.getAuth(id, pid).flatMap(Async.foreach[Site, Unit](_, { implicit site =>
+      for {
+	a <- models.Asset.get(id)
+      } yield ()
+    }))
 }

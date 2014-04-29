@@ -21,8 +21,8 @@ if [[ $# -ge $OPTIND || -z $aid || -z $kill && -z $url ]] ; then
 fi
 
 IN=$aid
-OUT=${aid}.mp4
-LOG=${aid}.log
+OUT=$aid.mp4
+LOG=$aid.log
 
 if [[ -n $kill ]] ; then
 	if [[ -n $hpc ]] ; then
@@ -30,7 +30,7 @@ if [[ -n $kill ]] ; then
 	else
 		kill $kill
 	fi
-	rm "$IN" "$OUT"
+	rm -f "$IN" "$OUT"
 	exit 0
 fi
 
@@ -52,6 +52,6 @@ sleep 5 # hope server knows job has started by now
 time ffmpeg -loglevel warning -threads 1 -i "$IN" -vf pad='iw+mod(iw\,2):ih+mod(ih\,2)' -threads 1 -f mp4 -c:v libx264 -c:a libfdk_aac -y "$OUT" > $LOG 2>&1
 r=$?
 if [[ $r -ne 0 ]] ; then
-	rm "$OUT"
+	rm -f "$OUT"
 fi
-curl -k --data-urlencode "pid=$PID" --data-urlencode "r=$r" --data-urlencode "log@$LOG" "$url"
+curl -k --data-urlencode "pid=$PID" --data-urlencode "res=$r" --data-urlencode "log@$LOG" "$url"

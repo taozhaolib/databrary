@@ -42,6 +42,7 @@ trait Access {
 /** Basic information about each request.  Primarily implemented by [[controllers.SiteRequest]]. */
 trait Site {
   def access : Access
+  assert(access.target == Party.Root)
   /** [[models.Party]] of the logged-in user, possibly [[models.Party.Nobody]]. */
   final def identity : Party = access.identity
   /** Some(identity) only if actual logged-in user. */
@@ -61,6 +62,11 @@ trait AuthSite extends Site {
   def account : Account = token.account
   override def user = Some(account)
   final def access = token.access
+}
+
+final class LocalAuth(val access : Access) extends Site {
+  val superuser = false
+  val clientIp = Inet("0.0.0.0")
 }
 
 trait PerSite {
