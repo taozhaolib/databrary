@@ -16,6 +16,43 @@ module.controller('RegisterPanel', [
 			})
 		});
 
+
+		// TODO: Remove analytics
+		$scope.$watch(function () {
+			if (!$scope.wizard)
+				return;
+
+			for (var i = 0, l = $scope.wizard.steps; i < l; i++) {
+				if ($scope.wizard.steps[i].active)
+					return $scope.wizard.steps[i]
+			}
+		}, function (step) {
+			if (!step)
+				return;
+
+			page.analytics.add('change', {
+				type: 'wizard',
+				id: step.id,
+				name: step.name
+			});
+
+			page.models.Analytic.send();
+		});
+
+		$scope.$watch(function () {
+			return $scope.agreement && $scope.agreement.current;
+		}, function (current) {
+			if (!current)
+				return;
+
+			page.analytics.add('change', {
+				type: 'agreement',
+				page: current
+			});
+
+			page.models.Analytic.send();
+		});
+
 		//
 
 		$scope.wizard = {};

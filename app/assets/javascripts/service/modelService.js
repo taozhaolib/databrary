@@ -11,8 +11,10 @@ module.factory('modelService', [
 	'Tag',
 	'Volume',
 	'VolumeAccess',
-	function ($rootScope, Asset, Comment, Party, PartyAuthorize, Record, Scraper, Slot, SlotAsset, Tag, Volume, VolumeAccess) {
+	'Analytic',
+	function ($rootScope, Asset, Comment, Party, PartyAuthorize, Record, Scraper, Slot, SlotAsset, Tag, Volume, VolumeAccess, Analytic) {
 		var models = {
+			Analytic: Analytic,
 			Asset: Asset,
 			Comment: Comment,
 			Party: Party,
