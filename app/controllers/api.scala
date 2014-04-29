@@ -69,4 +69,9 @@ object SiteApi extends SiteController {
 	})
     else
       macros.Async.void
+
+  def void =
+    SiteAction.Unlocked { implicit request =>
+      Ok("")
+    }
 }
