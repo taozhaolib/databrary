@@ -99,7 +99,7 @@ reset.save.error=Could not save new password.
 
 welcome.title=Welcome
 welcome.title.sub=Databrary Private Beta
-welcome.body=Databrary is currently in private beta. For more information, please visit <a href="http://databrary.org">databrary.org</a>.\n\nIf you''d like to be notified when we open the site to a wider audience, you can join our <a href="http://databrary.org/contact/newsletter.html">mailing list</a>. In the mean time, you can also <a href="http://databrary.org/user-guide/getting-started/release-instructions.html">start collecting sharable data</a> or <a href="http://databrary.org/user-guide/getting-started/introduction.html">begin the authorization process</a> so you''re ready to start using Databrary once we launch.\n\nIf you already have an account, you can <a href="/login">login</a>. If you''ve received an invitation, please use the link found in that email to register.
+welcome.body=Databrary is currently in private beta. For more information, please visit <a href="http://databrary.org">databrary.org</a>.\n\nIf you''d like to be notified when we open the site to a wider audience, you can join our <a href="http://databrary.org/contact/newsletter.html">mailing list</a>. In the mean time, you can also <a href="http://databrary.org/user-guide/releasing-data.html">start collecting sharable data</a> or <a href="http://databrary.org/user-guide/getting-authorized.html">begin the authorization process</a> so you''re ready to start using Databrary once we launch.\n\nIf you already have an account, you can <a href="/login">login</a>. If you''ve received an invitation, please use the link found in that email to register.
 
 party.overview.title=Overview
 party.contact.title=Contact
