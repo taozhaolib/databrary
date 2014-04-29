@@ -253,6 +253,8 @@ module.controller('NetworkPanel', [
 			if ($scope.currentAuthChild && $scope.currentAuthChild.remote)
 				form.party = auth.user;
 
+			form.notFound.query = $scope.currentAuthChild && $scope.currentAuthChild.remote ? $scope.currentAuthChild.query : $scope.currentAuthParent.query;
+
 			form.other = $scope.currentAuthChild && $scope.currentAuthChild.remote ? {
 				party: $scope.party,
 				id: $scope.party.id,
@@ -285,22 +287,24 @@ module.controller('NetworkPanel', [
 			}
 		};
 
-		var notFoundFn = function (query, form) { // Minimum fake info?
+		var notFoundFn = function (query, form) {
 			var request = {
 				party: {
 					id: -1,
-					name: page.constants.message('auth.request.notfound.name'),
+					name: page.constants.message('auth.request.notfound.user'),
 					avatar: '/party/-1/avatar'
 				},
 				force: true,
 				id: -1,
-				inherit: 0,
-				direct: 0
+				query: query
 			};
 
 			if (form.apply) {
-				$scope.partyAuth.children[-1] = request;
-				$scope.openAuthChild(request);
+				page.messages.add({
+					type: 'yellow',
+					countdown: 3000,
+					body: page.constants.message('auth.grant.notfound.message')
+				})
 			} else {
 				$scope.partyAuth.parents[-1] = request;
 				$scope.openAuthParent(request);
