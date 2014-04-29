@@ -112,7 +112,7 @@ module.controller('NetworkPanel', [
 		//
 
 		$scope.openAuthChild = function (child) {
-			if (!auth.hasAccess('ADMIN', $scope.party))
+			if (!child.force && !auth.hasAccess('ADMIN', $scope.party))
 				return;
 
 			if (!child.force)
@@ -212,7 +212,7 @@ module.controller('NetworkPanel', [
 		//
 
 		$scope.openAuthParent = function (parent) {
-			if (!auth.hasAccess('ADMIN', $scope.party) || !parent.force)
+			if (!auth.hasAccess('ADMIN', $scope.party) && !parent.force)
 				return;
 
 			if (parent.force)

@@ -121,7 +121,7 @@ auth.pending=Request pending.
 auth.request.title=Request the following status from {0}:
 auth.request.notfound.user=User Not Found
 auth.request.notfound.title=More information required
-auth.request.notfound.instructions=If you're seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.\n\nOtherwise, offer your best guess as to whom to speak to about granting you authorization in the space provided.
+auth.request.notfound.instructions=If you're seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.\n\nOtherwise, offer your best guess as to whom to contact about granting you authorization in the space provided.
 auth.request.notfound.success=Stay tuned! We''ll contact your institution and get back to you as soon we can.
 auth.apply.error=Could not submit your request.
 auth.grant.title=Grant {0} the following capabilities:
@@ -136,7 +136,7 @@ auth.update=Update
 auth.deny=Deny
 auth.revoke=Revoke
 auth.notfound=None of these
-auth.info.prompt=Contact info for your institution''s authorizing official (OSP)
+auth.info.prompt=Please offer your best guess as to whom to contact about granting you authorization.
 
 # Permission levels
 auth.inherit.NONE=No access.
@@ -284,7 +284,6 @@ register.agree=Agree
 register.register=Agree and register
 register.agreement.instructions=Download the <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">pdf version</a> for the full agreement. Terms in italics are defined in our <a href="http://databrary.org/user-guide/policies/definitions.html" target="_blank">definitions</a>.
 register.sent.instructions=Your confirmation email has been sent to {0}.
-register.notfound.instructions=Please offer your best guess as to whom to speak to about granting you authorization.
 register.authquery.error=Could not retrieve potential authorizing agents.
 
 wizard.register_create.name=Create Account
@@ -309,7 +308,7 @@ wizard.register_agent.instructions=Please search for the user or institution tha
 
 wizard.register_request.name=Request Authorization
 wizard.register_request.description=Select role and submit request.
-wizard.register_request.instructions=If you are eligible for Databrary Principal Investigator status, please select ''Principal Investigator''. If you would like to be authorized by a Databrary Principal Investigator, please select ''Affiliate Investigator''.
+wizard.register_request.instructions=If you are eligible for Databrary Principal Investigator status, please select "Principal Investigator". If you would like to be authorized by a Databrary Principal Investigator, please select "Affiliate Investigator".
 
 wizard.register_pending.name=Stay Tuned
 wizard.register_pending.description=Tips for exploring Databrary.
