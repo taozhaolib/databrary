@@ -1,5 +1,5 @@
 module.directive('authSearchForm', [
-	'PartyAuthorize', 'authService', 'pageService', function (PartyAuthorize, authService, page) {
+	'PartyAuthorize', 'authService', 'pageService', '$timeout', function (PartyAuthorize, authService, page, $timeout) {
 		var link = function ($scope, $element, $attrs) {
 			$scope.authSearchForm.name = '';
 			$scope.authSearchForm.found = [];
@@ -8,22 +8,40 @@ module.directive('authSearchForm', [
 
 			//
 
+			var recentSearch = undefined;
+			var sentSearch = undefined;
+
+			var fin = function () {
+				sentSearch = undefined;
+
+				if (recentSearch) {
+					recentSearch = undefined;
+					$scope.authSearchForm.search();
+				}
+			};
+
 			$scope.authSearchForm.search = function () {
-				if (!$scope.authSearchForm.name)
+				if (!$scope.authSearchForm.name || $scope.authSearchForm.name.length < 3)
 					$scope.authSearchForm.found = [];
+				else if (sentSearch)
+					recentSearch = $scope.authSearchForm.name;
 				else
-					PartyAuthorize.search({
+					sentSearch = PartyAuthorize.search({
 						id: $scope.authSearchForm.id || authService.user.id,
 						apply: $scope.authSearchForm.apply,
 						name: $scope.authSearchForm.name
 					}, function (data) {
 						$scope.authSearchForm.found = data;
+
+						fin();
 					}, function (res) {
 						page.messages.addError({
 							body: page.constants.message('auth.search.error'),
 							errors: res[0],
 							status: res[1]
 						});
+
+						fin();
 					});
 			};
 
