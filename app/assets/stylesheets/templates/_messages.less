@@ -1,3 +1,25 @@
+// MIXINS
+
+.message-color(@c) {
+	background-color: mix(@c, @white, 25%);
+	color: mix(@c, @dark, 25%);
+
+	a{
+		&:link, &.link,
+		&:visited, &.visited {
+			color: mix(@c, @black, 75%);
+		}
+
+		&:hover, &.hover {
+			color: mix(@c, @gray, 75%);
+		}
+
+		&:active, &.active {
+			color: mix(@c, @pale, 75%);
+		}
+	}
+}
+
 // STYLES
 
 .messages {
@@ -26,33 +48,27 @@
 //
 
 .message_blue {
-	background-color: @blue51;
-	color: @blue21;
+	.message-color(@blue);
 }
 
 .message_green {
-	background-color: @green51;
-	color: @green21;
+	.message-color(@green);
 }
 
 .message_red {
-	background-color: @red51;
-	color: @red21;
+	.message-color(@red);
 }
 
 .message_orange {
-	background-color: @orange51;
-	color: @orange21;
+	.message-color(@orange);
 }
 
 .message_yellow {
-	background-color: @yellow51;
-	color: @yellow21;
+	.message-color(@yellow);
 }
 
 .message_purple {
-	background-color: @purple51;
-	color: @purple21;
+	.message-color(@purple);
 }
 
 //

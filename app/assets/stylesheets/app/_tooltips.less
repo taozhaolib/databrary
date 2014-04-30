@@ -3,6 +3,28 @@
 @round: 15px;
 @point: 0;
 
+// MIXINS
+
+.tooltip-color(@c) {
+	background-color: mix(@c, @white, 25%);
+	border-color: mix(@c, @gray, 75%);
+
+	a{
+		&:link, &.link,
+		&:visited, &.visited {
+			color: mix(@c, @black, 75%);
+		}
+
+		&:hover, &.hover {
+			color: mix(@c, @gray, 75%);
+		}
+
+		&:active, &.active {
+			color: mix(@c, @pale, 75%);
+		}
+	}
+}
+
 // STYLES
 
 .tooltips {
@@ -40,33 +62,27 @@
 //
 
 .tooltip_blue {
-	background-color: @blue51;
-	border-color: @blue33;
+	.tooltip-color(@blue);
 }
 
 .tooltip_green {
-	background-color: @green51;
-	border-color: @green33;
+	.tooltip-color(@green);
 }
 
 .tooltip_red {
-	background-color: @red51;
-	border-color: @red33;
+	.tooltip-color(@red);
 }
 
 .tooltip_orange {
-	background-color: @orange51;
-	border-color: @orange33;
+	.tooltip-color(@orange);
 }
 
 .tooltip_yellow {
-	background-color: @yellow51;
-	border-color: @yellow33;
+	.tooltip-color(@yellow);
 }
 
 .tooltip_purple {
-	background-color: @purple51;
-	border-color: @purple33;
+	.tooltip-color(@purple);
 }
 
 //
