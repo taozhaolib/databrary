@@ -10,6 +10,9 @@ module.factory('analyticService', [
 			if (!queue.length)
 				return false;
 
+			if(config.url.indexOf('null') > -1)
+				return JSON.stringify(queue.splice(0, queue.length));
+
 			var info = $cacheFactory.info();
 			var cache, key;
 
