@@ -21,8 +21,6 @@ module.factory('updateInterceptor', ['$rootScope', function ($rootScope) {
 
 			version = newVersion;
 
-			console.log(version, newVersion);
-
 			return res;
 		}
 	}
