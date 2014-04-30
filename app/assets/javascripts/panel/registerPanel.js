@@ -269,6 +269,7 @@ module.controller('RegisterPanel', [
 
 				$scope.authSearchForm.selectFn = function (found) {
 					$scope.authSearchForm.data.party = found;
+					$scope.infoForm.data.query = undefined;
 					$scope.updateWizard();
 				};
 
@@ -407,12 +408,22 @@ module.controller('RegisterPanel', [
 
 				$scope.authApplyForm.party = $scope.auth.user;
 
+				var perm = [];
+
+				if($scope.authSearchForm.institution) {
+					perm = [2, 0];
+					step.institution = true;
+				} else {
+					perm = [2, 2];
+					step.institution = false;
+				}
+
 				if ($scope.authSearchForm.data.party && !$scope.authApplyForm.other)
 					$scope.authApplyForm.other = {
 						id: $scope.authSearchForm.data.party.id,
 						party: $scope.authSearchForm.data.party,
-						inherit: 0,
-						direct: 0
+						inherit: perm[2],
+						direct: perm[1]
 					};
 			},
 

@@ -122,7 +122,9 @@ auth.request.title=Request the following status from {0}:
 auth.request.notfound.user=User Not Found
 auth.request.notfound.title=More information required
 auth.request.notfound.instructions=If you're seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.\n\nOtherwise, offer your best guess as to whom to contact about granting you authorization in the space provided.
+auth.request.notfound.individual.instructions=Please invite the investigator from whom you are seeking authorization to Databrary directly and return after they have registered.
 auth.request.notfound.success=Stay tuned! We''ll contact your institution and get back to you as soon we can.
+auth.request.from=Click to request affiliate status from {0}.
 auth.apply.error=Could not submit your request.
 auth.grant.title=Grant {0} the following capabilities:
 auth.grant.save.error=Could not save this authorization.
@@ -136,7 +138,7 @@ auth.update=Update
 auth.deny=Deny
 auth.revoke=Revoke
 auth.notfound=None of these
-auth.info.prompt=Please offer your best guess as to whom to contact about granting you authorization.
+auth.info.prompt=Please offer your best guess as to whom Databrary should contact about granting you authorization.
 
 # Permission levels
 auth.inherit.NONE=No access.
@@ -305,10 +307,12 @@ wizard.register_password.instructions=Please set a secure password. Remember tha
 wizard.register_agent.name=Find Authorizing Agent
 wizard.register_agent.description=Select a party to request authorized Databrary access.
 wizard.register_agent.instructions=Please search for the user or institution that will co-sign your agreement and authorize you to access the shared data in Databrary.
+wizard.register_agent.seeking=Select desired status:
 
 wizard.register_request.name=Request Authorization
 wizard.register_request.description=Select role and submit request.
-wizard.register_request.instructions=If you are eligible for Databrary Principal Investigator status, please select "Principal Investigator". If you would like to be authorized by a Databrary Principal Investigator, please select "Affiliate Investigator".
+wizard.register_request.instructions=
+wizard.register_request.more=If you are eligible for Databrary Principal Investigator status, please select "Principal Investigator". If you would like to be authorized by a Databrary Principal Investigator, please select "Affiliate Investigator".
 
 wizard.register_pending.name=Stay Tuned
 wizard.register_pending.description=Tips for exploring Databrary.

@@ -25,10 +25,12 @@
 
 .cf { .clearfix(); }
 
-.cut_p {
-	.margin-top(@f1);
-
-	p:last-of-type {
+.cut_f {
+	*:last-child {
 		.margin-bottom(0);
 	}
+}
+
+.add_f {
+	.margin-bottom(@f1);
 }

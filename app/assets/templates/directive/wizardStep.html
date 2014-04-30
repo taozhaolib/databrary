@@ -4,12 +4,8 @@
       <h2>{{'wizard.'+id+'.name' | message}}</h2>
     </header>
 
-    <div class="wizard_step_instructions" ng-bind-html="'wizard.'+id+'.instructions' | message | format:false:true">
+    <div class="wizard_step_instructions" ng-if="page.constants.data.messages['wizard.'+id+'.instructions']" ng-bind-html="'wizard.'+id+'.instructions' | message | format:false:true"></div>
 
-    </div>
-
-    <div wizard-step-body class="wizard_step_body">
-
-    </div>
+    <div wizard-step-body class="wizard_step_body"></div>
   </div>
 </div>

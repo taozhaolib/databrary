@@ -6,6 +6,11 @@ module.directive('authSearchForm', [
 			$scope.authSearchForm.id = $attrs.party || undefined;
 			$scope.authSearchForm.apply = angular.isDefined($attrs.child);
 
+			$attrs.$observe('institution', function () {
+				$scope.authSearchForm.name = '';
+				$scope.authSearchForm.found = [];
+			});
+
 			//
 
 			var recentSearch = undefined;
@@ -29,7 +34,8 @@ module.directive('authSearchForm', [
 					sentSearch = PartyAuthorize.search({
 						id: $scope.authSearchForm.id || authService.user.id,
 						apply: $scope.authSearchForm.apply,
-						name: $scope.authSearchForm.name
+						name: $scope.authSearchForm.name,
+						institution: $element.attr('institution') === 'true'
 					}, function (data) {
 						$scope.authSearchForm.found = data;
 

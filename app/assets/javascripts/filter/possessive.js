@@ -3,7 +3,9 @@ module.filter('possessive', [
 		return function (key, party, name) {
 			var replace;
 
-			if ($rootScope.auth.user.id == party.id)
+			if (angular.isString(party))
+				replace = party + "'s";
+			else if ($rootScope.auth.user.id == party.id)
 				replace = 'my';
 			else
 				replace = (name ? name : party.name) + "'s";

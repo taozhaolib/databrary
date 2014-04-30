@@ -129,13 +129,13 @@ module.factory('authService', [
 				} else {
 					$location.path('/');
 				}
-			}, function () {
+			}, function (res) {
 				parseUser(undefined);
 
-				messages.add({
+				messages.addError({
 					body: constants.message('login.error'),
-					type: 'red',
-					countdown: 3000
+					errors: res.errors,
+					status: res.status
 				});
 			});
 		};
