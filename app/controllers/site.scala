@@ -182,12 +182,6 @@ private[controllers] abstract class FormException(form : Form[_]) extends SiteEx
     macros.Async(BadRequest(form.errorsAsJson))
 }
 
-private[controllers] final class BadFormException[A](view : Form[A] => templates.HtmlFormat.Appendable)(form : Form[A]) extends FormException(form) {
-  def resultHtml(implicit site : SiteRequest[_]) = macros.Async(BadRequest(view(form)))
-}
-private[controllers] final class ABadFormException[A](view : Form[A] => Future[templates.HtmlFormat.Appendable])(form : Form[A]) extends FormException(form) {
-  def resultHtml(implicit site : SiteRequest[_]) = view(form).map(BadRequest(_))
-}
 private[controllers] final class ApiFormException(form : Form[_]) extends FormException(form) with ApiException
 
 class SiteController extends Controller {
@@ -196,10 +190,6 @@ class SiteController extends Controller {
   protected def ARedirect(c : Call) : Future[SimpleResult] = macros.Async(Redirect(c))
   protected def ANotFound(implicit request : SiteRequest[_]) : Future[SimpleResult] =
     NotFoundException.result
-  protected def ABadForm[A](view : Form[A] => templates.HtmlFormat.Appendable, form : Form[A])(implicit request : SiteRequest[_]) : Future[SimpleResult] =
-    new BadFormException(view)(form).result
-  protected def AbadForm[A](view : Form[A] => Future[templates.HtmlFormat.Appendable], form : Form[A])(implicit request : SiteRequest[_]) : Future[SimpleResult] =
-    new ABadFormException(view)(form).result
 }
 
 class ObjectController[O <: SiteObject] extends SiteController {
