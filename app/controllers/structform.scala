@@ -213,9 +213,9 @@ abstract class FormView(action : Call) extends StructForm(action) {
 abstract class HtmlFormView(action : Call) extends FormView(action) {
   def _view : Future[HtmlFormat.Appendable]
   final def Ok : Future[SimpleResult] = _view.map(Results.Ok(_))
-  final def Bad : Future[SimpleResult] = _view.map(Results.BadRequest(_))
+  final def Bad(implicit request : SiteRequest[_]) : Future[SimpleResult] = _exception.result
   final def _exception = new FormException(new form()) {
-    def resultHtml(implicit site : SiteRequest[_]) = Bad
+    def resultHtml(implicit request : SiteRequest[_]) = _view.map(Results.BadRequest(_))
   }
 }
 
