@@ -80,7 +80,7 @@ module.config([
 							})
 							.error(function () {
 								deferred.reject();
-								$location('/');
+								$location.url('/');
 							});
 
 					return deferred.promise;
