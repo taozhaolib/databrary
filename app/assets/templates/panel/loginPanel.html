@@ -1,31 +1,31 @@
 <panel ng-controller="LoginPanel" top id="panel_login" panel-title="{{'login.title' | message}}">
-    <div class="row">
-      <hgroup class="col-full">
-        <h1 class="panel_context">{{'login.title' | message}}</h1>
+	<div class="row">
+		<hgroup class="col-full">
+			<h1 class="panel_context">{{'login.title' | message}}</h1>
 
-        <h2 class="panel_title with_context">{{'login.title.sub' | message}}</h2>
-      </hgroup>
+			<h2 class="panel_title with_context">{{'login.title.sub' | message}}</h2>
+		</hgroup>
 
-      <div class="col-full">
-        <form name="loginForm">
-          <div ng-switch="panel.getMethod()">
-            <div ng-switch-default>
-              <input id="loginEmail" type="email" ng-model="loginData.email" placeholder="{{'email' | message}}">
-              <input id="loginPassword" type="password" ng-model="loginData.password" placeholder="{{'password' | message}}" ng-required>
-            </div>
+		<div class="col-full">
+			<form name="loginForm">
+				<div ng-switch="panel.getMethod()">
+					<div ng-switch-default>
+						<input id="loginEmail" type="email" ng-model="loginData.email" placeholder="{{'email' | message}}">
+						<input id="loginPassword" type="password" ng-model="loginData.password" placeholder="{{'password' | message}}" ng-required>
+					</div>
 
-            <div ng-switch-when="openid">
-              <input id="loginOpenid" type="text" ng-model="loginData.openid" placeholder="{{'openid' | message}}" ng-required>
-            </div>
-          </div>
+					<div ng-switch-when="openid">
+						<input id="loginOpenid" type="text" ng-model="loginData.openid" placeholder="{{'openid' | message}}" ng-required>
+					</div>
+				</div>
 
-          <button id="loginSubmit" type="submit" class="button" ng-click="submitForm()" ng-disabled="loginForm.$invalid">{{"login.login" | message}}</button>
+				<button id="loginSubmit" type="submit" class="button" ng-click="submitForm()" ng-disabled="loginForm.$invalid">{{"login.login" | message}}</button>
 
-          <a ng-click="panel.switchMethod('openid')" ng-show="panel.showMethodLink('openid')">{{"login.method.openid" | message}}</a>
-          <a ng-click="panel.switchMethod('databrary')" ng-show="panel.showMethodLink('databrary')">{{"login.method.password" | message}}</a>
+				<a ng-click="panel.switchMethod('openid')" ng-show="panel.showMethodLink('openid')">{{"login.method.openid" | message}}</a>
+				<a ng-click="panel.switchMethod('databrary')" ng-show="panel.showMethodLink('databrary')">{{"login.method.password" | message}}</a>
 
-          <a ng-href="{{page.router.password()}}">{{"login.forgot" | message}}</a>
-        </form>
-      </div>
-    </div>
+				<a ng-href="{{page.router.password()}}">{{"login.forgot" | message}}</a>
+			</form>
+		</div>
+	</div>
 </panel>
