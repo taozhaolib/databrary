@@ -11,7 +11,7 @@ scalacOptions in (Compile, doc) <++= baseDirectory.map { bd => Seq(
   "-doc-source-url", "https://github.com/databrary/databrary/tree/master€{FILE_PATH}.scala"
 ) }
 
-GitDescribe.gitDescribeOptions in ThisBuild := Seq("--tags", "--dirty")
+GitDescribe.gitDescribeOptions in ThisBuild := Seq("--long", "--dirty")
 
 version in ThisBuild <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown"))
 
