@@ -1,5 +1,5 @@
 module.controller('OverviewPartyPanel', [
-	'$scope', 'pageService', function ($scope, page) {
+	'$scope', 'pageService', '$route', function ($scope, page, $route) {
 		$scope.editMode = false;
 
 		var form;
@@ -15,6 +15,14 @@ module.controller('OverviewPartyPanel', [
 				duns: $scope.party.duns,
 				affiliation: $scope.party.affiliation,
 				openid: $scope.party.openid
+			};
+
+			if (page.auth.hasAuth('ADMIN', $scope.party)) {
+				form.data.auth = '';
+				form.data.password = {
+					once: '',
+					again: ''
+				};
 			}
 		};
 
@@ -24,11 +32,19 @@ module.controller('OverviewPartyPanel', [
 			party.$save({
 				id: $scope.party.id
 			}, function (res) {
-				console.log(res);
+				page.messages.add({
+					body: page.constants.message('party.edit.success'),
+					type: 'green',
+					countdown: 3000
+				});
 
-				$scope.cancel();
+				page.models.Party.$cache.removeAll();
+				$route.reload();
 			}, function (res) {
-				console.log(res);
+				page.messages.addError({
+					body: page.constants.message('party.edit.error'),
+					report: res
+				});
 			});
 		};
 

@@ -113,8 +113,9 @@ party.contact.title=Contact
 party.edit=update profile
 
 party.edit.personal=Personal Info
-party.edit.display=Display
 party.edit.admin=Administration
+party.edit.success=Profile saved successfully!
+party.edit.error=Unable to save profile.
 
 network.title=Authorizations
 network.view=view
@@ -224,6 +225,13 @@ volume.access.title=Shared with
 volume.reuse.title=Reuse
 volume.reuse.provides=These data are used in...
 volume.reuse.consumes=These data were originally collected as part of...
+
+volume.name=Title
+volume.alias=Alias
+volume.body=Description
+volume.edit=edit volume
+volume.edit.success=Volume saved successfully!
+volume.edit.error=Unable to save volume.
 
 browser.title=Data
 browser.group=+

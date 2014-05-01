@@ -17,6 +17,8 @@
 						</dl>
 					</div>
 				</div>
+
+				<a href="" class="button mini yellow" ng-click="edit()" ng-bind-html="'party.edit' | message"></a>
 			</div>
 
 			<form name="userEditForm" ng-show="editMode">
@@ -26,23 +28,14 @@
 					<label bo-html="'fullname' | message"></label>
 					<input type="text" name="name" ng-model="userEditForm.data.name">
 
-					<label bo-html="'orcid' | message"></label>
-					<input type="text" name="orcid" ng-model="userEditForm.data.orcid">
-
 					<label bo-html="'affiliation' | message"></label>
 					<input type="text" name="affiliation" ng-model="userEditForm.data.affiliation">
 
-					<div ng-if="page.auth.hasAccess('ADMIN', party)">
-						<label bo-html="'duns' | message"></label>
-						<input type="text" name="duns" ng-model="userEditForm.data.duns">
-					</div>
-				</fieldset>
-
-				<fieldset>
-					<legend bo-html="'party.edit.display' | message"></legend>
-
 					<label bo-html="'avatar' | message"></label>
 					<input type="file" name="avatar" ng-model="userEditForm.data.avatar">
+
+					<label bo-html="'orcid' | message"></label>
+					<input type="text" name="orcid" ng-model="userEditForm.data.orcid">
 				</fieldset>
 
 				<fieldset ng-if="page.auth.hasAccess('ADMIN', party)">
@@ -54,16 +47,19 @@
 					<label bo-html="'openid' | message"></label>
 					<input type="text" name="openid" ng-model="userEditForm.data.openid">
 
-					<label bo-html="'password.new' | message"></label>
-					<input type="password" name="passwordOnce" ng-model="userEditForm.data.password.once">
-
-					<label bo-html="'password.new.again' | message"></label>
-					<input type="password" name="passwordAgain" ng-model="userEditForm.data.password.again">
+					<label bo-html="'duns' | message"></label>
+					<input type="text" name="duns" ng-model="userEditForm.data.duns">
 
 					<hr>
 
 					<label bo-html="'password.current' | message"></label>
 					<input type="password" name="auth" ng-model="userEditForm.data.auth">
+
+					<label bo-html="'password.new' | message"></label>
+					<input type="password" name="passwordOnce" ng-model="userEditForm.data.password.once">
+
+					<label bo-html="'password.new.again' | message"></label>
+					<input type="password" name="passwordAgain" ng-model="userEditForm.data.password.again">
 				</fieldset>
 
 				<button ng-click="save()" class="green" bo-html="'save' | message"></button>
@@ -75,8 +71,6 @@
       <div class="panel_overview_thumbnail_wrap">
         <img class="panel_overview_thumbnail" ng-src="{{page.router.partyAvatar(party, 500)}}">
       </div>
-
-			<a href="" ng-show="!editMode" ng-click="edit()" ng-bind-html="'party.edit' | message"></a>
     </div>
   </div>
 </panel>
