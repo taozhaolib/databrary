@@ -1,16 +1,14 @@
 module.directive('populate', [
-	'$timeout', function ($timeout) {
+	'$compile', function ($compile) {
 		var link = function ($scope, $element, $attrs) {
-			$scope.$watch('populate', function () {
-				$element.html($scope.populate);
+			console.log($scope.populate);
+			$attrs.$observe('populate', function () {
+				$element.append($compile('<span>' + $attrs.populate + '</span>')($scope));
 			});
 		};
 
 		return {
 			restrict: 'A',
-			scope: {
-				populate: '='
-			},
 			priority: 150,
 			link: link
 		};
