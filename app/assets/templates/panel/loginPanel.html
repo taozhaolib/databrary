@@ -19,7 +19,7 @@
             </div>
           </div>
 
-          <button id="loginSubmit" type="submit" class="button" ng-click="submitForm()" ng-disabled="!loginForm.$dirty || loginForm.$invalid">{{"login.login" | message}}</button>
+          <button id="loginSubmit" type="submit" class="button" ng-click="submitForm()" ng-disabled="loginForm.$invalid">{{"login.login" | message}}</button>
 
           <a ng-click="panel.switchMethod('openid')" ng-show="panel.showMethodLink('openid')">{{"login.method.openid" | message}}</a>
           <a ng-click="panel.switchMethod('databrary')" ng-show="panel.showMethodLink('databrary')">{{"login.method.password" | message}}</a>
