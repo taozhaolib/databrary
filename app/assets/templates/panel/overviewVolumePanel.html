@@ -6,28 +6,46 @@
           <h2 ng-if="auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-html="volume.alias"></h2>
         </hgroup>
 
-        <div frame id="frame_metadata" frame-title="{{'volume.metadata.title' | message}}" fold>
-          <div class="description" ng-bind-html="volume.body | format"></div>
+				<div ng-show="!editMode">
+					<div frame id="frame_metadata" frame-title="{{'volume.metadata.title' | message}}" fold>
+						<div class="description" ng-bind-html="volume.body | format"></div>
 
-          <div class="metadata">
-            <dl class="flat">
-              <dt>{{'volume.creation.title' | message}}</dt>
-              <dd>
-                <time datetime="{{volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>{{volume.creation | date:'MMMM yyyy'}}</time>
-              </dd>
+						<div class="metadata">
+							<dl class="flat">
+								<dt>{{'volume.creation.title' | message}}</dt>
+								<dd>
+									<time datetime="{{volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>{{volume.creation | date:'MMMM yyyy'}}</time>
+								</dd>
 
-              <dt>{{'volume.sessions.title' | message}}</dt>
-              <dd>{{'volume.sessions' | message:volume.summary.sessions:volume.summary.shared}}</dd>
+								<dt>{{'volume.sessions.title' | message}}</dt>
+								<dd>{{'volume.sessions' | message:volume.summary.sessions:volume.summary.shared}}</dd>
 
-              <dt ng-if="volume.summary.agemean > 0">{{'volume.ages.title' | message}}</dt>
-              <dd ng-if="volume.summary.agemean > 0">{{ageSummary(volume.summary)}}</dd>
-            </dl>
-          </div>
-        </div>
+								<dt ng-if="volume.summary.agemean > 0">{{'volume.ages.title' | message}}</dt>
+								<dd ng-if="volume.summary.agemean > 0">{{ageSummary(volume.summary)}}</dd>
+							</dl>
+						</div>
+					</div>
 
-        <div frame id="frame_citation" frame-title="{{'volume.citation.title' | message}}" fold>
-          <p ng-bind-html="volume | cite" class="citation"></p>
-        </div>
+					<div frame id="frame_citation" frame-title="{{'volume.citation.title' | message}}" fold>
+						<p ng-bind-html="volume | cite" class="citation"></p>
+					</div>
+
+					<a href="" class="button mini yellow" ng-click="edit()" ng-bind-html="'volume.edit' | message"></a>
+				</div>
+
+				<form name="volumeEditForm" ng-show="editMode">
+					<label bo-html="'volume.name' | message"></label>
+					<input type="text" name="name" ng-model="volumeEditForm.data.name">
+
+					<label bo-html="'volume.alias' | message"></label>
+					<input type="text" name="alias" ng-model="volumeEditForm.data.alias">
+
+					<label bo-html="'volume.body' | message"></label>
+					<textarea name="body" ng-model="volumeEditForm.data.body"></textarea>
+
+					<button ng-click="save()" class="green" bo-html="'save' | message"></button>
+					<button ng-click="cancel()" class="red" bo-html="'cancel' | message"></button>
+				</form>
       </div>
 
       <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
