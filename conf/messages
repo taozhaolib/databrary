@@ -45,6 +45,7 @@ mail.authorized.subject=Databrary authorization approved
 mail.authorized.body=You have been authorized for Databrary access by {0}.
 
 # Generic UI
+save=Save
 cancel=Cancel
 reset=Reset
 
@@ -67,11 +68,17 @@ login.method.openid=or login with OpenID.
 login.forgot=Forgot your password?
 email=Email
 password=Password
+password.current=Current Password
+password.new=New Password
+password.new.again=New Password (again)
 password.incorrect=Incorrect password.
 password.again=Passwords do not match.
 password.check=Insecure password: {0}
 openid=OpenID
 orcid=ORCiD
+fullname=Full Name
+duns=D-U-N-S
+avatar=Avatar
 affiliation=Affiliation
 login.bad=Incorrect login.
 login.throttled=Too many login attempts. Try again later.
@@ -103,6 +110,11 @@ welcome.body=Databrary is currently in private beta. For more information, pleas
 
 party.overview.title=Overview
 party.contact.title=Contact
+party.edit=update profile
+
+party.edit.personal=Personal Info
+party.edit.display=Display
+party.edit.admin=Administration
 
 network.title=Authorizations
 network.view=view
@@ -229,13 +241,12 @@ excerpts.title=Excerpts
 excerpts.download=Download this excerpt.
 excerpts.jump=Jump to the session from which this excerpt originates.
 
+player.title=Player
 player.download=Download this file.
 player.close=Close the media player.
 
 materials.title=Materials
 materials.empty=There are no files here.
-
-player.title=Player
 
 citations.title=Publications
 
