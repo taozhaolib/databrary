@@ -59,13 +59,13 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
     account.filter(_ => site.access.group >= Permission.VIEW).map(_.email)
 
   def json(implicit site : Site) : JsonRecord =
-    JsonRecord.flatten(id,
-      Some('name -> name), 
-      orcid.map(('orcid, _)),
-      affiliation.map(('affiliation, _)),
-      email.map(('email, _)),
-      if (duns.isDefined) Some('institution -> true) else None,
-      Some('avatar -> views.html.display.avatar(this).url)
+    JsonRecord.flatten(id
+    , Some('name -> name)
+    , orcid.map(('orcid, _))
+    , affiliation.map(('affiliation, _))
+    , email.map(('email, _))
+    , if (duns.isDefined) Some('institution -> true) else None
+    , Some('avatar -> views.html.display.avatar(this).url)
     )
 }
 
@@ -96,18 +96,22 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
     ('permission -> permission)
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
-    JsonOptions(json, options,
-      "parents" -> (opt => party.authorizeParents()
+    JsonOptions(json, options
+    , "parents" -> (opt => party.authorizeParents()
         .map(JsonRecord.map(_.parent.json))
-      ),
-      "children" -> (opt => party.authorizeChildren()
+      )
+    , "children" -> (opt => party.authorizeChildren()
         .map(JsonRecord.map(_.child.json))
-      ),
-      "access" -> (opt => if (checkPermission(Permission.ADMIN)) party.access.map(a => Json.toJson(a.group)) else Async(JsNull)),
-      "volumes" -> (opt => volumeAccess.map(JsonArray.map(_.json - "party"))),
-      "comments" -> (opt => party.account.fold[Future[Seq[Comment]]](Async(Nil))(_.comments)
+      )
+    , "access" -> (opt => if (checkPermission(Permission.ADMIN)) party.access.map(a => Json.toJson(a.group)) else Async(JsNull))
+    , "volumes" -> (opt => volumeAccess.map(JsonArray.map(_.json - "party")))
+    , "comments" -> (opt => party.account.fold[Future[Seq[Comment]]](Async(Nil))(_.comments)
         .map(JsonArray.map(c => c.json - "who" + ('volume -> c.volume.json)))
       )
+    , "openid" -> (opt => Async(if (party === site.identity || site.superuser)
+	Json.toJson(party.account.flatMap(_.openid)) else JsNull))
+    , "duns" -> (opt => Async(if (site.access.direct == Permission.ADMIN)
+	Json.toJson(party.duns.map(_.duns)) else JsNull))
     )
 }
 
