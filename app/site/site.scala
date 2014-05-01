@@ -66,7 +66,7 @@ trait AuthSite extends Site {
 
 final class LocalAuth(val access : Access) extends Site {
   val superuser = false
-  val clientIp = Inet("0.0.0.0")
+  val clientIP = Inet("0.0.0.0")
 }
 
 trait PerSite {

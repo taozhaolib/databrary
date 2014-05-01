@@ -70,6 +70,10 @@ object Transcode {
     Process(ctlCmd ++ Seq("-a", aid.toString) ++ args)
     .!!(procLogger(aid.toString))
 
+  private def setResult(aid : models.Asset.Id, pid : Int, result : String) : Future[Boolean] =
+    SQL("UPDATE transcode SET result = ? WHERE asset = ? AND process = ?")
+    .apply(result, aid, pid).execute
+
   def start(asset : models.Asset)(implicit request : controllers.SiteRequest[_]) : Future[Unit] =
     for {
       _ <- stop(asset.id)
@@ -94,10 +98,20 @@ object Transcode {
 	.apply(id, pid).execute
     } yield ()
 
-  def collect(id : models.Asset.Id, pid : Int, res : Int, log : String) : Future[Unit] =
-    models.Transcode.getAuth(id, pid).flatMap(Async.foreach[Site, Unit](_, { implicit site =>
-      for {
-	a <- models.Asset.get(id)
-      } yield ()
-    }))
+  def collect(aid : models.Asset.Id, pid : Int, res : Int, log : String) : Future[Boolean] =
+    if (res != 0)
+      setResult(aid, pid, "exit " + res + "\n" + log)
+    else models.Transcode.get(aid, pid).flatMap(Async.foreach[models.Asset, Boolean](_, { asset =>
+      val f = FileAsset.file(asset)
+      val t = TemporaryFile(new File(f.getPath + ".mp4"))
+      ctl(asset.id, "-c", t.file.getPath)
+      val sp = media.AV.probe(f)
+      val tp = media.AV.probe(t.file)
+      if (!tp.isVideo || (sp.duration - tp.duration).abs > Offset.ofSeconds(0.5))
+	throw new RuntimeException("check failed: " + sp.duration + "," + tp.duration)
+      models.Asset.create(asset.volume, models.AssetFormat.Video, asset.classification, tp.duration, asset.name, t)
+	.flatMap(_.supersede(asset))
+    }, false)).recoverWith { case e : Throwable =>
+      setResult(aid, pid, e.toString)
+    }
 }
