@@ -132,6 +132,8 @@ module.config([
 						var req = {
 							comments: '',
 							access: '',
+							openid: '',
+							duns: '',
 							parents: '',
 							children: ''
 						};
