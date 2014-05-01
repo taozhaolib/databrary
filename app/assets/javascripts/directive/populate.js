@@ -1,9 +1,14 @@
 module.directive('populate', [
-	'$compile', function ($compile) {
+	'$compile', '$parse', function ($compile, $parse) {
 		var link = function ($scope, $element, $attrs) {
-			console.log($scope.populate);
 			$attrs.$observe('populate', function () {
-				$element.append($compile('<span>' + $attrs.populate + '</span>')($scope));
+				var parse = $parse($attrs.populate)($scope);
+
+				if (angular.isString(parse)) {
+					$element.append($compile('<span>' + parse + '</span>')($scope));
+				} else {
+					$element.html(parse);
+				}
 			});
 		};
 
