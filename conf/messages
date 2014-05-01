@@ -272,7 +272,14 @@ notice.help.exclusion=<strong>Exclusion</strong>: This session was excluded due 
 error.prefix=<strong>Error</strong>:
 error.suffix=Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
 
+error.report=<a href="mailto:feedback@databrary.org?subject={0}&body={1}" target="_blank">Send report</a>.
+error.report.subject=[Error {0}] {1}
+error.report.body=Describe the error in your own words:\n\n\n\n----\n\n{0}
+
+error.view=<a href="" ng-click="message.fn()">View error</a>.
+
 error.generic=Something''s gone terribly wrong.
+error.email=feedback@databrary.org
 
 scraper.error=Could not retrieve required document "{0}".
 video.unsupported=Unfortunately, we do not currently support playing videos in Firefox on OS X. Please try Safari or Chrome.

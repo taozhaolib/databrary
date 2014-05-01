@@ -112,7 +112,7 @@
                 <div class="row">
                     <div class="col-full">
                         <div class="message_close" ng-if="message.closeable" ng-click="messages.disable(message)"></div>
-                        <div class="message_content" populate="message.body"></div>
+                        <div class="message_content" populate="{{message.body}}"></div>
                     </div>
                 </div>
             </div>

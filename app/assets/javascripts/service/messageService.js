@@ -70,30 +70,54 @@ module.factory('messageService', [
 			if (!newMessage)
 				return false;
 
-			newMessage.body = constants.message('error.prefix') + ' ' + newMessage.body + ' ' + constants.message('error.suffix');
+			newMessage.body = constants.message('error.prefix') + ' ' + newMessage.body;
 
-			if (message.errors && angular.isObject(message.errors)) {
+			if (message.report) {
+				message.errors = message.report.data;
+				message.status = message.report.status;
+				message.url = message.report.config.url;
+			}
+
+			if (!message.errors) {
+				newMessage.body = newMessage.body + ' ' + constants.message('error.suffix');
+			} else if (angular.isString(message.errors)) {
+				newMessage.fn = errorHTML(message.errors);
+				newMessage.body = newMessage.body + ' ' + constants.message('error.view');
+			} else if (angular.isObject(message.errors)) {
 				var moreBody = '';
+				var messageBody = '';
 
 				angular.forEach(message.errors, function (errorArray, field) {
-					moreBody += '<dt>Field "' + field + '"</dt><dd>' + errorArray.join('</dd><dd>') + '</dd>';
+					moreBody += '<dt>Field "' + (field || 'validation') + '"</dt><dd>' + errorArray.join('</dd><dd>') + '</dd>';
+					messageBody += 'Field "' + (field || 'validation') + '":\n' + errorArray.join('\n') + '\n\n';
 				});
 
-				if (message.status)
+				if (message.status) {
 					moreBody = '<dt>Status</dt><dd>' + message.status + '</dd>' + moreBody;
+					messageBody = 'Status:\n' + message.status + '\n\n' + messageBody;
+				}
 
 				moreBody = '<dl class="message_form_errors">' + moreBody + '</dl>';
 
-				delete message.errors;
-				delete message.status;
+				if (moreBody)
+					newMessage.body = '<p>' + newMessage.body + ' ' + constants.message('error.report', encodeURIComponent(constants.message('error.report.subject', message.status || 'Unknown', message.url || 'Location unknown')), encodeURIComponent(constants.message('error.report.body', messageBody))) + '</p>' + moreBody;
 			}
 
-			if (moreBody)
-				newMessage.body = '<p>' + newMessage.body + '</p>' + moreBody;
+			delete message.report;
+			delete message.errors;
+			delete message.status;
+			delete message.url;
 
 			register(newMessage);
-
 			return newMessage;
+		};
+
+		var errorHTML = function (html) {
+			return function () {
+				var doc = document.open('text/html', 'replace');
+				doc.write(html);
+				doc.close();
+			}
 		};
 
 		//
