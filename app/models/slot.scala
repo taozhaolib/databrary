@@ -11,6 +11,7 @@ import site._
 trait Slot extends TableRow with InVolume with SiteObject {
   def container : Container = context.container
   val segment : Segment
+  /** The containing consent slot, or container. */
   def context : ContextSlot
   /** The effective consent level that applies to contained data. */
   def consent : Consent.Value = context.consent
