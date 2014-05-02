@@ -9,6 +9,7 @@ import          mvc._
 import          data._
 import play.api.i18n.Messages
 import play.api.libs.json
+import macros.async._
 import site._
 import dbrary._
 import models._
@@ -99,7 +100,7 @@ object RecordHtml extends RecordController with HtmlController {
   def view(i : models.Record.Id) = Action(i).async { implicit request =>
     for {
       slots <- request.obj.slots
-      _ <- macros.Async.foreach[Slot, Unit](slots, _.records)
+      _ <- slots.foreachAsync(_.records)
     } yield (Ok(views.html.record.view(slots)))
   }
 

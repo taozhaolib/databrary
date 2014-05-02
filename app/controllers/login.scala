@@ -11,6 +11,7 @@ import          i18n.Messages
 import scala.concurrent.Future
 import org.mindrot.jbcrypt.BCrypt
 import macros._
+import macros.async._
 import dbrary._
 import site._
 import models._
@@ -35,13 +36,13 @@ private[controllers] sealed class LoginController extends SiteController {
 
   def post = SiteAction.Unlocked.async { implicit request =>
     val form = new LoginController.LoginForm()._bind
-    macros.Async.flatMap(form.email.get, Account.getEmail _).flatMap { acct =>
+    form.email.get.flatMapAsync(Account.getEmail _).flatMap { acct =>
       def bad =
-	macros.Async.foreach[Account, Unit](acct, a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)).execute).flatMap { _ =>
+	acct.foreachAsync(a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)).execute).flatMap { _ =>
 	  form.withGlobalError("login.bad").Bad
 	}
       if (form.password.get.nonEmpty) {
-	macros.Async.map[Account, Long](acct, _.recentAttempts).flatMap { attempts =>
+	acct.mapAsync(_.recentAttempts).flatMap { attempts =>
 	  if (attempts.exists(_ > 4))
 	    form.withGlobalError("login.throttled").Bad
 	  else
@@ -92,12 +93,12 @@ private[controllers] sealed class LoginController extends SiteController {
       val form = new LoginController.RegistrationForm()._bind
       for {
 	e <- Account.getEmail(form.email.get)
-	a <- macros.Async.getOrElse(e, {
+	a <- e getOrElseAsync {
 	  Party.create(
 	    name = form.name.get,
 	    affiliation = form.affiliation.get)
 	  .flatMap(Account.create(_, email = form.email.get))
-	})
+	}
 	_ <- controllers.TokenController.newPassword(Right(a), "register")
       } yield (Ok("sent"))
     }
@@ -213,7 +214,7 @@ object LoginHtml extends LoginController with HtmlController {
   def registration =
     SiteAction.Unlocked.async { implicit request =>
       if (request.isInstanceOf[AuthSite])
-	macros.Async(Found((
+	async(Found((
 	  if (request.access.group == Permission.NONE)
 	    routes.PartyHtml.view(request.identity.id)
 	  else

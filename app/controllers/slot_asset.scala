@@ -29,7 +29,7 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
 
   def download(s : Container.Id, segment : Segment, o : models.Asset.Id, inline : Boolean) =
     Action(s, segment, o, Permission.DOWNLOAD).async { implicit request =>
-      (if (inline) macros.Async(None) else for {
+      (if (inline) macros.async(None) else for {
 	_ <- request.obj.auditDownload
 	name <- request.obj.fileName
       } yield (Some(name)))

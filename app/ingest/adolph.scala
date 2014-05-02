@@ -3,6 +3,7 @@ package ingest
 import java.io.File
 import scala.concurrent.Future
 import macros._
+import macros.async._
 import dbrary._
 import models._
 import store.Stage
@@ -75,9 +76,9 @@ object Adolph extends Ingest {
       }	yield (l.headOption)
     def populate(volume : Volume, current : Option[models.Record] = None) : Future[models.Record] =
       for {
-	ro <- Async.orElse(current, find(volume))
-	r <- Async.getOrElse(ro, Record.create(volume, Some(category)))
-	_ <- Async.foreach[Measure[_], Unit](measures.values, { m =>
+	ro <- current orElseAsync find(volume)
+	r <- ro getOrElseAsync Record.create(volume, Some(category))
+	_ <- measures.values foreachAsync { m =>
 	  r.measures(m.metric).fold {
 	    r.setMeasure(m).flatMap(check(_, 
 	      PopulateException("failed to set measure for record " + this, r)))
@@ -85,7 +86,7 @@ object Adolph extends Ingest {
 	    check(c === m,
 	      PopulateException("inconsistent mesaures for record " + this + ": " + m + " <> " + c, r))
 	  }
-	})
+	}
       } yield (r)
   }
 
@@ -262,7 +263,7 @@ object Adolph extends Ingest {
 	c <- ms.headOption.fold {
 	  for {
 	    c <- Container.create(volume, Maybe(name).opt, date)
-	    _ <- Async.foreach[Consent.Value,Unit](consent, c.setConsent(_))
+	    _ <- consent.foreachAsync(c.setConsent(_))
 	    _ <- pr.addSlot(c)
 	  } yield (c)
 	} { s =>
@@ -276,12 +277,12 @@ object Adolph extends Ingest {
 	      PopulateException("existing session for " + pr + " with different name", s))
 	    _ <- check(c.date.equals(date),
 	      PopulateException("existing session for " + pr + " with different date", s))
-	    _ <- if (c.consent == Consent.NONE) Async.foreach[Consent.Value,Unit](consent, c.setConsent(_))
+	    _ <- if (c.consent == Consent.NONE) consent.foreachAsync(c.setConsent(_))
 	      else check(consent.exists(c.consent == _),
 		PopulateException("existing session for " + pr + " with different consent", s))
 	  } yield (c)
 	}
-	_ <- Async.foreach[(Asset,Offset),Unit](assets zip Asset.positions(assets), { case (a, o) =>
+	_ <- assets zip Asset.positions(assets) foreachAsync { case (a, o) =>
 	  for {
 	    a <- a.populate(volume)
 	    as <- a.slot
@@ -292,17 +293,17 @@ object Adolph extends Ingest {
 		PopulateException("existing asset in different container", as))
 	    }
 	  } yield (())
-	})
+	}
 	cr <- c.records.map(_.groupBy(_.category.map(_.id.unId)))
-	_ <- Async.foreach[Record,Unit]((records - RecordCategory.Participant.id.unId).values, { r =>
+	_ <- (records - RecordCategory.Participant.id.unId).values foreachAsync { r =>
 	  val crs = cr.getOrElse(Some(r.category.id.unId), Nil)
 	  for {
 	    _ <- check(crs.length <= 1,
 	      PopulateException("multiple existing records for category " + r.category, c))
 	    r <- r.populate(volume, crs.headOption)
-	    _ <- if (crs.isEmpty) r.addSlot(c) else Async(false)
+	    _ <- if (crs.isEmpty) r.addSlot(c) else async(false)
 	  } yield (())
-	})
+	}
       } yield (c)
   }
 
@@ -365,6 +366,6 @@ object Adolph extends Ingest {
     Sessions.parseCSV(s, p).map(_.length)
 
   def process(volume : Volume, s : File, p : File)(implicit site : Site) : Future[Seq[Container]] =
-    Sessions.parseCSV(s, p).flatMap(Async.map[Session,Container,Seq[Container]](_, _.populate(volume)))
+    Sessions.parseCSV(s, p).flatMap(_.mapAsync(_.populate(volume)))
 
 }

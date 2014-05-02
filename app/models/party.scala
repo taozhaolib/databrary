@@ -103,14 +103,14 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
     , "children" -> (opt => party.authorizeChildren()
         .map(JsonRecord.map(_.child.json))
       )
-    , "access" -> (opt => if (checkPermission(Permission.ADMIN)) party.access.map(a => Json.toJson(a.group)) else Async(JsNull))
+    , "access" -> (opt => if (checkPermission(Permission.ADMIN)) party.access.map(a => Json.toJson(a.group)) else async(JsNull))
     , "volumes" -> (opt => volumeAccess.map(JsonArray.map(_.json - "party")))
-    , "comments" -> (opt => party.account.fold[Future[Seq[Comment]]](Async(Nil))(_.comments)
+    , "comments" -> (opt => party.account.fold[Future[Seq[Comment]]](async(Nil))(_.comments)
         .map(JsonArray.map(c => c.json - "who" + ('volume -> c.volume.json)))
       )
-    , "openid" -> (opt => Async(if (party === site.identity || site.superuser)
+    , "openid" -> (opt => async(if (party === site.identity || site.superuser)
 	Json.toJson(party.account.flatMap(_.openid)) else JsNull))
-    , "duns" -> (opt => Async(if (site.access.direct == Permission.ADMIN)
+    , "duns" -> (opt => async(if (site.access.direct == Permission.ADMIN)
 	Json.toJson(party.duns.map(_.duns)) else JsNull))
     )
 }
@@ -134,7 +134,7 @@ final class Account protected (val party : Party, email_ : String, password_ : S
   def change(email : Option[String] = None, password : Option[String] = None, openid : Option[Option[String]] = None)(implicit site : Site) : Future[Boolean] = {
     (if (password.exists(!_.equals(_password)))
       clearTokens(cast[AuthSite](site).map(_.token))
-    else Async(false)).flatMap { _ =>
+    else async(false)).flatMap { _ =>
     Audit.change("account", SQLTerms.flatten(email.map('email -> _), password.map('password -> _), openid.map('openid -> _)), SQLTerms('id -> id))
       .execute.andThen { case scala.util.Success(true) =>
         email.foreach(_email = _)
@@ -184,7 +184,7 @@ object Party extends TableId[Party]("party") {
     getStatic(i).fold {
       row.SELECT("WHERE id = ?").apply(i).singleOpt
     } { p =>
-      Async(Some(p))
+      async(Some(p))
     }
 
   def getAll(implicit site : Site) : Future[Seq[Party]] =
@@ -230,8 +230,8 @@ object Party extends TableId[Party]("party") {
 
 object SiteParty {
   def get(p : Party)(implicit site : Site) : Future[SiteParty] =
-    if (p.id === Party.ROOT) Async(new SiteParty(site.access))
-    else if (p.id == Party.NOBODY) Async(new SiteParty(new Authorization(site.identity, Party.Nobody, site.access.group, Permission.NONE)))
+    if (p.id === Party.ROOT) async(new SiteParty(site.access))
+    else if (p.id == Party.NOBODY) async(new SiteParty(new Authorization(site.identity, Party.Nobody, site.access.group, Permission.NONE)))
     else Authorization.get(site.identity, p).map(new SiteParty(_))
 
   def get(i : Party.Id)(implicit site : Site) : Future[Option[SiteParty]] =

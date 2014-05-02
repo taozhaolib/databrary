@@ -5,6 +5,7 @@ import java.util.regex.{Pattern=>Regex}
 import scala.concurrent.Future
 import play.api.libs.Files
 import macros._
+import macros.async._
 import dbrary._
 import site._
 import models._
@@ -36,7 +37,7 @@ object Curated extends Ingest {
     }
 
   private[this] def check(b : Boolean, t : => PopulateException) : Future[Unit] =
-    if (b) Async(()) else Future.failed(t)
+    if (b) async.void else Future.failed(t)
 
   private final case class Subject(id : String, gender : Gender.Value, birthdate : Date, race : Option[Race.Value], ethnicity : Option[Ethnicity.Value], language : Option[String]) extends KeyedData {
     def fields = Seq(id, gender.toString, birthdate.toString, optString(race) + "/" + optString(ethnicity), optString(language))
@@ -54,13 +55,13 @@ object Curated extends Ingest {
         case Nil =>
           for {
             rec <- Record.create(volume, Some(RecordCategory.Participant))
-            _ <- Async.foreach[Measure[_], Unit](measures, { m =>
+            _ <- measures foreachAsync { m =>
               rec.setMeasure(m).flatMap(check(_, 
                 PopulateException("failed to set measure for subject " + id + ": " + m, rec)))
-            })
+            }
           } yield (rec)
         case Seq(rec) =>
-          Async.foreach[Measure[_],models.Record](measures, { m =>
+          measures.foreachAsync({ m =>
             rec.measures(m.metric).fold {
               rec.setMeasure(m).flatMap(check(_,
                 PopulateException("failed to set measure for subject " + id + ": " + m, rec)))
@@ -252,13 +253,13 @@ object Curated extends Ingest {
       data.assets.size + " files"
 
   private def populate(data : Data, volume : Volume)(implicit site : Site) : Future[(Iterable[Record], Iterable[SlotAsset])] = for {
-    subjs <- Async.mapValues[String, Subject, Record, Map[String, Record]](data.subjects, _.populate(volume))
-    sess <- Async.mapValues[String, Session, ModelSession, Map[String, ModelSession]](data.sessions, _.populate(volume))
-    _ <- Async.foreach[SubjectSession, Unit](data.subjectSessions, ss =>
+    subjs <- data.subjects.mapValuesAsync(_.populate(volume))
+    sess <- data.sessions.mapValuesAsync(_.populate(volume))
+    _ <- data.subjectSessions.foreachAsync(ss =>
       ss.populate(subjs(ss.subjectKey), sess(ss.sessionKey)))
-    assets <- Async.map[SessionAsset, SlotAsset, Seq[SlotAsset]](data.assets
-      .sortBy(_.asset.position.map(-_)), sa =>
-      sa.populate(sess(sa.sessionKey)))
+    assets <- data.assets
+      .sortBy(_.asset.position.map(-_))
+      .mapAsync(sa => sa.populate(sess(sa.sessionKey)))
   } yield ((subjs.values, assets))
 
   def preview(f : java.io.File) : String =

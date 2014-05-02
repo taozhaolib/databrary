@@ -7,6 +7,7 @@ import play.api.data._
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
+import macros.async._
 import site._
 import models._
 
@@ -17,12 +18,12 @@ private[controllers] sealed class TokenController extends SiteController {
     ) { token =>
       if (!token.valid) {
         token.remove
-        macros.Async(Gone)
+        macros.async(Gone)
       } else if (!auth.equals(token.auth)) {
         throw ForbiddenException
       } else if (token.password)
 	if (request.isApi)
-	  macros.Async(Ok(token.json))
+	  macros.async(Ok(token.json))
 	else
 	  new TokenController.PasswordTokenForm(token).Ok
       else {
@@ -48,7 +49,7 @@ private[controllers] sealed class TokenController extends SiteController {
 
   private[controllers] def newPassword(targ : Either[String,Account], msg : String = "password")(implicit request : SiteRequest[_]) : Future[Option[LoginToken]] =
     for {
-      token <- macros.Async.map[Account,LoginToken](targ.right.toOption, LoginToken.create(_, true))
+      token <- targ.right.toOption.mapAsync(LoginToken.create(_, true))
       _ <- Mail.send(
 	to = Seq(targ.fold(identity, _.email)),
 	subject = Messages("mail." + msg + ".subject"),
@@ -98,8 +99,8 @@ object TokenHtml extends TokenController with HtmlController {
     val form = new IssuePasswordForm()._bind
     for {
       acct <- Account.getEmail(form.email.get)
-      acct <- if (Play.isProd) macros.Async.filter[Account](acct, _.party.access.map(_.direct < Permission.ADMIN))
-	else macros.Async(acct)
+      acct <- if (Play.isProd) acct.filterAsync(_.party.access.map(_.direct < Permission.ADMIN))
+	else macros.async(acct)
       _ <- newPassword(acct.toRight(form.email.get))
     } yield (Ok("sent"))
   }

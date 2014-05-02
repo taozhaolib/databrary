@@ -221,7 +221,7 @@ abstract class HtmlFormView(action : Call) extends FormView(action) {
 
 class HtmlForm[+F <: HtmlForm[F]](action : Call, view : F => HtmlFormat.Appendable) extends HtmlFormView(action) {
   this : F =>
-  final def _view = macros.Async(view(this))
+  final def _view = async(view(this))
 }
 class AHtmlForm[+F <: AHtmlForm[F]](action : Call, view : F => Future[HtmlFormat.Appendable]) extends HtmlFormView(action) {
   this : F =>

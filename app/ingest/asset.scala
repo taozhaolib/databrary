@@ -41,7 +41,7 @@ trait Asset {
 	    case ts : Asset.TimeseriesInfo =>
 	      check(asset.asInstanceOf[Timeseries].duration.equals(ts.duration),
 		PopulateException("inconsistent duration for asset " + name + ": " + ts.duration + " <> " + asset.asInstanceOf[Timeseries].duration, asset))
-	    case _ => Async.void
+	    case _ => async.void
 	  }
 	  _ <- if (asset.name.isEmpty) asset.change(name = Some(Maybe(name).opt))
 	    else check(asset.name.equals(Maybe(name).opt),

@@ -6,8 +6,9 @@ import          mvc._
 import          data._
 import          i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import site._
 import macros._
+import macros.async._
+import site._
 import models._
 
 private[controllers] sealed class VolumeController extends ObjectController[Volume] {
@@ -37,7 +38,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       volume.setCitations(cites.flatMap(c =>
         c._1.map(h => VolumeCitation(volume, h, c._2, c._3))
       ))
-    } else macros.Async(false)
+    } else macros.async(false)
 
   protected def editFormFill(implicit request : Request[_]) =
     request.obj.citations.map(new VolumeController.EditForm(_))
@@ -89,7 +90,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       val form = new VolumeController.AccessSearchForm()._bind
       for {
 	res <- models.Party.searchForVolumeAccess(form.name.get, request.obj)
-	r <- if (request.isApi) macros.Async(Ok(JsonRecord.map[Party](_.json)(res)))
+	r <- if (request.isApi) macros.async(Ok(JsonRecord.map[Party](_.json)(res)))
 	  else VolumeHtml.viewAdmin(accessSearchForm = Some(form), accessResults = res)
 	    .map(Ok(_))
       } yield (r)
@@ -190,9 +191,8 @@ object VolumeHtml extends VolumeController with HtmlController {
     val (form, res) = searchResults
     for {
       vl <- res
-      vols <- macros.Async.map[Volume, (Volume, Seq[Party]), Seq[(Volume, Seq[Party])]](vl, vol => for {
-	access <- vol.partyAccess(Permission.ADMIN)
-      } yield ((vol, access.map(_.party))))
+      vols <- vl.mapAsync(vol =>
+	vol.partyAccess(Permission.ADMIN).map(a => (vol, a.map(_.party))))
     } yield (Ok(views.html.volume.search(vols, form)))
   }
 
@@ -236,7 +236,7 @@ object VolumeApi extends VolumeController with ApiController {
   def query = SiteAction.async { implicit request =>
     for {
       vl <- searchResults._2
-      vols <- macros.Async.map[Volume, JsonRecord, Seq[JsonRecord]](vl, _.json(queryOpts))
+      vols <- vl.mapAsync[JsonRecord, Seq[JsonRecord]](_.json(queryOpts))
     } yield (Ok(JsonArray(vols)))
   }
 
@@ -250,7 +250,7 @@ object VolumeApi extends VolumeController with ApiController {
   def accessDelete(volumeId : models.Volume.Id, partyId : models.Party.Id) = Action(volumeId, Permission.ADMIN).async { implicit request =>
     (if (!(partyId === request.identity.id))
       VolumeAccess.delete(request.obj, partyId)
-    else macros.Async(false)).map { _ =>
+    else macros.async(false)).map { _ =>
       result(request.obj)
     }
   }
