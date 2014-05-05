@@ -6,6 +6,7 @@ import scala.sys.process.Process
 import play.api.Play.current
 import play.api.libs.Files.TemporaryFile
 import macros._
+import macros.async._
 import dbrary._
 import site._
 
@@ -59,25 +60,26 @@ object Transcode {
     }
   }
 
-  private lazy val ctlCmd : Seq[String] =
-    current.resource("transctl.sh")
-    .flatMap(urlFile(_))
-    .getOrElse(throw new Exception("transctl.sh not found"))
-    .getPath +:
-    (dir.toSeq.flatMap(Seq("-d", _)) ++ host.toSeq.flatMap(Seq("-h", _)))
+  private lazy val ctlCmd : Seq[String] = {
+    val ctl = current.resource("transctl.sh")
+      .flatMap(urlFile(_))
+      .getOrElse(throw new Exception("transctl.sh not found"))
+    ctl.setExecutable(true)
+    ctl.getPath +: (dir.toSeq.flatMap(Seq("-d", _)) ++ host.toSeq.flatMap(Seq("-h", _)))
+  }
 
   private def ctl(aid : models.Asset.Id, args : String*) : String =
     Process(ctlCmd ++ Seq("-a", aid.toString) ++ args)
     .!!(procLogger(aid.toString))
 
-  private def setResult(aid : models.Asset.Id, pid : Int, result : String) : Future[Boolean] =
-    SQL("UPDATE transcode SET result = ? WHERE asset = ? AND process = ?")
-    .apply(result, aid, pid).execute
+  private def setResult(aid : models.Asset.Id, pid : Option[Int], result : String) : Future[Boolean] =
+    SQL("UPDATE transcode SET result = ? WHERE asset = ? AND", if (pid.isEmpty) "process IS NULL" else "process = ?")
+    .apply(SQLArgs(result, aid) ++ SQLArgs.fromOption(pid)).execute
 
-  def start(asset : models.Asset)(implicit request : controllers.SiteRequest[_]) : Future[Unit] =
-    for {
+  def start(asset : models.Asset)(implicit request : controllers.SiteRequest[_]) : Future[Boolean] =
+    (for {
       _ <- stop(asset.id)
-      _ <- SQL("INSERT INTO transcode (asset, user) VALUES (?, ?)")
+      _ <- SQL("INSERT INTO transcode (asset, owner) VALUES (?, ?)")
 	.apply(asset.id, request.identity.id).execute
       src = FileAsset.file(asset)
       pid = scala.util.control.Exception.catching(classOf[RuntimeException]) either {
@@ -85,23 +87,24 @@ object Transcode {
 	  "-f", src.getPath,
 	  "-r", controllers.AssetApi.TranscodedForm(asset.id)._action.absoluteURL())
       }
-      true <- SQL("UPDATE transcode SET process = ?::integer, result = ? WHERE asset = ?")
+      r <- SQL("UPDATE transcode SET process = ?::integer, result = ? WHERE asset = ?")
 	.apply(pid.right.toOption, pid.left.toOption.map(_.toString), asset.id).execute
-    } yield ()
+    } yield (r)).recoverWith { case e : Throwable =>
+      logger.error("starting " + asset.id, e)
+      setResult(asset.id, None, e.toString)
+    }
 
   def stop(id : models.Asset.Id) : Future[Unit] =
     for {
-      pid <- SQL("SELECT process FROM transcode WHERE asset = ?")
+      pid <- SQL("DELETE FROM transcode WHERE asset = ? RETURNING process")
 	.apply(id).singleOpt(SQLCols[Option[Int]])
       _ = pid.flatten.foreach((pid : Int) => ctl(id, "-k", pid.toString))
-      _ <- SQL("DELETE FROM transcode WHERE asset = ? AND process = ?")
-	.apply(id, pid).execute
     } yield ()
 
   def collect(aid : models.Asset.Id, pid : Int, res : Int, log : String) : Future[Boolean] =
     if (res != 0)
-      setResult(aid, pid, "exit " + res + "\n" + log)
-    else models.Transcode.get(aid, pid).flatMap(Async.foreach[models.Asset, Boolean](_, { asset =>
+      setResult(aid, Some(pid), "exit " + res + "\n" + log)
+    else models.Transcode.get(aid, pid).flatMap(_.foreachAsync({ asset =>
       val f = FileAsset.file(asset)
       val t = TemporaryFile(new File(f.getPath + ".mp4"))
       ctl(asset.id, "-c", t.file.getPath)
@@ -112,6 +115,7 @@ object Transcode {
       models.Asset.create(asset.volume, models.AssetFormat.Video, asset.classification, tp.duration, asset.name, t)
 	.flatMap(_.supersede(asset))
     }, false)).recoverWith { case e : Throwable =>
-      setResult(aid, pid, e.toString)
+      logger.error("collecting " + aid, e)
+      setResult(aid, Some(pid), e.toString)
     }
 }

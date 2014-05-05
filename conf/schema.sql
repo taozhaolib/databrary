@@ -451,7 +451,7 @@ SELECT audit.CREATE_TABLE ('excerpt');
 
 CREATE TABLE "transcode" (
 	"asset" integer NOT NULL Primary Key References "asset" ON DELETE CASCADE,
-	"user" integer NOT NULL References "party",
+	"owner" integer NOT NULL References "party",
 	"start" timestamp Default now(),
 	"process" integer,
 	"result" text
