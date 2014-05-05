@@ -58,6 +58,7 @@ page.title.reset=Password Reset
 page.title.register=Register
 page.title.loading=Loading...
 page.title.search=Search
+page.title.stub=Create Volume Stub
 
 # Login, party, auth pages
 login.title=Login
@@ -348,3 +349,20 @@ wizard.register_form.name.help=<strong>Name</strong>: Provide your full name.
 wizard.register_form.email.help=<strong>Email</strong>: We recommend using your institutional email address. You can change it later.
 wizard.register_form.email.error=<strong>Email</strong>: This email address is invalid.
 wizard.register_form.affiliation.help=<strong>Affiliation</strong>: Enter your affiliation as you wish it to display on your profile.
+
+# --- Stub Creation
+
+volume.edit.title=Create
+volume.edit.title.sub=New Volume
+
+wizard.volume_edit_overview.name=Overview
+wizard.volume_edit_overview.description=Edit volume name, description, and alias.
+
+wizard.volume_edit_publications.name=Publications
+wizard.volume_edit_publications.description=Update list of publications.
+
+wizard.volume_edit_materials.name=Materials
+wizard.volume_edit_materials.description=Upload excerpts, papers, posters, and other materials.
+
+wizard.volume_edit_access.name=Access
+wizard.volume_edit_access.description=Set visibility levels for volume data.

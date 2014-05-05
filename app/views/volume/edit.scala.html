@@ -4,7 +4,7 @@
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@template.form(Some(request.obj), form.formName) {
+@template.form(Some(request.obj), form.formName, angular = Some(play.api.libs.json.JsObject(Seq()))) {
         @widget.tag.form(form) {
             @widget.tag.inputText(form.name(), 'placeholder -> "Title", '_class -> "")
             @widget.tag.inputText(form.alias(), 'placeholder -> "Short name", '_class -> "")

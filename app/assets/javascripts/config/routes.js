@@ -201,6 +201,43 @@ module.config([
 
 		//
 
+		var volumeEdit = {
+			controller: 'VolumeEditView',
+			templateUrl: 'volumeEditView.html',
+			resolve: {
+				volume: [
+					'$route', 'Volume', '$q', function ($route, Volume, $q) {
+						var deferred = $q.defer();
+
+						if (!$route.current.params.id) {
+							deferred.resolve();
+						} else {
+							Volume.get({
+								access: '',
+								citations: '',
+								top: '',
+								excerpts: '',
+								funding: ''
+							}, function (res) {
+								deferred.resolve(res);
+							}, function (res) {
+								deferred.reject();
+							});
+						}
+
+						return deferred.promise;
+					}
+				]
+			},
+			reloadOnSearch: false,
+			authenticate: true
+		};
+
+		$routeProvider.when('/volume/create', appResolve(volumeEdit));
+		$routeProvider.when('/volume/:id/edit', appResolve(volumeEdit));
+
+		//
+
 		$routeProvider.when('/volume/:id', appResolve({
 			controller: 'VolumeView',
 			templateUrl: 'volumeView.html',
