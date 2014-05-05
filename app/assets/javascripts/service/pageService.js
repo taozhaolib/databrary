@@ -48,7 +48,7 @@ module.factory('pageService', [
 		events.listen($rootScope, 'pageService-updateApp', function () {
 			messages.add({
 				type: 'yellow',
-				body: constants.message('app.update')
+				body: constants.message('app.update') + ' <a href="" onclick="window.location.reload()">Reload</a>.'
 			});
 		});
 

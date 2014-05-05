@@ -7,6 +7,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json
 import play.api.mvc._
 import macros._
+import macros.async._
 import dbrary._
 import site._
 import models._
@@ -53,20 +54,25 @@ object SiteApi extends SiteController {
 	case ("route", json.JsString(v)) => route = Some(v)
 	case kv => lb += kv
       }
-      macros.Async.foreach[Audit.Action.Value, Unit](action, action =>
-	macros.Async.foreach[String, Unit](route, route =>
+      action.foreachAsync(action =>
+	route.foreachAsync(route =>
 	  Analytic.add(action, route, json.JsObject(lb.result))))
-    case _ => macros.Async.void
+    case _ => async.void
   }
 
   def analytics(implicit request : SiteRequest[_]) : Future[Unit] =
     if (request.isApi && request.headers.get("X-Requested-With").exists(_.equals("DatabraryClient")))
-      macros.Async.foreach[String, Unit](request.headers.getAll("Analytics"), a =>
+      request.headers.getAll("Analytics").foreachAsync(a =>
 	scala.util.control.Exception.failAsValue[json.JsValue](classOf[com.fasterxml.jackson.core.JsonProcessingException])(json.JsUndefined("parse error"))(
 	  json.Json.parse(a)) match {
-	  case json.JsArray(l) => macros.Async.foreach[json.JsValue, Unit](l, analytic _)
+	  case json.JsArray(l) => l.foreachAsync(analytic _)
 	  case j => analytic(j)
 	})
     else
-      macros.Async.void
+      async.void
+
+  def void =
+    SiteAction.Unlocked { implicit request =>
+      Ok("")
+    }
 }

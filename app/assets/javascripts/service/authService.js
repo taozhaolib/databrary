@@ -129,13 +129,12 @@ module.factory('authService', [
 				} else {
 					$location.path('/');
 				}
-			}, function () {
+			}, function (res) {
 				parseUser(undefined);
 
-				messages.add({
+				messages.addError({
 					body: constants.message('login.error'),
-					type: 'red',
-					countdown: 3000
+					report: res
 				});
 			});
 		};
@@ -155,13 +154,13 @@ module.factory('authService', [
 					type: 'yellow',
 					countdown: 3000
 				});
-			}, function () {
+			}, function (res) {
 				$location.url('/');
 
 				messages.add({
 					body: constants.message('logout.error'),
-					type: 'red',
-					countdown: 3000
+					errors: res.data,
+					status: res.status
 				});
 			});
 		};
@@ -220,7 +219,7 @@ module.factory('authService', [
 				}, function (res) {
 					messages.addError({
 						body: constants.message('superuser.on.error'),
-						errors: res.errors,
+						errors: res.data,
 						status: res.status
 					});
 				});

@@ -1,45 +1,58 @@
 <panel ng-controller="OverviewVolumePanel" top id="panel_overview" panel-title="{{'volume.overview.title' | message}}" ng-mouseover="hoverPanel()" bindonce>
-    <hgroup class="row">
-      <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-6">
-        <div class="panel_overview_thumbnail_wrap">
-          <div class="panel_overview_thumbnail" ng-style="{'background-image': 'url(/volume/'+volume.id+'/thumb)'}"></div>
-        </div>
-      </div>
-
-      <div class="col-desktop-13 col-laptop-10 col-tablet-7 col-mobile-6">
-        <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
-
-        <h2 ng-if="auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-html="volume.alias"></h2>
-      </div>
-    </hgroup>
-
     <div class="row">
       <div class="col-desktop-9 col-laptop-8 col-tablet-6 col-mobile-6">
-        <div frame id="frame_metadata" frame-title="{{'volume.metadata.title' | message}}" fold>
-          <div class="description" ng-bind-html="volume.body | format"></div>
+        <hgroup>
+          <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
+          <h2 ng-if="auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-html="volume.alias"></h2>
+        </hgroup>
 
-          <div class="metadata">
-            <dl class="flat">
-              <dt>{{'volume.creation.title' | message}}</dt>
-              <dd>
-                <time datetime="{{volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>{{volume.creation | date:'MMMM yyyy'}}</time>
-              </dd>
+				<div ng-show="!editMode">
+					<div frame id="frame_metadata" frame-title="{{'volume.metadata.title' | message}}" fold>
+						<div class="description" ng-bind-html="volume.body | format"></div>
 
-              <dt>{{'volume.sessions.title' | message}}</dt>
-              <dd>{{'volume.sessions' | message:volume.summary.sessions:volume.summary.shared}}</dd>
+						<div class="metadata">
+							<dl class="flat">
+								<dt>{{'volume.creation.title' | message}}</dt>
+								<dd>
+									<time datetime="{{volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>{{volume.creation | date:'MMMM yyyy'}}</time>
+								</dd>
 
-              <dt ng-if="volume.summary.agemean > 0">{{'volume.ages.title' | message}}</dt>
-              <dd ng-if="volume.summary.agemean > 0">{{ageSummary(volume.summary)}}</dd>
-            </dl>
-          </div>
-        </div>
+								<dt>{{'volume.sessions.title' | message}}</dt>
+								<dd>{{'volume.sessions' | message:volume.summary.sessions:volume.summary.shared}}</dd>
 
-        <div frame id="frame_citation" frame-title="{{'volume.citation.title' | message}}" fold>
-          <p ng-bind-html="volume | cite" class="citation"></p>
-        </div>
+								<dt ng-if="volume.summary.agemean > 0">{{'volume.ages.title' | message}}</dt>
+								<dd ng-if="volume.summary.agemean > 0">{{ageSummary(volume.summary)}}</dd>
+							</dl>
+						</div>
+					</div>
+
+					<div frame id="frame_citation" frame-title="{{'volume.citation.title' | message}}" fold>
+						<p ng-bind-html="volume | cite" class="citation"></p>
+					</div>
+
+					<a href="" class="button mini yellow" ng-click="edit()" ng-bind-html="'volume.edit' | message"></a>
+				</div>
+
+				<form name="volumeEditForm" ng-show="editMode">
+					<label bo-html="'volume.name' | message"></label>
+					<input type="text" name="name" ng-model="volumeEditForm.data.name">
+
+					<label bo-html="'volume.alias' | message"></label>
+					<input type="text" name="alias" ng-model="volumeEditForm.data.alias">
+
+					<label bo-html="'volume.body' | message"></label>
+					<textarea name="body" ng-model="volumeEditForm.data.body"></textarea>
+
+					<button ng-click="save()" class="green" bo-html="'save' | message"></button>
+					<button ng-click="cancel()" class="red" bo-html="'cancel' | message"></button>
+				</form>
       </div>
 
       <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
+        <div class="panel_overview_thumbnail_wrap">
+          <img class="panel_overview_thumbnail" ng-src="{{page.router.volumeThumb(volume)}}">
+        </div>
+
         <div frame id="frame_people" frame-title="{{'volume.admins.title' | message}}" fold>
           <div class="row">
             <div ng-repeat="volumeAccess in volume.access | filter:{access: 4}" class="col-desktop-3 col-laptop-4 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">

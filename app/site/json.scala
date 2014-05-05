@@ -5,6 +5,7 @@ import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.json._
 import play.api.http.Writeable
 import macros._
+import macros.async._
 
 sealed trait JsField {
   def name : String
@@ -118,8 +119,8 @@ object JsonOptions {
   type Tuple = (Key, Value)
   type Options = Map[String, Opt]
   def run(options : Options, opts : Tuple*)(implicit executionContext : ExecutionContext) : Future[JsObject] =
-    Async.map[Tuple, Option[JsonField], Seq[Option[JsonField]]](opts, { case (key, fun) =>
-      Async.map[Seq[String], JsonField](options.get(key), fun(_).map(JsonField(key, _)))
+    opts.mapAsync({ case (key, fun) =>
+      options.get(key).mapAsync(fun(_).map(JsonField(key, _)))
     }).map(r => new JsObject(r.flatten))
   def apply(base : JsonRecord, options : Options, opts : Tuple*)(implicit exceutionContext : ExecutionContext) : Future[JsonRecord] =
     run(options, opts : _*).map(base ++ _)

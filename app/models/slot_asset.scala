@@ -4,6 +4,7 @@ import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.JsObject
 import macros._
+import macros.async._
 import dbrary._
 import site._
 
@@ -199,12 +200,12 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   /** Find an asset suitable for use as a volume thumbnail. */
   private[models] def getThumb(volume : Volume) : Future[Option[SlotAsset]] =
-    Excerpt.getThumb(volume).flatMap(Async.orElse[SlotAsset](_,
+    Excerpt.getThumb(volume).flatMap(_.orElseAsync(
       SlotAssetSlot.getThumb(volume)))
 
   /** Find an asset suitable for use as a slot thumbnail. */
   private[models] def getThumb(slot : Slot) : Future[Option[SlotAsset]] =
-    Excerpt.getThumb(slot).flatMap(Async.orElse[SlotAsset](_,
+    Excerpt.getThumb(slot).flatMap(_.orElseAsync(
       SlotAssetSlot.getThumb(slot)))
 
   private final val fileNamePad = "[\0-,/?\\\\]+".r

@@ -1,16 +1,19 @@
 module.directive('populate', [
-	'$timeout', function ($timeout) {
+	'$compile', '$parse', function ($compile, $parse) {
 		var link = function ($scope, $element, $attrs) {
-			$scope.$watch('populate', function () {
-				$element.html($scope.populate);
+			$attrs.$observe('populate', function () {
+				var parse = $parse($attrs.populate)($scope);
+
+				if (angular.isString(parse)) {
+					$element.append($compile('<span>' + parse + '</span>')($scope));
+				} else {
+					$element.html(parse);
+				}
 			});
 		};
 
 		return {
 			restrict: 'A',
-			scope: {
-				populate: '='
-			},
 			priority: 150,
 			link: link
 		};

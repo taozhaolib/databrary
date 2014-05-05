@@ -138,7 +138,7 @@ object Authorization extends Table[Authorization]("authorize_view") {
 
   /** Determine the effective inherited and direct permission levels granted to a child by a parent. */
   private[models] def get(child : Party, parent : Party = Party.Root) : Future[Authorization] =
-    if (child === parent) Async(new Self(parent)) // optimization
+    if (child === parent) async(new Self(parent)) // optimization
     else columns
       .SELECT("WHERE child = ? AND parent = ?")
       .apply(child.id, parent.id).singleOpt

@@ -16,6 +16,43 @@ module.controller('RegisterPanel', [
 			})
 		});
 
+
+		// TODO: Remove analytics
+		$scope.$watch(function () {
+			if (!$scope.wizard)
+				return;
+
+			for (var i = 0, l = $scope.wizard.steps.length; i < l; i++) {
+				if ($scope.wizard.steps[i].active)
+					return $scope.wizard.steps[i]
+			}
+		}, function (step) {
+			if (!step)
+				return;
+
+			page.analytics.add('change', {
+				type: 'wizard',
+				id: step.id,
+				name: step.name
+			});
+
+			page.models.Analytic.send();
+		});
+
+		$scope.$watch(function () {
+			return $scope.agreement && $scope.agreement.current;
+		}, function (current) {
+			if (!current)
+				return;
+
+			page.analytics.add('change', {
+				type: 'agreement',
+				page: current
+			});
+
+			page.models.Analytic.send();
+		});
+
 		//
 
 		$scope.wizard = {};
@@ -232,6 +269,7 @@ module.controller('RegisterPanel', [
 
 				$scope.authSearchForm.selectFn = function (found) {
 					$scope.authSearchForm.data.party = found;
+					$scope.infoForm.data.query = undefined;
 					$scope.updateWizard();
 				};
 
@@ -282,9 +320,8 @@ module.controller('RegisterPanel', [
 								apply: true,
 								notfound: true,
 								name: $scope.infoForm.data.query,
-								target: $scope.infoForm.data.info
+								info: $scope.infoForm.data.info
 							}
-
 						})
 						.success(function (data) {
 							$scope.authApplyForm.successFn();
@@ -371,12 +408,22 @@ module.controller('RegisterPanel', [
 
 				$scope.authApplyForm.party = $scope.auth.user;
 
+				var perm = [];
+
+				if($scope.authSearchForm.institution) {
+					perm = [2, 0];
+					step.institution = true;
+				} else {
+					perm = [2, 2];
+					step.institution = false;
+				}
+
 				if ($scope.authSearchForm.data.party && !$scope.authApplyForm.other)
 					$scope.authApplyForm.other = {
 						id: $scope.authSearchForm.data.party.id,
 						party: $scope.authSearchForm.data.party,
-						inherit: 0,
-						direct: 0
+						inherit: perm[2],
+						direct: perm[1]
 					};
 			},
 

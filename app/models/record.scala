@@ -78,7 +78,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   /** Update the given values in the database and this object in-place. */
   def change(category : Option[Option[RecordCategory]] = None) : Future[Boolean] = {
-    category.fold(Async(false)) { cat =>
+    category.fold(async(false)) { cat =>
     SQL("UPDATE record SET category = ? WHERE id = ?").apply(cat.map(_.id), id)
       .execute.andThen { case scala.util.Success(true) =>
         _category = cat

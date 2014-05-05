@@ -11,6 +11,7 @@ import site._
 trait Slot extends TableRow with InVolume with SiteObject {
   def container : Container = context.container
   val segment : Segment
+  /** The containing consent slot, or container. */
   def context : ContextSlot
   /** The effective consent level that applies to contained data. */
   def consent : Consent.Value = context.consent
@@ -78,7 +79,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
     * @return true if the tag name is valid
     */
   final def setTag(tag : String, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Future[Option[TagWeight]] =
-    Tag.valid(tag).fold(Async[Option[TagWeight]](None))(tname => for {
+    Tag.valid(tag).fold(async[Option[TagWeight]](None))(tname => for {
       t <- Tag.getOrCreate(tname)
       _ <- t.set(this, up)
       r <- t.weight(this)

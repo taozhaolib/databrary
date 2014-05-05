@@ -66,7 +66,7 @@ module.config([
 				return window.$play.object && window.$play.object.reset ? 'resetView.html' : 'registerView.html';
 			},
 			resolve: {
-				token: ['$q', '$http', '$route', '$window', function ($q, $http, $route, $window) {
+				token: ['$q', '$http', '$route', '$window', '$location', function ($q, $http, $route, $window, $location) {
 					var deferred = $q.defer();
 
 					if ($window.$play.object && $window.$play.object.auth)
@@ -80,7 +80,7 @@ module.config([
 							})
 							.error(function () {
 								deferred.reject();
-								$location('/');
+								$location.url('/');
 							});
 
 					return deferred.promise;
@@ -132,6 +132,8 @@ module.config([
 						var req = {
 							comments: '',
 							access: '',
+							openid: '',
+							duns: '',
 							parents: '',
 							children: ''
 						};

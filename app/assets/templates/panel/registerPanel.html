@@ -46,16 +46,32 @@
         </wizard-step>
 
         <wizard-step id="register_agent">
-          <auth-search-form></auth-search-form>
+          <div>
+            <label ng-bind-html="'wizard.register_agent.seeking' | message"></label>
+
+            <div>
+              <input type="radio" ng-model="authSearchForm.institution" ng-value="true">
+              <label class="option"><strong>{{'auth.preset.CONTRIBUTE.NONE.title' | message}}</strong>: {{'auth.preset.CONTRIBUTE.NONE' | possessive:'investigator'}}</label>
+            </div>
+
+            <div>
+              <input type="radio" ng-model="authSearchForm.institution" ng-value="false">
+              <label class="option"><strong>{{'auth.preset.CONTRIBUTE.CONTRIBUTE.title' | message}}</strong>: {{'auth.preset.CONTRIBUTE.CONTRIBUTE' | possessive:'investigator'}}</label>
+            </div>
+          </div>
+
+          <auth-search-form institution="{{authSearchForm.institution}}" ng-show="authSearchForm.institution === true || authSearchForm.institution === false"></auth-search-form>
         </wizard-step>
 
         <wizard-step id="register_request">
           <div ng-hide="ifInfo()">
+            <legend ng-bind-html="'auth.request.from' | message:authApplyForm.other.party.name" ng-if="!authApplyForm.other.party.institution"></legend>
+
             <auth-apply-form></auth-apply-form>
           </div>
 
-          <div ng-show="ifInfo()">
-            <p ng-bind-html="'register.notfound.instructions' | message"></p>
+          <div ng-show="ifInfo() && institution">
+            <div ng-bind-html="'auth.info.prompt' | message"></div>
 
             <form name="infoForm">
               <textarea id="field_info" ng-model="infoForm.data.info"></textarea>
@@ -63,6 +79,10 @@
               <button class="green" type="submit" ng-disabled="!infoForm.ready()" ng-click="infoForm.proceed()">{{'register.continue' | message}}</button>
               <button ng-click="infoForm.cancel()" class="red">{{"cancel" | message}}</button>
             </form>
+          </div>
+
+          <div ng-show="ifInfo() && !institution">
+            <div ng-bind-html="'auth.request.notfound.individual.instructions' | message | format"></div>
           </div>
         </wizard-step>
 

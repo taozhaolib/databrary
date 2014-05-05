@@ -45,6 +45,7 @@ mail.authorized.subject=Databrary authorization approved
 mail.authorized.body=You have been authorized for Databrary access by {0}.
 
 # Generic UI
+save=Save
 cancel=Cancel
 reset=Reset
 
@@ -67,11 +68,17 @@ login.method.openid=or login with OpenID.
 login.forgot=Forgot your password?
 email=Email
 password=Password
+password.current=Current Password
+password.new=New Password
+password.new.again=New Password (again)
 password.incorrect=Incorrect password.
 password.again=Passwords do not match.
 password.check=Insecure password: {0}
 openid=OpenID
 orcid=ORCiD
+fullname=Full Name
+duns=D-U-N-S
+avatar=Avatar
 affiliation=Affiliation
 login.bad=Incorrect login.
 login.throttled=Too many login attempts. Try again later.
@@ -99,10 +106,16 @@ reset.save.error=Could not save new password.
 
 welcome.title=Welcome
 welcome.title.sub=Databrary Private Beta
-welcome.body=Databrary is currently in private beta. For more information, please visit <a href="http://databrary.org">databrary.org</a>.\n\nIf you''d like to be notified when we open the site to a wider audience, you can join our <a href="http://databrary.org/contact/newsletter.html">mailing list</a>. In the mean time, you can also <a href="http://databrary.org/user-guide/getting-started/release-instructions.html">start collecting sharable data</a> or <a href="http://databrary.org/user-guide/getting-started/introduction.html">begin the authorization process</a> so you''re ready to start using Databrary once we launch.\n\nIf you already have an account, you can <a href="/login">login</a>. If you''ve received an invitation, please use the link found in that email to register.
+welcome.body=Databrary is currently in private beta. For more information, please visit <a href="http://databrary.org">databrary.org</a>.\n\nIf you''d like to be notified when we open the site to a wider audience, you can join our <a href="http://databrary.org/contact/newsletter.html">mailing list</a>. In the mean time, you can also <a href="http://databrary.org/user-guide/releasing-data.html">start collecting sharable data</a> or <a href="http://databrary.org/user-guide/getting-authorized.html">begin the authorization process</a> so you''re ready to start using Databrary once we launch.\n\nIf you already have an account, you can <a href="/login">login</a>. If you''ve received an invitation, please use the link found in that email to register.
 
 party.overview.title=Overview
 party.contact.title=Contact
+party.edit=update profile
+
+party.edit.personal=Personal Info
+party.edit.admin=Administration
+party.edit.success=Profile saved successfully!
+party.edit.error=Unable to save profile.
 
 network.title=Authorizations
 network.view=view
@@ -121,8 +134,10 @@ auth.pending=Request pending.
 auth.request.title=Request the following status from {0}:
 auth.request.notfound.user=User Not Found
 auth.request.notfound.title=More information required
-auth.request.notfound.instructions=If you're seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.\n\nOtherwise, offer your best guess as to whom to speak to about granting you authorization in the space provided.
+auth.request.notfound.instructions=If you're seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.\n\nOtherwise, offer your best guess as to whom to contact about granting you authorization in the space provided.
+auth.request.notfound.individual.instructions=Please invite the investigator from whom you are seeking authorization to Databrary directly and return after they have registered.
 auth.request.notfound.success=Stay tuned! We''ll contact your institution and get back to you as soon we can.
+auth.request.from=Click to request affiliate status from {0}.
 auth.apply.error=Could not submit your request.
 auth.grant.title=Grant {0} the following capabilities:
 auth.grant.save.error=Could not save this authorization.
@@ -136,7 +151,7 @@ auth.update=Update
 auth.deny=Deny
 auth.revoke=Revoke
 auth.notfound=None of these
-auth.info.prompt=Contact info for your institution''s authorizing official (OSP)
+auth.info.prompt=Please offer your best guess as to whom Databrary should contact about granting you authorization.
 
 # Permission levels
 auth.inherit.NONE=No access.
@@ -211,6 +226,13 @@ volume.reuse.title=Reuse
 volume.reuse.provides=These data are used in...
 volume.reuse.consumes=These data were originally collected as part of...
 
+volume.name=Title
+volume.alias=Alias
+volume.body=Description
+volume.edit=edit volume
+volume.edit.success=Volume saved successfully!
+volume.edit.error=Unable to save volume.
+
 browser.title=Data
 browser.group=+
 browser.group.by=Categorize by
@@ -227,13 +249,12 @@ excerpts.title=Excerpts
 excerpts.download=Download this excerpt.
 excerpts.jump=Jump to the session from which this excerpt originates.
 
+player.title=Player
 player.download=Download this file.
 player.close=Close the media player.
 
 materials.title=Materials
 materials.empty=There are no files here.
-
-player.title=Player
 
 citations.title=Publications
 
@@ -270,7 +291,14 @@ notice.help.exclusion=<strong>Exclusion</strong>: This session was excluded due 
 error.prefix=<strong>Error</strong>:
 error.suffix=Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
 
+error.report=<a href="mailto:feedback@databrary.org?subject={0}&body={1}" target="_blank">Send report</a>.
+error.report.subject=[Error {0}] {1}
+error.report.body=Describe the error in your own words:\n\n\n\n----\n\n{0}
+
+error.view=<a href="" ng-click="message.fn()">View error</a>.
+
 error.generic=Something''s gone terribly wrong.
+error.email=feedback@databrary.org
 
 scraper.error=Could not retrieve required document "{0}".
 video.unsupported=Unfortunately, we do not currently support playing videos in Firefox on OS X. Please try Safari or Chrome.
@@ -284,7 +312,6 @@ register.agree=Agree
 register.register=Agree and register
 register.agreement.instructions=Download the <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">pdf version</a> for the full agreement. Terms in italics are defined in our <a href="http://databrary.org/user-guide/policies/definitions.html" target="_blank">definitions</a>.
 register.sent.instructions=Your confirmation email has been sent to {0}.
-register.notfound.instructions=Please offer your best guess as to whom to speak to about granting you authorization.
 register.authquery.error=Could not retrieve potential authorizing agents.
 
 wizard.register_create.name=Create Account
@@ -306,10 +333,12 @@ wizard.register_password.instructions=Please set a secure password. Remember tha
 wizard.register_agent.name=Find Authorizing Agent
 wizard.register_agent.description=Select a party to request authorized Databrary access.
 wizard.register_agent.instructions=Please search for the user or institution that will co-sign your agreement and authorize you to access the shared data in Databrary.
+wizard.register_agent.seeking=Select desired status:
 
 wizard.register_request.name=Request Authorization
 wizard.register_request.description=Select role and submit request.
-wizard.register_request.instructions=If you are eligible for Databrary Principal Investigator status, please select ''Principal Investigator''. If you would like to be authorized by a Databrary Principal Investigator, please select ''Affiliate Investigator''.
+wizard.register_request.instructions=
+wizard.register_request.more=If you are eligible for Databrary Principal Investigator status, please select "Principal Investigator". If you would like to be authorized by a Databrary Principal Investigator, please select "Affiliate Investigator".
 
 wizard.register_pending.name=Stay Tuned
 wizard.register_pending.description=Tips for exploring Databrary.

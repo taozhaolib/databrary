@@ -1,5 +1,5 @@
 module.factory('analyticService', [
-	'$rootScope', '$location', '$cacheFactory', function ($rootScope, $location, $cacheFactory) {
+	'$rootScope', '$location', '$cacheFactory', '$injector', function ($rootScope, $location, $cacheFactory, $injector) {
 		var analytics = {};
 
 		var queue = [];
@@ -9,6 +9,9 @@ module.factory('analyticService', [
 		analytics.dump = function (config) {
 			if (!queue.length)
 				return false;
+
+			if(config.url.indexOf('null') > -1)
+				return JSON.stringify(queue.splice(0, queue.length));
 
 			var info = $cacheFactory.info();
 			var cache, key;
@@ -28,16 +31,16 @@ module.factory('analyticService', [
 		};
 
 		analytics.add = function (action, route, data) {
-			queue.push({
-				action: action,
-				route: route,
-				data: data
-			});
+			var analytic = {};
+
+			analytic.action = action;
+			analytic.route = angular.isString(route) ? route : $location.url();
+			analytic.data = angular.isObject(route) ? route : data || {};
+
+			queue.push(analytic);
 		};
 
 		//
-
-		//$rootScope.$on('$routeChangeStart', function (event, next, current) {});
 
 		$rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
 			analytics.add('open', $location.url(), {
@@ -53,8 +56,6 @@ module.factory('analyticService', [
 				error: error
 			});
 		});
-
-		//$rootScope.$on('$routeUpdate', function (event, current) {});
 
 		//
 

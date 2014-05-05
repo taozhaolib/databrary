@@ -10,6 +10,7 @@ import          libs.Files.TemporaryFile
 import          libs.iteratee.Enumerator
 import          libs.concurrent.Execution.Implicits.defaultContext
 import macros._
+import macros.async._
 import dbrary._
 import site._
 import models._
@@ -25,11 +26,10 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
     Action(o, Permission.EDIT).async { implicit request =>
       val form = new AssetController.ChangeForm()._bind
       for {
-	container <- macros.Async.map[Container.Id, Container](form.container.get,
+	container <- form.container.get.mapAsync(
 	  Container.get(_).map(_.getOrElse(form.container.withError("Invalid container ID")._throw)))
 	_ <- request.obj.change(classification = form.classification.get, name = form.name.get)
-	_ <- macros.Async.foreach[Container, Unit](container,
-	  request.obj.link(_, form.position.get))
+	_ <- container.foreachAsync(request.obj.link(_, form.position.get))
       } yield (result(request.obj))
     }
 
@@ -37,7 +37,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
     val tag = asset.etag
     /* Assuming assets are immutable, any if-modified-since header is good enough */
     if (HTTP.notModified(tag, new Timestamp(0)))
-      macros.Async(NotModified)
+      async(NotModified)
     else for {
       data <- store.Asset.read(asset)
       date <- asset.source.creation
@@ -144,7 +144,7 @@ object AssetHtml extends AssetController with HtmlController {
 	}
       val aname = form.name.get.flatten orElse Maybe(fname).opt
       for {
-	container <- macros.Async.map[Container.Id, Container](form.container.get, Container.get(_).map(_ getOrElse
+	container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
 	  form.container.withError("Invalid container ID")._throw))
 	asset <- fmt match {
 	  case fmt : TimeseriesFormat if adm && form.timeseries.get =>
@@ -153,7 +153,7 @@ object AssetHtml extends AssetController with HtmlController {
 	  case _ =>
 	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), aname, file)
 	}
-	sa <- macros.Async.map[Container, SlotAsset](container, asset.link(_, form.position.get))
+	sa <- container.mapAsync(asset.link(_, form.position.get))
 	_ = if (fmt.mimetype.startsWith("video/") && !form.timeseries.get)
 	  store.Transcode.start(asset)
       } yield (Redirect(sa.getOrElse(asset).pageURL))

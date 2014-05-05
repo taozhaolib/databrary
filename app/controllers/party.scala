@@ -10,6 +10,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json
 import org.mindrot.jbcrypt.BCrypt
 import macros._
+import macros.async._
 import dbrary._
 import site._
 import models._
@@ -30,7 +31,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
               Right(request.withObj(p))
             }
           else
-            macros.Async(Left(Forbidden))
+            async(Left(Forbidden))
       }
     }
 
@@ -59,18 +60,18 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	affiliation = form.affiliation.get,
 	duns = form.duns.get.filter(_ => request.access.direct == Permission.ADMIN)
       )
-      _ <- macros.Async.foreach[PartyController.AccountEditForm, Unit](form.accountForm, { form =>
+      _ <- form.accountForm foreachAsync { form =>
 	form.checkPassword(form.account)
 	form.orThrow.account.change(
 	  email = form.email.get,
 	  password = form.cryptPassword,
 	  openid = form.openid.get.map(Maybe(_).opt))
-      })
-      _ <- macros.Async.foreach(form.avatar.get, { file : form.FilePart =>
+      }
+      _ <- form.avatar.get foreachAsync { file : form.FilePart =>
 	val fmt = AssetFormat.getFilePart(file).filter(_.isImage) getOrElse
 	  form.avatar.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw
 	request.obj.setAvatar(file.ref, fmt, Maybe(file.filename).opt)
-      })
+      }
     } yield (result(request.obj))
   }
 
@@ -82,7 +83,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	orcid = form.orcid.get.flatten,
 	affiliation = form.affiliation.get.flatten,
 	duns = form.duns.get.flatten)
-      a <- macros.Async.map[PartyController.AccountCreateForm, Account](cast[PartyController.AccountCreateForm](form), form =>
+      a <- cast[PartyController.AccountCreateForm](form).mapAsync(form =>
 	Account.create(p,
 	  email = form.email.get.get,
 	  password = form.cryptPassword,
@@ -112,7 +113,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	      to = child.account.map(_.email).toSeq :+ Messages("mail.authorize"),
 	      subject = Messages("mail.authorized.subject"),
 	      body = Messages("mail.authorized.body", request.obj.party.name))
-	    else macros.Async.void
+	    else async.void
 	} yield (result(request.obj))
       })
     }
@@ -144,7 +145,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	  parent.name)
       ).recover {
 	case ServiceUnavailableException => ()
-      } else macros.Async.void
+      } else async.void
     } yield (result(request.obj))
     })
   }
@@ -163,7 +164,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	} yield (Ok("request sent"))
       else for {
 	res <- models.Party.searchForAuthorize(form.name.get, request.obj.party, form.institution.get)
-        r <- if (request.isApi) macros.Async(Ok(JsonRecord.map[Party](_.json)(res)))
+        r <- if (request.isApi) async(Ok(JsonRecord.map[Party](_.json)(res)))
 	  else PartyHtml.viewAdmin(form +: res.map(e =>
 	    (if (apply) new PartyController.AuthorizeApplyForm(e) else new PartyController.AuthorizeChildForm(e)).copyFrom(form)))
 	    .map(Ok(_))
@@ -303,7 +304,7 @@ object PartyHtml extends PartyController with HtmlController {
       parents <- request.obj.party.authorizeParents()
       children <- request.obj.party.authorizeChildren()
       vols <- request.obj.volumeAccess
-      comments <- request.obj.party.account.fold[Future[Seq[Comment]]](macros.Async(Nil))(_.comments)
+      comments <- request.obj.party.account.fold[Future[Seq[Comment]]](async(Nil))(_.comments)
     } yield (Ok(views.html.party.view(parents, children, vols, comments)))
 
   def profile =
@@ -352,7 +353,7 @@ object PartyHtml extends PartyController with HtmlController {
   def avatar(i : models.Party.Id, size : Int = 64) =
     (SiteAction.Unlocked ~> action(Some(i), Some(Permission.NONE))).async { implicit request =>
       request.obj.avatar.flatMap(_.fold(
-	macros.Async(Found("//gravatar.com/avatar/"+request.obj.party.account.fold("none")(a => store.MD5.hex(a.email.toLowerCase))+"?s="+size+"&d=mm")))(
+	async(Found("//gravatar.com/avatar/"+request.obj.party.account.fold("none")(a => store.MD5.hex(a.email.toLowerCase))+"?s="+size+"&d=mm")))(
 	AssetController.assetResult(_)))
     }
 

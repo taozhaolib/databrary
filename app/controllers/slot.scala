@@ -8,6 +8,7 @@ import          i18n.Messages
 import          libs.json._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import macros._
+import macros.async._
 import site._
 import dbrary._
 import models._
@@ -23,9 +24,9 @@ private[controllers] sealed class SlotController extends ObjectController[Slot] 
     Action(i, segment, Permission.EDIT).async { implicit request =>
       val form = SlotController.editForm._bind
       for {
-	_ <- macros.Async.foreach(cast[SlotController.ContainerEditForm](form), (form : SlotController.ContainerEditForm) =>
+	_ <- cast[SlotController.ContainerEditForm](form).foreachAsync((form : SlotController.ContainerEditForm) =>
 	  request.obj.container.change(name = form.name.get, date = form.date.get))
-	_ <- macros.Async.foreach(form.consent.get, (c : Consent.Value) => request.obj.setConsent(c))
+	_ <- form.consent.get.foreachAsync((c : Consent.Value) => request.obj.setConsent(c))
       } yield (result(request.obj))
     }
 
@@ -116,7 +117,7 @@ object SlotHtml extends SlotController with HtmlController {
       val form = new ContainerCreateForm()._bind
       for {
 	cont <- models.Container.create(request.obj, name = form.name.get.flatten, date = form.date.get.flatten)
-	_ <- macros.Async.foreach(form.consent.get, (c : Consent.Value) =>
+	_ <- form.consent.get.foreachAsync((c : Consent.Value) =>
 	  cont.setConsent(c))
       } yield (result(cont))
     }

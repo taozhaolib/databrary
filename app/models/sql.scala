@@ -67,7 +67,7 @@ object DBUtil {
 	  }
 	}
 	}
-      case Some(r) => Async(r)
+      case Some(r) => async(r)
     }
     dbc.inTransaction(loop)
   }
@@ -85,7 +85,7 @@ object DBUtil {
         }
 	}
       else
-        Async(r)
+        async(r)
     }
     new SQLResult(dbc.inTransaction(loop))
   }
