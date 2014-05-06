@@ -208,13 +208,16 @@ module.factory('routerService', [
 			return router.makeUrl('/record/:id/edit', data);
 		};
 
-		router.volumeEdit = function (data) {
+		router.volumeEdit = function (data, page) {
 			if (!type.isVolume(data))
 				throw new Error('routerService.volumeEdit() requires Volume as first argument');
 
 			data = {
 				id: data.id
 			};
+
+			if (page)
+				data.page = page;
 
 			return router.makeUrl('/volume/:id/edit', data);
 		};
