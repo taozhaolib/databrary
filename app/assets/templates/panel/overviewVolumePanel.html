@@ -30,7 +30,7 @@
 						<p ng-bind-html="volume | cite" class="citation"></p>
 					</div>
 
-					<a href="" class="button mini yellow" ng-click="edit()" ng-bind-html="'volume.edit' | message"></a>
+					<a href="" ng-if="page.auth.hasAccess('EDIT', volume)" class="button mini yellow" ng-click="edit()" ng-bind-html="'volume.edit' | message"></a>
 				</div>
 
 				<form name="volumeEditForm" ng-show="editMode">

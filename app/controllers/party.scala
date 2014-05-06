@@ -369,6 +369,18 @@ object PartyApi extends PartyController with ApiController {
       request.obj.json(request.apiOptions).map(Ok(_))
     }
 
+  final class SearchForm(implicit request : SiteRequest[_])
+    extends ApiForm(routes.PartyApi.query) {
+    val query = Field(Mappings.maybeText)
+    val access = Field(OptionMapping(Mappings.enum(Permission)))
+  }
+
+  def query = SiteAction.async { implicit request =>
+    val form = new SearchForm()._bind
+    Party.search(form.query.get, form.access.get).map(l =>
+      Ok(JsonRecord.map[Party](_.json)(l)))
+  }
+
   def authorizeGet(partyId : models.Party.Id) = AdminAction(partyId).async { implicit request =>
     for {
       parents <- request.obj.party.authorizeParents(true)

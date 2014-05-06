@@ -1,0 +1,20 @@
+<article class="article article_crud article_volume article_edit panel">
+  <div class="wrap">
+    <div class="row">
+      <hgroup class="col-full">
+        <h1 class="panel_context">{{'volume.edit.title' | message}}</h1>
+
+        <h2 class="panel_title with_context">{{'volume.edit.title.sub' | message }}</h2>
+      </hgroup>
+
+      <div class="col-full">
+        <wizard retrieve="retrieveWizard" update="updateWizard">
+          <wizard-step id="volume_edit_overview"></wizard-step>
+          <wizard-step id="volume_edit_publications"></wizard-step>
+          <wizard-step id="volume_edit_materials"></wizard-step>
+          <wizard-step id="volume_edit_access"></wizard-step>
+        </wizard>
+      </div>
+    </div>
+  </div>
+</article>
