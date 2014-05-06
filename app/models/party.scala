@@ -199,6 +199,14 @@ object Party extends TableId[Party]("party") {
   private def byNameArgs(name : String) =
     SQLArgs(name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%")) * 2
 
+  def search(query : Option[String], access : Option[Permission.Value])(implicit site : Site) : Future[Seq[Party]] =
+    row.SELECT(if (access.nonEmpty) "JOIN authorize_view ON party.id = child AND parent = 0" else "",
+      "WHERE id > 0",
+      if (query.nonEmpty) "AND " + byName else "",
+      if (access.nonEmpty) "AND inherit = ?" else "")
+    .apply(query.fold(SQLArgs())(byNameArgs(_)) ++ access.fold(SQLArgs())(SQLArgs(_)))
+    .list
+
   /** Search for parties by name for the purpose of authorization.
     * @param name string to match against name/email (case insensitive substring)
     * @param who party doing the authorization, to exclude parties already authorized
