@@ -1,10 +1,9 @@
-<article class="article article_crud article_volume article_edit panel">
+<article class="article article_crud article_volume article_edit panel" bindonce>
   <div class="wrap">
     <div class="row">
       <hgroup class="col-full">
-        <h1 class="panel_context">{{'volume.edit.title' | message}}</h1>
-
-        <h2 class="panel_title with_context">{{'volume.edit.title.sub' | message }}</h2>
+        <h1 class="panel_context" bo-html="'volume.edit.title' | message"></h1>
+        <h2 class="panel_title with_context" bo-html="'volume.edit.title.sub' | message"></h2>
       </hgroup>
 
       <div class="col-full">

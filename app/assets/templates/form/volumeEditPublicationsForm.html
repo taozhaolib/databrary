@@ -1,4 +1,9 @@
-<form name="volumeEditPublicationsForm">
-p
+<form name="volumeEditPublicationsForm" bindonce>
+  <a ng-if="volumeEditPublicationsForm.volume" href="{{page.router.volumeEdit(volumeEditPublicationsForm.volume, 'materials')}}">link</a>
+  <fieldset class="clean">
+    <button ng-click="volumeEditPublicationsForm.save()" bo-html="'save' | message" class="green" ng-if="volumeEditPublicationsForm.$dirty"></button>
+    <button ng-click="volumeEditPublicationsForm.reset()" bo-html="'reset' | message" class="red" ng-if="volumeEditPublicationsForm.$dirty"></button>
+    <button ng-click="volumeEditPublicationsForm.cancel()" bo-html="'cancel' | message" class="yellow" ng-if="volumeEditPublicationsForm.volume"></button>
+  </fieldset>
 </form>
 

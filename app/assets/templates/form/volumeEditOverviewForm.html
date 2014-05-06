@@ -1,4 +1,9 @@
-<form name="volumeEditOverviewForm">
-o
+<form name="volumeEditOverviewForm" bindonce>
+
+  <fieldset class="clean">
+    <button ng-click="volumeEditOverviewForm.save()" bo-html="'save' | message" class="green" ng-if="volumeEditOverviewForm.$dirty"></button>
+    <button ng-click="volumeEditOverviewForm.reset()" bo-html="'reset' | message" class="red" ng-if="volumeEditOverviewForm.$dirty"></button>
+    <button ng-click="volumeEditOverviewForm.cancel()" bo-html="'cancel' | message" class="yellow" ng-if="volumeEditOverviewForm.volume"></button>
+  </fieldset>
 </form>
 
