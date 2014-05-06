@@ -41,6 +41,7 @@ object ApplicationBuild extends Build {
   val main = play.Project(appName, "unknown", appDependencies)
     .dependsOn(macros, dbrary, media, logbackAccess).settings(
       version <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown")),
+       closureCompilerOptions += "ecmascript5_strict",
       play.Project.templatesImport ++= Seq("macros._", "site._"),
       javascriptEntryPoints := PathFinder.empty, // disable play's standard js compiler
       resourceGenerators in Compile := Seq(),

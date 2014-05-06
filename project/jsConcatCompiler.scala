@@ -29,6 +29,7 @@ object JSConcatCompiler extends play.PlayAssetsCompiler with Plugin {
         case "checkTypes" => o.setCheckTypes(true)
         case "checkSymbols" => o.setCheckSymbols(true)
         case "ecmascript5" => o.setLanguageIn(CompilerOptions.LanguageMode.ECMASCRIPT5)
+        case "ecmascript5_strict" => o.setLanguageIn(CompilerOptions.LanguageMode.ECMASCRIPT5_STRICT)
         case _ => Unit // Unknown option
       })
       o
