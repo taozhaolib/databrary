@@ -143,4 +143,14 @@ object Authorization extends Table[Authorization]("authorize_view") {
       .SELECT("WHERE child = ? AND parent = ?")
       .apply(child.id, parent.id).singleOpt
       .map(make(child, parent))
+
+  def _get(childId : Party.Id, parent : Party = Party.Root) : Future[Option[Authorization]] =
+    if (childId === parent.id) async(Some(new Self(parent))) // optimization
+    else if (childId == Party.NOBODY) async(Some(Nobody))
+    else if (childId == Party.ROOT) async(Some(Root))
+    else Party.row
+      .leftJoin(columns, "party.id = authorize_view.child AND authorize_view.parent = ?")
+      .map { case (p, a) => make(p)(a) }
+      .SELECT("WHERE party.id = ?")
+      .apply(parent.id, childId).singleOpt
 }

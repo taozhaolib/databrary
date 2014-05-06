@@ -47,7 +47,7 @@ object Transcode {
 	logger.debug(cmd.mkString(" "))
 	val r = Process(cmd).!(log)
 	if (r != 0)
-	  throw new RuntimeException("failed: " + r)
+	  scala.sys.error("failed: " + r)
 	val tp = media.AV.probe(t.file)
 	if (!tp.isVideo || (sp.duration - tp.duration).abs > Offset.ofSeconds(0.5))
 	  throw new RuntimeException("check failed: " + sp.duration + "," + tp.duration)
@@ -68,12 +68,14 @@ object Transcode {
     ctl.getPath +: (dir.toSeq.flatMap(Seq("-d", _)) ++ host.toSeq.flatMap(Seq("-h", _)))
   }
 
-  private def ctl(aid : models.Asset.Id, args : String*) : String =
-    Process(ctlCmd ++ Seq("-a", aid.toString) ++ args)
-    .!!(procLogger(aid.toString))
+  private def ctl(aid : models.Asset.Id, args : String*) : String = {
+    val cmd = ctlCmd ++ Seq("-a", aid.toString) ++ args
+    logger.debug(cmd.mkString(" "))
+    Process(cmd).!!(procLogger(aid.toString))
+  }
 
   private def setResult(aid : models.Asset.Id, pid : Option[Int], result : String) : Future[Boolean] =
-    SQL("UPDATE transcode SET result = ? WHERE asset = ? AND", if (pid.isEmpty) "process IS NULL" else "process = ?")
+    SQL("UPDATE transcode SET result = ?, process = NULL WHERE asset = ? AND", if (pid.isEmpty) "process IS NULL" else "process = ?")
     .apply(SQLArgs(result, aid) ++ SQLArgs.fromOption(pid)).execute
 
   def start(asset : models.Asset)(implicit request : controllers.SiteRequest[_]) : Future[Boolean] =
@@ -87,11 +89,13 @@ object Transcode {
 	  "-f", src.getPath,
 	  "-r", controllers.AssetApi.TranscodedForm(asset.id)._action.absoluteURL())
       }
+      _ = logger.debug("running " + asset.id + ": " + pid.merge.toString)
       r <- SQL("UPDATE transcode SET process = ?::integer, result = ? WHERE asset = ?")
 	.apply(pid.right.toOption, pid.left.toOption.map(_.toString), asset.id).execute
     } yield (r)).recoverWith { case e : Throwable =>
       logger.error("starting " + asset.id, e)
-      setResult(asset.id, None, e.toString)
+      SQL("UPDATE transcode SET result = ? WHERE asset = ?")
+	.apply(e.toString, asset.id).execute
     }
 
   def stop(id : models.Asset.Id) : Future[Unit] =
@@ -103,19 +107,30 @@ object Transcode {
 
   def collect(aid : models.Asset.Id, pid : Int, res : Int, log : String) : Future[Boolean] =
     if (res != 0)
-      setResult(aid, Some(pid), "exit " + res + "\n" + log)
-    else models.Transcode.get(aid, pid).flatMap(_.foreachAsync({ asset =>
-      val f = FileAsset.file(asset)
-      val t = TemporaryFile(new File(f.getPath + ".mp4"))
-      ctl(asset.id, "-c", t.file.getPath)
-      val sp = media.AV.probe(f)
-      val tp = media.AV.probe(t.file)
-      if (!tp.isVideo || (sp.duration - tp.duration).abs > Offset.ofSeconds(0.5))
-	throw new RuntimeException("check failed: " + sp.duration + "," + tp.duration)
-      models.Asset.create(asset.volume, models.AssetFormat.Video, asset.classification, tp.duration, asset.name, t)
-	.flatMap(_.supersede(asset))
-    }, false)).recoverWith { case e : Throwable =>
-      logger.error("collecting " + aid, e)
-      setResult(aid, Some(pid), e.toString)
+      SQL("UPDATE transcode SET result = ? WHERE asset = ? AND process = ?")
+	.apply("exit " + res + "\n" + log, aid, pid).execute
+    else {
+      SQL("DELETE FROM transcode WHERE asset = ? AND process = ? RETURNING owner")
+      .apply(aid, pid).singleOpt(SQLCols[models.Party.Id])
+      .flatMap(_.flatMapAsync(
+	models.Authorization._get(_)
+	.flatMap(_.flatMapAsync(a =>
+	  models.Asset.get(aid)(new LocalAuth(a))))))
+      .flatMap(_.foreachAsync({ asset =>
+	val f = FileAsset.file(asset)
+	val t = TemporaryFile(new File(f.getPath + ".mp4"))
+	ctl(asset.id, "-c", t.file.getPath)
+	val sp = media.AV.probe(f)
+	val tp = media.AV.probe(t.file)
+	if (!tp.isVideo || (sp.duration - tp.duration).abs > Offset.ofSeconds(0.5))
+	  scala.sys.error("check failed: " + sp.duration + "," + tp.duration)
+	models.Asset.create(asset.volume, models.AssetFormat.Video, asset.classification, tp.duration, asset.name, t)
+	  .flatMap(_.supersede(asset))
+      }, false))
+      .recoverWith { case e : Throwable =>
+	logger.error("collecting " + aid, e)
+	SQL("INSERT INTO transcode (asset, result) VALUES (?, ?)")
+	  .apply(aid, e.toString + "\n" + log).execute
+      }
     }
 }
