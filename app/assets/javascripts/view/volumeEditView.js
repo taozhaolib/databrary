@@ -1,5 +1,5 @@
 module.controller('VolumeEditView', [
-	'$scope', 'volume', 'pageService', function ($scope, volume, page) {
+	'$scope', 'volume', 'pageService', '$location', function ($scope, volume, page, $location) {
 		page.title = page.constants.message('page.title.stub');
 
 		//
@@ -16,19 +16,17 @@ module.controller('VolumeEditView', [
 		};
 
 		$scope.updateWizard = function () {
-//			activate = angular.isUndefined(activate) ? true : activate;
+			if ($scope.wizard.newStep) {
+				$scope.wizard.newStep.complete = false;
 
-//			if ($scope.wizard.newStep) {
-//				$scope.prepareStep[$scope.wizard.newStep.id]($scope.wizard.newStep);
-//			}
+				$scope.wizard.newStep.allow = !!(volume || $scope.wizard.newStep.id === 'volume_edit_overview');
 
-//			angular.forEach($scope.wizard.steps, function (step) {
-//				$scope.updateStep[step.id](step, activate);
-//			});
+				if ($location.search().page && $scope.wizard.newStep.id.indexOf($location.search().page) > -1) {
+					$scope.wizard.activateStep($scope.wizard.newStep);
+				} else if ($scope.wizard.newStep.id === 'volume_edit_overview') {
+					$scope.wizard.activateStep($scope.wizard.newStep);
+				}
+			}
 		};
-
-		//
-
-
 	}
 ]);
