@@ -6,14 +6,13 @@ module.directive('wizard', [
 
 				//
 
-				$scope.linear = $attrs.hasOwnProperty('linear');
-
 				$scope.steps = [];
 				$scope.stepsList = {};
 				$scope.newStep = undefined;
 
 				$scope.onFn = {};
 				$scope.offFn = {};
+				$scope.addFn = undefined;
 				$scope.activateFn = undefined;
 
 				$scope.addStep = function (step) {
@@ -44,7 +43,7 @@ module.directive('wizard', [
 				};
 
 				$scope.isStepBlocked = function (step) {
-					return $scope.linear && !step.active && !step.allow;
+					return !step.active && !step.allow;
 				};
 
 				//
