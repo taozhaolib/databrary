@@ -14,7 +14,11 @@ object Transcode {
   private implicit val context : ExecutionContext = play.api.libs.concurrent.Akka.system.dispatchers.lookup("transcode")
   private val logger = play.api.Logger("transcode")
   private val host : Option[String] = current.configuration.getString("transcode.host").flatMap(Maybe(_).opt)
-  private val dir : Option[String] = current.configuration.getString("transcode.dir").flatMap(Maybe(_).opt)
+  private val dir : Option[File] = current.configuration.getString("transcode.dir").flatMap(Maybe(_).opt).map { s =>
+    val f = new File(s)
+    f.mkdir
+    f
+  }
 
   private def procLogger(prefix : String) = {
     val pfx = if (prefix.nonEmpty) prefix + ": " else prefix
@@ -31,7 +35,7 @@ object Transcode {
       else if (logger.isWarnEnabled) "error"
       else "fatal"
     /* When changing this, you must also change tools/hpc/transcode.pbs */
-    Seq("ffmpeg", "-loglevel", level, "-threads", "1", "-i", in.getPath, "-vf", "pad='iw+mod(iw\\,2):ih+mod(ih\\,2)'", "-threads", "1", "-f", "mp4", "-c:v", "libx264", "-c:a", "libfdk_aac", "-y", out.getPath)
+    Seq("ffmpeg", "-loglevel", level, "-threads", "1", "-i", in.getAbsolutePath, "-vf", "pad='iw+mod(iw\\,2):ih+mod(ih\\,2)'", "-threads", "1", "-f", "mp4", "-c:v", "libx264", "-c:a", "libfdk_aac", "-y", out.getAbsolutePath)
   }
 
   private def await[A](a : Future[A]) = Await.result(a, duration.Duration.Inf)
@@ -65,7 +69,7 @@ object Transcode {
       .flatMap(urlFile(_))
       .getOrElse(throw new Exception("transctl.sh not found"))
     ctl.setExecutable(true)
-    ctl.getPath +: (dir.toSeq.flatMap(Seq("-d", _)) ++ host.toSeq.flatMap(Seq("-h", _)))
+    ctl.getPath +: (dir.toSeq.flatMap(d => Seq("-d", d.getPath)) ++ host.toSeq.flatMap(Seq("-h", _)))
   }
 
   private def ctl(aid : models.Asset.Id, args : String*) : String = {
@@ -86,7 +90,7 @@ object Transcode {
       src = FileAsset.file(asset)
       pid = scala.util.control.Exception.catching(classOf[RuntimeException]) either {
 	ctl(asset.id,
-	  "-f", src.getPath,
+	  "-f", src.getAbsolutePath,
 	  "-r", controllers.AssetApi.TranscodedForm(asset.id)._action.absoluteURL())
       }
       _ = logger.debug("running " + asset.id + ": " + pid.merge.toString)
@@ -119,7 +123,7 @@ object Transcode {
       .flatMap(_.foreachAsync({ asset =>
 	val f = FileAsset.file(asset)
 	val t = TemporaryFile(new File(f.getPath + ".mp4"))
-	ctl(asset.id, "-c", t.file.getPath)
+	ctl(asset.id, "-c", t.file.getAbsolutePath)
 	val sp = media.AV.probe(f)
 	val tp = media.AV.probe(t.file)
 	if (!tp.isVideo || (sp.duration - tp.duration).abs > Offset.ofSeconds(0.5))

@@ -37,7 +37,7 @@ elif [[ -n $host ]] ; then
 elif [[ -n $kill ]] ; then
 	"$cmd" "$@"
 else
-	ln -f $src $dir/$aid
+	ln -sfT $src $dir/$aid
 	"$cmd" "$@" &
 	echo $!
 fi
