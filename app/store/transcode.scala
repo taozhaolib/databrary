@@ -71,7 +71,7 @@ object Transcode {
   private def ctl(aid : models.Asset.Id, args : String*) : String = {
     val cmd = ctlCmd ++ Seq("-a", aid.toString) ++ args
     logger.debug(cmd.mkString(" "))
-    Process(cmd).!!(procLogger(aid.toString))
+    Process(cmd).!!(procLogger(aid.toString)).trim
   }
 
   private def setResult(aid : models.Asset.Id, pid : Option[Int], result : String) : Future[Boolean] =

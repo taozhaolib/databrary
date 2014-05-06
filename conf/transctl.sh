@@ -3,7 +3,7 @@
 # This is run directly from the application, on the webserver.
 # It calls tools/transcode on transcode.host, which must be in the path.
 
-cmd=transcode
+cmd=tools/transcode
 
 while getopts 'a:c:d:f:h:k:r:' opt ; do case "$opt" in
 	a) aid=$OPTARG ;;
@@ -33,7 +33,7 @@ elif [[ -n $host ]] ; then
 	if [[ -z $kill ]] ; then
 		rsync "$src" "$host:$dir/$aid"
 	fi
-	exec ssh "$host" "$cmd" -h "$@"
+	ssh "$host" "$cmd" -h "$@" | sed 's/\.hpc0\.local$//'
 elif [[ -n $kill ]] ; then
 	"$cmd" "$@"
 else
