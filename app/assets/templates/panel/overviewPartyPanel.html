@@ -18,7 +18,7 @@
 					</div>
 				</div>
 
-				<a href="" class="button mini yellow" ng-click="edit()" ng-bind-html="'party.edit' | message"></a>
+				<a href="" ng-if="page.auth.hasAccess('EDIT', party)" class="button mini yellow" ng-click="edit()" ng-bind-html="'party.edit' | message"></a>
 			</div>
 
 			<form name="userEditForm" ng-show="editMode">
