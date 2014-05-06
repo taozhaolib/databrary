@@ -9,10 +9,21 @@
 
       <div class="col-full">
         <wizard retrieve="retrieveWizard" update="updateWizard">
-          <wizard-step id="volume_edit_overview"></wizard-step>
-          <wizard-step id="volume_edit_publications"></wizard-step>
-          <wizard-step id="volume_edit_materials"></wizard-step>
-          <wizard-step id="volume_edit_access"></wizard-step>
+          <wizard-step id="volume_edit_overview">
+            <volume-edit-overview-form></volume-edit-overview-form>
+          </wizard-step>
+
+          <wizard-step id="volume_edit_publications">
+            <volume-edit-publications-form></volume-edit-publications-form>
+          </wizard-step>
+
+          <wizard-step id="volume_edit_materials">
+            <volume-edit-materials-form></volume-edit-materials-form>
+          </wizard-step>
+
+          <wizard-step id="volume_edit_access">
+            <volume-edit-access-form></volume-edit-access-form>
+          </wizard-step>
         </wizard>
       </div>
     </div>
