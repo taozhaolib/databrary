@@ -5,12 +5,38 @@
           <search-form></search-form>
       </div>
 
-      <div class="col-full">
-        feature
-      </div>
+      <article class="home_feature col-full">
+        <div class="inner">
+          <img bo-src="page.router.volumeThumb(volume)" class="thumb" ng-click="page.$location.url(page.router.volume({id: volume.id}))">
 
-      <div class="col-full">
-          parties
+          <div class="feature">Featured</div>
+
+          <div class="info">
+            <h1><a bo-href="page.router.volume({id: volume.id})" ng-bind-html="volume.name"></a></h1>
+
+            <div class="investigators">
+              <ul class="inline-block">
+                <li ng-repeat="access in volume.access | filter:{access: 4}"><a bo-href="page.router.party(access.party)" ng-bind-html="access.party.name"></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <div class="home_parties col-full">
+        <div class="row">
+          <div ng-repeat="column in columns" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
+            <article class="home_party" ng-repeat="party in column" bindonce>
+              <img bo-src="page.router.partyAvatar(party, 300)" ng-click="page.$location.url(page.router.party(party))">
+
+              <div class="info">
+                <h1><a bo-href="page.router.party(party)" ng-bind-html="party.name"></a></h1>
+
+                <div class="affiliation" bo-if="party.affiliation" ng-bind-html="party.affiliation"></div>
+              </div>
+            </article>
+          </div>
+        </div>
       </div>
     </div>
   </div>
