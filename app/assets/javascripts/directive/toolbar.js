@@ -43,6 +43,16 @@ module.directive('toolbar', [
 
 			//
 
+			$scope.betaHome = function () {
+				if (page.auth.hasAuth('VIEW')) {
+					return '/home';
+				}
+
+				return '/';
+			};
+
+			//
+
 			$w.on('scroll resize', function () {
 				$scope.$apply(function () {
 					$scope.updateCurrentPanel();
