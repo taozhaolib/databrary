@@ -1,0 +1,27 @@
+// STYLES
+
+.search_results {
+	.padding-left(0);
+}
+
+//
+
+.search_result {
+	border-left: 2px solid @blue;
+	border-right: 2px solid @blue;
+	.border-radius(@b4);
+	.padding-width(@f2);
+	.margin-bottom(@f2);
+
+	h1 {
+		.font-line(1);
+	}
+
+	&.study {
+		border-color: @orange;
+
+		a {
+			.link-color(@orange);
+		}
+	}
+}

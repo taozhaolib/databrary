@@ -1,11 +1,13 @@
 // STYLES
 
-.body_header {
+.search_form {
 	.padding-top(1);
 	.padding-bottom(2);
 }
 
-.body_header_h1 {
+//
+
+.search_form_logo {
 	margin: 0;
 	float: left;
 	.line-height(3);
@@ -20,16 +22,23 @@
 	}
 }
 
-.body_header_search {
+.search_form_search {
 	overflow: hidden;
 
 	.w {
 		.margin(.5, .125, .25, .25);
 		text-align: right;
+		position: relative;
 	}
 
 	input[type="search"] {
 		.grid-width(max, 5);
 		margin-bottom: 0;
 	}
+}
+
+.search_form_reset {
+	position: absolute;
+	top: @b4;
+	right: @b2;
 }
