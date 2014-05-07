@@ -1,3 +1,30 @@
 <article class="article article_crud article_action article_search">
-  <ng-include src="'searchPanel.html'"></ng-include>
+  <div class="wrap">
+    <div class="row">
+      <div class="col-full">
+        <search-form></search-form>
+      </div>
+
+      <div class="col-full">
+        <ul class="flat search_results">
+          <li ng-repeat="volume in filterVolumes()" bindonce>
+            <article class="search_result cf" bo-class="volumeClasses(volume)">
+              <img class="thumb" bo-src="page.router.volumeThumb(volume)">
+
+              <h1><span class="icon" bo-class="iconClass(volume)"></span><a bo-href="page.router.volume({id: volume.id})" bo-html="volume.name"></a></h1>
+
+              <div class="investigators">
+                <strong>Investigators:</strong>
+                <ul class="inline-block">
+                  <li ng-repeat="access in volume.access | filter:{access: 4}"><a bo-href="page.router.party(access.party)" ng-bind-html="access.party.name"></a></li>
+                </ul>
+              </div>
+
+              <div class="body" ng-bind-html="volume.body.replace('\n', ' ') | truncate:30:'words'"></div>
+            </article>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </article>

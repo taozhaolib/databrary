@@ -1,0 +1,19 @@
+<form name="volumeEditOverviewForm" bindonce>
+  <fieldset class="clean">
+    <label bo-html="'volume.name' | message"></label>
+    <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name">
+
+    <label bo-html="'volume.alias' | message"></label>
+    <input type="text" name="alias" ng-model="volumeEditOverviewForm.data.alias">
+
+    <label bo-html="'volume.body' | message"></label>
+    <textarea name="body" ng-model="volumeEditOverviewForm.data.body"></textarea>
+  </fieldset>
+
+  <fieldset class="clean">
+    <button ng-click="volumeEditOverviewForm.save()" bo-html="'save' | message" class="green" ng-if="volumeEditOverviewForm.$dirty"></button>
+    <button ng-click="volumeEditOverviewForm.reset()" bo-html="'reset' | message" class="red" ng-if="volumeEditOverviewForm.$dirty"></button>
+    <button ng-click="volumeEditOverviewForm.cancel()" bo-html="'cancel' | message" class="yellow" ng-if="volumeEditOverviewForm.volume"></button>
+  </fieldset>
+</form>
+

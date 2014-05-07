@@ -5,6 +5,7 @@
 
 # static
 GET     /                                                                                         controllers.Site.start
+GET     /home                                                                                     controllers.Site.start
 
 # users
 GET     /login                                                                                    controllers.LoginHtml.view

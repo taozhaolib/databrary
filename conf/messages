@@ -48,6 +48,8 @@ mail.authorized.body=You have been authorized for Databrary access by {0}.
 save=Save
 cancel=Cancel
 reset=Reset
+edit=Edit
+create=Create
 
 toolbar.contact=Send us your comments, questions, and suggestions.
 
@@ -135,9 +137,9 @@ auth.pending=Request pending.
 auth.request.title=Request the following status from {0}:
 auth.request.notfound.user=User Not Found
 auth.request.notfound.title=More information required
-auth.request.notfound.instructions=If you're seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.\n\nOtherwise, offer your best guess as to whom to contact about granting you authorization in the space provided.
+auth.request.notfound.instructions=If you''re seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.\n\nOtherwise, please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.
 auth.request.notfound.individual.instructions=Please invite the investigator from whom you are seeking authorization to Databrary directly and return after they have registered.
-auth.request.notfound.success=Stay tuned! We''ll contact your institution and get back to you as soon we can.
+auth.request.notfound.success=Thank you for submitting a request to be Authorized. We will let you know as soon your application is Authorized.
 auth.request.from=Click to request affiliate status from {0}.
 auth.apply.error=Could not submit your request.
 auth.grant.title=Grant {0} the following capabilities:
@@ -152,7 +154,7 @@ auth.update=Update
 auth.deny=Deny
 auth.revoke=Revoke
 auth.notfound=None of these
-auth.info.prompt=Please offer your best guess as to whom Databrary should contact about granting you authorization.
+auth.info.prompt=Please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.
 
 # Permission levels
 auth.inherit.NONE=No access.
@@ -283,6 +285,8 @@ tags.new.error=Error while adding tag <strong>{0}</strong>.
 
 search.title=Search
 search.prompt=Start your search...
+search.error=Could not complete your search.
+search.deep.info=You are in deep search mode. Press enter to submit new request, or click [X] to return to filter mode.
 
 # --- Notices
 notice.help.pilot=<strong>Pilot</strong>: This session contains pilot data.
@@ -352,8 +356,16 @@ wizard.register_form.affiliation.help=<strong>Affiliation</strong>: Enter your a
 
 # --- Stub Creation
 
-volume.edit.title=Create
 volume.edit.title.sub=New Volume
+
+volume.edit.overview.success=Volume saved successfully.
+volume.edit.overview.error=Unable to save volume.
+volume.edit.publications.success=Publications updated successfully.
+volume.edit.publications.error=Unable to update publications.
+volume.edit.materials.success=Materials updated successfully.
+volume.edit.materials.error=Unable to update materials.
+volume.edit.access.success=Volume access updated successfully.
+volume.edit.access.error=Unable to update volume access.
 
 wizard.volume_edit_overview.name=Overview
 wizard.volume_edit_overview.description=Edit volume name, description, and alias.

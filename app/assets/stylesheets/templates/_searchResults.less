@@ -1,0 +1,68 @@
+// STYLES
+
+.search_results {
+	.padding-left(0);
+}
+
+//
+
+.search_result {
+	border-left: 2px solid @blue;
+	border-right: 2px solid @blue;
+	.border-radius(@b4);
+	.padding(@f4, @f2);
+	.margin-bottom(@f2);
+
+	h1 {
+		.font-line(1.5);
+
+		.icon {
+			position: relative;
+			top: @b8;
+			.margin-right(@f4);
+		}
+	}
+
+	&.study {
+		border-color: @orange;
+
+		a {
+			.link-color(@orange);
+		}
+	}
+
+	.investigators {
+		ul {
+			.margin-top(0);
+			display: inline-block;
+
+			li {
+				display: inline-block;
+				.margin-right(@f6);
+
+				&:after {
+					content: ', ';
+				}
+
+				&:last-child {
+					&:after {
+						content: none;
+					}
+				}
+			}
+
+			img {
+				.size(16px);
+				position: relative;
+				top: 1px;
+				.border-radius(@b1);
+			}
+		}
+	}
+
+	.thumb {
+		float: right;
+		.margin-left(@f3);
+		.grid-width(max, 2);
+	}
+}

@@ -91,6 +91,50 @@ module.config([
 
 		//
 
+		$routeProvider.when('/home', appResolve({
+			controller: 'HomeView',
+			templateUrl: 'homeView.html',
+			resolve: {
+				parties: [
+					'Party', '$q', 'constantService', function (Party, $q, constants) {
+						var deferred = $q.defer();
+
+						constants.$promise.then(function () {
+							Party.query({
+								access: constants.permission('CONTRIBUTE').id
+							}, function (data) {
+								deferred.resolve(data);
+							}, function (data) {
+								deferred.reject();
+							});
+						});
+
+						return deferred.promise;
+					}
+				],
+				volume: [
+					'Volume', '$q', function (Volume, $q) {
+						var deferred = $q.defer();
+
+						Volume.get({
+							id: 8,
+							access: ''
+						}, function (data) {
+							deferred.resolve(data);
+						}, function (data) {
+							deferred.reject();
+						});
+
+						return deferred.promise;
+					}
+				]
+			},
+			reloadOnSearch: false,
+			authenticate: true
+		}));
+
+		//
+
 		$routeProvider.when('/search', appResolve({
 			controller: 'SearchView',
 			templateUrl: 'searchView.html',

@@ -5,6 +5,10 @@ module.factory('Party', [
 				return ($route.current && $route.current.params.id) || undefined;
 			}
 		}, {
+			query: {
+				method: 'GET',
+				isArray: false
+			},
 			password: {
 				method: 'POST',
 				url: '/api/party/:id/password'
