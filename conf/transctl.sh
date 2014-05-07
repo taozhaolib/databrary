@@ -24,10 +24,10 @@ set -- ${aid:+-a "$aid"} ${dir:+-d "$dir"} ${url:+-r "$url"} ${kill:+-k "$kill"}
 if [[ -n $collect ]] ; then
 	if [[ -n $host ]] ; then
 		rsync "$host:$dir/$aid.mp4" "$collect"
-		ssh "$host" rm -f "$dir/$aid" "$dir/$aid.mp4" "$dir/$aid.log"
+		ssh "$host" rm -f "$dir/$aid" "$dir/$aid.mp4"
 	else
 		mv "$dir/$aid.mp4" "$collect"
-		rm -f "$dir/$aid" "$dir/$aid.log"
+		rm -f "$dir/$aid"
 	fi
 elif [[ -n $host ]] ; then
 	if [[ -z $kill ]] ; then

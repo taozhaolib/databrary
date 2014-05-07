@@ -33,7 +33,7 @@ if [[ -n $kill ]] ; then
 	else
 		kill $kill
 	fi
-	rm -f "$IN" "$OUT" "$LOG"
+	rm -f "$IN" "$OUT"
 	exit 0
 fi
 
@@ -56,7 +56,7 @@ fi
 ls -l $aid $aid.*
 sleep 5 # hope server knows job has started by now
 
-time ffmpeg -loglevel warning -threads 1 -i "$IN" -vf pad='iw+mod(iw\,2):ih+mod(ih\,2)' -threads 1 -f mp4 -c:v libx264 -c:a libfdk_aac -y "$OUT"
+time ffmpeg -loglevel warning -threads 1 -i "$IN" -vf pad='iw+mod(iw\,2):ih+mod(ih\,2)' -threads 1 -f mp4 -c:v libx264 -pix_fmt yuvj420p -c:a libfdk_aac -y "$OUT"
 r=$?
 if [[ $r -ne 0 ]] ; then
 	rm -f "$OUT"

@@ -10,6 +10,15 @@ BEGIN
 	INSERT INTO asset_revision VALUES (asset_old, asset_new);;
 END;; $$;
 
+CREATE TABLE "transcode" (
+	"asset" integer NOT NULL Primary Key References "asset" ON DELETE CASCADE,
+	"owner" integer NOT NULL References "party",
+	"start" timestamp Default now(),
+	"process" integer,
+	"result" text
+);
+
 # --- !Downs
 
 DROP FUNCTION "asset_supersede" (integer, integer);
+DROP TABLE "transcode";
