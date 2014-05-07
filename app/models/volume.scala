@@ -219,7 +219,7 @@ object Volume extends TableId[Volume]("volume") {
       query.fold("")(_ => "to_tsvector(name || ' ' || coalesce(body, '')) @@ plainto_tsquery(?) AND"),
       condition,
       "ORDER BY",
-      query.fold("")(_ => "ts_rank(to_tsvector(name || ' ' || coalesce(body, '')), to_tsquery(?)),"),
+      query.fold("")(_ => "ts_rank(to_tsvector(name || ' ' || coalesce(body, '')), plainto_tsquery(?)),"),
       party.fold("")(_ => "access DESC,"),
       "volume.id")
     .apply(party.fold(SQLArgs())(SQLArgs(_)) ++ query.fold(SQLArgs())(q => SQLArgs(q, q))).list
