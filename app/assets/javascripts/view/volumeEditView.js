@@ -1,6 +1,7 @@
 module.controller('VolumeEditView', [
 	'$scope', 'volume', 'pageService', function ($scope, volume, page) {
 		page.title = page.constants.message('page.title.stub');
+		$scope.volume = volume;
 
 		$scope.$watch(function () {
 			return page.$location.search().page;
@@ -44,7 +45,7 @@ module.controller('VolumeEditView', [
 			}
 
 			angular.forEach($scope.wizard.steps, function (step) {
-				if(angular.isFunction($scope.updateStep[step.id](step)))
+				if (angular.isFunction($scope.updateStep[step.id](step)))
 					$scope.updateStep[step.id](step);
 			});
 		};
@@ -77,25 +78,34 @@ module.controller('VolumeEditView', [
 
 		//
 
+		var cancelFn = function () {
+			console.log(page.router.volume({id: volume.id}));
+			page.$location.url(page.router.volume({id: volume.id}));
+		};
+
 		$scope.prepareStep = {
 			'volume_edit_overview': function (step) {
 				forms.overview = step.volumeEditOverviewForm;
 				forms.overview.volume = volume;
+				forms.overview.cancelFn = cancelFn;
 			},
 
 			'volume_edit_publications': function (step) {
 				forms.publications = step.volumeEditPublicationsForm;
 				forms.publications.volume = volume;
+				forms.publications.cancelFn = cancelFn;
 			},
 
 			'volume_edit_materials': function (step) {
 				forms.materials = step.volumeEditMaterialsForm;
 				forms.materials.volume = volume;
+				forms.materials.cancelFn = cancelFn;
 			},
 
 			'volume_edit_access': function (step) {
 				forms.access = step.volumeEditAccessForm;
 				forms.access.volume = volume;
+				forms.access.cancelFn = cancelFn;
 			},
 		};
 
@@ -103,7 +113,12 @@ module.controller('VolumeEditView', [
 
 		$scope.updateStep = {
 			'volume_edit_overview': function (step) {
-				forms.overview.data = {};
+				if (volume)
+					forms.overview.init({
+						name: volume.name,
+						alias: volume.alias,
+						body: volume.body,
+					});
 			},
 
 			'volume_edit_publications': function (step) {

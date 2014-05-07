@@ -26,27 +26,54 @@ module.directive('volumeEditOverviewForm', [
 				if (angular.isFunction(form.saveFn))
 					form.saveFn(form);
 
-				page.models.Volume.save(form.data,
-					function (res) {
-						page.messages.add({
-							type: 'green',
-							countdown: 3000,
-							body: page.constants.message('volume.edit.overview.success'),
+				if (form.volume) {
+					page.models.Volume.save(form.data,
+						function (res) {
+							page.messages.add({
+								type: 'green',
+								countdown: 3000,
+								body: page.constants.message('volume.edit.overview.success'),
+							});
+
+							if (angular.isFunction(form.successFn))
+								form.successFn(form, res);
+
+							form.$setPristine();
+						}, function (res) {
+							page.messages.addError({
+								body: page.constants.message('volume.edit.overview.error'),
+								report: res
+							});
+
+							if (angular.isFunction(form.errorFn))
+								form.errorFn(form, res);
 						});
+				} else {
+					var volume = new page.models.Volume(form.data);
 
-						if (angular.isFunction(form.successFn))
-							form.successFn(form, res);
-
-						form.$setPristine();
+					volume.$create({
+						owner: page.auth.user.id
 					}, function (res) {
-						page.messages.addError({
-							body: page.constants.message('volume.edit.overview.error'),
-							report: res
-						});
+							page.messages.add({
+								type: 'green',
+								countdown: 3000,
+								body: page.constants.message('volume.edit.overview.success'),
+							});
 
-						if (angular.isFunction(form.errorFn))
-							form.errorFn(form, res);
-					});
+							if (angular.isFunction(form.successFn))
+								form.successFn(form, res);
+
+							page.$location.url(page.router.volumeEdit(res));
+						}, function (res) {
+							page.messages.addError({
+								body: page.constants.message('volume.edit.overview.error'),
+								report: res
+							});
+
+							if (angular.isFunction(form.errorFn))
+								form.errorFn(form, res);
+						});
+				}
 			};
 
 			form.reset = function () {

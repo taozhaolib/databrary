@@ -62,8 +62,6 @@ module.directive('volumeEditPublicationsForm', [
 			form.cancel = function () {
 				if (angular.isFunction(form.cancelFn))
 					form.cancelFn(form);
-
-				page.$location.url(page.router.volume(form.volume));
 			};
 
 			//
