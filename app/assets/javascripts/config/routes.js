@@ -96,15 +96,17 @@ module.config([
 			templateUrl: 'homeView.html',
 			resolve: {
 				parties: [
-					'Party', '$q', function (Party, $q) {
+					'Party', '$q', 'constantService', function (Party, $q, constants) {
 						var deferred = $q.defer();
 
-						Party.get({
-							access: 4
-						}, function (data) {
-							deferred.resolve(data);
-						}, function (data) {
-							deferred.reject();
+						constants.$promise.then(function () {
+							Party.query({
+								access: constants.permission('CONTRIBUTE').id
+							}, function (data) {
+								deferred.resolve(data);
+							}, function (data) {
+								deferred.reject();
+							});
 						});
 
 						return deferred.promise;
@@ -115,7 +117,8 @@ module.config([
 						var deferred = $q.defer();
 
 						Volume.get({
-							id: 8
+							id: 8,
+							access: ''
 						}, function (data) {
 							deferred.resolve(data);
 						}, function (data) {

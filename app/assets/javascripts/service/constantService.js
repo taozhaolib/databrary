@@ -94,6 +94,16 @@ module.factory('constantService', [
 			return msg;
 		};
 
+		constants.permission = function (key) {
+			for (var prop in constants.data.permission) {
+				if (!constants.data.permission.hasOwnProperty(prop))
+					continue;
+
+				if (constants.data.permission[prop].id == key || constants.data.permission[prop].name === key)
+					return constants.data.permission[prop];
+			}
+		};
+
 		//
 
 		constants.update();
