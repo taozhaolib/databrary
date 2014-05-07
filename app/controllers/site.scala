@@ -107,7 +107,7 @@ object RequestObject {
   }
   def permission[O <: HasPermission](perm : Permission.Value = Permission.VIEW) = new ActionChecker[RequestObject[O]#Site] {
     protected def check[A](request : RequestObject[O]#Site[A]) =
-      (if (!request.obj.checkPermission(perm)) throw ForbiddenException).async
+      async(if (!request.obj.checkPermission(perm)) throw ForbiddenException)
   }
   def check[O <: HasPermission](get : SiteRequest[_] => Future[Option[O]], perm : Permission.Value = Permission.VIEW) =
     getter(get) ~> permission(perm)
