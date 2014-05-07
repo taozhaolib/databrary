@@ -150,7 +150,7 @@ GET     /api/volume                                                             
 # GET       ?summary;access;citations;tags;comments;funding;categories;records;sessions;assets;top
 GET     /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.get(volumeId : models.Volume.Id)
 # CREATE    ?owner=ID
-POST    /api/volume                                                                               controllers.VolumeApi.create(owner : models.Party.Id)
+POST    /api/volume/$owner<[0-9]+>                                                                controllers.VolumeApi.create(owner : models.Party.Id)
 # UPDATE
 POST    /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.update(volumeId : models.Volume.Id)
 

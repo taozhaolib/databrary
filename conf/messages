@@ -48,6 +48,8 @@ mail.authorized.body=You have been authorized for Databrary access by {0}.
 save=Save
 cancel=Cancel
 reset=Reset
+edit=Edit
+create=Create
 
 toolbar.contact=Send us your comments, questions, and suggestions.
 
@@ -354,7 +356,6 @@ wizard.register_form.affiliation.help=<strong>Affiliation</strong>: Enter your a
 
 # --- Stub Creation
 
-volume.edit.title=Create
 volume.edit.title.sub=New Volume
 
 volume.edit.overview.success=Volume saved successfully.
