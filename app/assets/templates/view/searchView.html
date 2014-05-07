@@ -11,7 +11,7 @@
             <article class="search_result cf" bo-class="volumeClasses(volume)">
               <img class="thumb" bo-src="page.router.volumeThumb(volume)">
 
-              <h1><a bo-href="page.router.volume(volume)" bo-html="volume.name"></a></h1>
+              <h1><span class="icon" bo-class="iconClass(volume)"></span><a bo-href="page.router.volume({id: volume.id})" bo-html="volume.name"></a></h1>
 
               <div class="investigators">
                 <strong>Investigators:</strong>
