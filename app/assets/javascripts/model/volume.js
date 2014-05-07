@@ -4,6 +4,11 @@ module.factory('Volume', [
 			id: function () {
 				return $route.current.params.id || undefined;
 			}
+		}, {
+			create: {
+				method: 'POST',
+				url: '/api/volume/:owner'
+			}
 		}, 'volume');
 	}
 ]);
