@@ -1,0 +1,10 @@
+<section class="repeater">
+  <div class="repeat" ng-repeat="repeat in repeats">
+    <div class="repeat_controls">
+      <div class="repeat_control remove" ng-click="remove()" ng-if="canRemove(repeat, $index, $first)"></div>
+      <div class="repeat_control add" ng-click="add()" ng-if="canAdd(repeat, $index, $last)"></div>
+    </div>
+
+    <div class="repeat_body" repeat-body></div>
+  </div>
+</section>
