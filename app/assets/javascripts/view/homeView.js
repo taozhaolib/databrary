@@ -21,7 +21,7 @@ module.controller('HomeView', [
 				cols = 4;
 			} else if (val >= 720) {
 				cols = 3;
-			} else if (cal >= 480) {
+			} else if (val >= 480) {
 				cols = 2;
 			}
 
