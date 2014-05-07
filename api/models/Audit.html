@@ -35,14 +35,14 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">Audit</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="when">when: <span class="extype" name="dbrary.Timestamp">Timestamp</span></span>, <span name="who">who: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="ip">ip: <span class="extype" name="dbrary.Inet">Inet</span></span>, <span name="action">action: <a href="Audit$$Action$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Audit.Action.Value</a></span>, <span name="row">row: <span class="extype" name="models.Audit.T">T</span></span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">Audit</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="when">when: <span class="extype" name="dbrary.Timestamp">Timestamp</span></span>, <span name="who">who: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="ip">ip: <span class="extype" name="dbrary.Inet">Inet</span></span>, <span name="action">action: <a href="Audit$$Action$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Audit.Action.Value</a></span>, <span name="row">row: <span class="extype" name="models.Audit.T">T</span></span>)</span><span class="result"> extends <a href="AuditBase.html" class="extype" name="models.AuditBase">AuditBase</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Represents an event row in an audit table of a particular type.  Currently unused as there is intentionally no read/modify access to audit tables.</p></div><dl class="paramcmts block"><dt class="tparam">T</dt><dd class="cmt"><p>the type of data attached to this record. Usually this is a TableRow instance for a corresponding audit_t table.</p></dd><dt class="param">when</dt><dd class="cmt"><p>the time of this event</p></dd><dt class="param">who</dt><dd class="cmt"><p>the user who generated this event. May no longer be a valid party.</p></dd><dt class="param">ip</dt><dd class="cmt"><p>the ip of the client machine that generated this event</p></dd><dt class="param">action</dt><dd class="cmt"><p>the type of event</p></dd><dt class="param">row</dt><dd class="cmt"><p>the remaining data columns
 </p></dd></dl><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/audit.scala" target="_blank">audit.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="AuditBase.html" class="extype" name="models.AuditBase">AuditBase</a>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -60,7 +60,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Audit"><span>Audit</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Audit"><span>Audit</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="models.AuditBase"><span>AuditBase</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -323,7 +323,7 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.Audit#party" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.AuditBase#party" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="party(implicitsite:site.Site):scala.concurrent.Future[Option[models.Party]]"></a>
       <a id="party(Site):Future[Option[Party]]"></a>
       <h4 class="signature">
@@ -335,7 +335,7 @@
         <span class="name">party</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Look up the party who generated this event, if still valid.</p>
+      <p class="shortcomment cmt">Look up the party who generated this event, if still valid.</p><div class="fullcomment"><div class="comment cmt"><p>Look up the party who generated this event, if still valid.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AuditBase.html" class="extype" name="models.AuditBase">AuditBase</a></dd></dl></div>
     </li><li name="models.Audit#row" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="row:T"></a>
       <a id="row:T"></a>
@@ -476,6 +476,8 @@
               <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
             </div><div class="parent" name="scala.Equals">
               <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
+            </div><div class="parent" name="models.AuditBase">
+              <h3>Inherited from <a href="AuditBase.html" class="extype" name="models.AuditBase">AuditBase</a></h3>
             </div><div class="parent" name="models.TableRow">
               <h3>Inherited from <span class="extype" name="models.TableRow">TableRow</span></h3>
             </div><div class="parent" name="scala.AnyRef">

@@ -2,17 +2,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>ReversePartyApi - controllers.ref.ReversePartyApi</title>
-          <meta name="description" content="ReversePartyApi - controllers.ref.ReversePartyApi" />
-          <meta name="keywords" content="ReversePartyApi controllers.ref.ReversePartyApi" />
+          <title>Analytic - models.Analytic</title>
+          <meta name="description" content="Analytic - models.Analytic" />
+          <meta name="keywords" content="Analytic models.Analytic" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
-      <link href="../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
-      <link href="../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
       <script type="text/javascript">
          if(top === self) {
-            var url = '../../index.html';
-            var hash = 'controllers.ref.ReversePartyApi';
+            var url = '../index.html';
+            var hash = 'models.Analytic';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -24,24 +24,24 @@
         </head>
         <body class="type">
       <div id="definition">
-        <img src="../../lib/class_big.png" />
-        <p id="owner"><a href="../package.html" class="extype" name="controllers">controllers</a>.<a href="package.html" class="extype" name="controllers.ref">ref</a></p>
-        <h1>ReversePartyApi</h1>
+        <a href="Analytic$.html" title="Go to companion"><img src="../lib/class_to_object_big.png" /></a>
+        <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
+        <h1><a href="Analytic$.html" title="Go to companion">Analytic</a></h1>
       </div>
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">ReversePartyApi</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <span class="name">Analytic</span><span class="result"> extends <a href="AuditBase.html" class="extype" name="models.AuditBase">AuditBase</a></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/target/scala-2.10/src_managed/main/routes_reverseRouting.scala" target="_blank">routes_reverseRouting.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/analytic.scala" target="_blank">analytic.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="AuditBase.html" class="extype" name="models.AuditBase">AuditBase</a>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="controllers.ref.ReversePartyApi"><span>ReversePartyApi</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Analytic"><span>Analytic</span></li><li class="in" name="models.AuditBase"><span>AuditBase</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -79,16 +79,16 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="controllers.ref.ReversePartyApi#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;():controllers.ref.ReversePartyApi"></a>
-      <a id="&lt;init&gt;:ReversePartyApi"></a>
+              <ol><li name="models.Analytic#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;(when:dbrary.Timestamp,who:models.Party.Id,ip:dbrary.Inet,action:models.Audit.Action.Value,route:String,data:play.api.libs.json.JsValue):models.Analytic"></a>
+      <a id="&lt;init&gt;:Analytic"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ReversePartyApi</span><span class="params">()</span>
+        <span class="name">Analytic</span><span class="params">(<span name="when">when: <span class="extype" name="dbrary.Timestamp">Timestamp</span></span>, <span name="who">who: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="ip">ip: <span class="extype" name="dbrary.Inet">Inet</span></span>, <span name="action">action: <a href="Audit$$Action$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Audit.Action.Value</a></span>, <span name="route">route: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="data">data: <span class="extype" name="play.api.libs.json.JsValue">JsValue</span></span>)</span>
       </span>
       </h4>
       
@@ -179,71 +179,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="controllers.ref.ReversePartyApi#authorizeApply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="authorizeApply(partyId:models.Party.Id,parentId:models.Party.Id):play.api.mvc.HandlerRef[_]"></a>
-      <a id="authorizeApply(models.Party.Id,models.Party.Id):HandlerRef[_]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">authorizeApply</span><span class="params">(<span name="partyId">partyId: <a href="../../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a></span>, <span name="parentId">parentId: <a href="../../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.HandlerRef">HandlerRef</span>[_]</span>
-      </span>
-      </h4>
-      
-    </li><li name="controllers.ref.ReversePartyApi#authorizeChange" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="authorizeChange(partyId:models.Party.Id,childId:models.Party.Id):play.api.mvc.HandlerRef[_]"></a>
-      <a id="authorizeChange(models.Party.Id,models.Party.Id):HandlerRef[_]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">authorizeChange</span><span class="params">(<span name="partyId">partyId: <a href="../../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a></span>, <span name="childId">childId: <a href="../../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.HandlerRef">HandlerRef</span>[_]</span>
-      </span>
-      </h4>
-      
-    </li><li name="controllers.ref.ReversePartyApi#authorizeDelete" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="authorizeDelete(partyId:models.Party.Id,otherId:models.Party.Id):play.api.mvc.HandlerRef[_]"></a>
-      <a id="authorizeDelete(models.Party.Id,models.Party.Id):HandlerRef[_]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">authorizeDelete</span><span class="params">(<span name="partyId">partyId: <a href="../../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a></span>, <span name="otherId">otherId: <a href="../../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.HandlerRef">HandlerRef</span>[_]</span>
-      </span>
-      </h4>
-      
-    </li><li name="controllers.ref.ReversePartyApi#authorizeGet" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="authorizeGet(partyId:models.Party.Id):play.api.mvc.HandlerRef[_]"></a>
-      <a id="authorizeGet(models.Party.Id):HandlerRef[_]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">authorizeGet</span><span class="params">(<span name="partyId">partyId: <a href="../../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.HandlerRef">HandlerRef</span>[_]</span>
-      </span>
-      </h4>
-      
-    </li><li name="controllers.ref.ReversePartyApi#authorizeSearch" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="authorizeSearch(partyId:models.Party.Id,apply:Boolean):play.api.mvc.HandlerRef[_]"></a>
-      <a id="authorizeSearch(models.Party.Id,Boolean):HandlerRef[_]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">authorizeSearch</span><span class="params">(<span name="partyId">partyId: <a href="../../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a></span>, <span name="apply">apply: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.HandlerRef">HandlerRef</span>[_]</span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -256,26 +191,13 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
       <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="controllers.ref.ReversePartyApi#create" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="create():play.api.mvc.HandlerRef[_]"></a>
-      <a id="create():HandlerRef[_]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">create</span><span class="params">()</span><span class="result">: <span class="extype" name="play.api.mvc.HandlerRef">HandlerRef</span>[_]</span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -314,26 +236,13 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
       <span class="symbol">classOf[java.lang.Throwable]</span>
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="controllers.ref.ReversePartyApi#get" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="get(partyId:models.Party.Id):play.api.mvc.HandlerRef[_]"></a>
-      <a id="get(models.Party.Id):HandlerRef[_]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">get</span><span class="params">(<span name="partyId">partyId: <a href="../../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.HandlerRef">HandlerRef</span>[_]</span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -412,32 +321,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="controllers.ref.ReversePartyApi#profile" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="profile():play.api.mvc.HandlerRef[_]"></a>
-      <a id="profile():HandlerRef[_]"></a>
+    </li><li name="models.AuditBase#party" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="party(implicitsite:site.Site):scala.concurrent.Future[Option[models.Party]]"></a>
+      <a id="party(Site):Future[Option[Party]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">profile</span><span class="params">()</span><span class="result">: <span class="extype" name="play.api.mvc.HandlerRef">HandlerRef</span>[_]</span>
+        <span class="name">party</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]]</span>
       </span>
       </h4>
-      
-    </li><li name="controllers.ref.ReversePartyApi#query" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="query():play.api.mvc.HandlerRef[_]"></a>
-      <a id="query():HandlerRef[_]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">query</span><span class="params">()</span><span class="result">: <span class="extype" name="play.api.mvc.HandlerRef">HandlerRef</span>[_]</span>
-      </span>
-      </h4>
-      
+      <p class="shortcomment cmt">Look up the party who generated this event, if still valid.</p><div class="fullcomment"><div class="comment cmt"><p>Look up the party who generated this event, if still valid.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AuditBase.html" class="extype" name="models.AuditBase">AuditBase</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -464,19 +360,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="controllers.ref.ReversePartyApi#update" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="update(partyId:models.Party.Id):play.api.mvc.HandlerRef[_]"></a>
-      <a id="update(models.Party.Id):HandlerRef[_]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">update</span><span class="params">(<span name="partyId">partyId: <a href="../../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.HandlerRef">HandlerRef</span>[_]</span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -543,7 +426,11 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.AnyRef">
+        <div class="parent" name="models.AuditBase">
+              <h3>Inherited from <a href="AuditBase.html" class="extype" name="models.AuditBase">AuditBase</a></h3>
+            </div><div class="parent" name="models.TableRow">
+              <h3>Inherited from <span class="extype" name="models.TableRow">TableRow</span></h3>
+            </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
@@ -563,6 +450,6 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../../lib/template.js"></script>
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

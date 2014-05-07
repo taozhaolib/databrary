@@ -2,9 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>Party - models.Party</title>
-          <meta name="description" content="Party - models.Party" />
-          <meta name="keywords" content="Party models.Party" />
+          <title>Analytic - models.Analytic</title>
+          <meta name="description" content="Analytic - models.Analytic" />
+          <meta name="keywords" content="Analytic models.Analytic" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -12,7 +12,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
-            var hash = 'models.Party$';
+            var hash = 'models.Analytic$';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -24,9 +24,9 @@
         </head>
         <body class="value">
       <div id="definition">
-        <a href="Party.html" title="Go to companion"><img src="../lib/object_to_class_big.png" /></a>
+        <a href="Analytic.html" title="Go to companion"><img src="../lib/object_to_class_big.png" /></a>
         <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
-        <h1><a href="Party.html" title="Go to companion">Party</a></h1>
+        <h1><a href="Analytic.html" title="Go to companion">Analytic</a></h1>
       </div>
 
       <h4 id="signature" class="signature">
@@ -35,13 +35,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Party</span><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</span>
+        <span class="name">Analytic</span><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="Analytic.html" class="extype" name="models.Analytic">Analytic</a>]</span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/party.scala" target="_blank">party.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/analytic.scala" target="_blank">analytic.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="models.TableId">TableId</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>], <span class="extype" name="models.HasId">HasId</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>], <span class="extype" name="models.Table">Table</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="models.HasTable">HasTable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="models.Table">Table</span>[<a href="Analytic.html" class="extype" name="models.Analytic">Analytic</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="models.HasTable">HasTable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Party"><span>Party</span></li><li class="in" name="models.TableId"><span>TableId</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="models.HasTable"><span>HasTable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Analytic"><span>Analytic</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="models.HasTable"><span>HasTable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -81,20 +81,7 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="models.HasId.Id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Id=models.IntId[T]"></a>
-      <a id="Id:Id"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Id</span><span class="result"> = <a href="IntId.html" class="extype" name="models.IntId">IntId</a>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId</dd></dl></div>
-    </li><li name="models.Table.Row" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+              <ol><li name="models.Table.Row" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Row=R"></a>
       <a id="Row:Row"></a>
       <h4 class="signature">
@@ -103,7 +90,7 @@
         <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <span class="name">Row</span><span class="result"> = <a href="Party.html" class="extype" name="models.Party">Party</a></span>
+        <span class="name">Row</span><span class="result"> = <a href="Analytic.html" class="extype" name="models.Analytic">Analytic</a></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Type of TableRow this object can generate.</p><div class="fullcomment"><div class="comment cmt"><p>Type of TableRow this object can generate.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>Table → TableView</dd></dl></div>
@@ -231,73 +218,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.Party#NOBODY" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="NOBODY:models.Party.Id"></a>
-      <a id="NOBODY:Id"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">NOBODY</span><span class="result">: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a></span>
-      </span>
-      </h4>
-      
-    </li><li name="models.Party#Nobody" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Nobody:models.Party"></a>
-      <a id="Nobody:Party"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Nobody</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The special party group representing everybody (including anonymous users) on the site.</p><div class="fullcomment"><div class="comment cmt"><p>The special party group representing everybody (including anonymous users) on the site.
-This is also in the database, but is cached here for special handling.</p></div></div>
-    </li><li name="models.Party#ROOT" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ROOT:models.Party.Id"></a>
-      <a id="ROOT:Id"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">ROOT</span><span class="result">: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a></span>
-      </span>
-      </h4>
-      
-    </li><li name="models.Party#Root" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Root:models.Party"></a>
-      <a id="Root:Party"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Root</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The special party group representing authorized users on the site.</p><div class="fullcomment"><div class="comment cmt"><p>The special party group representing authorized users on the site.
-This is also in the database, but is cached here for special handling.</p></div></div>
-    </li><li name="models.HasId#asId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="asId(i:Int):HasId.this.Id"></a>
-      <a id="asId(Int):Id"></a>
+    </li><li name="models.Analytic#add" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="add(action:models.Audit.Action.Value,route:String,data:play.api.libs.json.JsValue)(implicitsite:site.Site):scala.concurrent.Future[Boolean]"></a>
+      <a id="add(Audit.Action.Value,String,JsValue)(Site):Future[Boolean]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">asId</span><span class="params">(<span name="i">i: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a></span>
+        <span class="name">add</span><span class="params">(<span name="action">action: <a href="Audit$$Action$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Audit.Action.Value</a></span>, <span name="route">route: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="data">data: <span class="extype" name="play.api.libs.json.JsValue">JsValue</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Create an <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a> value.</p><div class="fullcomment"><div class="comment cmt"><p>Create an <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a> value.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId</dd></dl></div>
+      
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -330,19 +263,6 @@ This is also in the database, but is cached here for special handling.</p></div>
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.Party#create" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="create(name:String,orcid:Option[models.Orcid],affiliation:Option[String],duns:Option[models.DUNS])(implicitsite:site.Site):scala.concurrent.Future[models.Party]"></a>
-      <a id="create(String,Option[Orcid],Option[String],Option[DUNS])(Site):Future[Party]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">create</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="orcid">orcid: <span class="extype" name="scala.Option">Option</span>[<a href="Orcid.html" class="extype" name="models.Orcid">Orcid</a>] = <span class="symbol">None</span></span>, <span name="affiliation">affiliation: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="duns">duns: <span class="extype" name="scala.Option">Option</span>[<a href="DUNS.html" class="extype" name="models.DUNS">DUNS</a>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Create a new party.</p>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -401,32 +321,6 @@ This is also in the database, but is cached here for special handling.</p></div>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>HasTable</dd></dl></div>
-    </li><li name="models.Party#get" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="get(i:models.Party.Id)(implicitsite:site.Site):scala.concurrent.Future[Option[models.Party]]"></a>
-      <a id="get(Id)(Site):Future[Option[Party]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">get</span><span class="params">(<span name="i">i: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Look up a party by id.</p>
-    </li><li name="models.Party#getAll" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getAll(implicitsite:site.Site):scala.concurrent.Future[Seq[models.Party]]"></a>
-      <a id="getAll(Site):Future[Seq[Party]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getAll</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]]</span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -505,47 +399,6 @@ This is also in the database, but is cached here for special handling.</p></div>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.Party#search" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="search(query:Option[String],access:Option[models.Permission.Value])(implicitsite:site.Site):scala.concurrent.Future[Seq[models.Party]]"></a>
-      <a id="search(Option[String],Option[Permission.Value])(Site):Future[Seq[Party]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">search</span><span class="params">(<span name="query">query: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="access">access: <span class="extype" name="scala.Option">Option</span>[<a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]]</span>
-      </span>
-      </h4>
-      
-    </li><li name="models.Party#searchForAuthorize" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="searchForAuthorize(name:String,who:models.Party,institute:Boolean):scala.concurrent.Future[Seq[models.Party]]"></a>
-      <a id="searchForAuthorize(String,Party,Boolean):Future[Seq[Party]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">searchForAuthorize</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="who">who: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="institute">institute: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Search for parties by name for the purpose of authorization.</p><div class="fullcomment"><div class="comment cmt"><p>Search for parties by name for the purpose of authorization.</p></div><dl class="paramcmts block"><dt class="param">name</dt><dd class="cmt"><p>string to match against name/email (case insensitive substring)</p></dd><dt class="param">who</dt><dd class="cmt"><p>party doing the authorization, to exclude parties already authorized</p></dd><dt class="param">institute</dt><dd class="cmt"><p>limit to institutions
-</p></dd></dl></div>
-    </li><li name="models.Party#searchForVolumeAccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="searchForVolumeAccess(name:String,volume:models.Volume):scala.concurrent.Future[Seq[models.Party]]"></a>
-      <a id="searchForVolumeAccess(String,Volume):Future[Seq[Party]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">searchForVolumeAccess</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Search for parties by name for the purpose of volume access.</p><div class="fullcomment"><div class="comment cmt"><p>Search for parties by name for the purpose of volume access.</p></div><dl class="paramcmts block"><dt class="param">name</dt><dd class="cmt"><p>string to match against name/email (case insensitive substring)</p></dd><dt class="param">volume</dt><dd class="cmt"><p>volume to which to grant access, to exclude parties with access already.
-</p></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -638,12 +491,8 @@ This is also in the database, but is cached here for special handling.</p></div>
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="models.TableId">
-              <h3>Inherited from <span class="extype" name="models.TableId">TableId</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</h3>
-            </div><div class="parent" name="models.HasId">
-              <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</h3>
-            </div><div class="parent" name="models.Table">
-              <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</h3>
+        <div class="parent" name="models.Table">
+              <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="Analytic.html" class="extype" name="models.Analytic">Analytic</a>]</h3>
             </div><div class="parent" name="models.TableView">
               <h3>Inherited from <span class="extype" name="models.TableView">TableView</span></h3>
             </div><div class="parent" name="models.HasTable">

@@ -110,6 +110,19 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       </h4>
       
+    </li><li name="models.Analytic" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AnalyticextendsAuditBase"></a>
+      <a id="Analytic:Analytic"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="Analytic.html"><span class="name">Analytic</span></a><span class="result"> extends <a href="AuditBase.html" class="extype" name="models.AuditBase">AuditBase</a></span>
+      </span>
+      </h4>
+      
     </li><li name="models.Asset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="AssetextendsTableRowId[models.Asset]withBackedAssetwithInVolumewithSiteObject"></a>
       <a id="Asset:Asset"></a>
@@ -137,7 +150,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </h4>
       <p class="comment cmt">File formats for assets.</p>
     </li><li name="models.Audit" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Audit[T]extendsTableRowwithProductwithSerializable"></a>
+      <a id="Audit[T]extendsAuditBasewithProductwithSerializable"></a>
       <a id="Audit[T]:Audit[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -145,10 +158,23 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="Audit.html"><span class="name">Audit</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="when">when: <span class="extype" name="dbrary.Timestamp">Timestamp</span></span>, <span name="who">who: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="ip">ip: <span class="extype" name="dbrary.Inet">Inet</span></span>, <span name="action">action: <a href="Audit$$Action$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Audit.Action.Value</a></span>, <span name="row">row: <span class="extype" name="models.Audit.T">T</span></span>)</span><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="Audit.html"><span class="name">Audit</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="when">when: <span class="extype" name="dbrary.Timestamp">Timestamp</span></span>, <span name="who">who: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>, <span name="ip">ip: <span class="extype" name="dbrary.Inet">Inet</span></span>, <span name="action">action: <a href="Audit$$Action$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Audit.Action.Value">Audit.Action.Value</a></span>, <span name="row">row: <span class="extype" name="models.Audit.T">T</span></span>)</span><span class="result"> extends <a href="AuditBase.html" class="extype" name="models.AuditBase">AuditBase</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       <p class="comment cmt">Represents an event row in an audit table of a particular type.</p>
+    </li><li name="models.AuditBase" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="AuditBaseextendsTableRow"></a>
+      <a id="AuditBase:AuditBase"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="AuditBase.html"><span class="name">AuditBase</span></a><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span></span>
+      </span>
+      </h4>
+      
     </li><li name="models.Authorization" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="AuthorizationextendsAccesswithTableRow"></a>
       <a id="Authorization:Authorization"></a>
@@ -660,6 +686,19 @@ Controllers and other callers should do any necessary checking to ensure appropr
       </span>
       <span class="symbol">
         <a href="AccountToken$.html"><span class="name">AccountToken</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="AccountToken.html" class="extype" name="models.AccountToken">AccountToken</a>]</span>
+      </span>
+      </h4>
+      
+    </li><li name="models.Analytic" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Analytic"></a>
+      <a id="Analytic:Analytic"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Analytic$.html"><span class="name">Analytic</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="Analytic.html" class="extype" name="models.Analytic">Analytic</a>]</span>
       </span>
       </h4>
       
