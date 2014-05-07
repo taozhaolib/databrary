@@ -152,7 +152,7 @@ auth.update=Update
 auth.deny=Deny
 auth.revoke=Revoke
 auth.notfound=None of these
-auth.info.prompt=Please list the name and contact information (email, phone number) for your Institution's Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.
+auth.info.prompt=Please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.
 
 # Permission levels
 auth.inherit.NONE=No access.
