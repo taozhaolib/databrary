@@ -51,7 +51,7 @@ module.directive('volumeEditOverviewForm', [
 				} else {
 					var volume = new page.models.Volume(form.data);
 
-					volume.$create({
+					volume.$save({
 						owner: page.auth.user.id
 					}, function (res) {
 							page.messages.add({

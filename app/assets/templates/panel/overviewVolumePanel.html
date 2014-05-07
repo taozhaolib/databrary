@@ -1,109 +1,105 @@
 <panel ng-controller="OverviewVolumePanel" top id="panel_overview" panel-title="{{'volume.overview.title' | message}}" ng-mouseover="hoverPanel()" bindonce>
-    <div class="row">
-      <div class="col-desktop-9 col-laptop-8 col-tablet-6 col-mobile-6">
-        <hgroup>
-          <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
-          <h2 ng-if="auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-html="volume.alias"></h2>
-        </hgroup>
+  <div class="row">
+    <div class="col-desktop-9 col-laptop-8 col-tablet-6 col-mobile-6">
+      <hgroup>
+        <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
+        <h2 ng-if="auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-html="volume.alias"></h2>
+      </hgroup>
 
-				<div ng-show="!editMode">
-					<div frame id="frame_metadata" frame-title="{{'volume.metadata.title' | message}}" fold>
-						<div class="description" ng-bind-html="volume.body | format"></div>
+      <div ng-show="!editMode">
+        <div frame id="frame_metadata" frame-title="{{'volume.metadata.title' | message}}" fold>
+          <div class="description" ng-bind-html="volume.body | format"></div>
 
-						<div class="metadata">
-							<dl class="flat">
-								<dt>{{'volume.creation.title' | message}}</dt>
-								<dd>
-									<time datetime="{{volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>{{volume.creation | date:'MMMM yyyy'}}</time>
-								</dd>
+          <div class="metadata">
+            <dl class="flat">
+              <dt>{{'volume.creation.title' | message}}</dt>
+              <dd>
+                <time datetime="{{volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>{{volume.creation | date:'MMMM yyyy'}}</time>
+              </dd>
 
-								<dt>{{'volume.sessions.title' | message}}</dt>
-								<dd>{{'volume.sessions' | message:volume.summary.sessions:volume.summary.shared}}</dd>
+              <dt>{{'volume.sessions.title' | message}}</dt>
+              <dd>{{'volume.sessions' | message:volume.summary.sessions:volume.summary.shared}}</dd>
 
-								<dt ng-if="volume.summary.agemean > 0">{{'volume.ages.title' | message}}</dt>
-								<dd ng-if="volume.summary.agemean > 0">{{ageSummary(volume.summary)}}</dd>
-							</dl>
-						</div>
-					</div>
+              <dt ng-if="volume.summary.agemean > 0">{{'volume.ages.title' | message}}</dt>
+              <dd ng-if="volume.summary.agemean > 0">{{ageSummary(volume.summary)}}</dd>
+            </dl>
+          </div>
+        </div>
 
-					<div frame id="frame_citation" frame-title="{{'volume.citation.title' | message}}" fold>
-						<p ng-bind-html="volume | cite" class="citation"></p>
-					</div>
+        <div frame id="frame_citation" frame-title="{{'volume.citation.title' | message}}" fold>
+          <p ng-bind-html="volume | cite" class="citation"></p>
+        </div>
 
-					<a bo-href="page.router.volumeEdit(volume)" ng-if="page.auth.hasAccess('CONTRIBUTE', volume)" class="button mini yellow" ng-bind-html="'volume.edit' | message"></a>
-				</div>
+        <a bo-href="page.router.volumeEdit(volume)" ng-if="page.auth.hasAccess('CONTRIBUTE', volume)" class="button mini yellow" ng-bind-html="'volume.edit' | message"></a>
+        <a class="button mini yellow" ng-if="volume.permission >= page.constants.find('permission', 'ADMIN').id" ng-href="{{page.router.volumeAccess(volume)}}" target="_self">access</a>
+      </div>
+    </div>
+
+    <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
+      <div class="panel_overview_thumbnail_wrap">
+        <img class="panel_overview_thumbnail" ng-src="{{page.router.volumeThumb(volume)}}">
       </div>
 
-      <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
-        <div class="panel_overview_thumbnail_wrap">
-          <img class="panel_overview_thumbnail" ng-src="{{page.router.volumeThumb(volume)}}">
-        </div>
-
-        <div frame id="frame_people" frame-title="{{'volume.admins.title' | message}}" fold>
-          <div class="row">
-            <div ng-repeat="volumeAccess in volume.access | filter:{access: 4}" class="col-desktop-3 col-laptop-4 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">
-              <portrait class="portrait_vertical portrait_small"></portrait>
-            </div>
+      <div frame id="frame_people" frame-title="{{'volume.admins.title' | message}}" fold>
+        <div class="row">
+          <div ng-repeat="volumeAccess in volume.access | filter:{access: 4}" class="col-desktop-3 col-laptop-4 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">
+            <portrait class="portrait_vertical portrait_small"></portrait>
           </div>
         </div>
+      </div>
 
-        <div frame id="frame_access" frame-title="{{'volume.access.title' | message}}" fold>
-          <div class="row">
-            <div ng-repeat="volumeAccess in volume.access | filter:isShared" class="col-desktop-3 col-laptop-4 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">
-              <aside class="portrait portrait_vertical portrait_small ng-cloak" tooltip tooltip-message="{{shareMessage(volumeAccess)}}">
-                <figure baseline="square" class="figure_avatar" ng-href="{{page.router.party(party)}}">
-                  <figmedia><img ng-src="{{page.router.partyAvatar(party, 216)}}"></figmedia>
-                </figure>
+      <div frame id="frame_access" frame-title="{{'volume.access.title' | message}}" fold>
+        <div class="row">
+          <div ng-repeat="volumeAccess in volume.access | filter:isShared" class="col-desktop-3 col-laptop-4 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">
+            <aside class="portrait portrait_vertical portrait_small ng-cloak" tooltip tooltip-message="{{shareMessage(volumeAccess)}}">
+              <figure baseline="square" class="figure_avatar" ng-href="{{page.router.party(party)}}">
+                <figmedia><img ng-src="{{page.router.partyAvatar(party, 216)}}"></figmedia>
+              </figure>
 
-                <div class="portrait_info">
-                  <a class="portrait_name" ng-href="{{page.router.party(party)}}">{{party.name}}<span ng-if="volumeAccess.access == 1" class="icon line view"></span></a>
-                </div>
-              </aside>
-            </div>
-          </div>
-        </div>
-
-        <div frame id="frame_funding" frame-title="{{'volume.funding.title' | message}}" fold>
-          <div class="row">
-            <div ng-repeat="funding in volume.access | filter:isFunding" class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6" ng-init="party = funding.party">
-              <portrait class="portrait_vertical portrait_small portrait_more" extra="{{funding.funding}}"></portrait>
-            </div>
-          </div>
-        </div>
-
-        <div frame id="frame_reuse" frame-title="{{'volume.reuse.title' | message}}" fold ng-if="hasProps(volume, 'consumers') || hasProps(volume, 'providers')">
-          <div class="row">
-            <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
-              <div bo-if="hasProps(volume, 'consumers')">
-                <div bo-html="'volume.reuse.provides' | message"></div>
-
-                <ul class="reuse_list">
-                  <li ng-repeat="ext in volume.consumers">
-                    <a bo-href="page.router.volume({id: ext.id})"><img src="/public/images/browser/icon-study.png">
-                      <span bo-html="ext.name"></span></a>
-                  </li>
-                </ul>
+              <div class="portrait_info">
+                <a class="portrait_name" ng-href="{{page.router.party(party)}}">{{party.name}}<span ng-if="volumeAccess.access == 1" class="icon line view"></span></a>
               </div>
+            </aside>
+          </div>
+        </div>
+      </div>
 
-              <div bo-if="hasProps(volume, 'providers')">
-                <div bo-html="'volume.reuse.consumes' | message"></div>
+      <div frame id="frame_funding" frame-title="{{'volume.funding.title' | message}}" fold>
+        <div class="row">
+          <div ng-repeat="funding in volume.access | filter:isFunding" class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6" ng-init="party = funding.party">
+            <portrait class="portrait_vertical portrait_small portrait_more" extra="{{funding.funding}}"></portrait>
+          </div>
+        </div>
+      </div>
 
-                <ul class="reuse_list">
-                  <li ng-repeat="ext in volume.providers">
-                    <a bo-href="page.router.volume({id: ext.id})"><img src="/public/images/browser/icon-dataset.png">
-                      <span bo-html="ext.name"></span></a>
-                  </li>
-                </ul>
-              </div>
+      <div frame id="frame_reuse" frame-title="{{'volume.reuse.title' | message}}" fold ng-if="hasProps(volume, 'consumers') || hasProps(volume, 'providers')">
+        <div class="row">
+          <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
+            <div bo-if="hasProps(volume, 'consumers')">
+              <div bo-html="'volume.reuse.provides' | message"></div>
+
+              <ul class="reuse_list">
+                <li ng-repeat="ext in volume.consumers">
+                  <a bo-href="page.router.volume({id: ext.id})"><img src="/public/images/browser/icon-study.png">
+                    <span bo-html="ext.name"></span></a>
+                </li>
+              </ul>
+            </div>
+
+            <div bo-if="hasProps(volume, 'providers')">
+              <div bo-html="'volume.reuse.consumes' | message"></div>
+
+              <ul class="reuse_list">
+                <li ng-repeat="ext in volume.providers">
+                  <a bo-href="page.router.volume({id: ext.id})"><img src="/public/images/browser/icon-dataset.png">
+                    <span bo-html="ext.name"></span></a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <div class="temporary">
-      <a class="button mini" ng-if="volume.permission >= page.constants.find('permission', 'CONTRIBUTE').id" ng-href="{{page.router.volumeEdit(volume)}}" target="_self">edit</a>
-      <a class="button mini" ng-if="volume.permission >= page.constants.find('permission', 'ADMIN').id" ng-href="{{page.router.volumeAccess(volume)}}" target="_self">access</a>
-    </div>
+  </div>
 </panel>
 
