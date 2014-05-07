@@ -10,7 +10,8 @@ module.factory('pageService', [
 	'authService',
 	'analyticService',
 	'$location',
-	function ($rootScope, messages, tooltips, constants, router, events, gui, models, auth, analytics, $location) {
+	'$filter',
+	function ($rootScope, messages, tooltips, constants, router, events, gui, models, auth, analytics, $location, $filter) {
 		var page = {
 			messages: messages,
 			tooltips: tooltips,
@@ -21,7 +22,8 @@ module.factory('pageService', [
 			models: models,
 			auth: auth,
 			analytics: analytics,
-			$location: $location
+			$location: $location,
+			$filter: $filter
 		};
 
 		//

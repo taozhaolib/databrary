@@ -283,6 +283,8 @@ tags.new.error=Error while adding tag <strong>{0}</strong>.
 
 search.title=Search
 search.prompt=Start your search...
+search.error=Could not complete your search.
+search.deep.info=You are in deep search mode. Press enter to submit new request, or click [X] to return to filter mode.
 
 # --- Notices
 notice.help.pilot=<strong>Pilot</strong>: This session contains pilot data.
