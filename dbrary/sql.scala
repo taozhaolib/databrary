@@ -4,7 +4,6 @@ import scala.concurrent.{Future,ExecutionContext}
 import scala.util.control.Exception.catching
 import com.github.mauricio.async.db
 import macros._
-import macros.async._
 
 class SQLArg[A](val value : A)(implicit val sqlType : SQLType[A]) {
   def put : Any = sqlType.put(value)
@@ -69,7 +68,7 @@ class SQLResult(val result : Future[db.QueryResult])(implicit context : Executio
 
 object SQLResult {
   private final val emptyResult = new db.QueryResult(0, "")
-  def empty(implicit context : ExecutionContext) = new SQLResult(emptyResult.async)(context)
+  def empty(implicit context : ExecutionContext) = new SQLResult(async(emptyResult))(context)
 }
 
 /** SQLResult with an associated row parser. */
