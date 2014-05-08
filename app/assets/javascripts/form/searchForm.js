@@ -29,7 +29,7 @@ module.directive('searchForm', [
 			var query = function () {
 				page.models.Volume.query(form.data,
 					function (res) {
-						if (form.filterMode)
+						if (form.filterMode && form.data.query)
 							page.messages.add({
 								type: 'yellow',
 								countdown: 3000,
