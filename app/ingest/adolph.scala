@@ -197,7 +197,7 @@ object Adolph extends Ingest {
 	    ingest.Asset.fileInfo(origFile))
 	case None =>
 	  val info = ingest.Asset.fileInfo(file)
-	  if (info.format.mimetype.startsWith("video/"))
+	  if (info.format.isTranscodable)
 	    fail("untranscoded file: " + file)
 	  info
 	case _ => fail("no original file: " + file)

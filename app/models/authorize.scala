@@ -125,6 +125,7 @@ object Authorization extends Table[Authorization]("authorize_view") {
     access.getOrElse((Permission.NONE, Permission.NONE))
 
   object Nobody extends Authorization(Party.Nobody, Party.Root, Permission.NONE, Permission.NONE)
+  object Root extends Authorization(Party.Root, Party.Root, Permission.ADMIN, Permission.ADMIN)
 
   private final class Self (party : Party) extends Authorization(party, party,
     if (party.id === Party.NOBODY) Permission.NONE else Permission.ADMIN,
@@ -137,9 +138,19 @@ object Authorization extends Table[Authorization]("authorize_view") {
 
   /** Determine the effective inherited and direct permission levels granted to a child by a parent. */
   private[models] def get(child : Party, parent : Party = Party.Root) : Future[Authorization] =
-    if (child === parent) async(new Self(child)) // optimization
+    if (child === parent) async(new Self(parent)) // optimization
     else columns
       .SELECT("WHERE child = ? AND parent = ?")
       .apply(child.id, parent.id).singleOpt
       .map(make(child, parent))
+
+  def _get(childId : Party.Id, parent : Party = Party.Root) : Future[Option[Authorization]] =
+    if (childId === parent.id) async(Some(new Self(parent))) // optimization
+    else if (childId == Party.NOBODY) async(Some(Nobody))
+    else if (childId == Party.ROOT) async(Some(Root))
+    else Party.row
+      .leftJoin(columns, "party.id = authorize_view.child AND authorize_view.parent = ?")
+      .map { case (p, a) => make(p)(a) }
+      .SELECT("WHERE party.id = ?")
+      .apply(parent.id, childId).singleOpt
 }

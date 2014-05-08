@@ -66,6 +66,8 @@ POST    /volume/$vID<[0-9]+>/asset/create                                       
 GET     /asset/$aID<[0-9]+>                                                                       controllers.AssetHtml.view(aID : models.Asset.Id)
 GET     /asset/$aID<[0-9]+>/edit                                                                  controllers.AssetHtml.edit(aID : models.Asset.Id)
 POST    /asset/$aID<[0-9]+>/edit                                                                  controllers.AssetHtml.update(aID : models.Asset.Id)
+# should be POST but just for debugging:
+GET     /asset/$aID<[0-9]+>/transcode                                                             controllers.AssetHtml.transcode(aID : models.Asset.Id)
 POST    /asset/$aID<[0-9]+>/remove                                                                controllers.AssetHtml.remove(aID : models.Asset.Id)
 
 GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                                     controllers.SlotAssetHtml.view(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
@@ -215,6 +217,9 @@ GET     /api/tag/:name                                                          
 GET     /api/tag                                                                                  controllers.TagApi.search(query : String)
 # UPDATE    ?container=ID;segment=
 POST    /api/tag/:name                                                                            controllers.TagApi.update(name : String, container : models.Container.Id, segment : dbrary.Segment)
+
+# transcode remote
+POST    /transcoded/:id                                                                           controllers.AssetApi.transcoded(id : models.Asset.Id, auth : String)
 
 # ===== /API ===== #
 

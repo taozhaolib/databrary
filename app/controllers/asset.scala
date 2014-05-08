@@ -151,10 +151,24 @@ object AssetHtml extends AssetController with HtmlController {
 	    val probe = media.AV.probe(file.file)
 	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), probe.duration, aname, file)
 	  case _ =>
+	    if (fmt.isTranscodable) try {
+	      media.AV.probe(file.file)
+	    } catch { case e : media.AV.Error =>
+	      form.file.withError("file.invalid", e.getMessage)._throw
+	    }
 	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), aname, file)
 	}
 	sa <- container.mapAsync(asset.link(_, form.position.get))
+	_ = if (fmt.isTranscodable && !form.timeseries.get)
+	  store.Transcode.start(asset)
       } yield (Redirect(sa.getOrElse(asset).pageURL))
+    }
+
+  def transcode(a : models.Asset.Id, stop : Boolean = false) =
+    (SiteAction.rootAccess(Permission.ADMIN) ~> action(a, Permission.EDIT)) { implicit request =>
+      if (stop) store.Transcode.stop(request.obj.id)
+      else      store.Transcode.start(request.obj)
+      Ok("transcoding")
     }
 
   def remove(a : models.Asset.Id) = Action(a, Permission.EDIT).async { implicit request =>
@@ -168,4 +182,24 @@ object AssetApi extends AssetController with ApiController {
   def get(i : models.Asset.Id) = Action(i, Permission.VIEW).async { implicit request =>
     request.obj.json(request.apiOptions).map(Ok(_))
   }
+
+  case class TranscodedForm(aid : Asset.Id) extends {
+      val auth = play.api.libs.Crypto.sign(aid.toString)
+    } with StructForm(routes.AssetApi.transcoded(aid, auth)) {
+    val pid = Field(Forms.number)
+    val res = Field(Forms.number)
+    val log = Field(Forms.text)
+  }
+
+  /** Called from remote transcoding process only. */
+  def transcoded(i : models.Asset.Id, auth : String) =
+    play.api.mvc.Action { implicit request =>
+      val form = TranscodedForm(i)._bind
+      if (!auth.equals(form.auth) || form.hasErrors)
+	BadRequest("")
+      else {
+	store.Transcode.collect(i, form.pid.get, form.res.get, form.log.get)
+	Ok("")
+      }
+    }
 }
