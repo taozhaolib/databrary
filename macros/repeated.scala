@@ -22,4 +22,6 @@ trait RepeatedView[-V[_],B,+R] {
   def apply[A1 : V, A2 : V, A3 : V, A4 : V, A5 : V, A6 : V](a1 : A1, a2 : A2, a3 : A3, a4 : A4, a5 : A5, a6 : A6) : R = result(arg(a1), arg(a2), arg(a3), arg(a4), arg(a5), arg(a6))
   def apply[A1 : V, A2 : V, A3 : V, A4 : V, A5 : V, A6 : V, A7 : V](a1 : A1, a2 : A2, a3 : A3, a4 : A4, a5 : A5, a6 : A6, a7 : A7) : R = result(arg(a1), arg(a2), arg(a3), arg(a4), arg(a5), arg(a6), arg(a7))
   def apply[A1 : V, A2 : V, A3 : V, A4 : V, A5 : V, A6 : V, A7 : V, A8 : V](a1 : A1, a2 : A2, a3 : A3, a4 : A4, a5 : A5, a6 : A6, a7 : A7, a8 : A8) : R = result(arg(a1), arg(a2), arg(a3), arg(a4), arg(a5), arg(a6), arg(a7), arg(a8))
+
+  def fromOption[A1 : V](a1 : Option[A1]) : R = a1.fold(apply())(apply(_))
 }

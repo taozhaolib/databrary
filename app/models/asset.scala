@@ -22,7 +22,10 @@ sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype 
     else
       (mimetype.substring(0, slash), mimetype.substring(slash+1))
   }
-  def isImage = mimetype.startsWith("image/")
+  final def isImage = mimetype.startsWith("image/")
+  final def isVideo = mimetype.startsWith("video/")
+  final def isAudio = mimetype.startsWith("audio/")
+  final def isTranscodable = isVideo || isAudio
 
   final lazy val json = JsonRecord.flatten(id,
     Some('mimetype -> mimetype),
@@ -96,12 +99,10 @@ object AssetFormat extends TableId[AssetFormat]("format") {
     * Images of this type may be produced and handled specially internally.
     */
   final val Image = new AssetFormat(IMAGE, "image/jpeg", Some("jpg"), "Image") {
-    override def isImage = true
   }
   /** The designated internal video format. */
   final val Video = new TimeseriesFormat(VIDEO, "video/mp4", Some("mp4"), "Video") {
     val sampleFormat = Image
-    override def isImage = false
   }
 }
 
@@ -170,6 +171,9 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   }
   def unlink : Future[Boolean] =
     Audit.remove("slot_asset", SQLTerms('asset -> id)).execute
+
+  def supersede(asset : Asset) : Future[Boolean] =
+    SQL("SELECT asset_supersede(?, ?)").apply(asset.id, id).execute
 
   def pageName = name.getOrElse("file")
   def pageParent = Some(volume)
@@ -257,7 +261,8 @@ object Asset extends TableId[Asset]("asset") {
     * @param format the format of the file, taken as given
     * @param file a complete, uploaded file which will be moved into the appropriate storage location
     */
-  def create(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
+  def create(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String], file : TemporaryFile) : Future[Asset] = {
+    implicit val site = volume.site
     val sha1 = store.SHA1(file.file)
     Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name, 'sha1 -> sha1), "id")
       .single(SQLCols[Id]).map { id =>
@@ -267,7 +272,8 @@ object Asset extends TableId[Asset]("asset") {
       }
   }
 
-  def create(volume : Volume, format : TimeseriesFormat, classification : Classification.Value, duration : Offset, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
+  def create(volume : Volume, format : TimeseriesFormat, classification : Classification.Value, duration : Offset, name : Option[String], file : TemporaryFile) : Future[Asset] = {
+    implicit val site = volume.site
     val sha1 = store.SHA1(file.file)
     Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> duration, 'name -> name, 'sha1 -> sha1), "id")
       .single(SQLCols[Id]).map { id =>

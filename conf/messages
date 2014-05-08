@@ -13,6 +13,7 @@ error.missing=Field value has not been filled
 error.offset=Position in seconds expected
 citation.invalid=Invalid citation
 file.format.unknown=File format ''{0}'' is not supported.
+file.invalid=This does not appear to be a valid file ({0}).
 measure.unknown=Invalid or unknown type of measure.
 measure.bad=Invalid value for measure.
 duns.invalid=Invalid D-U-N-S

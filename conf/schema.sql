@@ -105,7 +105,7 @@ CREATE TYPE consent AS ENUM (
 COMMENT ON TYPE consent IS 'Levels of sharing that participants may consent to.';
 
 CREATE TABLE "authorize" (
-	"child" integer NOT NULL References "party" ON DELETE Cascade,
+	"child" integer NOT NULL References "party" ON DELETE CASCADE,
 	"parent" integer NOT NULL References "party",
 	"inherit" permission NOT NULL DEFAULT 'NONE',
 	"direct" permission NOT NULL DEFAULT 'NONE',
@@ -158,7 +158,7 @@ COMMENT ON VIEW "authorize_view" IS 'Expanded list of effective, active authoriz
 
 
 CREATE TABLE "authorize_info" (
-	"child" integer NOT NULL References "party" ON DELETE Cascade,
+	"child" integer NOT NULL References "party" ON DELETE CASCADE,
 	"parent" integer NOT NULL References "party",
 	"info" text NOT NULL,
 	Primary Key ("parent", "child"),
@@ -426,6 +426,16 @@ CREATE VIEW "asset_revisions" AS
 	) SELECT * FROM r;
 COMMENT ON VIEW "asset_revisions" IS 'Transitive closure of asset_revision.  Revisions must never form a cycle or this will not terminate.';
 
+CREATE FUNCTION "asset_supersede" ("asset_old" integer, "asset_new" integer) RETURNS void STRICT LANGUAGE plpgsql AS $$
+BEGIN
+	PERFORM next FROM asset_revision WHERE prev = asset_new;
+	IF FOUND THEN
+		RAISE 'Asset % already superseded', asset_new;
+	END IF;
+	UPDATE slot_asset SET asset = asset_new WHERE asset = asset_old;
+	INSERT INTO asset_revision VALUES (asset_old, asset_new);
+END; $$;
+
 
 CREATE TABLE "excerpt" (
 	"asset" integer NOT NULL References "slot_asset" ON DELETE CASCADE,
@@ -438,6 +448,14 @@ COMMENT ON COLUMN "excerpt"."segment" IS 'Segment within slot_asset.container sp
 
 SELECT audit.CREATE_TABLE ('excerpt');
 
+
+CREATE TABLE "transcode" (
+	"asset" integer NOT NULL Primary Key References "asset" ON DELETE CASCADE,
+	"owner" integer NOT NULL References "party",
+	"start" timestamp Default now(),
+	"process" integer,
+	"result" text
+);
 
 ----------------------------------------------------------- comments
 

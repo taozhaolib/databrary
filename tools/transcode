@@ -1,0 +1,65 @@
+#!/bin/bash
+# Transcode job management.
+# This is run on transcode.host, called from conf/transctl.sh
+# It is also the PBS script so is in fact run twice, once with arguments (up to the qsub), once with varibles.
+
+#PBS -l nodes=1:ppn=1,mem=1024mb
+
+PBS=$0
+if [[ $PBS != /* ]] ; then
+	PBS=$PWD/$PBS
+fi
+
+while getopts 'a:d:hk:r:' opt ; do case "$opt" in
+	a) aid=$OPTARG ;;
+	d) cd $OPTARG ;;
+	h) hpc=1 ;;
+	k) kill=$OPTARG ;;
+	r) url=$OPTARG ;;
+esac ; done
+
+if [[ $# -ge $OPTIND || -z $aid || -z $kill && -z $url ]] ; then
+	echo "$0: usage error: $*" >&2
+	exit 1
+fi
+
+IN=$aid
+OUT=$aid.mp4
+LOG=$aid.log
+
+if [[ -n $kill ]] ; then
+	if [[ -n $hpc ]] ; then
+		qdel $kill.hpc0.local
+	else
+		kill $kill
+	fi
+	rm -f "$IN" "$OUT"
+	exit 0
+fi
+
+if [[ ! -f $IN ]] ; then
+	echo "$IN: file not found" >&2
+	exit 1
+fi
+
+if [[ -n $hpc ]] ; then
+	rate=50000
+	sec=$[60+`stat -c %s "$IN"`/$rate]
+	exec qsub -d "$PWD" -q ser2 -j oe -o $LOG -N "$aid" -v "aid=$aid,url=$url" -l walltime=$sec "$PBS"
+elif [[ -z $PBS_JOBNAME ]] ; then
+	exec >$LOG 2>&1
+	PID=$$
+else
+	PID=${PBS_JOBID%%.hpc0.local}
+fi
+
+ls -l $aid $aid.*
+sleep 5 # hope server knows job has started by now
+
+time ffmpeg -loglevel warning -threads 1 -i "$IN" -vf pad='iw+mod(iw\,2):ih+mod(ih\,2)' -threads 1 -f mp4 -c:v libx264 -pix_fmt yuvj420p -c:a libfdk_aac -y "$OUT"
+r=$?
+if [[ $r -ne 0 ]] ; then
+	rm -f "$OUT"
+fi
+
+curl -sSk -F "pid=$PID" -F "res=$r" -F "log=<$LOG" "$url"

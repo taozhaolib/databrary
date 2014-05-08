@@ -61,6 +61,7 @@ object FileAsset extends StoreDir("store.master") {
     } else {
       d.getParentFile.mkdir
       f.moveTo(d)
+      d.setReadOnly
     }
   }
   def read(f : models.BackedAsset) : StreamEnumerator =

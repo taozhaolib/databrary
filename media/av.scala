@@ -11,7 +11,7 @@ object AV {
   private val videoCodecs = Seq("h264", "aac")
 
   /* These are referenced by native code so must match their use there */
-  final class Error(msg : String, val err : Int) extends RuntimeException(msg)
+  final class Error(val file : String, msg : String, val err : Int) extends RuntimeException(msg)
   final class Probe(val format : String, _duration : Double, val streams : Array[String]) {
     def duration : Offset = Offset.ofSeconds(_duration)
 
@@ -40,6 +40,6 @@ object AV {
       outfile.getPath).
       inheritIO.redirectInput(new File("/dev/null")).start.waitFor
     if (r != 0)
-      throw new Error("extractSegment failed", r)
+      throw new Error(infile.getPath, "extractSegment failed", r)
   }
 }
