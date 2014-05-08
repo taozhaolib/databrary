@@ -16,10 +16,16 @@ module.directive('repeater', ['pageService', function (page) {
 				//
 
 				$scope.remove = function (repeat, $index) {
+					if (angular.isFunction($scope.removeFn))
+						$scope.removeFn($scope, repeat, $index);
+
 					return $scope.repeats.splice($index, 1);
 				};
 
 				$scope.add = function (repeat, $index) {
+					if (angular.isFunction($scope.addFn))
+						$scope.addFn($scope, repeat, $index);
+
 					return $scope.repeats.splice($index + 1, 0, $scope.template || {});
 				};
 

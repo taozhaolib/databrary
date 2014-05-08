@@ -16,7 +16,7 @@ module.controller('VolumeEditView', [
 			}
 		});
 
-		var activateFn = function (step) {
+		var activateFn = function (step) { console.log(step.id.split('_'));
 			page.$location.search('page', step.id.split('_').pop());
 		};
 

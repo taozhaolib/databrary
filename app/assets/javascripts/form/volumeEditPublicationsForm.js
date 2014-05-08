@@ -70,9 +70,15 @@ module.directive('volumeEditPublicationsForm', [
 
 			//
 
+			var changeFn = function () {
+				form.$setDirty();
+			};
+
 			form.retrieveRepeater = function (repeater) {
 				form.repeater = repeater;
 				form.repeater.repeats = form.data.citation;
+				form.repeater.addFn = changeFn;
+				form.repeater.removeFn = changeFn;
 			};
 
 			//
