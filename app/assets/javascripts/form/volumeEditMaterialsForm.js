@@ -58,11 +58,27 @@ module.directive('volumeEditMaterialsForm', [
 
 				form.data = $.extend(true, {}, backup);
 				form.$setPristine();
+
+				if(form.repeater)
+					form.repeater.repeats = form.data.citation;
 			};
 
 			form.cancel = function () {
 				if (angular.isFunction(form.cancelFn))
 					form.cancelFn(form);
+			};
+
+			//
+
+			var changeFn = function () {
+				form.$setDirty();
+			};
+
+			form.retrieveRepeater = function (repeater) {
+				form.repeater = repeater;
+				form.repeater.repeats = form.data.citation;
+				form.repeater.addFn = changeFn;
+				form.repeater.removeFn = changeFn;
 			};
 
 			//

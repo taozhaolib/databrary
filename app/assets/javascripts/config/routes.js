@@ -245,6 +245,8 @@ module.config([
 
 		//
 
+		var volumeEditVolume;
+
 		var volumeEdit = {
 			controller: 'VolumeEditView',
 			templateUrl: 'volumeEditView.html',
@@ -269,9 +271,32 @@ module.config([
 							});
 						}
 
+						volumeEditVolume = deferred.promise;
+
+						return volumeEditVolume;
+					}
+				],
+				slot: [
+					'$route', 'Slot', '$q', function ($route, Slot, $q) {
+						var deferred = $q.defer();
+
+						if ($route.current.params.id) {
+							volumeEditVolume.then(function (volume) {
+								Slot.get({
+									id: volume.top.id,
+									segment: ',',
+									assets: ''
+								}, function (res) {
+									deferred.resolve(res);
+								}, function (res) {
+									deferred.reject();
+								});
+							});
+						}
+
 						return deferred.promise;
 					}
-				]
+				],
 			},
 			reloadOnSearch: false,
 			authenticate: true

@@ -1,5 +1,5 @@
 module.controller('VolumeEditView', [
-	'$scope', 'volume', 'pageService', function ($scope, volume, page) {
+	'$scope', 'volume', 'slot', 'pageService', function ($scope, volume, slot, page) {
 		page.title = page.constants.message('page.title.stub');
 		$scope.volume = volume;
 
@@ -129,7 +129,8 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_materials': function (step) {
-				forms.materials.data = {};
+				if (slot)
+					forms.materials.data = slot;
 			},
 
 			'volume_edit_access': function (step) {

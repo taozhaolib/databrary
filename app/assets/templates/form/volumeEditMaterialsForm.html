@@ -1,4 +1,9 @@
 <form name="volumeEditMaterialsForm" bindonce>
+  <fieldset class="clean">
+    <repeater retrieve="volumeEditMaterialsForm.retrieveRepeater">
+
+    </repeater>
+  </fieldset>
 
   <fieldset class="clean">
     <button ng-click="volumeEditMaterialsForm.save()" bo-html="'save' | message" class="green" ng-if="volumeEditMaterialsForm.$dirty"></button>
