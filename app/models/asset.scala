@@ -22,7 +22,10 @@ sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype 
     else
       (mimetype.substring(0, slash), mimetype.substring(slash+1))
   }
-  def isImage = mimetype.startsWith("image/")
+  final def isImage = mimetype.startsWith("image/")
+  final def isVideo = mimetype.startsWith("video/")
+  final def isAudio = mimetype.startsWith("audio/")
+  final def isTranscodable = isVideo || isAudio
 
   final lazy val json = JsonRecord.flatten(id,
     Some('mimetype -> mimetype),
@@ -96,12 +99,10 @@ object AssetFormat extends TableId[AssetFormat]("format") {
     * Images of this type may be produced and handled specially internally.
     */
   final val Image = new AssetFormat(IMAGE, "image/jpeg", Some("jpg"), "Image") {
-    override def isImage = true
   }
   /** The designated internal video format. */
   final val Video = new TimeseriesFormat(VIDEO, "video/mp4", Some("mp4"), "Video") {
     val sampleFormat = Image
-    override def isImage = false
   }
 }
 

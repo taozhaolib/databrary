@@ -151,10 +151,15 @@ object AssetHtml extends AssetController with HtmlController {
 	    val probe = media.AV.probe(file.file)
 	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), probe.duration, aname, file)
 	  case _ =>
+	    if (fmt.isTranscodable) try {
+	      media.AV.probe(file.file)
+	    } catch { case e : media.AV.Error =>
+	      form.file.withError("file.invalid", e.getMessage)._throw
+	    }
 	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), aname, file)
 	}
 	sa <- container.mapAsync(asset.link(_, form.position.get))
-	_ = if (fmt.mimetype.startsWith("video/") && !form.timeseries.get)
+	_ = if (fmt.isTranscodable && !form.timeseries.get)
 	  store.Transcode.start(asset)
       } yield (Redirect(sa.getOrElse(asset).pageURL))
     }
