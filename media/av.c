@@ -104,7 +104,7 @@ JNI_OnLoad(JavaVM *jvm, void *reserved)
 		return -1;
 	if (construct_init(Env, &String, "java/lang/String", NULL) < 0)
 		return -1;
-	CONSTRUCT_INIT(Error, "(Ljava/lang/String;I)V");
+	CONSTRUCT_INIT(Error, "(Ljava/lang/String;Ljava/lang/String;I)V");
 	CONSTRUCT_INIT(Probe, "(Ljava/lang/String;D[Ljava/lang/String;)V");
 
 #undef CONSTRUCT_INIT
@@ -130,8 +130,8 @@ JNI_OnUnload(JavaVM *jvm, void *reserved)
 		Env = NULL;
 }
 
-static void throw(JNIEnv *env, int r, const char *fmt, ...) __attribute__((format(printf, 3, 4)));
-static void throw(JNIEnv *env, int r, const char *fmt, ...)
+static void throw(JNIEnv *env, int r, const jstring jfile, const char *fmt, ...) __attribute__((format(printf, 4, 5)));
+static void throw(JNIEnv *env, int r, const jstring jfile, const char *fmt, ...)
 {
 	va_list args;
 	char buf[256];
@@ -151,13 +151,13 @@ static void throw(JNIEnv *env, int r, const char *fmt, ...)
 	}
 
 	jstring jstr = (*env)->NewStringUTF(env, buf);
-	(*env)->Throw(env, CONSTRUCT(Error, jstr, r));
+	(*env)->Throw(env, CONSTRUCT(Error, jfile, jstr, r));
 }
 
 #define CHECK(F, MSG, ARGS...) ({ \
 		int _r = (F); \
 		if (_r < 0) { \
-			throw(env, _r, "%s: " MSG, infile, ##ARGS); \
+			throw(env, _r, jinfile, MSG, ##ARGS); \
 			goto error; \
 		} \
 		_r; \
@@ -258,7 +258,7 @@ Java_media_AV_00024__1frame(
 
 	if (!((codec = avcodec_find_encoder(AV_CODEC_ID_MJPEG)) &&
 	      (os = avformat_new_stream(out, codec)))) {
-		throw(env, 0, "cannot find JPEG codec or create output stream");
+		throw(env, 0, jinfile, "cannot find JPEG codec or create output stream");
 		goto error;
 	}
 	os->codec->time_base = is->codec->time_base;
@@ -295,7 +295,7 @@ Java_media_AV_00024__1frame(
 	CHECK(avformat_write_header(out, NULL), "writing header to '%s'", outfile);
 	CHECK(avcodec_encode_video2(os->codec, &pkt, frame, &gpp), "encoding frame");
 	if (!gpp) {
-		throw(env, 0, "did not encode JPEG frame");
+		throw(env, 0, jinfile, "did not encode JPEG frame");
 		goto error;
 	}
 	CHECK(av_write_frame(out, &pkt), "writing frame to '%s'", outfile);
