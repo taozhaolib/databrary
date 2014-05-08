@@ -323,24 +323,6 @@ module.config([
 		$routeProvider.otherwise({
 			redirectTo: '/search'
 		});
-
-		//
-
-		// TODO: circular dependency from authService
-//		$httpProvider.interceptors.push([
-//			'$q', '$location', 'authService',
-//			function ($q, $location, auth) {
-//				return {
-//					'responseError': function (response) {
-//						if (response.status == 403) {
-//							auth.tryLogin();
-//						}
-//
-//						return $q.reject(response);
-//					}
-//				};
-//			}
-//		]);
 	}
 ]);
 
