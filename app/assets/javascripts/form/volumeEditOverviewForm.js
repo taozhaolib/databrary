@@ -15,9 +15,10 @@ module.directive('volumeEditOverviewForm', [
 
 			//
 
-			form.init = function (data) {
+			form.init = function (data, volume) {
 				form.data = data;
-				backup = angular.copy(data);
+				form.volume = form.volume || volume;
+				backup = $.extend(true, {}, data);
 			};
 
 			//
@@ -80,7 +81,7 @@ module.directive('volumeEditOverviewForm', [
 				if (angular.isFunction(form.resetFn))
 					form.resetFn(form);
 
-				form.data = angular.copy(backup);
+				form.data = $.extend(true, {}, backup);
 				form.$setPristine();
 			};
 

@@ -43,17 +43,11 @@ module.controller('SearchView', [
 		$scope.volumeClasses = function (volume) {
 			var cls = [], study = false;
 
-				for (var prop in volume.providers) {
-					if (volume.providers.hasOwnProperty(prop)) {
-						study = true;
-						break;
-					}
-				}
-
-				if (study)
-					cls.push('study');
-				else
-					cls.push('dataset');
+			if (Object.keys(volume.providers).length === 0) {
+				cls.push('dataset');
+			} else {
+				cls.push('study');
+			}
 
 				return cls;
 		};

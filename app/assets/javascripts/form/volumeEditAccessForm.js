@@ -5,6 +5,7 @@ module.directive('volumeEditAccessForm', [
 			var form = $scope.volumeEditAccessForm;
 
 			form.data = {};
+			form.volume = undefined;
 			var backup = {};
 
 			form.saveFn = undefined;
@@ -15,9 +16,10 @@ module.directive('volumeEditAccessForm', [
 
 			//
 
-			form.init = function (data) {
+			form.init = function (data, volume) {
 				form.data = data;
-				backup = angular.copy(data);
+				form.volume = form.volume || volume;
+				backup = $.extend(true, {}, data);
 			};
 
 			//
@@ -38,6 +40,7 @@ module.directive('volumeEditAccessForm', [
 							form.successFn(form, res);
 
 						form.$setPristine();
+						page.models.Volume.$cache.removeAll();
 					}, function (res) {
 						page.messages.addError({
 							body: page.constants.message('volume.edit.access.error'),
@@ -53,7 +56,7 @@ module.directive('volumeEditAccessForm', [
 				if (angular.isFunction(form.resetFn))
 					form.resetFn(form);
 
-				form.data = angular.copy(backup);
+				form.data = $.extend(true, {}, backup);
 				form.$setPristine();
 			};
 

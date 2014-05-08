@@ -18,8 +18,8 @@ module.directive('volumeEditPublicationsForm', [
 
 			form.init = function (data, volume) {
 				form.data = data;
-				form.volume = volume;
-				backup = angular.copy(data);
+				form.volume = form.volume || volume;
+				backup = $.extend(true, {}, data);
 			};
 
 			//
@@ -40,6 +40,7 @@ module.directive('volumeEditPublicationsForm', [
 							form.successFn(form, res);
 
 						form.$setPristine();
+						page.models.Volume.$cache.removeAll();
 					}, function (res) {
 						page.messages.addError({
 							body: page.constants.message('volume.edit.publications.error'),
@@ -55,13 +56,23 @@ module.directive('volumeEditPublicationsForm', [
 				if (angular.isFunction(form.resetFn))
 					form.resetFn(form);
 
-				form.data = angular.copy(backup);
+				form.data = $.extend(true, {}, backup);
 				form.$setPristine();
+
+				if(form.repeater)
+					form.repeater.repeats = form.data.citation;
 			};
 
 			form.cancel = function () {
 				if (angular.isFunction(form.cancelFn))
 					form.cancelFn(form);
+			};
+
+			//
+
+			form.retrieveRepeater = function (repeater) {
+				form.repeater = repeater;
+				form.repeater.repeats = form.data.citation;
 			};
 
 			//

@@ -122,7 +122,10 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_publications': function (step) {
-				forms.publications.data = {};
+				if (volume)
+					forms.publications.init({
+						citation: volume.citations,
+					});
 			},
 
 			'volume_edit_materials': function (step) {
