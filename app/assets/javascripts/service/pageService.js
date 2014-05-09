@@ -3,6 +3,7 @@ module.factory('pageService', [
 	'messageService',
 	'tooltipService',
 	'constantService',
+	'typeService',
 	'routerService',
 	'eventService',
 	'guiService',
@@ -11,11 +12,12 @@ module.factory('pageService', [
 	'analyticService',
 	'$location',
 	'$filter',
-	function ($rootScope, messages, tooltips, constants, router, events, gui, models, auth, analytics, $location, $filter) {
+	function ($rootScope, messages, tooltips, constants, types, router, events, gui, models, auth, analytics, $location, $filter) {
 		var page = {
 			messages: messages,
 			tooltips: tooltips,
 			constants: constants,
+			types: types,
 			router: router,
 			gui: gui,
 			events: events,

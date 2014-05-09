@@ -1,5 +1,6 @@
 module.factory('typeService', [
-	function () {
+	'constantService',
+	function (constants) {
 		var typeService = {};
 
 		//
@@ -70,10 +71,10 @@ module.factory('typeService', [
 
 			if (dig === true)
 				return object.asset[property];
-			else if (dig === false)
+			else if (dig === false || property in object)
 				return object[property];
 			else
-				return object[property] || object.asset[property];
+				return object.asset[property];
 		};
 
 		typeService.segmentString = function (object, dig) {
@@ -101,8 +102,12 @@ module.factory('typeService', [
 			return segment.join(',');
 		};
 
+		typeService.assetFormat = function (object, dig) {
+			return constants.get('format', typeService.assetProperty(object, 'format', dig));
+		}
+
 		typeService.assetDisplayName = function (object, dig) {
-			return typeService.assetProperty(object, 'name', dig) || typeService.assetProperty(object, 'format', dig).name;
+			return typeService.assetProperty(object, 'name', dig) || typeService.assetFormat(object, dig).name;
 		};
 
 		//
