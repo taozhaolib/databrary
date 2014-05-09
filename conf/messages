@@ -302,7 +302,6 @@ register.name.prompt=Full name
 register.continue=Continue
 register.agree=Agree
 register.register=Agree and register
-register.agreement.instructions= Scroll to the bottom of each page and click ''Agree''. Terms in italics are defined in our <a href="http://databrary.org/user-guide/policies/definitions.html" target="_blank">definitions</a>.
 register.sent.instructions=Your confirmation email has been sent to {0}.
 register.authquery.error=Could not retrieve potential authorizing agents.
 
