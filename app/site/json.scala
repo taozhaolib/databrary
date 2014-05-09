@@ -86,7 +86,7 @@ object JsonRecord {
   def seq(s : Seq[JsonRecord]) : JsValue =
     JsObject(s.map(JsonField.ofField(_)))
 
-  implicit object SeqBuild extends CanBuildFrom[Seq[_], JsonRecord, JsValue] {
+  implicit object SeqBuild extends CanBuildFrom[Iterable[_], JsonRecord, JsValue] {
     final class SeqBuilder extends scala.collection.mutable.Builder[JsonRecord, JsValue] {
       private[this] val builder = Seq.newBuilder[JsonField]
       def +=(e : JsonRecord) = {
@@ -96,11 +96,11 @@ object JsonRecord {
       def clear() = builder.clear
       def result() = JsObject(builder.result)
     }
-    def apply(coll : Seq[_]) = new SeqBuilder
+    def apply(coll : Iterable[_]) = new SeqBuilder
     def apply() = new SeqBuilder
   }
 
-  def map[A](f : A => JsonRecord)(l : Seq[A]) : JsValue =
+  def map[A](f : A => JsonRecord)(l : Iterable[A]) : JsValue =
     l.map(f)
 }
 

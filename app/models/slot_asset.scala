@@ -74,7 +74,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
 
   override lazy val json : JsonObject = JsonObject.flatten(
     Some('permission -> permission),
-    if (format === asset.format) None else Some('format -> format.json),
+    if (format === asset.format) None else Some('format -> format.id),
     if (excerpt) Some('excerpt -> excerpt) else None,
     Some('asset -> (asset.json ++
       JsonObject.flatten(if (asset_segment.isFull) None else Some('segment -> asset_segment))))

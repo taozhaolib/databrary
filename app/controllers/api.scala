@@ -29,6 +29,7 @@ object SiteApi extends SiteController {
 	, 'name -> c.toString
 	))(Classification.values.toSeq)
     , 'category -> JsonRecord.map[RecordCategory](_.json)(RecordCategory.getAll)
+    , 'format -> JsonRecord.map[AssetFormat](_.json)(AssetFormat.getAll)
     , 'mode -> json.JsString(current.mode.toString)
     , 'version -> json.JsString(site.Site.version)
     ).js
