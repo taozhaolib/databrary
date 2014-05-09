@@ -3,9 +3,29 @@ module.controller('VolumeEditView', [
 		page.title = page.constants.message('page.title.stub');
 		$scope.volume = volume;
 
+		$scope.funding = [];
+		$scope.access = [];
+
+		if (volume && volume.access) {
+			angular.forEach(volume.access, function (access) {
+				if (access.hasOwnProperty('funding'))
+					$scope.funding.push(access);
+
+				if (access.access)
+					$scope.access.push(access);
+			});
+		}
+
+		//
+
+		var updateQuery = false;
+
 		$scope.$watch(function () {
 			return page.$location.search().page;
 		}, function (val, old) {
+			if (!updateQuery)
+				updateQuery = true;
+
 			if (val && val !== old) {
 				for (var step in $scope.wizard.steps) {
 					if ($scope.wizard.steps.hasOwnProperty(step) && $scope.wizard.steps[step].id.indexOf(val) > -1) {
@@ -16,10 +36,6 @@ module.controller('VolumeEditView', [
 			}
 		});
 
-		var activateFn = function (step) { console.log(step.id.split('_'));
-			page.$location.search('page', step.id.split('_').pop());
-		};
-
 		//
 
 		$scope.wizard = {};
@@ -27,6 +43,11 @@ module.controller('VolumeEditView', [
 		$scope.retrieveWizard = function (wizard) {
 			$scope.wizard = wizard;
 			$scope.wizard.activateFn = activateFn;
+		};
+
+		var activateFn = function (step) {
+			if (updateQuery)
+				page.$location.search('page', step.id.split('_').pop());
 		};
 
 		$scope.updateWizard = function () {
@@ -45,7 +66,7 @@ module.controller('VolumeEditView', [
 			}
 
 			angular.forEach($scope.wizard.steps, function (step) {
-				if (angular.isFunction($scope.updateStep[step.id](step)))
+				if (angular.isFunction($scope.updateStep[step.id]))
 					$scope.updateStep[step.id](step);
 			});
 		};
@@ -56,6 +77,7 @@ module.controller('VolumeEditView', [
 			overview: undefined,
 			publications: undefined,
 			materials: undefined,
+			funding: undefined,
 			access: undefined,
 		};
 
@@ -102,6 +124,12 @@ module.controller('VolumeEditView', [
 				forms.materials.cancelFn = cancelFn;
 			},
 
+			'volume_edit_funding': function (step) {
+				forms.funding = step.volumeEditFundingForm;
+				forms.funding.volume = volume;
+				forms.funding.cancelFn = cancelFn;
+			},
+
 			'volume_edit_access': function (step) {
 				forms.access = step.volumeEditAccessForm;
 				forms.access.volume = volume;
@@ -133,8 +161,16 @@ module.controller('VolumeEditView', [
 					forms.materials.data = slot;
 			},
 
+			'volume_edit_funding': function (step) {
+				forms.funding.data = {
+					access: $scope.funding,
+				};
+			},
+
 			'volume_edit_access': function (step) {
-				forms.access.data = {};
+				forms.access.data = {
+					access: $scope.access,
+				};
 			},
 		};
 	}

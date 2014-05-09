@@ -12,7 +12,8 @@ module.factory('pageService', [
 	'analyticService',
 	'$location',
 	'$filter',
-	function ($rootScope, messages, tooltips, constants, types, router, events, gui, models, auth, analytics, $location, $filter) {
+	'$timeout',
+	function ($rootScope, messages, tooltips, constants, types, router, events, gui, models, auth, analytics, $location, $filter, $timeout) {
 		var page = {
 			messages: messages,
 			tooltips: tooltips,
@@ -25,7 +26,8 @@ module.factory('pageService', [
 			auth: auth,
 			analytics: analytics,
 			$location: $location,
-			$filter: $filter
+			$filter: $filter,
+			$timeout: $timeout,
 		};
 
 		//

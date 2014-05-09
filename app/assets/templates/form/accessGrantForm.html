@@ -1,0 +1,56 @@
+<form name="accesssGrantForm">
+  <fieldset class="clean" ng-if="accesssGrantForm.other">
+    <legend>{{"auth.grant.title" | message:accesssGrantForm.other.party.name}}</legend>
+
+    <div ng-repeat="preset in accesssGrantForm.presets.get(accesssGrantForm.party, accesssGrantForm.other.party)">
+      <input type="radio" name="shortcut" ng-checked="accesssGrantForm.other.preset === preset" ng-click="accesssGrantForm.presets.set(accesssGrantForm.other, preset)">
+      <label class="option" ng-if="!preset.custom">
+        <strong>{{'auth.preset.'+page.constants.data.permission[preset.inherit].name+'.'+page.constants.data.permission[preset.direct].name+'.title' | message}}</strong>: {{'auth.preset.'+page.constants.data.permission[preset.inherit].name+'.'+page.constants.data.permission[preset.direct].name | possessive:accesssGrantForm.party}}
+      </label> <label class="option" ng-if="preset.custom"><strong>Custom...</strong></label>
+    </div>
+  </fieldset>
+
+  <div class="row" ng-show="accesssGrantForm.other.preset.custom">
+    <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
+      <fieldset ng-disabled="!accesssGrantForm.other.preset.custom" class="boxed">
+        <legend bo-html="'auth.direct' | possessive:party"></legend>
+
+        <div ng-repeat="permission in page.constants.data.permission">
+          <input type="radio" ng-model="accesssGrantForm.other.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == accesssGrantForm.other.direct">
+          <label bo-html="'auth.direct.'+page.constants.data.permission[permission.id].name | possessive:party" class="option"></label>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
+      <fieldset ng-disabled="!accesssGrantForm.other.preset.custom" class="boxed">
+        <legend bo-html="'auth.inherit' | possessive:party"></legend>
+
+        <div ng-repeat="permission in page.constants.data.permission">
+          <input type="radio" ng-model="accesssGrantForm.other.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == accesssGrantForm.other.inherit">
+          <label bo-html="'auth.inherit.'+page.constants.data.permission[permission.id].name | possessive:party" class="option"></label>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+
+  <fieldset class="clean">
+    <label>{{"auth.expiration" | message}}:</label>
+
+    <input type="date" ng-model="accesssGrantForm.other.expiration" class="network-auth-expiration-input" ng-blur="accesssGrantForm.transformExpiration()">
+
+    <button ng-click="accesssGrantForm.other.expiration = ''" ng-if="auth.hasAuth('SUPER')" class="orange network-auth-expiration-button">Clear expiration</button>
+  </fieldset>
+
+  <fieldset class="clean">
+    <input type="hidden" name="id" ng-value="accesssGrantForm.other.id">
+
+    <button ng-click="accesssGrantForm.save()" class="green" ng-if="!accesssGrantForm.other.authorized">{{"auth.authorize" | message}}</button>
+    <button ng-click="accesssGrantForm.deny()" class="orange" ng-if="!accesssGrantForm.other.authorized && !accesssGrantForm.other.force">{{"auth.deny" | message}}</button>
+
+    <button ng-click="accesssGrantForm.save()" class="green" ng-if="accesssGrantForm.other.authorized">{{"auth.update" | message}}</button>
+    <button ng-click="accesssGrantForm.deny()" class="orange" ng-if="accesssGrantForm.other.authorized">{{"auth.revoke" | message}}</button>
+
+    <button ng-click="accesssGrantForm.cancel()" class="red">{{"cancel" | message}}</button>
+  </fieldset>
+</form>

@@ -1,0 +1,37 @@
+<form name="volumeEditFundingForm" bindonce>
+  <fieldset class="clean">
+    <article ng-repeat="access in volumeEditFundingForm.data.access">
+      <div class="row">
+        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+          <figure baseline="square" class="figure_avatar" ng-click="openAuthParent(parent)">
+            <figmedia><img ng-src="{{page.router.partyAvatar(access.party, 54)}}"></figmedia>
+          </figure>
+        </div>
+
+        <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+          <!--<access-grant-form></access-grant-form>-->
+        </div>
+      </div>
+    </article>
+
+    <article>
+      <div class="row">
+        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+          <figure baseline="square" class="figure_avatar">
+            <figmedia><img src="/public/images/network/auth-add.png"></figmedia>
+          </figure>
+        </div>
+
+        <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+          <access-search-form></access-search-form>
+        </div>
+      </div>
+    </article>
+  </fieldset>
+
+  <fieldset class="clean">
+    <button ng-click="volumeEditFundingForm.save()" bo-html="'save' | message" class="green" ng-if="volumeEditFundingForm.$dirty"></button>
+    <button ng-click="volumeEditFundingForm.reset()" bo-html="'reset' | message" class="red" ng-if="volumeEditFundingForm.$dirty"></button>
+    <button ng-click="volumeEditFundingForm.cancel()" bo-html="'cancel' | message" class="yellow" ng-if="volumeEditFundingForm.volume"></button>
+  </fieldset>
+</form>

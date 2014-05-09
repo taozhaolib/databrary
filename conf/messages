@@ -377,6 +377,9 @@ wizard.volume_edit_publications.description=Update list of publications.
 wizard.volume_edit_materials.name=Materials
 wizard.volume_edit_materials.description=Upload excerpts, papers, posters, and other materials.
 
+wizard.volume_edit_funding.name=Funding
+wizard.volume_edit_funding.description=Specify funding sources.
+
 wizard.volume_edit_access.name=Access
 wizard.volume_edit_access.description=Set visibility levels for volume data.
 

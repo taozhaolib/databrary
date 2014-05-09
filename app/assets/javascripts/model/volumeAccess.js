@@ -7,6 +7,11 @@ module.factory('VolumeAccess', [
 			partyId: function () {
 				return $route.current.params.partyId || undefined;
 			}
-		});
+		}, {
+			search: {
+				method: 'GET',
+				url: '/api/volume/:id/access/:partyId/search'
+			}
+		}, 'volumeAccess');
 	}
 ]);
