@@ -10,10 +10,10 @@ module.directive('wizard', [
 				$scope.stepsList = {};
 				$scope.newStep = undefined;
 
-				$scope.onFn = {};
-				$scope.offFn = {};
-				$scope.addFn = undefined;
-				$scope.activateFn = undefined;
+				$scope.onFn = $scope.onFn || {};
+				$scope.offFn = $scope.offFn || {};
+				$scope.addFn = $scope.addFn || undefined;
+				$scope.activateFn = $scope.activateFn ||undefined;
 
 				$scope.addStep = function (step) {
 					$scope.steps.push(step);
