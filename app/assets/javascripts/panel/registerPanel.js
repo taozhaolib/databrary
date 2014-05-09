@@ -13,7 +13,7 @@ module.controller('RegisterPanel', [
 		$scope.$on('$destroy', function () {
 			angular.forEach(mess, function (message) {
 				page.messages.remove(message);
-			})
+			});
 		});
 
 
