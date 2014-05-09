@@ -12,8 +12,6 @@ import site._
 /** File formats for assets.
   * id should actually be a ShortId but it's just simpler to have Ints everywhere. */
 sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype : String, val extension : Option[String], val name : String) extends TableRowId[AssetFormat] {
-  AssetFormat.add(this)
-
   /** mimetype split into its two components at the slash */
   final def mimeSubTypes = {
     val slash = mimetype.indexOf('/')
@@ -46,9 +44,6 @@ sealed abstract class TimeseriesFormat private[models] (id : AssetFormat.Id, mim
 
 /** Interface for non-timeseries file formats. */
 object AssetFormat extends TableId[AssetFormat]("format") {
-  private val cache : concurrent.Map[Int, AssetFormat] = concurrent.TrieMap.empty[Int, AssetFormat]
-  protected def add(f : AssetFormat) = cache.update(f.id.unId, f)
-
   private[models] val row = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("mimetype")
@@ -58,31 +53,23 @@ object AssetFormat extends TableId[AssetFormat]("format") {
       new AssetFormat(id, mimetype, extension, name)
     } from "format"
 
-  private def wait(f : => SQLRows[AssetFormat]) : Option[AssetFormat] =
-    scala.concurrent.Await.result(f.singleOpt,
-      scala.concurrent.duration.Duration(1, scala.concurrent.duration.MINUTES))
-
   /** Lookup a format by its id. */
   def get(id : Id) : Option[AssetFormat] =
-    cache.get(id.unId)
-      .orElse(wait(row.SELECT("WHERE id = ?").apply(id)))
+    byId.get(id.unId)
   private[models] def getTimeseries(id : Id) : Option[TimeseriesFormat] =
-    cache.get(id.unId).flatMap(cast[TimeseriesFormat](_))
+    byId.get(id.unId).flatMap(cast[TimeseriesFormat](_))
   /** Lookup a format by its mimetime. */
   def getMimetype(mimetype : String) : Option[AssetFormat] =
-    cache.collectFirst { case (_, a) if a.mimetype.equals(mimetype) => a }
-      .orElse(wait(row.SELECT("WHERE mimetype = ?").apply(mimetype)))
+    byId.collectFirst { case (_, a) if a.mimetype.equals(mimetype) => a }
   /** Lookup a format by its extension.
     * @param ts include TimeseriesFormats. */
   private def getExtension(ext : String) : Option[AssetFormat] = {
     val extension = if (ext.equals("mpeg")) "mpg" else ext
-    cache.collectFirst { case (_, a) if a.extension.exists(_.equals(extension)) => a }
-      .orElse(wait(row.SELECT("WHERE extension = ?").apply(extension)))
+    byId.collectFirst { case (_, a) if a.extension.exists(_.equals(extension)) => a }
   }
   /** Get a list of all file formats in the database. */
   def getAll : Iterable[AssetFormat] =
-    // XXX incomplete but asymptotically correct
-    cache.values
+    byId.values
 
   def getFilename(filename : String) : Option[AssetFormat] =
     Maybe(filename.lastIndexOf('.')).opt.flatMap { i =>
@@ -104,6 +91,13 @@ object AssetFormat extends TableId[AssetFormat]("format") {
   final val Video = new TimeseriesFormat(VIDEO, "video/mp4", Some("mp4"), "Video") {
     val sampleFormat = Image
   }
+
+  private val byId : scala.collection.immutable.Map[Int, AssetFormat] =
+    (Seq(Video, Image) ++
+    scala.concurrent.Await.result(
+      row.SELECT("WHERE id > 0").apply().list,
+      scala.concurrent.duration.Duration(1, scala.concurrent.duration.MINUTES)))
+    .map(f => f.id.unId -> f).toMap
 }
 
 
@@ -180,7 +174,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   def pageURL = controllers.routes.AssetHtml.view(id)
 
   lazy val json : JsonRecord = JsonRecord.flatten(id,
-    Some('format -> format.json /* XXX */),
+    Some('format -> format.id),
     Some('classification -> classification),
     name.map('name -> _),
     cast[Timeseries](this).map('duration -> _.duration)
