@@ -1,49 +1,40 @@
 module.directive('repeater', ['pageService', function (page) {
-	var compile = function ($el, $attrs, transclude) {
+	var link = function ($scope, $el, $attrs) {
+		$scope.repeats = [];
+		$scope.template = undefined;
 
-		return {
-			pre: function ($scope, $el, $attrs) {
-			},
+		$scope.addFn = undefined;
+		$scope.removeFn = undefined;
 
-			post: function ($scope, $el, $attrs) {
+		//
 
-				$scope.repeats = [];
-				$scope.template = undefined;
+		$scope.remove = function (repeat, $index) {
+			if (angular.isFunction($scope.removeFn))
+				$scope.removeFn($scope, repeat, $index);
 
-				$scope.addFn = undefined;
-				$scope.removeFn = undefined;
-
-				//
-
-				$scope.remove = function (repeat, $index) {
-					if (angular.isFunction($scope.removeFn))
-						$scope.removeFn($scope, repeat, $index);
-
-					return $scope.repeats.splice($index, 1);
-				};
-
-				$scope.add = function (repeat, $index) {
-					if (angular.isFunction($scope.addFn))
-						$scope.addFn($scope, repeat, $index);
-
-					return $scope.repeats.splice($index + 1, 0, $scope.template || {});
-				};
-
-				//
-
-				$scope.canRemove = function (repeat, $index, $first) {
-					return $scope.repeats.length > 1;
-				};
-
-				$scope.canAdd = function (repeat, $index, $last) {
-					return $last;
-				};
-
-				//
-
-				$scope.retrieve()($scope);
-			},
+			return $scope.repeats.splice($index, 1);
 		};
+
+		$scope.add = function (repeat, $index) {
+			if (angular.isFunction($scope.addFn))
+				$scope.addFn($scope, repeat, $index);
+
+			return $scope.repeats.splice($index + 1, 0, $scope.template || {});
+		};
+
+		//
+
+		$scope.canRemove = function (repeat, $index, $first) {
+			return $scope.repeats.length > 1;
+		};
+
+		$scope.canAdd = function (repeat, $index, $last) {
+			return $last;
+		};
+
+		//
+
+		$scope.retrieve()($scope);
 	};
 
 	return {
@@ -55,6 +46,6 @@ module.directive('repeater', ['pageService', function (page) {
 		scope: {
 			retrieve: '&'
 		},
-		compile: compile,
+		link: link,
 	}
 }]);

@@ -17,6 +17,7 @@ version in ThisBuild <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown"))
 
 JSConcatCompiler.externs := Seq(
   url("http://code.jquery.com/jquery-1.11.0.min.js"),
+  url("https://github.com/23/resumable.js/raw/master/resumable.js"),
   url("https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"),
   url("https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-route.min.js"),
   url("https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-sanitize.min.js"),
