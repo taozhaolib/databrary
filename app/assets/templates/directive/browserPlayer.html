@@ -17,7 +17,7 @@
 
         <div ng-switch-when="video">
           <video bo-if="supported()" controls excerpt="played">
-            <source ng-src="{{page.router.assetLink(played.object, true)}}" type="{{played.object.format.mimetype || played.object.asset.format.mimetype}}">
+            <source ng-src="{{page.router.assetLink(played.object, true)}}" type="{{page.types.assetFormat(played.object).mimetype}}">
           </video>
 
           <div bo-if="!supported()" bo-html="'video.unsupported' | message"></div>

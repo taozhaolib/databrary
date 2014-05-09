@@ -19,7 +19,7 @@
 
               <div ng-switch-when="video">
                 <video bo-if="supported()" controls excerpt="current">
-                  <source ng-src="{{srcRoute}}" type="{{current.format.mimetype || current.asset.format.mimetype}}">
+                  <source ng-src="{{srcRoute}}" type="{{page.types.assetFormat(current).mimetype}}">
                 </video>
 
                 <div bo-if="!supported()" bo-html="'video.unsupported' | message"></div>

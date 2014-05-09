@@ -1,5 +1,5 @@
 module.directive('browserPlayer', [
-	'browserService', '$window', function (browserService, $window) {
+	'browserService', 'typeService', '$window', function (browserService, typeService, $window) {
 		var link = function ($scope, $element) {
 			$scope.browser = $scope.browser || browserService;
 
@@ -14,7 +14,7 @@ module.directive('browserPlayer', [
 			};
 
 			$scope.getMimeGroup = function (asset) {
-				var mimetype = asset.format ? asset.format.mimetype : asset.asset.format.mimetype,
+				var mimetype = typeService.assetFormat(asset).mimetype,
 					type = mimetype.split('/')[0];
 
 				return type == 'text' ? mimetype[1] : type;

@@ -18,10 +18,10 @@
       <header>
         <h1>
           <span class="filetype">
-              <img bo-src="'/public/images/filetypes/16px/' + (data.object.format ? data.object.format.extension : data.object.asset.format.extension) + '.png'">
+              <img bo-src="'/public/images/filetypes/16px/' + page.types.assetFormat(data.object).extension + '.png'">
           </span>
 
-          <span class="filename" bo-html="type.assetDisplayName(data.object) | escape"></span>
+          <span class="filename" bo-html="page.types.assetDisplayName(data.object) | escape"></span>
         </h1>
       </header>
     </div>

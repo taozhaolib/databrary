@@ -5,7 +5,7 @@ module.controller('ExcerptsPanel', [
 	'$timeout',
 	'typeService',
 	'$window',
-	function ($scope, browser, $location, $timeout, type, $window) {
+	function ($scope, browser, $location, $timeout, types, $window) {
 		$scope.bootPanel = function () {
 			if (angular.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0)
 				$scope.current = $scope.volume.excerpts[0] || undefined;
@@ -22,7 +22,7 @@ module.controller('ExcerptsPanel', [
 		};
 
 		$scope.getMimeGroup = function (asset) {
-			var mimetype = asset.format ? asset.format.mimetype : asset.asset.format.mimetype,
+			var mimetype = types.assetFormat(asset).mimetype,
 				type = mimetype.split('/')[0];
 
 			return type == 'text' ? mimetype[1] : type;
