@@ -8,8 +8,9 @@ module.controller('TooltipCtrl', [
 		$scope.getControllerClasses = function () {
 			var classes = [];
 
-			if ($scope.enabled)
+			if ($scope.enabled) {
 				classes.push('tooltips_enabled');
+			}
 
 			return classes;
 		};
@@ -27,8 +28,9 @@ module.controller('TooltipCtrl', [
 				classes.push('tooltip_' + tooltip.position[1]);
 			}
 
-			if (tooltip.visible)
+			if (tooltip.visible) {
 				classes.push('tooltip_visible');
+			}
 
 			return classes;
 		};
@@ -42,8 +44,9 @@ module.controller('TooltipCtrl', [
 			var padding = 0;
 
 			angular.forEach($scope.tooltips, function (tooltip) {
-				if (tooltip.enabled)
+				if (tooltip.enabled) {
 					padding += $('#' + tooltip.id).outerHeight();
+				}
 			});
 
 			$window.scrollTop($window.scrollTop() + padding - parseInt($main.css('padding-top')));

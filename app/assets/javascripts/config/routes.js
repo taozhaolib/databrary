@@ -1,12 +1,16 @@
 module.config([
-	'$locationProvider', '$routeProvider', '$httpProvider', function ($locationProvider, $routeProvider, $httpProvider) {
+	'$locationProvider',
+	'$routeProvider',
+	'$httpProvider',
+	function ($locationProvider, $routeProvider, $httpProvider) {
 		$locationProvider.html5Mode(true);
 
 		//
 
 		var appResolve = function (config) {
-			if (!config.resolve)
+			if (!config.resolve) {
 				config.resolve = {};
+			}
 
 			angular.extend(config.resolve, {
 				authPromise: [
@@ -66,25 +70,29 @@ module.config([
 				return window.$play.object && window.$play.object.reset ? 'resetView.html' : 'registerView.html';
 			},
 			resolve: {
-				token: ['pageService', function (page) {
-					var deferred = page.$q.defer();
+				token: [
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
 
-					if (page.$window.$play.object && $window.$play.object.auth)
-						deferred.resolve(page.$window.$play.object);
-					else
-						page.$http
-							.get('/api/token/' + page.$route.current.params.id + '?auth=' + page.$route.current.params.auth)
-							.success(function (data) {
-								page.$window.$play.object = data;
-								deferred.resolve(data);
-							})
-							.error(function () {
-								deferred.reject();
-								page.$location.url('/');
-							});
+						if (page.$window.$play.object && $window.$play.object.auth) {
+							deferred.resolve(page.$window.$play.object);
+						}
+						else {
+							page.$http
+								.get('/api/token/' + page.$route.current.params.id + '?auth=' + page.$route.current.params.auth)
+								.success(function (data) {
+									page.$window.$play.object = data;
+									deferred.resolve(data);
+								})
+								.error(function () {
+									deferred.reject();
+									page.$location.url('/');
+								});
+						}
 
-					return deferred.promise;
-				}]
+						return deferred.promise;
+					}
+				]
 			},
 			reloadOnSearch: false
 		}));
@@ -176,25 +184,30 @@ module.config([
 							children: ''
 						};
 
-						if (page.$route.current.params.id)
+						if (page.$route.current.params.id) {
 							req.id = page.$route.current.params.id;
-						else if (page.auth.isLoggedIn())
+						}
+						else if (page.auth.isLoggedIn()) {
 							req.id = page.auth.user.id;
-						else if (page.types.isParty(page.$window.$play.object))
+						}
+						else if (page.types.isParty(page.$window.$play.object)) {
 							req.id = page.$window.$play.object.id;
+						}
 
-						if (page.$route.current.params.id)
+						if (page.$route.current.params.id) {
 							page.models.Party.get(req, function (data) {
 								deferred.resolve(data);
 							}, function (error) {
 								deferred.reject();
 							});
-						else
+						}
+						else {
 							page.models.Party.profile(req, function (data) {
 								deferred.resolve(data);
 							}, function (error) {
 								deferred.reject();
 							});
+						}
 
 						return deferred.promise;
 					}
@@ -207,12 +220,15 @@ module.config([
 							id: null
 						};
 
-						if (page.$route.current.params.id)
+						if (page.$route.current.params.id) {
 							req.party = page.$route.current.params.id;
-						else if (page.auth.isLoggedIn())
+						}
+						else if (page.auth.isLoggedIn()) {
 							req.party = page.auth.user.id;
-						else if (page.types.isParty(page.$window.$play.object))
+						}
+						else if (page.types.isParty(page.$window.$play.object)) {
 							req.party = page.$window.$play.object.id;
+						}
 
 						page.models.Volume.query(req, function (data) {
 							deferred.resolve(data);
@@ -345,8 +361,9 @@ module.run([
 			page.auth.$promise.then(function () {
 				if (page.auth.isLoggedIn()) {
 					if (page.auth.isUnauthorized()) {
-						if (!next.$$route || next.$$route.controller != 'RegisterView' || (angular.isFunction(next.$$route.controller) && next.$$route.controller() != 'RegisterView'))
+						if (!next.$$route || next.$$route.controller != 'RegisterView' || (angular.isFunction(next.$$route.controller) && next.$$route.controller() != 'RegisterView')) {
 							page.$location.url(page.router.register());
+						}
 					} else if (!next.authenticate) {
 						page.$location.url(page.router.search());
 					}

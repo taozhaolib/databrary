@@ -1,8 +1,9 @@
 module.filter('timecode', [
 	function () {
 		return function (input, showMilli) {
-			if (!angular.isNumber(input))
+			if (!angular.isNumber(input)) {
 				return input;
+			}
 
 			var time = [];
 
@@ -30,12 +31,14 @@ module.filter('timecode', [
 			input = input % millTo.seconds;
 
 			angular.forEach(time, function (input, k) {
-				if (k != 0 && time.length > 1)
+				if (k != 0 && time.length > 1) {
 					time[k] = new Array(3 - input.toString().length).join('0') + input;
+				}
 			});
 
-			if (showMilli)
+			if (showMilli) {
 				time.push(new Array(4 - input.toString().length).join('0') + input);
+			}
 
 			return time.join(':');
 		};

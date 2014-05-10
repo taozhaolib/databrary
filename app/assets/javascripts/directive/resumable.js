@@ -3,7 +3,6 @@ module.directive('resumable', [
 		var link = function ($scope, $element, $attrs) {
 			var r = new Resumable();
 
-			
 		};
 
 		return {

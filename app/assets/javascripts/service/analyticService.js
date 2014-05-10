@@ -1,5 +1,9 @@
 module.factory('analyticService', [
-	'$rootScope', '$location', '$cacheFactory', '$injector', function ($rootScope, $location, $cacheFactory, $injector) {
+	'$rootScope',
+	'$location',
+	'$cacheFactory',
+	'$injector',
+	function ($rootScope, $location, $cacheFactory, $injector) {
 		var analytics = {};
 
 		var queue = [];
@@ -7,11 +11,13 @@ module.factory('analyticService', [
 		//
 
 		analytics.dump = function (config) {
-			if (!queue.length)
+			if (!queue.length) {
 				return false;
+			}
 
-			if(config.url.indexOf('null') > -1)
+			if (config.url.indexOf('null') > -1) {
 				return JSON.stringify(queue.splice(0, queue.length));
+			}
 
 			var info = $cacheFactory.info();
 			var cache, key;
@@ -20,8 +26,9 @@ module.factory('analyticService', [
 				if (config.url.indexOf(key) > -1) {
 					cache = $cacheFactory.get(key);
 
-					if (!cache.get(config.url))
+					if (!cache.get(config.url)) {
 						return JSON.stringify(queue.splice(0, queue.length));
+					}
 
 					break;
 				}

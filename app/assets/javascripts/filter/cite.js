@@ -1,14 +1,16 @@
 module.filter('cite', [
 	'pageService', function (page) {
 		return function (volume) {
-			if (!angular.isObject(volume) || angular.isUndefined(volume.access) || angular.isUndefined(volume.name) || angular.isUndefined(volume.id))
+			if (!angular.isObject(volume) || angular.isUndefined(volume.access) || angular.isUndefined(volume.name) || angular.isUndefined(volume.id)) {
 				return '';
+			}
 
 			var names = [];
 
 			angular.forEach(volume.access, function (access) {
-				if (angular.isUndefined(access.access) || access.access < 4 /* FIXME: constant.find('permission', 'ADMIN').id */)
+				if (angular.isUndefined(access.access) || access.access < 4 /* FIXME: constant.find('permission', 'ADMIN').id */) {
 					return;
+				}
 
 				var parts = access.party.name.split(' '),
 					name = parts.pop();

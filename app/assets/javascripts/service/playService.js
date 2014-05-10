@@ -10,8 +10,9 @@ module.factory('playService', [
 		//
 
 		playService.run = function () {
-			if (!$window.$play || !$window.$play.object)
+			if (!$window.$play || !$window.$play.object) {
 				return;
+			}
 
 			switch (typeService.getType($window.$play.object)) {
 				case 'token':

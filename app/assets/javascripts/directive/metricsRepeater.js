@@ -19,8 +19,9 @@ module.directive('metricsRepeater', [
 						return i.metric == id;
 					}).length > 0);
 
-					if ($scope.metrics[i].values.length > 0)
+					if ($scope.metrics[i].values.length > 0) {
 						$scope.metrics[i].dataType = 'select';
+					}
 				}
 			};
 
@@ -37,8 +38,9 @@ module.directive('metricsRepeater', [
 			};
 
 			$scope.createRepeat = function (id) {
-				if ($scope.getRepeat(id))
+				if ($scope.getRepeat(id)) {
 					return false;
+				}
 
 				$scope.repeats.push({
 					metric: id
@@ -54,8 +56,9 @@ module.directive('metricsRepeater', [
 			$scope.updateRepeat = function (old, repeat) {
 				var index = $scope.getIndex(old);
 
-				if (!~index)
+				if (!~index) {
 					return false;
+				}
 
 				$scope.repeats[index] = $.extend(true, {}, $scope.repeats[index], repeat);
 
@@ -65,8 +68,9 @@ module.directive('metricsRepeater', [
 			$scope.deleteRepeat = function (repeat) {
 				var index = $scope.getIndex(repeat);
 
-				if (!~index)
+				if (!~index) {
 					return false;
+				}
 
 				var deleted = $scope.repeats.splice(index, 1);
 

@@ -40,34 +40,40 @@ module.directive('baseline', [
 
 				height = width * ratio;
 
-				if (height > 0)
+				if (height > 0) {
 					$element.height(height);
-				else
+				}
+				else {
 					$element.css('height', '');
+				}
 
 				//
 
 				var $img = $element.find('.media img');
 
-				if ($img.length == 0)
+				if ($img.length == 0) {
 					return;
+				}
 
 				var imgWidth = $img.width(),
 					imgHeight = $img.height();
 
-				if (imgWidth >= imgHeight)
+				if (imgWidth >= imgHeight) {
 					$img.css({
 						'width': 'auto',
 						'height': height + 'px'
 					});
-				else
+				}
+				else {
 					$img.css({
 						'width': width + 'px',
 						'height': 'auto'
 					});
+				}
 
-				if (imgWidth == 0 || imgHeight == 0)
+				if (imgWidth == 0 || imgHeight == 0) {
 					return $scope.timeoutBaseline();
+				}
 			};
 
 			$scope.timeoutBaseline = function () {

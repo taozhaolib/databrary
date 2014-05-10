@@ -11,16 +11,19 @@ module.controller('RegisterPanel', [
 
 		// TODO: Remove analytics
 		$scope.$watch(function () {
-			if (!$scope.wizard)
+			if (!$scope.wizard) {
 				return;
+			}
 
 			for (var i = 0, l = $scope.wizard.steps.length; i < l; i++) {
-				if ($scope.wizard.steps[i].active)
+				if ($scope.wizard.steps[i].active) {
 					return $scope.wizard.steps[i]
+				}
 			}
 		}, function (step) {
-			if (!step)
+			if (!step) {
 				return;
+			}
 
 			page.analytics.add('change', {
 				type: 'wizard',
@@ -34,8 +37,9 @@ module.controller('RegisterPanel', [
 		$scope.$watch(function () {
 			return $scope.agreement && $scope.agreement.current;
 		}, function (current) {
-			if (!current)
+			if (!current) {
 				return;
+			}
 
 			page.analytics.add('change', {
 				type: 'agreement',
@@ -129,8 +133,9 @@ module.controller('RegisterPanel', [
 		$scope.$watch('auth.user', function () {
 			$scope.updateWizard();
 
-			if (page.auth.isLoggedIn())
+			if (page.auth.isLoggedIn()) {
 				updateUserAuth();
+			}
 		});
 
 		//
@@ -183,10 +188,12 @@ module.controller('RegisterPanel', [
 				mess.push(emailError);
 
 				step.$watch('registerForm.fieldEmail.$valid', function () {
-					if ($scope.registerForm.fieldEmail.$valid || !$scope.registerForm.fieldEmail.$dirty)
+					if ($scope.registerForm.fieldEmail.$valid || !$scope.registerForm.fieldEmail.$dirty) {
 						page.messages.disable(emailError);
-					else
+					}
+					else {
 						page.messages.enable(emailError);
+					}
 				});
 			},
 
@@ -215,8 +222,9 @@ module.controller('RegisterPanel', [
 				step.next = function () {
 					$scope.agreement.current++;
 
-					if (step.$el)
+					if (step.$el) {
 						step.$el.scrollTop(0);
+					}
 
 					step.scrolled = false;
 				};
@@ -346,8 +354,9 @@ module.controller('RegisterPanel', [
 			'register_create': function (step, activate) {
 				step.allow = user.anon && !user.password && !$scope.registerForm.sent;
 
-				if (activate && user.anon && !user.password && !$scope.registerForm.ready())
+				if (activate && user.anon && !user.password && !$scope.registerForm.ready()) {
 					$scope.wizard.activateStep(step);
+				}
 
 				step.complete = !user.anon || user.password || !!$scope.registerForm.ready();
 			},
@@ -355,8 +364,9 @@ module.controller('RegisterPanel', [
 			'register_agreement': function (step, activate) {
 				step.allow = user.anon && !user.password && $scope.registerForm.ready() && !$scope.registerForm.sent;
 
-				if (activate && user.anon && !user.password && $scope.registerForm.ready() && !$scope.registerForm.sent)
+				if (activate && user.anon && !user.password && $scope.registerForm.ready() && !$scope.registerForm.sent) {
 					$scope.wizard.activateStep(step);
+				}
 
 				step.complete = !user.anon || user.password || !!$scope.registerForm.sent;
 			},
@@ -364,8 +374,9 @@ module.controller('RegisterPanel', [
 			'register_email': function (step, activate) {
 				step.allow = user.anon && !user.password && $scope.registerForm.sent;
 
-				if (activate && user.anon && !user.password && $scope.registerForm.sent)
+				if (activate && user.anon && !user.password && $scope.registerForm.sent) {
 					$scope.wizard.activateStep(step);
+				}
 
 				step.complete = !user.anon || user.password;
 			},
@@ -373,8 +384,9 @@ module.controller('RegisterPanel', [
 			'register_password': function (step, activate) {
 				step.allow = user.anon && user.password && !$scope.userPasswordForm.sent;
 
-				if (activate && user.anon && user.password && !$scope.userPasswordForm.sent)
+				if (activate && user.anon && user.password && !$scope.userPasswordForm.sent) {
 					$scope.wizard.activateStep(step);
+				}
 
 				step.complete = !user.anon;
 			},
@@ -382,8 +394,9 @@ module.controller('RegisterPanel', [
 			'register_agent': function (step, activate) {
 				step.allow = !user.anon && !user.pending && !$scope.authApplyForm.sent;
 
-				if (activate && !user.anon && !user.pending && !$scope.authSearchForm.data.party)
+				if (activate && !user.anon && !user.pending && !$scope.authSearchForm.data.party) {
 					$scope.wizard.activateStep(step);
+				}
 
 				step.complete = !user.anon && (user.pending || user.auth || !!$scope.authSearchForm.data.party);
 			},
@@ -391,8 +404,9 @@ module.controller('RegisterPanel', [
 			'register_request': function (step, activate) {
 				step.allow = !user.anon && !user.pending && $scope.authSearchForm.data.party && !$scope.authApplyForm.sent;
 
-				if (activate && !user.anon && !user.pending && $scope.authSearchForm.data.party && !$scope.authApplyForm.sent)
+				if (activate && !user.anon && !user.pending && $scope.authSearchForm.data.party && !$scope.authApplyForm.sent) {
 					$scope.wizard.activateStep(step);
+				}
 
 				step.complete = !user.anon && (user.pending || user.auth || !!$scope.authApplyForm.sent);
 
@@ -410,20 +424,22 @@ module.controller('RegisterPanel', [
 					step.institution = false;
 				}
 
-				if ($scope.authSearchForm.data.party && !$scope.authApplyForm.other)
+				if ($scope.authSearchForm.data.party && !$scope.authApplyForm.other) {
 					$scope.authApplyForm.other = {
 						id: $scope.authSearchForm.data.party.id,
 						party: $scope.authSearchForm.data.party,
 						inherit: perm[2],
 						direct: perm[1]
 					};
+				}
 			},
 
 			'register_pending': function (step, activate) {
 				step.allow = !user.anon && !user.auth && (user.pending || !!$scope.authApplyForm.sent);
 
-				if (activate)
+				if (activate) {
 					step.active = !user.anon && !user.auth && (user.pending || !!$scope.authApplyForm.sent);
+				}
 
 				step.complete = user.auth;
 			}

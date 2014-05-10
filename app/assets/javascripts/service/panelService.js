@@ -15,11 +15,13 @@ module.factory('panelService', [
 		panels.add = function (panel) {
 			var newPanel = addFn(panel);
 
-			if (angular.isFunction(newPanel.bootPanel))
+			if (angular.isFunction(newPanel.bootPanel)) {
 				newPanel.bootPanel();
+			}
 
-			if (angular.isFunction(newPanel.refreshPanel))
+			if (angular.isFunction(newPanel.refreshPanel)) {
 				newPanel.refreshPanel();
+			}
 
 			return newPanel;
 		};
@@ -37,8 +39,9 @@ module.factory('panelService', [
 		//
 
 		panels.toggleFold = function (panel, state) {
-			if (!panel.foldable)
+			if (!panel.foldable) {
 				return undefined;
+			}
 
 			return panel.toggleFold(state);
 		};
@@ -46,8 +49,9 @@ module.factory('panelService', [
 		//
 
 		panels.focus = function (panel) {
-			if (angular.isFunction(panel.toggleFold))
+			if (angular.isFunction(panel.toggleFold)) {
 				panel.toggleFold(false);
+			}
 
 			var $window = $(window),
 				$document = $(document),
@@ -76,8 +80,9 @@ module.factory('panelService', [
 
 		panels.refresh = function () {
 			angular.forEach(panels, function (panel) {
-				if (angular.isFunction(panel.refresh))
+				if (angular.isFunction(panel.refresh)) {
 					panel.refreshPanel();
+				}
 			});
 		};
 

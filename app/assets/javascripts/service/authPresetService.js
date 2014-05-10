@@ -5,19 +5,24 @@ module.factory('authPresetService', [
 		//
 
 		authPresetService.get = function (party, other, request) {
-			if (!angular.isObject(party) || !angular.isObject(other))
+			if (!angular.isObject(party) || !angular.isObject(other)) {
 				return [];
+			}
 
 			if (request) {
-				if (other.institution || other.id == 0)
+				if (other.institution || other.id == 0) {
 					return page.constants.data.preset.institution.slice(0, 2);
-				else
+				}
+				else {
 					return page.constants.data.preset.institution.slice(0, 1);
+				}
 			} else {
-				if (party.institution || party.id == 0)
+				if (party.institution || party.id == 0) {
 					return page.constants.data.preset.institution;
-				else
+				}
+				else {
 					return page.constants.data.preset.individual;
+				}
 			}
 		};
 

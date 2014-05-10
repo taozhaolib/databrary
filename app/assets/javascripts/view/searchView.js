@@ -49,7 +49,7 @@ module.controller('SearchView', [
 				cls.push('study');
 			}
 
-				return cls;
+			return cls;
 		};
 
 		$scope.iconClass = function (volume) {

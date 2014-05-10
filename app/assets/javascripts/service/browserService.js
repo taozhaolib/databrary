@@ -80,10 +80,11 @@ module.factory('browserService', [
 		browserService.initialize = function (newContext, newData) {
 			browserService.query = '';
 
-			if (angular.isUndefined(browserService.context))
+			if (angular.isUndefined(browserService.context)) {
 				constants.$promise.success(function () {
 					bindTooltips(tips);
 				});
+			}
 
 			newData.$promise.then(function (newData) {
 				initialize(newContext, newData);
@@ -99,8 +100,9 @@ module.factory('browserService', [
 		//
 
 		browserService.initializeOptions = function (newContext) {
-			if (contexts.indexOf(newContext) == -1)
+			if (contexts.indexOf(newContext) == -1) {
 				return false;
+			}
 
 			browserService.context = newContext;
 
@@ -143,8 +145,9 @@ module.factory('browserService', [
 		browserService.updateVolumeSorts = function () {
 			var option = browserService.options.volume;
 
-			if (option)
+			if (option) {
 				option.sort.length = 0;
+			}
 
 			option.sort.push(angular.extend({}, DEFAULT_SORT, {
 				name: 'Name',
@@ -160,8 +163,9 @@ module.factory('browserService', [
 		browserService.updateSessionSorts = function () {
 			var option = browserService.options.session;
 
-			if (option)
+			if (option) {
 				option.sort.length = 0;
+			}
 
 			option.sort.push(angular.extend({}, DEFAULT_SORT, {
 				name: 'Consent',
@@ -180,17 +184,19 @@ module.factory('browserService', [
 		};
 
 		browserService.updateCategories = function () {
-			if (browserService.options.record)
+			if (browserService.options.record) {
 				browserService.options.record.categories.length = 0;
+			}
 
 			angular.forEach(raw, function (volume) {
 				angular.forEach(volume.categories, function (sessions, category) {
-					if (!browserService.options.record.categories.find({id: category}))
+					if (!browserService.options.record.categories.find({id: category})) {
 						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {
 							id: category,
 							name: constants.get('category', category).name,
 							sort: arrayHelper([])
 						}));
+					}
 				});
 			});
 		};
@@ -198,10 +204,12 @@ module.factory('browserService', [
 		//
 
 		browserService.initializeData = function (newData) {
-			if (newData.id)
+			if (newData.id) {
 				raw = [newData];
-			else if (angular.isArray(newData))
+			}
+			else if (angular.isArray(newData)) {
 				raw = newData;
+			}
 		};
 
 		var focus, focusInvert, focusPosition;
@@ -258,13 +266,15 @@ module.factory('browserService', [
 		};
 
 		browserService.updateData = function (data) {
-			if (!data.object)
+			if (!data.object) {
 				return undefined;
+			}
 
 			var groups = getActiveGroups();
 
-			if (!groups[data.level])
+			if (!groups[data.level]) {
 				return undefined;
+			}
 
 			switch (data.group) {
 				case 'volume':
@@ -289,13 +299,16 @@ module.factory('browserService', [
 				children = groups[level + 1],
 				sortables, filterables;
 
-			if (!children)
+			if (!children) {
 				return;
+			}
 
-			if (parent)
+			if (parent) {
 				sortables = browserService.groups[parent];
-			else
+			}
+			else {
 				sortables = [browserService.data];
+			}
 
 			filterables = browserService.groups[children];
 
@@ -367,16 +380,19 @@ module.factory('browserService', [
 		var getActiveGroups = function () {
 			var groups = [];
 
-			if (isGroupActive('volume'))
+			if (isGroupActive('volume')) {
 				groups.push('volume');
+			}
 
 			groups.push.apply(groups, getActiveRecordGroups());
 
-			if (isGroupActive('session'))
+			if (isGroupActive('session')) {
 				groups.push('session');
+			}
 
-			if (isGroupActive('asset'))
+			if (isGroupActive('asset')) {
 				groups.push('asset');
+			}
 
 			return groups;
 		};
@@ -394,16 +410,19 @@ module.factory('browserService', [
 		var getAllowedGroups = function () {
 			var groups = [];
 
-			if (isGroupAllowed('volume'))
+			if (isGroupAllowed('volume')) {
 				groups.push('volume');
+			}
 
 			groups.push.apply(groups, getAllowedRecordGroups());
 
-			if (isGroupAllowed('session'))
+			if (isGroupAllowed('session')) {
 				groups.push('session');
+			}
 
-			if (isGroupAllowed('asset'))
+			if (isGroupAllowed('asset')) {
 				groups.push('asset');
+			}
 
 			return groups;
 		};
@@ -412,8 +431,9 @@ module.factory('browserService', [
 			var groups = [];
 
 			angular.forEach(browserService.options.record.categories, function (category) {
-				if (category.allow && category.active)
+				if (category.allow && category.active) {
 					groups.push(category.id);
+				}
 			});
 
 			return groups;
@@ -423,8 +443,9 @@ module.factory('browserService', [
 			var groups = [];
 
 			angular.forEach(browserService.options.record.categories, function (category) {
-				if (category.allow)
+				if (category.allow) {
 					groups.push(category.id);
+				}
 			});
 
 			return groups;
@@ -455,15 +476,19 @@ module.factory('browserService', [
 		};
 
 		var callbackVolumeChildren = function (data, volume, groups) {
-			if (!browserService.getItemExpand(data))
+			if (!browserService.getItemExpand(data)) {
 				return data;
+			}
 
-			if (groups[data.level + 1] == 'session')
+			if (groups[data.level + 1] == 'session') {
 				callbackSessions(data, volume, groups);
-			else if (groups[data.level + 1] == 'asset')
+			}
+			else if (groups[data.level + 1] == 'asset') {
 				callbackAssets(data, volume);
-			else
+			}
+			else {
 				callbackRecords(data, volume, groups);
+			}
 
 			return data;
 		};
@@ -477,14 +502,16 @@ module.factory('browserService', [
 
 				if (angular.isDefined(categoryRecords)) {
 					angular.forEach(categoryRecords, function (record) {
-						if (!tempData[record.id])
+						if (!tempData[record.id]) {
 							tempData[record.id] = {};
+						}
 
 						tempData[record.id][session.id] = session;
 					});
 				} else {
-					if (!tempData['null'])
+					if (!tempData['null']) {
 						tempData['null'] = {};
+					}
 
 					tempData['null'][session.id] = session;
 				}
@@ -494,14 +521,16 @@ module.factory('browserService', [
 				angular.forEach(tempData, function (newSessions, recordID) {
 					var newData;
 
-					if (volume.records[recordID])
+					if (volume.records[recordID]) {
 						newData = callbackItem(data, volume, newSessions, volume.records[recordID], groups[data.level + 1]);
-					else
+					}
+					else {
 						newData = callbackItem(data, volume, newSessions, {
 							category: groups[data.level + 1],
 							id: 0,
 							measures: {}
 						}, groups[data.level + 1]);
+					}
 
 					callbackRecordChildren(newData, volume, groups);
 				});
@@ -513,15 +542,19 @@ module.factory('browserService', [
 		};
 
 		var callbackRecordChildren = function (data, volume, groups) {
-			if (!browserService.getItemExpand(data))
+			if (!browserService.getItemExpand(data)) {
 				return data;
+			}
 
-			if (groups[data.level + 1] == 'session')
+			if (groups[data.level + 1] == 'session') {
 				callbackSessions(data, volume, groups);
-			else if (groups[data.level + 1] == 'asset')
+			}
+			else if (groups[data.level + 1] == 'asset') {
 				callbackAssets(data, volume);
-			else
+			}
+			else {
 				callbackRecords(data, volume, groups);
+			}
 
 			return data;
 		};
@@ -539,11 +572,13 @@ module.factory('browserService', [
 		};
 
 		var callbackSessionChildren = function (data, volume, groups) {
-			if (!browserService.getItemExpand(data))
+			if (!browserService.getItemExpand(data)) {
 				return data;
+			}
 
-			if (groups[data.level + 1] == 'asset')
+			if (groups[data.level + 1] == 'asset') {
 				callbackAssets(data, volume);
+			}
 
 			browserService.loading = false;
 		};
@@ -579,8 +614,9 @@ module.factory('browserService', [
 
 			var id = 'data-' + group + '-' + (angular.isNumber(object.id) ? object.id : object.asset.id);
 
-			if (object.segment || (object.asset && object.asset.segment))
+			if (object.segment || (object.asset && object.asset.segment)) {
 				id += '-' + typeService.segmentString(object).replace(',', '-');
+			}
 
 			var newData = {
 				parent: data,
@@ -606,10 +642,12 @@ module.factory('browserService', [
 
 			browserService.groups[group].push(newData);
 
-			if (group == 'session' && object.top)
+			if (group == 'session' && object.top) {
 				data.items.unshift(newData);
-			else
+			}
+			else {
 				data.items.push(newData);
+			}
 
 			return newData;
 		};
@@ -649,8 +687,9 @@ module.factory('browserService', [
 		};
 
 		browserService.clearRecordGroupToggle = function () {
-			if (angular.isDefined(recordGroupToggle))
+			if (angular.isDefined(recordGroupToggle)) {
 				recordGroupToggle = undefined;
+			}
 		};
 
 		browserService.isRecordGroupToggle = function (group) {
@@ -660,8 +699,9 @@ module.factory('browserService', [
 		//
 
 		browserService.setGroupActive = function (type, active) {
-			if (!browserService.isItemType(type))
+			if (!browserService.isItemType(type)) {
 				return undefined;
+			}
 
 			browserService.options[type].active =
 				angular.isUndefined(active) ?
@@ -733,13 +773,15 @@ module.factory('browserService', [
 			if (!data.expand && expand !== false) {
 				data.expand = true;
 
-				if (data.items == 0)
+				if (data.items == 0) {
 					browserService.updateData(data);
+				}
 			} else if (data.expand && expand !== true) {
 				data.expand = false;
 
-				if (data == browserService.player)
+				if (data == browserService.player) {
 					browserService.setItemPlayer(undefined);
+				}
 			}
 
 			return data;
@@ -856,8 +898,9 @@ module.factory('browserService', [
 			var option = getOptionByGroup(group);
 
 			angular.forEach(option.sort, function (sort) {
-				if (!canAdd && !sort.active)
+				if (!canAdd && !sort.active) {
 					canAdd = true;
+				}
 			});
 
 			return canAdd;
@@ -891,18 +934,21 @@ module.factory('browserService', [
 			angular.forEach(raw, function (volume) {
 				switch (type) {
 					case 'volume':
-						if (volume.id == object.id)
+						if (volume.id == object.id) {
 							permission = volume.permission;
+						}
 						break;
 
 					case 'session':
-						if (volume.sessions.indexOf(object.id) > -1)
+						if (volume.sessions.indexOf(object.id) > -1) {
 							permission = volume.permission;
+						}
 						break;
 
 					case 'record':
-						if (volume.records.indexOf(object.id) > -1)
+						if (volume.records.indexOf(object.id) > -1) {
 							permission = volume.permission;
+						}
 						break;
 
 					case 'asset':
@@ -919,11 +965,13 @@ module.factory('browserService', [
 		var itemSelect = undefined;
 
 		browserService.setItemSelect = function (data) {
-			if (angular.isDefined(itemSelect))
+			if (angular.isDefined(itemSelect)) {
 				itemSelect.select = false;
+			}
 
-			if (itemSelect == data)
+			if (itemSelect == data) {
 				return itemSelect = undefined;
+			}
 
 			data.select = true;
 			return itemSelect = data;
@@ -1002,8 +1050,9 @@ module.factory('browserService', [
 			var fullCount = 0;
 
 			angular.forEach(raw, function (volume) {
-				if (volume.full)
+				if (volume.full) {
 					fullCount++;
+				}
 			});
 
 			return fullCount;

@@ -3,8 +3,9 @@ module.controller('ExcerptsPanel', [
 	'pageService',
 	function ($scope, page) {
 		$scope.bootPanel = function () {
-			if (angular.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0)
+			if (angular.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0) {
 				$scope.current = $scope.volume.excerpts[0] || undefined;
+			}
 		};
 
 		$scope.refreshPanel = function () {
@@ -27,8 +28,9 @@ module.controller('ExcerptsPanel', [
 		$scope.listClass = function (excerpt) {
 			var cls = [];
 
-			if (angular.isArray(excerpt.segment))
+			if (angular.isArray(excerpt.segment)) {
 				cls.push('video');
+			}
 
 			return cls;
 		};
@@ -47,13 +49,15 @@ module.controller('ExcerptsPanel', [
 				}
 			}
 
-			if (!found)
+			if (!found) {
 				return expandTo(page.browser.data.items[0].volume.sessions[asset.container.id], asset);
+			}
 
 			var $item = $('#' + found.id);
 
-			if ($item.length == 0)
+			if ($item.length == 0) {
 				return addTo(found, asset);
+			}
 
 			$(window).scrollTop($item.offset().top - 76);
 			page.browser.setItemExpand(found, true);
@@ -63,17 +67,20 @@ module.controller('ExcerptsPanel', [
 			var dirty;
 
 			angular.forEach(page.browser.groups, function (objects, group) {
-				if (!$.isNumeric(group))
+				if (!$.isNumeric(group)) {
 					return;
+				}
 
 				var recordIDs = session.categories[group];
 
-				if (recordIDs)
+				if (recordIDs) {
 					recordIDs = recordIDs.map(function (obj) {
 						return obj.id;
 					});
-				else
+				}
+				else {
 					recordIDs = [0];
+				}
 
 				angular.forEach(objects, function (data) {
 					if (recordIDs.indexOf(data.object.id) > -1) {
@@ -83,10 +90,11 @@ module.controller('ExcerptsPanel', [
 				});
 			});
 
-			if (dirty)
+			if (dirty) {
 				page.$timeout(function () {
 					$scope.jump(asset);
 				}, 1);
+			}
 		};
 
 		var addTo = function (session, asset) {

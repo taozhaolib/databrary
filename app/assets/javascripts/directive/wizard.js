@@ -13,7 +13,7 @@ module.directive('wizard', [
 				$scope.onFn = $scope.onFn || {};
 				$scope.offFn = $scope.offFn || {};
 				$scope.addFn = $scope.addFn || undefined;
-				$scope.activateFn = $scope.activateFn ||undefined;
+				$scope.activateFn = $scope.activateFn || undefined;
 
 				$scope.addStep = function (step) {
 					$scope.steps.push(step);
@@ -24,21 +24,24 @@ module.directive('wizard', [
 				};
 
 				$scope.activateStep = function (step) {
-					if ($scope.isStepBlocked(step))
+					if ($scope.isStepBlocked(step)) {
 						return;
+					}
 
 					if (angular.isFunction($scope.activateFn)) {
 						$scope.activateFn(step, $scope);
 					}
 
 					angular.forEach($scope.steps, function (thisStep) {
-						if (thisStep.active && $scope.offFn[step.id] && angular.isFunction($scope.offFn[step.id]))
+						if (thisStep.active && $scope.offFn[step.id] && angular.isFunction($scope.offFn[step.id])) {
 							$scope.offFn[step.id](thisStep, step);
+						}
 
 						thisStep.active = thisStep == step;
 
-						if (thisStep.active && $scope.onFn[step.id] && angular.isFunction($scope.onFn[step.id]))
+						if (thisStep.active && $scope.onFn[step.id] && angular.isFunction($scope.onFn[step.id])) {
 							$scope.onFn[step.id](thisStep, step);
+						}
 					});
 				};
 
@@ -51,17 +54,21 @@ module.directive('wizard', [
 				$scope.getListItemClasses = function (step) {
 					var classes = [];
 
-					if (step.active)
+					if (step.active) {
 						classes.push('active');
+					}
 
-					if (step.complete === true)
+					if (step.complete === true) {
 						classes.push('complete');
+					}
 
-					if (angular.isUndefined(step.complete))
+					if (angular.isUndefined(step.complete)) {
 						classes.push('incomplete');
+					}
 
-					if ($scope.isStepBlocked(step))
+					if ($scope.isStepBlocked(step)) {
 						classes.push('blocked');
+					}
 
 					return classes;
 				};

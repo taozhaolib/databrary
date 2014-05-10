@@ -8,8 +8,9 @@ module.controller('MessageCtrl', [
 		$scope.getControllerClasses = function () {
 			var classes = [];
 
-			if ($scope.enabled)
+			if ($scope.enabled) {
 				classes.push('messages_enabled');
+			}
 
 			return classes;
 		};
@@ -23,14 +24,17 @@ module.controller('MessageCtrl', [
 			classes.push('message_animate');
 			classes.push('message_' + message.type);
 
-			if (message.enabled)
+			if (message.enabled) {
 				classes.push('message_enabled');
+			}
 
-			if (message.target)
+			if (message.target) {
 				classes.push('message_target');
+			}
 
-			if (message.closable)
+			if (message.closable) {
 				classes.push('message_closable');
+			}
 
 			return classes;
 		};
@@ -52,8 +56,9 @@ module.controller('MessageCtrl', [
 			var padding = 0;
 
 			angular.forEach($scope.messages, function (message) {
-				if (message.enabled)
+				if (message.enabled) {
 					padding += $('#' + message.id).outerHeight();
+				}
 			});
 
 			$window.scrollTop($window.scrollTop() + padding - parseInt($main.css('padding-top')));

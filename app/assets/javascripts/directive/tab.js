@@ -17,8 +17,9 @@ module.directive('tab', [
 			$scope.tabClass = function () {
 				var cls = [];
 
-				if ($scope.active)
+				if ($scope.active) {
 					cls.push('active');
+				}
 
 				return cls;
 			};

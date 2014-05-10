@@ -8,11 +8,13 @@ module.controller('VolumeEditView', [
 
 		if (volume && volume.access) {
 			angular.forEach(volume.access, function (access) {
-				if (access.hasOwnProperty('funding'))
+				if (access.hasOwnProperty('funding')) {
 					$scope.funding.push(access);
+				}
 
-				if (access.access)
+				if (access.access) {
 					$scope.access.push(access);
+				}
 			});
 		}
 
@@ -23,8 +25,9 @@ module.controller('VolumeEditView', [
 		$scope.$watch(function () {
 			return page.$location.search().page;
 		}, function (val, old) {
-			if (!updateQuery)
+			if (!updateQuery) {
 				updateQuery = true;
+			}
 
 			if (val && val !== old) {
 				for (var step in $scope.wizard.steps) {
@@ -46,8 +49,9 @@ module.controller('VolumeEditView', [
 		};
 
 		var activateFn = function (step) {
-			if (updateQuery)
+			if (updateQuery) {
 				page.$location.search('page', step.id.split('_').pop());
+			}
 		};
 
 		$scope.updateWizard = function () {
@@ -61,13 +65,15 @@ module.controller('VolumeEditView', [
 					$scope.wizard.activateStep($scope.wizard.newStep);
 				}
 
-				if (angular.isFunction($scope.prepareStep[$scope.wizard.newStep.id]))
+				if (angular.isFunction($scope.prepareStep[$scope.wizard.newStep.id])) {
 					$scope.prepareStep[$scope.wizard.newStep.id]($scope.wizard.newStep);
+				}
 			}
 
 			angular.forEach($scope.wizard.steps, function (step) {
-				if (angular.isFunction($scope.updateStep[step.id]))
+				if (angular.isFunction($scope.updateStep[step.id])) {
 					$scope.updateStep[step.id](step);
+				}
 			});
 		};
 
@@ -83,8 +89,9 @@ module.controller('VolumeEditView', [
 
 		$scope.$watch(function () {
 			for (var form in forms) {
-				if (forms.hasOwnProperty(form) && forms[form] && forms[form].$dirty)
+				if (forms.hasOwnProperty(form) && forms[form] && forms[form].$dirty) {
 					return forms[form];
+				}
 			}
 
 			return false;
@@ -141,24 +148,27 @@ module.controller('VolumeEditView', [
 
 		$scope.updateStep = {
 			'volume_edit_overview': function (step) {
-				if (volume)
+				if (volume) {
 					forms.overview.init({
 						name: volume.name,
 						alias: volume.alias,
 						body: volume.body,
 					});
+				}
 			},
 
 			'volume_edit_publications': function (step) {
-				if (volume)
+				if (volume) {
 					forms.publications.init({
 						citation: volume.citations,
 					});
+				}
 			},
 
 			'volume_edit_materials': function (step) {
-				if (slot)
+				if (slot) {
 					forms.materials.data = slot;
+				}
 			},
 
 			'volume_edit_funding': function (step) {

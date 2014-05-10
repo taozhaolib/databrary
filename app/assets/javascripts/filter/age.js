@@ -6,8 +6,9 @@ module.filter('age', [
 		};
 
 		return function (age, outputFormat, inputFormat, decimals) {
-			if (!angular.isNumber(parseFloat(age)))
+			if (!angular.isNumber(parseFloat(age))) {
 				return age;
+			}
 
 			var formats = ['seconds', 'days', 'months', 'years', 'science'];
 
@@ -65,14 +66,18 @@ module.filter('age', [
 
 				case 'science':
 				default:
-					if (months < 3)
+					if (months < 3) {
 						output = fix(days) + ' days';
-					else if (months < 37)
+					}
+					else if (months < 37) {
 						output = fix(months) + ' months';
-					else if (years >= 90)
+					}
+					else if (years >= 90) {
 						output = '90+ years';
-					else
+					}
+					else {
 						output = fix(years) + ' years';
+					}
 					break;
 			}
 

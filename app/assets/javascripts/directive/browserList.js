@@ -6,23 +6,28 @@ module.directive('browserList', [
 	'pageService',
 	function (browserService, $filter, typeService, auth, page) {
 		var link = function ($scope) {
-			if (!$scope.browser)
+			if (!$scope.browser) {
 				$scope.browser = browserService;
+			}
 
-			if (!$scope.router)
+			if (!$scope.router) {
 				$scope.router = page.router;
+			}
 
-			if (!$scope.constant)
+			if (!$scope.constant) {
 				$scope.constant = page.constants;
+			}
 
-			if (!$scope.type)
+			if (!$scope.type) {
 				$scope.type = typeService;
+			}
 
 			$scope.data = $scope.data || browserService.data;
 
 			$scope.getInclude = function () {
-				if (!$scope.data.items[0])
+				if (!$scope.data.items[0]) {
 					return '';
+				}
 
 				switch ($scope.data.items[0].group) {
 					case 'volume':
@@ -42,8 +47,9 @@ module.directive('browserList', [
 			$scope.itemClasses = function (data) {
 				var classes = [];
 
-				if (!data.expand)
+				if (!data.expand) {
 					classes.push('deepest');
+				}
 
 				return classes;
 			};
@@ -55,14 +61,16 @@ module.directive('browserList', [
 			//
 
 			$scope.setItemPlayer = function (data) {
-				if (auth.hasAccess('DOWNLOAD', data))
+				if (auth.hasAccess('DOWNLOAD', data)) {
 					$scope.browser.setItemPlayer(data);
-				else if (data)
+				}
+				else if (data) {
 					page.messages.add({
 						type: 'yellow',
 						countdown: 2000,
 						body: page.constants.message('browser.noaccess')
 					});
+				}
 			};
 
 			//
@@ -77,10 +85,12 @@ module.directive('browserList', [
 					}
 				}
 
-				if (study)
+				if (study) {
 					cls.push('browser_study');
-				else
+				}
+				else {
 					cls.push('browser_dataset');
+				}
 
 				return cls;
 			};
@@ -108,16 +118,19 @@ module.directive('browserList', [
 			$scope.formatSessionCategory = function (data, categoryID, records) {
 				var category = page.constants.get('category', categoryID);
 
-				if (!category)
+				if (!category) {
 					return 'Uncategorized';
+				}
 
-				if (!records[1])
+				if (!records[1]) {
 					return category.name.charAt(0).toUpperCase() + category.name.slice(1);
-				else
+				}
+				else {
 					switch (category.name) {
 						default:
 							return category.name.charAt(0).toUpperCase() + category.name.slice(1) + 's';
 					}
+				}
 			};
 
 			$scope.capitalize = function (input) {
@@ -125,7 +138,7 @@ module.directive('browserList', [
 			};
 
 			$scope.recordIdentifier = function (record) {
-				if (record.id != 0)
+				if (record.id != 0) {
 					switch (record.category) {
 						case -700:
 							return record.measures.reason;
@@ -135,25 +148,29 @@ module.directive('browserList', [
 
 							if (record.measures.state) {
 								out += ' (' + record.measures.state;
-								if (record.measures.country)
+								if (record.measures.country) {
 									out += ', ' + record.measures.country;
+								}
 								out += ')';
 							}
-							else if (record.measures.country)
+							else if (record.measures.country) {
 								out += ' (' + record.measures.country + ')';
+							}
 
 							return out;
 
 						default:
 							return record.measures.ident;
 					}
+				}
 			};
 
 			var measures = undefined;
 
 			$scope.getMeasures = function (data) {
-				if (measures)
+				if (measures) {
 					return measures;
+				}
 
 				// TODO: something with better performance!
 				var measures = {}, skip = ['description', 'pilot', 'exclusion'];
@@ -175,8 +192,9 @@ module.directive('browserList', [
 				}
 
 				angular.forEach(data.object.measures, function (value, key) {
-					if (skip.indexOf(key) == -1)
+					if (skip.indexOf(key) == -1) {
 						measures[key] = value;
+					}
 				});
 
 				return measures;
@@ -185,18 +203,20 @@ module.directive('browserList', [
 			var sessionRecords = {};
 
 			$scope.getSessionRecords = function (data) {
-				if (sessionRecords[data.object.id])
+				if (sessionRecords[data.object.id]) {
 					return sessionRecords[data.object.id];
+				}
 
 				sessionRecords[data.object.id] = [];
 				var skip = ['-700', '-800'];
 
 				angular.forEach(data.object.categories, function (records, key) {
-					if (data.object.categories.hasOwnProperty(key) && skip.indexOf(key) == -1)
+					if (data.object.categories.hasOwnProperty(key) && skip.indexOf(key) == -1) {
 						sessionRecords[data.object.id].push({
 							id: parseInt(key),
 							records: records
 						});
+					}
 				});
 
 				sessionRecords[data.object.id].sort(function (a, b) {
@@ -246,29 +266,35 @@ module.directive('browserList', [
 
 				var identifier = $scope.recordIdentifier(data.object);
 
-				if (identifier)
+				if (identifier) {
 					name += ': ' + identifier;
+				}
 
 				return name;
 			};
 
 			$scope.queryFilter = function (data) {
-				if (!browserService.query)
+				if (!browserService.query) {
 					return true;
+				}
 
 				var regex = new RegExp(browserService.query.toLowerCase().split(' ').join("|"));
 
-				if (!typeService.isVolume(data.object))
+				if (!typeService.isVolume(data.object)) {
 					return true;
+				}
 
-				if (data.object.name && regex.test(data.object.name.toLowerCase()))
+				if (data.object.name && regex.test(data.object.name.toLowerCase())) {
 					return true;
+				}
 
-				if (data.object.body && regex.test(data.object.body.toLowerCase()))
+				if (data.object.body && regex.test(data.object.body.toLowerCase())) {
 					return true;
+				}
 
-				if (data.object.more && regex.test(data.object.more.toLowerCase()))
+				if (data.object.more && regex.test(data.object.more.toLowerCase())) {
 					return true;
+				}
 
 				return false;
 			};

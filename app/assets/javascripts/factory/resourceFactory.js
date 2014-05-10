@@ -10,7 +10,7 @@ module.factory('resourceFactory', [
 
 				methods = angular.isObject(methods) ? methods : {};
 				methods.get = methods.get || {method: 'GET'};
-				methods.query = methods.query || {method: 'GET', isArray:true};
+				methods.query = methods.query || {method: 'GET', isArray: true};
 
 				for (var prop in methods) {
 					if (methods.hasOwnProperty(prop) && methods[prop].method.toUpperCase() === 'GET') {
@@ -21,7 +21,7 @@ module.factory('resourceFactory', [
 
 			var resource = $resource(url, params, methods);
 
-			if(cache) {
+			if (cache) {
 				resource.$cache = cache;
 			}
 

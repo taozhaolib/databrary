@@ -12,32 +12,37 @@ module.directive('tabset', [
 				$scope.tabList.push(tab);
 				$scope.tabHash[tab.id] = tab;
 
-				if (tab.active)
+				if (tab.active) {
 					return ctrl.activateTab(tab);
+				}
 
 				//
 
 				var anyActive;
 
 				angular.forEach($scope.tabList, function (thisTab) {
-					if (thisTab.active)
+					if (thisTab.active) {
 						anyActive = true;
+					}
 				});
 
-				if (anyActive)
+				if (anyActive) {
 					return true;
+				}
 
 				for (var i = 0; i < $scope.tabList.length; i = i + 1) {
-					if ($scope.tabList[i].enabled)
+					if ($scope.tabList[i].enabled) {
 						return ctrl.activateTab($scope.tabList[0]);
+					}
 				}
 			};
 
 			ctrl.removeTab = function (tab) {
 				var i = $scope.tabList.indexOf(tab);
 
-				if (i == -1)
+				if (i == -1) {
 					return false;
+				}
 
 				delete $scope.tabHash[tab.id];
 				$scope.tabList.splice($scope.tabList.indexOf(tab), 1);
@@ -46,8 +51,9 @@ module.directive('tabset', [
 			};
 
 			ctrl.activateTab = function (tab) {
-				if (!tab.enabled)
+				if (!tab.enabled) {
 					return false;
+				}
 
 				angular.forEach($scope.tabList, function (thisTab) {
 					thisTab.active = thisTab == tab;
@@ -62,11 +68,13 @@ module.directive('tabset', [
 				var c = 0;
 
 				for (var i = 0; i < $scope.tabList.length; i = i + 1) {
-					if ($scope.tabList[i].enabled)
+					if ($scope.tabList[i].enabled) {
 						c++;
+					}
 
-					if (c == 2)
+					if (c == 2) {
 						return true;
+					}
 				}
 
 				return false;
@@ -81,8 +89,9 @@ module.directive('tabset', [
 			ctrl.tabListClass = function (tab) {
 				var cls = [];
 
-				if (tab.active)
+				if (tab.active) {
 					cls.push('active');
+				}
 
 				return cls;
 			};

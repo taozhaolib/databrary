@@ -20,21 +20,25 @@ module.controller('OverviewVolumePanel', [
 			var age = page.$filter('age');
 			var range = age(summary.agerange[0]);
 
-			if (summary.agerange[0] != summary.agerange[1])
+			if (summary.agerange[0] != summary.agerange[1]) {
 				range += ' - ' + age(summary.agerange[1]);
+			}
 
 			return page.constants.message('volume.ages', range, age(summary.agemean));
 		};
 
 		$scope.hasProps = function (volume, property) {
-			if (!volume[property])
+			if (!volume[property]) {
 				return false;
+			}
 
 			var has = false;
 
-			for (var prop in volume[property])
-				if (volume[property].hasOwnProperty(prop))
+			for (var prop in volume[property]) {
+				if (volume[property].hasOwnProperty(prop)) {
 					return true;
+				}
+			}
 
 			return false;
 		};

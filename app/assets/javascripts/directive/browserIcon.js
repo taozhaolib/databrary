@@ -12,8 +12,9 @@ module.directive('browserIcon', [
 			$scope.expanderClasses = function (data) {
 				var classes = [];
 
-				if (browserService.canExpand(data))
+				if (browserService.canExpand(data)) {
 					classes.push('enabled');
+				}
 
 				classes.push(data.expand ? 'active' : '');
 

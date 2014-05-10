@@ -8,12 +8,14 @@ module.controller('TagsPanel', [
 		//
 
 		var createMessage = function (message) {
-			if (typeof(message) == 'string')
+			if (typeof(message) == 'string') {
 				page.messages.add(angular.extend({}, DEFAULT_MESSAGE, {
 					body: message
 				}));
-			else
+			}
+			else {
 				page.messages.add(angular.extend({}, DEFAULT_MESSAGE, message));
+			}
 		};
 
 		//
@@ -95,10 +97,12 @@ module.controller('TagsPanel', [
 				container: $scope.target.container,
 				segment: $scope.target.segment
 			}, function (newTag) {
-				if (newTag.weight == 0 && !newTag.vote)
+				if (newTag.weight == 0 && !newTag.vote) {
 					$scope.tags.splice($scope.tags.indexOf(tag), 1);
-				else
+				}
+				else {
 					$scope.tags.splice($scope.tags.indexOf(tag), 1, newTag);
+				}
 
 				switch (vote) {
 					case -1:
@@ -127,8 +131,9 @@ module.controller('TagsPanel', [
 		};
 
 		$scope.voteNew = function (form) {
-			if (form.$invalid)
+			if (form.$invalid) {
 				return;
+			}
 
 			emptyAuto();
 
@@ -162,11 +167,13 @@ module.controller('TagsPanel', [
 		//
 
 		$scope.newNameChange = function (form) {
-			if (form.newName.$dirty && form.newName.$valid)
+			if (form.newName.$dirty && form.newName.$valid) {
 				updateAuto(form);
+			}
 
-			if (form.newName.$pristine || form.newName.$valid)
+			if (form.newName.$pristine || form.newName.$valid) {
 				return disableNewNameError();
+			}
 
 			return enableNewNameError();
 		};
@@ -174,24 +181,29 @@ module.controller('TagsPanel', [
 		var keypress = function (event, form) {
 			if (event.which == 40) {
 				// down
-				if (angular.isUndefined($scope.autoSelect) || $scope.autoSelect == $scope.autoList.length - 1)
+				if (angular.isUndefined($scope.autoSelect) || $scope.autoSelect == $scope.autoList.length - 1) {
 					$scope.autoSelect = 0;
-				else
+				}
+				else {
 					$scope.autoSelect = $scope.autoSelect + 1;
+				}
 
 				return;
 			} else if (event.which == 38) {
 				// up
-				if (angular.isUndefined($scope.autoSelect) || $scope.autoSelect == 0)
+				if (angular.isUndefined($scope.autoSelect) || $scope.autoSelect == 0) {
 					$scope.autoSelect = $scope.autoList.length - 1;
-				else
+				}
+				else {
 					$scope.autoSelect = $scope.autoSelect - 1;
+				}
 
 				return;
 			} else if (event.which == 13) {
 				// enter
-				if (angular.isDefined($scope.autoSelect))
+				if (angular.isDefined($scope.autoSelect)) {
 					$scope.fillAuto(form, $scope.autoList[$scope.autoSelect]);
+				}
 
 			} else if (event.which == 27) {
 				// escape
@@ -231,8 +243,9 @@ module.controller('TagsPanel', [
 				}).success(function (data) {
 					emptyAuto();
 
-					if (form.newNameVal)
+					if (form.newNameVal) {
 						$scope.autoList = data;
+					}
 				}).error(function (errors, status) {
 					page.messages.addError({
 						body: page.constants.message('tags.auto.error'),
@@ -284,8 +297,9 @@ module.controller('TagsPanel', [
 		};
 
 		var disableNewNameError = function () {
-			if ($scope.tagNewFormMessage)
+			if ($scope.tagNewFormMessage) {
 				page.messages.disable($scope.tagNewFormMessage);
+			}
 		};
 
 		//

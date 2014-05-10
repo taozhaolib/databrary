@@ -42,8 +42,9 @@ module.factory('tooltipService', [
 		tooltips.add = function (tooltip) {
 			var newTooltip = addFn(tooltip);
 
-			if (newTooltip)
+			if (newTooltip) {
 				tooltips.target(newTooltip);
+			}
 
 			return newTooltip;
 		};
@@ -65,8 +66,9 @@ module.factory('tooltipService', [
 		tooltips.update = function (tooltip, obj) {
 			var newtooltip = updateFn(tooltip, obj);
 
-			if (newtooltip)
+			if (newtooltip) {
 				tooltips.target(newtooltip);
+			}
 
 			return newtooltip;
 		};
@@ -86,8 +88,9 @@ module.factory('tooltipService', [
 		//
 
 		tooltips.show = function (tooltip, event) {
-			if (!tooltip.enabled)
+			if (!tooltip.enabled) {
 				return undefined;
+			}
 
 			tooltips.position(tooltip, [event.clientX, event.clientY]);
 
@@ -101,18 +104,20 @@ module.factory('tooltipService', [
 		};
 
 		tooltips.position = function (tooltip, loc) {
-			if (loc === false)
+			if (loc === false) {
 				return;
+			}
 
 			var $t = tooltip.$target,
 				$e = $('#' + tooltip.id),
 				$w = $(window);
 
-			if (!loc)
+			if (!loc) {
 				loc = [
 					$t.offset().left,
 					$t.offset().top
 				];
+			}
 
 			var center = {
 				left: loc[0],
@@ -143,17 +148,19 @@ module.factory('tooltipService', [
 		//
 
 		var getTargetEvents = function (tooltip) {
-			if (!tooltip.$target)
+			if (!tooltip.$target) {
 				return [];
+			}
 
 			var focusElements = ['INPUT', 'SELECT', 'TEXTAREA'],
 				namespace = '.tooltipTarget';
 
-			if (!angular.isString(tooltip.$target) && focusElements.indexOf(tooltip.$target.prop('tagName')) >= 0)
+			if (!angular.isString(tooltip.$target) && focusElements.indexOf(tooltip.$target.prop('tagName')) >= 0) {
 				return [
 						'focusin' + namespace + '_' + tooltip.id,
 						'focusout' + namespace + '_' + tooltip.id
 				];
+			}
 
 			return [
 					'mouseenter' + namespace + '_' + tooltip.id,
@@ -162,16 +169,20 @@ module.factory('tooltipService', [
 		};
 
 		var removeEvents = function (tooltip) {
-			if (tooltip.$target)
-				if (tooltip.live)
+			if (tooltip.$target) {
+				if (tooltip.live) {
 					$doc.off(getTargetEvents(tooltip).join(' '), tooltip.$target);
-				else
+				}
+				else {
 					tooltip.$target.unbind(getTargetEvents(tooltip).join(' '));
+				}
+			}
 		};
 
 		tooltips.target = function (tooltip, $newTarget) {
-			if (tooltips.index(tooltip) == -1)
+			if (tooltips.index(tooltip) == -1) {
 				return undefined;
+			}
 
 			removeEvents(tooltip);
 

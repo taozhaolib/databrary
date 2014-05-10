@@ -21,8 +21,9 @@ module.directive('figure', [
 
 				$wrap.attr('ng-href', href);
 
-				if ($attrs.title)
+				if ($attrs.title) {
 					$wrap.attr('title', $attr.title);
+				}
 
 				$element.wrapInner($wrap);
 

@@ -50,10 +50,12 @@ module.directive('fold', [
 			};
 
 			$scope.toggleFold = function (state) {
-				if ((angular.isDefined(state) && !state) || folded)
+				if ((angular.isDefined(state) && !state) || folded) {
 					$scope.unfold();
-				else
+				}
+				else {
 					$scope.fold();
+				}
 			};
 
 			//
@@ -63,13 +65,15 @@ module.directive('fold', [
 			};
 
 			$scope.setFolding = function () {
-				if (!isForgetful())
+				if (!isForgetful()) {
 					$scope.$storage['folding_' + $scope.id] = folded;
+				}
 			};
 
 			$scope.getFolding = function () {
-				if (isForgetful() || angular.isUndefined($scope.$storage['folding_' + $scope.id]))
+				if (isForgetful() || angular.isUndefined($scope.$storage['folding_' + $scope.id])) {
 					return undefined;
+				}
 
 				return $scope.$storage['folding_' + $scope.id];
 			};
@@ -77,21 +81,26 @@ module.directive('fold', [
 			$scope.restoreFolding = function () {
 				var gotFolded = $scope.getFolding();
 
-				if (angular.isUndefined(gotFolded))
+				if (angular.isUndefined(gotFolded)) {
 					gotFolded = angular.isDefined($attrs.closed) ? true : false;
+				}
 
-				if (gotFolded)
+				if (gotFolded) {
 					$scope.fold();
-				else
+				}
+				else {
 					$scope.unfold();
+				}
 			};
 
 			//
 
-			if (angular.isDefined($attrs.fold) && (!$attrs.fold || $scope.$eval($attrs.fold)))
+			if (angular.isDefined($attrs.fold) && (!$attrs.fold || $scope.$eval($attrs.fold))) {
 				$scope.enableFold();
-			else
+			}
+			else {
 				$scope.disableFold();
+			}
 
 			$scope.restoreFolding();
 		};

@@ -1,5 +1,11 @@
 module.factory('displayService', [
-	'$rootScope', '$sessionStorage', 'eventService', '$filter', 'messageService', 'constantService', function ($rootScope, $sessionStorage, events, $filter, messages, constants) {
+	'$rootScope',
+	'$sessionStorage',
+	'eventService',
+	'$filter',
+	'messageService',
+	'constantService',
+	function ($rootScope, $sessionStorage, events, $filter, messages, constants) {
 		var display = {};
 
 		//

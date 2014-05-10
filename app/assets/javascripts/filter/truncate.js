@@ -9,17 +9,21 @@ module.filter('truncate', [
 				case 'words':
 					var words = text.split(' ');
 
-					if (words.length < length)
+					if (words.length < length) {
 						return text;
-					else
+					}
+					else {
 						return words.splice(0, length).join(' ') + end;
+					}
 
 				case 'characters':
 				default:
-					if (text.length <= length || text.length - end.length <= length)
+					if (text.length <= length || text.length - end.length <= length) {
 						return text;
-					else
+					}
+					else {
 						return String(text).substring(0, length - end.length) + end;
+					}
 			}
 
 		};

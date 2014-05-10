@@ -21,13 +21,16 @@ module.factory('authService', [
 			var reload = true;
 
 			if (user) {
-				if (angular.isDefined(user.superuser) && user.superuser > 0)
+				if (angular.isDefined(user.superuser) && user.superuser > 0) {
 					user.superuser = new Date(Date.now() + user.superuser);
-				else
+				}
+				else {
 					user.superuser = false;
+				}
 
-				if (auth.user && auth.user.id === user.id && !!auth.user.superuser === !!user.superuser)
+				if (auth.user && auth.user.id === user.id && !!auth.user.superuser === !!user.superuser) {
 					reload = false;
+				}
 			}
 
 			auth.user = user || undefined;
@@ -48,10 +51,12 @@ module.factory('authService', [
 			}
 
 			Party.user(function (data) {
-				if (data.id == -1 || angular.isString(data))
+				if (data.id == -1 || angular.isString(data)) {
 					parseUser(undefined);
-				else
+				}
+				else {
 					parseUser(data);
+				}
 
 				deferred.resolve();
 			}, function () {
@@ -81,14 +86,17 @@ module.factory('authService', [
 		};
 
 		var parseUserAuth = function (object) {
-			if (!auth.user || !auth.user.id || auth.user.id == -1)
+			if (!auth.user || !auth.user.id || auth.user.id == -1) {
 				return -1;
+			}
 
-			if (angular.isDate(auth.user.superuser) && auth.user.superuser > new Date())
+			if (angular.isDate(auth.user.superuser) && auth.user.superuser > new Date()) {
 				return parseAuthLevel('SUPER');
+			}
 
-			if (angular.isObject(object) && object.permission)
+			if (angular.isObject(object) && object.permission) {
 				return object.permission;
+			}
 
 			return auth.user.access;
 		};
@@ -180,8 +188,9 @@ module.factory('authService', [
 		};
 
 		auth.getToken = function () {
-			if (!auth.hasToken())
+			if (!auth.hasToken()) {
 				return;
+			}
 
 			return $window.$play.object;
 		};
@@ -244,10 +253,12 @@ module.factory('authService', [
 		};
 
 		auth.toggleSU = function (form) {
-			if (angular.isDefined(form))
+			if (angular.isDefined(form)) {
 				enableSU(form);
-			else
+			}
+			else {
 				disableSU();
+			}
 		};
 
 		//

@@ -6,29 +6,37 @@ module.factory('typeService', [
 		//
 
 		typeService.getType = function (object) {
-			if (!angular.isObject(object))
+			if (!angular.isObject(object)) {
 				return undefined;
+			}
 
-			if (typeService.isParty(object))
+			if (typeService.isParty(object)) {
 				return 'party';
+			}
 
-			if (typeService.isRecord(object))
+			if (typeService.isRecord(object)) {
 				return 'record';
+			}
 
-			if (typeService.isVolume(object))
+			if (typeService.isVolume(object)) {
 				return 'volume';
+			}
 
-			if (typeService.isAsset(object))
+			if (typeService.isAsset(object)) {
 				return 'asset';
+			}
 
-			if (typeService.isToken(object))
+			if (typeService.isToken(object)) {
 				return 'token';
+			}
 
-			if (typeService.isComment(object))
+			if (typeService.isComment(object)) {
 				return 'comment';
+			}
 
-			if (typeService.isSession(object))
+			if (typeService.isSession(object)) {
 				return 'session';
+			}
 
 			return undefined;
 		};
@@ -66,38 +74,49 @@ module.factory('typeService', [
 		//
 
 		typeService.assetProperty = function (object, property, dig) {
-			if (!typeService.isAsset(object))
+			if (!typeService.isAsset(object)) {
 				throw new Error('typeService.assetFormat() requires Asset as first argument');
+			}
 
-			if (dig === true)
+			if (dig === true) {
 				return object.asset[property];
-			else if (dig === false || property in object)
+			}
+			else if (dig === false || property in object) {
 				return object[property];
-			else
+			}
+			else {
 				return object.asset[property];
+			}
 		};
 
 		typeService.segmentString = function (object, dig) {
 			var segment;
 
-			if (typeService.isAsset(object))
+			if (typeService.isAsset(object)) {
 				segment = typeService.assetProperty(object, 'segment', dig);
-			else if (typeService.isSession(object) || typeService.isComment(object))
+			}
+			else if (typeService.isSession(object) || typeService.isComment(object)) {
 				segment = object.segment;
-			else
+			}
+			else {
 				throw new Error('typeService.segmentString() requires Asset or Session as first argument');
+			}
 
-			if (!segment)
+			if (!segment) {
 				return ',';
+			}
 
-			if (!angular.isArray(segment))
+			if (!angular.isArray(segment)) {
 				return segment;
+			}
 
-			if (segment[0] === null)
+			if (segment[0] === null) {
 				return ',' + segment[1];
+			}
 
-			if (segment[1] === null)
+			if (segment[1] === null) {
 				return segment[0] + ',';
+			}
 
 			return segment.join(',');
 		};

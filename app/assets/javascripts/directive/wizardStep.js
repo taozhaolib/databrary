@@ -1,4 +1,5 @@
-module.directive('wizardStep', ['pageService', function (page) {
+module.directive('wizardStep', [
+	'pageService', function (page) {
 		var compile = function ($element, $attrs, transclude) {
 			return function ($scope, $element, $attrs) {
 				$scope.page = page;

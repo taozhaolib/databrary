@@ -9,8 +9,9 @@ module.directive('tooltip', [
 			tooltip.message = $attrs.tooltipMessage;
 			tooltip.$target = $element;
 
-			if (tooltip.message)
+			if (tooltip.message) {
 				page.tooltips.add(tooltip);
+			}
 		};
 
 		return {

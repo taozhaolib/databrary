@@ -15,7 +15,7 @@ module.controller('HomeView', [
 			val = parseInt(val);
 			$scope.columns = [];
 
-			if(val >= 1200) {
+			if (val >= 1200) {
 				cols = 5;
 			} else if (val >= 960) {
 				cols = 4;
@@ -28,13 +28,15 @@ module.controller('HomeView', [
 			var col, i = 0;
 
 			angular.forEach(parties, function (party, key) {
-				if (!party.id)
+				if (!party.id) {
 					return;
+				}
 
 				col = i++ % cols;
 
-				if (!$scope.columns[col])
+				if (!$scope.columns[col]) {
 					$scope.columns[col] = [];
+				}
 
 				$scope.columns[col].push(party);
 			});

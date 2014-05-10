@@ -33,7 +33,7 @@ module.run([
 		$rootScope.type = type;
 
 		// TODO: someday...
-//		playService.run();
+		//		playService.run();
 	}
 ]);
 

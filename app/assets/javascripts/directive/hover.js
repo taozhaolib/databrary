@@ -53,8 +53,9 @@ module.directive('hover', [
 			});
 
 			$(window).on('resize scroll', function () {
-				if (typeof(clone) != 'undefined')
+				if (typeof(clone) != 'undefined') {
 					$scope.hide();
+				}
 			});
 
 			$element.on('$destroy', function () {

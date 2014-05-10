@@ -10,8 +10,9 @@ module.filter('uri', [
 		};
 
 		return function (input, component, withSpaces) {
-			if (component)
+			if (component) {
 				return encodeURIQuery(input, withSpaces);
+			}
 
 			return encodeURI(input);
 		};

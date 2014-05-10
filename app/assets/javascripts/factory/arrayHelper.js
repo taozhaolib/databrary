@@ -7,8 +7,9 @@ module.factory('arrayHelper', [
 
 			var catalog = {}, catalogKey;
 
-			if (!angular.isArray(array))
+			if (!angular.isArray(array)) {
 				array = [];
+			}
 
 			//
 
@@ -48,20 +49,23 @@ module.factory('arrayHelper', [
 			var catalogUpdate = function () {
 				catalog = {};
 
-				if (angular.isString(catalogKey))
+				if (angular.isString(catalogKey)) {
 					angular.forEach(array, function (item, index) {
 						catalogAdd(item);
 					});
+				}
 			};
 
 			var catalogAdd = function (item) {
-				if (item[catalogKey])
+				if (item[catalogKey]) {
 					catalog[item[catalogKey]] = item;
+				}
 			};
 
 			var catalogRemove = function (item) {
-				if (item[catalogKey])
+				if (item[catalogKey]) {
 					delete catalog[item[catalogKey]];
+				}
 			};
 
 			var useCatalog = function (item) {
@@ -71,15 +75,17 @@ module.factory('arrayHelper', [
 			//
 
 			var index = function (item) {
-				if (useCatalog(item))
+				if (useCatalog(item)) {
 					item = catalog[item];
+				}
 
 				return array.indexOf(item);
 			};
 
 			var find = function (item, strict) {
-				if (useCatalog(item))
+				if (useCatalog(item)) {
 					return catalog[item];
+				}
 
 				strict = angular.isUndefined(strict) ? true : strict;
 
@@ -87,8 +93,9 @@ module.factory('arrayHelper', [
 			};
 
 			var has = function (item) {
-				if (useCatalog(item))
+				if (useCatalog(item)) {
 					return catalog[item];
+				}
 
 				return array[index(item)];
 			};
@@ -96,8 +103,9 @@ module.factory('arrayHelper', [
 			//
 
 			var add = function (item) {
-				if (!(item = validate(transform(item))))
+				if (!(item = validate(transform(item)))) {
 					return false;
+				}
 
 				array.push(item);
 				catalogAdd(item);
@@ -110,11 +118,13 @@ module.factory('arrayHelper', [
 			var update = function (item, obj) {
 				var i = index(item);
 
-				if (!~i)
+				if (!~i) {
 					return undefined;
+				}
 
-				if (!angular.isObject(obj))
+				if (!angular.isObject(obj)) {
 					return false;
+				}
 
 				catalogRemove(item);
 				angular.extend(item, obj);
@@ -126,13 +136,15 @@ module.factory('arrayHelper', [
 			};
 
 			var replace = function (old, item) {
-				if (!(item = validate(transform(item))))
+				if (!(item = validate(transform(item)))) {
 					return false;
+				}
 
 				var i = index(old);
 
-				if (!~i)
+				if (!~i) {
 					return undefined;
+				}
 
 				array[i] = item;
 				catalogRemove(old);
@@ -146,8 +158,9 @@ module.factory('arrayHelper', [
 			var toggle = function (item, property, state) {
 				var i = index(item);
 
-				if (!~i)
+				if (!~i) {
 					return undefined;
+				}
 
 				var obj = {};
 
@@ -159,8 +172,9 @@ module.factory('arrayHelper', [
 			var remove = function (item) {
 				var i = index(item);
 
-				if (!~i)
+				if (!~i) {
 					return undefined;
+				}
 
 				catalogRemove(item);
 				return array.splice(i, 1).shift();

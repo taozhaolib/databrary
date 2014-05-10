@@ -8,12 +8,14 @@ module.controller('CommentsPanel', [
 		//
 
 		var createMessage = function (message) {
-			if (typeof(message) == 'string')
+			if (typeof(message) == 'string') {
 				page.messages.add(angular.extend({}, DEFAULT_MESSAGE, {
 					body: message
 				}));
-			else
+			}
+			else {
 				page.messages.add(angular.extend({}, DEFAULT_MESSAGE, message));
+			}
 		};
 
 		//
@@ -84,8 +86,9 @@ module.controller('CommentsPanel', [
 
 			var meta = '<time datetime="' + $filter('date')(comment.time, 'yyyy-MM-dd HH:mm:ss Z') + '" pubdate>' + page.$filter('date')(comment.time, 'MMMM d, yyyy') + '</time>';
 
-			if (isTop && !isParty)
+			if (isTop && !isParty) {
 				return meta;
+			}
 
 			meta += ' <span class="sep">|</span>';
 
@@ -93,14 +96,17 @@ module.controller('CommentsPanel', [
 				(comment.volume ? comment.volume.id : 0) :
 				($scope.volume ? $scope.volume.id : 0);
 
-			if (isParty)
+			if (isParty) {
 				meta += ' <a href="' + page.router.volume({id: volumeID}) + '">' + $filter('truncate')(comment.volume.name || $scope.volume.name, 20) + '</a>';
+			}
 
-			if (isParty && !isTop)
+			if (isParty && !isTop) {
 				meta += ' <span class="sep">/</span>';
+			}
 
-			if (!isTop)
+			if (!isTop) {
 				meta += ' <a href="' + page.router.volume({id: volumeID}) + '"><img class="line" src="' + page.router.slotThumb(comment.container) + '"> ' + (comment.container.name || '') + '</a>';
+			}
 
 			return meta;
 		};
@@ -146,18 +152,22 @@ module.controller('CommentsPanel', [
 			var classes = [];
 
 			if ($route.current.controller != 'PartyView') {
-				if (!comment.parent)
+				if (!comment.parent) {
 					comment.parent = 0;
+				}
 
 				var index = parents.indexOf(comment.parent);
 
-				if (index > -1)
+				if (index > -1) {
 					parents = parents.slice(0, index + 1);
-				else
+				}
+				else {
 					parents.push(comment.parent);
+				}
 
-				if (parents.length >= 5)
+				if (parents.length >= 5) {
 					comment.stop = true;
+				}
 
 				classes.push('depth-' + (parents.length - 1));
 			} else {

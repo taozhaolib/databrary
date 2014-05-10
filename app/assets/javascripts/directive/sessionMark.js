@@ -6,16 +6,18 @@ module.directive('sessionMark', [
 
 			switch ($scope.mark) {
 				case 'excluded':
-					if (!$scope.data.object.categories[-700])
+					if (!$scope.data.object.categories[-700]) {
 						return $el.remove();
+					}
 
 					message = page.constants.message('notice.help.exclusion', $scope.data.volume.records[$scope.data.object.categories[-700][0].id].measures.reason);
 					type = 'purple';
 					break;
 
 				case 'pilot':
-					if (!$scope.data.object.categories[-800])
+					if (!$scope.data.object.categories[-800]) {
 						return $el.remove();
+					}
 
 					message = page.constants.message('notice.help.pilot');
 					type = 'red';

@@ -13,21 +13,24 @@ module.directive('excerpt', [
 				return isNaN(old / 1000) ? null : old / 1000;
 			});
 
-			if (angular.isNumber(excerpt[0]))
+			if (angular.isNumber(excerpt[0])) {
 				$el.on('loadedmetadata', function () {
 					this.currentTime = excerpt[0];
 
 					$el.off('loadedmetadata');
 				});
+			}
 
-			if (angular.isNumber(excerpt[1]))
+			if (angular.isNumber(excerpt[1])) {
 				$el.on('timeupdate', function () {
-					if (this.currentTime < excerpt[1])
+					if (this.currentTime < excerpt[1]) {
 						return;
+					}
 
 					this.pause();
 					$el.off('timeupdate');
 				});
+			}
 		};
 
 		return {

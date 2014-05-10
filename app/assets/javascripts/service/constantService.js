@@ -61,11 +61,13 @@ module.factory('constantService', [
 		};
 
 		constants.get = function (key, id) {
-			if (angular.isUndefined(constants.data[key]))
+			if (angular.isUndefined(constants.data[key])) {
 				return undefined;
+			}
 
-			if (angular.isDefined(id))
+			if (angular.isDefined(id)) {
 				return constants.data[key][id] || undefined;
+			}
 
 			return constants.data[key];
 		};
@@ -73,10 +75,13 @@ module.factory('constantService', [
 		constants.find = function (key, name) {
 			var data = constants.data[key];
 
-			if (angular.isDefined(data))
-				for (var id in data)
-					if (data.hasOwnProperty(id) && data[id].name == name)
+			if (angular.isDefined(data)) {
+				for (var id in data) {
+					if (data.hasOwnProperty(id) && data[id].name == name) {
 						return data[id];
+					}
+				}
+			}
 
 			return undefined;
 		};
@@ -84,23 +89,28 @@ module.factory('constantService', [
 		constants.message = function (key /*, args...*/) {
 			if (!constants.data || !constants.data.messages || !constants.data.messages[key])
 			// warning? error? placeholder.
+			{
 				return '[' + key + ']';
+			}
 
 			var msg = constants.data.messages[key];
 
-			for (var i = 1, length = arguments.length; i < length; i++)
+			for (var i = 1, length = arguments.length; i < length; i++) {
 				msg = msg.replace('{' + (i - 1) + '}', arguments[i], 'g');
+			}
 
 			return msg;
 		};
 
 		constants.permission = function (key) {
 			for (var prop in constants.data.permission) {
-				if (!constants.data.permission.hasOwnProperty(prop))
+				if (!constants.data.permission.hasOwnProperty(prop)) {
 					continue;
+				}
 
-				if (constants.data.permission[prop].id == key || constants.data.permission[prop].name === key)
+				if (constants.data.permission[prop].id == key || constants.data.permission[prop].name === key) {
 					return constants.data.permission[prop];
+				}
 			}
 		};
 

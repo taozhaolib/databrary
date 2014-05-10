@@ -8,13 +8,16 @@ module.directive('browserGroup', [
 			$scope.groupClasses = function (group) {
 				var classes = [];
 
-				if ($scope.browser.options[group].active)
+				if ($scope.browser.options[group].active) {
 					classes.push('on');
-				else
+				}
+				else {
 					classes.push('off');
+				}
 
-				if ($scope.browser.isLastGroup(group))
+				if ($scope.browser.isLastGroup(group)) {
 					classes.push('last');
+				}
 
 				return classes;
 			};
@@ -25,8 +28,9 @@ module.directive('browserGroup', [
 				classes.push('on');
 				classes.push($scope.browser.isRecordGroupToggle(group) ? 'expanded' : '');
 
-				if ($last && !$scope.browser.canAddRecordGroup())
+				if ($last && !$scope.browser.canAddRecordGroup()) {
 					classes.push('last');
+				}
 
 				return classes;
 			};

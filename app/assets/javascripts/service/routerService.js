@@ -7,37 +7,46 @@ module.factory('routerService', [
 		//
 
 		router.makeUrl = function (url, params, stripQuery) {
-			if (!params) return url;
+			if (!params) {
+				return url;
+			}
 
-			if (!angular.isObject(params) || angular.isArray(params))
+			if (!angular.isObject(params) || angular.isArray(params)) {
 				throw new Error('routerService.makeUrl passed non-object "params" for ' + url);
+			}
 
 			var parts = [];
 
 			angular.forEach(params, function (value, key) {
-				if (value === null || angular.isUndefined(value))
+				if (value === null || angular.isUndefined(value)) {
 					return;
+				}
 
-				if (!angular.isArray(value))
+				if (!angular.isArray(value)) {
 					value = [value];
+				}
 
 				angular.forEach(value, function (v) {
-					if (angular.isObject(v))
+					if (angular.isObject(v)) {
 						v = angular.toJson(v);
+					}
 
 					var regex = new RegExp(':' + key + '\\*?'),
 						match = url.match(regex);
 
-					if (match != null && match[0].length > 0)
+					if (match != null && match[0].length > 0) {
 						url = url.replace(regex, v);
-					else
+					}
+					else {
 						parts.push($filter('uri')(key, true) + '=' +
 							$filter('uri')(v, true));
+					}
 				});
 			});
 
-			if (stripQuery !== false && parts.length > 0)
+			if (stripQuery !== false && parts.length > 0) {
 				url += ((url.indexOf('?') == -1) ? '?' : '&');
+			}
 
 			return url + parts.join('&');
 		};
@@ -66,8 +75,9 @@ module.factory('routerService', [
 		//
 
 		router.record = function (data) {
-			if (!type.isRecord(data))
+			if (!type.isRecord(data)) {
 				throw new Error('routerService.record() requires Record as first argument');
+			}
 
 			data = {
 				id: data.id
@@ -77,8 +87,9 @@ module.factory('routerService', [
 		};
 
 		router.slot = function (data) {
-			if (!type.isSession(data))
+			if (!type.isSession(data)) {
 				throw new Error('routerService.slot() requires Slot as first argument');
+			}
 
 			data = {
 				id: data.id,
@@ -89,8 +100,9 @@ module.factory('routerService', [
 		};
 
 		router.volumeThumb = function (data) {
-			if (!type.isVolume(data))
+			if (!type.isVolume(data)) {
 				throw new Error('routerService.volumeThumb() requires Volume as first argument');
+			}
 
 			data = {
 				id: data.id
@@ -100,8 +112,9 @@ module.factory('routerService', [
 		};
 
 		router.slotThumb = function (data) {
-			if (!type.isSession(data))
+			if (!type.isSession(data)) {
 				throw new Error('routerService.slotThumb() requires Slot as first argument');
+			}
 
 			data = {
 				id: data.id,
@@ -112,8 +125,9 @@ module.factory('routerService', [
 		};
 
 		router.assetThumb = function (data) {
-			if (!type.isAsset(data))
+			if (!type.isAsset(data)) {
 				throw new Error('routerService.assetThumb() requires Asset as first argument');
+			}
 
 			data = {
 				sid: data.container.id,
@@ -125,8 +139,9 @@ module.factory('routerService', [
 		};
 
 		router.assetHead = function (data) {
-			if (!type.isAsset(data))
+			if (!type.isAsset(data)) {
 				throw new Error('routerService.assetHead() requires Asset as first argument');
+			}
 
 			data = {
 				sid: data.container.id,
@@ -154,29 +169,36 @@ module.factory('routerService', [
 		};
 
 		router.partyAvatar = function (data, size) {
-			if (!type.isParty(data))
+			if (!type.isParty(data)) {
 				throw new Error('routerService.partyAvatar() requires Party as first argument');
+			}
 
 			data = {
 				id: data.id
 			};
 
-			if (angular.isNumber(parseInt(size)))
-				if (angular.isObject(data))
+			if (angular.isNumber(parseInt(size))) {
+				if (angular.isObject(data)) {
 					data.size = parseInt(size);
-				else if (angular.isArray(data))
+				}
+				else if (angular.isArray(data)) {
 					data.push(parseInt(size));
-				else if (angular.isString(data))
+				}
+				else if (angular.isString(data)) {
 					data = [data, size];
-				else
+				}
+				else {
 					data = '';
+				}
+			}
 
 			return router.makeUrl('/party/:id/avatar', data);
 		};
 
 		router.slotEdit = function (data) {
-			if (!type.isSession(data))
+			if (!type.isSession(data)) {
 				throw new Error('routerService.slotEdit() requires Slot as first argument');
+			}
 
 			data = {
 				id: data.id,
@@ -187,8 +209,9 @@ module.factory('routerService', [
 		};
 
 		router.assetEdit = function (data) {
-			if (!type.isAsset(data))
+			if (!type.isAsset(data)) {
 				throw new Error('routerService.assetEdit() requires Asset as first argument');
+			}
 
 			data = {
 				id: data.asset.id
@@ -198,8 +221,9 @@ module.factory('routerService', [
 		};
 
 		router.recordEdit = function (data) {
-			if (!type.isRecord(data))
+			if (!type.isRecord(data)) {
 				throw new Error('routerService.recordEdit() requires Record as first argument');
+			}
 
 			data = {
 				id: data.id
@@ -209,22 +233,25 @@ module.factory('routerService', [
 		};
 
 		router.volumeEdit = function (data, page) {
-			if (!type.isVolume(data))
+			if (!type.isVolume(data)) {
 				throw new Error('routerService.volumeEdit() requires Volume as first argument');
+			}
 
 			data = {
 				id: data.id
 			};
 
-			if (page)
+			if (page) {
 				data.page = page;
+			}
 
 			return router.makeUrl('/volume/:id/edit', data);
 		};
 
 		router.volumeAccess = function (data) {
-			if (!type.isVolume(data))
+			if (!type.isVolume(data)) {
 				throw new Error('routerService.volumeAccess() requires Volume as first argument');
+			}
 
 			data = {
 				id: data.id
@@ -234,8 +261,9 @@ module.factory('routerService', [
 		};
 
 		router.partyEdit = function (data) {
-			if (!type.isParty(data))
+			if (!type.isParty(data)) {
 				throw new Error('routerService.partyEdit() requires Party as first argument');
+			}
 
 			data = {
 				id: data.id
@@ -245,8 +273,9 @@ module.factory('routerService', [
 		};
 
 		router.party = function (data) {
-			if (!type.isParty(data))
+			if (!type.isParty(data)) {
 				throw new Error('routerService.party() requires Party as first argument');
+			}
 
 			data = {
 				id: data.id
@@ -256,8 +285,9 @@ module.factory('routerService', [
 		};
 
 		router.partyAuthorize = function (data) {
-			if (!type.isParty(data))
+			if (!type.isParty(data)) {
 				throw new Error('routerService.partyAuthorize() requires Party as first argument');
+			}
 
 			data = {
 				id: data.id

@@ -42,11 +42,13 @@ module.factory('messageService', [
 
 		var register = function (message) {
 			if (message) {
-				if (message.target)
+				if (message.target) {
 					messages.target(message);
+				}
 
-				if (message.countdown)
+				if (message.countdown) {
 					messages.countdown(message);
+				}
 			}
 
 			return message;
@@ -67,8 +69,9 @@ module.factory('messageService', [
 
 			var newMessage = addFn(message);
 
-			if (!newMessage)
+			if (!newMessage) {
 				return false;
+			}
 
 			newMessage.body = constants.message('error.prefix') + ' ' + newMessage.body;
 
@@ -99,8 +102,9 @@ module.factory('messageService', [
 
 				moreBody = '<dl class="message_form_errors">' + moreBody + '</dl>';
 
-				if (moreBody)
+				if (moreBody) {
 					newMessage.body = '<p>' + newMessage.body + ' ' + constants.message('error.report', encodeURIComponent(constants.message('error.report.subject', message.status || 'Unknown', message.url || 'Location unknown')), encodeURIComponent(constants.message('error.report.body', messageBody))) + '</p>' + moreBody;
+				}
 			}
 
 			delete message.report;
@@ -137,8 +141,9 @@ module.factory('messageService', [
 		messages.update = function (message, obj) {
 			var newMessage = updateFn(message, obj);
 
-			if (newMessage)
+			if (newMessage) {
 				messages.target(newMessage);
+			}
 
 			return newMessage;
 		};
@@ -160,17 +165,19 @@ module.factory('messageService', [
 		//
 
 		var getTargetEvents = function (message) {
-			if (!message.targetElement)
+			if (!message.targetElement) {
 				return [];
+			}
 
 			var focusElements = ['INPUT', 'SELECT', 'TEXTAREA'],
 				namespace = '.messageTarget';
 
-			if (focusElements.indexOf(message.targetElement.prop('tagName')) >= 0)
+			if (focusElements.indexOf(message.targetElement.prop('tagName')) >= 0) {
 				return [
 						'focusin' + namespace + '_' + message.id,
 						'focusout' + namespace + '_' + message.id
 				];
+			}
 
 			return [
 					'mouseenter' + namespace + '_' + message.id,
@@ -179,8 +186,9 @@ module.factory('messageService', [
 		};
 
 		messages.target = function (message, target) {
-			if (messages.index(message) == -1)
+			if (messages.index(message) == -1) {
 				return undefined;
+			}
 
 			if (message.targetElement) {
 				message.targetElement.unbind(getTargetEvents(message).join(' '));
@@ -220,20 +228,23 @@ module.factory('messageService', [
 		//
 
 		var countdownUnset = function (message) {
-			if (message.countdownTimer && message.countdownTimer.hasOwnProperty('cancel'))
+			if (message.countdownTimer && message.countdownTimer.hasOwnProperty('cancel')) {
 				message.countdownTimer.cancel();
+			}
 		};
 
 		messages.countdown = function (message, countdown) {
-			if (messages.index(message) == -1)
+			if (messages.index(message) == -1) {
 				return undefined;
+			}
 
 			countdownUnset(message);
 
 			message.countdown = angular.isDefined(countdown) ? countdown : message.countdown;
 
-			if (!angular.isNumber(message.countdown))
+			if (!angular.isNumber(message.countdown)) {
 				return message.countdown = false;
+			}
 
 			message.countdownTimer = $timeout(function () {
 				messages.disable(message);
