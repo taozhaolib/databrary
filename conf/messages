@@ -316,7 +316,6 @@ register.name.prompt=Full name
 register.continue=Continue
 register.agree=Agree
 register.register=Agree and register
-register.agreement.instructions=Download the <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">pdf version</a> for the full agreement. Terms in italics are defined in our <a href="http://databrary.org/user-guide/policies/definitions.html" target="_blank">definitions</a>.
 register.sent.instructions=Your confirmation email has been sent to {0}.
 register.authquery.error=Could not retrieve potential authorizing agents.
 
@@ -326,7 +325,9 @@ wizard.register_create.instructions=Please provide information about yourself.
 
 wizard.register_agreement.name=Sign Agreement
 wizard.register_agreement.description=Learn about the responsibilities of all Databrary members.
-wizard.register_agreement.instructions=Read each section of the agreement. You must scroll to the bottom of each page before clicking ''Agree''.
+wizard.register_agreement.instructions=Read each section of the agreement. You can also download the full agreement <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">here</a>.
+wizard.register_agreement.agreement_contents=<p>Users must abide by these three guiding principles</p><ol><li>Databrary investigators are responsible for getting participant permission levels correct. They must ensure that participants' wishes are respected in the data they contribute.</li><li>Databrary investigators must treat other researchers' data with the same respect, security, and ethical commitment as their own.</li><li>Databrary investigators must take care in authorizing other people (affiliates and collaborators) and are responsible for their conduct and use of Databrary data, just as they are in their own labs.</li></ol>
+wizard.register_agreement.agree=I have read and understand the <a href="http://databrary.org/user-guide/policies/investigator-agreement.html">Databrary Investigator Agreement</a>
 
 wizard.register_email.name=Confirm Email
 wizard.register_email.description=Confirm your email address to continue.
@@ -334,7 +335,7 @@ wizard.register_email.instructions=Check your inbox for your email confirmation.
 
 wizard.register_password.name=Set Password
 wizard.register_password.description=Pick a secure password.
-wizard.register_password.instructions=Please set a secure password. Remember that you have agreed not to share your login information with anyone.
+wizard.register_password.instructions=Please set a secure password. Remember that users may not share their login information with anyone.
 
 wizard.register_agent.name=Find Authorizing Agent
 wizard.register_agent.description=Select a party to request authorized Databrary access.

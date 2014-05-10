@@ -34,21 +34,6 @@ module.controller('RegisterPanel', [
 			page.models.Analytic.send();
 		});
 
-		$scope.$watch(function () {
-			return $scope.agreement && $scope.agreement.current;
-		}, function (current) {
-			if (!current) {
-				return;
-			}
-
-			page.analytics.add('change', {
-				type: 'agreement',
-				page: current
-			});
-
-			page.models.Analytic.send();
-		});
-
 		//
 
 		$scope.wizard = {};
@@ -87,28 +72,6 @@ module.controller('RegisterPanel', [
 		$scope.authSearchForm = {};
 		$scope.authApplyForm = {};
 		$scope.infoForm = {};
-
-		//
-
-		$scope.agreement = {
-			current: 1,
-			total: 1,
-			pages: []
-		};
-
-		page.models.Scraper('//databrary.org/policies/investigator-agreement.html')
-			.then(function (pages) {
-				pages = $('<response>' + pages + '</response>');
-				pages.find('a').each(function () {
-					$(this).attr('target', '_blank');
-				});
-				pages = pages.html();
-
-				pages = pages.split(/<!--page_.*-->/).slice(1, -1);
-
-				$scope.agreement.total = pages.length;
-				$scope.agreement.pages = pages;
-			});
 
 		//
 
@@ -198,40 +161,12 @@ module.controller('RegisterPanel', [
 			},
 
 			'register_agreement': function (step) {
-				step.agreement = $scope.agreement;
-				step.scrolled = false;
-				step.$el = undefined;
-
-				step.back = function () {
-					$scope.agreement.current--;
-					$scope.registerForm.data.agreement = false;
-				};
-
-				step.scroll = function ($scroll) {
-					step.$el = step.$el || $scroll.$element;
-
-					if (step.$el.height() + step.$el.scrollTop() >= step.$el.prop('scrollHeight')) {
-						step.scrolled = true;
-					}
-				};
-
 				step.ready = function () {
-					return step.scrolled;
-				};
-
-				step.next = function () {
-					$scope.agreement.current++;
-
-					if (step.$el) {
-						step.$el.scrollTop(0);
-					}
-
-					step.scrolled = false;
+					return step.agreementCheckbox;
 				};
 
 				step.proceed = function () {
 					$scope.registerForm.data.agreement = true;
-					step.scrolled = false;
 
 					page.$http
 						.post('/register', $scope.registerForm.data)
