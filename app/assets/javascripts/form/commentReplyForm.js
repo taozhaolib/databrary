@@ -1,14 +1,10 @@
 module.directive('commentReplyForm', [
-	'Comment',
-	'authService',
-	'typeService',
-	'pageService',
-	function (Comment, authService, type, page) {
+	'pageService', function (page) {
 		var link = function ($scope) {
 			var form = $scope.commentReplyForm;
 
 			form.getParty = function () {
-				return authService.user;
+				return page.auth.user;
 			};
 
 			form.data = {
@@ -25,10 +21,11 @@ module.directive('commentReplyForm', [
 			form.errorFn = undefined;
 
 			form.save = function () {
-				if (angular.isFunction(form.saveFn))
+				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
+				}
 
-				form.comment = new Comment();
+				form.comment = new page.models.Comment();
 
 				form.comment.$save(form.data, function () {
 					page.messages.add({
@@ -37,8 +34,9 @@ module.directive('commentReplyForm', [
 						countdown: 3000
 					});
 
-					if (angular.isFunction(form.successFn))
+					if (angular.isFunction(form.successFn)) {
 						form.successFn(form, arguments);
+					}
 
 					form.cancel();
 				}, function (res) {
@@ -48,8 +46,9 @@ module.directive('commentReplyForm', [
 						status: res[1]
 					});
 
-					if (angular.isFunction(form.errorFn))
+					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
+					}
 				});
 			};
 
@@ -58,8 +57,9 @@ module.directive('commentReplyForm', [
 			form.cancelFn = undefined;
 
 			form.cancel = function () {
-				if (angular.isFunction(form.cancelFn))
+				if (angular.isFunction(form.cancelFn)) {
 					form.cancelFn(form);
+				}
 
 				form.data.text = '';
 				form.target(undefined, undefined);
@@ -70,7 +70,7 @@ module.directive('commentReplyForm', [
 			form.target = function (comment) {
 				if (comment) {
 					form.data.container = comment.container.id;
-					form.data.segment = type.segmentString(comment);
+					form.data.segment = page.types.segmentString(comment);
 					form.data.parent = comment.id;
 					return;
 				}

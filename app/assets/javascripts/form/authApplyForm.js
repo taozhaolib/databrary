@@ -1,17 +1,13 @@
 module.directive('authApplyForm', [
-	'PartyAuthorize',
-	'authService',
-	'authPresetService',
-	'pageService',
-	function (PartyAuthorize, authService, authPresetService, page) {
+	'pageService', function (page) {
 		var link = function ($scope) {
 			var form = $scope.authApplyForm;
 
 			$scope.page = page;
 			$scope.constant = page.constants;
 
-			form.presets = authPresetService;
-			form.party = $scope.party || authService.user;
+			form.presets = page.authPresets;
+			form.party = $scope.party || page.auth.user;
 			form.other = undefined;
 			form.notFound = {
 				query: undefined,
@@ -25,20 +21,22 @@ module.directive('authApplyForm', [
 			form.errorFn = undefined;
 
 			var saveAuth = function () {
-				form.partyAuthorize = new PartyAuthorize();
+				form.partyAuthorize = new page.models.PartyAuthorize();
 
 				form.partyAuthorize.direct = form.other.direct;
 				form.partyAuthorize.inherit = form.other.inherit;
 
-				if (form.notFound.info)
+				if (form.notFound.info) {
 					form.partyAuthorize.info = form.notFound.info;
+				}
 
 				form.partyAuthorize.$apply({
 					id: form.party.id,
 					partyId: form.other.party.id
 				}, function () {
-					if (angular.isFunction(form.successFn))
+					if (angular.isFunction(form.successFn)) {
 						form.successFn(form, arguments);
+					}
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('auth.apply.error'),
@@ -46,13 +44,14 @@ module.directive('authApplyForm', [
 						status: res[1]
 					});
 
-					if (angular.isFunction(form.errorFn))
+					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
+					}
 				});
 			};
 
 			var saveQuery = function () {
-				form.partyAuthorize = new PartyAuthorize();
+				form.partyAuthorize = new page.models.PartyAuthorize();
 
 				form.partyAuthorize.$search({
 					id: form.party.id,
@@ -67,8 +66,9 @@ module.directive('authApplyForm', [
 						body: page.constants.message('auth.request.notfound.success')
 					});
 
-					if (angular.isFunction(form.successFn))
+					if (angular.isFunction(form.successFn)) {
 						form.successFn(form, arguments);
+					}
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('error.generic'),
@@ -76,19 +76,23 @@ module.directive('authApplyForm', [
 						status: res[1]
 					});
 
-					if (angular.isFunction(form.errorFn))
+					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
+					}
 				});
 			};
 
 			form.save = function () {
-				if (angular.isFunction(form.saveFn))
+				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
+				}
 
-				if (form.notFound.query)
+				if (form.notFound.query) {
 					saveQuery();
-				else
+				}
+				else {
 					saveAuth();
+				}
 			};
 
 			//
@@ -96,8 +100,9 @@ module.directive('authApplyForm', [
 			form.cancelFn = undefined;
 
 			form.cancel = function () {
-				if (angular.isFunction(form.cancelFn))
+				if (angular.isFunction(form.cancelFn)) {
 					form.cancelFn(form);
+				}
 
 				if (form.other) {
 					form.other.inherit = 0;

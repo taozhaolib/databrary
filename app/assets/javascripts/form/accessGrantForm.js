@@ -1,10 +1,5 @@
 module.directive('accessGrantForm', [
-	'PartyAuthorize',
-	'authService',
-	'authPresetService',
-	'$filter',
-	'pageService',
-	function (PartyAuthorize, authService, authPresetService, $filter, page) {
+	'pageService', function (page) {
 		var link = function ($scope) {
 			var form = $scope.accessGrantForm;
 
@@ -12,8 +7,8 @@ module.directive('accessGrantForm', [
 			supportsDate.setAttribute('type', 'date');
 			supportsDate = supportsDate.type === 'date';
 
-			form.presets = authPresetService;
-			form.party = $scope.party || authService.user;
+			form.presets = page.authPresets;
+			form.party = $scope.party || page.auth.user;
 			form.other = undefined;
 
 			//
@@ -27,11 +22,13 @@ module.directive('accessGrantForm', [
 					exp = form.other.expiration.split('-'),
 					trial = new Date(supportsDate ? exp[1] + '-' + exp[2] + '-' + exp[0] : form.other.expiration).getTime();
 
-				if (trial > limit || isNaN(trial))
-					form.other.expiration = $filter('date')(limit, 'yyyy-MM-dd');
+				if (trial > limit || isNaN(trial)) {
+					form.other.expiration = page.$filter('date')(limit, 'yyyy-MM-dd');
+				}
 
-				if (trial < now.getTime())
+				if (trial < now.getTime()) {
 					form.other.expiration = $filter('date')(now, 'yyyy-MM-dd');
+				}
 			};
 
 			//
@@ -41,27 +38,31 @@ module.directive('accessGrantForm', [
 			form.errorFn = undefined;
 
 			form.save = function () {
-				form.partyAuthorize = new PartyAuthorize();
+				form.partyAuthorize = new page.models.PartyAuthorize();
 
 				form.partyAuthorize.direct = form.other.direct;
 				form.partyAuthorize.inherit = form.other.inherit;
 				form.partyAuthorize.expires = form.other.expiration;
 
-				if (!form.partyAuthorize.expires.match(/^\d{4}-\d{1,2}-\d{1,2}$/))
+				if (!form.partyAuthorize.expires.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) {
 					form.partyAuthorize.expires = '';
+				}
 
-				if (form.partyAuthorize.expires == '')
+				if (form.partyAuthorize.expires == '') {
 					delete form.partyAuthorize.expires;
+				}
 
-				if (angular.isFunction(form.saveFn))
+				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
+				}
 
 				form.partyAuthorize.$save({
 					id: form.party.id,
 					partyId: form.other.party.id
 				}, function () {
-					if (angular.isFunction(form.successFn))
+					if (angular.isFunction(form.successFn)) {
 						form.successFn(form, arguments);
+					}
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('auth.grant.save.error'),
@@ -69,8 +70,9 @@ module.directive('accessGrantForm', [
 						status: res[1]
 					});
 
-					if (angular.isFunction(form.errorFn))
+					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
+					}
 				});
 			};
 
@@ -81,17 +83,19 @@ module.directive('accessGrantForm', [
 			form.denyErrorFn = undefined;
 
 			form.deny = function () {
-				form.partyAuthorize = new PartyAuthorize();
+				form.partyAuthorize = new page.models.PartyAuthorize();
 
-				if (angular.isFunction(form.denyFn))
+				if (angular.isFunction(form.denyFn)) {
 					form.denyFn(form);
+				}
 
 				form.partyAuthorize.$delete({
 					id: form.party.id,
 					partyId: form.other.party.id
 				}, function () {
-					if (angular.isFunction(form.denySuccessFn))
+					if (angular.isFunction(form.denySuccessFn)) {
 						form.denySuccessFn(form, arguments);
+					}
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('auth.grant.deny.error'),
@@ -99,8 +103,9 @@ module.directive('accessGrantForm', [
 						status: res[1]
 					});
 
-					if (angular.isFunction(form.denyErrorFn))
+					if (angular.isFunction(form.denyErrorFn)) {
 						form.denyErrorFn(form, arguments);
+					}
 				});
 			};
 
@@ -109,8 +114,9 @@ module.directive('accessGrantForm', [
 			form.cancelFn = undefined;
 
 			form.cancel = function () {
-				if (angular.isFunction(form.cancelFn))
+				if (angular.isFunction(form.cancelFn)) {
 					form.cancelFn(form);
+				}
 
 				form.other.inherit = 0;
 				form.other.direct = 0;
@@ -121,20 +127,23 @@ module.directive('accessGrantForm', [
 
 			var parsePresets = function () {
 				var custom = undefined,
-					presets = authPresetService.get(form.party, form.other);
+					presets = page.authPresets.get(form.party, form.other);
 
 				form.other.preset = undefined;
 
 				angular.forEach(presets, function (preset) {
-					if (form.other.direct == preset.direct && form.other.inherit == preset.inherit)
-						authPresetService.set(form.other, preset);
+					if (form.other.direct == preset.direct && form.other.inherit == preset.inherit) {
+						page.authPresets.set(form.other, preset);
+					}
 
-					if (angular.isUndefined(preset.inherit))
+					if (angular.isUndefined(preset.inherit)) {
 						custom = preset;
+					}
 				});
 
-				if (angular.isUndefined(form.other.preset))
-					authPresetService.set(form.other, custom);
+				if (angular.isUndefined(form.other.preset)) {
+					page.authPresets.set(form.other, custom);
+				}
 			};
 
 			//
@@ -144,12 +153,15 @@ module.directive('accessGrantForm', [
 			$scope.$watch('accessGrantForm.other', function () {
 				parsePresets();
 
-				if (form.other.expires)
+				if (form.other.expires) {
 					form.other.expiration = $filter('date')(new Date(form.other.expires), 'yyyy-MM-dd');
-				else if (angular.isUndefined(form.other.authorized))
+				}
+				else if (angular.isUndefined(form.other.authorized)) {
 					form.other.expiration = $filter('date')(dateLimit, 'yyyy-MM-dd');
-				else
+				}
+				else {
 					form.other.expiration = '';
+				}
 			});
 		};
 

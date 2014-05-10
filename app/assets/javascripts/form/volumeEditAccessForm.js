@@ -1,6 +1,5 @@
 module.directive('volumeEditAccessForm', [
-	'pageService',
-	function (page) {
+	'pageService', function (page) {
 		var link = function ($scope) {
 			var form = $scope.volumeEditAccessForm;
 
@@ -25,8 +24,9 @@ module.directive('volumeEditAccessForm', [
 			//
 
 			form.save = function () {
-				if (angular.isFunction(form.saveFn))
+				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
+				}
 
 				page.models.Volume.save(form.data,
 					function (res) {
@@ -36,8 +36,9 @@ module.directive('volumeEditAccessForm', [
 							body: page.constants.message('volume.edit.access.success'),
 						});
 
-						if (angular.isFunction(form.successFn))
+						if (angular.isFunction(form.successFn)) {
 							form.successFn(form, res);
+						}
 
 						form.$setPristine();
 						page.models.Volume.$cache.removeAll();
@@ -47,22 +48,25 @@ module.directive('volumeEditAccessForm', [
 							report: res
 						});
 
-						if (angular.isFunction(form.errorFn))
+						if (angular.isFunction(form.errorFn)) {
 							form.errorFn(form, res);
+						}
 					});
 			};
 
 			form.reset = function () {
-				if (angular.isFunction(form.resetFn))
+				if (angular.isFunction(form.resetFn)) {
 					form.resetFn(form);
+				}
 
 				form.data = $.extend(true, {}, backup);
 				form.$setPristine();
 			};
 
 			form.cancel = function () {
-				if (angular.isFunction(form.cancelFn))
+				if (angular.isFunction(form.cancelFn)) {
 					form.cancelFn(form);
+				}
 			};
 
 			//

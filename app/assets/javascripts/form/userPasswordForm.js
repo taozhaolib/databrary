@@ -1,5 +1,5 @@
 module.directive('userPasswordForm', [
-	'authService', 'pageService', '$http', '$window', function (auth, page, $http, $window) {
+	'pageService', function (page) {
 		var link = function ($scope) {
 			var form = $scope.userPasswordForm;
 			var token;
@@ -14,8 +14,8 @@ module.directive('userPasswordForm', [
 				}
 			};
 
-			if (auth.hasToken()) {
-				token = auth.getToken();
+			if (page.auth.hasToken()) {
+				token = page.auth.getToken();
 				form.data.token = token.id;
 				form.data.auth = token.auth;
 			}
@@ -27,10 +27,11 @@ module.directive('userPasswordForm', [
 			form.resetErrorFn = undefined;
 
 			form.reset = function () {
-				if (angular.isFunction(form.resetFn))
+				if (angular.isFunction(form.resetFn)) {
 					form.resetFn(form);
+				}
 
-				$http
+				page.$http
 					.post('/password', $scope.userPasswordForm.data)
 					.success(function (data) {
 						page.messages.add({
@@ -39,8 +40,9 @@ module.directive('userPasswordForm', [
 							body: page.constants.message('reset.request.success', form.data.email)
 						});
 
-						if (angular.isFunction(form.resetSuccessFn))
+						if (angular.isFunction(form.resetSuccessFn)) {
 							form.resetSuccessFn(form, arguments);
+						}
 					})
 					.error(function (errors, status) {
 						page.messages.addError({
@@ -50,8 +52,9 @@ module.directive('userPasswordForm', [
 							status: status
 						});
 
-						if (angular.isFunction(form.resetErrorFn))
+						if (angular.isFunction(form.resetErrorFn)) {
 							form.resetErrorFn(form, arguments);
+						}
 					});
 			};
 
@@ -62,10 +65,11 @@ module.directive('userPasswordForm', [
 			form.saveErrorFn = undefined;
 
 			form.save = function () {
-				if (angular.isFunction(form.saveFn))
+				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
+				}
 
-				$http
+				page.$http
 					.post('/api/party/' + token.party + '/password', $scope.userPasswordForm.data)
 					.success(function (data) {
 						page.messages.add({
@@ -74,11 +78,12 @@ module.directive('userPasswordForm', [
 							body: page.constants.message('reset.save.success', form.data.email)
 						});
 
-						if (angular.isFunction(form.saveSuccessFn))
+						if (angular.isFunction(form.saveSuccessFn)) {
 							form.saveSuccessFn(form, arguments);
+						}
 
-						$window.$play.object = null;
-						auth.updateUser(data);
+						page.$window.$play.object = null;
+						page.auth.updateUser(data);
 					})
 					.error(function (errors, status) {
 						page.messages.add({
@@ -87,21 +92,24 @@ module.directive('userPasswordForm', [
 							body: angular.isObject(errors) ? (errors['password.once'] || errors['password']).join('. ') + '.' : page.constants.message('error.generic')
 						});
 
-						if (angular.isFunction(form.saveErrorFn))
+						if (angular.isFunction(form.saveErrorFn)) {
 							form.saveErrorFn(form, arguments);
+						}
 
-						$window.$play.object = null;
+						page.$window.$play.object = null;
 					});
 			};
 
 			//
 
 			form.ready = function () {
-				if (form.data.token)
+				if (form.data.token) {
 					return form.$dirty && form.$valid && form.data.password.once &&
 						form.data.password.once == form.data.password.again;
-				else
+				}
+				else {
 					return form.$dirty && form.$valid && form.data.email;
+				}
 			};
 
 			//

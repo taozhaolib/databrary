@@ -1,5 +1,5 @@
 module.directive('authSearchForm', [
-	'PartyAuthorize', 'authService', 'pageService', '$timeout', function (PartyAuthorize, authService, page, $timeout) {
+	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
 			$scope.authSearchForm.name = '';
 			$scope.authSearchForm.found = [];
@@ -26,13 +26,15 @@ module.directive('authSearchForm', [
 			};
 
 			$scope.authSearchForm.search = function () {
-				if (!$scope.authSearchForm.name || $scope.authSearchForm.name.length < 3)
+				if (!$scope.authSearchForm.name || $scope.authSearchForm.name.length < 3) {
 					$scope.authSearchForm.found = [];
-				else if (sentSearch)
+				}
+				else if (sentSearch) {
 					recentSearch = $scope.authSearchForm.name;
-				else
-					sentSearch = PartyAuthorize.search({
-						id: $scope.authSearchForm.id || authService.user.id,
+				}
+				else {
+					sentSearch = page.models.PartyAuthorize.search({
+						id: $scope.authSearchForm.id || page.auth.user.id,
 						apply: $scope.authSearchForm.apply,
 						name: $scope.authSearchForm.name,
 						institution: $element.attr('institution') === 'true'
@@ -49,6 +51,7 @@ module.directive('authSearchForm', [
 
 						fin();
 					});
+				}
 			};
 
 			//
@@ -59,8 +62,9 @@ module.directive('authSearchForm', [
 				$scope.authSearchForm.name = '';
 				$scope.authSearchForm.search();
 
-				if (angular.isFunction($scope.authSearchForm.selectFn))
+				if (angular.isFunction($scope.authSearchForm.selectFn)) {
 					$scope.authSearchForm.selectFn(found, $scope.authSearchForm);
+				}
 			};
 
 			//
@@ -73,8 +77,9 @@ module.directive('authSearchForm', [
 				$scope.authSearchForm.name = '';
 				$scope.authSearchForm.search();
 
-				if (angular.isFunction($scope.authSearchForm.notFoundFn))
+				if (angular.isFunction($scope.authSearchForm.notFoundFn)) {
 					$scope.authSearchForm.notFoundFn(query, $scope.authSearchForm);
+				}
 			};
 
 			//

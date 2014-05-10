@@ -1,6 +1,5 @@
 module.directive('volumeEditOverviewForm', [
-	'pageService',
-	function (page) {
+	'pageService', function (page) {
 		var link = function ($scope) {
 			var form = $scope.volumeEditOverviewForm;
 
@@ -24,8 +23,9 @@ module.directive('volumeEditOverviewForm', [
 			//
 
 			form.save = function () {
-				if (angular.isFunction(form.saveFn))
+				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
+				}
 
 				if (form.volume) {
 					page.models.Volume.save(form.data,
@@ -36,8 +36,9 @@ module.directive('volumeEditOverviewForm', [
 								body: page.constants.message('volume.edit.overview.success'),
 							});
 
-							if (angular.isFunction(form.successFn))
+							if (angular.isFunction(form.successFn)) {
 								form.successFn(form, res);
+							}
 
 							form.$setPristine();
 						}, function (res) {
@@ -46,8 +47,9 @@ module.directive('volumeEditOverviewForm', [
 								report: res
 							});
 
-							if (angular.isFunction(form.errorFn))
+							if (angular.isFunction(form.errorFn)) {
 								form.errorFn(form, res);
+							}
 						});
 				} else {
 					var volume = new page.models.Volume(form.data);
@@ -55,39 +57,43 @@ module.directive('volumeEditOverviewForm', [
 					volume.$save({
 						owner: page.auth.user.id
 					}, function (res) {
-							page.messages.add({
-								type: 'green',
-								countdown: 3000,
-								body: page.constants.message('volume.edit.overview.success'),
-							});
-
-							if (angular.isFunction(form.successFn))
-								form.successFn(form, res);
-
-							page.$location.url(page.router.volumeEdit(res));
-						}, function (res) {
-							page.messages.addError({
-								body: page.constants.message('volume.edit.overview.error'),
-								report: res
-							});
-
-							if (angular.isFunction(form.errorFn))
-								form.errorFn(form, res);
+						page.messages.add({
+							type: 'green',
+							countdown: 3000,
+							body: page.constants.message('volume.edit.overview.success'),
 						});
+
+						if (angular.isFunction(form.successFn)) {
+							form.successFn(form, res);
+						}
+
+						page.$location.url(page.router.volumeEdit(res));
+					}, function (res) {
+						page.messages.addError({
+							body: page.constants.message('volume.edit.overview.error'),
+							report: res
+						});
+
+						if (angular.isFunction(form.errorFn)) {
+							form.errorFn(form, res);
+						}
+					});
 				}
 			};
 
 			form.reset = function () {
-				if (angular.isFunction(form.resetFn))
+				if (angular.isFunction(form.resetFn)) {
 					form.resetFn(form);
+				}
 
 				form.data = $.extend(true, {}, backup);
 				form.$setPristine();
 			};
 
 			form.cancel = function () {
-				if (angular.isFunction(form.cancelFn))
+				if (angular.isFunction(form.cancelFn)) {
 					form.cancelFn(form);
+				}
 			};
 
 			//
