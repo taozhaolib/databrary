@@ -1,12 +1,5 @@
 module.controller('CommentsPanel', [
-	'$scope',
-	'authService',
-	'$route',
-	'Comment',
-	'Volume',
-	'$filter',
-	'pageService',
-	function ($scope, authService, $route, Comment, Volume, $filter, page) {
+	'$scope', 'pageService', function ($scope, page) {
 		var DEFAULT_MESSAGE = {
 			type: 'blue',
 			countdown: 3000
@@ -26,11 +19,11 @@ module.controller('CommentsPanel', [
 		//
 
 		$scope.refreshPanel = function () {
-			switch ($route.current.controller) {
+			switch (page.$route.current.controller) {
 				case 'VolumeView':
 					$scope.comments = $scope.volume.comments;
 
-					$scope.enabled = authService.isLoggedIn() || !$.isEmptyObject($scope.comments);
+					$scope.enabled = page.auth.isLoggedIn() || !$.isEmptyObject($scope.comments);
 					break;
 
 				case 'PartyView':
@@ -46,9 +39,9 @@ module.controller('CommentsPanel', [
 		$scope.pullComments = function () {
 			switch ($route.current.controller) {
 				case 'VolumeView':
-					Volume.$cache.removeAll();
+					page.models.Volume.$cache.removeAll();
 
-					Volume.get({
+					page.models.Volume.get({
 						id: $scope.volume.id,
 						comments: ''
 					}, function (data) {
@@ -68,13 +61,13 @@ module.controller('CommentsPanel', [
 
 		//
 
-		$scope.authService = authService;
-		$scope.routeController = $route.current.controller;
+		$scope.authService = page.auth;
+		$scope.routeController = page.$route.current.controller;
 
 		//
 
 		$scope.commentParty = function (comment) {
-			switch ($route.current.controller) {
+			switch (page.$route.current.controller) {
 				case 'PartyView':
 					return $scope.party;
 
@@ -86,10 +79,10 @@ module.controller('CommentsPanel', [
 		};
 
 		$scope.commentMeta = function (comment) {
-			var isParty = $route.current.controller == 'PartyView' && !$scope.volume;
+			var isParty = page.$route.current.controller == 'PartyView' && !$scope.volume;
 			var isTop = comment.container.top;
 
-			var meta = '<time datetime="' + $filter('date')(comment.time, 'yyyy-MM-dd HH:mm:ss Z') + '" pubdate>' + $filter('date')(comment.time, 'MMMM d, yyyy') + '</time>';
+			var meta = '<time datetime="' + $filter('date')(comment.time, 'yyyy-MM-dd HH:mm:ss Z') + '" pubdate>' + page.$filter('date')(comment.time, 'MMMM d, yyyy') + '</time>';
 
 			if (isTop && !isParty)
 				return meta;
@@ -118,8 +111,8 @@ module.controller('CommentsPanel', [
 		var replyTo = undefined;
 
 		$scope.getReply = function (comment) {
-			return authService.isLoggedIn() &&
-				$route.current.controller != 'PartyView' &&
+			return page.auth.isLoggedIn() &&
+				page.$route.current.controller != 'PartyView' &&
 				replyTo == comment;
 		};
 

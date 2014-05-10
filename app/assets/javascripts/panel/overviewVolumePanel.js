@@ -1,5 +1,5 @@
 module.controller('OverviewVolumePanel', [
-	'$scope', 'pageService', '$filter', '$route', function ($scope, page, $filter, $route) {
+	'$scope', 'pageService', function ($scope, page) {
 		$scope.refreshPanel = function () {
 			$scope.enabled = angular.isObject($scope.volume);
 		};
@@ -17,7 +17,7 @@ module.controller('OverviewVolumePanel', [
 		};
 
 		$scope.ageSummary = function (summary) {
-			var age = $filter('age');
+			var age = page.$filter('age');
 			var range = age(summary.agerange[0]);
 
 			if (summary.agerange[0] != summary.agerange[1])

@@ -1,13 +1,6 @@
 module.controller('RegisterPanel', [
-	'$scope',
-	'authService',
-	'$http',
-	'$window',
-	'PartyAuthorize',
-	'Scraper',
-	'pageService',
-	function ($scope, auth, $http, $window, PartyAuthorize, Scraper, page) {
-		$scope.auth = $scope.auth || auth;
+	'$scope', 'pageService', function ($scope, page) {
+		$scope.auth = $scope.auth || page.auth;
 
 		var mess = [];
 		$scope.$on('$destroy', function () {
@@ -15,7 +8,6 @@ module.controller('RegisterPanel', [
 				page.messages.remove(message);
 			});
 		});
-
 
 		// TODO: Remove analytics
 		$scope.$watch(function () {
@@ -75,9 +67,9 @@ module.controller('RegisterPanel', [
 				$scope.prepareStep[$scope.wizard.newStep.id]($scope.wizard.newStep);
 			}
 
-			user.anon = !auth.isLoggedIn();
-			user.password = auth.isPasswordPending();
-			user.auth = auth.isAuthorized();
+			user.anon = !page.auth.isLoggedIn();
+			user.password = page.auth.isPasswordPending();
+			user.auth = page.auth.isAuthorized();
 
 			angular.forEach($scope.wizard.steps, function (step) {
 				$scope.updateStep[step.id](step, activate);
@@ -100,7 +92,7 @@ module.controller('RegisterPanel', [
 			pages: []
 		};
 
-		Scraper('//databrary.org/policies/investigator-agreement.html')
+		page.models.Scraper('//databrary.org/policies/investigator-agreement.html')
 			.then(function (pages) {
 				pages = $('<response>' + pages + '</response>');
 				pages.find('a').each(function () {
@@ -117,8 +109,8 @@ module.controller('RegisterPanel', [
 		//
 
 		var updateUserAuth = function () {
-			PartyAuthorize.query({
-				id: $scope.auth.user.id
+			page.models.PartyAuthorize.query({
+				id: page.auth.user.id
 			}, function (data) {
 				angular.forEach(data.parents, function (parent) {
 					user.pending = true;
@@ -137,7 +129,7 @@ module.controller('RegisterPanel', [
 		$scope.$watch('auth.user', function () {
 			$scope.updateWizard();
 
-			if (auth.isLoggedIn())
+			if (page.auth.isLoggedIn())
 				updateUserAuth();
 		});
 
@@ -233,7 +225,7 @@ module.controller('RegisterPanel', [
 					$scope.registerForm.data.agreement = true;
 					step.scrolled = false;
 
-					$http
+					page.$http
 						.post('/register', $scope.registerForm.data)
 						.success(function (res) {
 							$scope.registerForm.sent = true;
@@ -314,8 +306,8 @@ module.controller('RegisterPanel', [
 				};
 
 				$scope.infoForm.proceed = function () {
-					$http
-						.get('/api/party/' + auth.user.id + '/authorize/search', {
+					page.$http
+						.get('/api/party/' + page.auth.user.id + '/authorize/search', {
 							params: {
 								apply: true,
 								notfound: true,
@@ -406,7 +398,7 @@ module.controller('RegisterPanel', [
 
 				//
 
-				$scope.authApplyForm.party = $scope.auth.user;
+				$scope.authApplyForm.party = page.auth.user;
 
 				var perm = [];
 

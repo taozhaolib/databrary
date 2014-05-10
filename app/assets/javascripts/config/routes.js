@@ -179,8 +179,8 @@ module.config([
 						if (page.$route.current.params.id)
 							req.id = page.$route.current.params.id;
 						else if (page.auth.isLoggedIn())
-							req.id = auth.user.id;
-						else if (page.types.isParty($window.$play.object))
+							req.id = page.auth.user.id;
+						else if (page.types.isParty(page.$window.$play.object))
 							req.id = page.$window.$play.object.id;
 
 						if (page.$route.current.params.id)

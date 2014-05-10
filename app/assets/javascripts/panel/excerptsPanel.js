@@ -1,11 +1,7 @@
 module.controller('ExcerptsPanel', [
 	'$scope',
-	'browserService',
-	'$location',
-	'$timeout',
-	'typeService',
-	'$window',
-	function ($scope, browser, $location, $timeout, types, $window) {
+	'pageService',
+	function ($scope, page) {
 		$scope.bootPanel = function () {
 			if (angular.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0)
 				$scope.current = $scope.volume.excerpts[0] || undefined;
@@ -22,7 +18,7 @@ module.controller('ExcerptsPanel', [
 		};
 
 		$scope.getMimeGroup = function (asset) {
-			var mimetype = types.assetFormat(asset).mimetype,
+			var mimetype = page.types.assetFormat(asset).mimetype,
 				type = mimetype.split('/')[0];
 
 			return type == 'text' ? mimetype[1] : type;
@@ -38,21 +34,21 @@ module.controller('ExcerptsPanel', [
 		};
 
 		$scope.supported = function () {
-			return $window.navigator.userAgent.toLowerCase().indexOf('firefox') == -1 || $window.navigator.platform.toLowerCase().indexOf('mac') == -1;
+			return page.$window.navigator.userAgent.toLowerCase().indexOf('firefox') == -1 || page.$window.navigator.platform.toLowerCase().indexOf('mac') == -1;
 		};
 
 		$scope.jump = function (asset) {
 			var found;
 
-			for (var i = 0, l = browser.groups.session.length; i < l; i++) {
-				if (browser.groups.session[i].object.id == asset.container.id) {
-					found = browser.groups.session[i];
+			for (var i = 0, l = page.browser.groups.session.length; i < l; i++) {
+				if (page.browser.groups.session[i].object.id == asset.container.id) {
+					found = page.browser.groups.session[i];
 					break;
 				}
 			}
 
 			if (!found)
-				return expandTo(browser.data.items[0].volume.sessions[asset.container.id], asset);
+				return expandTo(page.browser.data.items[0].volume.sessions[asset.container.id], asset);
 
 			var $item = $('#' + found.id);
 
@@ -60,13 +56,13 @@ module.controller('ExcerptsPanel', [
 				return addTo(found, asset);
 
 			$(window).scrollTop($item.offset().top - 76);
-			browser.setItemExpand(found, true);
+			page.browser.setItemExpand(found, true);
 		};
 
 		var expandTo = function (session, asset) {
 			var dirty;
 
-			angular.forEach(browser.groups, function (objects, group) {
+			angular.forEach(page.browser.groups, function (objects, group) {
 				if (!$.isNumeric(group))
 					return;
 
@@ -81,14 +77,14 @@ module.controller('ExcerptsPanel', [
 
 				angular.forEach(objects, function (data) {
 					if (recordIDs.indexOf(data.object.id) > -1) {
-						browser.setItemExpand(data, true);
+						page.browser.setItemExpand(data, true);
 						dirty = true;
 					}
 				});
 			});
 
 			if (dirty)
-				$timeout(function () {
+				page.$timeout(function () {
 					$scope.jump(asset);
 				}, 1);
 		};
@@ -106,7 +102,7 @@ module.controller('ExcerptsPanel', [
 			if (index) {
 				data.items.splice(9, 0, data.items.splice(index, 1)[0]);
 
-				$timeout(function () {
+				page.$timeout(function () {
 					$scope.jump(asset);
 				}, 1);
 			}

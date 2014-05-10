@@ -1,12 +1,5 @@
 module.controller('TagsPanel', [
-	'$scope',
-	'Tag',
-	'$route',
-	'pageService',
-	'Volume',
-	'$http',
-	'$timeout',
-	function ($scope, Tag, $route, page, Volume, $http, $timeout) {
+	'$scope', 'pageService', function ($scope, page) {
 		var DEFAULT_MESSAGE = {
 			type: 'blue',
 			countdown: 3000
@@ -32,7 +25,7 @@ module.controller('TagsPanel', [
 		};
 
 		$scope.refreshPanel = function () {
-			switch ($route.current.controller) {
+			switch (page.$route.current.controller) {
 				case 'VolumeView':
 					$scope.prepareTags($scope.volume.tags);
 					$scope.target.container = $scope.volume.top.id;
@@ -69,11 +62,11 @@ module.controller('TagsPanel', [
 		};
 
 		$scope.retrieveTags = function () {
-			switch ($route.current.controller) {
+			switch (page.$route.current.controller) {
 				case 'VolumeView':
-					Volume.$cache.removeAll();
+					page.models.Volume.$cache.removeAll();
 
-					Volume.get({
+					page.models.Volume.get({
 						id: $scope.volume.id,
 						tags: ''
 					}, function (data) {
@@ -94,7 +87,7 @@ module.controller('TagsPanel', [
 		//
 
 		$scope.vote = function (tag, vote) {
-			var tagModel = new Tag({id: tag.id});
+			var tagModel = new page.models.Tag({id: tag.id});
 
 			tagModel.$save({
 				id: tag.id,
@@ -139,7 +132,7 @@ module.controller('TagsPanel', [
 
 			emptyAuto();
 
-			var tagModel = new Tag({id: form.newNameVal});
+			var tagModel = new page.models.Tag({id: form.newNameVal});
 
 			tagModel.$save({
 				id: form.newNameVal,
@@ -230,7 +223,7 @@ module.controller('TagsPanel', [
 		$scope.autoSelect = undefined;
 
 		var updateAuto = function (form) {
-			$http
+			page.$http
 				.get('/api/tag', {
 					params: {
 						query: form.newNameVal
@@ -257,7 +250,7 @@ module.controller('TagsPanel', [
 		};
 
 		var emptyAutoAfter = function (after) {
-			$timeout(function () {
+			page.$timeout(function () {
 				emptyAuto();
 			}, angular.isNumber(after) ? after : 1);
 		};

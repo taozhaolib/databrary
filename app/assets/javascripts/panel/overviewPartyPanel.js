@@ -1,5 +1,5 @@
 module.controller('OverviewPartyPanel', [
-	'$scope', 'pageService', '$route', function ($scope, page, $route) {
+	'$scope', 'pageService', function ($scope, page) {
 		$scope.editMode = false;
 
 		var form;
@@ -39,7 +39,7 @@ module.controller('OverviewPartyPanel', [
 				});
 
 				page.models.Party.$cache.removeAll();
-				$route.reload();
+				page.$route.reload();
 			}, function (res) {
 				page.messages.addError({
 					body: page.constants.message('party.edit.error'),

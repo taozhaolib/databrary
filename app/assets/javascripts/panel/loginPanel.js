@@ -1,5 +1,5 @@
 module.controller('LoginPanel', [
-	'$scope', 'authService', function ($scope, authService) {
+	'$scope', 'pageService', function ($scope, page) {
 		$scope.method = 'databrary';
 
 		$scope.loginData = {};
@@ -21,7 +21,7 @@ module.controller('LoginPanel', [
 		//
 
 		$scope.submitForm = function () {
-			authService.login($scope.loginData);
+			page.auth.login($scope.loginData);
 		};
 	}
 ]);
