@@ -1,7 +1,7 @@
 module.directive('browserIcon', [
-	'browserService', function (browserService) {
+	'pageService', function (page) {
 		var link = function ($scope) {
-			$scope.browser = $scope.browser || browserService;
+			$scope.browser = $scope.browser || page.browser;
 
 			//
 
@@ -12,7 +12,7 @@ module.directive('browserIcon', [
 			$scope.expanderClasses = function (data) {
 				var classes = [];
 
-				if (browserService.canExpand(data)) {
+				if (page.browser.canExpand(data)) {
 					classes.push('enabled');
 				}
 

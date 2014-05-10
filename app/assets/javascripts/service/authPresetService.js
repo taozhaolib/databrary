@@ -1,5 +1,5 @@
 module.factory('authPresetService', [
-	'pageService', function (page) {
+	'constantService', function (constants) {
 		var authPresetService = {};
 
 		//
@@ -11,17 +11,17 @@ module.factory('authPresetService', [
 
 			if (request) {
 				if (other.institution || other.id == 0) {
-					return page.constants.data.preset.institution.slice(0, 2);
+					return constants.data.preset.institution.slice(0, 2);
 				}
 				else {
-					return page.constants.data.preset.institution.slice(0, 1);
+					return constants.data.preset.institution.slice(0, 1);
 				}
 			} else {
 				if (party.institution || party.id == 0) {
-					return page.constants.data.preset.institution;
+					return constants.data.preset.institution;
 				}
 				else {
-					return page.constants.data.preset.individual;
+					return constants.data.preset.individual;
 				}
 			}
 		};

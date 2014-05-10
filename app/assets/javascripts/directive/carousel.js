@@ -1,5 +1,5 @@
 module.directive('carousel', [
-	'$timeout', function ($timeout) {
+	'pageService', function (page) {
 		var link = function ($scope, $element) {
 			var pauseTime = 5000,
 				fadeTime = 1000,
@@ -18,14 +18,14 @@ module.directive('carousel', [
 			};
 
 			$scope.schedule = function (pause) {
-				timeout = $timeout(function () {
+				timeout = page.$timeout(function () {
 					$scope.update(true);
 					$scope.schedule(pause);
 				}, pause);
 			};
 
 			$element.on('$destroy', function () {
-				$timeout.cancel(timeout);
+				page.$timeout.cancel(timeout);
 			});
 
 			$scope.schedule(pauseTime);

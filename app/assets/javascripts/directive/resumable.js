@@ -1,5 +1,5 @@
 module.directive('resumable', [
-	'$timeout', function ($timeout) {
+	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
 			var r = new Resumable();
 

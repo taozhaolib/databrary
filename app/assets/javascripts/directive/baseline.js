@@ -1,5 +1,5 @@
 module.directive('baseline', [
-	'$timeout', function ($timeout) {
+	'pageService', function (page) {
 		var pauseTime = 500;
 
 		var link = function ($scope, $element, $attrs) {
@@ -77,8 +77,8 @@ module.directive('baseline', [
 			};
 
 			$scope.timeoutBaseline = function () {
-				$timeout.cancel(timeout);
-				timeout = $timeout(function () {
+				page.$timeout.cancel(timeout);
+				timeout = page.$timeout(function () {
 					$scope.triggerBaseline();
 				}, pauseTime);
 			};
@@ -90,7 +90,7 @@ module.directive('baseline', [
 			});
 
 			$element.on('$destroy', function () {
-				$timeout.cancel(timeout);
+				page.$timeout.cancel(timeout);
 			});
 
 			$scope.triggerBaseline();

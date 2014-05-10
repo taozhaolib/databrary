@@ -1,11 +1,11 @@
 module.directive('clickElsewhere', [
-	'$document', function ($document) {
+	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
 			$element.bind('click', function ($event) {
 				$event.stopPropagation();
 			});
 
-			$document.bind('click', function () {
+			page.$document.bind('click', function () {
 				$scope.$apply($attrs.clickElsewhere);
 			});
 		};

@@ -1,12 +1,12 @@
 module.directive('scroll', [
-	'$timeout', function ($timeout) {
+	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
-			var timer = $timeout(angular.noop);
+			var timer = page.$timeout(angular.noop);
 			var timeout = $.isNumeric($attrs.scrollTimeout) ? parseInt($attrs.scrollTimeout) : 100;
 
 			$element.on('resize scroll', function ($event) {
-				$timeout.cancel(timer);
-				timer = $timeout(function () {
+				page.$timeout.cancel(timer);
+				timer = page.$timeout(function () {
 					$scope.$eval($attrs.scroll, {
 						$scroll: {
 							$event: $event,

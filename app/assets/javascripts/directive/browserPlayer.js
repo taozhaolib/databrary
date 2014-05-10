@@ -1,7 +1,7 @@
 module.directive('browserPlayer', [
-	'browserService', 'typeService', '$window', function (browserService, typeService, $window) {
+	'pageService', function (page) {
 		var link = function ($scope, $element) {
-			$scope.browser = $scope.browser || browserService;
+			$scope.browser = $scope.browser || page.browser;
 
 			var $content = $element.find('.browser_player_content').first();
 
@@ -14,14 +14,14 @@ module.directive('browserPlayer', [
 			};
 
 			$scope.getMimeGroup = function (asset) {
-				var mimetype = typeService.assetFormat(asset).mimetype,
+				var mimetype = page.types.assetFormat(asset).mimetype,
 					type = mimetype.split('/')[0];
 
 				return type == 'text' ? mimetype[1] : type;
 			};
 
 			$scope.supported = function () {
-				return $window.navigator.userAgent.toLowerCase().indexOf('firefox') == -1 || $window.navigator.platform.toLowerCase().indexOf('mac') == -1;
+				return page.$window.navigator.userAgent.toLowerCase().indexOf('firefox') == -1 || page.$window.navigator.platform.toLowerCase().indexOf('mac') == -1;
 			};
 		};
 

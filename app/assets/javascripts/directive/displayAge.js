@@ -1,10 +1,10 @@
 module.directive('displayAge', [
-	'pageService', 'displayService', function (page, display) {
+	'pageService', function (page) {
 		var link = function ($scope) {
-			$scope.change = display.toggleAge;
+			$scope.change = page.display.toggleAge;
 
 			var formatAge = function () {
-				$scope.age = display.formatAge($scope.value);
+				$scope.age = page.display.formatAge($scope.value);
 			};
 
 			formatAge();

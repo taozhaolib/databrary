@@ -1,5 +1,5 @@
 module.directive('fold', [
-	'$sessionStorage', function ($sessionStorage) {
+	'pageService', function (page) {
 		var foldableClass = 'foldable',
 			folderClass = 'folder',
 			foldClass = 'fold',
@@ -9,7 +9,7 @@ module.directive('fold', [
 
 		var link = function ($scope, $element, $attrs) {
 			$scope.id = $attrs.id;
-			$scope.$storage = $sessionStorage;
+			$scope.$storage = page.$sessionStorage;
 
 			//
 

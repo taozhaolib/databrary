@@ -1,5 +1,5 @@
 module.directive('panel', [
-	'panelService', function (panels) {
+	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs, ctrl, transclude) {
 			$scope.id = (angular.isDefined($attrs.id)) ? $attrs.id : '';
 			$scope.title = $attrs.panelTitle || '';
@@ -34,7 +34,7 @@ module.directive('panel', [
 				$element.find('[panel-body]').append($clone);
 			});
 
-			panels.add($scope);
+			page.panels.add($scope);
 		};
 
 		return {

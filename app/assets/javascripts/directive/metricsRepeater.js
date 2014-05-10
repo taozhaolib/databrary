@@ -1,5 +1,5 @@
 module.directive('metricsRepeater', [
-	'$http', 'pageService', function ($http, page) {
+	'pageService', function (page) {
 		var link = function ($scope) {
 			$scope.repeats = $scope.repeats || [];
 
@@ -129,7 +129,7 @@ module.directive('metricsRepeater', [
 					measure: $scope.repeats
 				};
 
-				$http
+				page.$http
 					.post($scope.formAction, data)
 					.then(function (response) {
 						$scope.category = response.data.category;

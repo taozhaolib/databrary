@@ -1,12 +1,12 @@
 module.directive('tab', [
-	'authService', function (auth) {
+	'pageService', function (page) {
 		var link = function ($scope, $el, $attr, tabset) {
 			$scope.id = $attr.id;
 			$scope.name = $attr.name;
 			$scope.active = false;
 
 			$scope.enabled = !angular.isString($attr.access) ? true :
-				auth.hasAccess($attr.access, $scope.party ? $scope.party : $scope.volume);
+				page.auth.hasAccess($attr.access, $scope.party ? $scope.party : $scope.volume);
 
 			//
 

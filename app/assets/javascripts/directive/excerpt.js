@@ -1,5 +1,5 @@
 module.directive('excerpt', [
-	'typeService', 'pageService', function (type, page) {
+	'pageService', function (page) {
 		var link = function ($scope, $el, $attr) {
 			var obj = $scope[$attr.excerpt].object ? $scope[$attr.excerpt].object : $scope[$attr.excerpt];
 
@@ -8,7 +8,7 @@ module.directive('excerpt', [
 				sid: obj.container.id
 			});
 
-			var excerpt = type.assetProperty(obj, 'segment', false) || [null, null];
+			var excerpt = page.types.assetProperty(obj, 'segment', false) || [null, null];
 			excerpt = excerpt.map(function (old) {
 				return isNaN(old / 1000) ? null : old / 1000;
 			});

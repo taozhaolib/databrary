@@ -1,13 +1,8 @@
 module.directive('browserList', [
-	'browserService',
-	'$filter',
-	'typeService',
-	'authService',
-	'pageService',
-	function (browserService, $filter, typeService, auth, page) {
+	'pageService', function (page) {
 		var link = function ($scope) {
 			if (!$scope.browser) {
-				$scope.browser = browserService;
+				$scope.browser = page.browser;
 			}
 
 			if (!$scope.router) {
@@ -19,10 +14,10 @@ module.directive('browserList', [
 			}
 
 			if (!$scope.type) {
-				$scope.type = typeService;
+				$scope.type = page.types;
 			}
 
-			$scope.data = $scope.data || browserService.data;
+			$scope.data = $scope.data || page.browser.data;
 
 			$scope.getInclude = function () {
 				if (!$scope.data.items[0]) {
@@ -61,7 +56,7 @@ module.directive('browserList', [
 			//
 
 			$scope.setItemPlayer = function (data) {
-				if (auth.hasAccess('DOWNLOAD', data)) {
+				if (page.auth.hasAccess('DOWNLOAD', data)) {
 					$scope.browser.setItemPlayer(data);
 				}
 				else if (data) {
@@ -98,9 +93,9 @@ module.directive('browserList', [
 			//
 
 			$scope.getName = function (data) {
-				switch ($scope.type.getType(data.object)) {
+				switch (page.types.getType(data.object)) {
 					case 'volume':
-						return (auth.hasAccess('CONTRIBUTE', data) && data.object.alias) ? data.object.alias : data.object.name;
+						return (page.auth.hasAccess('CONTRIBUTE', data) && data.object.alias) ? data.object.alias : data.object.name;
 
 					case 'record':
 						var category = page.constants.data.category[data.object.category].name;
@@ -112,7 +107,7 @@ module.directive('browserList', [
 			};
 
 			$scope.formatAge = function (age) {
-				return $filter('age')(age);
+				return page.$filter('age')(age);
 			};
 
 			$scope.formatSessionCategory = function (data, categoryID, records) {
@@ -274,13 +269,13 @@ module.directive('browserList', [
 			};
 
 			$scope.queryFilter = function (data) {
-				if (!browserService.query) {
+				if (!page.browser.query) {
 					return true;
 				}
 
-				var regex = new RegExp(browserService.query.toLowerCase().split(' ').join("|"));
+				var regex = new RegExp(page.browser.query.toLowerCase().split(' ').join("|"));
 
-				if (!typeService.isVolume(data.object)) {
+				if (!page.types.isVolume(data.object)) {
 					return true;
 				}
 
@@ -302,7 +297,7 @@ module.directive('browserList', [
 			//
 
 			$scope.editLink = function (data) {
-				switch ($scope.type.getType(data.object)) {
+				switch (page.types.getType(data.object)) {
 					case 'volume':
 						return page.router.volumeEdit(data.object);
 

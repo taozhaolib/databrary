@@ -1,7 +1,7 @@
 module.directive('browserFilter', [
-	'browserService', function (browserService) {
+	'pageService', function (page) {
 		var link = function ($scope) {
-			$scope.browser = $scope.browser || browserService;
+			$scope.browser = $scope.browser || page.browser;
 
 			//
 

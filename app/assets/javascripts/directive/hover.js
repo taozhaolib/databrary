@@ -1,5 +1,5 @@
 module.directive('hover', [
-	'$timeout', function ($timeout) {
+	'pageService', function (page) {
 		var hoverableClass = 'hoverable',
 			currentlyClass = 'hovered',
 			hoverWrap = $('<div class="hover_wrap" style="position: relative;"></div>'),
@@ -39,14 +39,14 @@ module.directive('hover', [
 			};
 
 			$element.on('mouseenter', function () {
-				clearTimeout(timeout);
+				page.$timeout.cancel(timeout);
 
 				$scope.show();
 
 				clone.on('mouseleave', function () {
-					clearTimeout(timeout);
+					page.$timeout.cancel(timeout);
 
-					timeout = setTimeout(function () {
+					timeout = page.$timeout(function () {
 						$scope.hide();
 					}, pauseTime);
 				});
@@ -59,7 +59,7 @@ module.directive('hover', [
 			});
 
 			$element.on('$destroy', function () {
-				$timeout.cancel(timeout);
+				page.$timeout.cancel(timeout);
 				$element.removeClass(hoverableClass);
 			});
 

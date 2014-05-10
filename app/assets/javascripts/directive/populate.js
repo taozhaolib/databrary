@@ -1,8 +1,8 @@
 module.directive('populate', [
-	'$compile', '$parse', function ($compile, $parse) {
+	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
 			$attrs.$observe('populate', function () {
-				var parse = $parse($attrs.populate)($scope);
+				var parse = page.$parse($attrs.populate)($scope);
 
 				if (angular.isString(parse)) {
 					$element.append($compile('<span>' + parse + '</span>')($scope));

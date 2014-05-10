@@ -1,19 +1,14 @@
 module.directive('toolbar', [
-	'$location',
-	'$timeout',
-	'authService',
-	'panelService',
-	'pageService',
-	function ($location, $timeout, authService, panels, page) {
+	'pageService', function (page) {
 		var controller = function ($scope) {
-			$scope.auth = $scope.auth || authService;
+			$scope.auth = $scope.auth || page.auth;
 
 			//
 
-			$scope.panels = panels;
+			$scope.panels = page.panels;
 
 			$scope.focusPanel = function (panel) {
-				panels.focus(panel);
+				page.panels.focus(panel);
 			};
 
 			$scope.getPanelClasses = function (panel) {
@@ -33,9 +28,9 @@ module.directive('toolbar', [
 			};
 
 			$scope.updateCurrentPanel = function () {
-				for (var i = $scope.panels.length - 1; i >= 0; i--) {
-					if ($scope.panels[i].isCurrent()) {
-						currentPanel = $scope.panels[i];
+				for (var i = page.panels.length - 1; i >= 0; i--) {
+					if (page.panels[i].isCurrent()) {
+						currentPanel = page.panels[i];
 						break;
 					}
 				}
