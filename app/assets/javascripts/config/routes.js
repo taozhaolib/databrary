@@ -66,21 +66,21 @@ module.config([
 				return window.$play.object && window.$play.object.reset ? 'resetView.html' : 'registerView.html';
 			},
 			resolve: {
-				token: ['$q', '$http', '$route', '$window', '$location', function ($q, $http, $route, $window, $location) {
-					var deferred = $q.defer();
+				token: ['pageService', function (page) {
+					var deferred = page.$q.defer();
 
-					if ($window.$play.object && $window.$play.object.auth)
-						deferred.resolve($window.$play.object);
+					if (page.$window.$play.object && $window.$play.object.auth)
+						deferred.resolve(page.$window.$play.object);
 					else
-						$http
-							.get('/api/token/' + $route.current.params.id + '?auth=' + $route.current.params.auth)
+						page.$http
+							.get('/api/token/' + page.$route.current.params.id + '?auth=' + page.$route.current.params.auth)
 							.success(function (data) {
-								$window.$play.object = data;
+								page.$window.$play.object = data;
 								deferred.resolve(data);
 							})
 							.error(function () {
 								deferred.reject();
-								$location.url('/');
+								page.$location.url('/');
 							});
 
 					return deferred.promise;
@@ -96,12 +96,12 @@ module.config([
 			templateUrl: 'homeView.html',
 			resolve: {
 				parties: [
-					'Party', '$q', 'constantService', function (Party, $q, constants) {
-						var deferred = $q.defer();
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
 
-						constants.$promise.then(function () {
-							Party.query({
-								access: constants.permission('CONTRIBUTE').id
+						page.constants.$promise.then(function () {
+							page.models.Party.query({
+								access: page.constants.permission('CONTRIBUTE').id
 							}, function (data) {
 								deferred.resolve(data);
 							}, function (data) {
@@ -113,10 +113,10 @@ module.config([
 					}
 				],
 				volume: [
-					'Volume', '$q', function (Volume, $q) {
-						var deferred = $q.defer();
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
 
-						Volume.get({
+						page.models.Volume.get({
 							id: 8,
 							access: ''
 						}, function (data) {
@@ -140,10 +140,10 @@ module.config([
 			templateUrl: 'searchView.html',
 			resolve: {
 				volumes: [
-					'$route', 'Volume', '$q', function ($route, Volume, $q) {
-						var deferred = $q.defer();
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
 
-						Volume.query({}, function (data) {
+						page.models.Volume.query({}, function (data) {
 							deferred.resolve(data);
 						}, function (data) {
 							deferred.reject();
@@ -164,14 +164,8 @@ module.config([
 			templateUrl: 'partyView.html',
 			resolve: {
 				party: [
-					'$route',
-					'Party',
-					'$q',
-					'$window',
-					'typeService',
-					'authService',
-					function ($route, Party, $q, $window, type, auth) {
-						var deferred = $q.defer();
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
 
 						var req = {
 							comments: '',
@@ -182,21 +176,21 @@ module.config([
 							children: ''
 						};
 
-						if ($route.current.params.id)
-							req.id = $route.current.params.id;
-						else if (auth.isLoggedIn())
+						if (page.$route.current.params.id)
+							req.id = page.$route.current.params.id;
+						else if (page.auth.isLoggedIn())
 							req.id = auth.user.id;
-						else if (type.isParty($window.$play.object))
-							req.id = $window.$play.object.id;
+						else if (page.types.isParty($window.$play.object))
+							req.id = page.$window.$play.object.id;
 
-						if ($route.current.params.id)
-							Party.get(req, function (data) {
+						if (page.$route.current.params.id)
+							page.models.Party.get(req, function (data) {
 								deferred.resolve(data);
 							}, function (error) {
 								deferred.reject();
 							});
 						else
-							Party.profile(req, function (data) {
+							page.models.Party.profile(req, function (data) {
 								deferred.resolve(data);
 							}, function (error) {
 								deferred.reject();
@@ -206,27 +200,21 @@ module.config([
 					}
 				],
 				volumes: [
-					'$route',
-					'Volume',
-					'$q',
-					'authService',
-					'typeService',
-					'$window',
-					function ($route, Volume, $q, auth, type, $window) {
-						var deferred = $q.defer();
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
 
 						var req = {
 							id: null
 						};
 
-						if ($route.current.params.id)
-							req.party = $route.current.params.id;
-						else if (auth.isLoggedIn())
-							req.party = auth.user.id;
-						else if (type.isParty($window.$play.object))
-							req.party = $window.$play.object.id;
+						if (page.$route.current.params.id)
+							req.party = page.$route.current.params.id;
+						else if (page.auth.isLoggedIn())
+							req.party = page.auth.user.id;
+						else if (page.types.isParty(page.$window.$play.object))
+							req.party = page.$window.$play.object.id;
 
-						Volume.query(req, function (data) {
+						page.models.Volume.query(req, function (data) {
 							deferred.resolve(data);
 						}, function (data) {
 							deferred.reject();
@@ -252,13 +240,13 @@ module.config([
 			templateUrl: 'volumeEditView.html',
 			resolve: {
 				volume: [
-					'$route', 'Volume', '$q', function ($route, Volume, $q) {
-						var deferred = $q.defer();
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
 
-						if (!$route.current.params.id) {
+						if (!page.$route.current.params.id) {
 							deferred.resolve();
 						} else {
-							Volume.get({
+							page.models.Volume.get({
 								access: '',
 								citations: '',
 								top: '',
@@ -277,12 +265,12 @@ module.config([
 					}
 				],
 				slot: [
-					'$route', 'Slot', '$q', function ($route, Slot, $q) {
-						var deferred = $q.defer();
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
 
-						if ($route.current.params.id) {
+						if (page.$route.current.params.id) {
 							volumeEditVolume.then(function (volume) {
-								Slot.get({
+								page.models.Slot.get({
 									id: volume.top.id,
 									segment: ',',
 									assets: ''
@@ -312,10 +300,10 @@ module.config([
 			templateUrl: 'volumeView.html',
 			resolve: {
 				volume: [
-					'$route', 'Volume', '$q', function ($route, Volume, $q) {
-						var deferred = $q.defer();
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
 
-						Volume.get({
+						page.models.Volume.get({
 							access: '',
 							citations: '',
 							providers: '',
@@ -352,26 +340,21 @@ module.config([
 ]);
 
 module.run([
-	'$rootScope',
-	'routerService',
-	'constantService',
-	'authService',
-	'$location',
-	function ($rootScope, router, constants, auth, $location) {
-		$rootScope.$on('$routeChangeStart', function (event, next) {
-			auth.$promise.then(function () {
-				if (auth.isLoggedIn()) {
-					if (auth.isUnauthorized()) {
+	'pageService', function (page) {
+		page.$rootScope.$on('$routeChangeStart', function (event, next) {
+			page.auth.$promise.then(function () {
+				if (page.auth.isLoggedIn()) {
+					if (page.auth.isUnauthorized()) {
 						if (!next.$$route || next.$$route.controller != 'RegisterView' || (angular.isFunction(next.$$route.controller) && next.$$route.controller() != 'RegisterView'))
-							$location.url(router.register());
+							page.$location.url(page.router.register());
 					} else if (!next.authenticate) {
-						$location.url(router.search());
+						page.$location.url(page.router.search());
 					}
 				} else {
-					if (auth.isPasswordPending() && next.$$route && next.$$route.controller != 'RegisterView' && (!angular.isFunction(next.$$route.controller) || next.$$route.controller() != 'RegisterView')) {
-						$location.url(router.register());
+					if (page.auth.isPasswordPending() && next.$$route && next.$$route.controller != 'RegisterView' && (!angular.isFunction(next.$$route.controller) || next.$$route.controller() != 'RegisterView')) {
+						page.$location.url(page.router.register());
 					} else if (next.authenticate) {
-						$location.url(router.index());
+						page.$location.url(page.router.index());
 					}
 				}
 			});

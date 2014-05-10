@@ -1,5 +1,5 @@
 module.controller('MessageCtrl', [
-	'$scope', '$timeout', 'pageService', function ($scope, $timeout, page) {
+	'$scope', 'pageService', function ($scope, page) {
 		$scope.messages = page.messages;
 		$scope.enabled = true;
 

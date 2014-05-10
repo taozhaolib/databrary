@@ -1,5 +1,5 @@
 module.controller('TooltipCtrl', [
-	'$scope', '$timeout', 'pageService', function ($scope, $timeout, page) {
+	'$scope', 'pageService', function ($scope, page) {
 		$scope.tooltips = page.tooltips;
 		$scope.enabled = true;
 
