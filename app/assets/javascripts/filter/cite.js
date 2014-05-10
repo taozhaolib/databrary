@@ -31,7 +31,7 @@ module.filter('cite', [
 
 			//
 
-			return page.$filter('escape')(names) + ', ' + created + '. ' + $filter('escape')(volume.name) + '. <em>Databrary</em>. Retrieved ' + retrieved + ' from <a href="http://databrary.org/volume/' + volume.id + '" title="' + $filter('escape')(volume.name) + '">http://databrary.org/volume/' + volume.id + '</a>.';
+			return page.$filter('escape')(names) + ', ' + created + '. ' + page.$filter('escape')(volume.name) + '. <em>Databrary</em>. Retrieved ' + retrieved + ' from <a href="http://databrary.org/volume/' + volume.id + '" title="' + page.$filter('escape')(volume.name) + '">http://databrary.org/volume/' + volume.id + '</a>.';
 		};
 	}
 ]);
