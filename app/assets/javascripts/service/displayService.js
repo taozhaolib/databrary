@@ -1,6 +1,31 @@
 module.factory('displayService', [
-	'$sessionStorage', 'pageService', '$filter', function ($sessionStorage, page, $filter) {
+	'$rootScope', '$sessionStorage', 'eventService', '$filter', 'messageService', 'constantService', function ($rootScope, $sessionStorage, events, $filter, messages, constants) {
 		var display = {};
+
+		//
+
+		display.title = 'Welcome!';
+
+		//
+
+		display.loading = false;
+
+		$rootScope.$on('$routeChangeStart', function () {
+			display.loading = true;
+		});
+
+		$rootScope.$on('$routeChangeSuccess', function () {
+			display.loading = false;
+		});
+
+		//
+
+		events.listen($rootScope, 'displayService-updateApp', function () {
+			messages.add({
+				type: 'yellow',
+				body: constants.message('app.update') + ' <a href="" onclick="window.location.reload()">Reload</a>.'
+			});
+		});
 
 		//
 
@@ -9,7 +34,7 @@ module.factory('displayService', [
 
 		display.toggleAge = function () {
 			ageKey = ageKeys[(ageKeys.indexOf(ageKey) + 1) % ageKeys.length];
-			page.events.talk('displayService-toggleAge', ageKey);
+			events.talk('displayService-toggleAge', ageKey);
 			$sessionStorage['displayAge'] = ageKey;
 		};
 

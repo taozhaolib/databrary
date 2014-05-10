@@ -1,7 +1,7 @@
 module.controller('VolumeView', [
 	'$scope', 'volume', 'pageService', function ($scope, volume, page) {
 		$scope.volume = volume;
-		page.title = volume.name;
+		page.display.title = volume.name;
 
 		$scope.browser.initialize('volume', volume);
 

@@ -3,7 +3,7 @@ module.controller('PartyView', [
 		$scope.party = party;
 		$scope.volumes = volumes;
 
-		page.title = party.name;
+		page.display.title = party.name;
 
 		$scope.browser.initialize('party', volumes);
 

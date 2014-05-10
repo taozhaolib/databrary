@@ -1,6 +1,6 @@
 module.controller('VolumeEditView', [
 	'$scope', 'volume', 'slot', 'pageService', function ($scope, volume, slot, page) {
-		page.title = page.constants.message('page.title.stub');
+		page.display.title = page.constants.message('page.title.stub');
 		$scope.volume = volume;
 
 		$scope.funding = [];

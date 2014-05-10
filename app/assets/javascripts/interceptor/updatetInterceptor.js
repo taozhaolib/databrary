@@ -15,7 +15,7 @@ module.factory('updateInterceptor', ['$rootScope', function ($rootScope) {
 			newVersion = newVersion.split('/').pop();
 
 			if (!warning && typeof version !== 'undefined' && newVersion !== version) {
-				$rootScope.$emit('pageService-updateApp');
+				$rootScope.$emit('displayService-updateApp');
 				warning = true;
 			}
 
