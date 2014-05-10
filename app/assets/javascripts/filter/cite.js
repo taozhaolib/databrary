@@ -1,5 +1,5 @@
 module.filter('cite', [
-	'$filter', function ($filter) {
+	'pageService', function (page) {
 		return function (volume) {
 			if (!angular.isObject(volume) || angular.isUndefined(volume.access) || angular.isUndefined(volume.name) || angular.isUndefined(volume.id))
 				return '';
@@ -26,12 +26,12 @@ module.filter('cite', [
 
 			//
 
-			var created = $filter('date')(new Date(volume.creation), 'yyyy');
-			var retrieved = $filter('date')(new Date(), 'longDate');
+			var created = page.$filter('date')(new Date(volume.creation), 'yyyy');
+			var retrieved = page.$filter('date')(new Date(), 'longDate');
 
 			//
 
-			return $filter('escape')(names) + ', ' + created + '. ' + $filter('escape')(volume.name) + '. <em>Databrary</em>. Retrieved ' + retrieved + ' from <a href="http://databrary.org/volume/' + volume.id + '" title="' + $filter('escape')(volume.name) + '">http://databrary.org/volume/' + volume.id + '</a>.';
+			return page.$filter('escape')(names) + ', ' + created + '. ' + $filter('escape')(volume.name) + '. <em>Databrary</em>. Retrieved ' + retrieved + ' from <a href="http://databrary.org/volume/' + volume.id + '" title="' + $filter('escape')(volume.name) + '">http://databrary.org/volume/' + volume.id + '</a>.';
 		};
 	}
 ]);

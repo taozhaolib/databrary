@@ -1,5 +1,5 @@
 module.filter('toArray', [
-	'$filter', function ($filter) {
+	'pageService', function (page) {
 		return function (input, expression, reverse) {
 			if (!angular.isObject(input))
 				return [input];
@@ -12,7 +12,7 @@ module.filter('toArray', [
 			});
 
 			if (angular.isDefined(expression))
-				output = $filter('orderBy')(output, expression, reverse);
+				output = page.$filter('orderBy')(output, expression, reverse);
 
 			return output;
 		};

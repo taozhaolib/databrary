@@ -1,11 +1,11 @@
 module.filter('format', [
-	'$filter', function ($filter) {
+	'pageService', function (page) {
 		return function (input, lineMode, raw) {
 			if (!angular.isString(input))
 				return '';
 
 			if (!raw)
-				input = $filter('escape')(input);
+				input = page.$filter('escape')(input);
 
 			if (lineMode)
 				return input.replace(/: /g, ': <br>');
