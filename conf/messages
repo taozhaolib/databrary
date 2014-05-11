@@ -46,11 +46,18 @@ mail.authorized.subject=Databrary authorization approved
 mail.authorized.body=You have been authorized for Databrary access by {0}.
 
 # Generic UI
+databrary=Databrary
+
 save=Save
 cancel=Cancel
 reset=Reset
 edit=Edit
 create=Create
+
+toolbar.login=login
+toolbar.logout=logout
+toolbar.profile=view profile
+toolbar.me=me
 
 toolbar.contact=Send us your comments, questions, and suggestions.
 

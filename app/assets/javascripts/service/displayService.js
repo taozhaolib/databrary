@@ -35,6 +35,10 @@ module.factory('displayService', [
 
 		//
 
+		display.toolbarLinks = [];
+
+		//
+
 		var ageKeys = ['science', 'days', 'months', 'years'],
 			ageKey = $sessionStorage['displayAge'] || 'science';
 

@@ -5,7 +5,7 @@ module.directive('populate', [
 				var parse = page.$parse($attrs.populate)($scope);
 
 				if (angular.isString(parse)) {
-					$element.append($compile('<span>' + parse + '</span>')($scope));
+					$element.append(page.$compile('<span>' + parse + '</span>')($scope));
 				} else {
 					$element.html(parse);
 				}

@@ -29,9 +29,6 @@
         <div frame id="frame_citation" frame-title="{{'volume.citation.title' | message}}" fold>
           <p ng-bind-html="volume | cite" class="citation"></p>
         </div>
-
-        <a bo-href="page.router.volumeEdit(volume)" ng-if="page.auth.hasAccess('CONTRIBUTE', volume)" class="button mini yellow" ng-bind-html="'volume.edit' | message"></a>
-        <a class="button mini yellow" ng-if="volume.permission >= page.constants.find('permission', 'ADMIN').id" ng-href="{{page.router.volumeAccess(volume)}}" target="_self">access</a>
       </div>
     </div>
 

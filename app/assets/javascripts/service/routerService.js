@@ -62,6 +62,7 @@ module.factory('routerService', [
 		//
 
 		router.index = makeRoute('/');
+		router.home = makeRoute('/home');
 		router.login = makeRoute('/login');
 		router.register = makeRoute('/register');
 		router.password = makeRoute('/password');
