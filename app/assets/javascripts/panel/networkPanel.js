@@ -320,7 +320,7 @@ module.controller('NetworkPanel', [
 					type: 'yellow',
 					countdown: 3000,
 					body: page.constants.message('auth.grant.notfound.message')
-				})
+				});
 			} else {
 				$scope.partyAuth.parents[-1] = request;
 				$scope.openAuthParent(request);

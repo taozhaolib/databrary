@@ -3,8 +3,8 @@ module.directive('accessSearchForm', [
 		var link = function ($scope, $element, $attrs) {
 			$scope.accessSearchForm.name = '';
 			$scope.accessSearchForm.found = [];
-			$scope.accessSearchForm.id = $attrs.party || undefined;
-			$scope.accessSearchForm.apply = angular.isDefined($attrs.child);
+			$scope.accessSearchForm.id = $attrs.volume || undefined;
+			$scope.accessSearchForm.institution = $element.attr('institution') === 'true';
 
 			$attrs.$observe('institution', function () {
 				$scope.accessSearchForm.name = '';
@@ -33,18 +33,17 @@ module.directive('accessSearchForm', [
 					recentSearch = $scope.accessSearchForm.name;
 				}
 				else {
-					sentSearch = page.models.PartyAuthorize.search({
-						id: $scope.accessSearchForm.id || page.auth.user.id,
-						apply: $scope.accessSearchForm.apply,
+					sentSearch = page.models.VolumeAccess.search({
+						id: $scope.accessSearchForm.id,
 						name: $scope.accessSearchForm.name,
-						institution: $element.attr('institution') === 'true'
+						institution: $scope.accessSearchForm.institution,
 					}, function (data) {
 						$scope.accessSearchForm.found = data;
 
 						fin();
 					}, function (res) {
 						page.messages.addError({
-							body: page.constants.message('auth.search.error'),
+							body: page.constants.message('access.search.error'),
 							errors: res[0],
 							status: res[1]
 						});
@@ -72,6 +71,12 @@ module.directive('accessSearchForm', [
 			$scope.accessSearchForm.notFoundFn = undefined;
 
 			$scope.accessSearchForm.notFound = function () {
+				page.messages.add({
+					type: 'yellow',
+					countdown: 3000,
+					body: page.constants.message('access.grant.notfound.message'),
+				});
+
 				var query = $scope.accessSearchForm.name;
 
 				$scope.accessSearchForm.name = '';

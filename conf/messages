@@ -164,6 +164,12 @@ auth.revoke=Revoke
 auth.notfound=None of these
 auth.info.prompt=Please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.
 
+# Access
+access.search=Search for a user or institution...
+access.search.error=Could not retrieve any users or institutions.
+access.notfound=None of these
+access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register directly.
+
 # Permission levels
 auth.inherit.NONE=No access.
 auth.inherit.VIEW=Access to deidentified Databrary data.
