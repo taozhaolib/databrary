@@ -3,8 +3,7 @@ module.factory('playService', [
 	'$window',
 	'$location',
 	'typeService',
-	'$sessionStorage',
-	function ($rootScope, $window, $location, typeService, $sessionStorage) {
+	function ($rootScope, $window, $location, typeService) {
 		var playService = {};
 
 		//

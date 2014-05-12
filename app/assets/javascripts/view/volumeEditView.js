@@ -108,7 +108,6 @@ module.controller('VolumeEditView', [
 		//
 
 		var cancelFn = function () {
-			console.log(page.router.volume({id: volume.id}));
 			page.$location.url(page.router.volume({id: volume.id}));
 		};
 

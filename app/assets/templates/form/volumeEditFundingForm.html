@@ -9,7 +9,16 @@
         </div>
 
         <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
-          <!--<access-grant-form></access-grant-form>-->
+          <div class="row">
+            <div class="network-heading col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+              <a bo-href="page.router.party(access.party)" class="network-auth-username">{{access.party.name}}</a>
+              <span class="network-auth-email" bo-if="access.party.email">{{access.party.email}}</span>
+            </div>
+
+            <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+              <access-grant-form funding></access-grant-form>
+            </div>
+           </div>
         </div>
       </div>
     </article>

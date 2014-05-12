@@ -90,6 +90,21 @@ module.directive('accessSearchForm', [
 			//
 
 			page.events.talk('accessSearchForm-init', $scope.accessSearchForm);
+
+			//
+
+			var selectFn = function (found, searchForm) {
+				form.data.access.push({
+					party: found,
+					id: found.id,
+					funding: '',
+				});
+			};
+
+			page.events.listen($scope, 'accessSearchForm-init', function (event, searchForm) {
+				searchForm.selectFn = selectFn;
+				event.stopPropagation();
+			});
 		};
 
 		//

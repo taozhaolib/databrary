@@ -74,10 +74,9 @@ module.config([
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 
-						if (page.$window.$play.object && $window.$play.object.auth) {
+						if (page.$window.$play.object && page.$window.$play.object.auth) {
 							deferred.resolve(page.$window.$play.object);
-						}
-						else {
+						} else {
 							page.$http
 								.get('/api/token/' + page.$route.current.params.id + '?auth=' + page.$route.current.params.auth)
 								.success(function (data) {

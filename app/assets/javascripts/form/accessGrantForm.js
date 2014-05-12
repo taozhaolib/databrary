@@ -38,25 +38,25 @@ module.directive('accessGrantForm', [
 			form.errorFn = undefined;
 
 			form.save = function () {
-				form.partyAuthorize = new page.models.PartyAuthorize();
+				form.volumeAccess = new page.models.volumeAccess();
 
-				form.partyAuthorize.direct = form.other.direct;
-				form.partyAuthorize.inherit = form.other.inherit;
-				form.partyAuthorize.expires = form.other.expiration;
+				form.volumeAccess.direct = form.other.direct;
+				form.volumeAccess.inherit = form.other.inherit;
+				form.volumeAccess.expires = form.other.expiration;
 
-				if (!form.partyAuthorize.expires.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) {
-					form.partyAuthorize.expires = '';
+				if (!form.volumeAccess.expires.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) {
+					form.volumeAccess.expires = '';
 				}
 
-				if (form.partyAuthorize.expires == '') {
-					delete form.partyAuthorize.expires;
+				if (form.volumeAccess.expires == '') {
+					delete form.volumeAccess.expires;
 				}
 
 				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
 				}
 
-				form.partyAuthorize.$save({
+				form.volumeAccess.$save({
 					id: form.party.id,
 					partyId: form.other.party.id
 				}, function () {
@@ -83,13 +83,13 @@ module.directive('accessGrantForm', [
 			form.denyErrorFn = undefined;
 
 			form.deny = function () {
-				form.partyAuthorize = new page.models.PartyAuthorize();
+				form.volumeAccess = new page.models.volumeAccess();
 
 				if (angular.isFunction(form.denyFn)) {
 					form.denyFn(form);
 				}
 
-				form.partyAuthorize.$delete({
+				form.volumeAccess.$delete({
 					id: form.party.id,
 					partyId: form.other.party.id
 				}, function () {

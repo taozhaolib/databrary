@@ -18,7 +18,7 @@ module.controller('VolumeView', [
 				access: 'ADMIN',
 				object: volume,
 			},
-		];console.log(page.display.toolbarLinks);
+		];
 
 		$scope.browser.initialize('volume', volume);
 
