@@ -32,8 +32,6 @@ error.internal.title=Internal error
 error.internal.body=Sorry, something is broken.  More information is below, or <a href=''mailto:feedback@databrary.org''>contact us</a> for assistance.
 
 # --- Emails
-mail.from=Databrary <help@databrary.org>
-mail.authorize=authorize@databrary.org
 mail.password.subject=Databrary password reset
 mail.password.none=Someone (hopefully you) has requested to reset the password for the Databrary account associated with this email address. If you did not request this, let us know (by replying to this message) or simply ignore it.\n\nUnfortunately, no Databrary account found for this email address. You can try again with a different email address, or reply to this email for assistance.
 mail.password.body=Someone (hopefully you) has requested to reset the password for the Databrary account associated with this email address. If you did not request this, let us know (by replying to this message) or simply ignore it. Otherwise, you may use this link to reset your Databrary password:\n\n{0}

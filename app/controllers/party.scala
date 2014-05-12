@@ -109,7 +109,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	  _ <- Authorize.Info.set(childId, id, form.info.get)
 	  _ <- if (Play.isProd && !form.pending.get && !c.exists(_.authorized.isDefined))
 	    Mail.send(
-	      to = child.account.map(_.email).toSeq :+ Messages("mail.authorize"),
+	      to = child.account.map(_.email).toSeq :+ Mail.authorizeAddr,
 	      subject = Messages("mail.authorized.subject"),
 	      body = Messages("mail.authorized.body", request.obj.party.name))
 	    else macros.Async.void
@@ -137,7 +137,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       _ <- Authorize.set(id, parentId, form.inherit.get, Permission.NONE, None, None)
       _ <- Authorize.Info.set(id, parentId, form.info.get)
       _ <- if (Play.isProd) Mail.send(
-	to = dl.map(_.email) :+ Messages("mail.authorize"),
+	to = dl.map(_.email) :+ Mail.authorizeAddr,
 	subject = Messages("mail.authorize.subject"),
 	body = Messages("mail.authorize.body", routes.PartyHtml.view(parentId).absoluteURL(true),
 	  request.obj.party.name + request.user.fold("")(" <" + _.email + ">"),
@@ -155,7 +155,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       if (form.notfound.get)
 	for {
 	  _ <- Mail.send(
-	    to = Seq(Messages("mail.authorize")),
+	    to = Seq(Mail.authorizeAddr),
 	    subject = Messages("mail.authorize.subject"),
 	    body = Messages("mail.authorize.body", routes.PartyHtml.view(id).absoluteURL(true),
 	      request.obj.party.name + request.user.fold("")(" <" + _.email + ">") + request.obj.party.affiliation.fold("")(" (" + _ + ")"),
