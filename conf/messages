@@ -6,6 +6,7 @@ format.date=Select a valid date (in ''{0}'' format).
 format.duns=9-digit D-U-N-S
 format.offset=Position in seconds
 format.orcid=ORCID iD
+format.boolean=
 
 # --- Errors
 error.both=Only one of {0} and {1} may be specified
