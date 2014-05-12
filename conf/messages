@@ -167,7 +167,17 @@ auth.info.prompt=Please list the name and contact information (email, phone numb
 access.search=Search for a user or institution...
 access.search.error=Could not retrieve any users or institutions.
 access.notfound=None of these
+access.grant.funding=Grant #
+access.update=Update
+access.remove=Remove
 access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register directly.
+access.grant.inherit=Extend access to those for whom {0} vouches.
+access.grant.funding.save.success=Funding source updated.
+access.grant.funding.remove.success=Funding source removed.
+access.grant.access.save.success=Access record updated.
+access.grant.access.remove.success=Access record removed.
+access.grant.save.error=Could not update access at this time.
+access.grant.remove.error=Could not remove access at this time.
 
 # Permission levels
 auth.inherit.NONE=No access.

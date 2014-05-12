@@ -4,7 +4,7 @@ module.controller('VolumeEditView', [
 		$scope.volume = volume;
 
 		$scope.funding = [];
-		$scope.access = [];
+		$scope.granted = [];
 
 		if (volume && volume.access) {
 			angular.forEach(volume.access, function (access) {
@@ -13,7 +13,7 @@ module.controller('VolumeEditView', [
 				}
 
 				if (access.access) {
-					$scope.access.push(access);
+					$scope.granted.push(access);
 				}
 			});
 		}
@@ -182,7 +182,7 @@ module.controller('VolumeEditView', [
 
 			'volume_edit_access': function (step) {
 				forms.access.data = {
-					access: $scope.access,
+					access: $scope.granted,
 				};
 			},
 		};

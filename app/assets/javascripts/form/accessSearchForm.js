@@ -1,14 +1,16 @@
 module.directive('accessSearchForm', [
 	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
-			$scope.accessSearchForm.name = '';
-			$scope.accessSearchForm.found = [];
-			$scope.accessSearchForm.id = $attrs.volume || undefined;
-			$scope.accessSearchForm.institution = $element.attr('institution') === 'true';
+			var form = $scope.accessSearchForm;
+
+			form.name = '';
+			form.found = [];
+			form.id = $attrs.volume || undefined;
+			form.institution = $element.attr('institution') === 'true';
 
 			$attrs.$observe('institution', function () {
-				$scope.accessSearchForm.name = '';
-				$scope.accessSearchForm.found = [];
+				form.name = '';
+				form.found = [];
 			});
 
 			//
@@ -21,24 +23,24 @@ module.directive('accessSearchForm', [
 
 				if (recentSearch) {
 					recentSearch = undefined;
-					$scope.accessSearchForm.search();
+					form.search();
 				}
 			};
 
-			$scope.accessSearchForm.search = function () {
-				if (!$scope.accessSearchForm.name || $scope.accessSearchForm.name.length < 3) {
-					$scope.accessSearchForm.found = [];
+			form.search = function () {
+				if (!form.name || form.name.length < 3) {
+					form.found = [];
 				}
 				else if (sentSearch) {
-					recentSearch = $scope.accessSearchForm.name;
+					recentSearch = form.name;
 				}
 				else {
 					sentSearch = page.models.VolumeAccess.search({
-						id: $scope.accessSearchForm.id,
-						name: $scope.accessSearchForm.name,
-						institution: $scope.accessSearchForm.institution,
+						id: form.id,
+						name: form.name,
+						institution: form.institution,
 					}, function (data) {
-						$scope.accessSearchForm.found = data;
+						form.found = data;
 
 						fin();
 					}, function (res) {
@@ -55,56 +57,45 @@ module.directive('accessSearchForm', [
 
 			//
 
-			$scope.accessSearchForm.selectFn = undefined;
+			form.selectFn = undefined;
 
-			$scope.accessSearchForm.select = function (found) {
-				$scope.accessSearchForm.name = '';
-				$scope.accessSearchForm.search();
+			form.select = function (found) {
+				form.name = '';
+				form.search();
 
-				if (angular.isFunction($scope.accessSearchForm.selectFn)) {
-					$scope.accessSearchForm.selectFn(found, $scope.accessSearchForm);
+				if (angular.isFunction(form.selectFn)) {
+					form.selectFn(found, form);
 				}
+
+				form.$setPristine();
 			};
 
 			//
 
-			$scope.accessSearchForm.notFoundFn = undefined;
+			form.notFoundFn = undefined;
 
-			$scope.accessSearchForm.notFound = function () {
+			form.notFound = function () {
 				page.messages.add({
 					type: 'yellow',
 					countdown: 3000,
 					body: page.constants.message('access.grant.notfound.message'),
 				});
 
-				var query = $scope.accessSearchForm.name;
+				var query = form.name;
 
-				$scope.accessSearchForm.name = '';
-				$scope.accessSearchForm.search();
+				form.name = '';
+				form.search();
 
-				if (angular.isFunction($scope.accessSearchForm.notFoundFn)) {
-					$scope.accessSearchForm.notFoundFn(query, $scope.accessSearchForm);
+				if (angular.isFunction(form.notFoundFn)) {
+					form.notFoundFn(query, form);
 				}
+
+				form.$setPristine();
 			};
 
 			//
 
-			page.events.talk('accessSearchForm-init', $scope.accessSearchForm);
-
-			//
-
-			var selectFn = function (found, searchForm) {
-				form.data.access.push({
-					party: found,
-					id: found.id,
-					funding: '',
-				});
-			};
-
-			page.events.listen($scope, 'accessSearchForm-init', function (event, searchForm) {
-				searchForm.selectFn = selectFn;
-				event.stopPropagation();
-			});
+			$scope.$emit('accessSearchForm-init', form);
 		};
 
 		//

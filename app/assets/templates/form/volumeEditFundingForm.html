@@ -16,7 +16,7 @@
             </div>
 
             <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
-              <access-grant-form funding></access-grant-form>
+              <access-grant-form volume="{{volumeEditFundingForm.volume.id}}" access="access" funding></access-grant-form>
             </div>
            </div>
         </div>
@@ -39,8 +39,6 @@
   </fieldset>
 
   <fieldset class="clean">
-    <button ng-click="volumeEditFundingForm.save()" bo-html="'save' | message" class="green" ng-if="volumeEditFundingForm.$dirty"></button>
-    <button ng-click="volumeEditFundingForm.reset()" bo-html="'reset' | message" class="red" ng-if="volumeEditFundingForm.$dirty"></button>
     <button ng-click="volumeEditFundingForm.cancel()" bo-html="'cancel' | message" class="yellow" ng-if="volumeEditFundingForm.volume"></button>
   </fieldset>
 </form>

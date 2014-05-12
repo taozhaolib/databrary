@@ -1,34 +1,26 @@
 module.directive('accessGrantForm', [
 	'pageService', function (page) {
-		var link = function ($scope) {
+		var link = function ($scope, $element, $attrs) {
 			var form = $scope.accessGrantForm;
+			form.funding = angular.isDefined($attrs.funding);
 
-			var supportsDate = document.createElement('input');
-			supportsDate.setAttribute('type', 'date');
-			supportsDate = supportsDate.type === 'date';
+			form.id = $attrs.volume || undefined;
+			form.access = page.$parse($attrs.access)($scope) || undefined;
 
-			form.presets = page.authPresets;
-			form.party = $scope.party || page.auth.user;
-			form.other = undefined;
+			form.data = {
+				access: form.access.access || 0,
+				inherit: form.access.inherit || 0,
+			};
 
+			if (form.access.funding) {
+				form.data.funding = form.access.funding;
+			}
 			//
 
-			var dateNow = new Date(),
-				dateLimit = new Date((new Date()).setYear(dateNow.getFullYear() + 2));
+			form.extend = function () {
+				form.data.inherit = form.data.access === form.data.inherit ? 0 : form.data.access <= 3 ? form.data.access : 3;
 
-			form.transformExpiration = function () {
-				var now = dateNow,
-					limit = dateLimit.getTime(),
-					exp = form.other.expiration.split('-'),
-					trial = new Date(supportsDate ? exp[1] + '-' + exp[2] + '-' + exp[0] : form.other.expiration).getTime();
-
-				if (trial > limit || isNaN(trial)) {
-					form.other.expiration = page.$filter('date')(limit, 'yyyy-MM-dd');
-				}
-
-				if (trial < now.getTime()) {
-					form.other.expiration = $filter('date')(now, 'yyyy-MM-dd');
-				}
+				form.save();
 			};
 
 			//
@@ -38,34 +30,27 @@ module.directive('accessGrantForm', [
 			form.errorFn = undefined;
 
 			form.save = function () {
-				form.volumeAccess = new page.models.volumeAccess();
+				form.volumeAccess = new page.models.VolumeAccess(form.data);
 
-				form.volumeAccess.direct = form.other.direct;
-				form.volumeAccess.inherit = form.other.inherit;
-				form.volumeAccess.expires = form.other.expiration;
-
-				if (!form.volumeAccess.expires.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) {
-					form.volumeAccess.expires = '';
-				}
-
-				if (form.volumeAccess.expires == '') {
-					delete form.volumeAccess.expires;
-				}
+				if (form.data.inherit > form.data.access)
+					form.data.inherit = form.data.access;
 
 				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
 				}
 
 				form.volumeAccess.$save({
-					id: form.party.id,
-					partyId: form.other.party.id
+					id: form.id,
+					partyId: form.access.party.id,
 				}, function () {
 					if (angular.isFunction(form.successFn)) {
 						form.successFn(form, arguments);
 					}
+
+					form.$setPristine();
 				}, function (res) {
 					page.messages.addError({
-						body: page.constants.message('auth.grant.save.error'),
+						body: page.constants.message('access.grant.save.error'),
 						errors: res[0],
 						status: res[1]
 					});
@@ -78,91 +63,78 @@ module.directive('accessGrantForm', [
 
 			//
 
-			form.denyFn = undefined;
-			form.denySuccessFn = undefined;
-			form.denyErrorFn = undefined;
+			form.removeFn = undefined;
+			form.removeSuccessFn = undefined;
+			form.removeErrorFn = undefined;
 
-			form.deny = function () {
-				form.volumeAccess = new page.models.volumeAccess();
+			form.remove = function () {
+				if ((form.funding && !form.data.access) || (!form.funding && !form.data.funding)) {
+					form.volumeAccess = new page.models.VolumeAccess();
 
-				if (angular.isFunction(form.denyFn)) {
-					form.denyFn(form);
-				}
-
-				form.volumeAccess.$delete({
-					id: form.party.id,
-					partyId: form.other.party.id
-				}, function () {
-					if (angular.isFunction(form.denySuccessFn)) {
-						form.denySuccessFn(form, arguments);
+					if (angular.isFunction(form.removeFn)) {
+						form.removeFn(form);
 					}
-				}, function (res) {
-					page.messages.addError({
-						body: page.constants.message('auth.grant.deny.error'),
-						errors: res[0],
-						status: res[1]
+
+					form.volumeAccess.$delete({
+						id: form.id,
+						partyId: form.access.party.id,
+					}, function () {
+						if (angular.isFunction(form.removeSuccessFn)) {
+							form.removeSuccessFn(form, arguments, form.access);
+						}
+
+						form.$setPristine();
+					}, function (res) {
+						page.messages.addError({
+							body: page.constants.message('access.grant.remove.error'),
+							errors: res[0],
+							status: res[1]
+						});
+
+						if (angular.isFunction(form.removeErrorFn)) {
+							form.removeErrorFn(form, arguments, form.access);
+						}
 					});
-
-					if (angular.isFunction(form.denyErrorFn)) {
-						form.denyErrorFn(form, arguments);
-					}
-				});
-			};
-
-			//
-
-			form.cancelFn = undefined;
-
-			form.cancel = function () {
-				if (angular.isFunction(form.cancelFn)) {
-					form.cancelFn(form);
-				}
-
-				form.other.inherit = 0;
-				form.other.direct = 0;
-				form.other.preset = undefined;
-			};
-
-			//
-
-			var parsePresets = function () {
-				var custom = undefined,
-					presets = page.authPresets.get(form.party, form.other);
-
-				form.other.preset = undefined;
-
-				angular.forEach(presets, function (preset) {
-					if (form.other.direct == preset.direct && form.other.inherit == preset.inherit) {
-						page.authPresets.set(form.other, preset);
+				} else {
+					if (form.funding) {
+						delete form.data.funding;
+					} else {
+						delete form.data.access;
+						delete form.data.inherit;
 					}
 
-					if (angular.isUndefined(preset.inherit)) {
-						custom = preset;
-					}
-				});
+					form.volumeAccess = new page.models.VolumeAccess(form.data);
 
-				if (angular.isUndefined(form.other.preset)) {
-					page.authPresets.set(form.other, custom);
+					if (angular.isFunction(form.removeFn)) {
+						form.removeFn(form);
+					}
+
+					form.volumeAccess.$save({
+						id: form.id,
+						partyId: form.access.party.id,
+					}, function () {
+						if (angular.isFunction(form.successFn)) {
+							form.removeSuccessFn(form, arguments, form.access);
+						}
+
+						form.$setPristine();
+					}, function (res) {
+						page.messages.addError({
+							body: page.constants.message('access.grant.save.error'),
+							errors: res[0],
+							status: res[1]
+						});
+
+						if (angular.isFunction(form.errorFn)) {
+							form.removeErrorFn(form, arguments, form.access);
+						}
+					});
 				}
 			};
 
 			//
 
-			page.events.talk('accessGrantForm-init', form, $scope);
-
-			$scope.$watch('accessGrantForm.other', function () {
-				parsePresets();
-
-				if (form.other.expires) {
-					form.other.expiration = $filter('date')(new Date(form.other.expires), 'yyyy-MM-dd');
-				}
-				else if (angular.isUndefined(form.other.authorized)) {
-					form.other.expiration = $filter('date')(dateLimit, 'yyyy-MM-dd');
-				}
-				else {
-					form.other.expiration = '';
-				}
-			});
+			$scope.$emit('accessGrantForm-init', form, $scope);
 		};
 
 		//

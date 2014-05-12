@@ -72,6 +72,47 @@ module.directive('volumeEditFundingForm', [
 			//
 
 			page.events.talk('volumeEditFundingForm-init', form, $scope);
+
+			//
+
+			$scope.$on('accessGrantForm-init', function (event, searchForm) {
+				searchForm.successFn = function (searchForm) {
+					page.messages.add({
+						body: page.constants.message('access.grant.funding.save.success'),
+						type: 'green',
+						countdown: 3000,
+					});
+
+					form.$setPristine();
+				};
+
+				searchForm.removeSuccessFn = function (searchForm, args, access) {
+					page.messages.add({
+						body: page.constants.message('access.grant.funding.remove.success'),
+						type: 'green',
+						countdown: 3000,
+					});
+
+					form.data.access.splice(form.data.access.indexOf(access), 1);
+					form.$setPristine();
+				};
+
+				event.stopPropagation();
+			});
+
+			$scope.$on('accessSearchForm-init', function (event, searchForm) {
+				searchForm.selectFn = function (found) {
+					form.data.access.push({
+						party: found,
+						funding: '',
+						access: 0,
+						inherit: 0,
+					});
+					form.$setPristine();
+				};
+
+				event.stopPropagation();
+			});
 		};
 
 		//
