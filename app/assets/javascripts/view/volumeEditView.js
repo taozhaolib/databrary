@@ -132,12 +132,16 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_funding': function (step) {
+				step.enable = page.auth.hasAccess('ADMIN', volume);
+
 				forms.funding = step.volumeEditFundingForm;
 				forms.funding.volume = volume;
 				forms.funding.cancelFn = cancelFn;
 			},
 
 			'volume_edit_access': function (step) {
+				step.enable = page.auth.hasAccess('ADMIN', volume);
+
 				forms.access = step.volumeEditAccessForm;
 				forms.access.volume = volume;
 				forms.access.cancelFn = cancelFn;

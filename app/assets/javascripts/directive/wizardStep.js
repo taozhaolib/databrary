@@ -8,6 +8,7 @@ module.directive('wizardStep', [
 				$scope.name = $attrs.name;
 				$scope.description = $attrs.description;
 
+				$scope.enable = true;
 				$scope.active = false;
 
 				transclude($scope, function ($clone) {
