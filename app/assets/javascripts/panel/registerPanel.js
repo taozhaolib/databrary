@@ -372,8 +372,8 @@ module.controller('RegisterPanel', [
 			'register_pending': function (step, activate) {
 				step.allow = !user.anon && !user.auth && (user.pending || !!$scope.authApplyForm.sent);
 
-				if (activate) {
-					step.active = !user.anon && !user.auth && (user.pending || !!$scope.authApplyForm.sent);
+				if (activate && !user.anon && !user.auth && (user.pending || !!$scope.authApplyForm.sent)) {
+					$scope.wizard.activateStep(step);
 				}
 
 				step.complete = user.auth;

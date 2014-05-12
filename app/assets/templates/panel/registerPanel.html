@@ -27,10 +27,7 @@
         <wizard-step id="register_agreement">
 					<div ng-bind-html="'wizard.register_agreement.agreement_contents' | message"></div>
 
-					<div>
-						<input id="agreement_checkbox" name="agreementCheckbox" type="checkbox" ng-model="agreementCheckbox">
-						<label for="agreement_checkbox" class="option" ng-bind-html="'wizard.register_agreement.agree' | message"></label>
-					</div>
+					<p><input id="agreement_checkbox" name="agreementCheckbox" type="checkbox" ng-model="agreementCheckbox"> <label for="agreement_checkbox" class="option" ng-bind-html="'wizard.register_agreement.agree' | message"></label></p>
 
           <button class="green" ng-click="proceed()" ng-disabled="!ready()">{{'register.register' | message}}</button>
         </wizard-step>
