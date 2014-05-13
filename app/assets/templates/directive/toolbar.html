@@ -30,7 +30,7 @@
 				<a href="mailto:feedback@databrary.org" class="icon contact" id="toolbar_contact" target="_blank" tooltip tooltip-message="{{'toolbar.contact' | message}}" tooltip-type="green"></a>
 			</div>
 
-			<section class="toolbar_hover user" ng-if="page.auth.hasAuth('NONE') && toolbar.hoverUser">
+			<section class="toolbar_hover user" ng-if="page.auth.hasAuth('NONE') && toolbar.hoverUser" click-elsewhere="toolbar.hideHover()">
 				<div class="row">
 					<div class="user_links col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
 						<ul class="flat">
@@ -39,7 +39,7 @@
 							<li><a href="" ng-click="page.auth.logout()" bo-html="'toolbar.logout' | message"></a></li>
 
               <li ng-if="page.auth.hasAuth('ADMIN')" class="password_form">
-                <form name="superuserForm" ng-if="!page.auth.hasAuth('SUPER')" class="cf" click-elsewhere="toolbar.hideHover()">
+                <form name="superuserForm" ng-if="!page.auth.hasAuth('SUPER')" class="cf">
                   <input type="password" class="mini password" ng-model="superuserForm.auth" placeholder="Password">
                   <button type="submit" class="link superuser off" ng-click="page.auth.toggleSU(superuserForm)">activate SU</button>
                 </form>

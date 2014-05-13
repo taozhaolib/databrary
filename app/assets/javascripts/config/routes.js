@@ -364,7 +364,7 @@ module.run([
 							page.$location.url(page.router.register());
 						}
 					} else if (!next.authenticate) {
-						page.$location.url(page.router.search());
+						page.$location.url(page.router.home());
 					}
 				} else {
 					if (page.auth.isPasswordPending() && next.$$route && next.$$route.controller != 'RegisterView' && (!angular.isFunction(next.$$route.controller) || next.$$route.controller() != 'RegisterView')) {
