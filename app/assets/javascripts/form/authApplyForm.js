@@ -40,8 +40,7 @@ module.directive('authApplyForm', [
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('auth.apply.error'),
-						errors: res[0],
-						status: res[1]
+						report: res,
 					});
 
 					if (angular.isFunction(form.errorFn)) {
@@ -72,8 +71,7 @@ module.directive('authApplyForm', [
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('error.generic'),
-						errors: res[0],
-						status: res[1]
+						report: res,
 					});
 
 					if (angular.isFunction(form.errorFn)) {

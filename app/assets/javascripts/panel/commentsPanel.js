@@ -52,8 +52,7 @@ module.controller('CommentsPanel', [
 					}, function (res) {
 						page.messages.addError({
 							body: page.constants.message('comments.update.error'),
-							errors: res[0],
-							status: res[1]
+							report: res,
 						})
 					});
 

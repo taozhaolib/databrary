@@ -46,8 +46,7 @@ module.directive('accessSearchForm', [
 					}, function (res) {
 						page.messages.addError({
 							body: page.constants.message('access.search.error'),
-							errors: res[0],
-							status: res[1]
+							report: res,
 						});
 
 						fin();

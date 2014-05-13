@@ -167,8 +167,7 @@ module.factory('authService', [
 
 				messages.add({
 					body: constants.message('logout.error'),
-					errors: res.data,
-					status: res.status
+					report: res,
 				});
 			});
 		};
@@ -228,8 +227,7 @@ module.factory('authService', [
 				}, function (res) {
 					messages.addError({
 						body: constants.message('superuser.on.error'),
-						errors: res.data,
-						status: res.status
+						report: res,
 					});
 				});
 		};
@@ -246,8 +244,7 @@ module.factory('authService', [
 			}, function (res) {
 				messages.addError({
 					body: constants.message('superuser.off.error'),
-					errors: res.data,
-					status: res.status
+					report: res,
 				});
 			});
 		};

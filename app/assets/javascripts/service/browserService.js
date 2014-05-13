@@ -601,8 +601,7 @@ module.factory('browserService', [
 			}, function (res) {
 				messages.addError({
 					body: constants.message('browser.assets.error'),
-					errors: res[0],
-					status: res[1]
+					report: res,
 				});
 			});
 

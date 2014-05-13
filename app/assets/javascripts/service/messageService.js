@@ -87,23 +87,18 @@ module.factory('messageService', [
 				newMessage.fn = errorHTML(message.errors);
 				newMessage.body = newMessage.body + ' ' + constants.message('error.view');
 			} else if (angular.isObject(message.errors)) {
-				var moreBody = '';
 				var messageBody = '';
 
 				angular.forEach(message.errors, function (errorArray, field) {
-					moreBody += '<dt>Field "' + (field || 'validation') + '"</dt><dd>' + errorArray.join('</dd><dd>') + '</dd>';
 					messageBody += 'Field "' + (field || 'validation') + '":\n' + errorArray.join('\n') + '\n\n';
 				});
 
 				if (message.status) {
-					moreBody = '<dt>Status</dt><dd>' + message.status + '</dd>' + moreBody;
 					messageBody = 'Status:\n' + message.status + '\n\n' + messageBody;
 				}
 
-				moreBody = '<dl class="message_form_errors">' + moreBody + '</dl>';
-
-				if (moreBody) {
-					newMessage.body = '<p>' + newMessage.body + ' ' + constants.message('error.report', encodeURIComponent(constants.message('error.report.subject', message.status || 'Unknown', message.url || 'Location unknown')), encodeURIComponent(constants.message('error.report.body', messageBody))) + '</p>' + moreBody;
+				if (messageBody) {
+					newMessage.body = newMessage.body + ' ' + constants.message('error.report', encodeURIComponent(constants.message('error.report.subject', message.status || 'Unknown', message.url || 'Location unknown')), encodeURIComponent(constants.message('error.report.body', messageBody)));
 				}
 			}
 

@@ -42,8 +42,7 @@ module.directive('commentReplyForm', [
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('comments.add.error'),
-						errors: res[0],
-						status: res[1]
+						report: res,
 					});
 
 					if (angular.isFunction(form.errorFn)) {

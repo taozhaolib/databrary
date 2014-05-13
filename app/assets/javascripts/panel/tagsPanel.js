@@ -77,8 +77,7 @@ module.controller('TagsPanel', [
 					}, function (res) {
 						page.messages.addError({
 							body: page.constants.message('tags.update.error'),
-							errors: res[0],
-							status: res[1]
+							report: res,
 						})
 					});
 
@@ -122,8 +121,7 @@ module.controller('TagsPanel', [
 			}, function (res) {
 				page.messages.addError({
 					body: page.constants.message('tags.vote.error', tag.id),
-					errors: res[0],
-					status: res[1]
+					report: res,
 				});
 
 				hideTooltips();
@@ -155,8 +153,7 @@ module.controller('TagsPanel', [
 			}, function (res) {
 				page.messages.addError({
 					body: page.constants.message('tags.new.error', form.newNameVal),
-					errors: res[0],
-					status: res[1]
+					report: res,
 				});
 
 				emptyAuto();

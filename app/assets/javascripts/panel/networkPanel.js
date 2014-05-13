@@ -45,8 +45,7 @@ module.controller('NetworkPanel', [
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('network.authquery.error'),
-						errors: res[0],
-						status: res[1]
+						report: res,
 					});
 				});
 			} else {
@@ -77,8 +76,7 @@ module.controller('NetworkPanel', [
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('network.authquery.error'),
-						errors: res[0],
-						status: res[1]
+						report: res,
 					});
 				});
 			}

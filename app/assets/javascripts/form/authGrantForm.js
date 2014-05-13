@@ -66,8 +66,7 @@ module.directive('authGrantForm', [
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('auth.grant.save.error'),
-						errors: res[0],
-						status: res[1]
+						report: res,
 					});
 
 					if (angular.isFunction(form.errorFn)) {
@@ -99,8 +98,7 @@ module.directive('authGrantForm', [
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('auth.grant.deny.error'),
-						errors: res[0],
-						status: res[1]
+						report: res,
 					});
 
 					if (angular.isFunction(form.denyErrorFn)) {

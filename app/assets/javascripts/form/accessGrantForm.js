@@ -51,8 +51,7 @@ module.directive('accessGrantForm', [
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('access.grant.save.error'),
-						errors: res[0],
-						status: res[1]
+						report: res,
 					});
 
 					if (angular.isFunction(form.errorFn)) {
@@ -87,8 +86,7 @@ module.directive('accessGrantForm', [
 					}, function (res) {
 						page.messages.addError({
 							body: page.constants.message('access.grant.remove.error'),
-							errors: res[0],
-							status: res[1]
+							report: res,
 						});
 
 						if (angular.isFunction(form.removeErrorFn)) {
@@ -121,8 +119,7 @@ module.directive('accessGrantForm', [
 					}, function (res) {
 						page.messages.addError({
 							body: page.constants.message('access.grant.save.error'),
-							errors: res[0],
-							status: res[1]
+							report: res,
 						});
 
 						if (angular.isFunction(form.errorFn)) {
