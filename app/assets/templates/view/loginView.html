@@ -1,4 +1,33 @@
-<article class="article article_crud article_action article_login">
-  <ng-include src="'loginPanel.html'"></ng-include>
+<article class="article article_crud article_action article_login" bindonce>
+  <div class="wrap">
+    <div class="row">
+      <hgroup class="col-full">
+        <h1 class="panel_context" bo-html="'login.title' | message"></h1>
+        <h2 class="panel_title with_context" bo-html="'login.title.sub' | message"></h2>
+      </hgroup>
+
+      <div class="col-full">
+        <form name="loginForm">
+          <div ng-switch="method">
+            <div ng-switch-default>
+              <input id="loginEmail" type="email" ng-model="loginData.email" bo-placeholder="'email' | message">
+              <input id="loginPassword" type="password" ng-model="loginData.password" bo-placeholder="'password' | message" ng-required>
+            </div>
+
+            <div ng-switch-when="openid">
+              <input id="loginOpenid" type="text" ng-model="loginData.openid" bo-placeholder="'openid' | message" ng-required>
+            </div>
+          </div>
+
+          <button id="loginSubmit" type="submit" class="button" ng-click="submitForm()" ng-disabled="loginForm.$invalid" bo-html="'login.login' | message"></button>
+
+          <a ng-click="switchMethod('openid')" ng-show="false && showMethodLink('openid')" bo-html="'login.method.openid' | message"></a>
+          <a ng-click="switchMethod('databrary')" ng-show="false && showMethodLink('databrary')" bo-html="'login.method.password' | message"></a>
+
+          <a bo-href="page.router.password()" bo-html="'login.forgot' | message"></a>
+        </form>
+      </div>
+    </div>
+  </div>
 </article>
 
