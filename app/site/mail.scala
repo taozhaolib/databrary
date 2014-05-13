@@ -10,7 +10,7 @@ object Mail {
   val fromAddr = current.configuration.getString("mail.from").getOrElse("<>")
   val authorizeAddr = current.configuration.getString("mail.authorize").getOrElse("authorize")
   private val fillinKey = new javax.crypto.spec.SecretKeySpec(
-    current.configuration.getString("fillin.key").getOrElse("").getBytes,
+    current.configuration.getString("fillin.key").getOrElse("databrary").getBytes,
     "HmacSHA256")
 
   def available : Boolean = mailer.isDefined
