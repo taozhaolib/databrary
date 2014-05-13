@@ -19,6 +19,13 @@ module.directive('toolbar', [
 				return page.$filter('filter')(page.display.toolbarLinks, function (link) {
 					return !link.access || !link.object ? true : page.auth.hasAccess(link.access, link.object);
 				});
+			};
+
+			//
+
+			this.stopProp = function ($event) { console.log(arguments);
+				$event.stopImmediatePropagation();
+				$event.stopPropagation();
 			}
 		};
 

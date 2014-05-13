@@ -1,7 +1,7 @@
 <section id="toolbar" class="toolbar cf" bindonce>
 	<div class="wrap">
 		<div class="row">
-			<div class="title cf col-desktop-12 col-laptop-9 col-tablet-6 col-mobile-3">
+			<div class="title cf col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-2">
 				<h1 class="toolbar_h1">
 					<a ng-href="{{toolbar.home()}}" title="Databrary: An Open Data Library"><span bo-html="'databrary' | message"></span></a>
 				</h1>
@@ -13,14 +13,14 @@
 				</nav>
 			</div>
 
-			<div class="toolbar_user col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
+			<div class="toolbar_user col-desktop-4 col-laptop-4 col-tablet-4 col-mobile-4">
 				<span ng-if="!page.auth.hasAuth('NONE')">
 					<a bo-href="page.router.login()" bo-html="'toolbar.login' | message">login</a>
 				</span>
 
 				<span ng-if="page.auth.hasAuth('NONE')">
-					<a href="" class="toolbar_user_link" ng-class="{superuser: page.auth.hasAuth('ADMIN'), on: page.auth.hasAuth('SUPER')}" ng-click="toolbar.hoverUser = true" click-elsewhere="toolbar.hideHover()">
-						<span class="username" bo-html="'toolbar.me' | message"></span>
+					<a href="" class="toolbar_user_link" ng-class="{superuser: page.auth.hasAuth('ADMIN'), on: page.auth.hasAuth('SUPER')}" ng-click="toolbar.hoverUser = true; $event.stopPropagation()">
+						<span class="username" bo-html="page.auth.user.name"></span>
 						<img bo-src="page.auth.user.avatar" class="avatar">
 					</a>
 				</span>
@@ -39,7 +39,7 @@
 							<li><a href="" ng-click="page.auth.logout()" bo-html="'toolbar.logout' | message"></a></li>
 
               <li ng-if="page.auth.hasAuth('ADMIN')" class="password_form">
-                <form name="superuserForm" ng-if="!page.auth.hasAuth('SUPER')" class="cf">
+                <form name="superuserForm" ng-if="!page.auth.hasAuth('SUPER')" class="cf" click-elsewhere="toolbar.hideHover()">
                   <input type="password" class="mini password" ng-model="superuserForm.auth" placeholder="Password">
                   <button type="submit" class="link superuser off" ng-click="page.auth.toggleSU(superuserForm)">activate SU</button>
                 </form>

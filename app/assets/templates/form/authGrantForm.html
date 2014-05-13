@@ -1,5 +1,5 @@
 <form name="authGrantForm">
-  <fieldset class="clean" ng-if="authGrantForm.other">
+  <fieldset class="clean radio-set" ng-if="authGrantForm.other">
     <legend>{{"auth.grant.title" | message:authGrantForm.other.party.name}}</legend>
 
     <div ng-repeat="preset in authGrantForm.presets.get(authGrantForm.party, authGrantForm.other.party)">
@@ -12,7 +12,7 @@
 
   <div class="row" ng-show="authGrantForm.other.preset.custom">
     <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
-      <fieldset ng-disabled="!authGrantForm.other.preset.custom" class="boxed">
+      <fieldset ng-disabled="!authGrantForm.other.preset.custom" class="boxed radio-set">
         <legend bo-html="'auth.direct' | possessive:party"></legend>
 
         <div ng-repeat="permission in page.constants.data.permission">
@@ -23,7 +23,7 @@
     </div>
 
     <div class="col-desktop-6 col-laptop-5 col-tablet-4 col-mobile-5">
-      <fieldset ng-disabled="!authGrantForm.other.preset.custom" class="boxed">
+      <fieldset ng-disabled="!authGrantForm.other.preset.custom" class="boxed radio-set">
         <legend bo-html="'auth.inherit' | possessive:party"></legend>
 
         <div ng-repeat="permission in page.constants.data.permission">
