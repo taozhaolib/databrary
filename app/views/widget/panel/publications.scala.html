@@ -3,9 +3,9 @@
 @if(citations.nonEmpty) {
     @widget.panel.raw("publications", "")(Messages("citations.title")){
         <div class="publication col-full">
-            @for(citation <- citations) {
+	    @citations.map { citation =>
                 <div class="publication">
-                    <h3>@citation.head @if(citation.url){<a href="@citation.url" title="@citation.head" class="cit_link">link</a>}</h3>
+		    <h3>@citation.head @citation.link.map{u => <a href="@u" title="@citation.head" class="cit_link">link</a>}</h3>
 
                     @citation.body.map(display.plainText _)
                 </div>
