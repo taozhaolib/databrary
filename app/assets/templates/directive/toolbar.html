@@ -1,4 +1,4 @@
-<section id="toolbar" class="toolbar cf" click-elsewhere="toolbar.hideHover();" bindonce>
+<section id="toolbar" class="toolbar cf" bindonce>
 	<div class="wrap">
 		<div class="row">
 			<div class="title cf col-desktop-12 col-laptop-9 col-tablet-6 col-mobile-3">
@@ -19,7 +19,7 @@
 				</span>
 
 				<span ng-if="page.auth.hasAuth('NONE')">
-					<a bo-href="page.router.profile()" class="toolbar_user_link" ng-class="{superuser: page.auth.hasAuth('ADMIN'), on: page.auth.hasAuth('SUPER')}" ng-mouseenter="toolbar.hoverUser = true">
+					<a href="" class="toolbar_user_link" ng-class="{superuser: page.auth.hasAuth('ADMIN'), on: page.auth.hasAuth('SUPER')}" ng-click="toolbar.hoverUser = true" click-elsewhere="toolbar.hideHover()">
 						<span class="username" bo-html="'toolbar.me' | message"></span>
 						<img bo-src="page.auth.user.avatar" class="avatar">
 					</a>
