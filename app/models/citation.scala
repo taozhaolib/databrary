@@ -12,6 +12,11 @@ import site._
 final case class VolumeCitation(val volume : Volume, val head : String, val url : Option[String], val body : Option[String]) extends TableRow with InVolume {
   private[models] def sqlKey = SQLTerms('volume -> volumeId)
   private def args = SQLTerms('volume -> volumeId, 'head -> head, 'url -> url, 'body -> body)
+  def link = url.map { u =>
+    if (u.startsWith("doi:")) "http://dx.doi.org/" + u.substring(4)
+    else if (u.startsWith("hdl:")) "http://hdl.handle.net/" + u.substring(4)
+    else u
+  }
 
   def json = JsonObject.flatten(
     Some('head -> head),
