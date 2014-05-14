@@ -18,5 +18,11 @@ package object dbrary {
     }
   }
 
+  try {
+    java.net.URL.setURLStreamHandlerFactory(URLStreamHandlerFactoryImpl)
+  } catch {
+    case e : Error if e.getMessage.equals("factory already defined") => () /* this defeats automatic reloading, but that's probably okay */
+  }
+
   def init() {}
 }
