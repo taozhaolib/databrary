@@ -2,7 +2,7 @@ package dbrary
 
 import java.net._
 
-object URLStreamHandlerFactoryImpl extends URLStreamHandlerFactory {
+object url extends URLStreamHandlerFactory {
   sealed abstract class TransformedURLHandler extends URLStreamHandler {
     protected def transform(u : URL) : URL
     final protected def openConnection(u : URL) : URLConnection =
@@ -13,12 +13,14 @@ object URLStreamHandlerFactoryImpl extends URLStreamHandlerFactory {
 
   object DOIHandler extends TransformedURLHandler {
     private val DOIRegex = "10\\.[\\.0-9]+/".r
+    def validDOI(s : String) =
+      DOIRegex.findPrefixOf(s).nonEmpty
 
     protected def transform(u : URL) =
       new URL("http", "dx.doi.org", "/" + u.getFile)
     override protected def parseURL(u : URL, spec : String, start : Int, limit : Int) {
       val doi = spec.substring(start, limit)
-      if (DOIRegex.findPrefixOf(doi).isEmpty)
+      if (!validDOI(doi))
 	throw new RuntimeException("Invalid DOI")
       setURL(u, "doi", u.getHost, u.getPort, u.getAuthority, u.getUserInfo, doi, u.getQuery, u.getRef)
     }
@@ -39,6 +41,24 @@ object URLStreamHandlerFactoryImpl extends URLStreamHandlerFactory {
     case _ => null
   }
 
+  try {
+    java.net.URL.setURLStreamHandlerFactory(this)
+  } catch {
+    case e : Error if e.getMessage.equals("factory already defined") => () /* this defeats automatic reloading, but that's probably okay */
+  }
+
+  def parse(s : String) : Option[URL] =
+    if (DOIHandler.validDOI(s))
+      Some(new URL("doi", null, s))
+    else
+      scala.util.control.Exception.catching(classOf[MalformedURLException]).opt(new URL(s))
   def normalize(u : URL) : URL =
     u.openConnection.getURL
+
+  val formatter : play.api.data.format.Formatter[URL] = new play.api.data.format.Formatter[URL] {
+    override val format = Some(("format.url", Nil))
+    def bind(key : String, data : Map[String, String]) =
+      data.get(key).flatMap(parse _).toRight(Seq(play.api.data.FormError(key, "url.invalid", Nil)))
+    def unbind(key : String, value : URL) = Map(key -> value.toString)
+  }
 }

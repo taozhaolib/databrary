@@ -18,11 +18,7 @@ package object dbrary {
     }
   }
 
-  try {
-    java.net.URL.setURLStreamHandlerFactory(URLStreamHandlerFactoryImpl)
-  } catch {
-    case e : Error if e.getMessage.equals("factory already defined") => () /* this defeats automatic reloading, but that's probably okay */
-  }
+  implicit def urlFormatter : play.api.data.format.Formatter[java.net.URL] = url.formatter
 
   def init() {}
 }

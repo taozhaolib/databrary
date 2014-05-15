@@ -6,8 +6,10 @@ import          mvc._
 import          data._
 import          i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import java.net.URL
 import macros._
 import macros.async._
+import dbrary._
 import site._
 import models._
 
@@ -23,13 +25,13 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     (form, Volume.search(form.query.get, form.party.get))
   }
 
-  type CitationMapping = (Option[String], Option[String], Option[String])
+  type CitationMapping = (Option[String], Option[URL], Option[String])
   private val citationMapping = Forms.tuple(
     "head" -> Mappings.maybeText,
-    "url" -> Mappings.maybeText,
+    "url" -> Forms.optional(Forms.of[URL]),
     "body" -> Mappings.maybeText
   ).verifying("citation.invalid", _ match {
-    case (Some(head), url, body) => true // TODO: validate URL
+    case (Some(head), url, body) => true
     case (None, None, None) => true
     case _ => false
   })
