@@ -129,7 +129,7 @@ module.config([
 						}, function (data) {
 							deferred.resolve(data);
 						}, function (data) {
-							deferred.reject();
+							deferred.resolve({});
 						});
 
 						return deferred.promise;
