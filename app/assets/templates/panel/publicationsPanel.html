@@ -2,7 +2,7 @@
     <div class="row">
       <div bindonce ng-repeat="citation in volume.citations" class="publication" fold closed forget>
         <div class="col-full">
-		<h3 class="publication_header" ng-click="toggleFold()"><div><span>{{citation.head}}</span> <a bo-if="citation.url" bo-href="citation.url | handle" bo-title="citation.head" class="cit_link" ng-click="stopProp($event)">link</a></div></h3>
+		<h3 class="publication_header" ng-click="toggleFold()"><div><span>{{citation.head}}</span> <a bo-if="citation.url" bo-href="citation.url | handle" bo-title="citation.head" class="cit_link" ng-click="stopProp($event)" target="_blank">link</a></div></h3>
         </div>
 
         <div class="col-desktop-9 push-desktop-3 col-laptop-8 push-laptop-2 col-tablet-9 col-mobile-6" folded>
