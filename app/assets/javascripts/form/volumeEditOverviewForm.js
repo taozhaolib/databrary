@@ -81,18 +81,44 @@ module.directive('volumeEditOverviewForm', [
 				}
 			};
 
-			form.reset = function () {
-				if (angular.isFunction(form.resetFn)) {
-					form.resetFn(form);
+			//
+
+			form.autoDOI = function () {
+				if (!angular.isUndefined(form.hasCitations)) {
+					form.hasCitations = false;
+
+					for (var cite in form.volume.citations) {
+						if (form.volume.citations.hasOwnProperty(cite)) {
+							form.hasCitations = true;
+							break;
+						}
+					}
 				}
 
-				form.data = $.extend(true, {}, backup);
-				form.$setPristine();
-			};
+				var doi = page.constants.data.regex.doi.exec(form.data.doi);
 
-			form.cancel = function () {
-				if (angular.isFunction(form.cancelFn)) {
-					form.cancelFn(form);
+				if (!form.data.doi || !doi || !doi[1]) {
+					return;
+				}
+
+				if (!form.data.name) {
+					page.models.CrossCite
+						.json(doi[1])
+						.then(function (res) {
+							console.log(arguments);
+						}, function (res) {
+							console.log('fail', arguments);
+						});
+				}
+
+				if (!form.hasCitations) {
+					page.models.CrossCite
+						.apa(doi[1])
+						.then(function (res) {
+							console.log(arguments);
+						}, function (res) {
+							console.log('fail', arguments);
+						});
 				}
 			};
 

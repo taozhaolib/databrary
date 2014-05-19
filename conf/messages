@@ -57,6 +57,7 @@ create=Create
 
 toolbar.login=login
 toolbar.logout=logout
+toolbar.register=register
 toolbar.profile=view profile
 toolbar.me=me
 
@@ -249,6 +250,7 @@ volume.sessions={0} sessions ({1} shared)
 volume.ages.title=Ages
 volume.ages={0} (M = {1})
 volume.citation.title=Citation
+volume.doi.primary=TODO Corresponding DOI
 volume.access.title=Shared with
 volume.reuse.title=Reuse
 volume.reuse.provides=These data are used in...

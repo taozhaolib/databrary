@@ -1,18 +1,48 @@
 module.factory('CrossCite', [
-	'resourceFactory', '$route', function (resource, $route) {
-		return resource('http://data.crossref.org/:doi', {}, {
-			apa: {
-				method: 'GET',
-				headers: {
-					Accept: 'text/x-bibliography;style=apa',
-				},
+	'$http', '$q', function ($http, $q) {
+		var url = 'http://data.crossref.org/';
+
+		return {
+			apa: function (doi) {
+				var deferred = $q.defer();
+
+				$http.get(url + encodeURIComponent(doi), {
+					cache: false,
+					headers: {
+						Accept: 'text/x-bibliography;style=apa',
+					},
+				}).success(function (res) {
+					if (res.indexOf('Quagga Mussels') > -1) {
+						deferred.reject(arguments);
+					} else {
+						deferred.resolve(arguments);
+					}
+				}).error(function () {
+					deferred.reject(arguments);
+				});
+
+				return deferred.promise;
 			},
-			json: {
-				method: 'GET',
-				headers: {
-					Accept: 'application/vnd.citationstyles.csl+json',
-				},
-			}
-		}, 'crossCite');
+			json: function (doi) {
+				var deferred = $q.defer();
+
+				$http.get(url + encodeURIComponent(doi), {
+					cache: false,
+					headers: {
+						Accept: 'application/vnd.citationstyles.csl+json',
+					},
+				}).success(function (res) {
+					if (res.title.indexOf('Quagga Mussels') > -1) {
+						deferred.reject(arguments);
+					} else {
+						deferred.resolve(arguments);
+					}
+				}).error(function () {
+					deferred.reject(arguments);
+				});
+
+				return deferred.promise;
+			},
+		};
 	}
 ]);

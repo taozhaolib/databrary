@@ -49,7 +49,7 @@ module.factory('constantService', [
 				]
 			},
 			regex: {
-				doi: /(?:doi:)?(10\.[0-9\.]+\/.*)/,
+				doi: /(?:doi|(?:http:\/\/)?data.crossref.org\/:)?(10\.[0-9\.]+\/.*)/,
 			},
 		};
 
