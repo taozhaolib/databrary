@@ -42,16 +42,14 @@
 
         <wizard-step id="register_agent">
           <div class="radio-set">
-            <label ng-bind-html="'wizard.register_agent.seeking' | message"></label>
-
             <div>
               <input type="radio" ng-model="authSearchForm.institution" ng-value="true">
-              <label class="option"><strong>{{'auth.preset.CONTRIBUTE.NONE.title' | message}}</strong>: {{'auth.preset.CONTRIBUTE.NONE' | possessive:'investigator'}}</label>
+              <label class="option"><strong>{{'auth.register.CONTRIBUTE.title' | message}}</strong>: {{'auth.register.CONTRIBUTE' | possessive:'investigator'}}</label>
             </div>
 
             <div>
               <input type="radio" ng-model="authSearchForm.institution" ng-value="false">
-              <label class="option"><strong>{{'auth.preset.CONTRIBUTE.CONTRIBUTE.title' | message}}</strong>: {{'auth.preset.CONTRIBUTE.CONTRIBUTE' | possessive:'investigator'}}</label>
+              <label class="option"><strong>{{'auth.register.DOWNLOAD.title' | message}}</strong>: {{'auth.register.DOWNLOAD' | possessive:'investigator'}}</label>
             </div>
           </div>
 

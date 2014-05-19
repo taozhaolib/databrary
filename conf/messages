@@ -148,15 +148,17 @@ auth.request.title=Request the following status from {0}:
 auth.request.notfound.user=User Not Found
 auth.request.notfound.title=More information required
 auth.request.notfound.instructions=If you''re seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.\n\nOtherwise, please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.
-auth.request.notfound.individual.instructions=Please invite the investigator from whom you are seeking authorization to Databrary directly and return after they have registered.
+auth.request.notfound.individual.instructions=Please invite the investigator from whom you are seeking authorization to register on Databrary first.
 auth.request.notfound.success=Thank you for submitting a request to be Authorized. We will let you know as soon your application is Authorized.
 auth.request.from=Click to request affiliate status from {0}.
 auth.apply.error=Could not submit your request.
 auth.grant.title=Grant {0} the following capabilities:
 auth.grant.save.error=Could not save this authorization.
 auth.grant.deny.error=Could not deny this authorization.
-auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register directly.
+auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register.
 auth.search=Search for a user or institution...
+auth.search.institution=Search for your institution...
+auth.search.individual=Search for your sponsoring PI...
 auth.search.error=Could not retrieve any users or institutions.
 auth.request=Request
 auth.authorize=Authorize
@@ -167,13 +169,13 @@ auth.notfound=None of these
 auth.info.prompt=Please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.
 
 # Access
-access.search=Search for a user or institution...
+access.search=Search for a user, group, or institution...
 access.search.error=Could not retrieve any users or institutions.
 access.notfound=None of these
 access.grant.funding=Grant #
 access.update=Update
 access.remove=Remove
-access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register directly.
+access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register.
 access.grant.inherit=Extend access to those for whom {0} vouches.
 access.grant.funding.save.success=Funding source updated.
 access.grant.funding.remove.success=Funding source removed.
@@ -200,7 +202,7 @@ auth.direct.ADMIN=Can share {0} data.
 auth.preset.DOWNLOAD.NONE.title=Affiliate Investigator
 auth.preset.DOWNLOAD.NONE=Access to shared Databrary data.
 auth.preset.CONTRIBUTE.NONE.title=Principal Investigator
-auth.preset.CONTRIBUTE.NONE=Access and share Databrary data, and authorize affiliates.
+auth.preset.CONTRIBUTE.NONE=Researchers eligible for PI status may access and share Databrary data, and authorize affiliates.
 auth.preset.ADMIN.NONE.title=Administrator
 auth.preset.ADMIN.NONE=Authorize Principal Investigators on {0} behalf.
 
@@ -363,15 +365,18 @@ wizard.register_password.name=Set Password
 wizard.register_password.description=Pick a secure password.
 wizard.register_password.instructions=Please set a secure password. Remember that users may not share their login information with anyone.
 
-wizard.register_agent.name=Find Authorizing Agent
-wizard.register_agent.description=Select a party to request authorized Databrary access.
-wizard.register_agent.instructions=Please search for the user or institution that will co-sign your agreement and authorize you to access the shared data in Databrary.
-wizard.register_agent.seeking=Select desired status:
+wizard.register_agent.name=Request Authorization
+wizard.register_agent.description=Begin the authorization process.
+wizard.register_agent.instructions=In order to access Databrary resources, you must be authorized either as a "Principal Investigator" through a sponsoring institution, or by a registered PI as an "Affiliate Investigator". <a href="http://databrary.org/user-guide/getting-authorized/agreement.html">Read more</a> about this process and its requirements.
 
-wizard.register_request.name=Request Authorization
-wizard.register_request.description=Select role and submit request.
+auth.register.CONTRIBUTE.title=Principal Investigator
+auth.register.CONTRIBUTE=Researchers eligible for PI status may access and share Databrary data, and authorize affiliates.
+auth.register.DOWNLOAD.title=Affiliate Investigator
+auth.register.DOWNLOAD=Individuals working with PIs may be sponsored to access shared Databrary data.
+
+wizard.register_request.name=Submit Authorization
+wizard.register_request.description=Confirm your authorization request.
 wizard.register_request.instructions=
-wizard.register_request.more=If you are eligible for Databrary Principal Investigator status, please select "Principal Investigator". If you would like to be authorized by a Databrary Principal Investigator, please select "Affiliate Investigator".
 
 wizard.register_pending.name=Stay Tuned
 wizard.register_pending.description=Tips for exploring Databrary.
