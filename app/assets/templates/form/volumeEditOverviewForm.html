@@ -1,5 +1,10 @@
 <form name="volumeEditOverviewForm" bindonce>
   <fieldset class="clean">
+    <label bo-html="'volume.cite' | message"></label>
+    <input type="text" name="cite" ng-model="volumeEditOverviewForm.data.cite" idle="volumeEditOverviewForm.cite()">
+  </fieldset>
+
+  <fieldset class="clean">
     <label bo-html="'volume.name' | message"></label>
     <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name">
 
@@ -11,9 +16,7 @@
   </fieldset>
 
   <fieldset class="clean">
-    <button ng-click="volumeEditOverviewForm.save()" bo-html="'save' | message" class="green" ng-if="volumeEditOverviewForm.$dirty"></button>
-    <button ng-click="volumeEditOverviewForm.reset()" bo-html="'reset' | message" class="red" ng-if="volumeEditOverviewForm.$dirty"></button>
-    <button ng-click="volumeEditOverviewForm.cancel()" bo-html="'cancel' | message" class="yellow" ng-if="volumeEditOverviewForm.volume"></button>
+    <button ng-click="volumeEditOverviewForm.save()" bo-html="'save' | message" class="green" ng-disabled="!volumeEditOverviewForm.$dirty"></button>
   </fieldset>
 </form>
 
