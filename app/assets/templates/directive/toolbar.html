@@ -16,11 +16,15 @@
 			<div class="toolbar_user col-desktop-4 col-laptop-4 col-tablet-4 col-mobile-4">
 				<span ng-if="!page.auth.hasAuth('NONE')">
 					<a bo-href="page.router.login()" bo-html="'toolbar.login' | message">login</a>
+
+				  <span class="sep">|</span>
+
+          <a bo-href="page.router.register()" bo-html="'toolbar.register' | message">login</a>
 				</span>
 
 				<span ng-if="page.auth.hasAuth('NONE')">
 					<a href="" class="toolbar_user_link" ng-class="{superuser: page.auth.hasAuth('ADMIN'), on: page.auth.hasAuth('SUPER')}" ng-click="toolbar.hoverUser = true; $event.stopPropagation()">
-						<span class="username" bo-html="page.auth.user.name"></span>
+						<span class="username" bo-html="page.auth.user.name.split(' ').shift()"></span>
 						<img bo-src="page.auth.user.avatar" class="avatar">
 					</a>
 				</span>
