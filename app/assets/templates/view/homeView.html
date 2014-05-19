@@ -25,6 +25,7 @@
 
       <div class="home_parties col-full">
         <div class="row">
+          <h1 ng-bind-html="'splash.investigators.header' | message"></h1>
           <div ng-repeat="column in columns" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
             <article class="home_party" ng-repeat="party in column" bindonce>
               <img bo-src="page.router.partyAvatar(party, 300)" ng-click="page.$location.url(page.router.party(party))">

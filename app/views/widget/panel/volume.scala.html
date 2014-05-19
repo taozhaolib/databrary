@@ -26,8 +26,8 @@
     <h2 class="col-full">@a</h2>
     }
 
-    @widget.frame.raw("people", "")(Messages("volume.admins.title")) {
-	@access.takeWhile(_.access >= Permission.ADMIN).map { a =>
+    @widget.frame.raw("people", "")(Messages("volume.contributors.title")) {
+	@access.takeWhile(_.access >= Permission.EDIT).map { a =>
 	    @widget.portrait.verticalSmall(a.party)
 	}
     }

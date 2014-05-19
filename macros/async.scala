@@ -29,6 +29,9 @@ object async {
       case Failure(a) => failed(a)
     }
 
+  def when(guard : Boolean, f : => Future[Unit]) : Future[Unit] =
+    if (guard) f else void
+
   implicit class Async[A](a : A) {
     def async : Future[A] = successful(a)
   }
@@ -65,7 +68,7 @@ object async {
       val b = bf()
       foreachAsync[R](f(_).andThen { case Success(a) => b += a }, b.result)
     }
-    def flatMapAsync[B, R](f : A => Future[Seq[B]])(implicit bf : generic.CanBuildFrom[Seq[A], B, R], context : ExecutionContext) : Future[R] = {
+    def flatMapAsync[B, R](f : A => Future[TraversableOnce[B]])(implicit bf : generic.CanBuildFrom[Seq[A], B, R], context : ExecutionContext) : Future[R] = {
       val b = bf()
       foreachAsync[R](f(_).andThen { case Success(a) => b ++= a }, b.result)
     }
@@ -93,4 +96,7 @@ object async {
     case Some(v) => v.get
     case None => throw new UnevaluatedFutureException /* checked explicitly to shorten stack trace */
   }
+  def AWAIT[A](f : Future[A]) : A =
+    scala.concurrent.Await.result(f,
+      scala.concurrent.duration.Duration(1, scala.concurrent.duration.MINUTES))
 }

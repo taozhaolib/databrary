@@ -220,10 +220,13 @@ CREATE TABLE "volume_citation" (
 	"volume" integer NOT NULL References "volume",
 	"head" text NOT NULL,
 	"url" text,
-	"body" text
+	"body" text,
+	"study" boolean NOT NULL Default false
 );
 CREATE INDEX ON "volume_citation" ("volume");
+CREATE UNIQUE INDEX ON "volume_citation" ("volume") WHERE "study";
 COMMENT ON TABLE "volume_citation" IS 'Quick and dirty citation list.  Not intended to be permanent.  No PK: only updated in bulk on volume.';
+COMMENT ON COLUMN "volume_citation"."study" IS 'Primary external citation associated with each volume, in the case of studies, supplementals, excerpts, or other volumes directly attached to publications.';
 
 ----------------------------------------------------------- time intervals
 

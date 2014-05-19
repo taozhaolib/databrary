@@ -1,4 +1,4 @@
-@(citations : Seq[VolumeCitation])(implicit request : SiteRequest[_])
+@(citations : Seq[Citation])(implicit request : SiteRequest[_])
 
 @if(citations.nonEmpty) {
     @widget.panel.raw("publications", "")(Messages("citations.title")){

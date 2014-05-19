@@ -66,11 +66,9 @@ sealed abstract class AccountToken protected (id : Token.Id, expires : Timestamp
 
 object AccountToken extends Table[AccountToken]("account_token") {
   private[models] def clearAccount(account : Account.Id, except : Option[Token] = None) : Future[Boolean] =
-    except.fold {
-      DELETE('account -> account)
-    } { token =>
-      SQL("DELETE FROM", table, "WHERE account = ? AND token <> ?").apply(account, token.id)
-    }.execute
+    SQL("DELETE FROM", table, "WHERE account = ? AND token <> ?")
+    .apply(account, except.fold("")(_.id))
+    .execute
 }
 
 /** A token, usually sent via email, granting automatic login or registration to the given party.

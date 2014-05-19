@@ -4,6 +4,10 @@ module.controller('OverviewVolumePanel', [
 			$scope.enabled = angular.isObject($scope.volume);
 		};
 
+		$scope.isContributor = function (volumeAccess) {
+			return volumeAccess.access && volumeAccess.access >= 3;
+		};
+
 		$scope.isShared = function (volumeAccess) {
 			return [1, 2].indexOf(volumeAccess.access) > -1;
 		};

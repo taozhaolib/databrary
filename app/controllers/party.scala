@@ -108,12 +108,11 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	    if (form.pending.get) None else Some(new Timestamp),
 	    form.expires.get.map(_.toLocalDateTime(new org.joda.time.LocalTime(12, 0))))
 	  _ <- Authorize.Info.set(childId, id, form.info.get)
-	  _ <- if (Play.isProd && !form.pending.get && !c.exists(_.authorized.isDefined))
+	  _ <- async.when(Play.isProd && !form.pending.get && !c.exists(_.authorized.isDefined),
 	    Mail.send(
 	      to = child.account.map(_.email).toSeq :+ Mail.authorizeAddr,
 	      subject = Messages("mail.authorized.subject"),
-	      body = Messages("mail.authorized.body", request.obj.party.name))
-	    else async.void
+	      body = Messages("mail.authorized.body", request.obj.party.name)))
 	} yield (result(request.obj))
       })
     }
@@ -137,7 +136,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       dl <- delegates(parent)
       _ <- Authorize.set(id, parentId, form.inherit.get, Permission.NONE, None, None)
       _ <- Authorize.Info.set(id, parentId, form.info.get)
-      _ <- if (Play.isProd) Mail.send(
+      _ <- async.when(Play.isProd, Mail.send(
 	to = dl.map(_.email) :+ Mail.authorizeAddr,
 	subject = Messages("mail.authorize.subject"),
 	body = Messages("mail.authorize.body", routes.PartyHtml.view(parentId).absoluteURL(true),
@@ -145,7 +144,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	  parent.name)
       ).recover {
 	case ServiceUnavailableException => ()
-      } else async.void
+      })
     } yield (result(request.obj))
     })
   }
