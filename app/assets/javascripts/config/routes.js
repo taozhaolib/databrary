@@ -283,7 +283,9 @@ module.config([
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 
-						if (page.$route.current.params.id) {
+						if (!page.$route.current.params.id) {
+							deferred.resolve();
+						} else {
 							volumeEditVolume.then(function (volume) {
 								page.models.Slot.get({
 									id: volume.top.id,
