@@ -1,7 +1,7 @@
 module.directive('idle', [
 	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
-			var after = $attrs.idleFor ? parseInt($attrs.idleFor) : 3000;
+			var after = $attrs.idleFor ? parseInt($attrs.idleFor) : 1000;
 			var timeout;
 
 			var fn = function () {
