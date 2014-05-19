@@ -212,9 +212,9 @@ object Party extends TableId[Party]("party") {
     * @param who party doing the authorization, to exclude parties already authorized
     * @param institute limit to institutions
     */
-  def searchForAuthorize(name : String, who : Party, institute : Boolean = false) : Future[Seq[Party]] =
+  def searchForAuthorize(name : String, who : Party, institute : Option[Boolean] = None) : Future[Seq[Party]] =
     row.SELECT("WHERE", byName, "AND id != ? AND id > 0",
-      if (institute) "AND duns IS NOT NULL" else "",
+      institute.fold("")(if (_) "AND duns IS NOT NULL" else "AND duns IS NULL"),
       "AND id NOT IN (SELECT child FROM authorize WHERE parent = ? UNION SELECT parent FROM authorize WHERE child = ?) LIMIT 8")
       .apply(byNameArgs(name) ++ SQLArgs(who.id) * 3).list
 

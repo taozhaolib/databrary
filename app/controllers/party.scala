@@ -285,7 +285,7 @@ object PartyController extends PartyController {
   final class AuthorizeSearchForm(val _apply : Boolean)(implicit request : Request[_])
     extends AuthorizeForm(routes.PartyHtml.authorizeSearch(request.obj.id, _apply)) {
     val name = Field(Mappings.nonEmptyText)
-    val institution = Field(Forms.boolean).fill(false)
+    val institution = Field(OptionMapping(Forms.boolean)).fill(None)
     val notfound = Field(Forms.boolean).fill(false)
   }
   final class AuthorizeAdminForm(val authorize : Authorize)(implicit request : SiteRequest[_])
