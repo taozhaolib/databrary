@@ -26,41 +26,11 @@ module.directive('searchForm', [
 			form.resetFn = undefined;
 
 			//
-			var query = function () {
-				page.models.Volume.query(form.data,
-					function (res) {
-						if (form.filterMode && form.data.query) {
-							page.messages.add({
-								type: 'yellow',
-								countdown: 3000,
-								body: page.constants.message('search.deep.info')
-							});
-						}
-
-						if (angular.isFunction(form.successFn)) {
-							form.successFn(form, res);
-						}
-
-						form.filterMode = false;
-						page.$location.search('query', form.data.query);
-					}, function (res) {
-						page.messages.addError({
-							body: page.constants.message('search.error'),
-							report: res
-						});
-
-						if (angular.isFunction(form.errorFn)) {
-							form.errorFn(form, res);
-						}
-					});
-			};
 
 			form.search = function () {
 				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
 				}
-
-				query();
 			};
 
 			form.reset = function () {
@@ -71,8 +41,6 @@ module.directive('searchForm', [
 				form.data = {};
 				form.filterMode = true;
 				form.$setPristine();
-
-				query();
 			};
 
 			//
