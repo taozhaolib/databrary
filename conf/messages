@@ -380,6 +380,9 @@ wizard.register_form.email.help=<strong>Email</strong>: We recommend using your 
 wizard.register_form.email.error=<strong>Email</strong>: This email address is invalid.
 wizard.register_form.affiliation.help=<strong>Affiliation</strong>: Enter your affiliation as you wish it to display on your profile.
 
+#Splash page text
+splash.investigators.header=Databrary Investigators
+
 # --- Volume edit
 
 volume.edit.title.sub=New Volume
