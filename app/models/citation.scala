@@ -20,7 +20,8 @@ final case class Citation(val head : String, val url : Option[java.net.URL], val
   def json = JsonObject.flatten(
     Some('head -> head),
     url.map(u => ('url, u.toString)),
-    body.map('body -> _)
+    body.map('body -> _),
+    if (study) Some('study -> true) else None
   )
 }
 

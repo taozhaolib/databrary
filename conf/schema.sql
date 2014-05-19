@@ -218,10 +218,10 @@ COMMENT ON FUNCTION "volume_access_check" (integer, integer) IS 'Permission leve
 
 CREATE TABLE "volume_citation" (
 	"volume" integer NOT NULL References "volume",
-	"study" boolean NOT NULL Default false,
 	"head" text NOT NULL,
 	"url" text,
-	"body" text
+	"body" text,
+	"study" boolean NOT NULL Default false
 );
 CREATE INDEX ON "volume_citation" ("volume");
 CREATE UNIQUE INDEX ON "volume_citation" ("volume") WHERE "study";

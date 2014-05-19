@@ -13,7 +13,7 @@ object Cite {
     .withHeaders(("Accept", bibliographyType + ";style=" + style))
     .get.map { r =>
       if (r.status == 200 && r.header("Content-Type").equals(Some(bibliographyType)))
-	Some(r.body)
+	Some(r.body.trim /* XXX: utf8 */)
       else None
     }
 
