@@ -310,7 +310,7 @@ wizard.register_create.instructions=Please provide information about yourself.
 
 wizard.register_agreement.name=Sign Agreement
 wizard.register_agreement.description=Learn about the responsibilities of all Databrary members.
-wizard.register_agreement.instructions=Read each section of the agreement. You can also download the full agreement <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">here</a>.
+wizard.register_agreement.instructions=Read each section of the agreement. You can also download the <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">full agreement as pdf</a>.
 wizard.register_agreement.agreement_contents=<p>Users must abide by these three guiding principles</p><ol><li>Databrary investigators are responsible for getting participant permission levels correct. They must ensure that participants'' wishes are respected in the data they contribute.</li><li>Databrary investigators must treat other researchers'' data with the same respect, security, and ethical commitment as their own.</li><li>Databrary investigators must take care in authorizing other people (affiliates and collaborators) and are responsible for their conduct and use of Databrary data, just as they are in their own labs.</li></ol>
 wizard.register_agreement.agree=I have read and understand the <a href="http://databrary.org/user-guide/policies/investigator-agreement.html">Databrary Investigator Agreement</a>
 
