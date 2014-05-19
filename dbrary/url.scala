@@ -47,11 +47,13 @@ object url extends URLStreamHandlerFactory {
     case e : Error if e.getMessage.equals("factory already defined") => () /* this defeats automatic reloading, but that's probably okay */
   }
 
-  def parse(s : String) : Option[URL] =
-    if (DOIHandler.validDOI(s))
-      Some(new URL("doi", null, s))
+  def parse(s : String) : Option[URL] = {
+    val doi = s.stripPrefix("http://dx.doi.org/")
+    if (DOIHandler.validDOI(doi))
+      Some(new URL("doi", null, doi))
     else
       scala.util.control.Exception.catching(classOf[MalformedURLException]).opt(new URL(s))
+  }
   def normalize(u : URL) : URL =
     u.openConnection.getURL
 
