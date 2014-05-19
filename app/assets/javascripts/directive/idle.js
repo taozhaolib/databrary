@@ -21,6 +21,6 @@ module.directive('idle', [
 		return {
 			restrict: 'A',
 			link: link
-		}
+		};
 	}
 ]);
