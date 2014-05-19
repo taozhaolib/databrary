@@ -240,7 +240,7 @@ object.tip.asset=Files can potentially contain a lot of valuable data.
 # Volume page
 volume=Volume
 volume.overview.title=Overview
-volume.admins.title=Investigators
+volume.contributors.title=Investigators
 volume.funding.title=Funding
 volume.metadata.title=Description
 volume.creation.title=Shared on

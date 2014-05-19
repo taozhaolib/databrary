@@ -37,9 +37,9 @@
         <img class="panel_overview_thumbnail" ng-src="{{page.router.volumeThumb(volume)}}">
       </div>
 
-      <div frame id="frame_people" frame-title="{{'volume.admins.title' | message}}" fold>
+      <div frame id="frame_people" frame-title="{{'volume.contributors.title' | message}}" fold>
         <div class="row">
-          <div ng-repeat="volumeAccess in volume.access | filter:{access: 4}" class="col-desktop-3 col-laptop-4 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">
+          <div ng-repeat="volumeAccess in volume.access | filter:isContributor" class="col-desktop-3 col-laptop-4 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">
             <portrait class="portrait_vertical portrait_small"></portrait>
           </div>
         </div>
