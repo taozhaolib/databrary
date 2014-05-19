@@ -20,13 +20,12 @@ module.directive('searchForm', [
 
 			//
 
-			form.seearchFn = undefined;
+			form.searchFn = undefined;
 			form.successFn = undefined;
 			form.errorFn = undefined;
 			form.resetFn = undefined;
 
 			//
-
 			var query = function () {
 				page.models.Volume.query(form.data,
 					function (res) {
