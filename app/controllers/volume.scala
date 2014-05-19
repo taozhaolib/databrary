@@ -25,22 +25,35 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     (form, Volume.search(form.query.get, form.party.get))
   }
 
-  type CitationMapping = (Option[String], Option[URL], Option[String])
   private val citationMapping = Forms.tuple(
     "head" -> Mappings.maybeText,
     "url" -> Forms.optional(Forms.of[URL]),
     "body" -> Mappings.maybeText
   ).verifying("citation.invalid", _ match {
-    case (Some(head), url, body) => true
     case (None, None, None) => true
+    case (Some(_), _, _) => true
+    case (None, Some(url), _) if url.getProtocol.equals("hdl") || url.getProtocol.equals("doi") => true
     case _ => false
+  }).transform[Option[Citation]]({
+    case (None, None, None) => None
+    case (head, url, body) => Some(Citation(head.getOrElse(""), url, body))
+  }, {
+    case None => (None, None, None)
+    case Some(Citation(head, url, body, _)) => (Some(head), url, body)
   })
-  private def citationSet(volume : Volume, cites : Seq[CitationMapping])(implicit site : Site) =
-    if (cites.nonEmpty) {
-      volume.setCitations(cites.flatMap(c =>
-        c._1.map(h => VolumeCitation(volume, h, c._2, c._3))
-      ))
-    } else macros.async(false)
+  private def citationFill(cite : Citation) : Future[Citation] =
+    if (cite.head.isEmpty) cite.lookup else async(cite)
+  private def citationSet(volume : Volume, form : VolumeController.VolumeForm) = {
+    val cites = form.citation.get
+    for {
+      _ <- async.when(cites.nonEmpty,
+	cites.flatten.mapAsync(citationFill)
+	.flatMap(volume.setCitations _))
+      _ <- form.study.get.foreachAsync(
+	_.mapAsync(citationFill(_))
+	.flatMap(volume.setStudyCitation _))
+    } yield ()
+  }
 
   protected def editFormFill(implicit request : Request[_]) =
     request.obj.citations.map(new VolumeController.EditForm(_))
@@ -53,7 +66,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       _ <- vol.change(name = form.name.get,
 	alias = form.alias.get.map(Maybe(_).opt),
 	body = form.body.get)
-      _ <- citationSet(vol, form.citation.get)
+      _ <- citationSet(vol, form)
     } yield (result(vol))
   }
 
@@ -61,7 +74,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     val form = new VolumeController.CreateForm()._bind
     for {
       vol <- models.Volume.create(form.name.get.get, form.alias.get.flatMap(Maybe(_).opt), form.body.get.flatten)
-      _ <- citationSet(vol, form.citation.get)
+      _ <- citationSet(vol, form)
       _ <- VolumeAccess.set(vol, owner, Permission.ADMIN, Permission.CONTRIBUTE)
     } yield (result(vol))
   }
@@ -115,11 +128,11 @@ object VolumeController extends VolumeController {
     val name : Field[Option[String]]
     val alias = Field(OptionMapping(Forms.text(maxLength = 64)))
     val body = Field(OptionMapping(Mappings.maybeText))
+    val study = Field(OptionMapping(citationMapping))
     val citation = Field(Forms.seq(citationMapping))
   }
 
-  private def citationFill(cite : VolumeCitation) = (Some(cite.head), cite.url, cite.body)
-  final class EditForm(cites : Seq[VolumeCitation])(implicit request : Request[_])
+  final class EditForm(cites : Seq[Citation])(implicit request : Request[_])
     extends HtmlForm[EditForm](
       routes.VolumeHtml.update(request.obj.id),
       views.html.volume.edit(_)) with VolumeForm {
@@ -128,7 +141,8 @@ object VolumeController extends VolumeController {
     val name = Field(OptionMapping(Mappings.nonEmptyText)).fill(Some(request.obj.name))
     body.fill(Some(request.obj.body))
     alias.fill(Some(request.obj.alias.getOrElse("")))
-    citation.fill(cites.map(citationFill(_)) :+ ((Some(""), None, None)))
+    study.fill(Some(cites.headOption.filter(_.study)))
+    citation.fill(cites.dropWhile(_.study).map(Some(_)) :+ None)
   }
 
   final class CreateForm(implicit request : PartyController.Request[_])

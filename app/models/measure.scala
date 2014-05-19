@@ -77,10 +77,9 @@ object Metric extends TableId[Metric[_]]("metric") {
   /** Retrieve a single metric by id.
     * Metrics are strongly cached, so this provides a synchronous interface which may block on occasion. */
   def get(id : Id) : Option[Metric[_]] =
-    cache.get(id.unId) orElse
-      scala.concurrent.Await.result(
-        row.SELECT("WHERE id = ?").apply(id).singleOpt,
-        scala.concurrent.duration.Duration(1, scala.concurrent.duration.MINUTES))
+    cache.get(id.unId) orElse async.AWAIT {
+      row.SELECT("WHERE id = ?").apply(id).singleOpt
+    }
   
   /** Retrieve a single metric by name.
     * Like getAll, this only includes already-retrieved (by get) metrics. */

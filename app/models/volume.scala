@@ -49,7 +49,9 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
 
   /** List of all citations on this volume. */
   lazy val citations = VolumeCitation.getVolume(this)
-  def setCitations(list : Seq[VolumeCitation]) = VolumeCitation.setVolume(this, list)
+  def studyCitation = citations.map(_.headOption.filter(_.study))
+  def setCitations(list : Seq[Citation]) = VolumeCitation.setVolume(this, list)
+  def setStudyCitation(cite : Option[Citation]) = VolumeCitation.setVolumeStudy(this, cite)
 
   /** The list of comments in this volume. */
   def comments = Comment.getVolume(this)

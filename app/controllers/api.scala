@@ -62,15 +62,13 @@ object SiteApi extends SiteController {
   }
 
   def analytics(implicit request : SiteRequest[_]) : Future[Unit] =
-    if (request.isApi && request.headers.get("X-Requested-With").exists(_.equals("DatabraryClient")))
+    async.when(request.isApi && request.headers.get("X-Requested-With").exists(_.equals("DatabraryClient")),
       request.headers.getAll("Analytics").foreachAsync(a =>
 	scala.util.control.Exception.failAsValue[json.JsValue](classOf[com.fasterxml.jackson.core.JsonProcessingException])(json.JsUndefined("parse error"))(
 	  json.Json.parse(a)) match {
 	  case json.JsArray(l) => l.foreachAsync(analytic _)
 	  case j => analytic(j)
-	})
-    else
-      async.void
+	}))
 
   def void =
     SiteAction.Unlocked { implicit request =>

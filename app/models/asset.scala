@@ -93,11 +93,9 @@ object AssetFormat extends TableId[AssetFormat]("format") {
   }
 
   private val byId : scala.collection.immutable.Map[Int, AssetFormat] =
-    (Seq(Video, Image) ++
-    scala.concurrent.Await.result(
-      row.SELECT("WHERE id > 0").apply().list,
-      scala.concurrent.duration.Duration(1, scala.concurrent.duration.MINUTES)))
-    .map(f => f.id.unId -> f).toMap
+    (Seq(Video, Image) ++ async.AWAIT {
+      row.SELECT("WHERE id > 0").apply().list
+    }).map(f => f.id.unId -> f).toMap
 }
 
 

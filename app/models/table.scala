@@ -3,6 +3,7 @@ package models
 import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
+import macros._
 import dbrary._
 import site._
 
@@ -36,8 +37,9 @@ private[models] trait TableRowId[+T] extends TableRow {
 /** Factory/helper object for a particular table.  Usually these are used to produce TableRows. */
 private[models] trait TableView extends HasTable {
   /** Database OID of the table.  This is useful when dealing with inheritance or other tableoid selections. */
-  private[models] lazy val tableOID : Future[Long] =
+  private[models] lazy val tableOID : Long = async.AWAIT {
     SQL("SELECT oid FROM pg_class WHERE relname = ?").apply(table).single(SQLCols[Long])
+  }
 
   /** Type of TableRow this object can generate. */
   private[models] type Row // <: TableRow
@@ -50,7 +52,7 @@ private[models] trait TableView extends HasTable {
   protected def INSERT(args : SQLTerm[_]*)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     INSERT(SQLTerms(args : _*))(dbc, exc)
   protected def DELETE(args : SQLTerms)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
-    SQL("DELETE FROM", table, "WHERE", args.where)(dbc, exc).apply(args)
+    SQL("DELETE FROM ONLY", table, "WHERE", args.where)(dbc, exc).apply(args)
   protected def DELETE(args : SQLTerm[_]*)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     DELETE(SQLTerms(args : _*))(dbc, exc)
 }
