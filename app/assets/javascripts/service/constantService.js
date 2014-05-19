@@ -47,7 +47,10 @@ module.factory('constantService', [
 						custom: true
 					}
 				]
-			}
+			},
+			regex: {
+				doi: /(?:doi:)?(10\.[0-9\.]+\/.*)/,
+			},
 		};
 
 		//
