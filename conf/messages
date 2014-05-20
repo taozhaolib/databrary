@@ -254,16 +254,15 @@ volume.sessions={0} sessions ({1} shared)
 volume.ages.title=Ages
 volume.ages={0} (M = {1})
 volume.citation.title=Citation
-volume.doi.primary=TODO Enter the DOI of any corresponding publication
-volume.doi.primary.legend=TODO DOI Autopopulation
-volume.doi.primary.instructions=TODO If you enter a valid DOI, we will populate as much of the following form pages as possible.
+volume.doi.primary=Enter the DOI or URL of any corresponding publication
+volume.doi.primary.instructions=If this study corresponds to or represents a specific research product, such as by providing supplemental materials, you may enter its DOI or URL here.  If you enter a DOI, we will attempt to automatically fill in the title and citation.
 volume.access.title=Shared with
 volume.reuse.title=Reuse
 volume.reuse.provides=These data are used in...
 volume.reuse.consumes=These data were originally collected as part of...
 
 volume.name=Title
-volume.alias=Alias
+volume.alias=Internal short name
 volume.body=Description
 volume.edit=edit mode
 volume.edit.exit=exit edit mode
@@ -301,10 +300,10 @@ material.file=File
 material.name=Name
 material.classification=Classification
 
-citations.title=Publications
-citations.study.title=TODO Corresponding Publication
-citations.study.body=TODO If this study corresponds to or represents a specific research product, such as by providing supplemental materials, you may enter a citation to it here.
-citations.more.title=Additional Citations
+citations.title=Citations
+citations.study.title=Corresponding Publication
+citations.study.body=If this study corresponds to or represents a specific research product, such as by providing supplemental materials, you may enter a citation to it here.
+citations.more.title=Citations
 citations.more.body=Enter details about any other related research products, papers, or publications that either reference or are referenced by this volume.
 
 citation.head=Citation
@@ -430,21 +429,22 @@ volume.edit.access.success=Volume access updated successfully.
 volume.edit.access.error=Unable to update volume access.
 
 wizard.volume_edit_overview.name=Overview
-wizard.volume_edit_overview.description=Edit volume name, description, and alias.
-wizard.volume_edit_overview.instructions=TODO Edit volume name, description, and alias.
+wizard.volume_edit_overview.description=Edit name and description.
+wizard.volume_edit_overview.instructions=Provide a name and description for your dataset or study. If this study corresponds to a paper, these can be the same as the title and abstract of the paper, which will be filled in if you enter its DOI.
 
-wizard.volume_edit_publications.name=Publications
-wizard.volume_edit_publications.description=Update list of publications.
-wizard.volume_edit_publications.instructions=TODO Update list of publications.
+# Same as citations.title above??!
+wizard.volume_edit_publications.name=Citations
+wizard.volume_edit_publications.description=Edit or add relevant citations.
+wizard.volume_edit_publications.instructions=Enter details about any related research products, papers, or publications that either reference or are referenced by this volume.
 
 wizard.volume_edit_materials.name=Materials
-wizard.volume_edit_materials.description=Upload excerpts, papers, posters, and other materials.
-wizard.volume_edit_materials.instructions=TODO Upload excerpts, papers, posters, and other materials.
+wizard.volume_edit_materials.description=Upload excerpts, stimuli, and other materials.
+wizard.volume_edit_materials.instructions=Provide any files related to this study, such as video excerpts that may be shared without restriction, stimuli or displays used during data collection, scripts, blank forms, or any other unrestricted or deidentified files.\n\nWe do not yet support uploading identifying or restricted participant data through this interface.
 
 wizard.volume_edit_funding.name=Funding
 wizard.volume_edit_funding.description=Specify funding sources.
-wizard.volume_edit_funding.instructions=TODO Specify funding sources.
+wizard.volume_edit_funding.instructions=Specify any sources of funding that may have supported this research along with the grant numbers.  If your funding agency is not listed, contact us to add it.
 
 wizard.volume_edit_access.name=Access
-wizard.volume_edit_access.description=Set visibility levels for volume data.
-wizard.volume_edit_access.instructions=TODO Set visibility levels for volume data.
+wizard.volume_edit_access.description=Set access and sharing levels.
+wizard.volume_edit_access.instructions=Specify with whom you want to share the data contained in this volume and what level of access you wish them to have.
